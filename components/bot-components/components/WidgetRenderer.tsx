@@ -542,12 +542,20 @@ function TransportCard({
         borderRadius: 16,
         padding: "16px 18px",
         cursor: clickAction ? "pointer" : "default",
-        transition: "border-color 0.15s",
+        transition: "border-color 0.15s, box-shadow 0.15s, transform 0.15s",
         boxSizing: "border-box",
         width: "100%",
       }}
-      onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = "#d1d5db"; }}
-      onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = "#e5e7eb"; }}
+      onMouseEnter={(e) => {
+        (e.currentTarget as HTMLDivElement).style.borderColor = "#111827";
+        (e.currentTarget as HTMLDivElement).style.boxShadow = "0 2px 8px rgba(0,0,0,0.06)";
+        (e.currentTarget as HTMLDivElement).style.transform = "translateX(3px)";
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLDivElement).style.borderColor = "#e5e7eb";
+        (e.currentTarget as HTMLDivElement).style.boxShadow = "none";
+        (e.currentTarget as HTMLDivElement).style.transform = "translateX(0)";
+      }}
       className="w-full md:max-w-[500px]"
     >
       {/* Header: icon + name + badges (badges wrap to a new line on narrow screens) */}
@@ -707,6 +715,24 @@ function ActivityCard({ node, onAction }: { node: WidgetNode; onAction?: WidgetR
 );
   const clickAction = node.onClickAction as { type: string; payload?: Record<string, unknown> } | undefined;
 
+  // Resolve city name from itinerary so we can show it under the heading.
+  const clickPayload = clickAction?.payload ?? {};
+  const itineraryCityId =
+    ((clickPayload as any).itineraryCityId as string | undefined) ??
+    ((clickPayload as any).itinerary_city_id as string | undefined);
+  const cityName = useCityNameById(itineraryCityId);
+
+  // Address — opportunistic. A medium-length text that isn't title /
+  // description / price is treated as the activity address.
+  const address = texts.find((t) => {
+    if (!t || t === title || t === description || t === priceText) return false;
+    if (t === category || t === ratingText) return false;
+    if (PRICE_TEXT_RE.test(t)) return false;
+    if (/^\(/.test(t)) return false;
+    if (/^\d/.test(t)) return false;
+    return t.length > 12 && t.length < 120;
+  }) ?? "";
+
   // Split category into multiple tags (supports comma / slash / pipe / bullet separated)
   const categoryTags = category
     ? category.split(/\s*[,/|•·]\s*/).map((s) => s.trim()).filter(Boolean)
@@ -724,15 +750,17 @@ function ActivityCard({ node, onAction }: { node: WidgetNode; onAction?: WidgetR
         width: "100%",
         marginBottom: 12,
         boxSizing: "border-box",
-        transition: "border-color 0.15s, box-shadow 0.15s",
+        transition: "border-color 0.15s, box-shadow 0.15s, transform 0.15s",
       }}
       onMouseEnter={(e) => {
         (e.currentTarget as HTMLDivElement).style.borderColor = "#111827";
         (e.currentTarget as HTMLDivElement).style.boxShadow = "0 2px 8px rgba(0,0,0,0.06)";
+        (e.currentTarget as HTMLDivElement).style.transform = "translateX(3px)";
       }}
       onMouseLeave={(e) => {
         (e.currentTarget as HTMLDivElement).style.borderColor = "#e5e5e5";
         (e.currentTarget as HTMLDivElement).style.boxShadow = "none";
+        (e.currentTarget as HTMLDivElement).style.transform = "translateX(0)";
       }}
     >
       {/* Body: left column (title + rating + tags + divider + desc + price) + image */}
@@ -774,6 +802,19 @@ function ActivityCard({ node, onAction }: { node: WidgetNode; onAction?: WidgetR
             </div>
           )}
 
+          {/* City name under the heading — sourced from the itinerary city */}
+          {cityName && (
+            <div
+              style={{
+                fontSize: 12,
+                color: "var(--color-text-secondary)",
+                fontFamily: "'Inter', sans-serif",
+              }}
+            >
+              {cityName}
+            </div>
+          )}
+
           {/* Colorful category tags — each distinct */}
           {categoryTags.length > 0 && (
             <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
@@ -805,6 +846,29 @@ function ActivityCard({ node, onAction }: { node: WidgetNode; onAction?: WidgetR
             >
               {description}
             </p>
+          )}
+
+          {/* Address — below the description, when one is supplied */}
+          {address && (
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 6 }}>
+              <span style={{ flexShrink: 0, marginTop: 1 }}>
+                <MapPinIcon size={14} color="#6b7280" />
+              </span>
+              <p
+                style={{
+                  fontSize: 12,
+                  color: "var(--color-text-secondary)",
+                  margin: 0,
+                  fontFamily: "'Inter', sans-serif",
+                  display: "-webkit-box",
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: "vertical",
+                  overflow: "hidden",
+                }}
+              >
+                {address}
+              </p>
+            </div>
           )}
 
           {/* Price */}
@@ -954,6 +1018,27 @@ function PoiCard({
     | { type: string; payload?: Record<string, unknown> }
     | undefined;
 
+  // Resolve city name from itinerary so "1.1 km" reads as "1.1 km from
+  // Bangkok city center" and we can show the city under the heading.
+  const clickPayload = clickAction?.payload ?? {};
+  const itineraryCityId =
+    ((clickPayload as any).itineraryCityId as string | undefined) ??
+    ((clickPayload as any).itinerary_city_id as string | undefined);
+  const cityName = useCityNameById(itineraryCityId);
+
+  // Address — opportunistic. Long captions that aren't the rating /
+  // category badge / description are typically the street address.
+  const addressCaption = captionNodes.find((c) => {
+    const v = ((c.value as string) ?? "").trim();
+    if (!v) return false;
+    if (/^\s*\d/.test(v)) return false;
+    if (/★/.test(v)) return false;
+    if (/^\(/.test(v)) return false;
+    if (v === cityName) return false;
+    return v.length > 12;
+  });
+  const address = ((addressCaption?.value as string) ?? "").trim();
+
   const stars = ratingValue > 0
     ? Array.from({ length: 5 }, (_, i) =>
         i < Math.round(ratingValue) ? <StarFilledIcon key={i} /> : null,
@@ -971,16 +1056,18 @@ function PoiCard({
         cursor: clickAction ? "pointer" : "default",
         width: "100%",
         marginBottom: 12,
-        transition: "border-color 0.15s, box-shadow 0.15s",
+        transition: "border-color 0.15s, box-shadow 0.15s, transform 0.15s",
         boxSizing: "border-box",
       }}
       onMouseEnter={(e) => {
         (e.currentTarget as HTMLDivElement).style.borderColor = "#111827";
         (e.currentTarget as HTMLDivElement).style.boxShadow = "0 2px 8px rgba(0,0,0,0.06)";
+        (e.currentTarget as HTMLDivElement).style.transform = "translateX(3px)";
       }}
       onMouseLeave={(e) => {
         (e.currentTarget as HTMLDivElement).style.borderColor = "#e5e5e5";
         (e.currentTarget as HTMLDivElement).style.boxShadow = "none";
+        (e.currentTarget as HTMLDivElement).style.transform = "translateX(0)";
       }}
     >
       {/* Body: left column (title + rating inline + badges + divider + desc + distance) + image */}
@@ -1023,6 +1110,19 @@ function PoiCard({
             </div>
           )}
 
+          {/* City name under the heading — sourced from the itinerary city */}
+          {cityName && (
+            <div
+              style={{
+                fontSize: 12,
+                color: "var(--color-text-secondary)",
+                fontFamily: "'Inter', sans-serif",
+              }}
+            >
+              {cityName}
+            </div>
+          )}
+
           {/* Colorful category badges — each gets a distinct color */}
           {categoryBadges.length > 0 && (
             <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
@@ -1061,6 +1161,29 @@ function PoiCard({
             </p>
           )}
 
+          {/* Address — below the description, when one is supplied */}
+          {address && (
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 6 }}>
+              <span style={{ flexShrink: 0, marginTop: 1 }}>
+                <MapPinIcon size={14} color="#6b7280" />
+              </span>
+              <p
+                style={{
+                  fontSize: 12,
+                  color: "var(--color-text-secondary)",
+                  margin: 0,
+                  fontFamily: "'Inter', sans-serif",
+                  display: "-webkit-box",
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: "vertical",
+                  overflow: "hidden",
+                }}
+              >
+                {address}
+              </p>
+            </div>
+          )}
+
           {/* Distance row */}
           {distanceValue && (
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -1078,7 +1201,7 @@ function PoiCard({
                 }}
               >
                 {distanceValue} km
-      
+                {cityName ? ` from ${cityName} City Center` : " from City Center"}
               </span>
             </div>
           )}
@@ -1191,6 +1314,20 @@ function RestaurantCard({
     if (label && !tags.includes(label)) tags.push(label);
   }
 
+  // Address — opportunistic. A long-ish caption that isn't rating / cuisine
+  // / unit caption is treated as the street address.
+  const addressCaption = captionNodes.find((c) => {
+    const v = ((c.value as string) ?? "").trim();
+    if (!v) return false;
+    if (/^\s*\d/.test(v)) return false;
+    if (/★/.test(v)) return false;
+    if (/^\(/.test(v)) return false;
+    if (v === cuisine) return false;
+    if (v === cityName) return false;
+    return v.length > 12;
+  });
+  const address = ((addressCaption?.value as string) ?? "").trim();
+
   return (
     <div
       onClick={() => clickAction && onAction?.(clickAction)}
@@ -1202,16 +1339,18 @@ function RestaurantCard({
         cursor: clickAction ? "pointer" : "default",
         width: "100%",
         marginBottom: 12,
-        transition: "border-color 0.15s, box-shadow 0.15s",
+        transition: "border-color 0.15s, box-shadow 0.15s, transform 0.15s",
         boxSizing: "border-box",
       }}
       onMouseEnter={(e) => {
         (e.currentTarget as HTMLDivElement).style.borderColor = "#111827";
         (e.currentTarget as HTMLDivElement).style.boxShadow = "0 2px 8px rgba(0,0,0,0.06)";
+        (e.currentTarget as HTMLDivElement).style.transform = "translateX(3px)";
       }}
       onMouseLeave={(e) => {
         (e.currentTarget as HTMLDivElement).style.borderColor = "#e5e5e5";
         (e.currentTarget as HTMLDivElement).style.boxShadow = "none";
+        (e.currentTarget as HTMLDivElement).style.transform = "translateX(0)";
       }}
     >
       <div className="flex flex-col-reverse sm:flex-row gap-3 items-stretch">
@@ -1251,6 +1390,19 @@ function RestaurantCard({
             </div>
           )}
 
+          {/* City name under the heading — sourced from the itinerary city */}
+          {cityName && (
+            <div
+              style={{
+                fontSize: 12,
+                color: "var(--color-text-secondary)",
+                fontFamily: "'Inter', sans-serif",
+              }}
+            >
+              {cityName}
+            </div>
+          )}
+
           {tags.length > 0 && (
             <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
               {tags.map((t, i) => (
@@ -1281,6 +1433,29 @@ function RestaurantCard({
             </p>
           )}
 
+          {/* Address — below the description, when one is supplied */}
+          {address && (
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 6 }}>
+              <span style={{ flexShrink: 0, marginTop: 1 }}>
+                <MapPinIcon size={14} color="#6b7280" />
+              </span>
+              <p
+                style={{
+                  fontSize: 12,
+                  color: "var(--color-text-secondary)",
+                  margin: 0,
+                  fontFamily: "'Inter', sans-serif",
+                  display: "-webkit-box",
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: "vertical",
+                  overflow: "hidden",
+                }}
+              >
+                {address}
+              </p>
+            </div>
+          )}
+
           {distanceValue && (
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
               <MapPinIcon size={14} color="#6b7280" />
@@ -1297,7 +1472,7 @@ function RestaurantCard({
                 }}
               >
                 {distanceValue} km
-                {cityName ? ` from ${cityName} city center` : " from city center"}
+                {cityName ? ` from ${cityName} City Center` : " from City Center"}
               </span>
             </div>
           )}
@@ -1406,6 +1581,13 @@ function HotelCard({
     | { type: string; payload?: Record<string, unknown> }
     | undefined;
 
+  // Resolve city name from itinerary so we can show it under the heading.
+  const clickPayload = clickAction?.payload ?? {};
+  const itineraryCityId =
+    ((clickPayload as any).itineraryCityId as string | undefined) ??
+    ((clickPayload as any).itinerary_city_id as string | undefined);
+  const cityName = useCityNameById(itineraryCityId);
+
   const ratingCaption = captionNodes.find((c) => /\([\d.]+\)/.test((c.value as string) ?? ""));
   const ratingMatch = ((ratingCaption?.value as string) ?? "").match(/[\d.]+/);
   const rating = starsText ? starsText.trim().length : 0;
@@ -1451,15 +1633,17 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
         width: "100%",
         marginBottom: 12,
         boxSizing: "border-box",
-        transition: "border-color 0.15s, box-shadow 0.15s",
+        transition: "border-color 0.15s, box-shadow 0.15s, transform 0.15s",
       }}
       onMouseEnter={(e) => {
         (e.currentTarget as HTMLDivElement).style.borderColor = "#111827";
         (e.currentTarget as HTMLDivElement).style.boxShadow = "0 2px 8px rgba(0,0,0,0.06)";
+        (e.currentTarget as HTMLDivElement).style.transform = "translateX(3px)";
       }}
       onMouseLeave={(e) => {
         (e.currentTarget as HTMLDivElement).style.borderColor = "#e5e5e5";
         (e.currentTarget as HTMLDivElement).style.boxShadow = "none";
+        (e.currentTarget as HTMLDivElement).style.transform = "translateX(0)";
       }}
     >
       {/* Body: left column (title + rating + tags + divider + desc + price) + image */}
@@ -1488,6 +1672,19 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
                   {starIcons}
                 </div>
               )} */}
+            </div>
+          )}
+
+          {/* City name under the heading — sourced from the itinerary city */}
+          {cityName && (
+            <div
+              style={{
+                fontSize: 12,
+                color: "var(--color-text-secondary)",
+                fontFamily: "'Inter', sans-serif",
+              }}
+            >
+              {cityName}
             </div>
           )}
 

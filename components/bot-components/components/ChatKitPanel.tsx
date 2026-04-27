@@ -511,6 +511,28 @@ mobileMenu,
     [callPaymentInfo, dispatch],
   );
 
+  // Fetch the full itinerary detail and push it into Redux. Called after
+  // a successful POI / activity / restaurant add so derived state (the
+  // day-by-day buckets, city duration, pricing surfaces) reflects what
+  // the backend now has — the optimistic local patches in
+  // applySlabToItinerary / applyActivityBookingToItinerary are best-effort.
+  const fetchAndApplyItineraryDetail = useCallback(async () => {
+    if (!localItineraryId) return;
+    try {
+      const res = await axios.get(
+        `${MERCURY_HOST}/api/v1/itinerary/${localItineraryId}/`,
+        authToken
+          ? { headers: { Authorization: `Bearer ${authToken}` } }
+          : undefined,
+      );
+      if (res?.data && res.data?.version !== "v1") {
+        dispatch(setItinerary(res.data));
+      }
+    } catch (err) {
+      console.error("[fetchAndApplyItineraryDetail] error:", err);
+    }
+  }, [localItineraryId, authToken, dispatch]);
+
   // ── Detail Drawer State ─────────────────────────────────────────────────
   const [activityDrawer, setActivityDrawer] = useState<{
     show: boolean;
@@ -681,6 +703,9 @@ mobileMenu,
     check_out?: string;
     bookingId?: string;
     cityName?: string;
+    source?: string;
+    occupancies?: Array<{ num_adults: number; child_ages: number[] }>;
+    traceId?: string;
   }>({ show: false });
 
   // POI / Restaurant detail drawer — opened by place.view / place.detail /
@@ -2020,6 +2045,15 @@ const handleShowLogin = useCallback(() => {
                       cityName: (payload.cityName ??
                         payload.city_name ??
                         payload.city) as string | undefined,
+                      source:
+                        ((payload.source ?? payload.provider) as string) ??
+                        "Travclan",
+                      occupancies: (payload.occupancies ??
+                        payload.occupancy) as
+                        | Array<{ num_adults: number; child_ages: number[] }>
+                        | undefined,
+                      traceId: (payload.traceId ??
+                        payload.trace_id) as string | undefined,
                     });
                     return;
                   }
@@ -2198,18 +2232,29 @@ const handleShowLogin = useCallback(() => {
             const itineraryCityId =
               (payload as any).itinerary_city_id ??
               activityDrawer.itinerary_city_id;
+            // Prefer the picker-chosen date (start_date / date in the
+            // payload) over the date the card was originally opened with —
+            // and keep `time` from the payload so the booking POST records
+            // the slot the user picked.
+            const pickerStartDate =
+              ((payload as any).start_date as string | undefined) ??
+              ((payload as any).date as string | undefined);
             void (async () => {
               const data = await postBookingAction(
                 "bookings/activity/",
                 {
                   ...payload,
                   itinerary_city_id: itineraryCityId,
-                  date: activityDrawer.date,
+                  date: pickerStartDate ?? activityDrawer.date,
                 },
                 "Added activity to your itinerary",
               );
               if (data) {
                 applyActivityBookingToItinerary(data, itineraryCityId);
+                // Re-pull the full itinerary so derived state (city
+                // duration / day-by-day, pricing) reflects what the
+                // backend now has.
+                void fetchAndApplyItineraryDetail();
               }
             })();
             setActivityDrawer({ show: false });
@@ -2334,6 +2379,10 @@ const handleShowLogin = useCallback(() => {
           check_in={hotelDrawer.check_in}
           check_out={hotelDrawer.check_out}
           bookingId={hotelDrawer.bookingId}
+          dbCityId={hotelDrawer.dbCityId}
+          source={hotelDrawer.source}
+          occupancies={hotelDrawer.occupancies}
+          traceId={hotelDrawer.traceId}
           setShowLoginModal={setShowLoginModal}
         />
       )}
@@ -2356,16 +2405,28 @@ const handleShowLogin = useCallback(() => {
           removeDelete={true}
           removeChange={true}
           showAddToItinerary={true}
-          onAddToItinerary={() => {
+          onAddToItinerary={(payload?: Record<string, unknown>) => {
             const kind = poiDrawer.kind ?? "poi";
             const path = kind === "restaurant" ? "restaurant/add/" : "poi/add/";
             const itineraryCityId = poiDrawer.itinerary_city_id;
-            const date = poiDrawer.date;
-            const dayByDayIndex = 0;
+            // Prefer the date the picker chose (start_date / date in the
+            // payload) over the date the card was originally opened with.
+            const pickerStartDate =
+              ((payload as any)?.start_date as string | undefined) ??
+              ((payload as any)?.date as string | undefined);
+            const date = pickerStartDate ?? poiDrawer.date;
+            const dayByDayIndex = Math.max(
+              0,
+              ((payload as any)?.day as number | undefined) != null
+                ? ((payload as any).day as number) - 1
+                : 0,
+            );
+            const time = (payload as any)?.time as string | undefined;
             const body: Record<string, unknown> = {
               itinerary_city_id: itineraryCityId,
               date,
               day_by_day_index: dayByDayIndex,
+              ...(time ? { time } : {}),
               ...(kind === "restaurant"
                 ? { restaurant_id: poiDrawer.id }
                 : { poi_id: poiDrawer.id }),
@@ -2385,6 +2446,9 @@ const handleShowLogin = useCallback(() => {
                   date,
                   dayByDayIndex,
                 );
+                // Re-pull the full itinerary so the next drawer open
+                // reads the up-to-date day-by-day and city duration.
+                void fetchAndApplyItineraryDetail();
               }
             })();
             setPoiDrawer({ show: false });

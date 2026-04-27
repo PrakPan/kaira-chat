@@ -50,7 +50,13 @@ export default function ActivityDetails(props) {
 
   const convertToISODate = (dateStr) => {
     if (!dateStr) return;
+    // Already ISO (YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS) — return the date portion.
+    // The chat-opened flow passes ISO strings through props.date, while the
+    // itinerary tree passes DD/MM/YYYY. Tolerating both keeps the day-list
+    // dropdown from coming up empty when launched from chat.
+    if (/^\d{4}-\d{2}-\d{2}/.test(dateStr)) return dateStr.slice(0, 10);
     const [day, month, year] = dateStr?.split("/");
+    if (!day || !month || !year) return;
     return `${year}-${month?.padStart(2, "0")}-${day?.padStart(2, "0")}`;
   };
 
@@ -60,8 +66,14 @@ export default function ActivityDetails(props) {
   // itinerary.start_date so the default reflects the city the activity belongs to.)
   const resolveEffectiveDate = () => {
     if (props?.date) {
+      // Already DD/MM/YYYY — return as-is. Anything else valid (ISO from
+      // chat flow, etc.) gets normalized so downstream comparisons against
+      // the day-list items (which build DD/MM/YYYY strings) succeed.
+      if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(props.date)) return props.date;
       const d = new Date(props.date);
-      if (!isNaN(d.getTime())) return props.date;
+      if (!isNaN(d.getTime())) {
+        return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+      }
     }
     const cityCheckIn =
       props?.check_in ||
@@ -487,7 +499,7 @@ export default function ActivityDetails(props) {
                   + checkout), and even a single-day option is informational. */}
               {!hideSchedule && (
                 <div className="relative">
-                  {/* Date box trigger */}
+               
                   <div
                     ref={dateBoxRef}
                     className="flex items-center w-auto bg-[#F9F9F9] py-[0.7rem] px-4 rounded-lg justify-between cursor-pointer"
@@ -506,7 +518,7 @@ export default function ActivityDetails(props) {
                     />
                   </div>
 
-                  {/* Desktop dropdown — positioned absolutely below the trigger */}
+                
                   {showCalender && (
                     <div
                       ref={calendarDesktopRef}
