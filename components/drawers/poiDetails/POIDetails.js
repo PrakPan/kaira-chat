@@ -140,6 +140,7 @@ const POIDetails = (props) => {
   const dispatch = useDispatch();
   const [showDrawer, setShowDrawer] = useState(false);
   const imgUrlEndPoint = "https://d31aoa0ehgvjdi.cloudfront.net/";
+  const { slabIndex} = router.query;
 
   const [ImagesLoaded, setImagesLoaded] = useState({
     0: false,
@@ -180,7 +181,7 @@ const POIDetails = (props) => {
           data: {
             itinerary_city_id: props?.itinerary_city_id,
             day_by_day_index: props?.dayIndex,
-            poi_index: props?.slabIndex,
+            poi_index: slabIndex || props?.slabIndex,
           },
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
@@ -282,7 +283,7 @@ const POIDetails = (props) => {
           </div>
           <div className="flex justify-between">
             <Title>{props.data.name}</Title>
-            {!(props?.removeChange === true) && !isDraft && (
+            {!(props?.removeChange === true) && !isDraft && !(props?.type === "restaurant") && (
               <Button
                 padding="7px 25px"
                 borderRadius="7px"

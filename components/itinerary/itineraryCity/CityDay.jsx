@@ -65,6 +65,9 @@ const resolveElementType = (item) => {
   // Old format: activity element that is actually a POI (self-exploration)
   if (item.element_type === "activity" && item.poi != null) return "poi";
 
+  // Old format: activity element
+  if (item.element_type === "activity" && item.activity) return "activity";
+
   // Old format: recommendation element that is actually a restaurant
   if (
     item.element_type === "recommendation" &&
@@ -229,7 +232,7 @@ const isDraft = useSelector((state) => state.Itinerary.status) === "Draft";
   try {
     setActivityLoading(true);
     const response = await fetch(
-      `https://dev.mercury.tarzanway.com/api/v1/ancillaries/activity/${activityId}/?currency=INR`,
+      `https://mercury.tarzanway.com/api/v1/ancillaries/activity/${activityId}/?currency=INR`,
       {
         method: "POST",
         headers: {
@@ -285,45 +288,37 @@ const isDraft = useSelector((state) => state.Itinerary.status) === "Draft";
     );
   };
 
-  const handleItemClick = (item) => {
-    const resolvedType = resolveElementType(item);
-    if (!resolvedType || resolvedType === "recommendation") return;
+const handleItemClick = (item) => {
+  const resolvedType = resolveElementType(item);
+  if (!resolvedType || resolvedType === "recommendation") return;
 
-    const itemId = getItemId(item, resolvedType);
-    if (!itemId) return;
+  const itemId = getItemId(item, resolvedType);
+  if (!itemId) return;
 
-    trackActivityCardClicked(
-      router.query.id,
-      itemId,
-      "day_by_day_collapse"
-    );
+  trackActivityCardClicked(router.query.id, itemId, "day_by_day_collapse");
 
-    // P1 (pre-finalize) or Draft activities use the inline fetch + drawer
-    // flow instead of URL-driven navigation.
-    if (
-      resolvedType === "activity" &&
-      (isDraft || finalized_status === "PENDING")
-    ) {
-      handleDraftActivityClick(item);
-      return;
-    }
+  if (resolvedType === "activity" && (isDraft || finalized_status === "PENDING")) {
+    handleDraftActivityClick(item);
+    return;
+  }
 
-    router.push(
-      {
-        pathname: window.location.pathname,
-        query: {
-          ...router.query,
-          drawer: "showPoiDetail",
-          poi_id: itemId,
-          type: resolvedType,
+  router.push(
+    {
+      pathname: window.location.pathname,
+      query: {
+        ...router.query,
+        drawer: "showPoiDetail",
+        poi_id: itemId,
+        type: resolvedType,
           dayIndex: props?.index,
-          itinerary_city_id: props?.itinerary_city_id,
-        },
+        slabIndex: item?.index,
+        itinerary_city_id: props?.itinerary_city_id,
       },
-      undefined,
-      { scroll: false }
-    );
-  };
+    },
+    undefined,
+    { scroll: false }
+  );
+};
 useEffect(() => {
   let elements = [];
   for (let elem of props.day.slab_elements) {
@@ -451,17 +446,17 @@ useEffect(() => {
 
   // ── Build time-slot groups ────────────────────────────────────────────────────
 
-  const buildSlotGroups = () => {
-    const groups = {};
+ const buildSlotGroups = () => {
+  const groups = {};
     elements.forEach((item) => {
-      const slot = item?.time
-        ? getTimeOfDay(item.time) || "Morning"
-        : "Morning";
-      if (!groups[slot]) groups[slot] = [];
+    const slot = item?.time
+      ? getTimeOfDay(item.time) || "Morning"
+      : "Morning";
+    if (!groups[slot]) groups[slot] = [];
       groups[slot].push(item);
-    });
-    return groups;
-  };
+  });
+  return groups;
+};
 
   // ── Render ────────────────────────────────────────────────────────────────────
 

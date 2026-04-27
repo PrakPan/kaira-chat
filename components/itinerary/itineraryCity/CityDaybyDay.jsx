@@ -39,7 +39,8 @@ const CityDaybyDay = (props) => {
           <CityDay
             mercuryItinerary={props?.mercuryItinerary}
             key={day.slab_id ?? `day-fallback-${index}`}
-            index={dayOffset + index}x
+            index={dayOffset + index}
+            dayIndex={index}
             day={day}
             cityId={props.city.city.id}
             city={props.city.city}

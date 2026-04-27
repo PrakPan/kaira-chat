@@ -237,6 +237,7 @@ const POIDetailsDrawer = (props) => {
                   version={props?.version}
                   itineraryDrawer={props.itineraryDrawer}
                   data={data}
+                  type={props?.activityData?.type}
                   handleCloseDrawer={props.handleCloseDrawer}
                   dayIndex={props?.dayIndex}
                   slabIndex={props?.slabIndex}
