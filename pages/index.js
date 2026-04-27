@@ -48,7 +48,7 @@ if (typeof window !== "undefined" && !window.requestIdleCallback) {
 
 const TestimonialCarousel = dynamic(() => import("../components/theme/TestimonialCarousel"), {
   ssr: false,
-  loading: () => <div style={{ height: 260, background: "#f3f4f6" }} />,
+  loading: () => <div style={{ height: 260, background: "#f3f4f6" }} className="mt-[2rem]" />,
 });
 const PartnersSection = dynamic(() => import("../components/theme/PartnersSection"), {
   ssr: false,
@@ -110,7 +110,7 @@ const Home = ({ token, hotLocationSearch, checkAuthState, setHotLocationSearch }
               name: "The Tarzan Way",
               image: "https://thetarzanway.com/logoblack.svg",
               url: "https://thetarzanway.com/",
-              telephone: "+91 8448687703",
+              telephone: "+91 7827441548",
               address: {
                 "@type": "PostalAddress",
                 addressCountry: "IN",
@@ -152,7 +152,7 @@ const Home = ({ token, hotLocationSearch, checkAuthState, setHotLocationSearch }
         <TravelerMadeItinerariesSection />
         <PartnersSection />
         <WhereNextSection />
-        <WhatMakesUsSection />
+        {/* <WhatMakesUsSection /> */}
         <TestimonialCarousel />
         <FaqSection />
       </div>

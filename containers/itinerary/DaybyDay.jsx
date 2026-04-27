@@ -72,6 +72,18 @@ const DaybyDay = ({
     (state) => state.TransferBookings
   )?.transferBookings;
   const Itinerary = useSelector(state=>state.Itinerary)
+  // Loading window after a thread switch / page reload: handleThreadSelect
+  // (BotApp) clears Redux Itinerary to {} and flips itinerary_status to
+  // PENDING before the canonical fetch resolves. Without this guard, the
+  // start/end CityItem placeholders render with empty data and the only
+  // visible UI is the "+ Add Taxi Pickup/Drop" CTAs — confusing the user
+  // into thinking the itinerary lost its day-by-day. Show a skeleton until
+  // either cities arrive or the status resolves.
+  const itineraryStatus = useSelector(
+    (state) => state.ItineraryStatus?.itinerary_status,
+  );
+  const hasNoCities = !itineraryDaybyDay?.cities?.length;
+  const isItineraryLoading = hasNoCities && itineraryStatus === "PENDING";
 
   let isPageWide = media("(min-width: 768px)");
   const cityRefs = useRef({});
@@ -133,6 +145,45 @@ const DaybyDay = ({
   };
 
 
+
+  if (isItineraryLoading) {
+    return (
+      <div
+        className={`flex flex-col gap-3 mt-4xl max-ph:mt-lg ${!isPageWide ? "" : "max-w-[51vw]"}`}
+        aria-busy="true"
+        aria-live="polite"
+      >
+        <style>{`
+          @keyframes daybydaySkeletonShimmer {
+            0%   { background-position: -400px 0; }
+            100% { background-position: 400px 0; }
+          }
+          .daybyday-skel {
+            background: linear-gradient(90deg, #e5e7eb 0%, #f3f4f6 50%, #e5e7eb 100%);
+            background-size: 800px 100%;
+            animation: daybydaySkeletonShimmer 1.4s linear infinite;
+            border-radius: 8px;
+          }
+        `}</style>
+        <div className="flex flex-col gap-4 px-3 py-2">
+          {[0, 1, 2].map((i) => (
+            <div key={`skel-city-${i}`} className="flex flex-col gap-3">
+              <div className="flex items-center gap-3">
+                <div className="daybyday-skel" style={{ width: 28, height: 28, borderRadius: "50%" }} />
+                <div className="daybyday-skel" style={{ height: 16, width: "45%" }} />
+              </div>
+              <div className="flex flex-col gap-2 pl-10">
+                <div className="daybyday-skel" style={{ height: 12, width: "85%" }} />
+                <div className="daybyday-skel" style={{ height: 12, width: "70%" }} />
+                <div className="daybyday-skel" style={{ height: 12, width: "55%" }} />
+              </div>
+              <div className="daybyday-skel" style={{ height: 110, width: "100%" }} />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>

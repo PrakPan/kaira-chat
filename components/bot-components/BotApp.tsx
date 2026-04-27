@@ -10,6 +10,7 @@ import MapView from "./components/MapView";
 import ViewToggle from "./components/ViewToggle";
 import Sidebar from "./components/Sidebar";
 import StartScreen, { type TravellerStory } from "./components/StartScreen";
+import type { ThemeConfig } from "./types/themeConfig";
 import ChatWelcomeScreen from "./components/ChatWelcomeScreen";
 import TrustIndicators from "./components/TrustIndicators";
 import { useUserLocation } from "./hooks/useUserLocation";
@@ -147,7 +148,15 @@ function transformDraftToItinerary(draft: any) {
   };
 }
 
-export default function BotApp({ sessionId }: { sessionId?: string }) {
+export default function BotApp({
+  sessionId,
+  fromTailored = false,
+  themeConfig,
+}: {
+  sessionId?: string;
+  fromTailored?: boolean;
+  themeConfig?: ThemeConfig;
+}) {
   const [mapState, setMapState] = useState<MapState>({
     lat: 20,
     lng: 78,
@@ -155,6 +164,7 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
   });
   const mapRef = useRef<google.maps.Map | null>(null);
   const [initialPrompt, setInitialPrompt] = useState<string | null>(null);
+  const [initialPromptRequiresLogin, setInitialPromptRequiresLogin] = useState(false);
   const [initialAttachmentIds, setInitialAttachmentIds] = useState<string[] | undefined>(undefined);
   const [activeTravellerStory, setActiveTravellerStory] = useState<TravellerStory | null>(null);
   const sendMessageRef = useRef<((msg: string) => void) | null>(null);
@@ -404,7 +414,22 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
           `/${itineraryId}/status/`,
         );
         const status = statusRes.data?.celery;
+        const stage = statusRes.data?.stage;
         if (!status) return;
+
+        // Stage P1 — no itinerary yet (or still in chat-only stage). Don't
+        // dispatch celery statuses or enable itinerary polling; otherwise
+        // ItineraryContainer mounts, polls, sees a FAILURE/PENDING status
+        // and either redirects to /thank-you or shows a stale loader.
+        // The chatkit thread alone drives the P1 UI.
+        if (stage === "P1" && !fromTailored) {
+          setBotMode("p1");
+          setShowChatBot(true);
+          setShowStartScreen(false);
+          setHasBotResponded(true);
+          setIsChatActive(true);
+          return;
+        }
 
         dispatch(setItineraryStatus("itinerary_status", status.ITINERARY || "PENDING"));
         dispatch(setItineraryStatus("hotels_status", status.HOTELS || "PENDING"));
@@ -417,10 +442,31 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
         const allDone = ["ITINERARY", "HOTELS", "TRANSFERS", "PRICING"].every(
           (k) => status[k] === "SUCCESS" || status[k] === "FAILURE",
         );
-        if (allDone) {
-          dispatch(setItineraryStatus("finalized_status", "SUCCESS"));
+        if (stage === "P2") {
+          dispatch(setItineraryStatus("finalized_status", allDone ? "SUCCESS" : "PENDING"));
           setBotMode("p2");
           setItineraryId(itineraryId);
+          if (!allDone) {
+            setIsItineraryCompleting(true);
+            itineraryCreatedInSessionRef.current = true;
+            if (!status.display_text) {
+              setLoaderDisplayText("Building your itinerary…");
+            }
+          }
+        } else if (fromTailored) {
+          // Itinerary was just created via the tailored form. Force p2 so the
+          // user lands on the building-status loader + summary chat path even
+          // though celery is still PENDING. Also set the same in-session
+          // completion flags the bot's own creation flow sets so the
+          // "completing" UI stays visible until polling reaches SUCCESS, and
+          // the post-completion `inject.context` summary fires automatically.
+          setBotMode("p2");
+          setItineraryId(itineraryId);
+          setIsItineraryCompleting(true);
+          itineraryCreatedInSessionRef.current = true;
+          if (!status.display_text) {
+            setLoaderDisplayText("Building your itinerary…");
+          }
         }
 
         dispatch(setCart({}));
@@ -434,7 +480,7 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
         setHasBotResponded(true);
         setIsChatActive(true);
         setViewMode("itinerary");
-        setMobilePanel(allDone ? "itinerary" : "map");
+        setMobilePanel(allDone || fromTailored ? "itinerary" : "map");
       } catch (err) {
         console.error("Failed to restore itinerary directly:", err);
         setShowStartScreen(true);
@@ -442,7 +488,7 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
         setIsChatActive(false);
       }
     },
-    [dispatch, setChatBotIdOnce],
+    [dispatch, setChatBotIdOnce, fromTailored],
   );
 
   const countCartItems = useMemo(() => {
@@ -502,6 +548,82 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
       status: "Draft",
     };
   }, []);
+
+  // ── fromTailored mount: seed skeleton from tailored-form route data ──────
+  // The /chat page lands before the status API responds, so without this the
+  // user sees a blank itinerary panel during that window. The tailored form
+  // (components/tailoredform/Index.js) stashes basic_route in sessionStorage
+  // under `tailored_skeleton_<itineraryId>` right before redirecting; we read
+  // it here, build a skeleton, and flip BotApp into the same "completing" UI
+  // state the in-session creation flow uses. Polling replaces the skeleton
+  // with the canonical itinerary. Gated on fromTailored only.
+  const hasHydratedFromTailoredRef = useRef(false);
+  useEffect(() => {
+    if (!fromTailored || hasHydratedFromTailoredRef.current) return;
+    if (!sessionId || typeof window === "undefined") return;
+
+    let basicRoute: any[] = [];
+    let startCityRaw: any = null;
+    let endCityRaw: any = null;
+    const storageKey = `tailored_skeleton_${sessionId}`;
+    try {
+      const raw = sessionStorage.getItem(storageKey);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        basicRoute = Array.isArray(parsed?.basic_route)
+          ? parsed.basic_route
+          : [];
+        startCityRaw = parsed?.start_city ?? null;
+        endCityRaw = parsed?.end_city ?? null;
+      }
+    } catch {}
+
+    if (basicRoute.length === 0) return;
+    hasHydratedFromTailoredRef.current = true;
+
+    const cities = basicRoute.map((loc: any) => ({
+      name: loc.name ?? "Loading…",
+      duration: loc.duration ?? loc.nights ?? 1,
+    }));
+    skeletonCitiesRef.current = cities;
+    setSkeletonCities(cities);
+
+    // Match the endpoint shape DaybyDay.jsx expects when reading
+    // itinerary.start_city / itinerary.end_city — same mapper used by
+    // transformDraftToItinerary above.
+    const toEndpointCity = (raw: any) => {
+      if (!raw) return null;
+      return {
+        city_name: raw.name ?? raw.city_name ?? "",
+        gmaps_place_id: raw.gmaps_place_id ?? raw.place_id ?? null,
+        place_id: raw.gmaps_place_id ?? raw.place_id ?? null,
+        latitude: raw.latitude ?? null,
+        longitude: raw.longitude ?? null,
+      };
+    };
+
+    const skeleton = {
+      ...buildSkeletonItinerary(),
+      start_city: toEndpointCity(startCityRaw),
+      end_city: toEndpointCity(endCityRaw),
+    };
+    dispatch(setItinerary(skeleton));
+    dispatch(setItineraryDaybyDay(skeleton));
+    dispatch(setBreif(skeleton));
+
+    setIsItineraryCompleting(true);
+    itineraryCreatedInSessionRef.current = true;
+    setLoaderDisplayText("Crafting your day by day itinerary…");
+    setShowStartScreen(false);
+    setHasBotResponded(true);
+    setIsChatActive(true);
+    setViewMode("itinerary");
+    setMobilePanel("itinerary");
+
+    try {
+      sessionStorage.removeItem(storageKey);
+    } catch {}
+  }, [fromTailored, sessionId, buildSkeletonItinerary, dispatch]);
 
   const handleItineraryCompletionStart = useCallback(
     (_id?: string) => {
@@ -623,7 +745,7 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
           },
           start_date: null,
           end_date: null,
-          duration: 3,
+          duration: null,
           day_by_day: [1, 2, 3].map((d) => ({
             day: d,
             date: null,
@@ -735,7 +857,7 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
           !itineraryCreatedInSessionRef.current;
         if (canFocusMap) {
           setViewMode("map");
-          setMobilePanel("map");
+          if (!isMobile) setMobilePanel("map");
           // On mobile: show "Back to Map" popup so user knows the map has updated
           triggerMobileEffectPopup("map");
         }
@@ -758,7 +880,7 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
         });
       }
     },
-    [revealLeftPanel, triggerMobileEffectPopup, botMode, isItineraryCompleting],
+    [revealLeftPanel, triggerMobileEffectPopup, botMode, isItineraryCompleting, isMobile],
   );
 
   const sessionIdFromUrl = useMemo(() => {
@@ -997,11 +1119,11 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
           !itineraryCreatedInSessionRef.current;
         if (canFocusMap) {
           setViewMode("map");
-          setMobilePanel("map");
+          if (!isMobile) setMobilePanel("map");
         }
       }
     },
-    [revealLeftPanel, botMode, isItineraryCompleting],
+    [revealLeftPanel, botMode, isItineraryCompleting, isMobile],
   );
 
   // Start / end trip endpoint pins (derived from shimmer_day_by_day,
@@ -1182,6 +1304,7 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
 
         let isTripFinalized = hasCompletedEffectInLoop;
         let statusCheckFailed = false;
+        let stageIsP1 = false;
 
         // Pre-emptively land on the itinerary view whenever the thread has a
         // restored itinerary. The map_effects replay above can call
@@ -1197,7 +1320,10 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
         }
 
         if (restoredItineraryId) {
-          // Check status immediately to determine the actual state
+          // Check status immediately to determine the actual state. The
+          // response's `stage` key ("P1" | "P2") drives which path we take —
+          // P1 skips itinerary status dispatches entirely; P2 hydrates them
+          // so ItineraryContainer can render the canonical trip.
           try {
             const { axiosGetItineraryStatus } = await import(
               "../../services/itinerary/daybyday/preview"
@@ -1206,35 +1332,54 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
               `/${restoredItineraryId}/status/`,
             );
             const status = statusRes.data?.celery;
+            const stage = statusRes.data?.stage;
             if (status) {
-              dispatch(setItineraryStatus("itinerary_status", status.ITINERARY || "PENDING"));
-              dispatch(setItineraryStatus("hotels_status", status.HOTELS || "PENDING"));
-              dispatch(setItineraryStatus("transfers_status", status.TRANSFERS || "PENDING"));
-              dispatch(setItineraryStatus("pricing_status", status.PRICING || "PENDING"));
-              dispatch(setItineraryStatus("display_text", status.display_text || null));
-              dispatch(setItineraryStatus("notes", status.notes || []));
+              if (stage === "P2") {
+                dispatch(setItineraryStatus("itinerary_status", status.ITINERARY || "PENDING"));
+                dispatch(setItineraryStatus("hotels_status", status.HOTELS || "PENDING"));
+                dispatch(setItineraryStatus("transfers_status", status.TRANSFERS || "PENDING"));
+                dispatch(setItineraryStatus("pricing_status", status.PRICING || "PENDING"));
+                dispatch(setItineraryStatus("display_text", status.display_text || null));
+                dispatch(setItineraryStatus("notes", status.notes || []));
 
-              const allDone = ["ITINERARY", "HOTELS", "TRANSFERS", "PRICING"].every(
-                (k) => status[k] === "SUCCESS" || status[k] === "FAILURE",
-              );
+                const allDone = ["ITINERARY", "HOTELS", "TRANSFERS", "PRICING"].every(
+                  (k) => status[k] === "SUCCESS" || status[k] === "FAILURE",
+                );
 
-              if (allDone) {
-                dispatch(setItineraryStatus("finalized_status", "SUCCESS"));
-                setBotMode("p2");
-                setItineraryId(restoredItineraryId);
-                isTripFinalized = true;
+                if (allDone) {
+                  dispatch(setItineraryStatus("finalized_status", "SUCCESS"));
+                  setBotMode("p2");
+                  setItineraryId(restoredItineraryId);
+                  isTripFinalized = true;
+                } else {
+                  dispatch(setItineraryStatus("finalized_status", "PENDING"));
+                  setBotMode("p2");
+                  setItineraryId(restoredItineraryId);
+                  setIsItineraryCompleting(true);
+                }
               } else {
-                // Still in progress — set up polling
-                dispatch(setItineraryStatus("finalized_status", "PENDING"));
-                setIsItineraryCompleting(true);
+                // Stage P1 (or missing) — chatkit-only path. No itinerary
+                // dispatches; the thread's effects already drive P1 visuals.
+                // Skip enabling itinerary polling below — ItineraryContainer
+                // would otherwise poll and redirect to /thank-you on FAILURE.
+                stageIsP1 = true;
+                setBotMode("p1");
+                setItineraryId("");
               }
             }
           } catch (e) {
-            // Status API failed — stay on p1, just show whatever the thread has
-            console.warn("Status check on restore failed, staying on p1:", e);
-            setBotMode("p1");
-            setItineraryId("");
+            // Status API failed — bounce to /thank-you rather than rendering
+            // a half-restored session.
+            console.warn("[loadThread] status check failed, redirecting to /thank-you:", e);
             statusCheckFailed = true;
+            try {
+              await router.replace("/thank-you");
+            } catch {
+              if (typeof window !== "undefined") {
+                window.location.href = "/thank-you";
+              }
+            }
+            return;
           }
         }
 
@@ -1252,10 +1397,19 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
         if (restoredItineraryId) {
 
           setShowItineraryShimmer(false);
-          dispatch(setCart({}));
-          if (statusCheckFailed) {
-            // Status API failed — treat as draft so CTA shows, settings/share hide
-            // Don't override activeItineraryId if display_itinerary already set it to "draft"
+          // Intentionally NOT wiping the cart here. On initial reload,
+          // restoreItineraryDirectly has already cleared it and
+          // ItineraryContainer's polling may race ahead and call
+          // getPaymentInfo — wiping again would clobber that fetch and
+          // leave the CTA stuck on "Calculating price…" until the user
+          // reopens the cart. On thread switch, ItineraryContainer
+          // remounts and its mount effect dispatches pricing_status =
+          // PENDING, so the stale cart isn't visible during the gap.
+          if (statusCheckFailed || stageIsP1) {
+            // Either status API failed, or trip is still in P1 (chat-only)
+            // stage — treat as draft so CTA shows and ItineraryContainer
+            // doesn't mount/poll. Don't override activeItineraryId if
+            // display_itinerary already set it to "draft".
             if (!hasDisplayItinerary) {
               setActiveItineraryId("draft");
             }
@@ -1305,31 +1459,30 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
       restoreItineraryDirectly,
       setChatBotIdOnce,
       sessionId,
+      router,
     ],
   );
 
   const restoreLatestThread = useCallback(
     async (sid: string) => {
-      // ── Refresh restore: status API has priority ──────────────────────────
-      // Order intentionally matches the UX: render the itinerary first from
-      // the canonical APIs, then layer chat history on top.
+      // ── Refresh restore: status API drives the path ──────────────────────
+      // Status response now includes a `stage` key ("P1" | "P2") that decides
+      // which APIs to fire:
       //
-      //   1. Status API (source of truth for trip existence).
-      //      ├─ ok  → restoreItineraryDirectly(sid) fires the canonical
-      //      │       itinerary fetch + dispatches Redux statuses so the
-      //      │       itinerary panel starts rendering immediately. Then
-      //      │       chatkit threads.list / get_by_id pulls in messages.
-      //      │       Empty chatkit response is fine — we keep the itinerary.
-      //      └─ fail → fall through to chatkit-only path.
-      //
-      //   2. Chatkit fallback — threads.list, then loadThread (which
-      //      internally does threads.get_by_id). Any thread is enough to
-      //      keep the chat alive even with no status data.
-      //
-      //   3. Both empty → no recoverable session, push to /thank-you.
+      //   1. Status API (source of truth — failure is fatal).
+      //      ├─ stage P2 → restoreItineraryDirectly(sid) hydrates the
+      //      │            canonical itinerary + Redux statuses, then chatkit
+      //      │            threads.list / get_by_id pulls in messages.
+      //      ├─ stage P1 → skip itinerary APIs entirely; only chatkit
+      //      │            threads.list / get_by_id (botMode stays on p1).
+      //      └─ fail     → /thank-you. No chatkit fallback.
 
       // ── Step 1: status API ───────────────────────────────────────────────
+      // The status response carries a `stage` key ("P1" | "P2") that drives
+      // which restore path we take. Status API failure is fatal — bounce to
+      // /thank-you rather than falling back to chatkit alone.
       let statusOk = false;
+      let stage: string | null = null;
       let allDone = false;
       try {
         const { axiosGetItineraryStatus } = await import(
@@ -1337,6 +1490,7 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
         );
         const statusRes = await axiosGetItineraryStatus.get(`/${sid}/status/`);
         const celery = statusRes?.data?.celery;
+        stage = statusRes?.data?.stage ?? null;
         statusOk = !!celery;
         if (celery) {
           allDone = ["ITINERARY", "HOTELS", "TRANSFERS", "PRICING"].every(
@@ -1348,55 +1502,33 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
         statusOk = false;
       }
 
-      if (statusOk) {
-        // 1a. Itinerary APIs first — Redux statuses, activeItineraryId
-        //     (drives ItineraryContainer's canonical fetch + polling).
-        await restoreItineraryDirectly(sid);
-
-        // 1b. Chatkit second — only for chat history. Empty / failed
-        //     response is non-fatal: the itinerary is already on screen.
+      if (!statusOk) {
+        console.warn(
+          "[restoreLatestThread] status API failed — redirecting to /thank-you",
+        );
         try {
-          const listRes = await fetch("https://chat.tarzanway.com/chatkit", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              type: "threads.list",
-              params: { limit: 9999, order: "desc" },
-              filter_session_id: sid,
-              platform: getPlatform(),
-            }),
-          });
-          const listData = await listRes.json();
-          const threads = listData.data ?? [];
-          if (threads.length > 0) {
-            await loadThread(threads[0].id);
-          } else if (allDone) {
-            // Status confirms a finalized trip but there's no chat thread
-            // yet — seed the conversation with a summary request so the
-            // user lands with context. restoreItineraryDirectly has
-            // already set botMode to "p2", so ChatKitPanel will route
-            // the message through /chatkit/p2.
-            console.log(
-              "[restoreLatestThread] status p2 + empty chatkit — seeding summary prompt",
-            );
-            setInitialPrompt("Hey Kaira! provide summary of my itinerary");
-            setIsChatActive(true);
-          } else {
-            console.log(
-              "[restoreLatestThread] status ok (still building), chatkit empty — chat skipped",
-            );
+          await router.replace("/thank-you");
+        } catch {
+          if (typeof window !== "undefined") {
+            window.location.href = "/thank-you";
           }
-        } catch (err) {
-          console.warn(
-            "[restoreLatestThread] status ok but chatkit fetch failed:",
-            err,
-          );
         }
         return;
       }
 
-      // ── Step 2: status failed → chatkit-only fallback ────────────────────
-      let threads: any[] = [];
+      // ── Step 2: P2 — itinerary APIs first, then chatkit get_by_id ────────
+      if (stage === "P2") {
+        await restoreItineraryDirectly(sid);
+      } else {
+        // Stage P1 — chatkit only. Mark the chat as active and ensure botMode
+        // stays on p1 so ChatKitPanel routes through the /chatkit p1 endpoint.
+        setBotMode("p1");
+        setShowChatBot(true);
+        setShowStartScreen(false);
+        setIsChatActive(true);
+      }
+
+      // ── Step 3: chatkit threads.list → loadThread (threads.get_by_id) ────
       try {
         const listRes = await fetch("https://chat.tarzanway.com/chatkit", {
           method: "POST",
@@ -1409,30 +1541,33 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
           }),
         });
         const listData = await listRes.json();
-        threads = listData.data ?? [];
-      } catch (err) {
-        console.error("[restoreLatestThread] threads.list failed:", err);
-        threads = [];
-      }
-
-      if (threads.length > 0) {
-        await loadThread(threads[0].id);
-        return;
-      }
-
-      // ── Step 3: both empty → /thank-you ──────────────────────────────────
-      console.warn(
-        "[restoreLatestThread] no status + no chatkit threads — redirecting to /thank-you",
-      );
-      try {
-        await router.replace("/thank-you");
-      } catch {
-        if (typeof window !== "undefined") {
-          window.location.href = "/thank-you";
+        const threads = listData.data ?? [];
+        if (threads.length > 0) {
+          await loadThread(threads[0].id);
+        } else if (stage === "P2" && (allDone || fromTailored)) {
+          // P2 trip confirmed but no chat thread yet — seed a summary prompt
+          // so the user lands with context. botMode is already "p2" via
+          // restoreItineraryDirectly, so ChatKitPanel routes through /chatkit/p2.
+          // If the user is not logged in, defer the prompt: ChatKitPanel will
+          // queue it as the post-login message and surface a login/signup CTA
+          // instead of auto-sending an unauthenticated summary request.
+          const loggedIn = !!getAuthToken();
+          console.log(
+            `[restoreLatestThread] stage P2 + empty chatkit — seeding summary prompt (loggedIn=${loggedIn})`,
+          );
+          setInitialPrompt("Hey Kaira! provide summary of my itinerary");
+          setInitialPromptRequiresLogin(!loggedIn);
+          setIsChatActive(true);
+        } else {
+          console.log(
+            `[restoreLatestThread] stage ${stage ?? "unknown"} + empty chatkit — chat skipped`,
+          );
         }
+      } catch (err) {
+        console.warn("[restoreLatestThread] chatkit fetch failed:", err);
       }
     },
-    [restoreItineraryDirectly, loadThread, router],
+    [restoreItineraryDirectly, loadThread, router, fromTailored],
   );
 
   // ── Only restore on initial mount ────────────────────────────────────────
@@ -1498,12 +1633,31 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
       dispatch(setItineraryStatus("pricing_status", "PENDING"));
       dispatch(setItineraryStatus("finalized_status", "PENDING"));
 
-      // Load thread (will also update URL/sessionId if API returns session_id),
-      // then remount ChatKitPanel with the correct session.
+      // Mirror the page-reload flow (restoreLatestThread): hit the status API
+      // first via restoreItineraryDirectly so Redux statuses + activeItineraryId
+      // land before chatkit responds. That kicks off ItineraryContainer's
+      // canonical itinerary fetch immediately, instead of waiting for
+      // loadThread → threads.get_by_id → status check serially. Skipped when
+      // the thread row didn't carry a session_id; loadThread will derive it
+      // from the get_by_id response in that case.
+      if (knownSessionId) {
+        try {
+          await restoreItineraryDirectly(knownSessionId);
+        } catch (err) {
+          console.warn(
+            "[handleThreadSelect] restoreItineraryDirectly failed, falling back to loadThread-only:",
+            err,
+          );
+        }
+      }
+
+      // Then load thread for chat history. loadThread re-runs the status
+      // check internally when its effects carry an itinerary id — same
+      // redundant ordering restoreLatestThread relies on, kept for parity.
       await loadThread(threadId, knownSessionId);
       setChatKey((prev) => prev + 1);
     },
-    [loadThread, dispatch],
+    [loadThread, dispatch, restoreItineraryDirectly],
   );
 
   const handleNewChat = () => {
@@ -1514,6 +1668,7 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
     setIsItineraryCompleting(false);
     itineraryCreatedInSessionRef.current = false;
     setInitialPrompt(null);
+    setInitialPromptRequiresLogin(false);
     setLocations([]);
     setCurrentRoute(null);
     setItineraryData(null);
@@ -1667,6 +1822,7 @@ Start Location: ${details.startLocation}`;
 
   const handleInitialPromptConsumed = useCallback(() => {
     setInitialPrompt(null);
+    setInitialPromptRequiresLogin(false);
     setInitialAttachmentIds(undefined);
   }, []);
 
@@ -1769,7 +1925,7 @@ Start Location: ${details.startLocation}`;
           </p>
            
             <div className="flex gap-3 items-center">
-              {!isDraft && !isMobile && <button
+              {!isDraft && <button
                 className="flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200"
                 onClick={() => {
                   axios
@@ -1802,7 +1958,10 @@ Start Location: ${details.startLocation}`;
 
         {!isDraft && (
           <div className="flex flex-col gap-1.5 mt-1.5">
-            <div className="flex items-center gap-2">
+            {/* Outer row — column on mobile (so the gallery slides below the
+                meta), single row on desktop (gallery sits to the right of
+                traveller/date, matching the original design). */}
+            <div className="flex items-start gap-2 max-ph:flex-col max-ph:items-stretch md:items-center">
               <div className="flex items-center gap-4 flex-wrap">
                 {itineraryRedux?.group_type && (
                   <div className="flex flex-col">
@@ -1858,6 +2017,7 @@ Start Location: ${details.startLocation}`;
                 <SmallGallery
                   maxShow={Math.min(3, galleryImages.images.length)}
                   images={galleryImages.images}
+                  closeLabel="Back to Itinerary"
                 />
               )}
             </div>
@@ -1916,7 +2076,7 @@ Start Location: ${details.startLocation}`;
 
   return (
     <main
-      className="flex flex-col h-screen overflow-hidden bg-slate-100 dark:bg-slate-950"
+      className="flex flex-col h-dvh md:h-screen overflow-hidden bg-slate-100 dark:bg-slate-950"
       style={{ fontFamily: "'Inter', sans-serif" }}
     >
       {/* ── Desktop layout ── */}
@@ -1946,6 +2106,7 @@ Start Location: ${details.startLocation}`;
             <StartScreen
               onPromptSelect={handlePromptSelect}
               onTravellerStorySelect={handleTravellerStorySelect}
+              themeConfig={themeConfig}
             />
           </div>
 
@@ -2016,6 +2177,7 @@ Start Location: ${details.startLocation}`;
                 key={chatKey}
                 {...sharedChatKitProps}
                 initialPrompt={initialPrompt}
+                initialPromptRequiresLogin={initialPromptRequiresLogin}
                 onInitialPromptConsumed={handleInitialPromptConsumed}
                 onSendReady={handleSendMessageReady}
               />
@@ -2030,8 +2192,26 @@ Start Location: ${details.startLocation}`;
           showStartScreen={showStartScreen}
           hasBotResponded={hasBotResponded}
           isChatActive={isChatActive}
-          hasItineraryActivity={!!activeItineraryId}
-          isComplete={activeItineraryId !== "skeleton" && activeItineraryId !== "draft" && !!activeItineraryId}
+          // Mirrors desktop ViewToggle gating. Routes/Bookings are still
+          // gated on `isComplete` (which checks Redux content), so a
+          // restoring/half-built itinerary only surfaces Map + Itinerary
+          // until Redux populates — restored P2 itineraries no longer get
+          // stuck on the Chat tab while ItineraryContainer is polling.
+          hasItineraryActivity={
+            !!activeItineraryId &&
+            activeItineraryId !== "skeleton" &&
+            activeItineraryId !== "draft"
+          }
+          isComplete={
+            activeItineraryId !== "skeleton" &&
+            activeItineraryId !== "draft" &&
+            !!activeItineraryId &&
+            !!(itineraryRedux && (itineraryRedux.name || itineraryRedux.cities?.length)) &&
+            itineraryRedux?.status !== "Draft" &&
+            itineraryRedux?.status !== undefined &&
+            itineraryRedux?.status !== null &&
+            itineraryRedux?.status !== "undefined"
+          }
           showChatBot={showChatBot}
           chatBotItineraryId={chatBotItineraryId}
           chatBotInjectedMessage={chatBotInjectedMessageRef.current}
@@ -2068,6 +2248,18 @@ Start Location: ${details.startLocation}`;
                 <ChatWelcomeScreen
                   onSubmit={handlePromptSelect}
                   onChatStart={() => setIsChatActive(true)}
+                  mobileMenu={
+                    <MobileHeaderMenu
+                      onNewChat={handleNewChat}
+                      onThreadSelect={handleThreadSelect}
+                      activeThreadId={activeThreadId}
+                      isComplete={
+                        activeItineraryId !== "skeleton" &&
+                        activeItineraryId !== "draft" &&
+                        !!activeItineraryId
+                      }
+                    />
+                  }
                 />
               </div>
               <div
@@ -2083,8 +2275,21 @@ Start Location: ${details.startLocation}`;
                     key={`${chatKey}`}
                     {...sharedChatKitProps}
                     initialPrompt={initialPrompt}
+                    initialPromptRequiresLogin={initialPromptRequiresLogin}
                     onInitialPromptConsumed={handleInitialPromptConsumed}
                     onSendReady={handleSendMessageReady}
+                    mobileMenu={
+                      <MobileHeaderMenu
+                        onNewChat={handleNewChat}
+                        onThreadSelect={handleThreadSelect}
+                        activeThreadId={activeThreadId}
+                        isComplete={
+                          activeItineraryId !== "skeleton" &&
+                          activeItineraryId !== "draft" &&
+                          !!activeItineraryId
+                        }
+                      />
+                    }
                   />
                 )}
               </div>
@@ -2271,7 +2476,7 @@ const BottomCTABar = React.memo(
       );
     }
 
-    const hasFreshPricing = cart?.discounted_cost > 0 && pricingStatus === "SUCCESS";
+    const hasFreshPricing = pricingStatus === "SUCCESS";
     const isPricingFailedWithEmptyNotes = pricingStatus === "FAILURE" && (!notes || notes.length === 0);
 
     if (isPricingFailedWithEmptyNotes) {
@@ -2303,25 +2508,34 @@ const BottomCTABar = React.memo(
     }
 
     const perPerson = cart?.pay_only_for_one || cart?.show_per_person_cost;
-    const cost = perPerson
-      ? Math.round(cart?.per_person_discounted_cost)
-      : Math.round(cart?.discounted_cost);
+    const rawCost = perPerson
+      ? cart?.per_person_discounted_cost
+      : cart?.discounted_cost;
+    const cost = Number.isFinite(rawCost) ? Math.round(rawCost) : null;
     const currencySymbol =
       currency?.currency === "USD" ? "$" : currency?.currency === "EUR" ? "€" : "₹";
 
     return (
       <div className="z-20 fixed w-full md:w-[48%] max-ph:bottom-0 md:bottom-[4.2rem] flex-shrink-0 bg-[#fffaf5] border-t border-slate-100 px-4 py-2 flex items-center justify-between">
         <div className="flex flex-col">
-          <span className="text-[11px] text-[#6E757A]">
-            {perPerson
-              ? "Per Person"
-              : cart?.is_estimated_price && cost > 0
-                ? "Estimated Price"
-                : "Total Cost"}
-          </span>
-          <span className="font-bold text-[16px]">
-            {currencySymbol} {cost?.toLocaleString("en-IN")}/-
-          </span>
+          {cost !== null ? (
+            <>
+              <span className="text-[11px] text-[#6E757A]">
+                {perPerson
+                  ? "Per Person"
+                  : cart?.is_estimated_price && cost > 0
+                    ? "Estimated Price"
+                    : "Total Cost"}
+              </span>
+              <span className="font-bold text-[16px]">
+                {currencySymbol} {cost.toLocaleString("en-IN")}/-
+              </span>
+            </>
+          ) : (
+            <span className="text-[13px] text-[#6E757A] italic">
+              Calculating price…
+            </span>
+          )}
         </div>
         <div className="flex gap-3 items-center">
           <div
@@ -2380,8 +2594,12 @@ function getAuthToken(): string | null {
   );
 }
 
-// ── MobileHeader ──────────────────────────────────────────────────────────────
-const MobileHeader = React.memo(({
+// ── MobileHeaderMenu ─────────────────────────────────────────────────────────
+// Right-side icons (history, new chat, profile) + their drawer/login modal.
+// Used both inside MobileHeader and embedded in ChatKitPanel's mobile top bar
+// — so the chat tab can drop the full header for vertical space while still
+// exposing the same actions next to "Chat with Kaira".
+export const MobileHeaderMenu = React.memo(({
   onNewChat,
   onThreadSelect,
   activeThreadId,
@@ -2461,56 +2679,56 @@ const MobileHeader = React.memo(({
 
   return (
     <>
-      {/* Chat history slide-in drawer */}
-      {historyOpen && <div className="fixed inset-0 z-[350] bg-black/20" onClick={() => setHistoryOpen(false)} />}
-      <div
-        className="fixed top-0 left-0 h-full z-[400] bg-white shadow-2xl flex flex-col transition-transform duration-300 ease-in-out"
-        style={{ width: "85vw", maxWidth: 320, transform: historyOpen ? "translateX(0)" : "translateX(-110%)" }}
-      >
-        <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100 flex-shrink-0">
-          <span className="font-semibold text-gray-800 text-[15px]">Chat History</span>
-          <button onClick={() => setHistoryOpen(false)} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-500">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
-        </div>
-        <div className="flex-1 overflow-y-auto px-3 py-3">
-          {historyLoading ? (
-            <div className="flex flex-col gap-2">{[...Array(5)].map((_, i) => <div key={i} className="h-10 rounded-lg bg-gray-100 animate-pulse" />)}</div>
-          ) : threads.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-center py-12 gap-3">
-              <p className="text-sm text-gray-500">No chats yet</p>
+      {/* Chat history slide-in drawer — portaled to <body> so the fixed
+          positioning isn't trapped by ancestor containing-blocks (e.g.
+          ChatKitPanel's top bar uses `backdrop-blur-sm`, which makes
+          `position: fixed` resolve against the bar instead of the viewport
+          and leaves the drawer pinned to a tiny header strip on mobile). */}
+      {typeof document !== "undefined" && createPortal(
+        <>
+          {historyOpen && <div className="fixed inset-0 z-[350] bg-black/20" onClick={() => setHistoryOpen(false)} />}
+          <div
+            className="fixed top-0 left-0 h-full z-[400] bg-white shadow-2xl flex flex-col transition-transform duration-300 ease-in-out"
+            style={{ width: "85vw", maxWidth: 320, transform: historyOpen ? "translateX(0)" : "translateX(-110%)" }}
+          >
+            <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100 flex-shrink-0">
+              <span className="font-semibold text-gray-800 text-[15px]">Chat History</span>
+              <button onClick={() => setHistoryOpen(false)} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-500">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
             </div>
-          ) : (
-            <div className="flex flex-col gap-0.5">
-              {threads.map((t: any) => (
-                <button
-                  key={t.id}
-                  onClick={() => { onThreadSelect(t.id, t.session_id ?? t.filter_session_id); setHistoryOpen(false); }}
-                  className={`w-full text-left px-3 py-2.5 rounded-lg text-[13px] truncate ${activeThreadId === t.id ? "bg-[#07213A] text-white font-medium" : "text-gray-700 hover:bg-gray-50"}`}
-                  title={t.title || "Untitled"}
-                >
-                  {t.title || "Untitled"}
-                </button>
-              ))}
+            <div className="flex-1 overflow-y-auto px-3 py-3">
+              {historyLoading ? (
+                <div className="flex flex-col gap-2">{[...Array(5)].map((_, i) => <div key={i} className="h-10 rounded-lg bg-gray-100 animate-pulse" />)}</div>
+              ) : threads.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-full text-center py-12 gap-3">
+                  <p className="text-sm text-gray-500">No chats yet</p>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-0.5">
+                  {threads.map((t: any) => (
+                    <button
+                      key={t.id}
+                      onClick={() => { onThreadSelect(t.id, t.session_id ?? t.filter_session_id); setHistoryOpen(false); }}
+                      className={`w-full text-left px-3 py-2.5 rounded-lg text-[13px] truncate ${activeThreadId === t.id ? "bg-[#07213A] text-white font-medium" : "text-gray-700 hover:bg-gray-50"}`}
+                      title={t.title || "Untitled"}
+                    >
+                      {t.title || "Untitled"}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
-          )}
-        </div>
-      </div>
+          </div>
+        </>,
+        document.body,
+      )}
 
 
-      {/* Header bar */}
-      <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 bg-white border-b border-gray-100 z-10">
-        {/* Logo */}
-        <div className="flex items-center gap-2">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logoblack.svg" height={22} width={22} alt="logo" />
-          <span className="font-semibold text-gray-800 text-sm">thetarzanway</span>
-        </div>
-
-        {/* Right icons */}
-        <div className="flex items-center gap-1">
+      {/* Right icons */}
+      <div className="flex items-center gap-1">
           {/* Chat history */}
           <button onClick={handleHistoryClick} className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-gray-100 transition-colors text-gray-600" aria-label="Chat history">
             <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 21 21" fill="none">
@@ -2555,7 +2773,6 @@ const MobileHeader = React.memo(({
               </div>
             )}
           </div>
-        </div>
       </div>
 
       {showLogin &&
@@ -2603,6 +2820,36 @@ const MobileHeader = React.memo(({
     </>
   );
 });
+MobileHeaderMenu.displayName = "MobileHeaderMenu";
+
+// ── MobileHeader ──────────────────────────────────────────────────────────────
+// Logo + MobileHeaderMenu. Used outside the chat tab; the chat tab embeds
+// MobileHeaderMenu directly inside ChatKitPanel's "Chat with Kaira" bar.
+const MobileHeader = React.memo(({
+  onNewChat,
+  onThreadSelect,
+  activeThreadId,
+  isComplete,
+}: {
+  onNewChat: () => void;
+  onThreadSelect: (id: string, sessionId?: string) => void;
+  activeThreadId: string | null;
+  isComplete?: boolean;
+}) => (
+  <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 bg-white border-b border-gray-100 z-10">
+    <div className="flex items-center gap-2">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/logoblack.svg" height={22} width={22} alt="logo" />
+      <span className="font-semibold text-gray-800 text-sm">thetarzanway</span>
+    </div>
+    <MobileHeaderMenu
+      onNewChat={onNewChat}
+      onThreadSelect={onThreadSelect}
+      activeThreadId={activeThreadId}
+      isComplete={isComplete}
+    />
+  </div>
+));
 MobileHeader.displayName = "MobileHeader";
 
 interface MobileLayoutProps {
@@ -2745,13 +2992,16 @@ const MobileLayout = React.memo(({
   return (
     <div className="flex flex-col h-full overflow-hidden relative">
 
-      {/* ── Mobile header — always visible ── */}
-      <MobileHeader
-        onNewChat={onNewChat}
-        onThreadSelect={onThreadSelect}
-        activeThreadId={activeThreadId}
-        isComplete={isComplete}
-      />
+      {/* ── Mobile header — hidden on chat tab; ChatKitPanel renders its
+           own top bar with the menu on the right of "Chat with Kaira". ── */}
+      {activeTab !== "chat" && (
+        <MobileHeader
+          onNewChat={onNewChat}
+          onThreadSelect={onThreadSelect}
+          activeThreadId={activeThreadId}
+          isComplete={isComplete}
+        />
+      )}
 
       {/* ── Top tab bar — only when itinerary is active ── */}
       {hasItineraryActivity && visibleTabs.length > 0 && (
@@ -2941,6 +3191,23 @@ const MobileLayout = React.memo(({
             />
           </div>
         </div>
+      )}
+
+      {/* ── "Back to Chat" pill on map tab — shown when no floating Kaira
+           icon is present (i.e. no itinerary activity yet) so users still
+           have an obvious way back to the chat. ── */}
+      {!hasItineraryActivity && activeTab === "map" && (
+        <button
+          onClick={() => handleTabClick("chat")}
+          className="fixed z-[100] flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#07213A] text-white text-[13px] font-semibold shadow-2xl active:scale-95 transition-transform"
+          style={{ bottom: 24, right: 16, whiteSpace: "nowrap" }}
+          aria-label="Back to chat"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+          Back to Chat
+        </button>
       )}
     </div>
   );

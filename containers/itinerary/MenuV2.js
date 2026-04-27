@@ -202,13 +202,11 @@ useEffect(() => {
   }
 }, [props.itinerary?.id]);
 
-  // useEffect(() => {
-  //   const timeout = setTimeout(() => {
-  //     scrollToElement("Itenary");
-  //   }, 300);
-
-  //   return () => clearTimeout(timeout);
-  // }, []);
+  useEffect(() => {
+    if(router.query?.drawer === "payment"){
+       handleFooterBannerMobile("View Inclusions");
+    }
+  }, []);
 
   useEffect(() => {
     if (

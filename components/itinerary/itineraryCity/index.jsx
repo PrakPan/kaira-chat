@@ -165,10 +165,25 @@ const ItineraryCity = (props) => {
   const reduxItineraryId = useSelector((state) => state.ItineraryId);
   const currentItineraryId = router.query.id || reduxItineraryId;
 
-  // Compute how many days precede this city so CityDay can show a continuous day index
-  const dayOffset = (itineraryDaybyDay?.cities || [])
-    .slice(0, props.index)
-    .reduce((sum, c) => sum + (c.day_by_day?.length || c.duration || 0), 0);
+  // Compute how many days precede this city so CityDay can show a continuous
+  // day index. Intermediate cities have a checkout day whose date matches the
+  // next city's first day — collapse those so the same date keeps the same
+  // Day N label across the city boundary instead of incrementing.
+  const dayOffset = (() => {
+    const cities = itineraryDaybyDay?.cities || [];
+    let offset = 0;
+    for (let i = 0; i < props.index; i++) {
+      const city = cities[i];
+      const days = city?.day_by_day || [];
+      offset += days.length || city?.duration || 0;
+      const lastDate = days[days.length - 1]?.date;
+      const nextFirstDate = cities[i + 1]?.day_by_day?.[0]?.date;
+      if (lastDate && nextFirstDate && lastDate === nextFirstDate) {
+        offset -= 1;
+      }
+    }
+    return offset;
+  })();
 
   const [images, setImages] = useState(null);
 
@@ -279,7 +294,7 @@ const ItineraryCity = (props) => {
 
   const handleStay = (e, label, value, clickType, hotelId) => {
     e.stopPropagation();
-    if (!localStorage?.getItem("access_token")) {
+    if (localStorage?.getItem("access_token")) {
       const index = multiHotelStays.findIndex((h) => h?.id === hotelId);
       props?.handleClickAc(
         index !== -1 ? index : props?.index,

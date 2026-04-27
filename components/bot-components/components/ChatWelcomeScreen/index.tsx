@@ -18,9 +18,14 @@ function getAuthToken(): string | null {
 interface ChatWelcomeScreenProps {
   onSubmit?: (message: string, attachmentIds?: string[]) => void;
   onChatStart?: () => void;
+  /** Mobile-only: rendered to the right of the logo in the welcome-screen
+   *  header. Lets BotApp inject MobileHeaderMenu so the chat tab keeps the
+   *  history/new-chat/profile actions accessible even though the global
+   *  MobileHeader is hidden on the chat tab. */
+  mobileMenu?: React.ReactNode;
 }
 
-const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatStart }) => {
+const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatStart, mobileMenu }) => {
   const [inputValue, setInputValue] = useState("");
   const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
   const [showInspiration, setShowInspiration] = useState(false);
@@ -243,6 +248,18 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
         }
         .welcome-chip:active { transform: translateY(0); }
       `}</style>
+
+      {/* ── Mobile-only header — logo + injected menu actions. Mirrors
+           ChatKitPanel's top bar so the welcome screen has parity with the
+           rest of the chat tab now that MobileHeader is hidden there. ── */}
+      <div className="md:hidden flex-shrink-0 flex items-center justify-between gap-2 px-4 py-3 bg-white border-b border-gray-100">
+        <div className="flex items-center gap-2 min-w-0">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logoblack.svg" height={22} width={22} alt="logo" />
+          <span className="font-semibold text-gray-800 text-sm">thetarzanway</span>
+        </div>
+        {mobileMenu && <div className="flex-shrink-0">{mobileMenu}</div>}
+      </div>
 
       {/* Scrollable content — top-aligned on mobile, centered on desktop */}
       <div

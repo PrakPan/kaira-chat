@@ -1793,12 +1793,12 @@ useEffect(() => {
       </div>
 
       {drawer === "addPickupDrop" &&
-        oItineraryCity == (oCityData?.id || oCityData?.gmaps_place_id) &&
-        dItineraryCity == (dCityData?.id || dCityData?.gmaps_place_id) && (
+        (oItineraryCity == oCityData?.id || oItineraryCity == oCityData?.gmaps_place_id) &&
+        (dItineraryCity == dCityData?.id || dItineraryCity == dCityData?.gmaps_place_id) && (
           <PickupDropDrawer
             isOpen={drawer === "addPickupDrop" &&
-              oItineraryCity == (oCityData?.id || oCityData?.gmaps_place_id) &&
-              dItineraryCity == (dCityData?.id || dCityData?.gmaps_place_id)}
+              (oItineraryCity == oCityData?.id || oItineraryCity == oCityData?.gmaps_place_id) &&
+              (dItineraryCity == dCityData?.id || dItineraryCity == dCityData?.gmaps_place_id)}
             hotelName={hotelName}
             destinationHotelName={destinationHotelName}
             sourceLat={sourceLat}
@@ -1840,17 +1840,15 @@ useEffect(() => {
 
 
       {((drawer == "editTransfer" &&
-        (bookingId === booking_id || (bookingId === "" && !booking_id)) &&
-        oItineraryCity == (oCityData?.id || oCityData?.gmaps_place_id) &&
-        dItineraryCity == (dCityData?.id || dCityData?.gmaps_place_id)) || drawerType == "multicity") && (
+        (oItineraryCity == oCityData?.id || oItineraryCity == oCityData?.gmaps_place_id) &&
+        (dItineraryCity == dCityData?.id || dItineraryCity == dCityData?.gmaps_place_id)) || drawerType == "multicity") && (
           <TransferEditDrawer
             mercury
             addOrEdit={"transferAdd"}
             showDrawer={
               drawer == "editTransfer" &&
-              (bookingId === booking_id || (bookingId === "" && !booking_id)) &&
-              oItineraryCity == (oCityData?.id || oCityData?.gmaps_place_id) &&
-              dItineraryCity == (dCityData?.id || dCityData?.gmaps_place_id)
+              (oItineraryCity == oCityData?.id || oItineraryCity == oCityData?.gmaps_place_id) &&
+              (dItineraryCity == dCityData?.id || dItineraryCity == dCityData?.gmaps_place_id)
             }
             destination={destination_city_id}
             _updateFlightBookingHandler={_updateFlightBookingHandler}
@@ -1878,8 +1876,9 @@ useEffect(() => {
         )}
 
       {"Intracity" === drawer &&
-        (bookingId === airportBookingId || bookingId === booking_id) && oItineraryCity == (oCityData?.id || oCityData?.gmaps_place_id) &&
-        dItineraryCity == (dCityData?.id || dCityData?.gmaps_place_id) && (
+        (bookingId === airportBookingId || bookingId === booking_id) &&
+        (oItineraryCity == oCityData?.id || oItineraryCity == oCityData?.gmaps_place_id) &&
+        (dItineraryCity == dCityData?.id || dItineraryCity == dCityData?.gmaps_place_id) && (
           <TransferDrawer
             show={
               "Intracity" === drawer && (bookingId === airportBookingId || bookingId === booking_id)

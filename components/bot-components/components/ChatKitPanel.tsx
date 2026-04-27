@@ -104,6 +104,11 @@ interface ChatKitPanelProps {
   onBotModeChange?: (mode: BotMode) => void;
   onItineraryIdChange?: (id: string) => void;
   initialPrompt?: string | null;
+  /** When true and the user is not logged in, the initialPrompt is queued as
+   *  the post-login message and a login/signup CTA is shown instead of being
+   *  auto-sent. Used by BotApp's restore flow so unauthenticated reloads of a
+   *  finished P2 trip don't fire a "Hey Kaira!" summary request. */
+  initialPromptRequiresLogin?: boolean;
   initialAttachmentIds?: string[];
   onSendReady?: (sendFn: (message: string) => void) => void;
   onItineraryCompletionStart?: (itineraryId: string) => void;
@@ -122,6 +127,10 @@ onPaymentStart?: () => void;
  *  corresponding prompt through the /chatkit p1 API. Not posted to the bot. */
 travellerStory?: TravellerStoryIntro | null;
 onTravellerStoryDismiss?: () => void;
+/** Mobile-only: rendered to the right of "Chat with Kaira" in the top bar.
+ *  Lets BotApp inject MobileHeaderMenu so the chat tab can drop the global
+ *  MobileHeader without losing the history/new-chat/profile actions. */
+mobileMenu?: React.ReactNode;
 }
 
 export interface TravellerStoryIntro {
@@ -258,6 +267,7 @@ export function ChatKitPanel({
   onBotModeChange,
   onItineraryIdChange,
   initialPrompt = null,
+  initialPromptRequiresLogin = false,
   initialAttachmentIds,
   onSendReady,
   onItineraryCompletionStart,
@@ -272,6 +282,7 @@ itineraryCompleted = false,
 onPaymentStart,
 travellerStory = null,
 onTravellerStoryDismiss,
+mobileMenu,
 }: ChatKitPanelProps) {
   // ── State ────────────────────────────────────────────────────────────────
   const [input, setInput] = useState("");
@@ -500,6 +511,28 @@ onTravellerStoryDismiss,
     [callPaymentInfo, dispatch],
   );
 
+  // Fetch the full itinerary detail and push it into Redux. Called after
+  // a successful POI / activity / restaurant add so derived state (the
+  // day-by-day buckets, city duration, pricing surfaces) reflects what
+  // the backend now has — the optimistic local patches in
+  // applySlabToItinerary / applyActivityBookingToItinerary are best-effort.
+  const fetchAndApplyItineraryDetail = useCallback(async () => {
+    if (!localItineraryId) return;
+    try {
+      const res = await axios.get(
+        `${MERCURY_HOST}/api/v1/itinerary/${localItineraryId}/`,
+        authToken
+          ? { headers: { Authorization: `Bearer ${authToken}` } }
+          : undefined,
+      );
+      if (res?.data && res.data?.version !== "v1") {
+        dispatch(setItinerary(res.data));
+      }
+    } catch (err) {
+      console.error("[fetchAndApplyItineraryDetail] error:", err);
+    }
+  }, [localItineraryId, authToken, dispatch]);
+
   // ── Detail Drawer State ─────────────────────────────────────────────────
   const [activityDrawer, setActivityDrawer] = useState<{
     show: boolean;
@@ -670,6 +703,9 @@ onTravellerStoryDismiss,
     check_out?: string;
     bookingId?: string;
     cityName?: string;
+    source?: string;
+    occupancies?: Array<{ num_adults: number; child_ages: number[] }>;
+    traceId?: string;
   }>({ show: false });
 
   // POI / Restaurant detail drawer — opened by place.view / place.detail /
@@ -1174,11 +1210,22 @@ const sendMessage = useCallback(
 
 useEffect(() => {
   if (initialPrompt && !hasProcessedInitial.current && locationReady) {
+    // Defer prompts that require login: queue as the post-login message and
+    // show the existing login/signup CTA. The authToken-change effect below
+    // will fire the queued message once the user authenticates.
+    if (initialPromptRequiresLogin && !isLoggedIn) {
+      hasProcessedInitial.current = true;
+      pendingPostLoginMsg.current = initialPrompt;
+      loginFlowArmedRef.current = true;
+      setShowLoginPrompt(true);
+      onInitialPromptConsumed?.();
+      return;
+    }
     hasProcessedInitial.current = true;
     sendMessage(initialPrompt, initialAttachmentIds);
     onInitialPromptConsumed?.();
   }
-}, [initialPrompt, initialAttachmentIds, locationReady, sendMessage, onInitialPromptConsumed]);
+}, [initialPrompt, initialPromptRequiresLogin, isLoggedIn, initialAttachmentIds, locationReady, sendMessage, onInitialPromptConsumed]);
 
   useEffect(() => {
     onSendReady?.(sendMessage);
@@ -1503,7 +1550,11 @@ useEffect(() => {
   // ── Handlers ──────────────────────────────────────────────────────────────
 const handleShowLogin = useCallback(() => {
   const currentInput = inputRef.current.trim();
-  const msg = currentInput || lastSentMessageRef.current;
+  // Preserve an existing queued message (e.g. an initialPrompt already
+  // stashed by the restore flow) if the user opens the modal without
+  // typing anything new — otherwise we'd clobber it with null and the
+  // post-login send would be a no-op.
+  const msg = currentInput || lastSentMessageRef.current || pendingPostLoginMsg.current;
   console.log("[handleShowLogin] storing pending:", msg);
   pendingPostLoginMsg.current = msg || null;
   loginFlowArmedRef.current = true;
@@ -1674,22 +1725,26 @@ const handleShowLogin = useCallback(() => {
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div
-      className={`flex flex-col h-full min-h-0 bg-white  max-h-[100vh] md:max-h-[93.5vh] border-[0.5px] border-l-[#e5e5e5]`}
+      className={`flex flex-col h-full min-h-0 bg-white  max-h-[100dvh] md:max-h-[93.5vh] border-[0.5px] border-l-[#e5e5e5]`}
       style={{ fontFamily: "'Inter', sans-serif" }}
     >
       {/* ── Top bar ───────────────────────────────────────────────────────── */}
-      <div className="flex-shrink-0 flex items-center justify-between px-4 py-2.5 bg-white/80 backdrop-blur-sm mt-2">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-full flex items-center justify-center">
+      <div className="flex-shrink-0 flex items-center justify-between gap-2 px-4 py-2.5 bg-white/80 backdrop-blur-sm mt-2">
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0">
             <img src="/KairaInsta.png" alt="Kaira" />
           </div>
-          <span className="text-sm md:text-[14px] font-semibold text-gray-800">Chat with Kaira <span className="font-normal">- Your AI Trip Planner</span></span>
+          <span className="text-sm md:text-[14px] font-semibold text-gray-800 truncate">
+            Chat with Kaira
+            <span className="font-normal hidden md:inline"> - Your AI Trip Planner</span>
+          </span>
           {isLoadingLocation && (
-            <span className="text-[11px] text-gray-400 flex items-center gap-1">
+            <span className="text-[11px] text-gray-400 flex items-center gap-1 flex-shrink-0">
               <Spinner size={10} /> locating…
             </span>
           )}
         </div>
+        {mobileMenu && <div className="md:hidden flex-shrink-0">{mobileMenu}</div>}
         {/* <button
           onClick={() => setShowControls((v) => !v)}
           className="text-[11px] text-gray-400 hover:text-gray-600 flex items-center gap-1 transition-colors"
@@ -1990,6 +2045,15 @@ const handleShowLogin = useCallback(() => {
                       cityName: (payload.cityName ??
                         payload.city_name ??
                         payload.city) as string | undefined,
+                      source:
+                        ((payload.source ?? payload.provider) as string) ??
+                        "Travclan",
+                      occupancies: (payload.occupancies ??
+                        payload.occupancy) as
+                        | Array<{ num_adults: number; child_ages: number[] }>
+                        | undefined,
+                      traceId: (payload.traceId ??
+                        payload.trace_id) as string | undefined,
                     });
                     return;
                   }
@@ -2020,7 +2084,7 @@ const handleShowLogin = useCallback(() => {
             )}
 
             {showLoginPrompt && !isLoggedIn && (
-              <div className="mt-[24px] p-4">
+              <div className="mt-[12px] p-2">
                  <div
           style={{
             maxWidth: "100%",
@@ -2168,18 +2232,29 @@ const handleShowLogin = useCallback(() => {
             const itineraryCityId =
               (payload as any).itinerary_city_id ??
               activityDrawer.itinerary_city_id;
+            // Prefer the picker-chosen date (start_date / date in the
+            // payload) over the date the card was originally opened with —
+            // and keep `time` from the payload so the booking POST records
+            // the slot the user picked.
+            const pickerStartDate =
+              ((payload as any).start_date as string | undefined) ??
+              ((payload as any).date as string | undefined);
             void (async () => {
               const data = await postBookingAction(
                 "bookings/activity/",
                 {
                   ...payload,
                   itinerary_city_id: itineraryCityId,
-                  date: activityDrawer.date,
+                  date: pickerStartDate ?? activityDrawer.date,
                 },
                 "Added activity to your itinerary",
               );
               if (data) {
                 applyActivityBookingToItinerary(data, itineraryCityId);
+                // Re-pull the full itinerary so derived state (city
+                // duration / day-by-day, pricing) reflects what the
+                // backend now has.
+                void fetchAndApplyItineraryDetail();
               }
             })();
             setActivityDrawer({ show: false });
@@ -2304,6 +2379,10 @@ const handleShowLogin = useCallback(() => {
           check_in={hotelDrawer.check_in}
           check_out={hotelDrawer.check_out}
           bookingId={hotelDrawer.bookingId}
+          dbCityId={hotelDrawer.dbCityId}
+          source={hotelDrawer.source}
+          occupancies={hotelDrawer.occupancies}
+          traceId={hotelDrawer.traceId}
           setShowLoginModal={setShowLoginModal}
         />
       )}
@@ -2326,16 +2405,28 @@ const handleShowLogin = useCallback(() => {
           removeDelete={true}
           removeChange={true}
           showAddToItinerary={true}
-          onAddToItinerary={() => {
+          onAddToItinerary={(payload?: Record<string, unknown>) => {
             const kind = poiDrawer.kind ?? "poi";
             const path = kind === "restaurant" ? "restaurant/add/" : "poi/add/";
             const itineraryCityId = poiDrawer.itinerary_city_id;
-            const date = poiDrawer.date;
-            const dayByDayIndex = 0;
+            // Prefer the date the picker chose (start_date / date in the
+            // payload) over the date the card was originally opened with.
+            const pickerStartDate =
+              ((payload as any)?.start_date as string | undefined) ??
+              ((payload as any)?.date as string | undefined);
+            const date = pickerStartDate ?? poiDrawer.date;
+            const dayByDayIndex = Math.max(
+              0,
+              ((payload as any)?.day as number | undefined) != null
+                ? ((payload as any).day as number) - 1
+                : 0,
+            );
+            const time = (payload as any)?.time as string | undefined;
             const body: Record<string, unknown> = {
               itinerary_city_id: itineraryCityId,
               date,
               day_by_day_index: dayByDayIndex,
+              ...(time ? { time } : {}),
               ...(kind === "restaurant"
                 ? { restaurant_id: poiDrawer.id }
                 : { poi_id: poiDrawer.id }),
@@ -2355,6 +2446,9 @@ const handleShowLogin = useCallback(() => {
                   date,
                   dayByDayIndex,
                 );
+                // Re-pull the full itinerary so the next drawer open
+                // reads the up-to-date day-by-day and city duration.
+                void fetchAndApplyItineraryDetail();
               }
             })();
             setPoiDrawer({ show: false });

@@ -381,6 +381,18 @@ function resolveEntityTokens(
 const ProgressLoader: React.FC<{ steps: ProgressStep[] }> = ({ steps }) => {
   const [expanded, setExpanded] = useState(false);
   const allDone = steps.length > 0 && steps.every((s) => s.done);
+
+  const [seconds, setSeconds] = useState(0);
+  const finalSeconds = React.useRef<number>(0);
+  React.useEffect(() => {
+    if (allDone) {
+      finalSeconds.current = seconds;
+      return;
+    }
+    const id = setInterval(() => setSeconds((s) => s + 1), 1000);
+    return () => clearInterval(id);
+  }, [allDone]);
+
   const latest = steps[steps.length - 1];
   if (!latest) return null;
 
@@ -469,7 +481,7 @@ const ProgressLoader: React.FC<{ steps: ProgressStep[] }> = ({ steps }) => {
         }}
       >
         <span style={{ fontSize: 14, color: "#374151", fontWeight: 400 }}>
-          Searched {steps.length} {steps.length === 1 ? "query" : "queries"}
+          Thought for {finalSeconds.current || seconds}s
         </span>
         <svg
           width="14"

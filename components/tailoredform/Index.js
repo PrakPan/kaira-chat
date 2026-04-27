@@ -625,7 +625,26 @@ const Enquiry = (props) => {
             return;
           }
           hasNavigated = true;
-          router.push(`/chat/${itineraryId}`);
+          // Stash the route so /chat can render a skeleton itinerary before
+          // the status API call returns. Closure-captured here because
+          // setItineraryInitiateData(null) above has already cleared Redux.
+          try {
+            if (
+              typeof window !== "undefined" &&
+              Array.isArray(itineraryInititateData?.basic_route) &&
+              itineraryInititateData.basic_route.length > 0
+            ) {
+              sessionStorage.setItem(
+                `tailored_skeleton_${itineraryId}`,
+                JSON.stringify({
+                  basic_route: itineraryInititateData.basic_route,
+                  start_city: itineraryInititateData.start_city ?? null,
+                  end_city: itineraryInititateData.end_city ?? null,
+                }),
+              );
+            }
+          } catch {}
+          router.push(`/chat/${itineraryId}?source=tailored`);
         };
 
         if (hasGtag) {

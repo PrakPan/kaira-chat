@@ -912,7 +912,7 @@ const ClickHandler = (child) => {
               BarName="TabsName"
               ClickHandler={ClickHandler}
               selectedItem={
-                elementType === "Activity" ? `${items[0].id}` : `${items[1].id}`
+                elementType === "Activity" ? items[0].label : items[1].label
               }
             />
             {/* </div> */}
