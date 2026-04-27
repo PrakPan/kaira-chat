@@ -14,6 +14,7 @@ import FullScreenGallery from "../../fullscreengallery/Index";
 import Skeleton from "../../modals/ViewHotelDetails/Skeleton";
 import media from "../../media";
 import { TbArrowBack } from "react-icons/tb";
+import { FaTaxi } from "react-icons/fa6";
 import styled from "styled-components";
 import { bookingDetails } from "../../../services/bookings/FetchAccommodation";
 import useMediaQuery from "../../media";
@@ -140,7 +141,7 @@ const ItineraryCity = (props) => {
   const stay = useSelector((state) => state.Stays);
   const [loading, setLoading] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
-  const { itinerary_status, hotels_status } = useSelector(
+  const { itinerary_status, hotels_status, transfers_status } = useSelector(
     (state) => state.ItineraryStatus,
   );
 
@@ -613,6 +614,62 @@ const ItineraryCity = (props) => {
               </button>
             </div>
           )}
+
+        {/* Sightseeing taxi chips — shown when intracity taxi bookings exist for this city.
+            While bookings API is still loading, render a skeleton chip so the slot doesn't
+            shift in once data arrives. */}
+        {transfers_status === "PENDING" ? (
+          <div className="mt-1 flex flex-wrap items-center justify-end gap-2">
+            <SkeletonCard
+              width="160px"
+              height="24px"
+              borderRadius="8px"
+              variant="default"
+            />
+          </div>
+        ) : Array.isArray(props?.intracityBookings) &&
+          props.intracityBookings.length > 0 ? (
+          <div className="mt-2 flex flex-wrap items-center justify-start gap-2">
+              {props.intracityBookings.map((taxi) => {
+                const fromName =
+                  taxi?.transfer_details?.source?.name || "";
+                const toName =
+                  taxi?.transfer_details?.destination?.name || "";
+                const label =
+                  taxi?.name ||
+                  (toName && toName !== fromName
+                    ? `Sightseeing: ${fromName} → ${toName}`
+                    : `Sightseeing Taxi in ${props?.city?.city?.name}`);
+                return (
+                  <button
+                    key={taxi.id}
+                    onClick={() => {
+                      router.push(
+                        {
+                          pathname: window.location.pathname,
+                          query: {
+                            ...(currentItineraryId
+                              ? { id: currentItineraryId }
+                              : {}),
+                            drawer: "SightSeeing",
+                            bookingId: taxi.id,
+                            itinerary_city_id: props?.city?.id,
+                          },
+                        },
+                        undefined,
+                        { scroll: false },
+                      );
+                    }}
+                    className="inline-flex items-center gap-[6px] px-[10px] py-[4px] rounded-[5px] border border-[#FDE68A] bg-[#FFFBEA] text-[12px] text-[#01202B] hover:bg-[#FFF3C4] whitespace-nowrap max-w-full"
+                    title={label}
+                  >
+                    <FaTaxi size={11} className="text-[#B45309] shrink-0" />
+                    <span className="truncate">{label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          ) : null}
       </div>
       {/* ── End header ──────────────────────────────────────────────────── */}
 
