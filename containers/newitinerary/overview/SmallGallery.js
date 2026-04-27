@@ -139,6 +139,7 @@ function SmallGallery(props) {
                     mercury
                     imgUrlEndPoint={imgUrlEndPoint}
                     closeGalleryHandler={closeGallery}
+                    closeLabel={props.closeLabel}
                     images={props.images}
                 ></FullScreenGallery>
             }

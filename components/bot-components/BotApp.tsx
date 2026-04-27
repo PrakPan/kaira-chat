@@ -1605,12 +1605,31 @@ export default function BotApp({
       dispatch(setItineraryStatus("pricing_status", "PENDING"));
       dispatch(setItineraryStatus("finalized_status", "PENDING"));
 
-      // Load thread (will also update URL/sessionId if API returns session_id),
-      // then remount ChatKitPanel with the correct session.
+      // Mirror the page-reload flow (restoreLatestThread): hit the status API
+      // first via restoreItineraryDirectly so Redux statuses + activeItineraryId
+      // land before chatkit responds. That kicks off ItineraryContainer's
+      // canonical itinerary fetch immediately, instead of waiting for
+      // loadThread → threads.get_by_id → status check serially. Skipped when
+      // the thread row didn't carry a session_id; loadThread will derive it
+      // from the get_by_id response in that case.
+      if (knownSessionId) {
+        try {
+          await restoreItineraryDirectly(knownSessionId);
+        } catch (err) {
+          console.warn(
+            "[handleThreadSelect] restoreItineraryDirectly failed, falling back to loadThread-only:",
+            err,
+          );
+        }
+      }
+
+      // Then load thread for chat history. loadThread re-runs the status
+      // check internally when its effects carry an itinerary id — same
+      // redundant ordering restoreLatestThread relies on, kept for parity.
       await loadThread(threadId, knownSessionId);
       setChatKey((prev) => prev + 1);
     },
-    [loadThread, dispatch],
+    [loadThread, dispatch, restoreItineraryDirectly],
   );
 
   const handleNewChat = () => {
@@ -1876,7 +1895,7 @@ Start Location: ${details.startLocation}`;
           </p>
            
             <div className="flex gap-3 items-center">
-              {!isDraft && !isMobile && <button
+              {!isDraft && <button
                 className="flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200"
                 onClick={() => {
                   axios
@@ -1909,7 +1928,10 @@ Start Location: ${details.startLocation}`;
 
         {!isDraft && (
           <div className="flex flex-col gap-1.5 mt-1.5">
-            <div className="flex items-center gap-2">
+            {/* Outer row — column on mobile (so the gallery slides below the
+                meta), single row on desktop (gallery sits to the right of
+                traveller/date, matching the original design). */}
+            <div className="flex items-start gap-2 max-ph:flex-col max-ph:items-stretch md:items-center">
               <div className="flex items-center gap-4 flex-wrap">
                 {itineraryRedux?.group_type && (
                   <div className="flex flex-col">
@@ -1965,6 +1987,7 @@ Start Location: ${details.startLocation}`;
                 <SmallGallery
                   maxShow={Math.min(3, galleryImages.images.length)}
                   images={galleryImages.images}
+                  closeLabel="Back to Itinerary"
                 />
               )}
             </div>

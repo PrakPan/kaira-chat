@@ -24,17 +24,23 @@ const FullScreenGallery = (props) => {
       style={{ zIndex: "2000" }}
     >
       <div className="container mt-7xl cursor-pointer max-ph:!p-0">
-        <span onClick={props.closeGalleryHandler} className="w-[30px] h-[30px] bg-text-white flex items-center justify-center rounded-circle absolute right-[20%]  max-ph:top-[25px] max-ph:left-[20px]">
+        {/* Desktop close icon (right-side) and mobile fallback when no
+            closeLabel is passed. */}
+        <span onClick={props.closeGalleryHandler} className={`w-[30px] h-[30px] bg-text-white flex items-center justify-center rounded-circle absolute right-[20%]  max-ph:top-[25px] max-ph:left-[20px] ${props.closeLabel ? "max-ph:hidden" : ""}`}>
           <span className="max-ph:hidden">{svgIcons.close} </span>
           <span className="hidden max-ph:!block">
             <Image src="/backarrow.svg" className="cursor-pointer" width={22} height={2} />
           </span>
         </span>
 
+       
+
         <SwiperGallery
           images={props.images}
           mercury={props.mercury}
           imgUrlEndPoint={props.imgUrlEndPoint}
+          closeLabel={props.closeLabel}
+          closeGalleryHandler={props.closeGalleryHandler}
         ></SwiperGallery>
       </div>
     </div>
