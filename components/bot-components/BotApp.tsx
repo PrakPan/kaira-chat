@@ -10,6 +10,7 @@ import MapView from "./components/MapView";
 import ViewToggle from "./components/ViewToggle";
 import Sidebar from "./components/Sidebar";
 import StartScreen, { type TravellerStory } from "./components/StartScreen";
+import type { ThemeConfig } from "./types/themeConfig";
 import ChatWelcomeScreen from "./components/ChatWelcomeScreen";
 import TrustIndicators from "./components/TrustIndicators";
 import { useUserLocation } from "./hooks/useUserLocation";
@@ -150,9 +151,11 @@ function transformDraftToItinerary(draft: any) {
 export default function BotApp({
   sessionId,
   fromTailored = false,
+  themeConfig,
 }: {
   sessionId?: string;
   fromTailored?: boolean;
+  themeConfig?: ThemeConfig;
 }) {
   const [mapState, setMapState] = useState<MapState>({
     lat: 20,
@@ -2050,6 +2053,7 @@ Start Location: ${details.startLocation}`;
             <StartScreen
               onPromptSelect={handlePromptSelect}
               onTravellerStorySelect={handleTravellerStorySelect}
+              themeConfig={themeConfig}
             />
           </div>
 

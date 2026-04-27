@@ -563,7 +563,7 @@ useEffect(() => {
             </div>
 
           ) : (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 md:ml-5 md:py-2">
               <MdOutlineDownhillSkiing size={15} className="text-[#9CA3AF]" />
               <span className="text-[13px] text-[#6B7280]">
                 No activity added.
