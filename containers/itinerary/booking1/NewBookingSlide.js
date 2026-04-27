@@ -2609,45 +2609,76 @@ const Details = (props) => {
                     }
 
                     {/* Visa & eSIM CTAs */}
-                    <div className="mt-md mb-md">
-                      <hr className="text-text-placeholder mb-md" />
-                      <div className="text-sm font-500 leading-xl mb-sm text-[#01202B]">
-                        Enhance Your Trip
-                      </div>
-                      <div className="flex flex-col gap-2">
-                        <button
-                          className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-[#E5E5E5] bg-white hover:bg-[#FAFAFA] transition-colors"
-                          onClick={() => setShowVisaDrawer(true)}
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="w-[36px] h-[36px] rounded-full bg-[#F5F0FF] flex items-center justify-center flex-shrink-0">
-                              <span className="text-[18px]">🛂</span>
-                            </div>
-                            <div className="text-left">
-                              <div className="text-[13px] font-600 text-[#01202B]">Add Visa</div>
-                              <div className="text-[11px] text-[#6E757A]">Hassle-free visa assistance</div>
-                            </div>
+                    {(() => {
+                      const ancillaryBookings =
+                        Cart?.summary?.Ancillaries?.bookings || [];
+                      const hasEsim = ancillaryBookings.some((b) =>
+                        (b?.name || "").toLowerCase().includes("esim"),
+                      );
+                      const hasVisa = ancillaryBookings.some((b) => {
+                        const n = (b?.name || "").toLowerCase();
+                        return !n.includes("esim") && n.includes("visa");
+                      });
+                      return (
+                        <div className="mt-md mb-md">
+                          <hr className="text-text-placeholder mb-md" />
+                          <div className="text-sm font-500 leading-xl mb-sm text-[#01202B]">
+                            Enhance Your Trip
                           </div>
-                          <span className="text-[#979393] text-lg">›</span>
-                        </button>
+                          <div className="flex flex-col gap-2">
+                            <button
+                              className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-[#E5E5E5] bg-white hover:bg-[#FAFAFA] transition-colors"
+                              onClick={() => setShowVisaDrawer(true)}
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className="w-[36px] h-[36px] rounded-full bg-[#F5F0FF] flex items-center justify-center flex-shrink-0">
+                                  <span className="text-[18px]">🛂</span>
+                                </div>
+                                <div className="text-left">
+                                  <div className="text-[13px] font-600 text-[#01202B] flex items-center gap-1">
+                                    {hasVisa ? "Visa added" : "Add Visa"}
+                                    {hasVisa && (
+                                      <span className="inline-flex items-center justify-center w-[14px] h-[14px] rounded-full bg-[#22C55E] text-white text-[9px] font-700">
+                                        ✓
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div className="text-[11px] text-[#6E757A]">
+                                    Hassle-free visa assistance
+                                  </div>
+                                </div>
+                              </div>
+                              <span className="text-[#979393] text-lg">›</span>
+                            </button>
 
-                        <button
-                          className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-[#E5E5E5] bg-white hover:bg-[#FAFAFA] transition-colors"
-                          onClick={() => setShowEsimDrawer(true)}
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="w-[36px] h-[36px] rounded-full bg-[#DDF4C5] flex items-center justify-center flex-shrink-0">
-                              <span className="text-[18px]">📶</span>
-                            </div>
-                            <div className="text-left">
-                              <div className="text-[13px] font-600 text-[#01202B]">Add eSIM</div>
-                              <div className="text-[11px] text-[#6E757A]">Stay connected abroad</div>
-                            </div>
+                            <button
+                              className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-[#E5E5E5] bg-white hover:bg-[#FAFAFA] transition-colors"
+                              onClick={() => setShowEsimDrawer(true)}
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className="w-[36px] h-[36px] rounded-full bg-[#DDF4C5] flex items-center justify-center flex-shrink-0">
+                                  <span className="text-[18px]">📶</span>
+                                </div>
+                                <div className="text-left">
+                                  <div className="text-[13px] font-600 text-[#01202B] flex items-center gap-1">
+                                    {hasEsim ? "eSIM added" : "Add eSIM"}
+                                    {hasEsim && (
+                                      <span className="inline-flex items-center justify-center w-[14px] h-[14px] rounded-full bg-[#22C55E] text-white text-[9px] font-700">
+                                        ✓
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div className="text-[11px] text-[#6E757A]">
+                                    Stay connected abroad
+                                  </div>
+                                </div>
+                              </div>
+                              <span className="text-[#979393] text-lg">›</span>
+                            </button>
                           </div>
-                          <span className="text-[#979393] text-lg">›</span>
-                        </button>
-                      </div>
-                    </div>
+                        </div>
+                      );
+                    })()}
 
                     {/* Trip Conditions */}
                     <div className="bg-primary-lightPurple p-sm mt-xl">
