@@ -2287,6 +2287,7 @@ const handleShowLogin = useCallback(() => {
       {activityDrawer.show && (
         <ActivityDetailsDrawer
           show={activityDrawer.show}
+          fromChat={true}
           activityId={activityDrawer.activityId}
           date={activityDrawer.date}
           handleCloseDrawer={() => setActivityDrawer({ show: false })}
