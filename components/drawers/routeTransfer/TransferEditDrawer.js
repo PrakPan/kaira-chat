@@ -1658,11 +1658,12 @@ const TransferEditDrawer = (props) => {
               <div className="flex justify-end items-end px-1 py-3 md:p-0">
                 <button
                   onClick={() => {
-                    const tripTypeIndex =
-                      selectedTripType === "roundtrip" ? 1 : 0;
+                    const suggestionIndex =
+                      selectedCab?.suggestion_result_index ??
+                      (selectedTripType === "roundtrip" ? 1 : 0);
                     handleMultiCitySelect(
                       multicityRoundtripTraceId,
-                      tripTypeIndex,
+                      suggestionIndex,
                       selectedCab?.result_index,
                     );
                   }}
@@ -4665,6 +4666,7 @@ const RoundTripSuggestion = ({
     setSelectedCab({
       ...pricing.find((p) => p.result_index == e.target.id),
       tripType: "roundtrip",
+      suggestion_result_index: roundTripSuggestions?.result_index,
     });
   };
 
@@ -4871,12 +4873,7 @@ const MultiCityTripSuggestion = ({
     setSelectedCab({
       ...cab,
       tripType: "multicity",
-    });
-    // Clear roundtrip selection and set trip type to multicity
-    setSelectedTripType("multicity");
-    setSelectedCab({
-      ...cab,
-      tripType: "multicity",
+      suggestion_result_index: multiCitySuggestions?.result_index,
     });
   };
 
