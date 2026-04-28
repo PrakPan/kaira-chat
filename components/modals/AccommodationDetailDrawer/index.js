@@ -19,6 +19,7 @@ import { hotelDetails } from "../../../services/bookings/FetchAccommodation";
 import { updateAccommodationBooking } from "../../../services/bookings/UpdateBookings";
 import { openNotification } from "../../../store/actions/notification";
 import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
+import { set } from "date-fns";
 
 const Container = styled.div`
   padding: 0 0.75rem 0.75rem 0.75rem;
@@ -71,6 +72,7 @@ const AccommodationDetailDrawer = ({
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState(null);
   const [updating, setUpdating] = useState(false);
 
   useEffect(() => {
@@ -91,6 +93,7 @@ const AccommodationDetailDrawer = ({
   const fetchDetails = () => {
     setLoading(true);
     setError(false);
+    setErrorMsg(null);
     setData({});
 
     const requestData = {
@@ -120,9 +123,10 @@ const AccommodationDetailDrawer = ({
         setData(res.data);
         setLoading(false);
       })
-      .catch(() => {
+      .catch((err) => {
         setLoading(false);
         setError(true);
+        setErrorMsg(err?.response?.data?.errors?.[0]?.message?.[0] || "Oops! There seems to be a problem, please try again later!");
       });
   };
 
@@ -213,7 +217,7 @@ const AccommodationDetailDrawer = ({
 
           {error ? (
             <ErrorContainer>
-              Oops! There seems to be a problem, please try again later!
+              {errorMsg || "Oops! There seems to be a problem, please try again later!"}
             </ErrorContainer>
           ) : data && data.id ? (
             <HotelBookingDetails

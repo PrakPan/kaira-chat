@@ -2192,16 +2192,7 @@ Start Location: ${details.startLocation}`;
           showStartScreen={showStartScreen}
           hasBotResponded={hasBotResponded}
           isChatActive={isChatActive}
-          // Mirrors desktop ViewToggle gating. Routes/Bookings are still
-          // gated on `isComplete` (which checks Redux content), so a
-          // restoring/half-built itinerary only surfaces Map + Itinerary
-          // until Redux populates — restored P2 itineraries no longer get
-          // stuck on the Chat tab while ItineraryContainer is polling.
-          hasItineraryActivity={
-            !!activeItineraryId &&
-            activeItineraryId !== "skeleton" &&
-            activeItineraryId !== "draft"
-          }
+          hasItineraryActivity={!!activeItineraryId}
           isComplete={
             activeItineraryId !== "skeleton" &&
             activeItineraryId !== "draft" &&
@@ -2278,6 +2269,7 @@ Start Location: ${details.startLocation}`;
                     initialPromptRequiresLogin={initialPromptRequiresLogin}
                     onInitialPromptConsumed={handleInitialPromptConsumed}
                     onSendReady={handleSendMessageReady}
+                    isPanelVisible={mobilePanel === "chat"}
                     mobileMenu={
                       <MobileHeaderMenu
                         onNewChat={handleNewChat}

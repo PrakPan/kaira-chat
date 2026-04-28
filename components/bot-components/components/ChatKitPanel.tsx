@@ -131,6 +131,12 @@ onTravellerStoryDismiss?: () => void;
  *  Lets BotApp inject MobileHeaderMenu so the chat tab can drop the global
  *  MobileHeader without losing the history/new-chat/profile actions. */
 mobileMenu?: React.ReactNode;
+/** Mobile-only: false when the chat tab is hidden behind another tab
+ *  (e.g. user switched to map/itinerary). When this transitions back to true
+ *  while a stream produced new content under the hood, snap scroll to bottom
+ *  so the message rendered during the hidden interval is visible without a
+ *  page refresh. Defaults to true (desktop / always-visible callers). */
+isPanelVisible?: boolean;
 }
 
 export interface TravellerStoryIntro {
@@ -283,6 +289,7 @@ onPaymentStart,
 travellerStory = null,
 onTravellerStoryDismiss,
 mobileMenu,
+isPanelVisible = true,
 }: ChatKitPanelProps) {
   // ── State ────────────────────────────────────────────────────────────────
   const [input, setInput] = useState("");
@@ -706,6 +713,8 @@ mobileMenu,
     source?: string;
     occupancies?: Array<{ num_adults: number; child_ages: number[] }>;
     traceId?: string;
+    travclan_hotel_id?: string;
+    currency?: string;  
   }>({ show: false });
 
   // POI / Restaurant detail drawer — opened by place.view / place.detail /
@@ -1187,16 +1196,58 @@ const sendMessage = useCallback(
     // Respect the user's scroll position: if they've scrolled up to read
     // earlier messages, don't yank the view back down while streaming.
     if (!isAtBottomRef.current) return;
-    // While a thread restore is still settling (widgets/images laying out),
-    // snap instantly to the absolute bottom instead of smooth-scrolling — a
-    // smooth scroll fires once and is overtaken by content that grows after.
-    if (initialScrollPendingRef.current) {
+    // While a thread restore is still settling (widgets/images laying out)
+    // OR a stream is actively producing text_deltas, snap instantly to the
+    // absolute bottom — smooth scrollIntoView fires once and gets overtaken
+    // by content that grows after, leaving intermediate streamed text
+    // hidden below the viewport until the user manually scrolls.
+    if (initialScrollPendingRef.current || isStreaming) {
       const c = messagesScrollRef.current;
       if (c) c.scrollTop = c.scrollHeight;
       return;
     }
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages, isStreaming]);
+
+  // Mobile: when the chat tab is hidden behind another tab, scrollIntoView
+  // calls fired by the auto-scroll effect above don't reliably move the
+  // scroll container — text_deltas streamed in the background grow the
+  // assistant bubble off-screen, and on iOS Safari the hidden parent can
+  // also leave the scrollHeight stale. When the panel becomes visible again,
+  // re-route the auto-scroll through an instant snap (scrollTop = scrollHeight)
+  // for a beat so any in-flight streaming, image loads, or widget layouts
+  // park us at the bottom — without the user needing to refresh.
+  const wasVisibleRef = useRef(isPanelVisible);
+  useEffect(() => {
+    if (wasVisibleRef.current === isPanelVisible) return;
+    const becameVisible = !wasVisibleRef.current && isPanelVisible;
+    wasVisibleRef.current = isPanelVisible;
+    if (!becameVisible) return;
+    if (!isAtBottomRef.current) return;
+
+    const snapToBottom = () => {
+      const c = messagesScrollRef.current;
+      if (c) c.scrollTop = c.scrollHeight;
+    };
+    // Drive the auto-scroll effect down the "instant snap" branch so the
+    // smooth scrollIntoView (which doesn't catch up to rapidly-growing
+    // streaming content) is bypassed while content settles.
+    initialScrollPendingRef.current = true;
+    requestAnimationFrame(() => {
+      snapToBottom();
+      requestAnimationFrame(snapToBottom);
+    });
+    const timers = [50, 150, 300, 600, 1000].map((ms) =>
+      setTimeout(() => {
+        snapToBottom();
+        if (ms === 1000) initialScrollPendingRef.current = false;
+      }, ms),
+    );
+    return () => {
+      timers.forEach(clearTimeout);
+      initialScrollPendingRef.current = false;
+    };
+  }, [isPanelVisible]);
 
   // Index transfer.select edge ids → mode from live widget messages, so the
   // TransferEditDrawer can skip its mode-selection step when the user clicks.
@@ -2062,6 +2113,9 @@ const handleShowLogin = useCallback(() => {
                       source:
                         ((payload.source ?? payload.provider) as string) ??
                         "Travclan",
+                      travclan_hotel_id: (payload.travclan_hotel_id ??
+                        payload.hotel_id) as string | undefined,
+                      currency: payload.currency as string | undefined,
                       occupancies: (payload.occupancies ??
                         payload.occupancy) as
                         | Array<{ num_adults: number; child_ages: number[] }>
@@ -2310,7 +2364,7 @@ const handleShowLogin = useCallback(() => {
       {hotelDrawer.show && hotelDrawer.accommodationId && (
         <AccommodationDetailDrawer
           show={hotelDrawer.show}
-          accommodationId={hotelDrawer.accommodationId}
+          accommodationId={hotelDrawer.travclan_hotel_id ?? hotelDrawer.accommodationId}
           onHide={() => setHotelDrawer({ show: false })}
           onChangeHotel={() => {
             // Don't POST from chat; close the detail drawer and route the
