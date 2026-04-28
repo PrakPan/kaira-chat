@@ -214,9 +214,21 @@ const SidebarProfile: React.FC<{ isCollapsed: boolean }> = ({ isCollapsed }) => 
   const [open, setOpen] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const [localImg, setLocalImg] = useState<string | null>(
+  typeof window !== "undefined" ? localStorage.getItem("user_image") : null
+);
 
   useEffect(() => {
   if (token && showLogin) setShowLogin(false);
+}, [token]);
+
+useEffect(() => {
+  if (token) {
+    const stored = typeof window !== "undefined" ? localStorage.getItem("user_image") : null;
+    setLocalImg(stored);
+  } else {
+    setLocalImg(null);
+  }
 }, [token]);
 
   useEffect(() => {
@@ -227,29 +239,30 @@ const SidebarProfile: React.FC<{ isCollapsed: boolean }> = ({ isCollapsed }) => 
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("access_token");
-    try {
-      dispatch((authaction as any).authLogout?.() ?? { type: "AUTH_LOGOUT" });
-    } catch {
-      dispatch({ type: "AUTH_LOGOUT" });
-    }
-    setOpen(false);
-  };
-
+const handleLogout = () => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("authToken");
+  localStorage.removeItem("access_token");
+  localStorage.removeItem("user_image");
+  setLocalImg(null); // ← clears the avatar immediately
+  try {
+    dispatch((authaction as any).authLogout?.() ?? { type: "AUTH_LOGOUT" });
+  } catch {
+    dispatch({ type: "AUTH_LOGOUT" });
+  }
+  setOpen(false);
+};
   const handleShowLogin = () => {
     setOpen(false);      // close the dropdown
     setShowLogin(true);  // ✅ modal is rendered independently — still mounts
   };
 
   const imgUrlEndPoint = "https://d31aoa0ehgvjdi.cloudfront.net/";
-  const localImg = typeof window !== "undefined" ? localStorage.getItem("user_image") : null;
-  const avatarSrc =
-    image && image !== "null" && image !== null ? imgUrlEndPoint + image
+ const avatarSrc = token
+  ? image && image !== "null" && image !== null ? imgUrlEndPoint + image
     : localImg && localImg !== "null" ? imgUrlEndPoint + localImg
-    : null;
+    : null
+  : null;
 
   const initials = name
     ? name.trim().split(/\s+/).slice(0, 2).map((w: string) => w[0]?.toUpperCase() ?? "").join("")
