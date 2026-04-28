@@ -20,7 +20,10 @@ import setItinerary, {
   deletePoiFromItinerary,
   deleteActivityFromItinerary,
   deleteRestaurantFromItinerary,
+  deleteHotelFromItinerary,
 } from "../../../store/actions/itinerary";
+import { updateStays } from "../../../store/actions/StayBookings";
+import { updateTransferBookings } from "../../../store/actions/transferBookingsStore";
 import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
 
 const CHATKIT_API_URL = "https://chat.tarzanway.com/chatkit";
@@ -1138,6 +1141,28 @@ case "shimmer_day_by_day": {
           dispatch(openNotification({ type: "success", heading: "Success!", text }));
           break;
         }
+        case "delete_hotel_from_itinerary": {
+          const payload = (data.data ?? {}) as Record<string, unknown>;
+          const bookingId = payload?.booking_id as string | undefined;
+          // Patch Itinerary cities[].hotels and Stays so the UI removes the
+          // hotel without waiting on a refetch. Toggle CallPaymentInfo so the
+          // pricing surface refreshes alongside.
+          dispatch(deleteHotelFromItinerary(payload));
+          if (bookingId) dispatch(updateStays(bookingId));
+          dispatch(SetCallPaymentInfo(!callPaymentInfo));
+          const text = typeof data.message === "string" ? data.message : "Hotel removed from your itinerary.";
+          dispatch(openNotification({ type: "success", heading: "Success!", text }));
+          break;
+        }
+        case "delete_transfer_from_itinerary": {
+          const payload = (data.data ?? {}) as Record<string, unknown>;
+          const bookingId = payload?.booking_id as string | undefined;
+          if (bookingId) dispatch(updateTransferBookings(bookingId));
+          dispatch(SetCallPaymentInfo(!callPaymentInfo));
+          const text = typeof data.message === "string" ? data.message : "Transfer removed from your itinerary.";
+          dispatch(openNotification({ type: "success", heading: "Success!", text }));
+          break;
+        }
         case "load_quick_replies": {
           const raw =
             (data.replies as any[]) ??
@@ -1161,7 +1186,7 @@ case "shimmer_day_by_day": {
           console.warn("[Effect] unhandled:", name);
       }
     },
-    [onLocationReceived, onNewQuery, onClearMap, onRouteReceived, onItineraryReceived, input, indexTransfersForLookup, emitEndpointsFromEffect, dispatch],
+    [onLocationReceived, onNewQuery, onClearMap, onRouteReceived, onItineraryReceived, input, indexTransfersForLookup, emitEndpointsFromEffect, dispatch, callPaymentInfo],
   );
 
   // Wire handleEffect into the ref so the stable onEffect wrapper picks it up
