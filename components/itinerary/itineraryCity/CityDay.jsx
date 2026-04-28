@@ -506,6 +506,34 @@ useEffect(() => {
         {/* COL 2: Content */}
         <div className="flex-1 sm:pr-4 px-4 sm:pt-6 md:pt-4 pb-4 sm:pb-6 min-w-0">
 
+          {matchingIntracityBookings && matchingIntracityBookings.length > 0 && (
+            <div className="flex flex-row gap-xs flex-wrap mb-3">
+              {matchingIntracityBookings.map((taxi) => (
+                <button
+                  key={taxi.id}
+                  onClick={() => {
+                    router.push(
+                      {
+                        pathname: window.location.pathname,
+                        query: {
+                          ...(router.query.id ? { id: router.query.id } : {}),
+                          drawer: "SightSeeing",
+                          bookingId: taxi.id,
+                          itinerary_city_id: props?.itinerary_city_id,
+                        },
+                      },
+                      undefined,
+                      { scroll: false },
+                    );
+                  }}
+                  className="rounded-9xl text-[12px] font-400 leading-md px-sm py-xxs text-white bg-[#5CBA66] flex gap-2 items-center justify-center hover:opacity-90"
+                >
+                  <FaTaxi /> Sightseeing Taxi Included
+                </button>
+              ))}
+            </div>
+          )}
+
           {elements.length > 0 ? (
             hasAnyTime ? (
               <div className="relative">

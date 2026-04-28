@@ -924,10 +924,10 @@ const TransferEditDrawer = (props) => {
             {transferType === TRANSFER_TYPES.MULTICITYROUNDTRIP.name && (
               <div className="w-full flex flex-wrap items-center gap-md mt-md">
                 {[
-                  { id: "sightseeing", label: "Sightseeing" },
-                  { id: "airport", label: "Airport pickup/drop" },
-                  { id: "multicity", label: "Multicity Taxi" },
-                ].map((tab) => {
+                  { id: "sightseeing", label: "Sightseeing Taxi", available: !!roundTripSuggestions },
+                  { id: "airport", label: "Pickup/Drop Taxi", available: !!airportSuggestions },
+                  { id: "multicity", label: "Multicity Taxi", available: !!multiCitySuggestions },
+                ].filter((tab) => tab.available).map((tab) => {
                   const isActive = multicityTab === tab.id;
                   return (
                     <label
