@@ -628,6 +628,7 @@ const ItineraryCity = (props) => {
               </button>
             </div>
           )}
+
       </div>
       {/* ── End header ──────────────────────────────────────────────────── */}
 

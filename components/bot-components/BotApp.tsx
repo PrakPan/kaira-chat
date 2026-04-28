@@ -1197,12 +1197,15 @@ export default function BotApp({
     [geocodePlaceId, userLocation],
   );
 
+
   const handleNewQuery = useCallback(() => {
     setLocations([]);
     setCurrentRoute(null);
     // A new query clears route-related endpoint pins too; they'll be
     // re-emitted by the next shimmer/display_itinerary/display_transfers.
     setEndpointPins([]);
+
+    
   }, []);
 
   // Drop any P1 endpoint pins when the itinerary finalizes into P2. The P2
@@ -2163,6 +2166,7 @@ Start Location: ${details.startLocation}`;
             <ChatWelcomeScreen
               onSubmit={handlePromptSelect}
               onChatStart={() => setIsChatActive(true)}
+              themeConfig={themeConfig}
             />
           </div>
           <div

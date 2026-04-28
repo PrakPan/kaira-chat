@@ -211,6 +211,8 @@ const TransferEditDrawer = (props) => {
   const [roundTripSuggestions, setRoundTripSuggestions] = useState(null);
   const [multiCitySuggestions, setMultiCitySuggestions] = useState(null);
   const [sightseeingSuggestions, setSightseeingSuggestions] = useState(null);
+  const [airportSuggestions, setAirportSuggestions] = useState(null);
+  const [multicityTab, setMulticityTab] = useState("multicity");
   const [transfers, setTransfers] = useState([]);
   const [loadingTransfers, setLoadingTransfers] = useState(true);
   const [loadingMulticityTransfers, setLoadingMulticityTransfers] =
@@ -430,13 +432,21 @@ const TransferEditDrawer = (props) => {
                 }
                 setMulticityRoundtripTraceId(response?.data?.trace_id);
                 const suggestions = response?.data?.suggestions || [];
-                // Categorize by type: "multicity" → multiCitySuggestions, everything else → roundTripSuggestions array
-                // Filter out pickup_drop type suggestions
+                // Categorize by type into three buckets surfaced as tabs:
+                //   "multicity"   → multiCitySuggestions
+                //   "pickup_drop" → airportSuggestions (Airport pickup/drop tab)
+                //   everything else (sightseeing etc.) → roundTripSuggestions
                 const multicitySuggs = suggestions.filter(s => s.type === "multicity");
+                const airportSuggs = suggestions.filter(s => s.type === "pickup_drop");
                 const otherSuggs = suggestions.filter(s => s.type !== "multicity" && s.type !== "pickup_drop");
                 setMultiCitySuggestions(multicitySuggs.length > 0 ? multicitySuggs[0] : null);
+                setAirportSuggestions(airportSuggs.length > 0 ? airportSuggs : null);
                 setRoundTripSuggestions(otherSuggs.length > 0 ? otherSuggs : null);
                 setSightseeingSuggestions(null); // cleared — handled in roundTripSuggestions array now
+                // Pick a sensible default tab based on what came back
+                if (multicitySuggs.length > 0) setMulticityTab("multicity");
+                else if (otherSuggs.length > 0) setMulticityTab("sightseeing");
+                else if (airportSuggs.length > 0) setMulticityTab("airport");
                 setLoadingMulticityTransfers(false);
                 setLoadingTransfers(false);
                 // If no suggestions found at all, show a message
@@ -910,6 +920,42 @@ const TransferEditDrawer = (props) => {
                 suits you best.{" "}
               </div>
             </div>
+
+            {transferType === TRANSFER_TYPES.MULTICITYROUNDTRIP.name && (
+              <div className="w-full flex flex-wrap items-center gap-md mt-md">
+                {[
+                  { id: "sightseeing", label: "Sightseeing Taxi", available: !!roundTripSuggestions },
+                  { id: "airport", label: "Pickup/Drop Taxi", available: !!airportSuggestions },
+                  { id: "multicity", label: "Multicity Taxi", available: !!multiCitySuggestions },
+                ].filter((tab) => tab.available).map((tab) => {
+                  const isActive = multicityTab === tab.id;
+                  return (
+                    <label
+                      key={tab.id}
+                      className={`flex items-center gap-xs cursor-pointer text-sm-md px-md py-xs rounded-md-lg border-sm border-solid ${
+                        isActive
+                          ? "border-black bg-text-smoothwhite font-600"
+                          : "border-text-disabled font-500"
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="multicityTripType"
+                        value={tab.id}
+                        checked={isActive}
+                        onChange={() => {
+                          setMulticityTab(tab.id);
+                          setSelectedCab(null);
+                          setSelectedTripType(null);
+                        }}
+                        className="accent-black"
+                      />
+                      <span>{tab.label}</span>
+                    </label>
+                  );
+                })}
+              </div>
+            )}
           </>
         )}
 
@@ -996,7 +1042,8 @@ const TransferEditDrawer = (props) => {
           </div>
         ) : transfersError &&
           roundTripSuggestions === null &&
-          multiCitySuggestions === null ? (
+          multiCitySuggestions === null &&
+          airportSuggestions === null ? (
           <div className="w-full flex flex-col space-y-5 items-center justify-center">
             <div className="flex items-center justify-center bg-red-500 text-white rounded p-2">
               {transfersError}
@@ -1505,7 +1552,7 @@ const TransferEditDrawer = (props) => {
             ) : transferType === "MULTICITYROUNDTRIP" ? (
               <div className="w-full flex flex-col items-center gap-4">
                 {/* Multicity suggestions */}
-                {multiCitySuggestions && (
+                {multicityTab === "multicity" && multiCitySuggestions && (
                   <div className="w-full">
                     {multiCitySuggestions?.data?.duration?.text && (
                       <div className="px-1 pb-1 text-sm font-semibold text-gray-700 flex items-center gap-2">
@@ -1526,63 +1573,87 @@ const TransferEditDrawer = (props) => {
                   </div>
                 )}
 
-                {/* Non-multicity suggestions (sightseeing, pickup_drop etc) — now an array */}
-                {Array.isArray(roundTripSuggestions) && roundTripSuggestions.map((sugg, idx) => (
-                  <div key={idx} className="w-full">
-                    {/* <div className="px-1 pb-1 text-sm font-semibold text-gray-700 flex items-center gap-2">
-                      <span>{sugg.name}</span>
-                      {sugg?.data?.duration?.text && (
-                        <span className="text-xs font-normal text-gray-500 bg-gray-100 rounded px-2 py-0.5">
-                          {sugg.data.duration.text}
-                        </span>
-                      )}
-                    </div> */}
-                    <MultiCityTripSuggestion
-                      handleRoundTripSelect={handleMultiCitySelect}
-                      multiCitySuggestions={sugg}
-                      selectedCab={selectedCab}
-                      setSelectedCab={setSelectedCab}
-                      selectedTripType={selectedTripType}
-                      setSelectedTripType={setSelectedTripType}
-                    />
-                  </div>
-                ))}
+                {/* Sightseeing (and any other non-airport, non-multicity) suggestions */}
+                {multicityTab === "sightseeing" &&
+                  Array.isArray(roundTripSuggestions) &&
+                  roundTripSuggestions.map((sugg, idx) => (
+                    <div key={idx} className="w-full">
+                      <MultiCityTripSuggestion
+                        handleRoundTripSelect={handleMultiCitySelect}
+                        multiCitySuggestions={sugg}
+                        selectedCab={selectedCab}
+                        setSelectedCab={setSelectedCab}
+                        selectedTripType={selectedTripType}
+                        setSelectedTripType={setSelectedTripType}
+                      />
+                    </div>
+                  ))}
 
                 {/* Backward-compat: single roundTripSuggestions object (non-array) */}
-                {roundTripSuggestions && !Array.isArray(roundTripSuggestions) && (
-                  <div className="w-full">
-                    <RoundTripSuggestion
-                      handleRoundTripSelect={handleMultiCitySelect}
-                      roundTripSuggestions={roundTripSuggestions}
-                      selectedCab={selectedCab}
-                      setSelectedCab={setSelectedCab}
-                      selectedTripType={selectedTripType}
-                      setSelectedTripType={setSelectedTripType}
-                    />
-                  </div>
-                )}
-
-                {/* No suggestions available message */}
-                {!multiCitySuggestions && !roundTripSuggestions && !loadingMulticityTransfers && (
-                  <div className="w-full flex flex-col items-center justify-center py-8">
-                    <div className="text-center text-gray-500 text-sm">
-                      {transfersError ? (
-                        <div className="flex items-center justify-center bg-red-50 text-red-600 rounded-lg p-4 border border-red-200">
-                          {transfersError}
-                        </div>
-                      ) : (
-                        <p>No taxi options available for this route. Please get in touch with us!</p>
-                      )}
+                {multicityTab === "sightseeing" &&
+                  roundTripSuggestions &&
+                  !Array.isArray(roundTripSuggestions) && (
+                    <div className="w-full">
+                      <RoundTripSuggestion
+                        handleRoundTripSelect={handleMultiCitySelect}
+                        roundTripSuggestions={roundTripSuggestions}
+                        selectedCab={selectedCab}
+                        setSelectedCab={setSelectedCab}
+                        selectedTripType={selectedTripType}
+                        setSelectedTripType={setSelectedTripType}
+                      />
                     </div>
-                  </div>
-                )}
+                  )}
+
+                {/* Airport pickup/drop suggestions */}
+                {multicityTab === "airport" &&
+                  Array.isArray(airportSuggestions) &&
+                  airportSuggestions.map((sugg, idx) => (
+                    <div key={idx} className="w-full">
+                      <MultiCityTripSuggestion
+                        handleRoundTripSelect={handleMultiCitySelect}
+                        multiCitySuggestions={sugg}
+                        selectedCab={selectedCab}
+                        setSelectedCab={setSelectedCab}
+                        selectedTripType={selectedTripType}
+                        setSelectedTripType={setSelectedTripType}
+                      />
+                    </div>
+                  ))}
+
+                {/* Empty state per tab */}
+                {!loadingMulticityTransfers &&
+                  ((multicityTab === "multicity" && !multiCitySuggestions) ||
+                    (multicityTab === "sightseeing" && !roundTripSuggestions) ||
+                    (multicityTab === "airport" && !airportSuggestions)) && (
+                    <div className="w-full flex flex-col items-center justify-center py-8">
+                      <div className="text-center text-gray-500 text-sm">
+                        {transfersError ? (
+                          <div className="flex items-center justify-center bg-red-50 text-red-600 rounded-lg p-4 border border-red-200">
+                            {transfersError}
+                          </div>
+                        ) : (
+                          <p>
+                            No{" "}
+                            {multicityTab === "multicity"
+                              ? "multicity taxi"
+                              : multicityTab === "airport"
+                                ? "airport pickup/drop"
+                                : "sightseeing"}{" "}
+                            options available for this route. Please get in
+                            touch with us!
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )}
               </div>
             ) : null}
           </div>
         )}
 
         {transferType === "MULTICITYROUNDTRIP" &&
-          (roundTripSuggestions || multiCitySuggestions) && (
+          (roundTripSuggestions || multiCitySuggestions || airportSuggestions) && (
             <div className="w-full  bg-white border-t border-gray-200 z-10 md:relative md:border-0 md:bg-transparent">
               <div className="flex justify-end items-end px-1 py-3 md:p-0">
                 <button
