@@ -21,6 +21,7 @@ import { hotelDetails } from "../../../services/bookings/FetchAccommodation";
 import { updateAccommodationBooking } from "../../../services/bookings/UpdateBookings";
 import { openNotification } from "../../../store/actions/notification";
 import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
+import { updateSingleStayCityAndCheckInWise } from "../../../store/actions/StayBookings";
 import { set } from "date-fns";
 
 const Container = styled.div`
@@ -64,12 +65,37 @@ const AccommodationDetailDrawer = ({
   source = "Travclan",
   occupancies = undefined,
   traceId = undefined,
+  // Optional hook fired after the booking POST succeeds. Receives the
+  // booking payload so callers (e.g. the chat panel) can refresh derived
+  // state on top of the Stays Redux update we already perform.
+  onBookingSuccess = undefined,
+  // Authoritative itinerary id from the caller. Required when the drawer
+  // is opened from a route whose router.query.id is NOT the itinerary
+  // (e.g. /chat/{sessionId}), where falling back to Redux can pick up a
+  // stale id from a previously loaded itinerary.
+  itineraryId: itineraryIdProp = undefined,
 }) => {
   const dispatch = useDispatch();
   const router = useRouter();
   const currency = useSelector((state) => state.currency);
   const callPaymentInfo = useSelector((state) => state.CallPaymentInfo);
   const itinerary = useSelector((state) => state.Itinerary);
+  const reduxItineraryId = useSelector((state) => state.ItineraryId);
+
+  // Resolve in priority order:
+  //   1. explicit prop (always current — caller owns the source of truth)
+  //   2. router.query.id, but only when the URL actually carries an
+  //      itinerary id (the /chat/{sessionId} route uses `id` for the
+  //      chat session UUID, which would silently corrupt the request)
+  //   3. dedicated ItineraryId Redux slice
+  //   4. Itinerary.id as a last resort (can lag during navigation)
+  const isItineraryRoute = (router?.pathname || "").startsWith("/itinerary");
+  const resolvedItineraryId =
+    itineraryIdProp ||
+    (isItineraryRoute ? router?.query?.id : undefined) ||
+    reduxItineraryId ||
+    itinerary?.id ||
+    null;
 
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(false);
@@ -145,7 +171,7 @@ const AccommodationDetailDrawer = ({
   };
 
   const updateBooking = (recommendation_id, rates) => {
-    const itineraryId = itinerary?.id || router?.query?.id;
+    const itineraryId = resolvedItineraryId;
     if (!itineraryId) {
       dispatch(
         openNotification({
@@ -181,8 +207,22 @@ const AccommodationDetailDrawer = ({
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
       })
-      .then(() => {
+      .then((response) => {
         setUpdating(false);
+
+        const bookingData = response?.data;
+        if (bookingData) {
+          const stayPayload = {
+            ...bookingData,
+            itinerary_city_id:
+              bookingData.itinerary_city_id ||
+              bookingData.itinerary_city ||
+              itinerary_city_id,
+            city_id: bookingData.city_id || dbCityId,
+          };
+          dispatch(updateSingleStayCityAndCheckInWise(stayPayload));
+        }
+
         dispatch(SetCallPaymentInfo(!callPaymentInfo));
         dispatch(
           openNotification({
@@ -191,6 +231,7 @@ const AccommodationDetailDrawer = ({
             heading: "Success!",
           })
         );
+        onBookingSuccess?.(bookingData);
         onHide?.();
       })
       .catch((err) => {

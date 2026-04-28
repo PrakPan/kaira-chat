@@ -535,11 +535,11 @@ const ItineraryCity = (props) => {
                     </span>
 
                     {/* Rating + star */}
-                    {(hotel?.rating && hotel?.rating !== 0) || (hotel.star_category && hotel?.star_category !== 0) ? (
+                    {(hotel?.rating && hotel?.rating !== 0 && hotel?.rating !== null) || (hotel.star_category && hotel?.star_category !== 0) ? (
                       <>
                         <span className="text-[#6B7280] shrink-0">•</span>
                         <span className="font-[500] shrink-0">
-                          {hotel.rating}
+                          {hotel.rating || hotel.star_category}{" "}
                         </span>
                         <StarIcon />
                       </>

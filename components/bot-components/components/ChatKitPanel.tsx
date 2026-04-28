@@ -2478,6 +2478,18 @@ const handleShowLogin = useCallback(() => {
           occupancies={hotelDrawer.occupancies}
           traceId={hotelDrawer.traceId}
           setShowLoginModal={setShowLoginModal}
+          // Authoritative itinerary id for this chat. The drawer would
+          // otherwise fall through to Redux Itinerary.id, which can lag
+          // when the user has just switched threads — leading to the
+          // POST hitting the previously loaded itinerary.
+          itineraryId={localItineraryId}
+          // Re-fetch the canonical itinerary so day_by_day buckets and
+          // city.hotels reflect the new booking — the drawer already
+          // patches the Stays slice, but the Itinerary slice needs the
+          // full server payload to stay in sync.
+          onBookingSuccess={() => {
+            void fetchAndApplyItineraryDetail();
+          }}
         />
       )}
 

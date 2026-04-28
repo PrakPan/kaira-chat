@@ -182,6 +182,66 @@ function buildSubsequentMessageBody(
   return body;
 }
 
+// ─── Network retry ────────────────────────────────────────────────────────────
+
+const MAX_NETWORK_RETRIES = 3;
+const NETWORK_RETRY_BASE_DELAY_MS = 500;
+
+function isNetworkError(err: unknown): boolean {
+  if (typeof navigator !== "undefined" && navigator.onLine === false) return true;
+  if (err instanceof TypeError) return true;
+  if (err instanceof Error) {
+    const msg = err.message.toLowerCase();
+    return (
+      msg.includes("failed to fetch") ||
+      msg.includes("networkerror") ||
+      msg.includes("network request failed") ||
+      msg.includes("load failed")
+    );
+  }
+  return false;
+}
+
+function waitWithAbort(ms: number, signal?: AbortSignal): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (signal?.aborted) {
+      reject(new DOMException("Aborted", "AbortError"));
+      return;
+    }
+    const timer = setTimeout(() => {
+      signal?.removeEventListener("abort", onAbort);
+      resolve();
+    }, ms);
+    const onAbort = () => {
+      clearTimeout(timer);
+      reject(new DOMException("Aborted", "AbortError"));
+    };
+    signal?.addEventListener("abort", onAbort, { once: true });
+  });
+}
+
+async function fetchWithRetry(
+  url: string,
+  init: RequestInit,
+  maxAttempts: number = MAX_NETWORK_RETRIES,
+  signal?: AbortSignal,
+): Promise<Response> {
+  let lastErr: unknown;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      return await fetch(url, init);
+    } catch (err) {
+      lastErr = err;
+      if (err instanceof Error && err.name === "AbortError") throw err;
+      if (!isNetworkError(err)) throw err;
+      if (attempt === maxAttempts) throw err;
+      console.warn(`[useChat] network error on attempt ${attempt}/${maxAttempts}, retrying…`, err);
+      await waitWithAbort(NETWORK_RETRY_BASE_DELAY_MS * Math.pow(2, attempt - 1), signal);
+    }
+  }
+  throw lastErr;
+}
+
 // ─── SSE types & parser ───────────────────────────────────────────────────────
 
 interface SseHandlers {
@@ -619,12 +679,17 @@ export function useChat({
       console.log("[useChat] →", JSON.stringify(body, null, 2));
 
       try {
-        const response = await fetch(apiUrl, {
-          method: "POST",
-          headers: buildHeaders(),
-          body: JSON.stringify(body),
-          signal: controller.signal,
-        });
+        const response = await fetchWithRetry(
+          apiUrl,
+          {
+            method: "POST",
+            headers: buildHeaders(),
+            body: JSON.stringify(body),
+            signal: controller.signal,
+          },
+          MAX_NETWORK_RETRIES,
+          controller.signal,
+        );
 
         if (!response.ok) {
           const errText = await response.text().catch(() => response.statusText);
@@ -703,10 +768,14 @@ export function useChat({
         const msg = err instanceof Error ? err.message : "Unknown error";
         console.error("[useChat]", msg);
         setError(msg);
+        const networkFailure = isNetworkError(err);
+        const fallbackContent = networkFailure
+          ? "I couldn't reach the server after a few attempts. Please check your internet connection and try again."
+          : "Sorry, something went wrong. Please try again.";
         setMessages((prev) =>
           prev.map((m) =>
             m.id === assistantMsgId && !m.content
-              ? { ...m, content: "Sorry, something went wrong. Please try again." }
+              ? { ...m, content: fallbackContent }
               : m
           )
         );
