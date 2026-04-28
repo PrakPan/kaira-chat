@@ -1275,6 +1275,8 @@ export default function BotApp({
     // A new query clears route-related endpoint pins too; they'll be
     // re-emitted by the next shimmer/display_itinerary/display_transfers.
     setEndpointPins([]);
+
+    
   }, []);
 
   // Drop any P1 endpoint pins when the itinerary finalizes into P2. The P2
