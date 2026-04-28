@@ -7,6 +7,7 @@
 // and routes "select room" through the same itinerary booking API.
 
 import { useEffect, useState } from "react";
+import ReactDOM from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import NextImage from "next/image";
@@ -15,6 +16,7 @@ import styled from "styled-components";
 import Drawer from "../../ui/Drawer";
 import Skeleton from "../ViewHotelDetails/Skeleton";
 import HotelBookingDetails from "../ViewHotelDetails/Overview/HotelBookingDetails";
+import FullScreenGallery from "../../fullscreengallery/Index.js";
 import { hotelDetails } from "../../../services/bookings/FetchAccommodation";
 import { updateAccommodationBooking } from "../../../services/bookings/UpdateBookings";
 import { openNotification } from "../../../store/actions/notification";
@@ -74,6 +76,18 @@ const AccommodationDetailDrawer = ({
   const [error, setError] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
   const [updating, setUpdating] = useState(false);
+  const [internalGalleryImages, setInternalGalleryImages] = useState(null);
+
+  // When opened from chat, the parent doesn't pass _setImagesHandler (the
+  // itinerary-side flow owns the FullScreenGallery), so "Show all photos"
+  // would be a no-op. Fall back to a local gallery in that case.
+  const handleSetImages = (images) => {
+    if (typeof _setImagesHandler === "function") {
+      _setImagesHandler(images);
+      return;
+    }
+    setInternalGalleryImages(images);
+  };
 
   useEffect(() => {
     if (!show || !accommodationId) return;
@@ -148,7 +162,10 @@ const AccommodationDetailDrawer = ({
       itinerary_code: data?.itinerary_code,
       items: data?.items,
       recommendation_id,
-      trace_id: localStorage.getItem("trace_id"),
+      trace_id:
+        data?.trace_details?.id ||
+        traceId ||
+        localStorage.getItem("trace_id"),
       itinerary_id: itineraryId,
       hotel_id: data?.id,
       source,
@@ -191,45 +208,46 @@ const AccommodationDetailDrawer = ({
   };
 
   return (
-    <Drawer
-      show={show}
-      anchor="right"
-      backdrop
-      className="font-lexend"
-      onHide={onHide}
-      style={{ zIndex: 1252 }}
-      width="50vw"
-      mobileWidth="100vw"
-    >
-      {loading ? (
-        <Skeleton onHide={onHide} />
-      ) : (
-        <Container>
-          <div className="my-xl">
-            <NextImage
-              src="/backarrow.svg"
-              className="cursor-pointer"
-              width={22}
-              height={2}
-              onClick={onHide}
-            />
-          </div>
+    <>
+      <Drawer
+        show={show}
+        anchor="right"
+        backdrop
+        className="font-lexend"
+        onHide={onHide}
+        style={{ zIndex: 1252 }}
+        width="50vw"
+        mobileWidth="100vw"
+      >
+        {loading ? (
+          <Skeleton onHide={onHide} />
+        ) : (
+          <Container>
+            <div className="my-xl">
+              <NextImage
+                src="/backarrow.svg"
+                className="cursor-pointer"
+                width={22}
+                height={2}
+                onClick={onHide}
+              />
+            </div>
 
-          {error ? (
-            <ErrorContainer>
-              {errorMsg || "Oops! There seems to be a problem, please try again later!"}
-            </ErrorContainer>
-          ) : data && data.id ? (
-            <HotelBookingDetails
-              _setImagesHandler={_setImagesHandler}
-              data={data}
-              images={data?.images || []}
-              updateBooking={updateBooking}
-              setShowLoginModal={setShowLoginModal}
-              onHide={onHide}
-              id={accommodationId}
-            />
-          ) : null}
+            {error ? (
+              <ErrorContainer>
+                {errorMsg || "Oops! There seems to be a problem, please try again later!"}
+              </ErrorContainer>
+            ) : data && data.id ? (
+              <HotelBookingDetails
+                _setImagesHandler={handleSetImages}
+                data={data}
+                images={data?.images || []}
+                updateBooking={updateBooking}
+                setShowLoginModal={setShowLoginModal}
+                onHide={onHide}
+                id={accommodationId}
+              />
+            ) : null}
 
           {/* {data && data.id && (onAddHotel || onChangeHotel) && (
             <div
@@ -265,9 +283,26 @@ const AccommodationDetailDrawer = ({
               </div>
             </div>
           )} */}
-        </Container>
-      )}
-    </Drawer>
+          </Container>
+        )}
+      </Drawer>
+
+      {/* Portal to #modal-portal so the gallery shares the drawer's
+          stacking context (chat panel's ancestor has a transform that would
+          otherwise trap a fixed-position element below the drawer). */}
+      {internalGalleryImages &&
+        internalGalleryImages.length > 0 &&
+        typeof document !== "undefined" &&
+        document.getElementById("modal-portal") &&
+        ReactDOM.createPortal(
+          <FullScreenGallery
+            mercury={false}
+            closeGalleryHandler={() => setInternalGalleryImages(null)}
+            images={internalGalleryImages}
+          />,
+          document.getElementById("modal-portal")
+        )}
+    </>
   );
 };
 

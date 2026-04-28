@@ -766,6 +766,10 @@ const fetchStatus = async () => {
     setConsecutiveErrors(0);
 
     // ── 2. Immediately dispatch real statuses so fetchItinerary sees them ────
+    // Note: hotels_status SUCCESS is deferred to getAllStays() so the UI doesn't
+    // render the "loaded" branch while state.Stays is still empty (the gap
+    // between polled SUCCESS and getAllStays completing was causing "+ Add Stay"
+    // CTAs to flicker and the changeHotelBooking drawer to fail to mount).
     const statusMap = {
       itinerary_status: status?.ITINERARY,
       hotels_status:    status?.HOTELS,
@@ -773,7 +777,9 @@ const fetchStatus = async () => {
       pricing_status:   status?.PRICING,
     };
     Object.entries(statusMap).forEach(([key, val]) => {
-      if (val) dispatch(setItineraryStatus(key, val));
+      if (!val) return;
+      if (key === "hotels_status" && val === "SUCCESS") return;
+      dispatch(setItineraryStatus(key, val));
     });
     // ─────────────────────────────────────────────────────────────────────────
 
