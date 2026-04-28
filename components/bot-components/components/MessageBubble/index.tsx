@@ -295,18 +295,38 @@ function renderContent(
     }
 
     if (/^\d+\.\s/.test(line)) {
+      // Preserve the source numbering across blank lines / indented sub-content.
+      // Each gap would otherwise spawn a fresh <ol> that resets to 1, so we
+      // capture the first item's number and pass it as `start` on the <ol>.
+      const firstMatch = line.match(/^(\d+)\.\s/);
+      const startNumber = firstMatch ? parseInt(firstMatch[1], 10) : 1;
       const items: string[] = [];
       while (i < lines.length && /^\d+\.\s/.test(lines[i])) {
         items.push(lines[i].replace(/^\d+\.\s/, ""));
         i++;
       }
       nodes.push(
-        <ol key={`ol-${i}`}>
+        <ol key={`ol-${i}`} start={startNumber}>
           {items.map((item, idx) => (
             <li key={idx}>{inlineFormat(item)}</li>
           ))}
         </ol>,
       );
+      continue;
+    }
+
+    if (/^\s*[-*_]{3,}\s*$/.test(line)) {
+      nodes.push(
+        <hr
+          key={`hr-${i}`}
+          style={{
+            border: "none",
+            borderTop: "1px dashed #d1d5db",
+            margin: "10px 0",
+          }}
+        />,
+      );
+      i++;
       continue;
     }
 

@@ -896,20 +896,18 @@ export default function BotApp({
   );
 
   const handleLoadRouteOnMap = useCallback(() => {
-    // load_route_on_map is the bot's signal to switch to the map for the
-    // initial route preview. Past P1 (during completion or after the
-    // itinerary is built) we just keep the user on the itinerary panel.
+    // load_route_on_map is the bot's signal that map data is ready, but we
+    // no longer auto-snap the view to the map — the user stays on whichever
+    // panel they were already looking at. The route data still updates
+    // underneath via handleRouteReceived, so the map renders correctly when
+    // the user opens it manually.
     if (
-      botMode !== "p1" ||
-      isItineraryCompleting ||
-      itineraryCreatedInSessionRef.current
+      botMode === "p1" &&
+      !isItineraryCompleting &&
+      !itineraryCreatedInSessionRef.current
     ) {
-      revealLeftPanel();
-      return;
+      setIsRoutePreparing(true);
     }
-    setIsRoutePreparing(true);
-    setViewMode("map");
-    setMobilePanel("map");
     revealLeftPanel();
   }, [revealLeftPanel, botMode, isItineraryCompleting]);
 
@@ -922,21 +920,10 @@ export default function BotApp({
         Array.isArray(routeData.data) &&
         routeData.data.length > 0
       ) {
-        // Auto-focus the map only in the initial route-creation stage (P1, not
-        // mid-completion). Once the itinerary is being built or finalized
-        // (P2), focus_route effects re-emitted by drawers/refreshes must not
-        // yank the user off the itinerary panel.
-        const canFocusMap =
-          !isRestoringRef.current &&
-          botMode === "p1" &&
-          !isItineraryCompleting &&
-          !itineraryCreatedInSessionRef.current;
-        if (canFocusMap) {
-          setViewMode("map");
-          if (!isMobile) setMobilePanel("map");
-          // On mobile: show "Back to Map" popup so user knows the map has updated
-          triggerMobileEffectPopup("map");
-        }
+        // No longer auto-snap the view to the map on focus_route (P1 used to
+        // pull the user onto the map mid-route-creation). The route data still
+        // populates the underlying map and skeleton cities below; the user
+        // can open the map manually whenever they want to see it.
         const cities = routeData.data.map((loc: any) => ({
           name: loc.name,
           duration: loc.duration ?? 1,
@@ -956,13 +943,7 @@ export default function BotApp({
         });
       }
     },
-    [
-      revealLeftPanel,
-      triggerMobileEffectPopup,
-      botMode,
-      isItineraryCompleting,
-      isMobile,
-    ],
+    [revealLeftPanel],
   );
 
   const sessionIdFromUrl = useMemo(() => {
@@ -1192,22 +1173,12 @@ export default function BotApp({
         // leftover polylines from a prior transfer/route query don't persist.
         setCurrentRoute(null);
         setLocations(locationData.data);
-        // Only auto-focus map in P1 (route-creation stage). In P2 / during
-        // completion, drawer-triggered focus_on_map / display_pois effects
-        // must update the underlying pins without yanking the view off the
-        // itinerary panel.
-        const canFocusMap =
-          !isRestoringRef.current &&
-          botMode === "p1" &&
-          !isItineraryCompleting &&
-          !itineraryCreatedInSessionRef.current;
-        if (canFocusMap) {
-          setViewMode("map");
-          if (!isMobile) setMobilePanel("map");
-        }
+        // No auto-focus on focus_on_map / display_pois effects — the pins
+        // update underneath but the user's current panel is preserved (P1
+        // used to yank into the map view; that's no longer the behaviour).
       }
     },
-    [revealLeftPanel, botMode, isItineraryCompleting, isMobile],
+    [revealLeftPanel],
   );
 
   // Start / end trip endpoint pins (derived from shimmer_day_by_day,

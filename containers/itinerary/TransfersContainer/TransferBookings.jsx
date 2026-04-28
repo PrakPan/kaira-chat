@@ -15,52 +15,42 @@ import SkeletonCard from "../../../components/ui/SkeletonCard";
 
 
 const renderLoadingSkeleton = () => (
-  <div className="mb-2 mt-3 w-full flex flex-col lg:flex-row lg:items-center space-y-3 items-start justify-between py-[30px] cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px]   border-[#ECEAEA] lg:p-3 p-2 max-w-[54vw]">
-    <div className="flex flex-row items-start md:items-center justify-between gap-1 w-full">
-      <div className="grid place-items-center md:min-w-[6rem] min-w-[4rem] lg:min-h-[6rem] min-h-[4rem] rounded-2xl">
-        <div className="" >
-          <SkeletonCard width="90px" height="65px" borderRadius="8px" variant="default" />
-        </div>
+  <div className="mb-2 mt-3 w-full flex flex-col py-4 cursor-pointer relative shadow-sm rounded-2xl transition-all border border-[#ECEAEA] lg:p-3 p-3 md:max-w-[54vw]">
+    <div className="flex flex-row items-start gap-3 w-full">
+      
+      {/* Thumbnail */}
+      <div className="flex-shrink-0 grid place-items-center rounded-2xl">
+        <SkeletonCard width="90px" height="80px" borderRadius="8px" variant="default" />
       </div>
-      <div className="flex flex-col md:flex-row justify-between items-center w-full">
-        <div className="flex flex-col  w-full">
-          <div className="text-[16px] font-medium w-full">
-            <SkeletonCard width="150px" height="20px" borderRadius="8px" variant="default" />
-          </div>
-          <div className="flex flex-row items-center mt-xxs">
-            <SkeletonCard width="100px" height="12px" borderRadius="8px" variant="default" />
-          </div>
-          <div className="text-[#01202B] font-normal flex  justify-start items-center mt-1 flex-wrap">
-            <span className="pr-1 ">
-              <SkeletonCard width="100px" height="12px" borderRadius="8px" variant="default" />
-            </span>
-            <span className="flex items-center gap-1">
-              <span>
-                <SkeletonCard width="100px" height="12px" borderRadius="8px" variant="default" />
-              </span>
-              <span>
-                <SkeletonCard width="2px" height="20px" borderRadius="8px" variant="default" />
-              </span>
-              <span>
-                <SkeletonCard width="100px" height="12px" borderRadius="8px" variant="default" />
-              </span>
-              <span>
-                <SkeletonCard width="2px" height="20px" borderRadius="8px" variant="default" />
-              </span>
-              <span>
-                <SkeletonCard width="100px" height="12px" borderRadius="8px" variant="default" />
-              </span>
-            </span>
+
+      {/* Content */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between w-full gap-3 min-w-0">
+        
+        {/* Text block */}
+        <div className="flex flex-col gap-2 flex-1 min-w-0">
+          <SkeletonCard width="60%" height="20px" borderRadius="8px" variant="default" />
+          <SkeletonCard width="40%" height="12px" borderRadius="8px" variant="default" />
+          <div className="flex flex-row items-center flex-wrap gap-1">
+            <SkeletonCard width="80px" height="12px" borderRadius="8px" variant="default" />
+            <SkeletonCard width="2px" height="16px" borderRadius="8px" variant="default" />
+            <SkeletonCard width="80px" height="12px" borderRadius="8px" variant="default" />
+            <SkeletonCard width="2px" height="16px" borderRadius="8px" variant="default" />
+            <SkeletonCard width="80px" height="12px" borderRadius="8px" variant="default" />
           </div>
         </div>
-        <div className="pr-2">
+
+        {/* CTA button skeleton — hidden on mobile, shown sm+ */}
+        <div className="hidden sm:block flex-shrink-0">
           <SkeletonCard width="120px" height="40px" borderRadius="8px" variant="default" />
         </div>
       </div>
     </div>
-    <div className="md:hidden w-full">
-      <div className="pr-2 w-full"><button className="md:hidden mt-2 w-full text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap">View Details</button>
-      </div>
+
+    {/* Mobile-only CTA */}
+    <div className="sm:hidden mt-3 w-full">
+      <button className="w-full text-[12px] font-semibold border border-black hover:bg-black hover:text-white rounded-lg px-3 py-2">
+        View Details
+      </button>
     </div>
   </div>
 );
