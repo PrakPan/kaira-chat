@@ -23,7 +23,7 @@ import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
 import { updateTransferBookings } from "../../../store/actions/transferBookingsStore";
 import SkeletonCard from "../../ui/SkeletonCard";
 import { setCloneItineraryDrawer } from "../../../store/actions/cloneItinerary";
-import AccommodationDetailDrawer from "../../modals/AccommodationDetailDrawer";
+import HotelP1Detail from "../../modals/AccommodationDetailDrawer/HotelP1Detail";
 import ActivityAddDrawer from "../../drawers/poiDetails/activityAddDrawer";
 import TransferEditDrawer from "../../drawers/routeTransfer/TransferEditDrawer";
 
@@ -728,7 +728,7 @@ const ItineraryCity = (props) => {
 
 
         {draftHotelDrawer.show && (
-  <AccommodationDetailDrawer
+  <HotelP1Detail
     show={draftHotelDrawer.show}
     onHide={() => setDraftHotelDrawer({ show: false, id: null })}
     accommodationId={draftHotelDrawer.id}

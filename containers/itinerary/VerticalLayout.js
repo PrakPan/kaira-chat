@@ -1082,7 +1082,7 @@ const CityItem = ({
   const { trackTransferBookingAdd, trackTransferBookingChange, trackTransferBookingDelete } = useAnalytics();
   const { id } = useSelector((state) => state.auth);
 
-  const { drawer, bookingId, oItineraryCity, dItineraryCity, drawerType,  doj} =
+  const { drawer, bookingId, oItineraryCity, dItineraryCity, drawerType,  doj, initialMode, initialEdgeId} =
     router?.query;
 
   // Use Redux ItineraryId as the canonical ID (works on /chat/[sessionId] pages too)
@@ -1872,6 +1872,8 @@ useEffect(() => {
             }
             booking_id={booking_id}
             booking_type={drawerType == "multicity" ? "multicity" : null}
+            initialMode={initialMode || undefined}
+            initialEdgeId={initialEdgeId || undefined}
           />
         )}
 

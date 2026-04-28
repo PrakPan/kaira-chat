@@ -1962,15 +1962,27 @@ const handleShowLogin = useCallback(() => {
                   // transfer.select is the legacy single-edge payload.
                   // transfer.view / transfer.detail are the richer multi-
                   // segment payloads. All three open TransferEditDrawer.
+                  // We pass initialMode + initialEdgeId so the drawer skips
+                  // its mode-selection step (currentStep=0) and opens the
+                  // matching modal directly: Flight → ComboFlight, Taxi →
+                  // ComboTaxi, anything else (Train/Bus/Ferry) → OtherTransfer.
+                  // Multi-leg routes auto-advance through legs from step 1.
                   if (
                     action.type === "transfer.select" ||
                     action.type === "transfer.view" ||
                     action.type === "transfer.detail" ||
                     action.type === "open_transfer_drawer"
                   ) {
-                    const edgeId = (payload.id ?? payload.edge_id) as
-                      | string
-                      | undefined;
+                    const segments: any[] = Array.isArray(payload.segments)
+                      ? payload.segments
+                      : [];
+                    const firstSegment = segments[0];
+                    const edgeId = (payload.id ??
+                      payload.edge_id ??
+                      firstSegment?.id ??
+                      firstSegment?.transfer_id) as string | undefined;
+                    const initialMode = (payload.mode ??
+                      firstSegment?.mode) as string | undefined;
                     const indexed = edgeId
                       ? transferEdgeMapRef.current[edgeId]
                       : undefined;
@@ -2006,6 +2018,8 @@ const handleShowLogin = useCallback(() => {
                           oItineraryCity: oItineraryCity ?? "",
                           dItineraryCity: dItineraryCity ?? "",
                           doj: doj ?? "",
+                          initialMode: initialMode ?? indexed?.mode ?? "",
+                          initialEdgeId: edgeId ?? "",
                         },
                       },
                       undefined,

@@ -227,7 +227,7 @@ const AccommodationDetailDrawer = ({
             />
           ) : null}
 
-          {data && data.id && (onAddHotel || onChangeHotel) && (
+          {/* {data && data.id && (onAddHotel || onChangeHotel) && (
             <div
               className="fixed bottom-0 left-0 right-0 md:absolute flex items-center justify-between gap-3 border-t-2 bg-white px-[20px] py-[12px] shadow-md"
               style={{ zIndex: 50 }}
@@ -260,7 +260,7 @@ const AccommodationDetailDrawer = ({
                 )}
               </div>
             </div>
-          )}
+          )} */}
         </Container>
       )}
     </Drawer>
