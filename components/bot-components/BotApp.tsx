@@ -12,7 +12,6 @@ import Sidebar from "./components/Sidebar";
 import StartScreen, { type TravellerStory } from "./components/StartScreen";
 import type { ThemeConfig } from "./types/themeConfig";
 import ChatWelcomeScreen from "./components/ChatWelcomeScreen";
-import type { ThemeConfig } from "./types/themeConfig";
 import TrustIndicators from "./components/TrustIndicators";
 import { useUserLocation } from "./hooks/useUserLocation";
 import { useMapBounds } from "./hooks/useMapBounds";
@@ -1198,76 +1197,6 @@ export default function BotApp({
     [geocodePlaceId, userLocation],
   );
 
-  // Start / end trip endpoint pins (derived from shimmer_day_by_day,
-  // display_itinerary, display_transfers effects in ChatKitPanel). Kept in a
-  // separate slice from `locations` so they survive focus_on_map clears.
-  // Rendered only in P1 — P2 uses its own itinerary visualization and would
-  // duplicate these pins otherwise.
-  const [endpointPins, setEndpointPins] = useState<Location[]>([]);
-  // Cache of gmaps_place_id → LatLng so we don't re-geocode the same city
-  // twice in a session (shimmer + display_itinerary + display_transfers all
-  // repeat the same endpoints).
-  const geocodeCacheRef = useRef<Record<string, { lat: number; lng: number }>>({});
-
-  const geocodePlaceId = useCallback(
-    async (placeId: string): Promise<{ lat: number; lng: number } | null> => {
-      if (!placeId) return null;
-      if (geocodeCacheRef.current[placeId]) return geocodeCacheRef.current[placeId];
-      if (typeof window === "undefined" || !window.google?.maps?.Geocoder) return null;
-      try {
-        const geocoder = new window.google.maps.Geocoder();
-        const result = await geocoder.geocode({ placeId });
-        const loc = result.results?.[0]?.geometry?.location;
-        if (!loc) return null;
-        const coords = { lat: loc.lat(), lng: loc.lng() };
-        geocodeCacheRef.current[placeId] = coords;
-        return coords;
-      } catch (err) {
-        console.warn("[BotApp] geocode failed for", placeId, err);
-        return null;
-      }
-    },
-    [],
-  );
-
-  const handleRouteEndpointsReceived = useCallback(
-    async ({
-      start_city,
-      end_city,
-    }: {
-      start_city: { name: string; gmaps_place_id: string } | null;
-      end_city: { name: string; gmaps_place_id: string } | null;
-    }) => {
-      const resolve = async (
-        raw: { name: string; gmaps_place_id: string } | null,
-        kind: "start_city" | "end_city",
-      ): Promise<Location | null> => {
-        if (!raw) return null;
-        let coords = await geocodePlaceId(raw.gmaps_place_id);
-        // Fallback: if geocoding failed or no place id was provided, drop back
-        // to the user's IP-resolved location so the user always sees a pin.
-        if (!coords && userLocation) {
-          coords = { lat: userLocation.lat, lng: userLocation.lng };
-        }
-        if (!coords) return null;
-        return {
-          id: `endpoint-${kind}`,
-          name: raw.name || (kind === "start_city" ? "Start" : "End"),
-          lat: coords.lat,
-          lng: coords.lng,
-          type: kind,
-        } as Location;
-      };
-
-      const [startPin, endPin] = await Promise.all([
-        resolve(start_city, "start_city"),
-        resolve(end_city, "end_city"),
-      ]);
-
-      setEndpointPins([startPin, endPin].filter((p): p is Location => !!p));
-    },
-    [geocodePlaceId, userLocation],
-  );
 
   const handleNewQuery = useCallback(() => {
     setLocations([]);
@@ -1275,6 +1204,8 @@ export default function BotApp({
     // A new query clears route-related endpoint pins too; they'll be
     // re-emitted by the next shimmer/display_itinerary/display_transfers.
     setEndpointPins([]);
+
+    
   }, []);
 
   // Drop any P1 endpoint pins when the itinerary finalizes into P2. The P2

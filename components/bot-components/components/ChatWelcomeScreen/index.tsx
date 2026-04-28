@@ -19,6 +19,7 @@ function getAuthToken(): string | null {
 interface ChatWelcomeScreenProps {
   onSubmit?: (message: string, attachmentIds?: string[]) => void;
   onChatStart?: () => void;
+  themeConfig?: ThemeConfig;
   /** Mobile-only: rendered to the right of the logo in the welcome-screen
    *  header. Lets BotApp inject MobileHeaderMenu so the chat tab keeps the
    *  history/new-chat/profile actions accessible even though the global
@@ -26,7 +27,7 @@ interface ChatWelcomeScreenProps {
   mobileMenu?: React.ReactNode;
 }
 
-const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatStart, mobileMenu }) => {
+const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatStart, mobileMenu, themeConfig }) => {
   const [inputValue, setInputValue] = useState("");
   const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
   const [showInspiration, setShowInspiration] = useState(false);
