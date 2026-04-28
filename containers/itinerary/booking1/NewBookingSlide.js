@@ -2692,13 +2692,15 @@ const Details = (props) => {
                     {(() => {
                       const ancillaryBookings =
                         Cart?.summary?.Ancillaries?.bookings || [];
-                      const hasEsim = ancillaryBookings.some((b) =>
+                      const esimCount = ancillaryBookings.filter((b) =>
                         (b?.name || "").toLowerCase().includes("esim"),
-                      );
-                      const hasVisa = ancillaryBookings.some((b) => {
+                      ).length;
+                      const visaCount = ancillaryBookings.filter((b) => {
                         const n = (b?.name || "").toLowerCase();
                         return !n.includes("esim") && n.includes("visa");
-                      });
+                      }).length;
+                      const hasEsim = esimCount > 0;
+                      const hasVisa = visaCount > 0;
                       return (
                         <div className="mt-md mb-md">
                           <hr className="text-text-placeholder mb-md" />
@@ -2716,7 +2718,7 @@ const Details = (props) => {
                                 </div>
                                 <div className="text-left">
                                   <div className="text-[13px] font-600 text-[#01202B] flex items-center gap-1">
-                                    {hasVisa ? "Visa added" : "Add Visa"}
+                                    {hasVisa ? `${visaCount} Visa added` : "Add Visa"}
                                     {hasVisa && (
                                       <span className="inline-flex items-center justify-center w-[14px] h-[14px] rounded-full bg-[#22C55E] text-white text-[9px] font-700">
                                         ✓
@@ -2741,7 +2743,7 @@ const Details = (props) => {
                                 </div>
                                 <div className="text-left">
                                   <div className="text-[13px] font-600 text-[#01202B] flex items-center gap-1">
-                                    {hasEsim ? "eSIM added" : "Add eSIM"}
+                                    {hasEsim ? `${esimCount} eSIM added` : "Add eSIM"}
                                     {hasEsim && (
                                       <span className="inline-flex items-center justify-center w-[14px] h-[14px] rounded-full bg-[#22C55E] text-white text-[9px] font-700">
                                         ✓
