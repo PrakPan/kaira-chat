@@ -1575,6 +1575,7 @@ const Details = (props) => {
   };
 
   const fetchItinerary = async () => {
+    if(props?.resetRef)
     props?.resetRef();
     // setWaitingForStatusUpdate(true);
     props.fetchData(true);
@@ -2509,7 +2510,7 @@ const Details = (props) => {
                       <PricingSkeleton />
                     </div>
                   ) : (
-                    <div className="hidden md:block">
+                    <div className="max-ph:hidden">
                       {!(
                         final_status == "Paid" || final_status == "Released"
                       ) && (

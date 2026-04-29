@@ -1060,7 +1060,6 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
           break;
         }
 case "prompt_login": {
-  console.log("[prompt_login] storing pending from lastSent:", lastSentMessageRef.current);
   pendingPostLoginMsg.current = lastSentMessageRef.current || null;
   loginFlowArmedRef.current = true;
   setShowLoginPrompt(true);

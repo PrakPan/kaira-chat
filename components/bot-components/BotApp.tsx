@@ -2668,7 +2668,12 @@ Start Location: ${details.startLocation}`;
             }
             setShowLoginModal={() => {}}
             setShowFooterBannerMobile={() => {}}
-            fetchData={() => {}}
+            // Reprice path inside NewBookingSlide calls resetRef + fetchData to
+            // restart polling. Without these wired, polling stays stopped and
+            // the cart shows stale statuses. Bumping the refetchCounter routes
+            // through ItineraryContainer's reset-and-restart effect.
+            resetRef={() => setItineraryRefetchCounter((c) => c + 1)}
+            fetchData={() => setItineraryRefetchCounter((c) => c + 1)}
             itineraryName={itineraryReduxName}
             itineraryImage={itineraryRedux?.images?.[0]}
             social_title={itineraryRedux?.social_title}
