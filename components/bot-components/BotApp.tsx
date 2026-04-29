@@ -364,7 +364,9 @@ export default function BotApp({
   const statusNotes = useSelector((state: any) => state.ItineraryStatus?.notes);
   const [showShare, setShowShare] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showSettingsLoginPrompt, setShowSettingsLoginPrompt] = useState(false);
   const [isHotelsPresent, setIsHotelsPresent] = useState(false);
+  const authToken = useSelector((state: any) => state.auth?.token);
 
   // ── Refs for restore guards ──────────────────────────────────────────────
   const hasRestoredRef = useRef(false);
@@ -2052,6 +2054,10 @@ Start Location: ${details.startLocation}`;
               <button
                 className="flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200"
                 onClick={() => {
+                  if (!authToken) {
+                    setShowSettingsLoginPrompt(true);
+                    return;
+                  }
                   axios
                     .get(
                       `${MERCURY_HOST}/api/v1/itinerary/${activeItineraryId}/bookings/hotels/?fields=no_of_hotels`,
@@ -2513,6 +2519,10 @@ Start Location: ${details.startLocation}`;
             },
           }}
           onSettingsClick={() => {
+            if (!authToken) {
+              setShowSettingsLoginPrompt(true);
+              return;
+            }
             if (!activeItineraryId) return;
             axios
               .get(
@@ -2579,6 +2589,50 @@ Start Location: ${details.startLocation}`;
           />
         </ModalWithBackdrop>
       )}
+
+      {showSettingsLoginPrompt &&
+        !authToken &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <>
+            <div
+              onClick={() => setShowSettingsLoginPrompt(false)}
+              style={{
+                position: "fixed",
+                inset: 0,
+                background: "rgba(0,0,0,0.5)",
+                zIndex: 3299,
+              }}
+            />
+            <div
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                position: "fixed",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                background: "#fff",
+                borderRadius: 16,
+                width: "min(480px, 95vw)",
+                maxHeight: "90vh",
+                overflowY: "auto",
+                zIndex: 3300,
+                boxShadow: "0 25px 60px rgba(0,0,0,0.3)",
+              }}
+            >
+              <LogInModal
+                show={showSettingsLoginPrompt}
+                onhide={() => setShowSettingsLoginPrompt(false)}
+                zIndex={"3300"}
+                message="Please login to continue"
+                onSuccess={async () => {
+                  setShowSettingsLoginPrompt(false);
+                }}
+              />
+            </div>
+          </>,
+          document.body,
+        )}
 
       {/* Toaster notifications — portal to modal-portal div */}
       <NotificationPopup />
