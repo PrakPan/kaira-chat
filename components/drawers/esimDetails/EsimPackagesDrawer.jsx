@@ -108,7 +108,7 @@ export default function EsimPackagesDrawer({ show, onHide }) {
     if (show && itineraryId) {
       fetchPackages(1, false);
     }
-  }, [show]);
+  }, [show, currency?.currency]);
 
   const fetchPackages = async (page = 1, append = false) => {
     if (!itineraryId) return;
@@ -119,6 +119,7 @@ export default function EsimPackagesDrawer({ show, onHide }) {
       const res = await esimPackages.post("/", {
         itinerary_id: itineraryId,
         page,
+        currency: currency?.currency || "INR",
       }, {
         headers: { Authorization: `Bearer ${localStorage.getItem("access_token")}` },
       });
