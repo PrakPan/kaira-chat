@@ -125,7 +125,7 @@ export default function VisaSearchDrawer({ show, onHide }) {
 
   useEffect(() => {
     if (show) fetchVisas();
-  }, [show]);
+  }, [show, currency?.currency]);
 
   const fetchVisas = async (overrideFilters) => {
     if (!itineraryId) return;
@@ -140,6 +140,7 @@ export default function VisaSearchDrawer({ show, onHide }) {
         processing_type: f.processing_type || "",
         category: f.category || "",
         entry_type: f.entry_type || "",
+        currency: currency?.currency || "INR",
       }, {
         headers: { Authorization: `Bearer ${localStorage.getItem("access_token")}` },
       });
