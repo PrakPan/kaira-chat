@@ -1895,7 +1895,7 @@ const handleShowLogin = useCallback(() => {
         className="flex-1 min-h-0 overflow-y-auto px-4 py-4 scroll-smooth"
       >
 
-          <div className="max-w-2xl mx-auto">
+          <div className="mx-auto">
             {isLoadingMore && (
               <div className="flex items-center justify-center py-3">
                 <Spinner size={16} />
@@ -2186,7 +2186,7 @@ const handleShowLogin = useCallback(() => {
           style={{
             maxWidth: "100%",
             // background: "#f8fafc",
-            color: "#0d0d0d",
+            color: "#000000",
             padding: "12px 0px",
             borderRadius: 12,
             fontFamily: "'Inter', sans-serif",
@@ -2218,7 +2218,7 @@ const handleShowLogin = useCallback(() => {
       {/* Hidden while itinerary creation is in progress — no quick replies/CTAs allowed */}
       {quickReplies.length > 0 && !isStreaming && !isItineraryCompleting && (
         <div className="flex-shrink-0 px-6 pt-2 pb-1">
-          <div className="max-w-2xl mx-auto">
+          <div className="mx-auto">
             <div
               className="flex gap-2 overflow-x-auto pb-1"
               style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
@@ -2239,7 +2239,7 @@ const handleShowLogin = useCallback(() => {
 
       {/* ── Composer ─────────────────────────────────────────────────────── */}
       <div className="flex-shrink-0 px-6 pt-3 pb-1 bg-white relative">
-        <div className="max-w-2xl mx-auto">
+        <div className="mx-auto">
           <MessageInputBox
             value={input}
             onChange={setInput}

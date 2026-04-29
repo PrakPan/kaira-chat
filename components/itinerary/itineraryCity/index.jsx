@@ -402,7 +402,7 @@ const ItineraryCity = (props) => {
   const hotelExists =
     multiHotelStays &&
     multiHotelStays.length > 0 &&
-    hotels_status === "SUCCESS" &&
+    ((hotels_status === "SUCCESS") || (hotels_status ==="FAILURE")) &&
     !!multiHotelStays?.[0]?.id;
 
   return (

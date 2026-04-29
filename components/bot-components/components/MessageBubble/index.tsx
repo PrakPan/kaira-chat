@@ -1000,7 +1000,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
       >
         <div
           className="chatWrapper"
-          style={{ padding: "10px 16px", color: "#374151", minWidth: "98%" }}
+          style={{ padding: "10px 16px", color: "#0d0d0d", minWidth: "98%" }}
         >
           {/* Progress steps (e.g. from progress_update events) */}
           {hasProgress && <ProgressLoader steps={message.progressSteps!} />}
