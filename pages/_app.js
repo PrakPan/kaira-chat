@@ -17,6 +17,7 @@ import { authLogout } from "../store/actions/auth";
 import { cleanExpiredLocalStorage } from "../services/localStorageUtils";
 import { usePathname } from "next/navigation";
 import BotApp from "../components/bot-components/BotApp";
+import JupyterAnalytics from "../components/JupyterAnalytics";
 
 // Polyfill for requestIdleCallback (Safari compatibility)
 if (typeof window !== "undefined" && !window.requestIdleCallback) {
@@ -177,14 +178,14 @@ function MyApp({ Component, pageProps }) {
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
           <ClarityInit />
           <Theme>
-            {/* <JupyterAnalytics
+            <JupyterAnalytics
               apiEndpoint="https://jupiter.tarzanway.com"
               userId={id || null}
               batchSize={10}
               flushInterval={3000}
               siteId="tarzanway-web"
               anonymousId="abc"
-            />  */}
+            /> 
            
             <Component {...pageProps}  />
           </Theme>

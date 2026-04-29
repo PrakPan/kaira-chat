@@ -1286,6 +1286,11 @@ const sendMessage = useCallback(
 
 useEffect(() => {
   if (initialPrompt && !hasProcessedInitial.current && locationReady) {
+    // Seeded summary prompts already cover the post-completion overview, so
+    // suppress the auto inject.context to avoid a duplicate response.
+    if (/summary|overview|itinerary/i.test(initialPrompt)) {
+      hasInjectedContextRef.current = true;
+    }
     // Defer prompts that require login: queue as the post-login message and
     // show the existing login/signup CTA. The authToken-change effect below
     // will fire the queued message once the user authenticates.
