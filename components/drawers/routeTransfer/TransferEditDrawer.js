@@ -24,6 +24,7 @@ import TaxiModal from "../../../components/modals/taxis/Index";
 import FlightModal from "../../../components/modals/flights/Index";
 import media from "../../../components/media";
 import { getDate } from "../../../helper/DateUtils";
+import { getDate as getHumanReadableDate } from "../../../helper/ConvertDateFormat";
 import {
   fetchMulticityRoundtrip,
   fetchTransferMode,
@@ -217,6 +218,7 @@ const TransferEditDrawer = (props) => {
   const [loadingTransfers, setLoadingTransfers] = useState(true);
   const [loadingMulticityTransfers, setLoadingMulticityTransfers] =
     useState(true);
+  const [sightseeingRefetching, setSightseeingRefetching] = useState(false);
   const [transfersError, setTransfersError] = useState(null);
   const [selectLoading, setSelectLoading] = useState(false);
   const [isRouteSelected, setIsRouteSelected] = useState(false);
@@ -232,6 +234,8 @@ const TransferEditDrawer = (props) => {
   const [multicityRoundtripTraceId, setMulticityRoundtripTraceId] =
     useState(null);
   const [selectedTripType, setSelectedTripType] = useState(null);
+  const [sightseeingStartDate, setSightseeingStartDate] = useState("");
+  const [sightseeingEndDate, setSightseeingEndDate] = useState("");
 
   const [showFlightModal, setShowFlightModal] = useState(false);
   const [showComboFlightModal, setShowComboFlightModal] = useState(false);
@@ -247,7 +251,7 @@ const TransferEditDrawer = (props) => {
   const [currentModeDepartureTime, setCurrentModeDepartureTime] =
     useState(null);
   const [selectedTransferIndex, setSelectedTransferIndex] = useState(null);
-  const { number_of_adults, number_of_children, number_of_infants } =
+  const { number_of_adults, number_of_children, number_of_infants, cities: itineraryCities } =
     useSelector((state) => state.Itinerary);
   const ItineraryId = useSelector((state) => state.ItineraryId);
   // console.log("SELECTED BOOKING",city,dcity,oCityData,dCityData,mercuryTransfer?.destination?.city_name);
@@ -271,6 +275,22 @@ const TransferEditDrawer = (props) => {
     if (showDrawer) {
       fetchRoutes();
     }
+  }, [showDrawer]);
+
+  // Refetch multicity suggestions when the sightseeing date filters change.
+  const isFirstSightseeingDateRun = useRef(true);
+  useEffect(() => {
+    if (!showDrawer) return;
+    if (!sightseeingStartDate || !sightseeingEndDate) return;
+    if (isFirstSightseeingDateRun.current) {
+      isFirstSightseeingDateRun.current = false;
+      return;
+    }
+    fetchRoutes({ sightseeingFilterRefetch: true });
+  }, [sightseeingStartDate, sightseeingEndDate]);
+
+  useEffect(() => {
+    if (!showDrawer) isFirstSightseeingDateRun.current = true;
   }, [showDrawer]);
 
   // Reset auto-skip guard when drawer closes so reopening can auto-skip again
@@ -387,10 +407,68 @@ const TransferEditDrawer = (props) => {
     };
   }, [showDrawer]);
 
+  // Resolve the itinerary city the multicity API was called with, so we can
+  // surface its days as the sightseeing date filter options.
+  const sightseeingCity = (() => {
+    const targetCityId =
+      origin_itinerary_city_id || destination_itinerary_city_id;
+    const matchedCity = Array.isArray(itineraryCities)
+      ? itineraryCities.find((c) => c?.id === targetCityId)
+      : null;
+    return matchedCity ?? dCityData ?? oCityData;
+  })();
+
+  const sightseeingDayOptions = (() => {
+    const days = sightseeingCity?.day_by_day;
+    if (Array.isArray(days) && days.length > 0) {
+      return days
+        .filter((d) => !!d?.date)
+        .map((d, idx) => {
+          const value = dayjs(d.date).format("YYYY-MM-DD");
+          return {
+            value,
+            label: `Day ${idx + 1} - ${getHumanReadableDate(value)}`,
+          };
+        });
+    }
+    if (sightseeingCity?.start_date && sightseeingCity?.duration != null) {
+      return Array.from({ length: sightseeingCity.duration + 1 }, (_, idx) => {
+        const date = addDaysToDate(sightseeingCity.start_date, idx);
+        return {
+          value: date,
+          label: `Day ${idx + 1} - ${getHumanReadableDate(date)}`,
+        };
+      });
+    }
+    return [];
+  })();
+
+  // Default sightseeing date filters to the first / last day of the itinerary city.
+  useEffect(() => {
+    if (sightseeingDayOptions.length === 0) return;
+    setSightseeingStartDate(sightseeingDayOptions[0].value);
+    setSightseeingEndDate(
+      sightseeingDayOptions[sightseeingDayOptions.length - 1].value,
+    );
+  }, [
+    origin_itinerary_city_id,
+    destination_itinerary_city_id,
+    itineraryCities,
+    dCityData?.start_date,
+    dCityData?.duration,
+    oCityData?.start_date,
+    oCityData?.duration,
+  ]);
+
   // console.log("IsMulti",booking_type,transferType);
-  const fetchRoutes = () => {
-    setLoadingTransfers(true);
-    setLoadingMulticityTransfers(true);
+  const fetchRoutes = (options = {}) => {
+    const { sightseeingFilterRefetch = false } = options;
+    if (sightseeingFilterRefetch) {
+      setSightseeingRefetching(true);
+    } else {
+      setLoadingTransfers(true);
+      setLoadingMulticityTransfers(true);
+    }
     setTransfersError(null);
     // roundTripSuggestion();
 
@@ -416,7 +494,9 @@ const TransferEditDrawer = (props) => {
       (booking_type == "multicity" || drawerType == "multicity") && (mercury || props?.isMercury)
         ? (() => {
             const cityId = origin_itinerary_city_id || destination_itinerary_city_id;
-            const multicityUrl = `/${router.query.id || ItineraryId || router.query.sessionId}/?currency=${currency?.currency || "INR"}${cityId ? `&itinerary_city_id=${cityId}` : ""}`;
+            const startParam = sightseeingStartDate ? `&start_date=${sightseeingStartDate}` : "";
+            const endParam = sightseeingEndDate ? `&end_date=${sightseeingEndDate}` : "";
+            const multicityUrl = `/${router.query.id || ItineraryId || router.query.sessionId}/?currency=${currency?.currency || "INR"}${cityId ? `&itinerary_city_id=${cityId}` : ""}${startParam}${endParam}`;
             return fetchMulticityRoundtrip
               .get(multicityUrl)
               .then((response) => {
@@ -426,8 +506,12 @@ const TransferEditDrawer = (props) => {
                     || response?.data?.errors?.[0]?.message
                     || "No taxi options available for this route.";
                   setTransfersError(typeof errorMsg === 'string' ? errorMsg : Array.isArray(errorMsg) ? errorMsg[0] : "No taxi options available for this route.");
-                  setLoadingMulticityTransfers(false);
-                  setLoadingTransfers(false);
+                  if (sightseeingFilterRefetch) {
+                    setSightseeingRefetching(false);
+                  } else {
+                    setLoadingMulticityTransfers(false);
+                    setLoadingTransfers(false);
+                  }
                   return;
                 }
                 setMulticityRoundtripTraceId(response?.data?.trace_id);
@@ -439,24 +523,35 @@ const TransferEditDrawer = (props) => {
                 const multicitySuggs = suggestions.filter(s => s.type === "multicity");
                 const airportSuggs = suggestions.filter(s => s.type === "pickup_drop");
                 const otherSuggs = suggestions.filter(s => s.type !== "multicity" && s.type !== "pickup_drop");
-                setMultiCitySuggestions(multicitySuggs.length > 0 ? multicitySuggs[0] : null);
-                setAirportSuggestions(airportSuggs.length > 0 ? airportSuggs : null);
-                setRoundTripSuggestions(otherSuggs.length > 0 ? otherSuggs : null);
-                setSightseeingSuggestions(null); // cleared — handled in roundTripSuggestions array now
-                // Pick a sensible default tab based on what came back
-                if (multicitySuggs.length > 0) setMulticityTab("multicity");
-                else if (otherSuggs.length > 0) setMulticityTab("sightseeing");
-                else if (airportSuggs.length > 0) setMulticityTab("airport");
-                setLoadingMulticityTransfers(false);
-                setLoadingTransfers(false);
+                if (sightseeingFilterRefetch) {
+                  // Filter-change refetch: only refresh sightseeing suggestions, leave the
+                  // other buckets and the active tab untouched so the UI doesn't jump.
+                  setRoundTripSuggestions(otherSuggs.length > 0 ? otherSuggs : null);
+                  setSightseeingRefetching(false);
+                } else {
+                  setMultiCitySuggestions(multicitySuggs.length > 0 ? multicitySuggs[0] : null);
+                  setAirportSuggestions(airportSuggs.length > 0 ? airportSuggs : null);
+                  setRoundTripSuggestions(otherSuggs.length > 0 ? otherSuggs : null);
+                  setSightseeingSuggestions(null); // cleared — handled in roundTripSuggestions array now
+                  // Pick a sensible default tab based on what came back
+                  if (multicitySuggs.length > 0) setMulticityTab("multicity");
+                  else if (otherSuggs.length > 0) setMulticityTab("sightseeing");
+                  else if (airportSuggs.length > 0) setMulticityTab("airport");
+                  setLoadingMulticityTransfers(false);
+                  setLoadingTransfers(false);
+                }
                 // If no suggestions found at all, show a message
                 if (suggestions.length === 0) {
                   setTransfersError("No taxi options available for this route. Please get in touch with us!");
                 }
               })
               .catch((error) => {
-                setLoadingTransfers(false);
-                setLoadingMulticityTransfers(false);
+                if (sightseeingFilterRefetch) {
+                  setSightseeingRefetching(false);
+                } else {
+                  setLoadingTransfers(false);
+                  setLoadingMulticityTransfers(false);
+                }
                 const errorMsg = error?.response?.data?.errors?.[0]?.message?.[0]
                   || error?.response?.data?.errors?.[0]?.message
                   || "No taxi options available for this route. Please get in touch with us!";
@@ -934,7 +1029,7 @@ const TransferEditDrawer = (props) => {
                       key={tab.id}
                       className={`flex items-center gap-xs cursor-pointer text-sm-md px-md py-xs rounded-md-lg border-sm border-solid ${
                         isActive
-                          ? "border-black bg-text-smoothwhite font-600"
+                          ? "border-[#f8e000] bg-text-smoothwhite font-600"
                           : "border-text-disabled font-500"
                       }`}
                     >
@@ -948,7 +1043,15 @@ const TransferEditDrawer = (props) => {
                           setSelectedCab(null);
                           setSelectedTripType(null);
                         }}
-                        className="accent-black"
+                        className="sr-only"
+                      />
+                      <span
+                        aria-hidden="true"
+                        className={`w-4 h-4 rounded-full border-sm border-solid ${
+                          isActive
+                            ? "bg-[#f8e000] border-[#f8e000]"
+                            : "border-text-disabled"
+                        }`}
                       />
                       <span>{tab.label}</span>
                     </label>
@@ -1573,21 +1676,115 @@ const TransferEditDrawer = (props) => {
                   </div>
                 )}
 
+                {/* Sightseeing date filters */}
+                {multicityTab === "sightseeing" &&
+                  sightseeingDayOptions.length > 0 && (
+                    <div className="w-full flex flex-wrap items-end gap-md">
+                      <div className="flex flex-col gap-xs">
+                        <label className="text-xs-md font-500 text-text-spacegrey">
+                          Start date
+                        </label>
+                        <select
+                          value={sightseeingStartDate}
+                          onChange={(e) =>
+                            setSightseeingStartDate(e.target.value)
+                          }
+                          className="border-sm border-solid border-text-disabled rounded-md-lg px-md py-xs text-sm-md bg-white"
+                        >
+                          {sightseeingDayOptions.map((opt) => (
+                            <option key={opt.value} value={opt.value}>
+                              {opt.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="flex flex-col gap-xs">
+                        <label className="text-xs-md font-500 text-text-spacegrey">
+                          End date
+                        </label>
+                        <select
+                          value={sightseeingEndDate}
+                          onChange={(e) =>
+                            setSightseeingEndDate(e.target.value)
+                          }
+                          className="border-sm border-solid border-text-disabled rounded-md-lg px-md py-xs text-sm-md bg-white"
+                        >
+                          {sightseeingDayOptions.map((opt) => (
+                            <option
+                              key={opt.value}
+                              value={opt.value}
+                              disabled={
+                                sightseeingStartDate &&
+                                opt.value < sightseeingStartDate
+                              }
+                            >
+                              {opt.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  )}
+
+                {/* Sightseeing refetch loader — shown only during a filter-change refetch */}
+                {multicityTab === "sightseeing" && sightseeingRefetching && (
+                  <div className="w-full flex flex-col gap-3 items-center mt-md">
+                    {[0, 1, 2].map((i) => (
+                      <div
+                        key={`ss-skel-${i}`}
+                        className="rounded-3xl border-sm border-solid border-text-disabled p-md w-full"
+                      >
+                        <SkeletonCard
+                          width="40%"
+                          height="20px"
+                          borderRadius="8px"
+                          variant="default"
+                        />
+                        <div className="mt-sm">
+                          <SkeletonCard
+                            width="70%"
+                            height="20px"
+                            borderRadius="8px"
+                            variant="default"
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
                 {/* Sightseeing (and any other non-airport, non-multicity) suggestions */}
                 {multicityTab === "sightseeing" &&
+                  !sightseeingRefetching &&
                   Array.isArray(roundTripSuggestions) &&
-                  roundTripSuggestions.map((sugg, idx) => (
-                    <div key={idx} className="w-full">
-                      <MultiCityTripSuggestion
-                        handleRoundTripSelect={handleMultiCitySelect}
-                        multiCitySuggestions={sugg}
-                        selectedCab={selectedCab}
-                        setSelectedCab={setSelectedCab}
-                        selectedTripType={selectedTripType}
-                        setSelectedTripType={setSelectedTripType}
-                      />
-                    </div>
-                  ))}
+                  roundTripSuggestions
+                    .filter((sugg) => {
+                      const suggStart = sugg?.start_date;
+                      if (!suggStart) return true;
+                      if (
+                        sightseeingStartDate &&
+                        suggStart < sightseeingStartDate
+                      )
+                        return false;
+                      if (
+                        sightseeingEndDate &&
+                        suggStart > sightseeingEndDate
+                      )
+                        return false;
+                      return true;
+                    })
+                    .map((sugg, idx) => (
+                      <div key={idx} className="w-full">
+                        <MultiCityTripSuggestion
+                          handleRoundTripSelect={handleMultiCitySelect}
+                          multiCitySuggestions={sugg}
+                          selectedCab={selectedCab}
+                          setSelectedCab={setSelectedCab}
+                          selectedTripType={selectedTripType}
+                          setSelectedTripType={setSelectedTripType}
+                        />
+                      </div>
+                    ))}
 
                 {/* Backward-compat: single roundTripSuggestions object (non-array) */}
                 {multicityTab === "sightseeing" &&
@@ -1623,6 +1820,7 @@ const TransferEditDrawer = (props) => {
 
                 {/* Empty state per tab */}
                 {!loadingMulticityTransfers &&
+                  !sightseeingRefetching &&
                   ((multicityTab === "multicity" && !multiCitySuggestions) ||
                     (multicityTab === "sightseeing" && !roundTripSuggestions) ||
                     (multicityTab === "airport" && !airportSuggestions)) && (
