@@ -2863,6 +2863,22 @@ function splitCurrencyAmount(
   return { code: null, amount: raw.trim() };
 }
 
+// Re-groups a numeric amount string with locale-appropriate separators. INR
+// uses Indian grouping (1,00,000); other currencies use international grouping
+// (100,000). Preserves any decimal portion sent by the server.
+function formatPaymentAmount(raw: string, symbol: string): string {
+  const numStr = raw.replace(/,/g, "");
+  const num = parseFloat(numStr);
+  if (isNaN(num)) return raw;
+  const locale = symbol === "₹" ? "en-IN" : "en-US";
+  const decimalIdx = numStr.indexOf(".");
+  const fractionDigits = decimalIdx === -1 ? 0 : numStr.length - decimalIdx - 1;
+  return num.toLocaleString(locale, {
+    minimumFractionDigits: Math.min(fractionDigits, 2),
+    maximumFractionDigits: Math.min(Math.max(fractionDigits, 0), 2),
+  });
+}
+
 function PaymentCard({
   node,
   button,
@@ -2972,6 +2988,7 @@ function PaymentCard({
       >
         {rows.map((r, i) => {
           const parsed = splitCurrencyAmount(r.amount);
+          const formattedAmount = formatPaymentAmount(parsed.amount, symbol);
           return (
             <div
               key={i}
@@ -3009,7 +3026,7 @@ function PaymentCard({
                 }}
               >
                 <span style={{ marginRight: 2 }}>{symbol}</span>
-                {parsed.amount}
+                {formattedAmount}
               </div>
             </div>
           );
