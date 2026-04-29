@@ -15,7 +15,7 @@ import SkeletonCard from "../../../components/ui/SkeletonCard";
 
 
 const renderLoadingSkeleton = () => (
-  <div className="mb-2 mt-3 w-full flex flex-col py-4 cursor-pointer relative shadow-sm rounded-2xl transition-all border border-[#ECEAEA] lg:p-3 p-3 md:max-w-[54vw]">
+  <div className="mb-2 mt-3 w-full flex flex-col py-4 cursor-pointer relative shadow-sm rounded-2xl transition-all border border-[#ECEAEA] lg:p-3 p-3">
     <div className="flex flex-row items-start gap-3 w-full">
       
       {/* Thumbnail */}
@@ -918,7 +918,7 @@ const TransferBookings = (props) => {
   return (
     <div
       id="transfers"
-      className={`mt-16 ${!isPageWide ? "w-full" : "max-w-[51vw]"} pb-[20px]`}
+      className="mt-16 w-full pb-[20px]"
     >
       <div
         id="Transfer_Container"

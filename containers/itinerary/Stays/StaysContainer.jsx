@@ -11,7 +11,7 @@ const StaysContainer = (props) => {
     <div id="stays" className="mt-5">
       <div
         id="staysBooking"
-        className="text-xl font-bold cursor-pointer group transition duration-300 max-w-fit md:min-w-[51vw]"
+        className="text-xl font-bold cursor-pointer group transition duration-300 max-w-fit"
       >
         Stays
         <span className="block max-w-0 group-hover:max-w-[65px] transition-all duration-500 h-0.5 bg-[#262626]"></span>
@@ -48,7 +48,7 @@ const StaysContainer = (props) => {
           ))
         ) : (
           <>
-            <div className={`${!isPageWide ? "w-full" : "max-w-[47vw]"}`}>
+            <div className="w-full">
               {hotels_status === "PENDING" && (
                 <div>
                   <div className="pb-2">

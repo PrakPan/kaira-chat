@@ -234,18 +234,7 @@ const FeedbackButtons: React.FC<{
         marginLeft: -6,
       }}
     >
-      <button
-        type="button"
-        aria-label={upActive ? "Remove thumbs up" : "Thumbs up"}
-        aria-pressed={upActive}
-        disabled={loading}
-        onClick={() => onFeedback(messageId, "up")}
-        onMouseEnter={(e) => (e.currentTarget.style.background = "#f3f4f6")}
-        onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-        style={{ ...baseStyle, color: upActive ? activeColor : idleColor }}
-      >
-        <ThumbsUpIcon />
-      </button>
+      
       <button
         type="button"
         aria-label={downActive ? "Remove thumbs down" : "Thumbs down"}
@@ -257,6 +246,19 @@ const FeedbackButtons: React.FC<{
         style={{ ...baseStyle, color: downActive ? activeColor : idleColor }}
       >
         <ThumbsDownIcon />
+      </button>
+
+      <button
+        type="button"
+        aria-label={upActive ? "Remove thumbs up" : "Thumbs up"}
+        aria-pressed={upActive}
+        disabled={loading}
+        onClick={() => onFeedback(messageId, "up")}
+        onMouseEnter={(e) => (e.currentTarget.style.background = "#f3f4f6")}
+        onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+        style={{ ...baseStyle, color: upActive ? activeColor : idleColor }}
+      >
+        <ThumbsUpIcon />
       </button>
     </div>
   );
