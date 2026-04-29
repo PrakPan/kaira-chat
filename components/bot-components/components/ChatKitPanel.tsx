@@ -2143,7 +2143,7 @@ const handleShowLogin = useCallback(() => {
                       source:
                         ((payload.source ?? payload.provider) as string) ??
                         "Travclan",
-                      travclan_hotel_id: (payload.travclan_hotel_id ??
+                      travclan_hotel_id: (payload.travclan_hotel_id ?? payload.travclanHotelId ??
                         payload.hotel_id) as string | undefined,
                       currency: payload.currency as string | undefined,
                       occupancies: (payload.occupancies ??
@@ -2395,7 +2395,7 @@ const handleShowLogin = useCallback(() => {
       {hotelDrawer.show && hotelDrawer.accommodationId && (
         <AccommodationDetailDrawer
           show={hotelDrawer.show}
-          accommodationId={hotelDrawer.travclan_hotel_id ?? hotelDrawer.accommodationId}
+          accommodationId={hotelDrawer.travclan_hotel_id}
           onHide={() => setHotelDrawer({ show: false })}
           onChangeHotel={() => {
             // Don't POST from chat; close the detail drawer and route the
