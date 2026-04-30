@@ -1395,14 +1395,14 @@ export default function BotApp({
         if (restoredItineraryId) {
           setViewMode("itinerary");
           if (hasCompletedEffectInLoop) setMobilePanel("itinerary");
-        } else if ((data.map_effects ?? []).length > 0 || hasItems) {
-          // P1 chat-only thread (no itinerary yet) — sessionId-default of
-          // "itinerary" hides the map behind an empty itinerary panel, so
-          // flip to "map". Covers both the route/POI case and early threads
-          // where the bot is still gathering details and hasn't emitted any
-          // map_effects yet.
-          setViewMode("map");
-          setMobilePanel("map");
+        } else if ((data.map_effects ?? []).length > 0) {
+          // P1 chat-only thread (no itinerary yet) but has route/POI data —
+          // sessionId-default of "itinerary" hides the map behind an empty
+          // itinerary panel, so flip to "map" so the route pins are visible.
+          if(botMode == "p1"){
+            setViewMode("map");
+            setMobilePanel("map");
+          }
         }
 
         if (restoredItineraryId) {
