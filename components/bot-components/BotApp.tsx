@@ -346,6 +346,28 @@ export default function BotApp({
   const itineraryRedux = useSelector((state: any) => state.Itinerary);
   const galleryImages = useSelector((state: any) => state.galleryImages);
   const itineraryReduxName = itineraryRedux?.name;
+
+  const attachUserToItinerary = useCallback(async () => {
+    if (itineraryRedux?.customer_name) return;
+    const itinId = activeItineraryId;
+    if (!itinId || itinId === "skeleton" || itinId === "draft") return;
+    try {
+      const response = await axios.get(
+        `${MERCURY_HOST}/api/v1/itinerary/${itinId}/attach-user/`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            "Content-Type": "application/json",
+          },
+        },
+      );
+      if (response.status === 200) {
+        setItineraryRefetchCounter((c) => c + 1);
+      }
+    } catch (error) {
+      console.error("Error attaching user to itinerary:", error);
+    }
+  }, [itineraryRedux?.customer_name, activeItineraryId]);
   // Mirror the Redux itinerary status into a ref so handleItineraryRefresh
   // (a stable useCallback) can read the latest canonical status — e.g.
   // "Finalized" from the status API — without re-creating the callback.
@@ -1297,7 +1319,7 @@ export default function BotApp({
       // pre-emptive/post-status setViewMode("itinerary") below.
       isRestoringRef.current = true;
       try {
-        const res = await fetch("https://chat.tarzanway.com/chatkit", {
+        const res = await fetch("https://dev.chat.tarzanway.com/chatkit", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -1654,7 +1676,7 @@ export default function BotApp({
 
       // ── Step 3: chatkit threads.list → loadThread (threads.get_by_id) ────
       try {
-        const listRes = await fetch("https://chat.tarzanway.com/chatkit", {
+        const listRes = await fetch("https://dev.chat.tarzanway.com/chatkit", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -1928,6 +1950,7 @@ export default function BotApp({
     onPaymentStart: openPaymentDrawer,
     travellerStory: activeTravellerStory,
     onTravellerStoryDismiss: () => setActiveTravellerStory(null),
+    onLoginSuccess: attachUserToItinerary,
   };
 
   const handleConfirmItinerary = (details: any) => {
@@ -2282,6 +2305,7 @@ Start Location: ${details.startLocation}`;
             activeItineraryId !== "draft" &&
             !!activeItineraryId
           }
+          onLoginSuccess={attachUserToItinerary}
         />
 
         {/* LEFT PANEL */}
@@ -2451,6 +2475,7 @@ Start Location: ${details.startLocation}`;
                         activeItineraryId !== "draft" &&
                         !!activeItineraryId
                       }
+                      onLoginSuccess={attachUserToItinerary}
                     />
                   }
                 />
@@ -2482,6 +2507,7 @@ Start Location: ${details.startLocation}`;
                           activeItineraryId !== "draft" &&
                           !!activeItineraryId
                         }
+                        onLoginSuccess={attachUserToItinerary}
                       />
                     }
                   />
@@ -2540,6 +2566,7 @@ Start Location: ${details.startLocation}`;
               .catch(() => setIsHotelsPresent(false))
               .finally(() => setShowSettings(true));
           }}
+          onLoginSuccess={attachUserToItinerary}
         />
       </div>
 
@@ -2635,6 +2662,7 @@ Start Location: ${details.startLocation}`;
                 message="Please login to continue"
                 onSuccess={async () => {
                   setShowSettingsLoginPrompt(false);
+                  await attachUserToItinerary();
                 }}
               />
             </div>
@@ -2860,7 +2888,7 @@ BottomCTABar.displayName = "BottomCTABar";
 // ── MobileLayout — full-screen views with top tab bar + mobile header ─────────
 type MobileTab = "chat" | "map" | "routes" | "itinerary" | "bookings";
 
-const CHATKIT_API_URL_MOBILE = "https://chat.tarzanway.com/chatkit";
+const CHATKIT_API_URL_MOBILE = "https://dev.chat.tarzanway.com/chatkit";
 
 function getAuthToken(): string | null {
   return (
@@ -2882,11 +2910,13 @@ export const MobileHeaderMenu = React.memo(
     onThreadSelect,
     activeThreadId,
     isComplete,
+    onLoginSuccess,
   }: {
     onNewChat: () => void;
     onThreadSelect: (id: string, sessionId?: string) => void;
     activeThreadId: string | null;
     isComplete?: boolean;
+    onLoginSuccess?: () => void | Promise<void>;
   }) => {
     const userId = (useSelector as any)((s: any) => s.auth?.id);
     const token = (useSelector as any)((s: any) => s.auth?.token);
@@ -3241,7 +3271,7 @@ export const MobileHeaderMenu = React.memo(
                   zIndex={"3300"}
                   message="Please login to continue"
                   onSuccess={async () => {
-                    // setPostLoginLoading(true);
+                    await onLoginSuccess?.();
                   }}
                 />
               </div>
@@ -3263,11 +3293,13 @@ const MobileHeader = React.memo(
     onThreadSelect,
     activeThreadId,
     isComplete,
+    onLoginSuccess,
   }: {
     onNewChat: () => void;
     onThreadSelect: (id: string, sessionId?: string) => void;
     activeThreadId: string | null;
     isComplete?: boolean;
+    onLoginSuccess?: () => void | Promise<void>;
   }) => (
     <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 bg-white border-b border-gray-100 z-10">
       <div className="flex items-center gap-2">
@@ -3282,6 +3314,7 @@ const MobileHeader = React.memo(
         onThreadSelect={onThreadSelect}
         activeThreadId={activeThreadId}
         isComplete={isComplete}
+        onLoginSuccess={onLoginSuccess}
       />
     </div>
   ),
@@ -3312,6 +3345,7 @@ interface MobileLayoutProps {
   onDismissMobileEffectPopup?: () => void;
   bottomCTABarProps?: BottomCTABarProps;
   onSettingsClick?: () => void;
+  onLoginSuccess?: () => void | Promise<void>;
 }
 
 const MobileLayout = React.memo(
@@ -3339,6 +3373,7 @@ const MobileLayout = React.memo(
     onDismissMobileEffectPopup,
     bottomCTABarProps,
     onSettingsClick,
+    onLoginSuccess,
   }: MobileLayoutProps) => {
     const [activeTab, setActiveTab] = React.useState<MobileTab>(
       hasItineraryActivity ? "itinerary" : "chat",
@@ -3444,6 +3479,7 @@ const MobileLayout = React.memo(
             onThreadSelect={onThreadSelect}
             activeThreadId={activeThreadId}
             isComplete={isComplete}
+            onLoginSuccess={onLoginSuccess}
           />
         )}
 
