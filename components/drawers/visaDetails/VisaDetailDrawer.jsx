@@ -179,11 +179,6 @@ export default function VisaDetailDrawer({ show, visa, onHide, onBooked }) {
                     {symbol}{getIndianPrice(Math.round(displayVisa.price))}
                     <span className="text-[14px] font-400 text-[#6E757A] ml-1">/ person</span>
                   </div>
-                  {displayVisa?.service_fee != null && (
-                    <div className="text-[12px] text-[#6E757A] mt-1">
-                      + {symbol}{getIndianPrice(Math.round(displayVisa.service_fee))} service fee
-                    </div>
-                  )}
                   <div className="text-[12px] text-[#6E757A] mt-1">
                     For {itinerary?.number_of_adults || 1} adult{(itinerary?.number_of_adults || 1) > 1 ? "s" : ""}
                     {itinerary?.number_of_children ? `, ${itinerary.number_of_children} child${itinerary.number_of_children > 1 ? "ren" : ""}` : ""}

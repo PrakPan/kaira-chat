@@ -24,7 +24,6 @@ const formatLabel = (val) => BADGE_LABELS[val] || (val ? val.replace(/_/g, " ").
 const VisaCard = ({ visa, onSelect, currency }) => {
   const symbol = currencySymbols?.[currency?.currency] || "₹";
   const totalPrice = visa?.price != null ? visa.price : null;
-  const serviceFee = visa?.service_fee;
 
   return (
     <div
@@ -79,11 +78,6 @@ const VisaCard = ({ visa, onSelect, currency }) => {
                 {symbol}{getIndianPrice(Math.round(totalPrice))}
                 <span className="text-[12px] font-400 text-[#6E757A] ml-1">/ person</span>
               </div>
-              {serviceFee != null && (
-                <div className="text-[11px] text-[#6E757A]">
-                  + {symbol}{getIndianPrice(Math.round(serviceFee))} service fee
-                </div>
-              )}
             </div>
           ) : (
             <div className="text-[13px] text-[#6E757A]">View pricing</div>
