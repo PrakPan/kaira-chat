@@ -1395,10 +1395,12 @@ export default function BotApp({
         if (restoredItineraryId) {
           setViewMode("itinerary");
           if (hasCompletedEffectInLoop) setMobilePanel("itinerary");
-        } else if ((data.map_effects ?? []).length > 0) {
-          // P1 chat-only thread (no itinerary yet) but has route/POI data —
-          // sessionId-default of "itinerary" hides the map behind an empty
-          // itinerary panel, so flip to "map" so the route pins are visible.
+        } else if ((data.map_effects ?? []).length > 0 || hasItems) {
+          // P1 chat-only thread (no itinerary yet) — sessionId-default of
+          // "itinerary" hides the map behind an empty itinerary panel, so
+          // flip to "map". Covers both the route/POI case and early threads
+          // where the bot is still gathering details and hasn't emitted any
+          // map_effects yet.
           setViewMode("map");
           setMobilePanel("map");
         }
@@ -3567,7 +3569,7 @@ const MobileLayout = React.memo(
                     </svg>
                   </button>
                   <p className="text-[14px] pr-3 mb-0">
-                    Hi, I am Kaira Your travel partner
+                    Hey, I’m Kaira - Your AI Trip Planner
                   </p>
                   {/* Speech bubble arrow */}
                   <div className="absolute -bottom-2 right-8 w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[#F7E700]" />
@@ -3657,7 +3659,7 @@ const MobileLayout = React.memo(
                   </svg>
                 </button>
                 <p className="text-[14px] pr-3 mb-0">
-                  Hi, I am Kaira Your travel partner
+                  Hey, I’m Kaira - Your AI Trip Planner
                 </p>
                 <div className="absolute -bottom-2 right-8 w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[#F7E700]" />
               </div>

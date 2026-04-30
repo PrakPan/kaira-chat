@@ -441,7 +441,7 @@ const ModalContent: React.FC<ModalContentProps> = ({
             onClick={onConfirm}
             className="flex-1 px-3 py-2.5 bg-[#07213A] text-white font-medium rounded-xl text-sm hover:bg-[#07213A]/90 active:scale-[0.98] transition-all"
           >
-            Confirm & View Itinerary
+            Confirm and View Prices
           </button>
         )}
       </div>
