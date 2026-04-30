@@ -253,6 +253,7 @@ interface SseHandlers {
   onWorkflowTaskAdded?: (index: number, content: string) => void;
   onWorkflowTaskUpdated?: (index: number, content: string) => void;
   onWorkflowDone?: () => void;
+  onAssistantMessageId?: (id: string) => void;
 }
 
 function parseSseLine(raw: string, handlers: SseHandlers) {
@@ -306,6 +307,14 @@ function parseSseLine(raw: string, handlers: SseHandlers) {
     return;
   }
 
+  if (type === "thread.item.added") {
+    const item = ev.item as Record<string, unknown> | undefined;
+    if (item?.type === "assistant_message" && typeof item.id === "string") {
+      handlers.onAssistantMessageId?.(item.id);
+    }
+    return;
+  }
+
   if (type === "thread.item.done") {
     const item = ev.item as Record<string, unknown> | undefined;
     if (item?.type === "workflow") {
@@ -317,6 +326,10 @@ function parseSseLine(raw: string, handlers: SseHandlers) {
         id: item.id as string,
         widget: item.widget as Record<string, unknown>,
       });
+      return;
+    }
+    if (item?.type === "assistant_message" && typeof item.id === "string") {
+      handlers.onAssistantMessageId?.(item.id);
       return;
     }
     return;
@@ -493,6 +506,7 @@ export function useChat({
       if (!threadIdRef.current) return;
 
       const assistantMsgId = `assistant-${Date.now()}`;
+      let currentAssistantId = assistantMsgId;
       setMessages((prev) => [
         ...prev,
         {
@@ -539,11 +553,19 @@ export function useChat({
           onTextChunk: (chunk) => {
             setMessages((prev) =>
               prev.map((m) =>
-                m.id === assistantMsgId ? { ...m, content: m.content + chunk } : m
+                m.id === currentAssistantId ? { ...m, content: m.content + chunk } : m
               )
             );
           },
           onThreadId: handleThreadId,
+          onAssistantMessageId: (realId) => {
+            if (realId === currentAssistantId) return;
+            const oldId = currentAssistantId;
+            currentAssistantId = realId;
+            setMessages((prev) =>
+              prev.map((m) => (m.id === oldId ? { ...m, id: realId } : m))
+            );
+          },
           onEffect: (effect) => onEffect?.(effect),
           onWidget: (item) => {
             setMessages((prev) => [
@@ -561,7 +583,7 @@ export function useChat({
           onProgress: (step) => {
             setMessages((prev) =>
               prev.map((m) =>
-                m.id !== assistantMsgId
+                m.id !== currentAssistantId
                   ? m
                   : { ...m, progressSteps: applyProgressStep(m.progressSteps ?? [], step) }
               )
@@ -570,7 +592,7 @@ export function useChat({
           onWorkflowTaskAdded: (index, content) => {
             setMessages((prev) =>
               prev.map((m) =>
-                m.id !== assistantMsgId
+                m.id !== currentAssistantId
                   ? m
                   : { ...m, thinkingTasks: applyTaskAdded(m.thinkingTasks ?? [], index, content) }
               )
@@ -579,7 +601,7 @@ export function useChat({
           onWorkflowTaskUpdated: (index, content) => {
             setMessages((prev) =>
               prev.map((m) =>
-                m.id !== assistantMsgId
+                m.id !== currentAssistantId
                   ? m
                   : { ...m, thinkingTasks: applyTaskUpdated(m.thinkingTasks ?? [], index, content) }
               )
@@ -588,7 +610,7 @@ export function useChat({
           onWorkflowDone: () => {
             setMessages((prev) =>
               prev.map((m) =>
-                m.id !== assistantMsgId
+                m.id !== currentAssistantId
                   ? m
                   : { ...m, thinkingTasks: applyWorkflowDone(m.thinkingTasks ?? []) }
               )
@@ -600,7 +622,7 @@ export function useChat({
       } finally {
         setMessages((prev) =>
           prev.map((m) => {
-            if (m.id !== assistantMsgId) return m;
+            if (m.id !== currentAssistantId) return m;
             const steps = m.progressSteps ?? [];
             const finalSteps =
               steps.length > 0 && !steps[steps.length - 1].done
@@ -631,6 +653,7 @@ export function useChat({
 
       const userMsgId = `user-${Date.now()}`;
       const assistantMsgId = `assistant-${Date.now() + 1}`;
+      let currentAssistantId = assistantMsgId;
 
       setMessages((prev) => [
         ...prev,
@@ -705,11 +728,19 @@ export function useChat({
               if (!firstToken) { firstToken = true; onFirstToken?.(); }
               setMessages((prev) =>
                 prev.map((m) =>
-                  m.id === assistantMsgId ? { ...m, content: m.content + chunk } : m
+                  m.id === currentAssistantId ? { ...m, content: m.content + chunk } : m
                 )
               );
             },
             onThreadId: handleThreadId,
+            onAssistantMessageId: (realId) => {
+              if (realId === currentAssistantId) return;
+              const oldId = currentAssistantId;
+              currentAssistantId = realId;
+              setMessages((prev) =>
+                prev.map((m) => (m.id === oldId ? { ...m, id: realId } : m))
+              );
+            },
             onEffect: (effect) => onEffect?.(effect),
             onWidget: (item) => {
               setMessages((prev) => [
@@ -727,7 +758,7 @@ export function useChat({
             onProgress: (step) => {
               setMessages((prev) =>
                 prev.map((m) =>
-                  m.id !== assistantMsgId
+                  m.id !== currentAssistantId
                     ? m
                     : { ...m, progressSteps: applyProgressStep(m.progressSteps ?? [], step) }
                 )
@@ -736,7 +767,7 @@ export function useChat({
             onWorkflowTaskAdded: (index, content) => {
               setMessages((prev) =>
                 prev.map((m) =>
-                  m.id !== assistantMsgId
+                  m.id !== currentAssistantId
                     ? m
                     : { ...m, thinkingTasks: applyTaskAdded(m.thinkingTasks ?? [], index, content) }
                 )
@@ -745,7 +776,7 @@ export function useChat({
             onWorkflowTaskUpdated: (index, content) => {
               setMessages((prev) =>
                 prev.map((m) =>
-                  m.id !== assistantMsgId
+                  m.id !== currentAssistantId
                     ? m
                     : { ...m, thinkingTasks: applyTaskUpdated(m.thinkingTasks ?? [], index, content) }
                 )
@@ -754,7 +785,7 @@ export function useChat({
             onWorkflowDone: () => {
               setMessages((prev) =>
                 prev.map((m) =>
-                  m.id !== assistantMsgId
+                  m.id !== currentAssistantId
                     ? m
                     : { ...m, thinkingTasks: applyWorkflowDone(m.thinkingTasks ?? []) }
                 )
@@ -774,7 +805,7 @@ export function useChat({
           : "Sorry, something went wrong. Please try again.";
         setMessages((prev) =>
           prev.map((m) =>
-            m.id === assistantMsgId && !m.content
+            m.id === currentAssistantId && !m.content
               ? { ...m, content: fallbackContent }
               : m
           )
@@ -782,7 +813,7 @@ export function useChat({
       } finally {
         setMessages((prev) =>
           prev.map((m) => {
-            if (m.id !== assistantMsgId) return m;
+            if (m.id !== currentAssistantId) return m;
             const steps = m.progressSteps ?? [];
             const finalSteps =
               steps.length > 0 && !steps[steps.length - 1].done

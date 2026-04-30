@@ -624,9 +624,9 @@ export default function PoiDetails(props) {
 
             {/* Day picker + Morning/Afternoon/Evening chips. Hidden in
                 Draft / P1 stage where the itinerary isn't pinned to dates. */}
-            {/* {!hideSchedule && (
+            {!hideSchedule && (
               <div className="flex flex-col gap-3">
-                <div className="flex gap-2">
+                {/* <div className="flex gap-2">
                   <div className="relative">
                     <div
                       ref={dateBoxRef}
@@ -655,7 +655,7 @@ export default function PoiDetails(props) {
                       </div>
                     )}
                   </div>
-                </div>
+                </div> */}
 
                 <div className="inline-flex w-fit sm:w-fit bg-[#F9F9F9] rounded-lg p-1 gap-1">
                   {TIME_PERIODS.map((period) => {
@@ -677,7 +677,7 @@ export default function PoiDetails(props) {
                   })}
                 </div>
               </div>
-            )} */}
+            )}
 
             {props?.data?.rating && (
               <div className="flex items-center gap-1">

@@ -737,6 +737,7 @@ isPanelVisible = true,
   const hasMoreRef = useRef(false);
   const beforeCursorRef = useRef<string | null>(null);
   const isFetchingMoreRef = useRef(false);
+  const appliedRestoredThreadRef = useRef<unknown>(null);
 
   // Tracks whether the user is pinned to the bottom of the message list. The
   // auto-scroll effect only fires when this is true, so the transcript won't
@@ -1420,6 +1421,16 @@ useEffect(() => {
 
   useEffect(() => {
   if (!restoredThread || !setMessages) return;
+  // Guard: only apply each restoredThread payload ONCE. The effect's callback
+  // deps (onRouteReceived/onItineraryReceived/etc.) change identity when their
+  // parent state mutates (e.g. shimmer_day_by_day flips viewMode/activeItineraryId),
+  // which would otherwise re-run the body mid-stream and call setMessages(restored)
+  // on top of a placeholder + streaming text — wiping the in-flight message.
+  if (appliedRestoredThreadRef.current === restoredThread) return;
+  // Also skip if a stream is active — restoring the previous transcript on top
+  // of the live placeholder is never what we want.
+  if (isStreaming) return;
+  appliedRestoredThreadRef.current = restoredThread;
 
   const restored = parseThreadItems(restoredThread.items?.data ?? []);
 
@@ -1553,7 +1564,7 @@ useEffect(() => {
   if (qrEffect?.data?.quick_replies) {
     setQuickReplies(qrEffect.data.quick_replies.map((r: string) => ({ label: r })));
   }
-}, [restoredThread, parseThreadItems, onRouteReceived, onLocationReceived, onItineraryReceived, indexTransfersForLookup, emitEndpointsFromEffect]);
+}, [restoredThread, isStreaming, parseThreadItems, onRouteReceived, onLocationReceived, onItineraryReceived, indexTransfersForLookup, emitEndpointsFromEffect]);
 
   // ── Pagination: fetch older messages ──────────────────────────────────────
   const fetchOlderMessages = useCallback(async () => {
