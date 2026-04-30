@@ -1215,6 +1215,38 @@ const sendMessage = useCallback(
     if (!error) setErrorDismissed(false);
   }, [error]);
 
+  // User-driven scroll detach. Fast text_delta-driven re-renders run the
+  // auto-scroll effect below before the `scroll` event the user just
+  // triggered has had a chance to update isAtBottomRef — that race is what
+  // makes the view snap back to the bottom while the user is trying to read
+  // earlier messages. Listen for the user's actual gesture (wheel scrolling
+  // up, or finger drag downward on touchscreens) and detach pinning
+  // synchronously, before the browser even processes the scroll.
+  useEffect(() => {
+    const c = messagesScrollRef.current;
+    if (!c) return;
+    const onWheel = (e: WheelEvent) => {
+      if (e.deltaY < 0) isAtBottomRef.current = false;
+    };
+    let touchStartY = 0;
+    const onTouchStart = (e: TouchEvent) => {
+      touchStartY = e.touches[0]?.clientY ?? 0;
+    };
+    const onTouchMove = (e: TouchEvent) => {
+      const y = e.touches[0]?.clientY ?? 0;
+      // Finger dragging downward → content scrolls up → user is reading above.
+      if (y - touchStartY > 5) isAtBottomRef.current = false;
+    };
+    c.addEventListener("wheel", onWheel, { passive: true });
+    c.addEventListener("touchstart", onTouchStart, { passive: true });
+    c.addEventListener("touchmove", onTouchMove, { passive: true });
+    return () => {
+      c.removeEventListener("wheel", onWheel);
+      c.removeEventListener("touchstart", onTouchStart);
+      c.removeEventListener("touchmove", onTouchMove);
+    };
+  }, []);
+
   useEffect(() => {
     // Don't auto-scroll to bottom when older messages are being prepended
     if (isFetchingMoreRef.current) return;
