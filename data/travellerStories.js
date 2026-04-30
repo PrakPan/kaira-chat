@@ -15,7 +15,7 @@ const travellerStories = [
     ],
     shortDescription:
       "Minal and partner explored the best of Vietnam — from the golden arches of Ba Na Hills and the mystical Marble Mountains in Da Nang, to the lantern-lit waterways of Hoi An's Ancient Town, and finally Hanoi's vibrant street life, Hoan Kiem Lake, and a day trip through Ninh Binh's dramatic limestone landscapes.",
-    viewItineraryLink: "https://thetarzanway.com/itinerary/8fd53624-ba0c-4ab2-9708-29108738fb56",
+    viewItineraryLink: "https://thetarzanway.com/chat/8fd53624-ba0c-4ab2-9708-29108738fb56",
     rating: 4.8,
     prompt:
       "Plan a 5-night Vietnam trip for 2 adults (couple) — Da Nang 2N, Hoi An 1N, Hanoi 2N. Add Ba Na Hills in Da Nang, Lantern Boat Trip in Hoi An, Water Puppet Theater Show and Ninh Binh Hoa Lu Trang An Mua Cave Tour in Hanoi. We love culture, old towns, and local food!",
@@ -36,7 +36,7 @@ const travellerStories = [
     ],
     shortDescription:
       "Amish and partner experienced the ultimate Maldivian romance — starting with 2 nights in a beachfront villa at Holiday Inn Resort Kandooma followed by 2 nights in a stunning overwater villa. Days were filled with scuba diving, snorkeling, manta ray spotting, seaplane flights, and water sports in the crystal-clear Indian Ocean.",
-    viewItineraryLink: "https://thetarzanway.com/itinerary/8fd53624-ba0c-4ab2-9708-29108738fb56",
+    viewItineraryLink: "https://thetarzanway.com/chat/8fd53624-ba0c-4ab2-9708-29108738fb56",
     rating: 4.9,
     prompt:
       "Plan a 4-night romantic Maldives getaway for 2 adults (couple) — Male 4N. We want a mix of water sports, snorkeling, scuba diving, and relaxation. A seaplane ride and visiting Banana Reef and Manta Point would be amazing!",
@@ -57,7 +57,7 @@ const travellerStories = [
     ],
     shortDescription:
       "Twinkle's Japan journey was nothing short of magical — a private Mount Fuji day tour and Senso-ji in Tokyo, followed by Kyoto's Arashiyama Bamboo Forest, Fushimi Inari Shrine, and the Philosopher's Path in autumn colours, wrapping up in Osaka with Universal Studios Japan, Dotonbori neon lights, and the Umeda Sky Building.",
-    viewItineraryLink: "https://thetarzanway.com/itinerary/8fd53624-ba0c-4ab2-9708-29108738fb56",
+    viewItineraryLink: "https://thetarzanway.com/chat/8fd53624-ba0c-4ab2-9708-29108738fb56",
     rating: 4.7,
     prompt:
       "Plan a 9-night Japan trip for 2 adults (couple) — Tokyo 3N, Kyoto 3N, Osaka 3N. Add Mount Fuji Full Day Tour in Tokyo. We love temples, shrines, street food, and cultural exploration!",
@@ -78,7 +78,7 @@ const travellerStories = [
     ],
     shortDescription:
       "Naveen and partner swept across Europe in style — from Amsterdam's scenic canal cruises and vibrant markets, to Paris's iconic Eiffel Tower, Notre-Dame, and a Louvre masterclass, then on to Zurich's Lindt Chocolate Museum and Bahnhofstrasse, before ending in Lucerne with a breathtaking Titlis glacier adventure and serene lakeside charm.",
-    viewItineraryLink: "https://thetarzanway.com/itinerary/8fd53624-ba0c-4ab2-9708-29108738fb56",
+    viewItineraryLink: "https://thetarzanway.com/chat/8fd53624-ba0c-4ab2-9708-29108738fb56",
     rating: 4.9,
     prompt:
       "Plan a 9-night Europe trip for 2 adults (couple) — Amsterdam 2N, Paris 2N, Zurich 1N, Lucerne 3N, Zurich 1N. Add canal cruise and hop-on hop-off bus in Amsterdam, Seine cruise, Louvre Museum and Eiffel Tower in Paris, Lindt Chocolate Museum in Zurich, and Titlis glacier excursion from Lucerne. We love art, culture, and scenic views!",
