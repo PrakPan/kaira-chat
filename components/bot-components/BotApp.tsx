@@ -2466,6 +2466,7 @@ Start Location: ${details.startLocation}`;
                 <ChatWelcomeScreen
                   onSubmit={handlePromptSelect}
                   onChatStart={() => setIsChatActive(true)}
+                  themeConfig={themeConfig}
                   mobileMenu={
                     <MobileHeaderMenu
                       onNewChat={handleNewChat}
