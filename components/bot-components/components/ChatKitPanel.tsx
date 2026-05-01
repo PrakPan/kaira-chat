@@ -2368,6 +2368,14 @@ const handleShowLogin = useCallback(() => {
           Topheading="Activity Details"
           showPackages={false}
           type={"activity"}
+          pax={{
+            adults: itinerary?.number_of_adults ?? 1,
+            children: itinerary?.number_of_children ?? 0,
+            childAges: Array.from(
+              { length: itinerary?.number_of_children ?? 0 },
+              () => 10,
+            ),
+          }}
           itinerary_city_id={activityDrawer.itinerary_city_id}
           onAddToItinerary={(payload: Record<string, unknown>) => {
             const itineraryCityId =
@@ -2522,7 +2530,19 @@ const handleShowLogin = useCallback(() => {
           bookingId={hotelDrawer.bookingId}
           dbCityId={hotelDrawer.dbCityId}
           source={hotelDrawer.source}
-          occupancies={hotelDrawer.occupancies}
+          occupancies={
+            hotelDrawer.occupancies && hotelDrawer.occupancies.length
+              ? hotelDrawer.occupancies
+              : [
+                  {
+                    num_adults: itinerary?.number_of_adults ?? 1,
+                    child_ages: Array.from(
+                      { length: itinerary?.number_of_children ?? 0 },
+                      () => 10,
+                    ),
+                  },
+                ]
+          }
           traceId={hotelDrawer.traceId}
           setShowLoginModal={setShowLoginModal}
           // Authoritative itinerary id for this chat. The drawer would
