@@ -26,9 +26,9 @@ import { updateStays } from "../../../store/actions/StayBookings";
 import { updateTransferBookings } from "../../../store/actions/transferBookingsStore";
 import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
 
-const CHATKIT_API_URL = "https://chat.tarzanway.com/chatkit";
+const CHATKIT_API_URL = "https://dev.chat.tarzanway.com/chatkit";
 const PAGINATION_SCROLL_THRESHOLD = 80;
-const CHATKIT = "https://chat.tarzanway.com"
+const CHATKIT = "https://dev.chat.tarzanway.com"
 
 export interface AttachmentFile {
   /** Temporary local ID (before server responds) or server-assigned ID */
@@ -140,6 +140,7 @@ mobileMenu?: React.ReactNode;
  *  so the message rendered during the hidden interval is visible without a
  *  page refresh. Defaults to true (desktop / always-visible callers). */
 isPanelVisible?: boolean;
+onLoginSuccess?: () => void | Promise<void>;
 }
 
 export interface TravellerStoryIntro {
@@ -293,6 +294,7 @@ travellerStory = null,
 onTravellerStoryDismiss,
 mobileMenu,
 isPanelVisible = true,
+onLoginSuccess,
 }: ChatKitPanelProps) {
   // ── State ────────────────────────────────────────────────────────────────
   const [input, setInput] = useState("");
@@ -827,7 +829,7 @@ const handleSessionCreated = useCallback((ourSessionId: string) => {
   // ── useChat ───────────────────────────────────────────────────────────────
   const apiUrl =
     botMode === "p2"
-      ? "https://chat.tarzanway.com/chatkit/p2"
+      ? "https://dev.chat.tarzanway.com/chatkit/p2"
       : CHATKIT_API_URL;
 
   // Stable onEffect wrapper — must be a named useCallback, never inline inside
@@ -1318,9 +1320,12 @@ const sendMessage = useCallback(
 
 useEffect(() => {
   if (initialPrompt && !hasProcessedInitial.current && locationReady) {
-    // Seeded summary prompts already cover the post-completion overview, so
-    // suppress the auto inject.context to avoid a duplicate response.
-    if (/summary|overview|itinerary/i.test(initialPrompt)) {
+    // Suppress the auto inject.context only for the exact auto-seeded
+    // post-completion summary prompt (set by restoreLatestThread on P2
+    // restore / fromTailored). A broader keyword match here also caught
+    // user-typed prompts containing "itinerary", which silenced the
+    // post-completion summary on the bot-create path.
+    if (initialPrompt === "Hey Kaira! provide summary of my itinerary") {
       hasInjectedContextRef.current = true;
     }
     // Defer prompts that require login: queue as the post-login message and
@@ -2343,7 +2348,7 @@ const handleShowLogin = useCallback(() => {
                 zIndex={"3300"}
                 message="Please login to continue"
                 onSuccess={async () => {
-                  // setPostLoginLoading(true);
+                  await onLoginSuccess?.();
                 }}
               />
             </div>

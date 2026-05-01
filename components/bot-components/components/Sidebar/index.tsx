@@ -7,7 +7,7 @@ import { createPortal } from "react-dom";
 import Image from "next/image";
 import { getPlatform } from "../../hooks/useChat";
 
-const CHATKIT_API_URL = "https://chat.tarzanway.com/chatkit";
+const CHATKIT_API_URL = "https://dev.chat.tarzanway.com/chatkit";
 
 interface Thread {
   id: string;
@@ -63,6 +63,7 @@ interface SidebarProps {
   activeThreadId?: string | null;
   /** True when itinerary is fully created (P2), false/undefined = P1 */
   isComplete?: boolean;
+  onLoginSuccess?: () => void | Promise<void>;
 }
 
 // ── Tooltip ───────────────────────────────────────────────────────────────────
@@ -206,7 +207,10 @@ const ChatHistoryDrawer: React.FC<{
 };
 
 // ── Profile ───────────────────────────────────────────────────────────────────
-const SidebarProfile: React.FC<{ isCollapsed: boolean }> = ({ isCollapsed }) => {
+const SidebarProfile: React.FC<{
+  isCollapsed: boolean;
+  onLoginSuccess?: () => void | Promise<void>;
+}> = ({ isCollapsed, onLoginSuccess }) => {
   const dispatch = useDispatch();
   const token = useSelector((state: any) => state.auth?.token);
   const name = useSelector((state: any) => state.auth?.name);
@@ -355,6 +359,9 @@ const handleLogout = () => {
               onhide={() => setShowLogin(false)}
               zIndex="3300"
               message="Please login to continue"
+              onSuccess={async () => {
+                await onLoginSuccess?.();
+              }}
             />
           </div>
         </>,
@@ -410,6 +417,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   onThreadSelect,
   activeThreadId,
   isComplete,
+  onLoginSuccess,
 }) => {
   const [threads, setThreads] = useState<Thread[]>([]);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -536,7 +544,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         <nav className="flex-1 px-3 py-4 overflow-visible">
 
           <div className="mt-1">
-            <SidebarProfile isCollapsed={isCollapsed} />
+            <SidebarProfile isCollapsed={isCollapsed} onLoginSuccess={onLoginSuccess} />
           </div>
           
           {isCollapsed ? (
