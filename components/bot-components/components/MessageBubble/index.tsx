@@ -234,20 +234,6 @@ const FeedbackButtons: React.FC<{
         marginLeft: -6,
       }}
     >
-      
-      <button
-        type="button"
-        aria-label={downActive ? "Remove thumbs down" : "Thumbs down"}
-        aria-pressed={downActive}
-        disabled={loading}
-        onClick={() => onFeedback(messageId, "down")}
-        onMouseEnter={(e) => (e.currentTarget.style.background = "#f3f4f6")}
-        onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-        style={{ ...baseStyle, color: downActive ? activeColor : idleColor }}
-      >
-        <ThumbsDownIcon />
-      </button>
-
       <button
         type="button"
         aria-label={upActive ? "Remove thumbs up" : "Thumbs up"}
@@ -259,6 +245,19 @@ const FeedbackButtons: React.FC<{
         style={{ ...baseStyle, color: upActive ? activeColor : idleColor }}
       >
         <ThumbsUpIcon />
+      </button>
+
+      <button
+        type="button"
+        aria-label={downActive ? "Remove thumbs down" : "Thumbs down"}
+        aria-pressed={downActive}
+        disabled={loading}
+        onClick={() => onFeedback(messageId, "down")}
+        onMouseEnter={(e) => (e.currentTarget.style.background = "#f3f4f6")}
+        onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+        style={{ ...baseStyle, color: downActive ? activeColor : idleColor }}
+      >
+        <ThumbsDownIcon />
       </button>
     </div>
   );
@@ -887,11 +886,23 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
 
   if (message.type === "widget" && message.widgetItem) {
     return (
-      <WidgetRenderer
-        widget={message.widgetItem.widget}
-        onAction={onWidgetAction}
-        disabled={widgetDisabled}
-      />
+      <div>
+        <WidgetRenderer
+          widget={message.widgetItem.widget}
+          onAction={onWidgetAction}
+          disabled={widgetDisabled}
+        />
+        <div className="ml-5">
+        {onFeedback && message.id && (
+          <FeedbackButtons
+            messageId={message.id}
+            feedback={feedback}
+            loading={feedbackLoading}
+            onFeedback={onFeedback}
+          />
+        )}
+        </div>
+      </div>
     );
   }
 

@@ -508,6 +508,12 @@ const TripCard: React.FC<TripCardProps> = ({ trip, delay, mounted, onSelect }) =
   const [hovered, setHovered] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
 
+  useEffect(() => {
+    if (imgLoaded) return;
+    const t = setTimeout(() => setImgLoaded(true), 6000);
+    return () => clearTimeout(t);
+  }, [imgLoaded]);
+
   return (
     <button
       onClick={() => onSelect(trip.prompt)}
@@ -624,6 +630,12 @@ const TrendingCard: React.FC<TrendingCardProps> = ({
   const [hovered, setHovered] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
 
+  useEffect(() => {
+    if (imgLoaded) return;
+    const t = setTimeout(() => setImgLoaded(true), 6000);
+    return () => clearTimeout(t);
+  }, [imgLoaded]);
+
   return (
     <button
       onClick={() => onSelect(trip.prompt)}
@@ -736,6 +748,12 @@ const TravellerStoryCard: React.FC<TravellerStoryCardProps> = ({
 }) => {
   const [hovered, setHovered] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
+
+  useEffect(() => {
+    if (imgLoaded) return;
+    const t = setTimeout(() => setImgLoaded(true), 6000);
+    return () => clearTimeout(t);
+  }, [imgLoaded]);
 
   const headline = `${story.name} did ${story.destinations.join(", ")} in ${story.duration}`;
 
