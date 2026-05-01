@@ -2,6 +2,7 @@ import React, { useState, useContext, createContext } from "react";
 import { PiAirplaneTakeoff } from "react-icons/pi";
 import { useSelector } from "react-redux";
 import { currencySymbols } from "../../../data/currencySymbols";
+import { MERCURY_HOST } from "../../../services/constants";
 
 // ─── Widget environment context ───────────────────────────────────────────────
 // Carries ambient data (e.g. botMode) down to individual cards without
@@ -2155,7 +2156,12 @@ function BoxNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetRender
     );
   }
 
-  const pxWidth  = width != null ? `${width as number}px` : size != null ? `${size as number}px` : undefined;
+  // Box wrapping only a dots-horizontal Icon: the icon is hidden, so trim the
+  // gutter from 24px → 12px to keep the row tight without removing the box.
+  const dotsBoxWidth = isDotsHorizontalBox(node) ? 0 : null;
+
+  const effectiveWidth = dotsBoxWidth ?? (width as number | undefined);
+  const pxWidth  = effectiveWidth != null ? `${effectiveWidth}px` : size != null ? `${size as number}px` : undefined;
   const pxHeight = height != null
     ? (typeof height === "string" ? height : `${height as number}px`)
     : size != null ? `${size as number}px` : undefined;
@@ -2253,6 +2259,15 @@ const JUSTIFY_MAP: Record<string, string> = {
 function isDotsHorizontalNode(n: WidgetNode): boolean {
   return (n.type === "Button" && n.iconStart === "dots-horizontal") ||
          (n.type === "Icon" && n.name === "dots-horizontal");
+}
+
+// Box that exists solely to wrap a dots-horizontal Icon. The icon renders
+// null, so we keep the Box but shrink it to a 12px gutter so the row layout
+// stays balanced without an empty 24px column.
+function isDotsHorizontalBox(n: WidgetNode): boolean {
+  if (n.type !== "Box") return false;
+  const kids = (n.children ?? []) as WidgetNode[];
+  return kids.length > 0 && kids.every(isDotsHorizontalNode);
 }
 
 function RowNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetRendererProps["onAction"] }) {
@@ -3130,18 +3145,32 @@ function PdfDownloadCard({
 
   const [downloading, setDownloading] = useState(false);
 
-  const handleDownload = () => {
+  // The server returns a relative path (e.g. "/api/v1/itinerary/123/pdf").
+  // Prefix with MERCURY_HOST and fetch with auth so the browser can preview
+  // the PDF in a new tab once the response arrives.
+  const handleDownload = async () => {
     if (!payload.url || downloading) return;
     setDownloading(true);
-    const a = document.createElement("a");
-    a.href = payload.url;
-    if (filename) a.download = filename;
-    a.target = "_blank";
-    a.rel = "noopener noreferrer";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setTimeout(() => setDownloading(false), 1200);
+    try {
+      const isAbsolute = /^https?:\/\//i.test(payload.url);
+      const path = payload.url.startsWith("/") ? payload.url : `/${payload.url}`;
+      const fullUrl = isAbsolute ? payload.url : `${MERCURY_HOST}${path}`;
+      const authToken =
+        (typeof window !== "undefined" && localStorage.getItem("access_token")) || "";
+      const res = await fetch(fullUrl, {
+        method: "GET",
+        headers: authToken ? { Authorization: `Bearer ${authToken}` } : {},
+      });
+      if (!res.ok) throw new Error(`PDF fetch failed: ${res.status}`);
+      const blob = await res.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      window.open(objectUrl, "_blank", "noopener,noreferrer");
+      setTimeout(() => URL.revokeObjectURL(objectUrl), 60_000);
+    } catch (err) {
+      console.error("PDF preview failed", err);
+    } finally {
+      setDownloading(false);
+    }
   };
 
   return (

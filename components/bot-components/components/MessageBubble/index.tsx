@@ -160,6 +160,49 @@ const ImageAttachment: React.FC<{ url: string; name?: string }> = ({ url, name }
   );
 };
 
+// A widget is "button-only" when it renders nothing but a single Button —
+// pure CTA prompts like "Confirm This Route" or "Build Itinerary". Layout
+// nodes (Card/Form/Row/Col/Box/ListView/Spacer/Divider) and Labels are
+// transparent; any other content node (Text/Title/Caption/Image/Icon/Input/
+// Select/Textarea) disqualifies the widget.
+const WIDGET_LAYOUT_TYPES = new Set([
+  "Card",
+  "Form",
+  "ListView",
+  "ListViewItem",
+  "Row",
+  "Col",
+  "Box",
+  "Spacer",
+  "Divider",
+  "Label",
+]);
+
+function inspectWidgetContent(node: unknown): { buttons: number; others: number } {
+  if (!node || typeof node !== "object") return { buttons: 0, others: 0 };
+  const n = node as { type?: string; iconStart?: string; children?: unknown[] };
+  let buttons = 0;
+  let others = 0;
+  if (n.type === "Button") {
+    if (n.iconStart !== "dots-horizontal") buttons += 1;
+  } else if (n.type && !WIDGET_LAYOUT_TYPES.has(n.type)) {
+    others += 1;
+  }
+  if (Array.isArray(n.children)) {
+    for (const child of n.children) {
+      const r = inspectWidgetContent(child);
+      buttons += r.buttons;
+      others += r.others;
+    }
+  }
+  return { buttons, others };
+}
+
+function isButtonOnlyWidget(widget: Record<string, unknown>): boolean {
+  const { buttons, others } = inspectWidgetContent(widget);
+  return buttons === 1 && others === 0;
+}
+
 interface MessageBubbleProps {
   message: Message;
   entities?: Record<string, { name: string; type: string }>;
@@ -885,6 +928,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   const isUser = message.role === "user";
 
   if (message.type === "widget" && message.widgetItem) {
+    const buttonOnly = isButtonOnlyWidget(message.widgetItem.widget);
     return (
       <div>
         <WidgetRenderer
@@ -893,7 +937,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           disabled={widgetDisabled}
         />
         <div className="ml-5">
-        {onFeedback && message.id && (
+        {!buttonOnly && onFeedback && message.id && (
           <FeedbackButtons
             messageId={message.id}
             feedback={feedback}
