@@ -51,6 +51,7 @@ import { SocialShareDesktop } from "../../containers/itinerary/booking1/SocialSh
 import NotificationPopup from "../ui/NotificationPopup";
 import LogInModal from "../userauth/LogInModal";
 import { createPortal } from "react-dom";
+import { currencySymbols } from "../../data/currencySymbols";
 
 type MobilePanel = "map" | "chat" | "itinerary";
 type LeftPanelMode = "default" | "itinerary-loading" | "itinerary-ready";
@@ -2813,12 +2814,7 @@ const BottomCTABar = React.memo(
       ? cart?.per_person_discounted_cost
       : cart?.discounted_cost;
     const cost = Number.isFinite(rawCost) ? Math.round(rawCost) : null;
-    const currencySymbol =
-      currency?.currency === "USD"
-        ? "$"
-        : currency?.currency === "EUR"
-          ? "€"
-          : "₹";
+    const currencySymbol = currencySymbols[currency?.currency] || "₹";
 
     return (
       <div className="z-20 fixed w-full md:w-[48%] max-ph:bottom-0 md:bottom-[4.2rem] flex-shrink-0 bg-[#fffaf5] border-t border-slate-100 px-4 py-2 flex items-center justify-between">
