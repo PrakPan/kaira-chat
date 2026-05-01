@@ -2459,6 +2459,29 @@ function findPaymentButton(node: WidgetNode): WidgetNode | null {
   return null;
 }
 
+// Backend occasionally wraps action types in markdown link syntax — e.g.
+// "[pdf.download](http://pdf.download)". Strip the envelope so type matching
+// works regardless of whether the wrapping is present.
+function normalizeActionType(t: string | undefined): string {
+  if (!t) return "";
+  const m = t.match(/^\[([^\]]+)\]\([^)]*\)$/);
+  return m ? m[1] : t;
+}
+
+function findPdfDownloadButton(node: WidgetNode): WidgetNode | null {
+  if (
+    node.type === "Button" &&
+    normalizeActionType((node.onClickAction as any)?.type) === "pdf.download"
+  ) {
+    return node;
+  }
+  for (const child of (node.children ?? []) as WidgetNode[]) {
+    const hit = findPdfDownloadButton(child);
+    if (hit) return hit;
+  }
+  return null;
+}
+
 // Crisp SVG glyphs keep the header consistent across browsers (emoji renders
 // differently on macOS / Windows / Linux and often looks cartoony).
 const ELEMENT_ICONS: Record<string, React.ReactNode> = {
@@ -3079,9 +3102,191 @@ function PaymentCard({
   );
 }
 
+// ─── PDF download card ────────────────────────────────────────────────────────
+// Server emits a Card containing a Button with onClickAction.type "pdf.download"
+// (sometimes wrapped as "[pdf.download](http://pdf.download)") and a payload
+// carrying { url, filename }. Render a polished, responsive download card and
+// trigger a browser download via a transient anchor element on click.
+
+function PdfDownloadCard({
+  node,
+  button,
+}: {
+  node: WidgetNode;
+  button: WidgetNode;
+}) {
+  const payload = ((button.onClickAction as any)?.payload ?? {}) as {
+    url?: string;
+    filename?: string;
+  };
+
+  const titleNode = findNodesByType(node, "Title")[0];
+  const captionNode = findNodesByType(node, "Caption")[0];
+  const title = ((titleNode?.value as string) ?? "Your Itinerary PDF").trim();
+  const filename =
+    payload.filename ??
+    ((captionNode?.value as string) ?? "itinerary.pdf").trim();
+  const buttonLabel = (button.label as string) ?? "Download PDF";
+
+  const [downloading, setDownloading] = useState(false);
+
+  const handleDownload = () => {
+    if (!payload.url || downloading) return;
+    setDownloading(true);
+    const a = document.createElement("a");
+    a.href = payload.url;
+    if (filename) a.download = filename;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => setDownloading(false), 1200);
+  };
+
+  return (
+    <div
+      style={{
+        marginTop: 10,
+        borderRadius: 16,
+        border: "1px solid #f0e7c7",
+        background:
+          "linear-gradient(135deg, #fffdf3 0%, #fff8d6 100%)",
+        padding: 16,
+        display: "flex",
+        flexWrap: "wrap",
+        alignItems: "center",
+        gap: 14,
+        boxShadow: "0 1px 2px rgba(17, 24, 39, 0.04)",
+        fontFamily: "'Inter', sans-serif",
+        boxSizing: "border-box",
+      }}
+    >
+      <div
+        aria-hidden="true"
+        style={{
+          flexShrink: 0,
+          width: 44,
+          height: 44,
+          borderRadius: 12,
+          background: "#f7e700",
+          color: "#1f2937",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          boxShadow: "0 2px 6px rgba(247, 231, 0, 0.35)",
+        }}
+      >
+        <svg
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+          <polyline points="14 2 14 8 20 8" />
+          <path d="M9 14l3 3 3-3" />
+          <path d="M12 11v6" />
+        </svg>
+      </div>
+
+      <div style={{ flex: "1 1 180px", minWidth: 0 }}>
+        <div
+          style={{
+            fontSize: 15,
+            fontWeight: 600,
+            color: "#111827",
+            lineHeight: 1.3,
+            marginBottom: 2,
+          }}
+        >
+          {title}
+        </div>
+        <div
+          style={{
+            fontSize: 12,
+            color: "#6b7280",
+            lineHeight: 1.4,
+            wordBreak: "break-word",
+            overflowWrap: "anywhere",
+          }}
+          title={filename}
+        >
+          {filename}
+        </div>
+      </div>
+
+      <button
+        type="button"
+        onClick={handleDownload}
+        disabled={!payload.url || downloading}
+        style={{
+          flex: "0 0 auto",
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 6,
+          padding: "10px 16px",
+          borderRadius: 9999,
+          border: "none",
+          background: "#f7e700",
+          color: "#111",
+          fontSize: 13,
+          fontWeight: 600,
+          fontFamily: "'Inter', sans-serif",
+          cursor: payload.url && !downloading ? "pointer" : "not-allowed",
+          opacity: payload.url ? (downloading ? 0.7 : 1) : 0.5,
+          outline: "none",
+          whiteSpace: "nowrap",
+          transition: "transform 0.15s ease, box-shadow 0.15s ease",
+          boxShadow: "0 2px 6px rgba(247, 231, 0, 0.4)",
+        }}
+        onMouseEnter={(e) => {
+          if (!payload.url || downloading) return;
+          e.currentTarget.style.transform = "translateY(-1px)";
+          e.currentTarget.style.boxShadow =
+            "0 4px 10px rgba(247, 231, 0, 0.5)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = "translateY(0)";
+          e.currentTarget.style.boxShadow =
+            "0 2px 6px rgba(247, 231, 0, 0.4)";
+        }}
+      >
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+          <polyline points="7 10 12 15 17 10" />
+          <line x1="12" y1="15" x2="12" y2="3" />
+        </svg>
+        {downloading ? "Downloading…" : buttonLabel}
+      </button>
+    </div>
+  );
+}
+
 // ─── Card ─────────────────────────────────────────────────────────────────────
 
 function CardNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetRendererProps["onAction"] }) {
+  // PDF download card (itinerary export). Detected before Payment / Drawer
+  // checks since the button uses its own action type.
+  const pdfButton = findPdfDownloadButton(node);
+  if (pdfButton) {
+    return <PdfDownloadCard node={node} button={pdfButton} />;
+  }
+
   // Payment preview (Complete Your Booking) comes before the drawer check so
   // we never misroute a payment card into the element preview renderer.
   const paymentButton = findPaymentButton(node);

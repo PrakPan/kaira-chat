@@ -322,7 +322,9 @@ const handleItemClick = (item) => {
 useEffect(() => {
   let elements = [];
   for (let elem of props.day.slab_elements) {
-    if (["activity", "poi", "restaurant"].includes(elem.element_type)) {
+
+
+    if (["activity", "poi", "restaurant","recommendation"].includes(elem.element_type || elem?.type)) {
       elements.push(elem);
     } else if (
       elem.element_type === "recommendation" &&
@@ -332,6 +334,7 @@ useEffect(() => {
     }
   }
   setElements(elements);
+  console.log("Elements for day", props.index + 1, elements);
 }, [props.day?.slab_elements]);
 
   useEffect(() => {
