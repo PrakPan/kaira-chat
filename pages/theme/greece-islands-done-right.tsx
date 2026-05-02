@@ -44,7 +44,7 @@ const greeceThemeConfig: ThemeConfig = {
       cards: [
         {
           image:
-            "https://images.unsplash.com/photo-1555993539-1732b0258235?w=1600&auto=format&fit=crop&q=80",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Athens.jpg",
           label: "Athens — Ruins and Rooftops",
           tags: "History · City",
           description: "2,500 years. Still buzzing.",
@@ -53,7 +53,7 @@ const greeceThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://images.unsplash.com/photo-1530841377377-3ff06c0ca713?w=1600&auto=format&fit=crop&q=80",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Santorini.jpg",
           label: "Santorini — Blue Domes, Real Story",
           tags: "Scenic · Romantic",
           description: "The photo is real. Book early.",
@@ -62,7 +62,7 @@ const greeceThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://images.unsplash.com/photo-1601581875309-fafbf2d3ed3a?w=1600&auto=format&fit=crop&q=80",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Crete.jpg",
           label: "Crete — More Than a Beach",
           tags: "Culture · Beach",
           description: "Biggest island. Wildly underrated.",
@@ -71,7 +71,7 @@ const greeceThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://images.unsplash.com/photo-1601581987809-a874a81309c9?w=1600&auto=format&fit=crop&q=80",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Meteora.jpg",
           label: "Meteora — Monasteries on Cliffs",
           tags: "UNESCO · Spiritual",
           description: "Built on nothing. Literally.",
@@ -80,7 +80,7 @@ const greeceThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://images.unsplash.com/photo-1612698093158-e07ac200d44e?w=1600&auto=format&fit=crop&q=80",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Mykonos.jpg",
           label: "Mykonos — Beyond the Party",
           tags: "Beach · Nightlife",
           description: "The calm side of Mykonos.",
@@ -95,7 +95,7 @@ const greeceThemeConfig: ThemeConfig = {
       cards: [
         {
           image:
-            "https://images.unsplash.com/photo-1542810634-71277d95dcbb?w=1600&auto=format&fit=crop&q=80",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Easter in Greece.png",
           label: "Easter in Greece — Nothing Like It",
           sublabel: "April–May · Bigger than Christmas",
           description: "Bigger than Christmas.",
@@ -113,7 +113,7 @@ const greeceThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=1600&auto=format&fit=crop&q=80",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Thessaloniki.jpg",
           label: "Thessaloniki — Where Greeks Holiday",
           sublabel: "Year-Round · More food per street",
           description: "More food per street.",
@@ -122,7 +122,7 @@ const greeceThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://images.unsplash.com/photo-1602343168117-bb8ffe3e2e9f?w=1600&auto=format&fit=crop&q=80",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Hydra.jpg",
           label: "Hydra — No Cars. Just Donkeys.",
           sublabel: "90 minutes from Athens",
           description: "90 minutes from Athens.",
@@ -131,7 +131,7 @@ const greeceThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://images.unsplash.com/photo-1555993539-1732b0258235?w=1600&auto=format&fit=crop&q=80",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Delphi.jpg",
           label: "Delphi — Where Gods Were Consulted",
           sublabel: "Day Trip · The centre of the ancient world",
           description: "The centre of the ancient world.",
@@ -146,7 +146,7 @@ const greeceThemeConfig: ThemeConfig = {
       cards: [
         {
           image:
-            "https://images.unsplash.com/photo-1602940659805-770d1b3b9911?w=1600&auto=format&fit=crop&q=80",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Classic Greek Islands.jpg",
           label: "Classic Greek Islands",
           sublabel: "Islands · Scenic",
           description: "Santorini. Crete. One more.",
@@ -155,7 +155,7 @@ const greeceThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://images.unsplash.com/photo-1602343168117-bb8ffe3e2e9f?w=1600&auto=format&fit=crop&q=80",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Greece With Kids.png",
           label: "Greece With Kids",
           sublabel: "Family · Islands",
           description: "Ruins, beaches, feta.",
@@ -164,7 +164,7 @@ const greeceThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=1600&auto=format&fit=crop&q=80",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Honeymoon in Greece.png",
           label: "Honeymoon in Greece",
           sublabel: "Romantic · Luxury",
           description: "Blue domes. No crowds.",
@@ -173,7 +173,7 @@ const greeceThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://images.unsplash.com/photo-1533104816931-20fa691ff6ca?w=1600&auto=format&fit=crop&q=80",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Greece Under Rs 1.8 Lakh Per Person.jpg",
           label: "Greece Under Rs 1.8 Lakh Per Person",
           sublabel: "Budget · Islands",
           description: "Aegean, minus the bill.",
@@ -182,7 +182,7 @@ const greeceThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://images.unsplash.com/photo-1555993539-1732b0258235?w=1600&auto=format&fit=crop&q=80",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Greece Mainland.png",
           label: "Greece Mainland — Ancient Greek Journey",
           sublabel: "History · Culture",
           description: "Before the islands existed.",
@@ -197,7 +197,7 @@ const greeceThemeConfig: ThemeConfig = {
       cards: [
         {
           image:
-            "https://images.unsplash.com/photo-1555993539-1732b0258235?w=1600&auto=format&fit=crop&q=80",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Acropolis.jpg",
           label: "Acropolis — 8am, No One Else",
           tags: "History · Athens",
           description: "You and the Parthenon.",
@@ -206,7 +206,7 @@ const greeceThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://images.unsplash.com/photo-1530841377377-3ff06c0ca713?w=1600&auto=format&fit=crop&q=80",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Catamaran.jpg",
           label: "Catamaran — Santorini From the Sea",
           tags: "Luxury · Santorini",
           description: "Better from the water.",
@@ -215,7 +215,7 @@ const greeceThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://images.unsplash.com/photo-1601581987809-a874a81309c9?w=1600&auto=format&fit=crop&q=80",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Samaria Gorge.png",
           label: "Samaria Gorge — Hike, Then Beach",
           tags: "Hiking · Crete",
           description: "16km. Worth every step.",
@@ -224,7 +224,7 @@ const greeceThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=1600&auto=format&fit=crop&q=80",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Cook Greek — In a Local Home.png",
           label: "Cook Greek — In a Local Home",
           tags: "Food · Cultural",
           description: "A Greek grandmother's kitchen.",
@@ -233,7 +233,7 @@ const greeceThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://images.unsplash.com/photo-1602940659805-770d1b3b9911?w=1600&auto=format&fit=crop&q=80",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Sail the Cyclades — Your Own Route.png",
           label: "Sail the Cyclades — Your Own Route",
           tags: "Sailing · Islands",
           description: "New island every morning.",

@@ -52,6 +52,7 @@ import NotificationPopup from "../ui/NotificationPopup";
 import LogInModal from "../userauth/LogInModal";
 import { createPortal } from "react-dom";
 import { currencySymbols } from "../../data/currencySymbols";
+import { useAnalytics } from "../../hooks/useAnalytics";
 
 type MobilePanel = "map" | "chat" | "itinerary";
 type LeftPanelMode = "default" | "itinerary-loading" | "itinerary-ready";
@@ -241,6 +242,10 @@ export default function BotApp({
 
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [isItineraryCompleting, setIsItineraryCompleting] = useState(false);
+  // Jupiter analytics — Partytown forwards calls to a worker so the main
+  // thread isn't blocked. Used to fire chat lifecycle + cart events from the
+  // BottomCTABar, which sits outside ChatKitPanel.
+  const { trackChatItineraryConfirmed, trackChatCartViewed } = useAnalytics();
   // true only when itinerary was created in this session (not restored on reload)
   const itineraryCreatedInSessionRef = useRef(false);
   const cart = useSelector((state: any) => state.Cart);
@@ -453,18 +458,40 @@ export default function BotApp({
 
   // ── Helpers ──────────────────────────────────────────────────────────────
 
+  // chatkit_session_* keys live in sessionStorage (set by handleSessionCreated
+  // in ChatKitPanel and the restore paths below). Previously this helper
+  // pointed at localStorage so the cleanup never ran — letting sessionStorage
+  // accumulate one entry per visited /chat/<id> until the quota tripped.
   const clearStaleChatSessions = () => {
     try {
-      const keysToRemove = Object.keys(localStorage).filter((k) =>
+      const keysToRemove = Object.keys(sessionStorage).filter((k) =>
         k.startsWith("chatkit_session_"),
       );
       if (keysToRemove.length > 3) {
         keysToRemove.slice(0, keysToRemove.length - 3).forEach((k) => {
-          localStorage.removeItem(k);
+          sessionStorage.removeItem(k);
         });
       }
     } catch (e) {
       console.warn("Error clearing chat sessions:", e);
+    }
+  };
+
+  // Quota-aware setter for chatkit_session_* — on QuotaExceededError, drop
+  // every existing chatkit_session_* entry and retry once. Failures are
+  // swallowed: the cached session id is an optimization, never load-bearing.
+  const safeSetSessionItem = (key: string, value: string) => {
+    try {
+      sessionStorage.setItem(key, value);
+    } catch (e) {
+      try {
+        Object.keys(sessionStorage)
+          .filter((k) => k.startsWith("chatkit_session_"))
+          .forEach((k) => sessionStorage.removeItem(k));
+        sessionStorage.setItem(key, value);
+      } catch (err) {
+        console.warn("sessionStorage write failed:", err);
+      }
     }
   };
 
@@ -1341,7 +1368,7 @@ export default function BotApp({
           if (window.location.pathname !== target) {
             window.history.pushState({}, "", target);
           }
-          sessionStorage.setItem(`chatkit_session_${target}`, threadSessionId);
+          safeSetSessionItem(`chatkit_session_${target}`, threadSessionId);
           setActiveChatSessionId(threadSessionId);
         }
         setRestoredThread(data);
@@ -1743,7 +1770,7 @@ export default function BotApp({
         if (window.location.pathname !== target) {
           window.history.pushState({}, "", target);
         }
-        sessionStorage.setItem(`chatkit_session_${target}`, knownSessionId);
+        safeSetSessionItem(`chatkit_session_${target}`, knownSessionId);
         setActiveChatSessionId(knownSessionId);
       }
 
@@ -2254,8 +2281,18 @@ Start Location: ${details.startLocation}`;
               isHovered={isHovered}
               setIsHovered={setIsHovered}
               popupStyle={popupStyle}
-              onConfirm={() => setShowConfirmModal(true)}
-              onViewCart={openPaymentDrawer}
+              onConfirm={() => {
+                trackChatItineraryConfirmed?.(
+                  activeItineraryId || "",
+                  "P1",
+                  [],
+                );
+                setShowConfirmModal(true);
+              }}
+              onViewCart={() => {
+                trackChatCartViewed?.(activeItineraryId || "", "P2", []);
+                openPaymentDrawer();
+              }}
               notes={statusNotes}
               onGetInTouch={() => {
                 if (!activeItineraryId) return;
@@ -2533,8 +2570,18 @@ Start Location: ${details.startLocation}`;
             isHovered,
             setIsHovered,
             popupStyle,
-            onConfirm: () => setShowConfirmModal(true),
-            onViewCart: openPaymentDrawer,
+            onConfirm: () => {
+              trackChatItineraryConfirmed?.(
+                activeItineraryId || "",
+                "P1",
+                [],
+              );
+              setShowConfirmModal(true);
+            },
+            onViewCart: () => {
+              trackChatCartViewed?.(activeItineraryId || "", "P2", []);
+              openPaymentDrawer();
+            },
             notes: statusNotes,
             onGetInTouch: () => {
               if (!activeItineraryId) return;

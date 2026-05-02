@@ -1339,6 +1339,8 @@ const Details = (props) => {
     trackPaymentDeselected,
     trackPaymentAttempted,
     trackPaymentBookingConfirmed,
+    trackVisaCardClicked,
+    trackEsimCardClicked,
   } = useAnalytics();
 
   useEffect(() => {
@@ -2711,7 +2713,10 @@ const Details = (props) => {
                           <div className="flex flex-col gap-2">
                             <button
                               className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-[#E5E5E5] bg-white hover:bg-[#FAFAFA] transition-colors"
-                              onClick={() => setShowVisaDrawer(true)}
+                              onClick={() => {
+                                trackVisaCardClicked?.(props?.id);
+                                setShowVisaDrawer(true);
+                              }}
                             >
                               <div className="flex items-center gap-3">
                                 <div className="w-[36px] h-[36px] rounded-full bg-[#F5F0FF] flex items-center justify-center flex-shrink-0">
@@ -2736,7 +2741,10 @@ const Details = (props) => {
 
                             <button
                               className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-[#E5E5E5] bg-white hover:bg-[#FAFAFA] transition-colors"
-                              onClick={() => setShowEsimDrawer(true)}
+                              onClick={() => {
+                                trackEsimCardClicked?.(props?.id);
+                                setShowEsimDrawer(true);
+                              }}
                             >
                               <div className="flex items-center gap-3">
                                 <div className="w-[36px] h-[36px] rounded-full bg-[#DDF4C5] flex items-center justify-center flex-shrink-0">

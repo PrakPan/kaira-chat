@@ -25,6 +25,7 @@ import setItinerary, {
 import { updateStays } from "../../../store/actions/StayBookings";
 import { updateTransferBookings } from "../../../store/actions/transferBookingsStore";
 import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
+import { useAnalytics } from "../../../hooks/useAnalytics";
 
 const CHATKIT_API_URL = "https://chat.tarzanway.com/chatkit";
 const PAGINATION_SCROLL_THRESHOLD = 80;
@@ -799,7 +800,83 @@ const sessionIdRef = useRef<string>((() => {
     ((effect: { name: string; data: Record<string, unknown> }) => void) | null
   >(null);
 
+  // ── Jupiter analytics — Partytown-forwarded, runs in a worker thread so
+  //    these calls don't block the main thread. Refs let us call them inside
+  //    other useCallbacks without changing their deps.
+  const {
+    trackChatItineraryStarted,
+    trackChatRouteConfirmed,
+    trackChatItineraryGenerated,
+    trackChatItineraryConfirmed,
+    trackChatPriceReceived,
+    trackChatCartViewed,
+    trackHotelCardClicked,
+    trackActivityCardClicked,
+    trackTransferCardClicked,
+    trackPoiCardClicked,
+  } = useAnalytics();
+  const analyticsRef = useRef({
+    trackChatItineraryStarted,
+    trackChatRouteConfirmed,
+    trackChatItineraryGenerated,
+    trackChatItineraryConfirmed,
+    trackChatPriceReceived,
+    trackChatCartViewed,
+    trackHotelCardClicked,
+    trackActivityCardClicked,
+    trackTransferCardClicked,
+    trackPoiCardClicked,
+  });
+  useEffect(() => {
+    analyticsRef.current = {
+      trackChatItineraryStarted,
+      trackChatRouteConfirmed,
+      trackChatItineraryGenerated,
+      trackChatItineraryConfirmed,
+      trackChatPriceReceived,
+      trackChatCartViewed,
+      trackHotelCardClicked,
+      trackActivityCardClicked,
+      trackTransferCardClicked,
+      trackPoiCardClicked,
+    };
+  }, [
+    trackChatItineraryStarted,
+    trackChatRouteConfirmed,
+    trackChatItineraryGenerated,
+    trackChatItineraryConfirmed,
+    trackChatPriceReceived,
+    trackChatCartViewed,
+    trackHotelCardClicked,
+    trackActivityCardClicked,
+    trackTransferCardClicked,
+    trackPoiCardClicked,
+  ]);
+  // Snapshot user prompts (text content of all user messages in the current
+  // thread) — chat lifecycle events include this in `properties.user_prompts`.
+  const messagesRef = useRef<Message[]>([]);
+  const getUserPrompts = useCallback((): string[] => {
+    return (messagesRef.current || [])
+      .filter((m: any) => m?.role === "user")
+      .map((m: any) => (typeof m?.content === "string" ? m.content : ""))
+      .filter(Boolean);
+  }, []);
+  const botModeRef = useRef<BotMode>(botMode);
+  useEffect(() => { botModeRef.current = botMode; }, [botMode]);
+  const ddAgent = () => (botModeRef.current === "p2" ? "P2" : "P1");
 
+  // Fire-once guards for chat lifecycle events. Each event should fire at
+  // most once per session — multiple effect/widget paths can lead to the same
+  // semantic milestone, and we don't want duplicates when both fire.
+  const firedChatEventsRef = useRef<Set<string>>(new Set());
+  const fireChatEventOnce = useCallback(
+    (eventKey: string, fire: () => void) => {
+      if (firedChatEventsRef.current.has(eventKey)) return;
+      firedChatEventsRef.current.add(eventKey);
+      fire();
+    },
+    [],
+  );
 
   // ── Location ─────────────────────────────────────────────────────────────
   const { userLocationData, isLoadingLocation } = useUserLocationData();
@@ -823,7 +900,22 @@ const handleSessionCreated = useCallback((ourSessionId: string) => {
   hasUpdatedUrl.current = true;
   const target = `/chat/${ourSessionId}`;
   window.history.pushState({}, "", target);
-  sessionStorage.setItem(`chatkit_session_${target}`, ourSessionId);
+  // sessionStorage can hit its quota when chatkit_session_* entries pile up.
+  // The cached value is an optimization for restore — if writing fails, drop
+  // every chatkit_session_* entry and retry once before giving up silently.
+  const key = `chatkit_session_${target}`;
+  try {
+    sessionStorage.setItem(key, ourSessionId);
+  } catch {
+    try {
+      Object.keys(sessionStorage)
+        .filter((k) => k.startsWith("chatkit_session_"))
+        .forEach((k) => sessionStorage.removeItem(k));
+      sessionStorage.setItem(key, ourSessionId);
+    } catch (err) {
+      console.warn("sessionStorage write failed:", err);
+    }
+  }
 }, []);
 
   // ── useChat ───────────────────────────────────────────────────────────────
@@ -860,6 +952,9 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
 
   // Keep sendWidgetActionRef current after every render
   sendWidgetActionRef.current = sendWidgetAction;
+  // Mirror messages into a ref so analytics calls can pull user_prompts
+  // without subscribing to the messages array directly.
+  messagesRef.current = messages;
 
   // ── Feedback (thumbs up / down) handler ──────────────────────────────────
   // Three-state toggle per assistant message:
@@ -1040,12 +1135,29 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
         case "display_itinerary": {
           emitEndpointsFromEffect(name, data);
           onItineraryReceived(data.itinerary);
+          fireChatEventOnce("chat_itinerary_generated", () =>
+            analyticsRef.current.trackChatItineraryGenerated?.(
+              localItineraryId || ((data.itinerary as any)?.id as string) || "",
+              ddAgent(),
+              getUserPrompts(),
+            ),
+          );
           break;
         }
         case "display_transfers": {
           emitEndpointsFromEffect(name, data);
           indexTransfersForLookup(data);
           onItineraryReceived(data);
+          // The server emits display_transfers once route options are
+          // finalized for the chosen itinerary — treat that as the route
+          // being confirmed for analytics purposes.
+          fireChatEventOnce("chat_route_confirmed", () =>
+            analyticsRef.current.trackChatRouteConfirmed?.(
+              localItineraryId || "",
+              ddAgent(),
+              getUserPrompts(),
+            ),
+          );
   break;
         }
         case "route.lock":
@@ -1053,6 +1165,23 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
         case "route.remove":
         case "route.reorder.start":
         case "itinerary.lock": {
+          if (name === "route.lock") {
+            fireChatEventOnce("chat_route_confirmed", () =>
+              analyticsRef.current.trackChatRouteConfirmed?.(
+                localItineraryId || "",
+                ddAgent(),
+                getUserPrompts(),
+              ),
+            );
+          } else if (name === "itinerary.lock") {
+            fireChatEventOnce("chat_itinerary_confirmed", () =>
+              analyticsRef.current.trackChatItineraryConfirmed?.(
+                localItineraryId || "",
+                ddAgent(),
+                getUserPrompts(),
+              ),
+            );
+          }
           sendWidgetActionRef.current?.(name, data);
           break;
         }
@@ -1089,6 +1218,15 @@ case "itinerary_completion_process_completed": {
   if (completedId) {
     onItineraryCompletionDone?.(completedId, summary);
   }
+  // Pricing/cart for the trip is finalized at this point — fire
+  // chat_price_received once the P2 completion process resolves.
+  fireChatEventOnce("chat_price_received", () =>
+    analyticsRef.current.trackChatPriceReceived?.(
+      completedId || localItineraryId || "",
+      ddAgent(),
+      getUserPrompts(),
+    ),
+  );
   break;
 }
 
@@ -1108,6 +1246,16 @@ case "start_itinerary_completion_process": {
   if (startId) {
     onItineraryCompletionDone?.(startId);
   }
+  // Server kicks off completion only after the user has confirmed their
+  // itinerary, so this is a reliable trigger for chat_itinerary_confirmed
+  // even when the explicit `itinerary.lock` effect doesn't arrive.
+  fireChatEventOnce("chat_itinerary_confirmed", () =>
+    analyticsRef.current.trackChatItineraryConfirmed?.(
+      startId || localItineraryId || "",
+      ddAgent(),
+      getUserPrompts(),
+    ),
+  );
   break;
 }
 case "shimmer_day_by_day": {
@@ -1206,6 +1354,14 @@ const sendMessage = useCallback(
 
     if (isFirstMessageRef.current) {
       isFirstMessageRef.current = false;
+      // Fire chat_itinerary_started on the very first user message of the
+      // session — this marks the moment the user kicks off itinerary creation
+      // through the chat flow.
+      analyticsRef.current.trackChatItineraryStarted?.(
+        localItineraryId || "",
+        ddAgent(),
+        [text].filter(Boolean),
+      );
     }
     rawSendMessage(text, attachmentIds, attachmentMeta);
   },
@@ -1317,6 +1473,79 @@ const sendMessage = useCallback(
       }
     }
   }, [messages, indexEdgesFromWidget]);
+
+  // Widget-pattern fallbacks for chat lifecycle events. The server-emitted
+  // effects (display_transfers / itinerary_completion_process_completed)
+  // don't replay when a thread is restored from history — but the widgets
+  // they generated are still in `messages`. Scan for known signatures so the
+  // events fire reliably across both fresh streams and restored threads.
+  useEffect(() => {
+    if (!messages?.length) return;
+
+    // Recursively check whether any descendant action.type matches a target.
+    const hasActionType = (node: any, targets: Set<string>): boolean => {
+      if (!node || typeof node !== "object") return false;
+      const actionType = node.onClickAction?.type as string | undefined;
+      if (actionType && targets.has(actionType)) return true;
+      const kids = Array.isArray(node.children) ? node.children : [];
+      for (const c of kids) if (hasActionType(c, targets)) return true;
+      return false;
+    };
+
+    const paymentTargets = new Set(["payment.start"]);
+    const routeTargets = new Set([
+      "route.lock",
+      "route.confirm",
+      "lock.route",
+    ]);
+    const itineraryLockTargets = new Set([
+      "itinerary.lock",
+      "itinerary.confirm",
+    ]);
+
+    let sawPayment = false;
+    let sawRoute = false;
+    let sawItineraryLock = false;
+    for (const m of messages as any[]) {
+      if (m?.type !== "widget") continue;
+      const w = m?.widgetItem?.widget;
+      if (!sawPayment && hasActionType(w, paymentTargets)) sawPayment = true;
+      if (!sawRoute && hasActionType(w, routeTargets)) sawRoute = true;
+      if (!sawItineraryLock && hasActionType(w, itineraryLockTargets))
+        sawItineraryLock = true;
+      if (sawPayment && sawRoute && sawItineraryLock) break;
+    }
+
+    if (sawRoute) {
+      fireChatEventOnce("chat_route_confirmed", () =>
+        analyticsRef.current.trackChatRouteConfirmed?.(
+          localItineraryId || "",
+          ddAgent(),
+          getUserPrompts(),
+        ),
+      );
+    }
+    if (sawItineraryLock || sawPayment) {
+      // A "Make Payment" widget only shows up after the itinerary is locked,
+      // so payment widgets imply confirmation too.
+      fireChatEventOnce("chat_itinerary_confirmed", () =>
+        analyticsRef.current.trackChatItineraryConfirmed?.(
+          localItineraryId || "",
+          ddAgent(),
+          getUserPrompts(),
+        ),
+      );
+    }
+    if (sawPayment) {
+      fireChatEventOnce("chat_price_received", () =>
+        analyticsRef.current.trackChatPriceReceived?.(
+          localItineraryId || "",
+          ddAgent(),
+          getUserPrompts(),
+        ),
+      );
+    }
+  }, [messages, fireChatEventOnce, getUserPrompts, localItineraryId]);
 
 useEffect(() => {
   if (initialPrompt && !hasProcessedInitial.current && locationReady) {
@@ -1853,7 +2082,7 @@ const handleShowLogin = useCallback(() => {
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div
-      className={`flex flex-col h-full min-h-0 bg-white  max-h-[100dvh] md:max-h-[93.5vh] border-[0.5px] border-l-[#e5e5e5]`}
+      className={`flex flex-col h-full min-h-0 bg-white  max-h-[100dvh] md:max-h-[93.5vh] border-[0.5px] border-l-[#e5e5e5] overflow-x-hidden`}
       style={{ fontFamily: "'Inter', sans-serif" }}
     >
       {/* ── Top bar ───────────────────────────────────────────────────────── */}
@@ -1940,7 +2169,7 @@ const handleShowLogin = useCallback(() => {
       <div
         ref={messagesScrollRef}
         onScroll={handleMessagesScroll}
-        className="flex-1 min-h-0 overflow-y-auto px-4 py-4 scroll-smooth"
+        className="flex-1 min-h-0 min-w-0 overflow-y-auto overflow-x-hidden px-4 py-4 scroll-smooth"
       >
 
           <div className="mx-auto">
@@ -1983,6 +2212,11 @@ const handleShowLogin = useCallback(() => {
                   // existing payment drawer rather than round-tripping via
                   // sendWidgetAction — the drawer owns the payment flow.
                   if (action.type === "payment.start") {
+                    analyticsRef.current.trackChatCartViewed?.(
+                      localItineraryId || "",
+                      ddAgent(),
+                      getUserPrompts(),
+                    );
                     onPaymentStart?.();
                     return;
                   }
@@ -2015,6 +2249,11 @@ const handleShowLogin = useCallback(() => {
                       date,
                       itinerary_city_id: itineraryCityId,
                     });
+                    analyticsRef.current.trackActivityCardClicked?.(
+                      localItineraryId || "",
+                      activityId,
+                      "chat",
+                    );
                     return;
                   }
 
@@ -2035,30 +2274,42 @@ const handleShowLogin = useCallback(() => {
                       payload.activityId != null;
 
                     if (hasActivityContext) {
+                      const activityId = (payload.activityId ??
+                        payload.activity_id ??
+                        payload.id) as string;
                       setActivityDrawer({
                         show: true,
-                        activityId: (payload.activityId ??
-                          payload.activity_id ??
-                          payload.id) as string,
+                        activityId,
                         date: (payload.startDate ??
                           payload.date) as string | undefined,
                         itinerary_city_id: (payload.itineraryCityId ??
                           payload.itinerary_city_id ??
                           payload.city_id) as string | undefined,
                       });
+                      analyticsRef.current.trackActivityCardClicked?.(
+                        localItineraryId || "",
+                        activityId,
+                        "chat",
+                      );
                     } else {
+                      const poiId = (payload.poiId ??
+                        payload.poi_id ??
+                        payload.id) as string;
                       setPoiDrawer({
                         show: true,
                         kind: "poi",
-                        id: (payload.poiId ??
-                          payload.poi_id ??
-                          payload.id) as string,
+                        id: poiId,
                         name: payload.title as string | undefined,
                         itinerary_city_id: (payload.itineraryCityId ??
                           payload.itinerary_city_id) as string | undefined,
                         date: (payload.startDate ??
                           payload.date) as string | undefined,
                       });
+                      analyticsRef.current.trackPoiCardClicked?.(
+                        localItineraryId || "",
+                        poiId,
+                        "chat",
+                      );
                     }
                     return;
                   }
@@ -2071,18 +2322,24 @@ const handleShowLogin = useCallback(() => {
                     action.type === "restaurant.detail" ||
                     action.type === "open_restaurant_drawer"
                   ) {
+                    const restaurantId = (payload.restaurantId ??
+                      payload.restaurant_id ??
+                      payload.id) as string;
                     setPoiDrawer({
                       show: true,
                       kind: "restaurant",
-                      id: (payload.restaurantId ??
-                        payload.restaurant_id ??
-                        payload.id) as string,
+                      id: restaurantId,
                       name: payload.title as string | undefined,
                       itinerary_city_id: (payload.itineraryCityId ??
                         payload.itinerary_city_id) as string | undefined,
                       date: (payload.startDate ??
                         payload.date) as string | undefined,
                     });
+                    analyticsRef.current.trackPoiCardClicked?.(
+                      localItineraryId || "",
+                      restaurantId,
+                      "chat",
+                    );
                     return;
                   }
 
@@ -2153,6 +2410,13 @@ const handleShowLogin = useCallback(() => {
                       undefined,
                       { scroll: false },
                     );
+                    analyticsRef.current.trackTransferCardClicked?.(
+                      localItineraryId || "",
+                      edgeId ?? bookingId ?? "",
+                      "chat",
+                      indexed?.from_city ?? (payload.from_city as string | undefined) ?? null,
+                      indexed?.to_city ?? (payload.to_city as string | undefined) ?? null,
+                    );
                     return;
                   }
 
@@ -2166,12 +2430,18 @@ const handleShowLogin = useCallback(() => {
                     action.type === "hotel.detail" ||
                     action.type === "open_hotel_drawer"
                   ) {
+                    const hotelAccommodationId = (payload.hotelId ??
+                      payload.accommodation_id ??
+                      payload.hotel_id ??
+                      payload.id) as string;
+                    analyticsRef.current.trackHotelCardClicked?.(
+                      localItineraryId || "",
+                      hotelAccommodationId,
+                      "chat",
+                    );
                     setHotelDrawer({
                       show: true,
-                      accommodationId: (payload.hotelId ??
-                        payload.accommodation_id ??
-                        payload.hotel_id ??
-                        payload.id) as string,
+                      accommodationId: hotelAccommodationId,
                       itinerary_city_id: (payload.itineraryCityId ??
                         payload.itinerary_city_id ??
                         payload.city_id) as string | undefined,

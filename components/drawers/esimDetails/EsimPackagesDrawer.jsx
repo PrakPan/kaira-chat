@@ -6,6 +6,7 @@ import Drawer from "../../ui/Drawer";
 import { esimPackages } from "../../../services/ancillaries/esimServices";
 import { getIndianPrice } from "../../../services/getIndianPrice";
 import { currencySymbols } from "../../../data/currencySymbols";
+import { useAnalytics } from "../../../hooks/useAnalytics";
 import EsimDetailDrawer from "./EsimDetailDrawer";
 
 const EsimCard = ({ pkg, onSelect, currency }) => {
@@ -104,6 +105,8 @@ export default function EsimPackagesDrawer({ show, onHide }) {
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [showDetail, setShowDetail] = useState(false);
 
+  const { trackEsimSearchList } = useAnalytics();
+
   useEffect(() => {
     if (show && itineraryId) {
       fetchPackages(1, false);
@@ -129,6 +132,7 @@ export default function EsimPackagesDrawer({ show, onHide }) {
       const pageMeta = payload?.meta || res.data?.meta || null;
       setPackages((prev) => append ? [...prev, ...list] : list);
       setMeta(pageMeta);
+      if (!append) trackEsimSearchList?.(itineraryId);
     } catch (err) {
       setError(err?.response?.data?.errors?.[0]?.message?.[0] || "Failed to load eSIM packages.");
     }

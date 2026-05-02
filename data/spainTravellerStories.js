@@ -7,7 +7,7 @@ const spainTravellerStories = [
     groupType: "Couple",
     destinations: ["Madrid", "Barcelona", "Valencia", "Malaga", "Seville"],
     image:
-      "https://images.thetarzanway.com/media/cities/167649252331322622299194335938.jpeg",
+     "https://images.thetarzanway.com/media/cities/168553070081940460205078125000.jpeg",
     images: [
       "https://images.thetarzanway.com/media/cities/167649252331322622299194335938.jpeg",
       "https://images.thetarzanway.com/media/cities/167636131177145671844482421875.jpeg",
@@ -30,7 +30,7 @@ const spainTravellerStories = [
     groupType: "Solo",
     destinations: ["Madrid", "Granada", "Seville", "Malaga"],
     image:
-      "https://images.thetarzanway.com/media/cities/167649252331322622299194335938.jpeg",
+      "https://images.thetarzanway.com/media/cities/168553035907274246215820312500.jpeg",
     images: [
       "https://images.thetarzanway.com/media/cities/167649252331322622299194335938.jpeg",
       "https://images.thetarzanway.com/media/cities/168552991028774070739746093750.jpeg",
@@ -75,7 +75,7 @@ const spainTravellerStories = [
     groupType: "Friends",
     destinations: ["Madrid", "Granada", "Seville", "Barcelona"],
     image:
-      "https://images.thetarzanway.com/media/cities/167649252331322622299194335938.jpeg",
+    "https://images.thetarzanway.com/media/cities/167649252331322622299194335938.jpeg",
     images: [
       "https://images.thetarzanway.com/media/cities/167649252331322622299194335938.jpeg",
       "https://images.thetarzanway.com/media/cities/168552991028774070739746093750.jpeg",

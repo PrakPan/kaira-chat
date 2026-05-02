@@ -43,7 +43,8 @@ const spainThemeConfig: ThemeConfig = {
       icon: "🏛️",
       cards: [
         {
-          image: "https://images.unsplash.com/photo-1583422409516-2895a77efded?w=1600&auto=format&fit=crop&q=80",
+          image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/spain-theme-2026/Barcelona — Gaudí and the Good Life.jpg ",
+          
           label: "Barcelona — Gaudí and the Good Life",
           tags: "City · First Timer",
           description: "Dinner starts at 10pm. Always.",
@@ -51,7 +52,7 @@ const spainThemeConfig: ThemeConfig = {
             "Plan 4 days in Barcelona. I want a logical order for seeing Gaudí's work — Sagrada Família at what time of day and why, Park Güell before the crowds arrive, Casa Batlló versus Palau de la Música for the one I shouldn't skip. I also want the real Barcelona eating schedule: why dinner before 9pm is wrong, which neighbourhood markets are worth the morning, and how to find the tapas bars the locals actually go to in El Born and Gràcia. Include the Gothic Quarter walking route and one half-day at Barceloneta beach. What should I book in advance and how far out?",
         },
         {
-          image: "https://images.unsplash.com/photo-1577147443647-81856d5151af?w=1600&auto=format&fit=crop&q=80",
+          image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/spain-theme-2026/Seville — Spain's Most Passionate City.jpg ",
           label: "Seville — Spain's Most Passionate City",
           tags: "Culture · Flamenco",
           description: "Feel where flamenco began.",
@@ -59,7 +60,7 @@ const spainThemeConfig: ThemeConfig = {
             "Plan 3 days in Seville. I want the real Triana neighbourhood across the river where Flamenco started, the Alcázar palace at opening time before the tour groups arrive, the Cathedral and the Giralda tower at golden hour, and the tapas circuit in the old city where the drink still comes with free food. Tell me which Flamenco shows are genuinely rooted in tradition versus staged for tourists — what makes a tablao authentic and what to look for when booking. What is Seville like in summer heat and what does a May or October visit feel like instead?",
         },
         {
-          image: "https://images.unsplash.com/photo-1591299177061-2151e53fcaea?w=1600&auto=format&fit=crop&q=80",
+          image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/spain-theme-2026/Granada — Home of the Alhambra.jpg ",
           label: "Granada — Home of the Alhambra",
           tags: "History · UNESCO",
           description: "One palace. Worth the wait.",
@@ -67,7 +68,7 @@ const spainThemeConfig: ThemeConfig = {
             "Plan 2 days in Granada. The Alhambra is non-negotiable — tell me how to book the timed entry tickets (they sell out weeks ahead), what time of day the Nasrid Palaces show the best light, and what the difference is between the Palacios Nazaríes, the Generalife gardens, and the Alcazaba fortress in terms of where to spend the most time. Outside the Alhambra: the Albaicín neighbourhood at dusk for the best view across to the palace, the tea houses of the Moorish quarter, and a real Sacromonte cave Flamenco in the evening. What must I know about getting there from Seville or Madrid?",
         },
         {
-          image: "https://images.unsplash.com/photo-1561409037-c7be81613c1f?w=1600&auto=format&fit=crop&q=80",
+          image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/spain-theme-2026/San Sebastián — World's Best Food City.jpg ",
           label: "San Sebastián — World's Best Food City",
           tags: "Food · Basque Country",
           description: "More Michelin stars per block.",
@@ -75,7 +76,7 @@ const spainThemeConfig: ThemeConfig = {
             "Plan 2 to 3 days in San Sebastián in the Basque Country. I want to understand what makes pintxos different from tapas and why the Basque food culture is considered Spain's most serious culinary tradition. Walk me through the Old Part bar crawl — which streets, what time, and what to order at each bar. Is a Michelin-starred dinner worth booking on this trip or is the pintxos bar scene genuinely better? What else does San Sebastián offer beyond food — La Concha beach, the Monte Urgull walk, the Chillida sculptures? How do I get there from Madrid or Barcelona?",
         },
         {
-          image: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=1600&auto=format&fit=crop&q=80",
+          image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/spain-theme-2026/Camino de Santiago — Walk It.jpg ",
           label: "Camino de Santiago — Walk It",
           tags: "Adventure · Pilgrimage",
           description: "500km. Most do the last 100.",
@@ -89,7 +90,7 @@ const spainThemeConfig: ThemeConfig = {
       icon: "🎉",
       cards: [
         {
-          image: "https://images.unsplash.com/photo-1556610961-2fecc5927173?w=1600&auto=format&fit=crop&q=80",
+          image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/spain-theme-2026/La Tomatina — Buñol, August.png ",
           label: "La Tomatina — Buñol, August",
           sublabel: "Hotels near Buñol: book by April",
           description: "Spain's wildest 90 minutes.",
@@ -97,7 +98,7 @@ const spainThemeConfig: ThemeConfig = {
             "I want to attend La Tomatina in Buñol on the last Wednesday of August. Plan the trip around it: how to get there from Valencia or Madrid on the morning, what the event actually involves from start to finish — the signal, the trucks, the 90-minute tomato battle, the hose-down — and where to stay since Buñol has almost no accommodation. How do I get official tickets, what should I wear and leave behind at the hotel, and how do I combine this with a wider Valencia and Spain itinerary? What is the full trip cost for an Indian traveller doing 10 days around this festival?",
         },
         {
-          image: "https://images.unsplash.com/photo-1518481852452-9415b262eba4?w=1600&auto=format&fit=crop&q=80",
+          image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/spain-theme-2026/Running of the Bulls — Pamplona, July.png ",
           label: "Running of the Bulls — Pamplona, July",
           sublabel: "You don't have to run. Watching works.",
           description: "Eight mornings. One legendary city.",
@@ -105,7 +106,7 @@ const spainThemeConfig: ThemeConfig = {
             "I want to be in Pamplona for the San Fermín festival and the Running of the Bulls. Tell me honestly what the week involves beyond the run itself — the daily encierro is 3 minutes long, so what fills the rest of the festival: the bullfights, the street parties, the fireworks, the white-and-red dress code that turns the whole city into one crowd? If I want to run, what do I need to know about the route, the danger, and what not to do? If I want to watch, where are the best viewing spots? How do I book accommodation in Pamplona 6 months out because the city fills completely, and how does this combine with San Sebastián or Barcelona?",
         },
         {
-          image: "https://images.unsplash.com/photo-1564507592333-c60657eea523?w=1600&auto=format&fit=crop&q=80",
+          image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/spain-theme-2026/Semana Santa — Seville, Holy Week.png ",
           label: "Semana Santa — Seville, Holy Week",
           sublabel: "March–April · Nothing prepares you",
           description: "Processions through the night.",
@@ -113,7 +114,7 @@ const spainThemeConfig: ThemeConfig = {
             "I want to witness Semana Santa — Holy Week — in Spain, specifically in Seville or Málaga where the processions are considered the most extraordinary in the world. Tell me what actually happens: the cofradías carrying their floats through narrow streets at 2am, the saeta — the spontaneous flamenco lament sung from balconies — the scale of the events that bring half a million people into Seville in a single week. Which days are the most significant, where should I stand, and what should I know as a non-Catholic visitor experiencing this? Book hotels at least 3 months out — rates triple and rooms vanish.",
         },
         {
-          image: "https://images.unsplash.com/photo-1551845041-63e8e76836ea?w=1600&auto=format&fit=crop&q=80",
+          image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/spain-theme-2026/Feria de Abril — Seville Dances Again.png ",
           label: "Feria de Abril — Seville Dances Again",
           sublabel: "April–May · Sherry at noon",
           description: "A week the city dresses up.",
@@ -121,7 +122,7 @@ const spainThemeConfig: ThemeConfig = {
             "Tell me about the Feria de Abril in Seville — the week-long festival that happens two weeks after Semana Santa where the city fills with casetas (private tent parties), Flamenco dresses, horse parades, and sherry at noon. Is it possible for a tourist to actually get inside the casetas or is it an invite-only experience? What is the Feria grounds layout, what is the right way to dress, what time does it come alive, and how does the energy compare to the solemnity of Semana Santa the fortnight before? How do I combine this with a Seville-Granada-Córdoba Andalusia trip?",
         },
         {
-          image: "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=1600&auto=format&fit=crop&q=80",
+          image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/spain-theme-2026/Primavera Sound — Barcelona, June.png ",
           label: "Primavera Sound — Barcelona, June",
           sublabel: "The reason Europe flies to Barcelona",
           description: "Barcelona's biggest music week.",
@@ -135,7 +136,7 @@ const spainThemeConfig: ThemeConfig = {
       icon: "🎯",
       cards: [
         {
-          image: "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=1600&auto=format&fit=crop&q=80",
+          image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/spain-theme-2026/Classic Andalusia.jpg ",
           label: "Classic Andalusia",
           sublabel: "Culture · South Spain",
           description: "Flamenco. Alhambra. Tapas.",
@@ -143,7 +144,7 @@ const spainThemeConfig: ThemeConfig = {
             "Design a 10-day trip entirely in Andalusia — the Spain that looks like Spain. I want the Alhambra at first light, the Mezquita of Córdoba before the tour groups, the whitewashed villages of the Sierra Nevada, a Flamenco show in Jerez that isn't for tourists, and Seville's tapas bars where the drink still arrives with free food. Route me through Granada, Córdoba, Seville, and Jerez with the right number of nights in each, honest guidance on where to stay, and what the total cost looks like from India for two people.",
         },
         {
-          image: "https://images.unsplash.com/photo-1562438668-bcf0ca6578f0?w=1600&auto=format&fit=crop&q=80",
+          image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/spain-theme-2026/Spain With Kids.png ",
           label: "Spain With Kids",
           sublabel: "Family · City + Beach",
           description: "Gaudí, beaches, churros.",
@@ -151,7 +152,7 @@ const spainThemeConfig: ThemeConfig = {
             "Plan a Spain family trip for 2 adults and 2 children aged 7 to 12. I want experiences that work for kids — Gaudí's buildings are genuinely strange and fascinating at any age, the beach culture works perfectly for children, and the late Spanish dinner hour is a real logistical challenge with tired kids. Which cities work best for families, what are the child-friendly attractions beyond the obvious, how do I handle the Spanish meal schedule with children, and what accommodation type works best — city apartments versus hotels? 10 days, mid-range budget.",
         },
         {
-          image: "https://images.unsplash.com/photo-1544866092-1935c5ef2a8f?w=1600&auto=format&fit=crop&q=80",
+          image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/spain-theme-2026/Honeymoon in Spain.png ",
           label: "Honeymoon in Spain",
           sublabel: "Romantic · City + Countryside",
           description: "Rooftops, alleys, no agenda.",
@@ -159,7 +160,7 @@ const spainThemeConfig: ThemeConfig = {
             "Plan a Spain honeymoon. We want the romantic version — Seville's candlelit tapas bars, a private Flamenco session in a Granada cave, the Alhambra at dusk just before closing when most tourists have left, a boutique hotel with a rooftop in the Gothic Quarter of Barcelona, and one night in a rural parador in the Andalusian countryside. 12 days, mid-range to premium. Tell us exactly what to spend on, what to skip, and which specific moments are worth engineering versus leaving to chance.",
         },
         {
-          image: "https://images.unsplash.com/photo-1543783207-ec64e4d95325?w=1600&auto=format&fit=crop&q=80",
+          image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/spain-theme-2026/Spain Under Rs 2.5 Lakh Per Person.jpg ",
           label: "Spain Under Rs 2.5 Lakh Per Person",
           sublabel: "Budget · All Regions",
           description: "Big trip. Smaller budget.",
@@ -167,7 +168,7 @@ const spainThemeConfig: ThemeConfig = {
             "Plan a Spain trip for under Rs 2.5 lakh per person including return flights from India. Is this realistic for 10 to 12 days? Spain is more affordable than most of Western Europe if you know where to eat and how to travel between cities. Walk me through the honest budget: where the AVE high-speed trains save time and money versus budget flights, which cities have good mid-range accommodation under Rs 6,000 per night, and where the food is genuinely cheap even in tourist areas. What are the smart trade-offs between Barcelona, Madrid, and Andalusia at this budget?",
         },
         {
-          image: "https://images.unsplash.com/photo-1558642084-fd07fae5282e?w=1600&auto=format&fit=crop&q=80",
+          image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/spain-theme-2026/Road Trip Across Spain.png ",
           label: "Road Trip Across Spain",
           sublabel: "Adventure · Self-Drive",
           description: "One car. No fixed plan.",
@@ -181,7 +182,7 @@ const spainThemeConfig: ThemeConfig = {
       icon: "✨",
       cards: [
         {
-          image: "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=1600&auto=format&fit=crop&q=80",
+          image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/spain-theme-2026/Alhambra — Before the Crowds Arrive.jpg ",
           label: "Alhambra — Before the Crowds Arrive",
           tags: "History · Granada",
           description: "Book 3 months out. No exceptions.",
@@ -189,7 +190,7 @@ const spainThemeConfig: ThemeConfig = {
             "I want to experience the Alhambra in Granada properly — not shuffled through in a tour group. Tell me everything about the timed entry system: how far in advance tickets sell out for the Nasrid Palaces specifically, what the morning first-entry slot feels like compared to afternoon, and which parts of the complex — Palacios Nazaríes, Generalife gardens, Alcazaba fortress — deserve the most time and why. What is the architectural and historical story of the Alhambra that makes it different from any other palace in Europe — the Nasrid dynasty, the water engineering, the geometry of the tilework, the inscriptions that run across every wall? What should I read or watch before visiting to understand what I'm actually standing inside? Then ask me my travel dates and how many days I have in Granada so I can help you secure the right entry slot before they're gone.",
         },
         {
-          image: "https://images.unsplash.com/photo-1565299507177-b0ac66763828?w=1600&auto=format&fit=crop&q=80",
+          image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/spain-theme-2026/Pintxos Crawl — San Sebastián After Dark.png ",
           label: "Pintxos Crawl — San Sebastián After Dark",
           tags: "Food · Basque",
           description: "Different bar every 20 minutes.",
@@ -197,7 +198,7 @@ const spainThemeConfig: ThemeConfig = {
             "Tell me exactly how a pintxos bar crawl in San Sebastián's Old Part works — the etiquette, the timing, the unwritten rules about grabbing from the bar versus ordering from the bartender, and why you should never stay in one place longer than two rounds. What are the specific streets — Calle Fermín Calbetón, 31 de Agosto — and what should I order at each stop rather than just eating whatever is on the counter? What makes Basque pintxos culture different from tapas culture elsewhere in Spain — the complexity of the preparations, the pride of the bartenders, the atmosphere at 8pm on a Thursday? Is this affordable or does San Sebastián's gastronomy reputation make it expensive even at bar level? Then ask me how many evenings I have in San Sebastián so we can plan whether to do one serious crawl or two lighter ones.",
         },
         {
-          image: "https://images.unsplash.com/photo-1580674684081-7617fbf3d745?w=1600&auto=format&fit=crop&q=80",
+          image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/spain-theme-2026/Real Flamenco — Andalusia’s True Show.png ",
           label: "Real Flamenco — Andalusia's True Show",
           tags: "Culture · Andalusia",
           description: "Where flamenco was born.",
@@ -205,7 +206,7 @@ const spainThemeConfig: ThemeConfig = {
             "I want to experience genuine Flamenco — not a tourist show with a dinner package. Explain to me what Flamenco actually is at its roots: the four elements of cante (voice), toque (guitar), baile (dance), and jaleo (the clapping and shouting from the audience that drives the performer), why Jerez de la Frontera and the Triana neighbourhood of Seville are its authentic homes, and what separates a real peña flamenca from a staged tablao. What is the right way to find a genuine Flamenco experience as an outsider — which venues in Jerez, which tablaos in Seville that are respected by local artists rather than built for tourist throughput? What time does real Flamenco start, what should I know about how to behave in the audience, and what does the music and performance actually feel like when it's the real thing rather than a reproduction? Then ask me which cities I'm visiting in Andalusia so I can match the best genuine Flamenco option to my route.",
         },
         {
-          image: "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=1600&auto=format&fit=crop&q=80",
+          image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/spain-theme-2026/Rioja — Spain’s Famous Wine Region.jpg ",
           label: "Rioja — Spain's Famous Wine Region",
           tags: "Wine · Northern Spain",
           description: "Spain's best-known wine country.",
@@ -213,7 +214,7 @@ const spainThemeConfig: ThemeConfig = {
             "Tell me about visiting the Rioja wine region in northern Spain — the bodega landscape around Haro and Logroño, what a proper winery visit involves beyond just a glass poured in a gift shop, and how the architecture of Rioja's bodegas — Frank Gehry's Marqués de Riscal, Zaha Hadid's López de Heredia visitor centre — has made this one of the most visually striking wine regions in the world. What is the difference between Rioja Alta, Rioja Alavesa, and Rioja Oriental in terms of the wines they produce? How do I structure a 2-day Rioja visit that includes at least two serious bodega tastings and a lunch at a restaurant that takes the local wine as seriously as the food? How do I get there from Bilbao or San Sebastián, and how does this combine into a Basque Country and Rioja 4 to 5 day itinerary? Then ask me my travel dates and what I want to spend on a bodega experience so I can suggest the right producers to book.",
         },
         {
-          image: "https://images.unsplash.com/photo-1578895101408-1a36b834405b?w=1600&auto=format&fit=crop&q=80",
+          image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/spain-theme-2026/Sleep in a Parador — A Castle Bedroom.png ",
           label: "Sleep in a Parador — A Castle Bedroom",
           tags: "Heritage · Unique Stay",
           description: "15th-century castle. Your room tonight.",

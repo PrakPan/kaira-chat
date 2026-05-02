@@ -9,6 +9,7 @@ import { openNotification } from "../../../store/actions/notification";
 import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
 import { getIndianPrice } from "../../../services/getIndianPrice";
 import { currencySymbols } from "../../../data/currencySymbols";
+import { useAnalytics } from "../../../hooks/useAnalytics";
 
 export default function EsimDetailDrawer({ show, pkg, onHide, onBooked }) {
   const router = useRouter();
@@ -26,6 +27,8 @@ export default function EsimDetailDrawer({ show, pkg, onHide, onBooked }) {
 
   const symbol = currencySymbols?.[currency?.currency] || "₹";
   const displayPkg = detail || pkg;
+
+  const { trackEsimBookingAdd } = useAnalytics();
 
   const bgStyle = displayPkg?.gradient_start && displayPkg?.gradient_end
     ? { background: `linear-gradient(135deg, ${displayPkg.gradient_start}, ${displayPkg.gradient_end})` }
@@ -69,6 +72,7 @@ export default function EsimDetailDrawer({ show, pkg, onHide, onBooked }) {
         headers: { Authorization: `Bearer ${localStorage.getItem("access_token")}` },
       });
 
+      trackEsimBookingAdd?.(itineraryId, displayPkg?.id || "");
       dispatch(SetCallPaymentInfo(!CallPaymentInfo));
       dispatch(openNotification({
         type: "success",

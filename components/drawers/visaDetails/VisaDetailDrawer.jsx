@@ -9,6 +9,7 @@ import { openNotification } from "../../../store/actions/notification";
 import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
 import { getIndianPrice } from "../../../services/getIndianPrice";
 import { currencySymbols } from "../../../data/currencySymbols";
+import { useAnalytics } from "../../../hooks/useAnalytics";
 
 export default function VisaDetailDrawer({ show, visa, onHide, onBooked }) {
   const router = useRouter();
@@ -25,6 +26,8 @@ export default function VisaDetailDrawer({ show, visa, onHide, onBooked }) {
   const [error, setError] = useState(null);
 
   const symbol = currencySymbols?.[currency?.currency] || "₹";
+
+  const { trackVisaBookingAdd } = useAnalytics();
 
   useEffect(() => {
     if (show && visa?.id) fetchDetail();
@@ -67,6 +70,7 @@ export default function VisaDetailDrawer({ show, visa, onHide, onBooked }) {
         headers: { Authorization: `Bearer ${localStorage.getItem("access_token")}` },
       });
 
+      trackVisaBookingAdd?.(itineraryId, displayVisa?.id || "");
       dispatch(SetCallPaymentInfo(!CallPaymentInfo));
       dispatch(openNotification({
         type: "success",

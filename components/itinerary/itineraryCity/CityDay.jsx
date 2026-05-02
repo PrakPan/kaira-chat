@@ -208,7 +208,12 @@ const CityDay = (props) => {
   const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
 
   const { finalized_status } = useSelector((state) => state.ItineraryStatus);
-  const { trackActivityBookingAdd, trackActivityCardClicked } = useAnalytics();
+  const {
+    trackActivityBookingAdd,
+    trackActivityCardClicked,
+    trackTaxiCardClicked,
+    trackPoiCardClicked,
+  } = useAnalytics();
   const transferBookings = useSelector(
     (state) => state.TransferBookings
   ).transferBookings;
@@ -295,7 +300,15 @@ const handleItemClick = (item) => {
   const itemId = getItemId(item, resolvedType);
   if (!itemId) return;
 
+  if(resolvedType === "poi") {
+    trackPoiCardClicked(router.query.id, itemId, "day_by_day_collapse", "poi");
+  } else if (resolvedType === "restaurant") {
+    trackActivityCardClicked(router.query.id, itemId, "day_by_day_collapse", "restaurant");
+  } else if (resolvedType === "activity") {
+    trackActivityCardClicked(router.query.id, itemId, "day_by_day_collapse", "activity");
+  } else {
   trackActivityCardClicked(router.query.id, itemId, "day_by_day_collapse");
+  }
 
   if (resolvedType === "activity" && (isDraft || finalized_status === "PENDING")) {
     handleDraftActivityClick(item);
@@ -334,7 +347,6 @@ useEffect(() => {
     }
   }
   setElements(elements);
-  console.log("Elements for day", props.index + 1, elements);
 }, [props.day?.slab_elements]);
 
   useEffect(() => {
@@ -515,6 +527,11 @@ useEffect(() => {
                 <button
                   key={taxi.id}
                   onClick={() => {
+                    trackTaxiCardClicked?.(
+                      router.query.id,
+                      taxi.id,
+                      "day_by_day_collapse",
+                    );
                     router.push(
                       {
                         pathname: window.location.pathname,
