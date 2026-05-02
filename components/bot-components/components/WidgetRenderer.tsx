@@ -3306,9 +3306,236 @@ function PdfDownloadCard({
   );
 }
 
+// ─── Plan New Trip card ──────────────────────────────────────────────────────
+// Detects a Card whose only action is a `trip.redirect_to_p1` button and
+// renders a polished hero card instead of the bare-button fallback.
+
+function findRedirectToP1Button(node: WidgetNode): WidgetNode | null {
+  if (
+    node.type === "Button" &&
+    (node.onClickAction as any)?.type === "trip.redirect_to_p1"
+  ) {
+    return node;
+  }
+  for (const child of (node.children ?? []) as WidgetNode[]) {
+    const hit = findRedirectToP1Button(child);
+    if (hit) return hit;
+  }
+  return null;
+}
+
+function PlanNewTripCard({
+  node,
+  button,
+  onAction,
+}: {
+  node: WidgetNode;
+  button: WidgetNode;
+  onAction?: WidgetRendererProps["onAction"];
+}) {
+  const [hovered, setHovered] = useState(false);
+  const titleNodes = findNodesByType(node, "Title");
+  const captionNodes = findNodesByType(node, "Caption");
+  const textNodes = findNodesByType(node, "Text");
+
+  const asText = (raw: unknown): string => {
+    if (typeof raw === "string") return raw.trim();
+    if (typeof raw === "number") return String(raw);
+    if (Array.isArray(raw)) {
+      return raw
+        .map((v) => (typeof v === "string" ? v : typeof v === "number" ? String(v) : ""))
+        .filter(Boolean)
+        .join(" · ");
+    }
+    return "";
+  };
+
+  const payload = (button.onClickAction as any).payload ?? {};
+  const buttonLabel = (button.label as string) || "Start Planning New Trip";
+  const headline =
+    asText(titleNodes[0]?.value) ||
+    asText(payload.headline) ||
+    "Ready for your next adventure?";
+  const subline =
+    asText(captionNodes[0]?.value) ||
+    asText(textNodes[0]?.value) ||
+    asText(payload.context) ||
+    "Pick up where this conversation leaves off — I'll start a fresh plan tailored to your next idea.";
+
+  const handleClick = () => {
+    onAction?.({
+      type: "trip.redirect_to_p1",
+      payload,
+    });
+  };
+
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={handleClick}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleClick();
+        }
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        position: "relative",
+        marginTop: 10,
+        marginBottom: 4,
+        width: "100%",
+        boxSizing: "border-box",
+        padding: 18,
+        borderRadius: 18,
+        background:
+          "linear-gradient(135deg, #fffbe6 0%, #fff5d1 45%, #ffeaa6 100%)",
+        border: "1px solid rgba(247, 231, 0, 0.5)",
+        boxShadow: hovered
+          ? "0 12px 28px rgba(247, 231, 0, 0.28)"
+          : "0 4px 12px rgba(247, 231, 0, 0.15)",
+        cursor: "pointer",
+        outline: "none",
+        overflow: "hidden",
+        transform: hovered ? "translateY(-2px)" : "translateY(0)",
+        transition:
+          "transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease",
+      }}
+    >
+      {/* Decorative blurred orb */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          top: -60,
+          right: -50,
+          width: 180,
+          height: 180,
+          borderRadius: "50%",
+          background:
+            "radial-gradient(circle at center, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0) 70%)",
+          pointerEvents: "none",
+        }}
+      />
+      <div
+        style={{
+          position: "relative",
+          display: "flex",
+          alignItems: "center",
+          gap: 14,
+        }}
+      >
+        <div
+          aria-hidden="true"
+          style={{
+            flex: "0 0 auto",
+            width: 44,
+            height: 44,
+            borderRadius: 14,
+            background: "#111827",
+            color: "#f7e700",
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            boxShadow: "0 6px 14px rgba(17, 24, 39, 0.25)",
+          }}
+        >
+          <PiAirplaneTakeoff size={22} />
+        </div>
+
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 15,
+              fontWeight: 700,
+              color: "#111827",
+              lineHeight: 1.3,
+              marginBottom: 4,
+            }}
+          >
+            {headline}
+          </div>
+          <div
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 12.5,
+              color: "#4b5563",
+              lineHeight: 1.5,
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+            }}
+          >
+            {subline}
+          </div>
+        </div>
+      </div>
+
+      <div
+        style={{
+          position: "relative",
+          marginTop: 14,
+          display: "flex",
+          justifyContent: "flex-end",
+        }}
+      >
+        <span
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 8,
+            padding: "10px 18px",
+            borderRadius: 9999,
+            background: "#111827",
+            color: "#fff",
+            fontFamily: "'Inter', sans-serif",
+            fontSize: 13,
+            fontWeight: 600,
+            letterSpacing: 0.2,
+            boxShadow: hovered
+              ? "0 8px 18px rgba(17, 24, 39, 0.3)"
+              : "0 3px 8px rgba(17, 24, 39, 0.18)",
+            transition: "box-shadow 0.18s ease, transform 0.18s ease",
+            transform: hovered ? "translateX(2px)" : "translateX(0)",
+          }}
+        >
+          {buttonLabel}
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <line x1="5" y1="12" x2="19" y2="12" />
+            <polyline points="12 5 19 12 12 19" />
+          </svg>
+        </span>
+      </div>
+    </div>
+  );
+}
+
 // ─── Card ─────────────────────────────────────────────────────────────────────
 
 function CardNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetRendererProps["onAction"] }) {
+  // "Start Planning New Trip" hero card. Checked first so the polished design
+  // wins over the generic Card passthrough.
+  const planNewTripButton = findRedirectToP1Button(node);
+  if (planNewTripButton) {
+    return (
+      <PlanNewTripCard node={node} button={planNewTripButton} onAction={onAction} />
+    );
+  }
+
   // PDF download card (itinerary export). Detected before Payment / Drawer
   // checks since the button uses its own action type.
   const pdfButton = findPdfDownloadButton(node);

@@ -159,6 +159,27 @@ export default function BotApp({
   fromTailored?: boolean;
   themeConfig?: ThemeConfig;
 }) {
+  // ── Fresh P1 redirect detection (synchronous) ────────────────────────────
+  // ChatKitPanel's `trip.redirect_to_p1` action stashes the seed prompt in
+  // sessionStorage under `pending_initial_prompt_{sessionId}` and pushes
+  // /chat/{sessionId}. We detect that *before* any state initialiser so the
+  // left panel can default to the map and we can skip restore — the new
+  // session has no thread/itinerary yet and the existing sessionId-based
+  // defaults would otherwise show a stale "itinerary" view from the prior
+  // session's Redux slice.
+  const isFreshP1RedirectRef = useRef<boolean>(
+    (() => {
+      if (typeof window === "undefined") return false;
+      if (!sessionId) return false;
+      try {
+        return !!sessionStorage.getItem(`pending_initial_prompt_${sessionId}`);
+      } catch {
+        return false;
+      }
+    })(),
+  );
+  const isFreshP1Redirect = isFreshP1RedirectRef.current;
+
   const [mapState, setMapState] = useState<MapState>({
     lat: 20,
     lng: 78,
@@ -189,9 +210,11 @@ export default function BotApp({
 
   // On refresh (sessionId present), default desktop to the itinerary tab so
   // P1 / P2 reloads land on the itinerary panel — not the map. Fresh sessions
-  // (no sessionId) still start on map for the StartScreen → P1 route flow.
+  // (no sessionId) and fresh P1 redirects (sessionId present but no thread
+  // yet) start on map so the user doesn't see the prior session's itinerary
+  // bleed through.
   const [viewMode, setViewMode] = useState<ViewMode>(
-    sessionId ? "itinerary" : "map",
+    sessionId && !isFreshP1Redirect ? "itinerary" : "map",
   );
   const [botMode, setBotMode] = useState<BotMode>("p1");
   const [itineraryId, setItineraryId] = useState("");
@@ -216,7 +239,7 @@ export default function BotApp({
   const [isRoutePreparing, setIsRoutePreparing] = useState(false);
 
   const [mobilePanel, setMobilePanel] = useState<MobilePanel>(
-    sessionId ? "itinerary" : "chat",
+    sessionId && !isFreshP1Redirect ? "itinerary" : "chat",
   );
   const [activeItineraryId, setActiveItineraryId] = useState<string | null>(
     null,
@@ -1743,6 +1766,68 @@ export default function BotApp({
     },
     [restoreItineraryDirectly, loadThread, router, fromTailored],
   );
+
+  // ── Consume a pending seed prompt left by trip.redirect_to_p1 ───────────
+  // When a chat widget kicks the user into a fresh /chat/{sessionId} (e.g.
+  // "Start Planning New Trip"), the seed context is stashed in sessionStorage
+  // under `pending_initial_prompt_{sessionId}`. Pick it up here, mark the
+  // chat active, and short-circuit restoreLatestThread — the session is
+  // brand-new, so the status API would 404 and bounce the user to /thank-you.
+  useEffect(() => {
+    if (!sessionId) return;
+    if (typeof window === "undefined") return;
+    let pending: string | null = null;
+    try {
+      pending = sessionStorage.getItem(`pending_initial_prompt_${sessionId}`);
+    } catch {
+      pending = null;
+    }
+    if (!pending) return;
+    try {
+      sessionStorage.removeItem(`pending_initial_prompt_${sessionId}`);
+    } catch {
+      /* noop */
+    }
+    hasRestoredRef.current = true;
+    setBotMode("p1");
+    setShowStartScreen(false);
+    setIsChatActive(true);
+    setHasBotResponded(true);
+    setInitialPrompt(pending);
+    setInitialPromptRequiresLogin(false);
+    setActiveChatSessionId(sessionId);
+
+    // Wipe local + Redux state left behind by the prior session. The
+    // BotApp instance itself is fresh (key={sessionId} in /chat/[id].tsx),
+    // but Redux slices persist across remounts — without these clears the
+    // left panel renders the previous itinerary's cities / cart / transfers
+    // until the new thread starts producing effects.
+    setLocations([]);
+    setCurrentRoute(null);
+    setItineraryData(null);
+    setTransfers(null);
+    setSkeletonCities([]);
+    skeletonCitiesRef.current = [];
+    setActiveItineraryId(null);
+    setItineraryPollingEnabled(false);
+    setShowItineraryShimmer(false);
+    setIsItineraryCompleting(false);
+    setCompletingItineraryId(null);
+    setLoaderDisplayText(null);
+    setLeftPanelMode("default");
+    setItineraryId("");
+    currentItineraryRef.current = null;
+
+    dispatch(setItinerary({}));
+    dispatch(setCart({}));
+    dispatch(setStays([]));
+    dispatch(setTransfersBookings(null));
+    dispatch(setItineraryStatus("itinerary_status", "PENDING"));
+    dispatch(setItineraryStatus("transfers_status", "PENDING"));
+    dispatch(setItineraryStatus("pricing_status", "PENDING"));
+    dispatch(setItineraryStatus("hotels_status", "PENDING"));
+    dispatch(setItineraryStatus("finalized_status", "PENDING"));
+  }, [sessionId, dispatch]);
 
   // ── Only restore on initial mount ────────────────────────────────────────
   useEffect(() => {

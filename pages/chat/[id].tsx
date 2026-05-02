@@ -30,7 +30,11 @@ const ChatSessionPage = ({ checkAuthState }: { checkAuthState: () => void }) => 
       <Head>
         <title>{title}</title>
       </Head>
-      <BotApp sessionId={sessionId} fromTailored={fromTailored} />
+      <BotApp
+        key={sessionId}
+        sessionId={sessionId}
+        fromTailored={fromTailored}
+      />
     </>
   );
 };
