@@ -639,6 +639,10 @@ const ItineraryCity = (props) => {
           {hotelExists && itineraryDaybyDay.status == "Draft" && (
             <button
               onClick={() => {
+                if (!localStorage?.getItem("access_token")) {
+                  props?.setShowLoginModal(true);
+                  return;
+                }
                 trackHotelCardClicked?.(
                   currentItineraryId,
                   multiHotelStays?.[0]?.id || "",

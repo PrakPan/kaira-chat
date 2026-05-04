@@ -817,8 +817,52 @@ export default function BotApp({
       setHasBotResponded(true);
       setMobilePanel("map");
       setViewMode("itinerary");
+
+      // Mirror tailored-form Google Ads conversion + GTM event for chat-only
+      // leads. Tailored users already fire these before navigating to /chat,
+      // so guard with !fromTailored to avoid double-counting.
+      if (!fromTailored && typeof window !== "undefined") {
+        const conversionId =
+          _id && _id !== "pending" ? _id : itineraryId || activeChatSessionId;
+        const currencyCode = currency?.currency || "INR";
+
+        if (typeof (window as any).gtag === "function") {
+          try {
+            (window as any).gtag("event", "conversion", {
+              send_to: "AW-738037519/IF5rCMyxhL8ZEI-e9t8C",
+              transaction_id: conversionId,
+              value: 1.0,
+              currency: currencyCode,
+            });
+          } catch (error) {
+            console.error("✗ Error firing Google Ads conversion:", error);
+          }
+        }
+
+        if (Array.isArray((window as any).dataLayer)) {
+          try {
+            (window as any).dataLayer.push({
+              event: "itinerary_completed",
+              itinerary_id: conversionId,
+              platform: getPlatform(),
+              currency: currencyCode,
+              source: "chat",
+              timestamp: new Date().toISOString(),
+            });
+          } catch (error) {
+            console.error("✗ Error pushing to dataLayer:", error);
+          }
+        }
+      }
     },
-    [dispatch, buildSkeletonItinerary],
+    [
+      dispatch,
+      buildSkeletonItinerary,
+      fromTailored,
+      itineraryId,
+      activeChatSessionId,
+      currency,
+    ],
   );
 
   const handleItineraryCompletionDone = useCallback(
