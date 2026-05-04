@@ -794,6 +794,7 @@ const ItineraryCity = (props) => {
             dcity={props?.city?.city?.name}
             oCityData={props?.city}
             dCityData={props?.city}
+            intracityBookings={props?.intracityBookings}
             getPaymentHandler={props?.getPaymentHandler}
             _updatePaymentHandler={props?._updatePaymentHandler}
             _updateFlightBookingHandler={props?._updateFlightBookingHandler}
