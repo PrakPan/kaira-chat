@@ -2806,19 +2806,9 @@ Start Location: ${details.startLocation}`;
             />
             <div
               onClick={(e) => e.stopPropagation()}
-              style={{
-                position: "fixed",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                background: "#fff",
-                borderRadius: 16,
-                width: "min(480px, 95vw)",
-                maxHeight: "90vh",
-                overflowY: "auto",
-                zIndex: 3300,
-                boxShadow: "0 25px 60px rgba(0,0,0,0.3)",
-              }}
+              className="fixed bg-white overflow-y-auto z-[3300]
+                left-0 right-0 bottom-0 w-full max-h-[90vh] rounded-t-2xl shadow-[0_-10px_30px_rgba(0,0,0,0.15)]
+                md:left-1/2 md:right-auto md:bottom-auto md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[min(480px,95vw)] md:rounded-2xl md:shadow-[0_25px_60px_rgba(0,0,0,0.3)]"
             >
               <LogInModal
                 show={showSettingsLoginPrompt}
@@ -3411,19 +3401,9 @@ export const MobileHeaderMenu = React.memo(
               />
               <div
                 onClick={(e) => e.stopPropagation()}
-                style={{
-                  position: "fixed",
-                  top: "50%",
-                  left: "50%",
-                  transform: "translate(-50%, -50%)",
-                  background: "#fff",
-                  borderRadius: 16,
-                  width: "min(480px, 95vw)",
-                  maxHeight: "90vh",
-                  overflowY: "auto",
-                  zIndex: 3300,
-                  boxShadow: "0 25px 60px rgba(0,0,0,0.3)",
-                }}
+                className="fixed bg-white overflow-y-auto z-[3300]
+                  left-0 right-0 bottom-0 w-full max-h-[90vh] rounded-t-2xl shadow-[0_-10px_30px_rgba(0,0,0,0.15)]
+                  md:left-1/2 md:right-auto md:bottom-auto md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[min(480px,95vw)] md:rounded-2xl md:shadow-[0_25px_60px_rgba(0,0,0,0.3)]"
               >
                 <LogInModal
                   show={showLogin}
