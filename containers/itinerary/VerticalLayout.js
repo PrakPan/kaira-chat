@@ -1550,6 +1550,19 @@ useEffect(() => {
     booking => booking.is_airport_drop
   ) || [];
 
+  const formatDurationRange = (minutes) => {
+  const hours = minutes / 60;
+
+  const lower = Math.floor(hours);
+  const upper = Math.ceil(hours);
+
+  if (lower === upper) {
+    return `${lower} hour${lower > 1 ? "s" : ""}`;
+  }
+
+  return `${lower}-${upper} hours`;
+};
+
 
   return (
     <Container className={`${isLast && "mb-[60px]"}`}>
@@ -1564,24 +1577,27 @@ useEffect(() => {
   )}
   {downPresent && <VerticalLine height={"50px"} gradient="bottom" />}
 </PinWrapper> :  <PinWrapper>
- { upPresent && downPresent && !firstCity && !lastCity &&
+  {/* P1 (Draft) stage. Endpoint *labels* (start/end city name rows) carry
+      isFirstCity/isLast and render the pin with a single line on the
+      appropriate side — those rows have no upPresent/downPresent. Every
+      other row (including the start→first-city and last-city→end transfers,
+      which have firstCity/lastCity set) renders one connecting line. Two
+      stacked gradients fade to transparent where they meet, which leaves a
+      visible gap; one line keeps the connector continuous. */}
+  {upPresent && downPresent && (
     <div className="flex items-center justify-center m-2 py-2">
       <VerticalLine height={"50px"} gradient="top" />
-    </div>}
-  {/* P1 (Draft) stage: line stays in flow so it doesn't overlap the next
-      DayByDay element. The city-name div (below) uses align-self to line
-      up with the pin. `isLast` is only passed to the end-city label. */}
-
-
+    </div>
+  )}
   {!upPresent && !downPresent && isFirstCity && (
     <>
       <Pin length={length} pinColour={"black"} inner={true} />
-      <VerticalLine height={"50px"} gradient="bottom" />
+      {/* <VerticalLine height={"50px"} gradient="bottom" /> */}
     </>
   )}
   {!upPresent && !downPresent && isLast && (
     <>
-      <VerticalLine height={"50px"} gradient="top" />
+      {/* <VerticalLine height={"50px"} gradient="top" /> */}
       <Pin length={length} pinColour={"black"} inner={true} />
     </>
   )}
@@ -1615,6 +1631,8 @@ useEffect(() => {
                 (Itinerary?.status === "Draft" && isFirstCity
                   ? userLocationFallback
                   : null)}
+
+
             </div>
           )}
 
@@ -1692,9 +1710,13 @@ useEffect(() => {
                 )}
               </div>
 
-              {duration && (
-                <div className="Body3R_12">Duration: {duration}</div>
-              )}
+             {duration > 0 && (
+  <div className="Body3R_12">
+    Duration: {Itinerary.status === "Draft"
+      ? formatDurationRange(duration)
+      : duration}
+  </div>
+)}
             </div>
           </div>
 

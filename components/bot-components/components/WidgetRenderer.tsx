@@ -3165,6 +3165,12 @@ function PdfDownloadCard({
       const blob = await res.blob();
       const objectUrl = URL.createObjectURL(blob);
       window.open(objectUrl, "_blank", "noopener,noreferrer");
+      const anchor = document.createElement("a");
+      anchor.href = objectUrl;
+      anchor.download = filename || "itinerary.pdf";
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
       setTimeout(() => URL.revokeObjectURL(objectUrl), 60_000);
     } catch (err) {
       console.error("PDF preview failed", err);

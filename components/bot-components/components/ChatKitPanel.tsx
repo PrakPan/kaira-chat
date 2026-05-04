@@ -2209,10 +2209,10 @@ const handleShowLogin = useCallback(() => {
 
                   // ── Plan New Trip → fresh P1 session ──────────────────
                   // Generate a new sessionId, stash the seed prompt for the
-                  // new session in sessionStorage, then router.push so
-                  // /chat/[id] remounts (key={sessionId}) with a clean P1
-                  // chat. BotApp's mount effect picks the prompt up and
-                  // sends it as the first user message.
+                  // new session in localStorage (sessionStorage isn't shared
+                  // across tabs), then open /chat/[id] in a new tab. BotApp's
+                  // mount effect picks the prompt up and sends it as the
+                  // first user message.
                   if (action.type === "trip.redirect_to_p1") {
                     const ctx = (action.payload?.context ??
                       action.payload?.prompt ??
@@ -2220,18 +2220,22 @@ const handleShowLogin = useCallback(() => {
                     const newSessionId = generateSessionId();
                     if (ctx) {
                       try {
-                        sessionStorage.setItem(
+                        localStorage.setItem(
                           `pending_initial_prompt_${newSessionId}`,
                           ctx,
                         );
                       } catch (err) {
                         console.warn(
-                          "[trip.redirect_to_p1] sessionStorage set failed:",
+                          "[trip.redirect_to_p1] localStorage set failed:",
                           err,
                         );
                       }
                     }
-                    router.push(`/chat/${newSessionId}`);
+                    window.open(
+                      `/chat/${newSessionId}`,
+                      "_blank",
+                      "noopener,noreferrer",
+                    );
                     return;
                   }
 

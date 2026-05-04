@@ -161,18 +161,18 @@ export default function BotApp({
 }) {
   // ── Fresh P1 redirect detection (synchronous) ────────────────────────────
   // ChatKitPanel's `trip.redirect_to_p1` action stashes the seed prompt in
-  // sessionStorage under `pending_initial_prompt_{sessionId}` and pushes
-  // /chat/{sessionId}. We detect that *before* any state initialiser so the
-  // left panel can default to the map and we can skip restore — the new
-  // session has no thread/itinerary yet and the existing sessionId-based
-  // defaults would otherwise show a stale "itinerary" view from the prior
-  // session's Redux slice.
+  // localStorage under `pending_initial_prompt_{sessionId}` and opens
+  // /chat/{sessionId} in a new tab. We detect that *before* any state
+  // initialiser so the left panel can default to the map and we can skip
+  // restore — the new session has no thread/itinerary yet and the existing
+  // sessionId-based defaults would otherwise show a stale "itinerary" view
+  // from the prior session's Redux slice.
   const isFreshP1RedirectRef = useRef<boolean>(
     (() => {
       if (typeof window === "undefined") return false;
       if (!sessionId) return false;
       try {
-        return !!sessionStorage.getItem(`pending_initial_prompt_${sessionId}`);
+        return !!localStorage.getItem(`pending_initial_prompt_${sessionId}`);
       } catch {
         return false;
       }
@@ -1105,33 +1105,62 @@ export default function BotApp({
         return;
       }
 
-      if (data?.transfers && !data?.itinerary && !data?.routes) {
+      if (
+        (data?.transfers || data?.start_transfer || data?.end_transfer) &&
+        !data?.itinerary &&
+        !data?.routes
+      ) {
         const intercity: Record<string, any> = {};
-        (data.transfers ?? []).forEach((t: any, idx: number) => {
-          const nameToId: Record<string, string> = {};
-          for (const c of currentItineraryRef.current?.cities ?? []) {
-            if (c.city?.name && c.id) nameToId[c.city.name] = String(c.id);
-          }
-          const fromId = nameToId[t.from_city] || `draft-city-${t.from_city}`;
-          const toId = nameToId[t.to_city] || `draft-city-${t.to_city}`;
-          const key = `${fromId}:${toId}`;
-          const leg = t.legs?.[0] ?? "";
-          const bookingType = leg.toLowerCase().includes("flight")
+        const nameToId: Record<string, string> = {};
+        for (const c of currentItineraryRef.current?.cities ?? []) {
+          if (c.city?.name && c.id) nameToId[c.city.name] = String(c.id);
+        }
+        const bookingTypeFromLeg = (leg: string) =>
+          leg.toLowerCase().includes("flight")
             ? "Flight"
             : leg.toLowerCase().includes("train")
               ? "Train"
               : "Taxi";
+        // DaybyDay reads transfer cards via the intercity map. The first/last
+        // (home → first city, last city → home) tiles look up by
+        // `<gmaps_place_id>:<first_city_id>` and `<last_city_id>:<gmaps_place_id>`,
+        // which is exactly what the server emits as
+        // start_transfer/end_transfer.from/to_itinerary_city_id.
+        const upsertTransfer = (key: string, t: any, idKey: string | number) => {
+          const leg = t.legs?.[0] ?? "";
           intercity[key] = {
-            id: `draft-transfer-${idx}`,
+            id: `draft-transfer-${idKey}`,
             name: t.legs?.join(" + ") ?? `${t.from_city} to ${t.to_city}`,
-            booking_type: bookingType,
+            booking_type: bookingTypeFromLeg(leg),
             transfer_type: "intercity",
             from_city: t.from_city,
             to_city: t.to_city,
             legs: t.legs,
+            duration: t.edges?.[0]?.duration,
             is_draft: true,
           };
+        };
+        (data.transfers ?? []).forEach((t: any, idx: number) => {
+          const fromId = nameToId[t.from_city] || `draft-city-${t.from_city}`;
+          const toId = nameToId[t.to_city] || `draft-city-${t.to_city}`;
+          upsertTransfer(`${fromId}:${toId}`, t, idx);
         });
+        const st = data.start_transfer;
+        if (st?.from_itinerary_city_id && st?.to_city_id) {
+          upsertTransfer(
+            `${st.from_itinerary_city_id}:${st.to_city_id}`,
+            st,
+            "start",
+          );
+        }
+        const et = data.end_transfer;
+        if (et?.from_city_id && et?.to_itinerary_city_id) {
+          upsertTransfer(
+            `${et.from_city_id}:${et.to_itinerary_city_id}`,
+            et,
+            "end",
+          );
+        }
         dispatch(
           setTransfersBookings({ intercity, airport: {}, intracity: {} }),
         );
@@ -1168,7 +1197,6 @@ export default function BotApp({
 
       const draftStays: any[] = [];
       for (const city of transformed.cities ?? []) {
-        console.log("Processing city:", city);
         const hotels = city.hotels ?? [];
         if (hotels.length === 0 || !hotels[0]?.name) {
           draftStays.push({
@@ -1182,7 +1210,6 @@ export default function BotApp({
             check_out: null,
           });
         } else {
-          console.log("Processing hotels for city:", city.city?.name, hotels);
           for (const hotel of hotels) {
             draftStays.push({
               ...hotel,
@@ -1581,7 +1608,11 @@ export default function BotApp({
           if (effect.name === "display_itinerary" && !isTripFinalized) {
             handleItineraryReceived(effect.data);
           } else if (effect.name === "display_transfers" && !isTripFinalized) {
-            handleItineraryReceived({ transfers: effect.data.transfers });
+            handleItineraryReceived({
+              transfers: effect.data.transfers,
+              start_transfer: effect.data.start_transfer,
+              end_transfer: effect.data.end_transfer,
+            });
           }
         }
 
@@ -1769,7 +1800,7 @@ export default function BotApp({
 
   // ── Consume a pending seed prompt left by trip.redirect_to_p1 ───────────
   // When a chat widget kicks the user into a fresh /chat/{sessionId} (e.g.
-  // "Start Planning New Trip"), the seed context is stashed in sessionStorage
+  // "Start Planning New Trip"), the seed context is stashed in localStorage
   // under `pending_initial_prompt_{sessionId}`. Pick it up here, mark the
   // chat active, and short-circuit restoreLatestThread — the session is
   // brand-new, so the status API would 404 and bounce the user to /thank-you.
@@ -1778,13 +1809,13 @@ export default function BotApp({
     if (typeof window === "undefined") return;
     let pending: string | null = null;
     try {
-      pending = sessionStorage.getItem(`pending_initial_prompt_${sessionId}`);
+      pending = localStorage.getItem(`pending_initial_prompt_${sessionId}`);
     } catch {
       pending = null;
     }
     if (!pending) return;
     try {
-      sessionStorage.removeItem(`pending_initial_prompt_${sessionId}`);
+      localStorage.removeItem(`pending_initial_prompt_${sessionId}`);
     } catch {
       /* noop */
     }
