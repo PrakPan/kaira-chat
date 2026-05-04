@@ -416,8 +416,38 @@ export default function BotApp({
   const [showShare, setShowShare] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showSettingsLoginPrompt, setShowSettingsLoginPrompt] = useState(false);
+  const [showApiLoginPrompt, setShowApiLoginPrompt] = useState(false);
   const [isHotelsPresent, setIsHotelsPresent] = useState(false);
+
   const authToken = useSelector((state: any) => state.auth?.token);
+
+  // Open the login modal whenever any axios call returns a 401. The
+  // interceptor only flips the prompt state — the original error still
+  // propagates so existing .catch handlers behave unchanged. Raw fetch
+  // callers (e.g. PdfDownloadCard) dispatch the same `api:unauthorized`
+  // event so they can trigger the modal too.
+  useEffect(() => {
+    const id = axios.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error?.response?.status === 401) {
+          setShowApiLoginPrompt(true);
+        }
+        return Promise.reject(error);
+      },
+    );
+    const onUnauthorized = () => setShowApiLoginPrompt(true);
+    if (typeof window !== "undefined") {
+      window.addEventListener("api:unauthorized", onUnauthorized);
+    }
+    return () => {
+      axios.interceptors.response.eject(id);
+      if (typeof window !== "undefined") {
+        window.removeEventListener("api:unauthorized", onUnauthorized);
+      }
+    };
+  }, []);
+
 
   // ── Refs for restore guards ──────────────────────────────────────────────
   const hasRestoredRef = useRef(false);
@@ -2084,7 +2114,7 @@ export default function BotApp({
     onLoadRouteOnMap: handleLoadRouteOnMap,
     restoredThread,
     initialAttachmentIds,
-    isItineraryCompleting,
+    isItineraryCompleting: isItineraryCompleting,
     itineraryCompleted:
       finalizedStatus === "SUCCESS" &&
       botMode === "p2" &&
@@ -2819,6 +2849,39 @@ Start Location: ${details.startLocation}`;
                 onSuccess={async () => {
                   setShowSettingsLoginPrompt(false);
                   await attachUserToItinerary();
+                }}
+              />
+            </div>
+          </>,
+          document.body,
+        )}
+
+      {showApiLoginPrompt &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <>
+            <div
+              onClick={() => setShowApiLoginPrompt(false)}
+              style={{
+                position: "fixed",
+                inset: 0,
+                background: "rgba(0,0,0,0.5)",
+                zIndex: 3299,
+              }}
+            />
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="fixed bg-white overflow-y-auto z-[3300]
+                left-0 right-0 bottom-0 w-full max-h-[90vh] rounded-t-2xl shadow-[0_-10px_30px_rgba(0,0,0,0.15)]
+                md:left-1/2 md:right-auto md:bottom-auto md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[min(480px,95vw)] md:rounded-2xl md:shadow-[0_25px_60px_rgba(0,0,0,0.3)]"
+            >
+              <LogInModal
+                show={showApiLoginPrompt}
+                onhide={() => setShowApiLoginPrompt(false)}
+                zIndex={"3300"}
+                message="Please login to continue"
+                onSuccess={async () => {
+                  setShowApiLoginPrompt(false);
                 }}
               />
             </div>

@@ -3161,6 +3161,9 @@ function PdfDownloadCard({
         method: "GET",
         headers: authToken ? { Authorization: `Bearer ${authToken}` } : {},
       });
+      if (res.status === 401 && typeof window !== "undefined") {
+        window.dispatchEvent(new Event("api:unauthorized"));
+      }
       if (!res.ok) throw new Error(`PDF fetch failed: ${res.status}`);
       const blob = await res.blob();
       const objectUrl = URL.createObjectURL(blob);
