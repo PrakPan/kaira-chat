@@ -383,12 +383,30 @@ function renderContent(
       continue;
     }
 
-    if (/^>\s/.test(line)) {
-      const content = line.replace(/^>\s/, "");
+    if (/^\s*>\s?/.test(line)) {
+      const quoteLines: string[] = [];
+      while (i < lines.length && /^\s*>\s?/.test(lines[i])) {
+        quoteLines.push(lines[i].replace(/^\s*>\s?/, ""));
+        i++;
+      }
       nodes.push(
-        <blockquote key={`bq-${i}`}>{inlineFormat(content)}</blockquote>,
+        <blockquote
+          key={`bq-${i}`}
+          style={{
+            borderLeft: "3px solid #d1d5db",
+            paddingLeft: 12,
+            margin: "8px 0",
+            color: "#4b5563",
+          }}
+        >
+          {quoteLines.map((q, idx) => (
+            <React.Fragment key={idx}>
+              {q.trim() === "" ? <br /> : inlineFormat(q)}
+              {idx < quoteLines.length - 1 && q.trim() !== "" && <br />}
+            </React.Fragment>
+          ))}
+        </blockquote>,
       );
-      i++;
       continue;
     }
 

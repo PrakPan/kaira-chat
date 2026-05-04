@@ -2161,7 +2161,8 @@ Start Location: ${details.startLocation}`;
 
   const handleItineraryContainerSendMessage = useCallback((msg: string) => {
     chatSendMessageRef.current?.(msg);
-  }, []);
+    if (isMobile) mobileTabSwitchRef.current?.("chat");
+  }, [isMobile]);
 
   const activeTab = useMemo(() => {
     if (viewMode === "bookings") return "Bookings";
