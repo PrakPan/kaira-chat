@@ -495,6 +495,8 @@ const RouteEditSection = (props) => {
       pollingIntervalRef.current = null;
     }
     setPolling(false);
+    // Re-enable the chat composer (ChatKitPanel reads is_polling).
+    dispatch(setItineraryStatus("is_polling", false));
   };
 
   const fetchItineraryStatus = async (itineraryId) => {
@@ -558,6 +560,13 @@ const RouteEditSection = (props) => {
     setItineraryLoading(true);
     setPolling(true);
     setWaitingForStatusUpdate(true);
+    // Reset statuses to PENDING and lock the chat composer immediately so
+    // the user can't keep typing while the backend recomputes.
+    dispatch(setItineraryStatus("itinerary_status", "PENDING"));
+    dispatch(setItineraryStatus("transfers_status", "PENDING"));
+    dispatch(setItineraryStatus("hotels_status", "PENDING"));
+    dispatch(setItineraryStatus("pricing_status", "PENDING"));
+    dispatch(setItineraryStatus("is_polling", true));
 
     // Fire once immediately so we don't pay the full interval delay before
     // the first status read, then keep polling until everything resolves.
@@ -568,15 +577,18 @@ const RouteEditSection = (props) => {
   };
 
   // Cleanup the polling interval if the user navigates away mid-update
-  // (e.g. closes the drawer) so we don't leak timers.
+  // (e.g. closes the drawer) so we don't leak timers. Also unlocks the
+  // chat composer — keeping is_polling true after the drawer is gone
+  // would leave the chat permanently disabled.
   useEffect(() => {
     return () => {
       if (pollingIntervalRef.current) {
         clearInterval(pollingIntervalRef.current);
         pollingIntervalRef.current = null;
+        dispatch(setItineraryStatus("is_polling", false));
       }
     };
-  }, []);
+  }, [dispatch]);
 
   const validateDates = () => {
     const today = new Date();

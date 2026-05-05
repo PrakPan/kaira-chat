@@ -3,6 +3,7 @@ import { PiAirplaneTakeoff } from "react-icons/pi";
 import { useSelector } from "react-redux";
 import { currencySymbols } from "../../../data/currencySymbols";
 import { MERCURY_HOST } from "../../../services/constants";
+import { FaTaxi } from "react-icons/fa";
 
 // ─── Widget environment context ───────────────────────────────────────────────
 // Carries ambient data (e.g. botMode) down to individual cards without
@@ -114,6 +115,9 @@ const ALWAYS_ENABLED_ACTIONS = new Set<string>([
   "transfer.select",
   "open_transfer_drawer",
   "payment.start",
+  "sightseeing.open",
+  "visa.open",
+  "esim.open",
 ]);
 
 // ─── Form Context ─────────────────────────────────────────────────────────────
@@ -1974,7 +1978,8 @@ function ButtonNode({
   // "View Details" / activity / POI / restaurant / hotel / transfer / payment
   // CTAs stay clickable even after the widget is marked disabled. Only flow-
   // gating CTAs (route.lock, itinerary.lock, generic actions) get frozen.
-  const actionType = (onClickAction as any)?.type as string | undefined;
+  const rawActionType = (onClickAction as any)?.type as string | undefined;
+  const actionType = normalizeActionType(rawActionType);
   const isProtectedAction = actionType
     ? ALWAYS_ENABLED_ACTIONS.has(actionType)
     : false;
@@ -1996,9 +2001,12 @@ function ButtonNode({
       });
       return;
     }
-    // Regular action button
+    // Regular action button — normalize the type so upstream handlers don't
+    // need to defend against markdown-wrapped strings like
+    // "[visa.open](http://visa.open)".
     if (onClickAction) {
-      onAction?.(onClickAction as { type: string; payload?: Record<string, unknown> });
+      const action = onClickAction as { type: string; payload?: Record<string, unknown> };
+      onAction?.({ ...action, type: actionType || action.type });
     }
   };
 
@@ -3333,6 +3341,305 @@ function findRedirectToP1Button(node: WidgetNode): WidgetNode | null {
   return null;
 }
 
+// ─── Trip extras card (sightseeing / visa / eSIM) ────────────────────────────
+// Detects buttons with sightseeing.open / visa.open / esim.open click actions
+// and renders a category-styled card matching the "Enhance Your Trip" CTAs in
+// the booking slide. Each kind gets its own glyph + accent palette so the cards
+// stand apart in the chat.
+
+const TRIP_EXTRAS_KINDS = new Set<string>([
+  "sightseeing.open",
+  "visa.open",
+  "esim.open",
+]);
+
+function findTripExtrasButton(node: WidgetNode): WidgetNode | null {
+  if (node.type === "Button") {
+    const t = normalizeActionType((node.onClickAction as any)?.type);
+    if (TRIP_EXTRAS_KINDS.has(t)) return node;
+  }
+  for (const child of (node.children ?? []) as WidgetNode[]) {
+    const hit = findTripExtrasButton(child);
+    if (hit) return hit;
+  }
+  return null;
+}
+
+interface TripExtrasTheme {
+  defaultHeadline: string;
+  defaultSubline: string;
+  defaultCta: string;
+  cardBackground: string;
+  border: string;
+  iconBackground: string;
+  iconColor: string;
+  glyph: React.ReactNode;
+  ctaBackground: string;
+  ctaColor: string;
+  ctaShadow: string;
+}
+
+const TRIP_EXTRAS_THEMES: Record<string, TripExtrasTheme> = {
+  "sightseeing.open": {
+    defaultHeadline: "Add Sightseeing & Taxis",
+    defaultSubline: "Browse curated day trips and intra-city rides for this stop.",
+    defaultCta: "Explore sightseeing",
+    cardBackground:
+      "linear-gradient(135deg, #fff7ed 0%, #ffedd5 50%, #fed7aa 100%)",
+    border: "1px solid rgba(249, 115, 22, 0.35)",
+    iconBackground: "#FFFFFF",
+    iconColor: "#C2410C",
+    glyph: (
+     <FaTaxi size={22} aria-hidden="true" />
+    ),
+    ctaBackground: "#C2410C",
+    ctaColor: "#FFFFFF",
+    ctaShadow: "0 8px 18px rgba(194, 65, 12, 0.28)",
+  },
+  "visa.open": {
+    defaultHeadline: "Add Visa Assistance",
+    defaultSubline: "Hassle-free visa options for everyone on the trip.",
+    defaultCta: "Browse visa options",
+    cardBackground:
+      "linear-gradient(135deg, #faf5ff 0%, #f3e8ff 50%, #e9d5ff 100%)",
+    border: "1px solid rgba(124, 58, 237, 0.32)",
+    iconBackground: "#FFFFFF",
+    iconColor: "#5B1DB3",
+    glyph: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <rect x="3" y="4" width="18" height="16" rx="2" />
+        <circle cx="9" cy="11" r="2.5" />
+        <path d="M14 9h5M14 13h5M6 16h12" />
+      </svg>
+    ),
+    ctaBackground: "#5B1DB3",
+    ctaColor: "#FFFFFF",
+    ctaShadow: "0 8px 18px rgba(91, 29, 179, 0.28)",
+  },
+  "esim.open": {
+    defaultHeadline: "Add an eSIM",
+    defaultSubline: "Stay connected the moment you land — no roaming surprises.",
+    defaultCta: "Browse eSIM packages",
+    cardBackground:
+      "linear-gradient(135deg, #f0fdf4 0%, #dcfce7 50%, #bbf7d0 100%)",
+    border: "1px solid rgba(34, 197, 94, 0.32)",
+    iconBackground: "#FFFFFF",
+    iconColor: "#15803D",
+    glyph: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <rect x="6" y="3" width="12" height="18" rx="3" />
+        <path d="M9 7h6M10 17h4" />
+        <circle cx="12" cy="12" r="1.4" fill="currentColor" />
+      </svg>
+    ),
+    ctaBackground: "#15803D",
+    ctaColor: "#FFFFFF",
+    ctaShadow: "0 8px 18px rgba(21, 128, 61, 0.28)",
+  },
+};
+
+function TripExtrasCard({
+  node,
+  button,
+  onAction,
+}: {
+  node: WidgetNode;
+  button: WidgetNode;
+  onAction?: WidgetRendererProps["onAction"];
+}) {
+  const [hovered, setHovered] = useState(false);
+  const widgetDisabled = useContext(DisabledActionContext);
+
+  const rawType = (button.onClickAction as any)?.type as string | undefined;
+  const actionType = normalizeActionType(rawType);
+  const theme = TRIP_EXTRAS_THEMES[actionType];
+  if (!theme) return null;
+
+  const titleNodes = findNodesByType(node, "Title");
+  const captionNodes = findNodesByType(node, "Caption");
+  const textNodes = findNodesByType(node, "Text");
+
+  const asText = (raw: unknown): string => {
+    if (typeof raw === "string") return raw.trim();
+    if (typeof raw === "number") return String(raw);
+    if (Array.isArray(raw)) {
+      return raw
+        .map((v) => (typeof v === "string" ? v : typeof v === "number" ? String(v) : ""))
+        .filter(Boolean)
+        .join(" · ");
+    }
+    return "";
+  };
+
+  const headline =
+    asText(titleNodes[0]?.value) || theme.defaultHeadline;
+  const subline =
+    asText(captionNodes[0]?.value) ||
+    asText(textNodes[0]?.value) ||
+    theme.defaultSubline;
+  const buttonLabel = (button.label as string) || theme.defaultCta;
+
+  const handleClick = () => {
+    // if (widgetDisabled) return;
+    const click = button.onClickAction as
+      | { type: string; payload?: Record<string, unknown> }
+      | undefined;
+    if (click) {
+      onAction?.({ ...click, type: actionType });
+    }
+  };
+
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={handleClick}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleClick();
+        }
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        position: "relative",
+        marginTop: 10,
+        marginBottom: 4,
+        width: "100%",
+        boxSizing: "border-box",
+        padding: 18,
+        borderRadius: 18,
+        background: theme.cardBackground,
+        border: theme.border,
+        boxShadow: hovered
+          ? "0 12px 28px rgba(15, 23, 42, 0.18)"
+          : "0 4px 12px rgba(15, 23, 42, 0.08)",
+        cursor: "pointer",
+        outline: "none",
+        overflow: "hidden",
+        transform: hovered ? "translateY(-2px)" : "translateY(0)",
+        transition:
+          "transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease",
+      }}
+    >
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          top: -60,
+          right: -50,
+          width: 180,
+          height: 180,
+          borderRadius: "50%",
+          background:
+            "radial-gradient(circle at center, rgba(255,255,255,0.65) 0%, rgba(255,255,255,0) 70%)",
+          pointerEvents: "none",
+        }}
+      />
+      <div
+        style={{
+          position: "relative",
+          display: "flex",
+          alignItems: "center",
+          gap: 14,
+        }}
+      >
+        <div
+          aria-hidden="true"
+          style={{
+            flex: "0 0 auto",
+            width: 44,
+            height: 44,
+            borderRadius: 14,
+            background: theme.iconBackground,
+            color: theme.iconColor,
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            boxShadow: "0 6px 14px rgba(15, 23, 42, 0.12)",
+          }}
+        >
+          {theme.glyph}
+        </div>
+
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 15,
+              fontWeight: 700,
+              color: "#111827",
+              lineHeight: 1.3,
+              marginBottom: 4,
+            }}
+          >
+            {headline}
+          </div>
+          <div
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 12.5,
+              color: "#4b5563",
+              lineHeight: 1.5,
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+            }}
+          >
+            {subline}
+          </div>
+        </div>
+      </div>
+
+      <div
+        style={{
+          position: "relative",
+          marginTop: 14,
+          display: "flex",
+          justifyContent: "flex-end",
+        }}
+      >
+        <span
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 8,
+            padding: "10px 18px",
+            borderRadius: 9999,
+            background: theme.ctaBackground,
+            color: theme.ctaColor,
+            fontFamily: "'Inter', sans-serif",
+            fontSize: 13,
+            fontWeight: 600,
+            letterSpacing: 0.2,
+            boxShadow: hovered ? theme.ctaShadow : "0 3px 8px rgba(15, 23, 42, 0.14)",
+            transition: "box-shadow 0.18s ease, transform 0.18s ease",
+            transform: hovered ? "translateX(2px)" : "translateX(0)",
+          }}
+        >
+          {buttonLabel}
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <line x1="5" y1="12" x2="19" y2="12" />
+            <polyline points="12 5 19 12 12 19" />
+          </svg>
+        </span>
+      </div>
+    </div>
+  );
+}
+
 function PlanNewTripCard({
   node,
   button,
@@ -3542,6 +3849,17 @@ function CardNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetRende
   if (planNewTripButton) {
     return (
       <PlanNewTripCard node={node} button={planNewTripButton} onAction={onAction} />
+    );
+  }
+
+  // Sightseeing / Visa / eSIM extras — category-styled card with a single
+  // primary CTA. Detected before the generic drawer-button branch so the
+  // ancillary extras get their own design instead of the element-preview
+  // layout meant for activity / hotel / POI / restaurant previews.
+  const tripExtrasButton = findTripExtrasButton(node);
+  if (tripExtrasButton) {
+    return (
+      <TripExtrasCard node={node} button={tripExtrasButton} onAction={onAction} />
     );
   }
 

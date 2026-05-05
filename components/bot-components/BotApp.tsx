@@ -910,6 +910,9 @@ export default function BotApp({
       dispatch(setItineraryStatus("transfers_status", "PENDING"));
       dispatch(setItineraryStatus("pricing_status", "PENDING"));
       dispatch(setItineraryStatus("finalized_status", "PENDING"));
+      // Lock the chat composer until ItineraryContainer's poll observes
+      // every status resolve again (it dispatches is_polling=false then).
+      dispatch(setItineraryStatus("is_polling", true));
 
       const current = currentItineraryRef.current;
       const placeholderCities = (current?.cities ?? []).map(

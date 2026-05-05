@@ -14,6 +14,8 @@ import ActivityDetailsDrawer from "../../drawers/activityDetails/ActivityDetails
 import TransferEditDrawer from "../../drawers/routeTransfer/TransferEditDrawer";
 import AccommodationDetailDrawer from "../../modals/AccommodationDetailDrawer";
 import POIDetailsDrawer from "../../drawers/poiDetails/POIDetailsDrawer";
+import VisaSearchDrawer from "../../drawers/visaDetails/VisaSearchDrawer";
+import EsimPackagesDrawer from "../../drawers/esimDetails/EsimPackagesDrawer";
 import { MERCURY_HOST } from "../../../services/constants";
 import { openNotification } from "../../../store/actions/notification";
 import setItinerary, {
@@ -316,6 +318,13 @@ onLoginSuccess,
   const reduxUserId = useSelector((state: any) => state.auth.id);
   const itinerary = useSelector((state: any) => state.Itinerary);
   const callPaymentInfo = useSelector((state: any) => state.CallPaymentInfo);
+  // Lock the composer whenever an update/edit action (Update Dates,
+  // Route Edit, refresh_itinerary, Reprice) is mid-poll. Cleared once
+  // every itinerary status resolves to SUCCESS or FAILURE.
+  const isItineraryPolling = useSelector(
+    (state: any) => !!state.ItineraryStatus?.is_polling,
+  );
+  const isComposerLocked = isItineraryCompleting || isItineraryPolling;
   const authToken = reduxToken ?? getAuthToken();
   const isLoggedIn = !!authToken;
 
@@ -734,6 +743,49 @@ onLoginSuccess,
     itinerary_city_id?: string;
     date?: string;
   }>({ show: false });
+
+  // Sightseeing (intra-city taxi) drawer — opened by sightseeing.open
+  // widget actions. Reuses TransferEditDrawer in multicity mode so the user
+  // can browse the same suggestions that the city header's "Add Taxi" CTA
+  // surfaces in /itinerary.
+  const [sightseeingDrawer, setSightseeingDrawer] = useState<{
+    show: boolean;
+    itinerary_city_id?: string;
+    cityId?: string;
+    cityName?: string;
+    cityData?: any;
+    startDate?: string;
+    endDate?: string;
+  }>({ show: false });
+
+
+  console.log("Sighseeing drawer state:", sightseeingDrawer);
+
+  // TransferEditDrawer closes itself by calling its internal `actualClose`
+  // (a Next router.push that strips the drawer/itinerary_city_id query
+  // params) — it never invokes the `handleClose` prop we pass in. Without
+  // this listener, our `sightseeingDrawer.show` stays `true` after the
+  // close, so a second `sightseeing.open` click only repushes the URL
+  // and the inner Drawer's `useEffect([props.show])` doesn't re-fire.
+  useEffect(() => {
+    if (!sightseeingDrawer.show) return;
+    const syncFromUrl = (url: string) => {
+      const target = new URL(url, window.location.origin);
+      if (target.searchParams.get("drawer") !== "addCityTaxi") {
+        setSightseeingDrawer({ show: false });
+      }
+    };
+    router.events.on("routeChangeComplete", syncFromUrl);
+    return () => {
+      router.events.off("routeChangeComplete", syncFromUrl);
+    };
+  }, [router, sightseeingDrawer.show]);
+
+  // Visa / eSIM ancillary drawers — opened by visa.open / esim.open widget
+  // actions. Both drawers self-fetch their own catalogue data so we only
+  // need to track open state here.
+  const [visaDrawer, setVisaDrawer] = useState<{ show: boolean }>({ show: false });
+  const [esimDrawer, setEsimDrawer] = useState<{ show: boolean }>({ show: false });
 
   // ── Pagination state ─────────────────────────────────────────────────────
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -2505,13 +2557,72 @@ const handleShowLogin = useCallback(() => {
                     return;
                   }
 
+                  // ── Sightseeing / Add City Taxi ──────────────────────
+                  // sightseeing.open opens the multicity TransferEditDrawer
+                  // for an itinerary city — same drawer the city header's
+                  // "Add Taxi" CTA opens on /itinerary. We resolve the city
+                  // payload from Redux so the drawer has the geo metadata
+                  // it needs to fetch suggestions, then mirror the URL the
+                  // itinerary page uses (?drawer=addCityTaxi&itinerary_city_id=...)
+                  // so refresh / share preserves the open drawer.
+                  if (action.type === "sightseeing.open") {
+                    const itineraryCityId = (payload.itineraryCityId ??
+                      payload.itinerary_city_id ??
+                      payload.city_id) as string | undefined;
+                    const matchedCity = itinerary?.cities?.find(
+                      (c: any) => String(c?.id) === String(itineraryCityId),
+                    );
+                    if (!matchedCity) {
+                      sendWidgetAction(action.type, payload);
+                      return;
+                    }
+                    setSightseeingDrawer({
+                      show: true,
+                      itinerary_city_id: itineraryCityId,
+                      cityId: matchedCity?.city?.id,
+                      cityName: matchedCity?.city?.name,
+                      cityData: matchedCity,
+                      startDate: (payload.startDate ??
+                        payload.start_date ??
+                        matchedCity?.start_date) as string | undefined,
+                      endDate: (payload.endDate ??
+                        payload.end_date ??
+                        matchedCity?.end_date) as string | undefined,
+                    });
+                    const url = new URL(window.location.href);
+                    url.searchParams.set("drawer", "addCityTaxi");
+                    if (itineraryCityId) {
+                      url.searchParams.set("itinerary_city_id", itineraryCityId);
+                    }
+                    window.history.pushState({}, "", url.toString());
+                    return;
+                  }
+
+                  // ── Visa ──────────────────────────────────────────────
+                  // visa.open opens VisaSearchDrawer (the same drawer the
+                  // booking slide's "Add Visa" CTA opens). Drawer fetches
+                  // its own catalogue so the click payload doesn't need
+                  // to carry visa data.
+                  if (action.type === "visa.open") {
+                    setVisaDrawer({ show: true });
+                    return;
+                  }
+
+                  // ── eSIM ──────────────────────────────────────────────
+                  // esim.open opens EsimPackagesDrawer (the same drawer the
+                  // booking slide's "Add eSIM" CTA opens).
+                  if (action.type === "esim.open") {
+                    setEsimDrawer({ show: true });
+                    return;
+                  }
+
                   sendWidgetAction(action.type, payload);
                 }}
               />
             ))}
 
             {showError && (
-              <div className="mt-2 px-4 py-2.5 bg-[#f8fafc] border border-red-100 rounded-[24px] text-xs text-red-600 flex items-center gap-2">
+              <div className="mt-2 px-2.5 py-2.5 text-xs text-red-600 flex items-center gap-2">
                 <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 flex-shrink-0">
                   <path
                     fillRule="evenodd"
@@ -2520,13 +2631,13 @@ const handleShowLogin = useCallback(() => {
                   />
                 </svg>
                 {error}
-                <button
+                {/* <button
                   onClick={() => setErrorDismissed(true)}
-                  className="ml-auto text-red-400 hover:text-red-600"
+                  // className="ml-auto text-red-400 hover:text-red-600"
                   aria-label="Dismiss error"
                 >
                   ✕
-                </button>
+                </button> */}
               </div>
             )}
 
@@ -2566,7 +2677,7 @@ const handleShowLogin = useCallback(() => {
 
       {/* ── Quick reply chips ─────────────────────────────────────────────── */}
       {/* Hidden while itinerary creation is in progress — no quick replies/CTAs allowed */}
-      {quickReplies.length > 0 && !isStreaming && !isItineraryCompleting && (
+      {quickReplies.length > 0 && !isStreaming && !isComposerLocked && (
         <div className="flex-shrink-0 px-6 pt-2 pb-1">
           <div className="mx-auto">
             <div
@@ -2577,7 +2688,7 @@ const handleShowLogin = useCallback(() => {
                 <SingleChips
                   key={idx}
                   onClick={() => handleQuickReply(reply)}
-                  disabled={isStreaming || isItineraryCompleting}
+                  disabled={isStreaming || isComposerLocked}
                 >
                   {reply.label}
                 </SingleChips>
@@ -2596,16 +2707,23 @@ const handleShowLogin = useCallback(() => {
             onSubmit={handleSubmit}
             onStop={cancelStream}
             isStreaming={isStreaming}
-            disabled={isItineraryCompleting}
-            placeholder={isItineraryCompleting ? "Planning your trip…" : "Ask me anything"}
-            showAttach={!isItineraryCompleting}
+            disabled={isComposerLocked}
+            placeholder={
+              isItineraryCompleting
+                ? "Planning your trip…"
+                : isItineraryPolling
+                ? "Updating your itinerary…"
+                : "Ask me anything"
+            }
+            showAttach={!isComposerLocked}
             onFilesSelected={handleFilesSelected}
             attachments={attachments}
             onRemoveAttachment={handleRemoveAttachment}
           />
         </div>
-        {/* Overlay blocks all typing/interaction while itinerary creation is in progress */}
-        {isItineraryCompleting && (
+        {/* Overlay blocks all typing/interaction while itinerary creation
+            or an update/edit poll is in progress. */}
+        {isComposerLocked && (
           <div
             className="absolute inset-0 cursor-not-allowed"
             style={{ background: "rgba(255,255,255,0.55)", zIndex: 5 }}
@@ -2937,6 +3055,55 @@ const handleShowLogin = useCallback(() => {
           handleCloseDrawer={() => setPoiDrawer({ show: false })}
         />
       )}
+
+      {/* ── Sightseeing / Add City Taxi Drawer ──────────────────────────── */}
+      {/* Opened by sightseeing.open widget actions. Renders TransferEditDrawer
+          in multicity (intra-city) mode — same drawer the city header's
+          "Add Taxi" CTA opens on the /itinerary page. */}
+      {sightseeingDrawer.show && sightseeingDrawer.cityData && (
+        <TransferEditDrawer
+          mercury
+          isMercury
+          showDrawer={sightseeingDrawer.show}
+          drawerType="multicity"
+          booking_type="multicity"
+          origin_itinerary_city_id={sightseeingDrawer.itinerary_city_id}
+          destination_itinerary_city_id={sightseeingDrawer.itinerary_city_id}
+          originCityId={sightseeingDrawer.cityId}
+          destinationCityId={sightseeingDrawer.cityId}
+          city={sightseeingDrawer.cityName}
+          dcity={sightseeingDrawer.cityName}
+          oCityData={sightseeingDrawer.cityData}
+          dCityData={sightseeingDrawer.cityData}
+          check_in={sightseeingDrawer.startDate}
+          setShowLoginModal={setShowLoginModal}
+          handleClose={() => {
+            setSightseeingDrawer({ show: false });
+            const url = new URL(window.location.href);
+            if (url.searchParams.get("drawer") === "addCityTaxi") {
+              url.searchParams.delete("drawer");
+              url.searchParams.delete("itinerary_city_id");
+              window.history.pushState({}, "", url.toString());
+            }
+          }}
+        />
+      )}
+
+      {/* ── Visa Search Drawer ──────────────────────────────────────────── */}
+      {/* Opened by visa.open widget actions. Drawer self-fetches visa
+          options from the ancillary service. */}
+      <VisaSearchDrawer
+        show={visaDrawer.show}
+        onHide={() => setVisaDrawer({ show: false })}
+      />
+
+      {/* ── eSIM Packages Drawer ────────────────────────────────────────── */}
+      {/* Opened by esim.open widget actions. Drawer self-fetches eSIM
+          packages from the ancillary service. */}
+      <EsimPackagesDrawer
+        show={esimDrawer.show}
+        onHide={() => setEsimDrawer({ show: false })}
+      />
     </div>
   );
 }

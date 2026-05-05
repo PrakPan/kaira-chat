@@ -1585,6 +1585,13 @@ const Details = (props) => {
 
   const handleRepriceBookings = async () => {
     setRepriceLoading(true);
+    // Reset statuses to PENDING and lock the chat composer until
+    // ItineraryContainer's poll resolves them all back to SUCCESS/FAILURE.
+    dispatch(setItineraryStatus("itinerary_status", "PENDING"));
+    dispatch(setItineraryStatus("transfers_status", "PENDING"));
+    dispatch(setItineraryStatus("hotels_status", "PENDING"));
+    dispatch(setItineraryStatus("pricing_status", "PENDING"));
+    dispatch(setItineraryStatus("is_polling", true));
     try {
       const response = await repriceBookings.get(
         `${router.query.id}/reprice/bookings`,
@@ -1615,6 +1622,9 @@ const Details = (props) => {
       }
     } catch (error) {
       console.error("Error Repricing :", error);
+      // Request failed before any polling could run — release the chat
+      // lock so the user isn't stuck.
+      dispatch(setItineraryStatus("is_polling", false));
       dispatch(
         openNotification({
           text:

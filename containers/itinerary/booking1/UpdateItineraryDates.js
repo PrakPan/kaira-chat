@@ -4,6 +4,7 @@ import { FaPen } from "react-icons/fa";
 import { FaX } from "react-icons/fa6";
 import { axiosUpdateItineraryDates } from "../../../services/itinerary/daybyday/preview";
 import setItinerary from "../../../store/actions/itinerary";
+import setItineraryStatus from "../../../store/actions/itineraryStatus";
 import { useRouter } from "next/router";
 import "react-dates/initialize";
 import "react-dates/lib/css/_datepicker.css";
@@ -424,6 +425,13 @@ const UpdateItineraryDates = ({
     }
 
     setIsLoading(true);
+    // Reset statuses to PENDING and lock the chat composer until the
+    // ItineraryContainer poll triggered by onUpdateSuccess resolves them.
+    dispatch(setItineraryStatus("itinerary_status", "PENDING"));
+    dispatch(setItineraryStatus("transfers_status", "PENDING"));
+    dispatch(setItineraryStatus("hotels_status", "PENDING"));
+    dispatch(setItineraryStatus("pricing_status", "PENDING"));
+    dispatch(setItineraryStatus("is_polling", true));
 
     const payload = {
       start_date: moment(dateObj.start).format("YYYY-MM-DD"),
@@ -459,6 +467,8 @@ const UpdateItineraryDates = ({
       setIsEditing(false);
       setFocusedInput(null);
     } catch (error) {
+      // Request failed before the poll could run — release the chat lock.
+      dispatch(setItineraryStatus("is_polling", false));
       let errorMsg =
         error.response?.data?.errors?.[0]?.detail?.[0] ||
         "There seems to be a problem, please try again!";
