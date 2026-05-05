@@ -44,7 +44,7 @@ const thailandThemeConfig: ThemeConfig = {
       cards: [
         {
           image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/BangkokR1.jpg",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/Bangkok — Streets to Skybars.jpg ",
           label: "Bangkok — Streets to Skybars",
           tags: "City · Food",
           description: "A city worth three days.",
@@ -53,7 +53,7 @@ const thailandThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/ChiangMaiR1.jpg",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/ChiangRai.jpg ",
           label: "Chiang Mai — Slow Northern Thailand",
           tags: "Culture · North Thailand",
           description: "A calmer side of Thailand.",
@@ -62,7 +62,7 @@ const thailandThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/KohLantaR1.jpg",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/Koh Lanta — Quiet Island Escape.png ",
           label: "Koh Lanta — Quiet Island Escape",
           tags: "Beach · Relaxed",
           description: "Thailand beaches without crowds.",
@@ -71,7 +71,7 @@ const thailandThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/ChiangRaiR1.jpg",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/ChiangMai.jpg ",
           label: "Chiang Rai — Thailand's Artistic North",
           tags: "Culture · Offbeat",
           description: "Temples, art, and the far north.",
@@ -80,7 +80,7 @@ const thailandThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/KohTaoR1.jpg",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/Koh Tao — The Underwater Side of Thailand.jpg ",
           label: "Koh Tao — The Underwater Side of Thailand",
           tags: "Diving · Island",
           description: "Thailand's best island for diving.",
@@ -95,7 +95,7 @@ const thailandThemeConfig: ThemeConfig = {
       cards: [
         {
           image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/SongkranR2.jpg",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/Songkran — Thailand’s Biggest Festival.png ",
           label: "Songkran — Thailand's Biggest Festival",
           sublabel: "Book by January — Chiang Mai fills 3 months out",
           description: "Biggest water fight on earth.",
@@ -104,7 +104,7 @@ const thailandThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/LoyKrathongR2.jpg",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/Loy Krathong — Thailand’s Most Beautiful Night.jpg ",
           label: "Loy Krathong — Thailand's Most Beautiful Night",
           sublabel: "November · book the lantern release early",
           description: "Thousands of lanterns. One night.",
@@ -113,7 +113,7 @@ const thailandThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/VegFestR2.jpg",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/Vegetarian Festival — Phuket Experience.png ",
           label: "Vegetarian Festival — Phuket Experience",
           sublabel: "October · 9 days of rituals",
           description: "Nine days of rituals in Phuket.",
@@ -122,7 +122,7 @@ const thailandThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/IslandsPeakR2.jpg",
+           "https://i.travelapi.com/lodging/5000000/4310000/4303800/4303775/2043dea5_b.jpg",
           label: "Thailand Islands at Their Best",
           sublabel: "Peak weather window · book early",
           description: "When Thailand feels like paradise.",
@@ -131,7 +131,7 @@ const thailandThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/FullMoonR2.jpg",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/Full Moon Party -- Koh Phangan.webp ",
           label: "Full Moon Party — Koh Phangan",
           sublabel: "Monthly · plan around the moon",
           description: "Music, fire, and endless night.",
@@ -146,7 +146,7 @@ const thailandThemeConfig: ThemeConfig = {
       cards: [
         {
           image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/FirstTimeR3.jpg",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/First Time in Thailand.jpg ",
           label: "First Time in Thailand",
           sublabel: "All Regions · First Timer",
           description: "City, culture, and beaches in one trip.",
@@ -155,7 +155,7 @@ const thailandThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/ThailandKidsR3.jpg",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/Thailand With Kids.png ",
           label: "Thailand With Kids",
           sublabel: "Family · All Ages",
           description: "Fun beaches, wildlife, and family time.",
@@ -164,7 +164,7 @@ const thailandThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/HoneymoonR3.jpg",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/Thailand Honeymoon.png ",
           label: "Thailand Honeymoon",
           sublabel: "Romantic · Beach + Culture",
           description: "Romance, culture, and island luxury.",
@@ -173,7 +173,7 @@ const thailandThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/FoodiesR3.jpg",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/Thailand for Foodies.jpg ",
           label: "Thailand for Foodies",
           sublabel: "Food · Street to Fine",
           description: "Street food to cooking class.",
@@ -182,7 +182,7 @@ const thailandThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/IslandsOnlyR3.jpg",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/Islands Only -- 10 Days.jpg",
           label: "Islands Only — 10 Days",
           sublabel: "Beach · Island Hopping",
           description: "Nothing but beaches and islands.",
@@ -197,7 +197,7 @@ const thailandThemeConfig: ThemeConfig = {
       cards: [
         {
           image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/MuayThaiR4.jpg",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/Muay Thai -- Train with a Real Coach.jpg ",
           label: "Muay Thai — Train with a Real Coach",
           tags: "Sport · Bangkok or Chiang Mai",
           description: "Not a show. An actual session.",
@@ -206,7 +206,7 @@ const thailandThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/CookingClassR4.jpg",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/Thai Cooking Class — Chiang Mai Food Experience.png ",
           label: "Thai Cooking Class — Chiang Mai Food Experience",
           tags: "Food · Chiang Mai",
           description: "Learn the dishes Thailand is known for.",
@@ -215,7 +215,7 @@ const thailandThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/NightTrainR4.jpg",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/Overnight Train -- Bangkok to Chiang Mai.png ",
           label: "Overnight Train — Bangkok to Chiang Mai",
           tags: "Experience · Night Train",
           description: "Thailand's most popular train journey.",
@@ -224,7 +224,7 @@ const thailandThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/SimilanR4.jpg",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/Similan Islands — Thailand’s Best Snorkelling.jpg ",
           label: "Similan Islands — Thailand's Best Snorkelling",
           tags: "Diving · Andaman Sea",
           description: "Clear water, reefs, and marine life.",
@@ -233,7 +233,7 @@ const thailandThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/DoiInthanonR4.jpg",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/Doi Inthanon - Thailand's Highest Point.jpg ",
           label: "Doi Inthanon — Thailand's Highest Point",
           tags: "Nature · Chiang Mai Day Trip",
           description: "Waterfalls, hill tribes, cold air.",

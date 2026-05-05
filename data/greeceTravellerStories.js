@@ -26,7 +26,7 @@ const greeceTravellerStories = [
  
   {
     id: 4,
-    name: "Hsb",
+    name: "Vibhuti",
     tripName: "7N Romantic Escape — Athens, Santorini, Mykonos, Athens",
     duration: "7 Nights",
     groupType: "Family Trip",
@@ -43,7 +43,7 @@ const greeceTravellerStories = [
     shortDescription:
       "A family of two adults and one child (age 10) did 7 nights across Athens, Santorini, and Mykonos, looping back to Athens at the end — a trip that balanced ancient history with island romance and kept the pace genuinely family-doable. Athens 2 nights at Great Athens Hotel: Acropolis and its surroundings, Roman Agora, Temple of Athena Nike, and the Acropolis Museum on day one. Day 2 began with a 4-hour guided Acropolis, Parthenon and Acropolis Museum tour and ended with a 5-hour sunset catamaran cruise over the Saronic Gulf — the child's clear favourite moment of the whole trip. Santorini 2 nights: a wine tour in Fira, Amoudi Bay, and Oia Village on arrival day. Day 2 brought the Venetian Castles in the morning, dinner at Ambrosia in Oia, and a 5-hour sunset cruise with swim stops, dinner and drinks. Mykonos 2 nights: Delos archaeological site, Matoyánni Street, Agia Anna Beach, and a 2-hour romantic sunset cruise with drinks. The final day back in Athens — Acropolis again, Temple of Athena Nike, Temple of Hephaestus, lunch at Lithos, and Philopappos Hill at sunset — gave the trip a clean, unhurried close.",
     viewItineraryLink:
-      "https://thetarzanway.com/chat/34bfde26-4b6f-4c4b-9d08-71c53e3b20e4",
+      "https://thetarzanway.com/chat/d918bc52-e431-407f-9f6e-b8b178f94567",
     rating: 4.7,
     prompt:
       "Plan a 7-night Greece family trip for 2 adults and 1 child aged 10 — Athens 2 nights, Santorini 2 nights, Mykonos 2 nights, Athens 1 night to close. We want the Acropolis and surroundings, Roman Agora, Temple of Athena Nike, and a guided Acropolis tour. Include a sunset catamaran cruise out of Athens over the Saronic Gulf. In Santorini, we want a wine tour in Fira, Amoudi Bay, Oia Village, Venetian Castles, and a sunset cruise with swim stops and dinner. In Mykonos, include Delos, Matoyánni Street, Agia Anna Beach, and a sunset cruise with drinks. Close with a relaxed final day in Athens — Temple of Hephaestus, Lithos lunch, Philopappos Hill. 4-star hotels, breakfast included, family-doable pace.",
@@ -67,14 +67,14 @@ const greeceTravellerStories = [
     shortDescription:
       "Sajal and his partner flew in from Delhi for 7 nights across Athens, Mykonos, and Santorini — a couple's trip that went deep on both culture and adventure. Athens 2 nights at Evita Asty: Acropolis and surroundings, Temple of Athena Nike, and Temple of Hephaestus in the morning, Michelin-starred lunch at Spondi, then the Erechtheion in the evening. Day 2 covered the Acropolis Museum, Roman Agora, lunch at Lithos, the Old Monastery of Daphni, and the Panathenaic Stadium. Mykonos 2 nights at Petinaros Hotel: Delos archaeological site, Lena's House Folk Museum, Ano Mera Village, and the Windmills at golden hour on day one. Day 2 was a 3-hour watersport adventure at Super Paradise Beach — jet skis, tubes, the works. Santorini 3 nights at Irigeneia Hotel: Venetian Castles, the caldera hike from Fira toward Oia, dinner at Ambrosia, and Amoudi Bay on arrival day. Day 2 was the centrepiece — a 5-hour sea kayaking trip along the coastline with a light lunch. Day 3 closed with Akrotiri excavations, Ancient Thera, the Museum of Prehistoric Thera, and the Archaeological Museum of Thera.",
     viewItineraryLink:
-      "https://thetarzanway.com/chat/a884b626-cea4-4287-841a-d5c54a780b5c",
+      "https://thetarzanway.com/chat/27020a6c-0d57-4f1b-b6d5-b238ca77a53a",
     rating: 4.8,
     prompt:
       "Plan a 7-night Greece couple's trip from Delhi — Athens 2 nights, Mykonos 2 nights, Santorini 3 nights. In Athens we want the Acropolis, Temple of Athena Nike, Temple of Hephaestus, Erechtheion, Acropolis Museum, Roman Agora, Panathenaic Stadium, and lunch at Spondi. In Mykonos we want Delos, Lena's House, Ano Mera Village, the Windmills, and a watersport session at Super Paradise Beach. In Santorini we want the caldera hike from Fira to Oia, Amoudi Bay, Venetian Castles, a 5-hour sea kayaking trip with lunch, Akrotiri excavations, Ancient Thera, and the Museum of Prehistoric Thera. 4 to 5-star hotels, breakfast included, mix of culture and adventure.",
   },
    {
     id: 2,
-    name: "Prakhar Pandey",
+    name: "Pratyush",
     tripName: "10N Enchanting Greece — Athens, Santorini, Mykonos",
     duration: "10 Nights",
     groupType: "Couple",
@@ -89,7 +89,7 @@ const greeceTravellerStories = [
       "https://i.travelapi.com/lodging/3000000/2840000/2836100/2836021/b174335e_b.jpg",
     ],
     shortDescription:
-      "Prakhar and his partner did 10 nights across Athens, Santorini, and Mykonos — a couple's trip built around culture, romance, and island magic, flying in from Delhi. Athens 2 nights at AthensWas Design Hotel: arriving into Plaka's charming lanes, a late lunch at To Kati Allo near the Acropolis, and sunset drinks at Brettos. Day 2 covered the Acropolis Museum, a yogurt break at Fresko, panoramic views from Mount Lycabettus, and farewell cocktails at A for Athens with the lit-up skyline. Santorini 4 nights at Marybill: arriving to Fira's caldera streets, dinner at Ambrosia in Oia, and a stroll through boutiques. Day 2 was the cliffside hike from Fira toward Oia, galleries in Oia, a swim at Amoudi Bay, and seafood dinner right at the water. Day 3 hit Red Beach and a 4-hour tour of 3 wineries with food pairing. Day 4 was the centrepiece — a 5-hour catamaran cruise with meal and open bar, then farewell cocktails at V Lounge over the caldera. Mykonos 4 nights at Mykonos Bay Resort & Villas: Little Venice, Panagia Paraportiani, Matogianni lanes, Ano Mera village, Agia Anna Beach, a 6-hour Delos and Rhenia islands boat trip, a sunset yacht cruise, and a final day at Super Paradise Beach on reserved sunbeds.",
+      "Pratyush and his partner did 10 nights across Athens, Santorini, and Mykonos — a couple's trip built around culture, romance, and island magic, flying in from Delhi. Athens 2 nights at AthensWas Design Hotel: arriving into Plaka's charming lanes, a late lunch at To Kati Allo near the Acropolis, and sunset drinks at Brettos. Day 2 covered the Acropolis Museum, a yogurt break at Fresko, panoramic views from Mount Lycabettus, and farewell cocktails at A for Athens with the lit-up skyline. Santorini 4 nights at Marybill: arriving to Fira's caldera streets, dinner at Ambrosia in Oia, and a stroll through boutiques. Day 2 was the cliffside hike from Fira toward Oia, galleries in Oia, a swim at Amoudi Bay, and seafood dinner right at the water. Day 3 hit Red Beach and a 4-hour tour of 3 wineries with food pairing. Day 4 was the centrepiece — a 5-hour catamaran cruise with meal and open bar, then farewell cocktails at V Lounge over the caldera. Mykonos 4 nights at Mykonos Bay Resort & Villas: Little Venice, Panagia Paraportiani, Matogianni lanes, Ano Mera village, Agia Anna Beach, a 6-hour Delos and Rhenia islands boat trip, a sunset yacht cruise, and a final day at Super Paradise Beach on reserved sunbeds.",
     viewItineraryLink:
       "https://thetarzanway.com/chat/a884b626-cea4-4287-841a-d5c54a780b5c",
     rating: 4.9,

@@ -104,7 +104,7 @@ const greeceThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://images.unsplash.com/photo-1533104816931-20fa691ff6ca?w=1600&auto=format&fit=crop&q=80",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Epidaurus.png",
           label: "Epidaurus — The Original Theatre",
           sublabel: "June–August · 2,400 years old",
           description: "2,400 years old.",
