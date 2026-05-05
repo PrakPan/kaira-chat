@@ -1798,17 +1798,6 @@ const TransferEditDrawer = (props) => {
                   </div>
                 )}
 
-                {/* Already-added banner (sightseeing) */}
-                {multicityTab === "sightseeing" && existingSightseeingBooking && (
-                  <div className="w-full flex items-center gap-2 rounded-md-lg border-sm border-solid border-[#5CBA66] bg-[#F1FAF2] text-[#2F7A36] px-md py-sm text-sm-md font-500">
-                    <PiTaxi className="text-base" />
-                    <span>
-                      Sightseeing taxi already added — change the dates below
-                      and pick a cab to update it.
-                    </span>
-                  </div>
-                )}
-
                 {/* Sightseeing date filters */}
                 {multicityTab === "sightseeing" &&
                   sightseeingDayOptions.length > 0 && (
@@ -1891,7 +1880,29 @@ const TransferEditDrawer = (props) => {
                   existingSightseeingBooking &&
                   !sightseeingDatesChanged &&
                   !sightseeingRefetching && (
-                    <BookedSightseeingCard booking={existingSightseeingBooking} />
+                    <BookedSightseeingCard
+                      booking={existingSightseeingBooking}
+                      onClick={() => {
+                        const cityKey =
+                          origin_itinerary_city_id ||
+                          destination_itinerary_city_id;
+                        router.push(
+                          {
+                            pathname: window.location.pathname,
+                            query: {
+                              ...(router.query.id
+                                ? { id: router.query.id }
+                                : {}),
+                              drawer: "SightSeeing",
+                              bookingId: existingSightseeingBooking?.id,
+                              itinerary_city_id: cityKey,
+                            },
+                          },
+                          undefined,
+                          { scroll: false },
+                        );
+                      }}
+                    />
                   )}
 
                 {/* Sightseeing (and any other non-airport, non-multicity) suggestions */}
@@ -1964,6 +1975,27 @@ const TransferEditDrawer = (props) => {
                           <BookedAirportCard
                             booking={existing}
                             isPickup={pk}
+                            onClick={() => {
+                              const cityKey =
+                                origin_itinerary_city_id ||
+                                destination_itinerary_city_id;
+                              router.push(
+                                {
+                                  pathname: window.location.pathname,
+                                  query: {
+                                    ...(router.query.id
+                                      ? { id: router.query.id }
+                                      : {}),
+                                    drawer: "AirportTaxiDetail",
+                                    bookingId: existing?.id,
+                                    itinerary_city_id: cityKey,
+                                    transferType: pk ? "pickup" : "drop",
+                                  },
+                                },
+                                undefined,
+                                { scroll: false },
+                              );
+                            }}
                           />
                         ) : (
                           <AirportPickupDropCard
@@ -5451,7 +5483,7 @@ const MultiCityTripSuggestion = ({
   );
 };
 
-const BookedSightseeingCard = ({ booking }) => {
+const BookedSightseeingCard = ({ booking, onClick }) => {
   const isDesktop = useMediaQuery("(min-width:768px)");
   const currency = useSelector((state) => state.currency);
   const td = booking?.transfer_details;
@@ -5479,7 +5511,19 @@ const BookedSightseeingCard = ({ booking }) => {
       : baseName;
 
   return (
-    <div className="w-full flex flex-row gap-2 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm border-x-2 border-t-2 border-b-4 border-[#5CBA66] bg-[#F1FAF2]">
+    <div
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onClick={onClick}
+      onKeyDown={(e) => {
+        if (!onClick) return;
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onClick();
+        }
+      }}
+      className={`w-full flex flex-row gap-2 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm border-x-2 border-t-2 border-b-4 border-[#5CBA66] bg-[#F1FAF2] ${onClick ? "cursor-pointer hover:shadow-md transition-shadow" : ""}`}
+    >
       {isDesktop && (
         <div className="w-[80px] h-[70px] px-2 bg-white rounded-xl flex items-center justify-center">
           <TransfersIcon
@@ -5501,8 +5545,13 @@ const BookedSightseeingCard = ({ booking }) => {
               />
             </div>
           )}
-          <div className="flex flex-col gap-1">
-            <div className="text-[16px] font-medium">{displayName}</div>
+          <div className="flex flex-col gap-1 flex-1 min-w-0">
+            <div className="flex flex-row items-start justify-between gap-2">
+              <div className="text-[16px] font-medium">{displayName}</div>
+              <span className="shrink-0 text-[10px] font-600 px-2 py-[2px] rounded-full bg-[#5CBA66] text-white whitespace-nowrap">
+                Added to Itinerary
+              </span>
+            </div>
             {td?.distance?.value ? (
               <div className="text-[#7A7A7A] text-[14px] font-normal">
                 Distance: {td.distance.value} Kms
@@ -5517,7 +5566,6 @@ const BookedSightseeingCard = ({ booking }) => {
         </div>
 
         <div className="flex flex-col gap-1">
-          <div className="text-[14px] font-semibold">Booked Cab</div>
           <div className="text-[#636366] text-[14px] font-normal">
             {cab?.model_name || cab?.type || "Cab"}
             {total != null && Number.isFinite(Number(total)) ? (
@@ -5555,7 +5603,7 @@ const BookedSightseeingCard = ({ booking }) => {
   );
 };
 
-const BookedAirportCard = ({ booking, isPickup }) => {
+const BookedAirportCard = ({ booking, isPickup, onClick }) => {
   const isDesktop = useMediaQuery("(min-width:768px)");
   const currency = useSelector((state) => state.currency);
   const td = booking?.transfer_details;
@@ -5598,7 +5646,19 @@ const BookedAirportCard = ({ booking, isPickup }) => {
       (toName && isPickup ? "" : "");
 
   return (
-    <div className="w-full flex flex-row gap-2 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm border-x-2 border-t-2 border-b-4 border-[#5CBA66] bg-[#F1FAF2]">
+    <div
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onClick={onClick}
+      onKeyDown={(e) => {
+        if (!onClick) return;
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onClick();
+        }
+      }}
+      className={`w-full flex flex-row gap-2 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm border-x-2 border-t-2 border-b-4 border-[#5CBA66] bg-[#F1FAF2] ${onClick ? "cursor-pointer hover:shadow-md transition-shadow" : ""}`}
+    >
       {isDesktop && (
         <div className="w-[80px] h-[70px] px-2 bg-white rounded-xl flex items-center justify-center">
           <TransfersIcon
@@ -5620,8 +5680,13 @@ const BookedAirportCard = ({ booking, isPickup }) => {
               />
             </div>
           )}
-          <div className="flex flex-col gap-1">
-            <div className="text-[16px] font-medium">{headline}</div>
+          <div className="flex flex-col gap-1 flex-1 min-w-0">
+            <div className="flex flex-row items-start justify-between gap-2">
+              <div className="text-[16px] font-medium">{headline}</div>
+              <span className="shrink-0 text-[10px] font-600 px-2 py-[2px] rounded-full bg-[#5CBA66] text-white whitespace-nowrap">
+                Added to Itinerary
+              </span>
+            </div>
             {fromName || toName ? (
               <div className="text-[#7A7A7A] text-[14px] font-normal">
                 {fromName} {fromName && toName ? "→" : ""} {toName}
@@ -5638,7 +5703,6 @@ const BookedAirportCard = ({ booking, isPickup }) => {
         </div>
 
         <div className="flex flex-col gap-1">
-          <div className="text-[14px] font-semibold">Booked Cab</div>
           <div className="text-[#636366] text-[14px] font-normal">
             {cab?.model_name || cab?.type || "Cab"}
             {total != null && Number.isFinite(Number(total)) ? (

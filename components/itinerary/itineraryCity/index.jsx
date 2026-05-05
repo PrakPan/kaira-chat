@@ -19,13 +19,20 @@ import { bookingDetails } from "../../../services/bookings/FetchAccommodation";
 import useMediaQuery from "../../media";
 import POIDetailsDrawer from "../../drawers/poiDetails/POIDetailsDrawer";
 import TransferDrawer from "../../../containers/itinerary/TransferDrawer";
+import PickupDropDrawer from "../../../containers/itinerary/PickupDropDrawer";
 import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
-import { updateTransferBookings } from "../../../store/actions/transferBookingsStore";
+import {
+  updateTransferBookings,
+  updateAirportTransferBooking,
+} from "../../../store/actions/transferBookingsStore";
 import SkeletonCard from "../../ui/SkeletonCard";
 import { setCloneItineraryDrawer } from "../../../store/actions/cloneItinerary";
 import AccommodationDetailDrawer from "../../modals/AccommodationDetailDrawer";
 import ActivityAddDrawer from "../../drawers/poiDetails/activityAddDrawer";
 import TransferEditDrawer from "../../drawers/routeTransfer/TransferEditDrawer";
+import axios from "axios";
+import { MERCURY_HOST } from "../../../services/constants";
+import { useHandleClose } from "../../../hooks/useHandleClose";
 
 const FloatingView = styled.div`
   position: sticky;
@@ -200,7 +207,77 @@ const ItineraryCity = (props) => {
     date,
     bookingId,
     city_id,
+    oItineraryCity,
+    dItineraryCity,
+    drawerType,
+    doj,
   } = router?.query;
+
+  const handleDrawerClose = useHandleClose();
+  const airportBookingsForCity = useSelector(
+    (state) =>
+      state?.TransferBookings?.transferBookings?.airport?.[props?.city?.id] ||
+      [],
+  );
+  const airportBookingForChange = airportBookingsForCity.find(
+    (b) => String(b?.id) === String(bookingId),
+  );
+
+  const handleAirportTransferChangeSubmit = async (transferData) => {
+    if (!localStorage?.getItem("access_token")) {
+      props?.setShowLoginModal?.(true);
+      return;
+    }
+    try {
+      const cityKey = props?.city?.id || props?.city?.gmaps_place_id;
+      const bookingPayload = {
+        transfer_type: "airport",
+        source_itinerary_city: cityKey,
+        destination_itinerary_city: null,
+        is_pickup: transferData.transferType === "pickup",
+        is_drop: transferData.transferType === "drop",
+        source: transferData?.source,
+        trace_id: transferData?.traceId,
+        result_index: transferData?.selectedQuote?.result_index,
+        booking_id: transferData?.booking_id,
+      };
+      const response = await axios.post(
+        `${MERCURY_HOST}/api/v1/itinerary/${currentItineraryId}/bookings/taxi/`,
+        bookingPayload,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        },
+      );
+      if (response.status === 200 || response.status === 201) {
+        dispatch(updateAirportTransferBooking(`${cityKey}`, response.data));
+        if (props?._updatePaymentHandler) props._updatePaymentHandler();
+        if (props?.getPaymentHandler) props.getPaymentHandler();
+        dispatch(
+          openNotification({
+            type: "success",
+            text: `${transferData.transferType === "pickup" ? "Pickup" : "Drop"} transfer updated successfully`,
+            heading: "Success!",
+          }),
+        );
+      }
+      handleDrawerClose();
+    } catch (error) {
+      const errorMsg =
+        error?.response?.data?.errors?.[0]?.message?.[0] ||
+        error?.response?.data?.message ||
+        error?.message ||
+        "Something went wrong, please try again.";
+      dispatch(
+        openNotification({
+          text: errorMsg,
+          heading: "Error!",
+          type: "error",
+        }),
+      );
+    }
+  };
 
   const [draftHotelDrawer, setDraftHotelDrawer] = useState({ show: false, id: null });
   const [showActivityDrawer, setShowActivityDrawer] = useState(false);
@@ -724,6 +801,68 @@ const ItineraryCity = (props) => {
             setError={props?.setError}
             isIntracity={true}
             isSightseeing={true}
+          />
+        )}
+
+      {/* Airport Pickup/Drop Booking Detail Drawer */}
+      {drawer === "AirportTaxiDetail" &&
+        String(itinerary_city_id) === String(props.city.id) &&
+        bookingId && (
+          <TransferDrawer
+            show={true}
+            setHandleShow={setHandleShowTaxi}
+            bookingData={taxiData}
+            booking_type={"Taxi"}
+            booking_id={bookingId}
+            loading={taxiLoading}
+            handleDelete={handleDeleteTaxi}
+            origin_itinerary_city_id={
+              props?.city?.id || props?.city?.gmaps_place_id
+            }
+            destination_itinerary_city_id={
+              props?.city?.id || props?.city?.gmaps_place_id
+            }
+            itinerary_city_id={props?.city?.id || props?.city?.gmaps_place_id}
+            setShowDrawer={setHandleShowTaxi}
+            _updateFlightBookingHandler={props?._updateFlightBookingHandler}
+            _updatePaymentHandler={props?._updatePaymentHandler}
+            getPaymentHandler={props?.getPaymentHandler}
+            setShowLoginModal={props?.setShowLoginModal}
+            setError={props?.setError}
+            isAirport={true}
+            AirportTransferType={router?.query?.transferType}
+          />
+        )}
+
+      {/* Airport Pickup/Drop Change/Search Drawer (opened from "Change" in detail) */}
+      {drawer === "addPickupDrop" &&
+        (String(oItineraryCity) === String(props?.city?.id) ||
+          String(oItineraryCity) === String(props?.city?.gmaps_place_id)) &&
+        (String(dItineraryCity) === String(props?.city?.id) ||
+          String(dItineraryCity) === String(props?.city?.gmaps_place_id)) && (
+          <PickupDropDrawer
+            isOpen={true}
+            onClose={handleDrawerClose}
+            transferType={drawerType}
+            bookingMode={"multicity"}
+            originCityName={props?.city?.city?.name}
+            destinationCityName={props?.city?.city?.name}
+            origin_itinerary_city_id={
+              props?.city?.id || props?.city?.gmaps_place_id
+            }
+            destination_itinerary_city_id={
+              props?.city?.id || props?.city?.gmaps_place_id
+            }
+            originCityId={props?.city?.city?.id}
+            destinationCityId={props?.city?.city?.id}
+            booking_id={bookingId}
+            doj={doj || airportBookingForChange?.check_in}
+            trips={airportBookingForChange?.transfer_details?.trips}
+            onSubmit={handleAirportTransferChangeSubmit}
+            _updateFlightBookingHandler={props?._updateFlightBookingHandler}
+            _updatePaymentHandler={props?._updatePaymentHandler}
+            getPaymentHandler={props?.getPaymentHandler}
+            setShowLoginModal={props?.setShowLoginModal}
           />
         )}
 
