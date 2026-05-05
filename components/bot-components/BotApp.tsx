@@ -1606,7 +1606,13 @@ export default function BotApp({
           // would paint an empty itinerary panel on desktop — flip to "map"
           // so the user sees the map alongside the chat. Mobile defaults to
           // the chat tab in this case.
-          setViewMode("map");
+          if(data?.items?.data?.[0]?.content?.[0]?.text == "Hey Kaira! provide summary of my itinerary"){
+             setViewMode("itinerary");
+          }
+          else if(botMode == "p2"){
+            setViewMode("itinerary");
+          }
+          else setViewMode("map");
           setMobilePanel("chat");
         }
 

@@ -97,6 +97,57 @@ const starRating = (rating) => {
   return stars;
 };
 
+// ─── Hoisted subcomponents (kept outside parent so their identity is stable
+// across re-renders — otherwise every ImgSlot remounts on each setState and
+// the gallery flickers through skeletons). ────────────────────────────────
+
+const ImgSlot = ({
+  index,
+  area,
+  className: cls = "",
+  loaded,
+  src,
+  caption,
+  onLoad,
+  onError,
+}) => (
+  <Child area={area} className={cls}>
+    {loaded ? null : (
+      <div style={{ height: "100%", overflow: "hidden" }}>
+        <SkeletonCard lottieDimension="50rem" />
+      </div>
+    )}
+    <div style={{ display: loaded ? "block" : "none" }} className="relative h-full w-full">
+      <ImageLoader
+        url={src}
+        fit="cover"
+        width="100%"
+        height="100%"
+        onload={onLoad}
+        onfail={onError}
+        noLazy
+      />
+      {caption && (
+        <div className="bg-text-smokywhite absolute rounded-67br text-sm font-500 leading-lg px-md py-xs top-md left-md">
+          {caption}
+        </div>
+      )}
+    </div>
+  </Child>
+);
+
+const Skeleton = () => (
+  <div className="flex flex-col gap-4 animate-pulse mt-4">
+    <div className="h-6 w-40 bg-gray-200 rounded" />
+    <div className="h-8 w-64 bg-gray-200 rounded" />
+    <div className="h-4 w-48 bg-gray-200 rounded" />
+    <div className="h-[19rem] w-full bg-gray-200 rounded-2xl" />
+    <div className="h-4 w-full bg-gray-200 rounded" />
+    <div className="h-4 w-5/6 bg-gray-200 rounded" />
+    <div className="h-4 w-4/6 bg-gray-200 rounded" />
+  </div>
+);
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 /**
@@ -161,7 +212,10 @@ const HotelP1Detail = ({
   const fetchAccommodation = async () => {
     try {
       setLoading(true);
-      setData(null);
+      // Reset per-image load/error state so reopening the drawer (or switching
+      // accommodation) doesn't flash stale "loaded" branches with new URLs.
+      setImagesLoaded({ 0: false, 1: false, 2: false, 3: false });
+      setImagesError({ 0: false, 1: false, 2: false, 3: false });
       const token = localStorage.getItem("access_token");
       const res = await fetch(
         `${MERCURY_HOST}/api/v1/hotels/accommodation/${accommodationId}/`,
@@ -229,47 +283,16 @@ const HotelP1Detail = ({
     </div>
   ) : null;
 
-  // ── Image grid (reusable slot renderer) ───────────────────────────────────
+  // ── Image slot prop builder ───────────────────────────────────────────────
 
-  const ImgSlot = ({ index, area, className: cls = "" }) => (
-    <Child area={area} className={cls}>
-      {ImagesLoaded[index] ? null : (
-        <div style={{ height: "100%", overflow: "hidden" }}>
-          <SkeletonCard lottieDimension="50rem" />
-        </div>
-      )}
-      <div style={{ display: ImagesLoaded[index] ? "block" : "none" }} className="relative h-full w-full">
-        <ImageLoader
-          url={imgSrc(index)}
-          fit="cover"
-          width="100%"
-          height="100%"
-          onload={() => onImgLoad(index)}
-          onfail={() => onImgError(index)}
-          noLazy
-        />
-        {data?.images?.[index]?.caption && (
-          <div className="bg-text-smokywhite absolute rounded-67br text-sm font-500 leading-lg px-md py-xs top-md left-md">
-            {data.images[index].caption}
-          </div>
-        )}
-      </div>
-    </Child>
-  );
-
-  // ── Skeleton ───────────────────────────────────────────────────────────────
-
-  const Skeleton = () => (
-    <div className="flex flex-col gap-4 animate-pulse mt-4">
-      <div className="h-6 w-40 bg-gray-200 rounded" />
-      <div className="h-8 w-64 bg-gray-200 rounded" />
-      <div className="h-4 w-48 bg-gray-200 rounded" />
-      <div className="h-[19rem] w-full bg-gray-200 rounded-2xl" />
-      <div className="h-4 w-full bg-gray-200 rounded" />
-      <div className="h-4 w-5/6 bg-gray-200 rounded" />
-      <div className="h-4 w-4/6 bg-gray-200 rounded" />
-    </div>
-  );
+  const slotProps = (index) => ({
+    index,
+    loaded: ImagesLoaded[index],
+    src: imgSrc(index),
+    caption: data?.images?.[index]?.caption,
+    onLoad: () => onImgLoad(index),
+    onError: () => onImgError(index),
+  });
 
   // ── Render ─────────────────────────────────────────────────────────────────
 
@@ -339,41 +362,20 @@ const HotelP1Detail = ({
                   <>
                     {images.length >= 4 ? (
                       <GridImage>
-                        <ImgSlot index={0} area="1 / 1 / 5 / 7"  />
-                        <ImgSlot index={2} area="1 / 7 / 3 / 12" />
-                        <Child area="3 / 7 / 5 / 12" className="relative overflow-hidden rounded-2xl">
-                          {!ImagesLoaded[3] && <div style={{ height: "100%", overflow: "hidden" }}><SkeletonCard lottieDimension="50rem" /></div>}
-                          <div style={{ display: ImagesLoaded[3] ? "block" : "none" }} className="relative h-full w-full">
-                            <ImageLoader url={imgSrc(3)} fit="cover" width="100%" height="100%" onload={() => onImgLoad(3)} onfail={() => onImgError(3)} noLazy />
-                            {data?.images?.[3]?.caption && (
-                              <div className="bg-text-smokywhite absolute rounded-67br text-sm font-500 leading-lg px-md py-xs top-md left-md">{data.images[3].caption}</div>
-                            )}
-                            {/* {viewAllOverlay} */}
-                          </div>
-                        </Child>
+                        <ImgSlot {...slotProps(0)} area="1 / 1 / 5 / 7"  />
+                        <ImgSlot {...slotProps(2)} area="1 / 7 / 3 / 12" />
+                        <ImgSlot {...slotProps(3)} area="3 / 7 / 5 / 12" className="relative overflow-hidden rounded-2xl" />
                       </GridImage>
                     ) : images.length === 3 ? (
                       <GridImage>
-                        <ImgSlot index={0} area="1 / 1 / 5 / 4"  />
-                        <ImgSlot index={1} area="1 / 4 / 5 / 7"  />
-                        <Child area="1 / 7 / 5 / 11" className="relative overflow-hidden rounded-2xl">
-                          {!ImagesLoaded[2] && <div style={{ height: "100%", overflow: "hidden" }}><SkeletonCard lottieDimension="50rem" /></div>}
-                          <div style={{ display: ImagesLoaded[2] ? "block" : "none" }} className="relative h-full w-full">
-                            <ImageLoader url={imgSrc(2)} fit="cover" width="100%" height="100%" onload={() => onImgLoad(2)} onfail={() => onImgError(2)} noLazy />
-                            {/* {viewAllOverlay} */}
-                          </div>
-                        </Child>
+                        <ImgSlot {...slotProps(0)} area="1 / 1 / 5 / 4"  />
+                        <ImgSlot {...slotProps(1)} area="1 / 4 / 5 / 7"  />
+                        <ImgSlot {...slotProps(2)} area="1 / 7 / 5 / 11" className="relative overflow-hidden rounded-2xl" />
                       </GridImage>
                     ) : images.length === 2 ? (
                       <GridImage>
-                        <ImgSlot index={0} area="1 / 1 / 5 / 6" />
-                        <Child area="1 / 6 / 5 / 11" className="relative overflow-hidden rounded-2xl">
-                          {!ImagesLoaded[1] && <div style={{ height: "100%", overflow: "hidden" }}><SkeletonCard lottieDimension="50rem" /></div>}
-                          <div style={{ display: ImagesLoaded[1] ? "block" : "none" }} className="relative h-full w-full">
-                            <ImageLoader url={imgSrc(1)} fit="cover" width="100%" height="100%" onload={() => onImgLoad(1)} onfail={() => onImgError(1)} noLazy />
-                            {/* {viewAllOverlay} */}
-                          </div>
-                        </Child>
+                        <ImgSlot {...slotProps(0)} area="1 / 1 / 5 / 6" />
+                        <ImgSlot {...slotProps(1)} area="1 / 6 / 5 / 11" className="relative overflow-hidden rounded-2xl" />
                       </GridImage>
                     ) : (
                       <Child style={{ height: "19rem" }}>
@@ -389,34 +391,17 @@ const HotelP1Detail = ({
                   <MGridImage>
                     {images.length >= 3 ? (
                       <>
-                        <ImgSlot index={0} area="1 / 1 / 4 / 7" />
-                        <ImgSlot index={1} area="4 / 1 / 7 / 4" />
-                        <Child area="4 / 4 / 7 / 7" className="relative overflow-hidden rounded-2xl">
-                          {!ImagesLoaded[2] && <div style={{ height: "100%", overflow: "hidden" }}><SkeletonCard lottieDimension="50rem" /></div>}
-                          <div style={{ display: ImagesLoaded[2] ? "block" : "none" }} className="relative h-full w-full">
-                            <ImageLoader url={imgSrc(2)} fit="cover" width="100%" height="100%" onload={() => onImgLoad(2)} onfail={() => onImgError(2)} noLazy />
-                            {/* {viewAllOverlay} */}
-                          </div>
-                        </Child>
+                        <ImgSlot {...slotProps(0)} area="1 / 1 / 4 / 7" />
+                        <ImgSlot {...slotProps(1)} area="4 / 1 / 7 / 4" />
+                        <ImgSlot {...slotProps(2)} area="4 / 4 / 7 / 7" className="relative overflow-hidden rounded-2xl" />
                       </>
                     ) : images.length === 2 ? (
                       <>
-                        <ImgSlot index={0} area="1 / 1 / 4 / 7" />
-                        <Child area="4 / 1 / 7 / 7" className="relative overflow-hidden rounded-2xl">
-                          {!ImagesLoaded[1] && <div style={{ height: "100%", overflow: "hidden" }}><SkeletonCard lottieDimension="50rem" /></div>}
-                          <div style={{ display: ImagesLoaded[1] ? "block" : "none" }} className="relative h-full w-full">
-                            <ImageLoader url={imgSrc(1)} fit="cover" width="100%" height="100%" onload={() => onImgLoad(1)} onfail={() => onImgError(1)} noLazy />
-                            {/* {viewAllOverlay} */}
-                          </div>
-                        </Child>
+                        <ImgSlot {...slotProps(0)} area="1 / 1 / 4 / 7" />
+                        <ImgSlot {...slotProps(1)} area="4 / 1 / 7 / 7" className="relative overflow-hidden rounded-2xl" />
                       </>
                     ) : (
-                      <Child area="1 / 1 / 7 / 7">
-                        {!ImagesLoaded[0] && <div style={{ height: "100%", overflow: "hidden" }}><SkeletonCard lottieDimension="50rem" /></div>}
-                        <div style={{ display: ImagesLoaded[0] ? "block" : "none" }} className="relative h-full w-full">
-                          <ImageLoader url={imgSrc(0)} fit="cover" width="100%" height="100%" onload={() => onImgLoad(0)} onfail={() => onImgError(0)} noLazy />
-                        </div>
-                      </Child>
+                      <ImgSlot {...slotProps(0)} area="1 / 1 / 7 / 7" />
                     )}
                   </MGridImage>
                 )}
