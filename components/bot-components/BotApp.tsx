@@ -288,8 +288,10 @@ export default function BotApp({
   const mobileEffectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
   );
-  // Only show the "Back to Map" popup once (first focus_route)
+  // Only show the "View Map" popup once (first focus_route)
   const hasShownMapPopupRef = useRef(false);
+  // Only show the "View Itinerary" popup once (first P2 transition)
+  const hasShownItineraryPopupRef = useRef(false);
 
   // Payment drawer — persists via ?drawer=payment in URL
   const [showPaymentDrawer, setShowPaymentDrawer] = useState(() => {
@@ -1026,17 +1028,20 @@ export default function BotApp({
     }
   }, [hasBotResponded]);
 
-  // Trigger a 10-second "Back to Map" popup — shown in chat view when map updates
-  // Only fires once (first focus_route). Itinerary popup is removed per UX revision.
+  // Trigger a 10-second mobile-chat popup — "View Map" on first focus_route,
+  // "View Itinerary" on first P2 transition. Each fires once per session.
   const triggerMobileEffectPopup = useCallback(
     (type: "map" | "itinerary") => {
       if (!isMobile) return;
-      // Only show "Back to Map" popup; silently ignore itinerary triggers
-      if (type !== "map") return;
-      // Show only on the very first focus_route event
-      if (hasShownMapPopupRef.current) return;
-      hasShownMapPopupRef.current = true;
-      setMobileEffectPopup({ type: "map", label: "Back to Map" });
+      if (type === "map") {
+        if (hasShownMapPopupRef.current) return;
+        hasShownMapPopupRef.current = true;
+        setMobileEffectPopup({ type: "map", label: "View Map" });
+      } else {
+        if (hasShownItineraryPopupRef.current) return;
+        hasShownItineraryPopupRef.current = true;
+        setMobileEffectPopup({ type: "itinerary", label: "View Itinerary" });
+      }
       if (mobileEffectTimerRef.current)
         clearTimeout(mobileEffectTimerRef.current);
       mobileEffectTimerRef.current = setTimeout(
@@ -1046,6 +1051,20 @@ export default function BotApp({
     },
     [isMobile],
   );
+
+  // Fire the "View Itinerary" mobile pill the moment we hit the same
+  // P2-finalized condition that ChatKitPanel uses to inject its hidden
+  // post-completion context message ("Provide short overview of the trip").
+  // The trigger fn already guards against re-fires per session.
+  useEffect(() => {
+    if (
+      finalizedStatus === "SUCCESS" &&
+      botMode === "p2" &&
+      itineraryCreatedInSessionRef.current
+    ) {
+      triggerMobileEffectPopup("itinerary");
+    }
+  }, [finalizedStatus, botMode, triggerMobileEffectPopup]);
 
   const handleLoadRouteOnMap = useCallback(() => {
     // load_route_on_map is the bot's signal that map data is ready, but we
@@ -1094,8 +1113,14 @@ export default function BotApp({
           return newLocations;
         });
       }
+      // Mobile: surface the "Back to Map" pill above the chat input when a
+      // route widget arrives live. Skip during thread restoration so historic
+      // focus_route replays don't fire the popup on every reload.
+      if (!isRestoringRef.current) {
+        triggerMobileEffectPopup("map");
+      }
     },
-    [revealLeftPanel],
+    [revealLeftPanel, triggerMobileEffectPopup],
   );
 
   const sessionIdFromUrl = useMemo(() => {
@@ -1177,8 +1202,6 @@ export default function BotApp({
           setActiveItineraryId("skeleton");
           setItineraryPollingEnabled(false);
         }
-        // On mobile: show "Back to Itinerary" popup
-        triggerMobileEffectPopup("itinerary");
         return;
       }
 
@@ -1329,15 +1352,12 @@ export default function BotApp({
       }
       setViewMode("itinerary");
       setMobilePanel("map");
-      // On mobile: show "Back to Itinerary" popup when itinerary data arrives
-      triggerMobileEffectPopup("itinerary");
     },
     [
       revealLeftPanel,
       dispatch,
       buildSkeletonItinerary,
       activeItineraryId,
-      triggerMobileEffectPopup,
       finalizedStatus,
       botMode,
       userLocation,
@@ -1580,6 +1600,14 @@ export default function BotApp({
             setViewMode("map");
             setMobilePanel("map");
           }
+        } else if (hasItems) {
+          // Chat-only thread with no itinerary and no map_effects (e.g. just
+          // destination suggestions). The sessionId-default of "itinerary"
+          // would paint an empty itinerary panel on desktop — flip to "map"
+          // so the user sees the map alongside the chat. Mobile defaults to
+          // the chat tab in this case.
+          setViewMode("map");
+          setMobilePanel("chat");
         }
 
         if (restoredItineraryId) {
@@ -3887,7 +3915,8 @@ const MobileLayout = React.memo(
             </div>
           )}
 
-        {/* ── "Back to Map" popup — above message input, shown for 10s on first focus_route ── */}
+        {/* ── Mobile chat pill — "View Map" on first focus_route, "View Itinerary"
+             on first P2 finalized transition. Shown for 10s above the input. ── */}
         {mobileEffectPopup && activeTab === "chat" && (
           <div
             className="fixed z-[300] left-0 right-0 flex justify-center px-4"
@@ -3895,25 +3924,45 @@ const MobileLayout = React.memo(
           >
             <button
               onClick={() => {
-                handleTabClick("map");
+                handleTabClick(
+                  mobileEffectPopup.type === "itinerary" ? "itinerary" : "map",
+                );
                 onDismissMobileEffectPopup?.();
               }}
               className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#07213A] text-white text-[13px] font-semibold shadow-2xl active:scale-95 transition-transform"
               style={{ whiteSpace: "nowrap" }}
             >
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
-              </svg>
-              Back to Map
+              {mobileEffectPopup.type === "itinerary" ? (
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
+                  <line x1="8" y1="13" x2="16" y2="13" />
+                  <line x1="8" y1="17" x2="16" y2="17" />
+                </svg>
+              ) : (
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
+                </svg>
+              )}
+              {mobileEffectPopup.label}
             </button>
           </div>
         )}
@@ -3998,7 +4047,7 @@ const MobileLayout = React.memo(
             >
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
             </svg>
-            Back to Chat
+            View Chat
           </button>
         )}
       </div>
