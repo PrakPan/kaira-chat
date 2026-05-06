@@ -29,9 +29,9 @@ import { updateTransferBookings } from "../../../store/actions/transferBookingsS
 import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 
-const CHATKIT_API_URL = "https://chat.tarzanway.com/chatkit";
+const CHATKIT_API_URL = "https://dev.chat.tarzanway.com/chatkit";
 const PAGINATION_SCROLL_THRESHOLD = 80;
-const CHATKIT = "https://chat.tarzanway.com"
+const CHATKIT = "https://dev.chat.tarzanway.com"
 
 export interface AttachmentFile {
   /** Temporary local ID (before server responds) or server-assigned ID */
@@ -973,7 +973,7 @@ const handleSessionCreated = useCallback((ourSessionId: string) => {
   // ── useChat ───────────────────────────────────────────────────────────────
   const apiUrl =
     botMode === "p2"
-      ? "https://chat.tarzanway.com/chatkit/p2"
+      ? "https://dev.chat.tarzanway.com/chatkit/p2"
       : CHATKIT_API_URL;
 
   // Stable onEffect wrapper — must be a named useCallback, never inline inside
