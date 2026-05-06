@@ -2208,6 +2208,7 @@ export default function BotApp({
     travellerStory: activeTravellerStory,
     onTravellerStoryDismiss: () => setActiveTravellerStory(null),
     onLoginSuccess: attachUserToItinerary,
+    loginMandatory: themeConfig?.loginMandatory,
   };
 
   const handleConfirmItinerary = (details: any) => {

@@ -78,6 +78,12 @@ interface UseChatOptions {
    * that was passed in, so the parent can push /chat/{sessionId} to history.
    */
   onSessionCreated?: (sessionId: string) => void;
+  /**
+   * Themed-page flag forwarded as `login_mandatory` on the very first
+   * /chatkit request (threads.create). When undefined, the field is omitted
+   * from the body. Subsequent messages never include it.
+   */
+  loginMandatory?: boolean;
 }
 
 // ─── UUID helper ──────────────────────────────────────────────────────────────
@@ -139,6 +145,7 @@ function buildFirstMessageBody(
     userId?: string | number;
     sessionId: string;
     attachmentIds?: string[];
+    loginMandatory?: boolean;
   }
 ): Record<string, unknown> {
   const body: Record<string, unknown> = {
@@ -151,6 +158,7 @@ function buildFirstMessageBody(
     ...buildAuthFields(opts),
   };
   if (opts.botMode === "p2" && opts.itineraryId) body.itinerary_id = opts.itineraryId;
+  if (opts.loginMandatory !== undefined) body.login_mandatory = opts.loginMandatory;
   return body;
 }
 
@@ -448,6 +456,7 @@ export function useChat({
   userId,
   sessionId,
   onSessionCreated,
+  loginMandatory,
 }: UseChatOptions) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
@@ -470,6 +479,8 @@ export function useChat({
   sessionIdRef.current = sessionId;
   const onSessionCreatedRef = useRef(onSessionCreated);
   onSessionCreatedRef.current = onSessionCreated;
+  const loginMandatoryRef = useRef(loginMandatory);
+  loginMandatoryRef.current = loginMandatory;
 
   const cancelStream = useCallback(() => {
     abortControllerRef.current?.abort();
@@ -697,7 +708,7 @@ export function useChat({
 
       const body = threadIdRef.current
         ? buildSubsequentMessageBody(trimmed, { threadId: threadIdRef.current, ...commonOpts })
-        : buildFirstMessageBody(trimmed, commonOpts);
+        : buildFirstMessageBody(trimmed, { ...commonOpts, loginMandatory: loginMandatoryRef.current });
 
       console.log("[useChat] →", JSON.stringify(body, null, 2));
 

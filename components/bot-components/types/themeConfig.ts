@@ -54,4 +54,5 @@ export interface ThemeConfig {
     row4?: ThemeRow<ThemeTripCard>;
   };
   travellerStories?: ThemeTravellerStory[];
+  loginMandatory?: boolean;
 }

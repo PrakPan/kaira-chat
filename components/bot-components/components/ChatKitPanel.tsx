@@ -144,6 +144,10 @@ mobileMenu?: React.ReactNode;
  *  page refresh. Defaults to true (desktop / always-visible callers). */
 isPanelVisible?: boolean;
 onLoginSuccess?: () => void | Promise<void>;
+/** Themed-page flag forwarded as `login_mandatory` on the very first
+ *  /chatkit request (threads.create). When undefined, the field is omitted
+ *  from the body. Subsequent messages never include it. */
+loginMandatory?: boolean;
 }
 
 export interface TravellerStoryIntro {
@@ -298,6 +302,7 @@ onTravellerStoryDismiss,
 mobileMenu,
 isPanelVisible = true,
 onLoginSuccess,
+loginMandatory,
 }: ChatKitPanelProps) {
   // ── State ────────────────────────────────────────────────────────────────
   const [input, setInput] = useState("");
@@ -1000,6 +1005,7 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
     // The stable frontend UUID — never changes for the lifetime of this component
     sessionId: sessionIdRef.current,
     onSessionCreated: handleSessionCreated,
+    loginMandatory,
   });
 
   // Keep sendWidgetActionRef current after every render
