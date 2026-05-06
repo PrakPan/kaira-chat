@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo, useCallback, memo } from "react";
 import styled from "styled-components";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 import useMediaQuery from "../../media";
@@ -101,7 +101,11 @@ const starRating = (rating) => {
 // across re-renders — otherwise every ImgSlot remounts on each setState and
 // the gallery flickers through skeletons). ────────────────────────────────
 
-const ImgSlot = ({
+// Safari note: do NOT toggle `display: none → block` on the image wrapper.
+// WebKit suspends image decoding on a display:none subtree and re-decodes on
+// reveal, which produces a visible flash. Keep the image in the layout flow
+// the whole time and stack the skeleton above it via opacity instead.
+const ImgSlot = memo(({
   index,
   area,
   className: cls = "",
@@ -112,12 +116,28 @@ const ImgSlot = ({
   onError,
 }) => (
   <Child area={area} className={cls}>
-    {loaded ? null : (
-      <div style={{ height: "100%", overflow: "hidden" }}>
-        <SkeletonCard lottieDimension="50rem" />
-      </div>
-    )}
-    <div style={{ display: loaded ? "block" : "none" }} className="relative h-full w-full">
+    <div
+      style={{
+        position: "absolute",
+        inset: 0,
+        opacity: loaded ? 0 : 1,
+        pointerEvents: loaded ? "none" : "auto",
+        transition: "opacity 150ms ease-out",
+        overflow: "hidden",
+        zIndex: 1,
+      }}
+    >
+      <SkeletonCard lottieDimension="50rem" />
+    </div>
+    <div
+      style={{
+        position: "absolute",
+        inset: 0,
+        opacity: loaded ? 1 : 0,
+        transition: "opacity 150ms ease-out",
+      }}
+      className="h-full w-full"
+    >
       <ImageLoader
         url={src}
         fit="cover"
@@ -134,7 +154,8 @@ const ImgSlot = ({
       )}
     </div>
   </Child>
-);
+));
+ImgSlot.displayName = "ImgSlot";
 
 const Skeleton = () => (
   <div className="flex flex-col gap-4 animate-pulse mt-4">
@@ -244,10 +265,27 @@ const HotelP1Detail = ({
 
   // ── Image helpers ──────────────────────────────────────────────────────────
 
-  const images = (data?.images || []).map((img) => img.image).filter(Boolean);
+  // Memoized so the array reference is stable across unrelated re-renders —
+  // otherwise every setState propagates a new `src` string identity into
+  // ImageLoader and Safari re-decodes the image (visible flicker).
+  const images = useMemo(
+    () => (data?.images || []).map((img) => img.image).filter(Boolean),
+    [data]
+  );
 
-  const onImgLoad  = (i) => setImagesLoaded((p) => ({ ...p, [i]: true  }));
-  const onImgError = (i) => setImagesError ((p) => ({ ...p, [i]: true  }));
+  // Per-index handlers built once. Inline `() => onImgLoad(i)` arrows would
+  // produce a new fn identity on every parent render, which defeats memo() on
+  // ImgSlot — so a single image load would re-render ALL slots and feed new
+  // onload/onfail refs to ImageLoader, which Safari treats as a reason to
+  // re-decode the <img> (visible flicker).
+  const slotHandlers = useMemo(
+    () =>
+      [0, 1, 2, 3].map((i) => ({
+        onLoad:  () => setImagesLoaded((p) => ({ ...p, [i]: true })),
+        onError: () => setImagesError ((p) => ({ ...p, [i]: true })),
+      })),
+    []
+  );
 
   const fallback = "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png";
   const imgSrc   = (i) => (ImagesError[i] ? fallback : images[i]);
@@ -290,8 +328,8 @@ const HotelP1Detail = ({
     loaded: ImagesLoaded[index],
     src: imgSrc(index),
     caption: data?.images?.[index]?.caption,
-    onLoad: () => onImgLoad(index),
-    onError: () => onImgError(index),
+    onLoad:  slotHandlers[index].onLoad,
+    onError: slotHandlers[index].onError,
   });
 
   // ── Render ─────────────────────────────────────────────────────────────────
@@ -379,9 +417,30 @@ const HotelP1Detail = ({
                       </GridImage>
                     ) : (
                       <Child style={{ height: "19rem" }}>
-                        {!ImagesLoaded[0] && <div style={{ height: "100%", overflow: "hidden", borderRadius: "8px" }}><SkeletonCard lottieDimension="100%" /></div>}
-                        <div style={{ display: ImagesLoaded[0] ? "block" : "none" }} className="relative h-full w-full">
-                          <ImageLoader url={imgSrc(0)} fit="cover" width="100%" height="100%" onload={() => onImgLoad(0)} onfail={() => onImgError(0)} noLazy />
+                        <div
+                          style={{
+                            position: "absolute",
+                            inset: 0,
+                            opacity: ImagesLoaded[0] ? 0 : 1,
+                            pointerEvents: ImagesLoaded[0] ? "none" : "auto",
+                            transition: "opacity 150ms ease-out",
+                            overflow: "hidden",
+                            borderRadius: "8px",
+                            zIndex: 1,
+                          }}
+                        >
+                          <SkeletonCard lottieDimension="100%" />
+                        </div>
+                        <div
+                          style={{
+                            position: "absolute",
+                            inset: 0,
+                            opacity: ImagesLoaded[0] ? 1 : 0,
+                            transition: "opacity 150ms ease-out",
+                          }}
+                          className="h-full w-full"
+                        >
+                          <ImageLoader url={imgSrc(0)} fit="cover" width="100%" height="100%" onload={slotHandlers[0].onLoad} onfail={slotHandlers[0].onError} noLazy />
                         </div>
                       </Child>
                     )}
