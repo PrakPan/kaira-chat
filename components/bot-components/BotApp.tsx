@@ -50,7 +50,7 @@ import BottomModal from "../ui/LowerModal";
 import Settings from "../settings/Index";
 import { SocialShareDesktop } from "../../containers/itinerary/booking1/SocialShare";
 import NotificationPopup from "../ui/NotificationPopup";
-import LogInModal from "../userauth/LogInModal";
+import BotLoginModal from "./components/BotLoginModal";
 import { createPortal } from "react-dom";
 import { currencySymbols } from "../../data/currencySymbols";
 import { useAnalytics } from "../../hooks/useAnalytics";
@@ -2921,73 +2921,30 @@ Start Location: ${details.startLocation}`;
         );
       })()}
 
-      {showSettingsLoginPrompt &&
-        !authToken &&
-        typeof document !== "undefined" &&
-        createPortal(
-          <>
-            <div
-              onClick={() => setShowSettingsLoginPrompt(false)}
-              style={{
-                position: "fixed",
-                inset: 0,
-                background: "rgba(0,0,0,0.5)",
-                zIndex: 3299,
-              }}
-            />
-            <div
-              onClick={(e) => e.stopPropagation()}
-              className="fixed bg-white overflow-y-auto z-[3300]
-                left-0 right-0 bottom-0 w-full max-h-[90vh] rounded-t-2xl shadow-[0_-10px_30px_rgba(0,0,0,0.15)]
-                md:left-1/2 md:right-auto md:bottom-auto md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[min(480px,95vw)] md:rounded-2xl md:shadow-[0_25px_60px_rgba(0,0,0,0.3)]"
-            >
-              <LogInModal
-                show={showSettingsLoginPrompt}
-                onhide={() => setShowSettingsLoginPrompt(false)}
-                zIndex={"3300"}
-                message="Please login to continue"
-                onSuccess={async () => {
-                  setShowSettingsLoginPrompt(false);
-                  await attachUserToItinerary();
-                }}
-              />
-            </div>
-          </>,
-          document.body,
-        )}
+      {showSettingsLoginPrompt && !authToken && (
+        <BotLoginModal
+          show={showSettingsLoginPrompt}
+          onhide={() => setShowSettingsLoginPrompt(false)}
+          zIndex={3300}
+          message="Please login to continue"
+          onSuccess={async () => {
+            setShowSettingsLoginPrompt(false);
+            await attachUserToItinerary();
+          }}
+        />
+      )}
 
-      {showApiLoginPrompt &&
-        typeof document !== "undefined" &&
-        createPortal(
-          <>
-            <div
-              onClick={() => setShowApiLoginPrompt(false)}
-              style={{
-                position: "fixed",
-                inset: 0,
-                background: "rgba(0,0,0,0.5)",
-                zIndex: 3299,
-              }}
-            />
-            <div
-              onClick={(e) => e.stopPropagation()}
-              className="fixed bg-white overflow-y-auto z-[3300]
-                left-0 right-0 bottom-0 w-full max-h-[90vh] rounded-t-2xl shadow-[0_-10px_30px_rgba(0,0,0,0.15)]
-                md:left-1/2 md:right-auto md:bottom-auto md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[min(480px,95vw)] md:rounded-2xl md:shadow-[0_25px_60px_rgba(0,0,0,0.3)]"
-            >
-              <LogInModal
-                show={showApiLoginPrompt}
-                onhide={() => setShowApiLoginPrompt(false)}
-                zIndex={"3300"}
-                message="Please login to continue"
-                onSuccess={async () => {
-                  setShowApiLoginPrompt(false);
-                }}
-              />
-            </div>
-          </>,
-          document.body,
-        )}
+      {showApiLoginPrompt && (
+        <BotLoginModal
+          show={showApiLoginPrompt}
+          onhide={() => setShowApiLoginPrompt(false)}
+          zIndex={3300}
+          message="Please login to continue"
+          onSuccess={async () => {
+            setShowApiLoginPrompt(false);
+          }}
+        />
+      )}
 
       {/* Toaster notifications — portal to modal-portal div */}
       <NotificationPopup />
@@ -3550,38 +3507,17 @@ export const MobileHeaderMenu = React.memo(
           </div>
         </div>
 
-        {showLogin &&
-          !isLoggedIn &&
-          createPortal(
-            <>
-              <div
-                onClick={() => setShowLogin(false)}
-                style={{
-                  position: "fixed",
-                  inset: 0,
-                  background: "rgba(0,0,0,0.5)",
-                  zIndex: 3299,
-                }}
-              />
-              <div
-                onClick={(e) => e.stopPropagation()}
-                className="fixed bg-white overflow-y-auto z-[3300]
-                  left-0 right-0 bottom-0 w-full max-h-[90vh] rounded-t-2xl shadow-[0_-10px_30px_rgba(0,0,0,0.15)]
-                  md:left-1/2 md:right-auto md:bottom-auto md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[min(480px,95vw)] md:rounded-2xl md:shadow-[0_25px_60px_rgba(0,0,0,0.3)]"
-              >
-                <LogInModal
-                  show={showLogin}
-                  onhide={() => setShowLogin(false)}
-                  zIndex={"3300"}
-                  message="Please login to continue"
-                  onSuccess={async () => {
-                    await onLoginSuccess?.();
-                  }}
-                />
-              </div>
-            </>,
-            document.body,
-          )}
+        {showLogin && !isLoggedIn && (
+          <BotLoginModal
+            show={showLogin}
+            onhide={() => setShowLogin(false)}
+            zIndex={3300}
+            message="Please login to continue"
+            onSuccess={async () => {
+              await onLoginSuccess?.();
+            }}
+          />
+        )}
       </>
     );
   },
