@@ -92,6 +92,7 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
   const [counter, setCounter] = useState(30);
   const [userDetailsRequired, setUserDetailsRequired] = useState(false);
   const [userNameError, setUserNameError] = useState(false);
+  const [phoneError, setPhoneError] = useState("");
 
   // Mount recaptcha script (used by LogInModal pattern)
   useEffect(() => {
@@ -140,7 +141,7 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
 
   // Auto submit OTP when user enters all 6 digits
   useEffect(() => {
-    if (otp.length === 6) {
+    if (otp.length === 4) {
       submitOtpHandler();
     }
   }, [otp]);
@@ -178,6 +179,7 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     setPhone(event.target.value);
+    if (phoneError) setPhoneError("");
   };
 
   const _userDetailsOnChangeHandler = (
@@ -285,11 +287,18 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
   const verifyRecaptchaHandler = () => {
     const phoneNumber = phone.trim();
     if (!props.otpSent) {
-      if (!phoneNumber || phoneNumber.replace(/\D/g, "").length < 10) {
-        // Surface a basic invalid-phone hint via mobileFail UX
+      if (!phoneNumber) {
+        setPhoneError("Please enter your mobile number");
+        if (mobileRef.current) mobileRef.current.focus();
+        return;
+      }
+      if (phoneNumber.replace(/\D/g, "").length < 10) {
+        setPhoneError("Please enter a valid 10-digit mobile number");
+        if (mobileRef.current) mobileRef.current.focus();
         return;
       }
     }
+    setPhoneError("");
 
     if (props.mobileFail) {
       props.onResetLogin && props.onResetLogin();
@@ -306,6 +315,7 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
     setOtp("");
     setUserDetailsRequired(false);
     setCounter(30);
+    setPhoneError("");
     props.onResetLogin && props.onResetLogin();
     if (recaptchaRef.current) recaptchaRef.current.reset();
     setTimeout(() => {
@@ -398,7 +408,11 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
       <div className="text-[11px] font-semibold text-[#6B7280] uppercase tracking-[0.05em] mb-1.5">
         Mobile number
       </div>
-      <div className="flex border-[1.5px] border-[#E5E7EB] rounded-xl overflow-hidden focus-within:border-[#0F1A2E] transition-colors relative">
+      <div
+        className={`flex border-[1.5px] rounded-xl overflow-hidden focus-within:border-[#0F1A2E] transition-colors relative ${
+          phoneError ? "border-[#DC2626]" : "border-[#E5E7EB]"
+        }`}
+      >
         <div
           className="flex items-center gap-1.5 px-3 py-3 bg-[#FAFAF7] border-r border-[#E5E7EB] text-sm font-semibold cursor-pointer select-none"
           onClick={() => setOpenCountryCodeOption(true)}
@@ -460,14 +474,21 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
         />
       </div>
 
-      {props.mobileFail && props.mobilefailmessage && (
+      {phoneError && (
+        <div className="flex items-center gap-1 text-[#DC2626] text-[12px] mt-1.5">
+          <BiError style={{ fontSize: "1rem" }} />
+          <span>{phoneError}</span>
+        </div>
+      )}
+
+      {!phoneError && props.mobileFail && props.mobilefailmessage && (
         <div className="flex items-center gap-1 text-[#DC2626] text-[12px] mt-1.5">
           <BiError style={{ fontSize: "1rem" }} />
           <span>{props.mobilefailmessage}</span>
         </div>
       )}
 
-      <div
+      {/* <div
         className="flex items-center gap-1.5 mt-3 cursor-pointer text-[13px] text-[#0F1A2E]"
         onClick={() => setWhatsapp(!whatsapp)}
       >
@@ -478,7 +499,7 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
         )}
         <span>Receive OTP on WhatsApp</span>
         <IoLogoWhatsapp className="text-base text-[#25D366]" />
-      </div>
+      </div> */}
 
       <button
         type="button"
@@ -534,7 +555,7 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
         📱 One more step
       </div>
       <div className="text-[20px] font-bold leading-[1.25] tracking-[-0.02em] mb-1.5">
-        Enter the 6-digit OTP
+        Enter the 4-digit OTP
       </div>
       <div className="text-[12.5px] text-[#6B7280] leading-[1.45] mb-3">
         Sent to your {whatsapp ? "WhatsApp" : "SMS"} · valid for 5 mins.
@@ -557,7 +578,7 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
         <OTPInput
           value={otp}
           onChange={setOtp}
-          numInputs={6}
+          numInputs={4}
           inputType="tel"
           shouldAutoFocus
           renderInput={(p) => <input {...p} />}
@@ -800,6 +821,11 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
 
   // ── Layout container (lightbox vs bottom sheet) ──
   const handleClose = () => {
+    console.log("Closing login modal");
+    props.onhide();
+  };
+
+  const handleBackdropClick = () => {
     if (!props.hideloginclose) props.onhide();
   };
 
@@ -835,7 +861,7 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
       `}</style>
 
       <div
-        onClick={handleClose}
+        onClick={handleBackdropClick}
         style={{
           position: "fixed",
           inset: 0,
@@ -872,31 +898,29 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
             }}
           />
           <div style={{ position: "relative", padding: 24 }}>
-            {!props.hideloginclose && (
-              <button
-                type="button"
-                onClick={handleClose}
-                aria-label="Close"
-                style={{
-                  position: "absolute",
-                  top: 12,
-                  right: 12,
-                  width: 32,
-                  height: 32,
-                  borderRadius: "50%",
-                  background: "rgba(255,255,255,0.95)",
-                  border: "1px solid #E5E7EB",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "#6B7280",
-                  zIndex: 5,
-                }}
-              >
-                <RxCross2 />
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={handleClose}
+              aria-label="Close"
+              style={{
+                position: "absolute",
+                top: 12,
+                right: 12,
+                width: 32,
+                height: 32,
+                borderRadius: "50%",
+                background: "rgba(255,255,255,0.95)",
+                border: "1px solid #E5E7EB",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#6B7280",
+                zIndex: 5,
+              }}
+            >
+              <RxCross2 />
+            </button>
             {screen}
             {skipLogin}
           </div>
@@ -942,18 +966,16 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
               flex: 1,
             }}
           >
-            {!props.hideloginclose && (
-              <div className="flex justify-end -mt-1 mb-1">
-                <RxCross2
-                  onClick={handleClose}
-                  style={{
-                    fontSize: "1.4rem",
-                    cursor: "pointer",
-                    color: "#6B7280",
-                  }}
-                />
-              </div>
-            )}
+            <div className="flex justify-end -mt-1 mb-1">
+              <RxCross2
+                onClick={handleClose}
+                style={{
+                  fontSize: "1.4rem",
+                  cursor: "pointer",
+                  color: "#6B7280",
+                }}
+              />
+            </div>
             {screen}
             {skipLogin}
           </div>
@@ -979,7 +1001,6 @@ const mapStateToProps = (state: any) => ({
   phone: state.auth.phone,
   email: state.auth.email,
   emailfailmessage: state.auth.emailfailmessage,
-  hideloginclose: state.auth.hideloginclose,
   CountryCodes: state.CountryCodes,
 });
 

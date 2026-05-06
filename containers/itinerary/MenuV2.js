@@ -2248,7 +2248,7 @@ props.fromChat ? (
         ></PoiEditModal>
       ) : null}
 
-      <div className="width-[100%] z-[1650]">
+      <div className="z-[1650]">
         <LogInModal
           show={showLoginModal}
           onhide={_handleLoginClose}

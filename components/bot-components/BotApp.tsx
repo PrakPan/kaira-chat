@@ -54,6 +54,7 @@ import BotLoginModal from "./components/BotLoginModal";
 import { createPortal } from "react-dom";
 import { currencySymbols } from "../../data/currencySymbols";
 import { useAnalytics } from "../../hooks/useAnalytics";
+import Login from "../modals/Login";
 
 type MobilePanel = "map" | "chat" | "itinerary";
 type LeftPanelMode = "default" | "itinerary-loading" | "itinerary-ready";
@@ -2921,7 +2922,10 @@ Start Location: ${details.startLocation}`;
         );
       })()}
 
+      
+
       {showSettingsLoginPrompt && !authToken && (
+        
         <BotLoginModal
           show={showSettingsLoginPrompt}
           onhide={() => setShowSettingsLoginPrompt(false)}
@@ -2933,6 +2937,7 @@ Start Location: ${details.startLocation}`;
           }}
         />
       )}
+
 
       {showApiLoginPrompt && (
         <BotLoginModal
@@ -3506,7 +3511,7 @@ export const MobileHeaderMenu = React.memo(
             )}
           </div>
         </div>
-
+        
         {showLogin && !isLoggedIn && (
           <BotLoginModal
             show={showLogin}
