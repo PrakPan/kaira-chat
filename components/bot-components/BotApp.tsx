@@ -2908,6 +2908,7 @@ Start Location: ${details.startLocation}`;
               setShowSettings={setShowSettings}
               isHotelsPresent={isHotelsPresent}
               handleApply={settingsHandleApply}
+              maxAdults={true}
             />
           </BottomModal>
         ) : (
@@ -2916,6 +2917,7 @@ Start Location: ${details.startLocation}`;
               setShowSettings={setShowSettings}
               isHotelsPresent={isHotelsPresent}
               handleApply={settingsHandleApply}
+              maxAdults={true}
             />
           </ModalWithBackdrop>
         );
