@@ -1,8 +1,12 @@
 import React, { useState } from "react";
-import { connect, useSelector } from "react-redux";
+import { connect, useSelector, useDispatch } from "react-redux";
 import ActivitiesSummary from "../../../components/Activities/ActivitiesSummary";
 import VisaDetailDrawer from "../../../components/drawers/visaDetails/VisaDetailDrawer";
 import EsimDetailDrawer from "../../../components/drawers/esimDetails/EsimDetailDrawer";
+import {
+  addAncillaryBooking,
+  removeAncillaryBooking,
+} from "../../../store/actions/ancillaryBookings";
 
 const BOOKING_TYPE_CONFIG = {
   eSIM: { label: "eSIM", bg: "bg-[#DDF4C5]", text: "text-[#2A6800]"},
@@ -11,6 +15,7 @@ const BOOKING_TYPE_CONFIG = {
 };
 
 const ActivitiesBookings = (props) => {
+  const dispatch = useDispatch();
   const [showActivities, setShowActivities] = useState(false);
   const [selectedAncillary, setSelectedAncillary] = useState(null);
   const [showVisaDrawer, setShowVisaDrawer] = useState(false);
@@ -27,6 +32,15 @@ const ActivitiesBookings = (props) => {
     setShowVisaDrawer(false);
     setShowEsimDrawer(false);
     setSelectedAncillary(null);
+  };
+
+  const handleAncillaryAdded = (booking, replaceId) => {
+    if (booking?.id) dispatch(addAncillaryBooking(booking, replaceId));
+    else if (replaceId) dispatch(removeAncillaryBooking(replaceId));
+  };
+
+  const handleAncillaryRemoved = (bookingId) => {
+    if (bookingId) dispatch(removeAncillaryBooking(bookingId));
   };
 
   return (
@@ -97,12 +111,12 @@ const ActivitiesBookings = (props) => {
                     </span>
                   )}
 
-                  {ancillary.currency && ancillary.total_booking_cost > 0 && (
+                  {/* {ancillary.currency && ancillary.total_booking_cost > 0 && (
                     <span className="text-sm font-semibold text-[#262626]">
                       {ancillary.currency}{" "}
                       {ancillary.total_booking_cost.toLocaleString()}
                     </span>
-                  )}
+                  )} */}
                 </div>
 
                 <div className="flex flex-row sm:flex-row items-center gap-2 flex-shrink-0">
@@ -139,6 +153,8 @@ const ActivitiesBookings = (props) => {
         bookingId={selectedAncillary?.id}
         showManageActions
         onHide={handleDrawerClose}
+        onAdded={handleAncillaryAdded}
+        onRemoved={handleAncillaryRemoved}
         onBooked={handleDrawerClose}
       />
       <EsimDetailDrawer
@@ -147,6 +163,8 @@ const ActivitiesBookings = (props) => {
         bookingId={selectedAncillary?.id}
         showManageActions
         onHide={handleDrawerClose}
+        onAdded={handleAncillaryAdded}
+        onRemoved={handleAncillaryRemoved}
         onBooked={handleDrawerClose}
       />
     </div>

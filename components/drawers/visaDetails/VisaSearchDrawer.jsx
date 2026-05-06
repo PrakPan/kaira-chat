@@ -25,7 +25,6 @@ const formatLabel = (val) => BADGE_LABELS[val] || (val ? val.replace(/_/g, " ").
 const VisaCard = ({ visa, onSelect, currency }) => {
   const symbol = currencySymbols?.[currency?.currency] || "₹";
   const totalPrice = visa?.price != null ? visa.price : null;
-  const serviceFee = visa?.service_fee;
 
   return (
     <div
@@ -80,11 +79,6 @@ const VisaCard = ({ visa, onSelect, currency }) => {
                 {symbol}{getIndianPrice(Math.round(totalPrice))}
                 <span className="text-[12px] font-400 text-[#6E757A] ml-1">/ person</span>
               </div>
-              {serviceFee != null && (
-                <div className="text-[11px] text-[#6E757A]">
-                  + {symbol}{getIndianPrice(Math.round(serviceFee))} service fee
-                </div>
-              )}
             </div>
           ) : (
             <div className="text-[13px] text-[#6E757A]">View pricing</div>
@@ -98,7 +92,7 @@ const VisaCard = ({ visa, onSelect, currency }) => {
   );
 };
 
-export default function VisaSearchDrawer({ show, onHide, bookingId, zIndex = 1700 }) {
+export default function VisaSearchDrawer({ show, onHide, onBooked, onAdded, onRemoved, bookingId, zIndex = 1700 }) {
   const router = useRouter();
   const itineraryId = useSelector((state) => state.ItineraryId) || router.query?.id;
   const itinerary = useSelector((state) => state.Itinerary);
@@ -322,8 +316,11 @@ export default function VisaSearchDrawer({ show, onHide, bookingId, zIndex = 170
           bookingId={bookingId}
           drawerZIndex={zIndex + 10}
           onHide={() => setShowDetail(false)}
+          onAdded={onAdded}
+          onRemoved={onRemoved}
           onBooked={() => {
             setShowDetail(false);
+            onBooked?.();
             onHide();
           }}
         />

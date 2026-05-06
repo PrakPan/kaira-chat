@@ -12,7 +12,7 @@ import { currencySymbols } from "../../../data/currencySymbols";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 import EsimPackagesDrawer from "./EsimPackagesDrawer";
 
-export default function EsimDetailDrawer({ show, pkg, onHide, onBooked, bookingId, drawerZIndex = 1710, showManageActions = false }) {
+export default function EsimDetailDrawer({ show, pkg, onHide, onBooked, onAdded, onRemoved, bookingId, drawerZIndex = 1710, showManageActions = false }) {
   const router = useRouter();
   const dispatch = useDispatch();
   const itineraryId = useSelector((state) => state.ItineraryId) || router.query?.id;
@@ -73,10 +73,11 @@ export default function EsimDetailDrawer({ show, pkg, onHide, onBooked, bookingI
     try {
       const payload = { trace_id: tid };
       if (bookingId) payload.booking_id = bookingId;
-      await esimBooking.post(`${itineraryId}/bookings/esim/`, payload, {
+      const res = await esimBooking.post(`${itineraryId}/bookings/esim/`, payload, {
         headers: { Authorization: `Bearer ${localStorage.getItem("access_token")}` },
       });
 
+      const newBooking = res?.data?.ancillary_booking || res?.data?.data || res?.data;
       trackEsimBookingAdd?.(itineraryId, displayPkg?.id || "");
       dispatch(SetCallPaymentInfo(!CallPaymentInfo));
       dispatch(openNotification({
@@ -84,6 +85,7 @@ export default function EsimDetailDrawer({ show, pkg, onHide, onBooked, bookingI
         heading: "Success!",
         text: "eSIM package added to your itinerary",
       }));
+      onAdded?.(newBooking, bookingId || null);
       onBooked?.();
     } catch (err) {
       dispatch(openNotification({
@@ -108,6 +110,7 @@ export default function EsimDetailDrawer({ show, pkg, onHide, onBooked, bookingI
         heading: "Removed!",
         text: "eSIM removed from your itinerary",
       }));
+      onRemoved?.(bookingId);
       onBooked?.();
     } catch (err) {
       dispatch(openNotification({
@@ -357,6 +360,8 @@ export default function EsimDetailDrawer({ show, pkg, onHide, onBooked, bookingI
         bookingId={bookingId}
         zIndex={drawerZIndex + 10}
         onHide={() => setShowSearch(false)}
+        onAdded={onAdded}
+        onRemoved={onRemoved}
         onBooked={() => {
           setShowSearch(false);
           onBooked?.();

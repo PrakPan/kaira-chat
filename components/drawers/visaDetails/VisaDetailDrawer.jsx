@@ -12,7 +12,7 @@ import { currencySymbols } from "../../../data/currencySymbols";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 import VisaSearchDrawer from "./VisaSearchDrawer";
 
-export default function VisaDetailDrawer({ show, visa, onHide, onBooked, bookingId, drawerZIndex = 1710, showManageActions = false }) {
+export default function VisaDetailDrawer({ show, visa, onHide, onBooked, onAdded, onRemoved, bookingId, drawerZIndex = 1710, showManageActions = false }) {
   const router = useRouter();
   const dispatch = useDispatch();
   const itineraryId = useSelector((state) => state.ItineraryId) || router.query?.id;
@@ -71,10 +71,11 @@ export default function VisaDetailDrawer({ show, visa, onHide, onBooked, booking
     try {
       const payload = { trace_id: tid };
       if (bookingId) payload.booking_id = bookingId;
-      await visaBooking.post(`${itineraryId}/bookings/visa/`, payload, {
+      const res = await visaBooking.post(`${itineraryId}/bookings/visa/`, payload, {
         headers: { Authorization: `Bearer ${localStorage.getItem("access_token")}` },
       });
 
+      const newBooking = res?.data?.ancillary_booking || res?.data?.data || res?.data;
       trackVisaBookingAdd?.(itineraryId, displayVisa?.id || "");
       dispatch(SetCallPaymentInfo(!CallPaymentInfo));
       dispatch(openNotification({
@@ -82,6 +83,7 @@ export default function VisaDetailDrawer({ show, visa, onHide, onBooked, booking
         heading: "Success!",
         text: `Visa added to your itinerary`,
       }));
+      onAdded?.(newBooking, bookingId || null);
       onBooked?.();
     } catch (err) {
       dispatch(openNotification({
@@ -106,6 +108,7 @@ export default function VisaDetailDrawer({ show, visa, onHide, onBooked, booking
         heading: "Removed!",
         text: "Visa removed from your itinerary",
       }));
+      onRemoved?.(bookingId);
       onBooked?.();
     } catch (err) {
       dispatch(openNotification({
@@ -221,11 +224,6 @@ export default function VisaDetailDrawer({ show, visa, onHide, onBooked, booking
                     {symbol}{getIndianPrice(Math.round(displayVisa.price))}
                     <span className="text-[14px] font-400 text-[#6E757A] ml-1">/ person</span>
                   </div>
-                  {displayVisa?.service_fee != null && (
-                    <div className="text-[12px] text-[#6E757A] mt-1">
-                      + {symbol}{getIndianPrice(Math.round(displayVisa.service_fee))} service fee
-                    </div>
-                  )}
                   <div className="text-[12px] text-[#6E757A] mt-1">
                     For {itinerary?.number_of_adults || 1} adult{(itinerary?.number_of_adults || 1) > 1 ? "s" : ""}
                     {itinerary?.number_of_children ? `, ${itinerary.number_of_children} child${itinerary.number_of_children > 1 ? "ren" : ""}` : ""}
@@ -309,6 +307,8 @@ export default function VisaDetailDrawer({ show, visa, onHide, onBooked, booking
         bookingId={bookingId}
         zIndex={drawerZIndex + 10}
         onHide={() => setShowSearch(false)}
+        onAdded={onAdded}
+        onRemoved={onRemoved}
         onBooked={() => {
           setShowSearch(false);
           onBooked?.();

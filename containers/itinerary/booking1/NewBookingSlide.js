@@ -69,6 +69,10 @@ import { currencySymbols } from "../../../data/currencySymbols";
 import { resetChatSession } from "../../../store/actions/chatState";
 import VisaSearchDrawer from "../../../components/drawers/visaDetails/VisaSearchDrawer";
 import EsimPackagesDrawer from "../../../components/drawers/esimDetails/EsimPackagesDrawer";
+import {
+  addAncillaryBooking,
+  removeAncillaryBooking,
+} from "../../../store/actions/ancillaryBookings";
 
 const GetInTouchContainer = styled.div`
   &:hover img {
@@ -2906,11 +2910,25 @@ const Details = (props) => {
       <VisaSearchDrawer
         show={showVisaDrawer}
         onHide={() => setShowVisaDrawer(false)}
+        onAdded={(booking, replaceId) => {
+          if (booking?.id) dispatch(addAncillaryBooking(booking, replaceId));
+          else if (replaceId) dispatch(removeAncillaryBooking(replaceId));
+        }}
+        onRemoved={(bookingId) => {
+          if (bookingId) dispatch(removeAncillaryBooking(bookingId));
+        }}
       />
 
       <EsimPackagesDrawer
         show={showEsimDrawer}
         onHide={() => setShowEsimDrawer(false)}
+        onAdded={(booking, replaceId) => {
+          if (booking?.id) dispatch(addAncillaryBooking(booking, replaceId));
+          else if (replaceId) dispatch(removeAncillaryBooking(replaceId));
+        }}
+        onRemoved={(bookingId) => {
+          if (bookingId) dispatch(removeAncillaryBooking(bookingId));
+        }}
       />
     </>
   );

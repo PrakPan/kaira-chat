@@ -91,7 +91,7 @@ const EsimCard = ({ pkg, onSelect, currency }) => {
   );
 };
 
-export default function EsimPackagesDrawer({ show, onHide, bookingId, zIndex = 1700 }) {
+export default function EsimPackagesDrawer({ show, onHide, onBooked, onAdded, onRemoved, bookingId, zIndex = 1700 }) {
   const router = useRouter();
   const itineraryId = useSelector((state) => state.ItineraryId) || router.query?.id;
   const currency = useSelector((state) => state.currency);
@@ -243,8 +243,11 @@ export default function EsimPackagesDrawer({ show, onHide, bookingId, zIndex = 1
           bookingId={bookingId}
           drawerZIndex={zIndex + 10}
           onHide={() => setShowDetail(false)}
+          onAdded={onAdded}
+          onRemoved={onRemoved}
           onBooked={() => {
             setShowDetail(false);
+            onBooked?.();
             onHide();
           }}
         />

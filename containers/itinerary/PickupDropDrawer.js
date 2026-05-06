@@ -902,7 +902,7 @@ const getStationName = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (selectedQuote) => {
+  const handleSubmit = async (selectedQuote) => {
     if (!selectedQuote) return;
 
     const submissionData = {
@@ -918,7 +918,7 @@ const getStationName = () => {
       source,
     };
 
-    onSubmit(submissionData);
+    await onSubmit(submissionData);
   };
 
   const handleInputChange = (field, value) => {
@@ -1479,13 +1479,13 @@ const getTitle = () => {
 
           {/* Transfer Results */}
           {!transferQuotes?.length && isLoadingQuotes ? (
-            <div className="space-y-3">
+            <div className="space-y-3 px-4">
               <Skeleton />
             </div>
           ) : null}
 
           {transferQuotes.length > 0 && (
-            <div className="space-y-3">
+            <div className="space-y-3 px-4">
               {transferQuotes.map((quote, index) => (
                 <TaxiSearched
                   airportBooking
