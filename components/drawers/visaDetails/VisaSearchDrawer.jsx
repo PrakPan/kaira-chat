@@ -98,7 +98,7 @@ const VisaCard = ({ visa, onSelect, currency }) => {
   );
 };
 
-export default function VisaSearchDrawer({ show, onHide }) {
+export default function VisaSearchDrawer({ show, onHide, bookingId, zIndex = 1700 }) {
   const router = useRouter();
   const itineraryId = useSelector((state) => state.ItineraryId) || router.query?.id;
   const itinerary = useSelector((state) => state.Itinerary);
@@ -186,7 +186,7 @@ export default function VisaSearchDrawer({ show, onHide }) {
         backdrop
         width="50%"
         mobileWidth="100%"
-        style={{ zIndex: 1700 }}
+        style={{ zIndex }}
         className="!overflow-y-hidden"
         onHide={onHide}
       >
@@ -319,6 +319,8 @@ export default function VisaSearchDrawer({ show, onHide }) {
         <VisaDetailDrawer
           show={showDetail}
           visa={selectedVisa}
+          bookingId={bookingId}
+          drawerZIndex={zIndex + 10}
           onHide={() => setShowDetail(false)}
           onBooked={() => {
             setShowDetail(false);

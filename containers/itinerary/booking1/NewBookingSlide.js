@@ -924,6 +924,7 @@ const ItineraryInclusions = ({
           duration: booking.duration,
           pax: booking.pax,
           transfer_type: booking.transfer_type,
+          booking_type: booking.booking_type,
         },
         status: booking.status,
         booking_type: type,
@@ -1067,7 +1068,8 @@ const ItineraryInclusions = ({
                         {/* Booking Details */}
                         <div className="flex-1 min-w-0">
                           <div className="text-md font-500 leading-xl mb-sm">
-                            {booking.detail.name}
+                            {booking.detail.name} 
+                            {booking?.detail?.booking_type === "Visa" ? <span className="ml-2 px-1.5 py-0.5 text-xs font-medium bg-purple-100  text-purple-800 rounded">Visa</span> : booking?.detail?.booking_type === "eSIM" ? <span className="ml-2 px-1.5 py-0.5 text-xs font-medium bg-green-100  text-green-800 rounded ">eSim</span> : null}
                           </div>
                           {booking.status === "Paid" && (
                             <div className="inline-block bg-green-100 text-green-700 text-xs font-semibold px-2 py-0.5 rounded mb-1">
