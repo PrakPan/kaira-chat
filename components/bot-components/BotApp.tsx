@@ -46,6 +46,7 @@ import NewSummaryContainers from "../../containers/itinerary/NewSummaryContainer
 import Image from "next/image";
 import { useRouter } from "next/router";
 import ModalWithBackdrop from "../ui/ModalWithBackdrop";
+import BottomModal from "../ui/LowerModal";
 import Settings from "../settings/Index";
 import { SocialShareDesktop } from "../../containers/itinerary/booking1/SocialShare";
 import NotificationPopup from "../ui/NotificationPopup";
@@ -2877,30 +2878,48 @@ Start Location: ${details.startLocation}`;
         </>
       )}
 
-      {showSettings && (
-        <ModalWithBackdrop show={true} onHide={() => setShowSettings(false)}>
-          <Settings
-            setShowSettings={setShowSettings}
-            isHotelsPresent={isHotelsPresent}
-            handleApply={async (req) => {
-              const response = await axios.post(
-                `${MERCURY_HOST}/api/v1/itinerary/${activeItineraryId}/itinerary-edit/`,
-                req,
-                {
-                  headers: {
-                    Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-                  },
-                },
-              );
-              // Re-poll status + canonical fetch instead of trusting the edit response,
-              // which lacks day-by-day, hotels, transfers, pricing and would clobber
-              // status:"Finalized" (hiding Routes/Bookings tabs).
-              if (activeItineraryId) handleItineraryRefresh(activeItineraryId);
-              return response;
-            }}
-          />
-        </ModalWithBackdrop>
-      )}
+      {showSettings && (() => {
+        const settingsHandleApply = async (req: any) => {
+          const response = await axios.post(
+            `${MERCURY_HOST}/api/v1/itinerary/${activeItineraryId}/itinerary-edit/`,
+            req,
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+              },
+            },
+          );
+          // Re-poll status + canonical fetch instead of trusting the edit response,
+          // which lacks day-by-day, hotels, transfers, pricing and would clobber
+          // status:"Finalized" (hiding Routes/Bookings tabs).
+          if (activeItineraryId) handleItineraryRefresh(activeItineraryId);
+          return response;
+        };
+        return isMobile ? (
+          <BottomModal
+            show={true}
+            onHide={() => setShowSettings(false)}
+            width="100%"
+            height="max-content"
+            paddingX="16px"
+            paddingY="31px"
+          >
+            <Settings
+              setShowSettings={setShowSettings}
+              isHotelsPresent={isHotelsPresent}
+              handleApply={settingsHandleApply}
+            />
+          </BottomModal>
+        ) : (
+          <ModalWithBackdrop show={true} onHide={() => setShowSettings(false)}>
+            <Settings
+              setShowSettings={setShowSettings}
+              isHotelsPresent={isHotelsPresent}
+              handleApply={settingsHandleApply}
+            />
+          </ModalWithBackdrop>
+        );
+      })()}
 
       {showSettingsLoginPrompt &&
         !authToken &&
