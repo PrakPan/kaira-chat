@@ -67,6 +67,7 @@ import CityDrawerView, { ItineraryCityWithDrawer } from "../../components/itiner
 import Overview from "../newitinerary/overview/Index";
 import TrustFactor from "../../components/tailoredform/TrustFactor.js";
 import ConfirmationModal from "../../components/bot-components/components/ConfirmationModal.tsx";
+import BotLoginModal from "../../components/bot-components/components/BotLoginModal";
 
 const NotificationDot = styled.div`
   position: absolute;
@@ -2249,7 +2250,7 @@ props.fromChat ? (
       ) : null}
 
       <div className="z-[1650]">
-        <LogInModal
+        <BotLoginModal
           show={showLoginModal}
           onhide={_handleLoginClose}
           itinary_id={props.id}
@@ -2258,7 +2259,7 @@ props.fromChat ? (
           onSuccess={async () => {
             await attachUserToItinerary();
           }}
-        ></LogInModal>
+        ></BotLoginModal>
 
        
       </div>

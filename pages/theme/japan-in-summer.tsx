@@ -7,7 +7,6 @@ import * as authaction from "../../store/actions/auth";
 import type { ThemeConfig } from "../../components/bot-components/types/themeConfig";
 
 const japanThemeConfig: ThemeConfig = {
-  loginMandatory: false,
   welcome: {
     subtitle: "Things you'll talk about for years. Tell me what you want.",
     promptChips: [

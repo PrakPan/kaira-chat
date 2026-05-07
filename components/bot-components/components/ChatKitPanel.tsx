@@ -28,6 +28,7 @@ import { updateStays } from "../../../store/actions/StayBookings";
 import { updateTransferBookings } from "../../../store/actions/transferBookingsStore";
 import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
 import { useAnalytics } from "../../../hooks/useAnalytics";
+import BotLoginModal from "./BotLoginModal";
 
 const CHATKIT_API_URL = "https://dev.chat.tarzanway.com/chatkit";
 const PAGINATION_SCROLL_THRESHOLD = 80;
@@ -2762,38 +2763,38 @@ const handleShowLogin = useCallback(() => {
             />
             <div
               onClick={(e) => e.stopPropagation()}
-              style={
-                isMobile
-                  ? {
-                      position: "fixed",
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      background: "#fff",
-                      borderTopLeftRadius: 16,
-                      borderTopRightRadius: 16,
-                      width: "100%",
-                      maxHeight: "90vh",
-                      overflowY: "auto",
-                      zIndex: 3300,
-                      boxShadow: "0 -8px 30px rgba(0,0,0,0.25)",
-                    }
-                  : {
-                      position: "fixed",
-                      top: "50%",
-                      left: "50%",
-                      transform: "translate(-50%, -50%)",
-                      background: "#fff",
-                      borderRadius: 16,
-                      width: "min(480px, 95vw)",
-                      maxHeight: "90vh",
-                      overflowY: "auto",
-                      zIndex: 3300,
-                      boxShadow: "0 25px 60px rgba(0,0,0,0.3)",
-                    }
-              }
+              // style={
+              //   isMobile
+              //     ? {
+              //         position: "fixed",
+              //         left: 0,
+              //         right: 0,
+              //         bottom: 0,
+              //         background: "#fff",
+              //         borderTopLeftRadius: 16,
+              //         borderTopRightRadius: 16,
+              //         width: "100%",
+              //         maxHeight: "90vh",
+              //         overflowY: "auto",
+              //         zIndex: 3300,
+              //         boxShadow: "0 -8px 30px rgba(0,0,0,0.25)",
+              //       }
+              //     : {
+              //         position: "fixed",
+              //         top: "50%",
+              //         left: "50%",
+              //         transform: "translate(-50%, -50%)",
+              //         background: "#fff",
+              //         borderRadius: 16,
+              //         width: "min(480px, 95vw)",
+              //         maxHeight: "90vh",
+              //         overflowY: "auto",
+              //         zIndex: 3300,
+              //         boxShadow: "0 25px 60px rgba(0,0,0,0.3)",
+              //       }
+              // }
             >
-              <LogInModal
+              <BotLoginModal
                 show={showLoginModal}
                 onhide={() => setShowLoginModal(false)}
                 zIndex={"3300"}

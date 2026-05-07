@@ -747,7 +747,7 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
         isPageWide ? (
           <div
             key={i}
-            className="bg-[#FAFAF7] border border-[#E5E7EB] rounded-xl p-3 transition-all hover:border-[#FFDD00] hover:bg-[#FFFCEF]"
+            className="bg-[#FAFAF7] border-[1px] rounded-xl p-2.5 transition-all hover:border-[#FFDD00] hover:bg-[#FFFCEF]"
           >
             <div
               className="w-[30px] h-[30px] rounded-lg flex items-center justify-center text-[15px] mb-2"
@@ -765,7 +765,7 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
         ) : (
           <div
             key={i}
-            className="flex items-center gap-2.5 px-2.5 py-2 bg-[#FAFAF7] border border-[#E5E7EB] rounded-[10px]"
+            className="flex items-center gap-2.5 px-2.5 py-[8px] bg-[#FAFAF7] border-[1px]  rounded-[10px] shadow-none"
           >
             <div
               className="w-7 h-7 rounded-md flex items-center justify-center text-[14px] flex-shrink-0"

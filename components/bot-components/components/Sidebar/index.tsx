@@ -6,6 +6,7 @@ import LogInModal from "../../../userauth/LogInModal";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import { getPlatform } from "../../hooks/useChat";
+import BotLoginModal from "../BotLoginModal";
 
 const CHATKIT_API_URL = "https://dev.chat.tarzanway.com/chatkit";
 
@@ -346,12 +347,12 @@ const handleLogout = () => {
           />
           <div
             onClick={(e) => e.stopPropagation()}
-            className="fixed bg-white overflow-y-auto z-[3300]
-              left-0 right-0 bottom-0 w-full min-h-[85vh] rounded-t-2xl shadow-[0_-10px_30px_rgba(0,0,0,0.15)]
-              md:left-1/2 md:right-auto md:bottom-auto md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[min(480px,95vw)] md:rounded-2xl md:shadow-[0_25px_60px_rgba(0,0,0,0.3)] flex items-center
-              justify-center"
+            // className="fixed bg-white overflow-y-auto z-[3300]
+            //   left-0 right-0 bottom-0 w-full min-h-[85vh] rounded-t-2xl shadow-[0_-10px_30px_rgba(0,0,0,0.15)]
+            //   md:left-1/2 md:right-auto md:bottom-auto md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[min(480px,95vw)] md:rounded-2xl md:shadow-[0_25px_60px_rgba(0,0,0,0.3)] flex items-center
+            //   justify-center"
           >
-            <LogInModal
+            <BotLoginModal
               show={showLogin}
               onhide={() => setShowLogin(false)}
               zIndex="3300"

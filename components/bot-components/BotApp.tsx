@@ -2212,7 +2212,7 @@ export default function BotApp({
     travellerStory: activeTravellerStory,
     onTravellerStoryDismiss: () => setActiveTravellerStory(null),
     onLoginSuccess: attachUserToItinerary,
-    loginMandatory: themeConfig?.loginMandatory,
+    loginMandatory: router.query.login === "false" ? false : undefined,
   };
 
   const handleConfirmItinerary = (details: any) => {
