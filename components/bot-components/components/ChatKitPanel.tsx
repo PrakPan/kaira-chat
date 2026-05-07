@@ -825,12 +825,16 @@ loginMandatory,
   const hasUpdatedUrl = useRef(false);
   const postLoginFiredRef = useRef(false);
   const loginFlowArmedRef = useRef(false);
-  const pendingPostLoginMsg = useRef<string | null>(null);
+  type PendingAction =
+    | { kind: "message"; text: string }
+    | { kind: "widget"; type: string; payload: Record<string, unknown> };
+  const pendingPostLoginAction = useRef<PendingAction | null>(null);
   const hasInjectedContextRef = useRef(false);
   const inputRef = useRef(input);
 useEffect(() => { inputRef.current = input; }, [input]);
 const prevAuthTokenRef = useRef<string | null>(null);
 const lastSentMessageRef = useRef<string>("");
+const lastSentActionRef = useRef<PendingAction | null>(null);
 
   /**
    * Frontend-generated UUID for this chat session.
@@ -1000,7 +1004,7 @@ const handleSessionCreated = useCallback((ourSessionId: string) => {
   );
 
 const { messages, isStreaming, error, sendMessage: rawSendMessage,
-  sendWidgetAction, clearMessages, cancelStream, setMessages, threadIdRef }= useChat({
+  sendWidgetAction: rawSendWidgetAction, clearMessages, cancelStream, setMessages, threadIdRef }= useChat({
     apiUrl,
     domainKey: CHATKIT_DOMAIN_KEY,
     model: selectedModel,
@@ -1016,6 +1020,16 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
     onSessionCreated: handleSessionCreated,
     loginMandatory,
   });
+
+  // Wrap sendWidgetAction so we can replay the same action after a post-login
+  // retry (e.g. inject.context that triggered prompt_login while logged out).
+  const sendWidgetAction = useCallback(
+    (type: string, payload: Record<string, unknown>) => {
+      lastSentActionRef.current = { kind: "widget", type, payload };
+      return rawSendWidgetAction(type, payload);
+    },
+    [rawSendWidgetAction],
+  );
 
   // Keep sendWidgetActionRef current after every render
   sendWidgetActionRef.current = sendWidgetAction;
@@ -1259,7 +1273,11 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
           break;
         }
 case "prompt_login": {
-  pendingPostLoginMsg.current = lastSentMessageRef.current || null;
+  pendingPostLoginAction.current =
+    lastSentActionRef.current ??
+    (lastSentMessageRef.current
+      ? { kind: "message", text: lastSentMessageRef.current }
+      : null);
   loginFlowArmedRef.current = true;
   setShowLoginModal(true);
   break;
@@ -1414,6 +1432,7 @@ const sendMessage = useCallback(
   (text: string, attachmentIds?: string[], attachmentMeta?: MessageAttachment[]) => {
     setQuickReplies([]);
     lastSentMessageRef.current = text;
+    lastSentActionRef.current = { kind: "message", text };
 
     // User-initiated send: snap the view to the latest message even if they
     // had scrolled up earlier in the session.
@@ -1629,7 +1648,7 @@ useEffect(() => {
     // will fire the queued message once the user authenticates.
     if (initialPromptRequiresLogin && !isLoggedIn) {
       hasProcessedInitial.current = true;
-      pendingPostLoginMsg.current = initialPrompt;
+      pendingPostLoginAction.current = { kind: "message", text: initialPrompt };
       loginFlowArmedRef.current = true;
       setShowLoginPrompt(true);
       onInitialPromptConsumed?.();
@@ -1661,11 +1680,11 @@ useEffect(() => {
   if (!tokenJustArrived) return;                    // only fire on login transition
   if (postLoginFiredRef.current) return;
 
-  const msg = pendingPostLoginMsg.current;
-  if (!msg) return;
+  const action = pendingPostLoginAction.current;
+  if (!action) return;
 
   postLoginFiredRef.current = true;
-  pendingPostLoginMsg.current = null;
+  pendingPostLoginAction.current = null;
 
   setShowLoginModal(false);
   setShowLoginPrompt(false);
@@ -1674,9 +1693,13 @@ useEffect(() => {
 
   // One tick defer — lets useChat re-render with new authToken before sending
   setTimeout(() => {
-    sendMessage(msg);
+    if (action.kind === "widget") {
+      sendWidgetAction(action.type, action.payload);
+    } else {
+      sendMessage(action.text);
+    }
   }, 100);
-}, [authToken, sendMessage]);
+}, [authToken, sendMessage, sendWidgetAction]);
 
 // ── Reset on logout ───────────────────────────────────────────────────────
 useEffect(() => {
@@ -1974,13 +1997,17 @@ useEffect(() => {
   // ── Handlers ──────────────────────────────────────────────────────────────
 const handleShowLogin = useCallback(() => {
   const currentInput = inputRef.current.trim();
-  // Preserve an existing queued message (e.g. an initialPrompt already
+  // Preserve an existing queued action (e.g. an initialPrompt already
   // stashed by the restore flow) if the user opens the modal without
-  // typing anything new — otherwise we'd clobber it with null and the
-  // post-login send would be a no-op.
-  const msg = currentInput || lastSentMessageRef.current || pendingPostLoginMsg.current;
-  console.log("[handleShowLogin] storing pending:", msg);
-  pendingPostLoginMsg.current = msg || null;
+  // typing anything new — otherwise we'd clobber it and the post-login
+  // send would be a no-op.
+  if (currentInput) {
+    pendingPostLoginAction.current = { kind: "message", text: currentInput };
+  } else if (lastSentActionRef.current) {
+    pendingPostLoginAction.current = lastSentActionRef.current;
+  } else if (lastSentMessageRef.current) {
+    pendingPostLoginAction.current = { kind: "message", text: lastSentMessageRef.current };
+  }
   loginFlowArmedRef.current = true;
   setShowLoginModal(true);
 }, []);

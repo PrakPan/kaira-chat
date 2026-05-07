@@ -294,8 +294,9 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
     return () => clearInterval(interval);
   }, [rotatePlaceholders]);
 
-  const activePlaceholder =
-    rotatePlaceholders?.length
+  const activePlaceholder = isStreaming
+    ? "Kaira is working…"
+    : rotatePlaceholders?.length
       ? rotatePlaceholders[placeholderIdx]
       : placeholder;
 

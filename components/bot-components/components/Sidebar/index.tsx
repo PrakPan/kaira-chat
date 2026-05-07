@@ -85,6 +85,10 @@ const SidebarTooltip: React.FC<{
   };
   const hide = () => setVisible(false);
 
+  useEffect(() => {
+    if (disabled) setVisible(false);
+  }, [disabled]);
+
   return (
     <>
       <div ref={ref} className="w-full flex items-center justify-center" onMouseEnter={show} onMouseLeave={hide} onClick={hide}>
@@ -368,7 +372,10 @@ const handleLogout = () => {
 
       <div ref={ref} className="w-full">
         {isCollapsed ? (
-          <SidebarTooltip label={token ? name || "Profile" : "Login / Signup"}>
+          <SidebarTooltip
+            label={token ? name || "Profile" : "Login / Signup"}
+            disabled={open || showLogin}
+          >
             <div className="flex items-center justify-center py-2 w-full relative">
               {avatarEl}
               {floatingDropdown}
