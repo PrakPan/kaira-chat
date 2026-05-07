@@ -239,14 +239,21 @@ const TransferEditDrawer = (props) => {
   const actualClose = useHandleClose();
   const dispatch = useDispatch();
   const router = useRouter();
-  const { drawer, bookingId, oItineraryCity, dItineraryCity, drawerType } =
+  const { drawer, bookingId, oItineraryCity, dItineraryCity, drawerType, taxiTab } =
     router?.query;
   const isDesktop = useMediaQuery("(min-width:768px)");
   const [roundTripSuggestions, setRoundTripSuggestions] = useState(null);
   const [multiCitySuggestions, setMultiCitySuggestions] = useState(null);
   const [sightseeingSuggestions, setSightseeingSuggestions] = useState(null);
   const [airportSuggestions, setAirportSuggestions] = useState(null);
-  const [multicityTab, setMulticityTab] = useState("multicity");
+  const [multicityTab, setMulticityTab] = useState(
+    ["sightseeing", "airport", "multicity"].includes(taxiTab) ? taxiTab : "sightseeing",
+  );
+  const [tabLoaded, setTabLoaded] = useState({
+    sightseeing: false,
+    airport: false,
+    multicity: false,
+  });
   const [transfers, setTransfers] = useState([]);
   const [loadingTransfers, setLoadingTransfers] = useState(true);
   const [loadingMulticityTransfers, setLoadingMulticityTransfers] =
@@ -272,6 +279,7 @@ const TransferEditDrawer = (props) => {
 
   const [airportSearchType, setAirportSearchType] = useState(null);
   const [airportSearchTrips, setAirportSearchTrips] = useState(null);
+  const [airportSearchBookingId, setAirportSearchBookingId] = useState(null);
 
   const [showFlightModal, setShowFlightModal] = useState(false);
   const [showComboFlightModal, setShowComboFlightModal] = useState(false);
@@ -321,16 +329,47 @@ const TransferEditDrawer = (props) => {
     }
   }, [booking_type]);
 
+  // ONEWAYTRIP: fetch on drawer open (no suggestion_type — uses non-multicity API).
   useEffect(() => {
-    if (showDrawer) {
-      fetchRoutes();
+    if (!showDrawer) return;
+    if (booking_type == "multicity" || drawerType == "multicity") return;
+    fetchRoutes();
+  }, [showDrawer]);
+
+  // MULTICITY: fetch the active tab's suggestion_type on drawer open or tab change.
+  // Each tab gets its own request so we don't pay for unused buckets, and the
+  // result is cached in `tabLoaded` so switching back is instant.
+  const tabToSuggestionType = {
+    sightseeing: "sightseeing",
+    airport: "pickup-drop",
+    multicity: "multicity",
+  };
+  useEffect(() => {
+    if (!showDrawer) return;
+    if (booking_type != "multicity" && drawerType != "multicity") return;
+    if (tabLoaded[multicityTab]) {
+      // Already fetched this tab — show the cached suggestions, skip the API.
+      setLoadingMulticityTransfers(false);
+      setLoadingTransfers(false);
+      return;
+    }
+    const sugg = tabToSuggestionType[multicityTab];
+    if (!sugg) return;
+    fetchRoutes({ suggestionType: sugg });
+  }, [showDrawer, multicityTab]);
+
+  // Reset per-tab cache when the drawer closes so reopening fetches fresh.
+  useEffect(() => {
+    if (!showDrawer) {
+      setTabLoaded({ sightseeing: false, airport: false, multicity: false });
     }
   }, [showDrawer]);
 
-  // Refetch multicity suggestions when the sightseeing date filters change.
+  // Refetch sightseeing suggestions when the sightseeing date filters change.
   const isFirstSightseeingDateRun = useRef(true);
   useEffect(() => {
     if (!showDrawer) return;
+    if (multicityTab !== "sightseeing") return;
     if (!sightseeingStartDate || !sightseeingEndDate) return;
     if (isFirstSightseeingDateRun.current) {
       isFirstSightseeingDateRun.current = false;
@@ -543,7 +582,7 @@ const TransferEditDrawer = (props) => {
 
   // console.log("IsMulti",booking_type,transferType);
   const fetchRoutes = (options = {}) => {
-    const { sightseeingFilterRefetch = false } = options;
+    const { sightseeingFilterRefetch = false, suggestionType = null } = options;
     if (sightseeingFilterRefetch) {
       setSightseeingRefetching(true);
     } else {
@@ -574,10 +613,16 @@ const TransferEditDrawer = (props) => {
     {
       (booking_type == "multicity" || drawerType == "multicity") && (mercury || props?.isMercury)
         ? (() => {
+            const effectiveType =
+              suggestionType ||
+              (sightseeingFilterRefetch ? "sightseeing" : null);
             const cityId = origin_itinerary_city_id || destination_itinerary_city_id;
-            const startParam = sightseeingStartDate ? `&start_date=${sightseeingStartDate}` : "";
-            const endParam = sightseeingEndDate ? `&end_date=${sightseeingEndDate}` : "";
-            const multicityUrl = `/${router.query.id || ItineraryId || router.query.sessionId}/?currency=${currency?.currency || "INR"}${cityId ? `&itinerary_city_id=${cityId}` : ""}${startParam}${endParam}`;
+            // Date filters only apply to the sightseeing tab.
+            const includeDateFilter = effectiveType === "sightseeing";
+            const startParam = includeDateFilter && sightseeingStartDate ? `&start_date=${sightseeingStartDate}` : "";
+            const endParam = includeDateFilter && sightseeingEndDate ? `&end_date=${sightseeingEndDate}` : "";
+            const typeParam = effectiveType ? `&suggestion_type=${effectiveType}` : "";
+            const multicityUrl = `/${router.query.id || ItineraryId || router.query.sessionId}/?currency=${currency?.currency || "INR"}${cityId ? `&itinerary_city_id=${cityId}` : ""}${startParam}${endParam}${typeParam}`;
             return fetchMulticityRoundtrip
               .get(multicityUrl)
               .then((response) => {
@@ -597,33 +642,33 @@ const TransferEditDrawer = (props) => {
                 }
                 setMulticityRoundtripTraceId(response?.data?.trace_id);
                 const suggestions = response?.data?.suggestions || [];
-                // Categorize by type into three buckets surfaced as tabs:
-                //   "multicity"   → multiCitySuggestions
-                //   "pickup_drop" → airportSuggestions (Airport pickup/drop tab)
-                //   everything else (sightseeing etc.) → roundTripSuggestions
-                const multicitySuggs = suggestions.filter(s => s.type === "multicity");
-                const airportSuggs = suggestions.filter(s => s.type === "pickup_drop");
-                const otherSuggs = suggestions.filter(s => s.type !== "multicity" && s.type !== "pickup_drop");
-                if (sightseeingFilterRefetch) {
-                  // Filter-change refetch: only refresh sightseeing suggestions, leave the
-                  // other buckets and the active tab untouched so the UI doesn't jump.
-                  setRoundTripSuggestions(otherSuggs.length > 0 ? otherSuggs : null);
-                  setSightseeingRefetching(false);
+
+                if (effectiveType === "multicity") {
+                  setMultiCitySuggestions(suggestions.length > 0 ? suggestions[0] : null);
+                  setTabLoaded((prev) => ({ ...prev, multicity: true }));
+                } else if (effectiveType === "pickup-drop") {
+                  setAirportSuggestions(suggestions.length > 0 ? suggestions : null);
+                  setTabLoaded((prev) => ({ ...prev, airport: true }));
+                } else if (effectiveType === "sightseeing") {
+                  setRoundTripSuggestions(suggestions.length > 0 ? suggestions : null);
+                  setSightseeingSuggestions(null);
+                  setTabLoaded((prev) => ({ ...prev, sightseeing: true }));
                 } else {
+                  // Legacy fallback: response contains all types — categorize.
+                  const multicitySuggs = suggestions.filter(s => s.type === "multicity");
+                  const airportSuggs = suggestions.filter(s => s.type === "pickup_drop");
+                  const otherSuggs = suggestions.filter(s => s.type !== "multicity" && s.type !== "pickup_drop");
                   setMultiCitySuggestions(multicitySuggs.length > 0 ? multicitySuggs[0] : null);
                   setAirportSuggestions(airportSuggs.length > 0 ? airportSuggs : null);
                   setRoundTripSuggestions(otherSuggs.length > 0 ? otherSuggs : null);
-                  setSightseeingSuggestions(null); // cleared — handled in roundTripSuggestions array now
-                  // Pick a sensible default tab based on what came back
-                  if (multicitySuggs.length > 0) setMulticityTab("multicity");
-                  else if (otherSuggs.length > 0) setMulticityTab("sightseeing");
-                  else if (airportSuggs.length > 0) setMulticityTab("airport");
+                  setSightseeingSuggestions(null);
+                }
+
+                if (sightseeingFilterRefetch) {
+                  setSightseeingRefetching(false);
+                } else {
                   setLoadingMulticityTransfers(false);
                   setLoadingTransfers(false);
-                }
-                // If no suggestions found at all, show a message
-                if (suggestions.length === 0) {
-                  setTransfersError("No taxi options available for this route. Please get in touch with us!");
                 }
               })
               .catch((error) => {
@@ -1035,6 +1080,7 @@ const TransferEditDrawer = (props) => {
       }
       setAirportSearchType(null);
       setAirportSearchTrips(null);
+      setAirportSearchBookingId(null);
     } catch (error) {
       const text = extractApiErrorMessage(error);
       openNotification({ text, heading: "Error!", type: "error" });
@@ -1141,10 +1187,10 @@ const TransferEditDrawer = (props) => {
             {transferType === TRANSFER_TYPES.MULTICITYROUNDTRIP.name && (
               <div className="w-full flex flex-wrap items-center gap-md mt-md">
                 {[
-                  { id: "sightseeing", label: "Sightseeing Taxi", available: !!roundTripSuggestions || !!existingSightseeingBooking },
-                  { id: "airport", label: "Pickup/Drop Taxi", available: !!airportSuggestions || !!existingAirportPickup || !!existingAirportDrop },
-                  { id: "multicity", label: "Multicity Taxi", available: !!multiCitySuggestions },
-                ].filter((tab) => tab.available).map((tab) => {
+                  { id: "sightseeing", label: "Sightseeing Taxi" },
+                  { id: "airport", label: "Pickup/Drop Taxi" },
+                  { id: "multicity", label: "Multicity Taxi" },
+                ].map((tab) => {
                   const isActive = multicityTab === tab.id;
                   return (
                     <label
@@ -1998,7 +2044,12 @@ const TransferEditDrawer = (props) => {
                             }}
                             onChange={() => {
                               setAirportSearchType(pk ? "pickup" : "drop");
-                              setAirportSearchTrips(sugg?.data?.trips || null);
+                              setAirportSearchTrips(
+                                sugg?.data?.trips ||
+                                  existing?.transfer_details?.trips ||
+                                  null,
+                              );
+                              setAirportSearchBookingId(existing?.id || null);
                             }}
                           />
                         ) : (
@@ -2118,6 +2169,7 @@ const TransferEditDrawer = (props) => {
         onClose={() => {
           setAirportSearchType(null);
           setAirportSearchTrips(null);
+          setAirportSearchBookingId(null);
         }}
         transferType={airportSearchType}
         bookingMode={"multicity"}
@@ -2128,6 +2180,7 @@ const TransferEditDrawer = (props) => {
         originCityId={originCityId}
         destinationCityId={destinationCityId}
         trips={airportSearchTrips}
+        booking_id={airportSearchBookingId}
         selectedBooking={selectedBooking}
         setSelectedBooking={setSelectedBooking}
         _updateFlightBookingHandler={props._updateFlightBookingHandler}
