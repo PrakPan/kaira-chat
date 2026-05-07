@@ -128,7 +128,7 @@ const getTimeOfDay = (timeString) => {
 
 // ─── Helper: get item ID for drawer navigation ────────────────────────────────
 const getItemId = (item, resolvedType) => {
-  if (resolvedType === "activity") return item?.booking?.id || item?.id;
+  if (resolvedType === "activity") return item?.booking?.id || item?.id || item?.activity;
   if (resolvedType === "poi") return item?.poi || item?.id;
   if (resolvedType === "restaurant")
     return item?.restaurants?.[0]?.id || item?.restaurant || item?.id;
@@ -298,6 +298,7 @@ const handleItemClick = (item) => {
   if (!resolvedType || resolvedType === "recommendation") return;
 
   const itemId = getItemId(item, resolvedType);
+  console.log("ItemId",itemId)
   if (!itemId) return;
 
   if(resolvedType === "poi") {
