@@ -1975,7 +1975,7 @@ const TransferEditDrawer = (props) => {
                           <BookedAirportCard
                             booking={existing}
                             isPickup={pk}
-                            onClick={() => {
+                            onViewDetail={() => {
                               const cityKey =
                                 origin_itinerary_city_id ||
                                 destination_itinerary_city_id;
@@ -1995,6 +1995,10 @@ const TransferEditDrawer = (props) => {
                                 undefined,
                                 { scroll: false },
                               );
+                            }}
+                            onChange={() => {
+                              setAirportSearchType(pk ? "pickup" : "drop");
+                              setAirportSearchTrips(sugg?.data?.trips || null);
                             }}
                           />
                         ) : (
@@ -5603,7 +5607,7 @@ const BookedSightseeingCard = ({ booking, onClick }) => {
   );
 };
 
-const BookedAirportCard = ({ booking, isPickup, onClick }) => {
+const BookedAirportCard = ({ booking, isPickup, onViewDetail, onChange }) => {
   const isDesktop = useMediaQuery("(min-width:768px)");
   const currency = useSelector((state) => state.currency);
   const td = booking?.transfer_details;
@@ -5646,19 +5650,7 @@ const BookedAirportCard = ({ booking, isPickup, onClick }) => {
       (toName && isPickup ? "" : "");
 
   return (
-    <div
-      role={onClick ? "button" : undefined}
-      tabIndex={onClick ? 0 : undefined}
-      onClick={onClick}
-      onKeyDown={(e) => {
-        if (!onClick) return;
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          onClick();
-        }
-      }}
-      className={`w-full flex flex-row gap-2 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm border-x-2 border-t-2 border-b-4 border-[#5CBA66] bg-[#F1FAF2] ${onClick ? "cursor-pointer hover:shadow-md transition-shadow" : ""}`}
-    >
+    <div className="w-full flex flex-row gap-2 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm border-x-2 border-t-2 border-b-4 border-[#5CBA66] bg-[#F1FAF2]">
       {isDesktop && (
         <div className="w-[80px] h-[70px] px-2 bg-white rounded-xl flex items-center justify-center">
           <TransfersIcon
@@ -5681,12 +5673,7 @@ const BookedAirportCard = ({ booking, isPickup, onClick }) => {
             </div>
           )}
           <div className="flex flex-col gap-1 flex-1 min-w-0">
-            <div className="flex flex-row items-start justify-between gap-2">
-              <div className="text-[16px] font-medium">{headline}</div>
-              <span className="shrink-0 text-[10px] font-600 px-2 py-[2px] rounded-full bg-[#5CBA66] text-white whitespace-nowrap">
-                Added to Itinerary
-              </span>
-            </div>
+            <div className="text-[16px] font-medium">{headline}</div>
             {fromName || toName ? (
               <div className="text-[#7A7A7A] text-[14px] font-normal">
                 {fromName} {fromName && toName ? "→" : ""} {toName}
@@ -5702,38 +5689,66 @@ const BookedAirportCard = ({ booking, isPickup, onClick }) => {
           </div>
         </div>
 
-        <div className="flex flex-col gap-1">
-          <div className="text-[#636366] text-[14px] font-normal">
-            {cab?.model_name || cab?.type || "Cab"}
-            {total != null && Number.isFinite(Number(total)) ? (
-              <>
-                :{" "}
-                <span className="text-black font-bold">
-                  {symbol}
-                  {getIndianPrice(Math.floor(total))}
-                </span>
-              </>
-            ) : null}
+        <div className="flex flex-row items-end justify-between gap-3">
+          <div className="flex flex-col gap-1 flex-1 min-w-0">
+            <div className="text-[#636366] text-[14px] font-normal">
+              {cab?.model_name || cab?.type || "Cab"}
+              {total != null && Number.isFinite(Number(total)) ? (
+                <>
+                  :{" "}
+                  <span className="text-black font-bold">
+                    {symbol}
+                    {getIndianPrice(Math.floor(total))}
+                  </span>
+                </>
+              ) : null}
+            </div>
+            {(cab?.seating_capacity ||
+              cab?.bag_capacity ||
+              cab?.bigBagCapaCity ||
+              cab?.fuel_type) && (
+              <div className="text-sm">
+                <span className="font-semibold">Facilities: </span>
+                {cab?.seating_capacity ? `${cab.seating_capacity} Seats | ` : null}
+                {cab?.bag_capacity ? `${cab.bag_capacity} Bags | ` : null}
+                {cab?.bigBagCapaCity
+                  ? `${cab.bigBagCapaCity} Big Bag Capacity | `
+                  : null}
+                {cab?.fuel_type ? `Fuel Type: ${cab.fuel_type}` : null}
+              </div>
+            )}
+            {pax > 0 && (
+              <div className="text-sm text-[#7A7A7A]">
+                {pax} Passenger{pax > 1 ? "s" : ""}
+              </div>
+            )}
           </div>
-          {(cab?.seating_capacity ||
-            cab?.bag_capacity ||
-            cab?.bigBagCapaCity ||
-            cab?.fuel_type) && (
-            <div className="text-sm">
-              <span className="font-semibold">Facilities: </span>
-              {cab?.seating_capacity ? `${cab.seating_capacity} Seats | ` : null}
-              {cab?.bag_capacity ? `${cab.bag_capacity} Bags | ` : null}
-              {cab?.bigBagCapaCity
-                ? `${cab.bigBagCapaCity} Big Bag Capacity | `
-                : null}
-              {cab?.fuel_type ? `Fuel Type: ${cab.fuel_type}` : null}
+
+          <div className="flex flex-col items-end gap-2 shrink-0">
+            <span className="text-[10px] font-600 px-2 py-[2px] rounded-full bg-[#5CBA66] text-white whitespace-nowrap">
+              Added to Itinerary
+            </span>
+            <div className="flex flex-row items-center gap-2">
+              {onViewDetail && (
+                <button
+                  type="button"
+                  onClick={onViewDetail}
+                  className="px-3 py-1.5 rounded-lg font-semibold text-[13px] text-black border-1 border-black bg-white hover:bg-gray-100 whitespace-nowrap"
+                >
+                  View Detail
+                </button>
+              )}
+              {onChange && (
+                <button
+                  type="button"
+                  onClick={onChange}
+                  className="px-3 py-1.5 rounded-lg font-semibold text-[13px] bg-[#f8e000] text-black border-1 border-black hover:bg-yellow-400 whitespace-nowrap"
+                >
+                  Change
+                </button>
+              )}
             </div>
-          )}
-          {pax > 0 && (
-            <div className="text-sm text-[#7A7A7A]">
-              {pax} Passenger{pax > 1 ? "s" : ""}
-            </div>
-          )}
+          </div>
         </div>
       </div>
     </div>
