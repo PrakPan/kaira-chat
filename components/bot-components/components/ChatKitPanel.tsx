@@ -316,7 +316,15 @@ loginMandatory,
   const [pendingMessage, setPendingMessage] = useState<string | null>(null);
   const [postLoginLoading, setPostLoginLoading] = useState(false);
   const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
-  
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkScreenSize = () => setIsMobile(window.innerWidth < 768);
+    checkScreenSize();
+    window.addEventListener("resize", checkScreenSize);
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
+
 
     // ── Auth ─────────────────────────────────────────────────────────────────
   const reduxToken = useSelector((state: any) => state.auth.token);
@@ -1252,7 +1260,7 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
 case "prompt_login": {
   pendingPostLoginMsg.current = lastSentMessageRef.current || null;
   loginFlowArmedRef.current = true;
-  setShowLoginPrompt(true);
+  setShowLoginModal(true);
   break;
 }
         case "display_pois_on_map":
@@ -2754,19 +2762,36 @@ const handleShowLogin = useCallback(() => {
             />
             <div
               onClick={(e) => e.stopPropagation()}
-              style={{
-                position: "fixed",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                background: "#fff",
-                borderRadius: 16,
-                width: "min(480px, 95vw)",
-                maxHeight: "90vh",
-                overflowY: "auto",
-                zIndex: 3300,
-                boxShadow: "0 25px 60px rgba(0,0,0,0.3)",
-              }}
+              style={
+                isMobile
+                  ? {
+                      position: "fixed",
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      background: "#fff",
+                      borderTopLeftRadius: 16,
+                      borderTopRightRadius: 16,
+                      width: "100%",
+                      maxHeight: "90vh",
+                      overflowY: "auto",
+                      zIndex: 3300,
+                      boxShadow: "0 -8px 30px rgba(0,0,0,0.25)",
+                    }
+                  : {
+                      position: "fixed",
+                      top: "50%",
+                      left: "50%",
+                      transform: "translate(-50%, -50%)",
+                      background: "#fff",
+                      borderRadius: 16,
+                      width: "min(480px, 95vw)",
+                      maxHeight: "90vh",
+                      overflowY: "auto",
+                      zIndex: 3300,
+                      boxShadow: "0 25px 60px rgba(0,0,0,0.3)",
+                    }
+              }
             >
               <LogInModal
                 show={showLoginModal}

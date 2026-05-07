@@ -2111,9 +2111,13 @@ export default function BotApp({
     dispatch(setItineraryStatus("finalized_status", "PENDING"));
 
     setChatKey((prev) => prev + 1);
-    if (window.location.pathname !== "/chat") {
+    const currentPath = window.location.pathname;
+    const targetPath = currentPath.startsWith("/theme/")
+      ? currentPath
+      : "/chat";
+    if (currentPath !== targetPath) {
       setActiveChatSessionId(undefined);
-      window.history.pushState({}, "", "/chat");
+      window.history.pushState({}, "", targetPath);
     }
   };
 
