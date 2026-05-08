@@ -34,6 +34,8 @@ import CountdownTimer from "../../../components/countdownTimer/CountdownTimer";
 import PricingSkeleton from "../../../components/itinerary/Skeleton/PricingSkeleton";
 import Drawer from "../../../components/ui/Drawer";
 import PassengerDetails from "../../../components/modals/passenger-details/PassengerDetails";
+import AddTravellerDetails from "../../../components/modals/passenger-details/AddTravellerDetails";
+import { FaCheckCircle } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
 import { PulseLoader } from "react-spinners";
 import { SocialShare } from "./SocialShare";
@@ -1291,6 +1293,24 @@ const Details = (props) => {
     return formattedDate;
   };
   const [showSetPassenger, setShowSetPassenger] = useState(false);
+  const [travellerDetailsOpen, setTravellerDetailsOpen] = useState(false);
+  const travellerDrawerRef = useRef(null);
+
+  useEffect(() => {
+    if (!travellerDetailsOpen) return undefined;
+    const handleOutside = (e) => {
+      const panel = travellerDrawerRef.current;
+      if (!panel) return;
+      if (e.target.closest(".react-dates-portal, .DayPicker, .CalendarMonth"))
+        return;
+      if (e.target.closest("[data-country-dropdown]")) return;
+      if (!panel.contains(e.target)) {
+        setTravellerDetailsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleOutside);
+    return () => document.removeEventListener("mousedown", handleOutside);
+  }, [travellerDetailsOpen]);
   const [showVisaDrawer, setShowVisaDrawer] = useState(false);
   const [showEsimDrawer, setShowEsimDrawer] = useState(false);
   const [getInTouchLoading, setGetInTouchLoading] = useState(false);
@@ -2430,45 +2450,72 @@ const Details = (props) => {
                     </div>
                   ) : (
                     <div>
-                      <div className="text-md font-500 leading-lg mb-xs">
-                        {Itinerary?.customer_name || ""}
-                      </div>
-
-                      <div className="flex flex-row gap-xs text-sm font-400 leading-md flex-wrap">
-                        <div>
-                          Dates:{" "}
-                          {convertDFormat(
-                            props?.itinerary?.start_date
-                              ? props?.itinerary?.start_date
-                              : null,
-                          )}{" "}
-                          -{" "}
-                          {convertDFormat(
-                            props?.itinerary?.end_date
-                              ? props?.itinerary?.end_date
-                              : null,
-                          )}
-                        </div>
-                        <div className="border-r-sm border-text-disabled"></div>
-                        <div>Trip: {props.trip_name}</div>
-                        <div className="border-r-sm border-text-disabled"></div>
-                        <div>
-                          Travellers: {pax} {pluralDetector("Adult", pax)}
-                          {props.itinerary?.number_of_children ? (
-                            <span>
-                              , {props.itinerary?.number_of_children} Children
-                            </span>
-                          ) : null}
-                          {props.itinerary?.number_of_infants ? (
-                            <span>
-                              , {props.itinerary?.number_of_infants}{" "}
-                              {pluralDetector(
-                                "Infant",
-                                props.itinerary?.number_of_infants
+                      <div className="flex justify-between items-start gap-2">
+                        <div className="flex-1">
+                          <div className="flex flex-wrap items-center gap-sm mb-xs">
+                            <div className="text-md font-500 leading-lg">
+                              {Itinerary?.customer_name || ""}
+                            </div>
+                            {Array.isArray(props?.itinerary?.travellers) &&
+                              props.itinerary.travellers.some(
+                                (t) => t?.is_lead && t?.first_name,
+                              ) && (
+                                <div className="flex items-center gap-1 text-green-600 text-xs">
+                                  <FaCheckCircle />
+                                  <span>Traveller details verified</span>
+                                </div>
                               )}
-                            </span>
-                          ) : null}
+                          </div>
+
+                          <div className="flex flex-row gap-xs text-sm font-400 leading-md flex-wrap">
+                            <div>
+                              Dates:{" "}
+                              {convertDFormat(
+                                props?.itinerary?.start_date
+                                  ? props?.itinerary?.start_date
+                                  : null,
+                              )}{" "}
+                              -{" "}
+                              {convertDFormat(
+                                props?.itinerary?.end_date
+                                  ? props?.itinerary?.end_date
+                                  : null,
+                              )}
+                            </div>
+                            <div className="border-r-sm border-text-disabled"></div>
+                            <div>Trip: {props.trip_name}</div>
+                            <div className="border-r-sm border-text-disabled"></div>
+                            <div>
+                              Travellers: {pax} {pluralDetector("Adult", pax)}
+                              {props.itinerary?.number_of_children ? (
+                                <span>
+                                  , {props.itinerary?.number_of_children}{" "}
+                                  Children
+                                </span>
+                              ) : null}
+                              {props.itinerary?.number_of_infants ? (
+                                <span>
+                                  , {props.itinerary?.number_of_infants}{" "}
+                                  {pluralDetector(
+                                    "Infant",
+                                    props.itinerary?.number_of_infants
+                                  )}
+                                </span>
+                              ) : null}
+                            </div>
+                          </div>
                         </div>
+                        <span
+                          className="text-xs text-blue underline cursor-pointer shrink-0 mt-1"
+                          onClick={() => setTravellerDetailsOpen(true)}
+                        >
+                          {Array.isArray(props?.itinerary?.travellers) &&
+                          props.itinerary.travellers.some(
+                            (t) => t?.is_lead && t?.first_name,
+                          )
+                            ? "Edit traveller details"
+                            : "Add traveller details"}
+                        </span>
                       </div>
                     </div>
                   )}
@@ -2879,6 +2926,41 @@ const Details = (props) => {
         ></IoMdClose>
         <div className="p-[40px]">
           <PassengerDetails />
+        </div>
+      </Drawer>
+
+      <Drawer
+        show={travellerDetailsOpen}
+        anchor={"right"}
+        backdrop
+        width={"720px"}
+        mobileWidth={"100%"}
+        style={{ zIndex: 1601 }}
+        className="font-lexend"
+        onHide={() => setTravellerDetailsOpen(false)}
+      >
+        <div ref={travellerDrawerRef} className="h-full bg-white">
+          <div className="sticky top-0 z-10 flex justify-between items-center px-lg py-md border-b-sm border-text-disabled bg-white">
+            <div>
+              <div className="text-md-lg font-500 leading-xl-md text-primary-indigo">
+                Traveller Details
+              </div>
+              <div className="text-xs font-400 leading-md text-text-spacegrey mt-xxs">
+                Add details for everyone travelling on this trip.
+              </div>
+            </div>
+            <IoMdClose
+              className="cursor-pointer text-text-spacegrey hover:text-primary-indigo"
+              onClick={() => setTravellerDetailsOpen(false)}
+              style={{ fontSize: "1.5rem" }}
+            />
+          </div>
+          <div className="px-lg py-lg">
+            <AddTravellerDetails
+              itinerary={props?.itinerary}
+              onSuccess={() => setTravellerDetailsOpen(false)}
+            />
+          </div>
         </div>
       </Drawer>
 

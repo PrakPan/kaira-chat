@@ -288,18 +288,23 @@ const UpdateItineraryDates = ({
   const [focusedInput, setFocusedInput] = useState(null);
   const router = useRouter();
   const [dateType, setDateType] = useState("fixed");
-  const start = new Date(startDate);
-  const end = new Date(endDate);
+  const start = startDate ? new Date(startDate) : null;
+  const end = endDate ? new Date(endDate) : null;
+  const startValid = start && !isNaN(start.getTime());
+  const endValid = end && !isNaN(end.getTime());
 
-  start.setHours(0, 0, 0, 0);
-  end.setHours(0, 0, 0, 0);
+  if (startValid) start.setHours(0, 0, 0, 0);
+  if (endValid) end.setHours(0, 0, 0, 0);
 
   const date = {
     type: "fixed",
-    start_date: start.toISOString(),
-    end_date: end.toISOString(),
+    start_date: startValid ? start.toISOString() : null,
+    end_date: endValid ? end.toISOString() : null,
     month: "",
-    duration: Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1,
+    duration:
+      startValid && endValid
+        ? Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1
+        : 0,
   };
 
   const [momentStartDate, setMomentStartDate] = useState(
