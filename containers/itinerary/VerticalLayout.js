@@ -304,7 +304,7 @@ const TaxiPickupDropItem = ({
         </span>
 
         {/* Only show info icon for middle cities when no bookings */}
-        {isPageWide && !firstCity && !lastCity  && (
+        {isPageWide   && (
           <div className="relative">
             <div
               className="w-4 h-4 rounded-full bg-white text-gray-400 flex items-center justify-center text-[14px] font-bold hover:bg-blue-700 transition-colors cursor-pointer"
@@ -316,7 +316,7 @@ const TaxiPickupDropItem = ({
 
             {showTooltip && !showClickTooltip && (
               <div
-                className="absolute left-0 md:left-6 top-1/2 transform -translate-y-1/2 bg-gray-900 text-white text-xs rounded-md px-3 py-2 shadow-xl border border-gray-600 whitespace-nowrap"
+                className="absolute left-0 md:left-6 top-1/2 transform -translate-y-1/2 bg-gray-900 text-white text-xs rounded-md px-3 py-2 shadow-xl border border-gray-600 whitespace-nowrap z-[9999]"
                 style={{ zIndex: 100 }}
                 onMouseEnter={handleTooltipMouseEnter}
                 onMouseLeave={handleTooltipMouseLeave}
@@ -1796,7 +1796,7 @@ useEffect(() => {
           ) : null}
 
           {/* Second CTA: Add Taxi Pickup/Drop - Only when NO booking */}
-          {!isDraftMode && transfers_status == "SUCCESS" && pricing_status == "SUCCESS" && (
+          {!isDraftMode && transfers_status != "PENDING" && pricing_status != "PENDING" && (
             <TaxiPickupDropItem
               key={`taxi-no-booking`}
               handlePickupDropDrawer={handlePickupDropDrawer}
