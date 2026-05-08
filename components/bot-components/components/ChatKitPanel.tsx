@@ -1459,6 +1459,16 @@ const sendMessage = useCallback(
     if (!error) setErrorDismissed(false);
   }, [error]);
 
+  // Auto-dismiss the error toast as soon as the network comes back online.
+  // The in-bubble error stays put (history is preserved) but the floating
+  // toast is meaningless once connectivity returns.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const onOnline = () => setErrorDismissed(true);
+    window.addEventListener("online", onOnline);
+    return () => window.removeEventListener("online", onOnline);
+  }, []);
+
   // User-driven scroll detach. Fast text_delta-driven re-renders run the
   // auto-scroll effect below before the `scroll` event the user just
   // triggered has had a chance to update isAtBottomRef — that race is what
@@ -1669,7 +1679,7 @@ useEffect(() => {
     if (itineraryCompleted && !hasInjectedContextRef.current && !isStreaming) {
       hasInjectedContextRef.current = true;
       if(isLoggedIn) {
-      sendWidgetAction("inject.context", { message: "Provide short overview of the trip" });
+        sendWidgetAction("inject.context", { message: "Provide short overview of the trip" });
       }
     }
   }, [itineraryCompleted, isStreaming, sendWidgetAction]);
@@ -2285,7 +2295,27 @@ const handleShowLogin = useCallback(() => {
                 }}
               />
             )}
-            {messages.map((msg) => (
+            {messages.map((msg, idx) => {
+              // For network-failed assistant bubbles, hand MessageBubble a
+              // retry callback that re-sends the immediately preceding user
+              // message (content + attachments) — useChat strips the failed
+              // pair before the new send so we don't double up.
+              const prevMsg = idx > 0 ? messages[idx - 1] : undefined;
+              const onRetry =
+                msg.role === "assistant" &&
+                msg.isError &&
+                msg.errorVariant === "network" &&
+                prevMsg?.role === "user"
+                  ? () => {
+                      const atts = prevMsg.attachments ?? [];
+                      sendMessage(
+                        prevMsg.content,
+                        atts.length ? atts.map((a) => a.id) : undefined,
+                        atts.length ? atts : undefined,
+                      );
+                    }
+                  : undefined;
+              return (
               <MessageBubble
                 key={msg.id}
                 message={msg}
@@ -2296,6 +2326,7 @@ const handleShowLogin = useCallback(() => {
                 feedback={feedbackByMessageId[msg.id] ?? null}
                 feedbackLoading={feedbackLoadingIds.has(msg.id)}
                 onFeedback={handleFeedback}
+                onRetry={onRetry}
                 onWidgetAction={(action) => {
                   // Freeze this widget's CTAs the moment the user clicks one,
                   // regardless of which drawer or server call it triggers. The
@@ -2663,9 +2694,10 @@ const handleShowLogin = useCallback(() => {
                   sendWidgetAction(action.type, payload);
                 }}
               />
-            ))}
+              );
+            })}
 
-            {showError && (
+            {/* {showError && (
               <div className="mt-2 px-2.5 py-2.5 text-xs text-red-600 flex items-center gap-2">
                 <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 flex-shrink-0">
                   <path
@@ -2675,15 +2707,15 @@ const handleShowLogin = useCallback(() => {
                   />
                 </svg>
                 {error}
-                {/* <button
+                <button
                   onClick={() => setErrorDismissed(true)}
                   // className="ml-auto text-red-400 hover:text-red-600"
                   aria-label="Dismiss error"
                 >
                   ✕
-                </button> */}
+                </button>
               </div>
-            )}
+            )} */}
 
             {showLoginPrompt && !isLoggedIn && (
               <div className="mt-[12px] p-2">

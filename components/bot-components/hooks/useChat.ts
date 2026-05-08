@@ -33,6 +33,11 @@ export interface Message {
   progressSteps?: ProgressStep[];
   thinkingTasks?: ThinkingTask[];
   attachments?: MessageAttachment[];
+  /** When true, this assistant message represents a failed send (network or
+   *  server error). Rendered with an inline error treatment in MessageBubble.
+   *  Variant lets us tailor the icon/copy for offline vs. generic failures. */
+  isError?: boolean;
+  errorVariant?: "network" | "generic";
 }
 
 export interface UserLocationData {
@@ -248,6 +253,16 @@ async function fetchWithRetry(
     }
   }
   throw lastErr;
+}
+
+// Drop the trailing failed assistant bubble (and the user message that
+// triggered it) so a retry doesn't leave a stale error sitting in history.
+function stripTrailingErrorPair(messages: Message[]): Message[] {
+  const last = messages[messages.length - 1];
+  if (!last || last.role !== "assistant" || !last.isError) return messages;
+  const prev = messages[messages.length - 2];
+  if (prev?.role === "user") return messages.slice(0, -2);
+  return messages.slice(0, -1);
 }
 
 // ─── SSE types & parser ───────────────────────────────────────────────────────
@@ -667,7 +682,10 @@ export function useChat({
       let currentAssistantId = assistantMsgId;
 
       setMessages((prev) => [
-        ...prev,
+        // Drop the most recent failed assistant message (and the user message
+        // it was responding to) so a successful retry doesn't leave a stale
+        // "couldn't reach the server" bubble glued to the conversation.
+        ...stripTrailingErrorPair(prev),
         {
           id: userMsgId,
           role: "user",
@@ -812,12 +830,17 @@ export function useChat({
         setError(msg);
         const networkFailure = isNetworkError(err);
         const fallbackContent = networkFailure
-          ? "I couldn't reach the server after a few attempts. Please check your internet connection and try again."
-          : "Sorry, something went wrong. Please try again.";
+          ? "I couldn't reach the server. Please check your internet connection and try again."
+          : "Something went wrong. Please try again.";
         setMessages((prev) =>
           prev.map((m) =>
             m.id === currentAssistantId && !m.content
-              ? { ...m, content: fallbackContent }
+              ? {
+                  ...m,
+                  content: fallbackContent,
+                  isError: true,
+                  errorVariant: networkFailure ? "network" : "generic",
+                }
               : m
           )
         );

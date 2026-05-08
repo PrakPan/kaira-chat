@@ -201,7 +201,7 @@ useEffect(() => {
     }, 30000);
     return () => clearTimeout(timeout);
   }
-}, []);
+}, [finalized_status]);
 
   useEffect(() => {
     if(router.query?.drawer === "payment"){

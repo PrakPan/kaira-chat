@@ -78,6 +78,10 @@ let userDetails: { userName: string; email: string } = {
 
 const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
   const isPageWide = useMediaQuery("(min-width: 768px)");
+  const [layoutReady, setLayoutReady] = useState(false);
+  useEffect(() => {
+    if (typeof window !== "undefined") setLayoutReady(true);
+  }, []);
   const { trackUserLogin, trackUserAccountUpdate } = useAnalytics();
 
   const mobileRef = useRef<HTMLInputElement | null>(null);
@@ -833,6 +837,7 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
   };
 
   if (typeof document === "undefined") return null;
+  if (!layoutReady) return null;
 
   const z = props.zIndex || 3300;
   const backdropZ = Number(z) - 1;

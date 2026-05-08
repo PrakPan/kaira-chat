@@ -222,6 +222,9 @@ interface MessageBubbleProps {
   feedbackLoading?: boolean;
   /** Toggle feedback for this message; ChatKitPanel handles create/change/delete. */
   onFeedback?: (messageId: string, type: "up" | "down") => void;
+  /** Re-send the previous user message. Provided only for network-error
+   *  assistant bubbles so we can render a retry CTA in place of feedback. */
+  onRetry?: () => void;
 }
 
 // ─── Feedback icons (thumbs up / thumbs down) ─────────────────────────────────
@@ -928,6 +931,133 @@ const ThinkingBlock: React.FC<{
   );
 };
 
+// ─── RetryButton ──────────────────────────────────────────────────────────────
+// Shown in place of feedback thumbs when an assistant message failed to send
+// because the user was offline. Re-sends the previous user message via the
+// onRetry callback supplied by ChatKitPanel.
+
+const RetryButton: React.FC<{ onRetry: () => void }> = ({ onRetry }) => (
+  <button
+    type="button"
+    onClick={onRetry}
+    onMouseEnter={(e) => (e.currentTarget.style.color = "#991b1b")}
+    onMouseLeave={(e) => (e.currentTarget.style.color = "#dc2626")}
+    style={{
+      display: "inline-flex",
+      alignItems: "center",
+      gap: 5,
+      padding: 0,
+      border: "none",
+      background: "transparent",
+      color: "#dc2626",
+      fontFamily: "'Inter', sans-serif",
+      fontSize: 13,
+      fontWeight: 600,
+      cursor: "pointer",
+      // textDecoration: "underline",
+      textUnderlineOffset: 3,
+      transition: "color 0.15s ease",
+    }}
+  >
+    <svg
+      width="13"
+      height="13"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <polyline points="23 4 23 10 17 10" />
+      <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+    </svg>
+    Retry
+  </button>
+);
+
+// ─── ErrorBubble ──────────────────────────────────────────────────────────────
+// Inline error treatment for assistant messages whose send failed (network or
+// generic). Distinct from regular text: red-tinted card, alert icon, and a
+// subtle fade-in. The composer's own clear-on-resend logic removes this bubble
+// when the user retries, so we don't need an explicit dismiss control here.
+
+const ErrorBubble: React.FC<{
+  variant: "network" | "generic";
+  text: string;
+  onRetry?: () => void;
+}> = ({ variant, text, onRetry }) => {
+  const isNetwork = variant === "network";
+  const accent = "#dc2626";
+  return (
+    <div
+      role="alert"
+      style={{
+        display: "flex",
+        alignItems: "flex-start",
+        gap: 10,
+        padding: "10px 12px",
+        borderRadius: 12,
+        border: "1px solid #fecaca",
+        background: "#fef2f2",
+        color: "#7f1d1d",
+        fontFamily: "'Inter', sans-serif",
+        fontSize: 14,
+        lineHeight: "20px",
+        animation: "errFadeIn 0.18s ease-out",
+        marginTop: 2,
+      }}
+    >
+      <div
+        style={{
+          width: 22,
+          height: 22,
+          borderRadius: "50%",
+          background: "#fee2e2",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexShrink: 0,
+          marginTop: 1,
+        }}
+      >
+        {isNetwork ? (
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={accent} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M2 8.82a15 15 0 0 1 20 0" />
+            <path d="M5 12.859a10 10 0 0 1 14 0" />
+            <path d="M8.5 16.429a5 5 0 0 1 7 0" />
+            <line x1="12" y1="20" x2="12.01" y2="20" />
+            <line x1="2" y1="2" x2="22" y2="22" />
+          </svg>
+        ) : (
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={accent} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+        )}
+      </div>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontWeight: 600, color: accent, marginBottom: 2 }}>
+          {isNetwork ? "Connection issue" : "Something went wrong"}
+        </div>
+        <div style={{ color: "#7f1d1d" }}>{text}</div>
+        {isNetwork && onRetry && (
+          <div style={{ marginTop: 6 }}>
+            <RetryButton onRetry={onRetry} />
+          </div>
+        )}
+      </div>
+      <style>{`
+        @keyframes errFadeIn {
+          from { opacity: 0; transform: translateY(2px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
+    </div>
+  );
+};
+
 // ─── MessageBubble ────────────────────────────────────────────────────────────
 
 export const MessageBubble: React.FC<MessageBubbleProps> = ({
@@ -938,6 +1068,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   feedback = null,
   feedbackLoading = false,
   onFeedback,
+  onRetry,
 }) => {
   const rendered = useMemo(
     () => renderContent(message.content, entities ?? {}),
@@ -1090,7 +1221,13 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           )}
 
           {/* Main response content */}
-          {hasContent && (
+          {hasContent && message.isError ? (
+            <ErrorBubble
+              variant={message.errorVariant ?? "generic"}
+              text={message.content}
+              onRetry={onRetry}
+            />
+          ) : hasContent ? (
             <div
               style={{
                 willChange: "contents",
@@ -1099,20 +1236,26 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
             >
               {renderContent(message.content, entities ?? {})}
             </div>
-          )}
+          ) : null}
 
           {/* Fallback bubble dots */}
           {showDots && <ThinkingDots />}
 
-          {/* Feedback (thumbs up / down) — only on completed bot text replies */}
-          {hasContent && !streaming && onFeedback && message.id && (
-            <FeedbackButtons
-              messageId={message.id}
-              feedback={feedback}
-              loading={feedbackLoading}
-              onFeedback={onFeedback}
-            />
-          )}
+          {/* Feedback (thumbs up / down) — only on completed bot text replies.
+              Suppressed for network errors; the retry CTA inside ErrorBubble
+              takes its place. */}
+          {hasContent &&
+            !streaming &&
+            onFeedback &&
+            message.id &&
+            !(message.isError && message.errorVariant === "network") && (
+              <FeedbackButtons
+                messageId={message.id}
+                feedback={feedback}
+                loading={feedbackLoading}
+                onFeedback={onFeedback}
+              />
+            )}
         </div>
       </div>
     </div>
