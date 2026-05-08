@@ -292,7 +292,10 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
         if (mobileRef.current) mobileRef.current.focus();
         return;
       }
-      if (phoneNumber.replace(/\D/g, "").length < 10) {
+      if (
+        extension === "India" &&
+        phoneNumber.replace(/\D/g, "").length < 10
+      ) {
         setPhoneError("Please enter a valid 10-digit mobile number");
         if (mobileRef.current) mobileRef.current.focus();
         return;
@@ -423,7 +426,7 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
               alt=""
               height={20}
               width={20}
-              style={{ borderRadius: "50%", objectFit: "cover" }}
+              style={{ borderRadius: "0%", objectFit: "cover" }}
             />
           ) : (
             <span className="text-base">🇮🇳</span>
