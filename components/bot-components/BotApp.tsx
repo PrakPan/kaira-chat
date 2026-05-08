@@ -55,6 +55,7 @@ import { createPortal } from "react-dom";
 import { currencySymbols } from "../../data/currencySymbols";
 import { useAnalytics } from "../../hooks/useAnalytics";
 import Login from "../modals/Login";
+import { FiMap, FiNavigation, FiCalendar, FiBookmark } from "react-icons/fi";
 
 type MobilePanel = "map" | "chat" | "itinerary";
 type LeftPanelMode = "default" | "itinerary-loading" | "itinerary-ready";
@@ -2914,6 +2915,7 @@ Start Location: ${details.startLocation}`;
               setShowSettings={setShowSettings}
               isHotelsPresent={isHotelsPresent}
               handleApply={settingsHandleApply}
+              maxAdults={true}
             />
           </BottomModal>
         ) : (
@@ -2922,6 +2924,7 @@ Start Location: ${details.startLocation}`;
               setShowSettings={setShowSettings}
               isHotelsPresent={isHotelsPresent}
               handleApply={settingsHandleApply}
+              maxAdults={true}
             />
           </ModalWithBackdrop>
         );
@@ -3698,12 +3701,17 @@ const MobileLayout = React.memo(
     }, [hasItineraryActivity, activeTab, setViewMode]);
 
     // Top tab bar — Chat + Map + Itinerary + Route + Bookings when itinerary is active
-    const tabs: { key: MobileTab; label: string; show: boolean }[] = [
-      { key: "map", label: "Map", show: hasItineraryActivity },
-      { key: "routes", label: "Route", show: isComplete },
-      { key: "itinerary", label: "Itinerary", show: hasItineraryActivity },
+    const tabs: {
+      key: MobileTab;
+      label: string;
+      show: boolean;
+      Icon: React.ComponentType<{ size?: number }>;
+    }[] = [
+      { key: "map", label: "Map", show: hasItineraryActivity, Icon: FiMap },
+      { key: "routes", label: "Route", show: isComplete, Icon: FiNavigation },
+      { key: "itinerary", label: "Itinerary", show: hasItineraryActivity, Icon: FiCalendar },
 
-      { key: "bookings", label: "Bookings", show: isComplete },
+      { key: "bookings", label: "Bookings", show: isComplete, Icon: FiBookmark },
     ];
     const visibleTabs = tabs.filter((t) => t.show);
 
@@ -3748,11 +3756,12 @@ const MobileLayout = React.memo(
                 <button
                   key={tab.key}
                   onClick={() => handleTabClick(tab.key)}
-                  className="flex-1 px-2 py-1.5 text-[12px] font-medium transition-all duration-200 whitespace-nowrap"
+                  className="flex-1 px-2 py-1.5 text-[12px] font-medium transition-all duration-200 whitespace-nowrap flex items-center justify-center gap-1.5"
                   style={
                     activeTab === tab.key ? activeTabStyle : inactiveTabStyle
                   }
                 >
+                  <tab.Icon size={12} />
                   {tab.label}
                 </button>
               ))}

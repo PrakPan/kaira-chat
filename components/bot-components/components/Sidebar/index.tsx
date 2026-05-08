@@ -21,10 +21,20 @@ interface Thread {
 // ── Relative time formatter (used in chat history drawer) ───────────────────
 const formatRelativeTime = (iso?: string): string => {
   if (!iso) return "";
-  const then = new Date(iso).getTime();
+
+  // Parse as UTC (append Z if no timezone suffix)
+  const normalized = /[Z+\-]/.test(iso.slice(10)) ? iso : iso + "Z";
+  const then = new Date(normalized).getTime();
+
   if (Number.isNaN(then)) return "";
-  const now = Date.now();
-  const diffMs = Math.max(0, now - then);
+  
+  // Use IST "now" for diff calculation
+  const IST_OFFSET = (5 * 60 + 30) * 60 * 1000;
+  const nowUTC = Date.now();
+  const nowIST = nowUTC + IST_OFFSET;
+  const thenIST = then + IST_OFFSET;
+
+  const diffMs = Math.max(0, nowIST - thenIST); // same as nowUTC - then, but clear in intent
   const minute = 60 * 1000;
   const hour = 60 * minute;
   const day = 24 * hour;
@@ -39,20 +49,20 @@ const formatRelativeTime = (iso?: string): string => {
     return `${hrs} hr${hrs > 1 ? "s" : ""} ago`;
   }
 
-  // Day-aware boundary: compare calendar days so "yesterday" is accurate
-  const startOfToday = new Date();
-  startOfToday.setHours(0, 0, 0, 0);
-  const dayDiff = Math.floor((startOfToday.getTime() - then) / day) + 1;
+  // Use IST midnight for day boundary comparisons
+  const startOfTodayIST = new Date(nowUTC + IST_OFFSET);
+  startOfTodayIST.setUTCHours(0, 0, 0, 0);
+  const dayDiff = Math.floor((startOfTodayIST.getTime() - thenIST) / day) + 1;
   if (dayDiff === 1) return "yesterday";
   if (dayDiff < 7) return `${dayDiff} days ago`;
 
-  // Older — show date (short month + day, include year if not current year)
-  const d = new Date(iso);
-  const currentYear = new Date().getFullYear();
+  // Format date in IST
+  const d = new Date(normalized);
+  const currentYear = new Date(nowUTC + IST_OFFSET).getUTCFullYear();
   const opts: Intl.DateTimeFormatOptions =
-    d.getFullYear() === currentYear
-      ? { month: "short", day: "numeric" }
-      : { month: "short", day: "numeric", year: "numeric" };
+    d.getUTCFullYear() === currentYear
+      ? { month: "short", day: "numeric", timeZone: "Asia/Kolkata" }
+      : { month: "short", day: "numeric", year: "numeric", timeZone: "Asia/Kolkata" };
   return d.toLocaleDateString("en-GB", opts);
 };
 
@@ -131,7 +141,7 @@ const ChatHistoryDrawer: React.FC<{
         className="fixed top-0 left-0 h-full z-[350] bg-white shadow-2xl flex flex-col transition-transform duration-300 ease-in-out w-full md:w-[30%]"
         style={{ transform: open ? "translateX(0)" : "translateX(-110%)" }}
       >
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 flex-shrink-0">
+        <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100 flex-shrink-0">
           <div className="flex items-center gap-2.5">
             <HistoryIcon />
             <span className="font-semibold text-gray-800 text-[15px]">Chat History</span>

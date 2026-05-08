@@ -1,6 +1,7 @@
 import React from "react";
 import { ViewToggleProps } from "../types";
 import { useSelector } from "react-redux";
+import { FiMap, FiNavigation, FiCalendar, FiBookmark } from "react-icons/fi";
 
 /**
  * Tab visibility rules:
@@ -46,6 +47,7 @@ const ViewToggle: React.FC<ViewToggleProps> = ({ viewMode, setViewMode, hasItine
     label: string,
     mode: string,
     onClick: () => void,
+    Icon: React.ComponentType<{ size?: number }>,
   ) => (
     <button
       onClick={onClick}
@@ -54,6 +56,7 @@ const ViewToggle: React.FC<ViewToggleProps> = ({ viewMode, setViewMode, hasItine
       }`}
       style={viewMode === mode ? activeStyle : inactiveStyle}
     >
+      <Icon size={14} />
       {label}
     </button>
   );
@@ -76,19 +79,20 @@ const ViewToggle: React.FC<ViewToggleProps> = ({ viewMode, setViewMode, hasItine
           }`}
           style={viewMode === "map" ? activeStyle : inactiveStyle}
         >
+          <FiMap size={14} />
           Map
         </button>
 
         {/* Routes — only when itinerary is fully complete (not draft/building) */}
         {isComplete &&
-          tabBtn("Route", "routes", () => setViewMode("routes"))}
+          tabBtn("Route", "routes", () => setViewMode("routes"), FiNavigation)}
 
         {/* Itinerary — visible whenever activity is present */}
-        {tabBtn("Itinerary", "itinerary", () => setViewMode("itinerary"))}
+        {tabBtn("Itinerary", "itinerary", () => setViewMode("itinerary"), FiCalendar)}
 
         {/* Bookings — only when itinerary is fully complete */}
         {isComplete &&
-          tabBtn("Bookings", "bookings", () => setViewMode("bookings"))}
+          tabBtn("Bookings", "bookings", () => setViewMode("bookings"), FiBookmark)}
       </div>
     </div>
   );

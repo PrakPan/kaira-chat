@@ -228,11 +228,11 @@ const PickupDropDrawer = ({
     if (transferType === "pickup") {
   const result = calculateTimeWithOffset(booking.check_out, 30);
   newDate = result.date;
-  newTime = { value: result.value, display: result.display };
+  newTime = result.value;
 } else {
   const result = calculateTimeWithOffset(booking.check_in, -30);
   newDate = result.date;
-  newTime = { value: result.value, display: result.display };
+  newTime = result.value;
 }
 
 

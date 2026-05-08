@@ -1361,7 +1361,10 @@ useEffect(() => {
       getPaymentHandler();
       trackTransferBookingDelete(router.query.id, dataPassed?.id, id);
 
-      if (isIntracity) {
+      const isAirportTransferBooking =
+        dataPassed?.is_airport_pickup || dataPassed?.is_airport_drop;
+
+      if (isIntracity || isAirportTransferBooking) {
         setCurrentAirportBookings((prev) =>
           prev.filter((booking) => booking.id !== dataPassed?.id)
         );
@@ -1721,8 +1724,8 @@ useEffect(() => {
           </div>
 
           {/* AIRPORT/STATION PICKUP DROP - Show only for flight/train/ferry/bus */}
-         {transfers_status == "SUCCESS" &&
-  pricing_status == "SUCCESS" && (
+         {transfers_status != "PENDING" &&
+  pricing_status != "PENDING" && (
     <div className="flex flex-col gap-1">
       {/* CHANGED: Conditional rendering based on booking existence */}
       {(booking_id || currentAirportBookings.length > 0) ? (

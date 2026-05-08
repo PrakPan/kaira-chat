@@ -18,7 +18,7 @@ const parseDateString = (dateString) => {
 };
 
 
-const Settings = ({setShowSettings, isHotelsPresent, handleApply}) => {
+const Settings = ({setShowSettings, isHotelsPresent, handleApply, maxAdults=false}) => {
   const dispatch = useDispatch();
   const itinerary = useSelector(state => state.Itinerary);
   const isDesktop = useMediaQuery("(min-width:767px)");
@@ -245,6 +245,7 @@ const handleUpdate = () => {
           setNumberOfChildren={setNumberOfChildren}
           setNumberOfInfants={setNumberOfInfants}
           settings={true}
+          isTailored={maxAdults}
         />
       ) : (
         <div>
