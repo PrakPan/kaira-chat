@@ -44,6 +44,7 @@ import getPlatform from "../../utils/getPlatform";
 import { useAnalyticsSession } from "../../hooks/useAnalyticsSession";
 import Image from "next/image";
 import RoutePreparationLoader from "./RoutePreparationLoader";
+import BotLoginModal from "../bot-components/components/BotLoginModal";
 
 {
   /* <Login/> to see this itinerary's cost */
@@ -1025,7 +1026,7 @@ const Enquiry = (props) => {
 
                 <div className="flex flex-col items-center">
                   <div id="login" className="z-[1650]">
-                    <Login
+                    <BotLoginModal
                       show={showLoginForm}
                       onhide={onHide}
                       zIndex={"3300"}

@@ -12,6 +12,7 @@ import Sidebar from "./components/Sidebar";
 import StartScreen, { type TravellerStory } from "./components/StartScreen";
 import type { ThemeConfig } from "./types/themeConfig";
 import ChatWelcomeScreen from "./components/ChatWelcomeScreen";
+import ItineraryShimmer from "./components/ItineraryShimmer";
 import TrustIndicators from "./components/TrustIndicators";
 import { useUserLocation } from "./hooks/useUserLocation";
 import { useMapBounds } from "./hooks/useMapBounds";
@@ -32,6 +33,7 @@ import setItineraryStatus from "../../store/actions/itineraryStatus";
 import setItineraryDaybyDay from "../../store/actions/itineraryDaybyDay";
 import setItinerary from "../../store/actions/itinerary";
 import setBreif from "../../store/actions/breif";
+import { setGalleryImages } from "../../store/actions/galleryImages";
 import { setTransfersBookings } from "../../store/actions/transferBookingsStore";
 import { setStays } from "../../store/actions/StayBookings";
 // ChatBot removed — only ChatKitPanel is used now
@@ -252,6 +254,12 @@ export default function BotApp({
   // status-poll + canonical fetch when `id` hasn't changed.
   const [itineraryRefetchCounter, setItineraryRefetchCounter] = useState(0);
   const initialPromptRef = useRef<string | null>(null);
+  // Set by restoreLatestThread when fromTailored lands on /chat/{id} with no
+  // existing chatkit thread and the itinerary is still building. The
+  // itinerary_status useEffect fires the seed prompt once polling reaches
+  // SUCCESS so thread.create / chatkit/p2 isn't called against an
+  // unfinished itinerary.
+  const pendingTailoredSeedRef = useRef(false);
   const [showChatBot, setShowChatBot] = useState(false);
 
   // ── Frozen ChatBot itinerary ID — set once, never changes after first assignment ──
@@ -280,6 +288,9 @@ export default function BotApp({
   );
   const finalizedStatus = useSelector(
     (state: any) => state.ItineraryStatus?.finalized_status,
+  );
+  const itineraryStatus = useSelector(
+    (state: any) => state.ItineraryStatus?.itinerary_status,
   );
   const currency = useSelector((state: any) => state.currency);
   const [isMobile, setIsMobile] = useState(false);
@@ -486,6 +497,21 @@ export default function BotApp({
       setIsItineraryCompleting(false);
     }
   }, [finalizedStatus, isItineraryCompleting]);
+
+  // ── Fire the deferred tailored summary prompt once polling resolves ───────
+  // For fromTailored landings, restoreLatestThread sets
+  // pendingTailoredSeedRef while the itinerary is still building so we don't
+  // call thread.create / chatkit/p2 against an unfinished trip. Send the
+  // prompt as soon as itinerary_status flips to SUCCESS.
+  useEffect(() => {
+    if (!pendingTailoredSeedRef.current) return;
+    if (itineraryStatus !== "SUCCESS") return;
+    pendingTailoredSeedRef.current = false;
+    const loggedIn = !!getAuthToken();
+    setInitialPrompt("Hey Kaira! provide summary of my itinerary");
+    setInitialPromptRequiresLogin(!loggedIn);
+    setIsChatActive(true);
+  }, [itineraryStatus]);
 
   // ── On the first time we land in P2 (finalized) state, default the desktop
   //    viewMode to itinerary. The chatkit restore flow can leave viewMode on
@@ -749,8 +775,31 @@ export default function BotApp({
       }
     } catch {}
 
-    if (basicRoute.length === 0) return;
     hasHydratedFromTailoredRef.current = true;
+
+    // Wipe stale itinerary slices left in Redux by the previous /chat/{id}
+    // session — without this, the header keeps painting the prior trip's
+    // name / dates / gallery until polling reaches itinerary_status=SUCCESS.
+    // Reset itinerary_status too, otherwise the prior trip's "SUCCESS" hides
+    // the showTailoredSkeleton shimmer until restoreItineraryDirectly catches
+    // up. Run regardless of whether the sessionStorage skeleton is present
+    // (manual ?source=tailored visits or evicted storage shouldn't leave
+    // stale data on screen either).
+    dispatch(setGalleryImages([]));
+    dispatch(setItineraryStatus("itinerary_status", "PENDING"));
+    dispatch(setItineraryStatus("hotels_status", "PENDING"));
+    dispatch(setItineraryStatus("transfers_status", "PENDING"));
+    dispatch(setItineraryStatus("pricing_status", "PENDING"));
+    dispatch(setItineraryStatus("finalized_status", "PENDING"));
+
+    if (basicRoute.length === 0) {
+      dispatch(
+        setItinerary({ name: "Building your itinerary…", status: "Draft" }),
+      );
+      dispatch(setItineraryDaybyDay(null));
+      dispatch(setBreif(null));
+      return;
+    }
 
     const cities = basicRoute.map((loc: any) => ({
       name: loc.name ?? "Loading…",
@@ -1886,7 +1935,7 @@ export default function BotApp({
         const threads = listData.data ?? [];
         if (threads.length > 0) {
           await loadThread(threads[0].id);
-        } else if (stage === "P2" && (allDone || fromTailored)) {
+        } else if (stage === "P2" && allDone) {
           // P2 trip confirmed but no chat thread yet — seed a summary prompt
           // so the user lands with context. botMode is already "p2" via
           // restoreItineraryDirectly, so ChatKitPanel routes through /chatkit/p2.
@@ -1900,6 +1949,16 @@ export default function BotApp({
           setInitialPrompt("Hey Kaira! provide summary of my itinerary");
           setInitialPromptRequiresLogin(!loggedIn);
           setIsChatActive(true);
+        } else if (stage === "P2" && fromTailored) {
+          // Tailored flow lands here while celery is still building. Don't fire
+          // thread.create yet — the summary prompt would hit /chatkit/p2 before
+          // the itinerary exists server-side. Mark the seed as pending; the
+          // itinerary_status useEffect below sends it once polling reaches
+          // SUCCESS.
+          pendingTailoredSeedRef.current = true;
+          console.log(
+            "[restoreLatestThread] stage P2 + fromTailored + still building — deferring summary prompt until itinerary_status=SUCCESS",
+          );
         } else {
           console.log(
             `[restoreLatestThread] stage ${stage ?? "unknown"} + empty chatkit — chat skipped`,
@@ -2296,6 +2355,15 @@ Start Location: ${details.startLocation}`;
     return activeItineraryId;
   }, [activeItineraryId]);
 
+  // ── Tailored-form skeleton gate ──────────────────────────────────────────
+  // When the user lands on /chat/{id}?source=tailored, the itinerary panel's
+  // body would otherwise be blank (header + cart loader visible, body empty)
+  // until polling reaches itinerary_status="SUCCESS". Render a skeleton in the
+  // body during that window. ItineraryContainer stays mounted underneath so
+  // its polling effects keep running.
+  const showTailoredSkeleton =
+    fromTailored && itineraryStatus !== "SUCCESS";
+
   // ── THE KEY FIX: single ItineraryContainer instance ──────────────────────
   // Rendered once here, shown in desktop OR mobile via isMobile guard in JSX.
   // This prevents every useEffect / setTimeout / API call from firing twice.
@@ -2498,7 +2566,14 @@ Start Location: ${details.startLocation}`;
               className="flex-1 overflow-y-auto"
               style={{ scrollbarWidth: "none" }}
             >
-              {itineraryContainerNode}
+              {showTailoredSkeleton && <ItineraryShimmer />}
+              <div
+                style={
+                  showTailoredSkeleton ? { display: "none" } : undefined
+                }
+              >
+                {itineraryContainerNode}
+              </div>
             </div>
             <BottomCTABar
               // Force itinerary on mobile: the panel itself is rendered

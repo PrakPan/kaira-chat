@@ -807,17 +807,17 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
   );
 
   // Skip-login hint for tailored
-  const skipLogin = props.isTailored && (
-    <div
-      className="text-center text-[#3A85FC] cursor-pointer text-[13px] mt-3"
-      onClick={() => {
-        props.onhide();
-        props.onSkipLogin && props.onSkipLogin();
-      }}
-    >
-      Continue without logging in?
-    </div>
-  );
+  // const skipLogin = props.isTailored && (
+  //   <div
+  //     className="text-center text-[#3A85FC] cursor-pointer text-[13px] mt-3"
+  //     onClick={() => {
+  //       props.onhide();
+  //       props.onSkipLogin && props.onSkipLogin();
+  //     }}
+  //   >
+  //     Continue without logging in?
+  //   </div>
+  // );
 
   // ── Layout container (lightbox vs bottom sheet) ──
   const handleClose = () => {
@@ -922,7 +922,7 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
               <RxCross2 />
             </button>
             {screen}
-            {skipLogin}
+            {/* {skipLogin} */}
           </div>
         </div>
       ) : (
@@ -977,7 +977,7 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
               />
             </div>
             {screen}
-            {skipLogin}
+            {/* {skipLogin} */}
           </div>
         </div>
       )}
