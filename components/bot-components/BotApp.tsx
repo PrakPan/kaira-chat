@@ -2601,6 +2601,10 @@ Start Location: ${details.startLocation}`;
                 setShowConfirmModal(true);
               }}
               onViewCart={() => {
+                if(!authToken) {
+                setShowApiLoginPrompt(true);
+                return;
+              }
                 trackChatCartViewed?.(activeItineraryId || "", "P2", []);
                 openPaymentDrawer();
               }}
@@ -2890,6 +2894,10 @@ Start Location: ${details.startLocation}`;
               setShowConfirmModal(true);
             },
             onViewCart: () => {
+              if(!authToken) {
+                setShowApiLoginPrompt(true);
+                return;
+              }
               trackChatCartViewed?.(activeItineraryId || "", "P2", []);
               openPaymentDrawer();
             },

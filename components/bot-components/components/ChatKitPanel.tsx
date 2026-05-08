@@ -1668,7 +1668,9 @@ useEffect(() => {
   useEffect(() => {
     if (itineraryCompleted && !hasInjectedContextRef.current && !isStreaming) {
       hasInjectedContextRef.current = true;
+      if(isLoggedIn) {
       sendWidgetAction("inject.context", { message: "Provide short overview of the trip" });
+      }
     }
   }, [itineraryCompleted, isStreaming, sendWidgetAction]);
 
