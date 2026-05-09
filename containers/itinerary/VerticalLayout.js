@@ -1754,7 +1754,7 @@ useEffect(() => {
           firstCity={firstCity}
           lastCity={lastCity}
         />
-      ) : (
+      ) : !(Itinerary.status == "Draft") ? (
         /* If NO main booking and NO pickup/drop bookings, show TaxiPickupDropItem */
         <TaxiPickupDropItem
           key={`taxi-no-booking`}
@@ -1766,7 +1766,7 @@ useEffect(() => {
           currentAirportBookings={currentAirportBookings}
           handleEdit={handleEdit}
         />
-      )}
+      ) : null}
     </div>
   )}
         </>
