@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import { BsCalendar2 } from "react-icons/bs";
 import { FaPen } from "react-icons/fa";
 import { FaX } from "react-icons/fa6";
-import { axiosUpdateItineraryDates } from "../../../services/itinerary/daybyday/preview";
-import setItinerary from "../../../store/actions/itinerary";
+import {
+  axiosGetItineraryStatus,
+  axiosUpdateItineraryDates,
+} from "../../../services/itinerary/daybyday/preview";
 import setItineraryStatus from "../../../store/actions/itineraryStatus";
 import { useRouter } from "next/router";
 import "react-dates/initialize";
@@ -12,7 +14,7 @@ import { DateRangePicker } from "react-dates";
 import moment from "moment";
 import styled from "styled-components";
 import { openNotification } from "../../../store/actions/notification";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import AirbnbCalendar from "../../../components/calendar";
 import Modal from "../../../components/ui/Modal";
 import ModalWithBackdrop from "../../../components/ui/ModalWithBackdrop";
@@ -285,6 +287,7 @@ const UpdateItineraryDates = ({
   const [endDate, setEndDate] = useState(
     itinerary?.end_date ? moment(itinerary.end_date) : null,
   );
+  const ItineraryId = useSelector((state) => state.ItineraryId);
   const [isLoading, setIsLoading] = useState(false);
   const [focusedInput, setFocusedInput] = useState(null);
   const router = useRouter();
@@ -370,7 +373,7 @@ const UpdateItineraryDates = ({
     if (setShowSettings) {
       Promise.resolve(
         axios.get(
-          `${MERCURY_HOST}/api/v1/itinerary/${router.query.id}/bookings/hotels/?fields=no_of_hotels`,
+          `${MERCURY_HOST}/api/v1/itinerary/${ItineraryId}/bookings/hotels/?fields=no_of_hotels`,
         ),
       )
         .then((res) => {
@@ -418,6 +421,64 @@ const UpdateItineraryDates = ({
     await handleUpdateDates(values);
   };
 
+  const POLL_KEYS = ["ITINERARY", "HOTELS", "TRANSFERS", "PRICING"];
+  const TERMINAL_STATUSES = new Set(["SUCCESS", "FAILURE"]);
+  const POLL_INTERVAL_MS = 5000;
+  const POLL_MAX_DURATION_MS = 5 * 60 * 1000;
+
+  const STATUS_KEY_TO_REDUX = {
+    ITINERARY: "itinerary_status",
+    HOTELS: "hotels_status",
+    TRANSFERS: "transfers_status",
+    PRICING: "pricing_status",
+  };
+
+  const pollStatusUntilTerminal = (itineraryId) =>
+    new Promise((resolve) => {
+      const startedAt = Date.now();
+
+      const tick = async () => {
+        try {
+          const res = await axiosGetItineraryStatus.get(
+            `/${itineraryId}/status/`,
+          );
+          const status = res?.data?.celery || {};
+
+          POLL_KEYS.forEach((key) => {
+            dispatch(
+              setItineraryStatus(
+                STATUS_KEY_TO_REDUX[key],
+                status?.[key] || "PENDING",
+              ),
+            );
+          });
+
+          const allTerminal = POLL_KEYS.every((key) =>
+            TERMINAL_STATUSES.has(status?.[key]),
+          );
+
+          if (allTerminal) {
+            resolve({ status });
+            return;
+          }
+        } catch (err) {
+          console.error(
+            "[UpdateItineraryDates] status poll failed:",
+            err?.message,
+          );
+        }
+
+        if (Date.now() - startedAt >= POLL_MAX_DURATION_MS) {
+          resolve({ timedOut: true });
+          return;
+        }
+
+        setTimeout(tick, POLL_INTERVAL_MS);
+      };
+
+      tick();
+    });
+
   const handleUpdateDates = async (dateObj) => {
     if (!dateObj.start || !dateObj.end) {
       alert("Please select valid dates. End date must be after start date.");
@@ -425,8 +486,8 @@ const UpdateItineraryDates = ({
     }
 
     setIsLoading(true);
-    // Reset statuses to PENDING and lock the chat composer until the
-    // ItineraryContainer poll triggered by onUpdateSuccess resolves them.
+    // Reset statuses to PENDING and lock the chat composer until the local
+    // status poll below resolves them all back to SUCCESS/FAILURE.
     dispatch(setItineraryStatus("itinerary_status", "PENDING"));
     dispatch(setItineraryStatus("transfers_status", "PENDING"));
     dispatch(setItineraryStatus("hotels_status", "PENDING"));
@@ -439,8 +500,8 @@ const UpdateItineraryDates = ({
     };
 
     try {
-      const res = await axiosUpdateItineraryDates.post(
-        `${router.query.id}/update-dates/`,
+      await axiosUpdateItineraryDates.post(
+        `${ItineraryId}/update-dates/`,
         payload,
         {
           headers: {
@@ -449,25 +510,28 @@ const UpdateItineraryDates = ({
         },
       );
 
-      setItinerary(res?.data?.data);
       Object.keys(localStorage).forEach((key) => {
         if (key.startsWith(`notes_dismissed_${router.query.id}`)) {
           localStorage.removeItem(key);
         }
       });
 
-      if (onUpdateSuccess) {
-        if (handleCloseDrawer) handleCloseDrawer();
-        resetRef();
-        onUpdateSuccess(true);
-      }
-
-      // Only close after success
+      // Close UI immediately so the user isn't stuck on "Applying..." while
+      // the celery tasks run on the backend.
       setShowCalendar(false);
       setIsEditing(false);
       setFocusedInput(null);
+      if (handleCloseDrawer) handleCloseDrawer();
+      if (resetRef) resetRef();
+
+      // Drive the poll loop ourselves — the parent's polling can race against
+      // the backend resetting statuses to PENDING and stop too early.
+      await pollStatusUntilTerminal(ItineraryId);
+
+      dispatch(setItineraryStatus("is_polling", false));
+
+      if (onUpdateSuccess) onUpdateSuccess(true);
     } catch (error) {
-      // Request failed before the poll could run — release the chat lock.
       dispatch(setItineraryStatus("is_polling", false));
       let errorMsg =
         error.response?.data?.errors?.[0]?.detail?.[0] ||
