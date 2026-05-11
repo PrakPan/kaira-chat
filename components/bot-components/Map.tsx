@@ -344,7 +344,6 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
     const mapRef = useRef<HTMLDivElement>(null);
     const mapInstance = useRef<google.maps.Map | null>(null);
     const markersRef = useRef<google.maps.Marker[]>([]);
-    const userMarkerRef = useRef<google.maps.Marker | null>(null);
     const infoWindowRef = useRef<google.maps.InfoWindow | null>(null);
     // One polyline per segment so we can draw arrows between consecutive stops
     const polylinesRef = useRef<google.maps.Polyline[]>([]);
@@ -645,63 +644,6 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
       });
       clampZoomAfterFit(mapInstance.current);
     }, [currentRoute, clampZoomAfterFit, mapReady]);
-
-    // User location marker — hide when an itinerary route is loaded
-    useEffect(() => {
-      if (!mapReady || !mapInstance.current || !infoWindowRef.current) return;
-
-      // Remove existing user marker
-      if (userMarkerRef.current) {
-        userMarkerRef.current.setMap(null);
-        userMarkerRef.current = null;
-      }
-
-      // Don't show user location when a route is active
-      if (!userLocation || (currentRoute && currentRoute.length > 0)) return;
-
-      const userIcon = {
-        url:
-          "data:image/svg+xml;charset=UTF-8," +
-          encodeURIComponent(`
-      <svg xmlns="http://www.w3.org/2000/svg" width="40" height="50" viewBox="0 0 40 50">
-        <path d="M20 0C11.163 0 4 7.163 4 16c0 12 16 34 16 34s16-22 16-34c0-8.837-7.163-16-16-16z" fill="#4285F4"/>
-        <circle cx="20" cy="16" r="10" fill="white"/>
-        <path d="M20 10c-3.314 0-6 2.686-6 6s2.686 6 6 6 6-2.686 6-6-2.686-6-6-6zm0 2c.828 0 1.5.672 1.5 1.5S20.828 15 20 15s-1.5-.672-1.5-1.5S19.172 12 20 12zm0 8c-1.657 0-3-1.343-3-3 0-.414.336-.75.75-.75h4.5c.414 0 .75.336.75.75 0 1.657-1.343 3-3 3z" fill="#4285F4"/>
-      </svg>
-    `),
-        scaledSize: new google.maps.Size(40, 50),
-        anchor: new google.maps.Point(20, 50),
-      };
-
-      userMarkerRef.current = new google.maps.Marker({
-        position: { lat: userLocation.lat, lng: userLocation.lng },
-        map: mapInstance.current,
-        title: "Your Location",
-        icon: userIcon,
-        zIndex: 1000,
-      });
-
-      userMarkerRef.current.addListener("click", () => {
-        const locationText = [
-          userLocation.city,
-          userLocation.regionName,
-          userLocation.country,
-        ]
-          .filter(Boolean)
-          .join(", ");
-        infoWindowRef.current!.setContent(
-          buildPopupHTML({
-            title: "Your Location",
-            locationText,
-            accentColor: "#4285F4",
-          }),
-        );
-        infoWindowRef.current!.open(
-          mapInstance.current!,
-          userMarkerRef.current!,
-        );
-      });
-    }, [userLocation, currentRoute, mapReady]);
 
     // Place / update location markers
     useEffect(() => {

@@ -1315,41 +1315,19 @@ const TransferEditDrawer = (props) => {
           roundTripSuggestions === null &&
           multiCitySuggestions === null &&
           airportSuggestions === null ? (
-          <div className="w-full flex flex-col space-y-5 items-center justify-center">
-            <div className="flex items-center justify-center bg-red-500 text-white rounded p-2">
-              {transfersError}
-            </div>
-            <div className="flex">
-              <GetInTouchContainer>
-                <Button
-                  color="#111"
-                  fontWeight="500"
-                  fontSize="1rem"
-                  borderWidth="2px"
-                  width="100%"
-                  borderRadius="8px"
-                  bgColor="#f8e000"
-                  padding="12px"
-                  onclick={() => {
-                    props._GetInTouch();
-                    actualClose();
-                    setCurrentStep(0);
-                    setIsRouteSelected(false);
-                  }}
-                >
-                  <div className="flex flex-row gap-2 items-center justify-center">
-                    <ImageLoader
-                      dimensions={{ height: 50, width: 50 }}
-                      dimensionsMobile={{ height: 50, width: 50 }}
-                      height={"20px"}
-                      width={"20px"}
-                      leftalign
-                      url={"media/icons/login/customer-service-black.png"}
-                    />
-                    <span className="text-nowrap">Get in touch!</span>
-                  </div>
-                </Button>
-              </GetInTouchContainer>
+          <div className="w-full flex justify-center py-10 px-4">
+            <div className="bg-text-stroke rounded-2xl p-lg flex flex-col items-center text-center max-w-[440px] w-full border-sm border-text-disabled">
+              <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center mb-sm shadow-soft">
+                <PiTaxi size={26} className="text-text-spacegrey" />
+              </div>
+              <div className="text-md font-500 leading-xl text-text-charcolblack mb-xxs">
+                No options available
+              </div>
+              <p className="text-sm font-400 leading-md text-text-spacegrey">
+                {typeof transfersError === "string"
+                  ? transfersError
+                  : "We couldn't find options for this route right now."}
+              </p>
             </div>
           </div>
         ) : (
@@ -2077,24 +2055,25 @@ const TransferEditDrawer = (props) => {
                       !airportSuggestions &&
                       !existingAirportPickup &&
                       !existingAirportDrop)) && (
-                    <div className="w-full flex flex-col items-center justify-center py-8">
-                      <div className="text-center text-gray-500 text-sm">
-                        {transfersError ? (
-                          <div className="flex items-center justify-center bg-red-50 text-red-600 rounded-lg p-4 border border-red-200">
-                            {transfersError}
-                          </div>
-                        ) : (
-                          <p>
-                            No{" "}
-                            {multicityTab === "multicity"
-                              ? "multicity taxi"
-                              : multicityTab === "airport"
-                                ? "airport pickup/drop"
-                                : "sightseeing"}{" "}
-                            options available for this route. Please get in
-                            touch with us!
-                          </p>
-                        )}
+                    <div className="w-full flex justify-center py-10 px-4">
+                      <div className="bg-text-stroke rounded-2xl p-lg flex flex-col items-center text-center max-w-[440px] w-full border-sm border-text-disabled">
+                        <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center mb-sm shadow-soft">
+                          <PiTaxi size={26} className="text-text-spacegrey" />
+                        </div>
+                        <div className="text-md font-500 leading-xl text-text-charcolblack mb-xxs">
+                          No{" "}
+                          {multicityTab === "multicity"
+                            ? "multicity taxi"
+                            : multicityTab === "airport"
+                              ? "pickup/drop"
+                              : "sightseeing"}{" "}
+                          options available
+                        </div>
+                        <p className="text-sm font-400 leading-md text-text-spacegrey">
+                          {transfersError && typeof transfersError === "string"
+                            ? transfersError
+                            : "We couldn't find options for this route right now."}
+                        </p>
                       </div>
                     </div>
                   )}
@@ -2105,7 +2084,10 @@ const TransferEditDrawer = (props) => {
 
         {transferType === "MULTICITYROUNDTRIP" &&
           multicityTab !== "airport" &&
-          (roundTripSuggestions || multiCitySuggestions || airportSuggestions) &&
+          ((multicityTab === "multicity" && !!multiCitySuggestions) ||
+            (multicityTab === "sightseeing" &&
+              (!!roundTripSuggestions || !!existingSightseeingBooking))) &&
+          !transfersError &&
           (() => {
             // While dates match the existing booking we have nothing to submit
             // (the user hasn't picked a different cab and hasn't changed the

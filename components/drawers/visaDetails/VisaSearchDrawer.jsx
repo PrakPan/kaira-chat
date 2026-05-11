@@ -6,6 +6,7 @@ import Drawer from "../../ui/Drawer";
 import { visaSearch } from "../../../services/ancillaries/visaServices";
 import { getIndianPrice } from "../../../services/getIndianPrice";
 import { currencySymbols } from "../../../data/currencySymbols";
+import { useAnalytics } from "../../../hooks/useAnalytics";
 import VisaDetailDrawer from "./VisaDetailDrawer";
 
 const BADGE_LABELS = {
@@ -91,7 +92,7 @@ const VisaCard = ({ visa, onSelect, currency }) => {
   );
 };
 
-export default function VisaSearchDrawer({ show, onHide }) {
+export default function VisaSearchDrawer({ show, onHide, onBooked, onAdded, onRemoved, bookingId, zIndex = 1700 }) {
   const router = useRouter();
   const itineraryId = useSelector((state) => state.ItineraryId) || router.query?.id;
   const itinerary = useSelector((state) => state.Itinerary);
@@ -116,6 +117,8 @@ export default function VisaSearchDrawer({ show, onHide }) {
 
   const [selectedVisa, setSelectedVisa] = useState(null);
   const [showDetail, setShowDetail] = useState(false);
+
+  const { trackVisaSearchList } = useAnalytics();
 
   useEffect(() => {
     if (show) fetchVisas();
@@ -142,6 +145,7 @@ export default function VisaSearchDrawer({ show, onHide }) {
       // Response: { success, data: [...], results, next, previous }
       const items = res.data?.data;
       setVisas(Array.isArray(items) ? items : []);
+      trackVisaSearchList?.(itineraryId);
 
       // Build filter options from the returned results
       if (Array.isArray(items) && items.length > 0) {
@@ -176,7 +180,7 @@ export default function VisaSearchDrawer({ show, onHide }) {
         backdrop
         width="50%"
         mobileWidth="100%"
-        style={{ zIndex: 1700 }}
+        style={{ zIndex }}
         className="!overflow-y-hidden"
         onHide={onHide}
       >
@@ -309,9 +313,14 @@ export default function VisaSearchDrawer({ show, onHide }) {
         <VisaDetailDrawer
           show={showDetail}
           visa={selectedVisa}
+          bookingId={bookingId}
+          drawerZIndex={zIndex + 10}
           onHide={() => setShowDetail(false)}
+          onAdded={onAdded}
+          onRemoved={onRemoved}
           onBooked={() => {
             setShowDetail(false);
+            onBooked?.();
             onHide();
           }}
         />

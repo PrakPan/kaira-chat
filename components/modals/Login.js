@@ -91,11 +91,14 @@ const Enquiry = (props) => {
         show={props.show}
         onHide={props.onhide}
         borderRadius="20px"
-        width={modalWidth}
+        // width={modalWidth}
         zIndex={props?.zIndex}
+        height={"92vh"}
       >
-        <div id="login-modal" style={{ display: "grid", gridTemplateColumns: "50% 50%" }}>
-          <div
+        <div id="login-modal" 
+        // style={{ display: "grid", gridTemplateColumns: "100%" }}
+        >
+          {/* <div
             style={{ 
               backgroundColor: "#2C2C2C",  
               height: "100%",  
@@ -103,9 +106,9 @@ const Enquiry = (props) => {
               borderRadius: "20px 0 0 20px", 
               display: showImage ? "none" : "block",  
             }} 
-          ></div> 
+          ></div>  */}
 
-          <ImgContainer style={{ display: showImage ? "block" : "none" }}> 
+          {/* <ImgContainer style={{ display: showImage ? "block" : "none" }}> 
             <ImageLoader
               noLazy
               url={"media/themes/auth.png"} 
@@ -134,7 +137,7 @@ const Enquiry = (props) => {
               </div>
             </ImgTagsContainer>
 
-          </ImgContainer>
+          </ImgContainer> */}
 
           <div style={{ paddingTop: "20px" }}>
             <Login
@@ -154,10 +157,10 @@ const Enquiry = (props) => {
     return (
       <Modal
         centered={props?.isTailored ? false : true}
-        bottomSheet={props?.isTailored ? true : false}
+        bottomSheet={true}
         backdrop={props.hideloginclose ? "static" : true}
         show={props.show}
-        height={!isPageWide ? props?.isTailored ? "70%" : "100%" : "auto"}
+        // height={!isPageWide ? props?.isTailored ? "70%" : "100%" : "auto"}
         onHide={props.onhide}
         width={modalWidth}
         borderRadius={"12px"}
@@ -165,10 +168,11 @@ const Enquiry = (props) => {
         itinary_id={props.itinary_id}
         zIndex={props?.zIndex}
         // className="overflow-y-auto"
+        height={"75vh"}
         overflow="hidden"
         style={{ overflowY: "scroll" }}
       >
-          <ImgContainer style={{
+          {/* <ImgContainer style={{
             display: props?.isTailored ? "none" : showImage ? "block" : "none",
             height: "calc(100vh - 502px)",
             overflow: "hidden"
@@ -201,7 +205,7 @@ const Enquiry = (props) => {
               </div>
             </ImgTagsMobContainer>
 
-          </ImgContainer>
+          </ImgContainer> */}
         <div className={`${isPageWide?"p-[20px]":"h-[570px]"}`} >
           <Login onhide={props.onhide} itinary_id={props.itinary_id} onSuccess={props?.onSuccess} isMobile={true} message={props.message} isTailored={props?.isTailored} onSkipLogin={props?.onSkipLogin}></Login>
         </div>

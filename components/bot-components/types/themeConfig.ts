@@ -27,6 +27,21 @@ export interface ThemeRow<T> {
   cards: T[];
 }
 
+export interface ThemeTravellerStory {
+  id: number;
+  name: string;
+  tripName: string;
+  duration: string;
+  groupType: string;
+  destinations: string[];
+  image: string;
+  images?: string[];
+  shortDescription: string;
+  viewItineraryLink: string;
+  rating: number;
+  prompt: string;
+}
+
 export interface ThemeConfig {
   welcome?: {
     subtitle?: string;
@@ -38,4 +53,5 @@ export interface ThemeConfig {
     row3?: ThemeRow<ThemeTrendingCard>;
     row4?: ThemeRow<ThemeTripCard>;
   };
+  travellerStories?: ThemeTravellerStory[];
 }

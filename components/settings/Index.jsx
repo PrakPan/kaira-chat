@@ -18,7 +18,7 @@ const parseDateString = (dateString) => {
 };
 
 
-const Settings = ({setShowSettings, isHotelsPresent, handleApply}) => {
+const Settings = ({setShowSettings, isHotelsPresent, handleApply, maxAdults=false}) => {
   const dispatch = useDispatch();
   const itinerary = useSelector(state => state.Itinerary);
   const isDesktop = useMediaQuery("(min-width:767px)");
@@ -83,7 +83,7 @@ useEffect(() => {
     setNumberOfAdults(itinerary?.number_of_adults || 1);
     setNumberOfChildren(itinerary?.number_of_children || 0);
     setNumberOfInfants(itinerary?.number_of_infants || 0);
-    
+
     if (itinerary?.start_date && itinerary?.end_date) {
       setDate({
         type: "fixed",
@@ -95,6 +95,33 @@ useEffect(() => {
     }
   }
 }, [itinerary, isHotelsPresent]);
+
+  // Keep traveller counts in sync with the room configuration. Pax (used when
+  // addHotels is true) only writes back to roomConfiguration on Done — it does
+  // NOT call the numberOf* setters, so without this effect the payload sent to
+  // handleApply carries stale passenger totals. Pax rooms don't track infants,
+  // so only fold infants in when the rooms actually carry them (EnterPassenger).
+  useEffect(() => {
+    if (!roomConfiguration || roomConfiguration.length === 0) return;
+
+    let adultsTotal = 0;
+    let childrenTotal = 0;
+    let infantsTotal = 0;
+    let roomsHaveInfants = false;
+
+    for (const room of roomConfiguration) {
+      adultsTotal += room?.adults || 0;
+      childrenTotal += room?.children || 0;
+      if (room?.infants !== undefined) {
+        roomsHaveInfants = true;
+        infantsTotal += room?.infants || 0;
+      }
+    }
+
+    setNumberOfAdults(adultsTotal);
+    setNumberOfChildren(childrenTotal);
+    if (roomsHaveInfants) setNumberOfInfants(infantsTotal);
+  }, [roomConfiguration]);
 
   const handleSetSelectedPreferences = (preference) => {
   dispatch(togglePreference(preference));
@@ -245,6 +272,7 @@ const handleUpdate = () => {
           setNumberOfChildren={setNumberOfChildren}
           setNumberOfInfants={setNumberOfInfants}
           settings={true}
+          isTailored={maxAdults}
         />
       ) : (
         <div>

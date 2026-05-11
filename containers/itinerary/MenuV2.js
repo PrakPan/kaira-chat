@@ -67,6 +67,7 @@ import CityDrawerView, { ItineraryCityWithDrawer } from "../../components/itiner
 import Overview from "../newitinerary/overview/Index";
 import TrustFactor from "../../components/tailoredform/TrustFactor.js";
 import ConfirmationModal from "../../components/bot-components/components/ConfirmationModal.tsx";
+import BotLoginModal from "../../components/bot-components/components/BotLoginModal";
 
 const NotificationDot = styled.div`
   position: absolute;
@@ -193,14 +194,14 @@ const SimpleTabsV2 = (props) => {
   }, []);
 
 useEffect(() => {
-  if (!props.token && props.itinerary?.id && finalized_status === "SUCCESS") {
+  if (!props.token && finalized_status === "SUCCESS") {
     const timeout = setTimeout(() => {
       setLoginModalMessage("Login to view details");
       setShowLoginModal(true);
     }, 30000);
     return () => clearTimeout(timeout);
   }
-}, [props.itinerary?.id]);
+}, [finalized_status]);
 
   useEffect(() => {
     if(router.query?.drawer === "payment"){
@@ -2248,8 +2249,8 @@ props.fromChat ? (
         ></PoiEditModal>
       ) : null}
 
-      <div className="width-[100%] z-[1650]">
-        <LogInModal
+      <div className="z-[1650]">
+        <BotLoginModal
           show={showLoginModal}
           onhide={_handleLoginClose}
           itinary_id={props.id}
@@ -2258,7 +2259,7 @@ props.fromChat ? (
           onSuccess={async () => {
             await attachUserToItinerary();
           }}
-        ></LogInModal>
+        ></BotLoginModal>
 
        
       </div>

@@ -9,8 +9,10 @@ import { openNotification } from "../../../store/actions/notification";
 import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
 import { getIndianPrice } from "../../../services/getIndianPrice";
 import { currencySymbols } from "../../../data/currencySymbols";
+import { useAnalytics } from "../../../hooks/useAnalytics";
+import VisaSearchDrawer from "./VisaSearchDrawer";
 
-export default function VisaDetailDrawer({ show, visa, onHide, onBooked }) {
+export default function VisaDetailDrawer({ show, visa, onHide, onBooked, onAdded, onRemoved, bookingId, drawerZIndex = 1710, showManageActions = false }) {
   const router = useRouter();
   const dispatch = useDispatch();
   const itineraryId = useSelector((state) => state.ItineraryId) || router.query?.id;
@@ -23,8 +25,12 @@ export default function VisaDetailDrawer({ show, visa, onHide, onBooked }) {
   const [loading, setLoading] = useState(false);
   const [booking, setBooking] = useState(false);
   const [error, setError] = useState(null);
+  const [showSearch, setShowSearch] = useState(false);
+  const [removing, setRemoving] = useState(false);
 
   const symbol = currencySymbols?.[currency?.currency] || "₹";
+
+  const { trackVisaBookingAdd } = useAnalytics();
 
   useEffect(() => {
     if (show && visa?.id) fetchDetail();
@@ -63,16 +69,21 @@ export default function VisaDetailDrawer({ show, visa, onHide, onBooked }) {
     if (!tid) return;
     setBooking(true);
     try {
-      await visaBooking.post(`${itineraryId}/bookings/visa/`, { trace_id: tid }, {
+      const payload = { trace_id: tid };
+      if (bookingId) payload.booking_id = bookingId;
+      const res = await visaBooking.post(`${itineraryId}/bookings/visa/`, payload, {
         headers: { Authorization: `Bearer ${localStorage.getItem("access_token")}` },
       });
 
+      const newBooking = res?.data?.ancillary_booking || res?.data?.data || res?.data;
+      trackVisaBookingAdd?.(itineraryId, displayVisa?.id || "");
       dispatch(SetCallPaymentInfo(!CallPaymentInfo));
       dispatch(openNotification({
         type: "success",
         heading: "Success!",
         text: `Visa added to your itinerary`,
       }));
+      onAdded?.(newBooking, bookingId || null);
       onBooked?.();
     } catch (err) {
       dispatch(openNotification({
@@ -84,24 +95,50 @@ export default function VisaDetailDrawer({ show, visa, onHide, onBooked }) {
     setBooking(false);
   };
 
+  const handleRemove = async () => {
+    if (!bookingId) return;
+    setRemoving(true);
+    try {
+      await visaBooking.delete(`${itineraryId}/ancillary-booking/${bookingId}/`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("access_token")}` },
+      });
+      dispatch(SetCallPaymentInfo(!CallPaymentInfo));
+      dispatch(openNotification({
+        type: "success",
+        heading: "Removed!",
+        text: "Visa removed from your itinerary",
+      }));
+      onRemoved?.(bookingId);
+      onBooked?.();
+    } catch (err) {
+      dispatch(openNotification({
+        type: "error",
+        heading: "Error!",
+        text: err?.response?.data?.errors?.[0]?.message?.[0] || "Failed to remove visa. Please try again.",
+      }));
+    }
+    setRemoving(false);
+  };
+
   const formatLabel = (val) =>
     val ? val.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) : null;
 
   return (
+    <>
     <Drawer
       show={show}
       anchor="right"
       backdrop
       width="50%"
       mobileWidth="100%"
-      style={{ zIndex: 1710 }}
+      style={{ zIndex: drawerZIndex }}
       className="!overflow-y-hidden"
       onHide={onHide}
     >
       <div className="h-screen flex flex-col overflow-hidden">
         <div className="overflow-y-scroll flex-1 px-6 max-ph:px-4 pb-24">
           {/* Back */}
-          <div className="py-4 bg-white sticky top-0 z-10">
+          <div className="py-4 bg-white sticky top-0 z-10 flex items-center justify-between">
             <Image
               src="/backarrow.svg"
               className="cursor-pointer"
@@ -109,6 +146,14 @@ export default function VisaDetailDrawer({ show, visa, onHide, onBooked }) {
               height={2}
               onClick={onHide}
             />
+            {showManageActions && (
+              <button
+                className="ttw-btn-secondary whitespace-nowrap text-sm"
+                onClick={() => setShowSearch(true)}
+              >
+                Change
+              </button>
+            )}
           </div>
 
           {loading ? (
@@ -234,16 +279,42 @@ export default function VisaDetailDrawer({ show, visa, onHide, onBooked }) {
         {/* Sticky CTA — show when detail loaded (traceId present) or fall back to visa.id */}
         {!loading && !error && (traceId || displayVisa?.id) && (
           <div className="border-t border-[#E5E5E5] px-6 py-4 bg-white">
-            <button
-              className="w-full bg-[#f7e700] text-black font-500 text-[15px] py-3 rounded-xl flex items-center justify-center gap-2 disabled:opacity-60"
-              onClick={handleBook}
-              disabled={booking}
-            >
-              {booking ? <PulseLoader size={8} color="#000" /> : "Add Visa to Cart"}
-            </button>
+            {showManageActions ? (
+              <button
+                className="w-full bg-[#ef4444]  text-white font-500 text-[15px] py-3 rounded-xl flex items-center justify-center gap-2 disabled:opacity-60"
+                onClick={handleRemove}
+                disabled={removing}
+              >
+                {removing ? <PulseLoader size={8} color="#ffffff" /> : "Remove from Itinerary"}
+              </button>
+            ) : (
+              <button
+                className="w-full bg-[#f7e700] text-black font-500 text-[15px] py-3 rounded-xl flex items-center justify-center gap-2 disabled:opacity-60"
+                onClick={handleBook}
+                disabled={booking}
+              >
+                {booking ? <PulseLoader size={8} color="#000" /> : "Add Visa to Cart"}
+              </button>
+            )}
           </div>
         )}
       </div>
     </Drawer>
+
+    {showSearch && (
+      <VisaSearchDrawer
+        show={showSearch}
+        bookingId={bookingId}
+        zIndex={drawerZIndex + 10}
+        onHide={() => setShowSearch(false)}
+        onAdded={onAdded}
+        onRemoved={onRemoved}
+        onBooked={() => {
+          setShowSearch(false);
+          onBooked?.();
+        }}
+      />
+    )}
+    </>
   );
 }

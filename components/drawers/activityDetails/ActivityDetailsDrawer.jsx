@@ -300,6 +300,7 @@ const ActivityDetailsDrawer = (props) => {
               showPackages={props?.showPackages}
               onAddToItinerary={props?.onAddToItinerary}
               traceId={traceId}
+              fromChat={props?.fromChat}
             />
           ) : (
             <ActivityDetailsSkeleton

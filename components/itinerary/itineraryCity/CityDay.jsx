@@ -128,7 +128,7 @@ const getTimeOfDay = (timeString) => {
 
 // ─── Helper: get item ID for drawer navigation ────────────────────────────────
 const getItemId = (item, resolvedType) => {
-  if (resolvedType === "activity") return item?.booking?.id || item?.id;
+  if (resolvedType === "activity") return item?.booking?.id || item?.id || item?.activity;
   if (resolvedType === "poi") return item?.poi || item?.id;
   if (resolvedType === "restaurant")
     return item?.restaurants?.[0]?.id || item?.restaurant || item?.id;
@@ -208,7 +208,12 @@ const CityDay = (props) => {
   const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
 
   const { finalized_status } = useSelector((state) => state.ItineraryStatus);
-  const { trackActivityBookingAdd, trackActivityCardClicked } = useAnalytics();
+  const {
+    trackActivityBookingAdd,
+    trackActivityCardClicked,
+    trackTaxiCardClicked,
+    trackPoiCardClicked,
+  } = useAnalytics();
   const transferBookings = useSelector(
     (state) => state.TransferBookings
   ).transferBookings;
@@ -293,9 +298,18 @@ const handleItemClick = (item) => {
   if (!resolvedType || resolvedType === "recommendation") return;
 
   const itemId = getItemId(item, resolvedType);
+  console.log("ItemId",itemId)
   if (!itemId) return;
 
+  if(resolvedType === "poi") {
+    trackPoiCardClicked(router.query.id, itemId, "day_by_day_collapse", "poi");
+  } else if (resolvedType === "restaurant") {
+    trackActivityCardClicked(router.query.id, itemId, "day_by_day_collapse", "restaurant");
+  } else if (resolvedType === "activity") {
+    trackActivityCardClicked(router.query.id, itemId, "day_by_day_collapse", "activity");
+  } else {
   trackActivityCardClicked(router.query.id, itemId, "day_by_day_collapse");
+  }
 
   if (resolvedType === "activity" && (isDraft || finalized_status === "PENDING")) {
     handleDraftActivityClick(item);
@@ -322,7 +336,9 @@ const handleItemClick = (item) => {
 useEffect(() => {
   let elements = [];
   for (let elem of props.day.slab_elements) {
-    if (["activity", "poi", "restaurant"].includes(elem.element_type)) {
+
+
+    if (["activity", "poi", "restaurant","recommendation"].includes(elem.element_type || elem?.type)) {
       elements.push(elem);
     } else if (
       elem.element_type === "recommendation" &&
@@ -512,6 +528,11 @@ useEffect(() => {
                 <button
                   key={taxi.id}
                   onClick={() => {
+                    trackTaxiCardClicked?.(
+                      router.query.id,
+                      taxi.id,
+                      "day_by_day_collapse",
+                    );
                     router.push(
                       {
                         pathname: window.location.pathname,

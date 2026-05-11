@@ -275,9 +275,9 @@ const Booking = (props) => {
         );
         const bookingIdToUpdate = requestData?.booking_id;
 
-        Object.keys(updatedTransferBookings).forEach((category) => {
+        Object.keys(updatedTransferBookings)?.forEach((category) => {
           if (updatedTransferBookings[category]) {
-            Object.keys(updatedTransferBookings[category]).forEach((key) => {
+            Object.keys(updatedTransferBookings[category])?.forEach((key) => {
               const booking = updatedTransferBookings[category][key];
 
               if (!booking || Object.keys(booking).length === 0) {

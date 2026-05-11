@@ -766,6 +766,10 @@ const fetchStatus = async () => {
     setConsecutiveErrors(0);
 
     // ── 2. Immediately dispatch real statuses so fetchItinerary sees them ────
+    // Note: hotels_status SUCCESS is deferred to getAllStays() so the UI doesn't
+    // render the "loaded" branch while state.Stays is still empty (the gap
+    // between polled SUCCESS and getAllStays completing was causing "+ Add Stay"
+    // CTAs to flicker and the changeHotelBooking drawer to fail to mount).
     const statusMap = {
       itinerary_status: status?.ITINERARY,
       hotels_status:    status?.HOTELS,
@@ -773,13 +777,18 @@ const fetchStatus = async () => {
       pricing_status:   status?.PRICING,
     };
     Object.entries(statusMap).forEach(([key, val]) => {
-      if (val) dispatch(setItineraryStatus(key, val));
+      if (!val) return;
+      if (key === "hotels_status" && val === "SUCCESS") return;
+      dispatch(setItineraryStatus(key, val));
     });
     // ─────────────────────────────────────────────────────────────────────────
 
     const itineraryFailure = status?.ITINERARY === "FAILURE";
     if (itineraryFailure) {
       setPolling(false);
+      // Itinerary task failed — release the chat composer so the user
+      // can talk to Kaira again instead of being stuck behind the lock.
+      dispatch(setItineraryStatus("is_polling", false));
       router.push("/thank-you");
       return;
     }
@@ -791,6 +800,8 @@ const fetchStatus = async () => {
     if (allStatusesCompleted) {
       dispatch(setItineraryStatus("finalized_status", "SUCCESS"));
       dispatch(setItineraryStatus("final_status", res?.data?.status));
+      // Polling has fully resolved — unlock the chat composer.
+      dispatch(setItineraryStatus("is_polling", false));
       if (props.id) fetchGallery();
       setPolling(false);
       if (res.data?.celery?.notes && res.data.celery?.notes.length > 0) {
@@ -822,6 +833,9 @@ const fetchStatus = async () => {
     ) {
       setPolling(false);
       setItineraryLoading(false);
+      // Falling back to the v1 itinerary view — release the chat lock so
+      // the composer doesn't stay disabled forever.
+      dispatch(setItineraryStatus("is_polling", false));
       setOldOne(true);
       return;
     }
@@ -942,6 +956,8 @@ const fetchStatus = async () => {
 
         if (newCount >= 2) {
           setPolling(false);
+          // Bailing out to /thank-you — release the chat composer lock.
+          dispatch(setItineraryStatus("is_polling", false));
           router.push("/thank-you");
         }
 
