@@ -8,7 +8,7 @@ import Image from "next/image";
 import { getPlatform } from "../../hooks/useChat";
 import BotLoginModal from "../BotLoginModal";
 
-const CHATKIT_API_URL = "https://chat.tarzanway.com/chatkit";
+const CHATKIT_API_URL = "https://dev.chat.tarzanway.com/chatkit";
 
 interface Thread {
   id: string;

@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import StartScreen from "../StartScreen";
 import type { ThemeConfig } from "../../types/themeConfig";
 
-const CHATKIT_API_URL = "https://chat.tarzanway.com/chatkit";
+const CHATKIT_API_URL = "https://dev.chat.tarzanway.com/chatkit";
 
 function getAuthToken(): string | null {
   return (
