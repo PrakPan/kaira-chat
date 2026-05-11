@@ -3,7 +3,7 @@ import { PiAirplaneTakeoff } from "react-icons/pi";
 import { useSelector } from "react-redux";
 import { currencySymbols } from "../../../data/currencySymbols";
 import { MERCURY_HOST } from "../../../services/constants";
-import { FaTaxi } from "react-icons/fa";
+import { FaTaxi, FaWhatsapp } from "react-icons/fa";
 
 // ─── Widget environment context ───────────────────────────────────────────────
 // Carries ambient data (e.g. botMode) down to individual cards without
@@ -118,6 +118,7 @@ const ALWAYS_ENABLED_ACTIONS = new Set<string>([
   "sightseeing.open",
   "visa.open",
   "esim.open",
+  "contact.whatsapp",
 ]);
 
 // ─── Form Context ─────────────────────────────────────────────────────────────
@@ -2006,7 +2007,9 @@ function ButtonNode({
     // "[visa.open](http://visa.open)".
     if (onClickAction) {
       const action = onClickAction as { type: string; payload?: Record<string, unknown> };
-      onAction?.({ ...action, type: actionType || action.type });
+      const next = { ...action, type: actionType || action.type };
+      if (openWhatsAppFromAction(next)) return;
+      onAction?.(next);
     }
   };
 
@@ -2489,6 +2492,28 @@ function normalizeActionType(t: string | undefined): string {
   if (!t) return "";
   const m = t.match(/^\[([^\]]+)\]\([^)]*\)$/);
   return m ? m[1] : t;
+}
+
+// Open a wa.me link for a contact.whatsapp action. Returns true if the action
+// was handled here (so the caller can skip bubbling to upstream onAction).
+function openWhatsAppFromAction(
+  action: { type?: string; payload?: Record<string, unknown> } | undefined,
+): boolean {
+  if (!action) return false;
+  const type = normalizeActionType(action.type);
+  if (type !== "contact.whatsapp") return false;
+  const payload = (action.payload ?? {}) as Record<string, unknown>;
+  const rawPhone = typeof payload.phone === "string" ? payload.phone : "";
+  const phone = rawPhone.replace(/[^\d]/g, "");
+  if (!phone) return false;
+  const text = typeof payload.text === "string" ? payload.text : "";
+  const url = text
+    ? `https://wa.me/${phone}?text=${encodeURIComponent(text)}`
+    : `https://wa.me/${phone}`;
+  if (typeof window !== "undefined") {
+    window.open(url, "_blank", "noopener,noreferrer");
+  }
+  return true;
 }
 
 function findPdfDownloadButton(node: WidgetNode): WidgetNode | null {
@@ -3840,9 +3865,244 @@ function PlanNewTripCard({
   );
 }
 
+// ─── WhatsApp contact card ───────────────────────────────────────────────────
+// Detects a Card whose primary action is `contact.whatsapp` and renders a
+// branded WhatsApp CTA. The card itself triggers the wa.me deep-link so the
+// surrounding chat doesn't need to know about the action shape.
+
+function findWhatsappContactButton(node: WidgetNode): WidgetNode | null {
+  if (
+    node.type === "Button" &&
+    normalizeActionType((node.onClickAction as any)?.type) === "contact.whatsapp"
+  ) {
+    return node;
+  }
+  for (const child of (node.children ?? []) as WidgetNode[]) {
+    const hit = findWhatsappContactButton(child);
+    if (hit) return hit;
+  }
+  return null;
+}
+
+function WhatsappContactCard({
+  node,
+  button,
+}: {
+  node: WidgetNode;
+  button: WidgetNode;
+}) {
+  const [hovered, setHovered] = useState(false);
+
+  const titleNodes = findNodesByType(node, "Title");
+  const captionNodes = findNodesByType(node, "Caption");
+  const textNodes = findNodesByType(node, "Text");
+
+  const asText = (raw: unknown): string => {
+    if (typeof raw === "string") return raw.trim();
+    if (typeof raw === "number") return String(raw);
+    if (Array.isArray(raw)) {
+      return raw
+        .map((v) => (typeof v === "string" ? v : typeof v === "number" ? String(v) : ""))
+        .filter(Boolean)
+        .join(" · ");
+    }
+    return "";
+  };
+
+  const click = button.onClickAction as
+    | { type: string; payload?: Record<string, unknown> }
+    | undefined;
+  const payload = (click?.payload ?? {}) as Record<string, unknown>;
+  const phone =
+    typeof payload.phone === "string"
+      ? (payload.phone as string).replace(/[^\d]/g, "")
+      : "";
+
+  const headline =
+    asText(titleNodes[0]?.value) ||
+    asText(payload.headline) ||
+    "Talk to a travel expert";
+  const subline =
+    asText(captionNodes[0]?.value) ||
+    asText(textNodes[0]?.value) ||
+    asText(payload.context) ||
+    "Chat with our team on WhatsApp for instant help with your itinerary.";
+  const buttonLabel = (button.label as string) || "Chat on WhatsApp";
+
+  const handleClick = () => {
+    openWhatsAppFromAction(click);
+  };
+
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={handleClick}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleClick();
+        }
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      aria-label={phone ? `${buttonLabel} (+${phone})` : buttonLabel}
+      style={{
+        position: "relative",
+        marginTop: 10,
+        marginBottom: 4,
+        width: "100%",
+        boxSizing: "border-box",
+        padding: 18,
+        borderRadius: 18,
+        background:
+          "linear-gradient(135deg, #ecfdf5 0%, #d1fae5 45%, #a7f3d0 100%)",
+        border: "1px solid rgba(37, 211, 102, 0.35)",
+        boxShadow: hovered
+          ? "0 12px 28px rgba(37, 211, 102, 0.28)"
+          : "0 4px 12px rgba(37, 211, 102, 0.16)",
+        cursor: "pointer",
+        outline: "none",
+        overflow: "hidden",
+        transform: hovered ? "translateY(-2px)" : "translateY(0)",
+        transition:
+          "transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease",
+      }}
+    >
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          top: -60,
+          right: -50,
+          width: 180,
+          height: 180,
+          borderRadius: "50%",
+          background:
+            "radial-gradient(circle at center, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0) 70%)",
+          pointerEvents: "none",
+        }}
+      />
+      <div
+        style={{
+          position: "relative",
+          display: "flex",
+          alignItems: "center",
+          gap: 14,
+        }}
+      >
+        <div
+          aria-hidden="true"
+          style={{
+            flex: "0 0 auto",
+            width: 48,
+            height: 48,
+            borderRadius: 14,
+            background: "#25D366",
+            color: "#FFFFFF",
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            boxShadow: "0 6px 14px rgba(18, 140, 70, 0.32)",
+          }}
+        >
+          <FaWhatsapp size={26} />
+        </div>
+
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 15,
+              fontWeight: 700,
+              color: "#064e3b",
+              lineHeight: 1.3,
+              marginBottom: 4,
+            }}
+          >
+            {headline}
+          </div>
+          <div
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 12.5,
+              color: "#065f46",
+              lineHeight: 1.5,
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+            }}
+          >
+            {subline}
+          </div>
+        </div>
+      </div>
+
+      <div
+        style={{
+          position: "relative",
+          marginTop: 14,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 12,
+          flexWrap: "wrap",
+        }}
+      >
+        {phone ? (
+          <span
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 11.5,
+              fontWeight: 500,
+              color: "#047857",
+              letterSpacing: 0.3,
+            }}
+          >
+            +{phone}
+          </span>
+        ) : (
+          <span />
+        )}
+        <span
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 8,
+            padding: "10px 18px",
+            borderRadius: 9999,
+            background: "#128C46",
+            color: "#FFFFFF",
+            fontFamily: "'Inter', sans-serif",
+            fontSize: 13,
+            fontWeight: 600,
+            letterSpacing: 0.2,
+            boxShadow: hovered
+              ? "0 8px 18px rgba(18, 140, 70, 0.36)"
+              : "0 3px 8px rgba(18, 140, 70, 0.22)",
+            transition: "box-shadow 0.18s ease, transform 0.18s ease",
+            transform: hovered ? "translateX(2px)" : "translateX(0)",
+          }}
+        >
+          <FaWhatsapp size={15} />
+          {buttonLabel}
+        </span>
+      </div>
+    </div>
+  );
+}
+
 // ─── Card ─────────────────────────────────────────────────────────────────────
 
 function CardNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetRendererProps["onAction"] }) {
+  // WhatsApp contact card — checked first so the branded design wins over the
+  // generic drawer-button fallback when both patterns are present.
+  const whatsappButton = findWhatsappContactButton(node);
+  if (whatsappButton) {
+    return <WhatsappContactCard node={node} button={whatsappButton} />;
+  }
+
   // "Start Planning New Trip" hero card. Checked first so the polished design
   // wins over the generic Card passthrough.
   const planNewTripButton = findRedirectToP1Button(node);

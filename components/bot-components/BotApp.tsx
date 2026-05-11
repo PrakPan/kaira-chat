@@ -2273,6 +2273,7 @@ export default function BotApp({
     onTravellerStoryDismiss: () => setActiveTravellerStory(null),
     onLoginSuccess: attachUserToItinerary,
     loginMandatory: router.query.login === "false" ? false : undefined,
+    onViewItinerary: () => mobileTabSwitchRef.current?.("itinerary"),
   };
 
   const handleConfirmItinerary = (details: any) => {
@@ -3569,7 +3570,7 @@ export const MobileHeaderMenu = React.memo(
             </button>
             {profileOpen && (
               <div
-                className="absolute right-0 top-10 z-[500] bg-white rounded-xl shadow-xl border border-gray-100 py-1.5 overflow-hidden"
+                className="absolute right-0 top-10 z-[9999] bg-white rounded-xl shadow-xl border border-gray-100 py-1.5 overflow-hidden"
                 style={{ minWidth: 180 }}
               >
                 {!token ? (
@@ -3784,18 +3785,38 @@ const MobileLayout = React.memo(
     }, [hasItineraryActivity, activeTab, setViewMode]);
 
     // Top tab bar — Chat + Map + Itinerary + Route + Bookings when itinerary is active
-    const tabs: {
-      key: MobileTab;
-      label: string;
-      show: boolean;
-      Icon: React.ComponentType<{ size?: number }>;
-    }[] = [
-      { key: "map", label: "Map", show: hasItineraryActivity, Icon: FiMap },
-      { key: "routes", label: "Route", show: isComplete, Icon: FiNavigation },
-      { key: "itinerary", label: "Itinerary", show: hasItineraryActivity, Icon: FiCalendar },
-
-      { key: "bookings", label: "Bookings", show: isComplete, Icon: FiBookmark },
-    ];
+   const tabs: {
+  key: MobileTab;
+  label: string;
+  show: boolean;
+  icon: React.ReactNode;
+}[] = [
+  { key: "map", label: "Map", show: hasItineraryActivity, icon: <FiMap size={14} /> },
+  {
+    key: "routes",
+    label: "Route",
+    show: isComplete,
+    icon: (
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="6" cy="6" r="2.5" />
+        <circle cx="18" cy="18" r="2.5" />
+        <path d="M9 6h7a2 2 0 0 1 2 2v7" />
+      </svg>
+    ),
+  },
+  { key: "itinerary", label: "Itinerary", show: hasItineraryActivity, icon: <FiCalendar size={14} /> },
+  {
+    key: "bookings",
+    label: "Bookings",
+    show: isComplete,
+    icon: (
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M19 14l-5-5-9 9" />
+        <path d="M5 21h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2z" />
+      </svg>
+    ),
+  },
+];
     const visibleTabs = tabs.filter((t) => t.show);
 
     const activeTabStyle: React.CSSProperties = {
@@ -3836,18 +3857,16 @@ const MobileLayout = React.memo(
               }}
             >
               {visibleTabs.map((tab) => (
-                <button
-                  key={tab.key}
-                  onClick={() => handleTabClick(tab.key)}
-                  className="flex-1 px-2 py-1.5 text-[12px] font-medium transition-all duration-200 whitespace-nowrap flex items-center justify-center gap-1.5"
-                  style={
-                    activeTab === tab.key ? activeTabStyle : inactiveTabStyle
-                  }
-                >
-                  <tab.Icon size={12} />
-                  {tab.label}
-                </button>
-              ))}
+  <button
+    key={tab.key}
+    onClick={() => handleTabClick(tab.key)}
+    className="flex-1 px-2 py-2 text-[12px] font-medium transition-all duration-200 whitespace-nowrap flex items-center justify-center gap-1.5"
+    style={activeTab === tab.key ? activeTabStyle : inactiveTabStyle}
+  >
+    {tab.icon}
+    {tab.label}
+  </button>
+))}
             </div>
             {/* Settings icon — only when itinerary is fully created */}
             {/* {isComplete && onSettingsClick && (
@@ -3980,22 +3999,24 @@ const MobileLayout = React.memo(
 
         {/* ── Mobile chat pill — "View Map" on first focus_route, "View Itinerary"
              on first P2 finalized transition. Shown for 10s above the input. ── */}
-        {mobileEffectPopup && activeTab === "chat" && (
+        {
+        mobileEffectPopup && activeTab === "chat" && 
+        (
           <div
             className="fixed z-[300] left-0 right-0 flex justify-center px-4"
-            style={{ bottom: 80 }}
+            style={{ bottom: 150 }}
           >
             <button
               onClick={() => {
                 handleTabClick(
-                  mobileEffectPopup.type === "itinerary" ? "itinerary" : "map",
+                  mobileEffectPopup?.type === "itinerary" ? "itinerary" : "map",
                 );
                 onDismissMobileEffectPopup?.();
               }}
               className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#07213A] text-white text-[13px] font-semibold shadow-2xl active:scale-95 transition-transform"
               style={{ whiteSpace: "nowrap" }}
             >
-              {mobileEffectPopup.type === "itinerary" ? (
+              {mobileEffectPopup?.type === "itinerary" ? (
                 <svg
                   width="14"
                   height="14"
@@ -4025,7 +4046,7 @@ const MobileLayout = React.memo(
                   <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
                 </svg>
               )}
-              {mobileEffectPopup.label}
+              {mobileEffectPopup?.label}
             </button>
           </div>
         )}

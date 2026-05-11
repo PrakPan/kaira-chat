@@ -26,6 +26,7 @@ import setItinerary, {
 } from "../../../store/actions/itinerary";
 import { updateStays } from "../../../store/actions/StayBookings";
 import { updateTransferBookings } from "../../../store/actions/transferBookingsStore";
+import { removeAncillaryBooking } from "../../../store/actions/ancillaryBookings";
 import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 import BotLoginModal from "./BotLoginModal";
@@ -149,6 +150,11 @@ onLoginSuccess?: () => void | Promise<void>;
  *  /chatkit request (threads.create). When undefined, the field is omitted
  *  from the body. Subsequent messages never include it. */
 loginMandatory?: boolean;
+/** Mobile-only: invoked when the user taps the "View Itinerary" CTA rendered
+ *  below the composer in P2 mode (or once a display_itinerary effect has fired
+ *  in this thread). Used by BotApp to switch the mobile tab to the itinerary
+ *  view. */
+onViewItinerary?: () => void;
 }
 
 export interface TravellerStoryIntro {
@@ -304,6 +310,7 @@ mobileMenu,
 isPanelVisible = true,
 onLoginSuccess,
 loginMandatory,
+onViewItinerary,
 }: ChatKitPanelProps) {
   // ── State ────────────────────────────────────────────────────────────────
   const [input, setInput] = useState("");
@@ -318,6 +325,10 @@ loginMandatory,
   const [postLoginLoading, setPostLoginLoading] = useState(false);
   const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
   const [isMobile, setIsMobile] = useState(false);
+  // True once any display_itinerary effect has fired in this thread (live
+  // stream or replayed from restoredThread.itinerary_effects). Drives the
+  // mobile "View Itinerary" CTA below the composer alongside botMode === "p2".
+  const [hasDisplayItinerary, setHasDisplayItinerary] = useState(false);
 
   useEffect(() => {
     const checkScreenSize = () => setIsMobile(window.innerWidth < 768);
@@ -773,8 +784,6 @@ loginMandatory,
   }>({ show: false });
 
 
-  console.log("Sighseeing drawer state:", sightseeingDrawer);
-
   // TransferEditDrawer closes itself by calling its internal `actualClose`
   // (a Next router.push that strips the drawer/itinerary_city_id query
   // params) — it never invokes the `handleClose` prop we pass in. Without
@@ -1216,6 +1225,7 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
         case "display_itinerary": {
           emitEndpointsFromEffect(name, data);
           onItineraryReceived(data.itinerary);
+          setHasDisplayItinerary(true);
           fireChatEventOnce("chat_itinerary_generated", () =>
             analyticsRef.current.trackChatItineraryGenerated?.(
               localItineraryId || ((data.itinerary as any)?.id as string) || "",
@@ -1395,6 +1405,17 @@ case "shimmer_day_by_day": {
           if (bookingId) dispatch(updateTransferBookings(bookingId));
           dispatch(SetCallPaymentInfo(!callPaymentInfo));
           const text = typeof data.message === "string" ? data.message : "Transfer removed from your itinerary.";
+          dispatch(openNotification({ type: "success", heading: "Success!", text }));
+          break;
+        }
+        case "delete_esim_from_itinerary":
+        case "delete_visa_from_itinerary": {
+          const payload = (data.data ?? {}) as Record<string, unknown>;
+          const bookingId = payload?.booking_id as string | undefined;
+          const kind = name === "delete_esim_from_itinerary" ? "eSIM" : "Visa";
+          if (bookingId) dispatch(removeAncillaryBooking(bookingId));
+          dispatch(SetCallPaymentInfo(!callPaymentInfo));
+          const text = typeof data.message === "string" ? data.message : `${kind} removed from your itinerary.`;
           dispatch(openNotification({ type: "success", heading: "Success!", text }));
           break;
         }
@@ -1852,10 +1873,12 @@ useEffect(() => {
   );
 
   let latestEndpointEffect: { name: string; data: Record<string, unknown> } | null = null;
+  let restoredHasDisplayItinerary = false;
   for (const effect of itineraryEffects) {
     if (effect.name === "display_itinerary" && effect.data?.itinerary) {
       if (!threadIsCompleted) onItineraryReceived(effect.data.itinerary);
       latestEndpointEffect = effect;
+      restoredHasDisplayItinerary = true;
     } else if (effect.name === "display_transfers" && effect.data) {
       indexTransfersForLookup(effect.data);
       if (!threadIsCompleted) onItineraryReceived(effect.data);
@@ -1869,6 +1892,8 @@ useEffect(() => {
   if (latestEndpointEffect && !threadIsCompleted) {
     emitEndpointsFromEffect(latestEndpointEffect.name, latestEndpointEffect.data);
   }
+
+  if (restoredHasDisplayItinerary) setHasDisplayItinerary(true);
 
   if (restored.length > 0) {
     setMessages(restored);
@@ -2192,7 +2217,7 @@ const handleShowLogin = useCallback(() => {
       style={{ fontFamily: "'Inter', sans-serif" }}
     >
       {/* ── Top bar ───────────────────────────────────────────────────────── */}
-      <div className="flex-shrink-0 flex items-center justify-between gap-2 px-4 py-2.5 bg-white/80 backdrop-blur-sm mt-2">
+      <div className="flex-shrink-0 flex items-center justify-between gap-2 px-[0.25rem] md:!px-4 py-2.5 bg-white/80 backdrop-blur-sm mt-2">
         <div className="flex items-center gap-2 min-w-0">
           <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0">
             <img src="/KairaInsta.png" alt="Kaira" />
@@ -2225,7 +2250,7 @@ const handleShowLogin = useCallback(() => {
 
       {/* ── Settings panel ────────────────────────────────────────────────── */}
       {showControls && (
-        <div className="flex-shrink-0 flex flex-wrap items-center gap-x-6 gap-y-2 px-4 py-2.5 bg-gray-50 border-b border-gray-100 text-xs">
+        <div className="flex-shrink-0 flex flex-wrap items-center gap-x-6 gap-y-2 px-[0.25rem] md:!px-4 py-2.5 bg-gray-50 border-b border-gray-100 text-xs">
           <label className="flex items-center gap-2 text-gray-600">
             Planner
             <select
@@ -2275,7 +2300,7 @@ const handleShowLogin = useCallback(() => {
       <div
         ref={messagesScrollRef}
         onScroll={handleMessagesScroll}
-        className="flex-1 min-h-0 min-w-0 overflow-y-auto overflow-x-hidden px-4 py-4 scroll-smooth"
+        className="flex-1 min-h-0 min-w-0 overflow-y-auto overflow-x-hidden px-[0.25rem] md:!px-4 py-4 scroll-smooth"
       >
 
           <div className="mx-auto">
@@ -2754,7 +2779,7 @@ const handleShowLogin = useCallback(() => {
       {/* ── Quick reply chips ─────────────────────────────────────────────── */}
       {/* Hidden while itinerary creation is in progress — no quick replies/CTAs allowed */}
       {quickReplies.length > 0 && !isStreaming && !isComposerLocked && (
-        <div className="flex-shrink-0 px-6 pt-2 pb-1">
+        <div className="flex-shrink-0 px-[0.25rem] md:!px-6 pt-2 pb-1">
           <div className="mx-auto">
             <div
               className="flex gap-2 overflow-x-auto pb-1"
@@ -2775,7 +2800,7 @@ const handleShowLogin = useCallback(() => {
       )}
 
       {/* ── Composer ─────────────────────────────────────────────────────── */}
-      <div className="flex-shrink-0 px-6 pt-3 pb-1 bg-white relative">
+      <div className="flex-shrink-0 px-[0.25rem] md:!px-6 pt-3 pb-1 bg-white relative">
         <div className="mx-auto">
           <MessageInputBox
             value={input}
@@ -2807,6 +2832,23 @@ const handleShowLogin = useCallback(() => {
           />
         )}
       </div>
+
+      {/* ── View Itinerary CTA — mobile only ──────────────────────────────
+          Mirrors the "Get Inspired" CTA on the welcome screen. Visible once
+          the bot has produced a draft (display_itinerary fired) or the
+          thread has reached P2, so users can jump from chat to the
+          itinerary tab without hunting for the top tab strip. */}
+      {(botMode === "p2" || hasDisplayItinerary) && onViewItinerary && (
+        <button
+          type="button"
+          onClick={onViewItinerary}
+          className="md:hidden flex-shrink-0 w-full flex items-center justify-center gap-1 py-2 text-[14px] font-medium"
+          style={{ background: "#f7e700", color: "#000000" }}
+        >
+          <span>View Itinerary</span>
+          <span aria-hidden>→</span>
+        </button>
+      )}
 
       {/* ── Login modal portal ────────────────────────────────────────────── */}
       {showLoginModal &&

@@ -43,23 +43,23 @@ const ViewToggle: React.FC<ViewToggleProps> = ({ viewMode, setViewMode, hasItine
   };
   const inactiveStyle: React.CSSProperties = { borderRadius: "10px" };
 
-  const tabBtn = (
-    label: string,
-    mode: string,
-    onClick: () => void,
-    Icon: React.ComponentType<{ size?: number }>,
-  ) => (
-    <button
-      onClick={onClick}
-      className={`flex-1 px-4 py-2 text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
-        viewMode === mode ? "text-white" : "text-black"
-      }`}
-      style={viewMode === mode ? activeStyle : inactiveStyle}
-    >
-      <Icon size={14} />
-      {label}
-    </button>
-  );
+const tabBtn = (
+  label: string,
+  mode: string,
+  onClick: () => void,
+  icon: React.ReactNode,
+) => (
+  <button
+    onClick={onClick}
+    className={`flex-1 px-4 py-2 text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
+      viewMode === mode ? "text-white" : "text-black"
+    }`}
+    style={viewMode === mode ? activeStyle : inactiveStyle}
+  >
+    {icon}
+    {label}
+  </button>
+);
 
   return (
     <div className="px-4 py-3 flex-shrink-0 text-sm md:text-[14px]">
@@ -83,16 +83,27 @@ const ViewToggle: React.FC<ViewToggleProps> = ({ viewMode, setViewMode, hasItine
           Map
         </button>
 
-        {/* Routes — only when itinerary is fully complete (not draft/building) */}
-        {isComplete &&
-          tabBtn("Route", "routes", () => setViewMode("routes"), FiNavigation)}
+      {/* Routes */}
+{isComplete &&
+  tabBtn("Route", "routes", () => setViewMode("routes"),
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="6" cy="6" r="2.5" />
+      <circle cx="18" cy="18" r="2.5" />
+      <path d="M9 6h7a2 2 0 0 1 2 2v7" />
+    </svg>
+  )}
 
-        {/* Itinerary — visible whenever activity is present */}
-        {tabBtn("Itinerary", "itinerary", () => setViewMode("itinerary"), FiCalendar)}
+{/* Itinerary */}
+{tabBtn("Itinerary", "itinerary", () => setViewMode("itinerary"), <FiCalendar size={14} />)}
 
-        {/* Bookings — only when itinerary is fully complete */}
-        {isComplete &&
-          tabBtn("Bookings", "bookings", () => setViewMode("bookings"), FiBookmark)}
+{/* Bookings */}
+{isComplete &&
+  tabBtn("Bookings", "bookings", () => setViewMode("bookings"),
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M19 14l-5-5-9 9" />
+      <path d="M5 21h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2z" />
+    </svg>
+  )}
       </div>
     </div>
   );
