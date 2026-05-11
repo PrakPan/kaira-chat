@@ -27,12 +27,13 @@ import {
 } from "../../../store/actions/transferBookingsStore";
 import SkeletonCard from "../../ui/SkeletonCard";
 import { setCloneItineraryDrawer } from "../../../store/actions/cloneItinerary";
-import AccommodationDetailDrawer from "../../modals/AccommodationDetailDrawer";
+import HotelP1Detail from "../../modals/AccommodationDetailDrawer/HotelP1Detail";
 import ActivityAddDrawer from "../../drawers/poiDetails/activityAddDrawer";
 import TransferEditDrawer from "../../drawers/routeTransfer/TransferEditDrawer";
 import axios from "axios";
 import { MERCURY_HOST } from "../../../services/constants";
 import { useHandleClose } from "../../../hooks/useHandleClose";
+import { useAnalytics } from "../../../hooks/useAnalytics";
 
 const FloatingView = styled.div`
   position: sticky;
@@ -170,6 +171,13 @@ const ItineraryCity = (props) => {
   const { customer } = useSelector((state) => state.Itinerary);
   const reduxItineraryId = useSelector((state) => state.ItineraryId);
   const currentItineraryId = router.query.id || reduxItineraryId;
+
+  const {
+    trackActivityBookingAdd,
+    trackHotelCardClicked,
+    trackTaxiCardClicked,
+    trackTaxiBookingAdd,
+  } = useAnalytics();
 
   // Compute how many days precede this city so CityDay can show a continuous
   // day index. Intermediate cities have a checkout day whose date matches the
@@ -479,7 +487,7 @@ const ItineraryCity = (props) => {
   const hotelExists =
     multiHotelStays &&
     multiHotelStays.length > 0 &&
-    hotels_status === "SUCCESS" &&
+    ((hotels_status === "SUCCESS") || (hotels_status ==="FAILURE")) &&
     !!multiHotelStays?.[0]?.id;
 
   return (
@@ -512,6 +520,10 @@ const ItineraryCity = (props) => {
             <div className="flex items-center gap-2 shrink-0">
               <button
                 onClick={() => {
+                  trackActivityBookingAdd?.(
+                    currentItineraryId,
+                    "city_header",
+                  );
                   setShowActivityDrawer(true);
                   router.push(
                     {
@@ -534,6 +546,16 @@ const ItineraryCity = (props) => {
               </button>
               <button
                 onClick={() => {
+                  trackTaxiCardClicked?.(
+                    currentItineraryId,
+                    "",
+                    "city_header_add_taxi",
+                  );
+                  trackTaxiBookingAdd?.(
+                    currentItineraryId,
+                    "",
+                    "city_header_add_taxi",
+                  );
                   router.push(
                     {
                       pathname: window.location.pathname,
@@ -601,22 +623,27 @@ const ItineraryCity = (props) => {
                           ? "underline cursor-pointer break-words"
                           : "underline cursor-pointer truncate shrink min-w-0 max-w-[130px] md:max-w-[200px]"
                       }
-                      onClick={() =>
-                        isDraftStage
+                      onClick={() => {
+                        trackHotelCardClicked?.(
+                          currentItineraryId,
+                          hotel.id,
+                          "city_header_hotel_name",
+                        );
+                        return isDraftStage
                           ? handleDraftHotelClick(hotel.id)
-                          : fetchDetails(hotel.id)
-                      }
+                          : fetchDetails(hotel.id);
+                      }}
                       title={hotel?.name}
                     >
                       {hotel?.name}
                     </span>
 
                     {/* Rating + star */}
-                    {(hotel?.rating && hotel?.rating !== 0) || (hotel.star_category && hotel?.star_category !== 0) ? (
+                    {(hotel?.rating && hotel?.rating !== 0 && hotel?.rating !== null) || (hotel.star_category && hotel?.star_category !== 0) ? (
                       <>
                         <span className="text-[#6B7280] shrink-0">•</span>
                         <span className="font-[500] shrink-0">
-                          {hotel.rating}
+                          {hotel.rating || hotel.star_category}{" "}
                         </span>
                         <StarIcon />
                       </>
@@ -629,9 +656,14 @@ const ItineraryCity = (props) => {
               !(itineraryDaybyDay.status == "Draft") && (
                 <button
                   className="text-blue cursor-pointer text-[14px] font-medium hover:underline whitespace-nowrap"
-                  onClick={(e) =>
-                    handleStay(e, "Add", props.city.city.name, "Add", null)
-                  }
+                  onClick={(e) => {
+                    trackHotelCardClicked?.(
+                      currentItineraryId,
+                      "",
+                      "city_header_add_stay",
+                    );
+                    handleStay(e, "Add", props.city.city.name, "Add", null);
+                  }}
                 >
                   + Add Stay in {props?.city?.city?.name}
                 </button>
@@ -643,6 +675,15 @@ const ItineraryCity = (props) => {
           {hotelExists && !(itineraryDaybyDay.status == "Draft") && (
             <button
               onClick={() => {
+                if (!localStorage?.getItem("access_token")) {
+                  props?.setShowLoginModal(true);
+                  return;
+                }
+                trackHotelCardClicked?.(
+                  currentItineraryId,
+                  multiHotelStays?.[0]?.id || "",
+                  "city_header_change_hotel",
+                );
                 router.push(
                   {
                     pathname: window.location.pathname,
@@ -674,11 +715,20 @@ const ItineraryCity = (props) => {
           {/* Right side (Draft/p1): Change Hotel — sends message to bot */}
           {hotelExists && itineraryDaybyDay.status == "Draft" && (
             <button
-              onClick={() =>
+              onClick={() => {
+                if (!localStorage?.getItem("access_token")) {
+                  props?.setShowLoginModal(true);
+                  return;
+                }
+                trackHotelCardClicked?.(
+                  currentItineraryId,
+                  multiHotelStays?.[0]?.id || "",
+                  "city_header_change_hotel_draft",
+                );
                 props?.onSendMessage?.(
                   `change hotel in ${props?.city?.city?.name}`,
-                )
-              }
+                );
+              }}
               className="flex items-center gap-[5px] shrink-0 bg-[#fafafa] px-2 py-1.5 rounded-[8px] font-medium text-[#111827] hover:underline whitespace-nowrap text-[13px]"
             >
               <EditIcon />
@@ -868,7 +918,7 @@ const ItineraryCity = (props) => {
 
 
         {draftHotelDrawer.show && (
-  <AccommodationDetailDrawer
+  <HotelP1Detail
     show={draftHotelDrawer.show}
     onHide={() => setDraftHotelDrawer({ show: false, id: null })}
     accommodationId={draftHotelDrawer.id}

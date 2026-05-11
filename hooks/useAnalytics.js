@@ -598,6 +598,141 @@ export const useAnalytics = () => {
         message
       });
     }, []),
+
+    // Taxi (intracity sightseeing) Events
+    trackTaxiCardClicked: useCallback(async (itineraryId, bookingId = "", actionSource = null) => {
+      return await callWorkerFunction('track', 'taxi_card_clicked', {
+        itineraryId,
+        bookingType: 'Taxi',
+        bookingId,
+        action_source: actionSource,
+      });
+    }, []),
+
+    trackTaxiDetail: useCallback(async (itineraryId, bookingId = "", actionSource = null) => {
+      return await callWorkerFunction('track', 'taxi_detail', {
+        itineraryId,
+        bookingType: 'Taxi',
+        bookingId,
+        action_source: actionSource,
+      });
+    }, []),
+
+    trackTaxiBookingAdd: useCallback(async (itineraryId, bookingId = "", actionSource = null) => {
+      return await callWorkerFunction('track', 'taxi_booking_add', {
+        itineraryId,
+        bookingType: 'Taxi',
+        bookingId,
+        action_source: actionSource,
+      });
+    }, []),
+
+    // Visa Events
+    trackVisaCardClicked: useCallback(async (itineraryId, bookingId = "") => {
+      return await callWorkerFunction('track', 'visa_card_clicked', {
+        itineraryId,
+        bookingType: 'Visa',
+        bookingId,
+      });
+    }, []),
+
+    trackVisaSearchList: useCallback(async (itineraryId, bookingId = "") => {
+      return await callWorkerFunction('track', 'visa_search_list', {
+        itineraryId,
+        bookingType: 'Visa',
+        bookingId,
+      });
+    }, []),
+
+    trackVisaBookingAdd: useCallback(async (itineraryId, bookingId = "") => {
+      return await callWorkerFunction('track', 'visa_booking_add', {
+        itineraryId,
+        bookingType: 'Visa',
+        bookingId,
+      });
+    }, []),
+
+    // eSIM Events
+    trackEsimCardClicked: useCallback(async (itineraryId, bookingId = "") => {
+      return await callWorkerFunction('track', 'esim_card_clicked', {
+        itineraryId,
+        bookingType: 'eSim',
+        bookingId,
+      });
+    }, []),
+
+    trackEsimSearchList: useCallback(async (itineraryId, bookingId = "") => {
+      return await callWorkerFunction('track', 'esim_search_list', {
+        itineraryId,
+        bookingType: 'eSim',
+        bookingId,
+      });
+    }, []),
+
+    trackEsimBookingAdd: useCallback(async (itineraryId, bookingId = "") => {
+      return await callWorkerFunction('track', 'esim_booking_add', {
+        itineraryId,
+        bookingType: 'eSim',
+        bookingId,
+      });
+    }, []),
+
+    // Chat lifecycle events. dd_agent is the bot stage (P1 / P2),
+    // created_at marks when the event fired client-side, user_prompts captures
+    // the user's message history at that moment.
+    trackChatItineraryStarted: useCallback(async (itineraryId, ddAgent, userPrompts = []) => {
+      return await callWorkerFunction('track', 'chat_itinerary_started', {
+        itineraryId,
+        dd_agent: ddAgent,
+        created_at: new Date().toISOString(),
+        user_prompts: userPrompts,
+      });
+    }, []),
+
+    trackChatRouteConfirmed: useCallback(async (itineraryId, ddAgent, userPrompts = []) => {
+      return await callWorkerFunction('track', 'chat_route_confirmed', {
+        itineraryId,
+        dd_agent: ddAgent,
+        created_at: new Date().toISOString(),
+        user_prompts: userPrompts,
+      });
+    }, []),
+
+    trackChatItineraryGenerated: useCallback(async (itineraryId, ddAgent, userPrompts = []) => {
+      return await callWorkerFunction('track', 'chat_itinerary_generated', {
+        itineraryId,
+        dd_agent: ddAgent,
+        created_at: new Date().toISOString(),
+        user_prompts: userPrompts,
+      });
+    }, []),
+
+    trackChatItineraryConfirmed: useCallback(async (itineraryId, ddAgent, userPrompts = []) => {
+      return await callWorkerFunction('track', 'chat_itinerary_confirmed', {
+        itineraryId,
+        dd_agent: ddAgent,
+        created_at: new Date().toISOString(),
+        user_prompts: userPrompts,
+      });
+    }, []),
+
+    trackChatPriceReceived: useCallback(async (itineraryId, ddAgent, userPrompts = []) => {
+      return await callWorkerFunction('track', 'chat_price_received', {
+        itineraryId,
+        dd_agent: ddAgent,
+        created_at: new Date().toISOString(),
+        user_prompts: userPrompts,
+      });
+    }, []),
+
+    trackChatCartViewed: useCallback(async (itineraryId, ddAgent, userPrompts = []) => {
+      return await callWorkerFunction('track', 'chat_cart_viewed', {
+        itineraryId,
+        dd_agent: ddAgent,
+        created_at: new Date().toISOString(),
+        user_prompts: userPrompts,
+      });
+    }, []),
   };
 };
 

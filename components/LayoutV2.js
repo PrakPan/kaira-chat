@@ -46,10 +46,10 @@ const LayoutV2 = (props) => {
       >
         {props.children}
       </div>
-      <LoginModal
+      {/* <LoginModal
         show={props.showLogin}
         onhide={props.token && !props.phone ? null : props.authCloseLogin}
-      ></LoginModal>
+      ></LoginModal> */}
       <TailoredFormMobileModal
         destinationType={"city-planner"}
         onHide={() => {

@@ -384,7 +384,7 @@ const Section = (props) => {
                       )}
                     </>
                   </>
-                ) : props.selectedBooking.transfer_type === "Intercity round-trip" ? (
+                ) : props?.selectedBooking?.transfer_type === "Intercity round-trip" ? (
                   "Round-trip Taxi"
                 ) : (
                   "One-way Taxi"

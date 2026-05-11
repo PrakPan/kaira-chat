@@ -23,6 +23,7 @@ import { MERCURY_HOST } from "../../../services/constants";
 import setHotLocationSearch from "../../../store/actions/hotLocationSearch";
 import Login from "../../modals/Login";
 import TailoredFormMobileModal from "../../modals/TailoredFomrMobile";
+import BotLoginModal from "../../bot-components/components/BotLoginModal";
 
 const NavigationMenu = (props) => {
   const {
@@ -254,7 +255,7 @@ const NavigationMenu = (props) => {
           </button>
         </div>
         {slideIndex!=4&&<div id="login" className="width-[100%] z-[1650]">
-        <Login
+        <BotLoginModal
           show={props.showLogin}
           onhide={props.authCloseLogin}
           itinary_id={props?.itinary_id}

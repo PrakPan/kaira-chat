@@ -14,14 +14,22 @@ import ActivityDetailsDrawer from "../../drawers/activityDetails/ActivityDetails
 import TransferEditDrawer from "../../drawers/routeTransfer/TransferEditDrawer";
 import AccommodationDetailDrawer from "../../modals/AccommodationDetailDrawer";
 import POIDetailsDrawer from "../../drawers/poiDetails/POIDetailsDrawer";
+import VisaSearchDrawer from "../../drawers/visaDetails/VisaSearchDrawer";
+import EsimPackagesDrawer from "../../drawers/esimDetails/EsimPackagesDrawer";
 import { MERCURY_HOST } from "../../../services/constants";
 import { openNotification } from "../../../store/actions/notification";
 import setItinerary, {
   deletePoiFromItinerary,
   deleteActivityFromItinerary,
   deleteRestaurantFromItinerary,
+  deleteHotelFromItinerary,
 } from "../../../store/actions/itinerary";
+import { updateStays } from "../../../store/actions/StayBookings";
+import { updateTransferBookings } from "../../../store/actions/transferBookingsStore";
+import { removeAncillaryBooking } from "../../../store/actions/ancillaryBookings";
 import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
+import { useAnalytics } from "../../../hooks/useAnalytics";
+import BotLoginModal from "./BotLoginModal";
 
 const CHATKIT_API_URL = "https://chat.tarzanway.com/chatkit";
 const PAGINATION_SCROLL_THRESHOLD = 80;
@@ -131,6 +139,22 @@ onTravellerStoryDismiss?: () => void;
  *  Lets BotApp inject MobileHeaderMenu so the chat tab can drop the global
  *  MobileHeader without losing the history/new-chat/profile actions. */
 mobileMenu?: React.ReactNode;
+/** Mobile-only: false when the chat tab is hidden behind another tab
+ *  (e.g. user switched to map/itinerary). When this transitions back to true
+ *  while a stream produced new content under the hood, snap scroll to bottom
+ *  so the message rendered during the hidden interval is visible without a
+ *  page refresh. Defaults to true (desktop / always-visible callers). */
+isPanelVisible?: boolean;
+onLoginSuccess?: () => void | Promise<void>;
+/** Themed-page flag forwarded as `login_mandatory` on the very first
+ *  /chatkit request (threads.create). When undefined, the field is omitted
+ *  from the body. Subsequent messages never include it. */
+loginMandatory?: boolean;
+/** Mobile-only: invoked when the user taps the "View Itinerary" CTA rendered
+ *  below the composer in P2 mode (or once a display_itinerary effect has fired
+ *  in this thread). Used by BotApp to switch the mobile tab to the itinerary
+ *  view. */
+onViewItinerary?: () => void;
 }
 
 export interface TravellerStoryIntro {
@@ -283,6 +307,10 @@ onPaymentStart,
 travellerStory = null,
 onTravellerStoryDismiss,
 mobileMenu,
+isPanelVisible = true,
+onLoginSuccess,
+loginMandatory,
+onViewItinerary,
 }: ChatKitPanelProps) {
   // ── State ────────────────────────────────────────────────────────────────
   const [input, setInput] = useState("");
@@ -296,13 +324,32 @@ mobileMenu,
   const [pendingMessage, setPendingMessage] = useState<string | null>(null);
   const [postLoginLoading, setPostLoginLoading] = useState(false);
   const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
-  
+  const [isMobile, setIsMobile] = useState(false);
+  // True once any display_itinerary effect has fired in this thread (live
+  // stream or replayed from restoredThread.itinerary_effects). Drives the
+  // mobile "View Itinerary" CTA below the composer alongside botMode === "p2".
+  const [hasDisplayItinerary, setHasDisplayItinerary] = useState(false);
+
+  useEffect(() => {
+    const checkScreenSize = () => setIsMobile(window.innerWidth < 768);
+    checkScreenSize();
+    window.addEventListener("resize", checkScreenSize);
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
+
 
     // ── Auth ─────────────────────────────────────────────────────────────────
   const reduxToken = useSelector((state: any) => state.auth.token);
   const reduxUserId = useSelector((state: any) => state.auth.id);
   const itinerary = useSelector((state: any) => state.Itinerary);
   const callPaymentInfo = useSelector((state: any) => state.CallPaymentInfo);
+  // Lock the composer whenever an update/edit action (Update Dates,
+  // Route Edit, refresh_itinerary, Reprice) is mid-poll. Cleared once
+  // every itinerary status resolves to SUCCESS or FAILURE.
+  const isItineraryPolling = useSelector(
+    (state: any) => !!state.ItineraryStatus?.is_polling,
+  );
+  const isComposerLocked = isItineraryCompleting || isItineraryPolling;
   const authToken = reduxToken ?? getAuthToken();
   const isLoggedIn = !!authToken;
 
@@ -706,6 +753,8 @@ mobileMenu,
     source?: string;
     occupancies?: Array<{ num_adults: number; child_ages: number[] }>;
     traceId?: string;
+    travclan_hotel_id?: string;
+    currency?: string;  
   }>({ show: false });
 
   // POI / Restaurant detail drawer — opened by place.view / place.detail /
@@ -720,11 +769,53 @@ mobileMenu,
     date?: string;
   }>({ show: false });
 
+  // Sightseeing (intra-city taxi) drawer — opened by sightseeing.open
+  // widget actions. Reuses TransferEditDrawer in multicity mode so the user
+  // can browse the same suggestions that the city header's "Add Taxi" CTA
+  // surfaces in /itinerary.
+  const [sightseeingDrawer, setSightseeingDrawer] = useState<{
+    show: boolean;
+    itinerary_city_id?: string;
+    cityId?: string;
+    cityName?: string;
+    cityData?: any;
+    startDate?: string;
+    endDate?: string;
+  }>({ show: false });
+
+
+  // TransferEditDrawer closes itself by calling its internal `actualClose`
+  // (a Next router.push that strips the drawer/itinerary_city_id query
+  // params) — it never invokes the `handleClose` prop we pass in. Without
+  // this listener, our `sightseeingDrawer.show` stays `true` after the
+  // close, so a second `sightseeing.open` click only repushes the URL
+  // and the inner Drawer's `useEffect([props.show])` doesn't re-fire.
+  useEffect(() => {
+    if (!sightseeingDrawer.show) return;
+    const syncFromUrl = (url: string) => {
+      const target = new URL(url, window.location.origin);
+      if (target.searchParams.get("drawer") !== "addCityTaxi") {
+        setSightseeingDrawer({ show: false });
+      }
+    };
+    router.events.on("routeChangeComplete", syncFromUrl);
+    return () => {
+      router.events.off("routeChangeComplete", syncFromUrl);
+    };
+  }, [router, sightseeingDrawer.show]);
+
+  // Visa / eSIM ancillary drawers — opened by visa.open / esim.open widget
+  // actions. Both drawers self-fetch their own catalogue data so we only
+  // need to track open state here.
+  const [visaDrawer, setVisaDrawer] = useState<{ show: boolean }>({ show: false });
+  const [esimDrawer, setEsimDrawer] = useState<{ show: boolean }>({ show: false });
+
   // ── Pagination state ─────────────────────────────────────────────────────
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const hasMoreRef = useRef(false);
   const beforeCursorRef = useRef<string | null>(null);
   const isFetchingMoreRef = useRef(false);
+  const appliedRestoredThreadRef = useRef<unknown>(null);
 
   // Tracks whether the user is pinned to the bottom of the message list. The
   // auto-scroll effect only fires when this is true, so the transcript won't
@@ -743,12 +834,16 @@ mobileMenu,
   const hasUpdatedUrl = useRef(false);
   const postLoginFiredRef = useRef(false);
   const loginFlowArmedRef = useRef(false);
-  const pendingPostLoginMsg = useRef<string | null>(null);
+  type PendingAction =
+    | { kind: "message"; text: string }
+    | { kind: "widget"; type: string; payload: Record<string, unknown> };
+  const pendingPostLoginAction = useRef<PendingAction | null>(null);
   const hasInjectedContextRef = useRef(false);
   const inputRef = useRef(input);
 useEffect(() => { inputRef.current = input; }, [input]);
 const prevAuthTokenRef = useRef<string | null>(null);
 const lastSentMessageRef = useRef<string>("");
+const lastSentActionRef = useRef<PendingAction | null>(null);
 
   /**
    * Frontend-generated UUID for this chat session.
@@ -784,7 +879,83 @@ const sessionIdRef = useRef<string>((() => {
     ((effect: { name: string; data: Record<string, unknown> }) => void) | null
   >(null);
 
+  // ── Jupiter analytics — Partytown-forwarded, runs in a worker thread so
+  //    these calls don't block the main thread. Refs let us call them inside
+  //    other useCallbacks without changing their deps.
+  const {
+    trackChatItineraryStarted,
+    trackChatRouteConfirmed,
+    trackChatItineraryGenerated,
+    trackChatItineraryConfirmed,
+    trackChatPriceReceived,
+    trackChatCartViewed,
+    trackHotelCardClicked,
+    trackActivityCardClicked,
+    trackTransferCardClicked,
+    trackPoiCardClicked,
+  } = useAnalytics();
+  const analyticsRef = useRef({
+    trackChatItineraryStarted,
+    trackChatRouteConfirmed,
+    trackChatItineraryGenerated,
+    trackChatItineraryConfirmed,
+    trackChatPriceReceived,
+    trackChatCartViewed,
+    trackHotelCardClicked,
+    trackActivityCardClicked,
+    trackTransferCardClicked,
+    trackPoiCardClicked,
+  });
+  useEffect(() => {
+    analyticsRef.current = {
+      trackChatItineraryStarted,
+      trackChatRouteConfirmed,
+      trackChatItineraryGenerated,
+      trackChatItineraryConfirmed,
+      trackChatPriceReceived,
+      trackChatCartViewed,
+      trackHotelCardClicked,
+      trackActivityCardClicked,
+      trackTransferCardClicked,
+      trackPoiCardClicked,
+    };
+  }, [
+    trackChatItineraryStarted,
+    trackChatRouteConfirmed,
+    trackChatItineraryGenerated,
+    trackChatItineraryConfirmed,
+    trackChatPriceReceived,
+    trackChatCartViewed,
+    trackHotelCardClicked,
+    trackActivityCardClicked,
+    trackTransferCardClicked,
+    trackPoiCardClicked,
+  ]);
+  // Snapshot user prompts (text content of all user messages in the current
+  // thread) — chat lifecycle events include this in `properties.user_prompts`.
+  const messagesRef = useRef<Message[]>([]);
+  const getUserPrompts = useCallback((): string[] => {
+    return (messagesRef.current || [])
+      .filter((m: any) => m?.role === "user")
+      .map((m: any) => (typeof m?.content === "string" ? m.content : ""))
+      .filter(Boolean);
+  }, []);
+  const botModeRef = useRef<BotMode>(botMode);
+  useEffect(() => { botModeRef.current = botMode; }, [botMode]);
+  const ddAgent = () => (botModeRef.current === "p2" ? "P2" : "P1");
 
+  // Fire-once guards for chat lifecycle events. Each event should fire at
+  // most once per session — multiple effect/widget paths can lead to the same
+  // semantic milestone, and we don't want duplicates when both fire.
+  const firedChatEventsRef = useRef<Set<string>>(new Set());
+  const fireChatEventOnce = useCallback(
+    (eventKey: string, fire: () => void) => {
+      if (firedChatEventsRef.current.has(eventKey)) return;
+      firedChatEventsRef.current.add(eventKey);
+      fire();
+    },
+    [],
+  );
 
   // ── Location ─────────────────────────────────────────────────────────────
   const { userLocationData, isLoadingLocation } = useUserLocationData();
@@ -808,7 +979,22 @@ const handleSessionCreated = useCallback((ourSessionId: string) => {
   hasUpdatedUrl.current = true;
   const target = `/chat/${ourSessionId}`;
   window.history.pushState({}, "", target);
-  sessionStorage.setItem(`chatkit_session_${target}`, ourSessionId);
+  // sessionStorage can hit its quota when chatkit_session_* entries pile up.
+  // The cached value is an optimization for restore — if writing fails, drop
+  // every chatkit_session_* entry and retry once before giving up silently.
+  const key = `chatkit_session_${target}`;
+  try {
+    sessionStorage.setItem(key, ourSessionId);
+  } catch {
+    try {
+      Object.keys(sessionStorage)
+        .filter((k) => k.startsWith("chatkit_session_"))
+        .forEach((k) => sessionStorage.removeItem(k));
+      sessionStorage.setItem(key, ourSessionId);
+    } catch (err) {
+      console.warn("sessionStorage write failed:", err);
+    }
+  }
 }, []);
 
   // ── useChat ───────────────────────────────────────────────────────────────
@@ -827,7 +1013,7 @@ const handleSessionCreated = useCallback((ourSessionId: string) => {
   );
 
 const { messages, isStreaming, error, sendMessage: rawSendMessage,
-  sendWidgetAction, clearMessages, cancelStream, setMessages, threadIdRef }= useChat({
+  sendWidgetAction: rawSendWidgetAction, clearMessages, cancelStream, setMessages, threadIdRef }= useChat({
     apiUrl,
     domainKey: CHATKIT_DOMAIN_KEY,
     model: selectedModel,
@@ -841,10 +1027,24 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
     // The stable frontend UUID — never changes for the lifetime of this component
     sessionId: sessionIdRef.current,
     onSessionCreated: handleSessionCreated,
+    loginMandatory,
   });
+
+  // Wrap sendWidgetAction so we can replay the same action after a post-login
+  // retry (e.g. inject.context that triggered prompt_login while logged out).
+  const sendWidgetAction = useCallback(
+    (type: string, payload: Record<string, unknown>) => {
+      lastSentActionRef.current = { kind: "widget", type, payload };
+      return rawSendWidgetAction(type, payload);
+    },
+    [rawSendWidgetAction],
+  );
 
   // Keep sendWidgetActionRef current after every render
   sendWidgetActionRef.current = sendWidgetAction;
+  // Mirror messages into a ref so analytics calls can pull user_prompts
+  // without subscribing to the messages array directly.
+  messagesRef.current = messages;
 
   // ── Feedback (thumbs up / down) handler ──────────────────────────────────
   // Three-state toggle per assistant message:
@@ -1025,12 +1225,30 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
         case "display_itinerary": {
           emitEndpointsFromEffect(name, data);
           onItineraryReceived(data.itinerary);
+          setHasDisplayItinerary(true);
+          fireChatEventOnce("chat_itinerary_generated", () =>
+            analyticsRef.current.trackChatItineraryGenerated?.(
+              localItineraryId || ((data.itinerary as any)?.id as string) || "",
+              ddAgent(),
+              getUserPrompts(),
+            ),
+          );
           break;
         }
         case "display_transfers": {
           emitEndpointsFromEffect(name, data);
           indexTransfersForLookup(data);
           onItineraryReceived(data);
+          // The server emits display_transfers once route options are
+          // finalized for the chosen itinerary — treat that as the route
+          // being confirmed for analytics purposes.
+          fireChatEventOnce("chat_route_confirmed", () =>
+            analyticsRef.current.trackChatRouteConfirmed?.(
+              localItineraryId || "",
+              ddAgent(),
+              getUserPrompts(),
+            ),
+          );
   break;
         }
         case "route.lock":
@@ -1038,6 +1256,23 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
         case "route.remove":
         case "route.reorder.start":
         case "itinerary.lock": {
+          if (name === "route.lock") {
+            fireChatEventOnce("chat_route_confirmed", () =>
+              analyticsRef.current.trackChatRouteConfirmed?.(
+                localItineraryId || "",
+                ddAgent(),
+                getUserPrompts(),
+              ),
+            );
+          } else if (name === "itinerary.lock") {
+            fireChatEventOnce("chat_itinerary_confirmed", () =>
+              analyticsRef.current.trackChatItineraryConfirmed?.(
+                localItineraryId || "",
+                ddAgent(),
+                getUserPrompts(),
+              ),
+            );
+          }
           sendWidgetActionRef.current?.(name, data);
           break;
         }
@@ -1048,10 +1283,13 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
           break;
         }
 case "prompt_login": {
-  console.log("[prompt_login] storing pending from lastSent:", lastSentMessageRef.current);
-  pendingPostLoginMsg.current = lastSentMessageRef.current || null;
+  pendingPostLoginAction.current =
+    lastSentActionRef.current ??
+    (lastSentMessageRef.current
+      ? { kind: "message", text: lastSentMessageRef.current }
+      : null);
   loginFlowArmedRef.current = true;
-  setShowLoginPrompt(true);
+  setShowLoginModal(true);
   break;
 }
         case "display_pois_on_map":
@@ -1075,6 +1313,15 @@ case "itinerary_completion_process_completed": {
   if (completedId) {
     onItineraryCompletionDone?.(completedId, summary);
   }
+  // Pricing/cart for the trip is finalized at this point — fire
+  // chat_price_received once the P2 completion process resolves.
+  fireChatEventOnce("chat_price_received", () =>
+    analyticsRef.current.trackChatPriceReceived?.(
+      completedId || localItineraryId || "",
+      ddAgent(),
+      getUserPrompts(),
+    ),
+  );
   break;
 }
 
@@ -1094,6 +1341,16 @@ case "start_itinerary_completion_process": {
   if (startId) {
     onItineraryCompletionDone?.(startId);
   }
+  // Server kicks off completion only after the user has confirmed their
+  // itinerary, so this is a reliable trigger for chat_itinerary_confirmed
+  // even when the explicit `itinerary.lock` effect doesn't arrive.
+  fireChatEventOnce("chat_itinerary_confirmed", () =>
+    analyticsRef.current.trackChatItineraryConfirmed?.(
+      startId || localItineraryId || "",
+      ddAgent(),
+      getUserPrompts(),
+    ),
+  );
   break;
 }
 case "shimmer_day_by_day": {
@@ -1129,6 +1386,39 @@ case "shimmer_day_by_day": {
           dispatch(openNotification({ type: "success", heading: "Success!", text }));
           break;
         }
+        case "delete_hotel_from_itinerary": {
+          const payload = (data.data ?? {}) as Record<string, unknown>;
+          const bookingId = payload?.booking_id as string | undefined;
+          // Patch Itinerary cities[].hotels and Stays so the UI removes the
+          // hotel without waiting on a refetch. Toggle CallPaymentInfo so the
+          // pricing surface refreshes alongside.
+          dispatch(deleteHotelFromItinerary(payload));
+          if (bookingId) dispatch(updateStays(bookingId));
+          dispatch(SetCallPaymentInfo(!callPaymentInfo));
+          const text = typeof data.message === "string" ? data.message : "Hotel removed from your itinerary.";
+          dispatch(openNotification({ type: "success", heading: "Success!", text }));
+          break;
+        }
+        case "delete_transfer_from_itinerary": {
+          const payload = (data.data ?? {}) as Record<string, unknown>;
+          const bookingId = payload?.booking_id as string | undefined;
+          if (bookingId) dispatch(updateTransferBookings(bookingId));
+          dispatch(SetCallPaymentInfo(!callPaymentInfo));
+          const text = typeof data.message === "string" ? data.message : "Transfer removed from your itinerary.";
+          dispatch(openNotification({ type: "success", heading: "Success!", text }));
+          break;
+        }
+        case "delete_esim_from_itinerary":
+        case "delete_visa_from_itinerary": {
+          const payload = (data.data ?? {}) as Record<string, unknown>;
+          const bookingId = payload?.booking_id as string | undefined;
+          const kind = name === "delete_esim_from_itinerary" ? "eSIM" : "Visa";
+          if (bookingId) dispatch(removeAncillaryBooking(bookingId));
+          dispatch(SetCallPaymentInfo(!callPaymentInfo));
+          const text = typeof data.message === "string" ? data.message : `${kind} removed from your itinerary.`;
+          dispatch(openNotification({ type: "success", heading: "Success!", text }));
+          break;
+        }
         case "load_quick_replies": {
           const raw =
             (data.replies as any[]) ??
@@ -1152,7 +1442,7 @@ case "shimmer_day_by_day": {
           console.warn("[Effect] unhandled:", name);
       }
     },
-    [onLocationReceived, onNewQuery, onClearMap, onRouteReceived, onItineraryReceived, input, indexTransfersForLookup, emitEndpointsFromEffect, dispatch],
+    [onLocationReceived, onNewQuery, onClearMap, onRouteReceived, onItineraryReceived, input, indexTransfersForLookup, emitEndpointsFromEffect, dispatch, callPaymentInfo],
   );
 
   // Wire handleEffect into the ref so the stable onEffect wrapper picks it up
@@ -1163,6 +1453,7 @@ const sendMessage = useCallback(
   (text: string, attachmentIds?: string[], attachmentMeta?: MessageAttachment[]) => {
     setQuickReplies([]);
     lastSentMessageRef.current = text;
+    lastSentActionRef.current = { kind: "message", text };
 
     // User-initiated send: snap the view to the latest message even if they
     // had scrolled up earlier in the session.
@@ -1170,6 +1461,14 @@ const sendMessage = useCallback(
 
     if (isFirstMessageRef.current) {
       isFirstMessageRef.current = false;
+      // Fire chat_itinerary_started on the very first user message of the
+      // session — this marks the moment the user kicks off itinerary creation
+      // through the chat flow.
+      analyticsRef.current.trackChatItineraryStarted?.(
+        localItineraryId || "",
+        ddAgent(),
+        [text].filter(Boolean),
+      );
     }
     rawSendMessage(text, attachmentIds, attachmentMeta);
   },
@@ -1181,22 +1480,106 @@ const sendMessage = useCallback(
     if (!error) setErrorDismissed(false);
   }, [error]);
 
+  // Auto-dismiss the error toast as soon as the network comes back online.
+  // The in-bubble error stays put (history is preserved) but the floating
+  // toast is meaningless once connectivity returns.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const onOnline = () => setErrorDismissed(true);
+    window.addEventListener("online", onOnline);
+    return () => window.removeEventListener("online", onOnline);
+  }, []);
+
+  // User-driven scroll detach. Fast text_delta-driven re-renders run the
+  // auto-scroll effect below before the `scroll` event the user just
+  // triggered has had a chance to update isAtBottomRef — that race is what
+  // makes the view snap back to the bottom while the user is trying to read
+  // earlier messages. Listen for the user's actual gesture (wheel scrolling
+  // up, or finger drag downward on touchscreens) and detach pinning
+  // synchronously, before the browser even processes the scroll.
+  useEffect(() => {
+    const c = messagesScrollRef.current;
+    if (!c) return;
+    const onWheel = (e: WheelEvent) => {
+      if (e.deltaY < 0) isAtBottomRef.current = false;
+    };
+    let touchStartY = 0;
+    const onTouchStart = (e: TouchEvent) => {
+      touchStartY = e.touches[0]?.clientY ?? 0;
+    };
+    const onTouchMove = (e: TouchEvent) => {
+      const y = e.touches[0]?.clientY ?? 0;
+      // Finger dragging downward → content scrolls up → user is reading above.
+      if (y - touchStartY > 5) isAtBottomRef.current = false;
+    };
+    c.addEventListener("wheel", onWheel, { passive: true });
+    c.addEventListener("touchstart", onTouchStart, { passive: true });
+    c.addEventListener("touchmove", onTouchMove, { passive: true });
+    return () => {
+      c.removeEventListener("wheel", onWheel);
+      c.removeEventListener("touchstart", onTouchStart);
+      c.removeEventListener("touchmove", onTouchMove);
+    };
+  }, []);
+
   useEffect(() => {
     // Don't auto-scroll to bottom when older messages are being prepended
     if (isFetchingMoreRef.current) return;
     // Respect the user's scroll position: if they've scrolled up to read
     // earlier messages, don't yank the view back down while streaming.
     if (!isAtBottomRef.current) return;
-    // While a thread restore is still settling (widgets/images laying out),
-    // snap instantly to the absolute bottom instead of smooth-scrolling — a
-    // smooth scroll fires once and is overtaken by content that grows after.
-    if (initialScrollPendingRef.current) {
+    // While a thread restore is still settling (widgets/images laying out)
+    // OR a stream is actively producing text_deltas, snap instantly to the
+    // absolute bottom — smooth scrollIntoView fires once and gets overtaken
+    // by content that grows after, leaving intermediate streamed text
+    // hidden below the viewport until the user manually scrolls.
+    if (initialScrollPendingRef.current || isStreaming) {
       const c = messagesScrollRef.current;
       if (c) c.scrollTop = c.scrollHeight;
       return;
     }
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages, isStreaming]);
+
+  // Mobile: when the chat tab is hidden behind another tab, scrollIntoView
+  // calls fired by the auto-scroll effect above don't reliably move the
+  // scroll container — text_deltas streamed in the background grow the
+  // assistant bubble off-screen, and on iOS Safari the hidden parent can
+  // also leave the scrollHeight stale. When the panel becomes visible again,
+  // re-route the auto-scroll through an instant snap (scrollTop = scrollHeight)
+  // for a beat so any in-flight streaming, image loads, or widget layouts
+  // park us at the bottom — without the user needing to refresh.
+  const wasVisibleRef = useRef(isPanelVisible);
+  useEffect(() => {
+    if (wasVisibleRef.current === isPanelVisible) return;
+    const becameVisible = !wasVisibleRef.current && isPanelVisible;
+    wasVisibleRef.current = isPanelVisible;
+    if (!becameVisible) return;
+    if (!isAtBottomRef.current) return;
+
+    const snapToBottom = () => {
+      const c = messagesScrollRef.current;
+      if (c) c.scrollTop = c.scrollHeight;
+    };
+    // Drive the auto-scroll effect down the "instant snap" branch so the
+    // smooth scrollIntoView (which doesn't catch up to rapidly-growing
+    // streaming content) is bypassed while content settles.
+    initialScrollPendingRef.current = true;
+    requestAnimationFrame(() => {
+      snapToBottom();
+      requestAnimationFrame(snapToBottom);
+    });
+    const timers = [50, 150, 300, 600, 1000].map((ms) =>
+      setTimeout(() => {
+        snapToBottom();
+        if (ms === 1000) initialScrollPendingRef.current = false;
+      }, ms),
+    );
+    return () => {
+      timers.forEach(clearTimeout);
+      initialScrollPendingRef.current = false;
+    };
+  }, [isPanelVisible]);
 
   // Index transfer.select edge ids → mode from live widget messages, so the
   // TransferEditDrawer can skip its mode-selection step when the user clicks.
@@ -1208,14 +1591,95 @@ const sendMessage = useCallback(
     }
   }, [messages, indexEdgesFromWidget]);
 
+  // Widget-pattern fallbacks for chat lifecycle events. The server-emitted
+  // effects (display_transfers / itinerary_completion_process_completed)
+  // don't replay when a thread is restored from history — but the widgets
+  // they generated are still in `messages`. Scan for known signatures so the
+  // events fire reliably across both fresh streams and restored threads.
+  useEffect(() => {
+    if (!messages?.length) return;
+
+    // Recursively check whether any descendant action.type matches a target.
+    const hasActionType = (node: any, targets: Set<string>): boolean => {
+      if (!node || typeof node !== "object") return false;
+      const actionType = node.onClickAction?.type as string | undefined;
+      if (actionType && targets.has(actionType)) return true;
+      const kids = Array.isArray(node.children) ? node.children : [];
+      for (const c of kids) if (hasActionType(c, targets)) return true;
+      return false;
+    };
+
+    const paymentTargets = new Set(["payment.start"]);
+    const routeTargets = new Set([
+      "route.lock",
+      "route.confirm",
+      "lock.route",
+    ]);
+    const itineraryLockTargets = new Set([
+      "itinerary.lock",
+      "itinerary.confirm",
+    ]);
+
+    let sawPayment = false;
+    let sawRoute = false;
+    let sawItineraryLock = false;
+    for (const m of messages as any[]) {
+      if (m?.type !== "widget") continue;
+      const w = m?.widgetItem?.widget;
+      if (!sawPayment && hasActionType(w, paymentTargets)) sawPayment = true;
+      if (!sawRoute && hasActionType(w, routeTargets)) sawRoute = true;
+      if (!sawItineraryLock && hasActionType(w, itineraryLockTargets))
+        sawItineraryLock = true;
+      if (sawPayment && sawRoute && sawItineraryLock) break;
+    }
+
+    if (sawRoute) {
+      fireChatEventOnce("chat_route_confirmed", () =>
+        analyticsRef.current.trackChatRouteConfirmed?.(
+          localItineraryId || "",
+          ddAgent(),
+          getUserPrompts(),
+        ),
+      );
+    }
+    if (sawItineraryLock || sawPayment) {
+      // A "Make Payment" widget only shows up after the itinerary is locked,
+      // so payment widgets imply confirmation too.
+      fireChatEventOnce("chat_itinerary_confirmed", () =>
+        analyticsRef.current.trackChatItineraryConfirmed?.(
+          localItineraryId || "",
+          ddAgent(),
+          getUserPrompts(),
+        ),
+      );
+    }
+    if (sawPayment) {
+      fireChatEventOnce("chat_price_received", () =>
+        analyticsRef.current.trackChatPriceReceived?.(
+          localItineraryId || "",
+          ddAgent(),
+          getUserPrompts(),
+        ),
+      );
+    }
+  }, [messages, fireChatEventOnce, getUserPrompts, localItineraryId]);
+
 useEffect(() => {
   if (initialPrompt && !hasProcessedInitial.current && locationReady) {
+    // Suppress the auto inject.context only for the exact auto-seeded
+    // post-completion summary prompt (set by restoreLatestThread on P2
+    // restore / fromTailored). A broader keyword match here also caught
+    // user-typed prompts containing "itinerary", which silenced the
+    // post-completion summary on the bot-create path.
+    if (initialPrompt === "Hey Kaira! provide summary of my itinerary") {
+      hasInjectedContextRef.current = true;
+    }
     // Defer prompts that require login: queue as the post-login message and
     // show the existing login/signup CTA. The authToken-change effect below
     // will fire the queued message once the user authenticates.
     if (initialPromptRequiresLogin && !isLoggedIn) {
       hasProcessedInitial.current = true;
-      pendingPostLoginMsg.current = initialPrompt;
+      pendingPostLoginAction.current = { kind: "message", text: initialPrompt };
       loginFlowArmedRef.current = true;
       setShowLoginPrompt(true);
       onInitialPromptConsumed?.();
@@ -1235,7 +1699,9 @@ useEffect(() => {
   useEffect(() => {
     if (itineraryCompleted && !hasInjectedContextRef.current && !isStreaming) {
       hasInjectedContextRef.current = true;
-      sendWidgetAction("inject.context", { message: "Provide short overview of the trip" });
+      if(isLoggedIn) {
+        sendWidgetAction("inject.context", { message: "Provide short overview of the trip" });
+      }
     }
   }, [itineraryCompleted, isStreaming, sendWidgetAction]);
 
@@ -1247,11 +1713,11 @@ useEffect(() => {
   if (!tokenJustArrived) return;                    // only fire on login transition
   if (postLoginFiredRef.current) return;
 
-  const msg = pendingPostLoginMsg.current;
-  if (!msg) return;
+  const action = pendingPostLoginAction.current;
+  if (!action) return;
 
   postLoginFiredRef.current = true;
-  pendingPostLoginMsg.current = null;
+  pendingPostLoginAction.current = null;
 
   setShowLoginModal(false);
   setShowLoginPrompt(false);
@@ -1260,9 +1726,13 @@ useEffect(() => {
 
   // One tick defer — lets useChat re-render with new authToken before sending
   setTimeout(() => {
-    sendMessage(msg);
+    if (action.kind === "widget") {
+      sendWidgetAction(action.type, action.payload);
+    } else {
+      sendMessage(action.text);
+    }
   }, 100);
-}, [authToken, sendMessage]);
+}, [authToken, sendMessage, sendWidgetAction]);
 
 // ── Reset on logout ───────────────────────────────────────────────────────
 useEffect(() => {
@@ -1340,6 +1810,16 @@ useEffect(() => {
 
   useEffect(() => {
   if (!restoredThread || !setMessages) return;
+  // Guard: only apply each restoredThread payload ONCE. The effect's callback
+  // deps (onRouteReceived/onItineraryReceived/etc.) change identity when their
+  // parent state mutates (e.g. shimmer_day_by_day flips viewMode/activeItineraryId),
+  // which would otherwise re-run the body mid-stream and call setMessages(restored)
+  // on top of a placeholder + streaming text — wiping the in-flight message.
+  if (appliedRestoredThreadRef.current === restoredThread) return;
+  // Also skip if a stream is active — restoring the previous transcript on top
+  // of the live placeholder is never what we want.
+  if (isStreaming) return;
+  appliedRestoredThreadRef.current = restoredThread;
 
   const restored = parseThreadItems(restoredThread.items?.data ?? []);
 
@@ -1393,10 +1873,12 @@ useEffect(() => {
   );
 
   let latestEndpointEffect: { name: string; data: Record<string, unknown> } | null = null;
+  let restoredHasDisplayItinerary = false;
   for (const effect of itineraryEffects) {
     if (effect.name === "display_itinerary" && effect.data?.itinerary) {
       if (!threadIsCompleted) onItineraryReceived(effect.data.itinerary);
       latestEndpointEffect = effect;
+      restoredHasDisplayItinerary = true;
     } else if (effect.name === "display_transfers" && effect.data) {
       indexTransfersForLookup(effect.data);
       if (!threadIsCompleted) onItineraryReceived(effect.data);
@@ -1410,6 +1892,8 @@ useEffect(() => {
   if (latestEndpointEffect && !threadIsCompleted) {
     emitEndpointsFromEffect(latestEndpointEffect.name, latestEndpointEffect.data);
   }
+
+  if (restoredHasDisplayItinerary) setHasDisplayItinerary(true);
 
   if (restored.length > 0) {
     setMessages(restored);
@@ -1473,7 +1957,7 @@ useEffect(() => {
   if (qrEffect?.data?.quick_replies) {
     setQuickReplies(qrEffect.data.quick_replies.map((r: string) => ({ label: r })));
   }
-}, [restoredThread, parseThreadItems, onRouteReceived, onLocationReceived, onItineraryReceived, indexTransfersForLookup, emitEndpointsFromEffect]);
+}, [restoredThread, isStreaming, parseThreadItems, onRouteReceived, onLocationReceived, onItineraryReceived, indexTransfersForLookup, emitEndpointsFromEffect]);
 
   // ── Pagination: fetch older messages ──────────────────────────────────────
   const fetchOlderMessages = useCallback(async () => {
@@ -1550,13 +2034,17 @@ useEffect(() => {
   // ── Handlers ──────────────────────────────────────────────────────────────
 const handleShowLogin = useCallback(() => {
   const currentInput = inputRef.current.trim();
-  // Preserve an existing queued message (e.g. an initialPrompt already
+  // Preserve an existing queued action (e.g. an initialPrompt already
   // stashed by the restore flow) if the user opens the modal without
-  // typing anything new — otherwise we'd clobber it with null and the
-  // post-login send would be a no-op.
-  const msg = currentInput || lastSentMessageRef.current || pendingPostLoginMsg.current;
-  console.log("[handleShowLogin] storing pending:", msg);
-  pendingPostLoginMsg.current = msg || null;
+  // typing anything new — otherwise we'd clobber it and the post-login
+  // send would be a no-op.
+  if (currentInput) {
+    pendingPostLoginAction.current = { kind: "message", text: currentInput };
+  } else if (lastSentActionRef.current) {
+    pendingPostLoginAction.current = lastSentActionRef.current;
+  } else if (lastSentMessageRef.current) {
+    pendingPostLoginAction.current = { kind: "message", text: lastSentMessageRef.current };
+  }
   loginFlowArmedRef.current = true;
   setShowLoginModal(true);
 }, []);
@@ -1725,11 +2213,11 @@ const handleShowLogin = useCallback(() => {
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div
-      className={`flex flex-col h-full min-h-0 bg-white  max-h-[100dvh] md:max-h-[93.5vh] border-[0.5px] border-l-[#e5e5e5]`}
+      className={`flex flex-col h-full min-h-0 bg-white  max-h-[100dvh] md:max-h-[93.5vh] border-[0.5px] border-l-[#e5e5e5] overflow-x-hidden`}
       style={{ fontFamily: "'Inter', sans-serif" }}
     >
       {/* ── Top bar ───────────────────────────────────────────────────────── */}
-      <div className="flex-shrink-0 flex items-center justify-between gap-2 px-4 py-2.5 bg-white/80 backdrop-blur-sm mt-2">
+      <div className="flex-shrink-0 flex items-center justify-between gap-2 px-[0.25rem] md:!px-4 py-2.5 bg-white/80 backdrop-blur-sm mt-2">
         <div className="flex items-center gap-2 min-w-0">
           <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0">
             <img src="/KairaInsta.png" alt="Kaira" />
@@ -1762,7 +2250,7 @@ const handleShowLogin = useCallback(() => {
 
       {/* ── Settings panel ────────────────────────────────────────────────── */}
       {showControls && (
-        <div className="flex-shrink-0 flex flex-wrap items-center gap-x-6 gap-y-2 px-4 py-2.5 bg-gray-50 border-b border-gray-100 text-xs">
+        <div className="flex-shrink-0 flex flex-wrap items-center gap-x-6 gap-y-2 px-[0.25rem] md:!px-4 py-2.5 bg-gray-50 border-b border-gray-100 text-xs">
           <label className="flex items-center gap-2 text-gray-600">
             Planner
             <select
@@ -1812,10 +2300,10 @@ const handleShowLogin = useCallback(() => {
       <div
         ref={messagesScrollRef}
         onScroll={handleMessagesScroll}
-        className="flex-1 min-h-0 overflow-y-auto px-4 py-4 scroll-smooth"
+        className="flex-1 min-h-0 min-w-0 overflow-y-auto overflow-x-hidden px-[0.25rem] md:!px-4 py-4 scroll-smooth"
       >
 
-          <div className="max-w-2xl mx-auto">
+          <div className="mx-auto">
             {isLoadingMore && (
               <div className="flex items-center justify-center py-3">
                 <Spinner size={16} />
@@ -1832,7 +2320,27 @@ const handleShowLogin = useCallback(() => {
                 }}
               />
             )}
-            {messages.map((msg) => (
+            {messages.map((msg, idx) => {
+              // For network-failed assistant bubbles, hand MessageBubble a
+              // retry callback that re-sends the immediately preceding user
+              // message (content + attachments) — useChat strips the failed
+              // pair before the new send so we don't double up.
+              const prevMsg = idx > 0 ? messages[idx - 1] : undefined;
+              const onRetry =
+                msg.role === "assistant" &&
+                msg.isError &&
+                msg.errorVariant === "network" &&
+                prevMsg?.role === "user"
+                  ? () => {
+                      const atts = prevMsg.attachments ?? [];
+                      sendMessage(
+                        prevMsg.content,
+                        atts.length ? atts.map((a) => a.id) : undefined,
+                        atts.length ? atts : undefined,
+                      );
+                    }
+                  : undefined;
+              return (
               <MessageBubble
                 key={msg.id}
                 message={msg}
@@ -1843,6 +2351,7 @@ const handleShowLogin = useCallback(() => {
                 feedback={feedbackByMessageId[msg.id] ?? null}
                 feedbackLoading={feedbackLoadingIds.has(msg.id)}
                 onFeedback={handleFeedback}
+                onRetry={onRetry}
                 onWidgetAction={(action) => {
                   // Freeze this widget's CTAs the moment the user clicks one,
                   // regardless of which drawer or server call it triggers. The
@@ -1850,11 +2359,48 @@ const handleShowLogin = useCallback(() => {
                   // submission.
                   if (msg.type === "widget") markWidgetDisabled(msg.id);
 
+                  // ── Plan New Trip → fresh P1 session ──────────────────
+                  // Generate a new sessionId, stash the seed prompt for the
+                  // new session in localStorage (sessionStorage isn't shared
+                  // across tabs), then open /chat/[id] in a new tab. BotApp's
+                  // mount effect picks the prompt up and sends it as the
+                  // first user message.
+                  if (action.type === "trip.redirect_to_p1") {
+                    const ctx = (action.payload?.context ??
+                      action.payload?.prompt ??
+                      "") as string;
+                    const newSessionId = generateSessionId();
+                    if (ctx) {
+                      try {
+                        localStorage.setItem(
+                          `pending_initial_prompt_${newSessionId}`,
+                          ctx,
+                        );
+                      } catch (err) {
+                        console.warn(
+                          "[trip.redirect_to_p1] localStorage set failed:",
+                          err,
+                        );
+                      }
+                    }
+                    window.open(
+                      `/chat/${newSessionId}`,
+                      "_blank",
+                      "noopener,noreferrer",
+                    );
+                    return;
+                  }
+
                   // ── Payment ───────────────────────────────────────────
                   // Clicking "Make Payment" inside a widget opens the
                   // existing payment drawer rather than round-tripping via
                   // sendWidgetAction — the drawer owns the payment flow.
                   if (action.type === "payment.start") {
+                    analyticsRef.current.trackChatCartViewed?.(
+                      localItineraryId || "",
+                      ddAgent(),
+                      getUserPrompts(),
+                    );
                     onPaymentStart?.();
                     return;
                   }
@@ -1887,6 +2433,11 @@ const handleShowLogin = useCallback(() => {
                       date,
                       itinerary_city_id: itineraryCityId,
                     });
+                    analyticsRef.current.trackActivityCardClicked?.(
+                      localItineraryId || "",
+                      activityId,
+                      "chat",
+                    );
                     return;
                   }
 
@@ -1907,30 +2458,42 @@ const handleShowLogin = useCallback(() => {
                       payload.activityId != null;
 
                     if (hasActivityContext) {
+                      const activityId = (payload.activityId ??
+                        payload.activity_id ??
+                        payload.id) as string;
                       setActivityDrawer({
                         show: true,
-                        activityId: (payload.activityId ??
-                          payload.activity_id ??
-                          payload.id) as string,
+                        activityId,
                         date: (payload.startDate ??
                           payload.date) as string | undefined,
                         itinerary_city_id: (payload.itineraryCityId ??
                           payload.itinerary_city_id ??
                           payload.city_id) as string | undefined,
                       });
+                      analyticsRef.current.trackActivityCardClicked?.(
+                        localItineraryId || "",
+                        activityId,
+                        "chat",
+                      );
                     } else {
+                      const poiId = (payload.poiId ??
+                        payload.poi_id ??
+                        payload.id) as string;
                       setPoiDrawer({
                         show: true,
                         kind: "poi",
-                        id: (payload.poiId ??
-                          payload.poi_id ??
-                          payload.id) as string,
+                        id: poiId,
                         name: payload.title as string | undefined,
                         itinerary_city_id: (payload.itineraryCityId ??
                           payload.itinerary_city_id) as string | undefined,
                         date: (payload.startDate ??
                           payload.date) as string | undefined,
                       });
+                      analyticsRef.current.trackPoiCardClicked?.(
+                        localItineraryId || "",
+                        poiId,
+                        "chat",
+                      );
                     }
                     return;
                   }
@@ -1943,18 +2506,24 @@ const handleShowLogin = useCallback(() => {
                     action.type === "restaurant.detail" ||
                     action.type === "open_restaurant_drawer"
                   ) {
+                    const restaurantId = (payload.restaurantId ??
+                      payload.restaurant_id ??
+                      payload.id) as string;
                     setPoiDrawer({
                       show: true,
                       kind: "restaurant",
-                      id: (payload.restaurantId ??
-                        payload.restaurant_id ??
-                        payload.id) as string,
+                      id: restaurantId,
                       name: payload.title as string | undefined,
                       itinerary_city_id: (payload.itineraryCityId ??
                         payload.itinerary_city_id) as string | undefined,
                       date: (payload.startDate ??
                         payload.date) as string | undefined,
                     });
+                    analyticsRef.current.trackPoiCardClicked?.(
+                      localItineraryId || "",
+                      restaurantId,
+                      "chat",
+                    );
                     return;
                   }
 
@@ -1962,15 +2531,27 @@ const handleShowLogin = useCallback(() => {
                   // transfer.select is the legacy single-edge payload.
                   // transfer.view / transfer.detail are the richer multi-
                   // segment payloads. All three open TransferEditDrawer.
+                  // We pass initialMode + initialEdgeId so the drawer skips
+                  // its mode-selection step (currentStep=0) and opens the
+                  // matching modal directly: Flight → ComboFlight, Taxi →
+                  // ComboTaxi, anything else (Train/Bus/Ferry) → OtherTransfer.
+                  // Multi-leg routes auto-advance through legs from step 1.
                   if (
                     action.type === "transfer.select" ||
                     action.type === "transfer.view" ||
                     action.type === "transfer.detail" ||
                     action.type === "open_transfer_drawer"
                   ) {
-                    const edgeId = (payload.id ?? payload.edge_id) as
-                      | string
-                      | undefined;
+                    const segments: any[] = Array.isArray(payload.segments)
+                      ? payload.segments
+                      : [];
+                    const firstSegment = segments[0];
+                    const edgeId = (payload.id ??
+                      payload.edge_id ??
+                      firstSegment?.id ??
+                      firstSegment?.transfer_id) as string | undefined;
+                    const initialMode = (payload.mode ??
+                      firstSegment?.mode) as string | undefined;
                     const indexed = edgeId
                       ? transferEdgeMapRef.current[edgeId]
                       : undefined;
@@ -2006,10 +2587,19 @@ const handleShowLogin = useCallback(() => {
                           oItineraryCity: oItineraryCity ?? "",
                           dItineraryCity: dItineraryCity ?? "",
                           doj: doj ?? "",
+                          initialMode: initialMode ?? indexed?.mode ?? "",
+                          initialEdgeId: edgeId ?? "",
                         },
                       },
                       undefined,
                       { scroll: false },
+                    );
+                    analyticsRef.current.trackTransferCardClicked?.(
+                      localItineraryId || "",
+                      edgeId ?? bookingId ?? "",
+                      "chat",
+                      indexed?.from_city ?? (payload.from_city as string | undefined) ?? null,
+                      indexed?.to_city ?? (payload.to_city as string | undefined) ?? null,
                     );
                     return;
                   }
@@ -2024,12 +2614,18 @@ const handleShowLogin = useCallback(() => {
                     action.type === "hotel.detail" ||
                     action.type === "open_hotel_drawer"
                   ) {
+                    const hotelAccommodationId = (payload.hotelId ??
+                      payload.accommodation_id ??
+                      payload.hotel_id ??
+                      payload.id) as string;
+                    analyticsRef.current.trackHotelCardClicked?.(
+                      localItineraryId || "",
+                      hotelAccommodationId,
+                      "chat",
+                    );
                     setHotelDrawer({
                       show: true,
-                      accommodationId: (payload.hotelId ??
-                        payload.accommodation_id ??
-                        payload.hotel_id ??
-                        payload.id) as string,
+                      accommodationId: hotelAccommodationId,
                       itinerary_city_id: (payload.itineraryCityId ??
                         payload.itinerary_city_id ??
                         payload.city_id) as string | undefined,
@@ -2048,6 +2644,9 @@ const handleShowLogin = useCallback(() => {
                       source:
                         ((payload.source ?? payload.provider) as string) ??
                         "Travclan",
+                      travclan_hotel_id: (payload.travclan_hotel_id ?? payload.travclanHotelId ??
+                        payload.hotel_id) as string | undefined,
+                      currency: payload.currency as string | undefined,
                       occupancies: (payload.occupancies ??
                         payload.occupancy) as
                         | Array<{ num_adults: number; child_ages: number[] }>
@@ -2058,13 +2657,73 @@ const handleShowLogin = useCallback(() => {
                     return;
                   }
 
+                  // ── Sightseeing / Add City Taxi ──────────────────────
+                  // sightseeing.open opens the multicity TransferEditDrawer
+                  // for an itinerary city — same drawer the city header's
+                  // "Add Taxi" CTA opens on /itinerary. We resolve the city
+                  // payload from Redux so the drawer has the geo metadata
+                  // it needs to fetch suggestions, then mirror the URL the
+                  // itinerary page uses (?drawer=addCityTaxi&itinerary_city_id=...)
+                  // so refresh / share preserves the open drawer.
+                  if (action.type === "sightseeing.open") {
+                    const itineraryCityId = (payload.itineraryCityId ??
+                      payload.itinerary_city_id ??
+                      payload.city_id) as string | undefined;
+                    const matchedCity = itinerary?.cities?.find(
+                      (c: any) => String(c?.id) === String(itineraryCityId),
+                    );
+                    if (!matchedCity) {
+                      sendWidgetAction(action.type, payload);
+                      return;
+                    }
+                    setSightseeingDrawer({
+                      show: true,
+                      itinerary_city_id: itineraryCityId,
+                      cityId: matchedCity?.city?.id,
+                      cityName: matchedCity?.city?.name,
+                      cityData: matchedCity,
+                      startDate: (payload.startDate ??
+                        payload.start_date ??
+                        matchedCity?.start_date) as string | undefined,
+                      endDate: (payload.endDate ??
+                        payload.end_date ??
+                        matchedCity?.end_date) as string | undefined,
+                    });
+                    const url = new URL(window.location.href);
+                    url.searchParams.set("drawer", "addCityTaxi");
+                    if (itineraryCityId) {
+                      url.searchParams.set("itinerary_city_id", itineraryCityId);
+                    }
+                    window.history.pushState({}, "", url.toString());
+                    return;
+                  }
+
+                  // ── Visa ──────────────────────────────────────────────
+                  // visa.open opens VisaSearchDrawer (the same drawer the
+                  // booking slide's "Add Visa" CTA opens). Drawer fetches
+                  // its own catalogue so the click payload doesn't need
+                  // to carry visa data.
+                  if (action.type === "visa.open") {
+                    setVisaDrawer({ show: true });
+                    return;
+                  }
+
+                  // ── eSIM ──────────────────────────────────────────────
+                  // esim.open opens EsimPackagesDrawer (the same drawer the
+                  // booking slide's "Add eSIM" CTA opens).
+                  if (action.type === "esim.open") {
+                    setEsimDrawer({ show: true });
+                    return;
+                  }
+
                   sendWidgetAction(action.type, payload);
                 }}
               />
-            ))}
+              );
+            })}
 
-            {showError && (
-              <div className="mt-2 px-4 py-2.5 bg-[#f8fafc] border border-red-100 rounded-[24px] text-xs text-red-600 flex items-center gap-2">
+            {/* {showError && (
+              <div className="mt-2 px-2.5 py-2.5 text-xs text-red-600 flex items-center gap-2">
                 <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 flex-shrink-0">
                   <path
                     fillRule="evenodd"
@@ -2075,13 +2734,13 @@ const handleShowLogin = useCallback(() => {
                 {error}
                 <button
                   onClick={() => setErrorDismissed(true)}
-                  className="ml-auto text-red-400 hover:text-red-600"
+                  // className="ml-auto text-red-400 hover:text-red-600"
                   aria-label="Dismiss error"
                 >
                   ✕
                 </button>
               </div>
-            )}
+            )} */}
 
             {showLoginPrompt && !isLoggedIn && (
               <div className="mt-[12px] p-2">
@@ -2089,7 +2748,7 @@ const handleShowLogin = useCallback(() => {
           style={{
             maxWidth: "100%",
             // background: "#f8fafc",
-            color: "#0d0d0d",
+            color: "#000000",
             padding: "12px 0px",
             borderRadius: 12,
             fontFamily: "'Inter', sans-serif",
@@ -2119,9 +2778,9 @@ const handleShowLogin = useCallback(() => {
 
       {/* ── Quick reply chips ─────────────────────────────────────────────── */}
       {/* Hidden while itinerary creation is in progress — no quick replies/CTAs allowed */}
-      {quickReplies.length > 0 && !isStreaming && !isItineraryCompleting && (
-        <div className="flex-shrink-0 px-6 pt-2 pb-1">
-          <div className="max-w-2xl mx-auto">
+      {quickReplies.length > 0 && !isStreaming && !isComposerLocked && (
+        <div className="flex-shrink-0 px-[0.25rem] md:!px-6 pt-2 pb-1">
+          <div className="mx-auto">
             <div
               className="flex gap-2 overflow-x-auto pb-1"
               style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
@@ -2130,7 +2789,7 @@ const handleShowLogin = useCallback(() => {
                 <SingleChips
                   key={idx}
                   onClick={() => handleQuickReply(reply)}
-                  disabled={isStreaming || isItineraryCompleting}
+                  disabled={isStreaming || isComposerLocked}
                 >
                   {reply.label}
                 </SingleChips>
@@ -2141,24 +2800,31 @@ const handleShowLogin = useCallback(() => {
       )}
 
       {/* ── Composer ─────────────────────────────────────────────────────── */}
-      <div className="flex-shrink-0 px-6 pt-3 pb-1 bg-white relative">
-        <div className="max-w-2xl mx-auto">
+      <div className="flex-shrink-0 px-[0.25rem] md:!px-6 pt-3 pb-1 bg-white relative">
+        <div className="mx-auto">
           <MessageInputBox
             value={input}
             onChange={setInput}
             onSubmit={handleSubmit}
             onStop={cancelStream}
             isStreaming={isStreaming}
-            disabled={isItineraryCompleting}
-            placeholder={isItineraryCompleting ? "Planning your trip…" : "Ask me anything"}
-            showAttach={!isItineraryCompleting}
+            disabled={isComposerLocked}
+            placeholder={
+              isItineraryCompleting
+                ? "Planning your trip…"
+                : isItineraryPolling
+                ? "Updating your itinerary…"
+                : "Ask me anything"
+            }
+            showAttach={!isComposerLocked}
             onFilesSelected={handleFilesSelected}
             attachments={attachments}
             onRemoveAttachment={handleRemoveAttachment}
           />
         </div>
-        {/* Overlay blocks all typing/interaction while itinerary creation is in progress */}
-        {isItineraryCompleting && (
+        {/* Overlay blocks all typing/interaction while itinerary creation
+            or an update/edit poll is in progress. */}
+        {isComposerLocked && (
           <div
             className="absolute inset-0 cursor-not-allowed"
             style={{ background: "rgba(255,255,255,0.55)", zIndex: 5 }}
@@ -2166,6 +2832,23 @@ const handleShowLogin = useCallback(() => {
           />
         )}
       </div>
+
+      {/* ── View Itinerary CTA — mobile only ──────────────────────────────
+          Mirrors the "Get Inspired" CTA on the welcome screen. Visible once
+          the bot has produced a draft (display_itinerary fired) or the
+          thread has reached P2, so users can jump from chat to the
+          itinerary tab without hunting for the top tab strip. */}
+      {(botMode === "p2" || hasDisplayItinerary) && onViewItinerary && (
+        <button
+          type="button"
+          onClick={onViewItinerary}
+          className="md:hidden flex-shrink-0 w-full flex items-center justify-center gap-1 py-2 text-[14px] font-medium"
+          style={{ background: "#f7e700", color: "#000000" }}
+        >
+          <span>View Itinerary</span>
+          <span aria-hidden>→</span>
+        </button>
+      )}
 
       {/* ── Login modal portal ────────────────────────────────────────────── */}
       {showLoginModal &&
@@ -2183,27 +2866,44 @@ const handleShowLogin = useCallback(() => {
             />
             <div
               onClick={(e) => e.stopPropagation()}
-              style={{
-                position: "fixed",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                background: "#fff",
-                borderRadius: 16,
-                width: "min(480px, 95vw)",
-                maxHeight: "90vh",
-                overflowY: "auto",
-                zIndex: 3300,
-                boxShadow: "0 25px 60px rgba(0,0,0,0.3)",
-              }}
+              // style={
+              //   isMobile
+              //     ? {
+              //         position: "fixed",
+              //         left: 0,
+              //         right: 0,
+              //         bottom: 0,
+              //         background: "#fff",
+              //         borderTopLeftRadius: 16,
+              //         borderTopRightRadius: 16,
+              //         width: "100%",
+              //         maxHeight: "90vh",
+              //         overflowY: "auto",
+              //         zIndex: 3300,
+              //         boxShadow: "0 -8px 30px rgba(0,0,0,0.25)",
+              //       }
+              //     : {
+              //         position: "fixed",
+              //         top: "50%",
+              //         left: "50%",
+              //         transform: "translate(-50%, -50%)",
+              //         background: "#fff",
+              //         borderRadius: 16,
+              //         width: "min(480px, 95vw)",
+              //         maxHeight: "90vh",
+              //         overflowY: "auto",
+              //         zIndex: 3300,
+              //         boxShadow: "0 25px 60px rgba(0,0,0,0.3)",
+              //       }
+              // }
             >
-              <LogInModal
+              <BotLoginModal
                 show={showLoginModal}
                 onhide={() => setShowLoginModal(false)}
                 zIndex={"3300"}
                 message="Please login to continue"
                 onSuccess={async () => {
-                  // setPostLoginLoading(true);
+                  await onLoginSuccess?.();
                 }}
               />
             </div>
@@ -2219,6 +2919,7 @@ const handleShowLogin = useCallback(() => {
       {activityDrawer.show && (
         <ActivityDetailsDrawer
           show={activityDrawer.show}
+          fromChat={true}
           activityId={activityDrawer.activityId}
           date={activityDrawer.date}
           handleCloseDrawer={() => setActivityDrawer({ show: false })}
@@ -2227,6 +2928,14 @@ const handleShowLogin = useCallback(() => {
           Topheading="Activity Details"
           showPackages={false}
           type={"activity"}
+          pax={{
+            adults: itinerary?.number_of_adults ?? 1,
+            children: itinerary?.number_of_children ?? 0,
+            childAges: Array.from(
+              { length: itinerary?.number_of_children ?? 0 },
+              () => 10,
+            ),
+          }}
           itinerary_city_id={activityDrawer.itinerary_city_id}
           onAddToItinerary={(payload: Record<string, unknown>) => {
             const itineraryCityId =
@@ -2296,7 +3005,7 @@ const handleShowLogin = useCallback(() => {
       {hotelDrawer.show && hotelDrawer.accommodationId && (
         <AccommodationDetailDrawer
           show={hotelDrawer.show}
-          accommodationId={hotelDrawer.accommodationId}
+          accommodationId={hotelDrawer.travclan_hotel_id}
           onHide={() => setHotelDrawer({ show: false })}
           onChangeHotel={() => {
             // Don't POST from chat; close the detail drawer and route the
@@ -2381,9 +3090,33 @@ const handleShowLogin = useCallback(() => {
           bookingId={hotelDrawer.bookingId}
           dbCityId={hotelDrawer.dbCityId}
           source={hotelDrawer.source}
-          occupancies={hotelDrawer.occupancies}
+          occupancies={
+            hotelDrawer.occupancies && hotelDrawer.occupancies.length
+              ? hotelDrawer.occupancies
+              : [
+                  {
+                    num_adults: itinerary?.number_of_adults ?? 1,
+                    child_ages: Array.from(
+                      { length: itinerary?.number_of_children ?? 0 },
+                      () => 10,
+                    ),
+                  },
+                ]
+          }
           traceId={hotelDrawer.traceId}
           setShowLoginModal={setShowLoginModal}
+          // Authoritative itinerary id for this chat. The drawer would
+          // otherwise fall through to Redux Itinerary.id, which can lag
+          // when the user has just switched threads — leading to the
+          // POST hitting the previously loaded itinerary.
+          itineraryId={localItineraryId}
+          // Re-fetch the canonical itinerary so day_by_day buckets and
+          // city.hotels reflect the new booking — the drawer already
+          // patches the Stays slice, but the Itinerary slice needs the
+          // full server payload to stay in sync.
+          onBookingSuccess={() => {
+            void fetchAndApplyItineraryDetail();
+          }}
         />
       )}
 
@@ -2457,6 +3190,55 @@ const handleShowLogin = useCallback(() => {
           handleCloseDrawer={() => setPoiDrawer({ show: false })}
         />
       )}
+
+      {/* ── Sightseeing / Add City Taxi Drawer ──────────────────────────── */}
+      {/* Opened by sightseeing.open widget actions. Renders TransferEditDrawer
+          in multicity (intra-city) mode — same drawer the city header's
+          "Add Taxi" CTA opens on the /itinerary page. */}
+      {sightseeingDrawer.show && sightseeingDrawer.cityData && (
+        <TransferEditDrawer
+          mercury
+          isMercury
+          showDrawer={sightseeingDrawer.show}
+          drawerType="multicity"
+          booking_type="multicity"
+          origin_itinerary_city_id={sightseeingDrawer.itinerary_city_id}
+          destination_itinerary_city_id={sightseeingDrawer.itinerary_city_id}
+          originCityId={sightseeingDrawer.cityId}
+          destinationCityId={sightseeingDrawer.cityId}
+          city={sightseeingDrawer.cityName}
+          dcity={sightseeingDrawer.cityName}
+          oCityData={sightseeingDrawer.cityData}
+          dCityData={sightseeingDrawer.cityData}
+          check_in={sightseeingDrawer.startDate}
+          setShowLoginModal={setShowLoginModal}
+          handleClose={() => {
+            setSightseeingDrawer({ show: false });
+            const url = new URL(window.location.href);
+            if (url.searchParams.get("drawer") === "addCityTaxi") {
+              url.searchParams.delete("drawer");
+              url.searchParams.delete("itinerary_city_id");
+              window.history.pushState({}, "", url.toString());
+            }
+          }}
+        />
+      )}
+
+      {/* ── Visa Search Drawer ──────────────────────────────────────────── */}
+      {/* Opened by visa.open widget actions. Drawer self-fetches visa
+          options from the ancillary service. */}
+      <VisaSearchDrawer
+        show={visaDrawer.show}
+        onHide={() => setVisaDrawer({ show: false })}
+      />
+
+      {/* ── eSIM Packages Drawer ────────────────────────────────────────── */}
+      {/* Opened by esim.open widget actions. Drawer self-fetches eSIM
+          packages from the ancillary service. */}
+      <EsimPackagesDrawer
+        show={esimDrawer.show}
+        onHide={() => setEsimDrawer({ show: false })}
+      />
     </div>
   );
 }

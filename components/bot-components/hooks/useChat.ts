@@ -33,6 +33,11 @@ export interface Message {
   progressSteps?: ProgressStep[];
   thinkingTasks?: ThinkingTask[];
   attachments?: MessageAttachment[];
+  /** When true, this assistant message represents a failed send (network or
+   *  server error). Rendered with an inline error treatment in MessageBubble.
+   *  Variant lets us tailor the icon/copy for offline vs. generic failures. */
+  isError?: boolean;
+  errorVariant?: "network" | "generic";
 }
 
 export interface UserLocationData {
@@ -78,6 +83,12 @@ interface UseChatOptions {
    * that was passed in, so the parent can push /chat/{sessionId} to history.
    */
   onSessionCreated?: (sessionId: string) => void;
+  /**
+   * Themed-page flag forwarded as `login_mandatory` on the very first
+   * /chatkit request (threads.create). When undefined, the field is omitted
+   * from the body. Subsequent messages never include it.
+   */
+  loginMandatory?: boolean;
 }
 
 // ─── UUID helper ──────────────────────────────────────────────────────────────
@@ -139,6 +150,7 @@ function buildFirstMessageBody(
     userId?: string | number;
     sessionId: string;
     attachmentIds?: string[];
+    loginMandatory?: boolean;
   }
 ): Record<string, unknown> {
   const body: Record<string, unknown> = {
@@ -151,6 +163,7 @@ function buildFirstMessageBody(
     ...buildAuthFields(opts),
   };
   if (opts.botMode === "p2" && opts.itineraryId) body.itinerary_id = opts.itineraryId;
+  if (opts.loginMandatory !== undefined) body.login_mandatory = opts.loginMandatory;
   return body;
 }
 
@@ -182,6 +195,76 @@ function buildSubsequentMessageBody(
   return body;
 }
 
+// ─── Network retry ────────────────────────────────────────────────────────────
+
+const MAX_NETWORK_RETRIES = 3;
+const NETWORK_RETRY_BASE_DELAY_MS = 500;
+
+function isNetworkError(err: unknown): boolean {
+  if (typeof navigator !== "undefined" && navigator.onLine === false) return true;
+  if (err instanceof TypeError) return true;
+  if (err instanceof Error) {
+    const msg = err.message.toLowerCase();
+    return (
+      msg.includes("failed to fetch") ||
+      msg.includes("networkerror") ||
+      msg.includes("network request failed") ||
+      msg.includes("load failed")
+    );
+  }
+  return false;
+}
+
+function waitWithAbort(ms: number, signal?: AbortSignal): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (signal?.aborted) {
+      reject(new DOMException("Aborted", "AbortError"));
+      return;
+    }
+    const timer = setTimeout(() => {
+      signal?.removeEventListener("abort", onAbort);
+      resolve();
+    }, ms);
+    const onAbort = () => {
+      clearTimeout(timer);
+      reject(new DOMException("Aborted", "AbortError"));
+    };
+    signal?.addEventListener("abort", onAbort, { once: true });
+  });
+}
+
+async function fetchWithRetry(
+  url: string,
+  init: RequestInit,
+  maxAttempts: number = MAX_NETWORK_RETRIES,
+  signal?: AbortSignal,
+): Promise<Response> {
+  let lastErr: unknown;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      return await fetch(url, init);
+    } catch (err) {
+      lastErr = err;
+      if (err instanceof Error && err.name === "AbortError") throw err;
+      if (!isNetworkError(err)) throw err;
+      if (attempt === maxAttempts) throw err;
+      console.warn(`[useChat] network error on attempt ${attempt}/${maxAttempts}, retrying…`, err);
+      await waitWithAbort(NETWORK_RETRY_BASE_DELAY_MS * Math.pow(2, attempt - 1), signal);
+    }
+  }
+  throw lastErr;
+}
+
+// Drop the trailing failed assistant bubble (and the user message that
+// triggered it) so a retry doesn't leave a stale error sitting in history.
+function stripTrailingErrorPair(messages: Message[]): Message[] {
+  const last = messages[messages.length - 1];
+  if (!last || last.role !== "assistant" || !last.isError) return messages;
+  const prev = messages[messages.length - 2];
+  if (prev?.role === "user") return messages.slice(0, -2);
+  return messages.slice(0, -1);
+}
+
 // ─── SSE types & parser ───────────────────────────────────────────────────────
 
 interface SseHandlers {
@@ -193,6 +276,7 @@ interface SseHandlers {
   onWorkflowTaskAdded?: (index: number, content: string) => void;
   onWorkflowTaskUpdated?: (index: number, content: string) => void;
   onWorkflowDone?: () => void;
+  onAssistantMessageId?: (id: string) => void;
 }
 
 function parseSseLine(raw: string, handlers: SseHandlers) {
@@ -246,6 +330,14 @@ function parseSseLine(raw: string, handlers: SseHandlers) {
     return;
   }
 
+  if (type === "thread.item.added") {
+    const item = ev.item as Record<string, unknown> | undefined;
+    if (item?.type === "assistant_message" && typeof item.id === "string") {
+      handlers.onAssistantMessageId?.(item.id);
+    }
+    return;
+  }
+
   if (type === "thread.item.done") {
     const item = ev.item as Record<string, unknown> | undefined;
     if (item?.type === "workflow") {
@@ -257,6 +349,10 @@ function parseSseLine(raw: string, handlers: SseHandlers) {
         id: item.id as string,
         widget: item.widget as Record<string, unknown>,
       });
+      return;
+    }
+    if (item?.type === "assistant_message" && typeof item.id === "string") {
+      handlers.onAssistantMessageId?.(item.id);
       return;
     }
     return;
@@ -375,6 +471,7 @@ export function useChat({
   userId,
   sessionId,
   onSessionCreated,
+  loginMandatory,
 }: UseChatOptions) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
@@ -397,6 +494,8 @@ export function useChat({
   sessionIdRef.current = sessionId;
   const onSessionCreatedRef = useRef(onSessionCreated);
   onSessionCreatedRef.current = onSessionCreated;
+  const loginMandatoryRef = useRef(loginMandatory);
+  loginMandatoryRef.current = loginMandatory;
 
   const cancelStream = useCallback(() => {
     abortControllerRef.current?.abort();
@@ -433,6 +532,7 @@ export function useChat({
       if (!threadIdRef.current) return;
 
       const assistantMsgId = `assistant-${Date.now()}`;
+      let currentAssistantId = assistantMsgId;
       setMessages((prev) => [
         ...prev,
         {
@@ -479,11 +579,19 @@ export function useChat({
           onTextChunk: (chunk) => {
             setMessages((prev) =>
               prev.map((m) =>
-                m.id === assistantMsgId ? { ...m, content: m.content + chunk } : m
+                m.id === currentAssistantId ? { ...m, content: m.content + chunk } : m
               )
             );
           },
           onThreadId: handleThreadId,
+          onAssistantMessageId: (realId) => {
+            if (realId === currentAssistantId) return;
+            const oldId = currentAssistantId;
+            currentAssistantId = realId;
+            setMessages((prev) =>
+              prev.map((m) => (m.id === oldId ? { ...m, id: realId } : m))
+            );
+          },
           onEffect: (effect) => onEffect?.(effect),
           onWidget: (item) => {
             setMessages((prev) => [
@@ -501,7 +609,7 @@ export function useChat({
           onProgress: (step) => {
             setMessages((prev) =>
               prev.map((m) =>
-                m.id !== assistantMsgId
+                m.id !== currentAssistantId
                   ? m
                   : { ...m, progressSteps: applyProgressStep(m.progressSteps ?? [], step) }
               )
@@ -510,7 +618,7 @@ export function useChat({
           onWorkflowTaskAdded: (index, content) => {
             setMessages((prev) =>
               prev.map((m) =>
-                m.id !== assistantMsgId
+                m.id !== currentAssistantId
                   ? m
                   : { ...m, thinkingTasks: applyTaskAdded(m.thinkingTasks ?? [], index, content) }
               )
@@ -519,7 +627,7 @@ export function useChat({
           onWorkflowTaskUpdated: (index, content) => {
             setMessages((prev) =>
               prev.map((m) =>
-                m.id !== assistantMsgId
+                m.id !== currentAssistantId
                   ? m
                   : { ...m, thinkingTasks: applyTaskUpdated(m.thinkingTasks ?? [], index, content) }
               )
@@ -528,7 +636,7 @@ export function useChat({
           onWorkflowDone: () => {
             setMessages((prev) =>
               prev.map((m) =>
-                m.id !== assistantMsgId
+                m.id !== currentAssistantId
                   ? m
                   : { ...m, thinkingTasks: applyWorkflowDone(m.thinkingTasks ?? []) }
               )
@@ -540,7 +648,7 @@ export function useChat({
       } finally {
         setMessages((prev) =>
           prev.map((m) => {
-            if (m.id !== assistantMsgId) return m;
+            if (m.id !== currentAssistantId) return m;
             const steps = m.progressSteps ?? [];
             const finalSteps =
               steps.length > 0 && !steps[steps.length - 1].done
@@ -571,9 +679,13 @@ export function useChat({
 
       const userMsgId = `user-${Date.now()}`;
       const assistantMsgId = `assistant-${Date.now() + 1}`;
+      let currentAssistantId = assistantMsgId;
 
       setMessages((prev) => [
-        ...prev,
+        // Drop the most recent failed assistant message (and the user message
+        // it was responding to) so a successful retry doesn't leave a stale
+        // "couldn't reach the server" bubble glued to the conversation.
+        ...stripTrailingErrorPair(prev),
         {
           id: userMsgId,
           role: "user",
@@ -614,17 +726,22 @@ export function useChat({
 
       const body = threadIdRef.current
         ? buildSubsequentMessageBody(trimmed, { threadId: threadIdRef.current, ...commonOpts })
-        : buildFirstMessageBody(trimmed, commonOpts);
+        : buildFirstMessageBody(trimmed, { ...commonOpts, loginMandatory: loginMandatoryRef.current });
 
       console.log("[useChat] →", JSON.stringify(body, null, 2));
 
       try {
-        const response = await fetch(apiUrl, {
-          method: "POST",
-          headers: buildHeaders(),
-          body: JSON.stringify(body),
-          signal: controller.signal,
-        });
+        const response = await fetchWithRetry(
+          apiUrl,
+          {
+            method: "POST",
+            headers: buildHeaders(),
+            body: JSON.stringify(body),
+            signal: controller.signal,
+          },
+          MAX_NETWORK_RETRIES,
+          controller.signal,
+        );
 
         if (!response.ok) {
           const errText = await response.text().catch(() => response.statusText);
@@ -640,11 +757,19 @@ export function useChat({
               if (!firstToken) { firstToken = true; onFirstToken?.(); }
               setMessages((prev) =>
                 prev.map((m) =>
-                  m.id === assistantMsgId ? { ...m, content: m.content + chunk } : m
+                  m.id === currentAssistantId ? { ...m, content: m.content + chunk } : m
                 )
               );
             },
             onThreadId: handleThreadId,
+            onAssistantMessageId: (realId) => {
+              if (realId === currentAssistantId) return;
+              const oldId = currentAssistantId;
+              currentAssistantId = realId;
+              setMessages((prev) =>
+                prev.map((m) => (m.id === oldId ? { ...m, id: realId } : m))
+              );
+            },
             onEffect: (effect) => onEffect?.(effect),
             onWidget: (item) => {
               setMessages((prev) => [
@@ -662,7 +787,7 @@ export function useChat({
             onProgress: (step) => {
               setMessages((prev) =>
                 prev.map((m) =>
-                  m.id !== assistantMsgId
+                  m.id !== currentAssistantId
                     ? m
                     : { ...m, progressSteps: applyProgressStep(m.progressSteps ?? [], step) }
                 )
@@ -671,7 +796,7 @@ export function useChat({
             onWorkflowTaskAdded: (index, content) => {
               setMessages((prev) =>
                 prev.map((m) =>
-                  m.id !== assistantMsgId
+                  m.id !== currentAssistantId
                     ? m
                     : { ...m, thinkingTasks: applyTaskAdded(m.thinkingTasks ?? [], index, content) }
                 )
@@ -680,7 +805,7 @@ export function useChat({
             onWorkflowTaskUpdated: (index, content) => {
               setMessages((prev) =>
                 prev.map((m) =>
-                  m.id !== assistantMsgId
+                  m.id !== currentAssistantId
                     ? m
                     : { ...m, thinkingTasks: applyTaskUpdated(m.thinkingTasks ?? [], index, content) }
                 )
@@ -689,7 +814,7 @@ export function useChat({
             onWorkflowDone: () => {
               setMessages((prev) =>
                 prev.map((m) =>
-                  m.id !== assistantMsgId
+                  m.id !== currentAssistantId
                     ? m
                     : { ...m, thinkingTasks: applyWorkflowDone(m.thinkingTasks ?? []) }
                 )
@@ -703,17 +828,26 @@ export function useChat({
         const msg = err instanceof Error ? err.message : "Unknown error";
         console.error("[useChat]", msg);
         setError(msg);
+        const networkFailure = isNetworkError(err);
+        const fallbackContent = networkFailure
+          ? "I couldn't reach the server. Please check your internet connection and try again."
+          : "Something went wrong. Please try again.";
         setMessages((prev) =>
           prev.map((m) =>
-            m.id === assistantMsgId && !m.content
-              ? { ...m, content: "Sorry, something went wrong. Please try again." }
+            m.id === currentAssistantId && !m.content
+              ? {
+                  ...m,
+                  content: fallbackContent,
+                  isError: true,
+                  errorVariant: networkFailure ? "network" : "generic",
+                }
               : m
           )
         );
       } finally {
         setMessages((prev) =>
           prev.map((m) => {
-            if (m.id !== assistantMsgId) return m;
+            if (m.id !== currentAssistantId) return m;
             const steps = m.progressSteps ?? [];
             const finalSteps =
               steps.length > 0 && !steps[steps.length - 1].done

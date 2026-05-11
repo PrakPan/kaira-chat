@@ -497,7 +497,7 @@ export default function ActivityDetails(props) {
                   the desktop dropdown can be positioned with absolute top-full.
                   Always rendered — a 1-night stay still has 2 options (arrival
                   + checkout), and even a single-day option is informational. */}
-              {!hideSchedule && (
+              {!hideSchedule && props?.fromChat && (
                 <div className="relative">
                
                   <div

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import travellerStories from "../../../../data/travellerStories";
+import defaultTravellerStories from "../../../../data/travellerStories";
 import type { ThemeConfig } from "../../types/themeConfig";
 
 export interface TravellerStory {
@@ -221,6 +221,9 @@ const StartScreen: React.FC<StartScreenProps> = ({
   const showScrollHint = hasOverflow && !atBottom;
 
   // ── Resolved theme-aware data (overridden by themeConfig when provided) ──
+  const travellerStories =
+    themeConfig?.travellerStories ?? defaultTravellerStories;
+
   const row1Heading =
     themeConfig?.rows?.row1?.heading ?? "From Relaxation to Adventure";
   const row1Icon = themeConfig?.rows?.row1?.icon ?? "🌅";
@@ -289,8 +292,6 @@ const StartScreen: React.FC<StartScreenProps> = ({
         {/* ── Traveller Stories ───────────────────────────────────────────── */}
         <div
           style={{
-            animation: mounted ? "fadeSlideUp 0.5s ease-out 40ms forwards" : "none",
-            opacity: mounted ? undefined : 0,
             background: "#F1F5FF",
           }}
           className="rounded-[24px] py-3 pl-3 pr-0"
@@ -332,12 +333,7 @@ const StartScreen: React.FC<StartScreenProps> = ({
         </div>
 
         {/* ── P1: From Relaxation to Adventure (combined, all 6 cards) ──────── */}
-        <div
-          style={{
-            animation: mounted ? "fadeSlideUp 0.5s ease-out 140ms forwards" : "none",
-            opacity: mounted ? undefined : 0,
-          }}
-        >
+        <div>
           <div className="flex items-center gap-2 mb-3">
             <span className="text-xl">{row1Icon}</span>
             <h2
@@ -364,12 +360,7 @@ const StartScreen: React.FC<StartScreenProps> = ({
         </div>
 
         {/* ── P2: Trending This April 🔥 ───────────────────────────────────── */}
-        <div
-          style={{
-            animation: mounted ? "fadeSlideUp 0.5s ease-out 300ms forwards" : "none",
-            opacity: mounted ? undefined : 0,
-          }}
-        >
+        <div>
           <div className="flex items-center gap-2 mb-3">
             <span className="text-xl">{row2Icon}</span>
             <h2
@@ -396,12 +387,7 @@ const StartScreen: React.FC<StartScreenProps> = ({
         </div>
 
         {/* ── TTW's Trending Themes — 6 campaign cards ─────────────────────── */}
-        <div
-          style={{
-            animation: mounted ? "fadeSlideUp 0.5s ease-out 460ms forwards" : "none",
-            opacity: mounted ? undefined : 0,
-          }}
-        >
+        <div>
           <div className="flex items-center gap-2 mb-3">
             <span className="text-xl">{row3Icon}</span>
             <h2
@@ -429,12 +415,7 @@ const StartScreen: React.FC<StartScreenProps> = ({
 
         {/* ── Optional Row 4 — themed activity row ─────────────────────────── */}
         {row4 && (
-          <div
-            style={{
-              animation: mounted ? "fadeSlideUp 0.5s ease-out 620ms forwards" : "none",
-              opacity: mounted ? undefined : 0,
-            }}
-          >
+          <div>
             <div className="flex items-center gap-2 mb-3">
               {row4.icon && <span className="text-xl">{row4.icon}</span>}
               <h2
@@ -508,6 +489,12 @@ const TripCard: React.FC<TripCardProps> = ({ trip, delay, mounted, onSelect }) =
   const [hovered, setHovered] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
 
+  useEffect(() => {
+    if (imgLoaded) return;
+    const t = setTimeout(() => setImgLoaded(true), 6000);
+    return () => clearTimeout(t);
+  }, [imgLoaded]);
+
   return (
     <button
       onClick={() => onSelect(trip.prompt)}
@@ -515,10 +502,6 @@ const TripCard: React.FC<TripCardProps> = ({ trip, delay, mounted, onSelect }) =
       onMouseLeave={() => setHovered(false)}
       className="group relative overflow-hidden rounded-2xl flex-shrink-0 max-w-[180px] md:max-w-[240px] aspect-[240/244]"
       style={{
-        animation: mounted
-          ? `fadeSlideUp 0.5s ease-out ${delay}ms forwards`
-          : "none",
-        opacity: mounted ? undefined : 0,
         transform: hovered ? "scale(1.03)" : "scale(1)",
         transition:
           "transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease",
@@ -624,6 +607,12 @@ const TrendingCard: React.FC<TrendingCardProps> = ({
   const [hovered, setHovered] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
 
+  useEffect(() => {
+    if (imgLoaded) return;
+    const t = setTimeout(() => setImgLoaded(true), 6000);
+    return () => clearTimeout(t);
+  }, [imgLoaded]);
+
   return (
     <button
       onClick={() => onSelect(trip.prompt)}
@@ -631,10 +620,6 @@ const TrendingCard: React.FC<TrendingCardProps> = ({
       onMouseLeave={() => setHovered(false)}
       className="group relative overflow-hidden rounded-2xl flex-shrink-0 max-w-[180px] md:max-w-[240px] aspect-[240/244]"
       style={{
-        animation: mounted
-          ? `fadeSlideUp 0.5s ease-out ${delay}ms forwards`
-          : "none",
-        opacity: mounted ? undefined : 0,
         transform: hovered ? "scale(1.03)" : "scale(1)",
         transition:
           "transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease",
@@ -737,6 +722,12 @@ const TravellerStoryCard: React.FC<TravellerStoryCardProps> = ({
   const [hovered, setHovered] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
 
+  useEffect(() => {
+    if (imgLoaded) return;
+    const t = setTimeout(() => setImgLoaded(true), 6000);
+    return () => clearTimeout(t);
+  }, [imgLoaded]);
+
   const headline = `${story.name} did ${story.destinations.join(", ")} in ${story.duration}`;
 
   return (
@@ -748,10 +739,6 @@ const TravellerStoryCard: React.FC<TravellerStoryCardProps> = ({
       style={{
         width: 240,
         border: active ? "2px solid #2563eb" : "1px solid transparent",
-        animation: mounted
-          ? `fadeSlideUp 0.5s ease-out ${delay}ms forwards`
-          : "none",
-        opacity: mounted ? undefined : 0,
         transform: hovered ? "translateY(-2px)" : "translateY(0)",
         transition:
           "transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease",
