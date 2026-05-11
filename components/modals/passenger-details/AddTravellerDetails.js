@@ -42,17 +42,6 @@ const buildInfant = () => ({
   is_lead: false,
 });
 
-const GST_FIELDS = [
-  "gst_number",
-  "gst_company_name",
-  "gst_company_email",
-  "gst_company_contact_number",
-  "gst_company_address",
-];
-
-const buildEmptyGst = () =>
-  GST_FIELDS.reduce((acc, key) => ({ ...acc, [key]: "" }), {});
-
 const normalizeGender = (g) => {
   if (!g) return "Male";
   const lower = g.toString().trim().toLowerCase();
@@ -156,10 +145,7 @@ const AddTravellerDetails = ({ itinerary, onSuccess }) => {
     );
 
   const [lead, setLead] = useState(() =>
-    hydrateFromApi(existingLead, {
-      ...buildAdult(true),
-      ...buildEmptyGst(),
-    })
+    hydrateFromApi(existingLead, buildAdult(true))
   );
   const [adults, setAdults] = useState(() =>
     fillSlots(Math.max(expectedAdults - 1, 0), existingNonLeadAdults, () =>
@@ -172,19 +158,7 @@ const AddTravellerDetails = ({ itinerary, onSuccess }) => {
   const [infants, setInfants] = useState(() =>
     fillSlots(expectedInfants, existingInfants, buildInfant)
   );
-  const [showGst, setShowGst] = useState(() => {
-    if (!existingLead) return false;
-    return GST_FIELDS.some((f) => {
-      const v = existingLead[f];
-      return v != null && v.toString().trim() !== "";
-    });
-  });
   const [submitting, setSubmitting] = useState(false);
-
-  const handleGstChange = (e) => {
-    const { name, value } = e.target;
-    setLead((prev) => ({ ...prev, [name]: value }));
-  };
 
   const validate = () => {
     if (!lead.first_name?.trim() || !lead.last_name?.trim()) {
@@ -201,13 +175,6 @@ const AddTravellerDetails = ({ itinerary, onSuccess }) => {
     }
     if (!lead.contact_number?.trim()) {
       return "Lead traveller must provide a contact number.";
-    }
-
-    if (showGst) {
-      const missing = GST_FIELDS.filter((f) => !lead[f]?.toString().trim());
-      if (missing.length && missing.length !== GST_FIELDS.length) {
-        return "All GST details must be provided.";
-      }
     }
 
     const labelFor = (g, i, kind) => `${kind} ${i + 1}`;
@@ -247,11 +214,6 @@ const AddTravellerDetails = ({ itinerary, onSuccess }) => {
       return;
     }
 
-    const leadPayload = { ...lead };
-    if (!showGst) {
-      GST_FIELDS.forEach((f) => delete leadPayload[f]);
-    }
-
     const emptyToNull = (g) =>
       Object.fromEntries(
         Object.entries(g).map(([k, v]) => [
@@ -260,9 +222,7 @@ const AddTravellerDetails = ({ itinerary, onSuccess }) => {
         ])
       );
 
-    const guests = [leadPayload, ...adults, ...children, ...infants].map(
-      emptyToNull
-    );
+    const guests = [lead, ...adults, ...children, ...infants].map(emptyToNull);
 
     try {
       setSubmitting(true);
@@ -299,12 +259,6 @@ const AddTravellerDetails = ({ itinerary, onSuccess }) => {
   const sectionDivider = "border-t-sm border-text-disabled pt-lg mt-lg";
   const subTitle =
     "text-md font-500 leading-xl text-primary-indigo mb-sm";
-  const fieldShellBase =
-    "flex h-[44px] items-center border-sm border-text-disabled rounded-md-lg bg-white overflow-hidden focus-within:border-primary-indigo transition-colors";
-  const inputBase =
-    "w-full h-full px-sm text-sm-md font-400 leading-md text-text-charcolblack outline-none placeholder:text-text-placeholder bg-transparent";
-  const labelBase =
-    "text-sm font-400 leading-sm-md text-text-spacegrey mb-xxs block";
 
   const otherTravellerCount =
     adults.length + children.length + infants.length;
@@ -312,88 +266,6 @@ const AddTravellerDetails = ({ itinerary, onSuccess }) => {
   return (
     <div className="font-lexend bg-white">
       <LeadPaxDetails input={lead} setInput={setLead} />
-
-      <div className={sectionDivider}>
-        <label className="inline-flex items-center gap-xs cursor-pointer w-fit">
-          <input
-            type="checkbox"
-            className="w-[16px] h-[16px] accent-primary-indigo cursor-pointer"
-            checked={showGst}
-            onChange={(e) => setShowGst(e.target.checked)}
-          />
-          <span className="text-sm-md font-500 leading-md text-text-charcolblack">
-            Add GST Details{" "}
-            <span className="text-text-spacegrey font-400">(optional)</span>
-          </span>
-        </label>
-
-        {showGst && (
-          <div className="mt-md grid grid-cols-1 md:grid-cols-2 gap-md">
-            <div>
-              <label className={labelBase}>GST Number</label>
-              <div className={fieldShellBase}>
-                <input
-                  className={inputBase}
-                  name="gst_number"
-                  placeholder="Enter GST Number"
-                  value={lead.gst_number}
-                  onChange={handleGstChange}
-                />
-              </div>
-            </div>
-            <div>
-              <label className={labelBase}>Company Name</label>
-              <div className={fieldShellBase}>
-                <input
-                  className={inputBase}
-                  name="gst_company_name"
-                  placeholder="Enter Company Name"
-                  value={lead.gst_company_name}
-                  onChange={handleGstChange}
-                />
-              </div>
-            </div>
-            <div>
-              <label className={labelBase}>Company Email</label>
-              <div className={fieldShellBase}>
-                <input
-                  className={inputBase}
-                  name="gst_company_email"
-                  type="email"
-                  placeholder="Enter Company Email"
-                  value={lead.gst_company_email}
-                  onChange={handleGstChange}
-                />
-              </div>
-            </div>
-            <div>
-              <label className={labelBase}>Company Contact Number</label>
-              <div className={fieldShellBase}>
-                <input
-                  className={inputBase}
-                  name="gst_company_contact_number"
-                  type="tel"
-                  placeholder="Enter Company Contact Number"
-                  value={lead.gst_company_contact_number}
-                  onChange={handleGstChange}
-                />
-              </div>
-            </div>
-            <div className="md:col-span-2">
-              <label className={labelBase}>Company Address</label>
-              <div className={fieldShellBase}>
-                <input
-                  className={inputBase}
-                  name="gst_company_address"
-                  placeholder="Enter Company Address"
-                  value={lead.gst_company_address}
-                  onChange={handleGstChange}
-                />
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
 
       {otherTravellerCount > 0 && (
         <div className={sectionDivider}>
