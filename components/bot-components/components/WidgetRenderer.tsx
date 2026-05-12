@@ -4060,7 +4060,6 @@ function WhatsappContactCard({
               letterSpacing: 0.3,
             }}
           >
-            +{phone}
           </span>
         ) : (
           <span />
