@@ -2151,16 +2151,26 @@ function BoxNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetRender
     // Hide connector for the last route item
     if (routeCtx?.isLast) return null;
 
+    const minH =
+      typeof height === "string" ? height : `${height as number}px`;
+
+    // In route context the parent ListViewItem is flex-stretch, so flex:1 +
+    // align-self:stretch lets the dashed line fill whatever vertical space
+    // the item takes (city name + one_liner description on a new line, etc.)
     return (
       <div style={{
         width: 10,
         display: "flex",
         justifyContent: "center",
         flexShrink: 0,
+        flex: routeCtx ? 1 : undefined,
+        alignSelf: routeCtx ? "stretch" : undefined,
+        minHeight: minH,
       }}>
         <div style={{
           width: 0,
-          height: typeof height === "string" ? height : `${height as number}px`,
+          height: "100%",
+          minHeight: minH,
           borderLeft: "2px dashed #d1d5db",
         }} />
       </div>
@@ -2337,11 +2347,112 @@ function ListViewItemNode({ node, onAction }: { node: WidgetNode; onAction?: Wid
     return <TransportListView node={node} onAction={onAction} />;
   }
 
+  // Route items: render as a custom timeline row so we control all spacing
+  // and typography directly instead of fighting TextNode's 10px route-ctx
+  // wrapper. Layout: colored pin dot + dashed rail on the left, city name +
+  // duration meta on top right, one-liner description wrapped on a new line.
+  if (routeCtx) {
+    let cityName: string | undefined;
+    const metaParts: string[] = [];
+    const descriptions: string[] = [];
+    let dotColor: string | undefined;
+    let hasConnector = false;
+
+    for (const c of filtered) {
+      if (c.type === "Col") {
+        for (const kid of (c.children ?? []) as WidgetNode[]) {
+          if (kid.type !== "Box") continue;
+          const isDot =
+            kid.radius === "full" &&
+            kid.size != null && (kid.size as number) <= 10;
+          if (isDot) {
+            dotColor = resolveBg(kid.background as string | undefined);
+          } else if (
+            kid.width != null && (kid.width as number) <= 3 && kid.height != null
+          ) {
+            hasConnector = true;
+          }
+        }
+      } else if (c.type === "Text") {
+        const v = (c.value as string | undefined) ?? "";
+        if (c.color === "secondary" || c.size === "xs") {
+          if (v) descriptions.push(v);
+        } else if (cityName === undefined) {
+          cityName = v;
+        } else if (v) {
+          metaParts.push(v);
+        }
+      }
+    }
+
+    const metaText = metaParts.join(" ");
+    const showConnector = hasConnector && !routeCtx.isLast;
+
+    return (
+      <div style={{
+        display: "flex", flexDirection: "row", alignItems: "stretch",
+        padding: "2px 0",
+      }}>
+        <div style={{
+          width: 16, display: "flex", flexDirection: "column",
+          alignItems: "center", flexShrink: 0,
+        }}>
+          <div style={{
+            marginTop: 6, width: 10, height: 10,
+            borderRadius: "50%",
+            background: dotColor ?? "#9ca3af",
+            flexShrink: 0,
+          }} />
+          {showConnector && (
+            <div style={{
+              flex: 1, width: 0, marginTop: 4, minHeight: 18,
+              borderLeft: "2px dashed #d1d5db",
+            }} />
+          )}
+        </div>
+        <div style={{
+          flex: 1, minWidth: 0,
+          paddingLeft: 10,
+          paddingBottom: routeCtx.isLast ? 0 : 12,
+          fontFamily: "'Inter', sans-serif",
+        }}>
+          <div style={{
+            display: "flex", alignItems: "baseline",
+            gap: 8, flexWrap: "wrap",
+          }}>
+            {cityName && (
+              <span style={{
+                fontSize: 14, fontWeight: 600, color: "#111827",
+                lineHeight: 1.3,
+              }}>
+                {cityName}
+              </span>
+            )}
+            {metaText && (
+              <span style={{
+                fontSize: 14, fontWeight: 600, color: "#111827",
+                lineHeight: 1.3,
+              }}>
+                {metaText}
+              </span>
+            )}
+          </div>
+          {descriptions.length > 0 && (
+            <div style={{
+              marginTop: 4, fontSize: 12, color: "#6B7280", lineHeight: 1.5,
+            }}>
+              {descriptions.join(" ")}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{
       display: "flex", flexDirection: "row",
-      alignItems: routeCtx ? "flex-start" : "center",
+      alignItems: "center",
       gap: node.gap != null ? `${(node.gap as number) * 4}px` : "8px",
       padding: "2px 0",
     }}>
@@ -2403,7 +2514,7 @@ function ListViewNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetR
   const isRoute = isRouteListView(children);
 
   return (
-    <div style={{ display: "inline-flex", flexDirection: "column", fontFamily: "'Inter', sans-serif" }}>
+    <div style={{ display: "inline-flex", flexDirection: "column", fontFamily: "'Inter', sans-serif",paddingLeft: isRoute ? 16 : 0 }}>
       {children.map((item, idx) => {
         const content = (
           <ListViewItemNode key={(item.key as string) ?? idx} node={item} onAction={onAction} />
