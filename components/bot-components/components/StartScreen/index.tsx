@@ -500,14 +500,16 @@ const TripCard: React.FC<TripCardProps> = ({ trip, delay, mounted, onSelect }) =
       onClick={() => onSelect(trip.prompt)}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="group relative overflow-hidden rounded-2xl flex-shrink-0 max-w-[180px] md:max-w-[240px] aspect-[240/244]"
+      className="group relative overflow-hidden rounded-2xl flex-shrink-0 w-[180px] md:w-[240px] aspect-[240/244]"
       style={{
-        transform: hovered ? "scale(1.03)" : "scale(1)",
+        transform: hovered ? "translate3d(0,-3px,0)" : "translate3d(0,0,0)",
         transition:
           "transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease",
         boxShadow: hovered
           ? "0 12px 32px rgba(0,0,0,0.18)"
           : "0 2px 8px rgba(0,0,0,0.08)",
+        WebkitBackfaceVisibility: "hidden",
+        backfaceVisibility: "hidden",
       }}
     >
       {!imgLoaded && (
@@ -521,8 +523,7 @@ const TripCard: React.FC<TripCardProps> = ({ trip, delay, mounted, onSelect }) =
         onError={() => setImgLoaded(true)}
         className="w-full h-full object-cover"
         style={{
-          transform: hovered ? "scale(1.06)" : "scale(1)",
-          transition: "transform 0.4s ease, opacity 0.3s ease",
+          transition: "opacity 0.3s ease",
           opacity: imgLoaded ? 1 : 0,
         }}
       />
@@ -532,6 +533,7 @@ const TripCard: React.FC<TripCardProps> = ({ trip, delay, mounted, onSelect }) =
           background: imgLoaded
             ? "linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.15) 55%, transparent 100%)"
             : "transparent",
+          pointerEvents: "none",
         }}
       />
       {imgLoaded && trip.tags && (
@@ -618,14 +620,16 @@ const TrendingCard: React.FC<TrendingCardProps> = ({
       onClick={() => onSelect(trip.prompt)}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="group relative overflow-hidden rounded-2xl flex-shrink-0 max-w-[180px] md:max-w-[240px] aspect-[240/244]"
+      className="group relative overflow-hidden rounded-2xl flex-shrink-0 w-[180px] md:w-[240px] aspect-[240/244]"
       style={{
-        transform: hovered ? "scale(1.03)" : "scale(1)",
+        transform: hovered ? "translate3d(0,-3px,0)" : "translate3d(0,0,0)",
         transition:
           "transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease",
         boxShadow: hovered
           ? "0 12px 32px rgba(0,0,0,0.18)"
           : "0 2px 8px rgba(0,0,0,0.08)",
+        WebkitBackfaceVisibility: "hidden",
+        backfaceVisibility: "hidden",
       }}
     >
       {!imgLoaded && (
@@ -639,8 +643,7 @@ const TrendingCard: React.FC<TrendingCardProps> = ({
         onError={() => setImgLoaded(true)}
         className="w-full h-full object-cover"
         style={{
-          transform: hovered ? "scale(1.06)" : "scale(1)",
-          transition: "transform 0.4s ease, opacity 0.3s ease",
+          transition: "opacity 0.3s ease",
           opacity: imgLoaded ? 1 : 0,
         }}
       />
@@ -650,6 +653,7 @@ const TrendingCard: React.FC<TrendingCardProps> = ({
           background: imgLoaded
             ? "linear-gradient(to top, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.1) 60%, transparent 100%)"
             : "transparent",
+          pointerEvents: "none",
         }}
       />
 
