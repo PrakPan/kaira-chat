@@ -2599,7 +2599,8 @@ Start Location: ${details.startLocation}`;
                   "P1",
                   [],
                 );
-                setShowConfirmModal(true);
+                chatSendMessageRef.current?.("Yes, I confirm the Itinerary");
+                if (isMobile) mobileTabSwitchRef.current?.("chat");
               }}
               onViewCart={() => {
                 if(!authToken) {
@@ -2892,7 +2893,8 @@ Start Location: ${details.startLocation}`;
                 "P1",
                 [],
               );
-              setShowConfirmModal(true);
+              chatSendMessageRef.current?.("Yes, I confirm the Itinerary");
+              if (isMobile) mobileTabSwitchRef.current?.("chat");
             },
             onViewCart: () => {
               if(!authToken) {

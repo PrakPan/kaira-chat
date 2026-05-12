@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
 import { useChat, generateSessionId, getPlatform, type UserLocationData, type MessageAttachment, Message } from "../hooks/useChat";
-import { MessageBubble } from "./MessageBubble";
+import { MessageBubble, isButtonOnlyWidget } from "./MessageBubble";
 import { MessageInputBox } from "./MessageInputBox";
 import { CHATKIT_API_DOMAIN_KEY as CHATKIT_DOMAIN_KEY } from "../lib/chatkitConfig";
 import type { Location, BotMode } from "../types";
@@ -2340,6 +2340,32 @@ const handleShowLogin = useCallback(() => {
                       );
                     }
                   : undefined;
+
+              // A single bot turn streams as one text message + N widget
+              // messages back-to-back. Show feedback on the LAST feedback-
+              // eligible message in the run so the turn gets a single thumbs
+              // row at the bottom. Button-only widgets (e.g. "Confirm This
+              // Route") suppress their own feedback in MessageBubble, so
+              // skip past them when locating the eligible tail — otherwise
+              // the whole turn ends up with no feedback at all.
+              let hideFeedback = false;
+              if (msg.role === "assistant") {
+                for (let j = idx + 1; j < messages.length; j++) {
+                  const later = messages[j];
+                  if (later.role !== "assistant") break;
+                  const eligible =
+                    later.type === "widget"
+                      ? later.widgetItem
+                        ? !isButtonOnlyWidget(later.widgetItem.widget)
+                        : false
+                      : true;
+                  if (eligible) {
+                    hideFeedback = true;
+                    break;
+                  }
+                }
+              }
+
               return (
               <MessageBubble
                 key={msg.id}
@@ -2350,7 +2376,7 @@ const handleShowLogin = useCallback(() => {
                 }
                 feedback={feedbackByMessageId[msg.id] ?? null}
                 feedbackLoading={feedbackLoadingIds.has(msg.id)}
-                onFeedback={handleFeedback}
+                onFeedback={hideFeedback ? undefined : handleFeedback}
                 onRetry={onRetry}
                 onWidgetAction={(action) => {
                   // Freeze this widget's CTAs the moment the user clicks one,
