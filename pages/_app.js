@@ -160,13 +160,13 @@ function MyApp({ Component, pageProps }) {
 
       {/* Jupiter Analytics */}
       <Script
-        src="https://dev.jupiter.tarzanway.com/jupiter.js"
+        src="https://jupiter.tarzanway.com/jupiter.js"
         strategy="afterInteractive"
       />
       <Script strategy="afterInteractive">
         {`
           if(window.JupiterAnalytics){
-            window.JupiterAnalytics.init({ siteId: 'tarzanway-web', apiHost: 'https://dev.jupiter.tarzanway.com' });
+            window.JupiterAnalytics.init({ siteId: 'tarzanway-web', apiHost: 'https://jupiter.tarzanway.com' });
           }
         `}
       </Script>
@@ -179,7 +179,7 @@ function MyApp({ Component, pageProps }) {
           <ClarityInit />
           <Theme>
             <JupyterAnalytics
-              apiEndpoint="https://dev.jupiter.tarzanway.com"
+              apiEndpoint="https://jupiter.tarzanway.com"
               userId={id || null}
               batchSize={10}
               flushInterval={3000}
