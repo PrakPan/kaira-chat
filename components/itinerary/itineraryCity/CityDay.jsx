@@ -320,7 +320,6 @@ const handleItemClick = (item) => {
     {
       pathname: window.location.pathname,
       query: {
-        ...router.query,
         drawer: "showPoiDetail",
         poi_id: itemId,
         type: resolvedType,
