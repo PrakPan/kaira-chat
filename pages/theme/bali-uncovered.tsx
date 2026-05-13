@@ -45,7 +45,7 @@ const baliThemeConfig: ThemeConfig = {
       cards: [
         {
           image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/UbudR1.jpg",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/Ubud -- Temples and Rice Fields.jpg ",
           label: "Ubud — Temples and Rice Fields",
           tags: "Culture · Central Bali",
           description: "The Bali everyone pictures.",
@@ -54,7 +54,7 @@ const baliThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/SeminyakR1.jpg",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/Seminyak -- Beach Clubs and Sunset.jpg ",
           label: "Seminyak — Beach Clubs and Sunset",
           tags: "Beach · West Bali",
           description: "Sunsets, cocktails, and beach days.",
@@ -63,7 +63,7 @@ const baliThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/CangguR1.jpg",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/Canggu — Surf, Cafes, Slow Bali Days.jpg ",
           label: "Canggu — Surf, Cafes, Slow Bali Days",
           tags: "Surf · Lifestyle",
           description: "Coffee at 8. Surf at 9.",
@@ -72,7 +72,7 @@ const baliThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/UluwatuR1.jpg",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/Uluwatu — Clifftop Sunsets and Surf.jpg ",
           label: "Uluwatu — Clifftop Sunsets and Surf",
           tags: "Scenic · South Bali",
           description: "The sunset nobody forgets.",
@@ -81,13 +81,14 @@ const baliThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/NusaPenidaR1.jpg",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/Nusa Penida -- Day Trip Done Right.jpg ",
           label: "Nusa Penida — Day Trip Done Right",
           tags: "Scenic · Island",
           description: "The views are worth the chaos.",
           prompt:
             "I want to do a Nusa Penida day trip from Bali properly. Build the full day with fast boat timing, Kelingking viewpoint strategy, and how to fit Broken Beach and Angel's Billabong without rushing. Explain road conditions, scooter vs driver options, total cost per person, and whether it fits well into a 7-night Bali itinerary.",
         },
+        
       ],
     },
     row2: {
@@ -96,7 +97,7 @@ const baliThemeConfig: ThemeConfig = {
       cards: [
         {
           image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/NyepiR2.jpg",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/Nyepi -- Bali Day of Silence.jpg",
           label: "Nyepi — Bali Day of Silence",
           sublabel: "March · plan around the silence day",
           description: "An entire island goes silent.",
@@ -105,7 +106,7 @@ const baliThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/GalunganR2.jpg",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/Galungan — Bali’s Most Sacred Festival.jpg ",
           label: "Galungan — Bali's Most Sacred Festival",
           sublabel: "Balinese calendar · every 210 days",
           description: "Bali covered in bamboo offerings.",
@@ -114,7 +115,7 @@ const baliThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/SurfSeasonR2.jpg",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/Surf Season — Bali’s Best Waves.jpg",
           label: "Surf Season — Bali's Best Waves",
           sublabel: "May to September · dry season",
           description: "Clean waves, warm water, all day in the ocean.",
@@ -123,7 +124,7 @@ const baliThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/ArtsFestivalR2.jpg",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/Bali Arts Festival — Culture Month in Denpasar.png ",
           label: "Bali Arts Festival — Culture Month in Denpasar",
           sublabel: "June to July · month-long festival",
           description: "A month of dance and music.",
@@ -132,7 +133,7 @@ const baliThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/NovemberR2.jpg",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/Bali in Shoulder Season -- November.jpg ",
           label: "Bali in Shoulder Season — November",
           sublabel: "Softer prices, fewer crowds",
           description: "Lush green Bali, fewer crowds, softer prices.",
@@ -147,7 +148,7 @@ const baliThemeConfig: ThemeConfig = {
       cards: [
         {
           image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/FirstTimeR3.jpg",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/First Time in Bali.jpg",
           label: "First Time in Bali",
           sublabel: "All Areas · First Timer",
           description: "The Bali trip everyone imagines.",
@@ -156,7 +157,7 @@ const baliThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/BaliKidsR3.jpg",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/Bali With Kids.png",
           label: "Bali With Kids",
           sublabel: "Family · All Ages",
           description: "Relaxed Bali days that work for everyone.",
@@ -165,7 +166,7 @@ const baliThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/HoneymoonR3.jpg",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/Bali Honeymoon.jpg",
           label: "Bali Honeymoon",
           sublabel: "Romantic · Luxury",
           description: "Private villas and slow sunsets.",
@@ -174,7 +175,7 @@ const baliThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/WellnessR3.jpg",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/Bali for Wellness and Yoga.jpg",
           label: "Bali for Wellness and Yoga",
           sublabel: "Wellness · Ubud",
           description: "Retreat, reset, actually rest.",
@@ -183,7 +184,7 @@ const baliThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/BaliLombokR3.jpg",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/Bali and Lombok -- Two Islands.jpg ",
           label: "Bali and Lombok — Two Islands",
           sublabel: "Both Islands · Beach",
           description: "Bali for culture. Lombok for quiet.",
@@ -198,7 +199,7 @@ const baliThemeConfig: ThemeConfig = {
       cards: [
         {
           image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/TegallalangR4.jpg",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/Tegallalang Before the Crowds.jpg ",
           label: "Tegallalang Before the Crowds",
           tags: "Nature · Ubud",
           description: "The quiet side of Bali.",
@@ -207,7 +208,7 @@ const baliThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/CookingClassR4.jpg",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/The Cooking Class Worth Doing.jpg ",
           label: "The Cooking Class Worth Doing",
           tags: "Food · Ubud",
           description: "Learn real Balinese cooking.",
@@ -216,7 +217,7 @@ const baliThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/MountBaturR4.jpg",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/Mount Batur at Sunrise.jpg ",
           label: "Mount Batur at Sunrise",
           tags: "Trekking · North Bali",
           description: "Bali's most famous sunrise trek.",
@@ -225,7 +226,7 @@ const baliThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/KecakR4.jpg",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/Uluwatu’s Kecak Fire Dance.jpg ",
           label: "Uluwatu's Kecak Fire Dance",
           tags: "Culture · Uluwatu",
           description: "The performance everyone remembers.",
@@ -234,7 +235,7 @@ const baliThemeConfig: ThemeConfig = {
         },
         {
           image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/PrivateVillaR4.jpg",
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/Private Villas in Bali — Worth It_.jpg ",
           label: "Private Villas in Bali — Worth It?",
           tags: "Villas · Luxury Stay",
           description: "Your own pool changes the trip.",
