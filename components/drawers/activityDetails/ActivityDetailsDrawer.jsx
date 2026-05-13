@@ -211,6 +211,11 @@ const ActivityDetailsDrawer = (props) => {
               user_ratings_total: res?.data?.activity?.user_ratings_total,
               start_time: formatTime(res?.data?.check_in?.split(" ")?.[1]) || null,
               end_time: formatTime(res?.data?.check_out?.split(" ")?.[1]) || null,
+              // Carry the picker's time-of-day onto the slab element so
+              // CityDay.jsx's getTimeOfDay(item.time) buckets the new item
+              // into the slot the user actually chose. Prefer the API's
+              // value if it returned one.
+              time: res?.data?.time || data?.time || requestData?.time || null,
             };
 
             const updatedDayByDay = city?.day_by_day?.map((day) => {
