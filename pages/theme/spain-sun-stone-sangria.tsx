@@ -37,8 +37,8 @@ const spainThemeConfig: ThemeConfig = {
       },
     ],
   },
-  rows: {
-    row1: {
+  rows: [
+    {
       heading: "From Gaudí to the Alhambra",
       icon: "🏛️",
       cards: [
@@ -85,7 +85,7 @@ const spainThemeConfig: ThemeConfig = {
         },
       ],
     },
-    row2: {
+    {
       heading: "Spain Right Now",
       icon: "🎉",
       cards: [
@@ -131,7 +131,7 @@ const spainThemeConfig: ThemeConfig = {
         },
       ],
     },
-    row3: {
+    {
       heading: "TTW's Spain Themes",
       icon: "🎯",
       cards: [
@@ -177,7 +177,7 @@ const spainThemeConfig: ThemeConfig = {
         },
       ],
     },
-    row4: {
+    {
       heading: "Only in Spain — Experiences Worth Flying For",
       icon: "✨",
       cards: [
@@ -223,7 +223,7 @@ const spainThemeConfig: ThemeConfig = {
         },
       ],
     },
-  },
+  ],
   travellerStories: spainTravellerStories,
 };
 

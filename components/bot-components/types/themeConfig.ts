@@ -47,11 +47,6 @@ export interface ThemeConfig {
     subtitle?: string;
     promptChips?: ThemePromptChip[];
   };
-  rows?: {
-    row1?: ThemeRow<ThemeTripCard>;
-    row2?: ThemeRow<ThemeTrendingCard>;
-    row3?: ThemeRow<ThemeTrendingCard>;
-    row4?: ThemeRow<ThemeTripCard>;
-  };
+  rows?: ThemeRow<ThemeTripCard | ThemeTrendingCard>[];
   travellerStories?: ThemeTravellerStory[];
 }

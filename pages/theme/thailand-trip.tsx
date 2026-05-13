@@ -37,8 +37,8 @@ const thailandThemeConfig: ThemeConfig = {
       },
     ],
   },
-  rows: {
-    row1: {
+  rows: [
+    {
       heading: "From Bangkok to the Islands",
       icon: "🌴",
       cards: [
@@ -89,7 +89,7 @@ const thailandThemeConfig: ThemeConfig = {
         },
       ],
     },
-    row2: {
+    {
       heading: "Thailand Right Now",
       icon: "🎉",
       cards: [
@@ -140,7 +140,7 @@ const thailandThemeConfig: ThemeConfig = {
         },
       ],
     },
-    row3: {
+    {
       heading: "TTW's Thailand Themes",
       icon: "🎯",
       cards: [
@@ -191,7 +191,7 @@ const thailandThemeConfig: ThemeConfig = {
         },
       ],
     },
-    row4: {
+    {
       heading: "Only in Thailand — Experiences Worth Flying For",
       icon: "✨",
       cards: [
@@ -242,7 +242,7 @@ const thailandThemeConfig: ThemeConfig = {
         },
       ],
     },
-  },
+  ],
   travellerStories: thailandTravellerStories,
 };
 

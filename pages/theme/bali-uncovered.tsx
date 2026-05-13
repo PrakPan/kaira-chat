@@ -38,8 +38,8 @@ const baliThemeConfig: ThemeConfig = {
       },
     ],
   },
-  rows: {
-    row1: {
+  rows: [
+    {
       heading: "From Ubud to the Sea",
       icon: "🌾",
       cards: [
@@ -91,7 +91,7 @@ const baliThemeConfig: ThemeConfig = {
         
       ],
     },
-    row2: {
+    {
       heading: "Bali Right Now",
       icon: "🎐",
       cards: [
@@ -142,7 +142,7 @@ const baliThemeConfig: ThemeConfig = {
         },
       ],
     },
-    row3: {
+    {
       heading: "TTW's Bali Themes",
       icon: "🎯",
       cards: [
@@ -193,7 +193,7 @@ const baliThemeConfig: ThemeConfig = {
         },
       ],
     },
-    row4: {
+    {
       heading: "Only in Bali — Experiences Worth Flying For",
       icon: "✨",
       cards: [
@@ -244,7 +244,7 @@ const baliThemeConfig: ThemeConfig = {
         },
       ],
     },
-  },
+  ],
   travellerStories: baliTravellerStories,
 };
 
