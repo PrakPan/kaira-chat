@@ -240,6 +240,7 @@ export default function VisaDetailDrawer({ show, visa, onHide, onBooked, onAdded
                   className="flex items-center gap-2 text-[13px] text-[#01202B] font-500 underline mb-4"
                 >
                   📄 Download Visa Checklist
+                  
                 </a>
               )}
 
