@@ -199,7 +199,7 @@ const Pax = (props) => {
                   <button
                     onClick={handleAddRoom}
                     className="text-[#3A85FC] font-inter text-[14px] font-normal leading-[22px] underline"
-                    disabled={rooms.length >= 8}
+                    disabled={rooms.length >= 8 && !props?.maxRooms}
                   >
                     + Add Room
                   </button>
