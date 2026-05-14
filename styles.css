@@ -10,10 +10,6 @@ html, body {
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif !important;
 }
 
-* {
-  font-family: inherit !important;
-}
-
 .fa, .glyphicon {
   font-family: initial !important;
 }

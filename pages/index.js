@@ -148,8 +148,8 @@ const Home = ({ token, hotLocationSearch, checkAuthState, setHotLocationSearch }
         <LuxuryEuropeDestinations />
         <WhereNextSection />
         <JourneySimplified />
-        <PartnersSection />
-        <TestimonialCarousel />
+        {/* <PartnersSection />
+        <TestimonialCarousel /> */}
         {/* <FaqSection /> */}
         <CtaBoardingSection />
       </div>
