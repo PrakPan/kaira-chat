@@ -1,6 +1,5 @@
 import React, {
   useEffect,
-  useMemo,
   useRef,
   useState,
   useCallback,
@@ -355,19 +354,6 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
       );
   };
 
-  // Display phone (mask for OTP screen)
-  const maskedPhone = useMemo(() => {
-    const p = phone.trim();
-    if (!p) return "";
-    if (p.length < 6) return p;
-    const visibleHead = p.slice(0, p.length - 4 - 0);
-    const tail = p.slice(-4);
-    const maskBody = "X".repeat(Math.max(0, p.length - visibleHead.length - 4));
-    return `${visibleHead.slice(0, p.length - 6)}${visibleHead
-      .slice(p.length - 6)
-      .replace(/\d/g, "X")}${tail}`;
-  }, [phone]);
-
   if (!props.show) return null;
 
   // ── DESIGN BLOCKS ──
@@ -608,6 +594,7 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
 
         {openCountryCodeOption && (
           <div
+            className="botLoginCountryDropdown"
             style={{
               position: "absolute",
               top: "100%",
@@ -844,7 +831,7 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
         <span>
           OTP sent to{" "}
           <strong style={{ color: COLORS.navy }}>
-            {maskedPhone || phone}
+            {phone}
           </strong>
         </span>
         <span
@@ -1368,6 +1355,18 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
         }
         .otpBoxNew:focus {
           border-color: ${COLORS.navy};
+        }
+        .botLoginCountryDropdown [data-country-dropdown="true"] {
+          position: absolute !important;
+          top: 100% !important;
+          left: 0 !important;
+          right: auto !important;
+          bottom: auto !important;
+          transform: none !important;
+          width: min(320px, 90vw) !important;
+          height: auto !important;
+          max-height: 320px !important;
+          margin-top: 4px !important;
         }
       `}</style>
 
