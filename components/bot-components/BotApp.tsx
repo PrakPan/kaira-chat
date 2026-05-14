@@ -58,6 +58,7 @@ import { currencySymbols } from "../../data/currencySymbols";
 import { useAnalytics } from "../../hooks/useAnalytics";
 import Login from "../modals/Login";
 import { FiMap, FiNavigation, FiCalendar, FiBookmark } from "react-icons/fi";
+import { tr } from "date-fns/locale";
 
 type MobilePanel = "map" | "chat" | "itinerary";
 type LeftPanelMode = "default" | "itinerary-loading" | "itinerary-ready";
@@ -3002,6 +3003,7 @@ Start Location: ${details.startLocation}`;
               isHotelsPresent={isHotelsPresent}
               handleApply={settingsHandleApply}
               maxAdults={true}
+              maxRooms={true}
             />
           </BottomModal>
         ) : (
@@ -3011,6 +3013,7 @@ Start Location: ${details.startLocation}`;
               isHotelsPresent={isHotelsPresent}
               handleApply={settingsHandleApply}
               maxAdults={true}
+              maxRooms={true}
             />
           </ModalWithBackdrop>
         );
