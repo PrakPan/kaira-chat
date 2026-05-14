@@ -64,7 +64,7 @@ const kairaHoneymoonThemeConfig: ThemeConfig = {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/honeymoon-theme-2026/Amalfi Coast, Italy — Clifftop Villages and Sea Drives.jpg ",
           label: "Amalfi Coast, Italy — Clifftop Villages and Sea Drives",
-          tags: "Romantic · Heritage · Very Popular",
+          tags: "Romantic · Heritage",
           description: "The drive alone will change you.",
           prompt:
             "I want to plan an Amalfi Coast honeymoon that feels smooth and romantic rather than stressful. Build the ideal split between Positano, Ravello, and Amalfi, including whether a private boat day is worth it, the best sea-view restaurants, and whether to add Naples or Rome before or after.",
@@ -73,7 +73,7 @@ const kairaHoneymoonThemeConfig: ThemeConfig = {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/honeymoon-theme-2026/Kyoto & Tokyo — Autumn Romance.jpg ",
           label: "Japan — Kyoto and Tokyo in Autumn",
-          tags: "Heritage · Art and Culture · Very Popular",
+          tags: "Heritage · Art and Culture",
           description: "Romance under crimson leaves.",
           prompt:
             "I want to experience Japan in autumn without the trip feeling rushed or checklist-driven. Build a romantic itinerary covering Kyoto and Tokyo, including a ryokan stay, autumn foliage spots, Kyoto at dawn, and how to make the shinkansen experience feel easy and seamless.",
@@ -82,7 +82,7 @@ const kairaHoneymoonThemeConfig: ThemeConfig = {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/honeymoon-theme-2026/Maldives — The Overwater Villa Fantasy.jpg ",
           label: "Maldives — Beyond the Instagram Honeymoon",
-          tags: "Luxury · Beach · Tropical Paradise",
+          tags: "Luxury · Beach",
           description: "A private island, just for two.",
           prompt:
             "I want to understand what a Maldives honeymoon actually feels like beyond the Instagram photos. Explain the real difference between budget, mid-range, and luxury villas, which atolls offer the best value, and build the ideal stay with snorkelling, spa time, sandbanks, and sunset experiences.",
@@ -97,7 +97,7 @@ const kairaHoneymoonThemeConfig: ThemeConfig = {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/honeymoon-theme-2026/Rajasthan — Palaces, Deserts and Royal Nights.jpg ",
           label: "Rajasthan — Palaces, Deserts and Royal Nights",
-          tags: "Heritage · Luxury · Iconic",
+          tags: "Heritage · Luxury",
           description: "Sleep where the maharajas slept.",
           prompt:
             "I want a Rajasthan honeymoon that feels royal rather than touristy. Build an 8-night itinerary across Udaipur, Jodhpur, and Jaisalmer with the right palace stays, desert experiences, romantic dinners, and the smoothest way to travel between cities.",
@@ -106,7 +106,7 @@ const kairaHoneymoonThemeConfig: ThemeConfig = {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/honeymoon-theme-2026/Kerala — Backwaters, Tea Hills and a Private Houseboat.jpg ",
           label: "Kerala — Backwaters, and a Private Houseboat",
-          tags: "Nature · Romantic · Scenic",
+          tags: "Nature · Romantic",
           description: "Your own boat. Your own pace.",
           prompt:
             "I want a Kerala honeymoon covering the backwaters, Munnar, and a beach escape. Build a romantic 7-night itinerary with the right houseboat experience, scenic stays, the best route through Kerala, and what kind of budget actually makes the trip feel special.",
@@ -115,7 +115,7 @@ const kairaHoneymoonThemeConfig: ThemeConfig = {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/honeymoon-theme-2026/Andaman Islands — Private Beaches and Still Blue Water.jpg ",
           label: "Andaman Islands — Private Beaches and Still Blue Water",
-          tags: "Beach · Tropical · Hidden Gem",
+          tags: "Beach · Tropical",
           description: "The kind of blue you don't believe is real.",
           prompt:
             "I want to plan an Andaman honeymoon beyond the usual Port Blair itinerary. Build a 7-night trip around Havelock and Neil Island with the best beach areas, romantic resorts, island experiences worth doing, and the easiest way to travel between islands.",
@@ -148,7 +148,7 @@ const kairaHoneymoonThemeConfig: ThemeConfig = {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/honeymoon-theme-2026/Bali — Beyond the Honeymoon Clichés.jpg ",
           label: "Bali — Beyond the Honeymoon Clichés",
-          tags: "Romance · Luxury · Beaches",
+          tags: "Romance · Luxury",
           description: "Amazing stays and unforgettable evenings.",
           prompt:
             "I want a romantic Bali trip that feels personal rather than touristy. Build a 7-day itinerary with private villas, jungle stays, beach sunsets, spa experiences, and the best areas in Bali for couples.",
@@ -217,7 +217,7 @@ const kairaHoneymoonThemeConfig: ThemeConfig = {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/honeymoon-theme-2026/Malaysia — Langkawi and Kuala Lumpur.jpg ",
           label: "Malaysia — Langkawi and Kuala Lumpur",
-          tags: "Beach · Southeast Asia · Diverse",
+          tags: "Beach · Southeast Asia",
           description: "Rainforest, beach, and city lights in one trip.",
           prompt:
             "I want to combine Langkawi and Kuala Lumpur for a romantic honeymoon. Build an 8-night itinerary with the best beaches, city experiences, rooftop dining, and whether Malaysia works best as a standalone trip or part of Southeast Asia.",
@@ -226,7 +226,7 @@ const kairaHoneymoonThemeConfig: ThemeConfig = {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/honeymoon-theme-2026/Spain — Barcelona and Andalusia.jpg ",
           label: "Spain — Barcelona and Andalusia",
-          tags: "Culture · Beach · Romantic",
+          tags: "Culture · Beach",
           description: "Flamenco nights and golden Spanish streets.",
           prompt:
             "I want to plan a romantic Spain honeymoon across Barcelona and Andalusia. Build the ideal route with beautiful stays, flamenco evenings, authentic tapas spots, and the experiences that make southern Spain feel magical.",
@@ -235,7 +235,7 @@ const kairaHoneymoonThemeConfig: ThemeConfig = {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/honeymoon-theme-2026/Australia — Sydney and the South.jpg ",
           label: "Australia — Sydney and the South",
-          tags: "Luxury · Adventure · Very Popular",
+          tags: "Luxury · Adventure",
           description: "Harbour sunsets and wine country escapes.",
           prompt:
             "I want to plan an Australia honeymoon covering Sydney and a scenic southern escape. Build a romantic itinerary with harbour experiences, coastal drives or wine regions, the best spring season, and the right balance between luxury and adventure.",
@@ -259,7 +259,7 @@ const kairaHoneymoonThemeConfig: ThemeConfig = {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/honeymoon-theme-2026/Ryokan Stay in Kyoto — The Full Experience.jpg ",
           label: "Ryokan Stay in Kyoto — The Full Experience",
-          tags: "Cultural · Japan · Hidden Gem",
+          tags: "Cultural · Japan",
           description: "An inn that turns sleep into ceremony.",
           prompt:
             "I want to experience a traditional ryokan stay in Kyoto for our honeymoon. Help us choose the right ryokan, understand the onsen and kaiseki experience, and decide whether one or two nights is worth it.",
@@ -268,7 +268,7 @@ const kairaHoneymoonThemeConfig: ThemeConfig = {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/honeymoon-theme-2026/Bioluminescent Plankton Night — Maldives.png ",
           label: "Bioluminescent Plankton Night — Maldives",
-          tags: "Maldives · Night · Nature and Wildlife",
+          tags: "Maldives · Night",
           description: "The ocean glows under your feet at midnight.",
           prompt:
             "I want to experience the glowing bioluminescent beaches in the Maldives on our honeymoon. Tell me the best islands and season for it, plus how to combine it with snorkelling, sandbanks, and an overwater villa stay.",
@@ -277,7 +277,7 @@ const kairaHoneymoonThemeConfig: ThemeConfig = {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/honeymoon-theme-2026/Private Desert Dinner Under the Stars — Rajasthan.png ",
           label: "Private Desert Dinner Under the Stars — Rajasthan",
-          tags: "India · Heritage · Romantic",
+          tags: "India · Heritage",
           description: "A royal table in the middle of nowhere.",
           prompt:
             "I want a romantic private dinner in the Thar Desert with lanterns, music, and stargazing. Tell me the best setup in Rajasthan, whether to base ourselves in Jaisalmer or Jodhpur, and how to build the honeymoon around it.",
@@ -286,7 +286,7 @@ const kairaHoneymoonThemeConfig: ThemeConfig = {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/honeymoon-theme-2026/Catamaran Sunset Cruise — Santorini Caldera.png ",
           label: "Catamaran Sunset Cruise — Santorini Caldera",
-          tags: "Romantic · Adventure and Outdoors",
+          tags: "Romantic · Scenic",
           description: "The water reflects gold. So does everything else.",
           prompt:
             "I want to do a Santorini catamaran sunset cruise properly. Explain the difference between private and group cruises, the best caldera route, and how to combine the sailing experience with the famous Oia sunset.",
