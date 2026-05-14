@@ -21,7 +21,7 @@ export const useUserLocation = (
           setMapState({
             lat: userLoc.lat,
             lng: userLoc.lng,
-            zoom: 13,
+            zoom: 4,
           });
           setIsLoadingLocation(false);
           return;
@@ -50,7 +50,7 @@ export const useUserLocation = (
           setMapState({
             lat: locationData.latitude,
             lng: locationData.longitude,
-            zoom: 13,
+            zoom: 4,
           });
         }
       } catch (error) {
@@ -64,7 +64,7 @@ export const useUserLocation = (
           setMapState({
             lat: userLoc.lat,
             lng: userLoc.lng,
-            zoom: 13,
+            zoom: 4,
           });
         }
       } finally {

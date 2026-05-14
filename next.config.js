@@ -11,10 +11,14 @@ const nextConfig = {
 
   images: {
     unoptimized: true,
-    domains:[''],
+    // domains:[''],
     remotePatterns: [
       {
         protocol: "https",
+        hostname: "d31aoa0ehgvjdi.cloudfront.net",
+      },
+      {
+        protocol: "http",
         hostname: "d31aoa0ehgvjdi.cloudfront.net",
       },
       {
@@ -41,14 +45,6 @@ const nextConfig = {
         protocol:"https",
         hostname:"maps.googleapis.com"
       },
-      {
-      protocol: "https",
-      hostname: "**",
-    },
-    {
-      protocol: "http",
-      hostname: "**",
-    },
     ],
   },
 

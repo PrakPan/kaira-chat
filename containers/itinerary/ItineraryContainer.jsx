@@ -32,6 +32,7 @@ import axiosPaymentInstance, {
 import axiosBookingsInstance, {
   axiosGetAllStays,
   axiosGetTransfers,
+  axiosGetAncillaryBookings,
 } from "../../services/itinerary/bookings";
 import { setTransfersBookings } from "../../store/actions/transferBookingsStore";
 import { setStays } from "../../store/actions/StayBookings";
@@ -51,15 +52,20 @@ import BottomModal from "../../components/ui/LowerModal";
 import ModalWithBackdrop from "../../components/ui/ModalWithBackdrop";
 import useMediaQuery from "../../components/media";
 import { setCloneItineraryDrawer } from "../../store/actions/cloneItinerary";
+import { set } from "nprogress";
+import { setGalleryImages } from "../../store/actions/galleryImages";
+import { setAncillaryBookings } from "../../store/actions/ancillaryBookings";
 
 const Container = styled.div`
   width: 100%;
   padding: 17px 16px 0 16px;
   max-width: 100vw;
+  background-color: white;
+
   @media screen and (min-width: 768px) {
-    width: 95%;
-    margin: -5vh auto 0 3.5rem; !important
-    padding: 0;
+    width: ${props => props.fromChat ? '100%' : '95%'};
+    margin: ${props => props.fromChat ? '0' : '-0.2vh auto 0 1rem'};
+    padding: ${props => props.fromChat ? '0 0 80px 0' : '0'};
   }
   @media screen and (max-width: 639px) {
     overflow-x: hidden;
@@ -73,7 +79,7 @@ export const ItineraryStatusLoader = ({ displayText, isVisible }) => {
 
   return (
     <div className="">
-      <div className="bg-[#fefad8] border border-yellow-200 rounded-lg px-4 py-3 shadow-lg max-w-sm">
+      <div className="bg-[#fefad8] border border-yellow-200 rounded-lg px-4 py-3 shadow-lg w-full md:max-w-sm ">
         <div className="flex items-center gap-3">
           {/* Rotating Hourglass Timer Icon */}
           <div className="flex-shrink-0">
@@ -220,10 +226,7 @@ const ItineraryContainer = (props) => {
   const phone = useSelector((state) => state.Auth)?.phone;
   const { id } = useSelector((state) => state.auth);
 
-  useEffect(() => {
-    const id = router.query.id;
-    dispatch(setItineraryId(id));
-  }, [router.query.id]);
+
 
   // Throttle function for performance optimization
   const throttle = (func, limit) => {
@@ -239,7 +242,7 @@ const ItineraryContainer = (props) => {
     };
   };
 
-  const [totalduration, setTotalduration] = useState(0);
+ const [totalduration, setTotalduration] = useState(0);
   const [itineraryReleased, setItineraryReleased] = useState(false);
   const [itineraryDate, setItineraryDate] = useState("");
   const [booking, setBooking] = useState(null);
@@ -272,35 +275,53 @@ const ItineraryContainer = (props) => {
   const [editRoute, setEditRoute] = useState(false);
   const [showMercuryItinerary, setShowMercuryItinerary] = useState(false);
   const [cities, setCities] = useState([]);
-  // const [cityTransferBookings, setCityTransferBookings] = useState(null);
   const [loadbookings, setLoadBookings] = useState(false);
   const [loadpricing, setLoadPricing] = useState(false);
-  const cityTransferBookings = useSelector(
-    (state) => state.TransferBookings
-  )?.transferBookings;
-
   const [polling, setPolling] = useState(true);
   const [consecutiveErrors, setConsecutiveErrors] = useState(0);
   const [displayText, setDisplayText] = useState(null);
   const [oldOne, setOldOne] = useState(false);
-  const itinerarySuccessRef = useRef(false);
-  const pricingSuccessRef = useRef(false);
-  const transfersSuccessRef = useRef(false);
-  const hotelsSuccessRef = useRef(false);
   const [notes, setNotes] = useState(null);
   const [showNotesPopup, setShowNotesPopup] = useState(false);
   const [gallery, setGallery] = useState([]);
   const [isHotelsPresent, setIsHotelsPresent] = useState(true);
-  const { isOpen } = useSelector((state) => state.cloneItinerary);
   const [showSettings, setShowSettings] = useState(false);
 
-  useEffect(() => {
-    if (!router.isReady) return
+  // ── ALL useRef AFTER useState ─────────────────────────────────────────────
+  const itinerarySuccessRef = useRef(false);
+  const pricingSuccessRef = useRef(false);
+  const transfersSuccessRef = useRef(false);
+  const hotelsSuccessRef = useRef(false);
+  const fetchDataRef = useRef(null);
+  const instanceIdRef = useRef(0);
 
+   const cityTransferBookings = useSelector(
+    (state) => state.TransferBookings
+  )?.transferBookings;
+  const { isOpen } = useSelector((state) => state.cloneItinerary);
+  const Itinerary= useSelector(state=>state.Itinerary);
+
+  // ── craft-a-similar-trip query handler ────────────────────────────────────
+  useEffect(() => {
+    if (!router.isReady) return;
     if (router.query['craft-a-similar-trip'] === 'true') {
-      setShowSettings(true)
+      setShowSettings(true);
     }
-  }, [router.isReady, router.query])
+  }, [router.isReady, router.query]);
+
+    const resetRef = () => {
+    dispatch(setItineraryStatus("pricing_status", "PENDING"));
+    dispatch(setItineraryStatus("transfers_status", "PENDING"));
+    dispatch(setItineraryStatus("hotels_status", "PENDING"));
+    dispatch(setItineraryStatus("itinerary_status", "PENDING"));
+    dispatch(setStays([]));
+    dispatch(setTransfersBookings(null));
+    dispatch(setGalleryImages([]));
+    itinerarySuccessRef.current = false;
+    pricingSuccessRef.current = false;
+    transfersSuccessRef.current = false;
+    hotelsSuccessRef.current = false;
+  };
 
   const divideTravellers = (val) => {
     let distribution = [];
@@ -369,29 +390,28 @@ const ItineraryContainer = (props) => {
         `${MERCURY_HOST}/api/v1/itinerary/${props.id}/gallery/`
       );
       setGallery(response.data);
+      dispatch(setGalleryImages(response.data));
     } catch (err) {
       console.error("Error fetching gallery:", err);
     } finally {
     }
   };
 
-  const resetRef = () => {
-    dispatch(setItineraryStatus("pricing_status", "PENDING"));
-    dispatch(setItineraryStatus("transfers_status", "PENDING"));
-    dispatch(setItineraryStatus("hotels_status", "PENDING"));
-    dispatch(setItineraryStatus("itinerary_status", "PENDING"));
-    dispatch(setStays([]));
-    dispatch(setTransfersBookings(null));
-    itinerarySuccessRef.current = false;
-    pricingSuccessRef.current = false;
-    transfersSuccessRef.current = false;
-    hotelsSuccessRef.current = false;
-    
-  };
+  //   useEffect(() => {
+  //   if (props.skipPolling) return;
+  //   resetRef();
+  // }, []);
+
+
 
   useEffect(() => {
-    resetRef();
-  }, []);
+    if (!props.skipPolling) return;
+    setItineraryLoading(false);
+    setShowMercuryItinerary(true);
+    setCities(props.itinerary?.cities ?? []);
+  }, [props.skipPolling, props.itinerary?.cities]);
+
+
 
   function addDaysToDate(dateString, daysToAdd) {
     const date = new Date(dateString);
@@ -564,6 +584,17 @@ const ItineraryContainer = (props) => {
     }
   };
 
+  const getAncillaryBookings = async () => {
+    try {
+      const res = await axiosGetAncillaryBookings.get(
+        props.id + "/bookings/?booking_type=ancillary"
+      );
+      dispatch(setAncillaryBookings(res.data?.ancillary_bookings || []));
+    } catch (error) {
+      console.log("ERROR[AncillaryBookings][Itinerary]", error);
+    }
+  };
+
   const getPaymentInfo = async () => {
     let stay_data = {};
     let activity_data = {};
@@ -708,100 +739,112 @@ const ItineraryContainer = (props) => {
     return data;
   }
 
-  async function fetchData(poll) {
+  async function fetchData(poll, instanceId) {
+      const currentId = props.id || router.query.id;
+  if (!currentId || currentId === "draft" || currentId === "undefined") {
+    return;  
+  }
     if (TRAVELER_ITINERARIES.includes(props.id))
       setIsPastTravelerItinerary(true);
 
-    const fetchStatus = async () => {
-      try {
-        const res = await axiosGetItineraryStatus.get(`/${props.id}/status/`);
-        const status = res.data?.celery;
+const fetchStatus = async () => {
 
-        setDisplayText(status?.display_text || null);
-        setConsecutiveErrors(0);
+  if (instanceId !== undefined && instanceId !== instanceIdRef.current) return;
 
-        if (status?.PRICING === "FAILURE") {
-          dispatch(setItineraryStatus("pricing_status", "FAILURE"));
-          dispatch(setCurrency("INR"));
-        }
-        if (status?.TRANSFERS === "FAILURE") {
-          dispatch(setItineraryStatus("transfers_status", "FAILURE"));
-        }
-        if (status?.HOTELS === "FAILURE") {
-          dispatch(setItineraryStatus("hotels_status", "FAILURE"));
-        }
+  try {
 
-        const itineraryFailure = status?.ITINERARY === "FAILURE";
-        // const notPrepared = res.data?.status == "Not Prepared";
 
-        if (itineraryFailure) {
-          setPolling(false);
-          router.push("/thank-you");
-          return;
-        }
+    const res = await axiosGetItineraryStatus.get(`/${props.id}/status/`);
+    const status = res.data?.celery;
 
-        const allStatusesCompleted = [
-          "ITINERARY",
-          "TRANSFERS",
-          "PRICING",
-          "HOTELS",
-        ].every(
-          (key) => status?.[key] === "SUCCESS" || status?.[key] === "FAILURE"
-        );
+     if (instanceId !== undefined && instanceId !== instanceIdRef.current) return;
 
-        if (allStatusesCompleted) {
-          dispatch(setItineraryStatus("finalized_status", "SUCCESS"));
-          dispatch(setItineraryStatus("final_status", res?.data?.status));
-          ["ITINERARY", "TRANSFERS", "PRICING", "HOTELS"].forEach((key) => {
-            const statusValue = status?.[key];
-            const statusField = `${key.toLowerCase()}_status`;
-            dispatch(setItineraryStatus(statusField, statusValue));
-          });
-          if (props.id) {
-            fetchGallery();
-          }
+    setDisplayText(status?.display_text || null);
+    dispatch(setItineraryStatus("display_text", status?.display_text || null));
+    dispatch(setItineraryStatus("notes", status?.notes || []));
+    dispatch(setItineraryStatus("version", res.data?.version || null));
+    setConsecutiveErrors(0);
 
-          setPolling(false);
-          if (res.data?.celery?.notes && res.data.celery?.notes.length > 0) {
-            setNotes(res.data.celery.notes);
-            setShowNotesPopup(true);
-          }
-        } else {
-          setPolling(true);
-        }
-
-        fetchItinerary(
-          status?.ITINERARY,
-          status?.HOTELS,
-          status?.TRANSFERS,
-          status?.PRICING
-        );
-      } catch (err) {
-        console.error(
-          "[ERROR]: axiosGetItineraryStatus: ",
-          err.message,
-          err.response?.status
-        );
-
-        if (
-          err.response?.data?.errors?.[0]?.message?.[0]?.includes(
-            "Itinerary matching query does not exist"
-          )
-        ) {
-          setPolling(false);
-          setItineraryLoading(false);
-          setOldOne(true);
-
-          // router.push(`/itinerary/v1/${props.id}`);
-
-          return;
-        }
-
-        handleApiError();
-      }
+    // ── 2. Immediately dispatch real statuses so fetchItinerary sees them ────
+    // Note: hotels_status SUCCESS is deferred to getAllStays() so the UI doesn't
+    // render the "loaded" branch while state.Stays is still empty (the gap
+    // between polled SUCCESS and getAllStays completing was causing "+ Add Stay"
+    // CTAs to flicker and the changeHotelBooking drawer to fail to mount).
+    const statusMap = {
+      itinerary_status: status?.ITINERARY,
+      hotels_status:    status?.HOTELS,
+      transfers_status: status?.TRANSFERS,
+      pricing_status:   status?.PRICING,
     };
+    Object.entries(statusMap).forEach(([key, val]) => {
+      if (!val) return;
+      if (key === "hotels_status" && val === "SUCCESS") return;
+      dispatch(setItineraryStatus(key, val));
+    });
+    // ─────────────────────────────────────────────────────────────────────────
 
-    const fetchItinerary = async (itinerary, hotels, transfers, pricing) => {
+    const itineraryFailure = status?.ITINERARY === "FAILURE";
+    if (itineraryFailure) {
+      setPolling(false);
+      // Itinerary task failed — release the chat composer so the user
+      // can talk to Kaira again instead of being stuck behind the lock.
+      dispatch(setItineraryStatus("is_polling", false));
+      router.push("/thank-you");
+      return;
+    }
+
+    const allStatusesCompleted = ["ITINERARY", "TRANSFERS", "PRICING", "HOTELS"].every(
+      (key) => status?.[key] === "SUCCESS" || status?.[key] === "FAILURE"
+    );
+
+    if (allStatusesCompleted) {
+      dispatch(setItineraryStatus("finalized_status", "SUCCESS"));
+      dispatch(setItineraryStatus("final_status", res?.data?.status));
+      // Polling has fully resolved — unlock the chat composer.
+      dispatch(setItineraryStatus("is_polling", false));
+      if (props.id) fetchGallery();
+      setPolling(false);
+      if (res.data?.celery?.notes && res.data.celery?.notes.length > 0) {
+        setNotes(res.data.celery.notes);
+        setShowNotesPopup(true);
+      }
+    } else {
+      setPolling(true);
+    }
+
+    // The status endpoint's top-level `status` (e.g. "Finalized") is the
+    // source of truth — the itinerary GET can lag and still return "Draft".
+    // Pass it into fetchItinerary so the Itinerary dispatch uses it instead
+    // of the stale data.status.
+    fetchItinerary(
+      status?.ITINERARY,
+      status?.HOTELS,
+      status?.TRANSFERS,
+      status?.PRICING,
+      res?.data?.status
+    );
+  } catch (err) {
+    console.error("[ERROR]: axiosGetItineraryStatus: ", err.message, err.response?.status);
+
+    if (
+      err.response?.data?.errors?.[0]?.message?.[0]?.includes(
+        "Itinerary matching query does not exist"
+      )
+    ) {
+      setPolling(false);
+      setItineraryLoading(false);
+      // Falling back to the v1 itinerary view — release the chat lock so
+      // the composer doesn't stay disabled forever.
+      dispatch(setItineraryStatus("is_polling", false));
+      setOldOne(true);
+      return;
+    }
+
+    handleApiError();
+  }
+};
+
+    const fetchItinerary = async (itinerary, hotels, transfers, pricing, statusApiStatus) => {
       try {
         if (itinerary === "SUCCESS" && !itinerarySuccessRef.current) {
           if (true) window.scrollTo(0, 0);
@@ -818,10 +861,23 @@ const ItineraryContainer = (props) => {
             return;
           } else {
             setShowMercuryItinerary(true);
-            dispatch(setItineraryStatus("final_status", data?.status));
+            dispatch(setItineraryStatus("final_status", statusApiStatus || data?.status));
           }
 
-          dispatch(setItinerary(data));
+          // Status resolution priority:
+          //   1. Status API's top-level `status` (most authoritative).
+          //   2. Prior Redux status when it's not "Draft" (preserves a
+          //      finalized state that was set on the pre-refresh skeleton).
+          //   3. `data.status` from the itinerary GET (can lag as "Draft").
+          // Without (2), a status API response that omits `status` would let
+          // the itinerary GET's stale "Draft" overwrite a freshly preserved
+          // "Finalized", hiding Routes/Bookings tabs post-poll.
+          const priorStatus = props.itinerary?.status;
+          const resolvedStatus =
+            statusApiStatus ||
+            (priorStatus && priorStatus !== "Draft" ? priorStatus : null) ||
+            data?.status;
+          dispatch(setItinerary({ ...data, status: resolvedStatus }));
 
           // props.setItinerary(data);
           props.setItineraryDaybyDay(data);
@@ -832,6 +888,7 @@ const ItineraryContainer = (props) => {
           let activities = getItineraryActivities();
           props.setItineraryActivities(activities);
           setItineraryLoading(false);
+          getAncillaryBookings();
           // dispatch(setItineraryStatus("itinerary_status", "SUCCESS"));
         }
 
@@ -899,6 +956,8 @@ const ItineraryContainer = (props) => {
 
         if (newCount >= 2) {
           setPolling(false);
+          // Bailing out to /thank-you — release the chat composer lock.
+          dispatch(setItineraryStatus("is_polling", false));
           router.push("/thank-you");
         }
 
@@ -910,6 +969,60 @@ const ItineraryContainer = (props) => {
       fetchStatus();
     }
   }
+
+  fetchDataRef.current = fetchData;
+
+useEffect(() => {
+  const currentId = props.id;
+  if (!currentId || currentId === "draft" || currentId === "undefined") return;
+  if (props.skipPolling) return;
+
+  // Bump instance ID — any in-flight poll with a stale ID will bail out
+  const thisInstance = ++instanceIdRef.current;
+
+  // Reset refs
+  itinerarySuccessRef.current = false;
+  pricingSuccessRef.current = false;
+  transfersSuccessRef.current = false;
+  hotelsSuccessRef.current = false;
+
+  // Wipe redux ONCE here, not inside the poll loop
+  dispatch(setItineraryStatus("itinerary_status", "PENDING"));
+  dispatch(setItineraryStatus("hotels_status", "PENDING"));
+  dispatch(setItineraryStatus("transfers_status", "PENDING"));
+  dispatch(setItineraryStatus("pricing_status", "PENDING"));
+  dispatch(setItineraryStatus("finalized_status", "PENDING"));
+  dispatch(setStays([]));
+  dispatch(setTransfersBookings(null));
+  // dispatch(setItinerary({}));
+
+  setItineraryLoading(true);
+  // if (!props.fromChat) {
+  //   setShowMercuryItinerary(false);
+  // }
+  setPolling(true);
+  fetchDataRef.current?.(true, thisInstance);
+  // refetchCounter bumps when `refresh_itinerary` fires on an unchanged id —
+  // needed because neither `props.id` nor `skipPolling` change in that case,
+  // so without it the poll loop would never restart.
+}, [props.id, props.skipPolling, props.refetchCounter]);
+
+
+useEffect(() => {
+  if (props.skipPolling) return;
+  const currentId = props.id || router.query.id;
+  if (!currentId || currentId === "draft") return;
+
+  let interval;
+  if (polling) {
+    interval = setInterval(() => {
+      fetchDataRef.current?.(true, instanceIdRef.current); // ← pass current instance
+    }, 5000);
+  }
+  return () => clearInterval(interval);
+}, [polling, props.skipPolling, props.id]);
+
+
   useEffect(() => {
     const start = Date.now();
     const fetchPaymentInfo = async () => {
@@ -941,43 +1054,6 @@ const ItineraryContainer = (props) => {
   //   }
   // }, [props?.token]);
 
-  useEffect(() => {
-    fetchData(true);
-  }, [props.id]);
-
-  useEffect(() => {
-    let interval;
-
-    if (polling) {
-      fetchData(true);
-
-      interval = setInterval(() => {
-        const isAnyFailure =
-          itinerary_status === "FAILURE" ||
-          transfers_status === "FAILURE" ||
-          pricing_status === "FAILURE" ||
-          hotels_status === "FAILURE";
-
-        if (isAnyFailure) {
-          clearInterval(interval);
-          router.push("/thank-you");
-          return;
-        }
-
-        fetchData(true);
-      }, 5000);
-    } else {
-      clearInterval(interval);
-    }
-
-    return () => clearInterval(interval);
-  }, [
-    polling,
-    itinerary_status,
-    transfers_status,
-    pricing_status,
-    hotels_status,
-  ]);
 
   const _updateTransferBooking = (arr1, arr2) => {
     const combinedArray = [...arr1]; // Copy arr1 to avoid modifying the original array
@@ -1481,8 +1557,8 @@ const ItineraryContainer = (props) => {
     setShowPoiModal(false);
   };
 
-  if (itineraryLoading) {
-    return <Spinner></Spinner>;
+  if (itineraryLoading && !props.skipPolling && !props.fromChat) {
+    return <Spinner />;
   }
 
   const shouldShowLoader = () => {
@@ -1499,7 +1575,7 @@ const ItineraryContainer = (props) => {
     // return !allStatusesCompleted;
   };
 
-  const fetchItineraryStatus = async (itineraryId = router.query.id) => {
+  const fetchItineraryStatus = async (itineraryId = props?.id || router.query.id) => {
     try {
       const res = await axiosGetItineraryStatus.get(`/${itineraryId}/status/`);
       const status = res.data?.celery;
@@ -1533,7 +1609,7 @@ const ItineraryContainer = (props) => {
   if (oldOne) {
     return (
       <>
-        <ItineraryContainerOld id={router.query.id} />
+        <ItineraryContainerOld id={router.query.id} itinerary={Itinerary} />
       </>
     );
   }
@@ -1617,6 +1693,9 @@ const ItineraryContainer = (props) => {
         <div id="itinerary-anchor">
           <Menu
             mercuryItinerary
+            onSendMessage={props?.onSendMessage}
+            fromChat={props.fromChat}
+            activeTab={props.activeTab} 
             loadbookings={!loadbookings}
             resetRef={resetRef}
             loadpricing={!loadpricing}
@@ -1689,7 +1768,7 @@ const ItineraryContainer = (props) => {
             setEditRoute={setEditRoute}
             getPaymentInfo={getPaymentInfo}
             cities={cities}
-            itinerary={props?.itinerary}
+            itinerary={Itinerary}
             setStayBookings={setStayBookings}
             setActivityBookings={setActivityBookings}
             shouldShowLoader={shouldShowLoader}
@@ -1703,6 +1782,7 @@ const ItineraryContainer = (props) => {
             handlePaymentComponentClick={handlePaymentComponentClick}
             handleTransferComponentClick={handleTransferComponentClick}
             setShowSettings={setShowSettings}
+            showPins={props?.showPins}
           ></Menu>
         </div>
 
@@ -1743,7 +1823,7 @@ const ItineraryContainer = (props) => {
             />
           </BottomModal>
         ) : null}
-        <ToastContainer />
+        {!props.fromChat && <ToastContainer />}
       </Container>
   );
 };

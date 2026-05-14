@@ -304,7 +304,7 @@ const TaxiPickupDropItem = ({
         </span>
 
         {/* Only show info icon for middle cities when no bookings */}
-        {isPageWide && !firstCity && !lastCity  && (
+        {isPageWide   && (
           <div className="relative">
             <div
               className="w-4 h-4 rounded-full bg-white text-gray-400 flex items-center justify-center text-[14px] font-bold hover:bg-blue-700 transition-colors cursor-pointer"
@@ -316,7 +316,7 @@ const TaxiPickupDropItem = ({
 
             {showTooltip && !showClickTooltip && (
               <div
-                className="absolute left-0 md:left-6 top-1/2 transform -translate-y-1/2 bg-gray-900 text-white text-xs rounded-md px-3 py-2 shadow-xl border border-gray-600 whitespace-nowrap"
+                className="absolute left-0 md:left-6 top-1/2 transform -translate-y-1/2 bg-gray-900 text-white text-xs rounded-md px-3 py-2 shadow-xl border border-gray-600 whitespace-nowrap z-[9999]"
                 style={{ zIndex: 100 }}
                 onMouseEnter={handleTooltipMouseEnter}
                 onMouseLeave={handleTooltipMouseLeave}
@@ -1049,14 +1049,32 @@ const CityItem = ({
   bookingIdToDelete,
   pinColour,
   isLast,
+  isFirstCity,
   check_in,
   check_out,
-  date_of_journey
+  date_of_journey,
+  fromChat,
+  isDraft,
+  showPins
 }) => {
   const router = useRouter();
   const dispatch = useDispatch();
   const { transfers_status,pricing_status } = useSelector((state) => state.ItineraryStatus);
   const isDesktop = useMediaQuery("(min-width:767px)");
+  const reduxItineraryId = useSelector((state) => state.ItineraryId);
+
+  // P1 (Draft) fallback: when the shimmer/draft itinerary doesn't yet carry
+  // a start city name, label the row with the user's cached IP location so
+  // the start pin/label isn't blank during the loading state.
+  const userLocationFallback = (() => {
+    if (typeof window === "undefined") return null;
+    try {
+      const cached = JSON.parse(localStorage.getItem("userLocation") || "null");
+      return cached?.city || null;
+    } catch {
+      return null;
+    }
+  })();
 
   const [isTransferDrawerOpen, setIsTransferDrawerOpen] = useState(false);
   const [transferDrawerType, setTransferDrawerType] = useState(null); // 'pickup' or 'drop'
@@ -1064,8 +1082,12 @@ const CityItem = ({
   const { trackTransferBookingAdd, trackTransferBookingChange, trackTransferBookingDelete } = useAnalytics();
   const { id } = useSelector((state) => state.auth);
 
-  const { drawer, bookingId, oItineraryCity, dItineraryCity, drawerType,  doj} =
+  const { drawer, bookingId, oItineraryCity, dItineraryCity, drawerType,  doj, initialMode, initialEdgeId} =
     router?.query;
+
+  // Use Redux ItineraryId as the canonical ID (works on /chat/[sessionId] pages too)
+  const currentItineraryId = router.query.id || reduxItineraryId;
+  const isDraftMode = fromChat && !currentItineraryId;
 
   const handlePickupClick = () => {
     setTransferDrawerType("pickup");
@@ -1159,6 +1181,8 @@ const CityItem = ({
     }
   }, [router.query.bookingId, router.query.transferType, router.query.drawer]);
 
+  const Itinerary = useSelector(state =>state.Itinerary)
+
 useEffect(() => {
   const isDrawerClosed = !drawer;
   
@@ -1181,7 +1205,7 @@ useEffect(() => {
   //   setLoading(true);
   //   router.push(
   //     {
-  //       pathname: `/itinerary/${router.query.id}`,
+  //       pathname: window.location.pathname,
   //       query: {
   //         drawer: "Intracity",
   //         bookingId: book?.id,
@@ -1216,8 +1240,9 @@ useEffect(() => {
     // Navigate to the URL with bookingId and transferType
     router.push(
       {
-        pathname: `/itinerary/${router.query.id}`,
+        pathname: window.location.pathname,
         query: {
+          ...(currentItineraryId ? { id: currentItineraryId } : {}),
           drawer: "Intracity",
           bookingId: book?.id,
           transferType: bookingType,
@@ -1235,8 +1260,9 @@ useEffect(() => {
   const handlePickupDropDrawer = (drawerType) => {
     router.push(
       {
-        pathname: `/itinerary/${router.query.id}`,
+        pathname: window.location.pathname,
         query: {
+          ...(currentItineraryId ? { id: currentItineraryId } : {}),
           drawer: "addPickupDrop",
           drawerType: drawerType,
           oItineraryCity: oCityData?.id || oCityData?.gmaps_place_id,
@@ -1254,15 +1280,12 @@ useEffect(() => {
 
   const handleAddTransfer = () => {
     if(localStorage.getItem("access_token")){
-    // if( id != customer){
-    //   dispatch(setCloneItineraryDrawer(true));
-    //   return;
-    // }
-    trackTransferBookingChange(router.query.id, bookingIdToDelete, oCityData?.name || oCityData?.city_name, dCityData?.name || dCityData?.city_name);
+    trackTransferBookingChange(currentItineraryId, bookingIdToDelete, oCityData?.name || oCityData?.city_name, dCityData?.name || dCityData?.city_name);
     router.push(
       {
-        pathname: `/itinerary/${router.query.id}`,
+        pathname: window.location.pathname,
         query: {
+          ...(currentItineraryId ? { id: currentItineraryId } : {}),
           drawer: "editTransfer",
           bookingId: booking?.id,
           oItineraryCity: oCityData?.id || oCityData?.gmaps_place_id,
@@ -1338,7 +1361,10 @@ useEffect(() => {
       getPaymentHandler();
       trackTransferBookingDelete(router.query.id, dataPassed?.id, id);
 
-      if (isIntracity) {
+      const isAirportTransferBooking =
+        dataPassed?.is_airport_pickup || dataPassed?.is_airport_drop;
+
+      if (isIntracity || isAirportTransferBooking) {
         setCurrentAirportBookings((prev) =>
           prev.filter((booking) => booking.id !== dataPassed?.id)
         );
@@ -1380,7 +1406,7 @@ useEffect(() => {
   //   if (transferType !== null && airportBookingId) {
   //     router.push(
   //       {
-  //         pathname: `/itinerary/${router.query.id}`,
+  //         pathname: window.location.pathname,
   //         query: {
   //           drawer: "Intracity",
   //           bookingId: airportBookingId,
@@ -1527,35 +1553,93 @@ useEffect(() => {
     booking => booking.is_airport_drop
   ) || [];
 
+  const formatDurationRange = (minutes) => {
+  const hours = minutes / 60;
+
+  const lower = Math.floor(hours);
+  const upper = Math.ceil(hours);
+
+  if (lower === upper) {
+    return `${lower} hour${lower > 1 ? "s" : ""}`;
+  }
+
+  return `${lower}-${upper} hours`;
+};
 
 
   return (
     <Container className={`${isLast && "mb-[60px]"}`}>
-       <PinWrapper>
-  {upPresent && <VerticalLine height={"50px"} gradient="top" />}
+    {!(Itinerary.status == "Draft") ?  <PinWrapper>
+  {upPresent &&  <VerticalLine height={"50px"} gradient="top" />}
   {upPresent && downPresent ? (
     <div className="flex items-center justify-center">
       {/* {correctIcon(booking_type)} */}
     </div>
   ) : (
-    <Pin length={length} pinColour={"black"} inner={true} />
+   <Pin length={length} pinColour={"black"} inner={true} className="-ml-[8.5px]" />
   )}
   {downPresent && <VerticalLine height={"50px"} gradient="bottom" />}
-</PinWrapper>
+</PinWrapper> :  <PinWrapper>
+  {/* P1 (Draft) stage. Endpoint *labels* (start/end city name rows) carry
+      isFirstCity/isLast and render the pin with a single line on the
+      appropriate side — those rows have no upPresent/downPresent. Every
+      other row (including the start→first-city and last-city→end transfers,
+      which have firstCity/lastCity set) renders one connecting line. Two
+      stacked gradients fade to transparent where they meet, which leaves a
+      visible gap; one line keeps the connector continuous. */}
+  {upPresent && downPresent && (
+    <div className="flex items-center justify-center m-2 py-2">
+      <VerticalLine height={"50px"} gradient="top" />
+    </div>
+  )}
+  {!upPresent && !downPresent && isFirstCity && (
+    <>
+      <Pin length={length} pinColour={"black"} inner={true} />
+      {/* <VerticalLine height={"50px"} gradient="bottom" /> */}
+    </>
+  )}
+  {!upPresent && !downPresent && isLast && (
+    <>
+      {/* <VerticalLine height={"50px"} gradient="top" /> */}
+      <Pin length={length} pinColour={"black"} inner={true} />
+    </>
+  )}
+</PinWrapper>}
      
 
       <div
         className={`flex flex-col gap-2 ${!downPresent && upPresent && "mt-[41px]z"
           } ${!upPresent && downPresent && "mb-[41px]"}`}
+        style={
+          // P1 (Draft) start/end city label rows: pin sits at one end of a
+          // taller PinWrapper (pin + line). align-self pulls the city name
+          // to the same end so the text lines up with the pin instead of
+          // the wrapper's vertical centre.
+          Itinerary?.status === "Draft" && !upPresent && !downPresent
+            ? { alignSelf: isLast ? "flex-end" : "flex-start" }
+            : undefined
+        }
       >
         {/* City and Duration Section - Aligned with Pin */}
         <div
           className={`flex flex-col gap-3 ${!(upPresent && downPresent) ? "itmes-center justify-center" : ""
             }`}
         >
-          {!(upPresent && downPresent) && <div className={`${isDesktop ? "Body1M_16" : "Body2M_14"}`}>{city}</div>}
+          {!(upPresent && downPresent) && (
+            <div className={`${isDesktop ? "Body1M_16" : "Body2M_14"}`}>
+              {/* P1 fallback: when the draft itinerary hasn't surfaced a
+                  start-city name yet, use the user's IP-derived city so the
+                  label isn't blank under the start pin. */}
+              {city ||
+                (Itinerary?.status === "Draft" && isFirstCity
+                  ? userLocationFallback
+                  : null)}
 
-          {transfers_status === "PENDING" ? (
+
+            </div>
+          )}
+
+          {transfers_status === "PENDING" && !(Itinerary.status == "Draft")  ? (
   upPresent && downPresent ? (
     <TransferSkeleton />
   ) : (
@@ -1605,9 +1689,11 @@ useEffect(() => {
                   upPresent && downPresent ? "group hover:cursor-pointer" : ""
                 }`}
                 onClick={() => {
+                  if(!(Itinerary.status == "Draft")){
                   upPresent &&
                     downPresent &&
                     handleEdit(transfer_type === "combo", booking);
+                  }
                 }}
               >
                 <div
@@ -1617,7 +1703,7 @@ useEffect(() => {
                 >
                   {upPresent && downPresent ? city : ""}
                 </div>
-                {upPresent && downPresent && (
+                {upPresent && downPresent && !(Itinerary.status == "Draft") && (
                   <div className="">
                     <FaPen
                       size={12}
@@ -1627,15 +1713,19 @@ useEffect(() => {
                 )}
               </div>
 
-              {duration && (
-                <div className="Body3R_12">Duration: {duration}</div>
-              )}
+             {duration > 0 && (
+  <div className="Body3R_12">
+    Duration: {Itinerary.status === "Draft"
+      ? formatDurationRange(duration)
+      : duration}
+  </div>
+)}
             </div>
           </div>
 
           {/* AIRPORT/STATION PICKUP DROP - Show only for flight/train/ferry/bus */}
-         {transfers_status == "SUCCESS" &&
-  pricing_status == "SUCCESS" && (
+         {transfers_status != "PENDING" &&
+  pricing_status != "PENDING" && (
     <div className="flex flex-col gap-1">
       {/* CHANGED: Conditional rendering based on booking existence */}
       {(booking_id || currentAirportBookings.length > 0) ? (
@@ -1664,7 +1754,7 @@ useEffect(() => {
           firstCity={firstCity}
           lastCity={lastCity}
         />
-      ) : (
+      ) : !(Itinerary.status == "Draft") ? (
         /* If NO main booking and NO pickup/drop bookings, show TaxiPickupDropItem */
         <TaxiPickupDropItem
           key={`taxi-no-booking`}
@@ -1676,7 +1766,7 @@ useEffect(() => {
           currentAirportBookings={currentAirportBookings}
           handleEdit={handleEdit}
         />
-      )}
+      ) : null}
     </div>
   )}
         </>
@@ -1684,7 +1774,8 @@ useEffect(() => {
         <>
           {/* NO BOOKING - Show both CTAs */}
           {/* First CTA: Add Transfer */}
-          {isPageWide ? (
+          { !(Itinerary.status == "Draft")  ? 
+          isPageWide ? (
             <button
               onClick={handleAddTransfer}
               className={`${
@@ -1693,7 +1784,7 @@ useEffect(() => {
             >
               + Add Transfer from {origin_city_name} to {destination_city_name}
             </button>
-          ) : (
+          ) :  (
             <button
               onClick={handleAddTransfer}
               className={`${
@@ -1702,10 +1793,10 @@ useEffect(() => {
             >
               + Add Transfer
             </button>
-          )}
+          ) : null}
 
           {/* Second CTA: Add Taxi Pickup/Drop - Only when NO booking */}
-          {transfers_status == "SUCCESS" && pricing_status == "SUCCESS" && (
+          {!isDraftMode && transfers_status != "PENDING" && pricing_status != "PENDING" && (
             <TaxiPickupDropItem
               key={`taxi-no-booking`}
               handlePickupDropDrawer={handlePickupDropDrawer}
@@ -1727,12 +1818,12 @@ useEffect(() => {
       </div>
 
       {drawer === "addPickupDrop" &&
-        oItineraryCity == (oCityData?.id || oCityData?.gmaps_place_id) &&
-        dItineraryCity == (dCityData?.id || dCityData?.gmaps_place_id) && (
+        (oItineraryCity == oCityData?.id || oItineraryCity == oCityData?.gmaps_place_id) &&
+        (dItineraryCity == dCityData?.id || dItineraryCity == dCityData?.gmaps_place_id) && (
           <PickupDropDrawer
             isOpen={drawer === "addPickupDrop" &&
-              oItineraryCity == (oCityData?.id || oCityData?.gmaps_place_id) &&
-              dItineraryCity == (dCityData?.id || dCityData?.gmaps_place_id)}
+              (oItineraryCity == oCityData?.id || oItineraryCity == oCityData?.gmaps_place_id) &&
+              (dItineraryCity == dCityData?.id || dItineraryCity == dCityData?.gmaps_place_id)}
             hotelName={hotelName}
             destinationHotelName={destinationHotelName}
             sourceLat={sourceLat}
@@ -1774,17 +1865,15 @@ useEffect(() => {
 
 
       {((drawer == "editTransfer" &&
-        (bookingId === booking_id || (bookingId === "" && !booking_id)) &&
-        oItineraryCity == (oCityData?.id || oCityData?.gmaps_place_id) &&
-        dItineraryCity == (dCityData?.id || dCityData?.gmaps_place_id)) || drawerType == "multicity") && (
+        (oItineraryCity == oCityData?.id || oItineraryCity == oCityData?.gmaps_place_id) &&
+        (dItineraryCity == dCityData?.id || dItineraryCity == dCityData?.gmaps_place_id)) || drawerType == "multicity") && (
           <TransferEditDrawer
             mercury
             addOrEdit={"transferAdd"}
             showDrawer={
               drawer == "editTransfer" &&
-              (bookingId === booking_id || (bookingId === "" && !booking_id)) &&
-              oItineraryCity == (oCityData?.id || oCityData?.gmaps_place_id) &&
-              dItineraryCity == (dCityData?.id || dCityData?.gmaps_place_id)
+              (oItineraryCity == oCityData?.id || oItineraryCity == oCityData?.gmaps_place_id) &&
+              (dItineraryCity == dCityData?.id || dItineraryCity == dCityData?.gmaps_place_id)
             }
             destination={destination_city_id}
             _updateFlightBookingHandler={_updateFlightBookingHandler}
@@ -1808,12 +1897,15 @@ useEffect(() => {
             }
             booking_id={booking_id}
             booking_type={drawerType == "multicity" ? "multicity" : null}
+            initialMode={initialMode || undefined}
+            initialEdgeId={initialEdgeId || undefined}
           />
         )}
 
       {"Intracity" === drawer &&
-        (bookingId === airportBookingId || bookingId === booking_id) && oItineraryCity == (oCityData?.id || oCityData?.gmaps_place_id) &&
-        dItineraryCity == (dCityData?.id || dCityData?.gmaps_place_id) && (
+        (bookingId === airportBookingId || bookingId === booking_id) &&
+        (oItineraryCity == oCityData?.id || oItineraryCity == oCityData?.gmaps_place_id) &&
+        (dItineraryCity == dCityData?.id || dItineraryCity == dCityData?.gmaps_place_id) && (
           <TransferDrawer
             show={
               "Intracity" === drawer && (bookingId === airportBookingId || bookingId === booking_id)

@@ -176,6 +176,7 @@ const ActivityDetails = (props) => {
     props?.data?.overview ?? props?.data?.short_description,
   );
   const itinerary = useSelector((state) => state.Itinerary);
+  const isDraft = useSelector((state) => state.Itinerary?.status === "Draft");
   const token = useSelector((state) => state.auth.token);
   const [imageLoaded, setImageLoaded] = useState(false);
 
@@ -226,37 +227,68 @@ const ActivityDetails = (props) => {
     }
     setLoading(true);
     try {
-      const res = await axios.delete(
-        `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/activity/${props?.data?.id}/`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+      const isRestaurant = props?.data?.type === "restaurant" || props?.activityData?.type === "restaurant" || props?.type === "restaurant";
+
+      let res;
+      if (isRestaurant) {
+        res = await axios.delete(
+          `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/restaurant/delete/`,
+          {
+            data: {
+              itinerary_city_id: props?.itinerary_city_id,
+              day_by_day_index: props?.dayIndex,
+              restaurant_index: props?.slabIndex,
+            },
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            },
           },
-        },
-      );
+        );
+      } else {
+        res = await axios.delete(
+          `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/activity/${props?.data?.id}/`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            },
+          },
+        );
+      }
       dispatch(SetCallPaymentInfo(!CallPaymentInfo));
 
-      if (res?.status == 204) {
+      const success = isRestaurant ? res?.status === 200 : res?.status === 204;
+
+      if (success) {
         const newItinerary = JSON.parse(JSON.stringify(itinerary));
-        trackActivityBookingDelete(
-          router.query.id,
-          props?.data?.id,
-          "ActivityDetailsDrawer",
-        );
+
+        if (!isRestaurant) {
+          trackActivityBookingDelete(
+            router.query.id,
+            props?.data?.id,
+            "ActivityDetailsDrawer",
+          );
+        }
 
         const itineraryCities = newItinerary.cities.map((city) => {
           if (city.id === props?.itinerary_city_id) {
-            city.day_by_day.forEach((day, index) => {
-              if (day?.slab_elements) {
-                day.slab_elements = day.slab_elements.filter(
-                  (item) => item?.booking?.id !== props?.data?.id,
-                );
-              }
-            });
+            if (isRestaurant) {
+              city.day_by_day[props?.dayIndex]?.slab_elements?.splice(
+                props?.slabIndex,
+                1,
+              );
+            } else {
+              city.day_by_day.forEach((day, index) => {
+                if (day?.slab_elements) {
+                  day.slab_elements = day.slab_elements.filter(
+                    (item) => item?.booking?.id !== props?.data?.id,
+                  );
+                }
+              });
 
-            city.activities = city.activities?.filter(
-              (item) => item?.id !== props?.data?.id,
-            );
+              city.activities = city.activities?.filter(
+                (item) => item?.id !== props?.data?.id,
+              );
+            }
           }
 
           return city;
@@ -915,7 +947,7 @@ const ActivityDetails = (props) => {
                 // )
                 <>
                   {" "}
-                  {props?.removeDelete == false && (
+                  {props?.removeDelete == false && !isDraft && (
                     <button
                       className="ttw-btn-fill-error"
                       onClick={handleDelete}

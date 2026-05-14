@@ -7,7 +7,6 @@ import Preferences from "../tailoredform/slidetwo/preferences/Index";
 import Buttons from "./Buttons";
 import useMediaQuery from "../../hooks/useMedia";
 import { useDispatch } from "react-redux";
-import setItinerary  from "../../store/actions/itinerary";
 import { openNotification } from "../../store/actions/notification";
 import { togglePreference } from "../../store/actions/slideOneActions";
 
@@ -19,7 +18,7 @@ const parseDateString = (dateString) => {
 };
 
 
-const Settings = ({setShowSettings, isHotelsPresent, handleApply}) => {
+const Settings = ({setShowSettings, isHotelsPresent, handleApply, maxAdults=false}) => {
   const dispatch = useDispatch();
   const itinerary = useSelector(state => state.Itinerary);
   const isDesktop = useMediaQuery("(min-width:767px)");
@@ -84,7 +83,7 @@ useEffect(() => {
     setNumberOfAdults(itinerary?.number_of_adults || 1);
     setNumberOfChildren(itinerary?.number_of_children || 0);
     setNumberOfInfants(itinerary?.number_of_infants || 0);
-    
+
     if (itinerary?.start_date && itinerary?.end_date) {
       setDate({
         type: "fixed",
@@ -96,6 +95,33 @@ useEffect(() => {
     }
   }
 }, [itinerary, isHotelsPresent]);
+
+  // Keep traveller counts in sync with the room configuration. Pax (used when
+  // addHotels is true) only writes back to roomConfiguration on Done — it does
+  // NOT call the numberOf* setters, so without this effect the payload sent to
+  // handleApply carries stale passenger totals. Pax rooms don't track infants,
+  // so only fold infants in when the rooms actually carry them (EnterPassenger).
+  useEffect(() => {
+    if (!roomConfiguration || roomConfiguration.length === 0) return;
+
+    let adultsTotal = 0;
+    let childrenTotal = 0;
+    let infantsTotal = 0;
+    let roomsHaveInfants = false;
+
+    for (const room of roomConfiguration) {
+      adultsTotal += room?.adults || 0;
+      childrenTotal += room?.children || 0;
+      if (room?.infants !== undefined) {
+        roomsHaveInfants = true;
+        infantsTotal += room?.infants || 0;
+      }
+    }
+
+    setNumberOfAdults(adultsTotal);
+    setNumberOfChildren(childrenTotal);
+    if (roomsHaveInfants) setNumberOfInfants(infantsTotal);
+  }, [roomConfiguration]);
 
   const handleSetSelectedPreferences = (preference) => {
   dispatch(togglePreference(preference));
@@ -141,7 +167,7 @@ const handleUpdate = () => {
   }
 
   handleApply(req)
-    .then((res) => {
+    .then(() => {
       dispatch(openNotification({
         type: "success",
         text: "Itinerary updated successfully",
@@ -153,7 +179,7 @@ const handleUpdate = () => {
       console.log("error is:", err);
       dispatch(openNotification({
         type: "error",
-        text: err?.response?.data?.errors?.[0]?.detail?.[0] || err?.response?.data?.errors[0]?.message?.[0] || "Something went wrong",
+        text: err?.response?.data?.errors?.[0]?.detail?.[0] || err?.response?.data?.errors?.[0]?.message?.[0] || "Something went wrong",
         heading: "Error!",
       }));
     })
@@ -171,7 +197,7 @@ const handleUpdate = () => {
   }
 
   return (
-    <div className={`flex flex-col gap-[24px] md:max-w-[537px]`}>
+    <div className={`flex flex-col gap-[24px] md:max-w-[537px] z-[9999] p-3`}>
       <div className="Heading1SB font-semibold">Update Your Trip Preferences</div>
 
       <DateComponent 
@@ -183,7 +209,7 @@ const handleUpdate = () => {
 
       <div>
         <div className="Body1M_16 mb-[12px]">Pick Your Inclusions</div>
-        <div className="flex flex-wrap md:grid md:grid-cols-3 justify-between items-center">
+        <div className="flex flex-wrap md:grid md:grid-cols-[1.5fr_1fr_1fr] justify-between items-center">
 
            <label
             htmlFor="add-activities-transfers"
@@ -246,6 +272,7 @@ const handleUpdate = () => {
           setNumberOfChildren={setNumberOfChildren}
           setNumberOfInfants={setNumberOfInfants}
           settings={true}
+          isTailored={maxAdults}
         />
       ) : (
         <div>

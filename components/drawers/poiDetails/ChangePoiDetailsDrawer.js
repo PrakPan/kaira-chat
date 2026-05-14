@@ -36,6 +36,7 @@ const ChangePoiDetailDrawer = (props) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const itinerary = useSelector((state) => state.Itinerary);
+  const { slabIndex} = router.query;
   const dispatch = useDispatch();
   useEffect(() => {
     if (props.show) fetchData();
@@ -56,7 +57,7 @@ const ChangePoiDetailDrawer = (props) => {
 
     try {
       const res = await axios.get(
-        `${MERCURY_HOST}/api/v1/geos/poi/${props?.id}/?itinerary_city_id=${props?.itinerary_city_id}`
+        `${MERCURY_HOST}/api/v1/geos/poi/${props?.id}/?itinerary_city_id=${props?.itinerary_city_id}`,
       );
       if (res.data?.data?.poi) {
         setData(res.data?.data?.poi);
@@ -68,7 +69,7 @@ const ChangePoiDetailDrawer = (props) => {
           type: "error",
           text: "Something went wrong! Please try after some time.",
           heading: "Error!",
-        })
+        }),
       );
     }
   };
@@ -79,7 +80,7 @@ const ChangePoiDetailDrawer = (props) => {
         itinerary_city_id: props?.itinerary_city_id,
         poi_id: props?.id,
         day_by_day_index: props?.dayIndex || 0,
-        poi_index: props?.slabIndex,
+        poi_index: slabIndex || props?.slabIndex,
       };
       const res = await axios.post(
         `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/poi/add/`,
@@ -88,19 +89,30 @@ const ChangePoiDetailDrawer = (props) => {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-        }
+        },
       );
-      var newItinerary = itinerary;
+      // ✅ Create a proper deep clone
+      const newItinerary = JSON.parse(JSON.stringify(itinerary));
+
       const itineraryCities = newItinerary?.cities?.map((item) => {
-        const city = item;
+        const city = { ...item }; // shallow copy of city
         if (item.id == props?.itinerary_city_id) {
-          const day_by_day = [...city?.day_by_day];
-          day_by_day[props?.dayIndex].slab_elements[props.slabIndex] =
-            res?.data;
+          const day_by_day = city.day_by_day.map((day, index) => {
+            if (index === props?.dayIndex) {
+              return {
+                ...day,
+                slab_elements: day.slab_elements.map((el, i) =>
+                  (i === slabIndex) || (i === props.slabIndex) ? res?.data : el,
+                ),
+              };
+            }
+            return day;
+          });
           city.day_by_day = day_by_day;
         }
         return city;
       });
+
       newItinerary.cities = itineraryCities;
       dispatch(setItinerary(newItinerary));
       props.openNotification({
@@ -111,7 +123,9 @@ const ChangePoiDetailDrawer = (props) => {
     } catch (error) {
       console.log("error is:", error);
       const errorMsg =
-        error?.response?.data?.errors?.[0]?.message?.[0] || error.message || "Something went wrong! Please try after some time.";
+        error?.response?.data?.errors?.[0]?.message?.[0] ||
+        error.message ||
+        "Something went wrong! Please try after some time.";
       props.openNotification({
         type: "error",
         text: errorMsg,
@@ -133,7 +147,6 @@ const ChangePoiDetailDrawer = (props) => {
       className=""
       onHide={(e) => {
         props.setShowDetails({ show: false, data: {} });
-
       }}
     >
       <ToastContainer />
@@ -186,5 +199,5 @@ const mapDispatchToProps = (dispatch) => {
 
 export default connect(
   mapStateToPros,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(ChangePoiDetailDrawer);

@@ -3,10 +3,12 @@ import Image from "next/image";
 import Button from "../common/components/button";
 import { Pinned, Japan } from "../assets";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import useMediaQuery from "../../media";
 import TailoredFormMobileModal from "../../modals/TailoredFomrMobile";
 
 const WhereNextSection = () => {
+  const router = useRouter();
   // Statistics data
   const stats = [
     {
@@ -61,8 +63,7 @@ const WhereNextSection = () => {
                     variant="filled"
                     size="medium"
                     onClick={() => {
-                      console.log("Create a Trip Now! clicked");
-                      setShowMobilePlanner(true);
+                      router.push("/chat");
                     }}
                     className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
                   >

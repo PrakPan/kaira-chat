@@ -1,84 +1,109 @@
 import React from "react";
 import { ViewToggleProps } from "../types";
+import { useSelector } from "react-redux";
+import { FiMap, FiNavigation, FiCalendar, FiBookmark } from "react-icons/fi";
 
-const ViewToggle: React.FC<ViewToggleProps> = ({ viewMode, setViewMode }) => {
+/**
+ * Tab visibility rules:
+ *
+ *  State                              | Map | Itinerary | Routes | Bookings
+ *  -----------------------------------|-----|-----------|--------|----------
+ *  No itinerary activity              | ✓   | ✗         | ✗      | ✗
+ *  Bot started building (shimmer/draft| ✓   | ✓         | ✗      | ✗
+ *  Itinerary complete (not Draft)     | ✓   | ✓         | ✓      | ✓
+ *
+ * hasItineraryActivity — passed from BotApp, true when shimmer/draft/real itinerary exists.
+ * "Complete" = itinerary exists AND status is NOT "Draft" AND NOT nullish.
+ */
+const ViewToggle: React.FC<ViewToggleProps> = ({ viewMode, setViewMode, hasItineraryActivity }) => {
+  const itinerary = useSelector((state: any) => state.Itinerary);
+
+  // Is there any itinerary object at all with meaningful content?
+  const hasItinerary = !!(itinerary && (itinerary.name || itinerary.cities?.length));
+
+  // Is the itinerary fully built (not a draft/skeleton)?
+  const isComplete =
+    hasItinerary &&
+    itinerary.status !== "Draft" &&
+    itinerary.status !== undefined &&
+    itinerary.status !== null &&
+    itinerary.status !== "undefined";
+
+  // Only show the tab strip if the bot has started building an itinerary
+  if (!hasItineraryActivity) {
+    return null;
+  }
+
+  // Shared button style helper
+  const activeStyle: React.CSSProperties = {
+    borderRadius: "10px",
+    border: "1px solid #FFFACD",
+    background: "#07213A",
+    boxShadow: "0 2px 8px rgba(195, 195, 195, 0.35)",
+  };
+  const inactiveStyle: React.CSSProperties = { borderRadius: "10px" };
+
+const tabBtn = (
+  label: string,
+  mode: string,
+  onClick: () => void,
+  icon: React.ReactNode,
+) => (
+  <button
+    onClick={onClick}
+    className={`flex-1 px-4 py-2 text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
+      viewMode === mode ? "text-white" : "text-black"
+    }`}
+    style={viewMode === mode ? activeStyle : inactiveStyle}
+  >
+    {icon}
+    {label}
+  </button>
+);
+
   return (
-    <div className="px-4 py-3 flex-shrink-0">
+    <div className="px-4 py-3 flex-shrink-0 text-sm md:text-[14px]">
       <div
-        className="flex gap-1 p-1"
+        className="flex gap-1"
         style={{
-          borderRadius: "18px",
-          border: "1px solid #FFFACD",
-          background: "#FFFAF5",
-          // boxShadow: "0 4px 34px 1px rgba(195, 195, 195, 0.25)",
+          borderRadius: "10px",
+          border: "1px solid #E5E5E5",
+          background: "#fff",
         }}
       >
+        {/* Map — always visible when the strip is shown */}
         <button
           onClick={() => setViewMode("map")}
-          className={`flex-1 px-4 py-1 text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
-            viewMode === "map"
-              ? "text-black"
-              : "text-gray-500 hover:text-gray-700"
+          className={`flex-1 px-4 py-2.5 text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
+            viewMode === "map" ? "text-white" : "text-black"
           }`}
-          style={
-            viewMode === "map"
-              ? {
-                  borderRadius: "10px",
-                  border: "1px solid #FFFACD",
-                  background: "#fff",
-                  boxShadow: "0 2px 8px rgba(195, 195, 195, 0.35)",
-                }
-              : { borderRadius: "10px" }
-          }
+          style={viewMode === "map" ? activeStyle : inactiveStyle}
         >
-          {/* <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
-            />
-          </svg> */}
+          <FiMap size={14} />
           Map
         </button>
-        <button
-          onClick={() => setViewMode("itinerary")}
-          className={`flex-1 px-4 py-1 text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
-            viewMode === "itinerary"
-              ? "text-black"
-              : "text-gray-500 hover:text-gray-700"
-          }`}
-          style={
-            viewMode === "itinerary"
-              ? {
-                  borderRadius: "10px",
-                  border: "1px solid #FFFACD",
-                  background: "#fff",
-                  boxShadow: "0 2px 8px rgba(195, 195, 195, 0.35)",
-                }
-              : { borderRadius: "10px" }
-          }
-        >
-          {/* <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
-            />
-          </svg> */}
-          Itinerary
-        </button>
+
+      {/* Routes */}
+{isComplete &&
+  tabBtn("Route", "routes", () => setViewMode("routes"),
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="6" cy="6" r="2.5" />
+      <circle cx="18" cy="18" r="2.5" />
+      <path d="M9 6h7a2 2 0 0 1 2 2v7" />
+    </svg>
+  )}
+
+{/* Itinerary */}
+{tabBtn("Itinerary", "itinerary", () => setViewMode("itinerary"), <FiCalendar size={14} />)}
+
+{/* Bookings */}
+{isComplete &&
+  tabBtn("Bookings", "bookings", () => setViewMode("bookings"),
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M19 14l-5-5-9 9" />
+      <path d="M5 21h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2z" />
+    </svg>
+  )}
       </div>
     </div>
   );

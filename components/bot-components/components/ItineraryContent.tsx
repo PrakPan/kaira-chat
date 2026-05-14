@@ -10,13 +10,14 @@ interface ItineraryContentProps {
   transfers: TransfersData | null;
   onSendMessage?: (message: string) => void;
   sidebarCollapsed?: boolean;
+  isLoading?: boolean;
 }
-
 const ItineraryContent: React.FC<ItineraryContentProps> = ({
   itineraryData,
   transfers,
   onSendMessage,
   sidebarCollapsed = false,
+  isLoading = false,
 }) => {
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 
@@ -25,7 +26,7 @@ const ItineraryContent: React.FC<ItineraryContentProps> = ({
   }, [onSendMessage]);
 
   const handleConfirmItinerary = (details: ConfirmationDetails) => {
-    const message = `Yes confirm the itinerary. Here are my details:
+    const message = `Yes, I confirm the itinerary! Here are my details:
 Start Date: ${details.startDate}
 Pax: ${details.adults} Adults, ${details.children} Children, ${details.infants} Infants
 Start Location: ${details.startLocation}`;
@@ -54,7 +55,7 @@ Start Location: ${details.startLocation}`;
 
           return (
             <div key={route.city.id} className="mb-1">
-              <CitySection route={route} />
+              <CitySection route={route} isLoading={isLoading} />
               {outboundTransfer && (
                 <TransferSection transfer={outboundTransfer} />
               )}

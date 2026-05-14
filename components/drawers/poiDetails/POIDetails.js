@@ -1,9 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
 import { useState } from "react";
 import { TbArrowBack } from "react-icons/tb";
 import SkeletonCard from "../../ui/SkeletonCard";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
+import { IoIosArrowDown } from "react-icons/io";
 import { MERCURY_HOST } from "../../../services/constants";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -21,6 +22,7 @@ import ImageLoader from "../../ImageLoader";
 import Button from "../../ui/button/Index";
 import Drawer from "../../ui/Drawer";
 import AddPoi from "../AddPoi";
+import { getHumanDate } from "../../../services/getHumanDate";
 
 const svgIcons = {
   "delete": <svg xmlns="http://www.w3.org/2000/svg" width="15" height="14" viewBox="0 0 15 14" fill="none">
@@ -134,10 +136,143 @@ const POIDetails = (props) => {
     props?.data?.overview ?? props?.data?.short_description
   );
   const itinerary = useSelector((state) => state.Itinerary);
+   const isDraft = useSelector((state) => state.Itinerary.status) === "Draft";
+  const { finalized_status } = useSelector((state) => state.ItineraryStatus);
+  // Treat P1 (PENDING finalize) the same as Draft for scheduling — the
+  // itinerary isn't pinned to specific dates yet, so the day/time picker
+  // is informational rather than required.
+  const hideSchedule = isDraft || finalized_status === "PENDING";
+
   const token = useSelector((state) => state.auth.token);
   const dispatch = useDispatch();
   const [showDrawer, setShowDrawer] = useState(false);
   const imgUrlEndPoint = "https://d31aoa0ehgvjdi.cloudfront.net/";
+  const { slabIndex, dayIndex} = router.query;
+
+  // ── Day picker + time-of-day chips ────────────────────────────────────
+  // Mirrors ActivityDetails.jsx so POI / restaurant detail drawers share
+  // the same scheduling UX. Static time slots (Morning / Afternoon /
+  // Evening) — POI/restaurant data has no availability windows, so all
+  // three are always rendered.
+  const TIME_PERIODS = ["Morning", "Afternoon", "Evening"];
+  const pad = (n) => (n < 10 ? `0${n}` : n);
+
+  const convertToISODate = (dateStr) => {
+    if (!dateStr) return;
+    if (/^\d{4}-\d{2}-\d{2}/.test(dateStr)) return dateStr.slice(0, 10);
+    const [day, month, year] = dateStr.split("/");
+    if (!day || !month || !year) return;
+    return `${year}-${month?.padStart(2, "0")}-${day?.padStart(2, "0")}`;
+  };
+
+  const resolveEffectiveDate = () => {
+    if (props?.date) {
+      if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(props.date)) return props.date;
+      const d = new Date(props.date);
+      if (!isNaN(d.getTime())) {
+        return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+      }
+    }
+    if (itinerary?.start_date) {
+      const d = new Date(itinerary.start_date);
+      if (!isNaN(d.getTime())) {
+        return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+      }
+    }
+    const today = new Date();
+    return `${pad(today.getDate())}/${pad(today.getMonth() + 1)}/${today.getFullYear()}`;
+  };
+
+  const resolvedCityDuration = (() => {
+    const direct = Number(props?.duration);
+    if (direct > 0) return direct;
+    if (props?.itinerary_city_id && itinerary?.cities) {
+      const match = itinerary.cities.find(
+        (c) => String(c.id) === String(props.itinerary_city_id),
+      );
+      if (match?.duration > 0) return Number(match.duration);
+    }
+    return 0;
+  })();
+
+  const [startDate, setStartDate] = useState(resolveEffectiveDate());
+  const [showCalender, setShowCalender] = useState(false);
+  const [selectedTimeOfDay, setSelectedTimeOfDay] = useState("Morning");
+  const calendarDesktopRef = useRef(null);
+  const dateBoxRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      const target = event.target;
+      const insideDesktop =
+        calendarDesktopRef.current &&
+        calendarDesktopRef.current.contains(target);
+      const insideTrigger =
+        dateBoxRef.current && dateBoxRef.current.contains(target);
+      if (!insideDesktop && !insideTrigger) {
+        setShowCalender(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const selectedDayNumber = (() => {
+    const cityStartRaw = props?.start_date || props?.date || null;
+    const baseDateStr = convertToISODate(
+      cityStartRaw || itinerary?.start_date || null,
+    );
+    const baseDate = baseDateStr ? new Date(baseDateStr) : null;
+    if (!baseDate || isNaN(baseDate.getTime())) return 1;
+    const [d, m, y] = (startDate || "").split("/");
+    if (!d || !m || !y) return 1;
+    const selected = new Date(`${y}-${m}-${d}`);
+    if (isNaN(selected.getTime())) return 1;
+    const diff = Math.round(
+      (selected.getTime() - baseDate.getTime()) / (1000 * 60 * 60 * 24),
+    );
+    return diff >= 0 ? diff + 1 : 1;
+  })();
+
+  const DayListContent = () => (
+    <>
+      {[...Array(Math.max(0, resolvedCityDuration) + 1)].map((_, i) => {
+        const cityStartRaw = props?.start_date || props?.date || null;
+        const baseDateStr = convertToISODate(
+          cityStartRaw || itinerary?.start_date || null,
+        );
+        const baseDate = new Date(baseDateStr);
+        if (isNaN(baseDate.getTime())) return null;
+
+        const currentDate = new Date(baseDate);
+        currentDate.setDate(currentDate.getDate() + i);
+
+        const year = currentDate.getFullYear();
+        const month = pad(currentDate.getMonth() + 1);
+        const day = pad(currentDate.getDate());
+        const dateString = `${day}/${month}/${year}`;
+        const displayDate = getHumanDate(dateString);
+
+        return (
+          <div
+            key={i}
+            className={`cursor-pointer ${
+              startDate === dateString ? "text-black font-semibold" : "text-[#4a4a4a]"
+            }`}
+            onClick={() => {
+              setStartDate(dateString);
+              setShowCalender(false);
+            }}
+          >
+            <span className="font-bold text-[14px]">
+              {displayDate + " | "}
+            </span>
+            <span>Day {i + 1}</span>
+          </div>
+        );
+      })}
+    </>
+  );
 
   const [ImagesLoaded, setImagesLoaded] = useState({
     0: false,
@@ -178,7 +313,7 @@ const POIDetails = (props) => {
           data: {
             itinerary_city_id: props?.itinerary_city_id,
             day_by_day_index: props?.dayIndex,
-            poi_index: props?.slabIndex,
+            poi_index: slabIndex || props?.slabIndex,
           },
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
@@ -194,10 +329,10 @@ const POIDetails = (props) => {
           if (city.id === props?.itinerary_city_id) {
             console.log(
               "here:",
-              cityTemp.day_by_day[props?.dayIndex]?.slab_elements
+              cityTemp.day_by_day[dayIndex]?.slab_elements
             );
-            cityTemp.day_by_day[props?.dayIndex]?.slab_elements.splice(
-              props?.slabIndex,
+            cityTemp.day_by_day[dayIndex]?.slab_elements.splice(
+              slabIndex,
               1
             );
           }
@@ -280,7 +415,7 @@ const POIDetails = (props) => {
           </div>
           <div className="flex justify-between">
             <Title>{props.data.name}</Title>
-            {!(props?.removeChange === true) && (
+            {!(props?.removeChange === true) && !isDraft && !(props?.type === "restaurant") && (
               <Button
                 padding="7px 25px"
                 borderRadius="7px"
@@ -296,6 +431,8 @@ const POIDetails = (props) => {
               </Button>
             )}
           </div>
+
+       
 
           <>
             {props?.data?.extra_images?.length > 3 ? (
@@ -588,10 +725,68 @@ const POIDetails = (props) => {
               </Child>
             )}
           </>
+
           <div className="">
             {props.data?.tags && (
               <Text>{tags}</Text>
             )}
+
+               {/* Day picker + Morning/Afternoon/Evening chips. Hidden in P1
+              stage where the itinerary isn't pinned to dates yet. */}
+          {!hideSchedule && (props?.removeDelete == true) &&  (
+            <div className="flex flex-col gap-3">
+              <div className="flex gap-2">
+                <div className="relative">
+                  <div
+                    ref={dateBoxRef}
+                    className="flex items-center w-auto bg-[#F9F9F9] py-[0.7rem] px-4 rounded-lg justify-between cursor-pointer"
+                    onClick={() => setShowCalender((prev) => !prev)}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-[14px]">
+                        {getHumanDate(startDate) + " | "}
+                      </span>
+                      <span>Day {selectedDayNumber}</span>
+                    </div>
+                    <IoIosArrowDown
+                      className={`transition-transform ml-2 ${
+                        showCalender ? "rotate-180" : ""
+                      }`}
+                    />
+                  </div>
+
+                  {showCalender && (props?.removeDelete == true) &&  (
+                    <div
+                      ref={calendarDesktopRef}
+                      className="absolute top-full left-0 mt-1 w-[260px] bg-white border border-gray-200 shadow-lg rounded-lg p-4 flex flex-col gap-3 text-sm z-[1091] max-h-[300px] overflow-y-auto"
+                    >
+                      <DayListContent />
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="inline-flex w-fit sm:w-fit bg-[#F9F9F9] rounded-lg p-1 gap-1">
+                {TIME_PERIODS.map((period) => {
+                  const isSelected = selectedTimeOfDay === period;
+                  return (
+                    <button
+                      key={period}
+                      type="button"
+                      onClick={() => setSelectedTimeOfDay(period)}
+                      className={`flex-1 sm:flex-none px-4 py-2 rounded-md text-[14px] font-medium transition-colors mb-3 ${
+                        isSelected
+                          ? "bg-[#07213A] text-white"
+                          : "bg-transparent text-[#7a7a7a] hover:text-[#01202B]"
+                      }`}
+                    >
+                      {period}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
             {aboutText != null && aboutText != undefined && (
               <div>
                 <Text
@@ -803,7 +998,7 @@ const POIDetails = (props) => {
                 </a>
               </div>
 
-              {!(props?.removeDelete == true) && props?.version != "v1" && (
+              {!(props?.removeDelete == true) && props?.version != "v1" && !isDraft && (
                 <button
                   className="ttw-btn-fill-error"
                   onClick={handleDelete}
@@ -830,6 +1025,31 @@ const POIDetails = (props) => {
                       />
                     )}
                   </div>
+                </button>
+              )}
+
+              {/* Chat-opened flow: "Add to Itinerary" CTA. Emits a widget
+                  action up to ChatKitPanel so the assistant can book the
+                  POI/restaurant into the itinerary. */}
+              {props?.showAddToItinerary && props?.onAddToItinerary && (
+                <button
+                  className="ttw-btn-fill-yellow"
+                  onClick={() => {
+                    if (!token) {
+                      props?.setShowLoginModal?.(true);
+                      return;
+                    }
+                    props.onAddToItinerary({
+                      id: props?.data?.id,
+                      itinerary_city_id: props?.itinerary_city_id,
+                      date: convertToISODate(startDate) || props?.date,
+                      start_date: convertToISODate(startDate),
+                      day: selectedDayNumber,
+                      time: selectedTimeOfDay,
+                    });
+                  }}
+                >
+                  Add to Itinerary
                 </button>
               )}
             </div>

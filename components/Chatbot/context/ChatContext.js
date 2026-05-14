@@ -27,7 +27,7 @@ const ChatContext = createContext();
 const localStorageKeyForSessionIds = "chatbotSessionIds";
 const localStorageKeyForceNewSession = "chatbotForceNewSession";
 
-export const ChatProvider = ({ itinearyId, children }) => {
+export const ChatProvider = ({ itinearyId, children, initialBotMessage }) => {
   const [conversations, setConversations] = useState([]);
   const [quickReplies, setQuickReplies] = useState([]);
   const [lastProductSliderPosition, setLastProductSliderPosition] = useState(0);
@@ -54,10 +54,18 @@ export const ChatProvider = ({ itinearyId, children }) => {
   const { finalized_status } = useSelector((state) => state.ItineraryStatus);
   const token = useSelector((state) => state.auth.token);
   const router = useRouter();
+  const initializationStartedRef = useRef(false);
   
   const chatState = useSelector((state) => state.chatState);
 
 
+ useEffect(() => {
+  if (initialBotMessage?.trim()) {
+    setConversations([{ message: initialBotMessage, is_bot: true }]);
+    setIsInitialized(true);
+    connect(null); 
+  }
+}, []);
 
   useEffect(() => {
     if (chatState?.shouldResetSession && chatState?.resetTimestamp) {
@@ -73,34 +81,33 @@ export const ChatProvider = ({ itinearyId, children }) => {
     }
   }, [sessionId, dispatch]);
 
-  useEffect(() => {
-    if (!itinearyId || !token || isInitialized) return;
-    
-    const initializeChat = async () => {
-      
-      const history = await getAllChatHistory(itinearyId);
-      
-      if (history && history.length > 0) {
-        const latestSession = history[0];
-        
-        let oldSessionIds = JSON.parse(
-          localStorage.getItem(localStorageKeyForSessionIds) || "{}"
-        );
-        oldSessionIds[itinearyId] = latestSession.id;
-        localStorage.setItem(
-          localStorageKeyForSessionIds,
-          JSON.stringify(oldSessionIds)
-        );
-        
-        await showChatHistoryById(latestSession.id, true);
-        trackChatOpened(router?.query?.id, latestSession.id);
-      } 
-      
-      setIsInitialized(true);
-    };
-    
-    initializeChat();
-  }, [itinearyId, token]);
+useEffect(() => {
+  if (!itinearyId || !token || isInitialized) return;
+  if (initializationStartedRef.current) return; 
+  initializationStartedRef.current = true;
+
+  const initializeChat = async () => {
+    const history = await getAllChatHistory(itinearyId);
+
+    if (history && history.length > 0) {
+      const latestSession = history[0];
+      let oldSessionIds = JSON.parse(
+        localStorage.getItem(localStorageKeyForSessionIds) || "{}"
+      );
+      oldSessionIds[itinearyId] = latestSession.id;
+      localStorage.setItem(
+        localStorageKeyForSessionIds,
+        JSON.stringify(oldSessionIds)
+      );
+      await showChatHistoryById(latestSession.id, true);
+      trackChatOpened(router?.query?.id, latestSession.id);
+    }
+
+    setIsInitialized(true);
+  };
+
+  initializeChat();
+}, [itinearyId, token]);
 
 
   useEffect(() => {

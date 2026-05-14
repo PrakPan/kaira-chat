@@ -58,7 +58,7 @@ const SlabElement = (props) => {
 
   return (
     <div className="w-[95%] mx-auto">
-      {props.element.element_type === "activity" ? (
+      {props.element.element_type === "activity" || props?.element?.element_type === "poi" ? (
         <Activity
           element={props.element}
           dayIndex={props?.dayIndex}
@@ -72,7 +72,7 @@ const SlabElement = (props) => {
           cityName={props?.cityName}
           totalElements={props.totalElements}
         />
-      ) : props.element.element_type === "recommendation" ? (
+      ) : props.element.element_type === "recommendation" || props.element.element_type === "restaurant"? (
         <Recommendation
           element={props.element}
           dayIndex={props?.dayIndex}
@@ -182,6 +182,14 @@ const Activity = (props) => {
   const {id} = useSelector(state=>state.auth);
   const {customer} = useSelector(state=>state.Itinerary)
 
+  const cart = useSelector((state) => state.Cart);
+
+const isIncluded = cart?.summary && Object.values(cart.summary).some(
+   (category) => category?.bookings?.some(
+     (booking) => booking?.id === props?.element?.booking?.id && booking?.selected === true
+   )
+ );
+
   const handleClick = (event) => {
     document.documentElement.style.overflow = "hidden";
     document.body.style.setProperty("overflow", "visible", "important");
@@ -202,7 +210,7 @@ const Activity = (props) => {
     if (e) e.stopPropagation(e);
     router.push(
       {
-        pathname: `/itinerary/${router?.query?.id}`,
+        pathname: window.location.pathname,
         query: {}, // remove "drawer"
       },
       undefined,
@@ -231,10 +239,10 @@ const Activity = (props) => {
     }
     router.push(
       {
-        pathname: `/itinerary/${router.query.id}`,
+        pathname: window.location.pathname,
         query: {
           drawer: "showPoiDetail",
-          poi_id: poi?.booking?.id || poi?.poi,
+          poi_id: poi?.booking?.id || poi?.poi || poi?.id,
           type: type,
           dayIndex: props?.dayIndex,
         },
@@ -266,7 +274,7 @@ const Activity = (props) => {
     }
     try {
       let res;
-      if (props?.element?.poi != null) {
+      if (props?.element?.poi != null || props?.element?.element_type === "poi") {
         res = await axios.delete(
           `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/poi/delete/`,
           {
@@ -296,10 +304,10 @@ const Activity = (props) => {
       let itineraryCities = [];
 
       if (
-        (props?.element?.poi != null && res?.status === 200) ||
+        ((props?.element?.poi != null || props?.element?.element_type === "poi") && res?.status === 200) ||
         (props?.element?.booking?.id && res?.status === 204)
       ) {
-        if (props?.element?.poi != null) {
+        if (props?.element?.poi != null || props?.element?.element_type === "poi") {
           itineraryCities = newItinerary.cities.map((city) => {
             const cityTemp = city;
             if (city.id === props?.itinerary_city_id) {
@@ -383,7 +391,7 @@ const Activity = (props) => {
             onClick={() =>
               handleActivity(
                 props?.element,
-                props?.element?.poi != "undefined"
+                props?.element?.poi != "undefined"  || props?.element?.element_type === "poi"
                   ? "poi"
                   : props?.element?.element_type
               )
@@ -407,7 +415,7 @@ const Activity = (props) => {
               onClick={() =>
                 handleActivity(
                   props?.element,
-                  props?.element?.poi != null ? "poi" : "activity"
+                  props?.element?.poi != null || props?.element?.element_type == "poi"? "poi" : "activity"
                 )
               }
               className={`${isPageWide ? "Body2M_14" : "Body3M_12"}`}
@@ -428,9 +436,9 @@ const Activity = (props) => {
                   />
                 ) : null}
                 <div className="text-[#6E757A] Body3R_12">
-                  {props?.element?.poi ? "Self Exploration" : ""}
+                  {props?.element?.poi || props?.element?.element_type === "poi" ? "Self Exploration" : ""}
                 </div>
-                {!props?.element?.poi ? (
+                {(props?.element?.element_type === "activity") && !(props?.element?.poi) ? (
                   <div className="w-max items-center bg-[#F5FFF7] text-[#10A317] text-[12px] rounded-sm">
                     Activity
                   </div>
@@ -502,7 +510,7 @@ const Activity = (props) => {
               )}
             </div>
 
-            {!props?.element?.poi ? (
+            {!props?.element?.poi && isIncluded ? (
               <div className="flex flex-row gap-xs flex-wrap ">
                 {/* {props?.element?.tags && props.element.tags.map((item, i) => ( */}
                 <div
@@ -579,7 +587,7 @@ const Activity = (props) => {
                 e.stopPropagation();
                 handleActivity(
                   props?.element,
-                  props?.element?.poi != null ? "poi" : "activity"
+                  props?.element?.poi != null || props?.element?.element_type === "poi" ? "poi" : "activity"
                 );
               }}
               className="IndigoOutlinedButton !w-[78px] Body2M_14"
@@ -594,7 +602,7 @@ const Activity = (props) => {
         String(poi_id) ===
           String(
             props?.element?.booking?.id ||
-              props.element?.poi ||
+              props.element?.poi || props?.element?.id ||
               props.element?.activity
           ) && (
           <POIDetailsDrawer
@@ -661,6 +669,8 @@ const Recommendation = (props) => {
     //   dispatch(setCloneItineraryDrawer(true));
     //   return;
     // }
+
+    console.log("activity data is:", poi);
     setShowDrawer(true);
     setActivityData(() => ({
       id: poi,
@@ -777,7 +787,7 @@ const Recommendation = (props) => {
         <div className="w-full flex flex-row items-stretch  gap-sm-md bg-white">
           <div
             onClick={() =>
-              handleActivity(props?.element?.restaurants?.[0]?.id, "restaurant")
+              handleActivity(props?.element?.restaurants?.[0]?.id || props.element?.id, "restaurant")
             }
             className="cursor-pointer"
           >
@@ -797,13 +807,13 @@ const Recommendation = (props) => {
             <div
               onClick={() =>
                 handleActivity(
-                  props?.element?.restaurants?.[0]?.id,
+                  props?.element?.restaurants?.[0]?.id || props.element?.id,
                   "restaurant"
                 )
               }
               className={`${isPageWide ? "Body2M_14" : "Body3M_12"}`}
             >
-              {props.element.heading}
+              {props.element.heading || props.element?.restaurants?.[0]?.name}
             </div>
 
             <div className="flex flex-wrap items-center text-sm">
@@ -918,7 +928,7 @@ const Recommendation = (props) => {
               onClick={(e) => {
                 e.stopPropagation();
                 handleActivity(
-                  props?.element?.restaurants?.[0]?.id,
+                  props?.element?.restaurants?.[0]?.id || props.element?.id,
                   "restaurant"
                 );
               }}

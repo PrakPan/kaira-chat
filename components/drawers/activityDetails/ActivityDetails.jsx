@@ -1,10 +1,11 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useState } from "react";
 import media from "../../media";
 import ImageLoader from "../../ImageLoader";
 import SkeletonCard from "../../ui/SkeletonCard";
 import CheckboxFormComponent from "../../../components/FormComponents/CheckboxFormComponent";
 import { getIndianPrice } from "../../../services/getIndianPrice";
+import { getHumanDate } from "../../../services/getHumanDate";
 import { dateFormat } from "../../../helper/DateUtils";
 import { FaStar, FaStarHalfAlt, FaClock } from "react-icons/fa";
 import { FaPerson } from "react-icons/fa6";
@@ -37,6 +38,208 @@ export default function ActivityDetails(props) {
   const [loading, setLoading] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState(null);
   const currency = useSelector((state) => state.currency);
+  const itinerary = useSelector((state) => state.Itinerary);
+  const isDraft = useSelector((state) => state.Itinerary.status) === "Draft";
+  const { finalized_status } = useSelector((state) => state.ItineraryStatus);
+  // P1 stage = pre-finalize (PENDING). Treat P1 like Draft for scheduling UI:
+  // hide the date picker and time-of-day chips since the itinerary is not
+  // yet pinned to specific dates/slots.
+  const hideSchedule = isDraft || finalized_status === "PENDING";
+
+  const pad = (n) => (n < 10 ? `0${n}` : n);
+
+  const convertToISODate = (dateStr) => {
+    if (!dateStr) return;
+    // Already ISO (YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS) — return the date portion.
+    // The chat-opened flow passes ISO strings through props.date, while the
+    // itinerary tree passes DD/MM/YYYY. Tolerating both keeps the day-list
+    // dropdown from coming up empty when launched from chat.
+    if (/^\d{4}-\d{2}-\d{2}/.test(dateStr)) return dateStr.slice(0, 10);
+    const [day, month, year] = dateStr?.split("/");
+    if (!day || !month || !year) return;
+    return `${year}-${month?.padStart(2, "0")}-${day?.padStart(2, "0")}`;
+  };
+
+  // Resolve effective start date — prefer prop.date, then city check_in,
+  // then city start_date, then itinerary-level start_date as last resort, then today.
+  // (When opened through chatkitpanel, city-level check_in should win over
+  // itinerary.start_date so the default reflects the city the activity belongs to.)
+  const resolveEffectiveDate = () => {
+    if (props?.date) {
+      // Already DD/MM/YYYY — return as-is. Anything else valid (ISO from
+      // chat flow, etc.) gets normalized so downstream comparisons against
+      // the day-list items (which build DD/MM/YYYY strings) succeed.
+      if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(props.date)) return props.date;
+      const d = new Date(props.date);
+      if (!isNaN(d.getTime())) {
+        return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+      }
+    }
+    const cityCheckIn =
+      props?.check_in ||
+      props?.city?.check_in ||
+      props?.city?.checkIn ||
+      null;
+    if (cityCheckIn) {
+      const d = new Date(cityCheckIn);
+      if (!isNaN(d.getTime())) {
+        return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+      }
+    }
+    if (props?.start_date) {
+      const d = new Date(props.start_date);
+      if (!isNaN(d.getTime())) {
+        return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+      }
+    }
+    if (props?.city?.start_date) {
+      const d = new Date(props.city.start_date);
+      if (!isNaN(d.getTime())) {
+        return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+      }
+    }
+    // Fall back to itinerary-level start_date only if nothing city-specific is available
+    if (itinerary?.start_date) {
+      const d = new Date(itinerary.start_date);
+      if (!isNaN(d.getTime())) {
+        return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+      }
+    }
+    const today = new Date();
+    return `${pad(today.getDate())}/${pad(today.getMonth() + 1)}/${today.getFullYear()}`;
+  };
+
+  const effectiveDate = resolveEffectiveDate();
+
+  // Resolve city duration: prop → city object → derived from check_in/check_out
+  // → itinerary Redux city lookup → 0. The extra fallbacks cover the chatkitpanel
+  // entry point where props.duration / itinerary.cities may not be populated.
+  const resolvedCityDuration = (() => {
+    const direct = Number(props.duration);
+    console.log("Direct duration from props:", direct, direct > 0);
+    if (direct > 0) return direct;
+
+    const fromCityObj = Number(
+      props?.city?.duration ?? props?.city?.nights ?? props?.cityDuration,
+    );
+    if (fromCityObj > 0) return fromCityObj;
+
+    const ci = props?.check_in || props?.city?.check_in || props?.city?.checkIn;
+    const co = props?.check_out || props?.city?.check_out || props?.city?.checkOut;
+    if (ci && co) {
+      const d1 = new Date(ci);
+      const d2 = new Date(co);
+      if (!isNaN(d1.getTime()) && !isNaN(d2.getTime())) {
+        const diffDays = Math.round(
+          (d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24),
+        );
+        if (diffDays > 0) return diffDays;
+      }
+    }
+
+    if (props?.itinerary_city_id && itinerary?.cities) {
+      const match = itinerary.cities.find(
+        (c) => String(c.id) === String(props.itinerary_city_id),
+      );
+      console.log("Matched itinerary city for duration:", match);
+      if (match?.duration > 0) return Number(match.duration);
+    }
+    return 0;
+  })();
+
+  // Total day options available in the dropdown (Day 1..N+1). "N" is the
+  // number of nights; the +1 accounts for the checkout day, so a 1-night stay
+  // still surfaces two options (arrival + checkout) and a 3-night stay shows
+  // four. The picker is always rendered — even a 1-day option is informational.
+  const totalDayOptions = Math.max(0, resolvedCityDuration) + 1;
+
+  // Currency-aware number formatting. INR uses Indian grouping (1,23,456);
+  // other currencies use international grouping (123,456).
+  const formatAmount = (amount) => {
+    if (amount == null || isNaN(Number(amount))) return amount;
+    const rounded = Math.round(Number(amount));
+    const isIndian = !currency?.currency || currency.currency === "INR";
+    return isIndian ? getIndianPrice(rounded) : rounded.toLocaleString("en-US");
+  };
+
+  const [startDate, setStartDate] = useState(effectiveDate);
+  const [showCalender, setShowCalender] = useState(false);
+  const [selectedTimeOfDay, setSelectedTimeOfDay] = useState(null);
+  // Desktop and mobile dropdowns are rendered separately — keep distinct
+  // refs so the click-outside handler doesn't treat a click on the visible
+  // (desktop) dropdown as outside just because a single shared ref points
+  // at the hidden mobile sheet.
+  const calendarDesktopRef = useRef(null);
+  const calendarMobileRef = useRef(null);
+
+  // Bucket availability slots into Morning (06:00–11:59),
+  // Afternoon (12:00–15:59), Evening (16:00+). Periods with no slots
+  // are hidden — e.g. an activity that only runs in the morning won't
+  // render Afternoon/Evening buttons.
+  const availableTimePeriods = (() => {
+    const slots = props?.data?.availabilities?.slots || [];
+    const periods = { Morning: false, Afternoon: false, Evening: false };
+    for (const slot of slots) {
+      const hour = parseInt((slot?.start_time || "").split(":")[0], 10);
+      if (isNaN(hour)) continue;
+      if (hour >= 6 && hour < 12) periods.Morning = true;
+      else if (hour >= 12 && hour < 16) periods.Afternoon = true;
+      else if (hour >= 16) periods.Evening = true;
+    }
+    return ["Morning", "Afternoon", "Evening"].filter((p) => periods[p]);
+  })();
+
+  // Default-select the first available period whenever the slot list
+  // changes (e.g. after the activity detail response lands).
+  useEffect(() => {
+    if (availableTimePeriods.length === 0) {
+      setSelectedTimeOfDay(null);
+      return;
+    }
+    if (!selectedTimeOfDay || !availableTimePeriods.includes(selectedTimeOfDay)) {
+      setSelectedTimeOfDay(availableTimePeriods[0]);
+    }
+  }, [props?.data?.availabilities?.slots]);
+  const dateBoxRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      const target = event.target;
+      const insideDesktop =
+        calendarDesktopRef.current &&
+        calendarDesktopRef.current.contains(target);
+      const insideMobile =
+        calendarMobileRef.current &&
+        calendarMobileRef.current.contains(target);
+      const insideTrigger =
+        dateBoxRef.current && dateBoxRef.current.contains(target);
+      if (!insideDesktop && !insideMobile && !insideTrigger) {
+        setShowCalender(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // Compute the selected day number (Day 1..N) from the startDate
+  const selectedDayNumber = (() => {
+    const cityStartRaw = props?.start_date || props?.date || null;
+    const baseDateStr = props?.mercuryItinerary
+      ? (cityStartRaw || itinerary?.start_date || null)
+      : convertToISODate(cityStartRaw || itinerary?.start_date || null);
+    const baseDate = baseDateStr ? new Date(baseDateStr) : null;
+    if (!baseDate || isNaN(baseDate.getTime())) return 1;
+    const [d, m, y] = (startDate || "").split("/");
+    if (!d || !m || !y) return 1;
+    const selected = new Date(`${y}-${m}-${d}`);
+    if (isNaN(selected.getTime())) return 1;
+    const diff = Math.round(
+      (selected.getTime() - baseDate.getTime()) / (1000 * 60 * 60 * 24),
+    );
+    return diff >= 0 ? diff + 1 : 1;
+  })();
 
   useEffect(() => {
     if (props.data?.prices?.length > 0) {
@@ -95,7 +298,37 @@ export default function ActivityDetails(props) {
     const bookingData = {
       ...e,
       result_index: selectedPackage?.result_index,
+      date: convertToISODate(startDate) || startDate,
+      start_date: convertToISODate(startDate),
+      day: selectedDayNumber,
+      time: selectedTimeOfDay,
     };
+
+    // Chat-opened flow: route the booking intent up to the orchestrator via
+    // a widget action instead of calling the booking API directly. The chat
+    // runtime has the session context (itinerary id, dates) the drawer does
+    // not, so it's the correct place to actually book.
+    if (typeof props?.onAddToItinerary === "function") {
+      props.onAddToItinerary({
+        activity_id: props?.data?.id,
+        itinerary_city_id: props?.itinerary_city_id,
+        result_index: selectedPackage?.result_index,
+        start_date: convertToISODate(startDate),
+        date: convertToISODate(startDate) || startDate,
+        day: selectedDayNumber,
+        number_of_adults: props?.filterState?.adults,
+        number_of_children: props?.filterState?.children,
+        children_ages: props?.filterState?.children_ages,
+        amenities: (props?.data?.amenities ?? [])
+          .filter((a) => a?.included)
+          .map((a) => a?.id),
+        time: selectedTimeOfDay,
+        trace_id: props?.traceId,
+      });
+      setLoading(false);
+      props?.handleCloseDrawer(e);
+      return;
+    }
 
     props.updatedActivityBooking(bookingData).then(() => {
       setLoading(false);
@@ -116,6 +349,51 @@ export default function ActivityDetails(props) {
       amenities: amenities.map((amenity) => amenity?.id),
     });
   };
+
+  // Shared day list content rendered inside both mobile and desktop dropdowns
+  const DayListContent = () => (
+    <>
+      {/* <div className="font-medium text-[14px]">Select Days</div> */}
+      {[...Array(Math.max(0, resolvedCityDuration) + 1)].map((_, i) => {
+        const cityStartRaw = props?.start_date || props?.date || null;
+        const baseDateStr = props?.mercuryItinerary
+          ? cityStartRaw || itinerary?.start_date || null
+          : convertToISODate(
+              cityStartRaw || itinerary?.start_date || null,
+            );
+
+        const baseDate = new Date(baseDateStr);
+        if (isNaN(baseDate.getTime())) return null;
+
+        const currentDate = new Date(baseDate);
+        currentDate.setDate(currentDate.getDate() + i);
+
+        const year = currentDate.getFullYear();
+        const month = pad(currentDate.getMonth() + 1);
+        const day = pad(currentDate.getDate());
+        const dateString = `${day}/${month}/${year}`;
+        const displayDate = getHumanDate(dateString);
+
+        return (
+          <div
+            key={i}
+            className={`cursor-pointer ${
+              startDate === dateString ? "text-black font-semibold" : "text-[#4a4a4a]"
+            }`}
+            onClick={() => {
+              setStartDate(dateString);
+              setShowCalender(false);
+            }}
+          >
+            <span className="font-bold text-[14px]">
+              {displayDate + " | "}
+            </span>
+            <span>Day {i + 1}</span>
+          </div>
+        );
+      })}
+    </>
+  );
 
   return (
     <div className="h-[100vh] overflow-y-auto px-4">
@@ -204,14 +482,76 @@ export default function ActivityDetails(props) {
               </div>
             </div>
 
-           
-            <Pax
-              pax={{
-                ...props?.filterState,
-                childAges: props?.filterState?.childAges || [],
-              }}
-              setPax={handlePaxChange}
-            />
+            <div className="flex gap-2">
+              {!isDraft && (
+                <Pax
+                  pax={{
+                    ...props?.filterState,
+                    childAges: props?.filterState?.childAges || [],
+                  }}
+                  setPax={handlePaxChange}
+                />
+              )}
+
+              {/* FIX: wrap trigger + dropdown in a relative container so
+                  the desktop dropdown can be positioned with absolute top-full.
+                  Always rendered — a 1-night stay still has 2 options (arrival
+                  + checkout), and even a single-day option is informational. */}
+              {!hideSchedule && props?.fromChat && (
+                <div className="relative">
+               
+                  <div
+                    ref={dateBoxRef}
+                    className="flex items-center w-auto bg-[#F9F9F9] py-[0.7rem] px-4 rounded-lg justify-between cursor-pointer"
+                    onClick={() => setShowCalender((prev) => !prev)}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-[14px]">
+                        {getHumanDate(startDate) + " | "}
+                      </span>
+                      <span>Day {selectedDayNumber}</span>
+                    </div>
+                    <IoIosArrowDown
+                      className={`transition-transform ml-2 ${
+                        showCalender ? "rotate-180" : ""
+                      }`}
+                    />
+                  </div>
+
+                
+                  {showCalender && (
+                    <div
+                      ref={calendarDesktopRef}
+                      className="max-ph:hidden md:flex md:flex-col absolute top-full left-0 mt-1 w-[260px] bg-white border border-gray-200 shadow-lg rounded-lg p-4 gap-3 text-sm z-[1091] max-h-[300px] overflow-y-auto"
+                    >
+                      <DayListContent />
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {!hideSchedule && availableTimePeriods.length > 0 && (
+              <div className="inline-flex w-fit sm:w-fit bg-[#F9F9F9] rounded-lg p-1 gap-1">
+                {availableTimePeriods.map((period) => {
+                  const isSelected = selectedTimeOfDay === period;
+                  return (
+                    <button
+                      key={period}
+                      type="button"
+                      onClick={() => setSelectedTimeOfDay(period)}
+                      className={`flex-1 sm:flex-none px-4 py-2 rounded-md text-[14px] font-medium transition-colors ${
+                        isSelected
+                          ? "bg-[#07213A] text-white"
+                          : "bg-transparent text-[#7a7a7a] hover:text-[#01202B]"
+                      }`}
+                    >
+                      {period}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
 
             {props?.data?.rating && (
               <div className="flex items-center gap-1">
@@ -475,7 +815,7 @@ export default function ActivityDetails(props) {
             </div>
           ) : null}
 
-          {props?.data?.prices && props?.data?.prices?.length && (
+          {!isDraft && props?.data?.prices && props?.data?.prices?.length && (
             <div className="mb-4">
               <h3 className="font-medium text-base mb-3">Package Options</h3>
 
@@ -532,9 +872,7 @@ export default function ActivityDetails(props) {
                                   ? currencySymbols?.[currency?.currency]
                                   : "₹"
                               }`}
-                              {getIndianPrice(
-                                Math.round(packageItem.total_price)
-                              )}
+                              {formatAmount(packageItem.total_price)}
                             </div>
                           </div>
                         </div>
@@ -580,7 +918,17 @@ export default function ActivityDetails(props) {
         )}
       </div>
 
-      <div className="scroll-none border-t-2 fixed bottom-0 right-0 left-0 gap-1 py-[12px] px-[20px] bg-white shadow-md z-50">
+      {/* Mobile bottom sheet — hidden on md+ screens */}
+      {/* {showCalender && (
+        <div
+          className="fixed bottom-0 left-0 right-0 w-full bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-t-xl space-y-5 text-sm z-[1091] max-h-[60vh] overflow-y-auto md:hidden"
+          ref={calendarMobileRef}
+        >
+          <DayListContent />
+        </div>
+      )} */}
+
+      {(!isDraft || typeof props?.onAddToItinerary === "function") && <div className="scroll-none border-t-2 fixed bottom-0 right-0 left-0 gap-1 py-[12px] px-[20px] bg-white shadow-md z-50">
         <div className="flex justify-between items-center">
           <>
             {selectedPackage?.total_price && (
@@ -593,7 +941,7 @@ export default function ActivityDetails(props) {
                   }`}
                   {selectedPackage?.total_price &&
                   selectedPackage?.total_price > 0
-                    ? getIndianPrice(Math.round(selectedPackage.total_price))
+                    ? formatAmount(selectedPackage.total_price)
                     : selectedPackage.total_price}
                 </span>
               </div>
@@ -607,14 +955,14 @@ export default function ActivityDetails(props) {
         <div className={`flex justify-between items-center`}>
           <span className="text-[12px] font-normal">
             {" "}
-            for {props?.filterState.adults + props?.filterState?.children}{" "}
+            for { (props?.filterState.adults + props?.filterState?.children) || (itinerary?.number_of_adults + itinerary?.number_of_children)}{" "}
             people{" "}
           </span>
           <div className="text-[14px] sm:text-[16px]">
-            on {dateFormat(props?.date)}
+            on {getHumanDate(startDate) || dateFormat(props?.date)}
           </div>
         </div>
-      </div>
+      </div>}
     </div>
   );
 }
@@ -667,10 +1015,10 @@ export const Amenity = ({ index, amenity, handleAmenityChange, travelers }) => {
           {amenity.name}
         </div>
         <div className="text-[14px]">{amenity.description}</div>
-        <div className="flex text-[12px] font-medium">
+        {travelers ? <div className="flex text-[12px] font-medium">
           <Image src="/ticket.svg" alt="ticket" width={13.33} height={10.67} />
           {travelers} tickets
-        </div>
+        </div> : null}
       </div>
 
       {amenity.price == 0 ? (
@@ -683,7 +1031,13 @@ export const Amenity = ({ index, amenity, handleAmenityChange, travelers }) => {
             {`${
               currency?.currency ? currencySymbols?.[currency?.currency] : "₹"
             }`}
-            {getIndianPrice(amenity.price)}{" "}
+            {(() => {
+              const rounded = Math.round(Number(amenity.price));
+              const isIndian = !currency?.currency || currency.currency === "INR";
+              return isIndian
+                ? getIndianPrice(rounded)
+                : rounded.toLocaleString("en-US");
+            })()}{" "}
             <span className="text-[14px] font-normal">per person*</span>
           </div>
 

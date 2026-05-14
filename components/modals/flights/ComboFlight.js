@@ -200,7 +200,7 @@ const ComboFlight = (props) => {
     useAnalytics();
   const { intercity } = useSelector(
     (state) => state.TransferBookings,
-  )?.transferBookings;
+  )?.transferBookings || {};
 
   //for flight search
   const [sourceInput, setSourceInput] = useState({
@@ -958,9 +958,9 @@ const ComboFlight = (props) => {
       const bookingIdToUpdate = requestData?.booking_id;
 
       if (props?.combo) {
-        Object.keys(updatedTransferBookings).forEach((category) => {
+        Object.keys(updatedTransferBookings)?.forEach((category) => {
           if (updatedTransferBookings[category]) {
-            Object.keys(updatedTransferBookings[category]).forEach((key) => {
+            Object.keys(updatedTransferBookings[category])?.forEach((key) => {
               const booking = updatedTransferBookings[category][key];
               if (!booking || Object.keys(booking).length === 0) return;
 
@@ -1006,7 +1006,7 @@ const ComboFlight = (props) => {
             "modal",
             "edit",
           ];
-          drawerParams.forEach((param) => {
+          drawerParams?.((param) => {
             url.searchParams.delete(param);
           });
 
@@ -1044,7 +1044,7 @@ const ComboFlight = (props) => {
             "modal",
             "edit",
           ];
-          drawerParams.forEach((param) => {
+          drawerParams?.forEach((param) => {
             url.searchParams.delete(param);
           });
 

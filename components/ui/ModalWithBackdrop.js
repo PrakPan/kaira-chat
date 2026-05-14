@@ -45,7 +45,7 @@ const ModalWithBackdrop = ({
     >
       <div
         className={`bg-white relative shadow-lg ${
-          animation ? "transition-all duration-300 ease-in-out transform scale-100" : ""
+          animation ? "transition-all duration-300 ease-in-out" : ""
         }`}
         style={{
           width: responsiveWidth.base,
@@ -77,6 +77,7 @@ const ModalWithBackdrop = ({
               top: paddingY,
               right: paddingY,
             }}
+             className="p-2 mt-2"
           >
             <RxCross2
               style={{
@@ -84,6 +85,7 @@ const ModalWithBackdrop = ({
                 cursor: "pointer",
                 zIndex: 999,
               }}
+             
             />
           </button>
         )}

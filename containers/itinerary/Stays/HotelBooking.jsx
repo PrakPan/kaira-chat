@@ -86,6 +86,8 @@ const HotelBooking = ({
   const { id } = useSelector(state => state.auth);
   const { customer } = useSelector(state => state.Itinerary)
   const dispatch = useDispatch();
+  const reduxItineraryId = useSelector((state) => state.ItineraryId);
+  const currentItineraryId = router.query.id || reduxItineraryId;
 
   let isPageWide = media("(min-width: 768px)");
   const [imageFail, setImageFail] = useState(false);
@@ -175,8 +177,9 @@ const HotelBooking = ({
 
     const isAuthenticated = requireAuth('view', () => {
       router.push({
-        pathname: `/itinerary/${router.query.id}`,
+        pathname: window.location.pathname,
         query: {
+          ...(currentItineraryId ? { id: currentItineraryId } : {}),
           drawer: "showHotelDetail",
           idx: index,
           booking_id: booking.id,
@@ -213,8 +216,9 @@ const HotelBooking = ({
     const isAuthenticated = requireAuth(clickType === 'Add' ? 'add' : 'change', () => {
       // This callback executes only if user is authenticated
       router.push({
-        pathname: `/itinerary/${router.query.id}`,
+        pathname: window.location.pathname,
         query: {
+          ...(currentItineraryId ? { id: currentItineraryId } : {}),
           drawer: "changeHotelBooking",
           clickType: clickType,
           itineraryCityId: itinerary_city_id,
@@ -252,7 +256,7 @@ const HotelBooking = ({
   //   if (token) {
   //     router.push(
   //       {
-  //         pathname: `/itinerary/${router.query.id}`,
+  //         pathname: window.location.pathname,
   //         query: {
   //           drawer: "changeHotelBooking",
   //           clickType: clickType,
@@ -376,7 +380,7 @@ const HotelBooking = ({
     setShowBookingModal(true);
     router.push(
       {
-        pathname: `/itinerary/${router.query.id}`,
+        pathname: window.location.pathname,
         query: {
           drawer: "changeHotelBooking",
           clickType: clickType,
@@ -456,7 +460,7 @@ const HotelBooking = ({
   };
 
   return (
-    <div className={`${!isPageWide ? "w-full" : "max-w-[51vw]"}`}>
+    <div className="w-full">
       {hotels_status === "PENDING" ? (
         <div>
           <div className="pb-2">
@@ -923,7 +927,7 @@ const HotelBooking = ({
               if (!drawer || itineraryCityId != itinerary_city_id) return;
               router.push(
                 {
-                  pathname: `/itinerary/${router?.query?.id}`,
+                  pathname: `/chat/${router?.query?.id}`,
                   query: {}, // remove "drawer"
                 },
                 undefined,

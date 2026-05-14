@@ -1,6 +1,9 @@
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 
+const SCROLL_KEY_PREFIX = "scroll-pos:";
+const MAX_ENTRIES = 20;
+
 function ScrollRestoration() {
   const router = useRouter();
 
@@ -11,16 +14,45 @@ function ScrollRestoration() {
       window.history.scrollRestoration = "manual";
     }
 
+    const pruneOldEntries = () => {
+      const keys = Object.keys(sessionStorage).filter((k) =>
+        k.startsWith(SCROLL_KEY_PREFIX)
+      );
+      if (keys.length >= MAX_ENTRIES) {
+        // Remove oldest entries to stay under the limit
+        keys.slice(0, keys.length - MAX_ENTRIES + 1).forEach((k) => {
+          sessionStorage.removeItem(k);
+        });
+      }
+    };
+
     const saveScrollPos = (url) => {
-      sessionStorage.setItem(`scroll-pos:${url}`, JSON.stringify({ x: window.scrollX, y: window.scrollY }));
+      try {
+        pruneOldEntries();
+        sessionStorage.setItem(
+          `${SCROLL_KEY_PREFIX}${url}`,
+          JSON.stringify({ x: window.scrollX, y: window.scrollY })
+        );
+      } catch (e) {
+        // Storage still full after pruning — clear all scroll keys and give up
+        Object.keys(sessionStorage)
+          .filter((k) => k.startsWith(SCROLL_KEY_PREFIX))
+          .forEach((k) => sessionStorage.removeItem(k));
+      }
     };
 
     const restoreScrollPos = (url) => {
-      const pos = JSON.parse(sessionStorage.getItem(`scroll-pos:${url}`) || "null");
-      if (pos) {
-        requestAnimationFrame(() => {
-          window.scrollTo(pos.x, pos.y);
-        });
+      try {
+        const pos = JSON.parse(
+          sessionStorage.getItem(`${SCROLL_KEY_PREFIX}${url}`) || "null"
+        );
+        if (pos) {
+          requestAnimationFrame(() => {
+            window.scrollTo(pos.x, pos.y);
+          });
+        }
+      } catch (e) {
+        // Silently fail — scroll just won't restore
       }
     };
 

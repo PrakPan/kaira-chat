@@ -34,6 +34,15 @@ const HeadingContent = ({ title, subtitle, slug=null,setShowTailoredModal }) => 
         return;
       }
 
+      // Restore original text before splitting (handles re-runs on prop change)
+      const headings = headingRef.current.querySelectorAll(".heading-text");
+      headings.forEach((heading) => {
+        // If already split into spans, restore plain text from current title prop
+        if (heading.querySelector(".word")) {
+          heading.textContent = title || "";
+        }
+      });
+
       // Split text into words and get word elements
       const wordElements = splitTextIntoWords(headingRef.current);
 
@@ -64,7 +73,7 @@ const HeadingContent = ({ title, subtitle, slug=null,setShowTailoredModal }) => 
         stagger: 0.05,
       });
     },
-    { scope: containerRef }
+    { scope: containerRef, dependencies: [title, subtitle] }
   );
   return (
     isStrangerThings ? 

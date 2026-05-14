@@ -1,19 +1,18 @@
 import Head from "next/head";
 import dynamic from "next/dynamic";
-import Script from "next/script";
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 import { connect } from "react-redux";
 
 import NavigationMenu from "../components/revamp/home/NavigationMenu";
 import HeroSection from "../components/revamp/home/HeroSection";
 import JourneySimplified from "../components/revamp/home/JourneySimplified";
-import TravelVibeSection from "../components/revamp/home/TravelVibeSection";
 import WhereNextSection from "../components/revamp/home/WhereNextSection";
 import WhatMakesUsSection from "../components/revamp/home/WhatMakesUsSection";
 import NewFooter from "../components/newfooter/Index";
 import MyTripsSection from "../components/revamp/destination/mytrips";
 import TrustFactors from "../components/revamp/home/TrustFactors";
 import FaqSection from "../components/revamp/home/FaqSection";
+import LuxuryEuropeDestinations from "../components/revamp/home/LuxuryEuropeDestinations";
 
 import * as authaction from "../store/actions/auth";
 import setHotLocationSearch from "../store/actions/hotLocationSearch";
@@ -45,35 +44,16 @@ if (typeof window !== "undefined" && !window.requestIdleCallback) {
   };
 }
 
-/* ---------------- Lazy-loaded sliders (no SSR) ---------------- */
+/* ---------------- Code-split below-the-fold sections (no SSR) ---------------- */
 
-const CurveImageGallery = dynamic(() => import("../components/theme/CurveImageGallery"), {
-  ssr: false,
-  loading: () => <div style={{ height: 260, background: "#f3f4f6" }} />,
-});
 const TestimonialCarousel = dynamic(() => import("../components/theme/TestimonialCarousel"), {
   ssr: false,
-  loading: () => <div style={{ height: 260, background: "#f3f4f6" }} />,
+  loading: () => <div style={{ height: 260, background: "#f3f4f6" }} className="mt-[2rem]" />,
 });
 const PartnersSection = dynamic(() => import("../components/theme/PartnersSection"), {
   ssr: false,
   loading: () => <div style={{ height: 160, background: "#f3f4f6" }} />,
 });
-const CtaBoardingSection = dynamic(() => import("../components/revamp/home/CtaBoardingSection"), {
-  ssr: false,
-  loading: () => <div style={{ height: 200, background: "#f3f4f6" }} />,
-});
-const PlacesBragSection = dynamic(() => import("../components/revamp/home/PlacesBragSection"), {
-  ssr: false,
-  loading: () => <div style={{ height: 260, background: "#f3f4f6" }} />,
-});
-const LuxuryEuropeDestinations = dynamic(
-  () => import("../components/revamp/home/LuxuryEuropeDestinations"),
-  {
-    ssr: false,
-    loading: () => <div style={{ height: 260, background: "#f3f4f6" }} />,
-  }
-);
 const TravelerMadeItinerariesSection = dynamic(
   () => import("../components/revamp/home/TravelerMadeItinerariesSection"),
   {
@@ -81,32 +61,6 @@ const TravelerMadeItinerariesSection = dynamic(
     loading: () => <div style={{ height: 260, background: "#f3f4f6" }} />,
   }
 );
-
-/* ---------------- Lazy mount wrapper (no deps) ---------------- */
-
-const LazySection = ({ children }) => {
-  const ref = useRef(null);
-  const [show, setShow] = useState(false);
-
-  useEffect(() => {
-    if (!ref.current) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setShow(true);
-          observer.disconnect();
-        }
-      },
-      { rootMargin: "200px" }
-    );
-
-    observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, []);
-
-  return <div ref={ref}>{show ? children : null}</div>;
-};
 
 /* ---------------- Page ---------------- */
 
@@ -147,18 +101,6 @@ const Home = ({ token, hotLocationSearch, checkAuthState, setHotLocationSearch }
           content="ai trip planner,ai travel planner,travel itinerary planner,custom travel itineraries,personalized travel planning,smart trip planner,automated itinerary builder,online trip planner,digital travel planner,travel planning platform,customized holiday packages,personalized travel package,luxury travel planning,honeymoon travel packages,family travel packages,international travel planner,travel packages with itinerary,create travel itinerary online,plan my trip online,The Tarzan Way, hotels,flights,activities,transfers local travel experience"
         ></meta>
 
-        {/* Non-blocking CSS */}
-        <script
-          type="module"
-          crossOrigin="anonymous"
-          src="/vendor/panorama-slider.js"
-        ></script>
-        <link
-          rel="preload"
-          href="/vendor/panorama-slider.css"
-          as="style"
-          onLoad="this.rel='stylesheet'"
-        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -168,7 +110,7 @@ const Home = ({ token, hotLocationSearch, checkAuthState, setHotLocationSearch }
               name: "The Tarzan Way",
               image: "https://thetarzanway.com/logoblack.svg",
               url: "https://thetarzanway.com/",
-              telephone: "+91 8448687703",
+              telephone: "+91 7827441548",
               address: {
                 "@type": "PostalAddress",
                 addressCountry: "IN",
@@ -200,31 +142,22 @@ const Home = ({ token, hotLocationSearch, checkAuthState, setHotLocationSearch }
 
       <div className={styles.ttwRevamp}>
         <NavigationMenu message={"Welcome to The Tarzan Way!"} />
-        {/* <ThemeHeadline text={`Limited-Time Offer: Up to ₹20,000 OFF | Book Before Dec 20`}/> */}
         <HeroSection slug={"home"} />
         <TrustFactors />
-        {/* {props.token && <MyTripsSection className={"max-w-7xl"} />} */}
         <JourneySimplified />
 
         {token && <MyTripsSection className="max-w-7xl" />}
 
-        {/* Below-the-fold */}
-        <LazySection><PlacesBragSection /></LazySection>
-        <LazySection><LuxuryEuropeDestinations /></LazySection>
-        <LazySection><TravelerMadeItinerariesSection /></LazySection>
-        <LazySection><TravelVibeSection /></LazySection>
-        <LazySection><PartnersSection /></LazySection>
-        <LazySection><WhereNextSection /></LazySection>
-        <LazySection><WhatMakesUsSection /></LazySection>
-        <LazySection><CurveImageGallery /></LazySection>
-        <LazySection><TestimonialCarousel /></LazySection>
-        <LazySection><FaqSection /></LazySection>
-        <LazySection><CtaBoardingSection /></LazySection>
+        <LuxuryEuropeDestinations />
+        <TravelerMadeItinerariesSection />
+        <PartnersSection />
+        <WhereNextSection />
+        {/* <WhatMakesUsSection /> */}
+        <TestimonialCarousel />
+        <FaqSection />
       </div>
 
       <NewFooter page="Homepage" />
-
-      <Script src="/vendor/panorama-slider.js" strategy="lazyOnload" />
     </>
   );
 };

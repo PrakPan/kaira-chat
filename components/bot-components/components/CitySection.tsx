@@ -211,9 +211,10 @@ interface DayRowProps {
   isLastDay: boolean;
   cityName: string;
   index: number;
+  isLoading?: boolean;
 }
 
-const DayRow: React.FC<DayRowProps> = ({ day, isLastDay, cityName, index }) => {
+const DayRow: React.FC<DayRowProps> = ({ day, isLastDay, cityName, index, isLoading }) => {
   const activities: SlabElement[] = [];
   const pois: SlabElement[] = [];
   const restaurants: SlabElement[] = [];
@@ -243,39 +244,42 @@ const DayRow: React.FC<DayRowProps> = ({ day, isLastDay, cityName, index }) => {
       </div>
 
       {/* Content column — matches CityDay: flex-1 px-2 md:px-4 py-2 md:py-3 */}
-      <div className="flex-1 px-2 md:px-4 py-2 md:py-3 min-w-0">
-        {elements.length > 0 ? (
-          <div className="flex flex-col gap-2">
-            {elements.map((item, i) => (
-              <ActivityRow key={i} item={item} index={i} />
-            ))}
-          </div>
-        ) : isLastDay ? (
-          <div className="flex items-center gap-2 md:gap-3">
-            {/* IoBagCheckOutline equivalent inline SVG */}
-            <div className="flex-shrink-0">
-              <IoBagCheckOutline
-                size={16}
-                className="w-[30px] md:w-[40px] h-[20px] md:h-[27px]"
-              />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="text-xs md:text-sm mt-1">
-                Check out from {cityName}
-              </div>
+     <div className="flex-1 px-2 md:px-4 py-2 md:py-3 min-w-0">
+  {isLoading ? (
+    <div className="flex flex-col gap-3 py-1">
+      {[1, 2].map((i) => (
+        <div key={i} className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full flex-shrink-0 bg-gray-200 animate-pulse" />
+          <div className="flex flex-col gap-1.5 flex-1">
+            <div className="h-3 bg-gray-200 rounded animate-pulse" style={{ width: `${50 + i * 15}%` }} />
+            <div className="flex gap-2">
+              <div className="h-4 w-16 bg-gray-200 rounded-full animate-pulse" />
+              <div className="h-4 w-12 bg-gray-200 rounded animate-pulse" />
             </div>
           </div>
-        ) : (
-          <div className="flex items-center gap-2">
-            {/* MdOutlineDownhillSkiing equivalent */}
-            <MdOutlineDownhillSkiing
-                            size={16}
-                            className="w-[30px] md:w-[40px] h-[20px] md:h-[27px]"
-                          />
-            <span className="text-xs md:text-sm">No activity is added.</span>
-          </div>
-        )}
+        </div>
+      ))}
+    </div>
+  ) : elements.length > 0 ? (
+    <div className="flex flex-col gap-2">
+      {elements.map((item, i) => (
+        <ActivityRow key={i} item={item} index={i} />
+      ))}
+    </div>
+  ) : isLastDay ? (
+    <div className="flex items-center gap-2 md:gap-3">
+      <IoBagCheckOutline size={16} className="w-[30px] md:w-[40px] h-[20px] md:h-[27px]" />
+      <div className="flex-1 min-w-0">
+        <div className="text-xs md:text-sm mt-1">Check out from {cityName}</div>
       </div>
+    </div>
+  ) : (
+    <div className="flex items-center gap-2">
+      <MdOutlineDownhillSkiing size={16} className="w-[30px] md:w-[40px] h-[20px] md:h-[27px]" />
+      <span className="text-xs md:text-sm">No activity is added.</span>
+    </div>
+  )}
+</div>
     </div>
   );
 };
@@ -327,7 +331,7 @@ const HotelRow: React.FC<HotelRowProps> = ({ hotels }) => {
 
 // ─── CitySection ─────────────────────────────────────────────────────────────
 
-const CitySection: React.FC<CitySectionProps> = ({ route }) => {
+const CitySection: React.FC<CitySectionProps & { isLoading?: boolean }> = ({ route, isLoading }) => {
   return (
     <div className="border-1 rounded-t-lg flex flex-col w-full bg-[#FFF5EF]">
       {/* City header — matches ItineraryCity top bar exactly */}
@@ -354,12 +358,13 @@ const CitySection: React.FC<CitySectionProps> = ({ route }) => {
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
           {route.day_by_day?.map((day, dayIndex) => (
             <DayRow
-              key={day.date}
-              day={day}
-              index={dayIndex}
-              isLastDay={dayIndex === route.day_by_day.length - 1}
-              cityName={route.city.name}
-            />
+  key={day.date}
+  day={day}
+  index={dayIndex}
+  isLastDay={dayIndex === route.day_by_day.length - 1}
+  cityName={route.city.name}
+  isLoading={isLoading}
+/>
           ))}
         </div>
       </div>

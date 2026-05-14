@@ -325,7 +325,7 @@ const HotelBookingDetails = (props) => {
     const fetchDetails = async () => {
       setLoadingDetails(true);
       await bookingDetails
-        .get(`/${router?.query?.id}/bookings/accommodation/${props?.id}/`, {
+        .get(`/${router.query.sessionId || router?.query?.id}/bookings/accommodation/${props?.id}/`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
@@ -429,7 +429,7 @@ const HotelBookingDetails = (props) => {
     if (!drawer || !props?.showDetails) return;
     router.push(
       {
-        pathname: `/itinerary/${id}`,
+        pathname: `/chat/${id}`,
         query: {}, // remove "drawer"
       },
       undefined,

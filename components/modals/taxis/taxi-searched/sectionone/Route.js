@@ -22,6 +22,7 @@ import Accordion, {
 import { updateFlightBookingWarning } from "../../../../../services/bookings/UpdateBookings";
 import { useAnalytics } from "../../../../../hooks/useAnalytics";
 import { currencySymbols } from "../../../../../data/currencySymbols";
+import { MdOutlineLuggage } from "react-icons/md";
 
 
 const Container = styled.div`
@@ -383,7 +384,7 @@ const Section = (props) => {
                       )}
                     </>
                   </>
-                ) : props.selectedBooking.transfer_type === "Intercity round-trip" ? (
+                ) : props?.selectedBooking?.transfer_type === "Intercity round-trip" ? (
                   "Round-trip Taxi"
                 ) : (
                   "One-way Taxi"
@@ -395,11 +396,19 @@ const Section = (props) => {
 
             <div className="flex flex-row justify-between">
               <div className="flex flex-col ">
-                <div className="font-600 text-md-lg leading-xl-sm">
+                <div className="font-400 text-[14px] leading-xl-sm flex gap-1 ">
                   {props.data?.taxi_category?.seating_capacity ?  props.data?.taxi_category?.seating_capacity + "-seater" : null}
+                   {bagCapacity > 0 && (
+                        
+                          <div className="flex items-center">
+                           , <MdOutlineLuggage />
+  {bagCapacity} Luggage bags
+                            </div>
+                          
+                      )}
                 </div>
                 <div>
-                  <Accordion
+                  {/* <Accordion
                     borderRadius="0.5rem"
                     open={open}
                     setOpen={setOpen}
@@ -441,7 +450,7 @@ const Section = (props) => {
                         </div>
                       )}
                     </AccordionDetails>
-                  </Accordion>
+                  </Accordion> */}
                 </div>
               </div>
             </div>

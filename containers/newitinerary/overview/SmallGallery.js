@@ -16,7 +16,11 @@ const Container = styled.div`
 
 const SingleImage = styled.div`
 position: relative;
-overflow: hidden
+overflow: hidden;
+width: 44px;
+height: 44px;
+border-radius: 50%;
+flex-shrink: 0;
 `
 
 const MoreImageOverlay = styled.div`
@@ -55,7 +59,7 @@ function SmallGallery(props) {
     const handleOpenGallery = (index = 0, imageId = null, value = null) => {
         router.push(
             {
-                pathname: `/itinerary/${router.query.id}`,
+                pathname: window.location.pathname,
                 query: {
                     gallery: "true"
                 },
@@ -83,7 +87,7 @@ function SmallGallery(props) {
 
         router.push(
             {
-                pathname: `/itinerary/${router.query.id}`,
+                pathname: window.location.pathname,
                 query: {},
             },
             undefined,
@@ -95,15 +99,15 @@ function SmallGallery(props) {
 
 
     useEffect(() => {
-        const newArr = props.images.slice(0, props.maxShow).filter((item) => item != "");
-        console.log('new array is: ', newArr)
+        const newArr = (props.images || []).slice(0, props.maxShow).filter((item) => item != "");
         setRenderImages(newArr);
-    }, [])
+    }, [props.images, props.maxShow])
+
     return (
         <>
-            <Container className={`pr-[24px] ${isDesktop ? "border-l pl-[24px]" : ""} min-h-full`}>
+            <Container className={!props?.isDraft ?`pr-[24px] ${isDesktop  ? "border-l pl-[24px]" : ""} min-h-full` : "min-h-full"}>
                 {props.images && renderImages.map((item, index) => <>
-                    <SingleImage key={index} style={{ left: -(index * 20) }} className='rounded-full border-white border-[3px]'>
+                    <SingleImage key={index} onClick={() => handleOpenGallery(index, null, 'Image')} style={{ left: -(index * 20) }} className='rounded-full border-white border-[3px] cursor-pointer'>
                         {/* <Image src={item} width={50} height={50} /> */}
                         <ImageLoader
                             // dimensions={{ width: 44, height: 44 }}
@@ -121,8 +125,8 @@ function SmallGallery(props) {
                         ></ImageLoader>
                     </SingleImage>
                 </>)}
-                {props.images?.length > renderImages.length &&
-                    <div style={{ left: -(renderImages.length * 20) }} className='relative rounded-full border-white border-[3px]'>
+                {props.images?.length > renderImages.length && !props.isDraft &&
+                    <div style={{ left: -(renderImages.length * 20) }} className='relative rounded-full border-white border-[3px] '>
                         <MoreImageOverlay className='rounded-full cursor-pointer' onClick={() => handleOpenGallery(0, null, 'More Images')}>
                             +{props?.images?.length - renderImages.length}
                         </MoreImageOverlay>
@@ -135,6 +139,7 @@ function SmallGallery(props) {
                     mercury
                     imgUrlEndPoint={imgUrlEndPoint}
                     closeGalleryHandler={closeGallery}
+                    closeLabel={props.closeLabel}
                     images={props.images}
                 ></FullScreenGallery>
             }

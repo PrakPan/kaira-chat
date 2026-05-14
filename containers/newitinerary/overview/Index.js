@@ -190,7 +190,7 @@ const Overview = (props) => {
         </div>
         {/* {!isDesktop && props.tripsPage && <Ratings />} */}
       </GridContainer>
-      {/* <div className="flex flex-row">
+     { props?.v1 && <div className="flex flex-row">
         <Details
           mercuryItinerary={props?.mercuryItinerary}
           group_type={props.group_type}
@@ -220,13 +220,13 @@ const Overview = (props) => {
             images={props.images}
           />
         )}
-      </div>
+      </div>}
       {!isDesktop && props?.images?.length > 0 && (
         <SmallGallery
           maxShow={Math.min(3, props.images.length)}
           images={props.images}
         />
-      )} */}
+      )}
 
       {/* {isDesktop && <div className="pt-3 pb-1">
         <ImagesMobile images={props.images}></ImagesMobile>

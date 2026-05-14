@@ -39,7 +39,7 @@ const PinSection = (props) => {
   const handleClick = () => {
     router.push(
       {
-        pathname: `/itinerary/${router.query.id}`,
+        pathname: window.location.pathname,
         query: {
           drawer: "showCityDetail",
           city_id: props?.cityId
@@ -80,6 +80,7 @@ const PinSection = (props) => {
           pinColour={props.pinColour}
           index={props?.index}
           length={props?.length}
+          className='ml-[2px]'
         ></Pin>
       )}
       <Heading

@@ -1,16 +1,12 @@
 import Image from "next/image";
-import React, { useState, useEffect, useRef } from "react";
-import Button from "../ui/button/Index";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { connect } from "react-redux";
 import * as authaction from "../../store/actions/auth";
 import * as otpaction from "../../store/actions/getOtp";
-import Spinner from "../Spinner";
-import styled from "styled-components";
 import Link from "next/link";
 import CountryCodeDropdown from "./CountryDropdown";
 import { ImCheckboxUnchecked, ImCheckboxChecked } from "react-icons/im";
 import OTPInput from "react-otp-input";
-import FloatingInput from "../ui/input/FloatingInput";
 import { BiError } from "react-icons/bi";
 import { IoLogoWhatsapp } from "react-icons/io";
 import ReCAPTCHA from "react-google-recaptcha";
@@ -21,56 +17,8 @@ import { getCountryCodes } from "../../store/actions/countryCodes";
 import { RECAPTCHA_SITE_KEY } from "../../services/constants";
 import { useAnalytics } from "../../hooks/useAnalytics";
 import { RxCross2 } from "react-icons/rx";
-import { FaEdit, FaPen } from "react-icons/fa";
 
-const MobileNumberContainer = styled.div`
-  display: grid;
-  grid-template-columns: 90px 1fr;
-  gap: 8px;
-`;
-
-const WhatsappCheckBox = styled.div`
-  cursor: pointer;
-  font-weight: 400;
-  font-size: 14px;
-  line-height: 16px;
-  display: flex;
-  gap: 0.3rem;
-  margin-top: 16px;
-  align-items: center;
-`;
-
-const ErrorText = styled.div`
-  color: red;
-  font-size: 13px;
-  margin-top: 5px;
-  margin-left: 5px;
-  height: 1rem;
-  display: flex;
-  align-items: center;
-`;
-
-const OtpContainer = styled.div`
-  div {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr 1fr 1fr !important;
-    gap: 0.8rem;
-  }
-  .otpBox {
-    width: 100% !important;
-    border: 1px solid #d0d5dd;
-    border-radius: 8px;
-    height: 3rem;
-    box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.05);
-  }
-`;
-
-const CountryImg = styled(Image)`
-  background-position: cover;
-  alt: "";
-`;
-
-var userDetails = {
+let userDetails = {
   firstName: "",
   lastName: "",
   userName: "",
@@ -78,37 +26,35 @@ var userDetails = {
 };
 
 const LogIn = React.memo((props) => {
-  let isPageWide = media("(min-width: 768px)");
-
-  const mobileRef = useRef();
-  const recaptchaRef = useRef(null);
-  const [phone, setPhone] = useState("");
-  const [otpResent, setOtpResent] = useState(false);
-  const [whatsapp, setWhatsapp] = useState(true);
-  const [extension, setExtension] = useState("India"); //store extension
-  const [openCountryCodeOption, setOpenCountryCodeOption] = useState(false);
-  const [otp, setOtp] = useState("");
-  const [userNameError, setUserNameError] = useState(false);
-  const [counter, setCounter] = useState(30);
-  let email = null; //JSX for email
-  let password = null; //JSX for OTP
-  let mobileInput = null; //JSX for mobile input field
-  const [userDetailsRequired, setUserDetailsRequired] = useState(false);
+  const isPageWide = media("(min-width: 768px)");
   const { trackUserLogin, trackUserAccountUpdate } = useAnalytics();
-  const [skipLogin, setSkipLogin] = useState(false);
+
+  const mobileRef = useRef(null);
+  const recaptchaRef = useRef(null);
+
+  const [phone, setPhone] = useState("");
+  const [otp, setOtp] = useState("");
+  const [whatsapp, setWhatsapp] = useState(true);
+  const [extension, setExtension] = useState("India");
+  const [openCountryCodeOption, setOpenCountryCodeOption] = useState(false);
+  const [otpResent, setOtpResent] = useState(false);
+  const [counter, setCounter] = useState(30);
+  const [userDetailsRequired, setUserDetailsRequired] = useState(false);
+  const [userNameError, setUserNameError] = useState(false);
+  const [phoneError, setPhoneError] = useState("");
 
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://checkout.razorpay.com/v1/checkout.js";
     script.async = true;
     document.body.appendChild(script);
-    props.getCountryCodes();
+    if (props.getCountryCodes) props.getCountryCodes();
   }, []);
 
+  // OTP resend timer
   useEffect(() => {
     if (props.otpSent) {
       setCounter(30);
-
       const timer = setInterval(() => {
         setCounter((prev) => {
           if (prev <= 1) {
@@ -118,49 +64,55 @@ const LogIn = React.memo((props) => {
           return prev - 1;
         });
       }, 1000);
-
       return () => clearInterval(timer);
     }
   }, [props.otpSent, otpResent]);
 
-  const minutes = String(Math.floor(counter / 60)).padStart(2, "0");
-  const seconds = String(counter % 60).padStart(2, "0");
-
+  // Auto-close once we have token + phone + name
   useEffect(() => {
     if (
       props.token &&
       props.phone &&
       props.name &&
-      props.token &&
-      props.name &&
       props.phone !== "null" &&
-      props.token &&
-      props.name &&
       props.phone !== null
-    )
-      props.authCloseLogin();
-  }, [props.name, props.phone, props.token]);
-
-  useEffect(() => {
-    props.onResetLogin();
-    if (mobileRef.current) {
-      mobileRef.current.focus();
+    ) {
+      props.authCloseLogin && props.authCloseLogin();
     }
+  }, [props.token, props.phone, props.name]);
+
+  // Reset login state on mount
+  useEffect(() => {
+    props.onResetLogin && props.onResetLogin();
+    setTimeout(() => {
+      if (mobileRef.current) mobileRef.current.focus();
+    }, 80);
   }, []);
 
+  // Auto submit OTP when user enters all 4 digits
   useEffect(() => {
     if (otp.length > 3) {
       submitOtpHandler();
     }
   }, [otp]);
 
+  const minutes = String(Math.floor(counter / 60)).padStart(2, "0");
+  const seconds = String(counter % 60).padStart(2, "0");
+
+  const separateCountryCode = (phoneNumber) => {
+    const pattern = /^(\+\d{1,3})(\d{10})$/;
+    const match = phoneNumber.match(pattern);
+    if (match) return { countryCode: match[1], number: match[2] };
+    return null;
+  };
+
   const handleExtensionChangeOption = (country) => {
     setExtension(country);
+    if (!props.CountryCodes || !props.CountryCodes[country]) return;
     if (phone.length <= 10) {
       setPhone(props.CountryCodes[country].label + phone);
       return;
     }
-
     const mobile = separateCountryCode(phone);
     if (mobile) {
       setPhone(props.CountryCodes[country].label + mobile.number);
@@ -169,85 +121,58 @@ const LogIn = React.memo((props) => {
     }
   };
 
-  //Change user details on key press
-  const _userDetailsOnChangeHandler = (event, target) => {
-    userDetails = {
-      ...userDetails,
-      [target]: event.target.value,
-    };
-  };
-
   const handleMobileBlur = () => {
-    const phone = mobileRef.current.value;
-    setPhone(phone);
+    if (mobileRef.current) setPhone(mobileRef.current.value);
   };
 
-  const separateCountryCode = (phoneNumber) => {
-    const pattern = /^(\+\d{1,3})(\d{10})$/;
-    const match = phoneNumber.match(pattern);
-
-    if (match) {
-      return {
-        countryCode: match[1],
-        number: match[2],
-      };
-    } else {
-      return null; // Invalid phone number format
-    }
+  const handleMobileChange = (event) => {
+    setPhone(event.target.value);
+    if (phoneError) setPhoneError("");
   };
 
-  const checkNewUserData = () => {
-    return 1;
+  const _userDetailsOnChangeHandler = (event, target) => {
+    userDetails = { ...userDetails, [target]: event.target.value };
   };
 
-  //Submit OTP
   const submitOtpHandler = () => {
     setUserNameError(false);
 
-    if (userDetailsRequired == false && props.newUser) {
+    if (!userDetailsRequired && props.newUser) {
       setUserDetailsRequired(true);
       return;
     }
 
+    if (!props.onAuth) return;
+    const country =
+      props.CountryCodes && props.CountryCodes[extension]
+        ? props.CountryCodes[extension].value
+        : null;
 
     if (props.newUser) {
-      const newUserValidity = checkNewUserData();
-
-      if (!userDetails.userName) return setUserNameError(true);
-
-      if (newUserValidity)
-        props.onAuth(
-          phone,
-          otp,
-          userDetails.userName,
-          userDetails.email,
-          whatsapp,
-          props.CountryCodes[extension].value,
-          props.onSuccess,
-          trackUserLogin
-        );
-    } else if (props.otpSent && !props.name) {
-      props.onAuth(
-        phone,
-        otp,
-        userDetails.userName,
-        null,
-        setUserDetailsRequired,
-        whatsapp,
-        null,
-        props.onSuccess,
-        trackUserLogin
-      );
-    } else if (props.otpSent && !props.name && !props.email) {
+      if (!userDetails.userName) {
+        setUserNameError(true);
+        return;
+      }
       props.onAuth(
         phone,
         otp,
         userDetails.userName,
         userDetails.email,
         whatsapp,
+        country,
+        props.onSuccess,
+        trackUserLogin,
+      );
+    } else if (props.otpSent && !props.name) {
+      props.onAuth(
+        phone,
+        otp,
+        userDetails.userName,
+        null,
+        whatsapp,
         null,
         props.onSuccess,
-        trackUserLogin
+        trackUserLogin,
       );
     } else if (props.otpSent && !props.email) {
       props.onAuth(
@@ -258,7 +183,7 @@ const LogIn = React.memo((props) => {
         whatsapp,
         null,
         props.onSuccess,
-        trackUserLogin
+        trackUserLogin,
       );
     } else {
       props.onAuth(
@@ -269,105 +194,64 @@ const LogIn = React.memo((props) => {
         whatsapp,
         null,
         props.onSuccess,
-        trackUserLogin
+        trackUserLogin,
       );
     }
   };
 
-  //Store OTP
-  const handleOtpChange = (OTP) => {
-    setOtp(OTP);
-  };
-
-  //Set Mobile
-  const handleMobileChange = (event) => {
-    setPhone(event.target.value);
-  };
-
-  //Dispatch Action
   const otpHandler = (token) => {
     const phoneNumber = phone.trim();
+    let mobile = phoneNumber;
     if (phoneNumber.length <= 10) {
-      const mobile = props.CountryCodes
+      mobile = props.CountryCodes
         ? props.CountryCodes[extension].label + phoneNumber
         : `+91${phoneNumber}`;
       setPhone(mobile);
-      const data = {
-        token: token,
-        mobile: mobile,
-        whatsapp: whatsapp,
-      };
-      props.onOtp(data);
     } else {
       setPhone(phoneNumber);
-      const data = {
-        token: token,
-        mobile: phoneNumber,
-        whatsapp: whatsapp,
-      };
-      props.onOtp(data);
     }
-    recaptchaRef.current.reset();
+    const data = { token, mobile, whatsapp };
+    props.onOtp && props.onOtp(data);
+    if (recaptchaRef.current) recaptchaRef.current.reset();
   };
 
-  //TEST
   const resetOtpHandler = (token) => {
-    const data = {
-      token: token,
-      mobile: phone,
-      whatsapp: whatsapp,
-    };
-    props.onOtp(data);
-    setOtpResent((prev) => !prev);
+    const data = { token, mobile: phone, whatsapp };
+    props.onOtp && props.onOtp(data);
+    setOtpResent((p) => !p);
     setCounter(30);
-    recaptchaRef.current.reset();
+    if (recaptchaRef.current) recaptchaRef.current.reset();
   };
-
-  //Update phone
-  const _updatePhoneHandler = () => {
-    props.onUpdate(
-      {
-        phone: phone,
-        whatsapp_opt_in: whatsapp,
-      },
-      trackUserAccountUpdate
-    );
-  };
-
-  const _handlePhoneUpdate = () => {
-    props.onResetLogin();
-    mobileRef.current.focus();
-  };
-
-  const _handleGoogleLogin = useGoogleLogin({
-    onSuccess: (tokenResponse) => props.onGoogleAuth(tokenResponse),
-  });
 
   const onRecaptchaChange = (value) => {
-    if (!value) {
-      console.warn("Recaptcha returned null");
-      return;
-    }
+    if (!value) return;
     if (!props.otpSent) otpHandler(value);
     else resetOtpHandler(value);
   };
 
   const verifyRecaptchaHandler = () => {
-    if (props.mobileFail) {
-      props.onResetLogin();
-    }
-
+    const phoneNumber = phone.trim();
     if (!props.otpSent) {
-      props.onStartLoading();
-    } else {
-      props.onStartLoading();
+      if (!phoneNumber) {
+        setPhoneError("Please enter your mobile number");
+        if (mobileRef.current) mobileRef.current.focus();
+        return;
+      }
+      if (phoneNumber.replace(/\D/g, "").length < 10) {
+        setPhoneError("Please enter a valid 10-digit mobile number");
+        if (mobileRef.current) mobileRef.current.focus();
+        return;
+      }
     }
+    setPhoneError("");
 
-    const recaptchaValue = recaptchaRef.current.getValue();
-    if (recaptchaValue) {
-      if (!props.otpSent) otpHandler(recaptchaValue);
-      else resetOtpHandler(recaptchaValue);
-    } else {
+    if (props.mobileFail) {
+      props.onResetLogin && props.onResetLogin();
+    }
+    props.onStartLoading && props.onStartLoading();
+
+    if (recaptchaRef.current) {
+      recaptchaRef.current.reset();
       recaptchaRef.current.execute();
     }
   };
@@ -376,575 +260,551 @@ const LogIn = React.memo((props) => {
     setOtp("");
     setUserDetailsRequired(false);
     setCounter(30);
-    props.onResetLogin();
-
+    setPhoneError("");
+    props.onResetLogin && props.onResetLogin();
+    if (recaptchaRef.current) recaptchaRef.current.reset();
     setTimeout(() => {
-      if (mobileRef.current) {
-        mobileRef.current.focus();
-      }
+      if (mobileRef.current) mobileRef.current.focus();
     }, 100);
   };
 
-  mobileInput = (
-    <div className="w-full">
-      <input
-        required
-        error={props.mobileFail ? true : false}
-        helperText={props.mobileFail ? props.mobilefailmessage : null}
-        disabled={props.otpSent ? true : false}
-        key="mobile"
-        name="mobile"
-        placeholder="Enter phone number"
-        type="mobile"
-        id="mobile"
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            e.preventDefault();
-          }
-        }}
-        value={phone}
-        onChange={handleMobileChange}
-        onBlur={handleMobileBlur}
-        className=" !border-[0px] h-[22px] focus:outline-none w-full"
-        ref={mobileRef}
-        height={"22px"}
-      />
+  const _updatePhoneHandler = () => {
+    props.onUpdate &&
+      props.onUpdate(
+        { phone, whatsapp_opt_in: whatsapp },
+        trackUserAccountUpdate,
+      );
+  };
+
+  const _handleGoogleLogin = useGoogleLogin({
+    onSuccess: (tokenResponse) =>
+      props.onGoogleAuth && props.onGoogleAuth(tokenResponse),
+  });
+
+  // Display phone (mask for OTP screen)
+  const maskedPhone = useMemo(() => {
+    const p = phone.trim();
+    if (!p) return "";
+    if (p.length < 6) return p;
+    const visibleHead = p.slice(0, p.length - 4 - 0);
+    const tail = p.slice(-4);
+    return `${visibleHead.slice(0, p.length - 6)}${visibleHead
+      .slice(p.length - 6)
+      .replace(/\d/g, "X")}${tail}`;
+  }, [phone]);
+
+  // ── UI fragments ──
+  const trustStrip = (
+    <div className="flex flex-wrap justify-center gap-x-2 gap-y-1 mt-4 pt-3 border-t border-[#E5E7EB] text-[11px] text-[#6B7280]">
+      <span>🔒 Secure</span>
+      <span>·</span>
+      <span>📄 GST invoice</span>
+      <span>·</span>
+      <span>🛡 10,000+ trips planned</span>
     </div>
   );
 
-  email = (
+  const legal = props.isTailored ? (
     <>
-      <FloatingInput
-        placeholder="Email Address"
-        required
-        error={props.emailFail ? true : false}
-        helperText={props.emailFail ? props.emailfailmessage : null}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            e.preventDefault();
-          }
-        }}
-        key="email"
-        name="email"
-        label="Email Address"
-        type="email"
-        id="email"
-        onChange={(event) => {
-          _userDetailsOnChangeHandler(event, "email");
-        }}
+      <div className="text-[11px] text-[#6B7280] text-center mt-3">
+        To unlock all features in your itinerary, we recommend logging in. It's
+        free.
+      </div>
+      <div className="flex justify-center gap-3 items-center text-[11px] mt-1">
+        <Link
+          href="/terms-conditions"
+          target="_blank"
+          className="text-[#3A85FC] no-underline"
+        >
+          Terms of Service
+        </Link>
+        <Link
+          href="/privacy-policy"
+          target="_blank"
+          className="text-[#3A85FC] no-underline"
+        >
+          Privacy Policy
+        </Link>
+      </div>
+    </>
+  ) : (
+    <div className="text-[10.5px] text-[#6B7280] leading-[1.5] mt-3 text-center">
+      By continuing you agree to our{" "}
+      <Link
+        href="/terms-conditions"
+        target="_blank"
+        className="text-[#0F1A2E] underline"
+      >
+        Terms
+      </Link>{" "}
+      and{" "}
+      <Link
+        href="/privacy-policy"
+        target="_blank"
+        className="text-[#0F1A2E] underline"
+      >
+        Privacy Policy
+      </Link>
+      .
+    </div>
+  );
+
+  const phoneForm = (
+    <>
+      <div className="text-[11px] font-semibold text-[#6B7280] uppercase tracking-[0.05em] mb-1.5">
+        Mobile number
+      </div>
+      <div
+        className={`flex border-[1.5px] rounded-xl overflow-hidden focus-within:border-[#0F1A2E] transition-colors relative ${
+          phoneError ? "border-[#DC2626]" : "border-[#E5E7EB]"
+        }`}
+      >
+        <div
+          className="flex items-center gap-1.5 px-3 py-3 bg-[#FAFAF7] border-r border-[#E5E7EB] text-sm font-semibold cursor-pointer select-none"
+          onClick={() => setOpenCountryCodeOption(true)}
+        >
+          {props.CountryCodes && props.CountryCodes[extension]?.img ? (
+            <Image
+              src={props.CountryCodes[extension].img}
+              alt=""
+              height={20}
+              width={20}
+              style={{ borderRadius: "50%", objectFit: "cover" }}
+            />
+          ) : (
+            <span className="text-base">🇮🇳</span>
+          )}
+          <span>
+            {props.CountryCodes && props.CountryCodes[extension]?.label
+              ? props.CountryCodes[extension].label
+              : "+91"}
+          </span>
+          <span
+            style={{
+              width: 0,
+              height: 0,
+              borderLeft: "4px solid transparent",
+              borderRight: "4px solid transparent",
+              borderTop: "5px solid #6B7280",
+              marginLeft: 2,
+            }}
+          />
+        </div>
+        {openCountryCodeOption && (
+          <div className="absolute top-full left-0 mt-1 z-[10000]">
+            <CountryCodeDropdown
+              onClose={() => setOpenCountryCodeOption(false)}
+              CountryCodes={props.CountryCodes}
+              handleExtensionChangeOption={handleExtensionChangeOption}
+              setOpenCountryCodeOption={setOpenCountryCodeOption}
+            />
+          </div>
+        )}
+        <input
+          ref={mobileRef}
+          type="tel"
+          inputMode="numeric"
+          placeholder="98XXX XXXXX"
+          maxLength={15}
+          className="flex-1 px-3 py-3 border-none outline-none text-[15px] font-inherit min-w-0"
+          value={phone}
+          onChange={handleMobileChange}
+          onBlur={handleMobileBlur}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              verifyRecaptchaHandler();
+            }
+          }}
+          disabled={!!props.otpSent}
+        />
+      </div>
+
+      {phoneError && (
+        <div className="flex items-center gap-1 text-[#DC2626] text-[12px] mt-1.5">
+          <BiError style={{ fontSize: "1rem" }} />
+          <span>{phoneError}</span>
+        </div>
+      )}
+
+      {!phoneError && props.mobileFail && props.mobilefailmessage && (
+        <div className="flex items-center gap-1 text-[#DC2626] text-[12px] mt-1.5">
+          <BiError style={{ fontSize: "1rem" }} />
+          <span>{props.mobilefailmessage}</span>
+        </div>
+      )}
+
+      {/* <div
+        className="flex items-center gap-1.5 mt-3 cursor-pointer text-[13px] text-[#0F1A2E]"
+        onClick={() => setWhatsapp(!whatsapp)}
+      >
+        {whatsapp ? (
+          <ImCheckboxChecked className="text-[#3A85FC]" />
+        ) : (
+          <ImCheckboxUnchecked />
+        )}
+        <span>Receive OTP on WhatsApp</span>
+        <IoLogoWhatsapp className="text-base text-[#25D366]" />
+      </div> */}
+
+      <button
+        type="button"
+        onClick={verifyRecaptchaHandler}
+        disabled={!!props.loading}
+        className="w-full mt-3 py-3.5 rounded-xl font-semibold text-[14px] flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1FB855] text-white disabled:opacity-60"
+      >
+        {props.loading ? (
+          <span>Sending…</span>
+        ) : (
+          <>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="white"
+              aria-hidden
+            >
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+            </svg>
+            Send OTP on WhatsApp
+          </>
+        )}
+      </button>
+
+      <div className="text-center text-[12.5px] text-[#6B7280] mt-3">
+        or{" "}
+        <span
+          className="text-[#0F1A2E] font-semibold cursor-pointer"
+          onClick={() => {
+            setWhatsapp(false);
+            setTimeout(() => verifyRecaptchaHandler(), 0);
+          }}
+        >
+          receive via SMS
+        </span>
+      </div>
+
+      <ReCAPTCHA
+        size="invisible"
+        sitekey={RECAPTCHA_SITE_KEY}
+        ref={recaptchaRef}
+        onChange={onRecaptchaChange}
+        className="hidden"
       />
     </>
   );
 
-  password = (
+  const otpScreen = (
     <>
-      <OtpContainer>
+      <div className="inline-flex items-center gap-1.5 bg-[#FFF9DB] text-[#92400E] px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-[0.05em] mb-3">
+        📱 One more step
+      </div>
+      <div className="text-[20px] font-bold leading-[1.25] tracking-[-0.02em] mb-1.5">
+        Enter the 4-digit OTP
+      </div>
+      <div className="text-[12.5px] text-[#6B7280] leading-[1.45] mb-3">
+        Sent to your {whatsapp ? "WhatsApp" : "SMS"} · valid for 5 mins.
+      </div>
+
+      <div className="bg-[#F9FAFB] rounded-[10px] px-3 py-2.5 text-[12.5px] text-[#6B7280] flex items-center justify-between mb-3">
+        <span>
+          OTP sent to{" "}
+          <strong className="text-[#0F1A2E]">{maskedPhone || phone}</strong>
+        </span>
+        <span
+          className="text-[#0F1A2E] font-semibold no-underline text-[12px] cursor-pointer"
+          onClick={handleEditPhone}
+        >
+          Change
+        </span>
+      </div>
+
+      <div className="otpRow">
         <OTPInput
           value={otp}
-          onChange={handleOtpChange}
+          onChange={setOtp}
           numInputs={4}
           inputType="tel"
-          inputStyle="otpBox"
-          renderInput={(props) => <input {...props} />}
+          shouldAutoFocus
+          renderInput={(p) => <input {...p} />}
+          renderSeparator={null}
+          containerStyle="otpContainer"
+          inputStyle="otpBoxNew"
         />
-      </OtpContainer>
+      </div>
+
       {props.otpFail && (
-        <ErrorText>
+        <div className="flex items-center gap-1 text-[#DC2626] text-[12px] mt-2">
           <BiError style={{ fontSize: "1rem" }} />
-          <span style={{ marginLeft: "2px", marginTop: "2px" }}>
-            OTP is not valid
-          </span>
-        </ErrorText>
+          <span>OTP is not valid</span>
+        </div>
       )}
+
+      <button
+        type="button"
+        onClick={submitOtpHandler}
+        disabled={!!props.loading}
+        className="w-full mt-4 py-3.5 rounded-xl font-semibold text-[14px] flex items-center justify-center gap-2 bg-[#0F1A2E] hover:bg-[#1A2842] text-white disabled:opacity-60"
+      >
+        {props.loading ? "Verifying…" : "Verify & continue"}
+      </button>
+
+      <div className="text-center mt-3 text-[12px] text-[#6B7280]">
+        {counter > 0 ? (
+          <>
+            Didn't get it?{" "}
+            <strong className="text-[#0F1A2E]">
+              Resend in {minutes}:{seconds}
+            </strong>
+          </>
+        ) : (
+          <>
+            Didn't get it?{" "}
+            <span
+              className={`font-semibold cursor-pointer ${
+                props.loading ? "text-gray-400" : "text-[#3A85FC]"
+              }`}
+              onClick={!props.loading ? verifyRecaptchaHandler : undefined}
+            >
+              {props.loading ? "Sending…" : "Resend OTP"}
+            </span>
+          </>
+        )}
+      </div>
+
+      <ReCAPTCHA
+        size="invisible"
+        sitekey={RECAPTCHA_SITE_KEY}
+        ref={recaptchaRef}
+        onChange={onRecaptchaChange}
+        className="hidden"
+      />
     </>
   );
 
-  if (props.loadingsocial)
-    return (
-      <div style={{ height: "27.25rem", width: "100%", display: "flex" }}>
-        <LoginLoadingIcon width={"7rem"} />
+  const detailsForm = (
+    <>
+      <div className="text-[20px] font-bold leading-[1.25] tracking-[-0.02em] mb-1.5">
+        Just a few details
       </div>
-    );
+      <div className="text-[12.5px] text-[#6B7280] leading-[1.45] mb-4">
+        We'll personalize your trip with these.
+      </div>
+
+      {(props.newUser || (props.otpSent && !props.name)) && (
+        <div className="mb-3">
+          <div className="text-[11px] font-semibold text-[#6B7280] uppercase tracking-[0.05em] mb-1.5">
+            Full name
+          </div>
+          <input
+            type="text"
+            placeholder="Enter your full name"
+            className="w-full border-[1.5px] border-[#E5E7EB] rounded-xl px-3 py-3 text-[15px] outline-none focus:border-[#0F1A2E]"
+            onChange={(e) => _userDetailsOnChangeHandler(e, "userName")}
+          />
+          {userNameError && (
+            <div className="text-[#DC2626] text-[12px] mt-1">
+              Please enter a valid name
+            </div>
+          )}
+        </div>
+      )}
+
+      {(props.newUser || (props.otpSent && !props.email)) && (
+        <div className="mb-2">
+          <div className="text-[11px] font-semibold text-[#6B7280] uppercase tracking-[0.05em] mb-1.5">
+            Email
+          </div>
+          <input
+            type="email"
+            placeholder="Enter your email"
+            className="w-full border-[1.5px] border-[#E5E7EB] rounded-xl px-3 py-3 text-[15px] outline-none focus:border-[#0F1A2E]"
+            onChange={(e) => _userDetailsOnChangeHandler(e, "email")}
+          />
+          {props.emailFail && (
+            <div className="text-[#DC2626] text-[12px] mt-1">
+              {props.emailfailmessage || "Invalid email"}
+            </div>
+          )}
+        </div>
+      )}
+
+      <button
+        type="button"
+        onClick={submitOtpHandler}
+        disabled={!!props.loading}
+        className="w-full mt-4 py-3.5 rounded-xl font-semibold text-[14px] bg-[#0F1A2E] hover:bg-[#1A2842] text-white disabled:opacity-60"
+      >
+        {props.loading ? "Saving…" : "Continue"}
+      </button>
+    </>
+  );
+
+  const introHeader = (
+    <>
+      <div className="inline-flex items-center gap-1.5 bg-[#FFF9DB] text-[#92400E] px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-[0.05em] mb-3">
+        🔓 Almost there
+      </div>
+      <div className="text-[20px] sm:text-[22px] font-bold leading-[1.25] tracking-[-0.02em] mb-1.5">
+        {props.loginmessage || props.message || "Login to see live prices & book"}
+      </div>
+      <div className="text-[12.5px] sm:text-[13px] text-[#6B7280] leading-[1.5] mb-4">
+        10 seconds. We'll send the OTP on{" "}
+        {whatsapp ? "WhatsApp" : "SMS"}.
+      </div>
+    </>
+  );
+
+  const benefits = (
+    <div
+      className={`gap-2 mb-4 ${
+        isPageWide ? "grid grid-cols-2" : "flex flex-col"
+      }`}
+    >
+      {[
+        {
+          icon: "💸",
+          bg: "#FEF3C7",
+          title: "Live prices, locked 24h",
+          desc: "Real fares held while you decide",
+        },
+        {
+          icon: "💬",
+          bg: "#DCFCE7",
+          title: "WhatsApp deals + concierge",
+          desc: "Member fares, real human 24×7",
+        },
+        {
+          icon: "📌",
+          bg: "#DBEAFE",
+          title: "Save plan, any device",
+          desc: "Pick up exactly where you left",
+        },
+        {
+          icon: "🧭",
+          bg: "#FCE7F3",
+          title: "Live trip companion",
+          desc: "Kaira on standby through travel",
+        },
+      ].map((b, i) =>
+        isPageWide ? (
+          <div
+            key={i}
+            className="bg-[#FAFAF7] border border-[#E5E7EB] rounded-xl p-3 transition-all hover:border-[#FFDD00] hover:bg-[#FFFCEF]"
+          >
+            <div
+              className="w-[30px] h-[30px] rounded-lg flex items-center justify-center text-[15px] mb-2"
+              style={{ background: b.bg }}
+            >
+              {b.icon}
+            </div>
+            <div className="text-[12px] font-bold leading-[1.3] mb-0.5">
+              {b.title}
+            </div>
+            <div className="text-[11px] text-[#6B7280] leading-[1.4]">
+              {b.desc}
+            </div>
+          </div>
+        ) : (
+          <div
+            key={i}
+            className="flex items-center gap-2.5 px-2.5 py-2 bg-[#FAFAF7] border border-[#E5E7EB] rounded-[10px]"
+          >
+            <div
+              className="w-7 h-7 rounded-md flex items-center justify-center text-[14px] flex-shrink-0"
+              style={{ background: b.bg }}
+            >
+              {b.icon}
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-[12px] font-semibold leading-[1.3]">
+                {b.title}
+              </div>
+              <div className="text-[10.5px] text-[#6B7280] leading-[1.35] mt-px">
+                {b.desc}
+              </div>
+            </div>
+          </div>
+        ),
+      )}
+    </div>
+  );
+
+  const screen = props.loadingsocial ? (
+    <div className="flex items-center justify-center py-16">
+      <LoginLoadingIcon width={"7rem"} />
+    </div>
+  ) : !props.otpSent ? (
+    <>
+      {!props.noheading && introHeader}
+      {benefits}
+      {phoneForm}
+      {trustStrip}
+      {legal}
+    </>
+  ) : userDetailsRequired ? (
+    detailsForm
+  ) : (
+    otpScreen
+  );
+
+  const skipLogin = props.isTailored && (
+    <div
+      className="text-center text-[#3A85FC] cursor-pointer text-[13px] mt-3"
+      onClick={() => {
+        props.onhide && props.onhide();
+        props.onSkipLogin && props.onSkipLogin();
+      }}
+    >
+      Continue without logging in?
+    </div>
+  );
 
   return (
     <div
       className={`${
-        isPageWide
-          ? "pt-[36px] px-[32px]"
-          : "pt-[12px] pb-[13px] px-[16px] h-full"
-      } h-max`}
+        isPageWide ? "px-[24px] py-[8px]" : "px-[16px] pt-[8px] pb-[20px]"
+      }`}
     >
-      <div className="flex flex-col gap-[12px] sm:gap-[24px] h-full">
-        {!isPageWide && (
-          <div className="flex justify-end">
-            <RxCross2
-              style={{
-                fontSize: "1.5rem",
-                cursor: "pointer",
-                zIndex: 999,
-              }}
-              onClick={props.onhide}
-            />
-          </div>
-        )}
-        {!props?.otpSent ? (
-          <div>
-            {!props.noheading && (
-              <div
-                style={{
-                  fontSize: "32px",
-                  textAlign: isPageWide ? "left" : "center",
-                  margin: isPageWide
-                    ? "0 0rem 32px 0rem"
-                    : "0rem 0rem 1rem 0rem",
-                  fontWeight: "700",
-                }}
-              >
-                {!props?.onSuccess ? (
-                  <>
-                    <h1 className="text-bold font-700 text-left ">
-                      {props.loginmessage ? props.loginmessage : "Welcome to"}
-                    </h1>
-                    <h1 className="text-bold font-700 text-left">
-                      {props.loginmessage
-                        ? props.loginmessage
-                        : "The Tarzan Way!"}
-                    </h1>
-                  </>
-                ) : (
-                  <>
-                    <h1 className="text-bold font-700">
-                      {props.loginmessage
-                        ? props.loginmessage
-                        : props?.message || "Please login to view details"}
-                    </h1>
-                  </>
-                )}
-              </div>
-            )}
+      <style jsx global>{`
+        .otpContainer {
+          display: flex !important;
+          gap: 0.45rem;
+          width: 100%;
+        }
+        .otpBoxNew {
+          flex: 1 1 0% !important;
+          min-width: 0 !important;
+          width: 100% !important;
+          height: 50px;
+          border: 1.5px solid #e5e7eb;
+          border-radius: 10px;
+          text-align: center;
+          font-size: 20px;
+          font-weight: 600;
+          outline: none;
+          background: white;
+        }
+        .otpBoxNew:focus {
+          border-color: #0f1a2e;
+        }
+      `}</style>
 
-            {(props.token && !props.phone) ||
-            (props.token && props.phone === "null") ? (
-              <p
-                style={{ margin: "0 1rem 2rem 1rem", fontWeight: "700" }}
-                className="text-[32px] text-center"
-              >
-                This is where your experience captain can reach you to
-                personalize your plan.
-              </p>
-            ) : null}
-
-            {(props.token && !props.phone) ||
-            (props.token && props.phone == "null") ? (
-              <form noValidate>
-                <div className="Body2R_14 mb-[6px]">Phone Number</div>
-                <MobileNumberContainer className="border-[1px] border-[#d0d5dd] rounded-lg p-[10px]">
-                  <div
-                    className="w-fit flex flex-row gap-3 px-2 items-center cursor-pointer border-r-2 border-black"
-                    onClick={() => setOpenCountryCodeOption(true)}
-                  >
-                    <div className="flex gap-3">
-                      <CountryImg
-                        height="30"
-                        width="30"
-                        objectFit="cover"
-                        src={
-                          props.CountryCodes
-                            ? props.CountryCodes[extension].img
-                            : ""
-                        }
-                      ></CountryImg>
-                      <div className="Body2R_14">
-                        {props?.CountryCodes[extension].label || +91}
-                      </div>
-                    </div>
-                  </div>
-
-                  {openCountryCodeOption && (
-                    <CountryCodeDropdown
-                      onClose={() => setOpenCountryCodeOption(false)}
-                      CountryCodes={props.CountryCodes}
-                      handleExtensionChangeOption={handleExtensionChangeOption}
-                      setOpenCountryCodeOption={setOpenCountryCodeOption}
-                    />
-                  )}
-                  <div className="Body2R_14">{mobileInput}</div>
-                </MobileNumberContainer>
-
-                {/* ADD THIS ERROR DISPLAY RIGHT AFTER MobileNumberContainer */}
-                {props.mobileFail && props.mobilefailmessage && (
-                  <ErrorText>
-                    <BiError style={{ fontSize: "1rem" }} />
-                    <span style={{ marginLeft: "2px", marginTop: "2px" }}>
-                      {props.mobilefailmessage}
-                    </span>
-                  </ErrorText>
-                )}
-
-                <WhatsappCheckBox onClick={() => setWhatsapp(!whatsapp)}>
-                  {whatsapp ? <ImCheckboxChecked /> : <ImCheckboxUnchecked />}{" "}
-                  Receive OTP on WhatsApp
-                  <IoLogoWhatsapp className="text-lg text-[#4DA750]" />
-                </WhatsappCheckBox>
-
-                <Button
-                  onclick={_updatePhoneHandler}
-                  error={props.mobileFail ? true : false}
-                  loading={props.loading}
-                  margin={props.nospacing ? "4rem 0 2rem 0" : "2rem 0"}
-                  width="100%"
-                  bgColor="#F7E700"
-                  fontWeight="500"
-                  fontSize="16px"
-                  borderWidth="1px"
-                  hoverColor="white"
-                  hoverBgColor="black"
-                  boxShadow="0px 2px 0px #ECEAEA"
-                  borderRadius="8px"
-                >
-                  Complete Signup
-                </Button>
-              </form>
-            ) : (
-              <form noValidate>
-                <div className="Body2R_14 mb-[6px]">Phone Number</div>
-                <MobileNumberContainer className="border-[1px] border-[#d0d5dd] rounded-lg p-[10px]">
-                  <div
-                    className="w-fit flex flex-row gap-3 px-2 items-center cursor-pointer border-r-2 border-black"
-                    onClick={() => setOpenCountryCodeOption(true)}
-                  >
-                    <div className="flex gap-3">
-                      <CountryImg
-                        height="30"
-                        width="30"
-                        objectFit="cover"
-                        src={
-                          props.CountryCodes
-                            ? props.CountryCodes[extension].img
-                            : ""
-                        }
-                      ></CountryImg>
-                      <div className="Body2R_14">
-                        {props?.CountryCodes[extension].label || +91}
-                      </div>
-                    </div>
-                  </div>
-
-                  {openCountryCodeOption && (
-                    <CountryCodeDropdown
-                      onClose={() => setOpenCountryCodeOption(false)}
-                      CountryCodes={props.CountryCodes}
-                      handleExtensionChangeOption={handleExtensionChangeOption}
-                      setOpenCountryCodeOption={setOpenCountryCodeOption}
-                    />
-                  )}
-                  <div className="Body2R_14">{mobileInput}</div>
-                </MobileNumberContainer>
-
-                {/* ADD THIS ERROR DISPLAY RIGHT AFTER MobileNumberContainer */}
-                {props.mobileFail && props.mobilefailmessage && (
-                  <ErrorText>
-                    <BiError style={{ fontSize: "1rem" }} />
-                    <span style={{ marginLeft: "2px", marginTop: "2px" }}>
-                      {props.mobilefailmessage}
-                    </span>
-                  </ErrorText>
-                )}
-
-                <WhatsappCheckBox onClick={() => setWhatsapp(!whatsapp)}>
-                  {whatsapp ? (
-                    <ImCheckboxChecked className="text-[#3A85FC]" />
-                  ) : (
-                    <ImCheckboxUnchecked />
-                  )}
-                  <div className="Body2R_14">Receive OTP on Whatsapp</div>
-                </WhatsappCheckBox>
-
-                <ReCAPTCHA
-                  size="invisible"
-                  sitekey={RECAPTCHA_SITE_KEY}
-                  ref={recaptchaRef}
-                  onChange={onRecaptchaChange}
-                  className="hidden"
-                />
-              </form>
-            )}
-          </div>
-        ) : userDetailsRequired ? (
-          <div className="flex flex-col gap-[24px]">
-            <div
-              style={{
-                fontSize: "32px",
-                textAlign: isPageWide ? "left" : "center",
-                fontWeight: "700",
-              }}
-            >
-              Just a Few Details to Get Started.
-            </div>
-            <div>
-              {props.newUser || (props.otpSent && !props.name) ? (
-                <div className="flex flex-col gap-[6px]">
-                  <div className="Body2M_14">Name</div>
-                  <FloatingInput
-                    error={userNameError}
-                    helperText={"Please enter valid username"}
-                    placeholder={"Enter Your name"}
-                    key="userName"
-                    required
-                    id="userName"
-                    label="Enter Your Full Name"
-                    onChange={(event) => {
-                      _userDetailsOnChangeHandler(event, "userName");
-                    }}
-                  />
-                </div>
-              ) : null}
-
-              {props.newUser || (props.otpSent && !props.email) ? (
-                <div className="flex flex-col gap-[6px] mt-[20px]">
-                  <div className="Body2M_14">Email</div>
-                  {email}
-                </div>
-              ) : null}
-            </div>
-          </div>
-        ) : (
-          <div>
-            {!props.noheading && (
-              <div
-                style={{
-                  fontSize: "32px",
-                  textAlign: isPageWide ? "left" : "left",
-                  fontWeight: "700",
-                }}
-              >
-                OTP Verification
-              </div>
-            )}
-
-            <div className="flex flex-col gap-[24px]">
-              <div
-                className={`Body1R_16 text-[#6E757A] ${
-                  isPageWide ? "text-left" : "text-left"
-                }`}
-              >
-                <div className="flex flex-wrap items-center">
-                  <span className="">
-                    We've sent a 4-digit OTP to your registered phone number
-                  </span>
-                  <span className="whitespace-nowrap font-medium mt-2">
-                    {phone}
-                    <span
-                      className="text-blue underline cursor-pointer ml-1"
-                      onClick={handleEditPhone}
-                    >
-                      Change
-                    </span>
-                  </span>
-                </div>
-              </div>
-
-              {props.otpSent ? password : null}
-              {counter > 0 && (
-                <div className="Body1R_16 text-[#6E757A;] text-center sm:text-left">
-                  You can resend OTP in{" "}
-                  <span className="text-black Body1M_16">
-                    {minutes}:{seconds}
-                  </span>
-                </div>
-              )}
-            </div>
-
-            <ReCAPTCHA
-              size="invisible"
-              sitekey={RECAPTCHA_SITE_KEY}
-              ref={recaptchaRef}
-              onChange={onRecaptchaChange}
-              className="hidden"
-            />
-          </div>
-        )}
-
-        {!props.otpSent ? (
-          <>
-            <Button
-              onclick={verifyRecaptchaHandler}
-              margin={props.nospacing ? "0" : "40px 0 0 0"}
-              width="100%"
-              bgColor="#07213A"
-              fontWeight="500"
-              fontSize="16px"
-              borderWidth="1px"
-              hoverColor="white"
-              hoverBgColor="black"
-              boxShadow="0px 2px 0px #ECEAEA"
-              borderRadius="8px"
-              height="50px"
-              color="white"
-              loading={props.loading}
-            >
-              Continue
-            </Button>
-            {/* {props.isTailored && (
-              <div
-                className="text-center text-[#3A85FC] cursor-pointer Body1R_16"
-                onClick={() => {
-                  props.onhide();
-                  if (props.onSkipLogin) {
-                    props.onSkipLogin();
-                  }
-                }}
-              >
-                Continue without logging in?
-              </div>
-            )} */}
-          </>
-        ) : (
-          <div
-            className={`flex flex-col gap-[16px] ${
-              !userDetailsRequired
-                ? `${
-                    counter == 0 && !userDetailsRequired
-                      ? "mt-[30px] sm:mt-[40px]"
-                      : "mt-[20px] sm:mt-[40px]"
-                  }`
-                : "mt-[46px]"
-            }`}
-          >
-            {!userDetailsRequired && (
-              <div className="flex gap-[16px] justify-center">
-                <div className="Body1R_16 text-[#6E757A;]">
-                  Didn't receive OTP?
-                </div>
-                {counter === 0 ? (
-                  <div
-                    className={`Body1R_16 cursor-pointer ${
-                      props.loading
-                        ? "text-gray-400 cursor-not-allowed"
-                        : "text-[#3A85FC]"
-                    }`}
-                    onClick={
-                      !props.loading ? verifyRecaptchaHandler : undefined
-                    }
-                  >
-                    {props.loading ? "Sending..." : "Resend OTP"}
-                  </div>
-                ) : (
-                  <div className="Body1R_16 text-gray-400">Resend OTP</div>
-                )}
-              </div>
-            )}
-            <Button
-              onclick={submitOtpHandler}
-              width="100%"
-              bgColor="#07213A"
-              fontWeight="500"
-              fontSize="16px"
-              borderWidth="1px"
-              hoverColor="white"
-              hoverBgColor="black"
-              boxShadow="0px 2px 0px #ECEAEA"
-              borderRadius="8px"
-              height="50px"
-              color="white"
-              loading={props.loading}
-            >
-              Continue
-            </Button>
-          </div>
-        )}
-        <div className={`${props.otpSent ? "mt-0" : "mt-12"}`}>
-          {props.isTailored ? (
-            <>
-              <div className="Body2R_14 text-[#6E757A] text-center mb-3">
-                To unlock all the features in the itinerary, we recommend
-                logging in. It's free!
-              </div>
-              <div className="flex justify-center gap-3 items-center Body2R_14 mb-2">
-                <Link
-                  href="/terms-conditions"
-                  style={{ textDecoration: "none" }}
-                  target="_blank"
-                  className="text-[#3A85FC]"
-                >
-                  Terms of Service
-                </Link>
-                <Link
-                  href="/privacy-policy"
-                  style={{ textDecoration: "none" }}
-                  target="_blank"
-                  className="text-[#3A85FC]"
-                >
-                  Privacy Policy
-                </Link>
-              </div>
-            </>
-          ) : (
-            <div
-              className={`Body2R_14 text-[#6E757A] ${
-                isPageWide ? "text-center" : "text-center"
-              }`}
-            >
-              By continuing, you agree to our{" "}
-              <Link
-                href="/terms-conditions"
-                style={{ textDecoration: "none" }}
-                target="_blank"
-              >
-                Terms of Service
-              </Link>{" "}
-              and acknowlege you've read our{" "}
-              <Link
-                href="/privacy-policy"
-                style={{ textDecoration: "none" }}
-                target="_blank"
-              >
-                Privacy Policy.
-              </Link>
-            </div>
-          )}
+      {!isPageWide && !props.hideloginclose && (
+        <div className="flex justify-end mb-1">
+          <RxCross2
+            onClick={props.onhide}
+            style={{
+              fontSize: "1.4rem",
+              cursor: "pointer",
+              color: "#6B7280",
+            }}
+          />
         </div>
-        {/* <div className={`${props.otpSent ? "mt-0" : "mt-12"}`}>
-          <div
-            className={`Body2R_14 text-[#6E757A] ${
-              isPageWide ? "text-center" : "text-center"
-            }`}
-          >
-            By continuing, you agree to our{" "}
-            <Link
-              href="/terms-conditions"
-              style={{ textDecoration: "none" }}
-              target="_blank"
-            >
-              Terms of Service
-            </Link>{" "}
-            and acknowlege you've read our{" "}
-            <Link
-              href="/privacy-policy"
-              style={{ textDecoration: "none" }}
-              target="_blank"
-            >
-              Privacy Policy.
-            </Link>
-          </div>
-        </div> */}
-      </div>
+      )}
 
-      {props.loadingsocial ? (
-        <div
-          style={{
-            position: "absolute",
-            height: "100%",
-            width: "100%",
-            top: "0",
-            zIndex: "2",
-            backgroundColor: "white",
-          }}
-          className="center-div"
-        >
-          <Spinner></Spinner>
-        </div>
-      ) : null}
+      {screen}
+      {skipLogin}
     </div>
   );
 });
@@ -982,7 +842,7 @@ const mapDispatchToProps = (dispatch) => {
       whatsapp,
       country,
       onSuccess,
-      trackUserLogin
+      trackUserLogin,
     ) =>
       dispatch(
         authaction.auth(
@@ -993,11 +853,10 @@ const mapDispatchToProps = (dispatch) => {
           whatsapp,
           country,
           onSuccess,
-          trackUserLogin
-        )
+          trackUserLogin,
+        ),
       ),
-    onOtp: (mobile, setNewUser) =>
-      dispatch(otpaction.getotp(mobile, setNewUser)),
+    onOtp: (data) => dispatch(otpaction.getotp(data)),
     onResetLogin: () => dispatch(authaction.authResetLogin()),
     onStartLoading: () => dispatch(authaction.authStartLoading()),
     onGoogleAuth: (response) => dispatch(authaction.googleAuth(response)),

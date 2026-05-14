@@ -44,6 +44,7 @@ import getPlatform from "../../utils/getPlatform";
 import { useAnalyticsSession } from "../../hooks/useAnalyticsSession";
 import Image from "next/image";
 import RoutePreparationLoader from "./RoutePreparationLoader";
+import BotLoginModal from "../bot-components/components/BotLoginModal";
 
 {
   /* <Login/> to see this itinerary's cost */
@@ -625,7 +626,26 @@ const Enquiry = (props) => {
             return;
           }
           hasNavigated = true;
-          router.push(`/itinerary/${itineraryId}`);
+          // Stash the route so /chat can render a skeleton itinerary before
+          // the status API call returns. Closure-captured here because
+          // setItineraryInitiateData(null) above has already cleared Redux.
+          try {
+            if (
+              typeof window !== "undefined" &&
+              Array.isArray(itineraryInititateData?.basic_route) &&
+              itineraryInititateData.basic_route.length > 0
+            ) {
+              sessionStorage.setItem(
+                `tailored_skeleton_${itineraryId}`,
+                JSON.stringify({
+                  basic_route: itineraryInititateData.basic_route,
+                  start_city: itineraryInititateData.start_city ?? null,
+                  end_city: itineraryInititateData.end_city ?? null,
+                }),
+              );
+            }
+          } catch {}
+          router.push(`/chat/${itineraryId}?source=tailored`);
         };
 
         if (hasGtag) {
@@ -1006,7 +1026,7 @@ const Enquiry = (props) => {
 
                 <div className="flex flex-col items-center">
                   <div id="login" className="z-[1650]">
-                    <Login
+                    <BotLoginModal
                       show={showLoginForm}
                       onhide={onHide}
                       zIndex={"3300"}

@@ -78,7 +78,7 @@ export interface TransfersData {
 }
 
 // UI Types
-export type ViewMode = "map" | "itinerary";
+export type ViewMode = "map" | "itinerary" | "routes" | "bookings";
 export type BotMode = "p1" | "p2";
 
 // Component Props Types
@@ -89,6 +89,7 @@ export interface MapViewProps {
   currentRoute: Location[] | null;
   isLoadingLocation: boolean;
   mapRef: React.MutableRefObject<google.maps.Map | null>;
+   isRoutePreparing?: boolean;
 }
 
 export interface ItineraryViewProps {
@@ -100,4 +101,6 @@ export interface ItineraryViewProps {
 export interface ViewToggleProps {
   viewMode: ViewMode;
   setViewMode: (mode: ViewMode) => void;
+  /** True when the bot has started building an itinerary (shimmer, draft, or complete) */
+  hasItineraryActivity: boolean;
 }

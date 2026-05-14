@@ -66,8 +66,13 @@ import { TbClockExclamation } from "react-icons/tb";
 import { FcCalendar } from "react-icons/fc";
 import { MdArrowBackIosNew } from "react-icons/md";
 import { currencySymbols } from "../../../data/currencySymbols";
-import usePaymentGateway from "../../../hooks/usePaymentGateway";
 import { resetChatSession } from "../../../store/actions/chatState";
+import VisaSearchDrawer from "../../../components/drawers/visaDetails/VisaSearchDrawer";
+import EsimPackagesDrawer from "../../../components/drawers/esimDetails/EsimPackagesDrawer";
+import {
+  addAncillaryBooking,
+  removeAncillaryBooking,
+} from "../../../store/actions/ancillaryBookings";
 
 const GetInTouchContainer = styled.div`
   &:hover img {
@@ -875,8 +880,21 @@ const ItineraryInclusions = ({
     Transfers: true,
     Flights: true,
     Activities: true,
+     "Activities & Ancillaries": true,
   });
   const { currency } = useSelector((state) => state.currency);
+  const TransferBookings = useSelector(
+    (state) => state.TransferBookings?.transferBookings,
+  );
+
+  // Find children flights for a combo (roundtrip) booking from TransferBookings store
+ const getChildrenFlights = (parentBookingId) => {
+  if (!TransferBookings?.intercity) return [];
+
+  return Object.values(TransferBookings.intercity).filter(
+    (booking) => booking?.parent === parentBookingId
+  );
+};
 
   const categorizeBookings = () => {
     const categories = {
@@ -910,6 +928,7 @@ const ItineraryInclusions = ({
           duration: booking.duration,
           pax: booking.pax,
           transfer_type: booking.transfer_type,
+          booking_type: booking.booking_type,
         },
         status: booking.status,
         booking_type: type,
@@ -1033,147 +1052,215 @@ const ItineraryInclusions = ({
             {/* Category Items */}
             {expandedCategories[category] && (
               <div className="divide-y divide-gray-100">
-                {bookings.map((booking) => (
-                  <div
-                    key={booking.id}
-                    className={`p-3 flex items-start gap-3 hover:bg-gray-50 transition-colors ${
-                      !selectedInclusions[booking.id] ? "" : ""
-                    }`}
-                  >
-                    {/* Booking Details */}
-                    <div className="flex-1 min-w-0">
-                      <div className="text-md font-500 leading-xl mb-sm">
-                        {booking.detail.name}
-                      </div>
-                      {booking.status === "Paid" && (
-                        <div className="inline-block bg-green-100 text-green-700 text-xs font-semibold px-2 py-0.5 rounded mb-1">
-                          PAID
-                        </div>
-                      )}
+                {bookings.map((booking) => {
+                  // For roundtrip (combo) flights, get children from TransferBookings
+                  const isRoundTripFlight =
+                    booking.booking_type === "Flight" &&
+                    booking.detail?.transfer_type === "combo";
+                  const childrenFlights = isRoundTripFlight
+                    ? getChildrenFlights(booking.id)
+                    : [];
 
-                      <div className="flex flex-wrap items-center gap-2">
-                        <div className="flex items-center gap-1">
-                          {/* <BsCalendar2 className="flex-shrink-0" /> */}
-                          <span className="text-sm font-400 leading-md text-text-spacegrey">
-                            {formatDate(booking.detail.check_in)}{" "}
-                            {category == "Stays"
-                              ? "- " + formatDate(booking.detail.check_out)
-                              : null}
-                          </span>
-                        </div>
 
-                        {booking.detail.duration && (
-                          <>
-                            <div className="border-r-sm border-text-spacegrey h-[12px]"></div>
-                            <span className="text-sm font-400 leading-md text-text-spacegrey">
-                              {booking.detail.duration}N
-                            </span>
-                          </>
-                        )}
-
-                        {booking.detail.pax && (
-                          <>
-                            <div className="border-r-sm border-text-spacegrey h-[12px]"></div>
-                            <div className="flex items-center gap-1 ">
-                              {/* <span>•</span> */}
-                              {/* <BsPeopleFill className="flex-shrink-0" /> */}
-                              <span className="text-sm font-400 leading-md text-text-spacegrey">
-                                {booking.detail.pax.number_of_adults +
-                                  (booking.detail?.pax?.number_of_children ||
-                                    0) +
-                                  (booking.detail?.pax?.number_of_infants ||
-                                    0) >
-                                1
-                                  ? booking.detail.pax.number_of_adults +
-                                    (booking.detail?.pax?.number_of_children ||
-                                      0) +
-                                    (booking.detail?.pax?.number_of_infants ||
-                                      0) +
-                                    " Travelers"
-                                  : booking.detail.pax.number_of_adults +
-                                    (booking.detail?.pax?.number_of_children ||
-                                      0) +
-                                    (booking.detail?.pax?.number_of_infants ||
-                                      0) +
-                                    " Traveler"}{" "}
-                              </span>
+                  return (
+                    <div key={booking.id}>
+                      <div
+                        className={`p-3 flex items-start gap-3 hover:bg-gray-50 transition-colors ${
+                          !selectedInclusions[booking.id] ? "" : ""
+                        }`}
+                      >
+                        {/* Booking Details */}
+                        <div className="flex-1 min-w-0">
+                          <div className="text-md font-500 leading-xl mb-sm">
+                            {booking.detail.name} 
+                            {booking?.detail?.booking_type === "Visa" ? <span className="ml-2 px-1.5 py-0.5 text-xs font-medium bg-purple-100  text-purple-800 rounded">Visa</span> : booking?.detail?.booking_type === "eSIM" ? <span className="ml-2 px-1.5 py-0.5 text-xs font-medium bg-green-100  text-green-800 rounded ">eSim</span> : null}
+                          </div>
+                          {booking.status === "Paid" && (
+                            <div className="inline-block bg-green-100 text-green-700 text-xs font-semibold px-2 py-0.5 rounded mb-1">
+                              PAID
                             </div>
-                          </>
-                        )}
+                          )}
 
-                        {/* Show individual booking cost */}
-                        {/* {
-                          !arePricesHidden &&
-                          booking.booking_cost > 0 && (
+                          <div className="flex flex-wrap items-center gap-2">
                             <div className="flex items-center gap-1">
-                              <span className="text-sm font-500 leading-md">
-                                {currencySymbols?.[currency] ? currencySymbols?.[currency] : '₹'}
-                                {getIndianPrice(
-                                  Math.round(booking.booking_cost)
-                                )}
-                              </span>
+                              {/* <BsCalendar2 className="flex-shrink-0" /> */}
+                              {!isRoundTripFlight && <span className="text-sm font-400 leading-md text-text-spacegrey">
+                                {formatDate(booking.detail.check_in)}{" "}
+                                {category == "Stays"
+                                  ? "- " + formatDate(booking.detail.check_out)
+                                  : null}
+                              </span>}
                             </div>
-                          )
-                        } */}
-                      </div>
-                    </div>
 
-                    {/* Checkbox */}
-                    <div className="pt-0.5">
-                      {updatingInclusions[booking.id] ? (
-                        <div className="w-4 h-4 flex items-center justify-center">
-                          <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-yellow-400"></div>
-                        </div>
-                      ) : arePricesExpired ? (
-                        <div className="relative group cursor-pointer">
-                          <span className="relative mr-xl pointer-events-none">
-                            <label className="ttw-custom-greenCheckbox-label opacity-60">
-                              <input
-                                type="checkbox"
-                                checked={selectedInclusions[booking.id]}
-                                disabled
-                                className="ttw-custom-greenCheckbox"
-                              />
-                            </label>
-                          </span>
+                            {booking.detail.duration && (
+                              <>
+                                <div className="border-r-sm border-text-spacegrey h-[12px]"></div>
+                                <span className="text-sm font-400 leading-md text-text-spacegrey">
+                                  {booking.detail.duration}N
+                                </span>
+                              </>
+                            )}
 
-                          {/* Tooltip */}
-                          <div
-                            className="absolute z-[999] bottom-full -left-20 -translate-x-1/2 mb-2
-                       hidden group-hover:!block whitespace-nowrap overflow-visible
-                      bg-black text-white text-xs px-2 py-1 rounded cursor-pointer"
-                          >
-                            Reprice itinerary to add/remove this booking
+                            {booking.detail.pax && (
+                              <>
+                                <div className="border-r-sm border-text-spacegrey h-[12px]"></div>
+                                <div className="flex items-center gap-1 ">
+                                  {/* <span>•</span> */}
+                                  {/* <BsPeopleFill className="flex-shrink-0" /> */}
+                                  <span className="text-sm font-400 leading-md text-text-spacegrey">
+                                    {booking.detail.pax.number_of_adults +
+                                      (booking.detail?.pax?.number_of_children ||
+                                        0) +
+                                      (booking.detail?.pax?.number_of_infants ||
+                                        0) >
+                                    1
+                                      ? booking.detail.pax.number_of_adults +
+                                        (booking.detail?.pax
+                                          ?.number_of_children || 0) +
+                                        (booking.detail?.pax
+                                          ?.number_of_infants || 0) +
+                                        " Travelers"
+                                      : booking.detail.pax.number_of_adults +
+                                        (booking.detail?.pax
+                                          ?.number_of_children || 0) +
+                                        (booking.detail?.pax
+                                          ?.number_of_infants || 0) +
+                                        " Traveler"}{" "}
+                                  </span>
+                                </div>
+                              </>
+                            )}
+
+                            {/* Show individual booking cost */}
+                            {/* {
+                              !arePricesHidden &&
+                              booking.booking_cost > 0 && (
+                                <div className="flex items-center gap-1">
+                                  <span className="text-sm font-500 leading-md">
+                                    {currencySymbols?.[currency] ? currencySymbols?.[currency] : '₹'}
+                                    {getIndianPrice(
+                                      Math.round(booking.booking_cost)
+                                    )}
+                                  </span>
+                                </div>
+                              )
+                            } */}
                           </div>
                         </div>
-                      ) : (
-                        <span className="relative mr-xl">
-                          <label className="cursor-pointer ttw-custom-greenCheckbox-label">
-                            <input
-                              type="checkbox"
-                              checked={selectedInclusions[booking.id]}
-                              onChange={() => onToggleInclusion(booking.id)}
-                              disabled={booking.status === "Paid"}
-                              className="accent-primary-yellow cursor-pointer
-                     disabled:cursor-not-allowed disabled:opacity-50
-                     ttw-custom-greenCheckbox"
-                            />
-                          </label>
-                        </span>
-                      )}
-                    </div>
 
-                    {/* Price - Desktop only */}
-                    {!arePricesHidden && booking.booking_cost > 0 && (
-                      <div className="hidden md:block font-semibold text-sm whitespace-nowrap">
-                        {currencySymbols?.[currency]
-                          ? currencySymbols?.[currency]
-                          : "₹"}
-                        {getIndianPrice(Math.round(booking.booking_cost))}
+                        {/* Checkbox */}
+                        <div className="pt-0.5">
+                          {updatingInclusions[booking.id] ? (
+                            <div className="w-4 h-4 flex items-center justify-center">
+                              <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-yellow-400"></div>
+                            </div>
+                          ) : arePricesExpired ? (
+                            <div className="relative group cursor-pointer">
+                              <span className="relative mr-xl pointer-events-none">
+                                <label className="ttw-custom-greenCheckbox-label opacity-60">
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedInclusions[booking.id]}
+                                    disabled
+                                    className="ttw-custom-greenCheckbox"
+                                  />
+                                </label>
+                              </span>
+
+                              {/* Tooltip */}
+                              <div
+                                className="absolute z-[999] bottom-full -left-20 -translate-x-1/2 mb-2
+                           hidden group-hover:!block whitespace-nowrap overflow-visible
+                          bg-black text-white text-xs px-2 py-1 rounded cursor-pointer"
+                              >
+                                Reprice itinerary to add/remove this booking
+                              </div>
+                            </div>
+                          ) : (
+                            <span className="relative mr-xl">
+                              <label className="cursor-pointer ttw-custom-greenCheckbox-label">
+                                <input
+                                  type="checkbox"
+                                  checked={selectedInclusions[booking.id]}
+                                  onChange={() => onToggleInclusion(booking.id)}
+                                  disabled={booking.status === "Paid"}
+                                  className="accent-primary-yellow cursor-pointer
+                         disabled:cursor-not-allowed disabled:opacity-50
+                         ttw-custom-greenCheckbox"
+                                />
+                              </label>
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Price - Desktop only */}
+                        {!arePricesHidden && booking.booking_cost > 0 && (
+                          <div className="hidden md:block font-semibold text-sm whitespace-nowrap">
+                            {currencySymbols?.[currency]
+                              ? currencySymbols?.[currency]
+                              : "₹"}
+                            {getIndianPrice(Math.round(booking.booking_cost))}
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
-                ))}
+
+                      {/* Children flights for roundtrip combo bookings */}
+                      {isRoundTripFlight &&
+                        childrenFlights.length > 0 &&
+                        childrenFlights.map((childFlight, childIndex) => {
+            
+                          const originCity =
+                            childFlight?.transfer_details?.items?.[0]
+                              ?.segments?.[0]?.origin?.city_name ||
+                            childFlight?.transfer_details?.source?.city_name ||
+                            "";
+                          const lastSegments =
+                            childFlight?.transfer_details?.items?.[0]?.segments;
+                          const destinationCity = lastSegments?.length
+                            ? lastSegments[lastSegments.length - 1]?.destination
+                                ?.city_name ||
+                              childFlight?.transfer_details?.destination
+                                ?.city_name ||
+                              ""
+                            : childFlight?.transfer_details?.destination
+                                ?.city_name || "";
+                          const childName = childFlight?.name ||
+                            originCity && destinationCity
+                              ? `${originCity} → ${destinationCity}`
+                              :  "Flight Leg";
+
+                          return (
+                            <div
+                              key={childFlight?.id || childIndex}
+                              className="pl-8 pr-3 py-2 flex items-start gap-2 bg-gray-50/50 border-t border-gray-50"
+                            >
+                          
+                              <div className="flex-1 min-w-0">
+                                <div className="text-sm font-500 leading-md text-black">
+                                  {childFlight?.name || childName}
+                                </div>
+                                <div className="flex flex-wrap items-center gap-2 mt-0.5">
+                                  {childFlight?.check_in && (
+                                    <span className="text-xs font-400 leading-md text-text-spacegrey">
+                                      {formatDate(childFlight.check_in)}
+                                    </span>
+                                  )}
+                                  {childFlight?.duration && (
+                                    <>
+                                      <div className="border-r-sm border-text-spacegrey h-[10px]"></div>
+                                      <span className="text-xs font-400 leading-md text-text-spacegrey">
+                                        {childFlight.duration}
+                                      </span>
+                                    </>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>
@@ -1210,6 +1297,8 @@ const Details = (props) => {
     return formattedDate;
   };
   const [showSetPassenger, setShowSetPassenger] = useState(false);
+  const [showVisaDrawer, setShowVisaDrawer] = useState(false);
+  const [showEsimDrawer, setShowEsimDrawer] = useState(false);
   const [getInTouchLoading, setGetInTouchLoading] = useState(false);
   const { itinerary_status, transfers_status, pricing_status, final_status } =
     useSelector((state) => state.ItineraryStatus);
@@ -1251,42 +1340,13 @@ const Details = (props) => {
   // const { resetSession } = useChatContext();
 
   const {
-    currentGateway,
-    setCurrentGateway,
-    gatewayLoadError,
-    paymentLoading: gatewayLoading,
-    isInitialized,
-    initiatePayment,
-    setPaymentLoading: setGatewayPaymentLoading,
-  } = usePaymentGateway(props);
-
-  const handlePaymentSuccess = useCallback(
-    (data, paymentType) => {
-      if (paymentType === "full_payment") {
-        setSessionPaymentCompleted(true);
-        setPaymentCompleted(true);
-        trackPaymentBookingConfirmed(router?.query?.id, Cart);
-      } else if (paymentType === "lock_payment") {
-        setLockInCompleted(true);
-        setSelectedPaymentOption("full");
-      }
-
-      // Refresh payment data
-      props.getPaymentHandler?.();
-    },
-    [router?.query?.id, Cart, props],
-  );
-
-  useEffect(() => {
-    setPaymentLoading(gatewayLoading);
-  }, [gatewayLoading]);
-
-  const {
     trackWhatsAppClicked,
     trackPaymentSelected,
     trackPaymentDeselected,
     trackPaymentAttempted,
     trackPaymentBookingConfirmed,
+    trackVisaCardClicked,
+    trackEsimCardClicked,
   } = useAnalytics();
 
   useEffect(() => {
@@ -1294,77 +1354,6 @@ const Details = (props) => {
       handleProceedToPayment();
     }
   }, [props?.openPaymentDrawer]);
-
-  const handlePaymentError = useCallback(
-    (error) => {
-      console.error("Payment error:", error);
-      props.getPaymentHandler?.();
-    },
-    [props],
-  );
-
-  const handlePaymentCancel = useCallback(() => {
-    console.log("Payment cancelled by user");
-  }, []);
-
-  // Full payment handler
-  const handleFullPayment = useCallback(async () => {
-    if (!isInitialized) {
-      dispatch(
-        openNotification({
-          text: "Payment system is still initializing. Please wait...",
-          heading: "Please Wait",
-          type: "info",
-        }),
-      );
-      return;
-    }
-
-    trackPaymentAttempted(router.query.id, Cart);
-
-    await initiatePayment("full_payment", Cart, {
-      onSuccess: handlePaymentSuccess,
-      onError: handlePaymentError,
-      onCancel: handlePaymentCancel,
-    });
-  }, [
-    isInitialized,
-    initiatePayment,
-    Cart,
-    router.query.id,
-    dispatch,
-    handlePaymentSuccess,
-    handlePaymentError,
-    handlePaymentCancel,
-  ]);
-
-  // Lock-in payment handler
-  const handleLockInPayment = useCallback(async () => {
-    if (!isInitialized) {
-      dispatch(
-        openNotification({
-          text: "Payment system is still initializing. Please wait...",
-          heading: "Please Wait",
-          type: "info",
-        }),
-      );
-      return;
-    }
-
-    await initiatePayment("lock_payment", Cart, {
-      onSuccess: handlePaymentSuccess,
-      onError: handlePaymentError,
-      onCancel: handlePaymentCancel,
-    });
-  }, [
-    isInitialized,
-    initiatePayment,
-    Cart,
-    dispatch,
-    handlePaymentSuccess,
-    handlePaymentError,
-    handlePaymentCancel,
-  ]);
 
   useEffect(() => {
     if (Cart?.summary) {
@@ -1545,17 +1534,21 @@ const Details = (props) => {
   const handleCloseDrawer = () => {
     if (isDirectlyOpenPaymentDrawer) {
       setIsDirectlyOpenPaymentDrawer(false);
-      props.setShowFooterBannerMobile();
+      props.setShowFooterBannerMobile?.();
     }
     setShowPaymentDrawer(false);
     setShowDetailedPayment(false);
-    router.push(
-      {
-        pathname: `/itinerary/${router.query.id}`,
-      },
-      undefined,
-      { scroll: false },
-    );
+    if (typeof window !== "undefined" && window.location.pathname.startsWith("/chat/")) {
+      const url = new URL(window.location.href);
+      url.searchParams.delete("drawer");
+      window.history.pushState({}, "", url.toString());
+    } else {
+      router.push(
+        { pathname: `/itinerary/${router.query.id}` },
+        undefined,
+        { scroll: false },
+      );
+    }
   };
 
   const scrollToElement = (elementId) => {
@@ -1590,6 +1583,7 @@ const Details = (props) => {
   };
 
   const fetchItinerary = async () => {
+    if(props?.resetRef)
     props?.resetRef();
     // setWaitingForStatusUpdate(true);
     props.fetchData(true);
@@ -1597,6 +1591,13 @@ const Details = (props) => {
 
   const handleRepriceBookings = async () => {
     setRepriceLoading(true);
+    // Reset statuses to PENDING and lock the chat composer until
+    // ItineraryContainer's poll resolves them all back to SUCCESS/FAILURE.
+    dispatch(setItineraryStatus("itinerary_status", "PENDING"));
+    dispatch(setItineraryStatus("transfers_status", "PENDING"));
+    dispatch(setItineraryStatus("hotels_status", "PENDING"));
+    dispatch(setItineraryStatus("pricing_status", "PENDING"));
+    dispatch(setItineraryStatus("is_polling", true));
     try {
       const response = await repriceBookings.get(
         `${router.query.id}/reprice/bookings`,
@@ -1627,6 +1628,9 @@ const Details = (props) => {
       }
     } catch (error) {
       console.error("Error Repricing :", error);
+      // Request failed before any polling could run — release the chat
+      // lock so the user isn't stuck.
+      dispatch(setItineraryStatus("is_polling", false));
       dispatch(
         openNotification({
           text:
@@ -1735,8 +1739,8 @@ const Details = (props) => {
   // setBookingSummary();
 
   function getURL() {
-    const url = router.asPath.split("?")[0];
-    const searchParams = new URLSearchParams(router.asPath.split("?")[1]);
+    const url = window.location.pathname;
+    const searchParams = new URLSearchParams(window.location.search);
     searchParams.delete("t");
     const newPath =
       url + (searchParams.toString() ? `?${searchParams.toString()}` : "");
@@ -1763,7 +1767,33 @@ const Details = (props) => {
         },
       },
       handler: function (response) {
-        _handlePaymentVerification(response, "Razorpay", paymentType);
+        setPaymentLoading(true);
+
+      axios
+      .post(
+            "https://mercury.tarzanway.com/payment/verify/",
+            { ...response },
+            { headers: { Authorization: `Bearer ${props.token}` } }
+          )
+          .then((res) => {
+      setPaymentLoading(false);
+
+      // Set session completion based on payment type
+      if (paymentType === "full") {
+        setSessionPaymentCompleted(true);
+        setPaymentCompleted(true);
+        trackPaymentBookingConfirmed(router?.query?.id, Cart);
+      } else {
+        setLockInCompleted(true);
+        setSelectedPaymentOption("full");
+      }
+
+
+      props.getPaymentHandler();
+          })
+          .catch((err) => {
+      setPaymentLoading(false);
+          });
       },
       prefill: {
         name: props.name,
@@ -1778,185 +1808,20 @@ const Details = (props) => {
     try {
       var rzp1 = new window.Razorpay(razorpayOptions);
       rzp1.open();
-    } catch (error) {
-      console.error("Razorpay error:", error);
-      _tryAlternativeGateway(data, paymentType);
-    }
+    } catch (error) {}
   };
 
-  // New Revolut handler
-  const _startRevolutHandler = async (data, paymentType) => {
-    console.log("OORDERR", data);
-    try {
-      const orderData = {
-        revolut_token: data?.sales[0]?.orders[0]?.revolut_token,
-        public_id: data?.sales[0]?.orders[0]?.public_id,
-        customer_email: props.email,
-      };
-
-      await revolutPaymentHandler.openPaymentModal(orderData, {
-        onSuccess: (response) => {
-          _handlePaymentVerification(response, "Revolut", paymentType);
-        },
-        onError: (error) => {
-          console.error("Revolut payment error:", error);
-          setPaymentLoading(false);
-          _tryAlternativeGateway(data, paymentType);
-        },
-        onCancel: () => {
-          setPaymentLoading(false);
-          dispatch(
-            openNotification({
-              text: "Payment was cancelled",
-              heading: "Payment Cancelled",
-              type: "warning",
-            }),
-          );
-        },
-      });
-    } catch (error) {
-      console.error("Error starting Revolut payment:", error);
-      _tryAlternativeGateway(data, paymentType);
-    }
-  };
-
-  // Gateway router - decides which payment handler to use
-  const _startPaymentHandler = (data, paymentType) => {
-    if (!currentGateway) {
-      dispatch(
-        openNotification({
-          text: "Payment gateway not initialized. Please refresh the page.",
-          heading: "Error!",
-          type: "error",
-        }),
-      );
-      setPaymentLoading(false);
-      return;
-    }
-
-    if (currentGateway === "Razorpay") {
-      _startRazorpayHandler(data, paymentType);
-    } else if (currentGateway === "Revolut") {
-      _startRevolutHandler(data, paymentType);
-    }
-  };
-
-  // Try alternative gateway if current one fails
-  const _tryAlternativeGateway = async (data, paymentType) => {
-    const availableGateways = paymentGatewayService.availableGateways;
-    const currentIndex = availableGateways.indexOf(currentGateway);
-    const nextGateway =
-      availableGateways[(currentIndex + 1) % availableGateways.length];
-
-    if (nextGateway === currentGateway) {
-      dispatch(
-        openNotification({
-          text: "All payment gateways failed. Please try again later.",
-          heading: "Error!",
-          type: "error",
-        }),
-      );
-      setPaymentLoading(false);
-      return;
-    }
-
-    try {
-      dispatch(
-        openNotification({
-          text: `Switching to alternative payment method...`,
-          heading: "Please Wait",
-          type: "info",
-        }),
-      );
-
-      await paymentGatewayService.loadGatewayScript(nextGateway);
-
-      if (nextGateway === "Revolut") {
-        await revolutPaymentHandler.initialize(process.env.REVOLUT_PUBLIC_KEY);
-      }
-
-      setCurrentGateway(nextGateway);
-
-      // Retry payment with new gateway
-      if (nextGateway === "Razorpay") {
-        _startRazorpayHandler(data, paymentType);
-      } else if (nextGateway === "Revolut") {
-        _startRevolutHandler(data, paymentType);
-      }
-    } catch (error) {
-      console.error("Failed to switch gateway:", error);
-      dispatch(
-        openNotification({
-          text: "Failed to initialize alternative payment method.",
-          heading: "Error!",
-          type: "error",
-        }),
-      );
-      setPaymentLoading(false);
-    }
-  };
-
-  const _handlePaymentVerification = async (response, gateway, paymentType) => {
-    setPaymentLoading(true);
-
-    try {
-      const verifyPayload = paymentGatewayService.prepareVerifyPayload(
-        response,
-        gateway,
-      );
-
-      const res = await axios.post(
-        "https://dev.mercury.tarzanway.com/payment/verify/",
-        verifyPayload,
-        { headers: { Authorization: `Bearer ${props.token}` } },
-      );
-
-      setPaymentLoading(false);
-
-      // Set session completion based on payment type
-      if (paymentType === "full") {
-        setSessionPaymentCompleted(true);
-        setPaymentCompleted(true);
-        trackPaymentBookingConfirmed(router?.query?.id, Cart);
-      } else {
-        setLockInCompleted(true);
-        setSelectedPaymentOption("full");
-      }
-
-      dispatch(
-        openNotification({
-          text: "Payment successful!",
-          heading: "Success",
-          type: "success",
-        }),
-      );
-
-      props.getPaymentHandler();
-    } catch (err) {
-      setPaymentLoading(false);
-      console.error("Payment verification error:", err);
-
-      dispatch(
-        openNotification({
-          text: err?.response?.data?.message || "Payment verification failed",
-          heading: "Error!",
-          type: "error",
-        }),
-      );
-    }
-  };
-
-  // Updated full payment handler
   const _fullPaymentHandler = async (id) => {
     setPaymentLoading(true);
 
     try {
-      const payload = paymentGatewayService.prepareInitiatePayload(
-        { id: Cart?.id, type: "full_payment" },
-        currentGateway,
-      );
-
-      const response = await paymentInitiate.post("", payload, {
+      const response = await paymentInitiate.post(
+        "",
+        {
+          payment_information_id: Cart?.id,
+          payment_type: "full_payment",
+        },
+        {
         headers: { Authorization: `Bearer ${props.token}` },
       });
 
@@ -1983,13 +1848,14 @@ const Details = (props) => {
           return;
         }
 
-        const paymentData = {
+        const razorpayData = {
           amount: calculateFilteredTotal() + Cart?.surcharges_and_taxes,
           sales: [fullPaymentSale],
           discounted_cost: calculateFilteredTotal(),
         };
 
-        _startPaymentHandler(paymentData, "full");
+        // Update the Razorpay handler to set session completion
+        _startRazorpayHandler(razorpayData, "full");
       }
     } catch (error) {
       console.error("Error initiating full payment:", error);
@@ -2015,14 +1881,16 @@ const Details = (props) => {
     setPaymentLoading(true);
 
     try {
-      const payload = paymentGatewayService.prepareInitiatePayload(
-        { id: Cart?.id, type: "lock_payment" },
-        currentGateway,
-      );
-
-      const response = await paymentInitiate.post("", payload, {
+      const response = await paymentInitiate.post(
+        "",
+        {
+          payment_information_id: Cart?.id,
+          payment_type: "lock_payment",
+        },
+        {
         headers: { Authorization: `Bearer ${props.token}` },
-      });
+        }
+      );
 
       if (response.data) {
         dispatch(setCart(response.data));
@@ -2030,7 +1898,7 @@ const Details = (props) => {
 
         const lockPaymentSale = response.data?.sales?.find(
           (sale) =>
-            sale.payment_type === "lock_payment" && sale.status === "Created",
+            sale.payment_type === "lock_payment" && sale.status === "Created"
         );
 
         if (!lockPaymentSale || !lockPaymentSale.orders?.[0]) {
@@ -2040,17 +1908,17 @@ const Details = (props) => {
               text: "Payment order not found. Please refresh and try again.",
               heading: "Error!",
               type: "error",
-            }),
+            })
           );
           return;
         }
 
-        const paymentData = {
+        const razorpayData = {
           amount: lockPaymentSale.remaining_amount,
           sales: [lockPaymentSale],
         };
 
-        _startPaymentHandler(paymentData, "lockin");
+        _startRazorpayHandler(razorpayData, "lockin");
       }
     } catch (error) {
       console.error("Error initiating lock payment:", error);
@@ -2061,10 +1929,35 @@ const Details = (props) => {
             "Something went wrong",
           heading: "Error!",
           type: "error",
-        }),
+        })
       );
       setPaymentLoading(false);
+      return;
     }
+  };
+
+  const _saleCreateHandler = (id) => {
+    setPaymentLoading(true);
+    axiossalecreateinstance
+      .post(
+        "/",
+        {
+          itinerary_id: id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${props.token}`,
+          },
+        }
+      )
+      .then((res) => {
+        setPaymentLoading(false);
+
+        _startRazorpayHandler(res.data);
+      })
+      .catch((err) => {
+        setPaymentLoading(false);
+      });
   };
 
   let optionsJSX = [];
@@ -2114,18 +2007,30 @@ const Details = (props) => {
     });
   };
 
-  const handlePayNow = useCallback(
-    (type) => {
-      if (type === "full") {
-        handleFullPayment();
-      } else if (type === "lockin") {
-        handleLockInPayment();
+  const handlePayNow = (label) => {
+    if (label === "_saleCreateHandler") {
+      _saleCreateHandler(props.id);
+    } else if (label === "lockin") {
+      _lockInPaymentHandler(Cart?.id);
+    } else if (label === "full") {
+      _fullPaymentHandler(Cart?.id);
       } else {
         setShowVerification(true);
       }
-    },
-    [handleFullPayment, handleLockInPayment],
-  );
+
+    // logEvent({
+    //   action: "Button_Click",
+    //   params: {
+    //     page: "Itinerary Page",
+    //     event_category: "Button Click",
+    //     event_label:
+    //       selectedPaymentOption === "full"
+    //         ? "Pay Full Amount"
+    //         : "Lock-in Price",
+    //     event_action: "Booking Slide",
+    //   },
+    // });
+  };
 
   const handleTravellersDetails = () => {
     setShowRegistartion(true);
@@ -2188,16 +2093,21 @@ const Details = (props) => {
   const handleProceedToPayment = () => {
     setShowDetailedPayment(true);
     setShowPaymentDrawer(true);
-    router.push(
-      {
-        pathname: `/itinerary/${router.query.id}/`,
-        query: {
-          drawer: "payment",
+    // On the chat page (/chat/*) don't navigate away — just update the URL param
+    if (typeof window !== "undefined" && window.location.pathname.startsWith("/chat/")) {
+      const url = new URL(window.location.href);
+      url.searchParams.set("drawer", "payment");
+      window.history.pushState({}, "", url.toString());
+    } else {
+      router.push(
+        {
+          pathname: `/itinerary/${router.query.id}/`,
+          query: { drawer: "payment" },
         },
-      },
-      undefined,
-      { scroll: false },
-    );
+        undefined,
+        { scroll: false },
+      );
+    }
   };
 
   const areAllInclusionsPaid = () => {
@@ -2306,11 +2216,8 @@ const Details = (props) => {
             <div className="row">
               <div className="col-12 col-sm-12 col-lg-12 col-md-12 mb-sm">
                 <div className="flex items-center w-100 justify-between">
-                  <div
-                    className="font-400 leading-xl-md flex items-center gap-1 cursor-pointer"
-                    onClick={() => handleCloseDrawer()}
-                  >
-                    <MdArrowBackIosNew /> Back to Itinerary
+                  <div className="font-400 leading-xl-md flex items-center gap-1 cursor-pointer"  onClick={() => handleCloseDrawer()}>
+                    <MdArrowBackIosNew/> Back to Itinerary
                   </div>
                   <div>
                     <IoMdClose
@@ -2323,11 +2230,19 @@ const Details = (props) => {
               </div>
             </div>
 
+            {/* Mobile-only: LivePriceTimer right below back button */}
+            {!(pricing_status === "PENDING" || props?.loadpricing) &&
+              !(final_status == "Paid" || final_status == "Released") && (
+              <div className="block md:hidden mb-2 -mx-[12px]">
+                <LivePriceTimer priceValidUntil={Cart?.price_valid_until} />
+              </div>
+            )}
+
             {/* Updated row with proper overflow handling */}
             <div className="row py-md bg-text-white">
               {/* Left column - Scrollable content */}
               <div
-                className="col-md-8 border-r-sm border-text-disabled overflow-y-auto max-h-[calc(100vh-210px)] pr-md"
+                className="col-md-8 border-r-sm border-text-disabled overflow-y-auto max-h-[calc(100vh-210px)] pb-[80px] md:pb-0 pr-md"
                 style={{
                   scrollbarWidth: "none",
                   msOverflowStyle: "none",
@@ -2568,7 +2483,7 @@ const Details = (props) => {
                               , {props.itinerary?.number_of_infants}{" "}
                               {pluralDetector(
                                 "Infant",
-                                props.itinerary?.number_of_infants,
+                                props.itinerary?.number_of_infants
                               )}
                             </span>
                           ) : null}
@@ -2589,21 +2504,18 @@ const Details = (props) => {
                       updatingInclusions={updatingInclusions}
                       defaultExpanded={
                         Cart?.sales?.some(
-                          (sale) => sale.status === "Completed",
+                          (sale) => sale.status === "Completed"
                         ) && Cart?.total_payable_amount !== 0
                       }
-                      arePricesExpired={
-                        (!isItineraryInFuture() && areAnyInclusionsPaid()) ||
-                        (hasPlanExpired && isItineraryInFuture()) ||
-                        !isItineraryInFuture()
-                      }
+                      arePricesExpired={(!isItineraryInFuture() && areAnyInclusionsPaid())|| (hasPlanExpired &&
+                    isItineraryInFuture()) || (!isItineraryInFuture())}
                     />
                   </div>
                 </div>
               </div>
 
               {/* Right column - Fixed/Sticky pricing section */}
-              <div className="col-md-4">
+              <div className="col-md-4 pb-[70px] md:pb-0">
                 <div
                   className="md:sticky md:top-4 md:max-h-[calc(100vh-120px)] md:overflow-y-auto"
                   style={{
@@ -2616,7 +2528,7 @@ const Details = (props) => {
                       <PricingSkeleton />
                     </div>
                   ) : (
-                    <div>
+                    <div className="max-ph:hidden">
                       {!(
                         final_status == "Paid" || final_status == "Released"
                       ) && (
@@ -2648,7 +2560,9 @@ const Details = (props) => {
 
                     <PriceDetails
                       itineraryCost={getIndianPrice(
-                        Math.round( Cart?.taxation_policy == "TCS" ? Cart?.total_itinerary_cost : Cart?.total_cost),
+                        Math.round(
+                          Cart?.taxation_policy == "TCS" ? Cart?.total_itinerary_cost : Cart?.total_cost
+                        )
                       )}
                       lockInCost={0}
                       couponDiscount={appliedCoupon ? -couponSavedAmount : 0}
@@ -2732,12 +2646,14 @@ const Details = (props) => {
                         </div>
                       </>
                     ) : (
-                      <PaymentButton
-                        amount={calculateFilteredTotal()}
-                        isLoading={paymentLoading}
-                        paymentType={"full"}
-                        onClick={() => handlePayNow("full")}
-                      />
+                      <div className="fixed bottom-0 left-0 right-0 bg-white px-4 pt-2 pb-4 z-[100] shadow-[0_-2px_12px_rgba(0,0,0,0.08)] md:static md:bg-transparent md:px-0 md:pt-0 md:pb-0 md:z-auto md:shadow-none">
+                        <PaymentButton
+                          amount={calculateFilteredTotal()}
+                          isLoading={paymentLoading}
+                          paymentType={"full"}
+                          onClick={() => handlePayNow("full")}
+                        />
+                      </div>
                     )}
 
                     {/* WhatsApp Button */}
@@ -2790,6 +2706,86 @@ const Details = (props) => {
                         </div>
                       </>
                     }
+
+                    {/* Visa & eSIM CTAs */}
+                    {(() => {
+                      const ancillaryBookings =
+                        Cart?.summary?.Ancillaries?.bookings || [];
+                      const esimCount = ancillaryBookings.filter((b) =>
+                        (b?.name || "").toLowerCase().includes("esim"),
+                      ).length;
+                      const visaCount = ancillaryBookings.filter((b) => {
+                        const n = (b?.name || "").toLowerCase();
+                        return !n.includes("esim") && n.includes("visa");
+                      }).length;
+                      const hasEsim = esimCount > 0;
+                      const hasVisa = visaCount > 0;
+                      return (
+                        <div className="mt-md mb-md">
+                          <hr className="text-text-placeholder mb-md" />
+                          <div className="text-sm font-500 leading-xl mb-sm text-[#01202B]">
+                            Enhance Your Trip
+                          </div>
+                          <div className="flex flex-col gap-2">
+                            <button
+                              className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-[#E5E5E5] bg-white hover:bg-[#FAFAFA] transition-colors"
+                              onClick={() => {
+                                trackVisaCardClicked?.(props?.id);
+                                setShowVisaDrawer(true);
+                              }}
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className="w-[36px] h-[36px] rounded-full bg-[#F5F0FF] flex items-center justify-center flex-shrink-0">
+                                  <span className="text-[18px]">🛂</span>
+                                </div>
+                                <div className="text-left">
+                                  <div className="text-[13px] font-600 text-[#01202B] flex items-center gap-1">
+                                    {hasVisa ? `${visaCount} Visa added` : "Add Visa"}
+                                    {hasVisa && (
+                                      <span className="inline-flex items-center justify-center w-[14px] h-[14px] rounded-full bg-[#22C55E] text-white text-[9px] font-700">
+                                        ✓
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div className="text-[11px] text-[#6E757A]">
+                                    Hassle-free visa assistance
+                                  </div>
+                                </div>
+                              </div>
+                              <span className="text-[#979393] text-lg">›</span>
+                            </button>
+
+                            <button
+                              className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-[#E5E5E5] bg-white hover:bg-[#FAFAFA] transition-colors"
+                              onClick={() => {
+                                trackEsimCardClicked?.(props?.id);
+                                setShowEsimDrawer(true);
+                              }}
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className="w-[36px] h-[36px] rounded-full bg-[#DDF4C5] flex items-center justify-center flex-shrink-0">
+                                  <span className="text-[18px]">📶</span>
+                                </div>
+                                <div className="text-left">
+                                  <div className="text-[13px] font-600 text-[#01202B] flex items-center gap-1">
+                                    {hasEsim ? `${esimCount} eSIM added` : "Add eSIM"}
+                                    {hasEsim && (
+                                      <span className="inline-flex items-center justify-center w-[14px] h-[14px] rounded-full bg-[#22C55E] text-white text-[9px] font-700">
+                                        ✓
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div className="text-[11px] text-[#6E757A]">
+                                    Stay connected abroad
+                                  </div>
+                                </div>
+                              </div>
+                              <span className="text-[#979393] text-lg">›</span>
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })()}
 
                     {/* Trip Conditions */}
                     <div className="bg-primary-lightPurple p-sm mt-xl">
@@ -2910,6 +2906,30 @@ const Details = (props) => {
           <PassengerDetails />
         </div>
       </Drawer>
+
+      <VisaSearchDrawer
+        show={showVisaDrawer}
+        onHide={() => setShowVisaDrawer(false)}
+        onAdded={(booking, replaceId) => {
+          if (booking?.id) dispatch(addAncillaryBooking(booking, replaceId));
+          else if (replaceId) dispatch(removeAncillaryBooking(replaceId));
+        }}
+        onRemoved={(bookingId) => {
+          if (bookingId) dispatch(removeAncillaryBooking(bookingId));
+        }}
+      />
+
+      <EsimPackagesDrawer
+        show={showEsimDrawer}
+        onHide={() => setShowEsimDrawer(false)}
+        onAdded={(booking, replaceId) => {
+          if (booking?.id) dispatch(addAncillaryBooking(booking, replaceId));
+          else if (replaceId) dispatch(removeAncillaryBooking(replaceId));
+        }}
+        onRemoved={(bookingId) => {
+          if (bookingId) dispatch(removeAncillaryBooking(bookingId));
+        }}
+      />
     </>
   );
 };
