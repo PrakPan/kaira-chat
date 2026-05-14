@@ -13,6 +13,9 @@ import MyTripsSection from "../components/revamp/destination/mytrips";
 import TrustFactors from "../components/revamp/home/TrustFactors";
 import FaqSection from "../components/revamp/home/FaqSection";
 import LuxuryEuropeDestinations from "../components/revamp/home/LuxuryEuropeDestinations";
+import KairaLovingSection from "../components/revamp/home/KairaLovingSection";
+import TravelerStoriesSection from "../components/revamp/home/TravelerStoriesSection";
+import CtaBoardingSection from "../components/revamp/home/CtaBoardingSection";
 
 import * as authaction from "../store/actions/auth";
 import setHotLocationSearch from "../store/actions/hotLocationSearch";
@@ -54,13 +57,6 @@ const PartnersSection = dynamic(() => import("../components/theme/PartnersSectio
   ssr: false,
   loading: () => <div style={{ height: 160, background: "#f3f4f6" }} />,
 });
-const TravelerMadeItinerariesSection = dynamic(
-  () => import("../components/revamp/home/TravelerMadeItinerariesSection"),
-  {
-    ssr: false,
-    loading: () => <div style={{ height: 260, background: "#f3f4f6" }} />,
-  }
-);
 
 /* ---------------- Page ---------------- */
 
@@ -144,17 +140,18 @@ const Home = ({ token, hotLocationSearch, checkAuthState, setHotLocationSearch }
         <NavigationMenu message={"Welcome to The Tarzan Way!"} />
         <HeroSection slug={"home"} />
         <TrustFactors />
-        <JourneySimplified />
+        <KairaLovingSection />
 
         {token && <MyTripsSection className="max-w-7xl" />}
 
+        <TravelerStoriesSection />
         <LuxuryEuropeDestinations />
-        <TravelerMadeItinerariesSection />
-        <PartnersSection />
         <WhereNextSection />
-        {/* <WhatMakesUsSection /> */}
+        <JourneySimplified />
+        <PartnersSection />
         <TestimonialCarousel />
-        <FaqSection />
+        {/* <FaqSection /> */}
+        <CtaBoardingSection />
       </div>
 
       <NewFooter page="Homepage" />

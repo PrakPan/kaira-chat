@@ -1,70 +1,107 @@
-import Image from "next/image";
-import { cta } from "../assets";
-import Button from "../common/components/button";
-import Link from "next/link";
-import { useState } from "react";
-import TailoredFormMobileModal from "../../modals/TailoredFomrMobile";
+import { useRouter } from "next/router";
+import { KairaAvatar } from "./HeroSection";
 
-const CtaBoardingSection = (props) => {
-  const [showTailoredModal,setShowTailoredModal] = useState(false);
+/*
+ * Final CTA — "So, where are we going?"
+ * Optional props let the same component be reused in other landing pages.
+ */
+
+const CtaBoardingSection = ({
+  title,
+  body,
+  ctaLabel = "Chat with Kaira",
+  ctaHref = "/chat",
+  trustLine = "Since 2018 · Based in India · Built for the world",
+}) => {
+  const router = useRouter();
+
   return (
-    <section className="w-full py-12 sm:py-16 lg:py-20 px-0 sm:px-4 lg:px-8 bg-white font-inter">
-      <div className="max-w-7xl mx-auto">
+    <section
+      style={{
+        padding: "80px 0 100px",
+        background:
+          "radial-gradient(ellipse 600px 300px at 50% 100%, var(--ttw-peach, #ffede0) 0%, transparent 70%), var(--ttw-bg-2, #fafaf5)",
+      }}
+    >
+      <div
+        style={{
+          maxWidth: "820px",
+          margin: "0 auto",
+          textAlign: "center",
+          padding: "0 28px",
+        }}
+      >
         <div
-          className="relative rounded-2xl overflow-hidden flex items-center justify-center"
-          style={{ height: "384px" }}
+          style={{
+            marginBottom: "24px",
+            display: "flex",
+            justifyContent: "center",
+          }}
         >
-          {/* Background Image */}
-          <div className="absolute inset-0">
-            <Image
-              src={cta}
-              alt="Travel destination with water and buildings at sunset"
-              fill
-              className="object-cover"
-            />
-            {/* Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-r from-black/10 via-black/15 to-black/5" />
-          </div>
+          <KairaAvatar size="sm" minimal />
+        </div>
 
-          {/* Content */}
-          <div className="relative z-10 text-center max-w-3xl px-6">
-            <h2 className="font-bold text-white mb-4 leading-tight text-[32px] md:text-[40px]">
-              Let's Turn That Wanderlust Into a{" "}
-              <span className="block">Boarding Pass</span>
-            </h2>
+        <h2
+          style={{
+            fontSize: "clamp(36px, 5vw, 56px)",
+            fontWeight: 800,
+            lineHeight: 1,
+            letterSpacing: "-0.035em",
+            margin: "0 0 16px 0",
+            color: "var(--ttw-ink, #0b1220)",
+          }}
+        >
+          {title || (
+            <>
+              So, where are <span className="ttwSerif">we going?</span>
+            </>
+          )}
+        </h2>
 
-            <p className="text-sm md:text-base text-white/90 mb-8 leading-relaxed max-w-lg mx-auto">
-              We'll take you from "wish you fun" to a perfectly curated
-              adventure. All you have to do is show up, grinning like Tarzan!
-            </p>
+        <p
+          style={{
+            fontSize: "17px",
+            color: "var(--ttw-ink-3, #445069)",
+            marginBottom: "32px",
+            maxWidth: "500px",
+            marginLeft: "auto",
+            marginRight: "auto",
+          }}
+        >
+          {body || "Start the conversation — no sign-up, no card, no commitment."}
+        </p>
 
-            {/* <Link href="/new-trip"> */}
-              <Button
-                variant="filled"
-                size="medium"
-                onClick={() => {
-                  console.log("Get Free Travel Consultation clicked");
-                  setShowTailoredModal(true);
-                }}
-                className="!bg-primary-yellow !border-primary-yellow !text-primary-indigo hover:!bg-primary-yellow/90 hover:!text-primary-indigo"
-              >
-                Plan a Trip Now!
-              </Button>
-            {/* </Link> */}
-          </div>
+        <button
+          type="button"
+          className="ttwCtaPrimary"
+          onClick={() => router.push(ctaHref)}
+        >
+          {ctaLabel}
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <line x1="5" y1="12" x2="19" y2="12" />
+            <polyline points="12 5 19 12 12 19" />
+          </svg>
+        </button>
+
+        <div
+          style={{
+            marginTop: "22px",
+            fontSize: "12.5px",
+            color: "var(--ttw-ink-4, #8a93a6)",
+          }}
+        >
+          {trustLine}
         </div>
       </div>
-       <TailoredFormMobileModal
-        destinationType={"city-planner"}
-        page_id={props.page_id}
-        children_cities={props.children_cities}
-        destination={props.destination}
-        cities={props.cities}
-        onHide={() => {
-          setShowTailoredModal(false);
-        }}
-        show={showTailoredModal}
-      />
     </section>
   );
 };

@@ -58,6 +58,10 @@ import { currencySymbols } from "../../data/currencySymbols";
 import { useAnalytics } from "../../hooks/useAnalytics";
 import Login from "../modals/Login";
 import { FiMap, FiNavigation, FiCalendar, FiBookmark } from "react-icons/fi";
+import {
+  takePendingFiles,
+  takePendingSeed,
+} from "../../services/heroChatHandoff";
 
 type MobilePanel = "map" | "chat" | "itinerary";
 type LeftPanelMode = "default" | "itinerary-loading" | "itinerary-ready";
@@ -197,6 +201,17 @@ export default function BotApp({
   const [initialAttachmentIds, setInitialAttachmentIds] = useState<
     string[] | undefined
   >(undefined);
+  // Hero handoff: seed prompt and/or selected files arriving from the
+  // homepage chat input. Files are queued to ChatKitPanel for upload via
+  // `initialFiles`. The seed pre-fills the composer (`initialInputText`)
+  // when files are present so the user can review before sending; when
+  // there are no files, it's auto-sent through the regular
+  // `handlePromptSelect` path.
+  const [initialFiles, setInitialFiles] = useState<File[] | undefined>(
+    undefined,
+  );
+  const [initialInputText, setInitialInputText] = useState<string | null>(null);
+  const hasConsumedHeroHandoffRef = useRef(false);
   const [activeTravellerStory, setActiveTravellerStory] =
     useState<TravellerStory | null>(null);
   const sendMessageRef = useRef<((msg: string) => void) | null>(null);
@@ -2193,6 +2208,53 @@ export default function BotApp({
     }
   };
 
+  // ── Consume the hero/external chat handoff ────────────────────────────────
+  // The homepage chat input routes here with `?seed=...` in the URL and
+  // optionally a list of File objects parked in the in-memory handoff
+  // buffer (services/heroChatHandoff.js). Drains both once on first
+  // route-ready render so they're not re-applied on subsequent navigations.
+  useEffect(() => {
+    if (hasConsumedHeroHandoffRef.current) return;
+    if (!router.isReady) return;
+    hasConsumedHeroHandoffRef.current = true;
+
+    const queryParam = router.query.seed;
+    const querySeed = Array.isArray(queryParam) ? queryParam[0] : queryParam;
+    const handoffSeed = takePendingSeed();
+    const seed = (querySeed || handoffSeed || "").toString().trim();
+    const files = takePendingFiles();
+
+    if (!seed && (!files || files.length === 0)) return;
+
+    if (files && files.length > 0) {
+      // Pre-fill composer + upload files; let the user click send so the
+      // first message includes any newly-uploaded attachment IDs.
+      setShowStartScreen(false);
+      setIsChatActive(true);
+      setInitialInputText(seed);
+      setInitialFiles(files);
+    } else if (seed) {
+      // Plain seed (no files): existing prompt-auto-send flow already
+      // funnels through `handlePromptSelect`, which sets `initialPrompt`
+      // and flips `isChatActive`. ChatKitPanel's `initialPrompt` effect
+      // sends it as the first message after location is ready.
+      handlePromptSelect(seed);
+    }
+
+    // Drop the seed from the URL once consumed so a refresh doesn't replay it.
+    if (querySeed && typeof window !== "undefined") {
+      try {
+        const url = new URL(window.location.href);
+        url.searchParams.delete("seed");
+        window.history.replaceState({}, "", url.toString());
+      } catch {
+        /* noop */
+      }
+    }
+    // We deliberately want this to run only once. The ref guards re-runs.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router.isReady]);
+
   // Open the traveller-story detail view inside ChatKitPanel without pushing a
   // message to the bot. CTAs on that detail view will call handlePromptSelect
   // which routes through the /chatkit p1 API.
@@ -2274,6 +2336,8 @@ export default function BotApp({
     onLoginSuccess: attachUserToItinerary,
     loginMandatory: router.query.login === "false" ? false : undefined,
     onViewItinerary: () => mobileTabSwitchRef.current?.("itinerary"),
+    initialFiles,
+    initialInputText,
   };
 
   const handleConfirmItinerary = (details: any) => {

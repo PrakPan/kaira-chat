@@ -118,6 +118,14 @@ interface ChatKitPanelProps {
    *  finished P2 trip don't fire a "Hey Kaira!" summary request. */
   initialPromptRequiresLogin?: boolean;
   initialAttachmentIds?: string[];
+  /** Files handed off from the homepage hero chat input. On mount, fed into
+   *  `handleFilesSelected` so they upload through the regular attachment
+   *  flow and appear in the composer's attachment row. */
+  initialFiles?: File[];
+  /** Pre-fills the composer text (NOT auto-sent). Used in tandem with
+   *  `initialFiles` so the user can review the hero seed + uploaded
+   *  attachment before sending the first message. */
+  initialInputText?: string | null;
   onSendReady?: (sendFn: (message: string) => void) => void;
   onItineraryCompletionStart?: (itineraryId: string) => void;
 onItineraryCompletionDone?: (itineraryId: string, summary?: string) => void;
@@ -293,6 +301,8 @@ export function ChatKitPanel({
   initialPrompt = null,
   initialPromptRequiresLogin = false,
   initialAttachmentIds,
+  initialFiles,
+  initialInputText,
   onSendReady,
   onItineraryCompletionStart,
 onItineraryCompletionDone,
@@ -2128,6 +2138,29 @@ const handleShowLogin = useCallback(() => {
     },
     [authToken, selectedModel, userLocationData, reduxUserId],
   );
+
+  // ── Hero handoff consumers ─────────────────────────────────────────────
+  // `initialFiles` come from BotApp via the homepage hero. Push them
+  // through the regular upload pipeline once on mount; the upload status
+  // chips in MessageInputBox show progress to the user.
+  const hasConsumedInitialFilesRef = useRef(false);
+  useEffect(() => {
+    if (hasConsumedInitialFilesRef.current) return;
+    if (!initialFiles || initialFiles.length === 0) return;
+    hasConsumedInitialFilesRef.current = true;
+    handleFilesSelected(initialFiles);
+  }, [initialFiles, handleFilesSelected]);
+
+  // `initialInputText` pre-fills the composer (NOT auto-sent). The user
+  // reviews seed + uploaded attachments and clicks send. Only runs once
+  // and only when the composer is empty to avoid clobbering user input.
+  const hasConsumedInitialInputRef = useRef(false);
+  useEffect(() => {
+    if (hasConsumedInitialInputRef.current) return;
+    if (!initialInputText) return;
+    hasConsumedInitialInputRef.current = true;
+    setInput((prev) => (prev && prev.trim() ? prev : initialInputText));
+  }, [initialInputText]);
 
   const handleRemoveAttachment = useCallback(
     async (id: string) => {
