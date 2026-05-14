@@ -52,6 +52,7 @@ const PinWrapper = styled.div`
 
 const TaxiPickupDropItem = ({
   handlePickupDropDrawer,
+  handleAddCityTaxiAirport,
   originCityName,
   destinationCityName,
   firstCity,
@@ -117,23 +118,11 @@ const TaxiPickupDropItem = ({
 
   // ADDED: handleClick function
   const handleClick = () => {
-    // If no bookings at all, show click tooltip
+    // No bookings yet → open the Add Taxi drawer with the Pickup/Drop tab
+    // pre-selected. For middle cities default to pickup at the destination.
     if (!hasPickup && !hasDrop) {
-      // For first city - directly open pickup drawer
-      if (firstCity && !lastCity) {
-        handlePickupDropDrawer("pickup");
-        return;
-      }
-      
-      // For last city - directly open drop drawer
-      if (lastCity && !firstCity) {
-        handlePickupDropDrawer("drop");
-        return;
-      }
-      
-      // For middle cities - show click tooltip with both options
-      setShowClickTooltip(!showClickTooltip);
-      setShowTooltip(false);
+      const type = lastCity && !firstCity ? "drop" : "pickup";
+      handleAddCityTaxiAirport?.(type);
       return;
     }
 
@@ -302,31 +291,6 @@ const TaxiPickupDropItem = ({
         >
           {displayText}
         </span>
-
-        {/* Only show info icon for middle cities when no bookings */}
-        {isPageWide   && (
-          <div className="relative">
-            <div
-              className="w-4 h-4 rounded-full bg-white text-gray-400 flex items-center justify-center text-[14px] font-bold hover:bg-blue-700 transition-colors cursor-pointer"
-              onMouseEnter={() => handleInfoHover(true)}
-              onMouseLeave={() => handleInfoHover(false)}
-            >
-              <LuInfo size={16} strokeWidth={2.5} />
-            </div>
-
-            {showTooltip && !showClickTooltip && (
-              <div
-                className="absolute left-0 md:left-6 top-1/2 transform -translate-y-1/2 bg-gray-900 text-white text-xs rounded-md px-3 py-2 shadow-xl border border-gray-600 whitespace-nowrap z-[9999]"
-                style={{ zIndex: 100 }}
-                onMouseEnter={handleTooltipMouseEnter}
-                onMouseLeave={handleTooltipMouseLeave}
-              >
-                {renderTooltipContent()}
-                <div className="absolute left-0 top-1/2 transform -translate-x-1 -translate-y-1/2 w-0 h-0 border-t-4 border-b-4 border-r-4 border-transparent border-r-gray-900"></div>
-              </div>
-            )}
-          </div>
-        )}
       </div>
 
       {showClickTooltip && (
@@ -357,6 +321,7 @@ const AirportBookingItem = ({
   onDropClick, // Add this prop
   handleEdit,
   handlePickupDropDrawer,
+  handleAddCityTaxiAirport,
   setTransferType,
   firstCity,
   lastCity,
@@ -599,16 +564,17 @@ const AirportBookingItem = ({
   }}, [showDetails, showClickTooltip]);
 
   const handleClick = () => {
-    // If no bookings and supports transfers, show tooltip below text
+    // No bookings yet → open the Add Taxi drawer with the Pickup/Drop tab
+    // pre-selected (firstCity → pickup at destination, lastCity → drop at
+    // origin, middle → default to pickup).
     if (
       !hasPickup &&
       !hasDrop &&
       noPickupDropBookings.length === 0 &&
       supportsTransfers(bookingMode)
     ) {
-      setShowClickTooltip(!showClickTooltip);
-      setShowTooltip(false);
-      setShowDetails(false);
+      const type = lastCity ? "drop" : "pickup";
+      handleAddCityTaxiAirport?.(type);
       return;
     }
 
@@ -905,44 +871,7 @@ const AirportBookingItem = ({
         >
           {displayText}
         </span>
-
-        {isPageWide && (
-          <div className="relative">
-            <div
-              className="w-4 h-4 rounded-full bg-white text-gray-400 flex items-center justify-center text-[14px] font-bold hover:bg-blue-700 transition-colors cursor-pointer"
-              onMouseEnter={() => handleInfoHover(true)}
-              onMouseLeave={() => handleInfoHover(false)}
-            >
-              <LuInfo size={16} strokeWidth={2.5} />
-            </div>
-
-            {showTooltip && !showDetails && !showClickTooltip && (
-              <div
-                className="absolute left-0 md:left-6 top-1/2 transform -translate-y-1/2 bg-gray-900 text-white text-xs rounded-md px-3 py-2 shadow-xl border border-gray-600 whitespace-nowrap"
-                style={{ zIndex: 100 }}
-                onMouseEnter={handleTooltipMouseEnter}
-                onMouseLeave={handleTooltipMouseLeave}
-              >
-                {renderTooltipContent()}
-                <div className="absolute left-0 top-1/2 transform -translate-x-1 -translate-y-1/2 w-0 h-0 border-t-4 border-b-4 border-r-4 border-transparent border-r-gray-900"></div>
-              </div>
-            )}
-          </div>
-        )}
       </div>
-
-      {/* Click tooltip for no bookings case - positioned below the text */}
-      {showClickTooltip && (
-        <div className="relative mt-2">
-          <div
-            className="absolute bg-gray-900 text-white text-xs rounded-md px-3 py-2 shadow-xl border border-gray-600 min-w-fit"
-            style={{ zIndex: 100 }}
-          >
-            {renderTooltipContent()}
-            <div className="absolute left-4 top-0 transform -translate-y-1 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-900"></div>
-          </div>
-        </div>
-      )}
 
       {showDetails &&
         ((hasPickup && hasDrop) ||
@@ -965,49 +894,12 @@ const AirportBookingItem = ({
       <div key={-3} className="group relative" ref={dropdownRef}>
         <div className="flex items-center gap-2">
           <span
-            className={`${isDesktop ? "Body1M_16" : "Body2M_14"} text-blue hover:underline `}
+            className={`${isDesktop ? "Body1M_16" : "Body2M_14"} text-blue hover:underline cursor-pointer`}
             onClick={handleClick}
           >
             + Add Pickup and Drop
           </span>
-
-          {isPageWide && (
-            <div className="relative">
-              <div
-                className="w-4 h-4 rounded-full bg-white text-gray-400 flex items-center justify-center text-[14px] font-bold hover:bg-blue-700 transition-colors cursor-pointer"
-                onMouseEnter={() => handleInfoHover(true)}
-                onMouseLeave={() => handleInfoHover(false)}
-              >
-                <LuInfo size={16} strokeWidth={2.5} />
-              </div>
-
-              {showTooltip && !showDetails && !showClickTooltip && (
-                <div
-                  className="absolute left-0 md:left-6 top-1/2 transform -translate-y-1/2 bg-gray-900 text-white text-xs rounded-md px-3 py-2 shadow-xl border border-gray-600 whitespace-nowrap"
-                  style={{ zIndex: 100 }}
-                  onMouseEnter={handleTooltipMouseEnter}
-                  onMouseLeave={handleTooltipMouseLeave}
-                >
-                  {renderTooltipContent()}
-                  <div className="absolute left-0 top-1/2 transform -translate-x-1 -translate-y-1/2 w-0 h-0 border-t-4 border-b-4 border-r-4 border-transparent border-r-gray-900"></div>
-                </div>
-              )}
-            </div>
-          )}
         </div>
-
-        {/* Click tooltip for no bookings case - positioned below the text */}
-        {showClickTooltip && (
-          <div className="relative mt-2">
-            <div
-              className="absolute bg-gray-900 text-white text-xs rounded-md px-3 py-2 shadow-xl border border-gray-600 min-w-fit"
-              style={{ zIndex: 100 }}
-            >
-              {renderTooltipContent()}
-              <div className="absolute left-4 top-0 transform -translate-y-1 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-900"></div>
-            </div>
-          </div>
-        )}
       </div>
     )
   );
@@ -1275,6 +1167,30 @@ useEffect(() => {
       {
         scroll: false,
       }
+    );
+  };
+
+  // Open the same Add Taxi drawer used by the "+ Taxi" CTA, but with the
+  // Pickup/Drop tab pre-selected. Pickup takes place at the destination city
+  // of the leg; drop at the origin. For "both", default to destination.
+  const handleAddCityTaxiAirport = (type) => {
+    const cityId =
+      type === "drop"
+        ? oCityData?.id || oCityData?.gmaps_place_id
+        : dCityData?.id || dCityData?.gmaps_place_id;
+    if (!cityId) return;
+    router.push(
+      {
+        pathname: window.location.pathname,
+        query: {
+          ...(currentItineraryId ? { id: currentItineraryId } : {}),
+          drawer: "addCityTaxi",
+          itinerary_city_id: cityId,
+          taxiTab: "airport",
+        },
+      },
+      undefined,
+      { scroll: false },
     );
   };
 
@@ -1749,6 +1665,7 @@ useEffect(() => {
           destinationGmaps={destinationGmaps}
           handleEdit={handleEdit}
           handlePickupDropDrawer={handlePickupDropDrawer}
+          handleAddCityTaxiAirport={handleAddCityTaxiAirport}
           setAirportBookingId={setAirportBookingId}
           setTransferType={setTransferType}
           firstCity={firstCity}
@@ -1759,6 +1676,7 @@ useEffect(() => {
         <TaxiPickupDropItem
           key={`taxi-no-booking`}
           handlePickupDropDrawer={handlePickupDropDrawer}
+          handleAddCityTaxiAirport={handleAddCityTaxiAirport}
           originCityName={origin_city_name}
           destinationCityName={destination_city_name}
           firstCity={firstCity}
@@ -1800,6 +1718,7 @@ useEffect(() => {
             <TaxiPickupDropItem
               key={`taxi-no-booking`}
               handlePickupDropDrawer={handlePickupDropDrawer}
+              handleAddCityTaxiAirport={handleAddCityTaxiAirport}
               originCityName={origin_city_name}
               destinationCityName={destination_city_name}
               firstCity={firstCity}
@@ -1859,6 +1778,7 @@ useEffect(() => {
             destination_itinerary_city_id={
               dCityData?.id || dCityData?.gmaps_place_id
             }
+            booking_id={bookingId}
           />
         )}
 

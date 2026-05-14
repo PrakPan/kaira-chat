@@ -36,8 +36,8 @@ const japanThemeConfig: ThemeConfig = {
       },
     ],
   },
-  rows: {
-    row1: {
+  rows: [
+    {
       heading: "From Cherry Blossoms to Bullet Trains",
       icon: "🌸",
      cards: [
@@ -78,7 +78,7 @@ const japanThemeConfig: ThemeConfig = {
   },
 ],
     },
-    row2: {
+    {
       heading: "Japan This Summer",
       icon: "🎐",
      cards: [
@@ -119,7 +119,7 @@ const japanThemeConfig: ThemeConfig = {
   },
 ],
     },
-    row3: {
+    {
       heading: "TTW's Japan Themes",
       icon: "🎯",
      cards: [
@@ -153,7 +153,7 @@ const japanThemeConfig: ThemeConfig = {
   },
 ],
     },
-    row4: {
+    {
       heading: "Only in Japan — Experiences Worth Flying For",
       icon: "✨",
       cards: [
@@ -204,7 +204,7 @@ const japanThemeConfig: ThemeConfig = {
         },
       ],
     },
-  },
+  ],
 };
 
 const JapanInSummerThemePage = ({

@@ -838,7 +838,7 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          marginBottom: 14,
+          marginBottom: 20,
         }}
       >
         <span>
@@ -882,7 +882,7 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
             gap: 4,
             color: "#DC2626",
             fontSize: 12,
-            marginTop: 8,
+            marginTop: 10,
           }}
         >
           <BiError style={{ fontSize: "1rem" }} />
@@ -905,7 +905,7 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
           fontWeight: 600,
           cursor: props.loading ? "not-allowed" : "pointer",
           width: "100%",
-          marginTop: 16,
+          marginTop: 20,
           opacity: props.loading ? 0.6 : 1,
           transition: "all 0.15s",
         }}
@@ -916,7 +916,7 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
       <div
         style={{
           textAlign: "center",
-          marginTop: 12,
+          marginTop: 14,
           fontSize: 12,
           color: COLORS.gray600,
         }}
