@@ -291,31 +291,6 @@ const TaxiPickupDropItem = ({
         >
           {displayText}
         </span>
-
-        {/* Only show info icon for middle cities when no bookings */}
-        {isPageWide   && (
-          <div className="relative">
-            <div
-              className="w-4 h-4 rounded-full bg-white text-gray-400 flex items-center justify-center text-[14px] font-bold hover:bg-blue-700 transition-colors cursor-pointer"
-              onMouseEnter={() => handleInfoHover(true)}
-              onMouseLeave={() => handleInfoHover(false)}
-            >
-              <LuInfo size={16} strokeWidth={2.5} />
-            </div>
-
-            {showTooltip && !showClickTooltip && (
-              <div
-                className="absolute left-0 md:left-6 top-1/2 transform -translate-y-1/2 bg-gray-900 text-white text-xs rounded-md px-3 py-2 shadow-xl border border-gray-600 whitespace-nowrap z-[9999]"
-                style={{ zIndex: 100 }}
-                onMouseEnter={handleTooltipMouseEnter}
-                onMouseLeave={handleTooltipMouseLeave}
-              >
-                {renderTooltipContent()}
-                <div className="absolute left-0 top-1/2 transform -translate-x-1 -translate-y-1/2 w-0 h-0 border-t-4 border-b-4 border-r-4 border-transparent border-r-gray-900"></div>
-              </div>
-            )}
-          </div>
-        )}
       </div>
 
       {showClickTooltip && (

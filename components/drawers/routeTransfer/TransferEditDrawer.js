@@ -643,8 +643,15 @@ const TransferEditDrawer = (props) => {
                 setMulticityRoundtripTraceId(response?.data?.trace_id);
                 const suggestions = response?.data?.suggestions || [];
 
+                // Multicity tab surfaces both `multicity` and `roundtrip`
+                // suggestions — the latter is a special case of multicity that
+                // returns to its origin, so it belongs under the same tab.
+                const isMulticityType = (s) =>
+                  s?.type === "multicity" || s?.type === "roundtrip";
+
                 if (effectiveType === "multicity") {
-                  setMultiCitySuggestions(suggestions.length > 0 ? suggestions[0] : null);
+                  const multicitySuggs = suggestions.filter(isMulticityType);
+                  setMultiCitySuggestions(multicitySuggs.length > 0 ? multicitySuggs : null);
                   setTabLoaded((prev) => ({ ...prev, multicity: true }));
                 } else if (effectiveType === "pickup-drop") {
                   setAirportSuggestions(suggestions.length > 0 ? suggestions : null);
@@ -655,10 +662,12 @@ const TransferEditDrawer = (props) => {
                   setTabLoaded((prev) => ({ ...prev, sightseeing: true }));
                 } else {
                   // Legacy fallback: response contains all types — categorize.
-                  const multicitySuggs = suggestions.filter(s => s.type === "multicity");
+                  const multicitySuggs = suggestions.filter(isMulticityType);
                   const airportSuggs = suggestions.filter(s => s.type === "pickup_drop");
-                  const otherSuggs = suggestions.filter(s => s.type !== "multicity" && s.type !== "pickup_drop");
-                  setMultiCitySuggestions(multicitySuggs.length > 0 ? multicitySuggs[0] : null);
+                  const otherSuggs = suggestions.filter(
+                    s => !isMulticityType(s) && s.type !== "pickup_drop"
+                  );
+                  setMultiCitySuggestions(multicitySuggs.length > 0 ? multicitySuggs : null);
                   setAirportSuggestions(airportSuggs.length > 0 ? airportSuggs : null);
                   setRoundTripSuggestions(otherSuggs.length > 0 ? otherSuggs : null);
                   setSightseeingSuggestions(null);
@@ -784,7 +793,7 @@ const TransferEditDrawer = (props) => {
               results[i].success &&
               results[i].transfer_type === "Multicity"
             ) {
-              setMultiCitySuggestions(results[i]);
+              setMultiCitySuggestions([results[i]]);
             }
           }
         })
@@ -1800,27 +1809,30 @@ const TransferEditDrawer = (props) => {
               </>
             ) : transferType === "MULTICITYROUNDTRIP" ? (
               <div className="w-full flex flex-col items-center gap-4">
-                {/* Multicity suggestions */}
-                {multicityTab === "multicity" && multiCitySuggestions && (
-                  <div className="w-full">
-                    {multiCitySuggestions?.data?.duration?.text && (
-                      <div className="px-1 pb-1 text-sm font-semibold text-gray-700 flex items-center gap-2">
-                        <span>{multiCitySuggestions.name}</span>
-                        <span className="text-xs font-normal text-gray-500 bg-gray-100 rounded px-2 py-0.5">
-                          {multiCitySuggestions.data.duration.text}
-                        </span>
-                      </div>
-                    )}
-                    <MultiCityTripSuggestion
-                      handleRoundTripSelect={handleMultiCitySelect}
-                      multiCitySuggestions={multiCitySuggestions}
-                      selectedCab={selectedCab}
-                      setSelectedCab={setSelectedCab}
-                      selectedTripType={selectedTripType}
-                      setSelectedTripType={setSelectedTripType}
-                    />
-                  </div>
-                )}
+                {/* Multicity & roundtrip suggestions — both types live under
+                    this tab; iterate so each one renders as its own card. */}
+                {multicityTab === "multicity" &&
+                  Array.isArray(multiCitySuggestions) &&
+                  multiCitySuggestions.map((sugg, idx) => (
+                    <div key={sugg?.result_index ?? idx} className="w-full">
+                      {sugg?.data?.duration?.text && (
+                        <div className="px-1 pb-1 text-sm font-semibold text-gray-700 flex items-center gap-2">
+                          <span>{sugg.name}</span>
+                          <span className="text-xs font-normal text-gray-500 bg-gray-100 rounded px-2 py-0.5">
+                            {sugg.data.duration.text}
+                          </span>
+                        </div>
+                      )}
+                      <MultiCityTripSuggestion
+                        handleRoundTripSelect={handleMultiCitySelect}
+                        multiCitySuggestions={sugg}
+                        selectedCab={selectedCab}
+                        setSelectedCab={setSelectedCab}
+                        selectedTripType={selectedTripType}
+                        setSelectedTripType={setSelectedTripType}
+                      />
+                    </div>
+                  ))}
 
                 {/* Sightseeing date filters */}
                 {multicityTab === "sightseeing" &&

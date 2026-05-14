@@ -198,7 +198,7 @@ function inspectWidgetContent(node: unknown): { buttons: number; others: number 
   return { buttons, others };
 }
 
-function isButtonOnlyWidget(widget: Record<string, unknown>): boolean {
+export function isButtonOnlyWidget(widget: Record<string, unknown>): boolean {
   const { buttons, others } = inspectWidgetContent(widget);
   return buttons === 1 && others === 0;
 }
