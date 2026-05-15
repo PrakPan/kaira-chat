@@ -461,6 +461,178 @@ function resolveEntityTokens(
   });
 }
 
+// ─── ThinkingLoaderShell ──────────────────────────────────────────────────────
+// Mirrors the design-spec HTML: a lead line, a navy gradient card with spinner
+// showing the *current* step, and a cream `.steps` list of completed events
+// underneath (each separated by a hairline). When a new event arrives, the
+// previous "current" step moves into the done-list.
+
+const ThinkingLoaderShell: React.FC<{
+  lead: string;
+  activeText: string;
+  doneTexts: string[];
+}> = ({ lead, activeText, doneTexts }) => (
+  <div
+    style={{
+      marginBottom: 12,
+      width: "100%",
+      maxWidth: "100%",
+      boxSizing: "border-box",
+      fontFamily: "'Inter', sans-serif",
+    }}
+  >
+    {/* Lead — matches .bubble-k .lead */}
+    {lead && (
+      <div
+        style={{
+          fontWeight: 700,
+          fontSize: 13.5,
+          marginBottom: 8,
+          color: "#0D1429",
+          lineHeight: 1.4,
+        }}
+      >
+        {lead}
+      </div>
+    )}
+
+    {/* Navy gradient loader — matches .bubble-loader */}
+    {activeText && (
+      <div
+        style={{
+          marginTop: 8,
+          background: "linear-gradient(135deg,#0D1429 0%,#1A2238 100%)",
+          color: "#fff",
+          borderRadius: 12,
+          padding: 12,
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
+        <div
+          aria-hidden
+          style={{
+            content: '""',
+            position: "absolute",
+            inset: 0,
+            background:
+              "radial-gradient(circle at 80% 20%, rgba(244,232,39,0.18) 0%, transparent 60%)",
+            pointerEvents: "none",
+          }}
+        />
+        <div
+          key={activeText}
+          style={{
+            position: "relative",
+            fontWeight: 700,
+            fontSize: 12.5,
+            display: "flex",
+            alignItems: "center",
+            gap: 7,
+            lineHeight: 1.45,
+            animation: "thinkRowIn 0.22s ease-out",
+          }}
+        >
+          <span
+            style={{
+              width: 13,
+              height: 13,
+              border: "2px solid rgba(244,232,39,0.3)",
+              borderTopColor: "#F4E827",
+              borderRadius: "50%",
+              animation: "thinkSpin 1s linear infinite",
+              flexShrink: 0,
+              display: "inline-block",
+              boxSizing: "border-box",
+            }}
+          />
+          <span style={{ wordBreak: "break-word", overflowWrap: "anywhere" }}>
+            {activeText}
+          </span>
+        </div>
+      </div>
+    )}
+
+    {/* Done-list — matches .steps */}
+    {doneTexts.length > 0 && (
+      <div
+        style={{
+          marginTop: 10,
+          background: "#F5F2E8",
+          border: "1px solid #E5E1D5",
+          borderRadius: 13,
+          padding: "10px 12px",
+        }}
+      >
+        {doneTexts.map((text, i) => (
+          <div
+            key={i}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 9,
+              padding: "5px 0",
+              fontSize: 11.5,
+              borderTop: i > 0 ? "1px solid #EFEBDD" : "none",
+            }}
+          >
+            <div
+              style={{
+                width: 20,
+                height: 20,
+                borderRadius: "50%",
+                background: "#16A34A",
+                color: "#fff",
+                display: "grid",
+                placeItems: "center",
+                flexShrink: 0,
+              }}
+            >
+              <svg
+                width="11"
+                height="11"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <div
+              style={{
+                flex: 1,
+                minWidth: 0,
+                fontWeight: 500,
+                color: "#475569",
+                textDecoration: "line-through",
+                textDecorationColor: "#94A3B8",
+                wordBreak: "break-word",
+                overflowWrap: "anywhere",
+                lineHeight: 1.4,
+              }}
+            >
+              {text}
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
+
+    <style>{`
+      @keyframes thinkRowIn {
+        from { opacity: 0; transform: translateY(4px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes thinkSpin {
+        to { transform: rotate(360deg); }
+      }
+    `}</style>
+  </div>
+);
+
 // ─── ProgressLoader ───────────────────────────────────────────────────────────
 
 const ProgressLoader: React.FC<{ steps: ProgressStep[] }> = ({ steps }) => {
@@ -481,71 +653,18 @@ const ProgressLoader: React.FC<{ steps: ProgressStep[] }> = ({ steps }) => {
   const latest = steps[steps.length - 1];
   if (!latest) return null;
 
-  // ── In-progress: bordered card with bulb + current message ──
+  // ── In-progress: lead + navy loader for current step + cream done-list ──
   if (!allDone) {
+    const lastIndex = steps.length - 1;
+    const activeStep = steps[lastIndex];
+    const doneSteps = steps.slice(0, lastIndex);
+
     return (
-      <div
-        style={{
-          marginBottom: 12,
-          borderRadius: 12,
-          border: "1px solid #e5e7eb",
-          background: "#ffffff",
-          padding: "10px 14px 12px",
-          fontFamily: "'Inter', sans-serif",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 6,
-            marginBottom: 8,
-          }}
-        >
-          <svg
-            width="15"
-            height="15"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#6b7280"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M9 21h6M12 3a6 6 0 0 1 6 6c0 2.22-1.21 4.16-3 5.2V17a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1v-2.8C7.21 13.16 6 11.22 6 9a6 6 0 0 1 6-6z" />
-          </svg>
-          <span style={{ fontSize: 14, color: "#6b7280", fontWeight: 500 }}>
-            Thinking
-          </span>
-          <svg width="12" height="12" viewBox="0 0 20 20" fill="#9ca3af">
-            <path
-              fillRule="evenodd"
-              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-              clipRule="evenodd"
-            />
-          </svg>
-        </div>
-
-        <div
-          key={latest.text}
-          style={{
-            fontSize: 14,
-            fontWeight: 600,
-            color: "#374151",
-            paddingLeft: 2,
-            animation: "thinkFadeIn 0.15s ease-out",
-          }}
-        >
-          {latest.text}
-        </div>
-
-        <style>{`
-          @keyframes thinkFadeIn {
-            from { opacity: 0; transform: translateY(4px); }
-            to   { opacity: 1; transform: translateY(0); }
-          }
-        `}</style>
-      </div>
+      <ThinkingLoaderShell
+        lead="Great — locking it in. Give me ~30 seconds."
+        activeText={activeStep?.text ?? ""}
+        doneTexts={doneSteps.map((s) => s.text)}
+      />
     );
   }
 
@@ -699,82 +818,20 @@ const ThinkingBlock: React.FC<{
 
   const cleanContent = (text: string) => text.replace(/\*\*/g, "");
 
-  // Current active task (last non-done, or last task while streaming)
-  const currentTask = isThinking
-    ? ([...tasks].reverse().find((t) => !t.done) ?? tasks[tasks.length - 1])
-    : null;
-
-  // ── Thinking state: bordered card ──────────────────────────────────────────
+  // ── Thinking state: lead + navy loader for current + cream done-list ──────
   if (isThinking) {
+    const lastIndex = tasks.length - 1;
+    const activeTask = tasks[lastIndex];
+    const doneTasks = tasks.slice(0, lastIndex);
+
     return (
-      <div
-        style={{
-          marginBottom: 12,
-          borderRadius: 12,
-          border: "1px solid #e5e7eb",
-          background: "#ffffff",
-          padding: "10px 14px 12px",
-          fontFamily: "'Inter', sans-serif",
-        }}
-      >
-        {/* Header */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 6,
-            marginBottom: 8,
-          }}
-        >
-          {/* Lightbulb icon */}
-          <svg
-            width="15"
-            height="15"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#6b7280"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M9 21h6M12 3a6 6 0 0 1 6 6c0 2.22-1.21 4.16-3 5.2V17a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1v-2.8C7.21 13.16 6 11.22 6 9a6 6 0 0 1 6-6z" />
-          </svg>
-          <span style={{ fontSize: 14, color: "#6b7280", fontWeight: 500 }}>
-            Thinking
-          </span>
-          {/* Right chevron */}
-          <svg width="12" height="12" viewBox="0 0 20 20" fill="#9ca3af">
-            <path
-              fillRule="evenodd"
-              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-              clipRule="evenodd"
-            />
-          </svg>
-        </div>
-
-        {/* Current single task — bold, animated fade */}
-        {currentTask && (
-          <div
-            key={currentTask.content}
-            style={{
-              fontSize: 14,
-              fontWeight: 600,
-              color: "#374151",
-              paddingLeft: 2,
-              animation: "thinkFadeIn 0.15s ease-out",
-            }}
-          >
-            {cleanContent(currentTask.content)}
-          </div>
-        )}
-
-        <style>{`
-          @keyframes thinkFadeIn {
-            from { opacity: 0; transform: translateY(4px); }
-            to   { opacity: 1; transform: translateY(0); }
-          }
-        `}</style>
-      </div>
+      <ThinkingLoaderShell
+        lead="Great — locking it in. Give me ~30 seconds."
+        activeText={
+          activeTask ? cleanContent(activeTask.content) : ""
+        }
+        doneTexts={doneTasks.map((t) => cleanContent(t.content))}
+      />
     );
   }
 
