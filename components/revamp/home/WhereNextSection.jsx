@@ -55,13 +55,13 @@ const WhereNextSection = ({ vibes = DEFAULT_VIBES, total = 47 }) => {
               below drops you into a chat, already briefed.
             </p>
           </div>
-          <a href="/destinations" className="ttwSectionLink">
+          {/* <a href="/destinations" className="ttwSectionLink">
             Browse all {total} countries
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" height={12} width={12}>
               <line x1="5" y1="12" x2="19" y2="12" />
               <polyline points="12 5 19 12 12 19" />
             </svg>
-          </a>
+          </a> */}
         </div>
 
         <div className={styles.grid}>

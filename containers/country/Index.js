@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
-import validateTextSize from "../../services/textSizeValidator";
-import Overview from "../travelplanner/Overview";
 import Button from "../../components/ui/button/Index";
 import ChatWithUs from "../../components/containers/ChatWithUs/ChatWithUs";
 import Continentcarousel from "../../components/continentcarousel/continentcarousel";
 import PathNavigation from "../travelplanner/PathNavigation";
-import Experience from "../../components/containers/Experiences";
 import dynamic from "next/dynamic";
 import { logEvent } from "../../services/ga/Index.js";
-import HeroSection from "../../components/revamp/destination/HeroSection.jsx";
+import HeroV2 from "../../components/revamp/destination/HeroV2.jsx";
+import OverviewEditorial from "../../components/revamp/destination/OverviewEditorial.jsx";
+import CountryCardV2 from "../../components/revamp/destination/CountryCardV2.jsx";
+import ItineraryCardV2 from "../../components/revamp/destination/ItineraryCardV2.jsx";
+import ActivityCardV2 from "../../components/revamp/destination/ActivityCardV2.jsx";
 import { imgUrlEndPoint } from "../../components/theme/ThemeConstants.js";
 const MapBox = dynamic(() => import("../../components/Map.js"), {
   ssr: false,
@@ -16,14 +17,12 @@ const MapBox = dynamic(() => import("../../components/Map.js"), {
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper";
 import "swiper/css";
-import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import DestinationCard from "../../components/revamp/common/components/card/DestinationCard.jsx";
 import {
+  faArrowRight,
   faChevronLeft,
   faChevronRight,
-  faArrowRight,
 } from "@fortawesome/free-solid-svg-icons";
 import POIDetailsDrawer from "../../components/drawers/poiDetails/POIDetailsDrawer.js";
 import CtaBoardingSection from "../../components/revamp/home/CtaBoardingSection.jsx";
@@ -36,18 +35,6 @@ import DesktopBanner from "../../components/containers/Banner.js";
 import { convertDbNameToCapitalFirst } from "../../helper/convertDbnameToCapitalFirst.js";
 import TailoredFormMobileModal from "../../components/modals/TailoredFomrMobile.js";
 import styles from "../../styles/pages/revamp/destination.module.scss";
-
-const carouselBreakpoints = {
-  640: { slidesPerView: 1.5, spaceBetween: 16 },
-  768: { slidesPerView: 2, spaceBetween: 20 },
-  1024: { slidesPerView: 3, spaceBetween: 24 },
-};
-
-const wideCarouselBreakpoints = {
-  640: { slidesPerView: 1.5, spaceBetween: 16 },
-  768: { slidesPerView: 2, spaceBetween: 20 },
-  1024: { slidesPerView: 4, spaceBetween: 24 },
-};
 
 const Index = (props) => {
   const [userItineraries, setUserItineraries] = useState([]);
@@ -103,85 +90,77 @@ const Index = (props) => {
 
   if (!props?.data) return null;
 
-  const renderCarousel = (
-    items,
-    keyPrefix,
-    cardProps = {},
-    onItemClick,
-    slidesPerViewDesktop = 3,
-    height = "376px"
-  ) => {
-    const prevClass = `${keyPrefix}-prev`;
-    const nextClass = `${keyPrefix}-next`;
-    const desktopBreakpoints =
-      slidesPerViewDesktop === 4 ? wideCarouselBreakpoints : carouselBreakpoints;
-
-    return (
-      <div className={styles.carouselWrap}>
-        <Swiper
-          style={{ height: height === "auto" ? "auto" : height }}
-          modules={[Navigation]}
-          spaceBetween={16}
-          slidesPerView={1}
-          navigation={{
-            nextEl: `.${nextClass}`,
-            prevEl: `.${prevClass}`,
-            clickable: true,
-          }}
-          breakpoints={desktopBreakpoints}
-        >
-          {items?.map((item) => (
-            <SwiperSlide key={item.id}>
-              <div className="w-full px-1">
-                <DestinationCard
-                  title={item?.display_name || item.title || item.name}
-                  description={item.description || item.tagline}
-                  one_liner_description={
-                    item?.state?.one_liner_description ||
-                    item?.one_liner_description
-                  }
-                  image={item.image}
-                  rating={item.rating}
-                  reviewCount={item.user_ratings_total}
-                  tags={
-                    item.tags ||
-                    (item.continent ? [item.continent] : [])
-                  }
-                  gradientOverlay={item.gradientOverlay}
-                  onClick={() =>
-                    onItemClick
-                      ? onItemClick(item)
-                      : item.path && window.location.replace("/" + item.path)
-                  }
-                  {...cardProps}
-                />
-              </div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
-        <div className={`${prevClass} ${styles.carouselNav} ${styles.carouselNavPrev}`} aria-hidden>
-          <FontAwesomeIcon icon={faChevronLeft} />
-        </div>
-        <div className={`${nextClass} ${styles.carouselNav} ${styles.carouselNavNext}`} aria-hidden>
-          <FontAwesomeIcon icon={faChevronRight} />
-        </div>
-      </div>
-    );
-  };
-
   const destinationName = props.data?.name || "";
+
+  const heroPolaroids = (hotLocations.length
+    ? hotLocations
+    : props.data?.locations || []
+  )
+    .slice(0, 4)
+    .map((loc) => ({
+      image: loc.image
+        ? loc.image.startsWith("http")
+          ? loc.image
+          : `${imgUrlEndPoint}${loc.image}`
+        : "",
+      caption: loc.display_name || loc.name || loc.title,
+    }))
+    .filter((p) => p.image);
+
+  const heroPrompts = (hotLocations.length
+    ? hotLocations
+    : props.data?.locations || []
+  )
+    .slice(0, 4)
+    .map((loc) => {
+      const name = loc.display_name || loc.name || loc.title || "";
+      return name ? `Plan ${name}` : null;
+    })
+    .filter(Boolean);
 
   return (
     <div className={styles.destinationPage}>
-      <HeroSection
-        title={validateTextSize(
-          `Your ${destinationName} Trip, Designed Around You`,
-          9,
-          `Craft a trip to ${destinationName} now!`
-        )}
-        image={`${imgUrlEndPoint}${props?.data?.image}`}
-        slug={props?.data?.slug}
+      <HeroV2
+        destinationLabel={destinationName}
+        kicker={
+          userItineraries?.length
+            ? `${userItineraries.length}+ ${destinationName} trips planned by Kaira`
+            : `Plan your ${destinationName} trip with Kaira`
+        }
+        title={
+          <>
+            {destinationName}, planned around{" "}
+            <span className={styles.serif}>your</span>{" "}
+            <span className={styles.highlight}>moments.</span>
+          </>
+        }
+        description={
+          <>
+            Tell Kaira <b>your dates and vibe</b> — she stitches the right cities
+            into a route that{" "}
+            <span className={styles.serif}>actually flows.</span> Local
+            concierges check every booking before you pay.
+          </>
+        }
+        prompts={heroPrompts}
+        polaroids={heroPolaroids}
         setShowTailoredModal={setShowTailoredModal}
+        meta={
+          <>
+            <span>
+              <span className="star">★</span> <b>4.8</b> Google · 1,200+ reviews
+            </span>
+            <span>·</span>
+            <span>
+              <b>{hotLocations.length || props.data?.locations?.length || 0}</b>{" "}
+              cities curated
+            </span>
+            <span>·</span>
+            <span>
+              <b>IATA</b>-protected
+            </span>
+          </>
+        }
       />
 
       {/* STATS STRIP */}
@@ -245,7 +224,7 @@ const Index = (props) => {
             <div className={styles.sectionHead}>
               <div className={styles.sectionHeadLeft}>
                 <h2>
-                  Popular cities{" "}
+                  Top cities to visit{" "}
                   <span className={styles.serif}>in {destinationName}.</span>
                 </h2>
                 <p className={styles.lede}>
@@ -262,7 +241,15 @@ const Index = (props) => {
                 <FontAwesomeIcon icon={faArrowRight} />
               </span>
             </div>
-            {renderCarousel(hotLocations, "HotLocations")}
+            <div className={styles.countriesGrid}>
+              {hotLocations.slice(0, 4).map((loc, idx) => (
+                <CountryCardV2
+                  key={loc.id || idx}
+                  item={loc}
+                  hot={idx === 0}
+                />
+              ))}
+            </div>
             <div className="flex justify-center mt-8">
               <Button
                 onclick={() =>
@@ -283,105 +270,120 @@ const Index = (props) => {
         ) : null}
 
         {/* OVERVIEW / EDITORIAL */}
-        <section className={`${styles.block} ${styles.editorialBlock}`}>
-          <Overview
-            overview_heading={"A little about " + destinationName}
-            overview_text={props?.data?.short_description}
-          />
-          {props?.data?.locations && props?.data?.locations?.length ? (
-            <div style={{ marginTop: 32 }}>
-              <MapBox
-                InfoWindowContainer={InfoWindowContainer}
-                locations={props?.data?.locations}
-                height="300px"
-              />
-            </div>
-          ) : null}
-        </section>
+        {(props.data?.overview_heading ||
+          props.data?.overview_text ||
+          props?.data?.short_description) && (
+          <section className={`${styles.block} ${styles.editorialBlock}`}>
+            <OverviewEditorial
+              tag="Kaira's take"
+              heading={
+                props.data?.overview_heading ||
+                `Why we send first-timers to ${destinationName}.`
+              }
+              text={
+                props.data?.overview_text || props?.data?.short_description
+              }
+              image={
+                props.data?.overview_image ||
+                (hotLocations[0] && hotLocations[0].image)
+              }
+              ctaLabel={`Plan my ${destinationName} trip`}
+              onCtaClick={() =>
+                handlePlanButtonClick(`Editorial overview - ${destinationName}`)
+              }
+            />
+          </section>
+        )}
 
         {/* TRIPS BY USERS */}
         {userItineraries?.length ? (
           <section className={`${styles.block} ${styles.itinerariesBlock}`}>
             <div className={styles.sectionHead}>
               <div className={styles.sectionHeadLeft}>
-                <div className={styles.itinPill}>★ Real trips, real travellers</div>
+                <div className={styles.itinPill}>
+                  ★ Real trips, real travellers
+                </div>
                 <h2>
-                  {destinationName} trips our{" "}
+                  Real {destinationName} trips our{" "}
                   <span className={styles.serif}>travellers loved.</span>
                 </h2>
                 <p className={styles.lede}>
-                  Hand-built routes across {destinationName}.{" "}
-                  <span className={styles.serif}>Tweak anything</span> in chat.
+                  Every itinerary below has been done.{" "}
+                  <span className={styles.serif}>Tweak anything</span> in chat
+                  — dates, hotels, duration.
                 </p>
               </div>
             </div>
-            <Experience experiences={userItineraries} page={"Country Page"} />
+            <div className={styles.itinGrid}>
+              {userItineraries.slice(0, 4).map((it, i) => (
+                <ItineraryCardV2 key={it.id || i} itinerary={it} />
+              ))}
+            </div>
           </section>
         ) : null}
 
-        {/* THINGS TO DO */}
-        {props.data.activities?.length ? (
-          <section className={styles.block} id="Activities">
+        {/* THINGS TO DO (ACTIVITIES + POIS COMBINED — Iconic experiences) */}
+        {(props.data.activities?.length || props.data.pois?.length) ? (
+          <section className={styles.block} id="Experiences">
             <div className={styles.sectionHead}>
               <div className={styles.sectionHeadLeft}>
                 <h2>
-                  Things to do{" "}
-                  <span className={styles.serif}>in {destinationName}.</span>
+                  Iconic <span className={styles.serif}>experiences.</span>
                 </h2>
                 <p className={styles.lede}>
-                  Activities we'd actually recommend —{" "}
-                  <span className={styles.serif}>not a tourist trap list.</span>
+                  The{" "}
+                  <span className={styles.serif}>non-skippable bits.</span> All
+                  bookable directly, all checked by humans before they go in
+                  your trip.
                 </p>
               </div>
             </div>
-            {renderCarousel(
-              props.data.activities,
-              "Activities",
-              { showImageText: false },
-              (activity) => handleOpenDrawer(activity, "activity"),
-              4,
-              "auto"
-            )}
-            <div className="flex justify-center mt-8">
-              <Button
-                onclick={() => setShowTailoredModal(true)}
-                borderWidth="1px"
-                fontWeight="400"
-                borderRadius="999px"
-                margin="0 auto"
-                padding="0.8rem 2rem"
-                bgColor="#0f1a2e"
-                color="white"
+            <div className={styles.carouselWrap}>
+              <Swiper
+                modules={[Navigation]}
+                spaceBetween={16}
+                slidesPerView={1.1}
+                navigation={{
+                  nextEl: ".Experiences-next",
+                  prevEl: ".Experiences-prev",
+                  clickable: true,
+                }}
+                breakpoints={{
+                  640: { slidesPerView: 2.2, spaceBetween: 16 },
+                  768: { slidesPerView: 3, spaceBetween: 16 },
+                  1024: { slidesPerView: 4, spaceBetween: 16 },
+                }}
               >
-                + Create a trip now!
-              </Button>
-            </div>
-          </section>
-        ) : null}
-
-        {/* PLACES TO VISIT */}
-        {props.data.pois?.length ? (
-          <section className={styles.block} id="Places">
-            <div className={styles.sectionHead}>
-              <div className={styles.sectionHeadLeft}>
-                <h2>
-                  Places to visit{" "}
-                  <span className={styles.serif}>in {destinationName}.</span>
-                </h2>
-                <p className={styles.lede}>
-                  Iconic landmarks, hidden corners,{" "}
-                  <span className={styles.serif}>and the in-betweens.</span>
-                </p>
+                {[
+                  ...(props.data.activities || []).map((a, i) => ({
+                    item: a,
+                    type: "activity",
+                    i,
+                  })),
+                  ...(props.data.pois || []).map((p, i) => ({
+                    item: p,
+                    type: "poi",
+                    i,
+                  })),
+                ].map(({ item, type, i }, slideIdx) => (
+                  <SwiperSlide key={`${type}-${item.id || i}`}>
+                    <div className="h-full">
+                      <ActivityCardV2
+                        item={item}
+                        kairaPick={slideIdx % 3 === 0}
+                        onClick={(d) => handleOpenDrawer(d, type)}
+                      />
+                    </div>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+              <div className={`Experiences-prev ${styles.carouselNav} ${styles.carouselNavPrev}`} aria-hidden>
+                <FontAwesomeIcon icon={faChevronLeft} />
+              </div>
+              <div className={`Experiences-next ${styles.carouselNav} ${styles.carouselNavNext}`} aria-hidden>
+                <FontAwesomeIcon icon={faChevronRight} />
               </div>
             </div>
-            {renderCarousel(
-              props.data.pois,
-              "Pois",
-              { showImageText: false },
-              (poi) => handleOpenDrawer(poi, "poi"),
-              4,
-              "auto"
-            )}
             <div className="flex justify-center mt-8">
               <Button
                 onclick={() => setShowTailoredModal(true)}
@@ -414,7 +416,11 @@ const Index = (props) => {
                 </p>
               </div>
             </div>
-            {renderCarousel(props.data.states, "States")}
+            <div className={styles.countriesGrid}>
+              {props.data.states.slice(0, 4).map((s, idx) => (
+                <CountryCardV2 key={s.id || idx} item={s} hot={idx === 0} />
+              ))}
+            </div>
             <div className="flex justify-center mt-8">
               <Button
                 onclick={() =>
@@ -445,7 +451,9 @@ const Index = (props) => {
               <div className={styles.sectionHeadLeft}>
                 <h2>
                   Other destinations to{" "}
-                  <span className={styles.serif}>explore in {props.data.continent}.</span>
+                  <span className={styles.serif}>
+                    explore in {props.data.continent}.
+                  </span>
                 </h2>
                 <p className={styles.lede}>
                   {destinationName} not enough?{" "}
@@ -453,7 +461,11 @@ const Index = (props) => {
                 </p>
               </div>
             </div>
-            {renderCarousel(props.locations, "OtherInContinent")}
+            <div className={styles.countriesGrid}>
+              {props.locations.slice(0, 4).map((loc, idx) => (
+                <CountryCardV2 key={loc.id || idx} item={loc} hot={idx === 0} />
+              ))}
+            </div>
             <div className="flex justify-center mt-8">
               <Button
                 onclick={() =>
@@ -475,52 +487,6 @@ const Index = (props) => {
           </section>
         ) : null}
 
-        {/* WORLD CAROUSEL */}
-        {props.continetCarousel?.length ? (
-          <section className={styles.block}>
-            <div className={styles.sectionHead}>
-              <div className={styles.sectionHeadLeft}>
-                <h2>
-                  Plan your trip{" "}
-                  <span className={styles.serif}>anywhere in the world.</span>
-                </h2>
-                <p className={styles.lede}>
-                  Whatever the vibe —{" "}
-                  <span className={styles.serif}>Kaira plans 60+ countries.</span>
-                </p>
-              </div>
-            </div>
-            <Continentcarousel
-              data={props.continetCarousel}
-              page={"Country Page"}
-            />
-            <div className="flex justify-center mt-8">
-              <Button
-                onclick={() =>
-                  handlePlanButtonClick(`Plan your trip to anywhere in the world`)
-                }
-                borderWidth="1px"
-                fontWeight="400"
-                borderRadius="999px"
-                margin="0 auto"
-                padding="0.8rem 2rem"
-                bgColor="#0f1a2e"
-                color="white"
-              >
-                + Create a trip now!
-              </Button>
-            </div>
-          </section>
-        ) : null}
-
-        <WhatMakesUsSection />
-
-        <CurveImageGallery />
-        <TestimonialCarousel />
-
-        <PartnersSection />
-
-        <ChatWithUs planner page_id={props.data.id} />
       </div>
 
       {/* FINAL CTA */}
@@ -546,7 +512,8 @@ const Index = (props) => {
         </div>
       </section>
 
-      <CtaBoardingSection />
+
+      
 
       {activeDrawer?.type === "poi" && (
         <POIDetailsDrawer

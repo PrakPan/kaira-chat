@@ -127,13 +127,13 @@ const LuxuryEuropeDestinations = ({
               your trip.
             </p>
           </div>
-          <a href="/connected-trips" className="ttwSectionLink">
+          {/* <a href="/connected-trips" className="ttwSectionLink">
             See all {total} packages
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" height={12} width={12}>
               <line x1="5" y1="12" x2="19" y2="12" />
               <polyline points="12 5 19 12 12 19" />
             </svg>
-          </a>
+          </a> */}
         </div>
 
         <div className={styles.filters}>

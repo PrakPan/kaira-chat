@@ -115,13 +115,13 @@ const TravelerStoriesSection = ({ stories = DEFAULT_STORIES, total = 2140 }) => 
               what Kaira&apos;s travellers took home.
             </p>
           </div>
-          <a href="/stories" className="ttwSectionLink">
+          {/* <a href="/stories" className="ttwSectionLink">
             See all {total.toLocaleString()} stories
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" height={12} width={12}>
               <line x1="5" y1="12" x2="19" y2="12" />
               <polyline points="12 5 19 12 12 19" />
             </svg>
-          </a>
+          </a> */}
         </div>
 
         <div className={styles.grid}>

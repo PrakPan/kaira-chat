@@ -1,23 +1,20 @@
 import React, { useState, useEffect } from "react";
-import validateTextSize from "../../services/textSizeValidator";
 import Button from "../../components/ui/button/Index";
 import ChatWithUs from "../../components/containers/ChatWithUs/ChatWithUs";
 import Continentcarousel from "../../components/continentcarousel/continentcarousel";
 import PathNavigation from "../travelplanner/PathNavigation";
 import { logEvent } from "../../services/ga/Index.js";
-import Destination1Carousel from "../../components/theme/Destination1Carousel.jsx";
-import { PlanYourTripButton } from "../travelplanner/ThemePage.jsx";
-import Itinerary1Carousel from "../../components/theme/Itinerary1Carousel.jsx";
 import Image from "next/image.js";
-import Itinerary2Carousel from "../../components/theme/Itinerary2Carousel.jsx";
-import Reviews1Carousel from "../../components/theme/Reviews1Carousel.jsx";
 import { convertDbNameToCapitalFirst } from "../../helper/convertDbnameToCapitalFirst.js";
 import Poi from "../newcityplanner/pois/Index.js";
 import TailoredFormMobileModal from "../../components/modals/TailoredFomrMobile.js";
-import Overview from "../themes/Overview.jsx";
 import Element from "../newcityplanner/elements/Index.js";
 import LocationsBlog from "../../components/containers/plannerlocations/Index.js";
-import HeroSection from "../../components/revamp/destination/HeroSection.jsx";
+import HeroV2 from "../../components/revamp/destination/HeroV2.jsx";
+import OverviewEditorial from "../../components/revamp/destination/OverviewEditorial.jsx";
+import CountryCardV2 from "../../components/revamp/destination/CountryCardV2.jsx";
+import ItineraryCardV2 from "../../components/revamp/destination/ItineraryCardV2.jsx";
+import ActivityCardV2 from "../../components/revamp/destination/ActivityCardV2.jsx";
 import { imgUrlEndPoint } from "../../components/theme/ThemeConstants.js";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper";
@@ -105,6 +102,70 @@ const Index = (props) => {
         .join(" ")
     : "";
 
+  const heroPolaroids = (props.locations || [])
+    .slice(0, 4)
+    .map((loc) => ({
+      image: loc.image
+        ? loc.image.startsWith("http")
+          ? loc.image
+          : `${imgUrlEndPoint}${loc.image}`
+        : "",
+      caption: loc.display_name || loc.name || loc.title,
+    }))
+    .filter((p) => p.image);
+
+  const heroPrompts = (props.locations || [])
+    .slice(0, 4)
+    .map((loc) => {
+      const name = loc.display_name || loc.name || loc.title || "";
+      return name ? `Plan ${name}` : null;
+    })
+    .filter(Boolean);
+
+  const renderCardCarousel = (
+    items,
+    keyPrefix,
+    renderCard,
+    slidesPerViewDesktop = 3,
+    height = "auto",
+  ) => {
+    const prevClass = `${keyPrefix}-prev`;
+    const nextClass = `${keyPrefix}-next`;
+    const desktopBreakpoints =
+      slidesPerViewDesktop === 4 ? wideCarouselBreakpoints : carouselBreakpoints;
+
+    return (
+      <div className={styles.carouselWrap}>
+        <Swiper
+          style={{ height: height === "auto" ? "auto" : height }}
+          modules={[Navigation]}
+          spaceBetween={16}
+          slidesPerView={1}
+          navigation={{
+            nextEl: `.${nextClass}`,
+            prevEl: `.${prevClass}`,
+            clickable: true,
+          }}
+          breakpoints={desktopBreakpoints}
+        >
+          {items?.map((item, idx) => (
+            <SwiperSlide key={item.id || `${keyPrefix}-${idx}`}>
+              <div className="w-full px-1 h-full">
+                {renderCard(item, idx)}
+              </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+        <div className={`${prevClass} ${styles.carouselNav} ${styles.carouselNavPrev}`} aria-hidden>
+          <FontAwesomeIcon icon={faChevronLeft} />
+        </div>
+        <div className={`${nextClass} ${styles.carouselNav} ${styles.carouselNavNext}`} aria-hidden>
+          <FontAwesomeIcon icon={faChevronRight} />
+        </div>
+      </div>
+    );
+  };
+
   const renderCarousel = (
     items,
     keyPrefix,
@@ -169,19 +230,49 @@ const Index = (props) => {
     );
   };
 
+  const overviewCountText = `${props.locations?.length || 0} countries · ${userItineraries?.length || 0}+ trips planned`;
+
   return (
     <div className={styles.continentPage}>
-      <HeroSection
-        title={validateTextSize(
-          `Your ${convertDbNameToCapitalFirst(
-            props.data?.slug
-          )} Trip, Designed Around You`,
-          9,
-          `Craft a trip to ${props.data?.destination} now!`
-        )}
-        image={`${imgUrlEndPoint}${props.data?.image}`}
-        slug={props?.data?.slug}
+      <HeroV2
+        destinationLabel={destinationLabel}
+        kicker={
+          props.locations?.length
+            ? `${props.locations.length}+ ${destinationLabel} destinations curated`
+            : `Plan your ${destinationLabel} trip with Kaira`
+        }
+        title={
+          <>
+            {destinationLabel},{" "}
+            <span className={styles.serif}>however</span> you{" "}
+            <span className={styles.highlight}>want it.</span>
+          </>
+        }
+        description={
+          <>
+            Tell Kaira <b>your vibe and dates</b> — she'll thread the right
+            countries into a trip that{" "}
+            <span className={styles.serif}>actually flows.</span>
+          </>
+        }
+        prompts={heroPrompts}
+        polaroids={heroPolaroids}
         setShowTailoredModal={setShowTailoredModal}
+        meta={
+          <>
+            <span>
+              <span className="star">★</span> <b>4.8</b> Google · 1,200+ reviews
+            </span>
+            <span>·</span>
+            <span>
+              <b>{props.locations?.length || 0}</b> destinations
+            </span>
+            <span>·</span>
+            <span>
+              <b>IATA</b>-protected
+            </span>
+          </>
+        }
       />
 
       {/* STATS STRIP */}
@@ -245,7 +336,7 @@ const Index = (props) => {
             <div className={styles.sectionHead}>
               <div className={styles.sectionHeadLeft}>
                 <h2>
-                  Top countries{" "}
+                  Top countries to visit{" "}
                   <span className={styles.serif}>in {destinationLabel}.</span>
                 </h2>
                 <p className={styles.lede}>
@@ -266,7 +357,15 @@ const Index = (props) => {
                 <FontAwesomeIcon icon={faArrowRight} />
               </span>
             </div>
-            {renderCarousel(props.locations, "TopCountriesSection")}
+            <div className={styles.countriesGrid}>
+              {props.locations.slice(0, 4).map((loc, idx) => (
+                <CountryCardV2
+                  key={loc.id || idx}
+                  item={loc}
+                  hot={idx === 0}
+                />
+              ))}
+            </div>
             <div className="flex justify-center mt-8">
               <Button
                 onclick={() =>
@@ -289,27 +388,30 @@ const Index = (props) => {
         ) : null}
 
         {/* OVERVIEW / EDITORIAL */}
-        {props?.data?.slug != "europe-continent" && (
-          <section className={`${styles.block} ${styles.editorialBlock}`}>
-            <Overview
-              heading={props.data?.overview_heading}
-              text={props.data?.overview_text}
-              image={props.data?.overview_image}
-              slug={props.data?.slug}
-              page_id={props.data?.id}
-              type={props.type}
-              destination={convertDbNameToCapitalFirst(props.data?.slug)}
-            />
-          </section>
-        )}
+        {props?.data?.slug != "europe-continent" &&
+          (props.data?.overview_heading || props.data?.overview_text) && (
+            <section className={`${styles.block} ${styles.editorialBlock}`}>
+              <OverviewEditorial
+                tag="Kaira's take"
+                heading={props.data?.overview_heading}
+                text={props.data?.overview_text}
+                image={props.data?.overview_image}
+                ctaLabel={`Plan my ${destinationLabel} trip`}
+                onCtaClick={() =>
+                  handlePlanButtonClick(`Editorial overview - ${destinationLabel}`)
+                }
+              />
+            </section>
+          )}
 
         {/* COMPONENTS FROM API */}
         {props?.data?.components?.length > 0 &&
           props?.data?.components?.map((component, idx) => {
-            const isActivityOrPoi =
-              component.carousel.toLowerCase().includes("activity") ||
-              component.carousel.toLowerCase().includes("poi");
-            const tinted = component.carousel === "itinerary-1";
+            const carouselType = String(component.carousel || "").toLowerCase();
+            const isActivity = carouselType.includes("activity");
+            const isPoi = carouselType.includes("poi");
+            const isItinerary1 = component.carousel === "itinerary-1";
+            const tinted = isItinerary1;
             return (
               <section
                 key={`${component.carousel}-${idx}`}
@@ -319,7 +421,7 @@ const Index = (props) => {
               >
                 <div
                   className={`${styles.sectionHead} ${
-                    isActivityOrPoi ? "" : styles.sectionHeadCenter
+                    isActivity || isPoi ? "" : styles.sectionHeadCenter
                   }`}
                 >
                   <div className={styles.sectionHeadLeft}>
@@ -328,29 +430,49 @@ const Index = (props) => {
                         ★ Real trips, real travellers
                       </div>
                     )}
-                    <h2>{component?.heading}</h2>
+                    <h2>
+                      {isItinerary1
+                        ? `Real ${destinationLabel} trips our `
+                        : ""}
+                      {isItinerary1 ? (
+                        <span className={styles.serif}>travellers loved.</span>
+                      ) : isActivity || isPoi ? (
+                        <>
+                          Iconic{" "}
+                          <span className={styles.serif}>experiences.</span>
+                        </>
+                      ) : (
+                        component?.heading
+                      )}
+                    </h2>
                     {component.text ? (
                       <p className={styles.lede}>{component.text}</p>
+                    ) : isActivity || isPoi ? (
+                      <p className={styles.lede}>
+                        The{" "}
+                        <span className={styles.serif}>
+                          non-skippable bits.
+                        </span>{" "}
+                        All bookable directly, all checked by humans before
+                        they go in your trip.
+                      </p>
                     ) : null}
                   </div>
                 </div>
 
                 {component.carousel === "destination-1" ? (
                   <>
-                    <Destination1Carousel
-                      handlePlanButton={handlePlanButtonClick}
-                      setDestination={setDestination}
-                      packages={[
+                    {renderCardCarousel(
+                      [
                         ...component.cities,
                         ...component.states,
                         ...component.countries,
-                      ]}
-                    />
-                    <PlanYourTripButton
-                      page_id={props.data.id}
-                      destination={convertDbNameToCapitalFirst(props.data?.slug)}
-                      type={props?.type}
-                    />
+                      ],
+                      `Destination1-${idx}`,
+                      (item, i) => (
+                        <CountryCardV2 item={item} hot={i === 0} />
+                      )
+                    )}
                   </>
                 ) : component.carousel === "destination-2" ? (
                   <>
@@ -361,16 +483,22 @@ const Index = (props) => {
                       slug={props?.slug}
                       page={"Country Page"}
                     />
-                    <PlanYourTripButton text={"+ Plan Itinerary For Free"} />
                   </>
                 ) : component.carousel === "destination-3" ? (
                   <>
-                    {renderCarousel(component?.countries, `Destination3-${idx}`)}
-                    <PlanYourTripButton text={"Create your travel plan now!"} />
+                    {renderCardCarousel(
+                      component?.countries,
+                      `Destination3-${idx}`,
+                      (item, i) => <CountryCardV2 item={item} hot={i === 0} />
+                    )}
                   </>
                 ) : component.carousel === "destination-4" ? (
                   <div className="space-y-4">
-                    {renderCarousel(component?.cities, `Destination4-${idx}`)}
+                    {renderCardCarousel(
+                      component?.cities,
+                      `Destination4-${idx}`,
+                      (item, i) => <CountryCardV2 item={item} hot={i === 0} />
+                    )}
                   </div>
                 ) : component.carousel === "destination-5" ? (
                   <Poi
@@ -386,7 +514,6 @@ const Index = (props) => {
                       data={props.continetCarousel}
                       page={"Country Page"}
                     />
-                    <PlanYourTripButton text={"Create your travel plan now!"} />
                   </>
                 ) : component.carousel === "state-1" ? (
                   <>
@@ -399,28 +526,31 @@ const Index = (props) => {
                       planner
                       page={"Country Page"}
                     />
-                    <PlanYourTripButton text={"Create your travel plan now!"} />
                   </>
-                ) : component.carousel === "Activity-2" ? (
+                ) : component.carousel === "Activity-2" ||
+                  component.carousel === "activity-1" ? (
                   <>
-                    {renderCarousel(
+                    {renderCardCarousel(
                       component?.activities,
-                      `Activity2-${idx}`,
-                      { showImageText: false },
-                      (activity) => handleOpenDrawer(activity, "activity"),
-                      3,
+                      `Activity-${idx}`,
+                      (item, i) => (
+                        <ActivityCardV2
+                          item={item}
+                          kairaPick={i % 3 === 0}
+                          onClick={(data) => handleOpenDrawer(data, "activity")}
+                        />
+                      ),
+                      4,
                       "auto"
                     )}
-                    <PlanYourTripButton text={"+ Plan Itinerary For Free"} />
                   </>
                 ) : component.carousel === "itinerary-1" ? (
                   <>
-                    <Itinerary1Carousel itineraries={component.itineraries} />
-                    <PlanYourTripButton
-                      page_id={props.data.id}
-                      destination={convertDbNameToCapitalFirst(props.data?.slug)}
-                      type={props?.type}
-                    />
+                    <div className={styles.itinGrid}>
+                      {component.itineraries?.slice(0, 4)?.map((it, i) => (
+                        <ItineraryCardV2 key={it.id || i} itinerary={it} />
+                      ))}
+                    </div>
                   </>
                 ) : component.carousel === "itinerary-2" ? (
                   <div className="w-full relative">
@@ -444,60 +574,31 @@ const Index = (props) => {
                         />
                       </>
                     )}
-                    <Itinerary2Carousel elements={component.elements} />
+                    <div className={styles.itinGrid}>
+                      {component.elements?.slice(0, 4)?.map((it, i) => (
+                        <ItineraryCardV2 key={it.id || i} itinerary={it} />
+                      ))}
+                    </div>
                   </div>
-                ) : component.carousel === "activity-1" ? (
-                  <>
-                    {renderCarousel(
-                      component?.activities,
-                      `Activity1-${idx}`,
-                      { showImageText: false },
-                      (activity) => handleOpenDrawer(activity, "activity"),
-                      4,
-                      "auto"
-                    )}
-                    <PlanYourTripButton
-                      page_id={props.data.id}
-                      destination={convertDbNameToCapitalFirst(props.data?.slug)}
-                      type={props?.type}
-                    />
-                  </>
                 ) : component.carousel === "review-1" ? (
                   <div className="relative">
-                    {props.slug === "honeymoon-2025" && (
-                      <div className="-z-10 w-fit absolute -top-[16rem] right-0 md:-top-[9rem] overflow-hidden">
-                        <Image
-                          src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/tilted-heart.png`}
-                          className="object-fill"
-                          alt="Tilted Hearts"
-                          height={200}
-                          width={200}
-                          style={{ transform: "rotate(45deg)" }}
-                        />
-                      </div>
-                    )}
-                    <Reviews1Carousel reviews={component.reviews} />
-                    <PlanYourTripButton
-                      page_id={props.data.id}
-                      destination={convertDbNameToCapitalFirst(props.data?.slug)}
-                      type={props?.type}
-                    />
+                    {renderCarousel(component.reviews, `Review-${idx}`)}
                   </div>
                 ) : component.carousel == "poi-1" ? (
                   <>
-                    {renderCarousel(
+                    {renderCardCarousel(
                       component?.pois,
-                      `Poi1-${idx}`,
-                      { showImageText: false },
-                      (poi) => handleOpenDrawer(poi, "poi"),
+                      `Poi-${idx}`,
+                      (item, i) => (
+                        <ActivityCardV2
+                          item={item}
+                          kairaPick={i % 3 === 0}
+                          onClick={(data) => handleOpenDrawer(data, "poi")}
+                        />
+                      ),
                       4,
                       "auto"
                     )}
-                    <PlanYourTripButton
-                      page_id={props.data.id}
-                      destination={convertDbNameToCapitalFirst(props.data?.slug)}
-                      type={props?.type}
-                    />
                   </>
                 ) : null}
               </section>
@@ -506,52 +607,7 @@ const Index = (props) => {
 
         <JourneySimplified />
 
-        {/* OTHER CONTINENTS */}
-        {props.continetCarousel?.length ? (
-          <section className={styles.block}>
-            <div className={styles.sectionHead}>
-              <div className={styles.sectionHeadLeft}>
-                <h2>
-                  Or maybe <span className={styles.serif}>elsewhere.</span>
-                </h2>
-                <p className={styles.lede}>
-                  {destinationLabel} not it?{" "}
-                  <span className={styles.serif}>Plan a trip</span> anywhere in
-                  the world.
-                </p>
-              </div>
-            </div>
-            <Continentcarousel
-              data={props.continetCarousel}
-              page={"Continent Page"}
-            />
-            <div className="flex justify-center mt-8">
-              <Button
-                onclick={() =>
-                  handlePlanButtonClick("Plan your trip anywhere in the world")
-                }
-                borderWidth="1px"
-                fontWeight="300"
-                borderRadius="999px"
-                margin="0 auto"
-                padding="0.8rem 2rem"
-                bgColor="#0f1a2e"
-                color="white"
-              >
-                Create your free itinerary
-              </Button>
-            </div>
-          </section>
-        ) : null}
 
-        <WhatMakesUsSection />
-
-        <CurveImageGallery />
-        <TestimonialCarousel />
-
-        <PartnersSection />
-
-        <ChatWithUs planner page_id={props.data?.id} />
       </div>
 
       {/* FINAL CTA */}
@@ -589,7 +645,6 @@ const Index = (props) => {
         show={showTailoredModal}
       />
 
-      <CtaBoardingSection />
 
       {activeDrawer?.type === "poi" && (
         <POIDetailsDrawer
