@@ -1,24 +1,17 @@
 import React, { useState } from "react";
 import FullScreenGallery from "../../components/fullscreengallery/Index";
-import DesktopPersonaliseBanner from "../../components/containers/Banner";
-import media from "../../components/media";
-import { useRouter } from "next/router";
 import NewMenu from "../newcityplanner/Menu";
-import MobileBanner from "./Banner/Mobile";
-import HeroBanner from "../../components/containers/HeroBanner/HeroBanner";
 import validateTextSize from "../../services/textSizeValidator";
-import openTailoredModal from "../../services/openTailoredModal";
 import { convertDbNameToCapitalFirst } from "../../helper/convertDbnameToCapitalFirst";
 import HeroSection from "../../components/revamp/destination/HeroSection";
 import { imgUrlEndPoint } from "../../components/theme/ThemeConstants";
 import TailoredFormMobileModal from "../../components/modals/TailoredFomrMobile";
+import styles from "../../styles/pages/revamp/destination.module.scss";
 
 const Experience = (props) => {
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [galleryimages, setGalleryImages] = useState([]);
-  const router = useRouter();
-  const [showTailoredModal,setShowTailoredModal] = useState(false);
-  let isPageWide = media("(min-width: 768px)");
+  const [showTailoredModal, setShowTailoredModal] = useState(false);
 
   const closeGalleryHandler = () => {
     let images = [];
@@ -29,82 +22,92 @@ const Experience = (props) => {
     setGalleryOpen(false);
   };
 
-  if (galleryOpen)
+  if (galleryOpen) {
     return (
       <FullScreenGallery
         closeGalleryHandler={closeGalleryHandler}
         images={galleryimages}
-      ></FullScreenGallery>
+      />
     );
-  else
-    return (
-      <div
-        className=""
-        style={isPageWide ? { minHeight: "100vh" } : {}}
-      >
-        {/* {isPageWide ? (
-          <DesktopPersonaliseBanner
-            onclick={() =>
-              openTailoredModal(router, props.cityData.id, props.cityData.name,props.type)
-            }
-            text={validateTextSize(
-              `Craft a personalized itinerary to ${props.cityData.name} now!`,
-              9,
-              `Craft a trip to ${props.cityData.name} now!`
-            )}
-          ></DesktopPersonaliseBanner>
-        ) : (
-          <MobileBanner
-            cityName={props.cityData.name}
-            onClick={() =>
-              openTailoredModal(router, props.cityData.id, props.cityData.name,props.type)
-            }
-          />
-        )} */}
-        <div>
-          {/* <HeroBanner
-            image={props.cityData.images[0].image}
-            destination={convertDbNameToCapitalFirst(props.cityData.name)}
-            cities={props.reccomendedCitiesData}
-            title={`${props.cityData.name} Trip Planner`}
-            page={"City Page"}
-            page_id={props?.page_id}
-            type={props?.type}
-          /> */}
+  }
 
-          <HeroSection
-            title={validateTextSize(
-              `Your ${props.cityData.name} Trip, Designed Around You`,
-              9,
-              `Craft a trip to ${props.cityData.name} now!`
-            )}
-            image={`${imgUrlEndPoint}${props.cityData.images[0].image}`}
-            slug={props?.cityData?.name}
-            setShowTailoredModal={setShowTailoredModal}
-          />
+  const cityName = props.cityData.name;
+  const cityDisplayName = convertDbNameToCapitalFirst(cityName);
 
-          <NewMenu
-            data={props.cityData}
-            destination={props?.cityData?.name}
-            nearbyCities={props.reccomendedCitiesData}
-            removeDelete={true}
-          />
+  return (
+    <div className={styles.destinationPage}>
+      <HeroSection
+        title={validateTextSize(
+          `Your ${cityName} Trip, Designed Around You`,
+          9,
+          `Craft a trip to ${cityName} now!`
+        )}
+        image={`${imgUrlEndPoint}${props.cityData.images[0].image}`}
+        slug={props?.cityData?.name}
+        setShowTailoredModal={setShowTailoredModal}
+      />
 
-           <TailoredFormMobileModal
-            destinationType={"city-planner"}
-            page_id={props.page_id}
-            children_cities={props.children_cities}
-            destination={props.destination}
-            cities={props.cities}
-            onHide={() => {
-              setShowTailoredModal(false);
-            }}
-            show={showTailoredModal}
-            eventDates={props.eventDates}
-          />
+      {/* STATS STRIP */}
+      <div className={styles.statsStrip}>
+        <div className={styles.statsStripInner}>
+          <div className={styles.stat}>
+            <div className={styles.statLabel}>City</div>
+            <div className={styles.statValue}>
+              <span className={styles.serif}>{cityDisplayName}</span>
+            </div>
+            <div className={styles.statSub}>Curated by Kaira</div>
+          </div>
+          <div className={styles.stat}>
+            <div className={styles.statLabel}>Photos</div>
+            <div className={styles.statValue}>
+              <span className={styles.serif}>
+                {props.cityData?.images?.length || 0}
+              </span>{" "}
+              gallery shots
+            </div>
+            <div className={styles.statSub}>Real, not stock</div>
+          </div>
+          <div className={styles.stat}>
+            <div className={styles.statLabel}>Nearby cities</div>
+            <div className={styles.statValue}>
+              <span className={styles.serif}>
+                {props.reccomendedCitiesData?.length || 0}
+              </span>{" "}
+              suggested
+            </div>
+            <div className={styles.statSub}>Easy to combine</div>
+          </div>
+          <div className={styles.stat}>
+            <div className={styles.statLabel}>Trusted by</div>
+            <div className={styles.statValue}>
+              <span className={styles.serif}>10K+</span> travellers
+            </div>
+            <div className={styles.statSub}>Across India</div>
+          </div>
         </div>
       </div>
-    );
+
+      <NewMenu
+        data={props.cityData}
+        destination={props?.cityData?.name}
+        nearbyCities={props.reccomendedCitiesData}
+        removeDelete={true}
+      />
+
+      <TailoredFormMobileModal
+        destinationType={"city-planner"}
+        page_id={props.page_id}
+        children_cities={props.children_cities}
+        destination={props.destination}
+        cities={props.cities}
+        onHide={() => {
+          setShowTailoredModal(false);
+        }}
+        show={showTailoredModal}
+        eventDates={props.eventDates}
+      />
+    </div>
+  );
 };
 
 export default Experience;
