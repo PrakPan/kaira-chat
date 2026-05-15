@@ -6,6 +6,7 @@ import Drawer from "../../ui/Drawer";
 import { visaSearch } from "../../../services/ancillaries/visaServices";
 import { getIndianPrice } from "../../../services/getIndianPrice";
 import { currencySymbols } from "../../../data/currencySymbols";
+import { useAnalytics } from "../../../hooks/useAnalytics";
 import VisaDetailDrawer from "./VisaDetailDrawer";
 
 const BADGE_LABELS = {
@@ -24,7 +25,6 @@ const formatLabel = (val) => BADGE_LABELS[val] || (val ? val.replace(/_/g, " ").
 const VisaCard = ({ visa, onSelect, currency }) => {
   const symbol = currencySymbols?.[currency?.currency] || "₹";
   const totalPrice = visa?.price != null ? visa.price : null;
-  const serviceFee = visa?.service_fee;
 
   return (
     <div
@@ -79,11 +79,6 @@ const VisaCard = ({ visa, onSelect, currency }) => {
                 {symbol}{getIndianPrice(Math.round(totalPrice))}
                 <span className="text-[12px] font-400 text-[#6E757A] ml-1">/ person</span>
               </div>
-              {serviceFee != null && (
-                <div className="text-[11px] text-[#6E757A]">
-                  + {symbol}{getIndianPrice(Math.round(serviceFee))} service fee
-                </div>
-              )}
             </div>
           ) : (
             <div className="text-[13px] text-[#6E757A]">View pricing</div>
@@ -97,7 +92,7 @@ const VisaCard = ({ visa, onSelect, currency }) => {
   );
 };
 
-export default function VisaSearchDrawer({ show, onHide }) {
+export default function VisaSearchDrawer({ show, onHide, onBooked, onAdded, onRemoved, bookingId, zIndex = 1700 }) {
   const router = useRouter();
   const itineraryId = useSelector((state) => state.ItineraryId) || router.query?.id;
   const itinerary = useSelector((state) => state.Itinerary);
@@ -123,9 +118,11 @@ export default function VisaSearchDrawer({ show, onHide }) {
   const [selectedVisa, setSelectedVisa] = useState(null);
   const [showDetail, setShowDetail] = useState(false);
 
+  const { trackVisaSearchList } = useAnalytics();
+
   useEffect(() => {
     if (show) fetchVisas();
-  }, [show]);
+  }, [show, currency?.currency]);
 
   const fetchVisas = async (overrideFilters) => {
     if (!itineraryId) return;
@@ -140,6 +137,7 @@ export default function VisaSearchDrawer({ show, onHide }) {
         processing_type: f.processing_type || "",
         category: f.category || "",
         entry_type: f.entry_type || "",
+        currency: currency?.currency || "INR",
       }, {
         headers: { Authorization: `Bearer ${localStorage.getItem("access_token")}` },
       });
@@ -147,6 +145,7 @@ export default function VisaSearchDrawer({ show, onHide }) {
       // Response: { success, data: [...], results, next, previous }
       const items = res.data?.data;
       setVisas(Array.isArray(items) ? items : []);
+      trackVisaSearchList?.(itineraryId);
 
       // Build filter options from the returned results
       if (Array.isArray(items) && items.length > 0) {
@@ -181,7 +180,7 @@ export default function VisaSearchDrawer({ show, onHide }) {
         backdrop
         width="50%"
         mobileWidth="100%"
-        style={{ zIndex: 1700 }}
+        style={{ zIndex }}
         className="!overflow-y-hidden"
         onHide={onHide}
       >
@@ -314,9 +313,14 @@ export default function VisaSearchDrawer({ show, onHide }) {
         <VisaDetailDrawer
           show={showDetail}
           visa={selectedVisa}
+          bookingId={bookingId}
+          drawerZIndex={zIndex + 10}
           onHide={() => setShowDetail(false)}
+          onAdded={onAdded}
+          onRemoved={onRemoved}
           onBooked={() => {
             setShowDetail(false);
+            onBooked?.();
             onHide();
           }}
         />

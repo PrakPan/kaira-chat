@@ -69,6 +69,10 @@ import { currencySymbols } from "../../../data/currencySymbols";
 import { resetChatSession } from "../../../store/actions/chatState";
 import VisaSearchDrawer from "../../../components/drawers/visaDetails/VisaSearchDrawer";
 import EsimPackagesDrawer from "../../../components/drawers/esimDetails/EsimPackagesDrawer";
+import {
+  addAncillaryBooking,
+  removeAncillaryBooking,
+} from "../../../store/actions/ancillaryBookings";
 
 const GetInTouchContainer = styled.div`
   &:hover img {
@@ -924,6 +928,7 @@ const ItineraryInclusions = ({
           duration: booking.duration,
           pax: booking.pax,
           transfer_type: booking.transfer_type,
+          booking_type: booking.booking_type,
         },
         status: booking.status,
         booking_type: type,
@@ -1067,7 +1072,8 @@ const ItineraryInclusions = ({
                         {/* Booking Details */}
                         <div className="flex-1 min-w-0">
                           <div className="text-md font-500 leading-xl mb-sm">
-                            {booking.detail.name}
+                            {booking.detail.name} 
+                            {booking?.detail?.booking_type === "Visa" ? <span className="ml-2 px-1.5 py-0.5 text-xs font-medium bg-purple-100  text-purple-800 rounded">Visa</span> : booking?.detail?.booking_type === "eSIM" ? <span className="ml-2 px-1.5 py-0.5 text-xs font-medium bg-green-100  text-green-800 rounded ">eSim</span> : null}
                           </div>
                           {booking.status === "Paid" && (
                             <div className="inline-block bg-green-100 text-green-700 text-xs font-semibold px-2 py-0.5 rounded mb-1">
@@ -1339,6 +1345,8 @@ const Details = (props) => {
     trackPaymentDeselected,
     trackPaymentAttempted,
     trackPaymentBookingConfirmed,
+    trackVisaCardClicked,
+    trackEsimCardClicked,
   } = useAnalytics();
 
   useEffect(() => {
@@ -1575,6 +1583,7 @@ const Details = (props) => {
   };
 
   const fetchItinerary = async () => {
+    if(props?.resetRef)
     props?.resetRef();
     // setWaitingForStatusUpdate(true);
     props.fetchData(true);
@@ -1582,6 +1591,13 @@ const Details = (props) => {
 
   const handleRepriceBookings = async () => {
     setRepriceLoading(true);
+    // Reset statuses to PENDING and lock the chat composer until
+    // ItineraryContainer's poll resolves them all back to SUCCESS/FAILURE.
+    dispatch(setItineraryStatus("itinerary_status", "PENDING"));
+    dispatch(setItineraryStatus("transfers_status", "PENDING"));
+    dispatch(setItineraryStatus("hotels_status", "PENDING"));
+    dispatch(setItineraryStatus("pricing_status", "PENDING"));
+    dispatch(setItineraryStatus("is_polling", true));
     try {
       const response = await repriceBookings.get(
         `${router.query.id}/reprice/bookings`,
@@ -1612,6 +1628,9 @@ const Details = (props) => {
       }
     } catch (error) {
       console.error("Error Repricing :", error);
+      // Request failed before any polling could run — release the chat
+      // lock so the user isn't stuck.
+      dispatch(setItineraryStatus("is_polling", false));
       dispatch(
         openNotification({
           text:
@@ -2509,7 +2528,7 @@ const Details = (props) => {
                       <PricingSkeleton />
                     </div>
                   ) : (
-                    <div className="hidden md:block">
+                    <div className="max-ph:hidden">
                       {!(
                         final_status == "Paid" || final_status == "Released"
                       ) && (
@@ -2692,13 +2711,15 @@ const Details = (props) => {
                     {(() => {
                       const ancillaryBookings =
                         Cart?.summary?.Ancillaries?.bookings || [];
-                      const hasEsim = ancillaryBookings.some((b) =>
+                      const esimCount = ancillaryBookings.filter((b) =>
                         (b?.name || "").toLowerCase().includes("esim"),
-                      );
-                      const hasVisa = ancillaryBookings.some((b) => {
+                      ).length;
+                      const visaCount = ancillaryBookings.filter((b) => {
                         const n = (b?.name || "").toLowerCase();
                         return !n.includes("esim") && n.includes("visa");
-                      });
+                      }).length;
+                      const hasEsim = esimCount > 0;
+                      const hasVisa = visaCount > 0;
                       return (
                         <div className="mt-md mb-md">
                           <hr className="text-text-placeholder mb-md" />
@@ -2708,7 +2729,10 @@ const Details = (props) => {
                           <div className="flex flex-col gap-2">
                             <button
                               className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-[#E5E5E5] bg-white hover:bg-[#FAFAFA] transition-colors"
-                              onClick={() => setShowVisaDrawer(true)}
+                              onClick={() => {
+                                trackVisaCardClicked?.(props?.id);
+                                setShowVisaDrawer(true);
+                              }}
                             >
                               <div className="flex items-center gap-3">
                                 <div className="w-[36px] h-[36px] rounded-full bg-[#F5F0FF] flex items-center justify-center flex-shrink-0">
@@ -2716,7 +2740,7 @@ const Details = (props) => {
                                 </div>
                                 <div className="text-left">
                                   <div className="text-[13px] font-600 text-[#01202B] flex items-center gap-1">
-                                    {hasVisa ? "Visa added" : "Add Visa"}
+                                    {hasVisa ? `${visaCount} Visa added` : "Add Visa"}
                                     {hasVisa && (
                                       <span className="inline-flex items-center justify-center w-[14px] h-[14px] rounded-full bg-[#22C55E] text-white text-[9px] font-700">
                                         ✓
@@ -2733,7 +2757,10 @@ const Details = (props) => {
 
                             <button
                               className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-[#E5E5E5] bg-white hover:bg-[#FAFAFA] transition-colors"
-                              onClick={() => setShowEsimDrawer(true)}
+                              onClick={() => {
+                                trackEsimCardClicked?.(props?.id);
+                                setShowEsimDrawer(true);
+                              }}
                             >
                               <div className="flex items-center gap-3">
                                 <div className="w-[36px] h-[36px] rounded-full bg-[#DDF4C5] flex items-center justify-center flex-shrink-0">
@@ -2741,7 +2768,7 @@ const Details = (props) => {
                                 </div>
                                 <div className="text-left">
                                   <div className="text-[13px] font-600 text-[#01202B] flex items-center gap-1">
-                                    {hasEsim ? "eSIM added" : "Add eSIM"}
+                                    {hasEsim ? `${esimCount} eSIM added` : "Add eSIM"}
                                     {hasEsim && (
                                       <span className="inline-flex items-center justify-center w-[14px] h-[14px] rounded-full bg-[#22C55E] text-white text-[9px] font-700">
                                         ✓
@@ -2883,11 +2910,25 @@ const Details = (props) => {
       <VisaSearchDrawer
         show={showVisaDrawer}
         onHide={() => setShowVisaDrawer(false)}
+        onAdded={(booking, replaceId) => {
+          if (booking?.id) dispatch(addAncillaryBooking(booking, replaceId));
+          else if (replaceId) dispatch(removeAncillaryBooking(replaceId));
+        }}
+        onRemoved={(bookingId) => {
+          if (bookingId) dispatch(removeAncillaryBooking(bookingId));
+        }}
       />
 
       <EsimPackagesDrawer
         show={showEsimDrawer}
         onHide={() => setShowEsimDrawer(false)}
+        onAdded={(booking, replaceId) => {
+          if (booking?.id) dispatch(addAncillaryBooking(booking, replaceId));
+          else if (replaceId) dispatch(removeAncillaryBooking(replaceId));
+        }}
+        onRemoved={(bookingId) => {
+          if (bookingId) dispatch(removeAncillaryBooking(bookingId));
+        }}
       />
     </>
   );

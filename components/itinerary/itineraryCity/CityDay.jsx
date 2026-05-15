@@ -128,7 +128,7 @@ const getTimeOfDay = (timeString) => {
 
 // ─── Helper: get item ID for drawer navigation ────────────────────────────────
 const getItemId = (item, resolvedType) => {
-  if (resolvedType === "activity") return item?.booking?.id || item?.id;
+  if (resolvedType === "activity") return item?.booking?.id || item?.id || item?.activity;
   if (resolvedType === "poi") return item?.poi || item?.id;
   if (resolvedType === "restaurant")
     return item?.restaurants?.[0]?.id || item?.restaurant || item?.id;
@@ -208,7 +208,12 @@ const CityDay = (props) => {
   const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
 
   const { finalized_status } = useSelector((state) => state.ItineraryStatus);
-  const { trackActivityBookingAdd, trackActivityCardClicked } = useAnalytics();
+  const {
+    trackActivityBookingAdd,
+    trackActivityCardClicked,
+    trackTaxiCardClicked,
+    trackPoiCardClicked,
+  } = useAnalytics();
   const transferBookings = useSelector(
     (state) => state.TransferBookings
   ).transferBookings;
@@ -232,7 +237,7 @@ const isDraft = useSelector((state) => state.Itinerary.status) === "Draft";
   try {
     setActivityLoading(true);
     const response = await fetch(
-      `https://mercury.tarzanway.com/api/v1/ancillaries/activity/${activityId}/?currency=INR`,
+      `https://dev.mercury.tarzanway.com/api/v1/ancillaries/activity/${activityId}/?currency=INR`,
       {
         method: "POST",
         headers: {
@@ -293,9 +298,18 @@ const handleItemClick = (item) => {
   if (!resolvedType || resolvedType === "recommendation") return;
 
   const itemId = getItemId(item, resolvedType);
+  console.log("ItemId",itemId)
   if (!itemId) return;
 
+  if(resolvedType === "poi") {
+    trackPoiCardClicked(router.query.id, itemId, "day_by_day_collapse", "poi");
+  } else if (resolvedType === "restaurant") {
+    trackActivityCardClicked(router.query.id, itemId, "day_by_day_collapse", "restaurant");
+  } else if (resolvedType === "activity") {
+    trackActivityCardClicked(router.query.id, itemId, "day_by_day_collapse", "activity");
+  } else {
   trackActivityCardClicked(router.query.id, itemId, "day_by_day_collapse");
+  }
 
   if (resolvedType === "activity" && (isDraft || finalized_status === "PENDING")) {
     handleDraftActivityClick(item);
@@ -306,7 +320,6 @@ const handleItemClick = (item) => {
     {
       pathname: window.location.pathname,
       query: {
-        ...router.query,
         drawer: "showPoiDetail",
         poi_id: itemId,
         type: resolvedType,
@@ -322,7 +335,9 @@ const handleItemClick = (item) => {
 useEffect(() => {
   let elements = [];
   for (let elem of props.day.slab_elements) {
-    if (["activity", "poi", "restaurant"].includes(elem.element_type)) {
+
+
+    if (["activity", "poi", "restaurant","recommendation"].includes(elem.element_type || elem?.type)) {
       elements.push(elem);
     } else if (
       elem.element_type === "recommendation" &&
@@ -505,6 +520,39 @@ useEffect(() => {
 
         {/* COL 2: Content */}
         <div className="flex-1 sm:pr-4 px-4 sm:pt-6 md:pt-4 pb-4 sm:pb-6 min-w-0">
+
+          {matchingIntracityBookings && matchingIntracityBookings.length > 0 && (
+            <div className="flex flex-row gap-xs flex-wrap mb-3">
+              {matchingIntracityBookings.map((taxi) => (
+                <button
+                  key={taxi.id}
+                  onClick={() => {
+                    trackTaxiCardClicked?.(
+                      router.query.id,
+                      taxi.id,
+                      "day_by_day_collapse",
+                    );
+                    router.push(
+                      {
+                        pathname: window.location.pathname,
+                        query: {
+                          ...(router.query.id ? { id: router.query.id } : {}),
+                          drawer: "SightSeeing",
+                          bookingId: taxi.id,
+                          itinerary_city_id: props?.itinerary_city_id,
+                        },
+                      },
+                      undefined,
+                      { scroll: false },
+                    );
+                  }}
+                  className="rounded-9xl text-[12px] font-400 leading-md px-sm py-xxs text-white bg-[#5CBA66] flex gap-2 items-center justify-center hover:opacity-90"
+                >
+                  <FaTaxi /> Sightseeing Taxi Included
+                </button>
+              ))}
+            </div>
+          )}
 
           {elements.length > 0 ? (
             hasAnyTime ? (

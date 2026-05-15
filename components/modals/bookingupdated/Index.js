@@ -30,6 +30,7 @@ import Filters from "./filtersmobile/Filters";
 import FilterChips from "./filtersmobile/FilterChips";
 import { IconButton } from "@mui/material";
 import CheckboxFormComponent from "../../FormComponents/CheckboxFormComponent";
+import BotLoginModal from "../../bot-components/components/BotLoginModal";
 
 const FloatingView = styled.div`
   position: sticky;
@@ -1252,7 +1253,7 @@ const Booking = (props) => {
   else
     return (
       <div>
-        <LogInModal show={true} onhide={props.setHideBookingModal}></LogInModal>
+        <BotLoginModal show={true} onhide={props.setHideBookingModal}></BotLoginModal>
       </div>
     );
 };

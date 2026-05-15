@@ -109,3 +109,19 @@ export const deleteActivityFromItinerary = (data) => (dispatch, getState) => {
   };
   dispatch({ type: actionTypes.SET_ITINERARY, payload: next });
 };
+
+// Clears the hotels array on the matching itinerary_city. Stays redux is
+// updated separately (via updateStays) so the city placeholder stays around
+// for the "+ Add Stay" CTA without needing a refetch.
+export const deleteHotelFromItinerary = (data) => (dispatch, getState) => {
+  const itinerary = getState().Itinerary;
+  const itineraryCityId = data?.itinerary_city_id;
+  const next = {
+    ...itinerary,
+    cities: (itinerary?.cities ?? []).map((city) => {
+      if (city?.id !== itineraryCityId) return city;
+      return { ...city, hotels: [] };
+    }),
+  };
+  dispatch({ type: actionTypes.SET_ITINERARY, payload: next });
+};

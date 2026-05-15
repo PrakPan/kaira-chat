@@ -22,6 +22,7 @@ import { useRouter } from "next/router";
 import { useHandleClose } from "../../hooks/useHandleClose";
 import { getDateDifferenceInDays } from "../../helper/DateUtils";
 import { currencySymbols } from "../../data/currencySymbols";
+import { useAnalytics } from "../../hooks/useAnalytics";
 import dayjs from "dayjs";
 const FloatingView = styled.div`
   position: sticky;
@@ -85,6 +86,8 @@ const TransferDrawer = ({
 
   const currency = useSelector((state) => state.currency);
 
+  const { trackTaxiDetail } = useAnalytics();
+
   useEffect(() => {
     if (show && isCombo && data?.children?.length > 0) {
       setExpandedIndexes([0]);
@@ -139,6 +142,20 @@ const TransferDrawer = ({
           }/${booking_id}/`,
         );
         setData(res?.data);
+        // Sightseeing transfers are intracity taxis — track the detail view
+        // separately so the taxi funnel is distinguishable from intercity
+        // transfers in analytics.
+        const isSightseeingDetail =
+          isSightseeing ||
+          drawer === "SightSeeing" ||
+          res?.data?.transfer_type === "sightseeing";
+        if (isSightseeingDetail) {
+          trackTaxiDetail?.(
+            router.query.id || router.query.sessionId,
+            booking_id,
+            "transfer_drawer",
+          );
+        }
         setLoading(false);
       } catch (error) {
         setLoading(false);

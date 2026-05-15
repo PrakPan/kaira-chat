@@ -210,26 +210,50 @@ const RouteEditSection = (props) => {
   );
 
     const [destinations, setDestinations] = useState([]);
-  // Chat-loaded itineraries hydrate `state.Itinerary` asynchronously, so the
-  // initial useState above can capture null. Keep the local dates in sync as
-  // the redux store fills in — without this, validateDates() fails on a frozen
-  // null startDate even though destinations[].checkin_date is set correctly.
-  // Fall back to destinations[0]/last when the itinerary itself doesn't carry
-  // start_date / end_date (chat-built drafts).
+  // Track the last upstream dates we've synced from so we only overwrite
+  // local state when the source actually changes (chat regenerating an
+  // itinerary in place, props swapping on tab/thread switch). Without this,
+  // a stale `prev || next` guard kept dates from a previously loaded trip,
+  // and an unconditional sync would clobber `endDate` every time the user
+  // edits destinations (updateDestinationsDates calls props.setEndDate).
+  const lastSyncedSourceRef = useRef({ start: null, end: null });
   useEffect(() => {
-    const nextStart =
-      getDate(
-        props?.plan ? props?.plan.start_date : props?.itinerary?.start_date
-      ) || destinations?.[0]?.cityData?.checkin_date;
-    if (nextStart) setStartDate((prev) => prev || nextStart);
+    const sourceStart = getDate(
+      props?.plan ? props?.plan.start_date : props?.itinerary?.start_date
+    );
+    const sourceEnd = getDate(
+      props?.plan ? props?.plan.end_date : props?.itinerary?.end_date
+    );
+    const synced = lastSyncedSourceRef.current;
+
+    const startChanged = sourceStart && sourceStart !== synced.start;
+    const endChanged = sourceEnd && sourceEnd !== synced.end;
+
+    // Hydration fallback for chat-built drafts: itinerary itself has no
+    // start/end yet, but destinations[].checkin/checkout_date have landed.
+    // Only fill in when local state is still empty so we don't fight user
+    // edits to endDate via updateDestinationsDates.
+    const fallbackStart = !sourceStart
+      ? destinations?.[0]?.cityData?.checkin_date
+      : null;
     const lastDest = destinations?.[destinations.length - 1]?.cityData;
-    const nextEnd =
-      getDate(
-        props?.plan ? props?.plan.end_date : props?.itinerary?.end_date
-      ) ||
-      lastDest?.checkout_date ||
-      lastDest?.checkin_date;
-    if (nextEnd) setEndDate((prev) => prev || nextEnd);
+    const fallbackEnd = !sourceEnd
+      ? lastDest?.checkout_date || lastDest?.checkin_date
+      : null;
+
+    if (startChanged) {
+      setStartDate(sourceStart);
+    } else if (fallbackStart) {
+      setStartDate((prev) => prev || fallbackStart);
+    }
+    if (endChanged) {
+      setEndDate(sourceEnd);
+    } else if (fallbackEnd) {
+      setEndDate((prev) => prev || fallbackEnd);
+    }
+
+    if (sourceStart) synced.start = sourceStart;
+    if (sourceEnd) synced.end = sourceEnd;
   }, [
     props?.plan?.start_date,
     props?.plan?.end_date,
@@ -495,6 +519,8 @@ const RouteEditSection = (props) => {
       pollingIntervalRef.current = null;
     }
     setPolling(false);
+    // Re-enable the chat composer (ChatKitPanel reads is_polling).
+    dispatch(setItineraryStatus("is_polling", false));
   };
 
   const fetchItineraryStatus = async (itineraryId) => {
@@ -558,6 +584,13 @@ const RouteEditSection = (props) => {
     setItineraryLoading(true);
     setPolling(true);
     setWaitingForStatusUpdate(true);
+    // Reset statuses to PENDING and lock the chat composer immediately so
+    // the user can't keep typing while the backend recomputes.
+    dispatch(setItineraryStatus("itinerary_status", "PENDING"));
+    dispatch(setItineraryStatus("transfers_status", "PENDING"));
+    dispatch(setItineraryStatus("hotels_status", "PENDING"));
+    dispatch(setItineraryStatus("pricing_status", "PENDING"));
+    dispatch(setItineraryStatus("is_polling", true));
 
     // Fire once immediately so we don't pay the full interval delay before
     // the first status read, then keep polling until everything resolves.
@@ -568,15 +601,18 @@ const RouteEditSection = (props) => {
   };
 
   // Cleanup the polling interval if the user navigates away mid-update
-  // (e.g. closes the drawer) so we don't leak timers.
+  // (e.g. closes the drawer) so we don't leak timers. Also unlocks the
+  // chat composer — keeping is_polling true after the drawer is gone
+  // would leave the chat permanently disabled.
   useEffect(() => {
     return () => {
       if (pollingIntervalRef.current) {
         clearInterval(pollingIntervalRef.current);
         pollingIntervalRef.current = null;
+        dispatch(setItineraryStatus("is_polling", false));
       }
     };
-  }, []);
+  }, [dispatch]);
 
   const validateDates = () => {
     const today = new Date();

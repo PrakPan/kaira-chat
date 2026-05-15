@@ -6,6 +6,7 @@ import Drawer from "../../ui/Drawer";
 import { esimPackages } from "../../../services/ancillaries/esimServices";
 import { getIndianPrice } from "../../../services/getIndianPrice";
 import { currencySymbols } from "../../../data/currencySymbols";
+import { useAnalytics } from "../../../hooks/useAnalytics";
 import EsimDetailDrawer from "./EsimDetailDrawer";
 
 const EsimCard = ({ pkg, onSelect, currency }) => {
@@ -90,7 +91,7 @@ const EsimCard = ({ pkg, onSelect, currency }) => {
   );
 };
 
-export default function EsimPackagesDrawer({ show, onHide }) {
+export default function EsimPackagesDrawer({ show, onHide, onBooked, onAdded, onRemoved, bookingId, zIndex = 1700 }) {
   const router = useRouter();
   const itineraryId = useSelector((state) => state.ItineraryId) || router.query?.id;
   const currency = useSelector((state) => state.currency);
@@ -104,11 +105,13 @@ export default function EsimPackagesDrawer({ show, onHide }) {
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [showDetail, setShowDetail] = useState(false);
 
+  const { trackEsimSearchList } = useAnalytics();
+
   useEffect(() => {
     if (show && itineraryId) {
       fetchPackages(1, false);
     }
-  }, [show]);
+  }, [show, currency?.currency]);
 
   const fetchPackages = async (page = 1, append = false) => {
     if (!itineraryId) return;
@@ -119,6 +122,7 @@ export default function EsimPackagesDrawer({ show, onHide }) {
       const res = await esimPackages.post("/", {
         itinerary_id: itineraryId,
         page,
+        currency: currency?.currency || "INR",
       }, {
         headers: { Authorization: `Bearer ${localStorage.getItem("access_token")}` },
       });
@@ -128,6 +132,7 @@ export default function EsimPackagesDrawer({ show, onHide }) {
       const pageMeta = payload?.meta || res.data?.meta || null;
       setPackages((prev) => append ? [...prev, ...list] : list);
       setMeta(pageMeta);
+      if (!append) trackEsimSearchList?.(itineraryId);
     } catch (err) {
       setError(err?.response?.data?.errors?.[0]?.message?.[0] || "Failed to load eSIM packages.");
     }
@@ -148,7 +153,7 @@ export default function EsimPackagesDrawer({ show, onHide }) {
         backdrop
         width="50%"
         mobileWidth="100%"
-        style={{ zIndex: 1700 }}
+        style={{ zIndex }}
         className="!overflow-y-hidden"
         onHide={onHide}
       >
@@ -235,9 +240,14 @@ export default function EsimPackagesDrawer({ show, onHide }) {
         <EsimDetailDrawer
           show={showDetail}
           pkg={selectedPackage}
+          bookingId={bookingId}
+          drawerZIndex={zIndex + 10}
           onHide={() => setShowDetail(false)}
+          onAdded={onAdded}
+          onRemoved={onRemoved}
           onBooked={() => {
             setShowDetail(false);
+            onBooked?.();
             onHide();
           }}
         />

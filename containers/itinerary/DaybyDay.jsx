@@ -72,6 +72,7 @@ const DaybyDay = ({
     (state) => state.TransferBookings
   )?.transferBookings;
   const Itinerary = useSelector(state=>state.Itinerary)
+
   // Loading window after a thread switch / page reload: handleThreadSelect
   // (BotApp) clears Redux Itinerary to {} and flips itinerary_status to
   // PENDING before the canonical fetch resolves. Without this guard, the

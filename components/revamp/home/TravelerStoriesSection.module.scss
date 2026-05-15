@@ -1,0 +1,132 @@
+/* "Real trips. Real moments." — editorial story cards. */
+
+.section {
+  padding: 72px 0;
+
+  @media (max-width: 640px) {
+    padding: 48px 0;
+  }
+}
+
+.headLeft { max-width: 640px; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  background: var(--ttw-bg);
+  border: 1px solid var(--ttw-line);
+  border-radius: 20px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px -16px rgba(11, 18, 32, 0.2);
+    border-color: transparent;
+  }
+}
+
+.img {
+  width: 100%;
+  aspect-ratio: 5 / 4;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 5px 11px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  color: var(--ttw-ink);
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.body {
+  padding: 22px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.moment {
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+  margin-bottom: 10px;
+  color: var(--ttw-ink);
+}
+
+.detail {
+  font-size: 13.5px;
+  color: var(--ttw-ink-3);
+  line-height: 1.5;
+  margin-bottom: 18px;
+  flex: 1;
+}
+
+.foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 14px;
+  border-top: 1px solid var(--ttw-line);
+}
+
+.authorRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12.5px;
+  color: var(--ttw-ink-3);
+
+  b { color: var(--ttw-ink); font-weight: 600; }
+}
+
+.avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: white;
+  font-weight: 700;
+  font-size: 11px;
+}
+.avCoral { background: linear-gradient(135deg, var(--ttw-coral), var(--ttw-coral-deep)); }
+.avPink  { background: linear-gradient(135deg, #f5a8c4, #d6486e); }
+.avBlue  { background: linear-gradient(135deg, #7ab8e8, #2d69a8); }
+.avGreen { background: linear-gradient(135deg, #88c89c, #2e7b4e); }
+
+.rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ttw-ink);
+}
+.ratingStar { color: #fbbf24; font-size: 14px; }

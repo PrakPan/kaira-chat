@@ -1,159 +1,163 @@
-import React from "react";
-import ItineraryTripCard from "./ItineraryTripCard";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation } from "swiper";
-import "swiper/css";
-import "swiper/css/pagination";
-import "swiper/css/navigation";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faChevronLeft,
-  faArrowRight,
-  faChevronRight,
-} from "@fortawesome/free-solid-svg-icons";
-import { imgUrlEndPoint } from "../../theme/ThemeConstants";
-import { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { MERCURY_HOST } from "../../../services/constants";
-import Itinerary2Carousel from "../../theme/Itinerary2Carousel";
-import Itinerary1Carousel from "../../theme/Itinerary1Carousel";
 import { useRouter } from "next/router";
-import Button from "../../Button";
 import { useSelector } from "react-redux";
 
+import PackageCard from "../home/PackageCard";
+import packageStyles from "../home/LuxuryEuropeDestinations.module.scss";
+import { MERCURY_HOST } from "../../../services/constants";
+import { imgUrlEndPoint } from "../../theme/ThemeConstants";
+import { getIndianPrice } from "../../../services/getIndianPrice";
 
+/*
+ * MyTripsSection — renders a logged-in user's plans using the shared
+ * <PackageCard> design from the homepage's connected-trips section. The
+ * card layout (image / route / title / includes / price + CTA) lives
+ * in components/revamp/home/PackageCard.jsx; this file only handles the
+ * trip-data fetch and the trip → PackageCard prop mapping.
+ */
 
-const MyTripsSection = ({ apiItineraries, className }) => {
-  // Transform API data or use sample data for demo
-  const [trips, setTrips] = useState([]);
-  const [plansCount, setPlansCount] = useState(null);
-  const token = localStorage.getItem("access_token");
-  const router = useRouter();
-  useEffect(() => {
-    if (token) {
-      fetchTrips(false);
-    }
-  }, [token]);
-  const currency = useSelector(state=>state.UserLocation)?.location;
- 
-      const fetchTrips = async (allPlans) => {
-        try {
-          const query = allPlans ? `?currency=${currency?.currency || 'INR'}` : `?currency=${currency?.currency || 'INR'}&limit=3&offset=0`;
-          const tripsResponse = await axios.get(
-            `${MERCURY_HOST}/api/v1/itinerary/my-plans/${query}`,
-            {
-              headers: {
-                Authorization: "Bearer " + token,
-              },
-            }
-          );
-          const newTrips = tripsResponse?.data?.data?.plans;
-          const count = tripsResponse?.data?.results;
-          setPlansCount(count);
-          setTrips(newTrips);
-        } catch (err) {
-          console.log("[ERROR][TripsResponse:getStaticProps]: ", err.message);
-        }
-      };
+/* ---------- trip → PackageCard mapping ---------- */
 
-    const handlePlan = () => {
-    router.push("/dashboard");
+const STATUS_TO_TIER = {
+  Released: { tier: "Released", variant: "premium" },
+  Confirmed: { tier: "Confirmed", variant: "popular" },
+  Draft: { tier: "Draft", variant: "default" },
+};
+
+const buildRoute = (trip) => {
+  const cities = trip?.cities || trip?.itinerary_locations || trip?.locations || [];
+  return cities.map((c) => c?.name).filter(Boolean);
+};
+
+const buildIncludes = (trip) => {
+  const summary = trip?.payment_information?.summary || {};
+  const out = [];
+  Object.entries(summary).forEach(([label, val]) => {
+    const count = val?.count;
+    if (count) out.push(`${count} ${label.toLowerCase()}`);
+  });
+  if (trip?.number_of_adults) {
+    const pax = [
+      trip.number_of_adults ? `${trip.number_of_adults} adult${trip.number_of_adults === 1 ? "" : "s"}` : null,
+      trip.number_of_children ? `${trip.number_of_children} child${trip.number_of_children === 1 ? "" : "ren"}` : null,
+    ]
+      .filter(Boolean)
+      .join(", ");
+    if (pax) out.push(pax);
+  }
+  return out;
+};
+
+const buildPrice = (trip) => {
+  const info = trip?.payment_information || {};
+  if (info.are_prices_hidden) return null;
+  const usePerPerson = info.show_per_person_cost;
+  const raw = usePerPerson ? info.per_person_discounted_cost : info.discounted_cost;
+  if (raw == null) return null;
+  const duration = trip?.duration;
+  const per = [
+    usePerPerson ? "per person" : "total",
+    duration ? `${duration} night${duration === 1 ? "" : "s"}` : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+  return { amount: `₹${getIndianPrice(raw)}`, per };
+};
+
+const tripToPackage = (trip) => {
+  const rawImage = Array.isArray(trip?.image) ? trip.image[0] : trip?.images?.[0];
+  const statusInfo = STATUS_TO_TIER[trip?.status];
+  return {
+    id: trip?.id,
+    slug: trip?.slug,
+    image: rawImage ? `${imgUrlEndPoint}${rawImage}` : undefined,
+    tier: statusInfo?.tier,
+    tierVariant: statusInfo?.variant,
+    route: buildRoute(trip),
+    title: trip?.name || "Untitled trip",
+    includes: buildIncludes(trip),
+    price: buildPrice(trip),
   };
+};
 
+/* ---------- Component ---------- */
+
+const MyTripsSection = ({ apiItineraries, className = "" }) => {
+  const router = useRouter();
+  const [trips, setTrips] = useState(apiItineraries || []);
+  const [plansCount, setPlansCount] = useState(null);
+  const currency = useSelector((state) => state.UserLocation)?.location;
+
+  useEffect(() => {
+    const token = typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
+    if (!token) return;
+    const query = `?currency=${currency?.currency || "INR"}&limit=4&offset=0`;
+    axios
+      .get(`${MERCURY_HOST}/api/v1/itinerary/my-plans/${query}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        setTrips(res?.data?.data?.plans || []);
+        setPlansCount(res?.data?.results ?? null);
+      })
+      .catch((err) => console.log("[ERROR][MyTrips:fetch]", err.message));
+  }, [currency?.currency]);
+
+  if (!trips || trips.length === 0) return null;
 
   return (
-    <section className="py-12 sm:py-16 lg:py-14  px-0 sm:px-4 lg:px-8 bg-white ">
-      <div className={`w-full mx-auto ${className}`}>
-          <div className="text-center mb-8 lg:mb-4">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 lg:mb-6 leading-tight mt-[2rem] md:mt-[4rem]">
-              My Trips {plansCount ? `(${plansCount})` : null}
+    <section className={packageStyles.section}>
+      <div className={`ttwContainer ${className}`.trim()}>
+        <div className="ttwSectionHead">
+          <div className={packageStyles.headLeft}>
+            <span className={packageStyles.kicker}>
+              <span className={packageStyles.kickerStar}>★</span>
+              Your plans
+            </span>
+            <h2>
+              Pick up where{" "}
+              <span className="ttwSerif">you left off.</span>
             </h2>
-            <p className="text-gray-600 text-base max-w-2xl mx-auto leading-6">
-              View your trips and start planning your next adventure.
+            <p className="ttwLede">
+              {plansCount
+                ? `${plansCount} plan${plansCount === 1 ? "" : "s"} in your library.`
+                : "Tap any trip to keep planning with Kaira."}
             </p>
           </div>
-
-          <Itinerary1Carousel itineraries={trips}/>
-
-           <Button
-            fontWeight="500"
-            boxShadow
-            borderRadius="8px"
-            bgColor="#07213A"
-            margin="2.5rem auto"
-            padding="0.5rem 2rem"
-            borderWidth="1px"
-            onclick={handlePlan}
-            color="white"
-            
+          <button
+            type="button"
+            className="ttwSectionLink"
+            onClick={() => router.push("/dashboard")}
+            style={{ background: "transparent", border: 0, cursor: "pointer" }}
           >
-            {"View all plans"}
-          </Button>
+            View all plans
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </button>
+        </div>
 
-        {/* <div className="relative  sm:px-0">
-          <Swiper
-            style={{ height: "677px" }}
-            modules={[Navigation]}
-            spaceBetween={16}
-            slidesPerView={1}
-            navigation={{
-              nextEl: ".custom-next",
-              prevEl: ".custom-prev",
-              clickable: true,
-            }}
-            breakpoints={{
-              // when window width is >= 640px
-              640: {
-                slidesPerView: 1,
-                spaceBetween: 16,
-              },
-              // when window width is >= 768px
-              768: {
-                slidesPerView: 2,
-                spaceBetween: 20,
-              },
-              // when window width is >= 1024px
-              1024: {
-                slidesPerView: 3,
-                spaceBetween: 24,
-              },
-            }}
-            className="py-6"
-          >
-            {trips.map((itinerary) => (
-              <SwiperSlide key={itinerary.id} className="flex justify-center">
-                <ItineraryTripCard
-                  itinerary={itinerary}
-                  
-                />
-              </SwiperSlide>
-            ))}
-          </Swiper>
-
-          <div className="absolute inset-x-0 top-0 h-[424px] z-30 pointer-events-none">
-            <div aria-hidden="true">
-              <div className="absolute -left-3 md:-left-5 top-1/2 -translate-y-1/2">
-                <div className="custom-prev w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer pointer-events-auto">
-                  <FontAwesomeIcon
-                    icon={faChevronLeft}
-                    className="text-white group-hover:text-white text-md transition-colors duration-300 transform "
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div aria-hidden="true">
-              <div className="absolute -right-3 md:-right-5 top-1/2 -translate-y-1/2">
-                <div className="custom-next w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer pointer-events-auto">
-                  <FontAwesomeIcon
-                    icon={faChevronRight}
-                    className="text-white hover:text-white text-md transition-colors duration-300 transform "
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div> */}
+        <div className={packageStyles.grid}>
+          {trips.map((trip) => {
+            const pkg = tripToPackage(trip);
+            return (
+              <PackageCard
+                key={pkg.id}
+                image={pkg.image}
+                tier={pkg.tier}
+                tierVariant={pkg.tierVariant}
+                route={pkg.route}
+                title={pkg.title}
+                includes={pkg.includes}
+                price={pkg.price}
+                ctaLabel="Open in planner"
+                onClick={() => router.push(`/trips/${pkg.slug}`)}
+              />
+            );
+          })}
+        </div>
       </div>
     </section>
   );

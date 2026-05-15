@@ -1,35 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import "bootstrap/dist/css/bootstrap.min.css";
-import styled from "styled-components";
 import DesktopBanner from "../../components/containers/Banner";
 import Experiences from "../../components/containers/Experiences";
-import media from "../../components/media";
-import BannerTwo from "./BannerTwo";
 import ChatWithUs from "../../components/containers/ChatWithUs/ChatWithUs";
-import Reviews from "./CaseStudies/Index";
-import ExperienceCard from "../../components/cards/newitinerarycard-main/ExperienceCard";
 import Overview from "./Overview";
 import Button from "../../components/ui/button/Index";
-import Locations from "../../components/containers/newplannerlocations/Index";
-import OldLocations from "../../components/containers/plannerlocations/Index";
 import MobileBanner from "./MobileBanner";
-import WhyPlanWithUs from "../../components/WhyPlanWithUs/PlanWithUsWithEnquiry";
-import HeroBanner from "../../components/containers/HeroBanner/HeroBanner";
 import openTailoredModal from "../../services/openTailoredModal";
 import dynamic from "next/dynamic";
-import AsSeenIn from "../testimonial/AsSeenIn";
 import PathNavigation from "./PathNavigation.js";
 import { logEvent } from "../../services/ga/Index";
-import H3 from "../../components/heading/H3";
 import { convertDbNameToCapitalFirst } from "../../helper/convertDbnameToCapitalFirst.js";
 import HeroBannerLadakh from "../../components/containers/HeroBanner/HeroBannerLadakh.js";
 import HeroSection from "../../components/revamp/destination/HeroSection.jsx";
-import MostLovedItinerariesSection from "../../components/revamp/destination/MostLovedItinerariesSection.jsx";
 import validateTextSize from "../../services/textSizeValidator.js";
 import { imgUrlEndPoint } from "../../components/theme/ThemeConstants.js";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Navigation } from "swiper";
+import { Navigation } from "swiper";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
@@ -38,6 +26,7 @@ import DestinationCard from "../../components/revamp/common/components/card/Dest
 import {
   faChevronLeft,
   faChevronRight,
+  faArrowRight,
 } from "@fortawesome/free-solid-svg-icons";
 import CtaBoardingSection from "../../components/revamp/home/CtaBoardingSection.jsx";
 import JourneySimplified from "../../components/revamp/home/JourneySimplified.jsx";
@@ -45,163 +34,33 @@ import Carousel3D from "../../components/theme/CurveImageGallery.jsx";
 import WhatMakesUsSection from "../../components/revamp/home/WhatMakesUsSection.jsx";
 import PartnersSection from "../../components/theme/PartnersSection.jsx";
 import TestimonialCarousel from "../../components/theme/TestimonialCarousel.jsx";
-import Link from "next/link.js";
 import TailoredFormMobileModal from "../../components/modals/TailoredFomrMobile.js";
+import styles from "../../styles/pages/revamp/destination.module.scss";
 const MapBox = dynamic(() => import("../../components/Map.js"), {
   ssr: false,
 });
 
-const SetWidthContainer = styled.div`
-  width: 100%;
-  margin: auto;
-  @media screen and (min-width: 768px) {
-    width: 85%;
-  }
-`;
-
-const MapInfo = styled.div`
-  b {
-    font-weight: 600;
-  }
-`;
-
-const MapGridContainer = styled.div`
-  display: grid;
-  grid-gap: 30px;
-  @media screen and (min-width: 768px) {
-    width: 100%;
-    grid-template-columns: auto 500px;
-    grid-gap: 40px;
-    margin: 0 auto 0 auto;
-  }
-`;
-
-const MapContainer = styled.div`
-  @media screen and (min-width: 768px) {
-    padding-top: 116px;
-  }
-`;
+const carouselBreakpoints = {
+  640: { slidesPerView: 1.5, spaceBetween: 16 },
+  768: { slidesPerView: 2, spaceBetween: 20 },
+  1024: { slidesPerView: 3, spaceBetween: 24 },
+};
 
 const Homepage = (props) => {
   const router = useRouter();
-  let isPageWide = media("(min-width: 768px)");
   const [userItineraries, setUserItineraries] = useState([]);
   const [TTWItineraries, setTTWItineraries] = useState([]);
   const [showMore, setShowMore] = useState(false);
   const [desktopBannerLoading, setDesktopBannerLoading] = useState(false);
   const [overviewHeading, setOverviewHeading] = useState(null);
   const [headings, setHeadings] = useState([]);
-  const [showTailoredModal,setShowTailoredModal] = useState(false);
-
-
-  useEffect(() => {
-    let iti_exclusive = [];
-    let iti_customer = [];
-    try {
-      for (var i = 0; i < props.experienceData.itineraries.length; i++) {
-        if (props.experienceData.itineraries[i].owner === "TTW")
-          iti_exclusive.push(
-            <ExperienceCard
-              data={props.experienceData.itineraries[i]}
-              key={props.experienceData.itineraries[i].short_text}
-              hardcoded={
-                props.experienceData.itineraries[i].payment_info ? true : false
-              }
-              filter={
-                props.experienceData.itineraries[i].experience_filters
-                  ? props.experienceData.itineraries[i].experience_filters[0]
-                  : null
-              }
-              rating={props.experienceData.itineraries[i].rating}
-              slug={props.experienceData.itineraries[i].slug}
-              id={props.experienceData.itineraries[i].id}
-              number_of_adults={
-                props.experienceData.itineraries[i].number_of_adults
-              }
-              locations={
-                props.experienceData.itineraries[i]["itinerary_locations"]
-              }
-              text={props.experienceData.itineraries[i].short_text}
-              experience={props.experienceData.itineraries[i].name}
-              cost={
-                props.experienceData.itineraries[i].payment_info
-                  ? props.experienceData.itineraries[i].payment_info.length
-                    ? props.experienceData.itineraries[i].payment_info[0].cost
-                    : null
-                  : null
-              }
-              duration_number={
-                props.experienceData.itineraries[i].duration_number
-              }
-              duration_unit={props.experienceData.itineraries[i].duration_unit}
-              location={
-                props.experienceData.itineraries[i]["experience_region"]
-              }
-              starting_cost={
-                props.experienceData.itineraries[i].payment_info
-                  ? props.experienceData.itineraries[i].payment_info
-                      .per_person_total_cost
-                  : props.experienceData.itineraries[i].starting_price
-              }
-              images={props.experienceData.itineraries[i].images}
-            ></ExperienceCard>
-          );
-        else
-          iti_customer.push(
-            <ExperienceCard
-              data={props.experienceData.itineraries[i]}
-              key={props.experienceData.itineraries[i].short_text}
-              hardcoded={
-                props.experienceData.itineraries[i].payment_info ? true : false
-              }
-              filter={
-                props.experienceData.itineraries[i].experience_filters
-                  ? props.experienceData.itineraries[i].experience_filters[0]
-                  : null
-              }
-              rating={props.experienceData.itineraries[i].rating}
-              slug={props.experienceData.itineraries[i].slug}
-              id={props.experienceData.itineraries[i].id}
-              number_of_adults={
-                props.experienceData.itineraries[i].number_of_adults
-              }
-              locations={
-                props.experienceData.itineraries[i]["itinerary_locations"]
-              }
-              text={props.experienceData.itineraries[i].short_text}
-              experience={props.experienceData.itineraries[i].name}
-              cost={
-                props.experienceData.itineraries[i].payment_info
-                  ? props.experienceData.itineraries[i].payment_info.length
-                    ? props.experienceData.itineraries[i].payment_info[0].cost
-                    : null
-                  : null
-              }
-              duration_number={
-                props.experienceData.itineraries[i].duration_number
-              }
-              duration_unit={props.experienceData.itineraries[i].duration_unit}
-              location={
-                props.experienceData.itineraries[i]["experience_region"]
-              }
-              starting_cost={
-                props.experienceData.itineraries[i].payment_information
-                  ? props.experienceData.itineraries[i].payment_information
-                      .per_person_total_cost
-                  : props.experienceData.itineraries[i].starting_price
-              }
-              images={props.experienceData.itineraries[i].images}
-            ></ExperienceCard>
-          );
-      }
-    } catch {}
-  }, []);
+  const [showTailoredModal, setShowTailoredModal] = useState(false);
 
   useEffect(() => {
     if (props.experienceData?.headings) {
-      let headings = props.experienceData?.headings;
-      headings.sort((a, b) => a?.priority - b?.priority);
-      setHeadings(headings);
+      let h = [...props.experienceData.headings];
+      h.sort((a, b) => a?.priority - b?.priority);
+      setHeadings(h);
     }
   }, [props.experienceData?.headings]);
 
@@ -219,48 +78,25 @@ const Homepage = (props) => {
   }, [props.experienceData.itineraries]);
 
   useEffect(() => {
-    // The counter changed!
     setOverviewHeading(
       `A little about ${convertDbNameToCapitalFirst(props.experienceData.slug)}`
     );
     return () => setOverviewHeading(null);
   }, [router.query.link, props.experienceData]);
 
-  var country;
-  if (props.experienceData.ancestors) {
-    if (
-      props.experienceData.ancestors.length &&
-      props.experienceData.ancestors[0].level == "Country" &&
-      props.experienceData.ancestors[0].name
-    ) {
-      country = props.experienceData.ancestors[0].name;
-    }
-  }
-
   const InfoWindowContainer = (location) => (
-    <MapInfo>
-      <b>{location.name}</b>
+    <div>
+      <b style={{ fontWeight: 600 }}>{location.name}</b>
       <div>
         {location.most_popular_for?.map((e, i) =>
           i != 0 ? <span key={i}>{", " + e}</span> : <span key={i}>{e}</span>
         )}
       </div>
-    </MapInfo>
+    </div>
   );
 
   const handlePlanButtonClick = (location) => {
-    // openTailoredModal(
-    //   router,
-    //   props.experienceData.id,
-    //   convertDbNameToCapitalFirst(props.experienceData.slug)
-    // );
-    //  router.push({
-    //     pathname: "/new-trip",
-    //     query: { ...router.query, source: props?.experienceData?.slug || 'home' }
-    // });
-
-    setShowTailoredModal(true); 
-     
+    setShowTailoredModal(true);
     logEvent({
       action: "Plan_Itinerary",
       params: {
@@ -272,262 +108,256 @@ const Homepage = (props) => {
     });
   };
 
+  const renderCarousel = (items, keyPrefix, onItemClick) => {
+    const prevClass = `${keyPrefix}-prev`;
+    const nextClass = `${keyPrefix}-next`;
+    return (
+      <div className={styles.carouselWrap}>
+        <Swiper
+          style={{ height: "376px" }}
+          modules={[Navigation]}
+          spaceBetween={16}
+          slidesPerView={1}
+          navigation={{
+            nextEl: `.${nextClass}`,
+            prevEl: `.${prevClass}`,
+            clickable: true,
+          }}
+          breakpoints={carouselBreakpoints}
+        >
+          {items?.map((item) => (
+            <SwiperSlide key={item.id}>
+              <div className="w-full px-1">
+                <DestinationCard
+                  title={item.title || item.name}
+                  description={item.description || item.tagline}
+                  one_liner_description={item?.one_liner_description}
+                  image={item.image}
+                  tags={
+                    item.tags ||
+                    (item.continent ? [item.continent] : [])
+                  }
+                  gradientOverlay={item.gradientOverlay}
+                  onClick={() =>
+                    onItemClick
+                      ? onItemClick(item)
+                      : item.path && window.location.replace("/" + item.path)
+                  }
+                />
+              </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+        <div className={`${prevClass} ${styles.carouselNav} ${styles.carouselNavPrev}`} aria-hidden>
+          <FontAwesomeIcon icon={faChevronLeft} />
+        </div>
+        <div className={`${nextClass} ${styles.carouselNav} ${styles.carouselNavNext}`} aria-hidden>
+          <FontAwesomeIcon icon={faChevronRight} />
+        </div>
+      </div>
+    );
+  };
+
+  if (props?.experienceData?.slug === "ladakh") {
+    return (
+      <div
+        className={styles.destinationPage}
+        id="homepage-anchor"
+        style={{ visibility: props.hidden ? "hidden" : "visible" }}
+      >
+        <HeroBannerLadakh
+          image={props.experienceData.image}
+          page_id={props.page_id}
+          type={props.type}
+          destination={convertDbNameToCapitalFirst(props.experienceData.slug)}
+          cities={props.experienceData.locations}
+          children_cities={props.experienceData.children}
+          title={props.experienceData.banner_heading}
+          subheading={props.experienceData.banner_text}
+          page={"State Page"}
+          eventDates={props.eventDates}
+          setShowTailoredModal={setShowTailoredModal}
+        />
+      </div>
+    );
+  }
+
+  const destinationName = convertDbNameToCapitalFirst(props.experienceData.slug);
+
   return (
     <div
-      className={"Homepage"}
+      className={styles.destinationPage}
       id="homepage-anchor"
       style={{ visibility: props.hidden ? "hidden" : "visible" }}
     >
-      {props?.experienceData?.slug == "ladakh" ? (
-        <>
-          <HeroBannerLadakh
-            image={props.experienceData.image}
-            page_id={props.page_id}
-            type={props.type}
-            destination={convertDbNameToCapitalFirst(props.experienceData.slug)}
-            cities={props.experienceData.locations}
-            children_cities={props.experienceData.children}
-            title={props.experienceData.banner_heading}
-            subheading={props.experienceData.banner_text}
-            page={"State Page"}
-            eventDates={props.eventDates}
-            setShowTailoredModal={setShowTailoredModal}
-          />
-        </>
-      ) : (
-        <>
-          {/* <HeroBanner
-        image={props.experienceData.image}
-        page_id={props.page_id}
-        type={props.type}
-        destination={convertDbNameToCapitalFirst(props.experienceData.slug)}
-        cities={props.experienceData.locations}
-        children_cities={props.experienceData.children}
-        title={props.experienceData.banner_heading}
-        subheading={props.experienceData.banner_text}
-        page={"State Page"}
-        eventDates={props.eventDates}
-      /> */}
+      <HeroSection
+        title={validateTextSize(
+          `Your ${props.experienceData.name} Trip, Designed Around You`,
+          9,
+          `Craft a trip to ${props.experienceData.name} now!`
+        )}
+        subtitle={props.experienceData.banner_text}
+        image={`${imgUrlEndPoint}${props.experienceData.image}`}
+        slug={props.experienceData?.slug}
+        setShowTailoredModal={setShowTailoredModal}
+      />
 
-          <HeroSection
-            title={validateTextSize(
-              `Your ${props.experienceData.name} Trip, Designed Around You`,
-            // `Craft a personalized itinerary to ${props.experienceData.name} now!`,
-            9,
-            `Craft a trip to ${props.experienceData.name} now!`
-          )}
-            // title={props.experienceData.banner_heading}
-            subtitle={props.experienceData.banner_text}
-            image={`${imgUrlEndPoint}${props.experienceData.image}`}
-            slug={props.experienceData?.slug}
-            setShowTailoredModal={setShowTailoredModal}
-          />
+      {/* STATS STRIP */}
+      <div className={styles.statsStrip}>
+        <div className={styles.statsStripInner}>
+          <div className={styles.stat}>
+            <div className={styles.statLabel}>Destination</div>
+            <div className={styles.statValue}>
+              <span className={styles.serif}>{destinationName}</span>
+            </div>
+            <div className={styles.statSub}>Curated by Kaira</div>
+          </div>
+          <div className={styles.stat}>
+            <div className={styles.statLabel}>Top locations</div>
+            <div className={styles.statValue}>
+              <span className={styles.serif}>
+                {props.experienceData?.locations?.length || 0}
+              </span>{" "}
+              hand-picked
+            </div>
+            <div className={styles.statSub}>Across {destinationName}</div>
+          </div>
+          <div className={styles.stat}>
+            <div className={styles.statLabel}>Trip ideas</div>
+            <div className={styles.statValue}>
+              <span className={styles.serif}>
+                {(userItineraries?.length || 0) + (TTWItineraries?.length || 0)}+
+              </span>{" "}
+              ready
+            </div>
+            <div className={styles.statSub}>From real travellers</div>
+          </div>
+          <div className={styles.stat}>
+            <div className={styles.statLabel}>Trusted by</div>
+            <div className={styles.statValue}>
+              <span className={styles.serif}>10K+</span> travellers
+            </div>
+            <div className={styles.statSub}>Across India</div>
+          </div>
+        </div>
+      </div>
 
-          <SetWidthContainer>
-            <PathNavigation path={props.experienceData.path} />
-            <>
-              <H3
-                style={{
-                  textAlign: isPageWide ? "left" : "center",
-                  margin: isPageWide
-                    ? "2.5rem 0 4.5rem 0"
-                    : "2.5rem 0.5rem 1.5rem 0.5rem",
-                }}
+      <div className={styles.container}>
+        <div className={styles.crumb}>
+          <PathNavigation path={props.experienceData.path} />
+        </div>
+
+        {/* TOP LOCATIONS */}
+        {props.experienceData?.locations?.length ? (
+          <section className={styles.block}>
+            <div className={styles.sectionHead}>
+              <div className={styles.sectionHeadLeft}>
+                <h2>
+                  Top locations{" "}
+                  <span className={styles.serif}>across {destinationName}.</span>
+                </h2>
+                <p className={styles.lede}>
+                  Curated cities and corners worth carving time for.
+                </p>
+              </div>
+              <span
+                className={styles.sectionLink}
+                onClick={() => setShowTailoredModal(true)}
               >
-                {props.experienceData.slug
-                  ? "Top locations across " +
-                    convertDbNameToCapitalFirst(props.experienceData?.slug)
-                  : "Top Locations"}
-              </H3>
-              {/* <Locations
-            locations={props.experienceData.locations}
-            viewall
-            page={"State Page"}
-            state={props?.experienceData?.destination}
-          ></Locations> */}
-              <div className="relative px-2 sm:px-0">
-                <Swiper
-                  style={{ height: "376px" }}
-                  modules={[Navigation]}
-                  spaceBetween={16}
-                  slidesPerView={1}
-                  navigation={{
-                    nextEl: ".PlacesBragSection-next",
-                    prevEl: ".PlacesBragSection-prev",
-                    clickable: true,
-                  }}
-                  breakpoints={{
-                    // when window width is >= 640px
-                    640: {
-                      slidesPerView: 1.5,
-                      spaceBetween: 16,
-                    },
-                    // when window width is >= 768px
-                    768: {
-                      slidesPerView: 2,
-                      spaceBetween: 20,
-                    },
-                    // when window width is >= 1024px
-                    1024: {
-                      slidesPerView: 3,
-                      spaceBetween: 24,
-                    },
-                  }}
-                >
-                  {props.experienceData.locations.map((destination) => (
-                    <SwiperSlide key={destination.id}>
-                      <div className="w-full px-1">
-                        <DestinationCard
-                          title={destination.title || destination.name}
-                          description={
-                            destination.description || destination.tagline
-                          }
-                           one_liner_description={destination?.one_liner_description}
-                          image={destination.image}
-                          tags={
-                            destination.tags ||
-                            (destination.continent
-                              ? [destination.continent]
-                              : [])
-                          }
-                          gradientOverlay={destination.gradientOverlay}
-                          onClick={() => {
-                            console.log(
-                              `Clicked on ${
-                                destination.name || destination.title
-                              }`
-                            );
-                            window.location.replace("/" + destination.path);
-                          }}
-                        />
-                      </div>
-                    </SwiperSlide>
-                  ))}
-                </Swiper>
-                <div className="PlacesBragSection-prev" aria-hidden>
-                  <div
-                    className="absolute left-3 sm:left-1 z-10"
-                    style={{
-                      top: "calc(376px / 2)",
-                      transform: "translateY(-50%)",
-                    }}
-                  >
-                    <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
-                      <FontAwesomeIcon
-                        icon={faChevronLeft}
-                        className="text-white group-hover:text-white text-md transition-colors duration-300 transform"
-                      />
-                    </div>
-                  </div>
-                </div>
+                Plan with Kaira
+                <FontAwesomeIcon icon={faArrowRight} />
+              </span>
+            </div>
+            {renderCarousel(props.experienceData.locations, "StateTopLocations")}
+            <div className="flex justify-center mt-8">
+              <Button
+                onclick={() => setShowTailoredModal(true)}
+                borderWidth="1px"
+                fontWeight="400"
+                borderRadius="999px"
+                margin="0 auto"
+                padding="0.8rem 2rem"
+                bgColor="#0f1a2e"
+                color="white"
+              >
+                + Create a Trip Now!
+              </Button>
+            </div>
+          </section>
+        ) : null}
 
-                {/* Custom Next Button - centered to image height (376px) */}
-                <div className="PlacesBragSection-next" aria-hidden>
-                  <div
-                    className="absolute right-3 sm:right-1 z-10"
-                    style={{
-                      top: "calc(376px / 2)",
-                      transform: "translateY(-50%)",
-                    }}
-                  >
-                    <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
-                      <FontAwesomeIcon
-                        icon={faChevronRight}
-                        className="text-white hover:text-white text-md transition-colors duration-300 transform"
-                      />
-                    </div>
-                  </div>
-                </div>
-
+        {/* HEADINGS (Carousels per heading) */}
+        {headings.map((heading, index) => (
+          <section
+            key={heading?.name || index}
+            className={`${styles.block} ${
+              index % 2 === 0 ? styles.itinerariesBlock : ""
+            }`}
+          >
+            <div className={styles.sectionHead}>
+              <div className={styles.sectionHeadLeft}>
+                <h2>{heading.name}</h2>
               </div>
-              <div className=" flex items-center justify-center mt-8 lg:mt-10">
-                {/* <Link href={`/new-trip/?source=${props?.experienceData?.slug || 'home'}`}> */}
-                  <button
-                    variant="filled"
-                    size="medium"
-                    onClick={() => {
-                      console.log("Create a Trip Now! clicked");
-                      setShowTailoredModal(true);
-                    }}
-                    className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
-                  >
-                    + Create a Trip Now!
-                  </button>
-                {/* </Link> */}
-              </div>
-            </>
-
-            {headings.map((heading, index) => (
-              <div key={index}>
-                <H3
-                  style={{
-                    textAlign: isPageWide ? "left" : "center",
-                    margin: isPageWide
-                      ? "2.5rem 0 2.5rem 0"
-                      : "2.5rem 0.5rem 1.5rem 0.5rem",
-                  }}
-                >
-                  {heading.name}
-                </H3>
-                <Experiences
-                  experiences={heading?.itineraries}
-                  page={"State Page"}
-                ></Experiences>
-
-                {index % 2 ? (
-                  <Button
-                    onclick={() => handlePlanButtonClick(heading.name)}
-                    borderWidth="1px"
-                    fontWeight="500"
-                    borderRadius="6px"
-                    margin="2rem auto"
-                    padding="0.5rem 2rem"
-                  >
-                    Create your travel plan now!
-                  </Button>
-                ) : null}
-              </div>
-            ))}
-
-            {userItineraries.length ? (
-              <>
-                <H3
-                  style={{
-                    textAlign: isPageWide ? "left" : "center",
-                    margin: isPageWide
-                      ? "2.5rem 0 2.5rem 0"
-                      : "2.5rem 0.5rem 1.5rem 0.5rem",
-                  }}
-                >
-                  Trips by our users
-                </H3>
-                {/* <MostLovedItinerariesSection apiItineraries={userItineraries} /> */}
-                <Experiences
-              experiences={userItineraries}
+            </div>
+            <Experiences
+              experiences={heading?.itineraries}
               page={"State Page"}
-            ></Experiences>
-              </>
+            />
+            {index % 2 ? (
+              <div className="flex justify-center mt-8">
+                <Button
+                  onclick={() => handlePlanButtonClick(heading.name)}
+                  borderWidth="1px"
+                  fontWeight="500"
+                  borderRadius="999px"
+                  margin="0 auto"
+                  padding="0.6rem 2rem"
+                  bgColor="#0f1a2e"
+                  color="white"
+                >
+                  Create your travel plan now!
+                </Button>
+              </div>
             ) : null}
+          </section>
+        ))}
 
-            <MapGridContainer>
-              <Overview
+        {/* USER TRIPS */}
+        {userItineraries.length ? (
+          <section className={`${styles.block} ${styles.itinerariesBlock}`}>
+            <div className={styles.sectionHead}>
+              <div className={styles.sectionHeadLeft}>
+                <div className={styles.itinPill}>★ Real trips, real travellers</div>
+                <h2>
+                  Trips{" "}
+                  <span className={styles.serif}>by our travellers.</span>
+                </h2>
+                <p className={styles.lede}>
+                  Hand-built routes by real travellers across {destinationName}.
+                </p>
+              </div>
+            </div>
+            <Experiences experiences={userItineraries} page={"State Page"} />
+          </section>
+        ) : null}
+
+        {/* OVERVIEW */}
+        <section className={`${styles.block} ${styles.editorialBlock}`}>
+          <Overview
+            locations={props.experienceData.locations}
+            overview_heading={overviewHeading}
+            overview_text={props.experienceData.short_description}
+          />
+          {props.experienceData.locations?.length ? (
+            <div style={{ marginTop: 32 }}>
+              <MapBox
+                InfoWindowContainer={InfoWindowContainer}
                 locations={props.experienceData.locations}
-                overview_heading={overviewHeading}
-                overview_text={props.experienceData.short_description}
-              ></Overview>
-              <MapContainer>
-                {props.experienceData.locations &&
-                props.experienceData.locations.length ? (
-                  <MapBox
-                    InfoWindowContainer={InfoWindowContainer}
-                    locations={props.experienceData.locations}
-                    height="300px"
-                  />
-                ) : (
-                  <></>
-                )}
-              </MapContainer>
-            </MapGridContainer>
+                height="300px"
+              />
+            </div>
+          ) : null}
+          <div className="flex justify-center mt-8">
             <Button
               onclick={() =>
                 handlePlanButtonClick(
@@ -536,301 +366,142 @@ const Homepage = (props) => {
               }
               borderWidth="1px"
               fontWeight="500"
-              borderRadius="6px"
-              margin="2rem auto"
-              padding="0.5rem 2rem"
+              borderRadius="999px"
+              margin="0 auto"
+              padding="0.6rem 2rem"
+              bgColor="#0f1a2e"
+              color="white"
             >
               {props.experienceData.page_type !== "Theme"
-                ? `Craft a trip to ${convertDbNameToCapitalFirst(
-                    props.experienceData.slug
-                  )} now!`
+                ? `Craft a trip to ${destinationName} now!`
                 : "Create your travel plan now!"}
             </Button>
-          </SetWidthContainer>
-
-          <SetWidthContainer>
-            <JourneySimplified />
-            {/* <H3
-          style={{
-            textAlign: isPageWide ? "left" : "center",
-            margin: isPageWide ? "3rem 0" : "2.5rem 0.5rem 0rem 0.5rem",
-          }}
-        >
-          How it works?
-        </H3>
-        <div>
-          <BannerTwo
-            page_id={props.experienceData.id}
-            destination={convertDbNameToCapitalFirst(props.experienceData.slug)}
-            cities={props.experienceData.locations}
-          ></BannerTwo>
-        </div> */}
-
-            {TTWItineraries.length ? (
-              <>
-                <H3
-                  style={{
-                    textAlign: isPageWide ? "left" : "center",
-                    margin: isPageWide
-                      ? "2.5rem 0 2.5rem 0"
-                      : "2.5rem 0.5rem 1.5rem 0.5rem",
-                  }}
-                >
-                  Tarzan Way Community Top Picks
-                </H3>
-                <Experiences
-                  mobileGrid
-                  experiences={
-                    showMore ? TTWItineraries : TTWItineraries.slice(0, 4)
-                  }
-                  page={"State Page"}
-                ></Experiences>
-              </>
-            ) : null}
-
-            {/* {!TTWItineraries.length || isPageWide ? null : showMore ? (
-          <Button
-            onclick={() =>
-              handlePlanButtonClick(`Tarzan Way Community Top Picks`)
-            }
-            borderWidth="1px"
-            fontWeight="500"
-            borderRadius="6px"
-            margin="2rem auto"
-            padding="0.5rem 2rem"
-          >
-            Unlock your adventure
-          </Button>
-        ) : (
-          <Button
-            onclick={() => setShowMore(true)}
-            borderWidth="1px"
-            fontWeight="500"
-            borderRadius="6px"
-            margin="2rem auto"
-            padding="0.5rem 2rem"
-          >
-            View more
-          </Button>
-        )}
-
-        {userItineraries.length ? (
-          <Button
-            onclick={() => handlePlanButtonClick(`Unlock your adventure`)}
-            borderWidth="1px"
-            fontWeight="500"
-            borderRadius="6px"
-            margin="2rem auto"
-            padding="0.5rem 2rem"
-          >
-            Unlock your adventure
-          </Button>
-        ) : null} */}
-          </SetWidthContainer>
-
-          <DesktopBanner
-            loading={desktopBannerLoading}
-            onclick={() =>
-              setShowTailoredModal(true)
-            }
-            text={`Craft a personalized itinerary${
-              props.experienceData.slug
-                ? " to " +
-                  convertDbNameToCapitalFirst(props.experienceData.slug) +
-                  " now"
-                : ""
-            }!`}
-          ></DesktopBanner>
-
-          <div className="hidden-desktop">
-            <MobileBanner
-              handleClick={() =>
-                openTailoredModal(
-                  router,
-                  props.experienceData.id,
-                  convertDbNameToCapitalFirst(props.experienceData.slug)
-                )
-              }
-              city={convertDbNameToCapitalFirst(props.experienceData.slug)}
-            />
           </div>
+        </section>
 
-          <SetWidthContainer>
-            {props.locations && props.locations.length ? (
-              <>
-                <H3
-                  style={{
-                    textAlign: isPageWide ? "left" : "center",
-                    margin: isPageWide ? "3.5rem 0rem" : "1.5rem 0.5rem",
-                  }}
-                >
-                  Other Destinations
-                </H3>
-                {/* <OldLocations
-              locations={props.locations}
-              page_id={props.experienceData.id}
-              destination={convertDbNameToCapitalFirst(props.experienceData.slug)}
-              viewall
-              country={country}
-              planner
-            ></OldLocations> */}
-                <div className="relative px-2 sm:px-0">
-                  <Swiper
-                    style={{ height: "376px" }}
-                    modules={[Navigation]}
-                    spaceBetween={16}
-                    slidesPerView={1}
-                    navigation={{
-                      nextEl: ".PlacesBragSection-n",
-                      prevEl: ".PlacesBragSection-p",
-                      clickable: true,
-                    }}
-                    breakpoints={{
-                      // when window width is >= 640px
-                      640: {
-                        slidesPerView: 1.5,
-                        spaceBetween: 16,
-                      },
-                      // when window width is >= 768px
-                      768: {
-                        slidesPerView: 2,
-                        spaceBetween: 20,
-                      },
-                      // when window width is >= 1024px
-                      1024: {
-                        slidesPerView: 3,
-                        spaceBetween: 24,
-                      },
-                    }}
-                  >
-                    {props.locations.map((destination) => (
-                      <SwiperSlide key={destination.id}>
-                        <div className="w-full px-1">
-                          <DestinationCard
-                            title={destination.title || destination.name}
-                            description={
-                              destination.description || destination.tagline
-                            }
-                            one_liner_description={destination?.one_liner_description}
-                            image={destination.image}
-                            tags={
-                              destination.tags ||
-                              (destination.continent
-                                ? [destination.continent]
-                                : [])
-                            }
-                            gradientOverlay={destination.gradientOverlay}
-                            onClick={() => {
-                              console.log(
-                                `Clicked on ${
-                                  destination.name || destination.title
-                                }`
-                              );
-                              window.location.replace("/" + destination.path);
-                            }}
-                          />
-                        </div>
-                      </SwiperSlide>
-                    ))}
-                  </Swiper>
-                  <div className="PlacesBragSection-p" aria-hidden>
-                    <div
-                      className="absolute left-3 sm:left-1 z-10"
-                      style={{
-                        top: "calc(376px / 2)",
-                        transform: "translateY(-50%)",
-                      }}
-                    >
-                      <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
-                        <FontAwesomeIcon
-                          icon={faChevronLeft}
-                          className="text-white group-hover:text-white text-md transition-colors duration-300 transform"
-                        />
-                      </div>
-                    </div>
-                  </div>
+        <JourneySimplified />
 
-                  {/* Custom Next Button - centered to image height (376px) */}
-                  <div className="PlacesBragSection-n" aria-hidden>
-                    <div
-                      className="absolute right-3 sm:right-1 z-10"
-                      style={{
-                        top: "calc(376px / 2)",
-                        transform: "translateY(-50%)",
-                      }}
-                    >
-                      <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
-                        <FontAwesomeIcon
-                          icon={faChevronRight}
-                          className="text-white hover:text-white text-md transition-colors duration-300 transform"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className=" flex items-center justify-center mt-8 lg:mt-10">
-                {/* <Link href={`/new-trip/?source=${props?.experienceData?.slug || 'home'}`}> */}
-                  <button
-                    variant="filled"
-                    size="medium"
-                    onClick={() => {
-                      console.log("Create a Trip Now! clicked");
-                      setShowTailoredModal(true);
-                    }}
-                    className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
-                  >
-                    + Create a Trip Now!
-                  </button>
-                {/* </Link> */}
+        {/* COMMUNITY TOP PICKS */}
+        {TTWItineraries.length ? (
+          <section className={styles.block}>
+            <div className={styles.sectionHead}>
+              <div className={styles.sectionHeadLeft}>
+                <h2>
+                  Community{" "}
+                  <span className={styles.serif}>top picks.</span>
+                </h2>
+                <p className={styles.lede}>
+                  Loved by The Tarzan Way community.
+                </p>
               </div>
-              </>
-            ) : null}
+              {!showMore && TTWItineraries.length > 4 ? (
+                <span
+                  className={styles.sectionLink}
+                  onClick={() => setShowMore(true)}
+                >
+                  View more
+                  <FontAwesomeIcon icon={faArrowRight} />
+                </span>
+              ) : null}
+            </div>
+            <Experiences
+              mobileGrid
+              experiences={
+                showMore ? TTWItineraries : TTWItineraries.slice(0, 4)
+              }
+              page={"State Page"}
+            />
+          </section>
+        ) : null}
 
-            {/* <H3
-          style={{
-            textAlign: isPageWide ? "left" : "center",
-            margin: "3.5rem 0 3.5rem 0",
-          }}
-        >
-          Why plan with us?
-        </H3>
-        <WhyPlanWithUs
-          page_id={props.experienceData.id}
-          destination={convertDbNameToCapitalFirst(props.experienceData.slug)}
-          cities={props.experienceData.locations}
-        /> */}
-            <WhatMakesUsSection />
+        <DesktopBanner
+          loading={desktopBannerLoading}
+          onclick={() => setShowTailoredModal(true)}
+          text={`Craft a personalized itinerary${
+            props.experienceData.slug
+              ? " to " + destinationName + " now"
+              : ""
+          }!`}
+        />
 
-            {/* <H3
-          style={{
-            textAlign: isPageWide ? "left" : "center",
-            margin: "4rem 0 2.5rem 0",
-          }}
-        >
-          Happy Community of The Tarzan Way
-        </H3>
-        <Reviews></Reviews> */}
-            <Carousel3D />
-            <TestimonialCarousel />
-          </SetWidthContainer>
+        <div className="hidden-desktop">
+          <MobileBanner
+            handleClick={() =>
+              openTailoredModal(
+                router,
+                props.experienceData.id,
+                destinationName
+              )
+            }
+            city={destinationName}
+          />
+        </div>
 
-          <SetWidthContainer>
-            {/* <H3
-              style={{
-                textAlign: isPageWide ? "left" : "center",
-                margin: "4rem 0 2.5rem 0",
-              }}
-            >
-              What they say?
-            </H3> */}
-            {/* <AsSeenIn /> */}
-            <PartnersSection />
-            <ChatWithUs planner page_id={props.experienceData.id}></ChatWithUs>
+        {/* OTHER DESTINATIONS */}
+        {props.locations && props.locations.length ? (
+          <section className={styles.block}>
+            <div className={styles.sectionHead}>
+              <div className={styles.sectionHeadLeft}>
+                <h2>
+                  Other{" "}
+                  <span className={styles.serif}>destinations.</span>
+                </h2>
+                <p className={styles.lede}>
+                  Pair {destinationName} with a neighbour.
+                </p>
+              </div>
+            </div>
+            {renderCarousel(props.locations, "OtherDestinations")}
+            <div className="flex justify-center mt-8">
+              <Button
+                onclick={() => setShowTailoredModal(true)}
+                borderWidth="1px"
+                fontWeight="400"
+                borderRadius="999px"
+                margin="0 auto"
+                padding="0.8rem 2rem"
+                bgColor="#0f1a2e"
+                color="white"
+              >
+                + Create a Trip Now!
+              </Button>
+            </div>
+          </section>
+        ) : null}
 
-            <CtaBoardingSection />
+        <WhatMakesUsSection />
+        <Carousel3D />
+        <TestimonialCarousel />
+        <PartnersSection />
+        <ChatWithUs planner page_id={props.experienceData.id} />
+      </div>
 
-            <TailoredFormMobileModal
+      {/* FINAL CTA */}
+      <section className={styles.finalCta}>
+        <div className={styles.finalCtaInner}>
+          <h2>
+            {destinationName}, <span className={styles.serif}>your way.</span>
+          </h2>
+          <p>
+            Tell Kaira your dates and vibe. She'll have a real plan back in
+            under 2 minutes.
+          </p>
+          <button
+            className={styles.btnPrimary}
+            onClick={() => handlePlanButtonClick(`Final CTA - ${destinationName}`)}
+          >
+            Plan my {destinationName} trip
+            <FontAwesomeIcon icon={faArrowRight} />
+          </button>
+          <div className={styles.finalCtaTrust}>
+            No commitment · free to plan · pay only for what you pick.
+          </div>
+        </div>
+      </section>
+
+      <CtaBoardingSection />
+
+      <TailoredFormMobileModal
         destinationType={"city-planner"}
         page_id={props.page_id}
         children_cities={props.children_cities}
@@ -842,9 +513,6 @@ const Homepage = (props) => {
         show={showTailoredModal}
         eventDates={props.eventDates}
       />
-          </SetWidthContainer>
-        </>
-      )}
     </div>
   );
 };

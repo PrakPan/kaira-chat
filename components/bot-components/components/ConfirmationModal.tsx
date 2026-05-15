@@ -140,7 +140,7 @@ const SimpleDatePicker = ({
     <div className="p-5">
       <div className="flex justify-between items-center mb-5">
         <h3 className="text-base font-semibold text-gray-800">Select Start Date</h3>
-        <button onClick={onClose} className="p-1.5 hover:bg-gray-100 rounded-full transition-colors">
+        <button onClick={onClose} className="p-2 md:p-1.5 hover:bg-gray-100 rounded-full transition-colors">
           <FaX size={12} className="text-gray-400 max-ph:hidden" />
         </button>
       </div>
@@ -441,7 +441,7 @@ const ModalContent: React.FC<ModalContentProps> = ({
             onClick={onConfirm}
             className="flex-1 px-3 py-2.5 bg-[#07213A] text-white font-medium rounded-xl text-sm hover:bg-[#07213A]/90 active:scale-[0.98] transition-all"
           >
-            Confirm & View Itinerary
+            Confirm and View Prices
           </button>
         )}
       </div>
@@ -596,7 +596,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         borderRadius="20px"
         paddingX="0"
         paddingY="0"
-        width="500px"
+        width="450px"
       >
         {renderContent()}
       </ModalWithBackdrop>

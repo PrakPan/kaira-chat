@@ -5,16 +5,48 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
 
 const nextConfig = {
   distDir: process.env.BUILD_DIR || ".next",
-//   output: "export",
-//   trailingSlash: true,
-//   skipTrailingSlashRedirect: true,
+  // output: "export",
+  // trailingSlash: true,
+  // skipTrailingSlashRedirect: true,
 
-images: {
-  remotePatterns: [
-    { protocol: "https", hostname: "**" },
-    { protocol: "http", hostname: "**" },
-  ],
-},
+  images: {
+    unoptimized: true,
+    // domains:[''],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "d31aoa0ehgvjdi.cloudfront.net",
+      },
+      {
+        protocol: "http",
+        hostname: "d31aoa0ehgvjdi.cloudfront.net",
+      },
+      {
+        protocol: "https",
+        hostname: "q-xx.bstatic.com",
+      },
+      {
+        protocol: "https",
+        hostname: "i.travelapi.com",
+      },
+      {
+        protocol: "https",
+        hostname: "imgak.mmtcdn.com",
+      },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+      },
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+      },
+      {
+        protocol:"https",
+        hostname:"maps.googleapis.com"
+      },
+    ],
+  },
 
   experimental: {
     nextScriptWorkers: true,

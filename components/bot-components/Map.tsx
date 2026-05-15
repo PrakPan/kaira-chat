@@ -5,7 +5,9 @@ import React, {
   forwardRef,
   useImperativeHandle,
   useCallback,
+  useMemo,
 } from "react";
+import { useSelector } from "react-redux";
 
 interface Location {
   id: string;
@@ -170,17 +172,17 @@ function getEndpointPin(kind: "start" | "end"): google.maps.Icon {
         `<path d="M6 22l20-6-2-3-6 1-8-7-3 1 4 6-5 1-2-2-2 1 4 5z" fill="white"/>`
       : // Landing arrow (mirrored)
         `<path d="M26 22L6 16l2-3 6 1 8-7 3 1-4 6 5 1 2-2 2 1-4 5z" fill="white"/>`;
-  const svg = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="61" viewBox="0 0 48 61" fill="none">
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="61" viewBox="0 0 48 61" fill="none">
       <defs>
         <filter id="sh" x="-40%" y="-40%" width="180%" height="180%">
           <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="rgba(0,0,0,0.30)"/>
         </filter>
       </defs>
-      <path d="M24 0C10.7314 0 0 10.7155 0 23.9643C0 39.495 17.9202 55.8391 22.7908 59.9944C23.4984 60.5982 24.5016 60.5982 25.2092 59.9944C30.0798 55.8391 48 39.495 48 23.9643C48 10.7155 37.2686 0 24 0Z" fill="${fill}" filter="url(#sh)"/>
-      <g transform="translate(8, 8)">
-        ${glyph}
-      </g>
+      <!-- exact pin shape with shadow -->
+      <path d="M24 0C10.7314 0 0 10.7155 0 23.9643C0 39.495 17.9202 55.8391 22.7908 59.9944C23.4984 60.5982 24.5016 60.5982 25.2092 59.9944C30.0798 55.8391 48 39.495 48 23.9643C48 10.7155 37.2686 0 24 0ZM24 32.523C19.2686 32.523 15.4286 28.6887 15.4286 23.9643C15.4286 19.2399 19.2686 15.4056 24 15.4056C28.7314 15.4056 32.5714 19.2399 32.5714 23.9643C32.5714 28.6887 28.7314 32.523 24 32.523Z" fill="#FD6D6C" filter="url(#sh)"/>
+      <!-- white filled circle over the hollow center -->
+      <circle cx="24" cy="23.9643" r="11.5" fill="white"/>
+      <!-- number -->
     </svg>`;
   return {
     url: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg),
@@ -344,11 +346,76 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
     const mapRef = useRef<HTMLDivElement>(null);
     const mapInstance = useRef<google.maps.Map | null>(null);
     const markersRef = useRef<google.maps.Marker[]>([]);
-    const userMarkerRef = useRef<google.maps.Marker | null>(null);
     const infoWindowRef = useRef<google.maps.InfoWindow | null>(null);
     // One polyline per segment so we can draw arrows between consecutive stops
     const polylinesRef = useRef<google.maps.Polyline[]>([]);
     const [mapReady, setMapReady] = useState(false);
+
+    // Fallback route from the Itinerary redux slice — used when the bot has
+    // not sent any map_effects yet (no currentRoute, no locations). Renders
+    // the saved itinerary as start_city → intermediate cities → end_city,
+    // matching the focus_route visual (numbered stops + dashed polyline).
+    const itineraryRedux = useSelector((s: any) => s.Itinerary);
+    const fallbackRoute = useMemo<Location[] | null>(() => {
+      const hasRoute = currentRoute && currentRoute.length > 0;
+      const hasLocations = locations && locations.length > 0;
+      if (hasRoute || hasLocations) return null;
+
+      const cities: any[] = itineraryRedux?.cities ?? [];
+      const startCity = itineraryRedux?.start_city;
+      const endCity = itineraryRedux?.end_city;
+      if (!cities.length && !startCity && !endCity) return null;
+
+      const route: Location[] = [];
+
+      // if (
+      //   startCity &&
+      //   startCity.latitude != null &&
+      //   startCity.longitude != null
+      // ) {
+      //   route.push({
+      //     id: `start__${startCity.gmaps_place_id ?? startCity.id ?? "start"}`,
+      //     name: startCity.name ?? startCity.city_name ?? "Start",
+      //     description: "",
+      //     lat: Number(startCity.latitude),
+      //     lng: Number(startCity.longitude),
+      //     type: "start_city",
+      //   } as Location);
+      // }
+
+      cities.forEach((c) => {
+        const city = c?.city ?? c;
+        if (city?.latitude == null || city?.longitude == null) return;
+        const img = Array.isArray(city.image)
+          ? city.image[0]?.image
+          : city.image;
+        route.push({
+          id: c?.id ?? city.gmaps_place_id ?? city.id ?? city.name,
+          name: city.name ?? "",
+          description: "",
+          lat: Number(city.latitude),
+          lng: Number(city.longitude),
+          duration: c?.duration,
+          image: img,
+        } as Location);
+      });
+
+      // if (endCity && endCity.latitude != null && endCity.longitude != null) {
+      //   route.push({
+      //     id: `end__${endCity.gmaps_place_id ?? endCity.id ?? "end"}`,
+      //     name: endCity.name ?? endCity.city_name ?? "End",
+      //     description: "",
+      //     lat: Number(endCity.latitude),
+      //     lng: Number(endCity.longitude),
+      //     type: "end_city",
+      //   } as Location);
+      // }
+
+      return route.length > 0 ? route : null;
+    }, [itineraryRedux, currentRoute, locations]);
+
+    const effectiveRoute = fallbackRoute ?? currentRoute;
+    const effectiveLocations = fallbackRoute ?? locations;
 
     // Expose the map instance to parent via ref
     useImperativeHandle(ref, () => mapInstance.current!, [mapReady]);
@@ -414,23 +481,23 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
     // computes bounds against the actual container dimensions.
     const fitToCurrentElements = useCallback(() => {
       if (!mapInstance.current) return;
-      const hasRoute = currentRoute && currentRoute.length > 0;
-      const hasLocations = locations && locations.length > 0;
+      const hasRoute = effectiveRoute && effectiveRoute.length > 0;
+      const hasLocations = effectiveLocations && effectiveLocations.length > 0;
       if (!hasRoute && !hasLocations) return;
 
       // Ensure Maps knows the true container size before fitting
       google.maps.event.trigger(mapInstance.current, "resize");
 
       if (hasRoute) {
-        if (currentRoute.length === 1) {
+        if (effectiveRoute!.length === 1) {
           mapInstance.current.setCenter({
-            lat: currentRoute[0].lat,
-            lng: currentRoute[0].lng,
+            lat: effectiveRoute![0].lat,
+            lng: effectiveRoute![0].lng,
           });
           mapInstance.current.setZoom(11);
         } else {
           const bounds = new google.maps.LatLngBounds();
-          currentRoute.forEach((loc) =>
+          effectiveRoute!.forEach((loc) =>
             bounds.extend({ lat: loc.lat, lng: loc.lng }),
           );
           mapInstance.current.fitBounds(bounds, {
@@ -443,7 +510,7 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
         }
       } else if (hasLocations) {
         const bounds = new google.maps.LatLngBounds();
-        locations.forEach((loc) =>
+        effectiveLocations!.forEach((loc) =>
           bounds.extend({ lat: loc.lat, lng: loc.lng }),
         );
         mapInstance.current.fitBounds(bounds, {
@@ -454,7 +521,7 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
         });
         clampZoomAfterFit(mapInstance.current);
       }
-    }, [currentRoute, locations, clampZoomAfterFit]);
+    }, [effectiveRoute, effectiveLocations, clampZoomAfterFit]);
 
     // Once the map tiles have loaded, re-fit to any existing route/location
     // data. Handles the page-reload race where data arrives before the map
@@ -504,15 +571,15 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
     // mapState update (e.g. user location resolving) from overriding fitBounds.
     useEffect(() => {
       if (!mapInstance.current) return;
-      const hasRoute = currentRoute && currentRoute.length > 0;
-      const hasLocations = locations && locations.length > 0;
+      const hasRoute = effectiveRoute && effectiveRoute.length > 0;
+      const hasLocations = effectiveLocations && effectiveLocations.length > 0;
       if (hasRoute || hasLocations) return;
 
       mapInstance.current.setCenter({ lat: state.lat, lng: state.lng });
       if (state.zoom) {
         mapInstance.current.setZoom(state.zoom);
       }
-    }, [state.lat, state.lng, state.zoom, currentRoute, locations]);
+    }, [state.lat, state.lng, state.zoom, effectiveRoute, effectiveLocations]);
 
     // Re-fit bounds when the browser tab becomes visible again (handles tab switching)
     useEffect(() => {
@@ -542,12 +609,17 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
       polylinesRef.current.forEach((p) => p.setMap(null));
       polylinesRef.current = [];
 
-      if (!mapReady || !mapInstance.current || !currentRoute || currentRoute.length === 0)
+      if (
+        !mapReady ||
+        !mapInstance.current ||
+        !effectiveRoute ||
+        effectiveRoute.length === 0
+      )
         return;
 
       // ↓ Single city — just fit bounds to it, no polyline needed
-      if (currentRoute.length === 1) {
-        const { lat, lng } = currentRoute[0];
+      if (effectiveRoute.length === 1) {
+        const { lat, lng } = effectiveRoute[0];
         mapInstance.current.setCenter({ lat, lng });
         mapInstance.current.setZoom(11);
         return;
@@ -586,9 +658,9 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
         return path;
       };
 
-      for (let i = 0; i < currentRoute.length - 1; i++) {
-        const from = currentRoute[i];
-        const to = currentRoute[i + 1];
+      for (let i = 0; i < effectiveRoute.length - 1; i++) {
+        const from = effectiveRoute[i];
+        const to = effectiveRoute[i + 1];
         // Alternate curve direction: odd segments curve one way, even the other
         const direction = i % 2 === 0 ? 1 : -1;
         const curvedPath = getCurvedPath(
@@ -634,7 +706,7 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
       // Fit map to route — trigger resize first so bounds use correct container size
       google.maps.event.trigger(mapInstance.current, "resize");
       const bounds = new google.maps.LatLngBounds();
-      currentRoute.forEach((loc) =>
+      effectiveRoute.forEach((loc) =>
         bounds.extend({ lat: loc.lat, lng: loc.lng }),
       );
       mapInstance.current.fitBounds(bounds, {
@@ -644,64 +716,7 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
         left: 60,
       });
       clampZoomAfterFit(mapInstance.current);
-    }, [currentRoute, clampZoomAfterFit, mapReady]);
-
-    // User location marker — hide when an itinerary route is loaded
-    useEffect(() => {
-      if (!mapReady || !mapInstance.current || !infoWindowRef.current) return;
-
-      // Remove existing user marker
-      if (userMarkerRef.current) {
-        userMarkerRef.current.setMap(null);
-        userMarkerRef.current = null;
-      }
-
-      // Don't show user location when a route is active
-      if (!userLocation || (currentRoute && currentRoute.length > 0)) return;
-
-      const userIcon = {
-        url:
-          "data:image/svg+xml;charset=UTF-8," +
-          encodeURIComponent(`
-      <svg xmlns="http://www.w3.org/2000/svg" width="40" height="50" viewBox="0 0 40 50">
-        <path d="M20 0C11.163 0 4 7.163 4 16c0 12 16 34 16 34s16-22 16-34c0-8.837-7.163-16-16-16z" fill="#4285F4"/>
-        <circle cx="20" cy="16" r="10" fill="white"/>
-        <path d="M20 10c-3.314 0-6 2.686-6 6s2.686 6 6 6 6-2.686 6-6-2.686-6-6-6zm0 2c.828 0 1.5.672 1.5 1.5S20.828 15 20 15s-1.5-.672-1.5-1.5S19.172 12 20 12zm0 8c-1.657 0-3-1.343-3-3 0-.414.336-.75.75-.75h4.5c.414 0 .75.336.75.75 0 1.657-1.343 3-3 3z" fill="#4285F4"/>
-      </svg>
-    `),
-        scaledSize: new google.maps.Size(40, 50),
-        anchor: new google.maps.Point(20, 50),
-      };
-
-      userMarkerRef.current = new google.maps.Marker({
-        position: { lat: userLocation.lat, lng: userLocation.lng },
-        map: mapInstance.current,
-        title: "Your Location",
-        icon: userIcon,
-        zIndex: 1000,
-      });
-
-      userMarkerRef.current.addListener("click", () => {
-        const locationText = [
-          userLocation.city,
-          userLocation.regionName,
-          userLocation.country,
-        ]
-          .filter(Boolean)
-          .join(", ");
-        infoWindowRef.current!.setContent(
-          buildPopupHTML({
-            title: "Your Location",
-            locationText,
-            accentColor: "#4285F4",
-          }),
-        );
-        infoWindowRef.current!.open(
-          mapInstance.current!,
-          userMarkerRef.current!,
-        );
-      });
-    }, [userLocation, currentRoute, mapReady]);
+    }, [effectiveRoute, clampZoomAfterFit, mapReady]);
 
     // Place / update location markers
     useEffect(() => {
@@ -710,12 +725,12 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
       markersRef.current.forEach((marker) => marker.setMap(null));
       markersRef.current = [];
 
-      locations?.forEach((location) => {
+      effectiveLocations?.forEach((location) => {
         const loc = location as any;
 
         // Determine if this location is a numbered route stop
         const routeIndex =
-          currentRoute?.findIndex((r) => r.id === location.id) ?? -1;
+          effectiveRoute?.findIndex((r) => r.id === location.id) ?? -1;
         const isRouteStop = routeIndex !== -1;
 
         let markerIcon: google.maps.Icon;
@@ -782,8 +797,8 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
                 badge: endpointKind === "start" ? "Start" : "End",
               }),
             );
-          } else if (isRouteStop && currentRoute) {
-            const badge = `Stop ${routeIndex + 1} of ${currentRoute.length}`;
+          } else if (isRouteStop && effectiveRoute) {
+            const badge = `Stop ${routeIndex + 1} of ${effectiveRoute.length}`;
             const locationText = loc.duration
               ? `${loc.duration} ${loc.duration === 1 ? "night" : "nights"}`
               : loc.city;
@@ -818,12 +833,12 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
       });
 
       // Fit bounds (only when no route — route fitting is handled separately)
-      if (currentRoute && currentRoute.length > 0) return;
+      if (effectiveRoute && effectiveRoute.length > 0) return;
 
-      if (locations?.length > 0) {
+      if (effectiveLocations && effectiveLocations.length > 0) {
         google.maps.event.trigger(mapInstance.current, "resize");
         const bounds = new window.google.maps.LatLngBounds();
-        locations.forEach((loc) =>
+        effectiveLocations.forEach((loc) =>
           bounds.extend(new window.google.maps.LatLng(loc.lat, loc.lng)),
         );
         mapInstance.current.fitBounds(bounds, {
@@ -842,7 +857,7 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
         // falling back to a sensible country-level zoom instead of world-level.
         mapInstance.current.setZoom(state.zoom ?? 6);
       }
-    }, [locations, userLocation, currentRoute, mapInstance, clampZoomAfterFit, state.zoom, mapReady]);
+    }, [effectiveLocations, userLocation, effectiveRoute, mapInstance, clampZoomAfterFit, state.zoom, mapReady]);
 
     return <div ref={mapRef} style={{ width: "100%", height: "100%" }} />;
   },

@@ -7,6 +7,7 @@
 // and routes "select room" through the same itinerary booking API.
 
 import { useEffect, useState } from "react";
+import ReactDOM from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import NextImage from "next/image";
@@ -15,10 +16,13 @@ import styled from "styled-components";
 import Drawer from "../../ui/Drawer";
 import Skeleton from "../ViewHotelDetails/Skeleton";
 import HotelBookingDetails from "../ViewHotelDetails/Overview/HotelBookingDetails";
+import FullScreenGallery from "../../fullscreengallery/Index.js";
 import { hotelDetails } from "../../../services/bookings/FetchAccommodation";
 import { updateAccommodationBooking } from "../../../services/bookings/UpdateBookings";
 import { openNotification } from "../../../store/actions/notification";
 import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
+import { updateSingleStayCityAndCheckInWise } from "../../../store/actions/StayBookings";
+import { set } from "date-fns";
 
 const Container = styled.div`
   padding: 0 0.75rem 0.75rem 0.75rem;
@@ -61,17 +65,55 @@ const AccommodationDetailDrawer = ({
   source = "Travclan",
   occupancies = undefined,
   traceId = undefined,
+  // Optional hook fired after the booking POST succeeds. Receives the
+  // booking payload so callers (e.g. the chat panel) can refresh derived
+  // state on top of the Stays Redux update we already perform.
+  onBookingSuccess = undefined,
+  // Authoritative itinerary id from the caller. Required when the drawer
+  // is opened from a route whose router.query.id is NOT the itinerary
+  // (e.g. /chat/{sessionId}), where falling back to Redux can pick up a
+  // stale id from a previously loaded itinerary.
+  itineraryId: itineraryIdProp = undefined,
 }) => {
   const dispatch = useDispatch();
   const router = useRouter();
   const currency = useSelector((state) => state.currency);
   const callPaymentInfo = useSelector((state) => state.CallPaymentInfo);
   const itinerary = useSelector((state) => state.Itinerary);
+  const reduxItineraryId = useSelector((state) => state.ItineraryId);
+
+  // Resolve in priority order:
+  //   1. explicit prop (always current — caller owns the source of truth)
+  //   2. router.query.id, but only when the URL actually carries an
+  //      itinerary id (the /chat/{sessionId} route uses `id` for the
+  //      chat session UUID, which would silently corrupt the request)
+  //   3. dedicated ItineraryId Redux slice
+  //   4. Itinerary.id as a last resort (can lag during navigation)
+  const isItineraryRoute = (router?.pathname || "").startsWith("/itinerary");
+  const resolvedItineraryId =
+    itineraryIdProp ||
+    (isItineraryRoute ? router?.query?.id : undefined) ||
+    reduxItineraryId ||
+    itinerary?.id ||
+    null;
 
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState(null);
   const [updating, setUpdating] = useState(false);
+  const [internalGalleryImages, setInternalGalleryImages] = useState(null);
+
+  // When opened from chat, the parent doesn't pass _setImagesHandler (the
+  // itinerary-side flow owns the FullScreenGallery), so "Show all photos"
+  // would be a no-op. Fall back to a local gallery in that case.
+  const handleSetImages = (images) => {
+    if (typeof _setImagesHandler === "function") {
+      _setImagesHandler(images);
+      return;
+    }
+    setInternalGalleryImages(images);
+  };
 
   useEffect(() => {
     if (!show || !accommodationId) return;
@@ -91,6 +133,7 @@ const AccommodationDetailDrawer = ({
   const fetchDetails = () => {
     setLoading(true);
     setError(false);
+    setErrorMsg(null);
     setData({});
 
     const requestData = {
@@ -120,14 +163,15 @@ const AccommodationDetailDrawer = ({
         setData(res.data);
         setLoading(false);
       })
-      .catch(() => {
+      .catch((err) => {
         setLoading(false);
         setError(true);
+        setErrorMsg(err?.response?.data?.errors?.[0]?.message?.[0] || "Oops! There seems to be a problem, please try again later!");
       });
   };
 
   const updateBooking = (recommendation_id, rates) => {
-    const itineraryId = itinerary?.id || router?.query?.id;
+    const itineraryId = resolvedItineraryId;
     if (!itineraryId) {
       dispatch(
         openNotification({
@@ -144,7 +188,10 @@ const AccommodationDetailDrawer = ({
       itinerary_code: data?.itinerary_code,
       items: data?.items,
       recommendation_id,
-      trace_id: localStorage.getItem("trace_id"),
+      trace_id:
+        data?.trace_details?.id ||
+        traceId ||
+        localStorage.getItem("trace_id"),
       itinerary_id: itineraryId,
       hotel_id: data?.id,
       source,
@@ -160,8 +207,22 @@ const AccommodationDetailDrawer = ({
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
       })
-      .then(() => {
+      .then((response) => {
         setUpdating(false);
+
+        const bookingData = response?.data;
+        if (bookingData) {
+          const stayPayload = {
+            ...bookingData,
+            itinerary_city_id:
+              bookingData.itinerary_city_id ||
+              bookingData.itinerary_city ||
+              itinerary_city_id,
+            city_id: bookingData.city_id || dbCityId,
+          };
+          dispatch(updateSingleStayCityAndCheckInWise(stayPayload));
+        }
+
         dispatch(SetCallPaymentInfo(!callPaymentInfo));
         dispatch(
           openNotification({
@@ -170,6 +231,7 @@ const AccommodationDetailDrawer = ({
             heading: "Success!",
           })
         );
+        onBookingSuccess?.(bookingData);
         onHide?.();
       })
       .catch((err) => {
@@ -187,47 +249,48 @@ const AccommodationDetailDrawer = ({
   };
 
   return (
-    <Drawer
-      show={show}
-      anchor="right"
-      backdrop
-      className="font-lexend"
-      onHide={onHide}
-      style={{ zIndex: 1252 }}
-      width="50vw"
-      mobileWidth="100vw"
-    >
-      {loading ? (
-        <Skeleton onHide={onHide} />
-      ) : (
-        <Container>
-          <div className="my-xl">
-            <NextImage
-              src="/backarrow.svg"
-              className="cursor-pointer"
-              width={22}
-              height={2}
-              onClick={onHide}
-            />
-          </div>
+    <>
+      <Drawer
+        show={show}
+        anchor="right"
+        backdrop
+        className="font-lexend"
+        onHide={onHide}
+        style={{ zIndex: 1252 }}
+        width="50vw"
+        mobileWidth="100vw"
+      >
+        {loading ? (
+          <Skeleton onHide={onHide} />
+        ) : (
+          <Container>
+            <div className="my-xl">
+              <NextImage
+                src="/backarrow.svg"
+                className="cursor-pointer"
+                width={22}
+                height={2}
+                onClick={onHide}
+              />
+            </div>
 
-          {error ? (
-            <ErrorContainer>
-              Oops! There seems to be a problem, please try again later!
-            </ErrorContainer>
-          ) : data && data.id ? (
-            <HotelBookingDetails
-              _setImagesHandler={_setImagesHandler}
-              data={data}
-              images={data?.images || []}
-              updateBooking={updateBooking}
-              setShowLoginModal={setShowLoginModal}
-              onHide={onHide}
-              id={accommodationId}
-            />
-          ) : null}
+            {error ? (
+              <ErrorContainer>
+                {errorMsg || "Oops! There seems to be a problem, please try again later!"}
+              </ErrorContainer>
+            ) : data && data.id ? (
+              <HotelBookingDetails
+                _setImagesHandler={handleSetImages}
+                data={data}
+                images={data?.images || []}
+                updateBooking={updateBooking}
+                setShowLoginModal={setShowLoginModal}
+                onHide={onHide}
+                id={accommodationId}
+              />
+            ) : null}
 
-          {data && data.id && (onAddHotel || onChangeHotel) && (
+          {/* {data && data.id && (onAddHotel || onChangeHotel) && (
             <div
               className="fixed bottom-0 left-0 right-0 md:absolute flex items-center justify-between gap-3 border-t-2 bg-white px-[20px] py-[12px] shadow-md"
               style={{ zIndex: 50 }}
@@ -260,10 +323,27 @@ const AccommodationDetailDrawer = ({
                 )}
               </div>
             </div>
-          )}
-        </Container>
-      )}
-    </Drawer>
+          )} */}
+          </Container>
+        )}
+      </Drawer>
+
+      {/* Portal to #modal-portal so the gallery shares the drawer's
+          stacking context (chat panel's ancestor has a transform that would
+          otherwise trap a fixed-position element below the drawer). */}
+      {internalGalleryImages &&
+        internalGalleryImages.length > 0 &&
+        typeof document !== "undefined" &&
+        document.getElementById("modal-portal") &&
+        ReactDOM.createPortal(
+          <FullScreenGallery
+            mercury={false}
+            closeGalleryHandler={() => setInternalGalleryImages(null)}
+            images={internalGalleryImages}
+          />,
+          document.getElementById("modal-portal")
+        )}
+    </>
   );
 };
 

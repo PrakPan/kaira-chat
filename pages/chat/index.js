@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import Head from "next/head";
 import { connect, useSelector } from "react-redux";
 import BotApp from "../../components/bot-components/BotApp";
 import setHotLocationSearch from "../../store/actions/hotLocationSearch";
@@ -9,7 +10,14 @@ const ChatPage = ({ checkAuthState }) => {
     checkAuthState();
   }, []);
 
-  return <BotApp />;
+  return (
+    <>
+      <Head>
+        <title>Chat With Kaira - AI Trip Planner | The Tarzan Way</title>
+      </Head>
+      <BotApp />
+    </>
+  );
 };
 
 const mapStateToPros = (state) => {

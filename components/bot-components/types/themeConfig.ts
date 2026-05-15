@@ -27,15 +27,26 @@ export interface ThemeRow<T> {
   cards: T[];
 }
 
+export interface ThemeTravellerStory {
+  id: number;
+  name: string;
+  tripName: string;
+  duration: string;
+  groupType: string;
+  destinations: string[];
+  image: string;
+  images?: string[];
+  shortDescription: string;
+  viewItineraryLink: string;
+  rating: number;
+  prompt: string;
+}
+
 export interface ThemeConfig {
   welcome?: {
     subtitle?: string;
     promptChips?: ThemePromptChip[];
   };
-  rows?: {
-    row1?: ThemeRow<ThemeTripCard>;
-    row2?: ThemeRow<ThemeTrendingCard>;
-    row3?: ThemeRow<ThemeTrendingCard>;
-    row4?: ThemeRow<ThemeTripCard>;
-  };
+  rows?: ThemeRow<ThemeTripCard | ThemeTrendingCard>[];
+  travellerStories?: ThemeTravellerStory[];
 }

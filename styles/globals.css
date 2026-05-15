@@ -41,11 +41,7 @@ html,
 body {
     padding: 0;
     margin: 0;
-     font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif !important;
-}
-
-* {
-  font-family: inherit;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif !important;
 }
 
 .fa, .glyphicon {

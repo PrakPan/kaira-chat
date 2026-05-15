@@ -1,20 +1,201 @@
+/* =========================================
+   HOMEPAGE — Design tokens & reusable utilities
+   Scoped to .ttwRevamp; children inherit CSS vars.
+   Use these tokens in any homepage section so the
+   palette stays in one place.
+   ========================================= */
+
 .ttwRevamp {
+  /* Brand & ink */
+  --ttw-yellow: #f7e700;
+  --ttw-yellow-soft: #fff8b3;
+  --ttw-yellow-wash: #fffde7;
+  --ttw-ink: #0b1220;
+  --ttw-ink-rail: #0f1a2e;
+  --ttw-ink-2: #1a2436;
+  --ttw-ink-3: #445069;
+  --ttw-ink-4: #8a93a6;
+  --ttw-line: #ececec;
+  --ttw-line-soft: #f4f3ec;
+  --ttw-bg: #ffffff;
+  --ttw-bg-2: #fafaf5;
+  --ttw-paper: #fafaf5;
+
+  /* Warmer accents */
+  --ttw-peach: #ffede0;
+  --ttw-peach-deep: #ffd4b8;
+  --ttw-coral: #ff9d6e;
+  --ttw-coral-deep: #e85a4f;
+  --ttw-lavender: #eef0fb;
+  --ttw-lavender-2: #dadfef;
+  --ttw-mint: #e0f2e9;
+  --ttw-rose: #ffe5ea;
+  --ttw-rose-deep: #ffb3c1;
+  --ttw-sky-a: #a8d2f5;
+  --ttw-sky-b: #7ab8e8;
+  --ttw-pink-tag: #ffe0ea;
+  --ttw-pink-tag-ink: #c73862;
+  --ttw-green: #1f8a5a;
+
   overflow-x: hidden;
-  background: linear-gradient(
-    180deg,
-    #feffdf 0%,
-    #fff6db 46.15%,
-    #fdf0e3 75.48%,
-    #fdf0e3 100%
-  );
-  // height: 115dvh;
+  background: var(--ttw-bg);
+  color: var(--ttw-ink);
+  font-family: "Inter", -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
   display: flex;
   justify-content: center;
   flex-direction: column;
+
+  /* Container width identical to mockup */
+  :global(.ttwContainer) {
+    max-width: 1240px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 28px;
+    @media (max-width: 640px) {
+      padding: 0 20px;
+    }
+  }
+
+  /* Reusable italic serif accent — drop the class on any inline span */
+  :global(.ttwSerif) {
+    font-family: "Instrument Serif", "Times New Roman", serif;
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: -0.015em;
+  }
+
+  /* Reusable yellow highlighter for inline emphasis */
+  :global(.ttwHighlight) {
+    position: relative;
+    display: inline-block;
+    padding: 0 6px;
+    z-index: 0;
+  }
+  :global(.ttwHighlight)::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 4px;
+    height: 12px;
+    background: var(--ttw-yellow);
+    z-index: -1;
+    opacity: 0.85;
+    transform: skewX(-6deg);
+  }
+
+  /* Reusable section heading */
+  :global(.ttwSectionHead) {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 36px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  :global(.ttwSectionHead h2) {
+    font-size: clamp(28px, 4vw, 46px);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.02;
+    margin-bottom: 10px;
+    color: var(--ttw-ink);
+  }
+  :global(.ttwSectionHead .ttwLede) {
+    font-size: 15.5px;
+    color: var(--ttw-ink-3);
+    line-height: 1.5;
+    max-width: 560px;
+  }
+  :global(.ttwSectionLink) {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ttw-ink-3);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.15s;
+    margin-top: 6px;
+  }
+  :global(.ttwSectionLink:hover) { color: var(--ttw-ink); }
+
+  /* Reusable pill kicker (yellow) */
+  :global(.ttwKicker) {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: var(--ttw-yellow);
+    color: var(--ttw-ink);
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    box-shadow: 0 4px 14px rgba(247, 231, 0, 0.35);
+  }
+  :global(.ttwKicker .ttwDot) {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--ttw-green);
+    box-shadow: 0 0 0 2px rgba(31, 138, 90, 0.3);
+    animation: ttw-live-blink 2s ease-in-out infinite;
+  }
+
+  /* Reusable primary CTA (dark pill) */
+  :global(.ttwCtaPrimary) {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 26px;
+    background: var(--ttw-ink-rail);
+    color: white;
+    border: 0;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.15s;
+    box-shadow: 0 8px 24px -8px rgba(11, 18, 32, 0.3);
+  }
+  :global(.ttwCtaPrimary:hover) {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px -8px rgba(11, 18, 32, 0.35);
+  }
+
+  /* Reusable secondary pill (white) */
+  :global(.ttwPill) {
+    padding: 8px 14px;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid var(--ttw-line);
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--ttw-ink);
+    cursor: pointer;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    backdrop-filter: blur(8px);
+  }
+  :global(.ttwPill:hover) {
+    background: var(--ttw-yellow);
+    border-color: var(--ttw-yellow);
+    transform: translateY(-1px);
+  }
+}
+
+@keyframes ttw-live-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
 .destinationPage {
-  // height: 115dvh;
   display: flex;
   justify-content: center;
   flex-direction: column;

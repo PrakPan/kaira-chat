@@ -58,15 +58,27 @@ const FaqSection = ({Faqs}) => {
   };
 
   return (
-    <section className="w-full py-12 sm:py-16 lg:py-20 px-0 sm:px-4 lg:px-8 bg-white">
+    <section
+      className="w-full py-12 sm:py-16 lg:py-20 px-0 sm:px-4 lg:px-8"
+      style={{ background: "var(--ttw-bg, #ffffff)" }}
+    >
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <h2 className="text-3xl max-sm:text-xl font-bold text-gray-900 mb-4 leading-tight">
-            Frequently Asked Questions
+          <h2
+            className="text-3xl max-sm:text-xl font-bold mb-4 leading-tight"
+            style={{
+              color: "var(--ttw-ink, #0b1220)",
+              letterSpacing: "-0.025em",
+            }}
+          >
+            Questions, <span className="ttwSerif">answered.</span>
           </h2>
-          <p className="text-gray-600 text-[16px] max-w-2xl mx-auto leading-relaxed">
-            Planning made simple with answers to your most common questions.
+          <p
+            className="text-[16px] max-w-2xl mx-auto leading-relaxed"
+            style={{ color: "var(--ttw-ink-3, #445069)" }}
+          >
+            The honest answers — no marketing fluff.
           </p>
         </div>
 

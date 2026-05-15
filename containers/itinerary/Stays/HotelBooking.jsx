@@ -460,7 +460,7 @@ const HotelBooking = ({
   };
 
   return (
-    <div className={`${!isPageWide ? "w-full" : "max-w-[51vw]"}`}>
+    <div className="w-full">
       {hotels_status === "PENDING" ? (
         <div>
           <div className="pb-2">

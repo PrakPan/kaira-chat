@@ -24,6 +24,7 @@ import TaxiModal from "../../../components/modals/taxis/Index";
 import FlightModal from "../../../components/modals/flights/Index";
 import media from "../../../components/media";
 import { getDate } from "../../../helper/DateUtils";
+import { getDate as getHumanReadableDate } from "../../../helper/ConvertDateFormat";
 import {
   fetchMulticityRoundtrip,
   fetchTransferMode,
@@ -53,7 +54,10 @@ import dayjs from "dayjs";
 import {
   setTransfersBookings,
   updateSingleTransferBooking,
+  updateAirportTransferBooking,
 } from "../../../store/actions/transferBookingsStore";
+import axios from "axios";
+import { MERCURY_HOST } from "../../../services/constants";
 import BackArrow from "../../ui/BackArrow";
 import { Pax } from "../activityDetails/Pax";
 import { TbArrowBack } from "react-icons/tb";
@@ -70,6 +74,7 @@ import { currencySymbols } from "../../../data/currencySymbols";
 import { Link } from "react-scroll";
 import SkeletonCard from "../../ui/SkeletonCard";
 import { is } from "date-fns/locale";
+import PickupDropDrawer from "../../../containers/itinerary/PickupDropDrawer";
 
 const svgIcons = {
   time: (
@@ -157,6 +162,34 @@ const GetInTouchContainer = styled.div`
   }
 `;
 
+const extractApiErrorMessage = (err, fallback = "There seems to be a problem, please try again!") => {
+  const data = err?.response?.data;
+  if (!data) return err?.message || fallback;
+  const flatten = (v) => {
+    if (!v) return null;
+    if (typeof v === "string") return v;
+    if (Array.isArray(v)) {
+      for (const item of v) {
+        const m = flatten(item);
+        if (m) return m;
+      }
+      return null;
+    }
+    if (typeof v === "object") {
+      return (
+        flatten(v.detail) ||
+        flatten(v.message) ||
+        flatten(v.errors) ||
+        flatten(v.error) ||
+        flatten(v.non_field_errors) ||
+        null
+      );
+    }
+    return null;
+  };
+  return flatten(data) || data?.message || fallback;
+};
+
 const TRANSFER_TYPES = {
   ONEWAYTRIP: {
     name: "one-way-trip",
@@ -200,23 +233,32 @@ const TransferEditDrawer = (props) => {
     booking_id,
     transferData,
     booking_type,
+    intracityBookings,
   } = props;
 
   const actualClose = useHandleClose();
   const dispatch = useDispatch();
   const router = useRouter();
-  const { drawer, bookingId, oItineraryCity, dItineraryCity, drawerType } =
+  const { drawer, bookingId, oItineraryCity, dItineraryCity, drawerType, taxiTab } =
     router?.query;
   const isDesktop = useMediaQuery("(min-width:768px)");
   const [roundTripSuggestions, setRoundTripSuggestions] = useState(null);
   const [multiCitySuggestions, setMultiCitySuggestions] = useState(null);
   const [sightseeingSuggestions, setSightseeingSuggestions] = useState(null);
   const [airportSuggestions, setAirportSuggestions] = useState(null);
-  const [multicityTab, setMulticityTab] = useState("multicity");
+  const [multicityTab, setMulticityTab] = useState(
+    ["sightseeing", "airport", "multicity"].includes(taxiTab) ? taxiTab : "sightseeing",
+  );
+  const [tabLoaded, setTabLoaded] = useState({
+    sightseeing: false,
+    airport: false,
+    multicity: false,
+  });
   const [transfers, setTransfers] = useState([]);
   const [loadingTransfers, setLoadingTransfers] = useState(true);
   const [loadingMulticityTransfers, setLoadingMulticityTransfers] =
     useState(true);
+  const [sightseeingRefetching, setSightseeingRefetching] = useState(false);
   const [transfersError, setTransfersError] = useState(null);
   const [selectLoading, setSelectLoading] = useState(false);
   const [isRouteSelected, setIsRouteSelected] = useState(false);
@@ -232,6 +274,12 @@ const TransferEditDrawer = (props) => {
   const [multicityRoundtripTraceId, setMulticityRoundtripTraceId] =
     useState(null);
   const [selectedTripType, setSelectedTripType] = useState(null);
+  const [sightseeingStartDate, setSightseeingStartDate] = useState("");
+  const [sightseeingEndDate, setSightseeingEndDate] = useState("");
+
+  const [airportSearchType, setAirportSearchType] = useState(null);
+  const [airportSearchTrips, setAirportSearchTrips] = useState(null);
+  const [airportSearchBookingId, setAirportSearchBookingId] = useState(null);
 
   const [showFlightModal, setShowFlightModal] = useState(false);
   const [showComboFlightModal, setShowComboFlightModal] = useState(false);
@@ -247,9 +295,23 @@ const TransferEditDrawer = (props) => {
   const [currentModeDepartureTime, setCurrentModeDepartureTime] =
     useState(null);
   const [selectedTransferIndex, setSelectedTransferIndex] = useState(null);
-  const { number_of_adults, number_of_children, number_of_infants } =
+  const { number_of_adults, number_of_children, number_of_infants, cities: itineraryCities } =
     useSelector((state) => state.Itinerary);
   const ItineraryId = useSelector((state) => state.ItineraryId);
+  const airportBookingsForCity = useSelector((state) => {
+    const cityKey =
+      origin_itinerary_city_id || destination_itinerary_city_id;
+    if (!cityKey) return [];
+    return (
+      state?.TransferBookings?.transferBookings?.airport?.[cityKey] || []
+    );
+  });
+  const existingAirportPickup = airportBookingsForCity.find(
+    (b) => b?.is_airport_pickup,
+  );
+  const existingAirportDrop = airportBookingsForCity.find(
+    (b) => b?.is_airport_drop,
+  );
   // console.log("SELECTED BOOKING",city,dcity,oCityData,dCityData,mercuryTransfer?.destination?.city_name);
 
   const [skipFlightFetch, setSkipFlightFetch] = useState(false);
@@ -267,10 +329,57 @@ const TransferEditDrawer = (props) => {
     }
   }, [booking_type]);
 
+  // ONEWAYTRIP: fetch on drawer open (no suggestion_type — uses non-multicity API).
   useEffect(() => {
-    if (showDrawer) {
-      fetchRoutes();
+    if (!showDrawer) return;
+    if (booking_type == "multicity" || drawerType == "multicity") return;
+    fetchRoutes();
+  }, [showDrawer]);
+
+  // MULTICITY: fetch the active tab's suggestion_type on drawer open or tab change.
+  // Each tab gets its own request so we don't pay for unused buckets, and the
+  // result is cached in `tabLoaded` so switching back is instant.
+  const tabToSuggestionType = {
+    sightseeing: "sightseeing",
+    airport: "pickup-drop",
+    multicity: "multicity",
+  };
+  useEffect(() => {
+    if (!showDrawer) return;
+    if (booking_type != "multicity" && drawerType != "multicity") return;
+    if (tabLoaded[multicityTab]) {
+      // Already fetched this tab — show the cached suggestions, skip the API.
+      setLoadingMulticityTransfers(false);
+      setLoadingTransfers(false);
+      return;
     }
+    const sugg = tabToSuggestionType[multicityTab];
+    if (!sugg) return;
+    fetchRoutes({ suggestionType: sugg });
+  }, [showDrawer, multicityTab]);
+
+  // Reset per-tab cache when the drawer closes so reopening fetches fresh.
+  useEffect(() => {
+    if (!showDrawer) {
+      setTabLoaded({ sightseeing: false, airport: false, multicity: false });
+    }
+  }, [showDrawer]);
+
+  // Refetch sightseeing suggestions when the sightseeing date filters change.
+  const isFirstSightseeingDateRun = useRef(true);
+  useEffect(() => {
+    if (!showDrawer) return;
+    if (multicityTab !== "sightseeing") return;
+    if (!sightseeingStartDate || !sightseeingEndDate) return;
+    if (isFirstSightseeingDateRun.current) {
+      isFirstSightseeingDateRun.current = false;
+      return;
+    }
+    fetchRoutes({ sightseeingFilterRefetch: true });
+  }, [sightseeingStartDate, sightseeingEndDate]);
+
+  useEffect(() => {
+    if (!showDrawer) isFirstSightseeingDateRun.current = true;
   }, [showDrawer]);
 
   // Reset auto-skip guard when drawer closes so reopening can auto-skip again
@@ -387,10 +496,99 @@ const TransferEditDrawer = (props) => {
     };
   }, [showDrawer]);
 
+  // Resolve the itinerary city the multicity API was called with, so we can
+  // surface its days as the sightseeing date filter options.
+  const sightseeingCity = (() => {
+    const targetCityId =
+      origin_itinerary_city_id || destination_itinerary_city_id;
+    const matchedCity = Array.isArray(itineraryCities)
+      ? itineraryCities.find((c) => c?.id === targetCityId)
+      : null;
+    return matchedCity ?? dCityData ?? oCityData;
+  })();
+
+  const sightseeingDayOptions = (() => {
+    const days = sightseeingCity?.day_by_day;
+    if (Array.isArray(days) && days.length > 0) {
+      return days
+        .filter((d) => !!d?.date)
+        .map((d, idx) => {
+          const value = dayjs(d.date).format("YYYY-MM-DD");
+          return {
+            value,
+            label: `Day ${idx + 1} - ${getHumanReadableDate(value)}`,
+          };
+        });
+    }
+    if (sightseeingCity?.start_date && sightseeingCity?.duration != null) {
+      return Array.from({ length: sightseeingCity.duration + 1 }, (_, idx) => {
+        const date = addDaysToDate(sightseeingCity.start_date, idx);
+        return {
+          value: date,
+          label: `Day ${idx + 1} - ${getHumanReadableDate(date)}`,
+        };
+      });
+    }
+    return [];
+  })();
+
+  // The existing sightseeing booking for this city, if any (used to surface
+  // an "already added" state and pre-select its dates in the date filters).
+  const existingSightseeingBooking = Array.isArray(intracityBookings)
+    ? intracityBookings[0]
+    : null;
+  const existingBookingStart = existingSightseeingBooking?.check_in
+    ? dayjs(existingSightseeingBooking.check_in.split(" ")[0]).format("YYYY-MM-DD")
+    : null;
+  const existingBookingEnd = existingSightseeingBooking?.check_out
+    ? dayjs(existingSightseeingBooking.check_out.split(" ")[0]).format("YYYY-MM-DD")
+    : null;
+  const sightseeingDatesChanged =
+    !!existingSightseeingBooking &&
+    (sightseeingStartDate !== existingBookingStart ||
+      sightseeingEndDate !== existingBookingEnd);
+
+  // Default sightseeing date filters: prefer existing booking's dates if one
+  // is already added, otherwise fall back to the city's first / last day.
+  useEffect(() => {
+    if (sightseeingDayOptions.length === 0) return;
+    const optionValues = sightseeingDayOptions.map((o) => o.value);
+    const existingStart = existingSightseeingBooking?.check_in
+      ? dayjs(existingSightseeingBooking.check_in.split(" ")[0]).format("YYYY-MM-DD")
+      : null;
+    const existingEnd = existingSightseeingBooking?.check_out
+      ? dayjs(existingSightseeingBooking.check_out.split(" ")[0]).format("YYYY-MM-DD")
+      : null;
+    setSightseeingStartDate(
+      existingStart && optionValues.includes(existingStart)
+        ? existingStart
+        : sightseeingDayOptions[0].value,
+    );
+    setSightseeingEndDate(
+      existingEnd && optionValues.includes(existingEnd)
+        ? existingEnd
+        : sightseeingDayOptions[sightseeingDayOptions.length - 1].value,
+    );
+  }, [
+    origin_itinerary_city_id,
+    destination_itinerary_city_id,
+    itineraryCities,
+    dCityData?.start_date,
+    dCityData?.duration,
+    oCityData?.start_date,
+    oCityData?.duration,
+    existingSightseeingBooking?.id,
+  ]);
+
   // console.log("IsMulti",booking_type,transferType);
-  const fetchRoutes = () => {
-    setLoadingTransfers(true);
-    setLoadingMulticityTransfers(true);
+  const fetchRoutes = (options = {}) => {
+    const { sightseeingFilterRefetch = false, suggestionType = null } = options;
+    if (sightseeingFilterRefetch) {
+      setSightseeingRefetching(true);
+    } else {
+      setLoadingTransfers(true);
+      setLoadingMulticityTransfers(true);
+    }
     setTransfersError(null);
     // roundTripSuggestion();
 
@@ -415,8 +613,16 @@ const TransferEditDrawer = (props) => {
     {
       (booking_type == "multicity" || drawerType == "multicity") && (mercury || props?.isMercury)
         ? (() => {
+            const effectiveType =
+              suggestionType ||
+              (sightseeingFilterRefetch ? "sightseeing" : null);
             const cityId = origin_itinerary_city_id || destination_itinerary_city_id;
-            const multicityUrl = `/${router.query.id || ItineraryId || router.query.sessionId}/?currency=${currency?.currency || "INR"}${cityId ? `&itinerary_city_id=${cityId}` : ""}`;
+            // Date filters only apply to the sightseeing tab.
+            const includeDateFilter = effectiveType === "sightseeing";
+            const startParam = includeDateFilter && sightseeingStartDate ? `&start_date=${sightseeingStartDate}` : "";
+            const endParam = includeDateFilter && sightseeingEndDate ? `&end_date=${sightseeingEndDate}` : "";
+            const typeParam = effectiveType ? `&suggestion_type=${effectiveType}` : "";
+            const multicityUrl = `/${router.query.id || ItineraryId || router.query.sessionId}/?currency=${currency?.currency || "INR"}${cityId ? `&itinerary_city_id=${cityId}` : ""}${startParam}${endParam}${typeParam}`;
             return fetchMulticityRoundtrip
               .get(multicityUrl)
               .then((response) => {
@@ -426,37 +632,61 @@ const TransferEditDrawer = (props) => {
                     || response?.data?.errors?.[0]?.message
                     || "No taxi options available for this route.";
                   setTransfersError(typeof errorMsg === 'string' ? errorMsg : Array.isArray(errorMsg) ? errorMsg[0] : "No taxi options available for this route.");
-                  setLoadingMulticityTransfers(false);
-                  setLoadingTransfers(false);
+                  if (sightseeingFilterRefetch) {
+                    setSightseeingRefetching(false);
+                  } else {
+                    setLoadingMulticityTransfers(false);
+                    setLoadingTransfers(false);
+                  }
                   return;
                 }
                 setMulticityRoundtripTraceId(response?.data?.trace_id);
                 const suggestions = response?.data?.suggestions || [];
-                // Categorize by type into three buckets surfaced as tabs:
-                //   "multicity"   → multiCitySuggestions
-                //   "pickup_drop" → airportSuggestions (Airport pickup/drop tab)
-                //   everything else (sightseeing etc.) → roundTripSuggestions
-                const multicitySuggs = suggestions.filter(s => s.type === "multicity");
-                const airportSuggs = suggestions.filter(s => s.type === "pickup_drop");
-                const otherSuggs = suggestions.filter(s => s.type !== "multicity" && s.type !== "pickup_drop");
-                setMultiCitySuggestions(multicitySuggs.length > 0 ? multicitySuggs[0] : null);
-                setAirportSuggestions(airportSuggs.length > 0 ? airportSuggs : null);
-                setRoundTripSuggestions(otherSuggs.length > 0 ? otherSuggs : null);
-                setSightseeingSuggestions(null); // cleared — handled in roundTripSuggestions array now
-                // Pick a sensible default tab based on what came back
-                if (multicitySuggs.length > 0) setMulticityTab("multicity");
-                else if (otherSuggs.length > 0) setMulticityTab("sightseeing");
-                else if (airportSuggs.length > 0) setMulticityTab("airport");
-                setLoadingMulticityTransfers(false);
-                setLoadingTransfers(false);
-                // If no suggestions found at all, show a message
-                if (suggestions.length === 0) {
-                  setTransfersError("No taxi options available for this route. Please get in touch with us!");
+
+                // Multicity tab surfaces both `multicity` and `roundtrip`
+                // suggestions — the latter is a special case of multicity that
+                // returns to its origin, so it belongs under the same tab.
+                const isMulticityType = (s) =>
+                  s?.type === "multicity" || s?.type === "roundtrip";
+
+                if (effectiveType === "multicity") {
+                  const multicitySuggs = suggestions.filter(isMulticityType);
+                  setMultiCitySuggestions(multicitySuggs.length > 0 ? multicitySuggs : null);
+                  setTabLoaded((prev) => ({ ...prev, multicity: true }));
+                } else if (effectiveType === "pickup-drop") {
+                  setAirportSuggestions(suggestions.length > 0 ? suggestions : null);
+                  setTabLoaded((prev) => ({ ...prev, airport: true }));
+                } else if (effectiveType === "sightseeing") {
+                  setRoundTripSuggestions(suggestions.length > 0 ? suggestions : null);
+                  setSightseeingSuggestions(null);
+                  setTabLoaded((prev) => ({ ...prev, sightseeing: true }));
+                } else {
+                  // Legacy fallback: response contains all types — categorize.
+                  const multicitySuggs = suggestions.filter(isMulticityType);
+                  const airportSuggs = suggestions.filter(s => s.type === "pickup_drop");
+                  const otherSuggs = suggestions.filter(
+                    s => !isMulticityType(s) && s.type !== "pickup_drop"
+                  );
+                  setMultiCitySuggestions(multicitySuggs.length > 0 ? multicitySuggs : null);
+                  setAirportSuggestions(airportSuggs.length > 0 ? airportSuggs : null);
+                  setRoundTripSuggestions(otherSuggs.length > 0 ? otherSuggs : null);
+                  setSightseeingSuggestions(null);
+                }
+
+                if (sightseeingFilterRefetch) {
+                  setSightseeingRefetching(false);
+                } else {
+                  setLoadingMulticityTransfers(false);
+                  setLoadingTransfers(false);
                 }
               })
               .catch((error) => {
-                setLoadingTransfers(false);
-                setLoadingMulticityTransfers(false);
+                if (sightseeingFilterRefetch) {
+                  setSightseeingRefetching(false);
+                } else {
+                  setLoadingTransfers(false);
+                  setLoadingMulticityTransfers(false);
+                }
                 const errorMsg = error?.response?.data?.errors?.[0]?.message?.[0]
                   || error?.response?.data?.errors?.[0]?.message
                   || "No taxi options available for this route. Please get in touch with us!";
@@ -563,7 +793,7 @@ const TransferEditDrawer = (props) => {
               results[i].success &&
               results[i].transfer_type === "Multicity"
             ) {
-              setMultiCitySuggestions(results[i]);
+              setMultiCitySuggestions([results[i]]);
             }
           }
         })
@@ -791,21 +1021,11 @@ const TransferEditDrawer = (props) => {
           "Error::While Creating Multicity/RoundTrip Booking",
           err.message,
         );
-        if (err.response?.status === 403) {
-          openNotification({
-            text: "You are not allowed to make changes to this itinerary",
-            heading: "Error!",
-            type: "error",
-          });
-        } else {
-          openNotification({
-            text:
-              err.response?.data?.errors[0]?.message[0] ||
-              "There seems to be a problem, please try again!",
-            heading: "Error!",
-            type: "error",
-          });
-        }
+        const text =
+          err.response?.status === 403
+            ? "You are not allowed to make changes to this itinerary"
+            : extractApiErrorMessage(err);
+        openNotification({ text, heading: "Error!", type: "error" });
       });
 
     logEvent({
@@ -822,6 +1042,58 @@ const TransferEditDrawer = (props) => {
 
   const handleTransferType = (e) => {
     setTransferType(e.target.id);
+  };
+
+  // Submit handler for the inline PickupDropDrawer's "Add to Itinerary" click.
+  // Mirrors VerticalLayout.handleTransferSubmit but stays in the multicity
+  // single-city context (origin/destination itinerary city are the same).
+  const handleAirportTransferSubmit = async (transferData) => {
+    if (!localStorage?.getItem("access_token")) {
+      setShowLoginModal(true);
+      return;
+    }
+    try {
+      const cityKey =
+        origin_itinerary_city_id || destination_itinerary_city_id;
+      const bookingPayload = {
+        transfer_type: "airport",
+        source_itinerary_city: cityKey,
+        destination_itinerary_city: null,
+        is_pickup: transferData.transferType === "pickup",
+        is_drop: transferData.transferType === "drop",
+        source: transferData?.source,
+        trace_id: transferData?.traceId,
+        result_index: transferData?.selectedQuote?.result_index,
+        booking_id: transferData?.booking_id,
+      };
+
+      const response = await axios.post(
+        `${MERCURY_HOST}/api/v1/itinerary/${ItineraryId || router?.query?.id}/bookings/taxi/`,
+        bookingPayload,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        },
+      );
+
+      if (response.status === 200 || response.status === 201) {
+        dispatch(updateAirportTransferBooking(`${cityKey}`, response.data));
+        if (props?._updatePaymentHandler) props._updatePaymentHandler();
+        if (props?.getPaymentHandler) props.getPaymentHandler();
+        openNotification({
+          type: "success",
+          text: `${transferData.transferType === "pickup" ? "Pickup" : "Drop"} transfer added successfully`,
+          heading: "Success!",
+        });
+      }
+      setAirportSearchType(null);
+      setAirportSearchTrips(null);
+      setAirportSearchBookingId(null);
+    } catch (error) {
+      const text = extractApiErrorMessage(error);
+      openNotification({ text, heading: "Error!", type: "error" });
+    }
   };
 
   return (
@@ -879,7 +1151,7 @@ const TransferEditDrawer = (props) => {
 
               {email && email?.includes('tarzanway.com') && (
                 <a
-                  href={`https://mercury.tarzanway.com/admin/geos/route/search-route/?origin=${props?.origin || originCityId || mercuryTransfer?.source?.city}&destination=${props?.destination || destinationCityId || mercuryTransfer?.destination?.city}`}
+                  href={`https://dev.mercury.tarzanway.com/admin/geos/route/search-route/?origin=${props?.origin || originCityId || mercuryTransfer?.source?.city}&destination=${props?.destination || destinationCityId || mercuryTransfer?.destination?.city}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="ml-auto text-sm text-blue font-500"
@@ -924,8 +1196,8 @@ const TransferEditDrawer = (props) => {
             {transferType === TRANSFER_TYPES.MULTICITYROUNDTRIP.name && (
               <div className="w-full flex flex-wrap items-center gap-md mt-md">
                 {[
-                  { id: "sightseeing", label: "Sightseeing" },
-                  { id: "airport", label: "Airport pickup/drop" },
+                  { id: "sightseeing", label: "Sightseeing Taxi" },
+                  { id: "airport", label: "Pickup/Drop Taxi" },
                   { id: "multicity", label: "Multicity Taxi" },
                 ].map((tab) => {
                   const isActive = multicityTab === tab.id;
@@ -934,7 +1206,7 @@ const TransferEditDrawer = (props) => {
                       key={tab.id}
                       className={`flex items-center gap-xs cursor-pointer text-sm-md px-md py-xs rounded-md-lg border-sm border-solid ${
                         isActive
-                          ? "border-black bg-text-smoothwhite font-600"
+                          ? "border-[#f8e000] bg-text-smoothwhite font-600"
                           : "border-text-disabled font-500"
                       }`}
                     >
@@ -948,7 +1220,15 @@ const TransferEditDrawer = (props) => {
                           setSelectedCab(null);
                           setSelectedTripType(null);
                         }}
-                        className="accent-black"
+                        className="sr-only"
+                      />
+                      <span
+                        aria-hidden="true"
+                        className={`w-4 h-4 rounded-full border-sm border-solid ${
+                          isActive
+                            ? "bg-[#f8e000] border-[#f8e000]"
+                            : "border-text-disabled"
+                        }`}
                       />
                       <span>{tab.label}</span>
                     </label>
@@ -1044,41 +1324,19 @@ const TransferEditDrawer = (props) => {
           roundTripSuggestions === null &&
           multiCitySuggestions === null &&
           airportSuggestions === null ? (
-          <div className="w-full flex flex-col space-y-5 items-center justify-center">
-            <div className="flex items-center justify-center bg-red-500 text-white rounded p-2">
-              {transfersError}
-            </div>
-            <div className="flex">
-              <GetInTouchContainer>
-                <Button
-                  color="#111"
-                  fontWeight="500"
-                  fontSize="1rem"
-                  borderWidth="2px"
-                  width="100%"
-                  borderRadius="8px"
-                  bgColor="#f8e000"
-                  padding="12px"
-                  onclick={() => {
-                    props._GetInTouch();
-                    actualClose();
-                    setCurrentStep(0);
-                    setIsRouteSelected(false);
-                  }}
-                >
-                  <div className="flex flex-row gap-2 items-center justify-center">
-                    <ImageLoader
-                      dimensions={{ height: 50, width: 50 }}
-                      dimensionsMobile={{ height: 50, width: 50 }}
-                      height={"20px"}
-                      width={"20px"}
-                      leftalign
-                      url={"media/icons/login/customer-service-black.png"}
-                    />
-                    <span className="text-nowrap">Get in touch!</span>
-                  </div>
-                </Button>
-              </GetInTouchContainer>
+          <div className="w-full flex justify-center py-10 px-4">
+            <div className="bg-text-stroke rounded-2xl p-lg flex flex-col items-center text-center max-w-[440px] w-full border-sm border-text-disabled">
+              <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center mb-sm shadow-soft">
+                <PiTaxi size={26} className="text-text-spacegrey" />
+              </div>
+              <div className="text-md font-500 leading-xl text-text-charcolblack mb-xxs">
+                No options available
+              </div>
+              <p className="text-sm font-400 leading-md text-text-spacegrey">
+                {typeof transfersError === "string"
+                  ? transfersError
+                  : "We couldn't find options for this route right now."}
+              </p>
             </div>
           </div>
         ) : (
@@ -1551,33 +1809,20 @@ const TransferEditDrawer = (props) => {
               </>
             ) : transferType === "MULTICITYROUNDTRIP" ? (
               <div className="w-full flex flex-col items-center gap-4">
-                {/* Multicity suggestions */}
-                {multicityTab === "multicity" && multiCitySuggestions && (
-                  <div className="w-full">
-                    {multiCitySuggestions?.data?.duration?.text && (
-                      <div className="px-1 pb-1 text-sm font-semibold text-gray-700 flex items-center gap-2">
-                        <span>{multiCitySuggestions.name}</span>
-                        <span className="text-xs font-normal text-gray-500 bg-gray-100 rounded px-2 py-0.5">
-                          {multiCitySuggestions.data.duration.text}
-                        </span>
-                      </div>
-                    )}
-                    <MultiCityTripSuggestion
-                      handleRoundTripSelect={handleMultiCitySelect}
-                      multiCitySuggestions={multiCitySuggestions}
-                      selectedCab={selectedCab}
-                      setSelectedCab={setSelectedCab}
-                      selectedTripType={selectedTripType}
-                      setSelectedTripType={setSelectedTripType}
-                    />
-                  </div>
-                )}
-
-                {/* Sightseeing (and any other non-airport, non-multicity) suggestions */}
-                {multicityTab === "sightseeing" &&
-                  Array.isArray(roundTripSuggestions) &&
-                  roundTripSuggestions.map((sugg, idx) => (
-                    <div key={idx} className="w-full">
+                {/* Multicity & roundtrip suggestions — both types live under
+                    this tab; iterate so each one renders as its own card. */}
+                {multicityTab === "multicity" &&
+                  Array.isArray(multiCitySuggestions) &&
+                  multiCitySuggestions.map((sugg, idx) => (
+                    <div key={sugg?.result_index ?? idx} className="w-full">
+                      {sugg?.data?.duration?.text && (
+                        <div className="px-1 pb-1 text-sm font-semibold text-gray-700 flex items-center gap-2">
+                          <span>{sugg.name}</span>
+                          <span className="text-xs font-normal text-gray-500 bg-gray-100 rounded px-2 py-0.5">
+                            {sugg.data.duration.text}
+                          </span>
+                        </div>
+                      )}
                       <MultiCityTripSuggestion
                         handleRoundTripSelect={handleMultiCitySelect}
                         multiCitySuggestions={sugg}
@@ -1589,8 +1834,150 @@ const TransferEditDrawer = (props) => {
                     </div>
                   ))}
 
+                {/* Sightseeing date filters */}
+                {multicityTab === "sightseeing" &&
+                  sightseeingDayOptions.length > 0 && (
+                    <div className="w-full flex flex-wrap items-end gap-md">
+                      <div className="flex flex-col gap-xs">
+                        <label className="text-xs-md font-500 text-text-spacegrey">
+                          Start date
+                        </label>
+                        <select
+                          value={sightseeingStartDate}
+                          onChange={(e) =>
+                            setSightseeingStartDate(e.target.value)
+                          }
+                          className="border-sm border-solid border-text-disabled rounded-md-lg px-md py-xs text-sm-md bg-white"
+                        >
+                          {sightseeingDayOptions.map((opt) => (
+                            <option key={opt.value} value={opt.value}>
+                              {opt.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="flex flex-col gap-xs">
+                        <label className="text-xs-md font-500 text-text-spacegrey">
+                          End date
+                        </label>
+                        <select
+                          value={sightseeingEndDate}
+                          onChange={(e) =>
+                            setSightseeingEndDate(e.target.value)
+                          }
+                          className="border-sm border-solid border-text-disabled rounded-md-lg px-md py-xs text-sm-md bg-white"
+                        >
+                          {sightseeingDayOptions.map((opt) => (
+                            <option
+                              key={opt.value}
+                              value={opt.value}
+                              disabled={
+                                sightseeingStartDate &&
+                                opt.value < sightseeingStartDate
+                              }
+                            >
+                              {opt.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  )}
+
+                {/* Sightseeing refetch loader — shown only during a filter-change refetch */}
+                {multicityTab === "sightseeing" && sightseeingRefetching && (
+                  <div className="w-full flex flex-col gap-3 items-center mt-md">
+                    {[0, 1, 2].map((i) => (
+                      <div
+                        key={`ss-skel-${i}`}
+                        className="rounded-3xl border-sm border-solid border-text-disabled p-md w-full"
+                      >
+                        <SkeletonCard
+                          width="40%"
+                          height="20px"
+                          borderRadius="8px"
+                          variant="default"
+                        />
+                        <div className="mt-sm">
+                          <SkeletonCard
+                            width="70%"
+                            height="20px"
+                            borderRadius="8px"
+                            variant="default"
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Booked sightseeing summary (shown instead of suggestions when one already exists and dates haven't been changed) */}
+                {multicityTab === "sightseeing" &&
+                  existingSightseeingBooking &&
+                  !sightseeingDatesChanged &&
+                  !sightseeingRefetching && (
+                    <BookedSightseeingCard
+                      booking={existingSightseeingBooking}
+                      onClick={() => {
+                        const cityKey =
+                          origin_itinerary_city_id ||
+                          destination_itinerary_city_id;
+                        router.push(
+                          {
+                            pathname: window.location.pathname,
+                            query: {
+                              ...(router.query.id
+                                ? { id: router.query.id }
+                                : {}),
+                              drawer: "SightSeeing",
+                              bookingId: existingSightseeingBooking?.id,
+                              itinerary_city_id: cityKey,
+                            },
+                          },
+                          undefined,
+                          { scroll: false },
+                        );
+                      }}
+                    />
+                  )}
+
+                {/* Sightseeing (and any other non-airport, non-multicity) suggestions */}
+                {multicityTab === "sightseeing" &&
+                  (!existingSightseeingBooking || sightseeingDatesChanged) &&
+                  !sightseeingRefetching &&
+                  Array.isArray(roundTripSuggestions) &&
+                  roundTripSuggestions
+                    .filter((sugg) => {
+                      const suggStart = sugg?.start_date;
+                      if (!suggStart) return true;
+                      if (
+                        sightseeingStartDate &&
+                        suggStart < sightseeingStartDate
+                      )
+                        return false;
+                      if (
+                        sightseeingEndDate &&
+                        suggStart > sightseeingEndDate
+                      )
+                        return false;
+                      return true;
+                    })
+                    .map((sugg, idx) => (
+                      <div key={idx} className="w-full">
+                        <MultiCityTripSuggestion
+                          handleRoundTripSelect={handleMultiCitySelect}
+                          multiCitySuggestions={sugg}
+                          selectedCab={selectedCab}
+                          setSelectedCab={setSelectedCab}
+                          selectedTripType={selectedTripType}
+                          setSelectedTripType={setSelectedTripType}
+                        />
+                      </div>
+                    ))}
+
                 {/* Backward-compat: single roundTripSuggestions object (non-array) */}
                 {multicityTab === "sightseeing" &&
+                  (!existingSightseeingBooking || sightseeingDatesChanged) &&
                   roundTripSuggestions &&
                   !Array.isArray(roundTripSuggestions) && (
                     <div className="w-full">
@@ -1608,42 +1995,97 @@ const TransferEditDrawer = (props) => {
                 {/* Airport pickup/drop suggestions */}
                 {multicityTab === "airport" &&
                   Array.isArray(airportSuggestions) &&
-                  airportSuggestions.map((sugg, idx) => (
-                    <div key={idx} className="w-full">
-                      <MultiCityTripSuggestion
-                        handleRoundTripSelect={handleMultiCitySelect}
-                        multiCitySuggestions={sugg}
-                        selectedCab={selectedCab}
-                        setSelectedCab={setSelectedCab}
-                        selectedTripType={selectedTripType}
-                        setSelectedTripType={setSelectedTripType}
-                      />
-                    </div>
-                  ))}
+                  (() => {
+                    const isPickup = (s) =>
+                      typeof s?.name === "string" &&
+                      s.name.toLowerCase().includes("pickup");
+                    const pickup = airportSuggestions.find(isPickup);
+                    const drop = airportSuggestions.find((s) => !isPickup(s));
+                    const ordered = [
+                      { sugg: pickup, isPickup: true, existing: existingAirportPickup },
+                      { sugg: drop, isPickup: false, existing: existingAirportDrop },
+                    ].filter((x) => x.sugg || x.existing);
+                    return ordered.map(({ sugg, isPickup: pk, existing }, idx) => (
+                      <div key={idx} className="w-full">
+                        {existing ? (
+                          <BookedAirportCard
+                            booking={existing}
+                            isPickup={pk}
+                            onViewDetail={() => {
+                              const cityKey =
+                                origin_itinerary_city_id ||
+                                destination_itinerary_city_id;
+                              router.push(
+                                {
+                                  pathname: window.location.pathname,
+                                  query: {
+                                    ...(router.query.id
+                                      ? { id: router.query.id }
+                                      : {}),
+                                    drawer: "AirportTaxiDetail",
+                                    bookingId: existing?.id,
+                                    itinerary_city_id: cityKey,
+                                    transferType: pk ? "pickup" : "drop",
+                                  },
+                                },
+                                undefined,
+                                { scroll: false },
+                              );
+                            }}
+                            onChange={() => {
+                              setAirportSearchType(pk ? "pickup" : "drop");
+                              setAirportSearchTrips(
+                                sugg?.data?.trips ||
+                                  existing?.transfer_details?.trips ||
+                                  null,
+                              );
+                              setAirportSearchBookingId(existing?.id || null);
+                            }}
+                          />
+                        ) : (
+                          <AirportPickupDropCard
+                            suggestion={sugg}
+                            isPickup={pk}
+                            onSearch={() => {
+                              setAirportSearchType(pk ? "pickup" : "drop");
+                              setAirportSearchTrips(sugg?.data?.trips || null);
+                            }}
+                          />
+                        )}
+                      </div>
+                    ));
+                  })()}
 
                 {/* Empty state per tab */}
                 {!loadingMulticityTransfers &&
+                  !sightseeingRefetching &&
                   ((multicityTab === "multicity" && !multiCitySuggestions) ||
-                    (multicityTab === "sightseeing" && !roundTripSuggestions) ||
-                    (multicityTab === "airport" && !airportSuggestions)) && (
-                    <div className="w-full flex flex-col items-center justify-center py-8">
-                      <div className="text-center text-gray-500 text-sm">
-                        {transfersError ? (
-                          <div className="flex items-center justify-center bg-red-50 text-red-600 rounded-lg p-4 border border-red-200">
-                            {transfersError}
-                          </div>
-                        ) : (
-                          <p>
-                            No{" "}
-                            {multicityTab === "multicity"
-                              ? "multicity taxi"
-                              : multicityTab === "airport"
-                                ? "airport pickup/drop"
-                                : "sightseeing"}{" "}
-                            options available for this route. Please get in
-                            touch with us!
-                          </p>
-                        )}
+                    (multicityTab === "sightseeing" &&
+                      !roundTripSuggestions &&
+                      !existingSightseeingBooking) ||
+                    (multicityTab === "airport" &&
+                      !airportSuggestions &&
+                      !existingAirportPickup &&
+                      !existingAirportDrop)) && (
+                    <div className="w-full flex justify-center py-10 px-4">
+                      <div className="bg-text-stroke rounded-2xl p-lg flex flex-col items-center text-center max-w-[440px] w-full border-sm border-text-disabled">
+                        <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center mb-sm shadow-soft">
+                          <PiTaxi size={26} className="text-text-spacegrey" />
+                        </div>
+                        <div className="text-md font-500 leading-xl text-text-charcolblack mb-xxs">
+                          No{" "}
+                          {multicityTab === "multicity"
+                            ? "multicity taxi"
+                            : multicityTab === "airport"
+                              ? "pickup/drop"
+                              : "sightseeing"}{" "}
+                          options available
+                        </div>
+                        <p className="text-sm font-400 leading-md text-text-spacegrey">
+                          {transfersError && typeof transfersError === "string"
+                            ? transfersError
+                            : "We couldn't find options for this route right now."}
+                        </p>
                       </div>
                     </div>
                   )}
@@ -1653,45 +2095,96 @@ const TransferEditDrawer = (props) => {
         )}
 
         {transferType === "MULTICITYROUNDTRIP" &&
-          (roundTripSuggestions || multiCitySuggestions || airportSuggestions) && (
-            <div className="w-full  bg-white border-t border-gray-200 z-10 md:relative md:border-0 md:bg-transparent">
-              <div className="flex justify-end items-end px-1 py-3 md:p-0">
-                <button
-                  onClick={() => {
-                    const tripTypeIndex =
-                      selectedTripType === "roundtrip" ? 1 : 0;
-                    handleMultiCitySelect(
-                      multicityRoundtripTraceId,
-                      tripTypeIndex,
-                      selectedCab?.result_index,
-                    );
-                  }}
-                  className={`
+          multicityTab !== "airport" &&
+          ((multicityTab === "multicity" && !!multiCitySuggestions) ||
+            (multicityTab === "sightseeing" &&
+              (!!roundTripSuggestions || !!existingSightseeingBooking))) &&
+          !transfersError &&
+          (() => {
+            // While dates match the existing booking we have nothing to submit
+            // (the user hasn't picked a different cab and hasn't changed the
+            // date range), so skip the action bar entirely.
+            const hasExistingUnchanged =
+              multicityTab === "sightseeing" &&
+              !!existingSightseeingBooking &&
+              !sightseeingDatesChanged;
+            if (hasExistingUnchanged) return null;
+
+            const isSightseeingUpdate =
+              multicityTab === "sightseeing" && !!existingSightseeingBooking;
+            const isDisabled = !selectedCab || updatingTransfer;
+
+            return (
+              <div className="w-full  bg-white border-t border-gray-200 z-10 md:relative md:border-0 md:bg-transparent">
+                <div className="flex justify-end items-end px-1 py-3 md:p-0">
+                  <button
+                    onClick={() => {
+                      const suggestionIndex =
+                        selectedCab?.suggestion_result_index ??
+                        (selectedTripType === "roundtrip" ? 1 : 0);
+                      handleMultiCitySelect(
+                        multicityRoundtripTraceId,
+                        suggestionIndex,
+                        selectedCab?.result_index,
+                      );
+                    }}
+                    className={`
             px-3 py-2 rounded-lg font-semibold text-base
             transition-all duration-200 ease-in-out
             flex items-center justify-center
-            
+
             ${
-              !selectedCab || updatingTransfer
+              isDisabled
                 ? "bg-[#f8e000] text-gray-500 cursor-not-allowed"
                 : "bg-[#f8e000] text-black border-1 border-black hover:bg-yellow-400 active:transform active:scale-95 cursor-pointer"
             }
           `}
-                  disabled={!selectedCab || updatingTransfer}
-                >
-                  {updatingTransfer ? (
-                    <div className="flex items-end gap-2">
-                      <div className="w-5 h-5 border-2 border-gray-600 border-t-transparent rounded-full animate-spin"></div>
-                      <span>Updating...</span>
-                    </div>
-                  ) : (
-                    "Update Transfer"
-                  )}
-                </button>
+                    disabled={isDisabled}
+                  >
+                    {updatingTransfer ? (
+                      <div className="flex items-end gap-2">
+                        <div className="w-5 h-5 border-2 border-gray-600 border-t-transparent rounded-full animate-spin"></div>
+                        <span>Updating...</span>
+                      </div>
+                    ) : isSightseeingUpdate ? (
+                      "Update Dates"
+                    ) : (
+                      "Update Transfer"
+                    )}
+                  </button>
+                </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
       </div>
+
+      <PickupDropDrawer
+        isOpen={!!airportSearchType}
+        onClose={() => {
+          setAirportSearchType(null);
+          setAirportSearchTrips(null);
+          setAirportSearchBookingId(null);
+        }}
+        transferType={airportSearchType}
+        bookingMode={"multicity"}
+        originCityName={city || mercuryTransfer?.source?.city_name}
+        destinationCityName={dcity || mercuryTransfer?.destination?.city_name}
+        origin_itinerary_city_id={origin_itinerary_city_id}
+        destination_itinerary_city_id={destination_itinerary_city_id}
+        originCityId={originCityId}
+        destinationCityId={destinationCityId}
+        trips={airportSearchTrips}
+        booking_id={airportSearchBookingId}
+        selectedBooking={selectedBooking}
+        setSelectedBooking={setSelectedBooking}
+        _updateFlightBookingHandler={props._updateFlightBookingHandler}
+        _updatePaymentHandler={props._updatePaymentHandler}
+        _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+        getPaymentHandler={props.getPaymentHandler}
+        setShowLoginModal={setShowLoginModal}
+        doj={check_in}
+        onSubmit={handleAirportTransferSubmit}
+      />
 
       <FlightModal
         handleFlightSelect={handleSelectResult}
@@ -2262,6 +2755,13 @@ const NewMultiModeContainer = ({
   const [pendingBookingData, setPendingBookingData] = useState(null);
   const [isProcessingWarning, setIsProcessingWarning] = useState(false);
   const [isProcessingBooking, setIsProcessingBooking] = useState(false);
+
+  // AllAboard pagination state for Train mode
+  const [allAboardOffset, setAllAboardOffset] = useState({});
+  const [loadingMore, setLoadingMore] = useState({});
+  const [hasMoreAllAboard, setHasMoreAllAboard] = useState({});
+  const ALL_ABOARD_LIMIT = 5;
+
   const { trackTransferBookingAdd } = useAnalytics();
  const { intercity } = useSelector(
   (state) => state.TransferBookings
@@ -2688,6 +3188,24 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
           delete newErrors[transferKey];
           return newErrors;
         });
+
+        // Track AllAboard pagination state
+        if (
+          option?.mode === "Train" &&
+          data.data.booking_source === "AllAboard"
+        ) {
+          setAllAboardOffset((prev) => ({ ...prev, [transferKey]: 0 }));
+          const resultCount = data.data.results?.length || 0;
+          setHasMoreAllAboard((prev) => ({
+            ...prev,
+            [transferKey]: resultCount >= ALL_ABOARD_LIMIT,
+          }));
+        } else {
+          setHasMoreAllAboard((prev) => ({
+            ...prev,
+            [transferKey]: false,
+          }));
+        }
       }
     } catch (error) {
       if (!isLoadMore) {
@@ -3736,7 +4254,7 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
                               currentTransferData.results.length > 0;
 
                             if (hasOmioResults) {
-  return currentTransferData.results.map(
+  const omioRendered = currentTransferData.results.flatMap(
     (result, resultIndex) => {
       const resultPrices = result.prices || [];
       return resultPrices.map(
@@ -4136,6 +4654,48 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
       );
     },
   );
+
+  // AllAboard "Load More" button for Train mode
+  const isAllAboard = currentTransferData.booking_source === "AllAboard";
+  if (isAllAboard && hasMoreAllAboard[transferKey]) {
+    omioRendered.push(
+      <div key="load-more-allaboard" className="flex justify-center mt-4 mb-2">
+        <button
+          onClick={() => {
+            const paxData = {
+              adults: pax?.adults || 1,
+              children: pax?.children || 0,
+              infants: pax?.infants || 0,
+            };
+            const departureDateTime = `${currentModeDepartureDate}T${currentModeDepartureTime}:00`;
+            loadMoreAllAboardResults(
+              currentTransferData,
+              paxData,
+              departureDateTime,
+            );
+          }}
+          disabled={loadingMore[transferKey]}
+          className="flex items-center gap-2 px-6 py-2.5 bg-[#07213A] text-white text-sm font-medium rounded-full hover:bg-[#07213A]/90 active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          {loadingMore[transferKey] ? (
+            <>
+              <PulseLoader size={8} speedMultiplier={0.6} color="#ffffff" />
+              {/* <span>Loading...</span> */}
+            </>
+          ) : (
+            <>
+              <span>Load More Trains</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </>
+          )}
+        </button>
+      </div>
+    );
+  }
+
+  return omioRendered;
 }
 
                             return currentTransferData.prices.map(
@@ -4665,6 +5225,7 @@ const RoundTripSuggestion = ({
     setSelectedCab({
       ...pricing.find((p) => p.result_index == e.target.id),
       tripType: "roundtrip",
+      suggestion_result_index: roundTripSuggestions?.result_index,
     });
   };
 
@@ -4871,12 +5432,7 @@ const MultiCityTripSuggestion = ({
     setSelectedCab({
       ...cab,
       tripType: "multicity",
-    });
-    // Clear roundtrip selection and set trip type to multicity
-    setSelectedTripType("multicity");
-    setSelectedCab({
-      ...cab,
-      tripType: "multicity",
+      suggestion_result_index: multiCitySuggestions?.result_index,
     });
   };
 
@@ -5040,6 +5596,347 @@ const MultiCityTripSuggestion = ({
             {selectedTripType === 'multicity' && selectedCab ? "Selected" : "Select"}
           </label>
         </div> */}
+      </div>
+    </div>
+  );
+};
+
+const BookedSightseeingCard = ({ booking, onClick }) => {
+  const isDesktop = useMediaQuery("(min-width:768px)");
+  const currency = useSelector((state) => state.currency);
+  const td = booking?.transfer_details;
+  const cab = td?.quote?.taxi_category;
+  const total = td?.quote?.price?.total;
+  const symbol = currency?.currency ? currencySymbols?.[currency?.currency] : "₹";
+  const pax =
+    (booking?.number_of_adults || 0) +
+    (booking?.number_of_children || 0) +
+    (booking?.number_of_infants || 0);
+
+  const dayCount = (() => {
+    if (!booking?.check_in || !booking?.check_out) return null;
+    const start = dayjs(booking.check_in.split(" ")[0]);
+    const end = dayjs(booking.check_out.split(" ")[0]);
+    if (!start.isValid() || !end.isValid()) return null;
+    const inclusive = end.diff(start, "day") + 1;
+    return inclusive > 0 ? inclusive : null;
+  })();
+  const baseName =
+    booking?.name || cab?.model_name || cab?.type || "Sightseeing Taxi";
+  const displayName =
+    dayCount && !/for\s+\d+\s+day/i.test(baseName)
+      ? `${baseName} for ${dayCount} day${dayCount > 1 ? "s" : ""}`
+      : baseName;
+
+  return (
+    <div
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onClick={onClick}
+      onKeyDown={(e) => {
+        if (!onClick) return;
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onClick();
+        }
+      }}
+      className={`w-full flex flex-row gap-2 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm border-x-2 border-t-2 border-b-4 border-[#5CBA66] bg-[#F1FAF2] ${onClick ? "cursor-pointer hover:shadow-md transition-shadow" : ""}`}
+    >
+      {isDesktop && (
+        <div className="w-[80px] h-[70px] px-2 bg-white rounded-xl flex items-center justify-center">
+          <TransfersIcon
+            TransportMode={"Taxi"}
+            Instyle={{ fontSize: "3rem", color: "black" }}
+            classname={{ width: 80, height: 75 }}
+          />
+        </div>
+      )}
+
+      <div className="w-full flex flex-col gap-3">
+        <div className="flex flex-row gap-2">
+          {!isDesktop && (
+            <div className="w-[60px] h-[60px] px-2 bg-white rounded-xl flex items-center justify-center">
+              <TransfersIcon
+                TransportMode={"Taxi"}
+                Instyle={{ fontSize: "3rem", color: "black" }}
+                classname={{ width: 80, height: 75 }}
+              />
+            </div>
+          )}
+          <div className="flex flex-col gap-1 flex-1 min-w-0">
+            <div className="flex flex-row items-start justify-between gap-2">
+              <div className="text-[16px] font-medium">{displayName}</div>
+              <span className="shrink-0 text-[10px] font-600 px-2 py-[2px] rounded-full bg-[#5CBA66] text-white whitespace-nowrap">
+                Added to Itinerary
+              </span>
+            </div>
+            {td?.distance?.value ? (
+              <div className="text-[#7A7A7A] text-[14px] font-normal">
+                Distance: {td.distance.value} Kms
+              </div>
+            ) : null}
+            {td?.duration?.text ? (
+              <div className="text-[#7A7A7A] text-[14px] font-normal">
+                Duration: {td.duration.text}
+              </div>
+            ) : null}
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <div className="text-[#636366] text-[14px] font-normal">
+            {cab?.model_name || cab?.type || "Cab"}
+            {total != null && Number.isFinite(Number(total)) ? (
+              <>
+                :{" "}
+                <span className="text-black font-bold">
+                  {symbol}
+                  {getIndianPrice(Math.floor(total))}
+                </span>
+              </>
+            ) : null}
+          </div>
+          {(cab?.seating_capacity ||
+            cab?.bag_capacity ||
+            cab?.bigBagCapaCity ||
+            cab?.fuel_type) && (
+            <div className="text-sm">
+              <span className="font-semibold">Facilities: </span>
+              {cab?.seating_capacity ? `${cab.seating_capacity} Seats | ` : null}
+              {cab?.bag_capacity ? `${cab.bag_capacity} Bags | ` : null}
+              {cab?.bigBagCapaCity
+                ? `${cab.bigBagCapaCity} Big Bag Capacity | `
+                : null}
+              {cab?.fuel_type ? `Fuel Type: ${cab.fuel_type}` : null}
+            </div>
+          )}
+          {pax > 0 && (
+            <div className="text-sm text-[#7A7A7A]">
+              {pax} Passenger{pax > 1 ? "s" : ""}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const BookedAirportCard = ({ booking, isPickup, onViewDetail, onChange }) => {
+  const isDesktop = useMediaQuery("(min-width:768px)");
+  const currency = useSelector((state) => state.currency);
+  const td = booking?.transfer_details;
+  const cab = td?.quote?.taxi_category;
+  const total = td?.quote?.price?.total;
+  const symbol = currency?.currency ? currencySymbols?.[currency?.currency] : "₹";
+  const pax =
+    (booking?.number_of_adults || 0) +
+    (booking?.number_of_children || 0) +
+    (booking?.number_of_infants || 0);
+
+  const fromName =
+    td?.source?.name || td?.items?.[0]?.segments?.[0]?.origin?.name || "";
+  const toName =
+    td?.destination?.name ||
+    td?.items?.[0]?.segments?.[td?.items?.[0]?.segments?.length - 1]?.destination
+      ?.name ||
+    "";
+  const dateStr = (() => {
+    const raw = booking?.check_in;
+    if (!raw) return null;
+    const d = dayjs(raw.split(" ")[0]);
+    return d.isValid() ? d.format("DD MMM YYYY") : null;
+  })();
+  const timeStr = (() => {
+    const raw = booking?.check_in;
+    if (!raw || !raw.includes(" ")) return null;
+    const t = raw.split(" ")[1];
+    if (!t) return null;
+    const [hh, mm] = t.split(":");
+    const h = parseInt(hh, 10);
+    if (Number.isNaN(h)) return null;
+    const ampm = h >= 12 ? "PM" : "AM";
+    const displayHour = h % 12 || 12;
+    return `${displayHour}:${mm || "00"} ${ampm}`;
+  })();
+  const headline =
+    booking?.name ||
+    (isPickup ? "Airport Pickup" : "Airport Drop") +
+      (toName && isPickup ? "" : "");
+
+  return (
+    <div className="w-full flex flex-row gap-2 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm border-x-2 border-t-2 border-b-4 border-[#5CBA66] bg-[#F1FAF2]">
+      {isDesktop && (
+        <div className="w-[80px] h-[70px] px-2 bg-white rounded-xl flex items-center justify-center">
+          <TransfersIcon
+            TransportMode={"Taxi"}
+            Instyle={{ fontSize: "3rem", color: "black" }}
+            classname={{ width: 80, height: 75 }}
+          />
+        </div>
+      )}
+
+      <div className="w-full flex flex-col gap-3">
+        <div className="flex flex-row gap-2">
+          {!isDesktop && (
+            <div className="w-[60px] h-[60px] px-2 bg-white rounded-xl flex items-center justify-center">
+              <TransfersIcon
+                TransportMode={"Taxi"}
+                Instyle={{ fontSize: "3rem", color: "black" }}
+                classname={{ width: 80, height: 75 }}
+              />
+            </div>
+          )}
+          <div className="flex flex-col gap-1 flex-1 min-w-0">
+            <div className="text-[16px] font-medium">{headline}</div>
+            {fromName || toName ? (
+              <div className="text-[#7A7A7A] text-[14px] font-normal">
+                {fromName} {fromName && toName ? "→" : ""} {toName}
+              </div>
+            ) : null}
+            {(dateStr || timeStr) && (
+              <div className="text-[#7A7A7A] text-[14px] font-normal">
+                {dateStr}
+                {dateStr && timeStr ? " • " : ""}
+                {timeStr}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="flex flex-row items-end justify-between gap-3">
+          <div className="flex flex-col gap-1 flex-1 min-w-0">
+            <div className="text-[#636366] text-[14px] font-normal">
+              {cab?.model_name || cab?.type || "Cab"}
+              {total != null && Number.isFinite(Number(total)) ? (
+                <>
+                  :{" "}
+                  <span className="text-black font-bold">
+                    {symbol}
+                    {getIndianPrice(Math.floor(total))}
+                  </span>
+                </>
+              ) : null}
+            </div>
+            {(cab?.seating_capacity ||
+              cab?.bag_capacity ||
+              cab?.bigBagCapaCity ||
+              cab?.fuel_type) && (
+              <div className="text-sm">
+                <span className="font-semibold">Facilities: </span>
+                {cab?.seating_capacity ? `${cab.seating_capacity} Seats | ` : null}
+                {cab?.bag_capacity ? `${cab.bag_capacity} Bags | ` : null}
+                {cab?.bigBagCapaCity
+                  ? `${cab.bigBagCapaCity} Big Bag Capacity | `
+                  : null}
+                {cab?.fuel_type ? `Fuel Type: ${cab.fuel_type}` : null}
+              </div>
+            )}
+            {pax > 0 && (
+              <div className="text-sm text-[#7A7A7A]">
+                {pax} Passenger{pax > 1 ? "s" : ""}
+              </div>
+            )}
+          </div>
+
+          <div className="flex flex-col items-end gap-2 shrink-0">
+            <span className="text-[10px] font-600 px-2 py-[2px] rounded-full bg-[#5CBA66] text-white whitespace-nowrap">
+              Added to Itinerary
+            </span>
+            <div className="flex flex-row items-center gap-2">
+              {onViewDetail && (
+                <button
+                  type="button"
+                  onClick={onViewDetail}
+                  className="px-3 py-1.5 rounded-lg font-semibold text-[13px] text-black border-1 border-black bg-white hover:bg-gray-100 whitespace-nowrap"
+                >
+                  View Detail
+                </button>
+              )}
+              {onChange && (
+                <button
+                  type="button"
+                  onClick={onChange}
+                  className="px-3 py-1.5 rounded-lg font-semibold text-[13px] bg-[#f8e000] text-black border-1 border-black hover:bg-yellow-400 whitespace-nowrap"
+                >
+                  Change
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const AirportPickupDropCard = ({ suggestion, isPickup, onSearch }) => {
+  const isDesktop = useMediaQuery("(min-width:768px)");
+  const currency = useSelector((state) => state.currency);
+
+  const quotes = suggestion?.data?.quotes || [];
+  const startingPrice = quotes.length
+    ? Math.min(...quotes.map((q) => Number(q?.price?.total)).filter((n) => !Number.isNaN(n)))
+    : null;
+  const symbol = currency?.currency ? currencySymbols?.[currency?.currency] : "₹";
+
+  return (
+    <div className="w-full flex flex-row gap-2 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm border-x-2 border-t-2 border-b-4">
+      {isDesktop && (
+        <div className="w-[80px] h-[70px] px-2 bg-gray-100 rounded-xl flex items-center justify-center">
+          <TransfersIcon
+            TransportMode={"Taxi"}
+            Instyle={{ fontSize: "3rem", color: "black" }}
+            classname={{ width: 80, height: 75 }}
+          />
+        </div>
+      )}
+
+      <div className="w-full flex flex-col gap-3">
+        <div className="flex flex-row gap-2">
+          {!isDesktop && (
+            <div className="w-[60px] h-[60px] px-2 bg-gray-100 rounded-xl flex items-center justify-center">
+              <TransfersIcon
+                TransportMode={"Taxi"}
+                Instyle={{ fontSize: "3rem", color: "black" }}
+                classname={{ width: 80, height: 75 }}
+              />
+            </div>
+          )}
+          <div className="flex flex-col gap-1">
+            <div className="text-[16px] font-medium">{suggestion?.name}</div>
+            {suggestion?.data?.distance?.value ? (
+              <div className="text-[#7A7A7A] text-[14px] font-normal">
+                Distance: {suggestion.data.distance.value} Kms
+              </div>
+            ) : null}
+            {suggestion?.data?.duration?.text ? (
+              <div className="text-[#7A7A7A] text-[14px] font-normal">
+                Duration: {suggestion.data.duration.text}
+              </div>
+            ) : null}
+          </div>
+        </div>
+
+        <div className="flex flex-row items-center justify-between gap-2 flex-wrap">
+          {startingPrice != null && Number.isFinite(startingPrice) ? (
+            <div className="flex flex-col">
+              <div className="text-[12px] text-[#7A7A7A] font-normal">Starting from</div>
+              <div className="text-[18px] font-bold">
+                {symbol}
+                {getIndianPrice(Math.floor(startingPrice))}
+              </div>
+            </div>
+          ) : (
+            <div />
+          )}
+
+          <button
+            onClick={onSearch}
+            className="px-4 py-2 rounded-lg font-semibold text-base bg-[#f8e000] text-black border-1 border-black hover:bg-yellow-400 active:transform active:scale-95 cursor-pointer transition-all duration-200 ease-in-out"
+          >
+            Search Taxis
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -5255,6 +6152,12 @@ const OtherTransfer = ({
   const [loadingRequestKey, setLoadingRequestKey] = useState(null);
   const abortControllerRef = useRef(null);
 
+  // AllAboard pagination state for Train mode
+  const [allAboardOffset, setAllAboardOffset] = useState(0);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMoreAllAboard, setHasMoreAllAboard] = useState(false);
+  const ALL_ABOARD_LIMIT = 5;
+
   const { number_of_adults, number_of_children, number_of_infants } =
     useSelector((state) => state.Itinerary);
   const [showPax, setShowPax] = useState(false);
@@ -5295,10 +6198,6 @@ const OtherTransfer = ({
 
   const [expandedTransfers, setExpandedTransfers] = useState({});
 
-  // Pagination state for AllAboard results
-  const [allAboardOffset, setAllAboardOffset] = useState(0);
-  const [hasMoreAllAboard, setHasMoreAllAboard] = useState(false);
-  const [loadingMore, setLoadingMore] = useState(false);
 
 const toggleTransferDetails = (priceOptionId) => {
   setExpandedTransfers(prev => ({
@@ -5423,7 +6322,7 @@ const toggleTransferDetails = (priceOptionId) => {
         requestBody.offset = currentOffset;
 
         const response = await loadOtherTransfers.post(
-          `/search/?currency=${currency?.currency || "INR"}`,
+          searchUrl,
           requestBody,
           {
             headers: {

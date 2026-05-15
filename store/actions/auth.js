@@ -282,7 +282,19 @@ export const auth = (
   return (dispatch, getState) => {
     dispatch(authStartLoading()); //Start spinner
     dispatch(authResetOtpFail()); //Set otp fail false
-    let updatedauthdata = { ...authData };
+    const getPlatform = () => {
+      if (typeof window === "undefined") return "desktop";
+      const ua = navigator.userAgent || "";
+      if (/iPad|Tablet|PlayBook|Silk/i.test(ua) || (/Android/i.test(ua) && !/Mobile/i.test(ua))) return "tablet";
+      if (/Mobi|Mobile|iPhone|iPod|Android/i.test(ua)) return "mobile";
+      return "desktop";
+    };
+    let updatedauthdata = {
+      ...authData,
+      website: typeof window !== "undefined" ? window.location.hostname : "",
+      path: typeof window !== "undefined" ? window.location.pathname : "",
+      platform: getPlatform(),
+    };
     if (getState().auth.newUser) {
       updatedauthdata = {
         ...updatedauthdata,
