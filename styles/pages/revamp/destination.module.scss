@@ -104,8 +104,8 @@
   flex-wrap: wrap;
 }
 .sectionHeadCenter {
-  justify-content: center;
-  text-align: center;
+  justify-content: start;
+  text-align: left;
 }
 .sectionHeadLeft {
   max-width: 660px;
@@ -398,10 +398,10 @@
 }
 
 .componentBlockTinted {
-  background:
-    radial-gradient(ellipse 800px 360px at 5% 0%, var(--ttw-rose) 0%, transparent 60%),
-    radial-gradient(ellipse 600px 320px at 100% 100%, var(--ttw-mint) 0%, transparent 60%),
-    var(--ttw-bg);
+  // background:
+  //   radial-gradient(ellipse 800px 360px at 5% 0%, var(--ttw-rose) 0%, transparent 60%),
+  //   radial-gradient(ellipse 600px 320px at 100% 100%, var(--ttw-mint) 0%, transparent 60%),
+  //   var(--ttw-bg);
 }
 
 .componentBlockSoft {
@@ -1161,6 +1161,7 @@
   position: absolute;
   top: 16px;
   left: 16px;
+  z-index: 2;
   padding: 6px 12px;
   background: var(--ttw-yellow);
   color: var(--ttw-ink);
@@ -1169,6 +1170,42 @@
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+  box-shadow: 0 6px 18px -8px rgba(11, 18, 32, 0.35);
+}
+.editorialImgScrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(11, 18, 32, 0.22) 0%,
+    rgba(11, 18, 32, 0) 35%,
+    rgba(11, 18, 32, 0) 65%,
+    rgba(11, 18, 32, 0.18) 100%
+  );
+  pointer-events: none;
+}
+.editorialKicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ttw-ink-3);
+}
+.editorialKickerLine {
+  width: 28px;
+  height: 2px;
+  background: var(--ttw-yellow);
+  border-radius: 2px;
+}
+.editorialLede {
+  font-size: 17px !important;
+  line-height: 1.7 !important;
+  color: var(--ttw-ink) !important;
+  font-weight: 500;
 }
 .editorialText h3 {
   font-size: clamp(28px, 3.2vw, 40px);
@@ -1245,6 +1282,24 @@
   gap: 22px;
   @media (max-width: 1024px) {
     grid-template-columns: 1fr;
+  }
+}
+.itinGrid3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+  .itinCard {
+    grid-template-columns: 1fr;
+  }
+  .itinImg {
+    min-height: 200px;
+    aspect-ratio: 4 / 3;
   }
 }
 .itinCard {

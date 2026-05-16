@@ -417,12 +417,12 @@ const Index = (props) => {
                 key={`${component.carousel}-${idx}`}
                 className={`${styles.block} ${
                   tinted ? styles.componentBlockTinted : ""
-                }`}
+                }`} 
               >
                 <div
                   className={`${styles.sectionHead} ${
                     isActivity || isPoi ? "" : styles.sectionHeadCenter
-                  }`}
+                  }`} 
                 >
                   <div className={styles.sectionHeadLeft}>
                     {tinted && (

@@ -4,6 +4,7 @@ import {
   setPendingFiles,
   setPendingSeed,
 } from "../../../services/heroChatHandoff";
+import { truncateAtSentence } from "../../../helper/truncateAtSentence";
 import styles from "../../../styles/pages/revamp/destination.module.scss";
 
 const FALLBACK_POLAROIDS = [
@@ -169,7 +170,11 @@ const HeroV2 = ({
             )}
             <h1>{title}</h1>
             {description && (
-              <p className={styles.heroV2Lede}>{description}</p>
+              <p className={styles.heroV2Lede}>
+                {typeof description === "string"
+                  ? truncateAtSentence(description, 300)
+                  : description}
+              </p>
             )}
             <form className={styles.heroV2Input} onSubmit={handleSubmit}>
               <textarea

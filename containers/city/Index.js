@@ -3,7 +3,7 @@ import FullScreenGallery from "../../components/fullscreengallery/Index";
 import NewMenu from "../newcityplanner/Menu";
 import validateTextSize from "../../services/textSizeValidator";
 import { convertDbNameToCapitalFirst } from "../../helper/convertDbnameToCapitalFirst";
-import HeroSection from "../../components/revamp/destination/HeroSection";
+import HeroV2 from "../../components/revamp/destination/HeroV2";
 import { imgUrlEndPoint } from "../../components/theme/ThemeConstants";
 import TailoredFormMobileModal from "../../components/modals/TailoredFomrMobile";
 import styles from "../../styles/pages/revamp/destination.module.scss";
@@ -36,14 +36,29 @@ const Experience = (props) => {
 
   return (
     <div className={styles.destinationPage}>
-      <HeroSection
-        title={validateTextSize(
-          `Your ${cityName} Trip, Designed Around You`,
-          9,
-          `Craft a trip to ${cityName} now!`
-        )}
-        image={`${imgUrlEndPoint}${props.cityData.images[0].image}`}
-        slug={props?.cityData?.name}
+      <HeroV2
+        destinationLabel={cityDisplayName || cityName}
+        kicker={`Plan your ${cityDisplayName} trip with Kaira`}
+        title={
+          <>
+            {cityDisplayName},{" "}
+            <span className={styles.serif}>however</span> you{" "}
+            <span className={styles.highlight}>want it.</span>
+          </>
+        }
+        description={
+          <>
+            Tell Kaira <b>your vibe and dates</b> — she'll craft a{" "}
+            <span className={styles.serif}>{cityDisplayName} trip</span> that{" "}
+            <span className={styles.serif}>actually flows.</span>
+          </>
+        }
+        polaroids={(props.cityData?.images || [])
+          .slice(0, 4)
+          .map((img) => ({
+            image: `${imgUrlEndPoint}${img.image}`,
+            caption: img.caption || cityDisplayName,
+          }))}
         setShowTailoredModal={setShowTailoredModal}
       />
 

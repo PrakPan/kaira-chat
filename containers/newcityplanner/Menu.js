@@ -23,6 +23,10 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import DestinationCard from "../../components/revamp/common/components/card/DestinationCard";
+import ActivityCardV2 from "../../components/revamp/destination/ActivityCardV2";
+import ItineraryCardV2 from "../../components/revamp/destination/ItineraryCardV2";
+import OverviewEditorial from "../../components/revamp/destination/OverviewEditorial";
+import styles from "../../styles/pages/revamp/destination.module.scss";
 import {
   faChevronLeft,
   faChevronRight,
@@ -156,51 +160,56 @@ const Menu = (props) => {
       <PathNavigation path={props.data?.path} />
 
       {!!props.data.itineraries.length && (
-        <MenuItem id="Itinerary">
-          <H3
-            style={{
-              lineHeight: "48px",
-              marginBlock: isPageWide ? "3.5rem" : "1.5rem",
-            }}
-          >
-            Trips by our users to {props.data.name}
-          </H3>
-          {/* <MostLovedItinerariesSection
-            apiItineraries={props.data.itineraries}
-          /> */}
-          <TopRecommendations itineraries={props.data.itineraries} />
+        <MenuItem id="Itinerary" className="mt-4 mb-4">
+          <div className={styles.sectionHead}>
+            <div className={styles.sectionHeadLeft}>
+              <h2>
+                Real{" "}
+                <span className={styles.serif}>{props.data.name}</span> trips
+                our <span className={styles.serif}>travellers loved.</span>
+              </h2>
+              <p className={styles.lede}>
+                Hand-picked itineraries built from real{" "}
+                <span className={styles.serif}>traveller stories.</span> Tweak
+                anything once you start chatting.
+              </p>
+            </div>
+          </div>
+          <div className={styles.itinGrid}>
+            {props.data.itineraries.slice(0, 4).map((itinerary) => (
+              <ItineraryCardV2 key={itinerary.id} itinerary={itinerary} />
+            ))}
+          </div>
         </MenuItem>
       )}
 
       {props.data.short_description && !props.thingsToDoPage && (
-        <MenuItem id="Brief">
-          <H3 style={{ margin: "30px 0 30px 0" }}>
-            {"A little about " + props.data.name}
-          </H3>
-          <Brief
-            short_description={props.data.short_description}
-            lat={props.data.lat}
-            lon={props.data.long}
-            name={props.data.name}
-            elevation={
-              props.data.elevation &&
-              props.data.elevation.length &&
-              props.data.elevation[0]?.elevation
-            }
+        <MenuItem id="Brief" className="mt-[4rem] mb-[4rem]">
+          <OverviewEditorial
+            heading={"A little about " + props.data.name}
+            text={props.data.short_description}
+            image={props.data.images?.[0]?.image}
           />
         </MenuItem>
       )}
 
       {props.data.activities.length ? (
         <MenuItem id="Activities">
-          <H3
-            style={{
-              lineHeight: "48px",
-              marginBlock: isPageWide ? "3.5rem" : "1.5rem",
-            }}
-          >
-            Things to do in {props.data.name}
-          </H3>
+          <div className={styles.sectionHead}>
+            <div className={styles.sectionHeadLeft}>
+              <h2>
+                Iconic{" "}
+                <span className={styles.serif}>experiences</span> in{" "}
+                {props.data.name}.
+              </h2>
+              <p className={styles.lede}>
+                The{" "}
+                <span className={styles.serif}>non-skippable bits.</span> All
+                bookable directly, all checked by humans before they go in your
+                trip.
+              </p>
+            </div>
+          </div>
           {/* <Activity
             data={props.data}
             activities={props.data.activities}
@@ -241,21 +250,8 @@ const Menu = (props) => {
               {props.data.activities.map((destination) => (
                 <SwiperSlide key={destination.id}>
                   <div className="w-full px-1">
-                    <DestinationCard
-                      title={destination?.display_name || destination.title || destination.name}
-                      description={
-                        destination.description || destination.tagline
-                      }
-                      image={destination.image}
-                      rating={destination.rating}
-                      one_liner_description={destination?.one_liner_description}
-                      reviewCount={destination.user_ratings_total}
-                      showImageText={false}
-                      tags={
-                        destination.tags ||
-                        (destination.continent ? [destination.continent] : [])
-                      }
-                      gradientOverlay={destination.gradientOverlay}
+                    <ActivityCardV2
+                      item={destination}
                       onClick={() => handleOpenDrawer(destination, "activity")}
                     />
                   </div>
@@ -300,7 +296,7 @@ const Menu = (props) => {
 
           <div className=" flex items-center justify-center mt-8 lg:mt-10">
             {/* <Link href={`/new-trip/?source=${props?.data?.slug || "home"}`}> */}
-              <button
+              {/* <button
                 variant="filled"
                 size="medium"
                 onClick={() => {
@@ -310,7 +306,7 @@ const Menu = (props) => {
                 className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
               >
                 + Create a Trip Now!
-              </button>
+              </button> */}
             {/* </Link> */}
           </div>
         </MenuItem>
@@ -318,14 +314,20 @@ const Menu = (props) => {
 
       {!!props.data.pois.length && (
         <MenuItem id="Places">
-          <H3
-            style={{
-              lineHeight: "48px",
-              marginBlock: isPageWide ? "3.5rem" : "1.5rem",
-            }}
-          >
-            Places to visit in {props.data.name}
-          </H3>
+          <div className={styles.sectionHead}>
+            <div className={styles.sectionHeadLeft}>
+              <h2>
+                Places to{" "}
+                <span className={styles.serif}>visit</span> in{" "}
+                {props.data.name}.
+              </h2>
+              <p className={styles.lede}>
+                The corners worth your{" "}
+                <span className={styles.serif}>memory card.</span> Curated, not
+                alphabetical.
+              </p>
+            </div>
+          </div>
           {/* <Poi
             elevation={props.elevation}
             data={props.data}
@@ -367,22 +369,9 @@ const Menu = (props) => {
               {props.data.pois.map((destination) => (
                 <SwiperSlide key={destination.id}>
                   <div className="w-full px-1">
-                    <DestinationCard
-                      title={destination?.display_name || destination.title || destination.name}
-                      description={
-                        destination.description || destination.tagline
-                      }
-                      one_liner_description={destination?.one_liner_description}
-                      image={destination.image}
-                      rating={destination.rating}
-                      reviewCount={destination.user_ratings_total}
-                      showImageText={false}
-                      tags={
-                        destination.tags ||
-                        (destination.continent ? [destination.continent] : [])
-                      }
+                    <ActivityCardV2
+                      item={destination}
                       onClick={() => handleOpenDrawer(destination, "poi")}
-                      gradientOverlay={destination.gradientOverlay}
                     />
                   </div>
                 </SwiperSlide>
@@ -426,7 +415,7 @@ const Menu = (props) => {
 
           <div className=" flex items-center justify-center mt-8 lg:mt-10">
             {/* <Link href={`/new-trip/?source=${props?.data?.slug || "home"}`}> */}
-              <button
+              {/* <button
                 variant="filled"
                 size="medium"
                 onClick={() => {
@@ -436,7 +425,7 @@ const Menu = (props) => {
                 className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
               >
                 + Create a Trip Now!
-              </button>
+              </button> */}
             {/* </Link> */}
           </div>
         </MenuItem>
@@ -449,13 +438,20 @@ const Menu = (props) => {
           page={"City Page"}
           data={props.data}
         /> */}
-        <H3
-          style={{
-            marginBlock: isPageWide ? "3.5rem" : "1.5rem",
-          }}
-        >
-          Nearby Locations to {props.data.name}
-        </H3>
+        <div className={styles.sectionHead}>
+          <div className={styles.sectionHeadLeft}>
+            <h2>
+              Nearby{" "}
+              <span className={styles.serif}>locations</span> to{" "}
+              {props.data.name}.
+            </h2>
+            <p className={styles.lede}>
+              Easy to combine with your{" "}
+              <span className={styles.serif}>{props.data.name} trip</span> —
+              add them with one tap.
+            </p>
+          </div>
+        </div>
         <div className="relative px-2 sm:px-0">
           <Swiper
             style={{ height: "376px" }}
@@ -547,7 +543,7 @@ const Menu = (props) => {
 
         <div className=" flex items-center justify-center mt-8 lg:mt-10">
           {/* <Link href={`/new-trip/?source=${props?.data?.slug || "home"}`}> */}
-            <button
+            {/* <button
               variant="filled"
               size="medium"
               onClick={() => {
@@ -557,41 +553,42 @@ const Menu = (props) => {
               className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
             >
               + Create a Trip Now!
-            </button>
+            </button> */}
           {/* </Link> */}
         </div>
       </MenuItem>
 
       {!!props.data.foods.length && (
         <MenuItem id="Food" single>
-          <H3
-            style={{
-              lineHeight: "48px",
-              marginBlock: isPageWide ? "3.5rem" : "1.5rem",
-            }}
-          >
-            Food to eat
-          </H3>
+          <div className={styles.sectionHead}>
+            <div className={styles.sectionHeadLeft}>
+              <h2>
+                Food to <span className={styles.serif}>eat.</span>
+              </h2>
+              <p className={styles.lede}>
+                What the locals{" "}
+                <span className={styles.serif}>actually order.</span>
+              </p>
+            </div>
+          </div>
           <FoodToEat foods={props.data.foods} />
         </MenuItem>
       )}
 
       {props.data.conveyance_available && (
         <MenuItem id="Reach" single>
-          <H3
-            style={{
-              lineHeight: "48px",
-              marginBlock: isPageWide ? "3.5rem" : "1.5rem",
-              marginBottom: "1rem",
-            }}
-          >
-            How to reach
-          </H3>
+          <div className={styles.sectionHead}>
+            <div className={styles.sectionHeadLeft}>
+              <h2>
+                How to <span className={styles.serif}>reach.</span>
+              </h2>
+            </div>
+          </div>
           <P className="font-light">{props.data.conveyance_available}</P>
         </MenuItem>
       )}
 
-      {props.data.survival_tips_and_tricks && (
+      {/* {props.data.survival_tips_and_tricks && (
         <MenuItem id="Survival" single>
           <H3
             style={{
@@ -619,7 +616,7 @@ const Menu = (props) => {
           </H3>
           <P>{props.data.folklore_or_story}</P>
         </MenuItem>
-      )}
+      )} */}
 
       <MenuItem id="Why">
         {/* <H3
@@ -634,7 +631,7 @@ const Menu = (props) => {
           page_id={props.data.id}
           destination={props.destination}
         /> */}
-        <WhatMakesUsSection />
+        {/* <WhatMakesUsSection /> */}
       </MenuItem>
 
       <MenuItem id="Customers">
@@ -648,8 +645,8 @@ const Menu = (props) => {
           Happy Community of The Tarzan Way
         </H3>
         <Reviews />  */}
-        <Carousel3D />
-        <TestimonialCarousel />
+        {/* <Carousel3D />
+        <TestimonialCarousel /> */}
       </MenuItem>
 
       <MenuItem>
@@ -663,8 +660,8 @@ const Menu = (props) => {
           What they say?
         </H3> */}
         {/* <AsSeenIn /> */}
-        <PartnersSection />
-        <ChatWithUs />
+        {/* <PartnersSection />
+        <ChatWithUs /> */}
 
         <CtaBoardingSection />
 
