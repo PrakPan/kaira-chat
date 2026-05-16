@@ -28,6 +28,10 @@ import { updateStays } from "../../../store/actions/StayBookings";
 import { updateTransferBookings } from "../../../store/actions/transferBookingsStore";
 import { removeAncillaryBooking } from "../../../store/actions/ancillaryBookings";
 import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
+import { axiosGetPaymentInfo } from "../../../services/itinerary/payment";
+import setCart from "../../../store/actions/Cart";
+import { setCurrency } from "../../../store/actions/currencyActions";
+import setItineraryStatus from "../../../store/actions/itineraryStatus";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 import BotLoginModal from "./BotLoginModal";
 
@@ -433,6 +437,26 @@ onViewItinerary,
     [localItineraryId, authToken, dispatch],
   );
 
+  // Mirrors getPaymentInfo() in ItineraryContainer.jsx — fetches /cart/ for
+  // the current itinerary and pushes the result into Redux (cart + currency +
+  // pricing_status). Passed to TransferEditDrawer so the drawer can refresh
+  // the cart after a booking completes, matching the /itinerary page flow.
+  const getPaymentInfo = useCallback(async () => {
+    if (!localItineraryId) return;
+    const token = localStorage.getItem("access_token");
+    try {
+      const res = await axiosGetPaymentInfo.get(`${localItineraryId}/cart/`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = res.data;
+      dispatch(setCart(data));
+      dispatch(setCurrency(data?.currency));
+      dispatch(setItineraryStatus("pricing_status", "SUCCESS"));
+    } catch (error) {
+      console.log("ERROR[PaymentInfo][Itinerary]", error);
+    }
+  }, [localItineraryId, dispatch]);
+
   // Mirrors updatedActivityBooking() in ActivityDetailsDrawer.jsx: after the
   // /bookings/activity/ POST returns, splice the new booking into the city's
   // activities list and the matching day_by_day slab so the itinerary view
@@ -769,10 +793,11 @@ onViewItinerary,
     date?: string;
   }>({ show: false });
 
-  // Sightseeing (intra-city taxi) drawer — opened by sightseeing.open
-  // widget actions. Reuses TransferEditDrawer in multicity mode so the user
-  // can browse the same suggestions that the city header's "Add Taxi" CTA
-  // surfaces in /itinerary.
+  // Sightseeing (intra-city taxi) drawer — opened by sightseeing.open and
+  // pickup_drop.open widget actions. Reuses TransferEditDrawer in multicity
+  // mode so the user can browse the same suggestions that the city header's
+  // "Add Taxi" CTA surfaces in /itinerary. `initialTab` chooses which of the
+  // drawer's internal tabs (sightseeing / airport) to open on mount.
   const [sightseeingDrawer, setSightseeingDrawer] = useState<{
     show: boolean;
     itinerary_city_id?: string;
@@ -781,6 +806,7 @@ onViewItinerary,
     cityData?: any;
     startDate?: string;
     endDate?: string;
+    initialTab?: "sightseeing" | "airport" | "multicity";
   }>({ show: false });
 
 
@@ -2691,7 +2717,10 @@ const handleShowLogin = useCallback(() => {
                   // it needs to fetch suggestions, then mirror the URL the
                   // itinerary page uses (?drawer=addCityTaxi&itinerary_city_id=...)
                   // so refresh / share preserves the open drawer.
-                  if (action.type === "sightseeing.open") {
+                  if (
+                    action.type === "sightseeing.open" ||
+                    action.type === "pickup_drop.open"
+                  ) {
                     const itineraryCityId = (payload.itineraryCityId ??
                       payload.itinerary_city_id ??
                       payload.city_id) as string | undefined;
@@ -2702,6 +2731,10 @@ const handleShowLogin = useCallback(() => {
                       sendWidgetAction(action.type, payload);
                       return;
                     }
+                    const initialTab: "sightseeing" | "airport" =
+                      action.type === "pickup_drop.open"
+                        ? "airport"
+                        : "sightseeing";
                     setSightseeingDrawer({
                       show: true,
                       itinerary_city_id: itineraryCityId,
@@ -2714,12 +2747,14 @@ const handleShowLogin = useCallback(() => {
                       endDate: (payload.endDate ??
                         payload.end_date ??
                         matchedCity?.end_date) as string | undefined,
+                      initialTab,
                     });
                     const url = new URL(window.location.href);
                     url.searchParams.set("drawer", "addCityTaxi");
                     if (itineraryCityId) {
                       url.searchParams.set("itinerary_city_id", itineraryCityId);
                     }
+                    url.searchParams.set("taxiTab", initialTab);
                     window.history.pushState({}, "", url.toString());
                     return;
                   }
@@ -3019,6 +3054,7 @@ const handleShowLogin = useCallback(() => {
           }
           city={transferDrawer.city}
           dcity={transferDrawer.dcity}
+          getPaymentHandler={getPaymentInfo}
           handleClose={() => setTransferDrawer({ show: false })}
         />
       )}
@@ -3237,6 +3273,8 @@ const handleShowLogin = useCallback(() => {
           oCityData={sightseeingDrawer.cityData}
           dCityData={sightseeingDrawer.cityData}
           check_in={sightseeingDrawer.startDate}
+          initialTab={sightseeingDrawer.initialTab}
+          getPaymentHandler={getPaymentInfo}
           setShowLoginModal={setShowLoginModal}
           handleClose={() => {
             setSightseeingDrawer({ show: false });
@@ -3244,6 +3282,7 @@ const handleShowLogin = useCallback(() => {
             if (url.searchParams.get("drawer") === "addCityTaxi") {
               url.searchParams.delete("drawer");
               url.searchParams.delete("itinerary_city_id");
+              url.searchParams.delete("taxiTab");
               window.history.pushState({}, "", url.toString());
             }
           }}
