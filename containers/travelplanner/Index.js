@@ -13,7 +13,7 @@ import PathNavigation from "./PathNavigation.js";
 import { logEvent } from "../../services/ga/Index";
 import { convertDbNameToCapitalFirst } from "../../helper/convertDbnameToCapitalFirst.js";
 import HeroBannerLadakh from "../../components/containers/HeroBanner/HeroBannerLadakh.js";
-import HeroSection from "../../components/revamp/destination/HeroSection.jsx";
+import HeroV2 from "../../components/revamp/destination/HeroV2.jsx";
 import validateTextSize from "../../services/textSizeValidator.js";
 import { imgUrlEndPoint } from "../../components/theme/ThemeConstants.js";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -36,6 +36,8 @@ import PartnersSection from "../../components/theme/PartnersSection.jsx";
 import TestimonialCarousel from "../../components/theme/TestimonialCarousel.jsx";
 import TailoredFormMobileModal from "../../components/modals/TailoredFomrMobile.js";
 import styles from "../../styles/pages/revamp/destination.module.scss";
+import ItineraryCardV2 from "../../components/revamp/destination/ItineraryCardV2.jsx";
+import OverviewEditorial from "../../components/revamp/destination/OverviewEditorial.jsx";
 const MapBox = dynamic(() => import("../../components/Map.js"), {
   ssr: false,
 });
@@ -190,15 +192,34 @@ const Homepage = (props) => {
       id="homepage-anchor"
       style={{ visibility: props.hidden ? "hidden" : "visible" }}
     >
-      <HeroSection
-        title={validateTextSize(
-          `Your ${props.experienceData.name} Trip, Designed Around You`,
-          9,
-          `Craft a trip to ${props.experienceData.name} now!`
-        )}
-        subtitle={props.experienceData.banner_text}
-        image={`${imgUrlEndPoint}${props.experienceData.image}`}
-        slug={props.experienceData?.slug}
+      <HeroV2
+        destinationLabel={destinationName}
+        kicker={`Plan your ${destinationName} trip with Kaira`}
+        title={
+          <>
+            {destinationName},{" "}
+            <span className={styles.serif}>however</span> you{" "}
+            <span className={styles.highlight}>want it.</span>
+          </>
+        }
+        description={
+          <>
+            Tell Kaira <b>your vibe and dates</b> — she'll craft a{" "}
+            <span className={styles.serif}>{destinationName} trip</span> that{" "}
+            <span className={styles.serif}>actually flows.</span>
+          </>
+        }
+        polaroids={(props.experienceData?.locations || [])
+          .slice(0, 4)
+          .map((loc) => ({
+            image: loc.image
+              ? loc.image.startsWith("http")
+                ? loc.image
+                : `${imgUrlEndPoint}${loc.image}`
+              : "",
+            caption: loc.display_name || loc.name || loc.title,
+          }))
+          .filter((p) => p.image)}
         setShowTailoredModal={setShowTailoredModal}
       />
 
@@ -323,32 +344,57 @@ const Homepage = (props) => {
         ))}
 
         {/* USER TRIPS */}
-        {userItineraries.length ? (
-          <section className={`${styles.block} ${styles.itinerariesBlock}`}>
+         {userItineraries?.length ? (
+          <section className={`${styles.block} ${styles.itinerariesBlock}`} style={{width: "100%"}}>
             <div className={styles.sectionHead}>
               <div className={styles.sectionHeadLeft}>
-                <div className={styles.itinPill}>★ Real trips, real travellers</div>
+                <div className={styles.itinPill}>
+                  ★ Real trips, real travellers
+                </div>
                 <h2>
-                  Trips{" "}
-                  <span className={styles.serif}>by our travellers.</span>
+                  Real {destinationName} trips our{" "}
+                  <span className={styles.serif}>travellers loved.</span>
                 </h2>
                 <p className={styles.lede}>
-                  Hand-built routes by real travellers across {destinationName}.
+                  Every itinerary below has been done.{" "}
+                  <span className={styles.serif}>Tweak anything</span> in chat
+                  — dates, hotels, duration.
                 </p>
               </div>
             </div>
-            <Experiences experiences={userItineraries} page={"State Page"} />
+            <div className={styles.itinGrid}>
+              {userItineraries.slice(0, 4).map((it, i) => (
+                <ItineraryCardV2 key={it.id || i} itinerary={it} />
+              ))}
+            </div>
           </section>
         ) : null}
 
         {/* OVERVIEW */}
         <section className={`${styles.block} ${styles.editorialBlock}`}>
-          <Overview
+          <OverviewEditorial
+             tag="Kaira's take"
+              heading={
+                overviewHeading ||
+                `Why we send first-timers to ${destinationName}.`
+              }
+              text={
+                props.experienceData?.overview_text || props?.experienceData?.short_description
+              }
+              image={
+                props.experienceData?.overview_image 
+                // ||
+                // (hotLocations[0] && hotLocations[0].image)
+              }
+              ctaLabel={`Plan my ${destinationName} trip`}
+              onCtaClick={() =>
+                handlePlanButtonClick(`Editorial overview - ${destinationName}`)
+              }
             locations={props.experienceData.locations}
             overview_heading={overviewHeading}
             overview_text={props.experienceData.short_description}
           />
-          {props.experienceData.locations?.length ? (
+          {/* {props.experienceData.locations?.length ? (
             <div style={{ marginTop: 32 }}>
               <MapBox
                 InfoWindowContainer={InfoWindowContainer}
@@ -356,7 +402,7 @@ const Homepage = (props) => {
                 height="300px"
               />
             </div>
-          ) : null}
+          ) : null} */}
           <div className="flex justify-center mt-8">
             <Button
               onclick={() =>
@@ -469,11 +515,11 @@ const Homepage = (props) => {
           </section>
         ) : null}
 
-        <WhatMakesUsSection />
+        {/* <WhatMakesUsSection />
         <Carousel3D />
         <TestimonialCarousel />
         <PartnersSection />
-        <ChatWithUs planner page_id={props.experienceData.id} />
+        <ChatWithUs planner page_id={props.experienceData.id} /> */}
       </div>
 
       {/* FINAL CTA */}
@@ -499,7 +545,7 @@ const Homepage = (props) => {
         </div>
       </section>
 
-      <CtaBoardingSection />
+      {/* <CtaBoardingSection /> */}
 
       <TailoredFormMobileModal
         destinationType={"city-planner"}

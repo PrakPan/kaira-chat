@@ -82,7 +82,7 @@ const JourneySimplified = ({ steps = DEFAULT_STEPS }) => {
         <div className="ttwSectionHead">
           <div>
             <h2>
-              How it <span className="ttwSerif">works.</span>
+              How it <span className={styles.serif} >works.</span>
             </h2>
             <p className="ttwLede">
               Kaira plans fast.{" "}
