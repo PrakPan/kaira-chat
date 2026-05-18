@@ -1532,6 +1532,39 @@ function isHotelListView(children: WidgetNode[]): boolean {
   });
 }
 
+
+// Star-count → fixed color token. Each tier always renders identically.
+// 5 = purple, 4 = blue, 3 = teal/green, 2 = amber, 1/fallback = gray.
+const STAR_TAG_STYLES: Record<number, { bg: string; color: string; border: string }> = {
+  5: { bg: "#EEEDFE", color: "#3C3489", border: "#AFA9EC" }, // purple
+  4: { bg: "#E6F1FB", color: "#0C447C", border: "#85B7EB" }, // blue
+  3: { bg: "#E1F5EE", color: "#085041", border: "#5DCAA5" }, // teal
+  2: { bg: "#FAEEDA", color: "#633806", border: "#EF9F27" }, // amber
+  1: { bg: "#F1EFE8", color: "#444441", border: "#B4B2A9" }, // gray
+};
+
+function StarRatingTag({ label, starCount }: { label: string; starCount: number }) {
+  const s = STAR_TAG_STYLES[starCount] ?? STAR_TAG_STYLES[1];
+  return (
+    <span
+      style={{
+        padding: "3px 10px",
+        borderRadius: 9999,
+        fontSize: 11,
+        fontWeight: 600,
+        fontFamily: "'Inter', sans-serif",
+        background: s.bg,
+        color: s.color,
+        border: `1px solid ${s.border}`,
+        whiteSpace: "nowrap",
+        display: "inline-block",
+      }}
+    >
+      {label}
+    </span>
+  );
+}
+
 function HotelCard({
   node,
   onAction,
@@ -1697,12 +1730,17 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
 
           {/* Colorful tags row — each tag gets a distinct color */}
           {hotelTags.length > 0 && (
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-              {hotelTags.map((t, i) => (
-                <ColorfulTag key={i} label={t} index={i} offset={hashLabel(name)} />
-              ))}
-            </div>
-          )}
+  <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+    {hotelTags.map((t, i) => {
+      // Extract star count from labels like "5-Star Hotel", "4 Star Hotel", "3-Star"
+      const starMatch = t.match(/^(\d)/);
+      const starCount = starMatch ? parseInt(starMatch[1], 10) : 0;
+      return (
+        <StarRatingTag key={i} label={t} starCount={starCount} />
+      );
+    })}
+  </div>
+)}
 
           {/* Divider */}
           {(name || hotelTags.length > 0) && (address || description || priceFormatted) && (
