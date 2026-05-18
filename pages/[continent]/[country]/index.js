@@ -146,7 +146,7 @@ export async function getStaticProps(context) {
     const continentData = await axiospagelistinstance.get(
       "/?page_type=Continent&fields=id,page_type,slug,overview_image,tagline,path"
     );
-    for (let i = 0; i < continentData.data.data.pages.length; i++) {
+    for (let i = 0; i < 2; i++) {
       let continentSlug=continentData.data.data.pages[i].slug
       
       const countrydetailsResponse = await axioscountrydetailsinstance.get(

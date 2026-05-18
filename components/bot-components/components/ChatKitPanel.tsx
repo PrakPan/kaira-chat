@@ -1078,7 +1078,7 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
   //   feedback type !== X + click X    →  POST   /feedback/{id}      (change)
   //   feedback type === X + click X    →  DELETE /feedback/{id}      (clear)
   const handleFeedback = useCallback(
-    async (messageId: string, type: "up" | "down") => {
+    async (messageId: string, type: "up" | "down", message?: string) => {
       if (!messageId) return;
       if (!authToken) {
         setShowLoginModal(true);
@@ -1101,6 +1101,7 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
           return next;
         });
 
+      const trimmedMessage = message?.trim();
       const current = feedbackByMessageId[messageId];
       setLoading(true);
       try {
@@ -1111,6 +1112,7 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
             message_id: messageId,
             type,
             platform: getPlatform(),
+            ...(trimmedMessage ? { message: trimmedMessage } : {}),
             ...(reduxUserId != null ? { author: parseInt(reduxUserId) } : {}),
           };
           const res = await axios.post(
@@ -1138,7 +1140,11 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
         } else {
           await axios.post(
             `${CHATKIT}/feedback/${current.feedbackId}`,
-            { type, platform: getPlatform() },
+            {
+              type,
+              platform: getPlatform(),
+              ...(trimmedMessage ? { message: trimmedMessage } : {}),
+            },
             { headers },
           );
           setFeedbackByMessageId((prev) => ({
