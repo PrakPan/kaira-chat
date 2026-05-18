@@ -58,6 +58,7 @@ import { currencySymbols } from "../../data/currencySymbols";
 import { useAnalytics } from "../../hooks/useAnalytics";
 import Login from "../modals/Login";
 import { FiMap, FiNavigation, FiCalendar, FiBookmark } from "react-icons/fi";
+import { tr } from "date-fns/locale";
 
 type MobilePanel = "map" | "chat" | "itinerary";
 type LeftPanelMode = "default" | "itinerary-loading" | "itinerary-ready";
@@ -3002,6 +3003,7 @@ Start Location: ${details.startLocation}`;
               isHotelsPresent={isHotelsPresent}
               handleApply={settingsHandleApply}
               maxAdults={true}
+              maxRooms={true}
             />
           </BottomModal>
         ) : (
@@ -3011,6 +3013,7 @@ Start Location: ${details.startLocation}`;
               isHotelsPresent={isHotelsPresent}
               handleApply={settingsHandleApply}
               maxAdults={true}
+              maxRooms={true}
             />
           </ModalWithBackdrop>
         );
@@ -3760,17 +3763,11 @@ const MobileLayout = React.memo(
       prevIsChatActiveRef.current = isChatActive;
     }, [isChatActive]);
 
-    // When itinerary activity starts, auto-move to itinerary tab so user sees content
+    // When itinerary activity starts on mobile, keep the user on the chat tab
+    // rather than yanking them into the itinerary view. The "View Itinerary"
+    // pill above the composer and the top tab bar let them switch manually.
     const prevHasActivityRef = React.useRef(hasItineraryActivity);
     React.useEffect(() => {
-      if (
-        !prevHasActivityRef.current &&
-        hasItineraryActivity &&
-        activeTab === "chat"
-      ) {
-        setActiveTab("itinerary");
-        setViewMode("itinerary");
-      }
       // Activity dropped (e.g. switched from a P2 thread to a P1 thread that
       // hasn't built an itinerary yet). The itinerary/routes/bookings tabs
       // disappear from the top bar AND their content div is gated by

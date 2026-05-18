@@ -246,9 +246,12 @@ const TransferEditDrawer = (props) => {
   const [multiCitySuggestions, setMultiCitySuggestions] = useState(null);
   const [sightseeingSuggestions, setSightseeingSuggestions] = useState(null);
   const [airportSuggestions, setAirportSuggestions] = useState(null);
-  const [multicityTab, setMulticityTab] = useState(
-    ["sightseeing", "airport", "multicity"].includes(taxiTab) ? taxiTab : "sightseeing",
-  );
+  const [multicityTab, setMulticityTab] = useState(() => {
+    const initial = props?.initialTab;
+    if (["sightseeing", "airport", "multicity"].includes(initial)) return initial;
+    if (["sightseeing", "airport", "multicity"].includes(taxiTab)) return taxiTab;
+    return "sightseeing";
+  });
   const [tabLoaded, setTabLoaded] = useState({
     sightseeing: false,
     airport: false,
@@ -622,7 +625,7 @@ const TransferEditDrawer = (props) => {
             const startParam = includeDateFilter && sightseeingStartDate ? `&start_date=${sightseeingStartDate}` : "";
             const endParam = includeDateFilter && sightseeingEndDate ? `&end_date=${sightseeingEndDate}` : "";
             const typeParam = effectiveType ? `&suggestion_type=${effectiveType}` : "";
-            const multicityUrl = `/${router.query.id || ItineraryId || router.query.sessionId}/?currency=${currency?.currency || "INR"}${cityId ? `&itinerary_city_id=${cityId}` : ""}${startParam}${endParam}${typeParam}`;
+            const multicityUrl = `/${ItineraryId || router.query.id || router.query.sessionId }/?currency=${currency?.currency || "INR"}${cityId ? `&itinerary_city_id=${cityId}` : ""}${startParam}${endParam}${typeParam}`;
             return fetchMulticityRoundtrip
               .get(multicityUrl)
               .then((response) => {
@@ -1006,7 +1009,9 @@ const TransferEditDrawer = (props) => {
           });
         }
         dispatch(setTransfersBookings(response?.data?.data));
+        if(props?.getPaymentHandler){
         props?.getPaymentHandler();
+        }
         setSelectLoading(false);
         setUpdatingTransfer(false);
         // setShowDrawer(false);

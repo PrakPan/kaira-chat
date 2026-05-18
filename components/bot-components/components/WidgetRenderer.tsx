@@ -116,6 +116,7 @@ const ALWAYS_ENABLED_ACTIONS = new Set<string>([
   "open_transfer_drawer",
   "payment.start",
   "sightseeing.open",
+  "pickup_drop.open",
   "visa.open",
   "esim.open",
   "contact.whatsapp",
@@ -1531,6 +1532,39 @@ function isHotelListView(children: WidgetNode[]): boolean {
   });
 }
 
+
+// Star-count → fixed color token. Each tier always renders identically.
+// 5 = purple, 4 = blue, 3 = teal/green, 2 = amber, 1/fallback = gray.
+const STAR_TAG_STYLES: Record<number, { bg: string; color: string; border: string }> = {
+  5: { bg: "#EEEDFE", color: "#3C3489", border: "#AFA9EC" }, // purple
+  4: { bg: "#E6F1FB", color: "#0C447C", border: "#85B7EB" }, // blue
+  3: { bg: "#E1F5EE", color: "#085041", border: "#5DCAA5" }, // teal
+  2: { bg: "#FAEEDA", color: "#633806", border: "#EF9F27" }, // amber
+  1: { bg: "#F1EFE8", color: "#444441", border: "#B4B2A9" }, // gray
+};
+
+function StarRatingTag({ label, starCount }: { label: string; starCount: number }) {
+  const s = STAR_TAG_STYLES[starCount] ?? STAR_TAG_STYLES[1];
+  return (
+    <span
+      style={{
+        padding: "3px 10px",
+        borderRadius: 9999,
+        fontSize: 11,
+        fontWeight: 600,
+        fontFamily: "'Inter', sans-serif",
+        background: s.bg,
+        color: s.color,
+        border: `1px solid ${s.border}`,
+        whiteSpace: "nowrap",
+        display: "inline-block",
+      }}
+    >
+      {label}
+    </span>
+  );
+}
+
 function HotelCard({
   node,
   onAction,
@@ -1696,12 +1730,17 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
 
           {/* Colorful tags row — each tag gets a distinct color */}
           {hotelTags.length > 0 && (
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-              {hotelTags.map((t, i) => (
-                <ColorfulTag key={i} label={t} index={i} offset={hashLabel(name)} />
-              ))}
-            </div>
-          )}
+  <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+    {hotelTags.map((t, i) => {
+      // Extract star count from labels like "5-Star Hotel", "4 Star Hotel", "3-Star"
+      const starMatch = t.match(/^(\d)/);
+      const starCount = starMatch ? parseInt(starMatch[1], 10) : 0;
+      return (
+        <StarRatingTag key={i} label={t} starCount={starCount} />
+      );
+    })}
+  </div>
+)}
 
           {/* Divider */}
           {(name || hotelTags.length > 0) && (address || description || priceFormatted) && (
@@ -3485,6 +3524,7 @@ function findRedirectToP1Button(node: WidgetNode): WidgetNode | null {
 
 const TRIP_EXTRAS_KINDS = new Set<string>([
   "sightseeing.open",
+  "pickup_drop.open",
   "visa.open",
   "esim.open",
 ]);
@@ -3531,6 +3571,22 @@ const TRIP_EXTRAS_THEMES: Record<string, TripExtrasTheme> = {
     ctaBackground: "#C2410C",
     ctaColor: "#FFFFFF",
     ctaShadow: "0 8px 18px rgba(194, 65, 12, 0.28)",
+  },
+  "pickup_drop.open": {
+    defaultHeadline: "Add Airport Transfer",
+    defaultSubline: "Book your airport pickup or drop for a smooth arrival.",
+    defaultCta: "Book transfer",
+    cardBackground:
+      "linear-gradient(135deg, #ecfeff 0%, #cffafe 50%, #a5f3fc 100%)",
+    border: "1px solid rgba(14, 165, 233, 0.32)",
+    iconBackground: "#FFFFFF",
+    iconColor: "#0369A1",
+    glyph: (
+      <FaTaxi size={22} aria-hidden="true" />
+    ),
+    ctaBackground: "#0369A1",
+    ctaColor: "#FFFFFF",
+    ctaShadow: "0 8px 18px rgba(3, 105, 161, 0.28)",
   },
   "visa.open": {
     defaultHeadline: "Add Visa Assistance",
@@ -3607,13 +3663,55 @@ function TripExtrasCard({
     return "";
   };
 
+  const payload = ((button.onClickAction as any)?.payload ?? {}) as Record<string, unknown>;
+  const cityName = asText(payload.cityName ?? (payload as any).city_name ?? (payload as any).city);
+  const taxiType = asText(payload.taxiType ?? (payload as any).taxi_type).toLowerCase();
+  const bookingId = asText(payload.bookingId ?? (payload as any).booking_id);
+  const hasBooking = bookingId.length > 0;
+
+  // Derive a contextual headline / CTA per extras kind so the widget reads as
+  // "Sightseeing Taxi in Ubud" / "Pickup/Drop Taxi in Ubud" without requiring
+  // the server to emit a Title node. The Add/Change distinction lives on the
+  // CTA so the headline stays clean.
+  let derivedHeadline: string | undefined;
+  let derivedSubline: string | undefined;
+  let derivedCta: string | undefined;
+
+  if (actionType === "sightseeing.open") {
+    derivedHeadline = cityName
+      ? `Sightseeing Taxi in ${cityName}`
+      : "Sightseeing Taxi";
+    derivedSubline = hasBooking
+      ? "Update your booked sightseeing ride for this city."
+      : "Browse curated day trips and intra-city rides for this stop.";
+    derivedCta = hasBooking ? "Change sightseeing" : "Explore sightseeing";
+  } else if (actionType === "pickup_drop.open") {
+    const isDrop = taxiType === "drop";
+    derivedHeadline = cityName
+      ? `Pickup/Drop Taxi in ${cityName}`
+      : "Pickup/Drop Taxi";
+    derivedSubline = hasBooking
+      ? `Update your booked ${isDrop ? "airport drop" : "airport pickup"} for this city.`
+      : `Book your ${isDrop ? "airport drop" : "airport pickup"} for a smooth ${isDrop ? "departure" : "arrival"}.`;
+    derivedCta = hasBooking
+      ? `Change ${isDrop ? "drop" : "pickup"}`
+      : `Book ${isDrop ? "drop" : "pickup"}`;
+  }
+
+  // Prefer the cityName-derived headline when we have a city, so server-emitted
+  // generic titles (e.g. "Add Airport Transfer") don't mask the city context.
   const headline =
-    asText(titleNodes[0]?.value) || theme.defaultHeadline;
+    (cityName && derivedHeadline) ||
+    asText(titleNodes[0]?.value) ||
+    derivedHeadline ||
+    theme.defaultHeadline;
   const subline =
     asText(captionNodes[0]?.value) ||
     asText(textNodes[0]?.value) ||
+    derivedSubline ||
     theme.defaultSubline;
-  const buttonLabel = (button.label as string) || theme.defaultCta;
+  const buttonLabel =
+    (button.label as string) || derivedCta || theme.defaultCta;
 
   const handleClick = () => {
     // if (widgetDisabled) return;

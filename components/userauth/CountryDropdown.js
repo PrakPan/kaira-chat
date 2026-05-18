@@ -139,7 +139,8 @@ const CountryCodeDropdown = ({
   return (
     <div
       ref={ref}
-      className="fixed z-[1900] w-[90%] md:w-[40%] h-[80%] bg-white border-2 rounded-md overflow-auto drop-shadow-2xl shadow-2xl"
+      data-country-dropdown="true"
+      className="fixed z-[1900] top-[10%] left-1/2 -translate-x-1/2 w-[90%] md:w-[40%] h-[80%] bg-white border-2 rounded-md overflow-auto drop-shadow-2xl shadow-2xl"
     >
       <div className="sticky top-0 w-full bg-white p-2">
         <input
