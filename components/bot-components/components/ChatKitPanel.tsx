@@ -287,6 +287,393 @@ const WelcomeState = () => (
   </div>
 );
 
+// ── Right-panel chat aesthetic (mirrors chat-active-v2.html) ─────────────────
+// Scoped class names so they don't collide with global styles. Applied to the
+// header, message bubbles, and composer wrap inside ChatKitPanel.
+const ChatPanelStyles = () => (
+  <style>{`
+    .kp-root,
+    .kp-root *,
+    .kp-root *::before,
+    .kp-root *::after {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    .kp-root .kp-serif,
+    .kp-serif {
+      font-family: 'Instrument Serif', serif !important;
+      font-style: italic;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+    }
+    .kp-header {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 20px;
+      border-bottom: 1px solid #ececec;
+      background: #fff;
+      flex-shrink: 0;
+    }
+    .kp-header-ava {
+      position: relative;
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(180deg, #a8d2f5, #7ab8e8);
+      overflow: hidden;
+      border: 2px solid #fff;
+      box-shadow: 0 2px 8px rgba(11,18,32,0.12);
+      flex-shrink: 0;
+    }
+    .kp-header-ava img { width: 100%; height: 100%; object-fit: cover; }
+    .kp-header-ava .kp-dot {
+      position: absolute;
+      bottom: 1px; right: 1px;
+      width: 11px; height: 11px;
+      background: #4ade80;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      animation: kpBlink 2s infinite;
+    }
+    @keyframes kpBlink { 0%,100% { opacity: 1; } 50% { opacity: 0.55; } }
+    .kp-header-info { flex: 1; min-width: 0; }
+    .kp-header-name {
+      font-size: 14px; font-weight: 700; color: #0b1220; line-height: 1.2;
+    }
+    .kp-header-status {
+      font-size: 11px; color: #1f8a5a; font-weight: 600;
+      display: flex; align-items: center; gap: 5px; margin-top: 1px;
+    }
+    .kp-header-status.thinking { color: #e85a4f; }
+    .kp-header-status.thinking::before {
+      content: ''; width: 5px; height: 5px;
+      background: #e85a4f; border-radius: 50%;
+      animation: kpStageDot 1.2s infinite;
+    }
+    @keyframes kpStageDot {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.7); }
+    }
+    .kp-composer-wrap {
+      padding: 12px 20px 18px;
+      border-top: 1px solid #ececec;
+      background: #fff;
+    }
+
+    /* ── Status notes card (mirrors .wait-card from the left panel) ── */
+    .sn-card {
+      background: #fff;
+      border: 1px solid #ececec;
+      border-radius: 22px;
+      padding: 22px 22px 20px;
+      margin: 8px 0 14px;
+      position: relative;
+      overflow: hidden;
+      animation: snIn 0.4s cubic-bezier(0.2,0.7,0.3,1);
+    }
+    @keyframes snIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .sn-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%; height: 3px;
+      background: linear-gradient(90deg, transparent, #f7e700, transparent);
+      animation: snScan 2.4s ease-in-out infinite;
+    }
+    @keyframes snScan { 0% { left: -100%; } 100% { left: 100%; } }
+    .sn-stage {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 5px 11px;
+      background: #0b1220; color: #f7e700;
+      border-radius: 999px;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.04em;
+      margin-bottom: 14px;
+    }
+    .sn-stage .sn-pulse {
+      width: 6px; height: 6px; background: #f7e700; border-radius: 50%;
+      animation: kpStageDot 1.4s ease-in-out infinite;
+    }
+    .sn-title {
+      font-size: 18px; font-weight: 800; color: #0b1220;
+      letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 14px;
+    }
+    .sn-list { list-style: none; display: flex; flex-direction: column; gap: 8px; padding: 0; margin: 0; }
+    .sn-item {
+      display: grid; grid-template-columns: 22px 1fr; gap: 10px;
+      align-items: flex-start;
+      padding: 10px 12px;
+      background: #fafaf5;
+      border: 1px solid #ececec;
+      border-radius: 12px;
+      font-size: 13px; line-height: 1.45;
+      color: #1a2436;
+      animation: snItemIn 0.35s ease-out;
+      transition: background 0.25s, border-color 0.25s, color 0.25s;
+    }
+    /* Active (latest batch while polling) — peach surface, pulsing dot. */
+    .sn-item.sn-item-active {
+      background: #fff4e8;
+      border-color: #ffd4b8;
+      color: #0b1220;
+    }
+    /* Done (any earlier batch, or every batch once polling ends) — muted. */
+    .sn-item.sn-item-done {
+      background: #fff;
+      color: #445069;
+    }
+    @keyframes snItemIn {
+      from { opacity: 0; transform: translateX(-6px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    .sn-item-dot {
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: #1f8a5a; color: #fff;
+      display: grid; place-items: center;
+      flex-shrink: 0; margin-top: 1px;
+    }
+    .sn-item-dot svg { width: 10px; height: 10px; }
+    /* Active dot — coral pulse instead of green check. */
+    .sn-item.sn-item-active .sn-item-dot {
+      background: transparent;
+      border: 2px solid #e85a4f;
+    }
+    .sn-item.sn-item-active .sn-item-dot::after {
+      content: '';
+      width: 6px; height: 6px;
+      background: #e85a4f;
+      border-radius: 50%;
+      animation: snPulse 1.2s ease-in-out infinite;
+    }
+    @keyframes snPulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.45; transform: scale(0.6); }
+    }
+    /* Pure mid-line divider between batches — no text. */
+    .sn-divider {
+      list-style: none;
+      height: 1px;
+      margin: 6px 4px;
+      background: linear-gradient(90deg, transparent, #ececec 18%, #ececec 82%, transparent);
+    }
+    /* Standalone loader row — sits at the bottom of the active batch (or
+       on its own before the first batch arrives). No text per spec. */
+    .sn-loader-row {
+      display: flex; align-items: center; justify-content: center;
+      padding: 8px 12px;
+    }
+    .sn-spinner {
+      width: 16px; height: 16px;
+      border: 2px solid #ffd4b8;
+      border-top-color: #e85a4f;
+      border-radius: 50%;
+      animation: snSpin 0.9s linear infinite;
+      flex-shrink: 0;
+    }
+    @keyframes snSpin { to { transform: rotate(360deg); } }
+    /* Done footer — replaces the loader once notes returns empty. */
+    .sn-done-row {
+      display: flex; align-items: center; gap: 9px;
+      margin-top: 4px;
+      padding: 10px 12px;
+      background: #e0f2e9;
+      border: 1px solid #b6dec7;
+      border-radius: 12px;
+      font-size: 13px; font-weight: 700; color: #1f8a5a;
+      animation: snItemIn 0.3s ease-out;
+    }
+    .sn-done-icon {
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: #1f8a5a; color: #fff;
+      display: grid; place-items: center;
+      flex-shrink: 0;
+    }
+    .sn-done-icon svg { width: 10px; height: 10px; }
+  `}</style>
+);
+
+/**
+ * StatusNotesCard
+ * Renders the progress signals coming from the /status/ poll inside the chat,
+ * styled like the left "wait-card" from the reference HTML.
+ *
+ * Sources merged:
+ *   - `notes`: array of step lines (server batches several at once).
+ *   - `displayText`: rolling status string (the same value the BottomCTA
+ *     loader shows). Often the only thing that updates poll-to-poll.
+ *
+ * Behaviour:
+ *   - A "batch" is a snapshot of `notes` containing N lines; consecutive
+ *     batches get a horizontal "next update" divider between them.
+ *   - `displayText` updates flow into the *current* batch (or a fresh
+ *     leading batch if none exists yet) as additional step lines, so each
+ *     new poll value appears immediately rather than being silently
+ *     swallowed.
+ *   - The loader stays visible until `notes` arrives empty (server signal
+ *     that no more steps are coming) or `isPolling` flips off. Collected
+ *     batches remain pinned after that so the user keeps the timeline.
+ */
+interface StatusNotesCardProps {
+  notes: any[] | undefined;
+  displayText?: string | null | undefined;
+  isPolling: boolean;
+  cycleKey: string;
+}
+const StatusNotesCard: React.FC<StatusNotesCardProps> = ({
+  notes,
+  displayText,
+  isPolling,
+  cycleKey,
+}) => {
+  type Batch = { id: number; items: string[] };
+  const [batches, setBatches] = useState<Batch[]>([]);
+  const [loaderActive, setLoaderActive] = useState<boolean>(true);
+  const prevNotesKeyRef = useRef<string>("");
+  const prevDisplayRef = useRef<string>("");
+  // Tracks every line we've ever shown this cycle (notes + display_text),
+  // keyed by the line text. Prevents duplicates when notes already contains
+  // the same text that arrived via display_text on a prior poll.
+  const seenLinesRef = useRef<Set<string>>(new Set());
+  const batchIdRef = useRef(0);
+  const cycleRef = useRef<string>(cycleKey);
+
+  // New polling cycle → reset everything.
+  useEffect(() => {
+    if (cycleRef.current === cycleKey) return;
+    cycleRef.current = cycleKey;
+    setBatches([]);
+    setLoaderActive(true);
+    prevNotesKeyRef.current = "";
+    prevDisplayRef.current = "";
+    seenLinesRef.current = new Set();
+    batchIdRef.current = 0;
+  }, [cycleKey]);
+
+  // Track new note snapshots (server may push 1+ lines at once).
+  useEffect(() => {
+    const arr = Array.isArray(notes) ? notes : [];
+    const items = arr
+      .map((n) =>
+        typeof n === "string"
+          ? n
+          : (n?.text ?? n?.message ?? n?.note ?? n?.title ?? JSON.stringify(n)),
+      )
+      .map((s) => (typeof s === "string" ? s.trim() : ""))
+      .filter(Boolean);
+    const key = items.join("||");
+    if (key === prevNotesKeyRef.current) return;
+    prevNotesKeyRef.current = key;
+    if (items.length === 0) {
+      // Empty notes from server — stop loader, freeze the card.
+      setLoaderActive(false);
+      return;
+    }
+    const fresh = items.filter((it) => !seenLinesRef.current.has(it));
+    if (fresh.length === 0) return;
+    fresh.forEach((it) => seenLinesRef.current.add(it));
+    batchIdRef.current += 1;
+    setBatches((prev) => [...prev, { id: batchIdRef.current, items: fresh }]);
+    setLoaderActive(true);
+  }, [notes]);
+
+  // Track display_text updates. Each new non-empty value is appended to the
+  // current batch (or seeds the first batch). Same de-dup as notes so we
+  // don't echo a line that's already in the list.
+  useEffect(() => {
+    const txt = typeof displayText === "string" ? displayText.trim() : "";
+    if (!txt) return;
+    if (txt === prevDisplayRef.current) return;
+    prevDisplayRef.current = txt;
+    if (seenLinesRef.current.has(txt)) return;
+    seenLinesRef.current.add(txt);
+    setBatches((prev) => {
+      if (prev.length === 0) {
+        batchIdRef.current += 1;
+        return [{ id: batchIdRef.current, items: [txt] }];
+      }
+      // Append into the most recent batch.
+      const next = prev.slice();
+      const last = next[next.length - 1];
+      next[next.length - 1] = { ...last, items: [...last.items, txt] };
+      return next;
+    });
+    setLoaderActive(true);
+  }, [displayText]);
+
+  // Polling ended without an empty-notes signal → still hide loader.
+  useEffect(() => {
+    if (!isPolling) setLoaderActive(false);
+  }, [isPolling]);
+
+  // `cycleKey === "init"` means the parent component hasn't observed a
+  // polling false→true transition yet (i.e. no update was triggered in
+  // this session). Stay invisible — guards against the card popping up in
+  // unrelated chats or after a page refresh just because Redux's
+  // `is_polling` flag is still set from a prior session.
+  if (cycleKey === "init") return null;
+  if (batches.length === 0 && !isPolling) return null;
+
+  // An item is "active" when it lives in the latest batch AND polling is
+  // still in flight. The moment the next batch arrives (or polling ends)
+  // it flips to "done" — coral pulsing dot becomes a green check.
+  const latestBatchIdx = batches.length - 1;
+  const isActiveBatch = (idx: number) => loaderActive && idx === latestBatchIdx;
+  const showDoneFooter = !loaderActive && batches.length > 0;
+
+  return (
+    <div className="sn-card">
+      <span className="sn-stage">
+        <span className="sn-pulse" />
+        Updating your itinerary
+      </span>
+      <div className="sn-title">Kaira is working on your changes</div>
+      <ul className="sn-list">
+        {batches.map((b, bi) => (
+          <React.Fragment key={b.id}>
+            {bi > 0 && <li className="sn-divider" aria-hidden="true" />}
+            {b.items.map((it, ii) => {
+              const active = isActiveBatch(bi);
+              return (
+                <li
+                  className={`sn-item ${active ? "sn-item-active" : "sn-item-done"}`}
+                  key={`${b.id}-${ii}`}
+                >
+                  <span className="sn-item-dot">
+                    {active ? null : (
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    )}
+                  </span>
+                  <span>{it}</span>
+                </li>
+              );
+            })}
+          </React.Fragment>
+        ))}
+        {loaderActive && (
+          <li className="sn-loader-row" aria-label="Loading next step">
+            <span className="sn-spinner" />
+          </li>
+        )}
+        {showDoneFooter && (
+          <li className="sn-done-row" role="status">
+            <span className="sn-done-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </span>
+            <span>Done</span>
+          </li>
+        )}
+      </ul>
+    </div>
+  );
+};
+
 export function ChatKitPanel({
   onLocationReceived,
   onNewQuery,
@@ -359,6 +746,40 @@ onViewItinerary,
   const isItineraryPolling = useSelector(
     (state: any) => !!state.ItineraryStatus?.is_polling,
   );
+  // Streamed progress signals from the /status/ poll. Two parallel fields:
+  //   - `notes`: a list of step lines (sometimes empty).
+  //   - `display_text`: a single rolling status string ("Crafting day by day…").
+  // The BottomCTA loader only consumes `display_text`, which is why the chat
+  // card looked empty before — most polls only update display_text, not notes.
+  // StatusNotesCard merges both into a single progressive list.
+  const statusNotes = useSelector(
+    (state: any) => state.ItineraryStatus?.notes as any[] | undefined,
+  );
+  const statusDisplayText = useSelector(
+    (state: any) => state.ItineraryStatus?.display_text as string | null | undefined,
+  );
+  // Bump whenever polling transitions false → true so StatusNotesCard resets
+  // to a fresh batch list per update cycle (Update Dates, Route Edit, …).
+  //
+  // Important: only observe transitions that happen *after* the component
+  // mounts. ItineraryStatus lives in global Redux, so on a fresh mount —
+  // e.g. user navigates into a different chat, or refreshes the page mid-
+  // poll — `is_polling` may already be true from a prior session. Without
+  // this guard the card would re-appear in every chat that didn't actually
+  // trigger an update. `prevPollingRef` starts as `null` so the first
+  // effect run only captures state without firing a cycle bump.
+  const [pollingCycleKey, setPollingCycleKey] = useState<string>("init");
+  const prevPollingRef = useRef<boolean | null>(null);
+  useEffect(() => {
+    if (prevPollingRef.current === null) {
+      prevPollingRef.current = isItineraryPolling;
+      return;
+    }
+    if (isItineraryPolling && !prevPollingRef.current) {
+      setPollingCycleKey(`cycle-${Date.now()}`);
+    }
+    prevPollingRef.current = isItineraryPolling;
+  }, [isItineraryPolling]);
   const isComposerLocked = isItineraryCompleting || isItineraryPolling;
   const authToken = reduxToken ?? getAuthToken();
   const isLoggedIn = !!authToken;
@@ -2246,24 +2667,42 @@ const handleShowLogin = useCallback(() => {
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div
-      className={`flex flex-col h-full min-h-0 bg-white  max-h-[100dvh] md:max-h-[93.5vh] border-[0.5px] border-l-[#e5e5e5] overflow-x-hidden`}
-      style={{ fontFamily: "'Inter', sans-serif" }}
+      className={`kp-root flex flex-col h-full min-h-0 bg-white  max-h-[100dvh] md:max-h-[93.5vh] border-[0.5px] border-l-[#e5e5e5] overflow-x-hidden`}
+      style={{
+        fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+        WebkitFontSmoothing: "antialiased",
+        MozOsxFontSmoothing: "grayscale",
+      }}
     >
-      {/* ── Top bar ───────────────────────────────────────────────────────── */}
-      <div className="flex-shrink-0 flex items-center justify-between gap-2 px-[0.25rem] md:!px-4 py-2.5 bg-white/80 backdrop-blur-sm mt-2">
-        <div className="flex items-center gap-2 min-w-0">
-          <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0">
-            <img src="/KairaInsta.png" alt="Kaira" />
+      <ChatPanelStyles />
+      {/* ── Top bar — mirrors chat-active-v2.html .chat-header ──────────── */}
+      <div className="kp-header">
+        <div className="kp-header-ava">
+          <img src="/KairaInsta.png" alt="Kaira" />
+          <span className="kp-dot" />
+        </div>
+        <div className="kp-header-info">
+          <div className="kp-header-name">
+            Kaira
+            <span className="font-normal hidden md:inline text-[#445069]"> · Your AI Trip Planner</span>
           </div>
-          <span className="text-sm md:text-[14px] font-semibold text-gray-800 truncate">
-            Chat with Kaira
-            <span className="font-normal hidden md:inline"> - Your AI Trip Planner</span>
-          </span>
-          {isLoadingLocation && (
-            <span className="text-[11px] text-gray-400 flex items-center gap-1 flex-shrink-0">
-              <Spinner size={10} /> locating…
+          <div
+            className={`kp-header-status ${
+              isStreaming || isItineraryCompleting || isItineraryPolling ? "thinking" : ""
+            }`}
+          >
+            <span>
+              {isItineraryPolling
+                ? "updating itinerary…"
+                : isItineraryCompleting
+                ? "building itinerary…"
+                : isStreaming
+                ? "typing…"
+                : isLoadingLocation
+                ? "locating…"
+                : "online · ~2s reply"}
             </span>
-          )}
+          </div>
         </div>
         {mobileMenu && <div className="md:hidden flex-shrink-0">{mobileMenu}</div>}
         {/* <button
@@ -2831,6 +3270,16 @@ const handleShowLogin = useCallback(() => {
 
             {isItineraryCompleting && !isStreaming && <TripPlanningLoader />}
 
+            {/* Itinerary update progress (Update Dates / Route Edit / Reprice /
+                refresh_itinerary). Renders the streaming `notes` from the
+                /status/ poll as a batched in-chat card. */}
+            <StatusNotesCard
+              notes={statusNotes}
+              displayText={statusDisplayText}
+              isPolling={isItineraryPolling}
+              cycleKey={pollingCycleKey}
+            />
+
             <div ref={messagesEndRef} />
           </div>
       </div>
@@ -2859,7 +3308,7 @@ const handleShowLogin = useCallback(() => {
       )}
 
       {/* ── Composer ─────────────────────────────────────────────────────── */}
-      <div className="flex-shrink-0 px-[0.25rem] md:!px-6 pt-3 pb-1 bg-white relative">
+      <div className="kp-composer-wrap flex-shrink-0 relative">
         <div className="mx-auto">
           <MessageInputBox
             value={input}

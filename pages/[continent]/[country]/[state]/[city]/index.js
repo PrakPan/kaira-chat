@@ -103,50 +103,14 @@ const Experience = (props) => {
 };
 
 export async function getStaticPaths() {
-  let paths = [];
-
-  try {
-    //mercury api
-    const res = await axios.get(
-      `${MERCURY_HOST}/api/v1/geos/search/all/?type=City`
-    );
-
-    let data = res.data;
-
-    for (var i = 0; i < data.length; i++) {
-      const pathArr = data[i].path.split("/");
-      var [continentSlug, countrySlug, stateSlug, citySlug] = pathArr;
-      if (data[i]) {
-        paths.push({
-          params: {
-            continent: continentSlug,
-            country:countrySlug!="None"? countrySlug.toLowerCase().replace(/ /g, "_"):countrySlug,
-            state: stateSlug,
-            city: citySlug,
-          }
-        });
-      }
-    }
-  } catch (err) {
-    console.log(
-      "[ERROR][cityPage:axiossearchInstance][/?type=Location&fields=path,cta]: ",
-      err.message
-    );
-  }
-
-  return{
-    paths:paths,
-    fallback:false
-  }
-
- return {
+  return {
     paths: [
       {
         params: {
-          continent: "europe",
-          country: "portugal",
-          state: "madeira",
-          city: "funchal_madeira",
+          continent: "asia",
+          country: "thailand",
+          state: "bangkok",
+          city: "bangkok",
         },
       },
     ],

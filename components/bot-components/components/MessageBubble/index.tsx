@@ -478,7 +478,7 @@ const ThinkingLoaderShell: React.FC<{
       width: "100%",
       maxWidth: "100%",
       boxSizing: "border-box",
-      fontFamily: "'Inter', sans-serif",
+      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
     }}
   >
     {/* Lead — matches .bubble-k .lead */}
@@ -670,7 +670,7 @@ const ProgressLoader: React.FC<{ steps: ProgressStep[] }> = ({ steps }) => {
 
   // ── Done: no card, collapsible toggle ──
   return (
-    <div style={{ marginBottom: 12, fontFamily: "'Inter', sans-serif" }}>
+    <div style={{ marginBottom: 12, fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}>
       <button
         onClick={() => setExpanded((v) => !v)}
         style={{
@@ -842,7 +842,7 @@ const ThinkingBlock: React.FC<{
     <div
       style={{
         marginBottom: 12,
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
       }}
     >
       {/* Header — clickable */}
@@ -1007,7 +1007,7 @@ const RetryButton: React.FC<{ onRetry: () => void }> = ({ onRetry }) => (
       border: "none",
       background: "transparent",
       color: "#dc2626",
-      fontFamily: "'Inter', sans-serif",
+      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
       fontSize: 13,
       fontWeight: 600,
       cursor: "pointer",
@@ -1058,7 +1058,7 @@ const ErrorBubble: React.FC<{
         border: "1px solid #fecaca",
         background: "#fef2f2",
         color: "#7f1d1d",
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
         fontSize: 14,
         lineHeight: "20px",
         animation: "errFadeIn 0.18s ease-out",
@@ -1115,6 +1115,98 @@ const ErrorBubble: React.FC<{
   );
 };
 
+// ─── Chat typography (matches design-system.html · 04 · Typography) ──────────
+// Applied to any markdown-rendered content inside a chat bubble. Sizes use
+// clamp() so a paragraph that's tight on a 375px phone scales smoothly up to
+// the design's 14.5/17/19/22px steps on desktop.
+const ChatMdStyles: React.FC = () => (
+  <style>{`
+    .chat-md {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: clamp(13.5px, 3.6vw, 14.5px);
+      line-height: 1.55;
+      color: #1a2436;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    .chat-md p { margin: 0 0 6px; }
+    .chat-md p:last-child { margin-bottom: 0; }
+    .chat-md ul, .chat-md ol { margin: 6px 0; padding-left: 18px; }
+    .chat-md ul + p, .chat-md ol + p { margin-top: 6px; }
+    .chat-md li { margin-bottom: 2px; }
+    .chat-md li::marker { color: #8a93a6; }
+    .chat-md h1 {
+      font-size: clamp(17px, 4.6vw, 19px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin: 8px 0 6px;
+      color: #0b1220;
+    }
+    .chat-md h2 {
+      font-size: clamp(15.5px, 4vw, 17px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin: 8px 0 6px;
+      color: #0b1220;
+    }
+    .chat-md h3 {
+      font-size: clamp(14px, 3.7vw, 15.5px);
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      line-height: 1.3;
+      margin: 6px 0 4px;
+      color: #0b1220;
+    }
+    .chat-md h1:first-child,
+    .chat-md h2:first-child,
+    .chat-md h3:first-child { margin-top: 0; }
+    .chat-md strong, .chat-md b { font-weight: 700; color: #0b1220; }
+    .chat-md em {
+      font-family: 'Instrument Serif', 'Inter', serif;
+      font-style: italic;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+    }
+    .chat-md code {
+      font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+      font-size: clamp(11.5px, 3vw, 13px);
+      background: #fafaf5;
+      border: 1px solid #f4f3ec;
+      padding: 1px 5px;
+      border-radius: 4px;
+      color: #1a2436;
+    }
+    .chat-md a {
+      color: #0b1220;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .chat-md hr {
+      border: none;
+      border-top: 1px dashed #ececec;
+      margin: 10px 0;
+    }
+    .chat-md blockquote {
+      border-left: 3px solid #ececec;
+      padding-left: 10px;
+      margin: 8px 0;
+      color: #445069;
+      font-size: clamp(13px, 3.4vw, 14px);
+    }
+    /* User bubble inverts text colour, but inherits the same scale. */
+    .chat-md.user { color: #fff; }
+    .chat-md.user strong, .chat-md.user b { color: #fff; }
+    .chat-md.user a { color: #f7e700; }
+    .chat-md.user code {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.16);
+      color: #fff;
+    }
+  `}</style>
+);
+
 // ─── MessageBubble ────────────────────────────────────────────────────────────
 
 export const MessageBubble: React.FC<MessageBubbleProps> = ({
@@ -1135,23 +1227,88 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
 
   if (message.type === "widget" && message.widgetItem) {
     const buttonOnly = isButtonOnlyWidget(message.widgetItem.widget);
-    return (
-      <div>
-        <WidgetRenderer
-          widget={message.widgetItem.widget}
-          onAction={onWidgetAction}
-          disabled={widgetDisabled}
-        />
-        <div className="ml-5">
-        {!buttonOnly && onFeedback && message.id && (
-          <FeedbackButtons
-            messageId={message.id}
-            feedback={feedback}
-            loading={feedbackLoading}
-            onFeedback={onFeedback}
+
+    // Pure CTA widgets (e.g. "Confirm This Route") render bare — no avatar,
+    // no bubble surround. They're a UI prompt, not a Kaira utterance, so the
+    // conversation visual shouldn't anchor them to her.
+    if (buttonOnly) {
+      return (
+        <div>
+          <WidgetRenderer
+            widget={message.widgetItem.widget}
+            onAction={onWidgetAction}
+            disabled={widgetDisabled}
           />
-        )}
         </div>
+      );
+    }
+
+    return (
+      <div
+        className="msg kaira"
+        style={{
+          display: "flex",
+          gap: 10,
+          maxWidth: "98%",
+          marginBottom: 14,
+          animation: "msgInK 0.3s ease-out",
+        }}
+      >
+        {/* Kaira avatar — same gradient ring + image as text replies, so
+            content widget messages read as part of the same turn. */}
+        <div
+          aria-hidden
+          style={{
+            width: 30,
+            height: 30,
+            borderRadius: "50%",
+            flexShrink: 0,
+            overflow: "hidden",
+            background: "linear-gradient(180deg, #a8d2f5, #7ab8e8)",
+          }}
+        >
+          <img
+            src="/KairaInsta.png"
+            alt="Kaira"
+            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          />
+        </div>
+        <div style={{ minWidth: 0, flex: 1 }}>
+          {/* Content widgets sit on the Kaira bubble surface — inner cards
+              (transport, activity, POI) stay white on top of this base. */}
+          <div
+            style={{
+              background: "#fafaf5",
+              borderRadius: 16,
+              borderBottomLeftRadius: 5,
+              padding: "11px 12px",
+              wordBreak: "break-word",
+              overflowWrap: "anywhere",
+            }}
+          >
+            <WidgetRenderer
+              widget={message.widgetItem.widget}
+              onAction={onWidgetAction}
+              disabled={widgetDisabled}
+            />
+          </div>
+          <div className="ml-1">
+            {onFeedback && message.id && (
+              <FeedbackButtons
+                messageId={message.id}
+                feedback={feedback}
+                loading={feedbackLoading}
+                onFeedback={onFeedback}
+              />
+            )}
+          </div>
+        </div>
+        <style>{`
+          @keyframes msgInK {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+        `}</style>
       </div>
     );
   }
@@ -1160,75 +1317,107 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
     const hasAttachments = (message.attachments?.length ?? 0) > 0;
     return (
       <div
+        className="msg user"
         style={{
           display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-end",
-          marginBottom: 16,
-          gap: 6,
+          flexDirection: "row-reverse",
+          gap: 10,
+          maxWidth: "85%",
+          marginLeft: "auto",
+          marginBottom: 14,
+          fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+          animation: "msgIn 0.3s ease-out",
         }}
       >
-        {hasAttachments && (
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              justifyContent: "flex-end",
-              gap: 6,
-              maxWidth: "85%",
-            }}
-          >
-            {message.attachments!.map((att) => {
-              const isImage = att.mimeType?.startsWith("image/");
-              if (isImage && att.previewUrl) {
+        <div
+          aria-hidden
+          style={{
+            width: 30,
+            height: 30,
+            borderRadius: "50%",
+            flexShrink: 0,
+            background: "#0f1a2e",
+            color: "#f7e700",
+            display: "grid",
+            placeItems: "center",
+            fontSize: 12,
+            fontWeight: 700,
+            fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+          }}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="8" r="4" />
+            <path d="M20 21a8 8 0 1 0-16 0" />
+          </svg>
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6, minWidth: 0 }}>
+          {hasAttachments && (
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                justifyContent: "flex-end",
+                gap: 6,
+                maxWidth: "100%",
+              }}
+            >
+              {message.attachments!.map((att) => {
+                const isImage = att.mimeType?.startsWith("image/");
+                if (isImage && att.previewUrl) {
+                  return (
+                    <ImageAttachment
+                      key={att.id}
+                      url={att.previewUrl}
+                      name={att.name}
+                    />
+                  );
+                }
                 return (
-                  <ImageAttachment
+                  <div
                     key={att.id}
-                    url={att.previewUrl}
-                    name={att.name}
-                  />
+                    style={{
+                      padding: "8px 12px",
+                      background: "#f3f4f6",
+                      borderRadius: 8,
+                      fontSize: 13,
+                      color: "#374151",
+                      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+                      maxWidth: 220,
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
+                    title={att.name}
+                  >
+                    📎 {att.name ?? "Attachment"}
+                  </div>
                 );
-              }
-              return (
-                <div
-                  key={att.id}
-                  style={{
-                    padding: "8px 12px",
-                    background: "#f3f4f6",
-                    borderRadius: 8,
-                    fontSize: 13,
-                    color: "#374151",
-                    fontFamily: "'Inter', sans-serif",
-                    maxWidth: 220,
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                  }}
-                  title={att.name}
-                >
-                  📎 {att.name ?? "Attachment"}
-                </div>
-              );
-            })}
-          </div>
-        )}
-        {message.content && (
-          <div
-            style={{
-              maxWidth: "85%",
-              background: "#f8fafc",
-              color: "#0d0d0d",
-              padding: "10px 16px",
-              borderRadius: 12,
-              fontFamily: "'Inter', sans-serif",
-              fontSize: 16,
-              lineHeight: "24px",
-              fontWeight: 400,
-            }}
-          >
-            {message.content}
-          </div>
-        )}
+              })}
+            </div>
+          )}
+          {message.content && (
+            <div
+              className="chat-md user"
+              style={{
+                padding: "11px 15px",
+                background: "#0f1a2e",
+                borderRadius: 16,
+                borderBottomRightRadius: 5,
+                wordBreak: "break-word",
+                overflowWrap: "anywhere",
+              }}
+            >
+              {message.content}
+            </div>
+          )}
+        </div>
+        <ChatMdStyles />
+        <style>{`
+          @keyframes msgIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+        `}</style>
       </div>
     );
   }
@@ -1245,76 +1434,111 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   // Show dots only when truly nothing else: no progress, no tasks, no content
   const showDots = !hasProgress && !hasTasks && !hasContent && streaming;
 
+  // Plain text replies sit inside a soft Kaira-style bubble (mirrors
+  // `.msg.kaira .msg-bubble` in chat-active-v2.html). Thinking/progress
+  // blocks and error bubbles have their own card design and keep it.
+  const showPlainBubble = hasContent && !message.isError;
+
   return (
     <div
+      className="msg kaira"
       style={{
         display: "flex",
-        justifyContent: "flex-start",
-        marginBottom: 16,
+        gap: 10,
+        maxWidth: "98%",
+        marginBottom: 14,
+        animation: "msgInK 0.3s ease-out",
       }}
     >
       <div
+        aria-hidden
         style={{
-          display: "flex",
-          alignItems: "flex-start",
-          gap: 10,
-          width: "98%",
+          width: 30,
+          height: 30,
+          borderRadius: "50%",
+          flexShrink: 0,
+          overflow: "hidden",
+          background: "linear-gradient(180deg, #a8d2f5, #7ab8e8)",
         }}
       >
-        <div
-          className="chatWrapper"
-          style={{ padding: "10px 16px", color: "#0d0d0d", minWidth: "98%" }}
-        >
-          {/* Progress steps (e.g. from progress_update events) */}
-          {hasProgress && <ProgressLoader steps={message.progressSteps!} />}
+        <img
+          src="/KairaInsta.png"
+          alt="Kaira"
+          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+        />
+      </div>
+      <div
+        className="chatWrapper"
+        style={{
+          color: "#1a2436",
+          minWidth: 0,
+          flex: 1,
+          fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+        }}
+      >
+        {/* Progress steps (e.g. from progress_update events) */}
+        {hasProgress && <ProgressLoader steps={message.progressSteps!} />}
 
-          {/* Thinking block — shows tasks, collapses to pill once done + content arrives */}
-          {showThinking && (
-            <ThinkingBlock
-              tasks={message.thinkingTasks!}
-              // Still "streaming" visually until both workflow done AND content has started
-              isStreaming={!allTasksDone || (!hasContent && streaming)}
+        {/* Thinking block — shows tasks, collapses to pill once done + content arrives */}
+        {showThinking && (
+          <ThinkingBlock
+            tasks={message.thinkingTasks!}
+            // Still "streaming" visually until both workflow done AND content has started
+            isStreaming={!allTasksDone || (!hasContent && streaming)}
+          />
+        )}
+
+        {/* Main response content */}
+        {hasContent && message.isError ? (
+          <ErrorBubble
+            variant={message.errorVariant ?? "generic"}
+            text={message.content}
+            onRetry={onRetry}
+          />
+        ) : showPlainBubble ? (
+          <div
+            className="chat-md kaira"
+            style={{
+              padding: "11px 15px",
+              background: "#fafaf5",
+              borderRadius: 16,
+              borderBottomLeftRadius: 5,
+              willChange: "contents",
+              transition: "opacity 0.1s ease",
+              wordBreak: "break-word",
+              overflowWrap: "anywhere",
+            }}
+          >
+            {renderContent(message.content, entities ?? {})}
+          </div>
+        ) : null}
+
+        {/* Fallback bubble dots */}
+        {showDots && <ThinkingDots />}
+
+        {/* Feedback (thumbs up / down) — only on completed bot text replies.
+            Suppressed for network errors; the retry CTA inside ErrorBubble
+            takes its place. */}
+        {hasContent &&
+          !streaming &&
+          onFeedback &&
+          message.id &&
+          !(message.isError && message.errorVariant === "network") && (
+            <FeedbackButtons
+              messageId={message.id}
+              feedback={feedback}
+              loading={feedbackLoading}
+              onFeedback={onFeedback}
             />
           )}
-
-          {/* Main response content */}
-          {hasContent && message.isError ? (
-            <ErrorBubble
-              variant={message.errorVariant ?? "generic"}
-              text={message.content}
-              onRetry={onRetry}
-            />
-          ) : hasContent ? (
-            <div
-              style={{
-                willChange: "contents",
-                transition: "opacity 0.1s ease",
-              }}
-            >
-              {renderContent(message.content, entities ?? {})}
-            </div>
-          ) : null}
-
-          {/* Fallback bubble dots */}
-          {showDots && <ThinkingDots />}
-
-          {/* Feedback (thumbs up / down) — only on completed bot text replies.
-              Suppressed for network errors; the retry CTA inside ErrorBubble
-              takes its place. */}
-          {hasContent &&
-            !streaming &&
-            onFeedback &&
-            message.id &&
-            !(message.isError && message.errorVariant === "network") && (
-              <FeedbackButtons
-                messageId={message.id}
-                feedback={feedback}
-                loading={feedbackLoading}
-                onFeedback={onFeedback}
-              />
-            )}
-        </div>
       </div>
+      <ChatMdStyles />
+      <style>{`
+        @keyframes msgInK {
+          from { opacity: 0; transform: translateY(8px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
   );
 };

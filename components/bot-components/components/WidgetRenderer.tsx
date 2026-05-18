@@ -149,21 +149,28 @@ const RouteItemContext = createContext<RouteItemContextValue | null>(null);
 
 // ─── Color map ────────────────────────────────────────────────────────────────
 
+// Aligned with design-system.html (04 · Typography / Brand colors). The
+// "primary" token here is the brand yellow used in CTAs and accents
+// (var(--yellow) = #f7e700). Accent tokens preserve the broader palette
+// used by the LLM to color widget badges.
 const BG_COLORS: Record<string, string> = {
-  // existing...
+  // existing semantic shortcuts (kept for back-compat with widget JSON)
   blue:       "#2563eb",
-  green:      "#16a34a",
-  red:        "#dc2626",
-  yellow:     "#ca8a04",
+  green:      "#1f8a5a",   // design-system --green
+  red:        "#e85a4f",   // design-system --coral-deep
+  yellow:     "#f7e700",   // design-system --yellow
   orange:     "#ea580c",
   purple:     "#7c3aed",
   pink:       "#db2777",
   cyan:       "#0891b2",
-  gray:       "#9ca3af",
-  "alpha-10": "rgba(0,0,0,0.08)",
-  "alpha-20": "rgba(0,0,0,0.15)",
-  primary:    "#FFD602",
+  gray:       "#8a93a6",   // design-system --ink-4
+  "alpha-10": "rgba(11,18,32,0.08)",
+  "alpha-20": "rgba(11,18,32,0.16)",
+  primary:    "#f7e700",   // design-system --yellow (brand)
   white:      "#ffffff",
+  paper:      "#fafaf5",   // design-system --paper / --bg-2
+  line:       "#ececec",   // design-system --line
+  ink:        "#0b1220",   // design-system --ink
 
   // Accent tokens — exact design system colors
   "accent.green-500":  "#22c55e",
@@ -268,7 +275,7 @@ function getTransportBadgeStyle(label: string, color?: string): React.CSSPropert
   const key = label.toLowerCase();
   if (TRANSPORT_BADGE_STYLES[key]) return TRANSPORT_BADGE_STYLES[key];
   if (color === "info") return TRANSPORT_BADGE_STYLES.info;
-  return { background: "#f3f4f6", color: "#374151" };
+  return { background: "#f3f4f6", color: "#1a2436" };
 }
 
 // ─── Colorful tag palette (for POI / Hotel / Activity category tags) ──────────
@@ -317,7 +324,7 @@ function ColorfulTag({
         borderRadius: 9999,
         fontSize: 11,
         fontWeight: 600,
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
         background: c.bg,
         color: c.color,
         border: `1px solid ${c.border}`,
@@ -356,7 +363,7 @@ function AddToItineraryButton({
         border: "none",
         fontSize: 12,
         fontWeight: 600,
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
         cursor: "pointer",
         whiteSpace: "nowrap",
         transition: "background 0.15s",
@@ -553,12 +560,12 @@ function TransportCard({
         width: "100%",
       }}
       onMouseEnter={(e) => {
-        (e.currentTarget as HTMLDivElement).style.borderColor = "#111827";
+        (e.currentTarget as HTMLDivElement).style.borderColor = "#0b1220";
         (e.currentTarget as HTMLDivElement).style.boxShadow = "0 2px 8px rgba(0,0,0,0.06)";
         (e.currentTarget as HTMLDivElement).style.transform = "translateX(3px)";
       }}
       onMouseLeave={(e) => {
-        (e.currentTarget as HTMLDivElement).style.borderColor = "#e5e7eb";
+        (e.currentTarget as HTMLDivElement).style.borderColor = "#ececec";
         (e.currentTarget as HTMLDivElement).style.boxShadow = "none";
         (e.currentTarget as HTMLDivElement).style.transform = "translateX(0)";
       }}
@@ -569,9 +576,9 @@ function TransportCard({
         {/* Icon circle */}
         <div style={{
           width: 44, height: 44, borderRadius: "50%",
-          background: "#fafafa",
+          background: "#fafaf5",
           display: "flex", alignItems: "center", justifyContent: "center",
-          flexShrink: 0, color: "#374151",
+          flexShrink: 0, color: "#1a2436",
           border: "1px solid #f0f0f0",
         }}>
           {icon}
@@ -581,14 +588,14 @@ function TransportCard({
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{
             fontSize: 18, fontWeight: 600,
-            color: "#111827", fontFamily: "'Inter', sans-serif",
+            color: "#0b1220", fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
             lineHeight: 1.2, marginBottom: 2,
           }}>
             {typeRaw || "Transfer"}
           </div>
           <div style={{
-            fontSize: 13, color: "#9ca3af",
-            fontFamily: "'Inter', sans-serif",
+            fontSize: 13, color: "#8a93a6",
+            fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
           }}>
             Non Stop
           </div>
@@ -607,7 +614,7 @@ function TransportCard({
                 borderRadius: 9999,
                 fontSize: 13,
                 fontWeight: 500,
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
                 whiteSpace: "nowrap",
                 border: `1px solid ${color || "#e0e0e0"}`,
               }}>
@@ -634,14 +641,14 @@ function TransportCard({
         ].map(({ label, value }) => (
           <div key={label}>
             <div style={{
-              fontSize: 13, color: "#111827",
-              fontFamily: "'Inter', sans-serif", marginBottom: 2,
+              fontSize: 13, color: "#0b1220",
+              fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif", marginBottom: 2,
             }}>
               {label}
             </div>
             <div style={{
-              fontSize: 13, color: "#9ca3af",
-              fontFamily: "'Inter', sans-serif",
+              fontSize: 13, color: "#8a93a6",
+              fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
             }}>
               {value || "—"}
             </div>
@@ -759,12 +766,12 @@ function ActivityCard({ node, onAction }: { node: WidgetNode; onAction?: WidgetR
         transition: "border-color 0.15s, box-shadow 0.15s, transform 0.15s",
       }}
       onMouseEnter={(e) => {
-        (e.currentTarget as HTMLDivElement).style.borderColor = "#111827";
+        (e.currentTarget as HTMLDivElement).style.borderColor = "#0b1220";
         (e.currentTarget as HTMLDivElement).style.boxShadow = "0 2px 8px rgba(0,0,0,0.06)";
         (e.currentTarget as HTMLDivElement).style.transform = "translateX(3px)";
       }}
       onMouseLeave={(e) => {
-        (e.currentTarget as HTMLDivElement).style.borderColor = "#e5e5e5";
+        (e.currentTarget as HTMLDivElement).style.borderColor = "#ececec";
         (e.currentTarget as HTMLDivElement).style.boxShadow = "none";
         (e.currentTarget as HTMLDivElement).style.transform = "translateX(0)";
       }}
@@ -782,7 +789,7 @@ function ActivityCard({ node, onAction }: { node: WidgetNode; onAction?: WidgetR
                     fontWeight: 600,
                     color: "var(--color-text-primary)",
                     lineHeight: 1.3,
-                    fontFamily: "'Inter', sans-serif",
+                    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
                     flex: 1,
                     minWidth: 0,
                   }}
@@ -797,7 +804,7 @@ function ActivityCard({ node, onAction }: { node: WidgetNode; onAction?: WidgetR
                     style={{
                       fontSize: 12,
                       color: "var(--color-text-secondary)",
-                      fontFamily: "'Inter', sans-serif",
+                      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
                       fontWeight: 500,
                     }}
                   >
@@ -814,7 +821,7 @@ function ActivityCard({ node, onAction }: { node: WidgetNode; onAction?: WidgetR
               style={{
                 fontSize: 12,
                 color: "var(--color-text-secondary)",
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
               }}
             >
               {cityName}
@@ -832,7 +839,7 @@ function ActivityCard({ node, onAction }: { node: WidgetNode; onAction?: WidgetR
 
           {/* Divider */}
           {(title || categoryTags.length > 0) && (description || priceFormatted) && (
-            <div style={{ height: "0.5px", background: "#e5e5e5" }} />
+            <div style={{ height: "0.5px", background: "#ececec" }} />
           )}
 
           {/* Description */}
@@ -847,7 +854,7 @@ function ActivityCard({ node, onAction }: { node: WidgetNode; onAction?: WidgetR
                 WebkitBoxOrient: "vertical",
                 overflow: "hidden",
                 margin: 0,
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
               }}
             >
               {description}
@@ -858,14 +865,14 @@ function ActivityCard({ node, onAction }: { node: WidgetNode; onAction?: WidgetR
           {address && (
             <div style={{ display: "flex", alignItems: "flex-start", gap: 6 }}>
               <span style={{ flexShrink: 0, marginTop: 1 }}>
-                <MapPinIcon size={14} color="#6b7280" />
+                <MapPinIcon size={14} color="#445069" />
               </span>
               <p
                 style={{
                   fontSize: 12,
                   color: "var(--color-text-secondary)",
                   margin: 0,
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
                   display: "-webkit-box",
                   WebkitLineClamp: 2,
                   WebkitBoxOrient: "vertical",
@@ -882,11 +889,11 @@ function ActivityCard({ node, onAction }: { node: WidgetNode; onAction?: WidgetR
             <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
               <PriceLabel />
               <div style={{ display: "flex", alignItems: "baseline", gap: 4 }}>
-                <span style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", fontFamily: "'Inter', sans-serif" }}>
+                <span style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}>
                   {priceFormatted}
                 </span>
                 {unitLabel && (
-                  <span style={{ fontSize: 12, color: "var(--color-text-secondary)", fontFamily: "'Inter', sans-serif" }}>
+                  <span style={{ fontSize: 12, color: "var(--color-text-secondary)", fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}>
                     / {unitLabel.toLowerCase()}
                   </span>
                 )}
@@ -956,7 +963,7 @@ function isPoiListView(children: WidgetNode[]): boolean {
   });
 }
 
-function MapPinIcon({ size = 14, color = "#6b7280" }: { size?: number; color?: string }) {
+function MapPinIcon({ size = 14, color = "#445069" }: { size?: number; color?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
       stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -1066,12 +1073,12 @@ function PoiCard({
         boxSizing: "border-box",
       }}
       onMouseEnter={(e) => {
-        (e.currentTarget as HTMLDivElement).style.borderColor = "#111827";
+        (e.currentTarget as HTMLDivElement).style.borderColor = "#0b1220";
         (e.currentTarget as HTMLDivElement).style.boxShadow = "0 2px 8px rgba(0,0,0,0.06)";
         (e.currentTarget as HTMLDivElement).style.transform = "translateX(3px)";
       }}
       onMouseLeave={(e) => {
-        (e.currentTarget as HTMLDivElement).style.borderColor = "#e5e5e5";
+        (e.currentTarget as HTMLDivElement).style.borderColor = "#ececec";
         (e.currentTarget as HTMLDivElement).style.boxShadow = "none";
         (e.currentTarget as HTMLDivElement).style.transform = "translateX(0)";
       }}
@@ -1089,7 +1096,7 @@ function PoiCard({
                     fontWeight: 600,
                     color: "var(--color-text-primary)",
                     lineHeight: 1.3,
-                    fontFamily: "'Inter', sans-serif",
+                    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
                     flex: 1,
                     minWidth: 0,
                   }}
@@ -1104,7 +1111,7 @@ function PoiCard({
                     style={{
                       fontSize: 12,
                       color: "var(--color-text-secondary)",
-                      fontFamily: "'Inter', sans-serif",
+                      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
                       fontWeight: 500,
                     }}
                   >
@@ -1122,7 +1129,7 @@ function PoiCard({
               style={{
                 fontSize: 12,
                 color: "var(--color-text-secondary)",
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
               }}
             >
               {cityName}
@@ -1145,7 +1152,7 @@ function PoiCard({
 
           {/* Divider */}
           {(name || categoryBadges.length > 0) && (description || distanceValue) && (
-            <div style={{ height: "0.5px", background: "#e5e5e5" }} />
+            <div style={{ height: "0.5px", background: "#ececec" }} />
           )}
 
           {/* Description */}
@@ -1160,7 +1167,7 @@ function PoiCard({
                 WebkitBoxOrient: "vertical",
                 overflow: "hidden",
                 margin: 0,
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
               }}
             >
               {description}
@@ -1171,14 +1178,14 @@ function PoiCard({
           {address && (
             <div style={{ display: "flex", alignItems: "flex-start", gap: 6 }}>
               <span style={{ flexShrink: 0, marginTop: 1 }}>
-                <MapPinIcon size={14} color="#6b7280" />
+                <MapPinIcon size={14} color="#445069" />
               </span>
               <p
                 style={{
                   fontSize: 12,
                   color: "var(--color-text-secondary)",
                   margin: 0,
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
                   display: "-webkit-box",
                   WebkitLineClamp: 2,
                   WebkitBoxOrient: "vertical",
@@ -1193,7 +1200,7 @@ function PoiCard({
           {/* Distance row */}
           {distanceValue && (
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              <MapPinIcon size={14} color="#6b7280" />
+              <MapPinIcon size={14} color="#445069" />
               <span
                 style={{
                   fontSize: 12,
@@ -1202,7 +1209,7 @@ function PoiCard({
                   background: "#e0f2fe",
                   padding: "2px 8px",
                   borderRadius: 9999,
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
                   border: "1px solid #BAE6FD",
                 }}
               >
@@ -1349,12 +1356,12 @@ function RestaurantCard({
         boxSizing: "border-box",
       }}
       onMouseEnter={(e) => {
-        (e.currentTarget as HTMLDivElement).style.borderColor = "#111827";
+        (e.currentTarget as HTMLDivElement).style.borderColor = "#0b1220";
         (e.currentTarget as HTMLDivElement).style.boxShadow = "0 2px 8px rgba(0,0,0,0.06)";
         (e.currentTarget as HTMLDivElement).style.transform = "translateX(3px)";
       }}
       onMouseLeave={(e) => {
-        (e.currentTarget as HTMLDivElement).style.borderColor = "#e5e5e5";
+        (e.currentTarget as HTMLDivElement).style.borderColor = "#ececec";
         (e.currentTarget as HTMLDivElement).style.boxShadow = "none";
         (e.currentTarget as HTMLDivElement).style.transform = "translateX(0)";
       }}
@@ -1370,7 +1377,7 @@ function RestaurantCard({
                     fontWeight: 600,
                     color: "var(--color-text-primary)",
                     lineHeight: 1.3,
-                    fontFamily: "'Inter', sans-serif",
+                    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
                     flex: 1,
                     minWidth: 0,
                   }}
@@ -1385,7 +1392,7 @@ function RestaurantCard({
                     style={{
                       fontSize: 12,
                       color: "#374957",
-                      fontFamily: "'Inter', sans-serif",
+                      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
                       fontWeight: 500,
                     }}
                   >
@@ -1402,7 +1409,7 @@ function RestaurantCard({
               style={{
                 fontSize: 12,
                 color: "var(--color-text-secondary)",
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
               }}
             >
               {cityName}
@@ -1418,7 +1425,7 @@ function RestaurantCard({
           )}
 
           {(name || tags.length > 0) && (description || distanceValue) && (
-            <div style={{ height: "0.5px", background: "#e5e5e5" }} />
+            <div style={{ height: "0.5px", background: "#ececec" }} />
           )}
 
           {description && (
@@ -1432,7 +1439,7 @@ function RestaurantCard({
                 WebkitBoxOrient: "vertical",
                 overflow: "hidden",
                 margin: 0,
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
               }}
             >
               {description}
@@ -1443,14 +1450,14 @@ function RestaurantCard({
           {address && (
             <div style={{ display: "flex", alignItems: "flex-start", gap: 6 }}>
               <span style={{ flexShrink: 0, marginTop: 1 }}>
-                <MapPinIcon size={14} color="#6b7280" />
+                <MapPinIcon size={14} color="#445069" />
               </span>
               <p
                 style={{
                   fontSize: 12,
                   color: "var(--color-text-secondary)",
                   margin: 0,
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
                   display: "-webkit-box",
                   WebkitLineClamp: 2,
                   WebkitBoxOrient: "vertical",
@@ -1464,7 +1471,7 @@ function RestaurantCard({
 
           {distanceValue && (
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              <MapPinIcon size={14} color="#6b7280" />
+              <MapPinIcon size={14} color="#445069" />
               <span
                 style={{
                   fontSize: 12,
@@ -1473,7 +1480,7 @@ function RestaurantCard({
                   background: "#e0f2fe",
                   padding: "2px 8px",
                   borderRadius: 9999,
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
                   border: "1px solid #BAE6FD",
                 }}
               >
@@ -1642,12 +1649,12 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
         transition: "border-color 0.15s, box-shadow 0.15s, transform 0.15s",
       }}
       onMouseEnter={(e) => {
-        (e.currentTarget as HTMLDivElement).style.borderColor = "#111827";
+        (e.currentTarget as HTMLDivElement).style.borderColor = "#0b1220";
         (e.currentTarget as HTMLDivElement).style.boxShadow = "0 2px 8px rgba(0,0,0,0.06)";
         (e.currentTarget as HTMLDivElement).style.transform = "translateX(3px)";
       }}
       onMouseLeave={(e) => {
-        (e.currentTarget as HTMLDivElement).style.borderColor = "#e5e5e5";
+        (e.currentTarget as HTMLDivElement).style.borderColor = "#ececec";
         (e.currentTarget as HTMLDivElement).style.boxShadow = "none";
         (e.currentTarget as HTMLDivElement).style.transform = "translateX(0)";
       }}
@@ -1665,7 +1672,7 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
                     fontWeight: 600,
                     color: "var(--color-text-primary)",
                     lineHeight: 1.3,
-                    fontFamily: "'Inter', sans-serif",
+                    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
                     flex: 1,
                     minWidth: 0,
                   }}
@@ -1687,7 +1694,7 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
               style={{
                 fontSize: 12,
                 color: "var(--color-text-secondary)",
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
               }}
             >
               {cityName}
@@ -1705,7 +1712,7 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
 
           {/* Divider */}
           {(name || hotelTags.length > 0) && (address || description || priceFormatted) && (
-            <div style={{ height: "0.5px", background: "#e5e5e5" }} />
+            <div style={{ height: "0.5px", background: "#ececec" }} />
           )}
 
           {/* Description */}
@@ -1720,7 +1727,7 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
                 WebkitBoxOrient: "vertical",
                 overflow: "hidden",
                 margin: 0,
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
               }}
             >
               {description}
@@ -1731,14 +1738,14 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
           {address && (
             <div style={{ display: "flex", alignItems: "flex-start", gap: 6 }}>
               <span style={{ flexShrink: 0, marginTop: 1 }}>
-                <MapPinIcon size={14} color="#6b7280" />
+                <MapPinIcon size={14} color="#445069" />
               </span>
               <p
                 style={{
                   fontSize: 12,
                   color: "var(--color-text-secondary)",
                   margin: 0,
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
                   display: "-webkit-box",
                   WebkitLineClamp: 2,
                   WebkitBoxOrient: "vertical",
@@ -1760,7 +1767,7 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
                     fontSize: 15,
                     fontWeight: 600,
                     color: "var(--color-text-primary)",
-                    fontFamily: "'Inter', sans-serif",
+                    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
                   }}
                 >
                   {priceFormatted}
@@ -1770,7 +1777,7 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
                     style={{
                       fontSize: 12,
                       color: "var(--color-text-secondary)",
-                      fontFamily: "'Inter', sans-serif",
+                      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
                     }}
                   >
                     / {unitLabel.toLowerCase()}
@@ -1873,15 +1880,15 @@ function InputNode({ node }: { node: WidgetNode }) {
         borderRadius: 8,
         border: "1.5px solid #e5e7eb",
         fontSize: 13,
-        fontFamily: "'Inter', sans-serif",
-        color: "#111827",
+        fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+        color: "#0b1220",
         background: "#fff",
         outline: "none",
         boxSizing: "border-box",
         transition: "border-color 0.15s",
       }}
       onFocus={(e) => { e.target.style.borderColor = "#f59e0b"; }}
-      onBlur={(e) => { e.target.style.borderColor = "#e5e7eb"; }}
+      onBlur={(e) => { e.target.style.borderColor = "#ececec"; }}
     />
   );
 }
@@ -1905,8 +1912,8 @@ function SelectNode({ node }: { node: WidgetNode }) {
         borderRadius: 8,
         border: "1.5px solid #e5e7eb",
         fontSize: 13,
-        fontFamily: "'Inter', sans-serif",
-        color: value ? "#111827" : "#9ca3af",
+        fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+        color: value ? "#0b1220" : "#8a93a6",
         background: "#fff",
         outline: "none",
         boxSizing: "border-box",
@@ -1915,7 +1922,7 @@ function SelectNode({ node }: { node: WidgetNode }) {
         transition: "border-color 0.15s",
       }}
       onFocus={(e) => { e.target.style.borderColor = "#f59e0b"; }}
-      onBlur={(e) => { e.target.style.borderColor = "#e5e7eb"; }}
+      onBlur={(e) => { e.target.style.borderColor = "#ececec"; }}
     >
       {(clearable || !value) && (
         <option value="">{node.placeholder as string ?? "Select…"}</option>
@@ -1946,8 +1953,8 @@ function TextareaNode({ node }: { node: WidgetNode }) {
         borderRadius: 8,
         border: "1.5px solid #e5e7eb",
         fontSize: 13,
-        fontFamily: "'Inter', sans-serif",
-        color: "#111827",
+        fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+        color: "#0b1220",
         background: "#fff",
         outline: "none",
         boxSizing: "border-box",
@@ -1955,7 +1962,7 @@ function TextareaNode({ node }: { node: WidgetNode }) {
         transition: "border-color 0.15s",
       }}
       onFocus={(e) => { e.target.style.borderColor = "#f59e0b"; }}
-      onBlur={(e) => { e.target.style.borderColor = "#e5e7eb"; }}
+      onBlur={(e) => { e.target.style.borderColor = "#ececec"; }}
     />
   );
 }
@@ -2029,7 +2036,7 @@ function ButtonNode({
         width: 36, height: 36, borderRadius: 8,
         border: "none", background: "transparent",
         display: "flex", alignItems: "center", justifyContent: "center",
-        color: "#374151", cursor: "pointer", outline: "none",
+        color: "#1a2436", cursor: "pointer", outline: "none",
         ...disabledStyle,
       }}>
         <NotebookPencilIcon />
@@ -2045,10 +2052,10 @@ function ButtonNode({
         padding: "10px 20px",
         borderRadius: pill ? "9999px" : 10,
         border: "none",
-        background: "#111827",
+        background: "#0b1220",
         color: "#fff",
         fontSize: 14, fontWeight: 600,
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
         cursor: "pointer", outline: "none",
         ...disabledStyle,
       }}>
@@ -2079,7 +2086,7 @@ function ButtonNode({
           color: "#111",
           fontSize: "0.85rem",
           fontWeight: 600,
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
           cursor: "pointer",
           outline: "none",
           ...disabledStyle,
@@ -2105,7 +2112,7 @@ function ButtonNode({
         color: "#111",
         fontSize: "0.85rem",
         fontWeight: 600,
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
         cursor: "pointer",
         outline: "none",
         ...disabledStyle,
@@ -2220,8 +2227,8 @@ function TextNode({ node }: { node: WidgetNode }) {
     <span style={{
       fontSize: fsMap[size as string] ?? 14,
       fontWeight: fwMap[weight as string] ?? 400,
-      color: type === "Caption" ? "#9ca3af" : "#111827",
-      fontFamily: "'Inter', sans-serif",
+      color: type === "Caption" ? "#8a93a6" : "#0b1220",
+      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
       lineHeight: 1.4,
     }}>
       {value as string}
@@ -2251,8 +2258,8 @@ function LabelNode({ node }: { node: WidgetNode }) {
       style={{
         fontSize: 12,
         fontWeight: 500,
-        color: "#6b7280",
-        fontFamily: "'Inter', sans-serif",
+        color: "#445069",
+        fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
         display: "block",
       }}
     >
@@ -2400,7 +2407,7 @@ function ListViewItemNode({ node, onAction }: { node: WidgetNode; onAction?: Wid
           <div style={{
             marginTop: 6, width: 10, height: 10,
             borderRadius: "50%",
-            background: dotColor ?? "#9ca3af",
+            background: dotColor ?? "#8a93a6",
             flexShrink: 0,
           }} />
           {showConnector && (
@@ -2414,7 +2421,7 @@ function ListViewItemNode({ node, onAction }: { node: WidgetNode; onAction?: Wid
           flex: 1, minWidth: 0,
           paddingLeft: 10,
           paddingBottom: routeCtx.isLast ? 0 : 12,
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
         }}>
           <div style={{
             display: "flex", alignItems: "baseline",
@@ -2422,7 +2429,7 @@ function ListViewItemNode({ node, onAction }: { node: WidgetNode; onAction?: Wid
           }}>
             {cityName && (
               <span style={{
-                fontSize: 14, fontWeight: 600, color: "#111827",
+                fontSize: 14, fontWeight: 600, color: "#0b1220",
                 lineHeight: 1.3,
               }}>
                 {cityName}
@@ -2430,7 +2437,7 @@ function ListViewItemNode({ node, onAction }: { node: WidgetNode; onAction?: Wid
             )}
             {metaText && (
               <span style={{
-                fontSize: 14, fontWeight: 600, color: "#111827",
+                fontSize: 14, fontWeight: 600, color: "#0b1220",
                 lineHeight: 1.3,
               }}>
                 {metaText}
@@ -2514,7 +2521,7 @@ function ListViewNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetR
   const isRoute = isRouteListView(children);
 
   return (
-    <div style={{ display: "inline-flex", flexDirection: "column", fontFamily: "'Inter', sans-serif",paddingLeft: isRoute ? 16 : 0 }}>
+    <div style={{ display: "inline-flex", flexDirection: "column", fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",paddingLeft: isRoute ? 16 : 0 }}>
       {children.map((item, idx) => {
         const content = (
           <ListViewItemNode key={(item.key as string) ?? idx} node={item} onAction={onAction} />
@@ -2759,7 +2766,7 @@ function ElementIconChip({
     //     background: floating ? "rgba(255,255,255,0.96)" : "#ffffff",
     //     border: "1px solid rgba(17,24,39,0.08)",
     //     boxShadow: floating ? "0 2px 8px rgba(0,0,0,0.12)" : "none",
-    //     fontFamily: "'Inter', sans-serif",
+    //     fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
     //     fontWeight: 600,
     //     fontSize: isSm ? 11 : 12,
     //     color: theme.accent,
@@ -2877,11 +2884,11 @@ function ElementPreviewCard({
         transition: "border-color 0.15s, box-shadow 0.15s",
       }}
       onMouseEnter={(e) => {
-        (e.currentTarget as HTMLDivElement).style.borderColor = "#111827";
+        (e.currentTarget as HTMLDivElement).style.borderColor = "#0b1220";
         (e.currentTarget as HTMLDivElement).style.boxShadow = "0 2px 8px rgba(0,0,0,0.06)";
       }}
       onMouseLeave={(e) => {
-        (e.currentTarget as HTMLDivElement).style.borderColor = "#e5e5e5";
+        (e.currentTarget as HTMLDivElement).style.borderColor = "#ececec";
         (e.currentTarget as HTMLDivElement).style.boxShadow = "none";
       }}
     >
@@ -2892,9 +2899,9 @@ function ElementPreviewCard({
               style={{
                 fontSize: 16,
                 fontWeight: 600,
-                color: "#111827",
+                color: "#0b1220",
                 lineHeight: 1.3,
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
               }}
             >
               {title}
@@ -2915,7 +2922,7 @@ function ElementPreviewCard({
           )}
 
           {(title || tags.length > 0) && description && (
-            <div style={{ height: "0.5px", background: "#e5e5e5" }} />
+            <div style={{ height: "0.5px", background: "#ececec" }} />
           )}
 
           {description && (
@@ -2929,7 +2936,7 @@ function ElementPreviewCard({
                 WebkitBoxOrient: "vertical",
                 overflow: "hidden",
                 margin: 0,
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
               }}
             >
               {description}
@@ -2945,10 +2952,10 @@ function ElementPreviewCard({
               borderRadius: 8,
               background: "transparent",
               border: "1px solid #111827",
-              color: "#111827",
+              color: "#0b1220",
               fontSize: 13,
               fontWeight: 600,
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
               cursor: "pointer",
               display: "inline-flex",
               alignItems: "center",
@@ -2956,12 +2963,12 @@ function ElementPreviewCard({
               transition: "background 0.15s, color 0.15s",
             }}
             onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.background = "#111827";
+              (e.currentTarget as HTMLButtonElement).style.background = "#0b1220";
               (e.currentTarget as HTMLButtonElement).style.color = "#ffffff";
             }}
             onMouseLeave={(e) => {
               (e.currentTarget as HTMLButtonElement).style.background = "transparent";
-              (e.currentTarget as HTMLButtonElement).style.color = "#111827";
+              (e.currentTarget as HTMLButtonElement).style.color = "#0b1220";
             }}
           >
             {buttonLabel}
@@ -3092,7 +3099,7 @@ function PaymentCard({
     const l = label.toLowerCase();
     if (l.includes("due") || l.includes("balance")) return "#B45309";
     if (l.includes("paid")) return "#047857";
-    return "#111827";
+    return "#0b1220";
   };
 
   return (
@@ -3105,7 +3112,7 @@ function PaymentCard({
         background: "linear-gradient(135deg, #FFFDF5 0%, #FEF3C7 100%)",
         boxShadow: "0 6px 20px rgba(234, 179, 8, 0.10)",
         overflow: "hidden",
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
         boxSizing: "border-box",
       }}
     >
@@ -3151,7 +3158,7 @@ function PaymentCard({
             style={{
               fontSize: 15,
               fontWeight: 700,
-              color: "#111827",
+              color: "#0b1220",
               lineHeight: 1.2,
             }}
           >
@@ -3221,7 +3228,7 @@ function PaymentCard({
           style={{
             width: "100%",
             padding: "12px 16px",
-            background: "#111827",
+            background: "#0b1220",
             color: "#ffffff",
             border: "none",
             borderRadius: 12,
@@ -3238,7 +3245,7 @@ function PaymentCard({
             (e.currentTarget as HTMLButtonElement).style.background = "#1F2937";
           }}
           onMouseLeave={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.background = "#111827";
+            (e.currentTarget as HTMLButtonElement).style.background = "#0b1220";
           }}
         >
           <svg
@@ -3340,7 +3347,7 @@ function PdfDownloadCard({
         alignItems: "center",
         gap: 14,
         boxShadow: "0 1px 2px rgba(17, 24, 39, 0.04)",
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
         boxSizing: "border-box",
       }}
     >
@@ -3381,7 +3388,7 @@ function PdfDownloadCard({
           style={{
             fontSize: 15,
             fontWeight: 600,
-            color: "#111827",
+            color: "#0b1220",
             lineHeight: 1.3,
             marginBottom: 2,
           }}
@@ -3391,7 +3398,7 @@ function PdfDownloadCard({
         <div
           style={{
             fontSize: 12,
-            color: "#6b7280",
+            color: "#445069",
             lineHeight: 1.4,
             wordBreak: "break-word",
             overflowWrap: "anywhere",
@@ -3418,7 +3425,7 @@ function PdfDownloadCard({
           color: "#111",
           fontSize: 13,
           fontWeight: 600,
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
           cursor: payload.url && !downloading ? "pointer" : "not-allowed",
           opacity: payload.url ? (downloading ? 0.7 : 1) : 0.5,
           outline: "none",
@@ -3702,10 +3709,10 @@ function TripExtrasCard({
         <div style={{ flex: 1, minWidth: 0 }}>
           <div
             style={{
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
               fontSize: 15,
               fontWeight: 700,
-              color: "#111827",
+              color: "#0b1220",
               lineHeight: 1.3,
               marginBottom: 4,
             }}
@@ -3714,7 +3721,7 @@ function TripExtrasCard({
           </div>
           <div
             style={{
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
               fontSize: 12.5,
               color: "#4b5563",
               lineHeight: 1.5,
@@ -3746,7 +3753,7 @@ function TripExtrasCard({
             borderRadius: 9999,
             background: theme.ctaBackground,
             color: theme.ctaColor,
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
             fontSize: 13,
             fontWeight: 600,
             letterSpacing: 0.2,
@@ -3886,7 +3893,7 @@ function PlanNewTripCard({
             width: 44,
             height: 44,
             borderRadius: 14,
-            background: "#111827",
+            background: "#0b1220",
             color: "#f7e700",
             display: "inline-flex",
             alignItems: "center",
@@ -3900,10 +3907,10 @@ function PlanNewTripCard({
         <div style={{ flex: 1, minWidth: 0 }}>
           <div
             style={{
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
               fontSize: 15,
               fontWeight: 700,
-              color: "#111827",
+              color: "#0b1220",
               lineHeight: 1.3,
               marginBottom: 4,
             }}
@@ -3912,7 +3919,7 @@ function PlanNewTripCard({
           </div>
           <div
             style={{
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
               fontSize: 12.5,
               color: "#4b5563",
               lineHeight: 1.5,
@@ -3942,9 +3949,9 @@ function PlanNewTripCard({
             gap: 8,
             padding: "10px 18px",
             borderRadius: 9999,
-            background: "#111827",
+            background: "#0b1220",
             color: "#fff",
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
             fontSize: 13,
             fontWeight: 600,
             letterSpacing: 0.2,
@@ -4123,7 +4130,7 @@ function WhatsappContactCard({
         <div style={{ flex: 1, minWidth: 0 }}>
           <div
             style={{
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
               fontSize: 15,
               fontWeight: 700,
               color: "#064e3b",
@@ -4135,7 +4142,7 @@ function WhatsappContactCard({
           </div>
           <div
             style={{
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
               fontSize: 12.5,
               color: "#065f46",
               lineHeight: 1.5,
@@ -4164,7 +4171,7 @@ function WhatsappContactCard({
         {phone ? (
           <span
             style={{
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
               fontSize: 11.5,
               fontWeight: 500,
               color: "#047857",
@@ -4184,7 +4191,7 @@ function WhatsappContactCard({
             borderRadius: 9999,
             background: "#128C46",
             color: "#FFFFFF",
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
             fontSize: 13,
             fontWeight: 600,
             letterSpacing: 0.2,
@@ -4266,7 +4273,7 @@ function CardNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetRende
       padding,
       width: "100%",
       marginTop: 10,
-      // background: "#fafafa",
+      // background: "#fafaf5",
       // borderRadius: 14,
       // border: "1px solid #f0f0f0",
       boxSizing: "border-box",
@@ -4309,7 +4316,7 @@ function NodeRenderer({
     default:
       return (
         <pre style={{
-          fontSize: 10, color: "#9ca3af", background: "#f9fafb",
+          fontSize: 10, color: "#8a93a6", background: "#f9fafb",
           borderRadius: 6, padding: 6, overflow: "auto",
         }}>
           {JSON.stringify(node, null, 2)}
@@ -4320,10 +4327,48 @@ function NodeRenderer({
 
 // ─── Public export ────────────────────────────────────────────────────────────
 
+// Scoped style block (matches design-system.html · 04 · Typography +
+// Brand colors). The widgets themselves keep their inline styles for
+// per-card visuals; this layer aligns the font stack, text color
+// defaults, and semantic neutral surfaces so every widget reads as part
+// of the same family without rewriting each card.
+const WidgetScopeStyles: React.FC = () => (
+  <style>{`
+    .kp-widget {
+      --w-yellow: #f7e700;
+      --w-ink: #0b1220;
+      --w-ink-2: #1a2436;
+      --w-ink-3: #445069;
+      --w-ink-4: #8a93a6;
+      --w-bg: #ffffff;
+      --w-bg-2: #fafaf5;
+      --w-line: #ececec;
+      --w-line-soft: #f4f3ec;
+      --w-green: #1f8a5a;
+      --w-coral: #e85a4f;
+
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--w-ink-2);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      font-size: clamp(13.5px, 3.6vw, 14.5px);
+      line-height: 1.55;
+    }
+    .kp-widget * { font-family: inherit; }
+    .kp-widget .kp-serif {
+      font-family: 'Instrument Serif', 'Inter', serif !important;
+      font-style: italic;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+    }
+  `}</style>
+);
+
 export function WidgetRenderer({ widget, onAction, disabled = false }: WidgetRendererProps) {
   return (
     <DisabledActionContext.Provider value={disabled}>
-      <div style={{ paddingBottom: 4 }} className="w-full">
+      <WidgetScopeStyles />
+      <div style={{ paddingBottom: 4 }} className="kp-widget w-full">
         <NodeRenderer node={widget as WidgetNode} onAction={onAction} />
       </div>
     </DisabledActionContext.Provider>
