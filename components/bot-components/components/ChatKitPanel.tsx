@@ -86,6 +86,34 @@ const SingleChips = styled.button`
   }
 `;
 
+// Placeholder chip rendered in the quick-reply row while the
+// `quick_reply_shimmer` client effect is active (server is preparing the next
+// batch of suggestions). Matches SingleChips dimensions so the row doesn't
+// jump when real replies land.
+const QuickReplyShimmerChip: React.FC<{ width: number }> = ({ width }) => (
+  <div
+    aria-hidden="true"
+    style={{
+      width,
+      height: 32,
+      borderRadius: 6,
+      border: "1px solid #e0e0e0",
+      background:
+        "linear-gradient(90deg, #f3f4f6 0%, #e5e7eb 50%, #f3f4f6 100%)",
+      backgroundSize: "200% 100%",
+      animation: "quickReplyShimmer 1.2s ease-in-out infinite",
+      flexShrink: 0,
+    }}
+  >
+    <style>{`
+      @keyframes quickReplyShimmer {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+      }
+    `}</style>
+  </div>
+);
+
 interface QuickReply {
   label: string;
   value?: string;
@@ -323,6 +351,11 @@ onViewItinerary,
   const [showControls, setShowControls] = useState(false);
   const [errorDismissed, setErrorDismissed] = useState(false);
   const [quickReplies, setQuickReplies] = useState<QuickReply[]>([]);
+  // True while the server is preparing the next batch of quick replies. The
+  // `quick_reply_shimmer` client effect toggles this flag — we show shimmer
+  // chips in the quick-reply row until either real replies arrive (via
+  // load_quick_replies) or the flag is explicitly cleared (loading: false).
+  const [quickReplyLoading, setQuickReplyLoading] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [pendingMessage, setPendingMessage] = useState<string | null>(null);
@@ -1078,7 +1111,12 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
   //   feedback type !== X + click X    →  POST   /feedback/{id}      (change)
   //   feedback type === X + click X    →  DELETE /feedback/{id}      (clear)
   const handleFeedback = useCallback(
-    async (messageId: string, type: "up" | "down", message?: string) => {
+    async (
+      messageId: string,
+      type: "up" | "down",
+      message?: string,
+      label?: string,
+    ) => {
       if (!messageId) return;
       if (!authToken) {
         setShowLoginModal(true);
@@ -1113,6 +1151,7 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
             type,
             platform: getPlatform(),
             ...(trimmedMessage ? { message: trimmedMessage } : {}),
+            ...(label ? { label } : {}),
             ...(reduxUserId != null ? { author: parseInt(reduxUserId) } : {}),
           };
           const res = await axios.post(
@@ -1144,6 +1183,7 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
               type,
               platform: getPlatform(),
               ...(trimmedMessage ? { message: trimmedMessage } : {}),
+              ...(label ? { label } : {}),
             },
             { headers },
           );
@@ -1468,6 +1508,11 @@ case "shimmer_day_by_day": {
               )
             : [];
           setQuickReplies(parsed);
+          setQuickReplyLoading(false);
+          break;
+        }
+        case "quick_reply_shimmer": {
+          setQuickReplyLoading(Boolean((data as any)?.loading));
           break;
         }
         default:
@@ -1484,6 +1529,7 @@ case "shimmer_day_by_day": {
 const sendMessage = useCallback(
   (text: string, attachmentIds?: string[], attachmentMeta?: MessageAttachment[]) => {
     setQuickReplies([]);
+    setQuickReplyLoading(false);
     lastSentMessageRef.current = text;
     lastSentActionRef.current = { kind: "message", text };
 
@@ -2845,22 +2891,26 @@ const handleShowLogin = useCallback(() => {
 
       {/* ── Quick reply chips ─────────────────────────────────────────────── */}
       {/* Hidden while itinerary creation is in progress — no quick replies/CTAs allowed */}
-      {quickReplies.length > 0 && !isStreaming && !isComposerLocked && (
+      {(quickReplies.length > 0 || quickReplyLoading) && !isStreaming && !isComposerLocked && (
         <div className="flex-shrink-0 px-[0.25rem] md:!px-6 pt-2 pb-1">
           <div className="mx-auto">
             <div
               className="flex gap-2 overflow-x-auto pb-1"
               style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             >
-              {quickReplies.map((reply, idx) => (
-                <SingleChips
-                  key={idx}
-                  onClick={() => handleQuickReply(reply)}
-                  disabled={isStreaming || isComposerLocked}
-                >
-                  {reply.label}
-                </SingleChips>
-              ))}
+              {quickReplyLoading
+                ? [120, 88, 140, 100].map((w, idx) => (
+                    <QuickReplyShimmerChip key={`qr-shimmer-${idx}`} width={w} />
+                  ))
+                : quickReplies.map((reply, idx) => (
+                    <SingleChips
+                      key={idx}
+                      onClick={() => handleQuickReply(reply)}
+                      disabled={isStreaming || isComposerLocked}
+                    >
+                      {reply.label}
+                    </SingleChips>
+                  ))}
             </div>
           </div>
         </div>

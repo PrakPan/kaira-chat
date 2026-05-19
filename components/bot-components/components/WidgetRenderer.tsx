@@ -1577,60 +1577,91 @@ function MiniSpinner({ size = 12 }: { size?: number }) {
   );
 }
 
-// "Check Availability" button — purely presentational. Clicking triggers the
-// detail fetch in the parent HotelCard, which orchestrates success (open
-// drawer) vs failure (show the error block + Raise Query CTA below).
-function CheckAvailabilityButton({
+// Primary CTA for the HotelCard footer. Drives the detail-fetch flow:
+//   • idle / post-error dismiss  →  "Check Availability"  (probe call only)
+//   • detail success             →  "Select Rooms"        (re-probes, then
+//                                                          opens the drawer)
+// Loading copy adapts to which variant fired the in-flight call.
+function HotelPrimaryActionButton({
+  mode,
   loading,
+  loadingMode,
   disabled,
   onClick,
 }: {
+  mode: "check" | "select";
   loading: boolean;
+  loadingMode: "check" | "select";
   disabled: boolean;
   onClick: (e: React.MouseEvent) => void;
 }) {
   const interactive = !disabled && !loading;
+  const isSelect = mode === "select";
+  // Yellow CTA with black border + black text — matches the booking-action
+  // accent used elsewhere in the chat surface.
+  const baseBg = "#f7e700";
+  const hoverBg = "#ffef3a";
+  const disabledBg = "#f3f1d4";
   return (
     <button
       type="button"
       onClick={onClick}
       disabled={!interactive}
       onMouseEnter={(e) => {
-        if (interactive) e.currentTarget.style.background = "#1f2937";
+        if (interactive) e.currentTarget.style.background = hoverBg;
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.background = disabled ? "#9ca3af" : "#0d0d0d";
+        e.currentTarget.style.background = disabled ? disabledBg : baseBg;
       }}
       style={{
-        width: "100%",
-        padding: "7px 8px",
-        borderRadius: 8,
-        border: "none",
-        background: disabled ? "#9ca3af" : "#0d0d0d",
-        color: "#ffffff",
+        padding: "9px 16px",
+        borderRadius: 10,
+        border: "1px solid #000000",
+        background: disabled ? disabledBg : baseBg,
+        color: "#000000",
         fontFamily: "'Inter', sans-serif",
-        fontSize: 12,
+        fontSize: 13,
         fontWeight: 600,
         cursor: interactive ? "pointer" : "not-allowed",
         display: "inline-flex",
         alignItems: "center",
         justifyContent: "center",
-        gap: 5,
+        gap: 6,
         transition: "background 0.15s ease",
         boxSizing: "border-box",
         whiteSpace: "nowrap",
-        lineHeight: "16px",
+        lineHeight: "18px",
+        opacity: disabled ? 0.7 : 1,
       }}
     >
       {loading ? (
         <>
-          <MiniSpinner />
-          Checking…
+          <DarkMiniSpinner />
+          {loadingMode === "select" ? "Loading rooms…" : "Checking…"}
+        </>
+      ) : isSelect ? (
+        <>
+          Select Rooms
+          {/* <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12" />
+            <polyline points="12 5 19 12 12 19" />
+          </svg> */}
         </>
       ) : (
         "Check Availability"
       )}
     </button>
+  );
+}
+
+// Spinner variant for light backgrounds — same shape as MiniSpinner but with
+// dark tones so it's readable on the yellow CTA.
+function DarkMiniSpinner({ size = 12 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className="animate-spin">
+      <circle cx="12" cy="12" r="10" stroke="rgba(0,0,0,0.2)" strokeWidth="3" />
+      <path d="M12 2a10 10 0 0 1 10 10" stroke="#000000" strokeWidth="3" strokeLinecap="round" />
+    </svg>
   );
 }
 
@@ -1725,10 +1756,10 @@ function HotelDetailErrorBlock({
           {raising ? (
             <>
               <MiniSpinner />
-              Raising…
+              Requesting…
             </>
           ) : (
-            "Raise Query"
+            "Offline Quote"
           )}
         </button>
       </div>
@@ -1880,10 +1911,13 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
         ? occupanciesFromItinerary
         : [{ num_adults: itinerary?.number_of_adults ?? 2, child_ages: [] }];
 
-  type DetailStatus = "idle" | "loading" | "error";
+  type DetailStatus = "idle" | "loading" | "success" | "error";
   const [detailStatus, setDetailStatus] = useState<DetailStatus>("idle");
   const [detailError, setDetailError] = useState<string>("");
   const [raisingQuery, setRaisingQuery] = useState(false);
+  // Which CTA fired the in-flight detail call. "check" probes only; "select"
+  // re-probes and (on success) opens the hotel drawer via onAction.
+  const [pendingAction, setPendingAction] = useState<"check" | "select">("check");
 
   const getToken = (): string =>
     (typeof window !== "undefined" &&
@@ -1892,8 +1926,9 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
         localStorage.getItem("access_token"))) ||
     "";
 
-  const fetchDetail = async () => {
+  const fetchDetail = async (action: "check" | "select" = "check") => {
     if (!clickAction || !accommodationId || detailStatus === "loading") return;
+    setPendingAction(action);
     setDetailStatus("loading");
     setDetailError("");
     const token = getToken();
@@ -1912,8 +1947,10 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
         },
         token ? { headers: { Authorization: `Bearer ${token}` } } : undefined,
       );
-      setDetailStatus("idle");
-      onAction?.(clickAction);
+      setDetailStatus("success");
+      // Probe-only: stay on the card so the user can pick "Select Rooms".
+      // Drawer is only opened on the second (explicit) click.
+      if (action === "select") onAction?.(clickAction);
     } catch (err: any) {
       const msg =
         err?.response?.data?.errors?.[0]?.message?.[0] ??
@@ -1932,8 +1969,12 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
     const token = getToken();
     try {
       await axios.post(
-        `${MERCURY_HOST}/api/v1/itinerary/${itineraryId}/hotel-query/`,
-        { accommodation_id: accommodationId },
+        `${MERCURY_HOST}/api/v1/itinerary/${itineraryId}/get-offline-quote/?type=hotels`,
+        {
+          accommodation_id: accommodationId,
+          ...(startDate ? { check_in: startDate } : {}),
+          ...(endDate ? { check_out: endDate } : {}),
+        },
         token ? { headers: { Authorization: `Bearer ${token}` } } : undefined,
       );
       dispatch(
@@ -1965,32 +2006,34 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
   };
 
   const detailLoading = detailStatus === "loading";
+  const ctaMode: "check" | "select" = detailStatus === "success" ? "select" : "check";
   const cardClickable = !!clickAction && !!accommodationId;
+
+  const handleCardClick = () => {
+    if (!cardClickable || detailLoading) return;
+    fetchDetail(ctaMode);
+  };
 
   return (
     <div
-      onClick={() => {
-        if (cardClickable) fetchDetail();
-      }}
+      onClick={handleCardClick}
       style={{
         background: "#ffffff",
         border: "1px solid #e5e5e5",
         borderRadius: 16,
         padding: "14px 16px",
-        cursor: cardClickable
-          ? detailLoading
-            ? "progress"
-            : "pointer"
-          : "default",
         width: "100%",
         marginBottom: 12,
         boxSizing: "border-box",
+        cursor: cardClickable ? (detailLoading ? "progress" : "pointer") : "default",
         transition: "border-color 0.15s, box-shadow 0.15s, transform 0.15s",
       }}
       onMouseEnter={(e) => {
         (e.currentTarget as HTMLDivElement).style.borderColor = "#111827";
         (e.currentTarget as HTMLDivElement).style.boxShadow = "0 2px 8px rgba(0,0,0,0.06)";
-        (e.currentTarget as HTMLDivElement).style.transform = "translateX(3px)";
+        if (cardClickable && !detailLoading) {
+          (e.currentTarget as HTMLDivElement).style.transform = "translateX(3px)";
+        }
       }}
       onMouseLeave={(e) => {
         (e.currentTarget as HTMLDivElement).style.borderColor = "#e5e5e5";
@@ -1998,64 +2041,55 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
         (e.currentTarget as HTMLDivElement).style.transform = "translateX(0)";
       }}
     >
-      {/* Body: left column (title + rating + tags + divider + desc + price) + image */}
+      {/* Body: text column + image. Mobile stacks image above text. */}
       <div className="flex flex-col-reverse sm:flex-row gap-3 items-stretch">
         <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 8 }}>
-          {/* Title + stars on the same line */}
-          {(name || rating > 0) && (
-            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+          {/* Title + tags share one inline-flow block so tags continue the
+              name's line and wrap naturally when the name spills onto another
+              line — they behave like trailing words rather than a separate
+              row beneath the title. */}
+          {(name || hotelTags.length > 0) && (
+            <div
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                lineHeight: 1.5,
+                wordBreak: "break-word",
+              }}
+            >
               {name && (
-                <div
+                <span
                   style={{
                     fontSize: 16,
                     fontWeight: 600,
                     color: "var(--color-text-primary)",
-                    lineHeight: 1.3,
-                    fontFamily: "'Inter', sans-serif",
-                    flex: 1,
-                    minWidth: 0,
+                    marginRight: hotelTags.length > 0 ? 8 : 0,
+                    verticalAlign: "middle",
                   }}
                 >
                   {name}
-                </div>
+                </span>
               )}
-              {/* {rating > 0 && (
-                <div style={{ display: "flex", alignItems: "center", gap: 2, flexShrink: 0 }}>
-                  {starIcons}
-                </div>
-              )} */}
+              {hotelTags.map((t, i) => {
+                const starMatch = t.match(/^(\d)/);
+                const starCount = starMatch ? parseInt(starMatch[1], 10) : 0;
+                return (
+                  <span
+                    key={i}
+                    style={{
+                      display: "inline-block",
+                      verticalAlign: "middle",
+                      marginRight: 6,
+                    }}
+                  >
+                    <StarRatingTag label={t} starCount={starCount} />
+                  </span>
+                );
+              })}
             </div>
           )}
-
-          {/* City name under the heading — sourced from the itinerary city */}
-          {cityName && (
-            <div
-              style={{
-                fontSize: 12,
-                color: "var(--color-text-secondary)",
-                fontFamily: "'Inter', sans-serif",
-              }}
-            >
-              {cityName}
-            </div>
-          )}
-
-          {/* Colorful tags row — each tag gets a distinct color */}
-          {hotelTags.length > 0 && (
-  <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-    {hotelTags.map((t, i) => {
-      // Extract star count from labels like "5-Star Hotel", "4 Star Hotel", "3-Star"
-      const starMatch = t.match(/^(\d)/);
-      const starCount = starMatch ? parseInt(starMatch[1], 10) : 0;
-      return (
-        <StarRatingTag key={i} label={t} starCount={starCount} />
-      );
-    })}
-  </div>
-)}
 
           {/* Divider */}
-          {(name || hotelTags.length > 0) && (address || description || priceFormatted) && (
+          {(name || hotelTags.length > 0) && description && (
             <div style={{ height: "0.5px", background: "#e5e5e5" }} />
           )}
 
@@ -2077,41 +2111,50 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
               {description}
             </p>
           )}
+        </div>
 
-          {/* Address — below description, with a location icon */}
-          {address && (
-            <div style={{ display: "flex", alignItems: "flex-start", gap: 6 }}>
-              <span style={{ flexShrink: 0, marginTop: 1 }}>
-                <MapPinIcon size={14} color="#6b7280" />
-              </span>
-              <p
-                style={{
-                  fontSize: 12,
-                  color: "var(--color-text-secondary)",
-                  margin: 0,
-                  fontFamily: "'Inter', sans-serif",
-                  display: "-webkit-box",
-                  WebkitLineClamp: 2,
-                  WebkitBoxOrient: "vertical",
-                  overflow: "hidden",
-                }}
-              >
-                {address}
-              </p>
+        {imgSrc && (
+          <div className="w-full sm:w-[140px] shrink-0 self-start">
+            <div className="w-full h-40 sm:h-[110px] rounded-xl overflow-hidden">
+              <img
+                src={imgSrc}
+                alt={imgAlt}
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              />
             </div>
-          )}
+          </div>
+        )}
+      </div>
 
-          {/* Price */}
-          {priceFormatted && (
-            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+      {/* Footer row — price on the left, primary CTA on the right. Wraps to
+          two lines on narrow widths so the CTA never overlaps the price. The
+          CTA copy switches from "Check Availability" to "Select Rooms" after
+          a successful probe so users can explicitly open the room drawer. */}
+      {(priceFormatted || (accommodationId && detailStatus !== "error")) && (
+        <div
+          style={{
+            marginTop: 14,
+            paddingTop: 12,
+            borderTop: "0.5px solid #e5e5e5",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 10,
+            flexWrap: "wrap",
+            rowGap: 10,
+          }}
+        >
+          {priceFormatted ? (
+            <div style={{ display: "flex", flexDirection: "row", gap: 2, minWidth: 0 }}>
               <PriceLabel />
-              <div style={{ display: "flex", alignItems: "baseline", gap: 4 }}>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 4, flexWrap: "wrap" }}>
                 <span
                   style={{
-                    fontSize: 15,
-                    fontWeight: 600,
+                    fontSize: 16,
+                    fontWeight: 700,
                     color: "var(--color-text-primary)",
                     fontFamily: "'Inter', sans-serif",
+                    lineHeight: 1.2,
                   }}
                 >
                   {priceFormatted}
@@ -2129,38 +2172,28 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
                 )}
               </div>
             </div>
+          ) : (
+            <span />
+          )}
+
+          {accommodationId && detailStatus !== "error" && (
+            <HotelPrimaryActionButton
+              mode={ctaMode}
+              loading={detailLoading}
+              loadingMode={pendingAction}
+              disabled={!cardClickable}
+              onClick={(e) => {
+                e.stopPropagation();
+                fetchDetail(ctaMode);
+              }}
+            />
           )}
         </div>
+      )}
 
-        {imgSrc && (
-          <div className="w-full sm:w-[120px] shrink-0 self-center flex flex-col gap-2">
-            <div className="w-full h-40 sm:h-[120px] rounded-xl overflow-hidden">
-              <img
-                src={imgSrc}
-                alt={imgAlt}
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              />
-            </div>
-            {/* Check Availability — same flow as clicking the card: tries
-                the hotel detail endpoint, opens the drawer on success, or
-                surfaces the error block below on failure. */}
-            {accommodationId && (
-              <CheckAvailabilityButton
-                loading={detailLoading}
-                disabled={!cardClickable}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  fetchDetail();
-                }}
-              />
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* Detail-fetch error block — only renders when the pre-flight detail
-          call has failed. Hosts the Raise Query CTA; its outcome is shown via
-          openNotification toaster, not inside the card. */}
+      {/* Detail-fetch error block — only renders when the detail call has
+          failed. Hosts the Offline Quote CTA; its outcome is surfaced via
+          openNotification, not inside the card. */}
       {detailStatus === "error" && (
         <HotelDetailErrorBlock
           message={detailError || "Couldn't load hotel details."}

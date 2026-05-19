@@ -221,8 +221,14 @@ interface MessageBubbleProps {
   /** Disables feedback buttons while a request is in flight. */
   feedbackLoading?: boolean;
   /** Toggle feedback for this message; ChatKitPanel handles create/change/delete.
-   *  An optional `message` is collected via popup when activating thumbs-down. */
-  onFeedback?: (messageId: string, type: "up" | "down", message?: string) => void;
+   *  An optional `message` and `label` are collected via popup when activating
+   *  thumbs-down. */
+  onFeedback?: (
+    messageId: string,
+    type: "up" | "down",
+    message?: string,
+    label?: FeedbackLabel,
+  ) => void;
   /** Re-send the previous user message. Provided only for network-error
    *  assistant bubbles so we can render a retry CTA in place of feedback. */
   onRetry?: () => void;
@@ -263,13 +269,27 @@ const ThumbsDownIcon: React.FC<{ filled?: boolean }> = ({ filled = false }) => (
 );
 
 // ─── Feedback message popup (thumbs-down) ─────────────────────────────────────
-// Centered modal that collects an optional comment when the user marks a
-// response as unhelpful. Submit closes immediately; the button's loading state
-// in FeedbackButtons reflects the in-flight API call.
+// Centered modal shown when the user marks a response as unhelpful. Collects:
+//   • A required `label` chosen from FEEDBACK_LABELS (single-select dropdown).
+//   • An optional free-text `message` — only revealed when the user picks
+//     "Other", since the canned labels already cover the common cases.
+// Submit closes immediately; FeedbackButtons reflects the in-flight API call.
+const FEEDBACK_LABELS: Record<string, string> = {
+  wrong_info: "Wrong information",
+  missed_intent: "Didn't understand me",
+  bad_tone: "Tone or clarity issue",
+  hallucination: "Hallucinated response",
+  bad_recommendation: "Bad recommendation",
+  other: "Other",
+};
+
+export type FeedbackLabel = keyof typeof FEEDBACK_LABELS;
+
 const FeedbackPopup: React.FC<{
-  onSubmit: (message: string) => void;
+  onSubmit: (label: FeedbackLabel, message: string) => void;
   onClose: () => void;
 }> = ({ onSubmit, onClose }) => {
+  const [label, setLabel] = useState<FeedbackLabel | "">("");
   const [message, setMessage] = useState("");
   const [sent, setSent] = useState(false);
 
@@ -290,9 +310,13 @@ const FeedbackPopup: React.FC<{
 
   const handleSend = () => {
     if (sent) return;
+    if (!label) return;
     setSent(true);
-    onSubmit(message.trim());
+    onSubmit(label, message.trim());
   };
+
+  const showOtherInput = label === "other";
+  const canSubmit = !!label && (!showOtherInput || message.trim().length > 0);
 
   return createPortal(
     <div
@@ -345,7 +369,8 @@ const FeedbackPopup: React.FC<{
               Tell us more
             </div>
             <div style={{ fontSize: 13, color: "#6b7280", lineHeight: "18px" }}>
-              What was wrong with this response? Your feedback helps us improve.
+              Pick the closest reason — it helps us improve faster than free
+              text alone.
             </div>
           </div>
           <button
@@ -377,38 +402,117 @@ const FeedbackPopup: React.FC<{
           </button>
         </div>
 
-        <textarea
-          autoFocus
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="What was the issue? (optional)"
-          maxLength={1000}
-          onFocus={(e) => {
-            e.currentTarget.style.borderColor = "#0d0d0d";
-            e.currentTarget.style.background = "#ffffff";
-          }}
-          onBlur={(e) => {
-            e.currentTarget.style.borderColor = "#e5e7eb";
-            e.currentTarget.style.background = "#f8fafc";
-          }}
-          style={{
-            width: "100%",
-            minHeight: 96,
-            maxHeight: 220,
-            padding: "12px 14px",
-            borderRadius: 12,
-            border: "1px solid #e5e7eb",
-            background: "#f8fafc",
-            color: "#0d0d0d",
-            fontFamily: "'Inter', sans-serif",
-            fontSize: 14,
-            lineHeight: "20px",
-            resize: "vertical",
-            outline: "none",
-            boxSizing: "border-box",
-            transition: "border-color 0.15s ease, background 0.15s ease",
-          }}
-        />
+        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          <label
+            htmlFor="feedback-label-select"
+            style={{
+              fontSize: 12,
+              fontWeight: 500,
+              color: "#374151",
+              fontFamily: "'Inter', sans-serif",
+            }}
+          >
+            What went wrong?
+          </label>
+          <div style={{ position: "relative" }}>
+            <select
+              id="feedback-label-select"
+              autoFocus
+              value={label}
+              onChange={(e) => setLabel(e.target.value as FeedbackLabel | "")}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = "#0d0d0d";
+                e.currentTarget.style.background = "#ffffff";
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = "#e5e7eb";
+                e.currentTarget.style.background = "#f8fafc";
+              }}
+              style={{
+                width: "100%",
+                appearance: "none",
+                WebkitAppearance: "none",
+                MozAppearance: "none",
+                padding: "11px 38px 11px 14px",
+                borderRadius: 12,
+                border: "1px solid #e5e7eb",
+                background: "#f8fafc",
+                color: label ? "#0d0d0d" : "#9ca3af",
+                fontFamily: "'Inter', sans-serif",
+                fontSize: 14,
+                lineHeight: "20px",
+                outline: "none",
+                boxSizing: "border-box",
+                cursor: "pointer",
+                transition: "border-color 0.15s ease, background 0.15s ease",
+              }}
+            >
+              <option value="" disabled>
+                Select a reason…
+              </option>
+              {Object.entries(FEEDBACK_LABELS).map(([value, text]) => (
+                <option key={value} value={value}>
+                  {text}
+                </option>
+              ))}
+            </select>
+            <svg
+              aria-hidden="true"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#6b7280"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              style={{
+                position: "absolute",
+                right: 14,
+                top: "50%",
+                transform: "translateY(-50%)",
+                pointerEvents: "none",
+              }}
+            >
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </div>
+        </div>
+
+        {showOtherInput && (
+          <textarea
+            autoFocus
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="Tell us what went wrong"
+            maxLength={1000}
+            onFocus={(e) => {
+              e.currentTarget.style.borderColor = "#0d0d0d";
+              e.currentTarget.style.background = "#ffffff";
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.borderColor = "#e5e7eb";
+              e.currentTarget.style.background = "#f8fafc";
+            }}
+            style={{
+              width: "100%",
+              minHeight: 96,
+              maxHeight: 220,
+              padding: "12px 14px",
+              borderRadius: 12,
+              border: "1px solid #e5e7eb",
+              background: "#f8fafc",
+              color: "#0d0d0d",
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 14,
+              lineHeight: "20px",
+              resize: "vertical",
+              outline: "none",
+              boxSizing: "border-box",
+              transition: "border-color 0.15s ease, background 0.15s ease",
+            }}
+          />
+        )}
 
         <div
           style={{
@@ -445,9 +549,9 @@ const FeedbackPopup: React.FC<{
           <button
             type="button"
             onClick={handleSend}
-            disabled={sent}
+            disabled={sent || !canSubmit}
             onMouseEnter={(e) => {
-              if (!sent) e.currentTarget.style.background = "#1f2937";
+              if (!sent && canSubmit) e.currentTarget.style.background = "#1f2937";
             }}
             onMouseLeave={(e) => (e.currentTarget.style.background = "#0d0d0d")}
             style={{
@@ -459,8 +563,8 @@ const FeedbackPopup: React.FC<{
               fontFamily: "'Inter', sans-serif",
               fontSize: 14,
               fontWeight: 600,
-              cursor: sent ? "not-allowed" : "pointer",
-              opacity: sent ? 0.7 : 1,
+              cursor: sent || !canSubmit ? "not-allowed" : "pointer",
+              opacity: sent || !canSubmit ? 0.5 : 1,
               transition: "background 0.15s ease, opacity 0.15s ease",
               display: "inline-flex",
               alignItems: "center",
@@ -497,7 +601,12 @@ const FeedbackButtons: React.FC<{
   messageId: string;
   feedback: { feedbackId: string; type: "up" | "down" } | null;
   loading: boolean;
-  onFeedback: (messageId: string, type: "up" | "down", message?: string) => void;
+  onFeedback: (
+    messageId: string,
+    type: "up" | "down",
+    message?: string,
+    label?: FeedbackLabel,
+  ) => void;
 }> = ({ messageId, feedback, loading, onFeedback }) => {
   const [popupOpen, setPopupOpen] = useState(false);
   const baseStyle: React.CSSProperties = {
@@ -530,9 +639,9 @@ const FeedbackButtons: React.FC<{
     setPopupOpen(true);
   };
 
-  const handlePopupSubmit = (msg: string) => {
+  const handlePopupSubmit = (label: FeedbackLabel, msg: string) => {
     setPopupOpen(false);
-    onFeedback(messageId, "down", msg);
+    onFeedback(messageId, "down", msg, label);
   };
 
   return (
