@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
 import { useChat, generateSessionId, getPlatform, type UserLocationData, type MessageAttachment, Message } from "../hooks/useChat";
@@ -354,11 +354,15 @@ const ChatPanelStyles = () => (
       50% { opacity: 0.5; transform: scale(0.7); }
     }
     .kp-composer-wrap {
-      padding: 12px 20px 18px;
-      border-top: 1px solid #ececec;
-      background: #fff;
-    }
-
+  padding: 12px 20px 18px;
+  border-top: 1px solid #ececec;
+  background: #fff;
+}
+@media (max-width: 768px) {
+  .kp-composer-wrap {
+    padding: 8px 12px 10px;
+  }
+}
     /* ── Status notes card (mirrors .wait-card from the left panel) ── */
     .sn-card {
       background: #fff;
@@ -374,7 +378,10 @@ const ChatPanelStyles = () => (
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    .sn-card::before {
+    /* Border-scan animation only runs while tasks are still in flight. Once
+       polling ends the parent drops the .is-active modifier, killing the
+       sweep so a settled card looks calm. */
+    .sn-card.is-active::before {
       content: '';
       position: absolute;
       top: 0; left: -100%;
@@ -521,16 +528,23 @@ interface StatusNotesCardProps {
   displayText?: string | null | undefined;
   isPolling: boolean;
   cycleKey: string;
+  /** Identifier for the most recent user message. When this changes the
+   *  card resets and disappears — the user has moved on to a new turn. */
+  resetKey?: string | null;
 }
 const StatusNotesCard: React.FC<StatusNotesCardProps> = ({
   notes,
   displayText,
   isPolling,
   cycleKey,
+  resetKey,
 }) => {
   type Batch = { id: number; items: string[] };
   const [batches, setBatches] = useState<Batch[]>([]);
   const [loaderActive, setLoaderActive] = useState<boolean>(true);
+  // Set when the user kicks off a new turn — suppresses the card until the
+  // next polling cycle (or fresh data) revives it.
+  const [dismissed, setDismissed] = useState<boolean>(false);
   const prevNotesKeyRef = useRef<string>("");
   const prevDisplayRef = useRef<string>("");
   // Tracks every line we've ever shown this cycle (notes + display_text),
@@ -540,17 +554,35 @@ const StatusNotesCard: React.FC<StatusNotesCardProps> = ({
   const batchIdRef = useRef(0);
   const cycleRef = useRef<string>(cycleKey);
 
-  // New polling cycle → reset everything.
+  // New polling cycle → reset everything (and revive the card if it was
+  // dismissed by a prior user turn).
   useEffect(() => {
     if (cycleRef.current === cycleKey) return;
     cycleRef.current = cycleKey;
     setBatches([]);
     setLoaderActive(true);
+    setDismissed(false);
     prevNotesKeyRef.current = "";
     prevDisplayRef.current = "";
     seenLinesRef.current = new Set();
     batchIdRef.current = 0;
   }, [cycleKey]);
+
+  // New user message → dismiss the card. The user has moved on, so any
+  // previously-pinned status should disappear and not bleed into the new
+  // turn. Stays dismissed until the next polling cycle bumps `cycleKey`.
+  const prevResetKeyRef = useRef<string | null | undefined>(resetKey);
+  useEffect(() => {
+    if (prevResetKeyRef.current === resetKey) return;
+    prevResetKeyRef.current = resetKey;
+    setBatches([]);
+    setLoaderActive(false);
+    setDismissed(true);
+    prevNotesKeyRef.current = "";
+    prevDisplayRef.current = "";
+    seenLinesRef.current = new Set();
+    batchIdRef.current = 0;
+  }, [resetKey]);
 
   // Track new note snapshots (server may push 1+ lines at once).
   useEffect(() => {
@@ -614,6 +646,7 @@ const StatusNotesCard: React.FC<StatusNotesCardProps> = ({
   // unrelated chats or after a page refresh just because Redux's
   // `is_polling` flag is still set from a prior session.
   if (cycleKey === "init") return null;
+  if (dismissed) return null;
   if (batches.length === 0 && !isPolling) return null;
 
   // An item is "active" when it lives in the latest batch AND polling is
@@ -624,11 +657,13 @@ const StatusNotesCard: React.FC<StatusNotesCardProps> = ({
   const showDoneFooter = !loaderActive && batches.length > 0;
 
   return (
-    <div className="sn-card">
-      <span className="sn-stage">
-        <span className="sn-pulse" />
-        Updating your itinerary
-      </span>
+    <div className={`sn-card${loaderActive ? " is-active" : ""}`}>
+      {loaderActive && (
+        <span className="sn-stage">
+          <span className="sn-pulse" />
+          Updating your itinerary
+        </span>
+      )}
       <div className="sn-title">Kaira is working on your changes</div>
       <ul className="sn-list">
         {batches.map((b, bi) => (
@@ -1444,7 +1479,7 @@ const handleSessionCreated = useCallback((ourSessionId: string) => {
   );
 
 const { messages, isStreaming, error, sendMessage: rawSendMessage,
-  sendWidgetAction: rawSendWidgetAction, clearMessages, cancelStream, setMessages, threadIdRef }= useChat({
+  sendWidgetAction: rawSendWidgetAction, clearMessages, cancelStream, setMessages, threadIdRef } = useChat({
     apiUrl,
     domainKey: CHATKIT_DOMAIN_KEY,
     model: selectedModel,
@@ -2664,6 +2699,35 @@ const handleShowLogin = useCallback(() => {
 
   const showError = !!error && !errorDismissed;
 
+  // Identifier for the newest user message — used by StatusNotesCard to
+  // reset itself whenever the user kicks off a new turn.
+  const lastUserMessageId = useMemo(() => {
+    for (let i = messages.length - 1; i >= 0; i--) {
+      if (messages[i].role === "user") return messages[i].id ?? null;
+    }
+    return null;
+  }, [messages]);
+
+  // While streaming, the assistant either has visible content/progress/tasks
+  // already (→ "typing…") or is still just showing the dots placeholder
+  // (→ "thinking…"). Pre-stream, before any assistant message exists, we
+  // also treat it as thinking.
+  const isStreamingDotsOnly = useMemo(() => {
+    if (!isStreaming) return false;
+    let lastAssistant: Message | null = null;
+    for (let i = messages.length - 1; i >= 0; i--) {
+      if (messages[i].role === "assistant") {
+        lastAssistant = messages[i];
+        break;
+      }
+    }
+    if (!lastAssistant) return true;
+    const hasContent = !!lastAssistant.content;
+    const hasProgress = (lastAssistant.progressSteps?.length ?? 0) > 0;
+    const hasTasks = (lastAssistant.thinkingTasks?.length ?? 0) > 0;
+    return !hasContent && !hasProgress && !hasTasks;
+  }, [isStreaming, messages]);
+
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div
@@ -2697,7 +2761,9 @@ const handleShowLogin = useCallback(() => {
                 : isItineraryCompleting
                 ? "building itinerary…"
                 : isStreaming
-                ? "typing…"
+                ? isStreamingDotsOnly
+                  ? "thinking…"
+                  : "typing…"
                 : isLoadingLocation
                 ? "locating…"
                 : "online · ~2s reply"}
@@ -3278,6 +3344,7 @@ const handleShowLogin = useCallback(() => {
               displayText={statusDisplayText}
               isPolling={isItineraryPolling}
               cycleKey={pollingCycleKey}
+              resetKey={lastUserMessageId}
             />
 
             <div ref={messagesEndRef} />

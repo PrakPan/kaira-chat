@@ -1,7 +1,116 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { createPortal } from "react-dom";
+import { useSelector } from "react-redux";
 import type { Message, ProgressStep, ThinkingTask } from "../../hooks/useChat";
 import { WidgetRenderer } from "../WidgetRenderer";
+
+const USER_IMAGE_CDN = "https://d31aoa0ehgvjdi.cloudfront.net/";
+
+function useUserAvatarSrc(): string | null {
+  const reduxImage = useSelector((state: any) => state?.auth?.image);
+  const token = useSelector((state: any) => state?.auth?.token);
+  const [localImg, setLocalImg] = useState<string | null>(() =>
+    typeof window !== "undefined" ? localStorage.getItem("user_image") : null,
+  );
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    setLocalImg(token ? localStorage.getItem("user_image") : null);
+  }, [token]);
+
+  if (!token) return null;
+  const candidate =
+    reduxImage && reduxImage !== "null" ? reduxImage : localImg;
+  if (!candidate || candidate === "null") return null;
+  if (/^https?:\/\//i.test(candidate)) return candidate;
+  return USER_IMAGE_CDN + candidate;
+}
+
+const UserFallbackIcon: React.FC = () => (
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <circle cx="12" cy="8" r="4" />
+    <path d="M20 21a8 8 0 1 0-16 0" />
+  </svg>
+);
+
+// Shared responsive rules for the message bubble. On phones the avatar
+// (Kaira on the left, user on the right) eats horizontal room in the flex
+// row — we lift it out of flow and re-pin it as a small floating badge
+// overlapping the bubble's top corner. Also tightens the bubble max-width
+// and adds a hint of horizontal padding so cards don't kiss the screen
+// edge. Desktop layout is unchanged.
+// `!important` is required because the avatar divs set sizing/display
+// inline, and we override `.msg.kaira` / `.msg.user` inline `maxWidth`.
+const MessageBubbleResponsiveStyles: React.FC = () => (
+  <style>{`
+    @media (max-width: 767px) {
+      .msg {
+        position: relative;
+        padding-top: 14px;
+      }
+      .msg.kaira { max-width: 92% !important; padding-left: 2px; }
+      .msg.user  { padding-right: 2px; }
+      .msg-avatar {
+        position: absolute !important;
+        top: 0 !important;
+        width: 24px !important;
+        height: 24px !important;
+        box-sizing: border-box !important;
+        z-index: 2;
+        border: 2px solid #fff !important;
+        box-shadow: 0 1px 4px rgba(11,18,32,0.18);
+      }
+      .msg.kaira .msg-avatar { left: 0; }
+      .msg.user  .msg-avatar { right: 0; }
+    }
+  `}</style>
+);
+
+const UserAvatar: React.FC = () => {
+  const avatarSrc = useUserAvatarSrc();
+  const [errored, setErrored] = useState(false);
+  const showImage = !!avatarSrc && !errored;
+  return (
+    <div
+      aria-hidden
+      className="msg-avatar"
+      style={{
+        width: 30,
+        height: 30,
+        borderRadius: "50%",
+        flexShrink: 0,
+        overflow: "hidden",
+        background: "#0f1a2e",
+        color: "#f7e700",
+        display: "grid",
+        placeItems: "center",
+        fontSize: 12,
+        fontWeight: 700,
+        fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+      }}
+    >
+      {showImage ? (
+        <img
+          src={avatarSrc!}
+          alt="You"
+          onError={() => setErrored(true)}
+          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+        />
+      ) : (
+        <UserFallbackIcon />
+      )}
+    </div>
+  );
+};
 
 // ─── Image lightbox (full-size preview) ───────────────────────────────────────
 const ImageLightbox: React.FC<{ url: string; alt?: string; onClose: () => void }> = ({
@@ -462,16 +571,16 @@ function resolveEntityTokens(
 }
 
 // ─── ThinkingLoaderShell ──────────────────────────────────────────────────────
-// Mirrors the design-spec HTML: a lead line, a navy gradient card with spinner
-// showing the *current* step, and a cream `.steps` list of completed events
-// underneath (each separated by a hairline). When a new event arrives, the
-// previous "current" step moves into the done-list.
+// Optional lead line above a navy gradient row containing a yellow spinner
+// and the current step. Only one message is shown at a time — once a new
+// event arrives, the previous step is dropped from the card. Completed
+// steps don't render here; they move into the "Thought for Xs" collapsible
+// in ProgressLoader / ThinkingBlock once the loader finishes.
 
 const ThinkingLoaderShell: React.FC<{
-  lead: string;
+  lead?: string;
   activeText: string;
-  doneTexts: string[];
-}> = ({ lead, activeText, doneTexts }) => (
+}> = ({ lead, activeText }) => (
   <div
     style={{
       marginBottom: 12,
@@ -481,7 +590,7 @@ const ThinkingLoaderShell: React.FC<{
       fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
     }}
   >
-    {/* Lead — matches .bubble-k .lead */}
+    {/* Optional lead */}
     {lead && (
       <div
         style={{
@@ -496,11 +605,11 @@ const ThinkingLoaderShell: React.FC<{
       </div>
     )}
 
-    {/* Navy gradient loader — matches .bubble-loader */}
+    {/* Navy gradient single-row loader */}
     {activeText && (
       <div
         style={{
-          marginTop: 8,
+          marginTop: lead ? 8 : 0,
           background: "linear-gradient(135deg,#0D1429 0%,#1A2238 100%)",
           color: "#fff",
           borderRadius: 12,
@@ -512,7 +621,6 @@ const ThinkingLoaderShell: React.FC<{
         <div
           aria-hidden
           style={{
-            content: '""',
             position: "absolute",
             inset: 0,
             background:
@@ -553,74 +661,6 @@ const ThinkingLoaderShell: React.FC<{
       </div>
     )}
 
-    {/* Done-list — matches .steps */}
-    {doneTexts.length > 0 && (
-      <div
-        style={{
-          marginTop: 10,
-          background: "#F5F2E8",
-          border: "1px solid #E5E1D5",
-          borderRadius: 13,
-          padding: "10px 12px",
-        }}
-      >
-        {doneTexts.map((text, i) => (
-          <div
-            key={i}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 9,
-              padding: "5px 0",
-              fontSize: 11.5,
-              borderTop: i > 0 ? "1px solid #EFEBDD" : "none",
-            }}
-          >
-            <div
-              style={{
-                width: 20,
-                height: 20,
-                borderRadius: "50%",
-                background: "#16A34A",
-                color: "#fff",
-                display: "grid",
-                placeItems: "center",
-                flexShrink: 0,
-              }}
-            >
-              <svg
-                width="11"
-                height="11"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="3"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-            </div>
-            <div
-              style={{
-                flex: 1,
-                minWidth: 0,
-                fontWeight: 500,
-                color: "#475569",
-                textDecoration: "line-through",
-                textDecorationColor: "#94A3B8",
-                wordBreak: "break-word",
-                overflowWrap: "anywhere",
-                lineHeight: 1.4,
-              }}
-            >
-              {text}
-            </div>
-          </div>
-        ))}
-      </div>
-    )}
-
     <style>{`
       @keyframes thinkRowIn {
         from { opacity: 0; transform: translateY(4px); }
@@ -653,17 +693,15 @@ const ProgressLoader: React.FC<{ steps: ProgressStep[] }> = ({ steps }) => {
   const latest = steps[steps.length - 1];
   if (!latest) return null;
 
-  // ── In-progress: lead + navy loader for current step + cream done-list ──
+  // ── In-progress: lead + navy single-row loader showing only the current step.
+  // Completed steps are exposed via the "Thought for Xs" collapsible below.
   if (!allDone) {
-    const lastIndex = steps.length - 1;
-    const activeStep = steps[lastIndex];
-    const doneSteps = steps.slice(0, lastIndex);
+    const activeStep = steps[steps.length - 1];
 
     return (
       <ThinkingLoaderShell
         lead="Great — locking it in. Give me ~30 seconds."
         activeText={activeStep?.text ?? ""}
-        doneTexts={doneSteps.map((s) => s.text)}
       />
     );
   }
@@ -818,19 +856,15 @@ const ThinkingBlock: React.FC<{
 
   const cleanContent = (text: string) => text.replace(/\*\*/g, "");
 
-  // ── Thinking state: lead + navy loader for current + cream done-list ──────
+  // ── Thinking state: lead + navy single-row loader showing only the current
+  // task. Completed tasks are exposed via the "Thought for Xs" collapsible.
   if (isThinking) {
-    const lastIndex = tasks.length - 1;
-    const activeTask = tasks[lastIndex];
-    const doneTasks = tasks.slice(0, lastIndex);
+    const activeTask = tasks[tasks.length - 1];
 
     return (
       <ThinkingLoaderShell
         lead="Great — locking it in. Give me ~30 seconds."
-        activeText={
-          activeTask ? cleanContent(activeTask.content) : ""
-        }
-        doneTexts={doneTasks.map((t) => cleanContent(t.content))}
+        activeText={activeTask ? cleanContent(activeTask.content) : ""}
       />
     );
   }
@@ -1255,9 +1289,12 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
         }}
       >
         {/* Kaira avatar — same gradient ring + image as text replies, so
-            content widget messages read as part of the same turn. */}
+            content widget messages read as part of the same turn. Hidden on
+            phones (see MessageBubbleResponsiveStyles) to give the widget
+            card full width. */}
         <div
           aria-hidden
+          className="msg-avatar"
           style={{
             width: 30,
             height: 30,
@@ -1303,6 +1340,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
             )}
           </div>
         </div>
+        <MessageBubbleResponsiveStyles />
         <style>{`
           @keyframes msgInK {
             from { opacity: 0; transform: translateY(8px); }
@@ -1329,27 +1367,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           animation: "msgIn 0.3s ease-out",
         }}
       >
-        <div
-          aria-hidden
-          style={{
-            width: 30,
-            height: 30,
-            borderRadius: "50%",
-            flexShrink: 0,
-            background: "#0f1a2e",
-            color: "#f7e700",
-            display: "grid",
-            placeItems: "center",
-            fontSize: 12,
-            fontWeight: 700,
-            fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-          }}
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="8" r="4" />
-            <path d="M20 21a8 8 0 1 0-16 0" />
-          </svg>
-        </div>
+        <UserAvatar />
         <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6, minWidth: 0 }}>
           {hasAttachments && (
             <div
@@ -1412,6 +1430,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           )}
         </div>
         <ChatMdStyles />
+        <MessageBubbleResponsiveStyles />
         <style>{`
           @keyframes msgIn {
             from { opacity: 0; transform: translateY(8px); }
@@ -1452,6 +1471,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
     >
       <div
         aria-hidden
+        className="msg-avatar"
         style={{
           width: 30,
           height: 30,
@@ -1533,6 +1553,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           )}
       </div>
       <ChatMdStyles />
+      <MessageBubbleResponsiveStyles />
       <style>{`
         @keyframes msgInK {
           from { opacity: 0; transform: translateY(8px); }
