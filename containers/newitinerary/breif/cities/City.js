@@ -42,7 +42,7 @@ const City = (props) => {
 
   return (
     <div className=" ">
-      <div className="font-bold text-2xl pb-3">
+      <div className="font-bold ttw-type-h2 pb-3">
         {props.cityData.city_name + " - " + props.cityData.duration} Nights
       </div>
       <GridContainer>
@@ -60,10 +60,10 @@ const City = (props) => {
             </div>
 
             <div className="flex flex-col">
-              <div className="text-xl font-medium">
+              <div className="ttw-type-h3">
                 Lemon Tree Premium Hotel
               </div>
-              <div className="text-xs font-light">
+              <div className="ttw-type-small font-light">
                 Nirwan Marg, Bani Park, Jaipur
               </div>
             </div>

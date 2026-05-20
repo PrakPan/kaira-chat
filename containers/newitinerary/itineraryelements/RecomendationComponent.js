@@ -107,12 +107,12 @@ const RecomendationComponent = (props) => {
                   />
                 </ReccoIcon>
               )}
-              <div className="lg:text-lg text-[1.2rem] lg:font-medium font-normal pb-3">
+              <div className="lg:ttw-type-h4 text-[1.2rem] lg:font-medium font-normal pb-3">
                 {props.heading}
               </div>
             </GridContainerMobile>
           ) : (
-            <div className="text-xl font-normal pb-3">{props.heading}</div>
+            <div className="ttw-type-h3 font-normal pb-3">{props.heading}</div>
           )}
           {props.recomendation ? (
             <div>
@@ -120,8 +120,8 @@ const RecomendationComponent = (props) => {
                 <div
                   className={
                     isPageWide
-                      ? "pt-1 font-normal text-sm"
-                      : "pt-2 text-sm font-[350]"
+                      ? "pt-1 font-normal ttw-type-body"
+                      : "pt-2 ttw-type-body font-[350]"
                   }
                 >
                   {props.recomendation}
@@ -151,14 +151,14 @@ const RecomendationComponent = (props) => {
                   </RecommendationGridContainer>
                   {JSON.parse(props.recomendation).length > 2 ? (
                     <LivelyButton
-                      className="font-normal flex flex-row items-center justify-center  rounded-sm  py-1 mt-2    bg-white text-[#565555]"
+                      className="font-normal flex flex-row items-center justify-center rounded-sm py-1 mt-2 bg-white text-[#565555]"
                       onClick={() => setViewMore(!viewMore)}
                     >
                       {!viewMore ? "View More" : "View Less"}
                       <AiOutlineDown
                         className={`ml-2 transition-all ${
-                          viewMore ? "rotate-180" : ""
-                        }`}
+ viewMore ? "rotate-180" : ""
+ }`}
                       />
                     </LivelyButton>
                   ) : (

@@ -43,7 +43,7 @@ const NewCity = (props) => (
     )}
     <div className="flex flex-row pt-2">
       <div className="pl-[8rem] w-full">
-        <div className="pb-[1rem] pt-[0.6rem] text-base font-semibold">
+        <div className="pb-[1rem] pt-[0.6rem] ttw-type-h5">
           Arrive in {props.newcity.city_data.city_name}{" "}
         </div>
         <Line></Line>

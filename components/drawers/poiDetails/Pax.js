@@ -46,8 +46,8 @@ const ChildAge = ({ index, age, handleChildAgeChange }) => {
   };
 
   return (
-    <div className="flex justify-between items-center w-full text-[12px]">
-      <div className="text-[14px] font-medium">Age of Child {index + 1}</div>
+    <div className="flex justify-between items-center w-full ttw-type-small">
+      <div className="ttw-type-body font-medium">Age of Child {index + 1}</div>
       <div className="flex items-center gap-2">
         <CounterButton
           onClick={() => handleChange({ target: { value: age - 1 } })}
@@ -63,7 +63,7 @@ const ChildAge = ({ index, age, handleChildAgeChange }) => {
           onChange={handleChange}
           disabled
         />
-        <span className="text-sm text-gray-500">years</span>
+        <span className="ttw-type-body text-gray-500">years</span>
         <CounterButton
           onClick={() => handleChange({ target: { value: age + 1 } })}
           disabled={age >= 12}
@@ -181,13 +181,13 @@ export const Pax = ({ pax, setPax, combo, limit = null }) => {
   const DropdownContent = ({ refProp }) => (
     <div
       ref={refProp}
-      className="absolute top-full right-0 bg-white shadow-2xl p-3 rounded-lg space-y-5 text-sm z-50 w-[280px] max-h-[500px] overflow-y-auto"
+      className="absolute top-full right-0 bg-white shadow-2xl p-3 rounded-lg space-y-5 ttw-type-body z-50 w-[280px] max-h-[500px] overflow-y-auto"
     >
       {/* Adults */}
       <div className="flex justify-between items-center w-full">
         <div>
-          <div className="text-[14px] font-medium">Adults</div>
-          <div className="text-[10px] text-[#6e757a]">12+ Years</div>
+          <div className="ttw-type-body font-medium">Adults</div>
+          <div className="ttw-type-small text-[#6e757a]">12+ Years</div>
         </div>
         <div className="flex items-center gap-2 border-2 border-[#e4e4e4] rounded-full px-3 py-1">
           <FaMinus
@@ -196,7 +196,7 @@ export const Pax = ({ pax, setPax, combo, limit = null }) => {
             className="cursor-pointer"
             color="#0000EE"
           />
-          <span className="text-[12px] min-w-[20px] text-center">{adults}</span>
+          <span className="ttw-type-small min-w-[20px] text-center">{adults}</span>
           <FaPlus
             onClick={() => handlePlus("adult")}
             size={9.33}
@@ -210,8 +210,8 @@ export const Pax = ({ pax, setPax, combo, limit = null }) => {
       <div className="flex flex-col gap-4 w-full">
         <div className="flex justify-between items-center w-full">
           <div>
-            <div className="text-[14px] font-medium">Children</div>
-            <div className="text-[10px] text-[#6e757a]">2-12 Years</div>
+            <div className="ttw-type-body font-medium">Children</div>
+            <div className="ttw-type-small text-[#6e757a]">2-12 Years</div>
           </div>
           <div className="flex items-center gap-2 border-2 border-[#e4e4e4] rounded-full px-3 py-1">
             <FaMinus
@@ -220,7 +220,7 @@ export const Pax = ({ pax, setPax, combo, limit = null }) => {
               className="cursor-pointer"
               color="#0000EE"
             />
-            <span className="text-[12px] min-w-[20px] text-center">
+            <span className="ttw-type-small min-w-[20px] text-center">
               {children}
             </span>
             <FaPlus
@@ -251,8 +251,8 @@ export const Pax = ({ pax, setPax, combo, limit = null }) => {
       {combo && (
         <div className="flex justify-between items-center w-full">
           <div>
-            <div className="text-[14px] font-medium">Infants</div>
-            <div className="text-[10px] text-[#6e757a]">{`<2 years`}</div>
+            <div className="ttw-type-body font-medium">Infants</div>
+            <div className="ttw-type-small text-[#6e757a]">{`<2 years`}</div>
           </div>
           <div className="flex items-center gap-2 border-2 border-[#e4e4e4] rounded-full px-3 py-1">
             <FaMinus
@@ -261,7 +261,7 @@ export const Pax = ({ pax, setPax, combo, limit = null }) => {
               className="cursor-pointer"
               color="#0000EE"
             />
-            <span className="text-[12px] min-w-[20px] text-center">
+            <span className="ttw-type-small min-w-[20px] text-center">
               {infants}
             </span>
             <FaPlus
@@ -300,12 +300,12 @@ export const Pax = ({ pax, setPax, combo, limit = null }) => {
         onClick={() => setShowPax((prev) => !prev)}
         className="flex items-center w-full bg-[#F9F9F9] py-[0.7rem] px-4 rounded-lg justify-between"
       >
-        <div className="text-[10px] md:text-[14px] font-medium">Travellers</div>
-        <div className="text-[10px] md:text-[14px] font-medium">
+        <div className="ttw-type-small md:ttw-type-body font-medium">Travellers</div>
+        <div className="ttw-type-small md:ttw-type-body font-medium">
           &nbsp;|&nbsp;
         </div>
         <div className="flex items-center gap-1">
-          <div className="text-[10px] font-medium">
+          <div className="ttw-type-small font-medium">
             {`${adults + children + infants} Passenger`}
           </div>
           <IoIosArrowDown />

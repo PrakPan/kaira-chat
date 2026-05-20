@@ -20,12 +20,12 @@ const PriceSummary = () => {
           </svg>
         </div>
 
-        <p className="text-gray-500 text-[16px]">Total Price</p>
+        <p className="text-gray-500 ttw-type-body">Total Price</p>
 
         <div className="mt-2 flex items-center gap-3">
-          <h2 className="text-[20px] font-bold">₹ 39,000/-</h2>
+          <h2 className="ttw-type-h3 font-bold">₹ 39,000/-</h2>
 
-          <span className="rounded-md bg-red-400 px-3 py-1 text-sm font-medium text-white">
+          <span className="rounded-md bg-red-400 px-3 py-1 ttw-type-body-strong text-white">
             20% Off
           </span>
         </div>
@@ -34,7 +34,7 @@ const PriceSummary = () => {
 
         <button className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 py-2 text-white font-medium">
           View Cart
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-sm font-semibold text-slate-900">
+          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white ttw-type-body-strong text-slate-900">
             12
           </span>
         </button>
@@ -50,10 +50,10 @@ const PriceSummary = () => {
           />
 
           <div>
-            <h3 className="font-semibold text-lg">
+            <h3 className="font-semibold ttw-type-h4">
               Hey, I'm Kaira – Your AI Travel Buddy
             </h3>
-            <p className="mt-1 text-gray-600 text-sm">
+            <p className="mt-1 text-gray-600 ttw-type-body">
               Ready to plan your perfect trip? Let’s customize your itinerary
               together!
             </p>

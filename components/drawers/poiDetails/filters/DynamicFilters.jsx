@@ -45,10 +45,10 @@ export default function DyamicFilters(props) {
       {props?.showFilter && (
         <>
           {props?.elementType === "Activity" ? (
-            <div className="sm:w-[452px]  flex flex-col gap-3 justify-between items-start mx-auto">
+            <div className="sm:w-[452px] flex flex-col gap-3 justify-between items-start mx-auto">
               <div className="flex flex-col gap-3 justify-between w-[95%] mx-auto mt-4">
                 <div className="border-b border-b-[#CAC3C3] flex justify-between items-center">
-                  <div className="text-[20px] font-normal line-clamp-1 font-semibold">
+                  <div className="ttw-type-h3 font-normal line-clamp-1 font-semibold">
                     Filters
                   </div>
                   <div
@@ -117,10 +117,10 @@ export default function DyamicFilters(props) {
               </div>
             </div>
           ) : (
-            <div className="sm:w-[452px]  flex flex-col gap-3 justify-between items-start mx-auto">
+            <div className="sm:w-[452px] flex flex-col gap-3 justify-between items-start mx-auto">
               <div className="flex flex-col gap-3 justify-between w-[95%] mx-auto mt-4">
                 <div className="border-b border-b-[#CAC3C3] flex justify-between items-center">
-                  <div className="text-[20px] font-normal line-clamp-1 font-semibold">
+                  <div className="ttw-type-h3 font-normal line-clamp-1 font-semibold">
                     Filters
                   </div>
                   <div

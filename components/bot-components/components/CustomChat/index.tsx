@@ -89,10 +89,10 @@ export const CustomChat: React.FC<CustomChatProps> = ({
                 <span className="text-5xl">🧳</span>
               </div>
             </div>
-            <h1 className="text-2xl font-semibold text-gray-900 mb-2">
+            <h1 className="ttw-type-h2 text-gray-900 mb-2">
               Planning a trip today?
             </h1>
-            <p className="text-sm text-gray-500">
+            <p className="ttw-type-body text-gray-500">
               I'm here to help you with anything related to travel
             </p>
           </div>
@@ -102,23 +102,23 @@ export const CustomChat: React.FC<CustomChatProps> = ({
               <div
                 key={message.id}
                 className={`flex ${
-                  message.role === "user" ? "justify-end" : "justify-start"
-                }`}
+ message.role === "user" ? "justify-end" : "justify-start"
+ }`}
               >
                 <div
                   className={`max-w-[80%] rounded-2xl px-4 py-3 ${
-                    message.role === "user"
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-100 text-gray-900"
-                  }`}
+ message.role === "user"
+ ? "bg-blue-500 text-white"
+ : "bg-gray-100 text-gray-900"
+ }`}
                 >
                   {message.isLoading ? (
                     <div className="flex items-center gap-2">
                       {/* <Loader2 className="w-4 h-4 animate-spin" /> */}
-                      <span className="text-sm">Thinking...</span>
+                      <span className="ttw-type-body">Thinking...</span>
                     </div>
                   ) : (
-                    <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                    <p className="ttw-type-body leading-relaxed whitespace-pre-wrap">
                       {message.content}
                     </p>
                   )}
@@ -130,7 +130,7 @@ export const CustomChat: React.FC<CustomChatProps> = ({
                 <div className="bg-gray-100 rounded-2xl px-4 py-3">
                   <div className="flex items-center gap-2">
                     <PiPulse/>
-                    <span className="text-sm text-gray-600">Thinking...</span>
+                    <span className="ttw-type-body text-gray-600">Thinking...</span>
                   </div>
                 </div>
               </div>
@@ -152,7 +152,7 @@ export const CustomChat: React.FC<CustomChatProps> = ({
               placeholder="Ask me anything"
               rows={1}
               disabled={isProcessing}
-              className="flex-1 px-5 py-3.5 bg-transparent text-gray-900 placeholder-gray-400 outline-none resize-none text-sm font-normal"
+              className="flex-1 px-5 py-3.5 bg-transparent text-gray-900 placeholder-gray-400 outline-none resize-none ttw-type-body"
               style={{ maxHeight: "120px" }}
             />
 

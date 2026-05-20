@@ -297,11 +297,11 @@ const CitySummary = (props) => {
   return (
     <div className="p-3 flex flex-col gap-3">
       {dayByDay && dayByDay.length ? (
-        <div className="text-sm font-normal flex flex-col gap-1 w-auto md:flex-row">
-          <div className="text-[14px] font-medium leading-[22px] w-[80px]">
+        <div className="ttw-type-body flex flex-col gap-1 w-auto md:flex-row">
+          <div className="ttw-type-body font-medium w-[80px]">
             Explore:{" "}
           </div>
-          <div className="text-sm font-normal flex flex-row items-center flex-wrap gap-1 w-[]">
+          <div className="ttw-type-body flex flex-row items-center flex-wrap gap-1 w-[]">
             {dayByDay.map((poi, index) => {
               if (!poi.activity) {
                 size += 1;
@@ -354,15 +354,15 @@ const CitySummary = (props) => {
             })}
             <span
               onClick={handleSeeMore}
-              className="ml-2 text-blue hover:underline font-[600] text-[12px] leading-[22px] cursor-pointer"
+              className="ml-2 text-blue hover:underline font-[600] ttw-type-small cursor-pointer"
             >
               {size > 3 && `+${size - 3} more`}
             </span>
           </div>
         </div>
       ) : null}
-      <div className="text-sm font-normal flex flex-col gap-1 w-auto md:flex-row">
-        <div className="text-[14px] font-medium leading-[22px] w-[80px]">
+      <div className="ttw-type-body flex flex-col gap-1 w-auto md:flex-row">
+        <div className="ttw-type-body font-medium w-[80px]">
           {activities?.length > 0 && <>Activity:</>}{" "}
         </div>
         <div className="flex flex-col gap-2 w-full">
@@ -388,7 +388,7 @@ const CitySummary = (props) => {
                   </div>
                   <div>
                     <div className="flex gap-1">
-                      <div className="w-fit font-semibold  text-[12px] cursor-pointer">
+                      <div className="w-fit font-semibold ttw-type-small cursor-pointer">
                         {item?.name}
                       </div>
                       <div className="hidden group-hover:!block">
@@ -407,7 +407,7 @@ const CitySummary = (props) => {
                         </svg>
                       </div>
                     </div>
-                    <div className="flex gap-3 text-[12px] ">
+                    <div className="flex gap-3 ttw-type-small ">
                       <div className="w-auto flex items-center gap-1">
                         <svg
                           width="14"
@@ -505,8 +505,8 @@ const CitySummary = (props) => {
       {props?.intracityBookings &&
         formattedTaxiDetails &&
         props?.intracityBookings?.length > 0 && (
-          <div className="text-sm font-normal flex flex-col gap-1 w-auto md:flex-row">
-            <div className="text-[14px] font-medium leading-[22px] w-[80px]">
+          <div className="ttw-type-body flex flex-col gap-1 w-auto md:flex-row">
+            <div className="ttw-type-body font-medium w-[80px]">
               {formattedTaxiDetails?.length > 0 && <>Taxi:</>}{" "}
             </div>
             <div className="flex flex-col gap-2 w-full">
@@ -540,16 +540,16 @@ const CitySummary = (props) => {
                       </div>
 
                       <div>
-                        <span className="font-normal text-[12px] text-[#8a989d]">
+                        <span className="font-normal ttw-type-small text-[#8a989d]">
                           {item.date}
                         </span>
                         <div className="w-full h-px bg-gray-200 mb-2" />
                         <div className="flex gap-1 relative">
-                          <div className="w-fit font-[450] text-[12px] ">
+                          <div className="w-fit font-[450] ttw-type-small ">
                             {item?.name}
                           </div>
                         </div>
-                        <div className="flex gap-3 text-[12px] font-normal">
+                        <div className="flex gap-3 ttw-type-small font-normal">
                           <div className="w-auto flex items-center gap-1">
                             <BsPeopleFill />
                             <div>

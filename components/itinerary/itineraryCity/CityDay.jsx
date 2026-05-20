@@ -158,7 +158,7 @@ const renderTag = (item, extraClass = "") => {
   if (type === "activity") {
     return (
       <div className={`${extraClass}`}>
-        <span className="inline-flex items-center gap-[5px] px-[7px] py-[1px] rounded-[6px] border border-[#5cba663b] bg-[#EBFFEF] text-[12px] shadow-none">
+        <span className="inline-flex items-center gap-[5px] px-[7px] py-[1px] rounded-[6px] border border-[#5cba663b] bg-[#EBFFEF] ttw-type-small shadow-none">
           <span className="w-[7px] h-[7px] rounded-full bg-[#22C55E] shrink-0" />
           Activity
         </span>
@@ -177,7 +177,7 @@ const renderTag = (item, extraClass = "") => {
   if (type === "restaurant") {
     return (
       <div className={`${extraClass}`}>
-        <span className="inline-flex items-center gap-[5px] px-[7px] py-[1px] rounded-[6px] border border-[#D1D5DB] bg-white text-[12px] shadow-none">
+        <span className="inline-flex items-center gap-[5px] px-[7px] py-[1px] rounded-[6px] border border-[#D1D5DB] bg-white ttw-type-small shadow-none">
           <span className="w-[7px] h-[7px] rounded-full bg-[#3B82F6] shrink-0" />
           Restaurant
         </span>
@@ -188,7 +188,7 @@ const renderTag = (item, extraClass = "") => {
   if (type === "poi") {
     return (
       <div className={`${extraClass}`}>
-        <span className="inline-flex items-center gap-[5px] px-[7px] py-[1px] rounded-[6px] border border-[#D1D5DB] bg-white text-[12px] shadow-none">
+        <span className="inline-flex items-center gap-[5px] px-[7px] py-[1px] rounded-[6px] border border-[#D1D5DB] bg-white ttw-type-small shadow-none">
           <span className="w-[7px] h-[7px] rounded-full bg-[#7C3AED] shrink-0" />
           Self Exploration
         </span>
@@ -422,7 +422,7 @@ useEffect(() => {
           {/* "Recommendation:" prefix — distinguishes a recommendation row
               from a real bookable item (activity / restaurant / poi). */}
           {/* {isRecommendationOnly && (
-            <span className="text-[11px] text-[#07213A] font-medium leading-none mb-0.5">
+            <span className="ttw-type-small text-[#07213A] font-medium leading-none mb-0.5">
               Recommendation
             </span>
           )} */}
@@ -432,11 +432,11 @@ useEffect(() => {
             className="min-w-0"
           >
             <span
-              className={`text-[13px] font-[400] leading-snug truncate block ${
-                isClickable
-                  ? "cursor-pointer hover:underline"
-                  : "cursor-default"
-              }`}
+              className={`ttw-type-small truncate block ${
+ isClickable
+ ? "cursor-pointer hover:underline"
+ : "cursor-default"
+ }`}
               onClick={() => isClickable && handleItemClick(item)}
             >
               {name}
@@ -493,18 +493,18 @@ useEffect(() => {
         {/* COL 1: Date label */}
         <div className="sm:w-fit w-full shrink-0 px-4 sm:pt-6 pt-4 sm:pb-6 pb-2 flex sm:flex-col flex-row sm:items-start items-baseline gap-2 sm:min-w-[90px]">
           <div className="flex flex-col items-baseline sm:items-start gap-2 shrink-0">
-            <p className="text-[18px] font-[600] m-0 leading-tight whitespace-nowrap">Day {props.index + 1} 
-              {/* {isDesktop ? "": props.day?.day_summary && <span className="text-[12px] text-[#9CA3AF]">- {props.day?.day_summary}</span>} */}
+            <p className="ttw-type-h4 m-0 leading-tight whitespace-nowrap">Day {props.index + 1} 
+              {/* {isDesktop ? "": props.day?.day_summary && <span className="ttw-type-small text-[#9CA3AF]">- {props.day?.day_summary}</span>} */}
               </p>
             {props.day?.date && (
-              <p className="text-[12px] text-[#9CA3AF] m-0 sm:mt-1 mt-0 leading-tight whitespace-nowrap">
+              <p className="ttw-type-small text-[#9CA3AF] m-0 sm:mt-1 mt-0 leading-tight whitespace-nowrap">
                 {getDate(props.day.date)}
               </p>
             )}
           </div>
           {/* {props.day?.day_summary && (
             <p
-              className="text-[12px] text-[#6B7280] m-0 sm:mt-1 mt-0 leading-tight hidden sm:block"
+              className="ttw-type-small text-[#6B7280] m-0 sm:mt-1 mt-0 leading-tight hidden sm:block"
               style={{
                 display: "-webkit-box",
                 WebkitLineClamp: 2,
@@ -546,7 +546,7 @@ useEffect(() => {
                       { scroll: false },
                     );
                   }}
-                  className="rounded-9xl text-[12px] font-400 leading-md px-sm py-xxs text-white bg-[#5CBA66] flex gap-2 items-center justify-center hover:opacity-90"
+                  className="rounded-9xl ttw-type-small font-400 leading-md px-sm py-xxs text-white bg-[#5CBA66] flex gap-2 items-center justify-center hover:opacity-90"
                 >
                   <FaTaxi /> Sightseeing Taxi Included
                 </button>
@@ -571,7 +571,7 @@ useEffect(() => {
                       {/* Slot header */}
                       <div className="flex items-center gap-3 mb-2">
                         <div className="w-[7px] h-[7px] rounded-full bg-[#e5e5e5] shrink-0 z-10 relative" />
-                        <span className="text-[14px] font-[500] text-[#111]">
+                        <span className="ttw-type-body text-[#111]">
                           {slot}
                         </span>
                       </div>
@@ -605,7 +605,7 @@ useEffect(() => {
           ) : props?.isLastDay ? (
             <div className="flex items-center gap-2 md:ml-5 md:py-2">
               <IoBagCheckOutline size={15} />
-              <span className="text-[13px]">
+              <span className="ttw-type-small">
                 Check out from {props?.city?.name}
               </span>
             </div>
@@ -613,7 +613,7 @@ useEffect(() => {
           ) : (
             <div className="flex items-center gap-2 md:ml-5 md:py-2">
               <MdOutlineDownhillSkiing size={15} className="text-[#9CA3AF]" />
-              <span className="text-[13px] text-[#6B7280]">
+              <span className="ttw-type-small text-[#6B7280]">
                 No activity added.
               </span>
             </div>

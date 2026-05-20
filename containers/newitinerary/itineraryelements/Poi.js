@@ -520,24 +520,24 @@ const ItineraryPoiElement = (props) => {
           <div className="w-full ">
             <div className="w-full">
               <div
-                className="flex flex-row w-full  justify-start items-center"
+                className="flex flex-row w-full justify-start items-center"
                 style={{ lineHeight: "1" }}
               >
                 <div
-                  className="text-xl font-normal cursor-pointer"
+                  className="ttw-type-h3 font-normal cursor-pointer"
                   onClick={() => handleEditActivity(props?.heading, false)}
                 >
                   {props.heading}
                 </div>
                 <div
                  // onClick={() => handleEditActivity(props?.heading, true)}
-                  className="cursor-pointer min-w-max text-lg w-4 h-4 pl-3 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
+                  className="cursor-pointer min-w-max ttw-type-h4 w-4 h-4 pl-3 transition-transform duration-300 ase-in-out group-hover:text-blue-500 group-hover:scale-110 active:scale-90"
                 >
                   {/* <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" /> */}
                 </div>
               </div>
               <div className="flex flex-row gap-2">
-                <div className="font-normal border-2 border-[#9F9F9F] rounded-md px-2 py-[1px] mt-1    block  bg-white text-[#9F9F9F]">
+                <div className="font-normal border-2 border-[#9F9F9F] rounded-md px-2 py-[1px] mt-1 block bg-white text-[#9F9F9F]">
                   {props?.activity_data &&
                     props?.activity_data?.activity &&
                     props?.activity_data?.activity?.id
@@ -569,7 +569,7 @@ const ItineraryPoiElement = (props) => {
             </div>
           </div>
           <TextContainer>
-            <div className="pt-1 line-clamp-3 font-normal text-sm mb-3">
+            <div className="pt-1 line-clamp-3 font-normal ttw-type-body mb-3">
               {props.text}
             </div>
             <MoreIcon onClick={() => setShow(true)}>
@@ -621,7 +621,7 @@ const ItineraryPoiElement = (props) => {
                   textAlign: "right",
                 }}
               ></IoMdClose>
-              <div className="line-clamp-1 text-2xl font-normal ">
+              <div className="line-clamp-1 ttw-type-h2 font-normal ">
                 Replacing {props.heading}
               </div>
             </div>
@@ -630,7 +630,7 @@ const ItineraryPoiElement = (props) => {
               <IoMdSearch
                 id={"icon"}
                 onClick={searchHandler}
-                className="absolute cursor-pointer left-4 text-2xl"
+                className="absolute cursor-pointer left-4 ttw-type-h2"
               />
 
               <input
@@ -639,7 +639,7 @@ const ItineraryPoiElement = (props) => {
                 onChange={searchHandler}
                 placeholder={`Search ${elementType === "POI" ? "attractions" : "activities"
                   }`}
-                className="w-full flex items-center text-sm border-2 border-gray-300 rounded-lg px-5 py-2 focus:outline-none focus:border-[#F7E700]"
+                className="w-full flex items-center ttw-type-body border-2 border-gray-300 rounded-lg px-5 py-2 focus:outline-none focus:border-[#F7E700]"
               ></input>
             </div>
           </div>
@@ -647,7 +647,7 @@ const ItineraryPoiElement = (props) => {
           {elementType === "POI" ? (
             <div className="flex flex-row justify-between mt-0">
               <div className="flex flex-col justify-start items-baseline">
-                <div className="mb-2 text-sm font-normal">Experience Types</div>
+                <div className="mb-2 ttw-type-body">Experience Types</div>
                 <FiltersContainer>
                   {EXPERIENCE_FILTERS_BOX.map((currentfilter, i) => (
                     <button
@@ -655,10 +655,10 @@ const ItineraryPoiElement = (props) => {
                         if (SelectedExprience !== i) SetSelectedExprience(i);
                         else SetSelectedExprience(-1);
                       }}
-                      className={`flex font-normal  text-sm cursor-pointer  justify-center items-center hover:bg-gray-100 active:bg-[#111] active:border-0 ${SelectedExprience == i
-                        ? "text-white border-0 bg-black "
-                        : "border-2 bg-white text-black"
-                        } active:text-white  border-[#D0D5DD]  rounded-lg px-2 py-1`}
+                      className={`flex font-normal ttw-type-body cursor-pointer justify-center items-center hover:bg-gray-100 active:bg-[#111] active:border-0 ${SelectedExprience == i
+ ? "text-white border-0 bg-black "
+ : "border-2 bg-white text-black"
+ } active:text-white border-[#D0D5DD] rounded-lg px-2 py-1`}
                       key={i}
                     >
                       {currentfilter.display}

@@ -260,14 +260,14 @@ const Details = ({
           <div className="w-5 h-5 border-4 border-t-[#F8E000] rounded-full animate-spin"></div>
         </div>
       ) : fareRUlesError ? (
-        <div className="text-sm text-center text-gray-600 py-4">
+        <div className="ttw-type-body text-center text-gray-600 py-4">
           Something went wrong, please try again
         </div>
       ) : (
         fareRules && (
           <div className="flex flex-col mt-2">
-            <div className="text-sm leading-6">
-              <h6 className="font-semibold text-base mb-3">
+            <div className="ttw-type-body leading-6">
+              <h6 className="font-semibold ttw-type-body mb-3">
                 Fare Details and Rules
               </h6>
               <div
@@ -338,10 +338,10 @@ export const FlightSegment = ({ segments, showWarningModal, warningData, setWarn
               <div className="flex items-center gap-3">
                 <div className="hidden sm:block flex-shrink-0 w-8 h-px bg-[#FDCA05]"></div>
                 <div className="flex flex-col gap-1 bg-[#FFF9E6] rounded-full px-4 py-2 w-full">
-                  <div className="font-semibold text-xs md:text-sm text-gray-800">
+                  <div className="font-semibold ttw-type-small md:ttw-type-body text-gray-800">
                     Change of planes
                   </div>
-                  <div className="text-xs text-gray-600">
+                  <div className="ttw-type-small text-gray-600">
                     {`${getTime(segment?.ground_time)} Layover in ${
                       segment?.origin?.airport_name
                     }`}
@@ -359,11 +359,11 @@ export const FlightSegment = ({ segments, showWarningModal, warningData, setWarn
                 <Logo src={segment?.airline?.code} />
               </div>
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="font-semibold text-sm md:text-base text-gray-900">
+                <span className="font-semibold ttw-type-body md:ttw-type-body text-gray-900">
                   {segment?.airline?.name}
                 </span>
                 <span className="text-gray-400">|</span>
-                <span className="text-xs md:text-sm text-gray-600">
+                <span className="ttw-type-small md:ttw-type-body text-gray-600">
                   {`${segment?.airline?.code}-${segment?.airline?.flight_number}`}
                 </span>
               </div>
@@ -376,10 +376,10 @@ export const FlightSegment = ({ segments, showWarningModal, warningData, setWarn
                 <DottedLine />
                 <Circle style={{ right: 0 }} />
                 <PlaneIcon>
-                  <FaPlane className="text-gray-600 text-xs" style={{ transform: 'rotate(0deg)' }} />
+                  <FaPlane className="text-gray-600 ttw-type-small" style={{ transform: 'rotate(0deg)' }} />
                 </PlaneIcon>
               </div>
-              <div className="text-xs text-gray-500 text-center mt-1">
+              <div className="ttw-type-small text-gray-500 text-center mt-1">
                 {getTime(segment?.duration)}
               </div>
             </div>
@@ -387,25 +387,25 @@ export const FlightSegment = ({ segments, showWarningModal, warningData, setWarn
         
             <div className="flex justify-between gap-4">
               <div className="flex flex-col flex-1">
-                <div className="text-base md:text-lg font-semibold text-gray-900">
+                <div className="ttw-type-body md:ttw-type-h4 text-gray-900">
                   {segment?.origin?.airport_code}
                 </div>
-                <div className="text-xs md:text-sm text-gray-600 mt-1">
+                <div className="ttw-type-small md:ttw-type-body text-gray-600 mt-1">
                   {segment?.origin?.airport_name}
                 </div>
                 {segment?.origin?.terminal && (
-                  <div className="text-xs text-gray-500 mt-1">
+                  <div className="ttw-type-small text-gray-500 mt-1">
                     {segment?.origin?.terminal.includes("Terminal") ? "" : "Terminal "}
                     {segment?.origin?.terminal}
                   </div>
                 )}
-                <div className="text-xs md:text-sm font-medium text-gray-900 mt-2">
+                <div className="ttw-type-small md:ttw-type-body-strong text-gray-900 mt-2">
                   {new Date(segment?.origin?.departure_time).toLocaleTimeString([], {
                     hour: "2-digit",
                     minute: "2-digit",
                   })}
                 </div>
-                <div className="text-xs text-gray-500">
+                <div className="ttw-type-small text-gray-500">
                   {new Date(segment?.origin?.departure_time).toLocaleDateString([], {
                     day: "numeric",
                     month: "short",
@@ -415,25 +415,25 @@ export const FlightSegment = ({ segments, showWarningModal, warningData, setWarn
               </div>
 
               <div className="flex flex-col flex-1 items-end text-right">
-                <div className="text-base md:text-lg font-semibold text-gray-900">
+                <div className="ttw-type-body md:ttw-type-h4 text-gray-900">
                   {segment?.destination?.airport_code}
                 </div>
-                <div className="text-xs md:text-sm text-gray-600 mt-1">
+                <div className="ttw-type-small md:ttw-type-body text-gray-600 mt-1">
                   {segment?.destination?.airport_name}
                 </div>
                 {segment?.destination?.terminal && (
-                  <div className="text-xs text-gray-500 mt-1">
+                  <div className="ttw-type-small text-gray-500 mt-1">
                     {segment?.destination?.terminal.includes("Terminal") ? "" : "Terminal "}
                     {segment?.destination?.terminal}
                   </div>
                 )}
-                <div className="text-xs md:text-sm font-medium text-gray-900 mt-2">
+                <div className="ttw-type-small md:ttw-type-body-strong text-gray-900 mt-2">
                   {new Date(segment?.destination?.arrival_time).toLocaleTimeString([], {
                     hour: "2-digit",
                     minute: "2-digit",
                   })}
                 </div>
-                <div className="text-xs text-gray-500">
+                <div className="ttw-type-small text-gray-500">
                   {new Date(segment?.destination?.arrival_time).toLocaleDateString([], {
                     day: "numeric",
                     month: "short",
@@ -446,14 +446,14 @@ export const FlightSegment = ({ segments, showWarningModal, warningData, setWarn
             
             <div className="grid grid-cols-2 gap-3 mt-3">
               <div className="bg-gray-50 rounded-lg p-3">
-                <div className="text-xs text-gray-600 mb-1">Baggage Allowance</div>
-                <div className="text-sm font-semibold text-gray-900">
+                <div className="ttw-type-small text-gray-600 mb-1">Baggage Allowance</div>
+                <div className="ttw-type-body-strong text-gray-900">
                   {segment?.baggage_allowance || "N/A"}
                 </div>
               </div>
               <div className="bg-gray-50 rounded-lg p-3">
-                <div className="text-xs text-gray-600 mb-1">Cabin Baggage</div>
-                <div className="text-sm font-semibold text-gray-900">
+                <div className="ttw-type-small text-gray-600 mb-1">Cabin Baggage</div>
+                <div className="ttw-type-body-strong text-gray-900">
                   {segment?.cabin_baggage_allowance || "N/A"}
                 </div>
               </div>
@@ -461,8 +461,8 @@ export const FlightSegment = ({ segments, showWarningModal, warningData, setWarn
 
           
             <div className="bg-gray-50 rounded-lg p-3 mt-2">
-              <div className="text-xs text-gray-600 mb-1">Cabin Class</div>
-              <div className="text-sm font-semibold text-gray-900">
+              <div className="ttw-type-small text-gray-600 mb-1">Cabin Class</div>
+              <div className="ttw-type-body-strong text-gray-900">
                 {segment?.airline?.cabin_class || segment?.cabin_class || "N/A"}
               </div>
             </div>
@@ -478,17 +478,17 @@ export const FlightSegment = ({ segments, showWarningModal, warningData, setWarn
                 <Logo src={segment?.airline?.code} ht={36} wd={36} />
               </div>
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="font-semibold text-base text-gray-900">
+                <span className="font-semibold ttw-type-body text-gray-900">
                   {segment?.airline?.name}
                 </span>
-                <span className="text-sm text-gray-500">
+                <span className="ttw-type-body text-gray-500">
                   {`${segment?.airline?.code}-${segment?.airline?.flight_number}`}
                 </span>
               </div>
             </div>
 
             {/* Flight Route with Vertical Timeline */}
-            <div className="flex gap-3  mx-2">
+            <div className="flex gap-3 mx-2">
               {/* Timeline */}
               <div className="flex flex-col items-center pt-1">
                 <Pin></Pin>
@@ -501,7 +501,7 @@ export const FlightSegment = ({ segments, showWarningModal, warningData, setWarn
               <div className="flex flex-col flex-1 gap-4">
                 {/* Origin */}
                 <div className="flex flex-col">
-                  <div className="font-medium text-sm text-gray-900">
+                  <div className="font-medium ttw-type-body text-gray-900">
                     {segment?.origin?.airport_code === "DEL"
                       ? "New Delhi"
                       : segment?.origin?.airport_code}
@@ -517,13 +517,13 @@ export const FlightSegment = ({ segments, showWarningModal, warningData, setWarn
                 </div>
 
                 {/* Duration */}
-                <div className="text-sm text-gray-600 -my-2">
+                <div className="ttw-type-body text-gray-600 -my-2">
                   {getTime(segment?.duration)}
                 </div>
 
                 {/* Destination */}
                 <div className="flex flex-col">
-                  <div className="font-medium text-sm text-gray-900">
+                  <div className="font-medium ttw-type-body text-gray-900">
                     {segment?.destination?.airport_code === "TXL"
                       ? "Berlin"
                       : segment?.destination?.airport_code}
@@ -544,10 +544,10 @@ export const FlightSegment = ({ segments, showWarningModal, warningData, setWarn
             {/* Information Grid */}
             <div className="grid grid-cols-3 gap-4 pt-4 border-t border-gray-200">
               <div>
-                <div className="text-sm font-semibold text-gray-900 mb-1">
+                <div className="ttw-type-body-strong text-gray-900 mb-1">
                   Departure Time
                 </div>
-                <div className="text-sm text-gray-600">
+                <div className="ttw-type-body text-gray-600">
                   {segment?.origin?.departure_time
                     ? new Date(
                         segment?.origin?.departure_time
@@ -561,10 +561,10 @@ export const FlightSegment = ({ segments, showWarningModal, warningData, setWarn
               </div>
 
               <div>
-                <div className="text-sm font-semibold text-gray-900 mb-1">
+                <div className="ttw-type-body-strong text-gray-900 mb-1">
                   Arrival Time
                 </div>
-                <div className="text-sm text-gray-600">
+                <div className="ttw-type-body text-gray-600">
                   {segment?.destination?.arrival_time
                     ? new Date(
                         segment?.destination?.arrival_time
@@ -579,12 +579,12 @@ export const FlightSegment = ({ segments, showWarningModal, warningData, setWarn
             </div>
 
             {/* Information Grid */}
-            <div className=" flex flex-wrap md:grid  md:grid-cols-3 gap-4 pt-4 border-t border-gray-200">
+            <div className=" flex flex-wrap md:grid md:grid-cols-3 gap-4 pt-4 border-t border-gray-200">
               <div>
-                <div className="text-sm font-semibold text-gray-900 mb-1">
+                <div className="ttw-type-body-strong text-gray-900 mb-1">
                   Cabin Class
                 </div>
-                <div className="text-sm text-gray-600">
+                <div className="ttw-type-body text-gray-600">
                   {segment?.airline?.cabin_class ||
                     segment?.cabin_class ||
                     "N/A"}
@@ -592,19 +592,19 @@ export const FlightSegment = ({ segments, showWarningModal, warningData, setWarn
               </div>
 
               <div>
-                <div className="text-sm font-semibold text-gray-900 mb-1">
+                <div className="ttw-type-body-strong text-gray-900 mb-1">
                   Baggage Allowance
                 </div>
-                <div className="text-sm text-gray-600">
+                <div className="ttw-type-body text-gray-600">
                   {segment?.baggage_allowance || "N/A"}
                 </div>
               </div>
 
               <div>
-                <div className="text-sm font-semibold text-gray-900 mb-1">
+                <div className="ttw-type-body-strong text-gray-900 mb-1">
                   Cabin Baggage Allowance
                 </div>
-                <div className="text-sm text-gray-600">
+                <div className="ttw-type-body text-gray-600">
                   {segment?.cabin_baggage_allowance || "N/A"}
                 </div>
               </div>
@@ -616,7 +616,7 @@ export const FlightSegment = ({ segments, showWarningModal, warningData, setWarn
       {showWarningModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold mb-4">Warning</h3>
+            <h3 className="ttw-type-h4 mb-4">Warning</h3>
             <p className="text-gray-700 mb-6">
               {warningData?.warning ||
                 warningData?.message ||

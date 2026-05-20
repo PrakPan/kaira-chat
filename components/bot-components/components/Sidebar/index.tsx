@@ -124,7 +124,7 @@ const SidebarTooltip: React.FC<{
             transform: "translateY(-50%)",
           }}
         >
-          <span className="px-2.5 py-1.5 bg-gray-900 text-white text-xs rounded-lg whitespace-nowrap shadow-lg block">
+          <span className="px-2.5 py-1.5 bg-gray-900 text-white ttw-type-small rounded-lg whitespace-nowrap shadow-lg block">
             {label}
           </span>
         </div>
@@ -179,7 +179,7 @@ const ChatHistoryDrawer: React.FC<{
         <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100 flex-shrink-0">
           <div className="flex items-center gap-2.5">
             <HistoryIcon />
-            <span className="font-semibold text-gray-800 text-[15px]">
+            <span className="font-semibold text-gray-800 ttw-type-body">
               Chat History
             </span>
           </div>
@@ -223,8 +223,8 @@ const ChatHistoryDrawer: React.FC<{
               <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
                 <HistoryIcon />
               </div>
-              <p className="text-sm text-gray-500">No chats yet</p>
-              <p className="text-xs text-gray-400">
+              <p className="ttw-type-body text-gray-500">No chats yet</p>
+              <p className="ttw-type-small text-gray-400">
                 Start a new chat to see history here
               </p>
             </div>
@@ -244,10 +244,10 @@ const ChatHistoryDrawer: React.FC<{
                       onClose();
                     }}
                     className={`w-full text-left px-3 py-2.5 rounded-lg text-[13.5px] transition-colors flex items-center gap-2.5 ${
-                      isActive
-                        ? "bg-[#07213A] text-white font-medium"
-                        : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
-                    }`}
+ isActive
+ ? "bg-[#07213A] text-white font-medium"
+ : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+ }`}
                     title={thread.title || "Untitled"}
                   >
                     <svg
@@ -268,9 +268,9 @@ const ChatHistoryDrawer: React.FC<{
                     </span>
                     {relative && (
                       <span
-                        className={`flex-shrink-0 text-[11px] whitespace-nowrap tabular-nums ${
-                          isActive ? "text-white/70" : "text-gray-400"
-                        }`}
+                        className={`flex-shrink-0 ttw-type-small whitespace-nowrap tabular-nums ${
+ isActive ? "text-white/70" : "text-gray-400"
+ }`}
                       >
                         {relative}
                       </span>
@@ -286,7 +286,7 @@ const ChatHistoryDrawer: React.FC<{
               {!loadingMore && hasMore && (
                 <button
                   onClick={() => onLoadMore?.()}
-                  className="w-full text-center py-2 text-xs text-gray-500 hover:text-gray-800 transition-colors"
+                  className="w-full text-center py-2 ttw-type-small text-gray-500 hover:text-gray-800 transition-colors"
                 >
                   Load more
                 </button>
@@ -295,7 +295,7 @@ const ChatHistoryDrawer: React.FC<{
           )}
         </div>
         <div className="flex-shrink-0 border-t border-gray-100 px-4 py-3">
-          <p className="text-xs text-gray-400 text-center">
+          <p className="ttw-type-small text-gray-400 text-center">
             {threads.length > 0
               ? `${threads.length} conversation${threads.length !== 1 ? "s" : ""}`
               : ""}
@@ -402,7 +402,7 @@ const SidebarProfile: React.FC<{
           className="object-cover"
         />
       ) : (
-        <span className="text-[11px] font-bold text-gray-600 select-none">
+        <span className="ttw-type-small font-bold text-gray-600 select-none">
           {initials}
         </span>
       )}
@@ -412,7 +412,7 @@ const SidebarProfile: React.FC<{
   // Shared menu items
   const menuItems = !token ? (
     <button
-      className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3 transition-colors bg-white"
+      className="w-full text-left px-4 py-2.5 ttw-type-body text-gray-700 hover:bg-gray-50 flex items-center gap-3 transition-colors bg-white"
       onClick={handleShowLogin}
     >
       <UserIcon />
@@ -422,7 +422,7 @@ const SidebarProfile: React.FC<{
     <>
       <Link href="/dashboard" passHref legacyBehavior>
         <a
-          className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+          className="flex items-center gap-3 px-4 py-2.5 ttw-type-body text-gray-700 hover:bg-gray-50 transition-colors"
           onClick={() => setOpen(false)}
         >
           <svg
@@ -442,7 +442,7 @@ const SidebarProfile: React.FC<{
         </a>
       </Link>
       <button
-        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors"
+        className="w-full flex items-center gap-3 px-4 py-2.5 ttw-type-body text-red-500 hover:bg-red-50 transition-colors"
         onClick={handleLogout}
       >
         <svg
@@ -501,9 +501,9 @@ const SidebarProfile: React.FC<{
             <div
               onClick={(e) => e.stopPropagation()}
               // className="fixed bg-white overflow-y-auto z-[3300]
-              //   left-0 right-0 bottom-0 w-full min-h-[85vh] rounded-t-2xl shadow-[0_-10px_30px_rgba(0,0,0,0.15)]
-              //   md:left-1/2 md:right-auto md:bottom-auto md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[min(480px,95vw)] md:rounded-2xl md:shadow-[0_25px_60px_rgba(0,0,0,0.3)] flex items-center
-              //   justify-center"
+ // left-0 right-0 bottom-0 w-full min-h-[85vh] rounded-t-2xl shadow-[0_-10px_30px_rgba(0,0,0,0.15)]
+ // md:left-1/2 md:right-auto md:bottom-auto md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[min(480px,95vw)] md:rounded-2xl md:shadow-[0_25px_60px_rgba(0,0,0,0.3)] flex items-center
+ // justify-center"
             >
               <BotLoginModal
                 show={showLogin}
@@ -537,7 +537,7 @@ const SidebarProfile: React.FC<{
               onClick={() => setOpen((v) => !v)}
             >
               {avatarEl}
-              <span className="text-sm font-medium text-gray-700 truncate whitespace-nowrap select-none">
+              <span className="ttw-type-body-strong text-gray-700 truncate whitespace-nowrap select-none">
                 {token ? name || "My Profile" : "Login / Signup"}
               </span>
               <svg
@@ -691,7 +691,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             <div className="flex items-center gap-2 overflow-hidden">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/logoblack.svg" height={22} width={22} alt="logo" />
-              <span className="font-semibold text-gray-800 text-sm whitespace-nowrap">
+              <span className="font-semibold text-gray-800 ttw-type-body whitespace-nowrap">
                 thetarzanway
               </span>
             </div>
@@ -753,7 +753,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             <SidebarTooltip label="New Chat">
               <button
                 onClick={onNewChat}
-                className="w-full flex items-center justify-center py-2.5 text-sm text-gray-700 hover:bg-gray-50 rounded-xl transition-colors mb-1"
+                className="w-full flex items-center justify-center py-2.5 ttw-type-body text-gray-700 hover:bg-gray-50 rounded-xl transition-colors mb-1"
               >
                 <NewChatIcon />
               </button>
@@ -761,7 +761,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           ) : (
             <button
               onClick={onNewChat}
-              className="w-full flex items-center gap-3 px-2 py-2.5 text-sm text-gray-700 hover:bg-gray-50 rounded-xl transition-colors mb-1"
+              className="w-full flex items-center gap-3 px-2 py-2.5 ttw-type-body text-gray-700 hover:bg-gray-50 rounded-xl transition-colors mb-1"
             >
               <NewChatIcon />
               <span className="whitespace-nowrap">New Chat</span>
@@ -772,7 +772,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             <SidebarTooltip label="Chat History">
               <button
                 onClick={handleChatHistoryClick}
-                className="w-full flex items-center justify-center py-2.5 text-sm text-gray-700 hover:bg-gray-50 rounded-xl transition-colors mb-1"
+                className="w-full flex items-center justify-center py-2.5 ttw-type-body text-gray-700 hover:bg-gray-50 rounded-xl transition-colors mb-1"
               >
                 <HistoryIcon />
               </button>
@@ -780,7 +780,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           ) : (
             <button
               onClick={handleChatHistoryClick}
-              className="w-full flex items-center gap-3 px-2 py-2.5 text-sm text-gray-700 hover:bg-gray-50 rounded-xl transition-colors mb-1"
+              className="w-full flex items-center gap-3 px-2 py-2.5 ttw-type-body text-gray-700 hover:bg-gray-50 rounded-xl transition-colors mb-1"
             >
               <HistoryIcon />
               <span className="whitespace-nowrap">Chat History</span>

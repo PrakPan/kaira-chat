@@ -44,9 +44,9 @@ const ActivitiesBookings = (props) => {
   };
 
   return (
-    <div id="activities" className="w-full  md:w-auto mb-[80px] md:mb-0">
+    <div id="activities" className="w-full md:w-auto mb-[80px] md:mb-0">
       {showActivities && (
-        <div className="mb-8 cursor-pointer  mb-2  mt-8 font-bold text-xl group text-[#262626] transition duration-300 max-w-fit">
+        <div className="mb-8 cursor-pointer mb-2 mt-8 font-bold ttw-type-h3 group text-[#262626] transition duration-300 max-w-fit">
           Activities
           <span className="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>
         </div>
@@ -72,7 +72,7 @@ const ActivitiesBookings = (props) => {
 
       {ancillaries.length > 0 && (
         <div className="mt-8">
-          <div className="cursor-pointer mb-2 mt-8 font-bold text-xl group text-[#262626] transition duration-300 max-w-fit">
+          <div className="cursor-pointer mb-2 mt-8 font-bold ttw-type-h3 group text-[#262626] transition duration-300 max-w-fit">
             Ancillaries
             <span className="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>
           </div>
@@ -85,18 +85,18 @@ const ActivitiesBookings = (props) => {
               >
                 <div className="flex flex-col gap-1.5 min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-semibold text-[#262626] text-base leading-tight">
+                    <span className="font-semibold text-[#262626] ttw-type-body leading-tight">
                       {ancillary.name}
                     </span>
                     {typeConfig && (
-                      <span className={`text-[11px] font-500 px-2 py-0.5 rounded-full ${typeConfig.bg} ${typeConfig.text}`}>
+                      <span className={`ttw-type-small font-500 px-2 py-0.5 rounded-full ${typeConfig.bg} ${typeConfig.text}`}>
                         {typeConfig.label}
                       </span>
                     )}
                   </div>
 
                   {ancillary.check_in && ancillary.check_out && (
-                    <span className="text-sm text-gray-500">
+                    <span className="ttw-type-body text-gray-500">
                       {new Date(ancillary.check_in).toLocaleDateString("en-GB", {
                         day: "numeric",
                         month: "long",
@@ -112,7 +112,7 @@ const ActivitiesBookings = (props) => {
                   )}
 
                   {/* {ancillary.currency && ancillary.total_booking_cost > 0 && (
-                    <span className="text-sm font-semibold text-[#262626]">
+                    <span className="ttw-type-body-strong text-[#262626]">
                       {ancillary.currency}{" "}
                       {ancillary.total_booking_cost.toLocaleString()}
                     </span>

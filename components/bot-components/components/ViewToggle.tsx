@@ -51,9 +51,9 @@ const tabBtn = (
 ) => (
   <button
     onClick={onClick}
-    className={`flex-1 px-4 py-2 text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
-      viewMode === mode ? "text-white" : "text-black"
-    }`}
+    className={`flex-1 px-4 py-2 ttw-type-body-strong transition-all duration-200 flex items-center justify-center gap-2 ${
+ viewMode === mode ? "text-white" : "text-black"
+ }`}
     style={viewMode === mode ? activeStyle : inactiveStyle}
   >
     {icon}
@@ -62,7 +62,7 @@ const tabBtn = (
 );
 
   return (
-    <div className="px-4 py-3 flex-shrink-0 text-sm md:text-[14px]">
+    <div className="px-4 py-3 flex-shrink-0 ttw-type-body md:ttw-type-body">
       <div
         className="flex gap-1"
         style={{
@@ -74,9 +74,9 @@ const tabBtn = (
         {/* Map — always visible when the strip is shown */}
         <button
           onClick={() => setViewMode("map")}
-          className={`flex-1 px-4 py-2.5 text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
-            viewMode === "map" ? "text-white" : "text-black"
-          }`}
+          className={`flex-1 px-4 py-2.5 ttw-type-body-strong transition-all duration-200 flex items-center justify-center gap-2 ${
+ viewMode === "map" ? "text-white" : "text-black"
+ }`}
           style={viewMode === "map" ? activeStyle : inactiveStyle}
         >
           <FiMap size={14} />

@@ -9,7 +9,7 @@ interface MapLegendProps {
 
 const MapLegend: React.FC<MapLegendProps> = ({ userLocation, locationCount }) => {
   return (
-    <div className="absolute bottom-6 left-6 bg-white rounded-xl shadow-lg p-4 text-sm border border-gray-200">
+    <div className="absolute bottom-6 left-6 bg-white rounded-xl shadow-lg p-4 ttw-type-body border border-gray-200">
       <div className="font-semibold text-gray-700 mb-3">Map Legend</div>
       
       <div className="flex items-center gap-3 mb-2">
@@ -35,7 +35,7 @@ const MapLegend: React.FC<MapLegendProps> = ({ userLocation, locationCount }) =>
       </div>
       
       {locationCount > 0 && (
-        <div className="mt-3 pt-3 border-t border-gray-200 text-xs text-gray-500">
+        <div className="mt-3 pt-3 border-t border-gray-200 ttw-type-small text-gray-500">
           {locationCount} location{locationCount !== 1 ? "s" : ""} found
         </div>
       )}

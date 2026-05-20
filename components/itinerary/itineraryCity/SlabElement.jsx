@@ -386,7 +386,7 @@ const isIncluded = cart?.summary && Object.values(cart.summary).some(
   return (
     <>
       <div className="flex gap-1 md:gap-3 flex-row justify-between bg-white border-radius-10 p-xs-md border-1">
-        <div className="w-full flex flex-row items-stretch  gap-sm-md  bg-white">
+        <div className="w-full flex flex-row items-stretch gap-sm-md bg-white">
           <div
             onClick={() =>
               handleActivity(
@@ -423,7 +423,7 @@ const isIncluded = cart?.summary && Object.values(cart.summary).some(
               {props.element.heading}
             </div>
 
-            <div className="flex flex-wrap items-center text-sm ">
+            <div className="flex flex-wrap items-center ttw-type-body ">
               <div className="pr-[8px] flex gap-[8px] items-center justify-center -ml-[2px]">
                 {props?.element?.poi ? (
                   <Image
@@ -439,7 +439,7 @@ const isIncluded = cart?.summary && Object.values(cart.summary).some(
                   {props?.element?.poi || props?.element?.element_type === "poi" ? "Self Exploration" : ""}
                 </div>
                 {(props?.element?.element_type === "activity") && !(props?.element?.poi) ? (
-                  <div className="w-max items-center bg-[#F5FFF7] text-[#10A317] text-[12px] rounded-sm">
+                  <div className="w-max items-center bg-[#F5FFF7] text-[#10A317] ttw-type-small rounded-sm">
                     Activity
                   </div>
                 ) : (
@@ -449,7 +449,7 @@ const isIncluded = cart?.summary && Object.values(cart.summary).some(
 
               {/* For POIs (Self Exploration) - timings and ratings on new line */}
               {props?.element?.poi ? (
-                <div className="w-full flex  mt-2 gap-2 sm:gap-3">
+                <div className="w-full flex mt-2 gap-2 sm:gap-3">
                   {(props.element?.start_time || props.element?.end_time) && (
                     <div className="Body3M_12 text-[#6E757A]">
                       {props.element?.start_time &&
@@ -514,7 +514,7 @@ const isIncluded = cart?.summary && Object.values(cart.summary).some(
               <div className="flex flex-row gap-xs flex-wrap ">
                 {/* {props?.element?.tags && props.element.tags.map((item, i) => ( */}
                 <div
-                  className={`rounded-9xl text-[12px] font-400 leading-md px-sm py-xxs text-white ${"bg-[#5CBA66]"}`}
+                  className={`rounded-9xl ttw-type-small font-400 leading-md px-sm py-xxs text-white ${"bg-[#5CBA66]"}`}
                 >
                   ✓ Included
                 </div>
@@ -525,11 +525,11 @@ const isIncluded = cart?.summary && Object.values(cart.summary).some(
         </div>
 
         <div
-          className={`flex gap-3 flex-col  ${
-            !isPageWide
-              ? "flex-row-reverse justify-end "
-              : " items-end justify-between"
-          }`}
+          className={`flex gap-3 flex-col ${
+ !isPageWide
+ ? "flex-row-reverse justify-end "
+ : " items-end justify-between"
+ }`}
         >
           <div>
             {" "}
@@ -784,7 +784,7 @@ const Recommendation = (props) => {
   return (
     <>
       <div className="flex gap-3 flex-row justify-between bg-white border-radius-10 p-xs-md border-1">
-        <div className="w-full flex flex-row items-stretch  gap-sm-md bg-white">
+        <div className="w-full flex flex-row items-stretch gap-sm-md bg-white">
           <div
             onClick={() =>
               handleActivity(props?.element?.restaurants?.[0]?.id || props.element?.id, "restaurant")
@@ -816,7 +816,7 @@ const Recommendation = (props) => {
               {props.element.heading || props.element?.restaurants?.[0]?.name}
             </div>
 
-            <div className="flex flex-wrap items-center text-sm">
+            <div className="flex flex-wrap items-center ttw-type-body">
               <div className="pr-[8px] flex gap-[8px] justify-center items-center">
                 <Image
                   src={"/assets/Itinerary/restaurant.svg"}
@@ -828,7 +828,7 @@ const Recommendation = (props) => {
               </div>
 
               {/* For Restaurants - timings and ratings on new line */}
-              <div className="w-full flex gap-2 sm:gap-3  mt-2">
+              <div className="w-full flex gap-2 sm:gap-3 mt-2">
                 {(props.element?.start_time || props.element?.end_time) && (
                   <div className="Body3M_12 text-[#6E757A]">
                     {props.element?.start_time &&
@@ -860,18 +860,18 @@ const Recommendation = (props) => {
 
             <div className="flex flex-row gap-xs flex-wrap ">
               {/* {props?.element?.tags && props.element.tags.map((item, i) => (
-                <div className={`rounded-9xl text-sm font-400 leading-md px-sm py-xxs text-white ${i % 2 ? 'bg-tag-sky' : 'bg-tag-grass'}`} key={i}>{item}</div>
+                <div className={`rounded-9xl ttw-type-body leading-md px-sm py-xxs text-white ${i % 2 ? 'bg-tag-sky' : 'bg-tag-grass'}`} key={i}>{item}</div>
               ))} */}
             </div>
           </div>
         </div>
 
         <div
-          className={`flex gap-3 flex-col  ${
-            !isPageWide
-              ? "flex-row-reverse justify-end "
-              : " items-end justify-between"
-          }`}
+          className={`flex gap-3 flex-col ${
+ !isPageWide
+ ? "flex-row-reverse justify-end "
+ : " items-end justify-between"
+ }`}
         >
           <div>
             {" "}
@@ -982,8 +982,8 @@ const MealRecommendation = (props) => {
         />
       </div>
 
-      <div className="w-[90%] flex flex-col gap-2 text-sm">
-        <div className="font-medium text-[16px]">{props.element.heading}</div>
+      <div className="w-[90%] flex flex-col gap-2 ttw-type-body">
+        <div className="font-medium ttw-type-body">{props.element.heading}</div>
       </div>
     </div>
   );
@@ -1008,14 +1008,14 @@ const Restaurant = (props) => {
       </div>
 
       <div className="">
-        <div className="font-medium md:text-[14px]">{props.element.name}</div>
+        <div className="font-medium md:ttw-type-body">{props.element.name}</div>
         <div className="flex items-center gap-1">
-          <FaLocationDot className="text-2xl" />
-          <span className="text-[12px] line-clamp-1">
+          <FaLocationDot className="ttw-type-h2" />
+          <span className="ttw-type-small line-clamp-1">
             {props.element.address}
           </span>
         </div>
-        <div className="line-clamp-3 text-[12px] text-[#7A7A7A]">
+        <div className="line-clamp-3 ttw-type-small text-[#7A7A7A]">
           {props.element.description}
         </div>
       </div>

@@ -22,8 +22,12 @@ import Button from "../../../components/ui/button/Index";
 import { PulseLoader } from "react-spinners";
 
 export const Title = styled.p`
+  /* H3 token · 22/1.15/800/-0.02em */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 22px;
   font-weight: 800;
-  font-size: 20px;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
 `;
 
 export const Reviews = styled.div`
@@ -32,7 +36,12 @@ export const Reviews = styled.div`
   gap: 0.2rem;
   p,
   u {
+    /* Caption · 12/1.4/600/0.04em */
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    line-height: 1.4;
     color: #7a7a7a;
   }
   u {
@@ -41,12 +50,20 @@ export const Reviews = styled.div`
 `;
 
 export const Text = styled.p`
-  font-size: 14px;
+  /* Body · 14.5/1.55/400 */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14.5px;
+  font-weight: 400;
+  line-height: 1.55;
 `;
 
 export const Heading = styled.p`
-  font-size: 18px;
-  font-weight: 800;
+  /* H4 token · 17/1.2/700/-0.015em */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
 `;
 
 const Container = styled.div`
@@ -316,7 +333,7 @@ export default function ChangePoiDetails(props) {
           )}
 
           <div className="flex flex-col gap-3">
-            <div className="text-[20px] font-[800]">{props.data.name}</div>
+            <div className="ttw-type-h3">{props.data.name}</div>
 
             {props?.data?.rating && (
               <div className="flex items-center gap-1">
@@ -332,7 +349,7 @@ export default function ChangePoiDetails(props) {
                 <div style={{ display: "flex", alignItems: "center" }}>
                   {props.data?.rating && (
                     <p
-                      className="text-[12px] text-[#7a7a7a]"
+                      className="ttw-type-small text-[#7a7a7a]"
                       style={{ marginBlock: "auto" }}
                     >
                       {props.data.rating} ·
@@ -340,7 +357,7 @@ export default function ChangePoiDetails(props) {
                   )}
 
                   {props.data?.user_ratings_total > 0 && (
-                    <u className="text-[12px] text-[#7a7a7a]">
+                    <u className="ttw-type-small text-[#7a7a7a]">
                       {props.data.user_ratings_total}
                       {" user reviews"}
                     </u>
@@ -349,7 +366,7 @@ export default function ChangePoiDetails(props) {
               </div>
             )}
             {props.data?.experience_filters && (
-              <div className="text-[14px] flex flex-row items-center gap-1 flex-wrap">
+              <div className="ttw-type-body flex flex-row items-center gap-1 flex-wrap">
                 {props.data.experience_filters?.map((e, i) => (
                   <span
                     key={i}
@@ -363,7 +380,7 @@ export default function ChangePoiDetails(props) {
             )}
             {props.data?.short_description && (
               <div className="flex flex-col gap-2">
-                <div className="text-[14px] text-[#01202B]">
+                <div className="ttw-type-body text-[#01202B]">
                   {props.data.short_description}
                 </div>
               </div>
@@ -373,15 +390,15 @@ export default function ChangePoiDetails(props) {
           <div className="flex flex-col md:flex-row md:items-center gap-2 justify-between">
             {props.data?.prices?.total_price ? (
               <div className="flex flex-col gap-1">
-                <div className="flex flex-row gap-2 items-center text-sm">
-                  <span className="font-bold text-lg md:text-2xl">
+                <div className="flex flex-row gap-2 items-center ttw-type-body">
+                  <span className="font-bold ttw-type-h4 md:ttw-type-h2">
                     ₹{getIndianPrice(Math.round(props.data.prices.total_price))}
                   </span>
                   {`for ${props.data.prices?.total_pax} people`}
                 </div>
 
                 {inclusiveCost.length ? (
-                  <div className="text-sm flex flex-row items-center gap-1 flex-wrap">
+                  <div className="ttw-type-body flex flex-row items-center gap-1 flex-wrap">
                     Inclusive of{" "}
                     {inclusiveCost.map((item, index) => (
                       <span
@@ -401,7 +418,7 @@ export default function ChangePoiDetails(props) {
             {props.data?.general_guidelines &&
             props.data?.general_guidelines?.length ? (
               <div className="flex flex-col">
-                <div className="text-[20px] font-semibold">
+                <div className="ttw-type-h3 font-semibold">
                   <div>General guidelines</div>
                   <div className="border-b-[1px] mt-2 mb-2"></div>
                   {/* {!boolDetails?.generalGuidelines ? (
@@ -427,7 +444,7 @@ export default function ChangePoiDetails(props) {
                   )} */}
                 </div>
                 {boolDetails?.generalGuidelines && (
-                  <div className="text-[14px]">
+                  <div className="ttw-type-body">
                     <ul style={{ paddingLeft: "0.5rem" }}>
                       {props.data.general_guidelines?.map((e, i) => (
                         <li key={i}>- {e}</li>
@@ -443,7 +460,7 @@ export default function ChangePoiDetails(props) {
             {props.data?.things_to_bring &&
             props.data?.things_to_bring?.length ? (
               <div className="flex flex-col">
-                <div className="text-[20px] font-semibold">
+                <div className="ttw-type-h3 font-semibold">
                   <div>Things to bring</div>
                   <div className="border-b-[1px] mt-2 mb-2"></div>
                   {/* {!boolDetails?.thingsToBring ? (
@@ -469,7 +486,7 @@ export default function ChangePoiDetails(props) {
                   )} */}
                 </div>
                 {!boolDetails?.thingsToBring && (
-                  <div className="text-[14px]">
+                  <div className="ttw-type-body">
                     <ul style={{ paddingLeft: "0.5rem" }}>
                       {props.data.things_to_bring?.map((e, i) => (
                         <li key={i}>- {e}</li>
@@ -485,7 +502,7 @@ export default function ChangePoiDetails(props) {
             {props.data?.not_suitable_for &&
             props.data?.not_suitable_for?.length ? (
               <div className="flex flex-col">
-                <div className="text-[20px] font-semibold">
+                <div className="ttw-type-h3 font-semibold">
                   <div>Not suitable for</div>
                   <div className="border-b-[1px] mt-2 mb-2"></div>
                   {/* {!boolDetails?.notSuitableFor ? (
@@ -511,7 +528,7 @@ export default function ChangePoiDetails(props) {
                   )} */}
                 </div>
                 {boolDetails?.notSuitableFor && (
-                  <div className="text-[14px]">
+                  <div className="ttw-type-body">
                     <ul style={{ paddingLeft: "0.5rem" }}>
                       {props.data.not_suitable_for?.map((e, i) => (
                         <li key={i}>- {e}</li>
@@ -526,7 +543,7 @@ export default function ChangePoiDetails(props) {
 
             {props.data?.tips_tricks && props.data?.tips_tricks?.length ? (
               <div className="flex flex-col">
-                <div className="text-[20px] font-semibold">
+                <div className="ttw-type-h3 font-semibold">
                   <div>Tips, Tricks and Cautions</div>
                   <div className="border-b-[1px] mt-2 mb-2"></div>
                   {/* {!boolDetails?.tipsTricks ? (
@@ -552,7 +569,7 @@ export default function ChangePoiDetails(props) {
                   )} */}
                 </div>
                 {boolDetails?.tipsTricks && (
-                  <div className="text-[14px]">
+                  <div className="ttw-type-body">
                     <ul style={{ paddingLeft: "0.5rem" }}>
                       {props.data.tips_tricks?.map((e, i) => (
                         <li key={i}>- {e}</li>
@@ -579,13 +596,13 @@ export default function ChangePoiDetails(props) {
 
                     return (
                       <div key={i} className="flex gap-[22px] mb-2">
-                        <div className="text-[14px] font-semibold">{day}</div>
+                        <div className="ttw-type-body font-semibold">{day}</div>
                         <div
-                          className={`text-[14px] font-normal bg-[#FAFAFA] px-[8px] py-[2px] rounded-[10px] ${
-                            time == "Closed"
-                              ? " bg-[rgba(220,69,65,0.1)]  text-[#DC4541]"
-                              : ""
-                          }`}
+                          className={`ttw-type-body font-normal bg-[#FAFAFA] px-[8px] py-[2px] rounded-[10px] ${
+ time == "Closed"
+ ? " bg-[rgba(220,69,65,0.1)] text-[#DC4541]"
+ : ""
+ }`}
                         >
                           {time}
                         </div>
@@ -780,23 +797,23 @@ const Amenity = ({ index, amenity, handleAmenityChange, travelers }) => {
   };
 
   return (
-    <div key={index} className=" gap-3  bg-[#FAFAFA] p-[10px] rounded-[4px]">
+    <div key={index} className=" gap-3 bg-[#FAFAFA] p-[10px] rounded-[4px]">
       <div className="flex flex-col gap-1">
-        <div className="flex flex-row items-center gap-2 text-[16px] font-medium">
+        <div className="flex flex-row items-center gap-2 ttw-type-body font-medium">
           {/* {getAmenityIcon(amenity?.type)} */}
           {amenity.name}
         </div>
-        <div className="text-[14px]">{amenity.description}</div>
-        <div className="flex text-[12px] font-medium">
+        <div className="ttw-type-body">{amenity.description}</div>
+        <div className="flex ttw-type-small font-medium">
           <Image src="/ticket.svg" alt="ticket" width={13.33} height={10.67} />
           {travelers} tickets
         </div>
       </div>
 
       <div className="flex items-center justify-between">
-        <div className="font-semibold text-[24px]">
+        <div className="font-semibold ttw-type-h2">
           ₹{getIndianPrice(amenity.price)}{" "}
-          <span className="text-[14px] font-normal">per person*</span>
+          <span className="ttw-type-body font-normal">per person*</span>
         </div>
 
         <button

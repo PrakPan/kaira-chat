@@ -504,14 +504,14 @@ const ItineraryCity = (props) => {
           RIGHT: [+ Activity] [+ Taxi] — always aligned to city name baseline
         */}
         <div className="flex items-center justify-between gap-3">
-          <div className="md:text-[18px] text-[16px] font-semibold leading-snug min-w-0 flex items-center gap-1 overflow-hidden">
+          <div className="md:ttw-type-h4 ttw-type-body font-semibold leading-snug min-w-0 flex items-center gap-1 overflow-hidden">
             <span className="truncate">{props?.city?.city?.name}</span>
             {props?.city?.duration === 0 ? (
               <span className="shrink-0"> (Transit City)</span>
             ) : props?.city?.duration > 0 ? (
               <>
-                <span className="max-ph:hidden md:inline shrink-0 md:text-[18px] text-[16px] font-semibold leading-snug"> - {props?.city?.duration} {props?.city?.duration > 1 ? "Nights" : "Night"}</span>
-                <span className="md:hidden shrink-0 md:text-[18px] text-[16px] font-semibold leading-snug"> - {props?.city?.duration}N</span>
+                <span className="max-ph:hidden md:inline shrink-0 md:ttw-type-h4 ttw-type-body font-semibold leading-snug"> - {props?.city?.duration} {props?.city?.duration > 1 ? "Nights" : "Night"}</span>
+                <span className="md:hidden shrink-0 md:ttw-type-h4 ttw-type-body font-semibold leading-snug"> - {props?.city?.duration}N</span>
               </>
             ) : null}
           </div>
@@ -539,7 +539,7 @@ const ItineraryCity = (props) => {
                     { scroll: false },
                   );
                 }}
-                className="flex h-7 items-center justify-center gap-1 px-3.5 py-2 rounded-[8px] border border-black text-[13px] whitespace-nowrap"
+                className="flex h-7 items-center justify-center gap-1 px-3.5 py-2 rounded-[8px] border border-black ttw-type-small whitespace-nowrap"
               >
                 <PlusCircleIcon id="act_ic" />
                 Activity
@@ -569,7 +569,7 @@ const ItineraryCity = (props) => {
                     { scroll: false },
                   );
                 }}
-                className="flex h-7 items-center justify-center gap-1 px-3.5 py-2 rounded-[8px] border border-black text-[13px] whitespace-nowrap"
+                className="flex h-7 items-center justify-center gap-1 px-3.5 py-2 rounded-[8px] border border-black ttw-type-small whitespace-nowrap"
               >
                 <PlusCircleIcon id="taxi_ic" />
                 Taxi
@@ -614,7 +614,7 @@ const ItineraryCity = (props) => {
                   return (
                   <div
                     key={hotel.id}
-                    className="flex items-center gap-1 text-[14px] text-[#111827] min-w-0 flex-wrap"
+                    className="flex items-center gap-1 ttw-type-body text-[#111827] min-w-0 flex-wrap"
                   >
                     {/* Hotel name — truncated in p2, full text in p1 (Draft) */}
                     <span
@@ -655,7 +655,7 @@ const ItineraryCity = (props) => {
             ) : (
               !(itineraryDaybyDay.status == "Draft") && (
                 <button
-                  className="text-blue cursor-pointer text-[14px] font-medium hover:underline whitespace-nowrap"
+                  className="text-blue cursor-pointer ttw-type-body font-medium hover:underline whitespace-nowrap"
                   onClick={(e) => {
                     trackHotelCardClicked?.(
                       currentItineraryId,
@@ -705,7 +705,7 @@ const ItineraryCity = (props) => {
                   "Change",
                 );
               }}
-              className="flex items-center gap-[5px] shrink-0 bg-[#fafafa] px-2 py-1.5 rounded-[8px] font-medium text-[#111827] hover:underline whitespace-nowrap text-[13px]"
+              className="flex items-center gap-[5px] shrink-0 bg-[#fafafa] px-2 py-1.5 rounded-[8px] font-medium text-[#111827] hover:underline whitespace-nowrap ttw-type-small"
             >
               <EditIcon />
               Change Hotel
@@ -729,7 +729,7 @@ const ItineraryCity = (props) => {
                   `change hotel in ${props?.city?.city?.name}`,
                 );
               }}
-              className="flex items-center gap-[5px] shrink-0 bg-[#fafafa] px-2 py-1.5 rounded-[8px] font-medium text-[#111827] hover:underline whitespace-nowrap text-[13px]"
+              className="flex items-center gap-[5px] shrink-0 bg-[#fafafa] px-2 py-1.5 rounded-[8px] font-medium text-[#111827] hover:underline whitespace-nowrap ttw-type-small"
             >
               <EditIcon />
               Change Hotel
@@ -741,14 +741,14 @@ const ItineraryCity = (props) => {
         {itineraryDaybyDay.status == "Draft" &&
           hasIntracityTransfer && (
             <div className="flex items-center justify-between gap-3 mt-1 min-w-0">
-              <div className="text-[14px] text-[#111827]">Transfer</div>
+              <div className="ttw-type-body text-[#111827]">Transfer</div>
               <button
                 onClick={() =>
                   props?.onSendMessage?.(
                     `change transfer in ${props?.city?.city?.name}`,
                   )
                 }
-                className="flex items-center gap-[5px] shrink-0 bg-[#fafafa] px-2 py-1.5 rounded-[8px] font-medium text-[#111827] hover:underline whitespace-nowrap text-[13px]"
+                className="flex items-center gap-[5px] shrink-0 bg-[#fafafa] px-2 py-1.5 rounded-[8px] font-medium text-[#111827] hover:underline whitespace-nowrap ttw-type-small"
               >
                 <EditIcon />
                 Change Transfer

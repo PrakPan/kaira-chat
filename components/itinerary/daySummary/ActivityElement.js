@@ -72,7 +72,7 @@ export default function ActivityElement(props) {
       <div className="flex flex-col items-center justify-center w-full space-y-1">
         <div className="w-full flex flex-col space-y-2 md:space-y-0 lg:space-y-0 md:flex-row lg:flex-row items-start md:items-center lg:items-center">
           <div className="lg:w-[11%] md:w-[21%] flex flex-row justify-center"></div>
-          <div className="font-medium text-sm">{data.heading}</div>
+          <div className="font-medium ttw-type-body">{data.heading}</div>
         </div>
 
         <div className="w-full flex flex-col lg:flex-row md:flex-row items-start">
@@ -80,8 +80,8 @@ export default function ActivityElement(props) {
           <div className="flex flex-row items-center">
             <div
               className={`flex items-center justify-center w-[4rem] h-[4rem] ${
-                !imageLoaded && "bg-gray-200 rounded-lg animate-pulse"
-              }`}
+ !imageLoaded && "bg-gray-200 rounded-lg animate-pulse"
+ }`}
             >
               {selectedBooking?.images[0]?.image !==
                 "media/icons/default/activity.svg" && (
@@ -111,24 +111,24 @@ export default function ActivityElement(props) {
               )}
             </div>
             <div className="flex flex-col ml-3">
-              <div className="font-normal text-xs leading-4 ml-2">
+              <div className="font-normal ttw-type-small leading-4 ml-2">
                 {selectedBooking?.ideal_duration_hours_text && (
                   <div className="flex flex-row gap-1 items-center">
-                    <BiTimeFive className="text-md font-[400] line-clamp-1 text-[#7A7A7A]" />
+                    <BiTimeFive className="ttw-type-body line-clamp-1 text-[#7A7A7A]" />
                     <div>
-                      <div className="text-xs font-normal leading-4 line-clamp-1">
+                      <div className="ttw-type-small leading-4 line-clamp-1">
                         {selectedBooking.ideal_duration_hours_text}
                       </div>
                     </div>
                   </div>
                 )}
               </div>
-              <div className="flex flex-row space-x-5 text-xs font-normal leading-4 ml-2">
+              <div className="flex flex-row space-x-5 ttw-type-small leading-4 ml-2">
                 {selectedBooking?.costings_breakdown?.no_of_tickets && (
                   <div>
                     <div className="flex flex-row gap-1 items-center">
-                      <IoTicket className="text-sm font-[400] line-clamp-1 text-[#7A7A7A]" />
-                      <div className="text-xs font-normal leading-4 line-clamp-1">
+                      <IoTicket className="ttw-type-body line-clamp-1 text-[#7A7A7A]" />
+                      <div className="ttw-type-small leading-4 line-clamp-1">
                         {selectedBooking?.costings_breakdown?.no_of_tickets}{" "}
                         {selectedBooking?.costings_breakdown?.no_of_tickets <=
                         "1"

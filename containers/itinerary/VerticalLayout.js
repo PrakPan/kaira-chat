@@ -284,9 +284,9 @@ const TaxiPickupDropItem = ({
     <div key={-4} className="group relative" ref={dropdownRef}>
       <div className="flex items-center gap-2">
         <span
-          className={`text-blue font-[500] text-[14px] ${
-            displayText ? "hover:underline cursor-pointer" : ""
-          }`}
+          className={`text-blue font-[500] ttw-type-body ${
+ displayText ? "hover:underline cursor-pointer" : ""
+ }`}
           onClick={handleClick}
         >
           {displayText}
@@ -296,7 +296,7 @@ const TaxiPickupDropItem = ({
       {showClickTooltip && (
         <div className="relative mt-2">
           <div
-            className="absolute bg-gray-900 text-white text-xs rounded-md px-3 py-2 shadow-xl border border-gray-600 min-w-fit"
+            className="absolute bg-gray-900 text-white ttw-type-small rounded-md px-3 py-2 shadow-xl border border-gray-600 min-w-fit"
             style={{ zIndex: 100 }}
           >
             {renderTooltipContent()}
@@ -345,22 +345,22 @@ const AirportBookingItem = ({
       case "Flight":
         return (
           <MdOutlineFlightTakeoff
-            className="text-2xl text-[#a5a5a5]"
+            className="ttw-type-h2 text-[#a5a5a5]"
             size={16}
             color={"#a5a5a5"}
           />
         );
       case "Taxi":
       case "Car":
-        return <IoCar className="text-2xl" size={16} color={"#a5a5a5"} />;
+        return <IoCar className="ttw-type-h2" size={16} color={"#a5a5a5"} />;
       case "Train":
-        return <IoMdTrain className="text-2xl" size={16} color={"#a5a5a5"} />;
+        return <IoMdTrain className="ttw-type-h2" size={16} color={"#a5a5a5"} />;
       case "Ferry":
-        return <IoMdBoat className="text-2xl" size={16} color={"#a5a5a5"} />;
+        return <IoMdBoat className="ttw-type-h2" size={16} color={"#a5a5a5"} />;
       case "Bus":
         return (
           <FaBus
-            className="text-2xl text-[#a5a5a5]"
+            className="ttw-type-h2 text-[#a5a5a5]"
             size={14}
             color={"#a5a5a5"}
           />
@@ -485,7 +485,7 @@ const AirportBookingItem = ({
       supportsTransfers(bookingMode)
     ) {
       return (
-        <div className="flex items-center text-sm gap-1">
+        <div className="flex items-center ttw-type-body gap-1">
           <span>{`+ Add ${firstCity ? "Pickup" : lastCity ? "Drop" :"Pickup and Drop"}`}</span>
         </div>
       );
@@ -503,7 +503,7 @@ const AirportBookingItem = ({
       return (
         <div className="flex items-center gap-1">
           {uniqueIcons}
-          <span className="text-sm">Pickup & Drop Added</span>
+          <span className="ttw-type-body">Pickup & Drop Added</span>
         </div>
       );
     } else if (hasCurrentPickup) {
@@ -513,7 +513,7 @@ const AirportBookingItem = ({
       return (
         <div className="flex items-center gap-1">
           {pickupIcons}
-          <span className="text-sm">Pickup Added</span>
+          <span className="ttw-type-body">Pickup Added</span>
         </div>
       );
     } else if (hasCurrentDrop) {
@@ -523,7 +523,7 @@ const AirportBookingItem = ({
       return (
         <div className="flex items-center gap-1">
           {dropIcons}
-          <span className="text-sm">Drop Added</span>
+          <span className="ttw-type-body">Drop Added</span>
         </div>
       );
     } else if (currentNoPickupDropBookings.length > 0) {
@@ -865,8 +865,8 @@ const AirportBookingItem = ({
     <div key={-3} className="group relative" ref={dropdownRef}>
       <div className="flex items-center gap-2">
         <span
-          className={`text-blue font-[500] text-[14px] ${displayText ? "hover:underline cursor-pointer" : ""
-            }`}
+          className={`text-blue font-[500] ttw-type-body ${displayText ? "hover:underline cursor-pointer" : ""
+ }`}
           onClick={handleClick}
         >
           {displayText}
@@ -879,7 +879,7 @@ const AirportBookingItem = ({
           dropBookings.length > 1) && (
           <div className="relative mt-2">
             <div
-              className="absolute bg-gray-900 text-white text-xs rounded-md px-2 py-2 shadow-xl border border-gray-600 min-w-fit md:min-w-[320px] max-w-[450px] md:w-[800px]"
+              className="absolute bg-gray-900 text-white ttw-type-small rounded-md px-2 py-2 shadow-xl border border-gray-600 min-w-fit md:min-w-[320px] max-w-[450px] md:w-[800px]"
               style={{ zIndex: 100 }}
             >
               {renderDropdownContent()}
@@ -1000,22 +1000,22 @@ const CityItem = ({
       case "flight":
         return (
           <MdOutlineFlightTakeoff
-            className="text-2xl text-[#a5a5a5]"
+            className="ttw-type-h2 text-[#a5a5a5]"
             size={18}
             color={"#a5a5a5"}
           />
         );
       case "taxi":
       case "car":
-        return <IoCar className="text-2xl" size={16} color={"#a5a5a5"} />;
+        return <IoCar className="ttw-type-h2" size={16} color={"#a5a5a5"} />;
       case "train":
-        return <IoMdTrain className="text-2xl" size={16} color={"#a5a5a5"} />;
+        return <IoMdTrain className="ttw-type-h2" size={16} color={"#a5a5a5"} />;
       case "ferry":
-        return <IoMdBoat className="text-2xl" size={16} color={"#a5a5a5"} />;
+        return <IoMdBoat className="ttw-type-h2" size={16} color={"#a5a5a5"} />;
       case "bus":
         return (
           <FaBus
-            className="text-2xl text-[#a5a5a5]"
+            className="ttw-type-h2 text-[#a5a5a5]"
             size={16}
             color={"#a5a5a5"}
           />
@@ -1525,7 +1525,7 @@ useEffect(() => {
 
       <div
         className={`flex flex-col gap-2 ${!downPresent && upPresent && "mt-[41px]z"
-          } ${!upPresent && downPresent && "mb-[41px]"}`}
+ } ${!upPresent && downPresent && "mb-[41px]"}`}
         style={
           // P1 (Draft) start/end city label rows: pin sits at one end of a
           // taller PinWrapper (pin + line). align-self pulls the city name
@@ -1539,7 +1539,7 @@ useEffect(() => {
         {/* City and Duration Section - Aligned with Pin */}
         <div
           className={`flex flex-col gap-3 ${!(upPresent && downPresent) ? "itmes-center justify-center" : ""
-            }`}
+ }`}
         >
           {!(upPresent && downPresent) && (
             <div className={`${isDesktop ? "Body1M_16" : "Body2M_14"}`}>
@@ -1565,17 +1565,17 @@ useEffect(() => {
   upPresent &&
   downPresent && (
     <div
-      className={`text-[16px] font-[500] flex flex-col gap-2 ${
-        (currentAirportBookings &&
-          currentAirportBookings.length > 0) ||
-        ["flight", "train", "ferry", "bus"].includes(
-          booking_type?.toLowerCase()
-        )
-          ? "mt-2"
-          : (booking_id || city) && !visible
-          ? "mt-2"
-          : "mt-0"
-      }`}
+      className={`ttw-type-body flex flex-col gap-2 ${
+ (currentAirportBookings &&
+ currentAirportBookings.length > 0) ||
+ ["flight", "train", "ferry", "bus"].includes(
+ booking_type?.toLowerCase()
+ )
+ ? "mt-2"
+ : (booking_id || city) && !visible
+ ? "mt-2"
+ : "mt-0"
+ }`}
     >
       {(booking_id || city) && !visible ? (
         <>
@@ -1602,8 +1602,8 @@ useEffect(() => {
             <div className="flex flex-col">
               <div
                 className={`flex items-center gap-2 ${
-                  upPresent && downPresent ? "group hover:cursor-pointer" : ""
-                }`}
+ upPresent && downPresent ? "group hover:cursor-pointer" : ""
+ }`}
                 onClick={() => {
                   if(!(Itinerary.status == "Draft")){
                   upPresent &&
@@ -1614,8 +1614,8 @@ useEffect(() => {
               >
                 <div
                   className={`${
-                    isDesktop ? "Body1M_16" : "Body2M_14"
-                  } group-hover:text-blue `}
+ isDesktop ? "Body1M_16" : "Body2M_14"
+ } group-hover:text-blue `}
                 >
                   {upPresent && downPresent ? city : ""}
                 </div>
@@ -1697,8 +1697,8 @@ useEffect(() => {
             <button
               onClick={handleAddTransfer}
               className={`${
-                isDesktop ? "Body1M_16" : "Body2M_14"
-              } text-blue hover:underline text-left`}
+ isDesktop ? "Body1M_16" : "Body2M_14"
+ } text-blue hover:underline text-left`}
             >
               + Add Transfer from {origin_city_name} to {destination_city_name}
             </button>
@@ -1706,8 +1706,8 @@ useEffect(() => {
             <button
               onClick={handleAddTransfer}
               className={`${
-                isDesktop ? "Body1M_16" : "Body2M_14"
-              } text-blue hover:underline text-left`}
+ isDesktop ? "Body1M_16" : "Body2M_14"
+ } text-blue hover:underline text-left`}
             >
               + Add Transfer
             </button>

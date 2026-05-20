@@ -1178,7 +1178,7 @@ const getTitle = () => {
           <BackArrow handleClick={onClose} />
         </div>
 
-        <h2 className="text-lg font-semibold text-gray-900 p-3">
+        <h2 className="ttw-type-h4 text-gray-900 p-3">
           {getTitle()}
         </h2>
 
@@ -1190,7 +1190,7 @@ const getTitle = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
               {/* Source Field */}
               <div className="relative">
-                <label className="text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
+                <label className="ttw-type-body-strong text-gray-700 mb-1 flex items-center gap-2">
                   {getFieldLabel("source")} <FiNavigation color="red" />
                 </label>
                 <div className="relative">
@@ -1207,11 +1207,11 @@ const getTitle = () => {
                       setErrors((prev) => ({ ...prev, sourceAddress: "" }));
                     }}
                     placeholder={getFieldPlaceholder("source")}
-                    className={`w-full px-3 py-2 pl-8 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm ${
-                      errors.sourceAddress
-                        ? "border-red-500"
-                        : "border-gray-300"
-                    }`}
+                    className={`w-full px-3 py-2 pl-8 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 ttw-type-body ${
+ errors.sourceAddress
+ ? "border-red-500"
+ : "border-gray-300"
+ }`}
                   />
 
                   {isFieldValid("source") && (
@@ -1222,7 +1222,7 @@ const getTitle = () => {
                   )}
                 </div>
                 {errors.sourceAddress && (
-                  <p className="text-red-500 text-xs mt-1">
+                  <p className="ttw-type-small text-red-500 mt-1">
                     {errors.sourceAddress}
                   </p>
                 )}
@@ -1240,16 +1240,16 @@ const getTitle = () => {
                           className="px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
                         >
                           <div className="flex items-center space-x-2">
-                            <span className="text-sm text-gray-900">
+                            <span className="ttw-type-body text-gray-900">
                               {suggestion.name || suggestion.text}
                             </span>
                             {suggestion.code && (
-                              <span className="text-xs text-gray-500 ml-auto">
+                              <span className="ttw-type-small text-gray-500 ml-auto">
                                 {suggestion.code}
                               </span>
                             )}
                             {suggestion.isHotel && (
-                              <span className="text-xs text-blue-500 ml-auto">
+                              <span className="ttw-type-small text-blue-500 ml-auto">
                                 Hotel
                               </span>
                             )}
@@ -1262,7 +1262,7 @@ const getTitle = () => {
 
               {/* Destination Field */}
               <div className="relative">
-                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
+                <label className="flex items-center gap-2 ttw-type-body-strong text-gray-700 mb-1">
                   {getFieldLabel("destination")} <FiMapPin color="green" />
                 </label>
                 <div className="relative">
@@ -1282,11 +1282,11 @@ const getTitle = () => {
                       }));
                     }}
                     placeholder={getFieldPlaceholder("destination")}
-                    className={`w-full px-3 py-2 pl-8 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm ${
-                      errors.destinationAddress
-                        ? "border-red-500"
-                        : "border-gray-300"
-                    }`}
+                    className={`w-full px-3 py-2 pl-8 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 ttw-type-body ${
+ errors.destinationAddress
+ ? "border-red-500"
+ : "border-gray-300"
+ }`}
                   />
 
                   {isFieldValid("destination") && (
@@ -1297,7 +1297,7 @@ const getTitle = () => {
                   )}
                 </div>
                 {errors.destinationAddress && (
-                  <p className="text-red-500 text-xs mt-1">
+                  <p className="ttw-type-small text-red-500 mt-1">
                     {errors.destinationAddress}
                   </p>
                 )}
@@ -1315,11 +1315,11 @@ const getTitle = () => {
                             className="px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
                           >
                             <div className="flex items-center space-x-2">
-                              <span className="text-sm text-gray-900">
+                              <span className="ttw-type-body text-gray-900">
                                 {suggestion.name || suggestion.text}
                               </span>
                               {suggestion.code && (
-                                <span className="text-xs text-gray-500 ml-auto">
+                                <span className="ttw-type-small text-gray-500 ml-auto">
                                   {suggestion.code}
                                 </span>
                               )}
@@ -1335,7 +1335,7 @@ const getTitle = () => {
             {/* Date, Time, and Passengers */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
               <div ref={calendarRef}>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block ttw-type-body-strong text-gray-700 mb-1">
                   <FiCalendar size={14} className="inline mr-1 text-blue-600" />
                   Date
                 </label>
@@ -1348,21 +1348,21 @@ const getTitle = () => {
                 />
 
                 {errors.transferDate && (
-                  <p className="text-red-500 text-xs mt-1">
+                  <p className="ttw-type-small text-red-500 mt-1">
                     {errors.transferDate}
                   </p>
                 )}
               </div>
 
               <div className="relative" ref={timeDropdownRef}>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block ttw-type-body-strong text-gray-700 mb-1">
                   <FiClock size={14} className="inline mr-1 text-blue-600" />
                   Time
                 </label>
                 <div
-                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm cursor-pointer bg-white flex items-center justify-between ${
-                    errors.transferTime ? "border-red-500" : "border-gray-300"
-                  }`}
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 ttw-type-body cursor-pointer bg-white flex items-center justify-between ${
+ errors.transferTime ? "border-red-500" : "border-gray-300"
+ }`}
                   onClick={() => setShowTimeDropdown(!showTimeDropdown)}
                 >
                   <span
@@ -1375,8 +1375,8 @@ const getTitle = () => {
                   <FiChevronDown
                     size={16}
                     className={`text-gray-400 transform transition-transform ${
-                      showTimeDropdown ? "rotate-180" : ""
-                    }`}
+ showTimeDropdown ? "rotate-180" : ""
+ }`}
                   />
                 </div>
 
@@ -1387,26 +1387,26 @@ const getTitle = () => {
                         key={option.value}
                         onMouseDown={() => handleTimeSelect(option.value)}
                         className={`px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0 ${
-                          formData.transferTime === option.value
-                            ? "bg-blue-50 text-blue-600"
-                            : ""
-                        }`}
+ formData.transferTime === option.value
+ ? "bg-blue-50 text-blue-600"
+ : ""
+ }`}
                       >
-                        <span className="text-sm">{option.display}</span>
+                        <span className="ttw-type-body">{option.display}</span>
                       </div>
                     ))}
                   </div>
                 )}
 
                 {errors.transferTime && (
-                  <p className="text-red-500 text-xs mt-1">
+                  <p className="ttw-type-small text-red-500 mt-1">
                     {errors.transferTime}
                   </p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block ttw-type-body-strong text-gray-700 mb-1">
                   <FiUsers size={14} className="inline mr-1 text-blue-600" />
                   Passengers
                 </label>
@@ -1420,12 +1420,12 @@ const getTitle = () => {
                       parseInt(e.target.value) || 1
                     )
                   }
-                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm ${
-                    errors.passengers ? "border-red-500" : "border-gray-300"
-                  }`}
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 ttw-type-body ${
+ errors.passengers ? "border-red-500" : "border-gray-300"
+ }`}
                 />
                 {errors.passengers && (
-                  <p className="text-red-500 text-xs mt-1">
+                  <p className="ttw-type-small text-red-500 mt-1">
                     {errors.passengers}
                   </p>
                 )}
@@ -1452,8 +1452,8 @@ const getTitle = () => {
               >
                 <span
                   className={`transition-opacity duration-200 ${
-                    isLoadingQuotes ? "hidden" : "opacity-100"
-                  }`}
+ isLoadingQuotes ? "hidden" : "opacity-100"
+ }`}
                 >
                   Search
                 </span>
@@ -1472,7 +1472,7 @@ const getTitle = () => {
             <div className="bg-red-50 border border-red-200 rounded-md p-3 mb-4">
               <div className="flex items-center space-x-2">
                 <FiAlertCircle className="text-red-500" size={16} />
-                <span className="text-red-700 text-sm">{searchError}</span>
+                <span className="ttw-type-body text-red-700">{searchError}</span>
               </div>
             </div>
           )}

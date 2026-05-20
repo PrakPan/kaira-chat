@@ -150,7 +150,7 @@ export default function EsimDetailDrawer({ show, pkg, onHide, onBooked, onAdded,
             />
             {showManageActions && (
               <button
-                className="ttw-btn-secondary whitespace-nowrap text-sm"
+                className="ttw-btn-secondary whitespace-nowrap ttw-type-body"
                 onClick={() => setShowSearch(true)}
               >
                 Change
@@ -171,7 +171,7 @@ export default function EsimDetailDrawer({ show, pkg, onHide, onBooked, onAdded,
             <div className="flex flex-col items-center justify-center mt-16 gap-3">
               <div className="text-[#6E757A] text-center">{error}</div>
               <button
-                className="bg-[#f7e700] border border-black text-black px-4 py-2 rounded-lg text-sm font-500"
+                className="bg-[#f7e700] border border-black text-black px-4 py-2 rounded-lg ttw-type-body-strong"
                 onClick={fetchDetail}
               >
                 Retry
@@ -188,20 +188,20 @@ export default function EsimDetailDrawer({ show, pkg, onHide, onBooked, onAdded,
                 />
               ) : (
                 <div className="w-full h-[160px] rounded-2xl mb-4 flex flex-col items-center justify-center gap-1" style={bgStyle}>
-                  <span className="text-white text-[26px] font-700">{displayPkg?.country_code || "eSIM"}</span>
+                  <span className="text-white ttw-type-h2 font-700">{displayPkg?.country_code || "eSIM"}</span>
                   {displayPkg?.title && (
-                    <span className="text-white text-[13px] opacity-80">{displayPkg.title}</span>
+                    <span className="text-white ttw-type-small opacity-80">{displayPkg.title}</span>
                   )}
                 </div>
               )}
 
               {/* Title */}
-              <div className="text-[22px] font-600 text-[#01202B] leading-snug mb-1">
+              <div className="ttw-type-h3 font-600 text-[#01202B] leading-snug mb-1">
                 {displayPkg?.title}
               </div>
 
               {/* Key specs row */}
-              <div className="flex items-center gap-3 text-[13px] text-[#6E757A] mb-3">
+              <div className="flex items-center gap-3 ttw-type-small text-[#6E757A] mb-3">
                 {displayPkg?.data && (
                   <span className="font-600 text-[#01202B]">{displayPkg.data}</span>
                 )}
@@ -219,22 +219,22 @@ export default function EsimDetailDrawer({ show, pkg, onHide, onBooked, onAdded,
               {/* Badges */}
               <div className="flex flex-wrap gap-1 mb-4">
                 {displayPkg?.esim_type && (
-                  <span className="text-[11px] bg-[#F5F0FF] text-[#5B1DB3] px-2 py-0.5 rounded-full">
+                  <span className="ttw-type-small bg-[#F5F0FF] text-[#5B1DB3] px-2 py-0.5 rounded-full">
                     {displayPkg.esim_type}
                   </span>
                 )}
                 {displayPkg?.rechargeability && (
-                  <span className="text-[11px] bg-[#DDF4C5] text-[#2A6800] px-2 py-0.5 rounded-full">
+                  <span className="ttw-type-small bg-[#DDF4C5] text-[#2A6800] px-2 py-0.5 rounded-full">
                     Rechargeable
                   </span>
                 )}
                 {displayPkg?.plan_type && (
-                  <span className="text-[11px] bg-[#F8F8F8] text-[#6E757A] px-2 py-0.5 rounded-full border border-[#E5E5E5] capitalize">
+                  <span className="ttw-type-small bg-[#F8F8F8] text-[#6E757A] px-2 py-0.5 rounded-full border border-[#E5E5E5] capitalize">
                     {displayPkg.plan_type}
                   </span>
                 )}
                 {displayPkg?.activation_policy && (
-                  <span className="text-[11px] bg-[#FFF3E0] text-[#E65100] px-2 py-0.5 rounded-full capitalize">
+                  <span className="ttw-type-small bg-[#FFF3E0] text-[#E65100] px-2 py-0.5 rounded-full capitalize">
                     {displayPkg.activation_policy.replace(/-/g, " ")}
                   </span>
                 )}
@@ -243,11 +243,11 @@ export default function EsimDetailDrawer({ show, pkg, onHide, onBooked, onAdded,
               {/* Price card — detail.price is already in the requested currency */}
               {displayPkg?.price != null && (
                 <div className="bg-[#F8F8F8] rounded-xl p-4 mb-4">
-                  <div className="text-[13px] text-[#6E757A] mb-1">Price</div>
-                  <div className="text-[24px] font-700 text-[#01202B]">
+                  <div className="ttw-type-small text-[#6E757A] mb-1">Price</div>
+                  <div className="ttw-type-h2 font-700 text-[#01202B]">
                     {symbol}{getIndianPrice(Math.round(displayPkg.price))}
                   </div>
-                  <div className="text-[11px] text-[#6E757A] mt-0.5">
+                  <div className="ttw-type-small text-[#6E757A] mt-0.5">
                     Per traveller · {itinerary?.number_of_adults || 1} adult{(itinerary?.number_of_adults || 1) > 1 ? "s" : ""}
                   </div>
                 </div>
@@ -257,17 +257,17 @@ export default function EsimDetailDrawer({ show, pkg, onHide, onBooked, onAdded,
               {displayPkg?.warning && (
                 <div className="bg-[#FFF8E1] border border-[#FFD740] rounded-xl p-3 mb-4 flex gap-2">
                   <span>⚠️</span>
-                  <div className="text-[12px] text-[#7A5800]">{displayPkg.warning}</div>
+                  <div className="ttw-type-small text-[#7A5800]">{displayPkg.warning}</div>
                 </div>
               )}
 
               {/* Package info bullet points */}
               {displayPkg?.info?.length > 0 && (
                 <div className="mb-4">
-                  <div className="text-[14px] font-600 text-[#01202B] mb-2">What's Included</div>
+                  <div className="ttw-type-body font-600 text-[#01202B] mb-2">What's Included</div>
                   <div className="space-y-1.5">
                     {displayPkg.info.map((item, i) => (
-                      <div key={i} className="flex items-start gap-2 text-[13px] text-[#6E757A]">
+                      <div key={i} className="flex items-start gap-2 ttw-type-small text-[#6E757A]">
                         <span className="text-green-500 mt-0.5 flex-shrink-0">✓</span>
                         <span>{typeof item === "string" ? item : JSON.stringify(item)}</span>
                       </div>
@@ -279,30 +279,30 @@ export default function EsimDetailDrawer({ show, pkg, onHide, onBooked, onAdded,
               {/* Other info */}
               {displayPkg?.other_info && (
                 <div className="mb-4">
-                  <div className="text-[14px] font-600 text-[#01202B] mb-1">Coverage Info</div>
-                  <div className="text-[13px] text-[#6E757A] leading-relaxed">{displayPkg.other_info}</div>
+                  <div className="ttw-type-body font-600 text-[#01202B] mb-1">Coverage Info</div>
+                  <div className="ttw-type-small text-[#6E757A] leading-relaxed">{displayPkg.other_info}</div>
                 </div>
               )}
 
               {/* Fair usage policy */}
               {displayPkg?.fair_usage_policy && (
                 <div className="bg-[#F0F4FF] rounded-xl p-3 mb-4">
-                  <div className="text-[12px] font-600 text-[#01202B] mb-0.5">Fair Usage Policy</div>
-                  <div className="text-[12px] text-[#6E757A]">{displayPkg.fair_usage_policy}</div>
+                  <div className="ttw-type-small font-600 text-[#01202B] mb-0.5">Fair Usage Policy</div>
+                  <div className="ttw-type-small text-[#6E757A]">{displayPkg.fair_usage_policy}</div>
                 </div>
               )}
 
               {/* APN Setup */}
               {(displayPkg?.apn_type || displayPkg?.apn_value) && (
                 <div className="bg-[#F5F0FF] rounded-xl p-4 mb-4">
-                  <div className="text-[13px] font-600 text-[#01202B] mb-2">APN Setup</div>
+                  <div className="ttw-type-small font-600 text-[#01202B] mb-2">APN Setup</div>
                   {displayPkg.apn_type && (
-                    <div className="text-[12px] text-[#6E757A]">
+                    <div className="ttw-type-small text-[#6E757A]">
                       Type: <span className="text-[#01202B] font-500">{displayPkg.apn_type}</span>
                     </div>
                   )}
                   {displayPkg.apn_value && (
-                    <div className="text-[12px] text-[#6E757A] mt-0.5">
+                    <div className="ttw-type-small text-[#6E757A] mt-0.5">
                       APN: <span className="text-[#01202B] font-600 font-mono">{displayPkg.apn_value}</span>
                     </div>
                   )}
@@ -311,7 +311,7 @@ export default function EsimDetailDrawer({ show, pkg, onHide, onBooked, onAdded,
 
               {/* Install window */}
               {displayPkg?.install_window_days != null && (
-                <div className="text-[12px] text-[#6E757A] mb-4">
+                <div className="ttw-type-small text-[#6E757A] mb-4">
                   📅 Must be installed within <span className="font-600 text-[#01202B]">{displayPkg.install_window_days} days</span> of purchase
                 </div>
               )}
@@ -319,8 +319,8 @@ export default function EsimDetailDrawer({ show, pkg, onHide, onBooked, onAdded,
               {/* Installation instructions */}
               {displayPkg?.qr_installation && (
                 <div className="mb-4">
-                  <div className="text-[14px] font-600 text-[#01202B] mb-1">QR Installation</div>
-                  <div className="text-[12px] text-[#6E757A] leading-relaxed">
+                  <div className="ttw-type-body font-600 text-[#01202B] mb-1">QR Installation</div>
+                  <div className="ttw-type-small text-[#6E757A] leading-relaxed">
                     {stripHtml(displayPkg.qr_installation)}
                   </div>
                 </div>
@@ -334,7 +334,7 @@ export default function EsimDetailDrawer({ show, pkg, onHide, onBooked, onAdded,
           <div className="border-t border-[#E5E5E5] px-6 py-4 bg-white">
             {showManageActions ? (
               <button
-                className="w-full bg-[#ef4444] text-white font-500 text-[15px] py-3 rounded-xl flex items-center justify-center gap-2 disabled:opacity-60"
+                className="w-full bg-[#ef4444] text-white font-500 ttw-type-body py-3 rounded-xl flex items-center justify-center gap-2 disabled:opacity-60"
                 onClick={handleRemove}
                 disabled={removing}
               >
@@ -342,7 +342,7 @@ export default function EsimDetailDrawer({ show, pkg, onHide, onBooked, onAdded,
               </button>
             ) : (
               <button
-                className="w-full bg-[#f7e700] text-black font-500 text-[15px] py-3 rounded-xl flex items-center justify-center gap-2 disabled:opacity-60"
+                className="w-full bg-[#f7e700] text-black font-500 ttw-type-body py-3 rounded-xl flex items-center justify-center gap-2 disabled:opacity-60"
                 onClick={handleBook}
                 disabled={booking}
               >

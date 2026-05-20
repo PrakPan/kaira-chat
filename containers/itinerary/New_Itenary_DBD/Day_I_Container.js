@@ -341,9 +341,9 @@ const Day_I_Container = (props) => {
         <InnerDayLocationRow style={{ paddingRight: "2px" }}>
           <div
             className={`${viewMore
-                ? "text-black text-2xl font-[500] leading-[22px] "
-                : "text-black text-[16px] font-[500] leading-[22px]"
-              }`}
+ ? "text-black ttw-type-h2 "
+ : "text-black ttw-type-body"
+ }`}
           >
             {props.tripsPage ? (
               `Day ${props.indexDay + 1} - `
@@ -385,7 +385,7 @@ const Day_I_Container = (props) => {
                       `Add Activity on ${convertDateFormat(props?.Days?.date)}`
                     )
                   }
-                  className="text-lg font-normal text-blue hover:underline"
+                  className="ttw-type-h4 font-normal text-blue hover:underline"
                 >
                   + Add Activity
                   {props.tripsPage
@@ -410,7 +410,7 @@ const Day_I_Container = (props) => {
                       `Add Activity on ${convertDateFormat(props?.Days?.date)}`
                     )
                   }
-                  className="text-[14px] font-[600] leading-[22px] text-blue hover:underline"
+                  className="ttw-type-body-strong text-blue hover:underline"
                 >
                   +Add Activity
                   {props.tripsPage

@@ -144,7 +144,7 @@ const Review = ({ heading, text, name, image, rating }) => {
   const [viewMore, setViewMore] = useState(false);
 
   return (
-    <div className="h-[400px]  border-2 flex flex-col gap-4 bg-white p-4 rounded-lg overflow-y-auto hide-scrollbar">
+    <div className="h-[400px] border-2 flex flex-col gap-4 bg-white p-4 rounded-lg overflow-y-auto hide-scrollbar">
       <div className="flex justify-between gap-3">
         <div className="">
           <GoogleImageLoader
@@ -153,12 +153,12 @@ const Review = ({ heading, text, name, image, rating }) => {
             height={"65px"}
             noLazy
           />
-          <p className="text-[18px] leading-[27px] font-[500] mb-0">{name}</p>
+          <p className="ttw-type-h4 mb-0">{name}</p>
         </div>
 
         {/* Text Section */}
         <div className="flex flex-col h-fit">
-          <div className="text-[#FEB739] text-xl flex">
+          <div className="text-[#FEB739] ttw-type-h3 flex">
             {"★".repeat(rating)}{" "}
             <span className="text-gray-400">{"☆".repeat(5 - rating)}</span>
           </div>
@@ -167,8 +167,8 @@ const Review = ({ heading, text, name, image, rating }) => {
 
       <div className="flex flex-col justify-between h-full">
         <div>
-          <h3 className="text-[16px] leading-[24px] font-[600]">{heading}</h3>
-          <p className="text-[15px] leading-[24px] font-[350] text-[#323232] h-auto">
+          <h3 className="ttw-type-h5">{heading}</h3>
+          <p className="ttw-type-body text-[#323232] h-auto">
             {viewMore ? text : text.substring(0, 300)}
             {text.length > 300 ? (
               viewMore ? (

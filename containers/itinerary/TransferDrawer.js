@@ -291,13 +291,13 @@ const TransferDrawer = ({
               onClick={() => toggleExpand(index)}
             >
               <div className="flex items-center space-x-3 flex-1 min-w-0">
-                {/* <div className="text-xl">{getTransferIcon(transferType)}</div> */}
+                {/* <div className="ttw-type-h3">{getTransferIcon(transferType)}</div> */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center space-x-2 mb-1">
-                    <h3 className="text-sm md:text-base font-semibold text-gray-900 truncate">
+                    <h3 className="ttw-type-body-strong text-gray-900 truncate">
                       {childTitle} &nbsp;
                       {type === "Flight" ? (
-                        <span className="text-xs font-medium bg-purple-100 text-purple-800 capitalize">
+                        <span className="ttw-type-small bg-purple-100 text-purple-800 capitalize">
                           {
                             transferData.transfer_details?.items?.[0]
                               ?.segments?.[0]?.origin?.city_name
@@ -312,21 +312,21 @@ const TransferDrawer = ({
                           }
                         </span>
                       ) : (
-                        <span className="text-xs font-medium bg-blue-100 text-blue-800 capitalize">
+                        <span className="ttw-type-small bg-blue-100 text-blue-800 capitalize">
                           {transferType}
                         </span>
                       )}
                       {transferData.status === "Paid" && (
-                        <span className="ml-2 text-xs font-medium bg-green-100 text-green-800 px-2 py-1 rounded">
+                        <span className="ml-2 ttw-type-small bg-green-100 text-green-800 px-2 py-1 rounded">
                           Paid
                         </span>
                       )}
                     </h3>
-                    {/* <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 capitalize">
+                    {/* <span className="inline-flex items-center px-2 py-1 rounded-full ttw-type-small bg-blue-100 text-blue-800 capitalize">
                       
                     </span> */}
                   </div>
-                  <div className="text-xs md:text-sm text-gray-600">
+                  <div className="ttw-type-small text-gray-600">
                     {type === "Flight" ? (
                       <span>
 
@@ -377,11 +377,11 @@ const TransferDrawer = ({
               {/* Price and Date - Desktop */}
               <div className="hidden md:flex items-center space-x-4">
                 <div className="text-right">
-                  <div className="text-lg font-bold text-gray-900">
+                  <div className="ttw-type-h4 text-gray-900">
                     {`${currency?.currency ? currencySymbols?.[currency?.currency] : "₹"}`}
                     {transferData.price?.toLocaleString()}
                   </div>
-                  <div className="text-xs text-gray-500">{checkIn.date}</div>
+                  <div className="ttw-type-small text-gray-500">{checkIn.date}</div>
                 </div>
 
                 <div className="text-gray-400">
@@ -396,7 +396,7 @@ const TransferDrawer = ({
               {/* Price and Arrow - Mobile */}
               <div className="flex md:hidden items-center space-x-2">
                 {/* <div className="text-right">
-                  <div className="text-sm font-bold text-gray-900">
+                  <div className="ttw-type-body-strong text-gray-900">
                     ₹{(transferData.price / 1000).toFixed(0)}k
                   </div>
                 </div> */}
@@ -445,17 +445,17 @@ const TransferDrawer = ({
                       // Check if sightseeing has source and destination addresses
                       originName && destinationName ? (
                         <>
-                          <h4 className="font-medium text-gray-900 mb-3 text-sm">
+                          <h4 className="ttw-type-body-strong text-gray-900 mb-3">
                             Route Information
                           </h4>
                           <div className="flex items-center justify-between space-x-4">
                             {/* Source */}
                             <div className="flex flex-col items-center">
                               <div className="w-3 h-3 rounded-full bg-green-500 mb-1"></div>
-                              <div className="text-sm font-medium text-gray-900 text-center">
+                              <div className="ttw-type-body-strong text-gray-900 text-center">
                                 {originName}
                               </div>
-                              <div className="text-xs text-gray-500 text-center">
+                              <div className="ttw-type-small text-gray-500 text-center">
                                 {checkIn.time}
                               </div>
                             </div>
@@ -463,7 +463,7 @@ const TransferDrawer = ({
                             {/* Dotted line with distance and duration */}
                             <div className="flex-1 flex flex-col items-center">
                               <div className="w-full border-t-2 border-dotted border-gray-300 mb-1"></div>
-                              <div className="text-xs text-gray-500 whitespace-nowrap">
+                              <div className="ttw-type-small text-gray-500 whitespace-nowrap">
                                 {distance} • {duration}
                               </div>
                             </div>
@@ -471,10 +471,10 @@ const TransferDrawer = ({
                             {/* Destination */}
                             <div className="flex flex-col items-center">
                               <div className="w-3 h-3 rounded-full bg-red-500 mb-1"></div>
-                              <div className="text-sm font-medium text-gray-900 text-center">
+                              <div className="ttw-type-body-strong text-gray-900 text-center">
                                 {destinationName}
                               </div>
-                              <div className="text-xs text-gray-500 text-center">
+                              <div className="ttw-type-small text-gray-500 text-center">
                                 {checkOut.time}
                               </div>
                             </div>
@@ -483,24 +483,24 @@ const TransferDrawer = ({
                       ) : (
                         // Original sightseeing layout
                         <>
-                          <h4 className="font-medium text-gray-900 mb-3 text-sm">
+                          <h4 className="ttw-type-body-strong text-gray-900 mb-3">
                             Sightseeing Details
                           </h4>
-                          <div className="grid grid-cols-2 gap-3 text-sm">
+                          <div className="grid grid-cols-2 gap-3 ttw-type-body">
                             <div>
-                              <div className="text-gray-500 text-xs">
+                              <div className="text-gray-500 ttw-type-small">
                                 Duration
                                 {/* : {dateDiff} {dateDiff ==1 ? "day" :"days"} */}
                               </div>
-                              <div className="font-medium text-gray-900">
+                              <div className="ttw-type-body-strong text-gray-900">
                                 {duration}
                               </div>
                             </div>
                             <div>
-                              <div className="text-gray-500 text-xs">
+                              <div className="text-gray-500 ttw-type-small">
                                 Distance Limit
                               </div>
-                              <div className="font-medium text-gray-900">
+                              <div className="ttw-type-body-strong text-gray-900">
                                 {distance}
                               </div>
                             </div>
@@ -510,17 +510,17 @@ const TransferDrawer = ({
                     ) : (
                       // Taxi route information - single row layout
                       <>
-                        <h4 className="font-medium text-gray-900 mb-3 text-sm">
+                        <h4 className="ttw-type-body-strong text-gray-900 mb-3">
                           Route Information
                         </h4>
                         <div className="flex items-center justify-between space-x-4">
                           {/* Source */}
                           <div className="flex flex-col items-center">
                             <div className="w-3 h-3 rounded-full bg-green-500 mb-1"></div>
-                            <div className="text-sm font-medium text-gray-900 text-center">
+                            <div className="ttw-type-body-strong text-gray-900 text-center">
                               {originName}
                             </div>
-                            <div className="text-xs text-gray-500 text-center">
+                            <div className="ttw-type-small text-gray-500 text-center">
                               {checkIn.time}
                             </div>
                           </div>
@@ -528,7 +528,7 @@ const TransferDrawer = ({
                           {/* Dotted line with distance and duration */}
                           <div className="flex-1 flex flex-col items-center">
                             <div className="w-full border-t-2 border-dotted border-gray-300 mb-1"></div>
-                            <div className="text-xs text-gray-500 whitespace-nowrap">
+                            <div className="ttw-type-small text-gray-500 whitespace-nowrap">
                               {distance} • {duration}
                             </div>
                           </div>
@@ -536,10 +536,10 @@ const TransferDrawer = ({
                           {/* Destination */}
                           <div className="flex flex-col items-center">
                             <div className="w-3 h-3 rounded-full bg-red-500 mb-1"></div>
-                            <div className="text-sm font-medium text-gray-900 text-center">
+                            <div className="ttw-type-body-strong text-gray-900 text-center">
                               {destinationName}
                             </div>
-                            <div className="text-xs text-gray-500 text-center">
+                            <div className="ttw-type-small text-gray-500 text-center">
                               {checkOut.time}
                             </div>
                           </div>
@@ -552,30 +552,30 @@ const TransferDrawer = ({
                   {transferType === "sightseeing" &&
                     !(originName && destinationName) && (
                       <div className="bg-white rounded-lg p-3">
-                        <h4 className="font-medium text-gray-900 mb-3 text-sm">
+                        <h4 className="ttw-type-body-strong text-gray-900 mb-3">
                           Timings
                         </h4>
-                        <div className="grid grid-cols-2 gap-3 text-sm">
+                        <div className="grid grid-cols-2 gap-3 ttw-type-body">
                           <div>
-                            <div className="text-gray-500 text-xs">
+                            <div className="text-gray-500 ttw-type-small">
                               {" "}
                               Start Date
                             </div>
-                            <div className="font-medium text-gray-900">
+                            <div className="ttw-type-body-strong text-gray-900">
                               {checkIn.date}
                             </div>
-                            <div className="text-gray-500 text-xs">
+                            <div className="text-gray-500 ttw-type-small">
                               {checkIn.time}
                             </div>
                           </div>
                           <div>
-                            <div className="text-gray-500 text-xs">
+                            <div className="text-gray-500 ttw-type-small">
                               End Date
                             </div>
-                            <div className="font-medium text-gray-900">
+                            <div className="ttw-type-body-strong text-gray-900">
                               {checkOut.date}
                             </div>
-                            <div className="text-gray-500 text-xs">
+                            <div className="text-gray-500 ttw-type-small">
                               {checkOut.time}
                             </div>
                           </div>
@@ -586,7 +586,7 @@ const TransferDrawer = ({
                   {/* Cancellation Policy - Show if exists */}
                   {transferData.cancellation_policy && (
                     <div className="bg-white rounded-lg p-3 border-l-4 border-orange-400">
-                      {/* <h4 className="font-medium text-gray-900 mb-2 text-sm flex items-center">
+                      {/* <h4 className="font-medium text-gray-900 mb-2 ttw-type-body flex items-center">
                      Cancellation Policy
                   </h4> */}
 
@@ -594,7 +594,7 @@ const TransferDrawer = ({
                         dangerouslySetInnerHTML={{
                           __html: transferData.cancellation_policy,
                         }}
-                        className="flex flex-col gap-1 text-sm ml-4"
+                        className="flex flex-col gap-1 ttw-type-body ml-4"
                       ></div>
                     </div>
                   )}
@@ -613,9 +613,9 @@ const TransferDrawer = ({
           className="flex items-center justify-between px-4 py-3 bg-gray-50 rounded-lg cursor-pointer"
           onClick={() => toggleExpand(index)}
         >
-          <h3 className="text-lg font-medium">{childTitle}</h3>
+          <h3 className="ttw-type-h4">{childTitle}</h3>
           {transferData.status === "Paid" && (
-            <span className="ml-2 text-xs font-medium bg-green-100 text-green-800 px-2 py-1 rounded">
+            <span className="ml-2 ttw-type-small bg-green-100 text-green-800 px-2 py-1 rounded">
               Paid
             </span>
           )}
@@ -627,7 +627,7 @@ const TransferDrawer = ({
                   e.stopPropagation();
                   handleEditRoute(transferData);
                 }}
-                className="px-3 py-1 text-sm bg-black text-white rounded hover:bg-gray-800"
+                className="px-3 py-1 ttw-type-body bg-black text-white rounded hover:bg-gray-800"
               >
                 Change
               </button>
@@ -751,14 +751,14 @@ const TransferDrawer = ({
             <BackArrow handleClick={handleClose} />
             <div className="flex justify-between">
               <div>
-                <div className="text-xl font-semibold mt-2">
+                <div className="ttw-type-h3 mt-2">
                   {data.name ||
                     `${data.children[0]?.source_address?.name || ""} to ${
                       data.children[data.children.length - 1]
                         ?.destination_address?.name || ""
                     }`}
                 </div>
-                {/* <div className="text-sm text-gray-500 mt-1">
+                {/* <div className="ttw-type-body text-gray-500 mt-1">
                   {data.duration || `${data.children.length} transfers`}
                 </div> */}
               </div>
@@ -793,7 +793,7 @@ const TransferDrawer = ({
               data?.booking_type == "taxi" && (
                 <>
                   <div className="bg-gray-50 p-4 rounded-lg">
-                    <p className="font-semibold text-gray-800 mb-4">
+                    <p className="ttw-type-body-strong text-gray-800 mb-4">
                       {loading ? (
                         <div className="w-24 h-5 bg-gray-300 opacity-50 rounded"></div>
                       ) : (
@@ -804,7 +804,7 @@ const TransferDrawer = ({
                     <div className="flex flex-col md:flex-row gap-4">
                       <div className="flex flex-col gap-4 items-center">
                         <div
-                          className="w-full md:w-auto border border-gray-200 rounded-lg  flex justify-center items-center"
+                          className="w-full md:w-auto border border-gray-200 rounded-lg flex justify-center items-center"
                           style={{ height: "140px" }}
                         >
                           {loading ? (
@@ -830,8 +830,8 @@ const TransferDrawer = ({
                         {data?.children[0]?.transfer_details?.quote
                           ?.taxi_category?.type && (
                           <div>
-                            <p className="text-gray-500 text-sm">
-                              <span className="font-semibold text-gray-800">
+                            <p className="text-gray-500 ttw-type-body">
+                              <span className="ttw-type-body-strong text-gray-800">
                                 {loading ? (
                                   <div className="w-20 h-5 bg-gray-300 opacity-50 rounded"></div>
                                 ) : data?.children[0]?.transfer_details?.quote
@@ -851,8 +851,8 @@ const TransferDrawer = ({
                         <div className="grid grid-cols-2 gap-4">
                           {
                             <div>
-                              <p className="text-gray-500 text-sm">Model</p>
-                              <p className="font-semibold text-gray-800">
+                              <p className="text-gray-500 ttw-type-body">Model</p>
+                              <p className="ttw-type-body-strong text-gray-800">
                                 {loading ? (
                                   <div className="w-20 h-5 bg-gray-300 opacity-50 rounded"></div>
                                 ) : data?.children[0]?.transfer_details?.quote
@@ -869,8 +869,8 @@ const TransferDrawer = ({
                           {/* Fuel Type */}
                           {
                             <div>
-                              <p className="text-gray-500 text-sm">Fuel Type</p>
-                              <p className="font-semibold text-gray-800">
+                              <p className="text-gray-500 ttw-type-body">Fuel Type</p>
+                              <p className="ttw-type-body-strong text-gray-800">
                                 {loading ? (
                                   <div className="w-20 h-5 bg-gray-300 opacity-50 rounded"></div>
                                 ) : data?.children[0]?.transfer_details?.quote
@@ -887,10 +887,10 @@ const TransferDrawer = ({
                           {/* Luggage Bags */}
                           {
                             <div>
-                              <p className="text-gray-500 text-sm">
+                              <p className="text-gray-500 ttw-type-body">
                                 Luggage Bags
                               </p>
-                              <p className="font-semibold text-gray-800">
+                              <p className="ttw-type-body-strong text-gray-800">
                                 {loading ? (
                                   <div className="w-10 h-5 bg-gray-300 opacity-50 rounded"></div>
                                 ) : data?.children[0]?.transfer_details?.quote
@@ -907,10 +907,10 @@ const TransferDrawer = ({
                           {/* Seat Capacity */}
                           {
                             <div>
-                              <p className="text-gray-500 text-sm">
+                              <p className="text-gray-500 ttw-type-body">
                                 Seat Capacity
                               </p>
-                              <p className="font-semibold text-gray-800">
+                              <p className="ttw-type-body-strong text-gray-800">
                                 {loading ? (
                                   <div className="w-24 h-5 bg-gray-300 opacity-50 rounded"></div>
                                 ) : data?.children[0]?.transfer_details?.quote
@@ -928,7 +928,7 @@ const TransferDrawer = ({
                     </div>
                   </div>
 
-                  <h2 className="text-sm md:text-base ml-2 md:ml-5 font-semibold text-gray-900">
+                  <h2 className="ttw-type-body-strong ml-2 md:ml-5 text-gray-900">
                     Booking Inclusions
                   </h2>
                 </>

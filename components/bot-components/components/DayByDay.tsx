@@ -153,7 +153,7 @@ const DayByDay = ({
         key={itemIndex}
         className="flex items-center gap-2 md:gap-3 min-w-0 md:flex-1"
       >
-        <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gray-100 flex items-center justify-center text-lg flex-shrink-0">
+        <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gray-100 flex items-center justify-center ttw-type-h4 flex-shrink-0">
           {getIconForType(item.type)}
           {/* <img src={}/> */}
         </div>
@@ -165,7 +165,7 @@ const DayByDay = ({
               className="flex-1 min-w-0"
             >
               <h4
-                className="text-xs md:text-sm text-[#000] !font-normal truncate mb-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap cursor-pointer hover:text-[#0066CC]"
+                className="ttw-type-small md:ttw-type-body text-[#000] !font-normal truncate mb-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap cursor-pointer hover:text-[#0066CC]"
                 onClick={() => handleItemClick(item)}
               >
                 {itemName}
@@ -185,7 +185,7 @@ const DayByDay = ({
             {/* Show remaining count on second element */}
             {isSecondItem && remainingCount > 0 && (
               <span
-                className="px-2 py-1 text-[10px] md:text-xs font-medium text-[#666666] rounded-full flex-shrink-0 cursor-pointer hover:bg-gray-200"
+                className="px-2 py-1 ttw-type-small md:ttw-type-small text-[#666666] rounded-full flex-shrink-0 cursor-pointer hover:bg-gray-200"
                 onClick={() => {
                   if (setShowCityDrawer) setShowCityDrawer(itinerary_city_id);
                 }}
@@ -197,12 +197,12 @@ const DayByDay = ({
           {(
             <div className="flex items-center gap-1 flex-shrink-0">
              
-              <span className="text-xs text-[#666666]">
+              <span className="ttw-type-small text-[#666666]">
                 {item?.time ? item?.time : null}
               </span>
 
               {/* {item?.type === "activity" && (
-                <span className="flex gap-2 items-center px-1.5 md:px-2 py-0.5 bg-[#5CBA66] text-white text-[10px] md:text-xs rounded-full font-medium flex-shrink-0 whitespace-nowrap">
+                <span className="flex gap-2 items-center px-1.5 md:px-2 py-0.5 bg-[#5CBA66] text-white ttw-type-small md:ttw-type-small rounded-full font-medium flex-shrink-0 whitespace-nowrap">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="10"
@@ -226,9 +226,9 @@ const DayByDay = ({
   };
 
   return (
-    <div className="flex  border-[#E8E8E8] hover:bg-[#FAFAFA] bg-transition-colors ">
+    <div className="flex border-[#E8E8E8] hover:bg-[#FAFAFA] bg-transition-colors ">
       <div className="w-20 md:w-24 px-2 md:px-4 py-3 md:py-4 border-r border-[#E8E8E8] flex items-start">
-        <span className="text-xs md:text-sm text-[#000]">
+        <span className="ttw-type-small md:ttw-type-body text-[#000]">
           {/* {formatDateLabel(day?.date)}  */}
           {/* {`Day ${index + 1}`} */} {day?.day}
         </span>
@@ -258,7 +258,7 @@ const DayByDay = ({
               <IoBagCheckOutline className="w-[30px] md:w-[40px] h-[20px] md:h-[27px]" />
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-xs md:text-sm mt-1">
+              <div className="ttw-type-small md:ttw-type-body mt-1">
                 Check out from {city?.name}
               </div>
             </div>
@@ -269,7 +269,7 @@ const DayByDay = ({
               size={16}
               className="md:w-[18px] md:h-[18px] flex-shrink-0 text-black"
             />
-            <span className="text-xs md:text-sm">No activity is added.</span>
+            <span className="ttw-type-small md:ttw-type-body">No activity is added.</span>
           </div>
         )}
       </div>

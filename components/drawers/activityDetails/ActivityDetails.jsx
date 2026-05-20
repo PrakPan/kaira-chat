@@ -353,7 +353,7 @@ export default function ActivityDetails(props) {
   // Shared day list content rendered inside both mobile and desktop dropdowns
   const DayListContent = () => (
     <>
-      {/* <div className="font-medium text-[14px]">Select Days</div> */}
+      {/* <div className="font-medium ttw-type-body">Select Days</div> */}
       {[...Array(Math.max(0, resolvedCityDuration) + 1)].map((_, i) => {
         const cityStartRaw = props?.start_date || props?.date || null;
         const baseDateStr = props?.mercuryItinerary
@@ -378,14 +378,14 @@ export default function ActivityDetails(props) {
           <div
             key={i}
             className={`cursor-pointer ${
-              startDate === dateString ? "text-black font-semibold" : "text-[#4a4a4a]"
-            }`}
+ startDate === dateString ? "text-black font-semibold" : "text-[#4a4a4a]"
+ }`}
             onClick={() => {
               setStartDate(dateString);
               setShowCalender(false);
             }}
           >
-            <span className="font-bold text-[14px]">
+            <span className="font-bold ttw-type-body">
               {displayDate + " | "}
             </span>
             <span>Day {i + 1}</span>
@@ -397,7 +397,7 @@ export default function ActivityDetails(props) {
 
   return (
     <div className="h-[100vh] overflow-y-auto px-4">
-      <div className="flex flex-col gap-4  mb-[100px] pb-[20px]">
+      <div className="flex flex-col gap-4 mb-[100px] pb-[20px]">
         <div className="mt-xl">
           <Image
             src="/backarrow.svg"
@@ -416,8 +416,8 @@ export default function ActivityDetails(props) {
 
         <div
           className={`flex flex-col gap-4 ${
-            props.updateAmenities && "opacity-50"
-          }`}
+ props.updateAmenities && "opacity-50"
+ }`}
         >
           <div className="h-[180px] md:h-[300px] relative">
             <div style={{ display: imageLoaded ? "initial" : "none" }}>
@@ -448,8 +448,8 @@ export default function ActivityDetails(props) {
 
               {props.data?.ideal_duration_number ? (
                 <div className="absolute bottom-1 left-2 bg-[#000000] text-white px-[16px] py-[2px] rounded-full flex flex-row items-center gap-2">
-                  <div className="text-[14px]">Approx Time:</div>
-                  <div className="text-[14px]">
+                  <div className="ttw-type-body">Approx Time:</div>
+                  <div className="ttw-type-body">
                     {props.data.ideal_duration_number}{" "}
                     {props.data.ideal_duration_number > 1
                       ? props.data?.ideal_duration_unit?.toLowerCase()
@@ -477,7 +477,7 @@ export default function ActivityDetails(props) {
 
           <div className="flex flex-col gap-3">
             <div className="flex justify-between">
-              <div className="text-md-lg leading-xl-sm font-600 mb-0">
+              <div className="ttw-type-h4 leading-xl-sm font-600 mb-0">
                 {props.data?.display_name || props.data.name}
               </div>
             </div>
@@ -506,15 +506,15 @@ export default function ActivityDetails(props) {
                     onClick={() => setShowCalender((prev) => !prev)}
                   >
                     <div className="flex items-center gap-2">
-                      <span className="font-medium text-[14px]">
+                      <span className="font-medium ttw-type-body">
                         {getHumanDate(startDate) + " | "}
                       </span>
                       <span>Day {selectedDayNumber}</span>
                     </div>
                     <IoIosArrowDown
                       className={`transition-transform ml-2 ${
-                        showCalender ? "rotate-180" : ""
-                      }`}
+ showCalender ? "rotate-180" : ""
+ }`}
                     />
                   </div>
 
@@ -522,7 +522,7 @@ export default function ActivityDetails(props) {
                   {showCalender && (
                     <div
                       ref={calendarDesktopRef}
-                      className="max-ph:hidden md:flex md:flex-col absolute top-full left-0 mt-1 w-[260px] bg-white border border-gray-200 shadow-lg rounded-lg p-4 gap-3 text-sm z-[1091] max-h-[300px] overflow-y-auto"
+                      className="max-ph:hidden md:flex md:flex-col absolute top-full left-0 mt-1 w-[260px] bg-white border border-gray-200 shadow-lg rounded-lg p-4 gap-3 ttw-type-body z-[1091] max-h-[300px] overflow-y-auto"
                     >
                       <DayListContent />
                     </div>
@@ -540,11 +540,11 @@ export default function ActivityDetails(props) {
                       key={period}
                       type="button"
                       onClick={() => setSelectedTimeOfDay(period)}
-                      className={`flex-1 sm:flex-none px-4 py-2 rounded-md text-[14px] font-medium transition-colors ${
-                        isSelected
-                          ? "bg-[#07213A] text-white"
-                          : "bg-transparent text-[#7a7a7a] hover:text-[#01202B]"
-                      }`}
+                      className={`flex-1 sm:flex-none px-4 py-2 rounded-md ttw-type-body font-medium transition-colors ${
+ isSelected
+ ? "bg-[#07213A] text-white"
+ : "bg-transparent text-[#7a7a7a] hover:text-[#01202B]"
+ }`}
                     >
                       {period}
                     </button>
@@ -566,7 +566,7 @@ export default function ActivityDetails(props) {
                 <div style={{ display: "flex", alignItems: "center" }}>
                   {props.data?.rating && (
                     <p
-                      className="text-[12px] text-[#7a7a7a]"
+                      className="ttw-type-small text-[#7a7a7a]"
                       style={{ marginBlock: "auto" }}
                     >
                       {props.data.rating} ·
@@ -574,7 +574,7 @@ export default function ActivityDetails(props) {
                   )}
 
                   {props.data?.user_ratings_total > 0 && (
-                    <u className="text-[12px] text-[#7a7a7a]">
+                    <u className="ttw-type-small text-[#7a7a7a]">
                       {props.data.user_ratings_total}
                       {" user reviews"}
                     </u>
@@ -584,7 +584,7 @@ export default function ActivityDetails(props) {
             )}
 
             {props.data?.tags && (
-              <div className="text-[14px] flex flex-row items-center gap-1 flex-wrap">
+              <div className="ttw-type-body flex flex-row items-center gap-1 flex-wrap">
                 {props.data.tags?.map((e, i) => (
                   <span
                     key={i}
@@ -599,7 +599,7 @@ export default function ActivityDetails(props) {
 
             {props.data?.short_description && (
               <div className="flex flex-col gap-2">
-                <div className="text-[14px] text-[#01202B]">
+                <div className="ttw-type-body text-[#01202B]">
                   {props.data.short_description}
                 </div>
               </div>
@@ -607,11 +607,11 @@ export default function ActivityDetails(props) {
 
             {props.data?.inclusions && props.data?.inclusions?.length > 0 && (
               <div className="flex flex-col gap-2 mb-[30px]">
-                <div className="text-[20px] font-semibold text-green">
+                <div className="ttw-type-h3 font-semibold text-green">
                   Inclusions
                 </div>
                 <div className="border-b-[1px]"></div>
-                <div className="text-[14px]">
+                <div className="ttw-type-body">
                   <ul style={{ paddingLeft: "0.5rem" }}>
                     {props.data.inclusions.map((inclusion, i) => (
                       <li key={i} className="mb-1">
@@ -625,11 +625,11 @@ export default function ActivityDetails(props) {
 
             {props.data?.exclusions && props.data?.exclusions?.length > 0 && (
               <div className="flex flex-col gap-2 mb-[30px]">
-                <div className="text-[20px] font-semibold text-red">
+                <div className="ttw-type-h3 font-semibold text-red">
                   Exclusions
                 </div>
                 <div className="border-b-[1px]"></div>
-                <div className="text-[14px]">
+                <div className="ttw-type-body">
                   <ul style={{ paddingLeft: "0.5rem" }}>
                     {props.data.exclusions.map((exclusion, i) => (
                       <li key={i} className="mb-1">
@@ -643,26 +643,26 @@ export default function ActivityDetails(props) {
           </div>
 
           {props?.hotel_pickup_included ? (
-            <div className="flex items-center gap-1 text-[14px] bg-[#e6f9ec] text-[#3BAF75] font-semibold rounded-sm w-max px-1">
+            <div className="flex items-center gap-1 ttw-type-body bg-[#e6f9ec] text-[#3BAF75] font-semibold rounded-sm w-max px-1">
               <Image
                 src="/hotelPickupIncluded.svg"
                 alt="hotel-pickup-included"
                 width={20}
                 height={20}
               />
-              <span className=" px-2 py-1 mb-0 rounded-md text-xs font-medium">
+              <span className=" px-2 py-1 mb-0 rounded-md ttw-type-small">
                 Hotel Pickup Included
               </span>
             </div>
           ) : (
-            <div className="flex items-center gap-1 text-[14px] bg-[#FCE3DB] text-[#EE724B] font-semibold w-max rounded-sm px-1">
+            <div className="flex items-center gap-1 ttw-type-body bg-[#FCE3DB] text-[#EE724B] font-semibold w-max rounded-sm px-1">
               <Image
                 src="/notHotelPickupIncluded.svg"
                 alt="not-hotel-pickup-included"
                 width={20}
                 height={20}
               />
-              <span className=" px-2 py-1 mb-0 rounded-md text-xs font-medium">
+              <span className=" px-2 py-1 mb-0 rounded-md ttw-type-small">
                 Hotel pickup not included
               </span>
             </div>
@@ -725,12 +725,12 @@ export default function ActivityDetails(props) {
           <div>
             {props.data?.general_guidelines?.length ? (
               <div className="flex flex-col">
-                <div className="text-[20px] font-semibold">
+                <div className="ttw-type-h3 font-semibold">
                   <div>General guidelines</div>
                   <div className="border-b-[1px] mt-2 mb-2"></div>
                 </div>
                 {boolDetails?.generalGuidelines && (
-                  <div className="text-[14px]">
+                  <div className="ttw-type-body">
                     <ul style={{ paddingLeft: "0.5rem" }}>
                       {props.data.general_guidelines?.map((e, i) => (
                         <li key={i}>- {e}</li>
@@ -743,12 +743,12 @@ export default function ActivityDetails(props) {
 
             {props.data?.things_to_bring?.length ? (
               <div className="flex flex-col">
-                <div className="text-[20px] font-semibold">
+                <div className="ttw-type-h3 font-semibold">
                   <div>Things to bring</div>
                   <div className="border-b-[1px] mt-2 mb-2"></div>
                 </div>
                 {boolDetails?.thingsToBring && (
-                  <div className="text-[14px]">
+                  <div className="ttw-type-body">
                     <ul style={{ paddingLeft: "0.5rem" }}>
                       {props.data.things_to_bring?.map((e, i) => (
                         <li key={i}>- {e}</li>
@@ -761,12 +761,12 @@ export default function ActivityDetails(props) {
 
             {props.data?.not_suitable_for?.length ? (
               <div className="flex flex-col">
-                <div className="text-[20px] font-semibold">
+                <div className="ttw-type-h3 font-semibold">
                   <div>Not suitable for</div>
                   <div className="border-b-[1px] mt-2 mb-2"></div>
                 </div>
                 {boolDetails?.notSuitableFor && (
-                  <div className="text-[14px]">
+                  <div className="ttw-type-body">
                     <ul style={{ paddingLeft: "0.5rem" }}>
                       {props.data.not_suitable_for?.map((e, i) => (
                         <li key={i}>- {e}</li>
@@ -779,12 +779,12 @@ export default function ActivityDetails(props) {
 
             {props.data?.tips_tricks?.length ? (
               <div className="flex flex-col">
-                <div className="text-[20px] font-semibold">
+                <div className="ttw-type-h3 font-semibold">
                   <div>Tips, Tricks and Cautions</div>
                   <div className="border-b-[1px] mt-2 mb-2"></div>
                 </div>
                 {boolDetails?.tipsTricks && (
-                  <div className="text-[14px]">
+                  <div className="ttw-type-body">
                     <ul style={{ paddingLeft: "0.5rem" }}>
                       {props.data.tips_tricks?.map((e, i) => (
                         <li key={i}>- {e}</li>
@@ -797,8 +797,8 @@ export default function ActivityDetails(props) {
           </div>
 
           {props.data?.amenities && props.data?.amenities?.length ? (
-            <div className="flex flex-col gap-2  mb-[30px]">
-              <div className="text-[20px] font-semibold">Add - Ons</div>
+            <div className="flex flex-col gap-2 mb-[30px]">
+              <div className="ttw-type-h3 font-semibold">Add - Ons</div>
               <div className="border-b-[1px]"></div>
               <div className="flex flex-col gap-2">
                 {props.data.amenities.map((amenity, index) => (
@@ -817,30 +817,30 @@ export default function ActivityDetails(props) {
 
           {!isDraft && props?.data?.prices && props?.data?.prices?.length && (
             <div className="mb-4">
-              <h3 className="font-medium text-base mb-3">Package Options</h3>
+              <h3 className="font-medium ttw-type-body mb-3">Package Options</h3>
 
               <div className="flex flex-col gap-3 w-full">
                 {props.data.prices.map((packageItem, index) => (
                   <div
                     key={packageItem.result_index}
                     className={`border-2 rounded-lg p-3 cursor-pointer transition-colors ${
-                      selectedPackage?.result_index === packageItem.result_index
-                        ? "border-yellow-400 bg-yellow-50"
-                        : "border-gray-200 bg-white hover:border-gray-300"
-                    }`}
+ selectedPackage?.result_index === packageItem.result_index
+ ? "border-yellow-400 bg-yellow-50"
+ : "border-gray-200 bg-white hover:border-gray-300"
+ }`}
                     onClick={() => setSelectedPackage(packageItem)}
                   >
                     <div className="flex items-center justify-between w-full">
-                      <div className="flex  flex-col gap-2 w-full">
+                      <div className="flex flex-col gap-2 w-full">
                         <div className="flex justify-between w-full items-start">
                           <div className="flex items-center gap-3">
                             <div
                               className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                                selectedPackage?.result_index ===
-                                packageItem.result_index
-                                  ? "border-yellow-400 bg-yellow-400"
-                                  : "border-gray-300"
-                              }`}
+ selectedPackage?.result_index ===
+ packageItem.result_index
+ ? "border-yellow-400 bg-yellow-400"
+ : "border-gray-300"
+ }`}
                             >
                               {selectedPackage?.result_index ===
                                 packageItem.result_index && (
@@ -857,7 +857,7 @@ export default function ActivityDetails(props) {
                             {!(packageItem?.description) &&
                               !packageItem?.title &&
                               packageItem.pax_details?.adults && (
-                                <div className="text-sm text-gray-600">
+                                <div className="ttw-type-body text-gray-600">
                                   For{" "}
                                   {packageItem.pax_details?.adults +
                                     packageItem.pax_details?.children}{" "}
@@ -866,7 +866,7 @@ export default function ActivityDetails(props) {
                               )}
                           </div>
                           <div className="text-right">
-                            <div className="font-bold text-lg">
+                            <div className="font-bold ttw-type-h4">
                               {`${
                                 currency?.currency
                                   ? currencySymbols?.[currency?.currency]
@@ -878,7 +878,7 @@ export default function ActivityDetails(props) {
                         </div>
 
                         <div className="flex flex-col ">
-                          <div className="font-normal text-gray-900 text-sm">
+                          <div className="font-normal text-gray-900 ttw-type-body">
                             {props.data?.is_package
                               ? packageItem?.description
                                 ? packageItem.description
@@ -886,7 +886,7 @@ export default function ActivityDetails(props) {
                               : ""}
                           </div>
                           {(packageItem?.description || packageItem?.title) && (
-                            <div className="text-sm text-gray-600">
+                            <div className="ttw-type-body text-gray-600">
                               For{" "}
                               {packageItem.pax_details.adults +
                                 packageItem.pax_details.children}{" "}
@@ -905,14 +905,14 @@ export default function ActivityDetails(props) {
 
         {props?.data?.cancellation_policies && (
           <>
-            <div className="text-[20px] font-semibold">
+            <div className="ttw-type-h3 font-semibold">
               Cancellation Policies
             </div>
             <div
               dangerouslySetInnerHTML={{
                 __html: props?.data?.cancellation_policies,
               }}
-              className="flex flex-col gap-1 text-sm ml-4"
+              className="flex flex-col gap-1 ttw-type-body ml-4"
             ></div>
           </>
         )}
@@ -921,7 +921,7 @@ export default function ActivityDetails(props) {
       {/* Mobile bottom sheet — hidden on md+ screens */}
       {/* {showCalender && (
         <div
-          className="fixed bottom-0 left-0 right-0 w-full bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-t-xl space-y-5 text-sm z-[1091] max-h-[60vh] overflow-y-auto md:hidden"
+          className="fixed bottom-0 left-0 right-0 w-full bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-t-xl space-y-5 ttw-type-body z-[1091] max-h-[60vh] overflow-y-auto md:hidden"
           ref={calendarMobileRef}
         >
           <DayListContent />
@@ -933,7 +933,7 @@ export default function ActivityDetails(props) {
           <>
             {selectedPackage?.total_price && (
               <div className="font-bold">
-                <span className="text-[34px]">
+                <span className="ttw-type-h2">
                   {`${
                     currency?.currency
                       ? currencySymbols?.[currency?.currency]
@@ -953,12 +953,12 @@ export default function ActivityDetails(props) {
           </button>
         </div>
         <div className={`flex justify-between items-center`}>
-          <span className="text-[12px] font-normal">
+          <span className="ttw-type-small font-normal">
             {" "}
             for { (props?.filterState.adults + props?.filterState?.children) || (itinerary?.number_of_adults + itinerary?.number_of_children)}{" "}
             people{" "}
           </span>
-          <div className="text-[14px] sm:text-[16px]">
+          <div className="ttw-type-body sm:ttw-type-body">
             on {getHumanDate(startDate) || dateFormat(props?.date)}
           </div>
         </div>
@@ -1008,26 +1008,26 @@ export const Amenity = ({ index, amenity, handleAmenityChange, travelers }) => {
   return (
     <div
       key={index}
-      className="relative gap-3  bg-[#FAFAFA] p-[10px] rounded-[4px]"
+      className="relative gap-3 bg-[#FAFAFA] p-[10px] rounded-[4px]"
     >
       <div className="flex flex-col gap-1">
-        <div className="flex flex-row items-center gap-2 text-[16px] font-medium">
+        <div className="flex flex-row items-center gap-2 ttw-type-body font-medium">
           {amenity.name}
         </div>
-        <div className="text-[14px]">{amenity.description}</div>
-        {travelers ? <div className="flex text-[12px] font-medium">
+        <div className="ttw-type-body">{amenity.description}</div>
+        {travelers ? <div className="flex ttw-type-small font-medium">
           <Image src="/ticket.svg" alt="ticket" width={13.33} height={10.67} />
           {travelers} tickets
         </div> : null}
       </div>
 
       {amenity.price == 0 ? (
-        <div className=" text-md font-semibold  text-[#277004] ">
+        <div className=" ttw-type-h5 text-[#277004] ">
           Included for free
         </div>
       ) : (
         <div className="flex items-center justify-between">
-          <div className="font-semibold text-[24px]">
+          <div className="font-semibold ttw-type-h2">
             {`${
               currency?.currency ? currencySymbols?.[currency?.currency] : "₹"
             }`}
@@ -1038,7 +1038,7 @@ export const Amenity = ({ index, amenity, handleAmenityChange, travelers }) => {
                 ? getIndianPrice(rounded)
                 : rounded.toLocaleString("en-US");
             })()}{" "}
-            <span className="text-[14px] font-normal">per person*</span>
+            <span className="ttw-type-body font-normal">per person*</span>
           </div>
 
           <div
@@ -1057,12 +1057,12 @@ export const Amenity = ({ index, amenity, handleAmenityChange, travelers }) => {
             {amenity.mandatory && (
               <div
                 style={popupStyle}
-                className="z-[1600] absolute -right-3 top-full mt-2  text-sm text-center flex flex-col gap-2"
+                className="z-[1600] absolute -right-3 top-full mt-2 ttw-type-body text-center flex flex-col gap-2"
               >
                 <div className="relative">
-                  <span className="absolute -top-5 right-0  w-0 h-0 border-[10px] border-solid border-transparent border-b-red"></span>
+                  <span className="absolute -top-5 right-0 w-0 h-0 border-[10px] border-solid border-transparent border-b-red"></span>
                   <span className="absolute -top-[21px] -right-0 w-0 h-0 border-[10px] border-solid border-transparent border-b-[#2b2b2a]"></span>
-                  <div className="text-nowrap font-normal text-white text-sm bg-[#2b2b2a] px-2 py-1 rounded">
+                  <div className="text-nowrap font-normal text-white ttw-type-body bg-[#2b2b2a] px-2 py-1 rounded">
                     This add on cannot be removed
                   </div>
                 </div>

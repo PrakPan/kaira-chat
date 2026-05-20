@@ -293,10 +293,10 @@ const Day_I_ContainerM = (props) => {
       >
         <div
           className={`${
-            viewMore
-              ? "font-bold text-black text-2xl"
-              : "text-black text-base font-bold"
-          }`}
+ viewMore
+ ? "font-bold text-black ttw-type-h2"
+ : "text-black ttw-type-h5"
+ }`}
         >
           {props.tripsPage ? (
             "Day 1 - "
@@ -331,7 +331,7 @@ const Day_I_ContainerM = (props) => {
                       `Add Activity on ${convertDateFormat(props?.Days?.date)}`
                     )
                   }
-                  className="text-lg font-normal text-blue hover:underline"
+                  className="ttw-type-h4 font-normal text-blue hover:underline"
                 >
                   +Add Activity{" "}
                   {props.tripsPage
@@ -356,7 +356,7 @@ const Day_I_ContainerM = (props) => {
                       `Add Activity on ${convertDateFormat(props?.Days?.date)}`
                     )
                   }
-                  className="text-sm font-normal text-blue hover:underline"
+                  className="ttw-type-body text-blue hover:underline"
                 >
                   +Add Activity{" "}
                   {props.tripsPage

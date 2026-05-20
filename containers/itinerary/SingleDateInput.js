@@ -26,9 +26,11 @@ const Container = styled.div`
   }
 
   .DateInput > input {
-    font-family: poppins;
+    /* Body · 14.5/1.55/400 */
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 14.5px;
     font-weight: 400;
-    font-size: 1rem;
+    line-height: 1.55;
   }
 
    .SingleDatePicker_picker,

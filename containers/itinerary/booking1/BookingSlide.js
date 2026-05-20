@@ -111,17 +111,10 @@ const Details = (props) => {
               ) {
                 bookingslist.push(
                   <p
-                    style={{
-                      fontSize: "0.75rem",
-                      fontWeight: "400",
-                      letterSpacing: "1px",
-                      marginBottom: "0.25rem",
-                    }}
-                    className={
-                      props.blur
-                        ? " text-enter blurry-text"
-                        : " text-enter"
-                    }
+                    style={{ marginBottom: "0.25rem" }}
+                    className={`ttw-type-small${
+ props.blur ? " text-enter blurry-text" : " text-enter"
+ }`}
                   >
                     {props.payment.costings_breakdown[booking].detail[
                       "duration"
@@ -140,17 +133,10 @@ const Details = (props) => {
                     }}
                   >
                     <p
-                      style={{
-                        fontSize: "0.75rem",
-                        fontWeight: "300",
-                        letterSpacing: "1px",
-                        marginBottom: "0.25rem",
-                      }}
-                      className={
-                        props.blur
-                          ? " text-enter blurry-text"
-                          : " text-enter"
-                      }
+                      style={{ marginBottom: "0.25rem" }}
+                      className={`ttw-type-small${
+ props.blur ? " text-enter blurry-text" : " text-enter"
+ }`}
                     >
                       {props.payment.costings_breakdown[booking].detail[
                         "duration"
@@ -161,17 +147,10 @@ const Details = (props) => {
                         ]}
                     </p>
                     <p
-                      style={{
-                        fontSize: "0.75rem",
-                        fontWeight: "300",
-                        letterSpacing: "1px",
-                        marginBottom: "0.25rem",
-                      }}
-                      className={
-                        props.blur
-                          ? " text-enter blurry-text"
-                          : " text-enter"
-                      }
+                      style={{ marginBottom: "0.25rem" }}
+                      className={`ttw-type-small ttw-type-num${
+ props.blur ? " text-enter blurry-text" : " text-enter"
+ }`}
                     >
                       {"₹ " +
                         getIndianPrice(
@@ -187,17 +166,10 @@ const Details = (props) => {
               } else {
                 bookingslist.push(
                   <p
-                    style={{
-                      fontSize: "0.75rem",
-                      fontWeight: "400",
-                      letterSpacing: "1px",
-                      marginBottom: "0.25rem",
-                    }}
-                    className={
-                      props.blur
-                        ? " text-enter blurry-text"
-                        : " text-enter"
-                    }
+                    style={{ marginBottom: "0.25rem" }}
+                    className={`ttw-type-small${
+ props.blur ? " text-enter blurry-text" : " text-enter"
+ }`}
                   >
                     {props.payment.costings_breakdown[booking].detail["name"]}
                   </p>
@@ -212,32 +184,18 @@ const Details = (props) => {
                     }}
                   >
                     <p
-                      style={{
-                        fontSize: "0.75rem",
-                        fontWeight: "300",
-                        letterSpacing: "1px",
-                        marginBottom: "0.25rem",
-                      }}
-                      className={
-                        props.blur
-                          ? " text-enter blurry-text"
-                          : " text-enter"
-                      }
+                      style={{ marginBottom: "0.25rem" }}
+                      className={`ttw-type-small${
+ props.blur ? " text-enter blurry-text" : " text-enter"
+ }`}
                     >
                       {props.payment.costings_breakdown[booking].detail["name"]}
                     </p>
                     <p
-                      style={{
-                        fontSize: "0.75rem",
-                        fontWeight: "300",
-                        letterSpacing: "1px",
-                        marginBottom: "0.25rem",
-                      }}
-                      className={
-                        props.blur
-                          ? " text-enter blurry-text"
-                          : " text-enter"
-                      }
+                      style={{ marginBottom: "0.25rem" }}
+                      className={`ttw-type-small ttw-type-num${
+ props.blur ? " text-enter blurry-text" : " text-enter"
+ }`}
                     >
                       {"₹ " +
                         getIndianPrice(
@@ -472,8 +430,8 @@ const Details = (props) => {
     <>
       <div
         className={`${
-          props.payment?.paid_user ? "bg-[#98F0AB33]" : "bg-[#F7E70033]"
-        }  -mt-[1rem] -mx-[1rem] mb-0`}
+ props.payment?.paid_user ? "bg-[#98F0AB33]" : "bg-[#F7E70033]"
+ } -mt-[1rem] -mx-[1rem] mb-0`}
       >
         <div className=" mx-[1rem] mt-[1rem]">
           <div className="flex flex-row justify-between">
@@ -481,7 +439,7 @@ const Details = (props) => {
             props.payment?.discounted_cost != props.payment.total_cost &&
             props.payment?.show_per_person_cost !=
               props.payment.per_person_discounted_cost ? (
-              <div className="flex flex-row items-center text-[#7A7A7A] gap-1 text-base font-light line-through">
+              <div className="flex flex-row items-center text-[#7A7A7A] gap-1 ttw-type-body font-light line-through">
                 <span>₹</span>
                 <div>
                   {props.payment.show_per_person_cost ||
@@ -500,7 +458,7 @@ const Details = (props) => {
             )}
 
             {props.iscouponApplied && props?.payment?.coupon_usage && (
-              <div className="bg-[#EB5757] font-bold flex flex-row gap-1 items-center justify-center text-sm px-2 py-1 lg:mt-4 mt-0 text-white">
+              <div className="bg-[#EB5757] font-bold flex flex-row gap-1 items-center justify-center ttw-type-body px-2 py-1 lg:mt-4 mt-0 text-white">
                 <div>{props?.payment?.coupon_usage?.usage_description}</div>
               </div>
             )}
@@ -513,7 +471,7 @@ const Details = (props) => {
                   className={
                     props.blur
                       ? " blurry-text"
-                      : " text-3xl flex flex-row items-center font-semibold"
+                      : " ttw-type-h1 flex flex-row items-center font-semibold"
                   }
                 >
                   <span>₹</span>
@@ -537,9 +495,9 @@ const Details = (props) => {
                 </div>
 
                 {props.payment.paid_user ? (
-                  <div className="font-[400] pl-2 text-base self-end">PAID</div>
+                  <div className="font-[400] pl-2 ttw-type-body self-end">PAID</div>
                 ) : (
-                  <div className="font-medium text-base self-end">
+                  <div className="font-medium ttw-type-body self-end">
                     {props?.payment?.pay_only_for_one ||
                     props?.payment?.show_per_person_cost
                       ? "Per Person Cost"
@@ -553,7 +511,7 @@ const Details = (props) => {
               </div>
             )}
 
-            <div className="text-[#7A7A7A] text-sm">
+            <div className="text-[#7A7A7A] ttw-type-body">
               {props?.payment?.total_cost == 0
                 ? "No bookings added yet"
                 : "Inclusive of applicable taxes"}
@@ -586,7 +544,7 @@ const Details = (props) => {
         ) : null}
 
         <div
-          className="mx-[1rem]  font-medium text-sm flex gap-0 flex-row cursor-pointer"
+          className="mx-[1rem] font-medium ttw-type-body flex gap-0 flex-row cursor-pointer"
           onClick={() => setAcordianOpen(!acoordianceOpen)}
         >
           <div>
@@ -595,16 +553,16 @@ const Details = (props) => {
           </div>
 
           <RiArrowDropDownLine
-            className={` text-2xl  mt-1 transition-all duration-100 ${
-              acoordianceOpen ? "-rotate-180 " : "rotate-180 animate-bounce"
-            }`}
+            className={` ttw-type-h2 mt-1 transition-all duration-100 ${
+ acoordianceOpen ? "-rotate-180 " : "rotate-180 animate-bounce"
+ }`}
           ></RiArrowDropDownLine>
         </div>
 
         <div
           className={`mb-[0.8rem] mx-[1rem] Transition-Height-${
-            acoordianceOpen ? "in" : "out"
-          } `}
+ acoordianceOpen ? "in" : "out"
+ } `}
         >
           {acoordianceOpen && (
             <div className="">
@@ -622,7 +580,7 @@ const Details = (props) => {
                     className={
                       props.blur
                         ? " text-enter blurry-text "
-                        : " text-enter text-sm font-normal"
+                        : " text-enter ttw-type-body"
                     }
                   >
                     {"Surcharges & Taxes"}
@@ -654,7 +612,7 @@ const Details = (props) => {
                         className={
                           props.blur
                             ? " text-enter blurry-text  "
-                            : " text-enter text-sm font-bold  flex flex-col"
+                            : " text-enter ttw-type-body-strong flex flex-col"
                         }
                       >
                         {"Coupon Discount"}
@@ -716,8 +674,8 @@ const Details = (props) => {
         {props.couponJSX}
         <div className=" border-y border-[#F0F0F0] mb-3 mt-2 ml-1">
           <div className=" group flex flex-row gap-3 items-center py-[1rem]">
-            <BsCalendar2 className="text-md text-[#7A7A7A]" />
-            <div className="text-md font-medium text-black flex flex-row items-center gap-2">
+            <BsCalendar2 className="ttw-type-body text-[#7A7A7A]" />
+            <div className="ttw-type-body-strong text-black flex flex-row items-center gap-2">
               {props.tripsPage ? (
                 <div>{props.plan.duration_number + " Nights"}</div>
               ) : (
@@ -754,7 +712,7 @@ const Details = (props) => {
               {props.payment?.itinerary_status ===
               ITINERARY_STATUSES.itinerary_prepared ? (
                 <>
-                  <div className="cursor-pointer w-4 h-4 text-gray-500 transition-transform duration-300 group-hover:text-blue-500 group-hover:scale-110  active:scale-90">
+                  <div className="cursor-pointer w-4 h-4 text-gray-500 transition-transform duration-300 group-hover:text-blue-500 group-hover:scale-110 active:scale-90">
                     <MdEdit
                       className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500"
                       onClick={() => setFocus(true)}
@@ -775,9 +733,9 @@ const Details = (props) => {
           </div>
         </div>
 
-        <div className="group text-md font-medium gap-3 flex flex-row items-center mb-2 ml-1">
-          <BsPeopleFill className="text-md text-[#7A7A7A]" />
-          <div className=" flex flex-row items-center text-md font-medium text-black">
+        <div className="group ttw-type-body-strong gap-3 flex flex-row items-center mb-2 ml-1">
+          <BsPeopleFill className="ttw-type-body text-[#7A7A7A]" />
+          <div className=" flex flex-row items-center ttw-type-body-strong text-black">
             <div>
               {pax} {pluralDetector("Adult", pax)}{" "}
             </div>
@@ -796,7 +754,7 @@ const Details = (props) => {
             {props.payment?.itinerary_status ===
             ITINERARY_STATUSES?.itinerary_finalized ? null : (
               <>
-                <div className="cursor-pointer pl-2 w-4 h-4 text-gray-500 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90">
+                <div className="cursor-pointer pl-2 w-4 h-4 text-gray-500 transition-transform duration-300 ase-in-out group-hover:text-blue-500 group-hover:scale-110 active:scale-90">
                   <MdEdit
                     className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500"
                     onClick={() => setDropdownOpen(!DropdownOpen)}
@@ -980,7 +938,7 @@ const Details = (props) => {
         onclick={handleWhatsappChat}
       >
         <div className="flex flex-row justify-center items-center">
-          <RiWhatsappFill className="text-[#4da750] mr-2 text-xl" />
+          <RiWhatsappFill className="text-[#4da750] mr-2 ttw-type-h3" />
           <div>Chat on WhatsApp</div>
         </div>
       </Button>

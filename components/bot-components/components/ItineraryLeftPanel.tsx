@@ -208,11 +208,11 @@ const ActivityRow: React.FC<{ item: SlabElement }> = ({ item }) => {
           <RecommendationIcon />
         </div>
         <div className="flex flex-col min-w-0 justify-center">
-          <h4 className="text-sm text-[#111827] font-normal truncate mb-0 leading-4">
+          <h4 className="ttw-type-body text-[#111827] font-normal truncate mb-0 leading-4">
             {itemName}
           </h4>
           {item?.time && (
-            <span className="text-xs text-[#666666]">{item.time}</span>
+            <span className="ttw-type-small text-[#666666]">{item.time}</span>
           )}
         </div>
       </div>
@@ -230,27 +230,27 @@ const ActivityRow: React.FC<{ item: SlabElement }> = ({ item }) => {
         }}
       />
       <div className="flex flex-col items-start justify-center gap-1 min-w-0 flex-1">
-        <h4 className="text-xs md:text-sm text-[#000] !font-normal truncate mb-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap cursor-pointer hover:text-[#0066CC]">
+        <h4 className="ttw-type-small md:ttw-type-body text-[#000] !font-normal truncate mb-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap cursor-pointer hover:text-[#0066CC]">
           {itemName}
         </h4>
         <div className="flex items-center gap-2">
           {item?.type === "activity" && (
-            <span className="px-1.5 md:px-2 py-0.5 bg-[#5CBA66] text-white text-[10px] md:text-xs rounded-full font-medium whitespace-nowrap">
+            <span className="px-1.5 md:px-2 py-0.5 bg-[#5CBA66] text-white ttw-type-small md:ttw-type-small rounded-full font-medium whitespace-nowrap">
               Activity
             </span>
           )}
           {item?.type === "restaurant" && (
-            <span className="px-1.5 md:px-2 py-0.5 bg-[#FDECEA] text-[#C62828] text-[10px] md:text-xs rounded-full font-medium whitespace-nowrap">
+            <span className="px-1.5 md:px-2 py-0.5 bg-[#FDECEA] text-[#C62828] ttw-type-small md:ttw-type-small rounded-full font-medium whitespace-nowrap">
               Restaurant
             </span>
           )}
           {(item?.type === "poi" || (!item?.type && item?.poi)) && (
-            <span className="px-1.5 md:px-2 py-0.5 bg-[#EEF2FF] text-[#4338CA] text-[10px] md:text-xs rounded-full font-medium whitespace-nowrap">
+            <span className="px-1.5 md:px-2 py-0.5 bg-[#EEF2FF] text-[#4338CA] ttw-type-small md:ttw-type-small rounded-full font-medium whitespace-nowrap">
               Self Exploration
             </span>
           )}
           {item?.time && (
-            <span className="text-xs text-[#666666]">{item.time}</span>
+            <span className="ttw-type-small text-[#666666]">{item.time}</span>
           )}
         </div>
       </div>
@@ -278,7 +278,7 @@ const DayRow: React.FC<{
     <div className="flex border-b border-[#E8E8E8] hover:bg-[#FAFAFA] transition-colors">
       {/* Date column */}
       <div className="w-20 md:w-24 px-2 md:px-4 py-3 md:py-4 border-r border-[#E8E8E8] flex items-start flex-shrink-0">
-        <span className="text-xs md:text-sm text-[#000]">{dayLabel}</span>
+        <span className="ttw-type-small md:ttw-type-body text-[#000]">{dayLabel}</span>
       </div>
 
       {/* Content column */}
@@ -292,12 +292,12 @@ const DayRow: React.FC<{
         ) : isLastDay ? (
           <div className="flex items-center gap-2 md:gap-3">
             <IoBagCheckOutline className="w-[30px] md:w-[40px] h-[20px] md:h-[27px] flex-shrink-0" />
-            <span className="text-xs md:text-sm">Check out from {cityName}</span>
+            <span className="ttw-type-small md:ttw-type-body">Check out from {cityName}</span>
           </div>
         ) : (
           <div className="flex items-center gap-2">
             <MdOutlineDownhillSkiing className="w-[30px] md:w-[40px] h-[20px] md:h-[27px] flex-shrink-0" />
-            <span className="text-xs md:text-sm">No activity is added.</span>
+            <span className="ttw-type-small md:ttw-type-body">No activity is added.</span>
           </div>
         )}
       </div>
@@ -318,11 +318,11 @@ const HotelRow: React.FC<{ hotels: HotelsInput }> = ({ hotels }) => {
             <div className="flex flex-row">
               <div className="flex gap-2 pr-[8px]">
                 <HotelIcon />
-                <div className="text-[14px] cursor-pointer">{hotel.name}</div>
+                <div className="ttw-type-body cursor-pointer">{hotel.name}</div>
               </div>
               {hotel?.rating && hotel.rating !== 0 && (
                 <div className="flex flex-row items-center pl-[8px]">
-                  <div className="text-[#000] text-[12px] ml-1 mr-1 font-[500]">
+                  <div className="text-[#000] ttw-type-small ml-1 mr-1">
                     {hotel.rating}
                   </div>
                   <StarIcon />
@@ -342,7 +342,7 @@ const CitySection: React.FC<{ route: Route }> = ({ route }) => (
     {/* City header */}
     <div className="flex items-start justify-between p-3 rounded-t-lg w-full border-1 border-[#FBEAC7]">
       <div className="space-y-1 font-inter w-full">
-        <div className="md:text-[18px] font-semibold leading-0">
+        <div className="md:ttw-type-h4 font-semibold leading-0">
           {/* Desktop: full format */}
           <span className="hidden md:inline">
             {route.city.name}
@@ -354,7 +354,7 @@ const CitySection: React.FC<{ route: Route }> = ({ route }) => (
           {/* Mobile: truncate city name + short night count */}
           <span className="md:hidden flex items-center gap-1 min-w-0">
             <span className="truncate">{route.city.name}</span>
-            <span className="flex-shrink-0 text-[13px]">
+            <span className="flex-shrink-0 ttw-type-small">
               {route.city.duration === 0 ? "(Transit)" : `${route.city.duration}N`}
             </span>
           </span>
@@ -431,7 +431,7 @@ const TransferSection: React.FC<{ transfer: Transfer }> = ({ transfer }) => {
           </React.Fragment>
         ))}
         {legs.length > 0 && (
-          <span className="text-[16px] font-[500] ml-1">{legs.join(", ")}</span>
+          <span className="ttw-type-body ml-1">{legs.join(", ")}</span>
         )}
       </div>
     </div>
@@ -461,7 +461,7 @@ Start Location: ${details.startLocation}`;
       {/* Scrollable content */}
       <div className="flex-1 overflow-y-auto pb-4 px-4">
         <div className="mb-6 pt-4">
-          <h1 className="text-xl font-bold text-gray-800">
+          <h1 className="ttw-type-h3 text-gray-800">
             {itineraryData.name}
           </h1>
         </div>
@@ -486,7 +486,7 @@ Start Location: ${details.startLocation}`;
       <div className="flex-shrink-0 px-6 py-3 bg-white border-t border-gray-100 shadow-[0_-4px_12px_rgba(0,0,0,0.06)] flex justify-center">
         <button
           onClick={() => setShowConfirmationModal(true)}
-          className="w-fit px-3 py-[12px] bg-[#07213A] text-white font-medium rounded-lg hover:bg-[#0a2a4a] transition-colors text-sm md:text-[14px]"
+          className="w-fit px-3 py-[12px] bg-[#07213A] text-white font-medium rounded-lg hover:bg-[#0a2a4a] transition-colors ttw-type-body md:ttw-type-body"
         >
           Confirm Itinerary & View Prices →
         </button>

@@ -60,17 +60,22 @@ const LogoContainer = styled.div`
   display: flex;
   align-items: center;
   text-align: left;
-  font-size: 0.9rem;
+  /* Body-strong · 14.5/1.55/600 — transfer mode label */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14.5px;
   font-weight: 600;
+  line-height: 1.55;
   flex-direction: row;
   gap: 1rem;
   @media screen and (min-width: 768px) {
+    /* Desktop: Small body · 13/1.5/400 — stacked layout, lighter */
     padding-left: 0.25rem;
     flex-direction: column;
+    font-size: 13px;
     font-weight: 400;
+    line-height: 1.5;
     gap: 0rem;
     text-align: center;
-    font-size: 0.8rem;
   }
 `;
 
@@ -106,7 +111,11 @@ const InfoContainer = styled.div`
   }
   @media screen and (max-width: 768px) {
     span {
-      font-size: 14px;
+      /* Body · 14.5/1.55/400 */
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 14.5px;
+      font-weight: 400;
+      line-height: 1.55;
     }
   }
 `;
@@ -174,15 +183,24 @@ const Line = styled.hr`
 `;
 
 const Cost = styled.p`
-  font-size: 16px;
-  font-weight: 600;
+  /* H4 token · 17/1.2/700/-0.015em — transfer price callout */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
   margin: 0;
   text-align: center;
 `;
 
 const Text = styled.p`
+  /* Caption · 12/1.4/600 — meta label (kept mixed-case, no transform) */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 12px;
-  font-weight: 300;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
   margin: 0;
   text-align: left;
   @media screen and (min-width: 768px) {
@@ -594,14 +612,14 @@ const TransferModeContainer = (props) => {
           {props?.booking_type == "Flight" ? (
             <div className="mt-3 lg:ml-7">
               <div className="flex flex-row w-full justify-between items-center">
-                <span className="font-medium  inline">{props.heading}</span>
+                <span className="font-medium inline">{props.heading}</span>
                 <div className="flex flex-row gap-2 justify-center items-center">
                   <div
                     className={`${
-                      props.booking_type == "Train"
-                        ? "lg:bottom-4 hidden"
-                        : "lg:bottom-[3.6rem] hidden"
-                    } `}
+ props.booking_type == "Train"
+ ? "lg:bottom-4 hidden"
+ : "lg:bottom-[3.6rem] hidden"
+ } `}
                     // onClick={(e) => {
                     //   handleCheckboxChange(e);
                     // }}
@@ -609,11 +627,11 @@ const TransferModeContainer = (props) => {
                     {/* <CheckboxFormComponent checked={addbooking} />{" "} */}
                   </div>
                   {props.userSelected ? (
-                    <div className=" text-md font-semibold  text-[#277004] ">
+                    <div className=" ttw-type-h5 text-[#277004] ">
                       Included
                     </div>
                   ) : (
-                    <div className=" text-md font-semibold text-[#E00000]  ">
+                    <div className=" ttw-type-h5 text-[#E00000] ">
                       Excluded
                     </div>
                   )}{" "}
@@ -623,12 +641,12 @@ const TransferModeContainer = (props) => {
               <div
                 id={props.booking.id}
                 className={`mb-4 mt-2 lg:block ${
-                  !props.userSelected
-                    ? "mb-4 mt-3 lg:block flex flex-col-reverse p-3 py-4"
-                    : "mb-4 mt-2 lg:block flex flex-col p-3 "
-                }    cursor-pointer relative shadow-sm rounded-2xl transition-all  hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] border-[1px]  hover:border-[#F7E700]  shadow-[#ECEAEA] lg:p-5 `}
+ !props.userSelected
+ ? "mb-4 mt-3 lg:block flex flex-col-reverse p-3 py-4"
+ : "mb-4 mt-2 lg:block flex flex-col p-3 "
+ } cursor-pointer relative shadow-sm rounded-2xl transition-all hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] border-[1px] hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-5 `}
               >
-                <div className="flex flex-row gap-4    ">
+                <div className="flex flex-row gap-4 ">
                   {props.userSelected && (
                     <LogoContainer>
                       <div className="">
@@ -709,7 +727,7 @@ const TransferModeContainer = (props) => {
                           }}
                         >
                           <div className="flex flex-col">
-                            <div className="text-[#01202B] text-lg font-medium min-w-max">
+                            <div className="text-[#01202B] ttw-type-h4 min-w-max">
                               {props.booking?.airline_code && (
                                 <span>
                                   {
@@ -783,7 +801,7 @@ const TransferModeContainer = (props) => {
 
                           <div className="flex flex-row justify-between w-full">
                             <div>
-                              <div className="text-[#01202B] text-lg font-medium min-w-max">
+                              <div className="text-[#01202B] ttw-type-h4 min-w-max">
                                 {props.booking?.airline_code && (
                                   <span>
                                     {
@@ -823,9 +841,9 @@ const TransferModeContainer = (props) => {
                       <>
                         {props.userSelected ? (
                           <div className="flex lg:flex-col md:flex-row lg:justify-center justify-between items-center">
-                            <div className="flex  mr-3 lg:w-full w-full flex-col lg:justify-center justify-start lg:items-end items-start">
+                            <div className="flex mr-3 lg:w-full w-full flex-col lg:justify-center justify-start lg:items-end items-start">
                               {props.booking.duration && (
-                                <div className="flex pl-2  font-[300]">
+                                <div className="flex pl-2 font-[300]">
                                   <div>
                                     {
                                       processBookingTimes(
@@ -846,7 +864,7 @@ const TransferModeContainer = (props) => {
                                 onClick={() =>
                                   HandleFlights(props.index, "Change Flight")
                                 }
-                                className="px-[1.6rem] min-w-fit bg-[#F7E700] py-[8px] lg:px-4 inline-block cursor-pointer rounded-lg shadow-sm ml-2 lg:border-2  border-[1px] border-black  text-black font-medium text-sm"
+                                className="px-[1.6rem] min-w-fit bg-[#F7E700] py-[8px] lg:px-4 inline-block cursor-pointer rounded-lg shadow-sm ml-2 lg:border-2 border-[1px] border-black text-black font-medium ttw-type-body"
                               >
                                 Change Flight
                               </div>
@@ -886,7 +904,7 @@ const TransferModeContainer = (props) => {
                         }}
                       >
                         <div className="flex flex-col">
-                          <div className="text-[#01202B] text-lg font-medium min-w-max">
+                          <div className="text-[#01202B] ttw-type-h4 min-w-max">
                             {props.booking?.airline_code && (
                               <span>
                                 {
@@ -940,7 +958,7 @@ const TransferModeContainer = (props) => {
 
                         <div className="flex flex-row justify-between w-full">
                           <div>
-                            <div className="text-[#01202B] text-lg font-medium min-w-max">
+                            <div className="text-[#01202B] ttw-type-h4 min-w-max">
                               {props.booking?.airline_code && (
                                 <span>
                                   {
@@ -1016,7 +1034,7 @@ const TransferModeContainer = (props) => {
                                 onClick={() =>
                                   HandleFlights(props.index, "Change")
                                 }
-                                className="px-[1.6rem] min-w-fit bg-[#F7E700] py-[8px] lg:px-4   inline-block cursor-pointer rounded-lg shadow-sm lg:border-2  border-[1px] border-black  text-black font-medium text-sm"
+                                className="px-[1.6rem] min-w-fit bg-[#F7E700] py-[8px] lg:px-4 inline-block cursor-pointer rounded-lg shadow-sm lg:border-2 border-[1px] border-black text-black font-medium ttw-type-body"
                               >
                                 Change
                               </div>
@@ -1030,7 +1048,7 @@ const TransferModeContainer = (props) => {
                           //       onClick={() =>
                           //         HandleFlights(props.index, "Add Flight")
                           //       }
-                          //       className="px-[1.8rem] bg-[#F7E700] py-[8px] inline-block cursor-pointer rounded-lg shadow-sm  border-2 border-black  text-black font-medium text-sm"
+                          //       className="px-[1.8rem] bg-[#F7E700] py-[8px] inline-block cursor-pointer rounded-lg shadow-sm border-2 border-black text-black font-medium ttw-type-body"
                           //     >
                           //       Add Flight
                           //     </div>
@@ -1046,14 +1064,14 @@ const TransferModeContainer = (props) => {
           ) : (
             <div className="mt-3 lg:ml-7 sm:ml-2 ml-0 flex flex-col">
               <div className="flex flex-row w-full justify-between items-center">
-                <span className="font-medium  inline">{props.heading}</span>
+                <span className="font-medium inline">{props.heading}</span>
                 <div className="flex flex-row gap-2 justify-center items-center">
                   <div
                     className={`${
-                      props.booking_type !== "Taxi"
-                        ? "lg:bottom-4 hidden"
-                        : "lg:bottom-[3.6rem] hidden"
-                    } `}
+ props.booking_type !== "Taxi"
+ ? "lg:bottom-4 hidden"
+ : "lg:bottom-[3.6rem] hidden"
+ } `}
                     // onClick={(e) => {
                     //   handleCheckboxChange(
                     //     e,
@@ -1064,11 +1082,11 @@ const TransferModeContainer = (props) => {
                     {/* <CheckboxFormComponent checked={addbooking} />{" "} */}
                   </div>
                   {props.userSelected ? (
-                    <div className=" text-md font-semibold  text-[#277004] ">
+                    <div className=" ttw-type-h5 text-[#277004] ">
                       Included
                     </div>
                   ) : (
-                    <div className=" text-md font-semibold text-[#E00000]  ">
+                    <div className=" ttw-type-h5 text-[#E00000] ">
                       Excluded
                     </div>
                   )}
@@ -1077,11 +1095,11 @@ const TransferModeContainer = (props) => {
 
               <div
                 id={props?.booking?.id}
-                className="mb-4 mt-3 w-full flex flex-col lg:flex-row lg:items-center space-y-3 items-start justify-between py-[30px] cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2"
+                className="mb-4 mt-3 w-full flex flex-col lg:flex-row lg:items-center space-y-3 items-start justify-between py-[30px] cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2"
               >
                 <div className="flex flex-row items-center space-x-3">
                   {props.icon && (
-                    <div className="grid  place-items-center  lg:min-w-[6rem] min-w-[4rem] lg:min-h-[6rem] min-h-[4rem]  rounded-2xl">
+                    <div className="grid place-items-center lg:min-w-[6rem] min-w-[4rem] lg:min-h-[6rem] min-h-[4rem] rounded-2xl">
                       {props.booking_type === "Flight" ? (
                         <TransportIconFetcher
                           TransportMode={props.booking_type}
@@ -1120,7 +1138,7 @@ const TransferModeContainer = (props) => {
                   )}
 
                   <div className="flex flex-col lg:w-96">
-                    <div className="sm:text-sm text-[0.85rem]">
+                    <div className="sm:ttw-type-body text-[0.85rem]">
                       {props.booking_type == "Taxi"
                         ? props.booking.costings_breakdown &&
                           props.booking.costings_breakdown.gozo &&
@@ -1141,13 +1159,13 @@ const TransferModeContainer = (props) => {
                           </span>
                         )}
                     </div>
-                    <div className="flex sm:text-sm text-[0.93rem] flex-row text-[#7A7A7A] font-light items-center">
+                    <div className="flex sm:ttw-type-body text-[0.93rem] flex-row text-[#7A7A7A] font-light items-center">
                       {props.taxi_type && <div>{props.taxi_type}</div>}
                     </div>
 
                     {props?.costings_breakdown && (
                       <FacilityContainer className="text-[#01202B] font-normal flex flex-row justify-start items-center mt-1 flex-wrap">
-                        <span className="pr-1 sm:text-sm text-[0.82rem]">
+                        <span className="pr-1 sm:ttw-type-body text-[0.82rem]">
                           Facilities:
                         </span>
 
@@ -1156,7 +1174,7 @@ const TransferModeContainer = (props) => {
                             (data, index) =>
                               data !== null && (
                                 <div className="gap-1">
-                                  <div className="flex flex-row flex-wrap sm:text-sm text-[0.74rem] font-normal">
+                                  <div className="flex flex-row flex-wrap sm:ttw-type-body text-[0.74rem] font-normal">
                                     {index !== 0 && data != null ? (
                                       <span className="px-1">|</span>
                                     ) : null}
@@ -1180,7 +1198,7 @@ const TransferModeContainer = (props) => {
                       //   onClick={() =>
                       //     HandleTransport(props.index, "Change Taxi")
                       //   }
-                      //   className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#F7E700] hover:text-white hover:bg-black"
+                      //   className="ttw-type-body lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#F7E700] hover:text-white hover:bg-black"
                       // >
                       //   {isDesktop ? "Change Taxi" : "Change"}
                       // </button>
@@ -1188,7 +1206,7 @@ const TransferModeContainer = (props) => {
                       <></>
                       // <button
                       //   onClick={() => HandleTransport(props.index, "Add Taxi")}
-                      //   className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#F7E700] hover:text-white hover:bg-black"
+                      //   className="ttw-type-body lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#F7E700] hover:text-white hover:bg-black"
                       // >
                       //   Add Taxi
                       // </button>
@@ -1236,7 +1254,7 @@ const TransferModeContainer = (props) => {
                         className="flex flex-row gap-1 items-center cursor-pointer"
                       >
                         {/* <CheckboxFormComponent checked={addbooking} /> */}
-                        {/* <label className="text-center sm:text-sm text-[0.7rem]">
+                        {/* <label className="text-center sm:ttw-type-body text-[0.7rem]">
                           {addbooking ? "Added Booking" : "Add Booking"}
                         </label> */}
                       </div>

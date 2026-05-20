@@ -2473,7 +2473,7 @@ Start Location: ${details.startLocation}`;
       {/* Header strip */}
       <div className="bg-white flex flex-col px-3 py-3 border-b border-slate-100">
         <div className="flex justify-between items-start">
-          <p className="font-inter font-semibold text-lg leading-tight">
+          <p className="font-inter font-semibold ttw-type-h4 leading-tight">
             {itineraryReduxName || currentItineraryRef?.current?.name || ""}
           </p>
 
@@ -2530,7 +2530,7 @@ Start Location: ${details.startLocation}`;
               <div className="flex items-center gap-4 flex-wrap">
                 {itineraryRedux?.group_type && (
                   <div className="flex flex-col">
-                    <span className="text-[10px] font-inter uppercase tracking-wide">
+                    <span className="ttw-type-small font-inter uppercase tracking-wide">
                       Traveller Type
                     </span>
                     <div className="flex items-center gap-1.5 mt-0.5">
@@ -2558,7 +2558,7 @@ Start Location: ${details.startLocation}`;
                           fill="#ACACAC"
                         />
                       </svg>
-                      <span className="text-[12px] font-inter font-medium">
+                      <span className="ttw-type-small font-inter font-medium">
                         {itineraryRedux.group_type}
                         {itineraryRedux.number_of_adults
                           ? ` (${itineraryRedux.number_of_adults} Adult${itineraryRedux.number_of_adults > 1 ? "s" : ""})`
@@ -2572,7 +2572,7 @@ Start Location: ${details.startLocation}`;
                 )}
                 {itineraryRedux?.start_date && itineraryRedux?.end_date && (
                   <div className="flex flex-col">
-                    <span className="text-[10px] font-inter uppercase tracking-wide">
+                    <span className="ttw-type-small font-inter uppercase tracking-wide">
                       Date of Travelling
                     </span>
                     <div className="flex items-center gap-1.5 mt-0.5">
@@ -2588,7 +2588,7 @@ Start Location: ${details.startLocation}`;
                           fill="#ACACAC"
                         />
                       </svg>
-                      <span className="text-[12px] font-inter font-medium">
+                      <span className="ttw-type-small font-inter font-medium">
                         {new Date(itineraryRedux.start_date).toLocaleDateString(
                           "en-GB",
                           {
@@ -2734,8 +2734,8 @@ Start Location: ${details.startLocation}`;
         >
           <div
             className={`absolute inset-0 z-10 overflow-y-auto transition-opacity duration-500 ease-in-out pointer-events-${
-              showStartScreen && leftPanelMode === "default" ? "auto" : "none"
-            }`}
+ showStartScreen && leftPanelMode === "default" ? "auto" : "none"
+ }`}
             style={{
               opacity: showStartScreen && leftPanelMode === "default" ? 1 : 0,
             }}
@@ -2796,10 +2796,10 @@ Start Location: ${details.startLocation}`;
         >
           <div
             className={`absolute inset-0 z-10 bg-white ease-in-out ${
-              isChatActive
-                ? "opacity-0 pointer-events-none translate-y-2"
-                : "opacity-100 pointer-events-auto translate-y-0"
-            }`}
+ isChatActive
+ ? "opacity-0 pointer-events-none translate-y-2"
+ : "opacity-100 pointer-events-auto translate-y-0"
+ }`}
           >
             <ChatWelcomeScreen
               onSubmit={handlePromptSelect}
@@ -2809,10 +2809,10 @@ Start Location: ${details.startLocation}`;
           </div>
           <div
             className={`flex-1 overflow-hidden min-h-0 ease-in-out ${
-              isChatActive
-                ? "opacity-100 translate-y-0"
-                : "opacity-0 translate-y-2 pointer-events-none"
-            }`}
+ isChatActive
+ ? "opacity-100 translate-y-0"
+ : "opacity-0 translate-y-2 pointer-events-none"
+ }`}
           >
             {!isMobile && (
               <ChatKitPanel
@@ -3205,7 +3205,7 @@ const BottomCTABar = React.memo(
         <div className="z-20 fixed w-full md:w-[47.5%] max-ph:bottom-0 md:!bottom-[4.2rem] flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3 flex items-center justify-center">
           <button
             onClick={onConfirm}
-            className="flex items-center justify-center h-[40px] px-5 gap-2 rounded-[8px] bg-[#F7E700] font-semibold text-[14px] font-inter"
+            className="flex items-center justify-center h-[40px] px-5 gap-2 rounded-[8px] bg-[#F7E700] font-semibold ttw-type-body font-inter"
           >
             Confirm Itinerary & View Prices →
           </button>
@@ -3220,12 +3220,12 @@ const BottomCTABar = React.memo(
     if (isPricingFailedWithEmptyNotes) {
       return (
         <div className="z-20 fixed w-full md:w-[48%] max-ph:bottom-0 md:bottom-[4.2rem] flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3 flex items-center justify-between">
-          <p className="text-red-600 text-sm">
+          <p className="text-red-600 ttw-type-body">
             Get in touch to finalize the pricing!
           </p>
           <button
             onClick={onGetInTouch}
-            className="flex items-center gap-2 h-[44px] px-4 rounded-[8px] bg-[#F7E700] text-[16px] font-inter font-semibold"
+            className="flex items-center gap-2 h-[44px] px-4 rounded-[8px] bg-[#F7E700] ttw-type-body font-inter font-semibold"
           >
             Get in touch!
           </button>
@@ -3259,19 +3259,19 @@ const BottomCTABar = React.memo(
         <div className="flex flex-col">
           {cost !== null ? (
             <>
-              <span className="text-[11px] text-[#6E757A]">
+              <span className="ttw-type-small text-[#6E757A]">
                 {perPerson
                   ? "Per Person"
                   : cart?.is_estimated_price && cost > 0
                     ? "Estimated Price"
                     : "Total Cost"}
               </span>
-              <span className="font-bold text-[16px]">
+              <span className="font-bold ttw-type-body">
                 {currencySymbol} {cost.toLocaleString("en-IN")}/-
               </span>
             </>
           ) : (
-            <span className="text-[13px] text-[#6E757A] italic">
+            <span className="ttw-type-small text-[#6E757A] italic">
               Calculating price…
             </span>
           )}
@@ -3279,9 +3279,9 @@ const BottomCTABar = React.memo(
         <div className="flex gap-3 items-center">
           <div
             style={popupStyle}
-            className="z-50 absolute -top-11 text-sm text-center flex flex-col gap-2 bg-white"
+            className="z-50 absolute -top-11 ttw-type-body text-center flex flex-col gap-2 bg-white"
           >
-            <div className="text-nowrap font-normal text-black text-sm">
+            <div className="text-nowrap font-normal text-black ttw-type-body">
               No Hidden Charges,
               <br />
               Includes taxes
@@ -3303,11 +3303,11 @@ const BottomCTABar = React.memo(
           </svg>
           <button
             onClick={onViewCart}
-            className="flex items-center gap-2 h-[44px] px-4 rounded-[8px] bg-[#F7E700] text-[16px] font-inter font-semibold"
+            className="flex items-center gap-2 h-[44px] px-4 rounded-[8px] bg-[#F7E700] ttw-type-body font-inter font-semibold"
           >
             View Cart
             {countCartItems > 0 && (
-              <span className="bg-[#07213A] text-white text-[11px] font-bold rounded-full w-5 h-5 flex items-center justify-center">
+              <span className="bg-[#07213A] text-white ttw-type-small font-bold rounded-full w-5 h-5 flex items-center justify-center">
                 {countCartItems}
               </span>
             )}
@@ -3493,7 +3493,7 @@ export const MobileHeaderMenu = React.memo(
                 }}
               >
                 <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100 flex-shrink-0">
-                  <span className="font-semibold text-gray-800 text-[15px]">
+                  <span className="font-semibold text-gray-800 ttw-type-body">
                     Chat History
                   </span>
                   <button
@@ -3527,7 +3527,7 @@ export const MobileHeaderMenu = React.memo(
                     </div>
                   ) : threads.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-full text-center py-12 gap-3">
-                      <p className="text-sm text-gray-500">No chats yet</p>
+                      <p className="ttw-type-body text-gray-500">No chats yet</p>
                     </div>
                   ) : (
                     <div className="flex flex-col gap-0.5">
@@ -3541,7 +3541,7 @@ export const MobileHeaderMenu = React.memo(
                             );
                             setHistoryOpen(false);
                           }}
-                          className={`w-full text-left px-3 py-2.5 rounded-lg text-[13px] truncate ${activeThreadId === t.id ? "bg-[#07213A] text-white font-medium" : "text-gray-700 hover:bg-gray-50"}`}
+                          className={`w-full text-left px-3 py-2.5 rounded-lg ttw-type-small truncate ${activeThreadId === t.id ? "bg-[#07213A] text-white font-medium" : "text-gray-700 hover:bg-gray-50"}`}
                           title={t.title || "Untitled"}
                         >
                           {t.title || "Untitled"}
@@ -3629,7 +3629,7 @@ export const MobileHeaderMenu = React.memo(
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <span className="text-[11px] font-bold text-gray-600">
+                <span className="ttw-type-small font-bold text-gray-600">
                   {initials}
                 </span>
               )}
@@ -3641,7 +3641,7 @@ export const MobileHeaderMenu = React.memo(
               >
                 {!token ? (
                   <button
-                    className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
+                    className="w-full text-left px-4 py-2.5 ttw-type-body text-gray-700 hover:bg-gray-50"
                     onClick={() => {
                       setProfileOpen(false);
                       setShowLogin(true);
@@ -3653,12 +3653,12 @@ export const MobileHeaderMenu = React.memo(
                   <>
                     <a
                       href="/dashboard"
-                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
+                      className="flex items-center gap-2 px-4 py-2.5 ttw-type-body text-gray-700 hover:bg-gray-50"
                     >
                       My Trips
                     </a>
                     <button
-                      className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50"
+                      className="w-full flex items-center gap-2 px-4 py-2.5 ttw-type-body text-red-500 hover:bg-red-50"
                       onClick={handleLogout}
                     >
                       Logout
@@ -3708,7 +3708,7 @@ const MobileHeader = React.memo(
       <div className="flex items-center gap-2">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/logoblack.svg" height={22} width={22} alt="logo" />
-        <span className="font-semibold text-gray-800 text-sm">
+        <span className="font-semibold text-gray-800 ttw-type-body">
           thetarzanway
         </span>
       </div>
@@ -3913,7 +3913,7 @@ const MobileLayout = React.memo(
 
         {/* ── Top tab bar — only when itinerary is active ── */}
         {hasItineraryActivity && visibleTabs.length > 0 && (
-          <div className="flex-shrink-0  bg-white border-b border-gray-100 flex items-center gap-2">
+          <div className="flex-shrink-0 bg-white border-b border-gray-100 flex items-center gap-2">
             <div
               className="flex flex-1 gap-1 p-[3px]"
               style={{
@@ -3926,7 +3926,7 @@ const MobileLayout = React.memo(
   <button
     key={tab.key}
     onClick={() => handleTabClick(tab.key)}
-    className="flex-1 px-2 py-2 text-[12px] font-medium transition-all duration-200 whitespace-nowrap flex items-center justify-center gap-1.5"
+    className="flex-1 px-2 py-2 ttw-type-small font-medium transition-all duration-200 whitespace-nowrap flex items-center justify-center gap-1.5"
     style={activeTab === tab.key ? activeTabStyle : inactiveTabStyle}
   >
     {tab.icon}
@@ -4031,7 +4031,7 @@ const MobileLayout = React.memo(
                       <line x1="6" y1="6" x2="18" y2="18" />
                     </svg>
                   </button>
-                  <p className="text-[14px] pr-3 mb-0">
+                  <p className="ttw-type-body pr-3 mb-0">
                     Hey, I’m Kaira - Your AI Trip Planner
                   </p>
                   {/* Speech bubble arrow */}
@@ -4079,7 +4079,7 @@ const MobileLayout = React.memo(
                 );
                 onDismissMobileEffectPopup?.();
               }}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#07213A] text-white text-[13px] font-semibold shadow-2xl active:scale-95 transition-transform"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#07213A] text-white ttw-type-small font-semibold shadow-2xl active:scale-95 transition-transform"
               style={{ whiteSpace: "nowrap" }}
             >
               {mobileEffectPopup?.type === "itinerary" ? (
@@ -4144,7 +4144,7 @@ const MobileLayout = React.memo(
                     <line x1="6" y1="6" x2="18" y2="18" />
                   </svg>
                 </button>
-                <p className="text-[14px] pr-3 mb-0">
+                <p className="ttw-type-body pr-3 mb-0">
                   Hey, I’m Kaira - Your AI Trip Planner
                 </p>
                 <div className="absolute -bottom-2 right-8 w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[#F7E700]" />
@@ -4181,7 +4181,7 @@ const MobileLayout = React.memo(
         {!hasItineraryActivity && activeTab === "map" && (
           <button
             onClick={() => handleTabClick("chat")}
-            className="fixed z-[100] flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#07213A] text-white text-[13px] font-semibold shadow-2xl active:scale-95 transition-transform"
+            className="fixed z-[100] flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#07213A] text-white ttw-type-small font-semibold shadow-2xl active:scale-95 transition-transform"
             style={{ bottom: 24, right: 16, whiteSpace: "nowrap" }}
             aria-label="Back to chat"
           >

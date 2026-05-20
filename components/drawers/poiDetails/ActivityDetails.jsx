@@ -73,8 +73,12 @@ const svgIcons = {
   ),
 };
 export const Title = styled.p`
+  /* H3 token · 22/1.15/800/-0.02em */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 22px;
   font-weight: 800;
-  font-size: 20px;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
 `;
 
 export const Reviews = styled.div`
@@ -83,7 +87,12 @@ export const Reviews = styled.div`
   gap: 0.2rem;
   p,
   u {
+    /* Caption · 12/1.4/600/0.04em */
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    line-height: 1.4;
     color: #7a7a7a;
   }
   u {
@@ -92,12 +101,20 @@ export const Reviews = styled.div`
 `;
 
 export const Text = styled.p`
-  font-size: 14px;
+  /* Body · 14.5/1.55/400 */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14.5px;
+  font-weight: 400;
+  line-height: 1.55;
 `;
 
 export const Heading = styled.p`
-  font-size: 18px;
-  font-weight: 800;
+  /* H4 token · 17/1.2/700/-0.015em */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
 `;
 
 const Container = styled.div`
@@ -413,8 +430,8 @@ const ActivityDetails = (props) => {
 
                     {props.data?.ideal_duration_number ? (
                       <div className="absolute bottom-1 left-2 bg-[#000000] text-white px-[16px] py-[2px] rounded-full flex flex-row items-center gap-2">
-                        <div className="text-[14px]">Approx Time:</div>
-                        <div className="text-[14px]">
+                        <div className="ttw-type-body">Approx Time:</div>
+                        <div className="ttw-type-body">
                           {props.data.ideal_duration_number}{" "}
                           {props.data.ideal_duration_number > 1
                             ? props.data?.ideal_duration_unit?.toLowerCase()
@@ -505,11 +522,11 @@ const ActivityDetails = (props) => {
             {props.activityData?.inclusions &&
               props.activityData?.inclusions?.length > 0 && (
                 <div className="flex flex-col gap-2 mb-[30px]">
-                  <div className="text-[20px] font-semibold text-green">
+                  <div className="ttw-type-h3 font-semibold text-green">
                     Inclusions
                   </div>
                   <div className="border-b-[1px]"></div>
-                  <div className="text-[14px]">
+                  <div className="ttw-type-body">
                     <ul style={{ paddingLeft: "0.5rem" }}>
                       {props.activityData.inclusions.map((inclusion, i) => (
                         <li key={i} className="mb-1">
@@ -525,11 +542,11 @@ const ActivityDetails = (props) => {
             {props.activityData?.exclusions &&
               props.activityData?.exclusions?.length > 0 && (
                 <div className="flex flex-col gap-2 mb-[30px]">
-                  <div className="text-[20px] font-semibold text-red">
+                  <div className="ttw-type-h3 font-semibold text-red">
                     Exclusions
                   </div>
                   <div className="border-b-[1px]"></div>
-                  <div className="text-[14px]">
+                  <div className="ttw-type-body">
                     <ul style={{ paddingLeft: "0.5rem" }}>
                       {props.activityData.exclusions.map((exclusion, i) => (
                         <li key={i} className="mb-1">
@@ -549,32 +566,32 @@ const ActivityDetails = (props) => {
           </div>
 
           {props.data?.hotel_pickup_included ? (
-            <div className="flex items-center gap-1 text-[14px] bg-[#e6f9ec] text-[#3BAF75] font-semibold rounded-sm w-max px-1">
+            <div className="flex items-center gap-1 ttw-type-body bg-[#e6f9ec] text-[#3BAF75] font-semibold rounded-sm w-max px-1">
               <Image
                 src="/hotelPickupIncluded.svg"
                 alt="hotel-pickup-included"
                 width={20}
                 height={20}
               />
-              <span className=" px-2 py-1 mb-0 rounded-md text-xs font-medium">
+              <span className=" px-2 py-1 mb-0 rounded-md ttw-type-small">
                 Hotel Pickup Included
               </span>
             </div>
           ) : (
-            <div className="flex items-center gap-1 text-[14px] bg-[#FCE3DB] text-[#EE724B] font-semibold w-max rounded-sm px-1">
+            <div className="flex items-center gap-1 ttw-type-body bg-[#FCE3DB] text-[#EE724B] font-semibold w-max rounded-sm px-1">
               <Image
                 src="/notHotelPickupIncluded.svg"
                 alt="not-hotel-pickup-included"
                 width={20}
                 height={20}
               />
-              <span className=" px-2 py-1 mb-0 rounded-md text-xs font-medium">
+              <span className=" px-2 py-1 mb-0 rounded-md ttw-type-small">
                 Hotel pickup not included
               </span>
             </div>
           )}
 
-          <div className="flex items-center gap-4 flex-wrap text-[14px] text-gray-800">
+          <div className="flex items-center gap-4 flex-wrap ttw-type-body text-gray-800">
             {/* Tour Type */}
             {props?.data?.tour_type === "Private Tour" && (
               <div className="flex items-center gap-1">
@@ -634,7 +651,7 @@ const ActivityDetails = (props) => {
             {props.data?.general_guidelines?.length ? (
               <div className="flex flex-col">
                 <div
-                  className="text-[20px] font-semibold"
+                  className="ttw-type-h3 font-semibold"
                   // onClick={() =>
                   //   setBoolDetail((prev) => ({
                   //     ...prev,
@@ -651,7 +668,7 @@ const ActivityDetails = (props) => {
                   )} */}
                 </div>
                 {boolDetails?.generalGuidelines && (
-                  <div className="text-[14px]">
+                  <div className="ttw-type-body">
                     <ul style={{ paddingLeft: "0.5rem" }}>
                       {props.data.general_guidelines?.map((e, i) => (
                         <li key={i}>- {e}</li>
@@ -665,7 +682,7 @@ const ActivityDetails = (props) => {
             {props.data?.things_to_bring?.length ? (
               <div className="flex flex-col">
                 <div
-                  className="text-[20px] font-semibold"
+                  className="ttw-type-h3 font-semibold"
                   // onClick={() =>
                   //   setBoolDetail((prev) => ({
                   //     ...prev,
@@ -682,7 +699,7 @@ const ActivityDetails = (props) => {
                   )} */}
                 </div>
                 {boolDetails?.thingsToBring && (
-                  <div className="text-[14px]">
+                  <div className="ttw-type-body">
                     <ul style={{ paddingLeft: "0.5rem" }}>
                       {props.data.things_to_bring.map((e, i) => (
                         <li key={i}>- {e}</li>
@@ -696,7 +713,7 @@ const ActivityDetails = (props) => {
             {props.data?.not_suitable_for?.length ? (
               <div className="flex flex-col">
                 <div
-                  className="text-[20px] font-semibold"
+                  className="ttw-type-h3 font-semibold"
                   // onClick={() =>
                   //   setBoolDetail((prev) => ({
                   //     ...prev,
@@ -713,7 +730,7 @@ const ActivityDetails = (props) => {
                   )} */}
                 </div>
                 {boolDetails?.notSuitableFor && (
-                  <div className="text-[14px]">
+                  <div className="ttw-type-body">
                     <ul style={{ paddingLeft: "0.5rem" }}>
                       {props.data.not_suitable_for.map((e, i) => (
                         <li key={i}>- {e}</li>
@@ -727,7 +744,7 @@ const ActivityDetails = (props) => {
             {props.data?.tips_tricks?.length ? (
               <div className="flex flex-col">
                 <div
-                  className="text-[20px] font-semibold"
+                  className="ttw-type-h3 font-semibold"
                   // onClick={() =>
                   //   setBoolDetail((prev) => ({
                   //     ...prev,
@@ -744,7 +761,7 @@ const ActivityDetails = (props) => {
                   )} */}
                 </div>
                 {boolDetails?.tipsTricks && (
-                  <div className="text-[14px]">
+                  <div className="ttw-type-body">
                     <ul style={{ paddingLeft: "0.5rem" }}>
                       {props.data.tips_tricks.map((e, i) => (
                         <li key={i}>- {e}</li>
@@ -759,7 +776,7 @@ const ActivityDetails = (props) => {
           {props?.activityData?.selected_amenities &&
             props?.activityData?.selected_amenities?.length > 0 && (
               <div className="flex flex-col gap-2 relative">
-                <div className="text-[20px] font-semibold">Add - Ons</div>
+                <div className="ttw-type-h3 font-semibold">Add - Ons</div>
                 <div className="border-b-[1px]"></div>
                 <div className="flex flex-col gap-2">
                   {props?.activityData?.selected_amenities.map(
@@ -776,7 +793,7 @@ const ActivityDetails = (props) => {
             (props.activityData?.prices[0]?.title ||
               props.activityData?.prices[0]?.description) && (
               <div className="flex flex-col">
-                <div className="text-[20px] font-semibold mb-2">
+                <div className="ttw-type-h3 font-semibold mb-2">
                   Package Details
                 </div>
                 <div className="font-medium text-gray-900">
@@ -789,7 +806,7 @@ const ActivityDetails = (props) => {
                     ? props.activityData?.prices[0]?.description
                     : null}
                 </div>
-                <div className="text-sm text-gray-600">
+                <div className="ttw-type-body text-gray-600">
                   For{" "}
                   {props.activityData?.prices[0]?.pax_details.adults +
                     props.activityData?.prices[0]?.pax_details.children}{" "}
@@ -800,14 +817,14 @@ const ActivityDetails = (props) => {
 
           {props?.data?.cancellation_policies && (
             <>
-              <div className="text-[20px] font-semibold">
+              <div className="ttw-type-h3 font-semibold">
                 Cancellation Policies
               </div>
               <div
                 dangerouslySetInnerHTML={{
                   __html: props?.data?.cancellation_policies,
                 }}
-                className="flex flex-col gap-1 text-sm ml-4"
+                className="flex flex-col gap-1 ttw-type-body ml-4"
               ></div>
             </>
           )}
@@ -1014,13 +1031,13 @@ const Amenity = ({ index, amenity, handleAmenityChange, travelers }) => {
   };
 
   return (
-    <div key={index} className=" gap-3  bg-[#FAFAFA] p-[10px] rounded-[4px]">
+    <div key={index} className=" gap-3 bg-[#FAFAFA] p-[10px] rounded-[4px]">
       <div className="flex flex-col gap-1">
-        <div className="flex flex-row items-center gap-2 text-[16px] font-medium">
+        <div className="flex flex-row items-center gap-2 ttw-type-body font-medium">
           {/* {getAmenityIcon(amenity?.type)} */}
           {amenity.name}
         </div>
-        <div className="text-[14px]">{amenity.description}</div>
+        <div className="ttw-type-body">{amenity.description}</div>
       </div>
     </div>
   );
