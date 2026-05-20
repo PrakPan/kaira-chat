@@ -228,9 +228,11 @@ const StyledDateRangeContainer = styled.div`
     background: #f9fafb;
     padding: 12px;
     cursor: pointer;
-    font-family: inherit;
+    /* Body · 14.5/1.55/400 */
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 14.5px;
     font-weight: 400;
-    font-size: 0.875rem;
+    line-height: 1.55;
     color: #374151;
     display: flex;
     align-items: center;
@@ -594,7 +596,7 @@ const UpdateItineraryDates = ({
           </button>
         ) : !cartValue ? (
           <div
-            className={`cursor-pointer ${cartValue ? "text-white" : "text-blue"} underline text-sm`}
+            className={`cursor-pointer ${cartValue ? "text-white" : "text-blue"} underline ttw-type-body`}
             onClick={handleCancel}
           >
             Reset
@@ -607,9 +609,9 @@ const UpdateItineraryDates = ({
         <button
           onClick={handleUpdateDates}
           disabled={isLoading}
-          className={`px-4 py-2 bg-[#07213A] text-white border-2 border-black rounded-lg font-medium text-sm transition-opacity whitespace-nowrap ${
-            isLoading ? "opacity-50 cursor-not-allowed" : ""
-          }`}
+          className={`px-4 py-2 bg-[#07213A] text-white border-2 border-black rounded-lg font-medium ttw-type-body transition-opacity whitespace-nowrap ${
+ isLoading ? "opacity-50 cursor-not-allowed" : ""
+ }`}
         >
           {isLoading ? "Applying..." : "Apply Date Change!"}
         </button>

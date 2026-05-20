@@ -48,7 +48,7 @@ const renderLoadingSkeleton = () => (
 
     {/* Mobile-only CTA */}
     <div className="sm:hidden mt-3 w-full">
-      <button className="w-full text-[12px] font-semibold border border-black hover:bg-black hover:text-white rounded-lg px-3 py-2">
+      <button className="w-full ttw-type-small font-semibold border border-black hover:bg-black hover:text-white rounded-lg px-3 py-2">
         View Details
       </button>
     </div>
@@ -922,7 +922,7 @@ const TransferBookings = (props) => {
     >
       <div
         id="Transfer_Container"
-        className="mb-8 mt-8 font-bold text-xl group t transition duration-300 max-w-fit"
+        className="mb-8 mt-8 font-bold ttw-type-h3 group t transition duration-300 max-w-fit"
       >
         Transfers
         <span className="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>

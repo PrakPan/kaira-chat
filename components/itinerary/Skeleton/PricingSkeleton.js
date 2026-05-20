@@ -33,7 +33,7 @@ const MobileCard = Array(4).fill(
 
 const PricingSkeleton = (props) => {
   return (
-    <div className=" border-sm border-primary-grey p-sm rounded-sm text-xs font-medium w-100">
+    <div className=" border-sm border-primary-grey p-sm rounded-sm ttw-type-small w-100">
       <div className="flex items-center gap-2xl">
         <div className="flex flex-col items-center gap-1">
           <span >

@@ -49,10 +49,10 @@ const Itinerary = (props) => {
             }}
             onClick={() => setCitySelected(index)}
             className={`${
-              citySelected === i
-                ? classnames + "city-active"
-                : classnames + "city-inactive"
-            }`}
+ citySelected === i
+ ? classnames + "city-active"
+ : classnames + "city-inactive"
+ }`}
           >
             {props.city_slabs[i].city_name}
           </Link>

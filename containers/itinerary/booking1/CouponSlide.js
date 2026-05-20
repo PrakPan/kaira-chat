@@ -27,15 +27,26 @@ const FlexBox = styled.div`
 `;
 
 const Heading = styled.div`
-  font-size: 18px;
-  font-weight: 600;
+  /* H4 token · 17/1.2/700/-0.015em */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
   .text {
+    /* Small body · 13/1.5/400 — supporting caption */
     font-size: 13px;
     font-weight: 400;
+    letter-spacing: 0;
+    line-height: 1.5;
     color: #7a7a7a;
   }
   &.sub-heading {
+    /* Small body · 13/1.5/400 */
     font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 1.5;
     padding-bottom: 0.5rem;
   }
 `;
@@ -57,8 +68,12 @@ const CouponContainer = styled.div`
   }
 
   .coupon {
+    /* Caption-ish · 12/1.4/600/0.04em — coupon code chip */
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 12px;
-    font-weight: 500;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    line-height: 1.4;
     background: #f7e70047;
     height: 100%;
     text-align: left;
@@ -70,14 +85,17 @@ const CouponContainer = styled.div`
     padding-inline: 1rem;
     text-align: left;
     @media screen and (min-width: 768px) {
-      font-size: 14px;
+      font-size: 13px;
+      letter-spacing: 0.02em;
     }
   }
   .text {
+    /* Small body shrunk · 12/1.4/400 — supporting copy */
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     color: #615f5f;
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 400;
-    line-height: 14px;
+    line-height: 1.4;
     padding: 0.5rem;
   }
 `;

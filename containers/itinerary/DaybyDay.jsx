@@ -190,7 +190,7 @@ const DaybyDay = ({
     <>
       <div
         className={`flex flex-col gap-3 mt-4xl max-ph:mt-lg ${!isPageWide ? "" : "max-w-[51vw]"
-          }`}
+ }`}
       >
 
         <div className="flex flex-col">

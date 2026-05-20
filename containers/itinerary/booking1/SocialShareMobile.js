@@ -113,7 +113,7 @@ const SocialShareMobile = ({
   
     return (
       <div className="w-full flex flex-col gap-3 p-0">
-        <div className="text-lg font-bold flex items-center justify-center">Share This Itinerary</div>
+        <div className="ttw-type-h4 flex items-center justify-center">Share This Itinerary</div>
         <div className="flex flex-row items-center gap-2">
           {/* <ImageLoader
             url={itineraryImage}
@@ -125,8 +125,8 @@ const SocialShareMobile = ({
             noPlaceholder={true}
           ></ImageLoader> */}
           {/* <div className="w-[100%] flex flex-col gap-1">
-            <div className="flex text-lg font-bold">{itineraryName}</div>
-            <div className="flex text-sm text-gray-600 truncate">{getURL()}</div>
+            <div className="flex ttw-type-h4">{itineraryName}</div>
+            <div className="flex ttw-type-body text-gray-600 truncate">{getURL()}</div>
           </div> */}
         </div>
         <div className="w-[99%] md:w-full flex flex-row justify-center items-center gap-3 px-2 overflow-x-auto hide-scrollbar">
@@ -134,30 +134,30 @@ const SocialShareMobile = ({
             <div className="p-1 flex items-center justify-center bg-green-500 rounded-full">
               <FaWhatsapp
                 onClick={() => handleClick("whatsapp")}
-                className="text-[40px] text-white p-1 cursor-pointer"
+                className="ttw-type-h1 text-white p-1 cursor-pointer"
               />
             </div>
-            <div className="text-xs font-medium text-nowrap">WhatsApp</div>
+            <div className="ttw-type-small text-nowrap">WhatsApp</div>
           </div>
   
           <div className="flex flex-col gap-1 items-center">
             <div className="p-1 flex items-center justify-center bg-[#3b5998] rounded-full">
               <FaFacebook
                 onClick={() => handleClick("fb")}
-                className="text-[40px] text-white p-1 cursor-pointer"
+                className="ttw-type-h1 text-white p-1 cursor-pointer"
               />
             </div>
-            <div className="text-xs font-medium text-nowrap">Facebook</div>
+            <div className="ttw-type-small text-nowrap">Facebook</div>
           </div>
   
           <div className="flex flex-col gap-1 items-center">
             <div className="p-1 flex items-center justify-center bg-black rounded-full">
               <RiTwitterXLine
                 onClick={() => handleClick("twitter")}
-                className="text-[40px] text-white p-1 cursor-pointer"
+                className="ttw-type-h1 text-white p-1 cursor-pointer"
               />
             </div>
-            <div className="text-xs font-medium text-nowrap">Twitter</div>
+            <div className="ttw-type-small text-nowrap">Twitter</div>
           </div>
   
           {more && (
@@ -165,10 +165,10 @@ const SocialShareMobile = ({
               <div className="p-1 flex items-center justify-center bg-gray-500 rounded-full">
                 <CgMoreO
                   onClick={handleMore}
-                  className="text-[40px] text-white p-1 cursor-pointer"
+                  className="ttw-type-h1 text-white p-1 cursor-pointer"
                 />
               </div>
-              <div className="text-xs font-medium text-nowrap">More Apps</div>
+              <div className="ttw-type-small text-nowrap">More Apps</div>
             </div>
           )}
         </div>
@@ -178,12 +178,12 @@ const SocialShareMobile = ({
             onClick={copyToClipboard}
             className="w-[70%] p-1 flex flex-row gap-2 items-center justify-center border-2 border-gray-300 cursor-pointer rounded-lg"
           >
-            <MdLink className="text-[40px] p-1 cursor-pointer" />
-            <div className="text-sm font-medium text-nowrap">Copy Link</div>
+            <MdLink className="ttw-type-h1 p-1 cursor-pointer" />
+            <div className="ttw-type-body-strong text-nowrap">Copy Link</div>
   
             {copied && (
-              <div className="flex flex-row items-center gap-1 text-sm text-gray-600">
-                Copied <IoIosDoneAll className="text-2xl text-green-500" />
+              <div className="flex flex-row items-center gap-1 ttw-type-body text-gray-600">
+                Copied <IoIosDoneAll className="ttw-type-h2 text-green-500" />
               </div>
             )}
           </div>

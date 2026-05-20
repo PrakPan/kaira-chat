@@ -122,6 +122,19 @@ const Index = (props) => {
     })
     .filter(Boolean);
 
+  const normalizeImage = (img) =>
+    img ? (img.startsWith("http") ? img : `${imgUrlEndPoint}${img}`) : "";
+
+  const componentsList = props?.data?.components || [];
+  const heroActivities = componentsList
+    .flatMap((c) => c?.activities || [])
+    .map((a) => ({ image: normalizeImage(a?.image) }))
+    .filter((p) => p.image);
+  const heroPois = componentsList
+    .flatMap((c) => c?.pois || [])
+    .map((p) => ({ image: normalizeImage(p?.image) }))
+    .filter((p) => p.image);
+
   const renderCardCarousel = (
     items,
     keyPrefix,
@@ -257,6 +270,8 @@ const Index = (props) => {
         }
         prompts={heroPrompts}
         polaroids={heroPolaroids}
+        activities={heroActivities}
+        pois={heroPois}
         setShowTailoredModal={setShowTailoredModal}
         meta={
           <>

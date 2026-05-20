@@ -92,7 +92,7 @@ const TransferPickupDropButton = ({
   // If both pickup and drop exist, make it clickable to show details
   if (hasPickup && hasDrop) {
     return (
-      <div className="flex items-center gap-2 text-blue-600 font-medium text-sm">
+      <div className="flex items-center gap-2 text-blue-600 font-medium ttw-type-body">
         {getIcon()}
         <span>{getButtonText()}</span>
       </div>
@@ -104,7 +104,7 @@ const TransferPickupDropButton = ({
     return (
       <button
         onClick={dropdownOptions[0].onClick}
-        className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium text-sm hover:underline transition-colors"
+        className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium ttw-type-body hover:underline transition-colors"
       >
         {/* {getIcon()} */}
         <span className="text-blue hover:text-blue">+ {getButtonText()}</span>
@@ -117,14 +117,14 @@ const TransferPickupDropButton = ({
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-        className="flex items-center gap-2  font-medium text-sm hover:underline transition-colors"
+        className="flex items-center gap-2 font-medium ttw-type-body hover:underline transition-colors"
       >
         {/* {getIcon()} */}
         <span className="text-blue hover:text-blue">+ {getButtonText()}</span>
         {/* <AiOutlineDown 
           className={`w-4 h-4 transition-transform ${
-            isDropdownOpen ? 'rotate-180' : ''
-          }`} 
+ isDropdownOpen ? 'rotate-180' : ''
+ }`} 
         /> */}
       </button>
 
@@ -134,7 +134,7 @@ const TransferPickupDropButton = ({
             <button
               key={option.id}
               onClick={option.onClick}
-              className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 transition-colors first:rounded-t-md last:rounded-b-md"
+              className="w-full px-4 py-2 text-left ttw-type-body hover:bg-gray-50 transition-colors first:rounded-t-md last:rounded-b-md"
             >
               {option.label}
             </button>

@@ -41,11 +41,11 @@ const Ratings = ({ plan }) => {
     <div className="relative flex flex-col items-center w-fit">
       <div className="py-2 flex flex-row gap-2 items-center">
         <div className="flex flex-row gap-1 text-[#FFD201]">{stars}</div>
-        <div className="text-sm font-light text-gray-600">
+        <div className="ttw-type-body font-light text-gray-600">
           {rating.toFixed(1)}/5 <span className="md:hidden">({reviews})</span>
           <span
             onClick={() => setShowUserRating(true)}
-            className="text-blue cursor-pointer text-sm font-light leading-3 ml-3 md:hidden"
+            className="text-blue cursor-pointer ttw-type-body font-light leading-3 ml-3 md:hidden"
           >
             Rate this itinerary
           </span>
@@ -54,12 +54,12 @@ const Ratings = ({ plan }) => {
 
       {isDesktop && (
         <div className="flex flex-row gap-2">
-          <span className="text-sm font-light text-gray-600 leading-3">
+          <span className="ttw-type-body font-light text-gray-600 leading-3">
             {reviews} customer ratings
           </span>
           <span
             onClick={() => setShowUserRating(true)}
-            className="text-blue cursor-pointer text-sm font-light leading-3"
+            className="text-blue cursor-pointer ttw-type-body font-light leading-3"
           >
             Rate this itinerary
           </span>

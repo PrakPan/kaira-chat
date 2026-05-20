@@ -82,11 +82,11 @@ export const ItineraryStatusLoader = ({ displayText, isVisible }) => {
   // fade animation when `displayText` changes.
   return (
     <div
+      className="ttw-type-sans"
       style={{
         width: "100%",
         maxWidth: "100%",
         boxSizing: "border-box",
-        fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
       }}
     >
       <div
@@ -126,13 +126,11 @@ export const ItineraryStatusLoader = ({ displayText, isVisible }) => {
         </div>
         <span
           key={displayText}
+          className="ttw-type-body"
           style={{
             flex: 1,
             minWidth: 0,
-            fontSize: 14,
-            fontWeight: 500,
             color: "#0B1220",
-            lineHeight: 1.4,
             wordBreak: "break-word",
             overflowWrap: "anywhere",
             animation: "itinStatusRowIn 0.22s ease-out",

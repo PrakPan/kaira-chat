@@ -63,10 +63,10 @@ export default function Travelers(props) {
 
     return (
         <div ref={containerRef} className="relative w-fit h-fit border-2 flex flex-row items-center gap-2 px-3 py-2 rounded-lg cursor-pointer hover:border-black">
-            <IoPerson onClick={() => setOpen(prev => !prev)} className="text-2xl" />
+            <IoPerson onClick={() => setOpen(prev => !prev)} className="ttw-type-h2" />
 
             <div onClick={() => setOpen(prev => !prev)} className="flex flex-col">
-                <div className="text-sm">Travelers</div>
+                <div className="ttw-type-body">Travelers</div>
                 <div>{travelers} {travelers > 1 ? "travelers" : "traveler"}</div>
             </div>
 
@@ -77,12 +77,12 @@ export default function Travelers(props) {
                             <div className="flex flex-col gap-2">
                                 <div className="flex flex-row items-center justify-between gap-[100px]">
                                     <div className="flex flex-col">
-                                        <div className="text-sm">Travelers</div>
+                                        <div className="ttw-type-body">Travelers</div>
                                     </div>
                                     <div className="flex flex-row items-center gap-2">
-                                        <CiCircleMinus onClick={() => handleAdults('minus')} className="text-2xl" />
+                                        <CiCircleMinus onClick={() => handleAdults('minus')} className="ttw-type-h2" />
                                         <div>{travelers}</div>
-                                        <CiCirclePlus onClick={() => handleAdults('plus')} className="text-2xl" />
+                                        <CiCirclePlus onClick={() => handleAdults('plus')} className="ttw-type-h2" />
                                     </div>
                                 </div>
 
@@ -126,13 +126,13 @@ const AdultAge = ({ index, adult, age, setAdultAges, showError }) => {
 
     return (
         <div className="relative">
-            <div onClick={() => setOpenAges(prev => !prev)} className={`flex flex-row justify-between text-sm border-1 rounded-lg p-2 ${showError && !selectedAge ? "border-red-500" : ""}`}>
+            <div onClick={() => setOpenAges(prev => !prev)} className={`flex flex-row justify-between ttw-type-body border-1 rounded-lg p-2 ${showError && !selectedAge ? "border-red-500" : ""}`}>
                 <div>Traveler {adult} age*</div>
                 <div>{selectedAge}</div>
-                <RiArrowDropDownLine className="text-xl" />
+                <RiArrowDropDownLine className="ttw-type-h3" />
             </div>
             {showError && !selectedAge && (
-                <div className="text-xs text-red-400">Provide the age of the adult.</div>
+                <div className="ttw-type-small text-red-400">Provide the age of the adult.</div>
             )}
 
             {openAges && (

@@ -242,7 +242,7 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
   return (
     <div
       className="flex flex-col h-full bg-white"
-      style={{ fontFamily: "'Inter', sans-serif" }}
+      // style={{ fontFamily: "'Inter', sans-serif" }}
     >
       <style>{`
         .welcome-chip {
@@ -263,7 +263,7 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
         <div className="flex items-center gap-2 min-w-0">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/logoblack.svg" height={22} width={22} alt="logo" />
-          <span className="font-semibold text-gray-800 text-sm">thetarzanway</span>
+          <span className="font-semibold text-gray-800 ttw-type-body">thetarzanway</span>
         </div>
         {mobileMenu && <div className="flex-shrink-0">{mobileMenu}</div>}
       </div>
@@ -282,14 +282,14 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
 
         {/* Heading */}
         <h1
-          className="text-center font-semibold mb-2 text-[20px] md:text-[24px]"
+          className="text-center font-semibold mb-2 ttw-type-h3 md:ttw-type-h2"
           style={{ lineHeight: "1.3", letterSpacing: "-0.3px" }}
         >
           Your next trip is one conversation away
         </h1>
 
         {/* Subtitle */}
-        <p className="text-center text-[#6E757A] mb-5 text-sm md:text-md leading-relaxed">
+        <p className="text-center text-[#6E757A] mb-5 ttw-type-body md:ttw-type-body leading-relaxed font-normal">
           {subtitle}
         </p>
 
@@ -301,11 +301,11 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
               onClick={() => handleChipClick(chip.prompt)}
               className="welcome-chip flex flex-col md:flex-row items-start md:items-center gap-1.5 md:gap-3 p-3 md:p-[10px] rounded-xl border-[0.9px] bg-white text-left"
             >
-              <span className="text-xl md:text-lg flex-shrink-0">{chip.icon}</span>
+              <span className="ttw-type-h3 md:ttw-type-h4 flex-shrink-0">{chip.icon}</span>
               <div className="flex flex-col leading-tight min-w-0">
-                <span className="text-sm font-semibold md:font-medium text-gray-900 line-clamp-2">{chip.label}</span>
+                <span className="ttw-type-body  line-clamp-2 font-normal">{chip.label}</span>
                 {chip.sublabel && (
-                  <span className="text-xs text-gray-400 mt-0.5">{chip.sublabel}</span>
+                  <span className="ttw-type-small text-gray-400 mt-0.5 font-normal">{chip.sublabel}</span>
                 )}
               </div>
             </button>
@@ -326,7 +326,7 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
         <button
           type="button"
           onClick={() => setShowInspiration(true)}
-          className="w-full flex items-center justify-center gap-1 py-2 text-[14px] font-medium"
+          className="w-full flex items-center justify-center gap-1 py-2 ttw-type-body font-medium"
           style={{ background: "#F7ECFF", color: "#922ADC" }}
         >
           <span>Get Inspired</span>
@@ -387,7 +387,7 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
             {/* Header */}
             {/* <div className="flex items-center justify-between px-5 pt-2 pb-2 flex-shrink-0">
               <h2
-                className="text-[20px] font-semibold text-gray-900"
+                className="ttw-type-h3 font-semibold text-gray-900"
                 style={{ fontFamily: "'Inter', sans-serif" }}
               >
                 Inspiration

@@ -57,7 +57,16 @@ const MessageBubbleResponsiveStyles: React.FC = () => (
         position: relative;
         padding-top: 14px;
       }
-      .msg.kaira { max-width: 92% !important; padding-left: 2px; }
+      /* Bot bubble fills the row on mobile. The avatar is absolutely
+         positioned (below), so it floats above the bubble's top-left
+         corner without pushing the content. */
+      .msg.kaira {
+        max-width: 100% !important;
+        width: 100%;
+        padding-left: 0;
+      }
+      .msg.kaira > .chatWrapper,
+      .msg.kaira > div:not(.msg-avatar) { flex: 1 1 auto; min-width: 0; }
       .msg.user  { padding-right: 2px; }
       .msg-avatar {
         position: absolute !important;
@@ -1238,6 +1247,7 @@ const ChatMdStyles: React.FC = () => (
       border-color: rgba(255,255,255,0.16);
       color: #fff;
     }
+    
   `}</style>
 );
 
@@ -1447,6 +1457,16 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   const hasContent = !!message.content;
   const streaming = !!message.isStreaming;
   const allTasksDone = hasTasks && message.thinkingTasks!.every((t) => t.done);
+
+  // When a turn ends without producing anything (e.g. server emits
+  // prompt_login and closes the stream before any text/task/progress), the
+  // assistant placeholder is left empty + not-streaming. Rendering it would
+  // show a bare Kaira avatar with no bubble — and after the post-login replay
+  // adds a fresh streaming placeholder, the user sees two stacked Kaira
+  // avatars. Drop the empty husk.
+  if (!hasProgress && !hasTasks && !hasContent && !streaming && !message.isError) {
+    return null;
+  }
 
   // Show thinking block if we have tasks (whether streaming or done)
   const showThinking = hasTasks;

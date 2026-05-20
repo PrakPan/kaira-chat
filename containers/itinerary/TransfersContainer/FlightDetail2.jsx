@@ -202,7 +202,7 @@ const Details = ({
           <VehicleDetailLoader setHandleShow={setFareRulesLoading} />
         </div>
       ) : fareRUlesError ? (
-        <div className="text-sm text-center">
+        <div className="ttw-type-body text-center">
           Something went wrong, please try again
         </div>
       ) : (
@@ -225,7 +225,7 @@ const Details = ({
           </div>
 
           <div className="flex flex-col">
-            <div className="text-sm-xl font-400 leading-xl gl-dynamic-render-elements">
+            <div className="ttw-type-body-xl font-400 leading-xl gl-dynamic-render-elements">
           <h6 className="section-heading">
             Fare Details and Rules
           </h6>
@@ -241,7 +241,7 @@ const Details = ({
         </div>
           {cancellationPolicy && (
             <div className="flex flex-col">
-              <div className="w-fit py-2 mb-2 text-lg font-bold">
+              <div className="w-fit py-2 mb-2 ttw-type-h4">
                 Cancellation Policies
               </div>
 
@@ -249,7 +249,7 @@ const Details = ({
                 dangerouslySetInnerHTML={{
                   __html: cancellationPolicy,
                 }}
-                className="flex flex-col gap-1 text-sm ml-4"
+                className="flex flex-col gap-1 ttw-type-body ml-4"
               ></div>
             </div>
           )}
@@ -257,7 +257,7 @@ const Details = ({
           {type != "combo" && (
             <div className="w-full flex justify-end w-[100%]">
               <button
-                className="right-0 w-full sm:w-auto  text-white p-1 rounded-lg flex items-center justify-center bg-[#ba2121] hover:bg-[#a41515] p-2"
+                className="right-0 w-full sm:w-auto text-white p-1 rounded-lg flex items-center justify-center bg-[#ba2121] hover:bg-[#a41515] p-2"
                 onClick={handleDelete}
                 disabled={loading}
               >
@@ -315,23 +315,23 @@ const FlightSegment = ({ segments }) => {
   }
 
   return (
-    <div className="max-w-full bg-[#FCFAFA] p-[20px] border-[#ECE8E8] border-2 rounded-[12px] text-[rgba(0,0,0,0.85)] text-sm leading-[21px]">
+    <div className="max-w-full bg-[#FCFAFA] p-[20px] border-[#ECE8E8] border-2 rounded-[12px] text-[rgba(0,0,0,0.85)] ttw-type-body">
       {segments.map((segment, i) => (
         <div key={i}>
           {i !== 0 && (
-            <div className="text-center  my-[30px]">
-              <div className="flex items-center  gap-2">
+            <div className="text-center my-[30px]">
+              <div className="flex items-center gap-2">
                 <div className="hidden sm:!block w-[35px] border-[1px] border-[#FDCA05]"></div>
-                {/* <span className="text-[#4a4a4a] bg-[#dfdfdf] block absolute text-xs left-[-50px] md:left-[-100px] h-[1px] w-[50px] md:w-[100px] md:top-[13.7px] top-[50%]"></span> */}
+                {/* <span className="text-[#4a4a4a] bg-[#dfdfdf] block absolute ttw-type-small left-[-50px] md:left-[-100px] h-[1px] w-[50px] md:w-[100px] md:top-[13.7px] top-[50%]"></span> */}
                 <div className=" flex flex-col gap-[2px] text-[#4a4a4a] bg-[rgba(253,202,5,0.11)] rounded-[40px] px-[16px] py-[8px] w-full">
-                  <div className="font-black text-[12px] sm:text-[14px] font-semibold">
+                  <div className="font-black ttw-type-small sm:ttw-type-body font-semibold">
                     Change of planes
                   </div>
-                  <div className="text-[10px] sm:text-[12px]">{`${getTime(
+                  <div className="ttw-type-small sm:ttw-type-small">{`${getTime(
                     segment?.ground_time
                   )} Layover in ${segment?.origin?.airport_name}`}</div>
                 </div>
-                <div className="hidden sm:!block  w-[35px] border-[1px] border-[#FDCA05]"></div>
+                <div className="hidden sm:!block w-[35px] border-[1px] border-[#FDCA05]"></div>
               </div>
             </div>
           )}
@@ -362,20 +362,20 @@ const FlightSegment = ({ segments }) => {
                   <FaPlane style={{ fontSize: "1.25rem" }} />
                 </Plan>
               </div>
-              <div className="flex-1 text-xs text-black text-[10px] mt-1 text-center">
+              <div className="flex-1 ttw-type-small text-black ttw-type-small mt-1 text-center">
                 {getTime(segment?.duration)}
               </div>
             </div>
 
-            <div className="flex flex-col  justify-between">
+            <div className="flex flex-col justify-between">
               <div className=" flex flex-row gap-3 justify-between ">
                 {["origin"].map((key) => (
                   <div key={key} className="flex flex-col w-full">
-                    <p className="text-black text-[16px] sm:text-[18px] font-semibold m-0">
+                    <p className="text-black ttw-type-body sm:ttw-type-h4 font-semibold m-0">
                       {segment[key]?.airport_code}
                     </p>
 
-                    <p className="text-[10px] sm:text-[12px] font-normal m-0">
+                    <p className="ttw-type-small sm:ttw-type-small font-normal m-0">
                       {segment[key]?.airport_name}
                     </p>
                   </div>
@@ -383,18 +383,18 @@ const FlightSegment = ({ segments }) => {
 
                 {["destination"].map((key) => (
                   <div key={key} className="flex flex-col w-full">
-                    <p className="text-black text-[16px] sm:text-[18px] font-semibold m-0 flex justify-end">
+                    <p className="text-black ttw-type-body sm:ttw-type-h4 font-semibold m-0 flex justify-end">
                       {segment[key]?.airport_code}
                     </p>
 
-                    <p className="text-[10px] sm:text-[12px] font-normal m-0 flex justify-end">
+                    <p className="ttw-type-small sm:ttw-type-small font-normal m-0 flex justify-end">
                       {segment[key]?.airport_name}
                     </p>
                   </div>
                 ))}
               </div>
 
-              <div className="flex flex-col  justify-between w-full">
+              <div className="flex flex-col justify-between w-full">
                 <div className=" flex flex-row gap-3 justify-between w-full">
                   {["origin"].map((key) => (
                     <div key={key} className="flex flex-col w-full">
@@ -411,7 +411,7 @@ const FlightSegment = ({ segments }) => {
 
                   {["destination"].map((key) => (
                     <div key={key} className="flex flex-col w-full">
-                      <div className="text-[10px] sm:text-[12px] font-normal m-0 flex justify-end">
+                      <div className="ttw-type-small sm:ttw-type-small font-normal m-0 flex justify-end">
                         {segment[key]?.terminal && (
                           <div className="flex ">
                             {segment[key]?.terminal.split(" ")[0] == "Terminal"
@@ -426,11 +426,11 @@ const FlightSegment = ({ segments }) => {
                 </div>
               </div>
 
-              <div className="flex flex-col  justify-between w-full">
+              <div className="flex flex-col justify-between w-full">
                 <div className=" flex flex-row gap-3 justify-between w-full">
                   {["origin"].map((key) => (
                     <div key={key} className="flex flex-col w-full">
-                      <div className=" sm:flex sm:gap-1 text-black text-[10px] sm:text-[14px] sm:font-semibold font-normal mb-2 mt-[12px]">
+                      <div className=" sm:flex sm:gap-1 text-black ttw-type-small sm:ttw-type-body sm:font-semibold font-normal mb-2 mt-[12px]">
                         <div>
                           {new Date(
                             segment[key]?.departure_time ||
@@ -453,7 +453,7 @@ const FlightSegment = ({ segments }) => {
 
                   {["destination"].map((key) => (
                     <div key={key} className="flex flex-col w-full">
-                      <div className=" sm:flex sm:gap-1 text-black text-[10px] sm:text-[14px] sm:font-semibold font-normal mb-2 mt-[12px] justify-end">
+                      <div className=" sm:flex sm:gap-1 text-black ttw-type-small sm:ttw-type-body sm:font-semibold font-normal mb-2 mt-[12px] justify-end">
                         <div className="flex justify-end">
                           {new Date(
                             segment[key]?.departure_time ||
@@ -476,13 +476,13 @@ const FlightSegment = ({ segments }) => {
                 </div>
               </div>
 
-              <div className="flex  items-start justify-between gap-[20px] text-xs mt-4 w-full">
+              <div className="flex items-start justify-between gap-[20px] ttw-type-small mt-4 w-full">
                 {["baggage_allowance", "cabin_baggage_allowance"].map((key) => (
                   <div
                     key={key}
                     className="flex flex-col gap-2 p-[10px] w-full bg-[#6464640C] rounded-[8px]"
                   >
-                    <span className="font-normal text-left pr-2.5 text-[14px]">
+                    <span className="font-normal text-left pr-2.5 ttw-type-body">
                       {key
                         .split("_")
                         .map(
@@ -497,14 +497,14 @@ const FlightSegment = ({ segments }) => {
                 ))}
               </div>
 
-              <div className="flex  items-start justify-between gap-[20px] text-xs mt-4 w-full">
+              <div className="flex items-start justify-between gap-[20px] ttw-type-small mt-4 w-full">
                 {["cabin_class"].map((key) => (
                   <div
                     key={key}
                     className="flex flex-col gap-2 p-[10px] w-[calc(50%_-_10px)] bg-[#6464640C] rounded-[8px]"
                   >
                     <>
-                      <span className="font-normal text-left pr-2.5 text-[14px]">
+                      <span className="font-normal text-left pr-2.5 ttw-type-body">
                         {key
                           .split("_")
                           .map(

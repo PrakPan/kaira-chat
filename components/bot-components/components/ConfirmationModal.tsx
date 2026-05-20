@@ -125,11 +125,11 @@ const SimpleDatePicker = ({
         key={day}
         disabled={isPast || isToday}
         onClick={() => { if (!isPast) { onSelect(dateStr); onClose(); } }}
-        className={`aspect-square flex items-center justify-center rounded-full text-sm transition-all
-          ${isPast || isToday ? "text-gray-300 cursor-not-allowed" : ""}
-          ${isSelected ? "bg-[#07213A] text-white font-semibold shadow-sm" : ""}
-          ${!isSelected && !isPast && !isToday ? "hover:bg-[#07213A]/10 text-gray-700" : ""}
-        `}
+        className={`aspect-square flex items-center justify-center rounded-full ttw-type-body transition-all
+ ${isPast || isToday ? "text-gray-300 cursor-not-allowed" : ""}
+ ${isSelected ? "bg-[#07213A] text-white font-semibold shadow-sm" : ""}
+ ${!isSelected && !isPast && !isToday ? "hover:bg-[#07213A]/10 text-gray-700" : ""}
+ `}
       >
         {day}
       </button>
@@ -139,7 +139,7 @@ const SimpleDatePicker = ({
   return (
     <div className="p-5">
       <div className="flex justify-between items-center mb-5">
-        <h3 className="text-base font-semibold text-gray-800">Select Start Date</h3>
+        <h3 className="ttw-type-h5 text-gray-800">Select Start Date</h3>
         <button onClick={onClose} className="p-2 md:p-1.5 hover:bg-gray-100 rounded-full transition-colors">
           <FaX size={12} className="text-gray-400 max-ph:hidden" />
         </button>
@@ -154,7 +154,7 @@ const SimpleDatePicker = ({
             <path d="M15 18l-6-6 6-6" />
           </svg>
         </button>
-        <span className="font-semibold text-gray-800 text-sm">{monthNames[month]} {year}</span>
+        <span className="font-semibold text-gray-800 ttw-type-body">{monthNames[month]} {year}</span>
         <button
           onClick={() => setCurrentMonth(new Date(year, month + 1, 1))}
           className="p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -166,7 +166,7 @@ const SimpleDatePicker = ({
       </div>
       <div className="grid grid-cols-7 gap-0.5 mb-1">
         {daysOfWeek.map((day) => (
-          <div key={day} className="aspect-square flex items-center justify-center text-[11px] text-gray-400 font-semibold uppercase">
+          <div key={day} className="aspect-square flex items-center justify-center ttw-type-small text-gray-400 font-semibold uppercase">
             {day}
           </div>
         ))}
@@ -330,7 +330,7 @@ const ModalContent: React.FC<ModalContentProps> = ({
     <div className="p-6">
       {/* Header */}
       <div className="flex justify-between items-center mb-3">
-        <h2 className="text-lg font-semibold text-gray-800">Confirm Itinerary Details</h2>
+        <h2 className="ttw-type-h4 text-gray-800">Confirm Itinerary Details</h2>
         <button onClick={onHide} className="p-1.5 hover:bg-gray-100 rounded-full transition-colors">
           <FaX size={14} className="text-black max-ph:hidden" />
         </button>
@@ -338,7 +338,7 @@ const ModalContent: React.FC<ModalContentProps> = ({
 
       {/* Start Location */}
       <div className="mb-4">
-        <label className="block text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
+        <label className="block ttw-type-body-strong text-gray-500 uppercase tracking-wide mb-1.5">
           Start Location <span className="text-red-400">*</span>
         </label>
         <div className="relative">
@@ -350,7 +350,7 @@ const ModalContent: React.FC<ModalContentProps> = ({
             onFocus={onLocationFocus}
             onBlur={onLocationBlur}
             placeholder="Enter the start Location"
-            className="w-full pl-9 pr-8 py-2.5 border rounded-[8px] bg-white focus:outline-none text-sm transition-all placeholder:text-gray-400"
+            className="w-full pl-9 pr-8 py-2.5 border rounded-[8px] bg-white focus:outline-none ttw-type-body transition-all placeholder:text-gray-400"
             autoComplete="off"
             spellCheck={false}
           />
@@ -381,7 +381,7 @@ const ModalContent: React.FC<ModalContentProps> = ({
                       <div className="bg-[#dfdfdf] rounded-full p-2.5 flex items-center justify-center">
                         <FaMapMarkerAlt />
                       </div>
-                      <div className="font-medium text-sm">{r.text}</div>
+                      <div className="font-medium ttw-type-body">{r.text}</div>
                     </div>
                   ))}
                 </div>
@@ -393,14 +393,14 @@ const ModalContent: React.FC<ModalContentProps> = ({
 
       {/* Start Date */}
       <div className="mb-4">
-        <label className="block text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
+        <label className="block ttw-type-body-strong text-gray-500 uppercase tracking-wide mb-1.5">
           Start Date <span className="text-red-400">*</span>
         </label>
         <div
           onClick={onOpenDatePicker}
           className="w-full border rounded-[8px] bg-white p-2.5 cursor-pointer flex items-center justify-between transition-all"
         >
-          <span className={`text-sm ${details.startDate ? "text-gray-800 font-medium" : "text-gray-400"}`}>
+          <span className={`ttw-type-body ${details.startDate ? "text-gray-800 font-medium" : "text-gray-400"}`}>
             {details.startDate || "Select start date"}
           </span>
           <BsCalendar2 className="text-[#07213A]/40" size={15} />
@@ -409,17 +409,17 @@ const ModalContent: React.FC<ModalContentProps> = ({
 
       {/* Travelers - simple display with Change CTA */}
       <div className="mb-5">
-        <label className="block text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
+        <label className="block ttw-type-body-strong text-gray-500 uppercase tracking-wide mb-1.5">
           Travelers
         </label>
         <div
           className="w-full border rounded-[8px] bg-white p-2.5 cursor-pointer flex items-center justify-between transition-all"
           onClick={onOpenPassengerPicker}
         >
-          <span className="text-sm text-gray-800 font-medium">
+          <span className="ttw-type-body text-gray-800 font-medium">
             {totalTravelers} {totalTravelers === 1 ? "Traveler" : "Travelers"}
           </span>
-          <span className="text-sm font-medium text-blue underline">Change</span>
+          <span className="ttw-type-body-strong text-blue underline">Change</span>
         </div>
       </div>
 
@@ -427,19 +427,19 @@ const ModalContent: React.FC<ModalContentProps> = ({
       <div className="flex gap-2.5">
         <button
           onClick={onHide}
-          className="flex-1 px-3 py-2.5 border border-gray-200 rounded-xl text-gray-600 font-medium hover:bg-gray-50 transition-colors text-sm"
+          className="flex-1 px-3 py-2.5 border border-gray-200 rounded-xl text-gray-600 font-medium hover:bg-gray-50 transition-colors ttw-type-body"
         >
           Cancel
         </button>
         {isDraftLoading ? (
-          <div className="flex-1 px-3 py-2.5 bg-gray-100 text-gray-500 font-medium rounded-xl text-sm flex items-center justify-center gap-2">
+          <div className="flex-1 px-3 py-2.5 bg-gray-100 text-gray-500 font-medium rounded-xl ttw-type-body flex items-center justify-center gap-2">
             <Spinner size={14} margin="0" />
             <span>Preparing itinerary…</span>
           </div>
         ) : (
           <button
             onClick={onConfirm}
-            className="flex-1 px-3 py-2.5 bg-[#07213A] text-white font-medium rounded-xl text-sm hover:bg-[#07213A]/90 active:scale-[0.98] transition-all"
+            className="flex-1 px-3 py-2.5 bg-[#07213A] text-white font-medium rounded-xl ttw-type-body hover:bg-[#07213A]/90 active:scale-[0.98] transition-all"
           >
             Confirm and View Prices
           </button>

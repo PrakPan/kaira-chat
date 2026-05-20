@@ -43,6 +43,8 @@ const HeroV2 = ({
   prompts = [],
   meta,
   polaroids = [],
+  activities = [],
+  pois = [],
   setShowTailoredModal,
   inputPlaceholder,
 }) => {
@@ -151,10 +153,33 @@ const HeroV2 = ({
     requestAnimationFrame(() => autoGrow(textareaRef.current));
   };
 
-  const polaroidImages = (polaroids && polaroids.length
-    ? polaroids
-    : FALLBACK_POLAROIDS
-  ).slice(0, 4);
+  const polaroidImages = (() => {
+    const valid = (polaroids || []).filter((p) => p && p.image);
+    const unique = new Set(valid.map((p) => p.image));
+    const allSame = valid.length > 1 && unique.size === 1;
+    const enough = valid.length >= 4 && !allSame;
+
+    if (enough) return valid.slice(0, 4);
+
+    const base = allSame ? [] : [...valid];
+    const seen = new Set(base.map((p) => p.image));
+
+    const pushFrom = (items, label) => {
+      for (const it of items || []) {
+        if (base.length >= 4) return;
+        const img = it && it.image;
+        if (!img || seen.has(img)) continue;
+        base.push({ image: img, caption: label });
+        seen.add(img);
+      }
+    };
+
+    pushFrom(activities, "Activity");
+    pushFrom(pois, "POI");
+
+    if (base.length === 0) return FALLBACK_POLAROIDS.slice(0, 4);
+    return base.slice(0, 4);
+  })();
   const polClassNames = [styles.pol1, styles.pol2, styles.pol3, styles.pol4];
 
   return (
@@ -168,7 +193,7 @@ const HeroV2 = ({
                 {kicker}
               </div>
             )}
-            <h1>{title}</h1>
+            <h1 className={styles.heroV2Lede}>{title}</h1>
             {description && (
               <p className={styles.heroV2Lede}>
                 {typeof description === "string"

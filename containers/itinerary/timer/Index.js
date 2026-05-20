@@ -51,29 +51,46 @@ const ButtonsContainer = styled.div`
 `;
 
 const TimeRemaining = styled.p`
-  font-size: 1.25rem;
-  font-weight: 700;
+  /* H3 token · 22/1.15/800/-0.02em — desktop bumps to H2-ish (28/1.1/800) */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
   text-align: center;
   margin: 1rem 1rem 0.5rem 1rem;
   @media screen and (min-width: 768px) {
-    font-size: 1.5rem;
+    font-size: 28px;
+    letter-spacing: -0.025em;
+    line-height: 1.1;
   }
 `;
 
 const TimeNumber = styled.p`
-  font-size: 1.9rem;
-  line-height: 1;
-  margin: 0;
+  /* H2 → display · countdown digits, tabular */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 32px;
   font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  margin: 0;
   @media screen and (min-width: 768px) {
-    font-size: 2.25rem;
+    font-size: 38px;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
   }
 `;
 
 const TimeUnit = styled.p`
-  font-size: 0.75rem;
+  /* Caption · 12/1.4/600/0.04em/uppercase */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+  text-transform: uppercase;
   margin: 0;
-  font-weight: 300;
   @media screen and (min-width: 768px) {
   }
 `;

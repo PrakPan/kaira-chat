@@ -71,8 +71,8 @@ const ItineraryFoodElement = (props) => {
             className="pl-[1.4rem] flex justify-center flex-col"
             style={{ paddingLeft: newDayContainerTextpadding.initialLeft }}
           >
-            <div className="text-xl font-normal">{props.heading}</div>
-            <div className="pt-1 line-clamp-3 font-normal text-sm pb-4">
+            <div className="ttw-type-h3 font-normal">{props.heading}</div>
+            <div className="pt-1 line-clamp-3 font-normal ttw-type-body pb-4">
               {props.text}
             </div>
           </div>
@@ -86,7 +86,7 @@ const ItineraryFoodElement = (props) => {
 
             {props.recomendation ? (
               <>
-                <div className="pt-1 line-clamp-3 font-normal text-sm">
+                <div className="pt-1 line-clamp-3 font-normal ttw-type-body">
                   {props.text}
                 </div>
                 {!isJson(props.recomendation) ? (

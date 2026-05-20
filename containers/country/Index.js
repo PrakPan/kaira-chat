@@ -118,6 +118,16 @@ const Index = (props) => {
     })
     .filter(Boolean);
 
+  const normalizeImage = (img) =>
+    img ? (img.startsWith("http") ? img : `${imgUrlEndPoint}${img}`) : "";
+
+  const heroActivities = (props.data?.activities || [])
+    .map((a) => ({ image: normalizeImage(a?.image) }))
+    .filter((p) => p.image);
+  const heroPois = (props.data?.pois || [])
+    .map((p) => ({ image: normalizeImage(p?.image) }))
+    .filter((p) => p.image);
+
   return (
     <div className={styles.destinationPage}>
       <HeroV2
@@ -144,6 +154,8 @@ const Index = (props) => {
         }
         prompts={heroPrompts}
         polaroids={heroPolaroids}
+        activities={heroActivities}
+        pois={heroPois}
         setShowTailoredModal={setShowTailoredModal}
         meta={
           <>

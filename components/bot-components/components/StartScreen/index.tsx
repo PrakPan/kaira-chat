@@ -301,7 +301,7 @@ const StartScreen: React.FC<StartScreenProps> = ({
         >
           <div className="flex items-center gap-2 mb-3">
             <h2
-              className="text-[14px] font-semibold text-[#1F4AAF]"
+              className="ttw-type-body font-semibold text-[#1F4AAF]"
               style={{ fontFamily: "'Inter', sans-serif" }}
             >
               Traveller Stories
@@ -341,9 +341,9 @@ const StartScreen: React.FC<StartScreenProps> = ({
           return (
             <div key={`row-${rowIndex}`}>
               <div className="flex items-center gap-2 mb-3">
-                {row.icon && <span className="text-xl">{row.icon}</span>}
+                {row.icon && <span className="ttw-type-h3">{row.icon}</span>}
                 <h2
-                  className="text-lg font-semibold text-gray-900"
+                  className="ttw-type-h4 text-gray-900"
                   style={{ fontFamily: "'Inter', sans-serif" }}
                 >
                   {row.heading}
@@ -394,7 +394,7 @@ const StartScreen: React.FC<StartScreenProps> = ({
         }}
       >
         <div
-          className="flex items-center gap-1 text-[11px] text-gray-500 font-medium"
+          className="flex items-center gap-1 ttw-type-small text-gray-500 font-medium"
           style={{ animation: "startScreenBounce 1.4s ease-in-out infinite" }}
         >
           <span>Scroll for more</span>
@@ -474,7 +474,7 @@ const TripCard: React.FC<TripCardProps> = ({ trip, delay, mounted, onSelect }) =
       />
       {imgLoaded && trip.tags && (
         <div
-          className="absolute top-3 left-2 flex items-center justify-center gap-[6px] px-[8px] py-[4px] rounded-[26px] text-[10px] font-medium leading-[14px]"
+          className="absolute top-3 left-2 flex items-center justify-center gap-[6px] px-[8px] py-[4px] rounded-[26px] ttw-type-small font-medium"
           // style={{
           //   background: "rgba(255,255,255,0.92)",
           //   color: "#07213A",
@@ -484,7 +484,7 @@ const TripCard: React.FC<TripCardProps> = ({ trip, delay, mounted, onSelect }) =
            style={{
     background: "#F7E700",
     color: "#07213A",
-    fontFamily: "Inter",
+      fontSize: "10px"
   }}
         >
           {trip.tags}
@@ -492,11 +492,11 @@ const TripCard: React.FC<TripCardProps> = ({ trip, delay, mounted, onSelect }) =
       )}
       {imgLoaded && (
         <div className="absolute bottom-3 left-3 right-3 text-left" >
-          <p className="text-white font-semibold text-sm drop-shadow-lg leading-tight" >
+          <p className="text-white font-semibold ttw-type-body drop-shadow-lg leading-tight text-[11px]" >
             {trip.label}
           </p>
           {trip.description && (
-            <p className="text-white/85 text-[11px] mt-1 leading-snug drop-shadow-md line-clamp-2">
+            <p className="text-white/85 ttw-type-small mt-1 leading-snug drop-shadow-md line-clamp-2 text-[11px]">
               {trip.description}
             </p>
           )}
@@ -508,7 +508,7 @@ const TripCard: React.FC<TripCardProps> = ({ trip, delay, mounted, onSelect }) =
               transition: "max-height 0.25s ease, opacity 0.25s ease",
             }}
           >
-            <span className="text-white/80 text-xs">Tap to explore</span>
+            <span className="text-white/80 ttw-type-small">Tap to explore</span>
             <svg
               width="12"
               height="12"
@@ -595,11 +595,11 @@ const TrendingCard: React.FC<TrendingCardProps> = ({
 
     {imgLoaded && (
     <div
-  className="max-ph:hidden absolute top-3 left-2 flex items-center justify-center gap-[6px] px-[6px] py-[4px] rounded-[26px] text-[10px] font-medium leading-[14px]"
+  className="max-ph:hidden absolute top-3 left-2 flex items-center justify-center gap-[6px] px-[6px] py-[4px] rounded-[26px] ttw-type-small font-medium"
   style={{
     background: "#F7E700",
     color: "#07213A",
-    fontFamily: "Inter",
+    fontSize: "10px"
   }}
 >
   {trip.sublabel}
@@ -608,11 +608,11 @@ const TrendingCard: React.FC<TrendingCardProps> = ({
 
       {imgLoaded && (
       <div className="absolute bottom-3 left-3 right-3 text-left">
-        <p className="text-white font-semibold text-sm drop-shadow-lg leading-tight">
+        <p className="text-white font-semibold ttw-type-body drop-shadow-lg leading-tight text-[11px]">
           {trip.label}
         </p>
         {trip.description && (
-  <p className="text-white/85 text-[11px] mt-1 leading-snug drop-shadow-md line-clamp-1">
+  <p className="text-white/85 ttw-type-small mt-1 leading-snug drop-shadow-md line-clamp-1 text-[11px]">
     {trip.description}
   </p>
 )}
@@ -624,7 +624,7 @@ const TrendingCard: React.FC<TrendingCardProps> = ({
             transition: "max-height 0.25s ease, opacity 0.25s ease",
           }}
         >
-          <span className="text-white/80 text-xs">Tap to explore</span>
+          <span className="text-white/80 ttw-type-small">Tap to explore</span>
           <svg
             width="12"
             height="12"
@@ -712,9 +712,9 @@ const TravellerStoryCard: React.FC<TravellerStoryCardProps> = ({
         {imgLoaded ? (
           <>
             <p
-              className="text-[13px] font-semibold text-[#07213A] leading-snug mb-0"
+              className="ttw-type-small font-semibold text-[#07213A] leading-snug mb-0"
               style={{
-                fontFamily: "'Inter', sans-serif",
+                // fontFamily: "'Inter', sans-serif",
                 display: "-webkit-box",
                 WebkitLineClamp: 2,
                 WebkitBoxOrient: "vertical",
@@ -725,16 +725,17 @@ const TravellerStoryCard: React.FC<TravellerStoryCardProps> = ({
               {headline}
             </p>
             <div className="flex items-center justify-between mt-2">
-              <div className="flex items-center gap-1 text-[11px] text-[#07213A]">
+              <div className="flex items-center gap-1 ttw-type-small text-[#07213A] text-[11px]">
                 <span className="font-medium">{story.rating.toFixed(1)}</span>
                 <span style={{ color: "#F7B500" }}>★</span>
               </div>
               <span
-                className="px-2 py-[2px] rounded-full text-[10px] font-medium"
+                className="px-2 py-[2px] rounded-full ttw-type-small font-medium"
                 style={{
                   background: "#FCE7F3",
                   color: "#9D174D",
-                  fontFamily: "Inter",
+                  // fontFamily: "Inter",
+                  fontSize:"11px"
                 }}
               >
                 {story.groupType} Trip

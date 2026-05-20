@@ -47,8 +47,8 @@ export default function PoiElement(props) {
       <div className="flex flex-col space-y-3 items-start w-full md:pl-2 lg:pl-2">
         <div className="flex flex-row items-center w-full">
           <div className="lg:w-[11%] md:w-[21%]"></div>
-          <div className="text-sm font-normal flex flex-row items-center flex-wrap gap-1 w-full">
-            <span className="text-[14px] font-medium leading-[22px]">
+          <div className="ttw-type-body flex flex-row items-center flex-wrap gap-1 w-full">
+            <span className="ttw-type-body font-medium">
               Explore:{" "}
             </span>
             {pois.map(
@@ -66,7 +66,7 @@ export default function PoiElement(props) {
             )}
             <span
               onClick={hanldeSeeMore}
-              className="ml-2 text-blue hover:underline font-[600] text-[12px] leading-[22px] cursor-pointer"
+              className="ml-2 text-blue hover:underline font-[600] ttw-type-small cursor-pointer"
             >
               {pois.length > 3 ? "1+ more" : "see more"}
             </span>

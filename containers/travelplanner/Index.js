@@ -220,6 +220,24 @@ const Homepage = (props) => {
             caption: loc.display_name || loc.name || loc.title,
           }))
           .filter((p) => p.image)}
+        activities={(props.experienceData?.activities || [])
+          .map((a) => ({
+            image: a?.image
+              ? a.image.startsWith("http")
+                ? a.image
+                : `${imgUrlEndPoint}${a.image}`
+              : "",
+          }))
+          .filter((p) => p.image)}
+        pois={(props.experienceData?.pois || [])
+          .map((p) => ({
+            image: p?.image
+              ? p.image.startsWith("http")
+                ? p.image
+                : `${imgUrlEndPoint}${p.image}`
+              : "",
+          }))
+          .filter((p) => p.image)}
         setShowTailoredModal={setShowTailoredModal}
       />
 

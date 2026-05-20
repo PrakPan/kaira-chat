@@ -26,10 +26,10 @@ export default function Rating(props) {
         {props.ratings.map((star, i) => (
           <button
             onClick={() => handleRating(star)}
-            className={`flex gap-2 font-normal p-2 rounded-full cursor-pointer   text-sm cursor-pointer  justify-center items-center hover:bg-gray-100 active:bg-[#111] active:border-0 ${
-              isSelectedRating(star) ? "bg-[#F0F0FE]" : "bg-[#F6F6F6]"
-            }
-            active:text-white  border-[#D0D5DD]  rounded-full`}
+            className={`flex gap-2 font-normal p-2 rounded-full cursor-pointer ttw-type-body cursor-pointer justify-center items-center hover:bg-gray-100 active:bg-[#111] active:border-0 ${
+ isSelectedRating(star) ? "bg-[#F0F0FE]" : "bg-[#F6F6F6]"
+ }
+ active:text-white border-[#D0D5DD] rounded-full`}
             key={i}
           >
             {getStars(star)}

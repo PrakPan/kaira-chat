@@ -257,7 +257,7 @@ const TripPlanningLoader = () => (
   <div className="flex items-start gap-2 mb-4">
     <div className="flex items-center gap-2">
       <Spinner size={14} />
-      <span className="text-sm text-black">Your trip is being planned</span>
+      <span className="ttw-type-body text-black">Your trip is being planned</span>
     </div>
   </div>
 );
@@ -275,12 +275,12 @@ const WelcomeState = () => (
       </span>
     </div>
     <h2
-      className="text-[22px] font-semibold text-gray-900 mb-2 tracking-tight"
+      className="ttw-type-h3 font-semibold text-gray-900 mb-2 tracking-tight"
       style={{ fontFamily: "'Inter', sans-serif" }}
     >
       Planning a trip today?
     </h2>
-    <p className="text-[13px] text-gray-400 text-center max-w-xs leading-relaxed">
+    <p className="ttw-type-small text-gray-400 text-center max-w-xs leading-relaxed">
       I'm Kaira — your AI travel companion. Ask me anything about destinations,
       itineraries, routes, or local tips.
     </p>
@@ -2731,7 +2731,7 @@ const handleShowLogin = useCallback(() => {
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div
-      className={`kp-root flex flex-col h-full min-h-0 bg-white  max-h-[100dvh] md:max-h-[93.5vh] border-[0.5px] border-l-[#e5e5e5] overflow-x-hidden`}
+      className={`kp-root flex flex-col h-full min-h-0 bg-white max-h-[100dvh] md:max-h-[93.5vh] border-[0.5px] border-l-[#e5e5e5] overflow-x-hidden`}
       style={{
         fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
         WebkitFontSmoothing: "antialiased",
@@ -2752,8 +2752,8 @@ const handleShowLogin = useCallback(() => {
           </div>
           <div
             className={`kp-header-status ${
-              isStreaming || isItineraryCompleting || isItineraryPolling ? "thinking" : ""
-            }`}
+ isStreaming || isItineraryCompleting || isItineraryPolling ? "thinking" : ""
+ }`}
           >
             <span>
               {isItineraryPolling
@@ -2773,7 +2773,7 @@ const handleShowLogin = useCallback(() => {
         {mobileMenu && <div className="md:hidden flex-shrink-0">{mobileMenu}</div>}
         {/* <button
           onClick={() => setShowControls((v) => !v)}
-          className="text-[11px] text-gray-400 hover:text-gray-600 flex items-center gap-1 transition-colors"
+          className="ttw-type-small text-gray-400 hover:text-gray-600 flex items-center gap-1 transition-colors"
         >
           <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
             <path
@@ -2788,13 +2788,13 @@ const handleShowLogin = useCallback(() => {
 
       {/* ── Settings panel ────────────────────────────────────────────────── */}
       {showControls && (
-        <div className="flex-shrink-0 flex flex-wrap items-center gap-x-6 gap-y-2 px-[0.25rem] md:!px-4 py-2.5 bg-gray-50 border-b border-gray-100 text-xs">
+        <div className="flex-shrink-0 flex flex-wrap items-center gap-x-6 gap-y-2 px-[0.25rem] md:!px-4 py-2.5 bg-gray-50 border-b border-gray-100 ttw-type-small">
           <label className="flex items-center gap-2 text-gray-600">
             Planner
             <select
               value={selectedModel}
               onChange={(e) => setSelectedModel(e.target.value)}
-              className="border border-gray-200 rounded-lg px-2 py-1 bg-white text-gray-800 focus:outline-none focus:ring-1 focus:ring-amber-400 text-xs"
+              className="border border-gray-200 rounded-lg px-2 py-1 bg-white text-gray-800 focus:outline-none focus:ring-1 focus:ring-amber-400 ttw-type-small"
             >
               <option value="high">Deep Planner</option>
               <option value="medium">Quick Planner</option>
@@ -2805,7 +2805,7 @@ const handleShowLogin = useCallback(() => {
             <select
               value={botMode}
               onChange={(e) => onBotModeChange?.(e.target.value as BotMode)}
-              className="border border-gray-200 rounded-lg px-2 py-1 bg-white text-gray-800 focus:outline-none focus:ring-1 focus:ring-amber-400 text-xs"
+              className="border border-gray-200 rounded-lg px-2 py-1 bg-white text-gray-800 focus:outline-none focus:ring-1 focus:ring-amber-400 ttw-type-small"
             >
               <option value="p1">Kaira P1</option>
               <option value="p2">Kaira P2</option>
@@ -2820,11 +2820,11 @@ const handleShowLogin = useCallback(() => {
                   value={localItineraryId}
                   onChange={(e) => setLocalItineraryId(e.target.value)}
                   placeholder="Enter ID"
-                  className="border border-gray-200 rounded-lg px-2 py-1 w-36 bg-white text-gray-800 focus:outline-none focus:ring-1 focus:ring-amber-400 text-xs"
+                  className="border border-gray-200 rounded-lg px-2 py-1 w-36 bg-white text-gray-800 focus:outline-none focus:ring-1 focus:ring-amber-400 ttw-type-small"
                 />
                 <button
                   onClick={() => onItineraryIdChange?.(localItineraryId)}
-                  className="px-2.5 py-1 bg-amber-400 hover:bg-amber-500 text-gray-900 rounded-lg transition-colors font-medium text-xs"
+                  className="px-2.5 py-1 bg-amber-400 hover:bg-amber-500 text-gray-900 rounded-lg transition-colors font-medium ttw-type-small"
                 >
                   Load
                 </button>
@@ -2845,7 +2845,7 @@ const handleShowLogin = useCallback(() => {
             {isLoadingMore && (
               <div className="flex items-center justify-center py-3">
                 <Spinner size={16} />
-                <span className="ml-2 text-xs text-gray-400">Loading older messages…</span>
+                <span className="ml-2 ttw-type-small text-gray-400">Loading older messages…</span>
               </div>
             )}
             {travellerStory && messages.length === 0 && (
@@ -3287,7 +3287,7 @@ const handleShowLogin = useCallback(() => {
             })}
 
             {/* {showError && (
-              <div className="mt-2 px-2.5 py-2.5 text-xs text-red-600 flex items-center gap-2">
+              <div className="mt-2 px-2.5 py-2.5 ttw-type-small text-red-600 flex items-center gap-2">
                 <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 flex-shrink-0">
                   <path
                     fillRule="evenodd"
@@ -3328,7 +3328,7 @@ const handleShowLogin = useCallback(() => {
             )}
 
             {postLoginLoading && (
-              <div className="mt-4 flex items-center gap-2 text-sm text-gray-400">
+              <div className="mt-4 flex items-center gap-2 ttw-type-body text-gray-400">
                 <Spinner size={14} />
                 <span>Sending your message…</span>
               </div>
@@ -3417,7 +3417,7 @@ const handleShowLogin = useCallback(() => {
         <button
           type="button"
           onClick={onViewItinerary}
-          className="md:hidden flex-shrink-0 w-full flex items-center justify-center gap-1 py-2 text-[14px] font-medium"
+          className="md:hidden flex-shrink-0 w-full flex items-center justify-center gap-1 py-2 ttw-type-body font-medium"
           style={{ background: "#f7e700", color: "#000000" }}
         >
           <span>View Itinerary</span>
@@ -3909,16 +3909,16 @@ const TravellerStoryIntroCard: React.FC<TravellerStoryIntroCardProps> = ({
       {/* Traveller info row */}
       <div className="flex items-center justify-start gap-2 mt-3 mb-3">
         <div
-          className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-[12px] font-semibold text-[#07213A]"
+          className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center ttw-type-small font-semibold text-[#07213A]"
           style={{ background: "#E5E7EB" }}
         >
           {story.name.charAt(0)}
         </div>
         <div className="min-w-0">
-          <p className="text-[13px] font-semibold text-[#07213A] leading-tight truncate m-0">
+          <p className="ttw-type-small font-semibold text-[#07213A] leading-tight truncate m-0">
             {story.name}
           </p>
-          <p className="text-[11px] text-gray-500 mt-[1px] truncate m-0">
+          <p className="ttw-type-small text-gray-500 mt-[1px] truncate m-0">
             {story.duration} · {story.destinations.join(" · ")}
           </p>
         </div>
@@ -3938,7 +3938,7 @@ const TravellerStoryIntroCard: React.FC<TravellerStoryIntroCardProps> = ({
           onClick={(e) => {
             if (disabled) e.preventDefault();
           }}
-          className="px-4 py-[8px] rounded-lg text-[12px] font-semibold transition-colors"
+          className="px-4 py-[8px] rounded-lg ttw-type-small font-semibold transition-colors"
           style={{
             background: "#fff",
             border: "1px solid #0B1E36",
@@ -3954,7 +3954,7 @@ const TravellerStoryIntroCard: React.FC<TravellerStoryIntroCardProps> = ({
           type="button"
           disabled={disabled}
           onClick={onBookExact}
-          className="px-4 py-[8px] rounded-lg text-[12px] font-semibold transition-colors"
+          className="px-4 py-[8px] rounded-lg ttw-type-small font-semibold transition-colors"
           style={{
             background: "#0B1E36",
             border: "1px solid #0B1E36",

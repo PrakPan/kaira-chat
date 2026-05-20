@@ -74,6 +74,7 @@ import {
 import TestimonialCarousel from "../../components/theme/TestimonialCarousel.jsx";
 import TravelVibeSection from "../../components/revamp/home/TravelVibeSection.jsx";
 import JourneySimplified from "../../components/revamp/home/JourneySimplified.jsx";
+import styles from "../../styles/pages/revamp/destination.module.scss"
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -188,7 +189,15 @@ export default function ThemePage(props) {
                 props.experienceData.slug || ""
               )} trip with Kaira`
         }
-        title={props.experienceData.banner_heading}
+         title={
+          <>
+            {convertDbNameToCapitalFirst(
+                props.experienceData.slug || ""
+              )},{" "}
+            <span className={styles.serif}>however</span> you{" "}
+            <span className={styles.highlight}>want it.</span>
+          </>
+        }
         description={props.experienceData.banner_text}
         prompts={(props.experienceData?.locations || [])
           .slice(0, 4)
@@ -221,6 +230,28 @@ export default function ThemePage(props) {
             ];
           }
           return [];
+        })()}
+        activities={(() => {
+          const normalize = (img) =>
+            img ? (img.startsWith("http") ? img : `${imgUrlEndPoint}${img}`) : "";
+          const direct = (props.experienceData?.activities || []).map((a) => ({
+            image: normalize(a?.image),
+          }));
+          const fromComponents = (props.experienceData?.components || [])
+            .flatMap((c) => c?.activities || [])
+            .map((a) => ({ image: normalize(a?.image) }));
+          return [...direct, ...fromComponents].filter((p) => p.image);
+        })()}
+        pois={(() => {
+          const normalize = (img) =>
+            img ? (img.startsWith("http") ? img : `${imgUrlEndPoint}${img}`) : "";
+          const direct = (props.experienceData?.pois || []).map((p) => ({
+            image: normalize(p?.image),
+          }));
+          const fromComponents = (props.experienceData?.components || [])
+            .flatMap((c) => c?.pois || [])
+            .map((p) => ({ image: normalize(p?.image) }));
+          return [...direct, ...fromComponents].filter((p) => p.image);
         })()}
         setShowTailoredModal={setShowTailoredModal}
         meta={

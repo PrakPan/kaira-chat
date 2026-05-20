@@ -1159,7 +1159,7 @@ Start Location: ${details.startLocation}`;
                 >
                   <RxCross2 size={18} />
                 </button>
-                <p className="text-[14px] pr-6 mb-0 ">
+                <p className="ttw-type-body pr-6 mb-0 ">
                   Hi, I am Kiara Your travel partner
                 </p>
                 {/* Speech bubble arrow */}
@@ -1924,7 +1924,7 @@ props.fromChat ? (
 
   <button
     onClick={() => setShowConfirmationModal(true)}
-    className="flex items-center justify-center h-[40px] px-4 gap-2 rounded-[8px] bg-[#F7E700] font-semibold text-sm md:text-[14px] transition-colors font-inter"
+    className="flex items-center justify-center h-[40px] px-4 gap-2 rounded-[8px] bg-[#F7E700] font-semibold ttw-type-body md:ttw-type-body transition-colors font-inter"
   >
     Confirm Itinerary & View Prices →
   </button>
@@ -1939,7 +1939,7 @@ props.fromChat ? (
             <div className="flex flex-col">
               <div className="flex justify-start items-center gap-2">
                 {pricing_status === "FAILURE" ? (
-                  <p className="text-red-600 text-sm">
+                  <p className="text-red-600 ttw-type-body">
                     Get in touch to finalize the pricing!
                   </p>
                 ) : null}
@@ -1980,7 +1980,7 @@ props.fromChat ? (
                 ) : null}
               </div>
               {cart && (
-                <div className="text-[12px] text-[#6E757A]">
+                <div className="ttw-type-small text-[#6E757A]">
                   {cart?.pay_only_for_one || cart?.show_per_person_cost
                     ? "Per Person"
                     : cart?.is_estimated_price
@@ -2016,10 +2016,10 @@ props.fromChat ? (
                   </span>
                 </div>
               ) : null}
-              {/* <span className="text-blue cursor-pointer text-sm sm:text-[14px] underline" onClick={()=>setShowLoginModal(true)}>{isDesktop ? "Login to view total cost" : "Login to view cost"}</span>} */}
+              {/* <span className="text-blue cursor-pointer ttw-type-body sm:ttw-type-body underline" onClick={()=>setShowLoginModal(true)}>{isDesktop ? "Login to view total cost" : "Login to view cost"}</span>} */}
             </div>
             {props?.token && props?.payment?.paid_user && (
-              <div className="border-[3px] flex  justify-center items-center text-[#04AA32] text-center font-medium  text-sm border-[#04AA32] px-[9px] py-[0px]">
+              <div className="border-[3px] flex justify-center items-center text-[#04AA32] text-center font-medium ttw-type-body border-[#04AA32] px-[9px] py-[0px]">
                 PAID
               </div>
             )}
@@ -2060,7 +2060,7 @@ props.fromChat ? (
                         <path
                           d="M11.3333 29.75L1.13333 22.1C0.779167 21.8403 0.501736 21.5097 0.301042 21.1083C0.100347 20.7069 0 20.2819 0 19.8333V2.83333C0 2.05417 0.277431 1.38715 0.832292 0.832292C1.38715 0.277431 2.05417 0 2.83333 0H19.8333C20.6125 0 21.2795 0.277431 21.8344 0.832292C22.3892 1.38715 22.6667 2.05417 22.6667 2.83333V19.8333C22.6667 20.2819 22.5663 20.7069 22.3656 21.1083C22.1649 21.5097 21.8875 21.8403 21.5333 22.1L11.3333 29.75ZM11.3333 26.2083L19.8333 19.8333V2.83333H2.83333V19.8333L11.3333 26.2083ZM9.84583 18.4167L17.85 10.4125L15.8667 8.35833L9.84583 14.3792L6.87083 11.4042L4.81667 13.3875L9.84583 18.4167ZM11.3333 2.83333H2.83333H19.8333H11.3333Z"
                           fill="#AD5BE7"
-                          className="cursor-pointer min-w-max text-lg w-4 h-4 pl-3 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90 relative"
+                          className="cursor-pointer min-w-max ttw-type-h4 w-4 h-4 pl-3 transition-transform duration-300 ase-in-out group-hover:text-blue-500 group-hover:scale-110 active:scale-90 relative"
                           // onMouseEnter={() => setIsHovered(true)}
                           // onMouseLeave={() => setIsHovered(false)}
                         />
@@ -2084,13 +2084,13 @@ props.fromChat ? (
 
                       <div
                         style={popupStyle}
-                        className="z-50 absolute -top-11  text-sm text-center flex flex-col gap-2 bg-white"
+                        className="z-50 absolute -top-11 ttw-type-body text-center flex flex-col gap-2 bg-white"
                       >
                         <div className="relative">
                           <span className="absolute top-2 -left-5 -translate-x-1/2 w-0 h-0 border-[10px] border-solid border-transparent border-b-red"></span>
                           {/* <span className="absolute -bottom-2 left-1/4 w-0 h-0 border-[10px] border-solid border-transparent border-t-[#2b2b2a]"></span> */}
 
-                          <div className="text-nowrap font-normal text-black text-sm">
+                          <div className="text-nowrap font-normal text-black ttw-type-body">
                             No Hidden Charges,
                             <br />
                             Includes taxes
@@ -2171,7 +2171,7 @@ props.fromChat ? (
           {trustFactors.map((factor, index) => (
             <div
               key={index}
-              className="flex items-center text-[#ACACAC] text-xs flex-shrink-0"
+              className="flex items-center text-[#ACACAC] ttw-type-small flex-shrink-0"
             >
               <div className="flex items-center gap-1.5 text-gray-500">
                
@@ -2180,7 +2180,7 @@ props.fromChat ? (
                   alt={factor.title}
                   className="w-[20px] h-[20px]"
                 />
-                <span className="text-xs md:text-xs whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px] md:max-w-none">
+                <span className="ttw-type-small md:ttw-type-small whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px] md:max-w-none">
                   {factor.text}
                 </span>
               </div>
@@ -2197,9 +2197,9 @@ props.fromChat ? (
           className="z-[999] flex fixed bottom-[90px] right-[25px] p-[18px] w-fit items-center justify-center rounded-full cursor-pointer bg-black mb-[1rem]"
         >
           {share ? (
-            <IoMdClose className="animate-popOut text-[25px] text-white" />
+            <IoMdClose className="animate-popOut ttw-type-h2 text-white" />
           ) : (
-            <BsShareFill className="animate-popOut text-[25px] text-white" />
+            <BsShareFill className="animate-popOut ttw-type-h2 text-white" />
           )}
         </div>
       )} */}
@@ -2217,9 +2217,9 @@ props.fromChat ? (
 
       {/* <div
         onClick={() => setShareMobile((prev) => !prev)}
-        className="z-[999] fixed bottom-[160px] right-[22px] md:right-[16px] md:hidden bg-black  p-[18px] w-fit flex items-center justify-center rounded-full cursor-pointer"
+        className="z-[999] fixed bottom-[160px] right-[22px] md:right-[16px] md:hidden bg-black p-[18px] w-fit flex items-center justify-center rounded-full cursor-pointer"
       >
-        <BsShareFill className="text-[25px] text-white " />
+        <BsShareFill className="ttw-type-h2 text-white " />
       </div>
 
       {shareMobile && (

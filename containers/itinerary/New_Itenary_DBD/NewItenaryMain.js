@@ -101,7 +101,7 @@ const NewItenaryMain = (props) => {
 
   return (
     <Wrapper id="itinerary">
-      <div className="text-3xl font-bold mb-8 mt-4"> Day By Day Itinerary</div>
+      <div className="ttw-type-display mb-8 mt-4"> Day By Day Itinerary</div>
 
       <ScrollableMenuTabs
         classStyle="pb-2"

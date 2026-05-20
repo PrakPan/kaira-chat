@@ -59,6 +59,24 @@ const Experience = (props) => {
             image: `${imgUrlEndPoint}${img.image}`,
             caption: img.caption || cityDisplayName,
           }))}
+        activities={(props.cityData?.activities || [])
+          .map((a) => ({
+            image: a?.image
+              ? a.image.startsWith("http")
+                ? a.image
+                : `${imgUrlEndPoint}${a.image}`
+              : "",
+          }))
+          .filter((p) => p.image)}
+        pois={(props.cityData?.pois || [])
+          .map((p) => ({
+            image: p?.image
+              ? p.image.startsWith("http")
+                ? p.image
+                : `${imgUrlEndPoint}${p.image}`
+              : "",
+          }))
+          .filter((p) => p.image)}
         setShowTailoredModal={setShowTailoredModal}
       />
 

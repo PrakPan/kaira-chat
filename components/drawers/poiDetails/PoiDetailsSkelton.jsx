@@ -75,7 +75,7 @@ const Child = styled.div`
         //     }}
         //     style={{ fontSize: "2rem" }}
         //   ></IoMdClose>
-        //   <BackText className="text-[24px] font-semibold">Activity Details</BackText>
+        //   <BackText className="ttw-type-h2 font-semibold">Activity Details</BackText>
         // </div>
       )}
 

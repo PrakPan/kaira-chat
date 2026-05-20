@@ -98,17 +98,17 @@ export default function AccommodationElement(props) {
         <div className="w-full flex flex-col space-y-2 md:space-y-0 lg:space-y-0 md:flex-row lg:flex-row items-start md:items-center lg:items-center">
           <div className="lg:w-[11%] md:w-[21%] flex flex-row justify-center">
             {meta?.day_timing ? (
-              <span className="font-normal text-sm text-gray-500">
+              <span className="font-normal ttw-type-body text-gray-500">
                 meta.day_timing
               </span>
             ) : (
               <div className="flex items-center">
-                <TbSunset2 className="text-2xl text-gray-500"></TbSunset2>
+                <TbSunset2 className="ttw-type-h2 text-gray-500"></TbSunset2>
                 {isPageWide ? null : (
                   <span
                     className={`${
-                      visible ? "" : ""
-                    } font-normal text-xs text-gray-500 ml-2`}
+ visible ? "" : ""
+ } font-normal ttw-type-small text-gray-500 ml-2`}
                   >
                     Afternoon
                   </span>
@@ -116,7 +116,7 @@ export default function AccommodationElement(props) {
               </div>
             )}
           </div>
-          <div className="font-medium text-sm">{heading}</div>
+          <div className="font-medium ttw-type-body">{heading}</div>
         </div>
 
         <div className="w-full flex flex-col lg:flex-row md:flex-row items-start">
@@ -124,8 +124,8 @@ export default function AccommodationElement(props) {
           <div className="flex flex-row">
             <div
               className={`flex items-center justify-center w-[4rem] h-[4rem] ${
-                !imageLoaded && "bg-gray-200 rounded-lg animate-pulse"
-              }`}
+ !imageLoaded && "bg-gray-200 rounded-lg animate-pulse"
+ }`}
             >
               <div className={`${imageLoaded ? "visible" : "invisible"}`}>
                 {selectedBooking?.image !== "" && !imageFailed ? (
@@ -153,10 +153,10 @@ export default function AccommodationElement(props) {
             </div>
 
             <div className="flex flex-col gap-0 ml-3">
-              <div className="text-sm font-bold leading-6 ml-2">
+              <div className="ttw-type-body-strong leading-6 ml-2">
                 {selectedBooking && selectedBooking.name}
               </div>
-              <div className="font-normal text-xs leading-4 ml-2">
+              <div className="font-normal ttw-type-small leading-4 ml-2">
                 {selectedBooking &&
                   selectedBooking.duration &&
                   (selectedBooking.duration > 1
@@ -166,7 +166,7 @@ export default function AccommodationElement(props) {
                     : null)}
               </div>
               {selectedBooking?.user_rating ? (
-                <span className="flex flex-row items-center gap-1 text-sm text-[#7a7a7a]">
+                <span className="flex flex-row items-center gap-1 ttw-type-body text-[#7a7a7a]">
                   <span className="flex flex-row text-[#FFD201] ml-2">
                     {stars}
                   </span>
