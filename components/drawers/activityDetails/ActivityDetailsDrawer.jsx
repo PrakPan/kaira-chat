@@ -98,22 +98,34 @@ const ActivityDetailsDrawer = (props) => {
 
   const fetchData = (data) => {
     const paxSource = data?._paxOverride || filterState;
+    const dateSource = data?._dateOverride || props.date;
+    // Day / time / amenity refetches re-render in place via the inline
+    // "Updating" overlay. Routing them through setLoading would swap the
+    // drawer for ActivityDetailsSkeleton, unmounting ActivityDetails and
+    // resetting the user's day + time-of-day picks back to defaults.
+    const isInlineUpdate = !!(
+      data?.amenities || data?._dateOverride || data?._timeOverride
+    );
 
-
-    if (!data?.amenities) {
+    if (isInlineUpdate) {
+      setUpdateAmenities(true);
+    } else {
       setLoading(true);
     }
 
     let requestData = {
-      start_date: getDate(props.date),
+      start_date: getDate(dateSource),
       number_of_adults: paxSource.adults,
       number_of_children: paxSource.children,
       children_ages: paxSource?.children_ages || paxSource.traveler_ages,
     };
 
+    if (data?._timeOverride) {
+      requestData.time_of_day = data._timeOverride;
+    }
+
     if (data?.amenities) {
       requestData.amenities = data.amenities;
-      setUpdateAmenities(true);
     }
 
     activityDetail

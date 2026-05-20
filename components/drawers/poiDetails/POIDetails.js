@@ -260,8 +260,18 @@ const POIDetails = (props) => {
               startDate === dateString ? "text-black font-semibold" : "text-[#4a4a4a]"
             }`}
             onClick={() => {
+              if (dateString === startDate) {
+                setShowCalender(false);
+                return;
+              }
               setStartDate(dateString);
               setShowCalender(false);
+              if (typeof props?.fetchData === "function") {
+                props.fetchData({
+                  _dateOverride: dateString,
+                  ...(selectedTimeOfDay && { _timeOverride: selectedTimeOfDay }),
+                });
+              }
             }}
           >
             <span className="font-bold text-[14px]">
@@ -410,6 +420,12 @@ const POIDetails = (props) => {
     <>
       {props?.data ? (
         <Container className="px-lg max-ph:px-sm gap-xl" itineraryDrawer={props.itineraryDrawer}>
+          {props?.updating && (
+            <div className="fixed top-[65%] left-[50%] -translate-x-[50%] z-50 flex flex-row items-center gap-2">
+              Updating
+              <div className="w-5 h-5 border-2 rounded-full border-t-black animate-spin"></div>
+            </div>
+          )}
           <div className="mt-[1rem]">
             <Image src="/backarrow.svg" className="cursor-pointer" width={22} height={2} onClick={(e) => props.handleCloseDrawer(e)} />
           </div>
@@ -773,7 +789,16 @@ const POIDetails = (props) => {
                     <button
                       key={period}
                       type="button"
-                      onClick={() => setSelectedTimeOfDay(period)}
+                      onClick={() => {
+                        if (period === selectedTimeOfDay) return;
+                        setSelectedTimeOfDay(period);
+                        if (typeof props?.fetchData === "function") {
+                          props.fetchData({
+                            _dateOverride: startDate,
+                            _timeOverride: period,
+                          });
+                        }
+                      }}
                       className={`flex-1 sm:flex-none px-4 py-2 rounded-md text-[14px] font-medium transition-colors mb-3 ${
                         isSelected
                           ? "bg-[#07213A] text-white"

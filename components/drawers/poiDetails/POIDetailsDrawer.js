@@ -6,6 +6,7 @@ import axiosPOIdetailsInstance from "../../../services/poi/poidetails";
 import { activityDetail } from "../../../services/poi/poiActivities";
 import axios from "axios";
 import { MERCURY_HOST } from "../../../services/constants";
+import { getDate } from "../../../helper/DateUtils";
 import { useRouter } from "next/router";
 import PoiDetailsNew from "./PoiDetailsNew";
 import ActivityDetails from "./ActivityDetails";
@@ -48,6 +49,10 @@ const POIDetailsDrawer = (props) => {
   const [data, setData] = useState(props?.data || []);
   const [activityData, setActivityData] = useState(null);
   const [loading, setLoading] = useState(false);
+  // Inline overlay flag — keeps POIDetails mounted during day/time
+  // refetches so the user's day + time-of-day picks aren't reset to
+  // defaults by an unmount/remount cycle through the skeleton view.
+  const [updating, setUpdating] = useState(false);
   const [error, setError] = useState(null);
   const router = useRouter();
   const currency = useSelector(state=>state.currency);
@@ -66,8 +71,23 @@ const POIDetailsDrawer = (props) => {
     };
   }, [props.show]);
 
-  const fetchData = async () => {
-    setLoading(true);
+  const fetchData = async (opts) => {
+    // Day/time refetches go through the inline overlay; first-open and
+    // other refetches keep the skeleton path. Without the inline mode the
+    // skeleton swap would unmount POIDetails and reset startDate /
+    // selectedTimeOfDay to their defaults mid-interaction.
+    const isInlineUpdate = !!(opts?._dateOverride || opts?._timeOverride);
+    const dateParam = opts?._dateOverride ? getDate(opts._dateOverride) : null;
+    const timeParam = opts?._timeOverride || null;
+    const scheduleQuery =
+      (dateParam ? `&start_date=${dateParam}` : "") +
+      (timeParam ? `&time_of_day=${encodeURIComponent(timeParam)}` : "");
+
+    if (isInlineUpdate) {
+      setUpdating(true);
+    } else {
+      setLoading(true);
+    }
 
     try {
       if (props?.activityData?.type == "activity") {
@@ -84,26 +104,30 @@ const POIDetailsDrawer = (props) => {
           }));
           setActivityData(res?.data?.activity_data);
           setLoading(false);
+          setUpdating(false);
         } else {
           const res = await axios.get(
-            `${MERCURY_HOST}/api/v1/geos/poi/${props?.activityData?.id}/?itinerary_city_id=${props?.itinerary_city_id}`
+            `${MERCURY_HOST}/api/v1/geos/poi/${props?.activityData?.id}/?itinerary_city_id=${props?.itinerary_city_id}${scheduleQuery}`
           );
           setData(res?.data?.data?.poi);
           setLoading(false);
+          setUpdating(false);
         }
       } else if (props?.activityData?.type == "poi") {
         const res = await axios.get(
-          `${MERCURY_HOST}/api/v1/geos/poi/${props?.activityData?.id}/?itinerary_city_id=${props?.itinerary_city_id}`
+          `${MERCURY_HOST}/api/v1/geos/poi/${props?.activityData?.id}/?itinerary_city_id=${props?.itinerary_city_id}${scheduleQuery}`
         );
         setData(res?.data?.data?.poi);
         setLoading(false);
+        setUpdating(false);
       } else if (props?.activityData?.type == "restaurant") {
         console.log("fetching restaurant details", props?.activityData);
         const res = await axios.get(
-          `${MERCURY_HOST}/api/v1/geos/restaurant/${props?.activityData?.id}/?itinerary_city_id=${props?.itinerary_city_id}`
+          `${MERCURY_HOST}/api/v1/geos/restaurant/${props?.activityData?.id}/?itinerary_city_id=${props?.itinerary_city_id}${scheduleQuery}`
         );
         setData(res?.data?.data?.restaurant);
         setLoading(false);
+        setUpdating(false);
       } else if (props.ActivityiconId && props.themePage) {
         activityDetail
           .post(
@@ -192,6 +216,8 @@ const POIDetailsDrawer = (props) => {
       }
     } catch (err) {
       setError(err?.response?.data?.errors?.[0]?.message?.[0] || err.message);
+      setLoading(false);
+      setUpdating(false);
     }
   };
 
@@ -253,6 +279,8 @@ const POIDetailsDrawer = (props) => {
                   showAddToItinerary={props?.showAddToItinerary}
                   onAddToItinerary={props?.onAddToItinerary}
                   kind={props?.activityData?.type}
+                  fetchData={fetchData}
+                  updating={updating}
                 >
                   {props.children}
                 </POIDetails>
