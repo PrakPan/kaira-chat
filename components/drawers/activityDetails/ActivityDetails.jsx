@@ -381,8 +381,16 @@ export default function ActivityDetails(props) {
               startDate === dateString ? "text-black font-semibold" : "text-[#4a4a4a]"
             }`}
             onClick={() => {
+              if (dateString === startDate) {
+                setShowCalender(false);
+                return;
+              }
               setStartDate(dateString);
               setShowCalender(false);
+              props.fetchData({
+                _dateOverride: dateString,
+                ...(selectedTimeOfDay && { _timeOverride: selectedTimeOfDay }),
+              });
             }}
           >
             <span className="font-bold text-[14px]">
@@ -539,7 +547,14 @@ export default function ActivityDetails(props) {
                     <button
                       key={period}
                       type="button"
-                      onClick={() => setSelectedTimeOfDay(period)}
+                      onClick={() => {
+                        if (period === selectedTimeOfDay) return;
+                        setSelectedTimeOfDay(period);
+                        props.fetchData({
+                          _dateOverride: startDate,
+                          _timeOverride: period,
+                        });
+                      }}
                       className={`flex-1 sm:flex-none px-4 py-2 rounded-md text-[14px] font-medium transition-colors ${
                         isSelected
                           ? "bg-[#07213A] text-white"

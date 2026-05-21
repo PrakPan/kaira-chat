@@ -203,6 +203,10 @@ useEffect(() => {
   }
 }, [finalized_status, props.token]);
 
+useEffect(() => {
+  if (props.token) setShowLoginModal(false);
+}, [props.token]);
+
   useEffect(() => {
     if(router.query?.drawer === "payment"){
        handleFooterBannerMobile("View Inclusions");
@@ -2257,6 +2261,7 @@ props.fromChat ? (
           zIndex={"3300"}
           message={loginModalMessage}
           onSuccess={async () => {
+            setShowLoginModal(false);
             await attachUserToItinerary();
           }}
         ></BotLoginModal>
