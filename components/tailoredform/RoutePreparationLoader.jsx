@@ -99,7 +99,7 @@ const RoutePreparationLoader = ({
       }
 
       try {
-        const socketUrl = `wss://dev.chat.tarzanway.com/ws?session_id=${sessionId}`;
+        const socketUrl = `wss://chat.tarzanway.com/ws?session_id=${sessionId}`;
 
         socketRef.current = new WebSocket(socketUrl);
 
