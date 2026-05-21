@@ -6,6 +6,7 @@ import { currencySymbols } from "../../../data/currencySymbols";
 import { MERCURY_HOST } from "../../../services/constants";
 import { openNotification } from "../../../store/actions/notification";
 import { FaTaxi, FaWhatsapp } from "react-icons/fa";
+import useMediaQuery from "../../media";
 
 // ─── Widget environment context ───────────────────────────────────────────────
 // Carries ambient data (e.g. botMode) down to individual cards without
@@ -1681,6 +1682,8 @@ function HotelDetailErrorBlock({
   onRaiseQuery: (e: React.MouseEvent) => void;
   onDismiss: (e: React.MouseEvent) => void;
 }) {
+
+    const isDesktop = useMediaQuery("(min-width:767px)");
   return (
     <div
       onClick={(e) => e.stopPropagation()}
@@ -1693,6 +1696,7 @@ function HotelDetailErrorBlock({
         color: "#7f1d1d",
         fontFamily: "'Inter', sans-serif",
         display: "flex",
+        flexDirection: isDesktop ? "row" : "column",
         alignItems: "center",
         gap: 10,
         flexWrap: "wrap",
@@ -1712,7 +1716,7 @@ function HotelDetailErrorBlock({
           <line x1="12" y1="8" x2="12" y2="12" />
           <line x1="12" y1="16" x2="12.01" y2="16" />
         </svg>
-        <span style={{ fontSize: 13, lineHeight: "18px", flex: 1, minWidth: 0 }}>
+        <span style={{ fontSize: isDesktop ? 13 : 10, lineHeight: "18px", flex: 1, minWidth: 0 }}>
           {message}
         </span>
       </div>
@@ -1727,7 +1731,7 @@ function HotelDetailErrorBlock({
             border: "1px solid #fecaca",
             background: "#ffffff",
             color: "#7f1d1d",
-            fontSize: 12,
+            fontSize: isDesktop? 12 : 10,
             fontWeight: 600,
             cursor: raising ? "not-allowed" : "pointer",
           }}
@@ -1744,7 +1748,7 @@ function HotelDetailErrorBlock({
             border: "none",
             background: "#7f1d1d",
             color: "#ffffff",
-            fontSize: 12,
+            fontSize: isDesktop ? 12: 10,
             fontWeight: 600,
             cursor: !canRaise || raising ? "not-allowed" : "pointer",
             opacity: !canRaise ? 0.6 : 1,
@@ -1759,7 +1763,7 @@ function HotelDetailErrorBlock({
               Requesting…
             </>
           ) : (
-            "Offline Quote"
+            "Request Offline Quote"
           )}
         </button>
       </div>

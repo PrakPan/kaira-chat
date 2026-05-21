@@ -479,40 +479,42 @@ const FeedbackPopup: React.FC<{
           </div>
         </div>
 
-        {showOtherInput && (
-          <textarea
-            autoFocus
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            placeholder="Tell us what went wrong"
-            maxLength={1000}
-            onFocus={(e) => {
-              e.currentTarget.style.borderColor = "#0d0d0d";
-              e.currentTarget.style.background = "#ffffff";
-            }}
-            onBlur={(e) => {
-              e.currentTarget.style.borderColor = "#e5e7eb";
-              e.currentTarget.style.background = "#f8fafc";
-            }}
-            style={{
-              width: "100%",
-              minHeight: 96,
-              maxHeight: 220,
-              padding: "12px 14px",
-              borderRadius: 12,
-              border: "1px solid #e5e7eb",
-              background: "#f8fafc",
-              color: "#0d0d0d",
-              fontFamily: "'Inter', sans-serif",
-              fontSize: 14,
-              lineHeight: "20px",
-              resize: "vertical",
-              outline: "none",
-              boxSizing: "border-box",
-              transition: "border-color 0.15s ease, background 0.15s ease",
-            }}
-          />
-        )}
+        <textarea
+          autoFocus={showOtherInput}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          placeholder={
+            showOtherInput
+              ? "Tell us what went wrong"
+              : "Add more details (optional)"
+          }
+          maxLength={1000}
+          onFocus={(e) => {
+            e.currentTarget.style.borderColor = "#0d0d0d";
+            e.currentTarget.style.background = "#ffffff";
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.borderColor = "#e5e7eb";
+            e.currentTarget.style.background = "#f8fafc";
+          }}
+          style={{
+            width: "100%",
+            minHeight: 96,
+            maxHeight: 220,
+            padding: "12px 14px",
+            borderRadius: 12,
+            border: "1px solid #e5e7eb",
+            background: "#f8fafc",
+            color: "#0d0d0d",
+            fontFamily: "'Inter', sans-serif",
+            fontSize: 14,
+            lineHeight: "20px",
+            resize: "vertical",
+            outline: "none",
+            boxSizing: "border-box",
+            transition: "border-color 0.15s ease, background 0.15s ease",
+          }}
+        />
 
         <div
           style={{
