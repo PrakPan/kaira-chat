@@ -1,0 +1,145 @@
+/* =========================================
+   FAQ section — destination-page style.
+   Centered heading with italic serif accent,
+   thin-rule rows, circular plus icon that
+   rotates 45° and turns yellow on open.
+   ========================================= */
+
+$ink: #0b1220;
+$ink-2: #1a2436;
+$ink-3: #445069;
+$ink-4: #8a93a6;
+$line: #ececec;
+$bg: #ffffff;
+$bg-2: #fafaf5;
+$yellow: #f7e700;
+
+.faqBlock {
+  background: $bg;
+  padding: 72px 0;
+
+  @media (max-width: 640px) {
+    padding: 48px 0;
+  }
+}
+.faqContainer {
+  max-width: 1240px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 28px;
+
+  @media (max-width: 640px) {
+    padding: 0 20px;
+  }
+}
+.faqHead {
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto 32px;
+}
+.faqHead h2 {
+  font-size: clamp(30px, 3.4vw, 44px);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+  margin-bottom: 10px;
+  color: $ink;
+}
+.faqHead h2 .serif {
+  font-family: "Instrument Serif", "Times New Roman", serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+}
+.faqLede {
+  font-size: 16px;
+  color: $ink-3;
+  line-height: 1.5;
+}
+.faqLede .serif {
+  font-family: "Instrument Serif", "Times New Roman", serif;
+  font-style: italic;
+  font-weight: 400;
+  color: $ink;
+}
+.faqList {
+  max-width: 880px;
+  margin: 0 auto;
+}
+.faqItem {
+  border-bottom: 1px solid $line;
+}
+.faqItem:last-child {
+  border-bottom: 0;
+}
+.faqQ {
+  width: 100%;
+  background: transparent;
+  border: 0;
+  padding: 22px 0;
+  text-align: left;
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: 700;
+  color: $ink;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  letter-spacing: -0.01em;
+
+  @media (max-width: 640px) {
+    font-size: 15.5px;
+    padding: 18px 0;
+  }
+}
+.faqQ:focus {
+  outline: none;
+}
+.faqIcon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: $bg-2;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+  color: $ink-2;
+}
+.faqIcon svg {
+  width: 14px;
+  height: 14px;
+}
+.faqItemOpen .faqIcon {
+  background: $yellow;
+  transform: rotate(45deg);
+  color: $ink;
+}
+.faqA {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.3s ease;
+}
+.faqItemOpen .faqA {
+  max-height: 800px;
+}
+.faqAInner {
+  padding: 0 0 22px;
+  font-size: 14.5px;
+  color: $ink-3;
+  line-height: 1.6;
+  max-width: 720px;
+}
+.faqAInner b,
+.faqAInner strong {
+  color: $ink;
+  font-weight: 600;
+}
+.faqAInner .serif {
+  color: $ink;
+  font-family: "Instrument Serif", "Times New Roman", serif;
+  font-style: italic;
+  font-weight: 400;
+}
