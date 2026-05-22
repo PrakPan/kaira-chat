@@ -25,7 +25,7 @@ export default function ThankyouPage(props) {
       params: {
         page: "Corporates Thank you page",
         event_category: "Button Click",
-        event_label: "Plan Itinerary For Free!",
+        event_label: "Chat with Kaira!",
         event_action: "Banner",
       },
     });
@@ -68,7 +68,7 @@ export default function ThankyouPage(props) {
               onClick={handlePlanButton}
               className="mx-auto px-[1rem] py-[0.7rem] font-[500] text-black bg-[#f7e700] border-[1px] rounded-[7px] border-black"
             >
-              Plan Itinerary For Free!
+              Chat with Kaira!
             </button>
           </div>
 

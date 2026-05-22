@@ -1,6 +1,4 @@
 import React from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { imgUrlEndPoint } from "../../theme/ThemeConstants";
 import { getIndianPrice } from "../../../services/getIndianPrice";
 import ImageWithSkeleton from "./ImageWithSkeleton";
@@ -8,6 +6,25 @@ import styles from "../../../styles/pages/revamp/destination.module.scss";
 
 
 const Arrow = () => <span className={styles.arrow} aria-hidden />;
+
+// Inline SVG arrow so the CTA chevron renders even on pages where FontAwesome's
+// auto-CSS hasn't been injected (e.g. dashboard / profile routes).
+const CtaArrow = () => (
+  <svg
+    width="13"
+    height="13"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <line x1="5" y1="12" x2="19" y2="12" />
+    <polyline points="12 5 19 12 12 19" />
+  </svg>
+);
 
 const renderRoute = (cities = []) => {
   if (!cities || !cities.length) return null;
@@ -181,7 +198,7 @@ const ItineraryCardV2 = ({ itinerary, onClick }) => {
           )}
           <div className={styles.itinCta}>
             View trip
-            <FontAwesomeIcon icon={faArrowRight} />
+            <CtaArrow />
           </div>
         </div>
       </div>

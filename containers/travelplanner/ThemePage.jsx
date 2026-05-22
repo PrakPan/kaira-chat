@@ -13,7 +13,6 @@ import ThemeFaqs from "../themes/ThemeFaqs.jsx";
 import Destination1Carousel from "../../components/theme/Destination1Carousel.jsx";
 import Activity1Carousel from "../../components/theme/Activity1Carousel.jsx";
 import Reviews1Carousel from "../../components/theme/Reviews1Carousel.jsx";
-import Itinerary2Carousel from "../../components/theme/Itinerary2Carousel.jsx";
 import PrimaryHeading from "../../components/heading/PrimaryHeading.jsx";
 import SecondaryHeading from "../../components/heading/Secondary.jsx";
 import Itinerary1Carousel from "../../components/theme/Itinerary1Carousel.jsx";
@@ -75,6 +74,7 @@ import TestimonialCarousel from "../../components/theme/TestimonialCarousel.jsx"
 import TravelVibeSection from "../../components/revamp/home/TravelVibeSection.jsx";
 import JourneySimplified from "../../components/revamp/home/JourneySimplified.jsx";
 import styles from "../../styles/pages/revamp/destination.module.scss"
+import OverviewEditorial from "../../components/revamp/destination/OverviewEditorial.jsx";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -319,10 +319,44 @@ export default function ThemePage(props) {
       )}
 
       <SetWidthContainer>
+
+         <section className={`${styles.block} ${styles.editorialBlock}`}>
+          <OverviewEditorial
+             tag="Kaira's take"
+              heading={ props.experienceData.overview_heading ||
+                `Why we send first-timers to ${props?.slug}.`
+              }
+              text={
+                props.experienceData?.overview_text || props?.experienceData?.short_description
+              }
+              image={
+                props.experienceData?.overview_image 
+                // ||
+                // (hotLocations[0] && hotLocations[0].image)
+              }
+              ctaLabel={`Plan my ${props?.slug} trip`}
+             
+            locations={props.experienceData.locations}
+            overview_heading={props.experienceData.overview_heading}
+            overview_text={props.experienceData.short_description}
+          />
+          {/* {props.experienceData.locations?.length ? (
+            <div style={{ marginTop: 32 }}>
+              <MapBox
+                InfoWindowContainer={InfoWindowContainer}
+                locations={props.experienceData.locations}
+                height="300px"
+              />
+            </div>
+          ) : null} */}
+          <div className="flex justify-center mt-8">
+             <PlanYourTripButton text={"Chat with Kaira"} slug={props?.slug} />
+          </div>
+        </section>
         {props?.slug === "japan-cherry-blossom" && (
           <PathNavigation path={"asia/japan"} />
         )}
-        {props.experienceData.overview_heading &&
+        {/* {props.experienceData.overview_heading &&
           props.experienceData.overview_text &&
           props?.slug !== "ladakh" &&
           props?.slug !== "thailand" && props?.slug !== "dubai" && props?.slug !== "japan" && props?.slug !== "singapore" && props?.slug !== "bali" && props?.slug != 'europe-continent' ? (
@@ -332,8 +366,8 @@ export default function ThemePage(props) {
             image={props.experienceData.overview_image}
             slug={props.slug}
           />
-        ) : null}
-        {props?.slug == "thailand" && (
+        ) : null} */}
+        {/* {props?.slug == "thailand" && (
           <>
             <OverviewThailand
               heading={props.experienceData.overview_heading}
@@ -354,7 +388,7 @@ export default function ThemePage(props) {
               slug={props?.slug}
             />
           </>
-        )}
+        )} */}
 
         <div className="mt-5">
           {components &&
@@ -379,7 +413,7 @@ export default function ThemePage(props) {
 
                     <CarouselNavigation slug={props?.slug} components={navComponents} />
 
-                    <PlanYourTripButton text={"+ Plan Itinerary For Free"} slug={props?.slug} />
+                    <PlanYourTripButton text={"Chat with Kaira"} slug={props?.slug} />
                   </div>
                 ) : null;
               }
@@ -649,7 +683,14 @@ export default function ThemePage(props) {
                           </>
                         )}
 
-                        <Itinerary2Carousel elements={component.elements} />
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+                          {component.elements.map((el, i) => (
+                            <ItineraryCardV2
+                              key={el.id ?? el.page_id ?? i}
+                              itinerary={el}
+                            />
+                          ))}
+                        </div>
                       </div>
                     ) : component.carousel === "activity-1" ? (
                       <>
@@ -909,7 +950,7 @@ export default function ThemePage(props) {
                             <FontAwesomeIcon icon={faChevronRight} />
                           </div>
                         </div>
-                        <PlanYourTripButton text={"+ Plan Itinerary For Free"} slug={props?.slug} />
+                        <PlanYourTripButton text={"+ Chat with Kaira"} slug={props?.slug} />
                       </>
                     ) : component.carousel === "destination-2" ? (
                       <>
@@ -922,7 +963,7 @@ export default function ThemePage(props) {
                           slug={props?.slug}
                           page={"Country Page"}
                         />
-                        <PlanYourTripButton text={"+ Plan Itinerary For Free"} slug={props?.slug} />
+                        <PlanYourTripButton text={"Chat with Kaira"} slug={props?.slug} />
                       </>
                     ) : component.carousel === "destination-5" || component.carousel === "poi-1" ? (
                       <>
@@ -1266,7 +1307,7 @@ export const PlanYourTripButton = (props) => {
       params: {
         page: props.page ? props.page : "",
         event_category: "Button Click",
-        event_label: "Plan Itinerary For Free!",
+        event_label: "Chat with Kaira!",
         event_action: "Banner",
       },
     });
@@ -1274,13 +1315,13 @@ export const PlanYourTripButton = (props) => {
 
   return (
 
-    <div className="flex items-center justify-center mt-5 text-white bg-[#07213A] rounded-md  w-fit mx-auto hover:opacity-90 cursor-pointer">
+    <div className="flex items-center justify-center mt-5 text-white bg-[#07213A] rounded-2xl  w-fit mx-auto hover:opacity-90 cursor-pointer">
       <SecondaryButton onClick={handlePlanButton} className={props?.className}>
         {props.text
           ? props.text
           : props.slug === "honeymoon-2025"
             ? "Plan Your Honeymoon!"
-            : "+ Plan Your Trip Now!"}
+            : "Chat with Kaira"}
       </SecondaryButton>
 
       <TailoredFormMobileModal
@@ -1317,7 +1358,7 @@ export const PlanYourTripLadakhButton = (props) => {
       params: {
         page: props.page ? props.page : "",
         event_category: "Button Click",
-        event_label: "Plan Itinerary For Free!",
+        event_label: "Chat with Kaira!",
         event_action: "Banner",
       },
     });
