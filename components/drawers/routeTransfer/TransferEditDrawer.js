@@ -2386,7 +2386,9 @@ const RouteContainer = (props) => {
     let calculatedStartTime;
 
     if (currentStep === 1) {
-      calculatedStartTime = dayjs(`${baseStartDate} 00:00`);
+      // Default the first leg's departure time to 11:00 AM for all transfer
+      // modes (instead of midnight).
+      calculatedStartTime = dayjs(`${baseStartDate} 11:00`);
     } else {
       const prevSelected = selectedData[currentStep - 2];
       const prevArrivalTime = prevSelected?.arrival_time;
@@ -3657,7 +3659,9 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
     let calculatedStartTime;
 
     if (currentStep === 1) {
-      calculatedStartTime = dayjs(`${baseStartDate} 00:00`);
+      // Default the first leg's departure time to 11:00 AM for all transfer
+      // modes (instead of midnight).
+      calculatedStartTime = dayjs(`${baseStartDate} 11:00`);
     } else {
       const prevSelected = selectedData[currentStep - 2];
       const prevArrivalTime = prevSelected?.arrival_time;
@@ -4130,7 +4134,7 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
                                   Departure Time
                                 </div>
                                 <div
-                                  className="flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50"
+                                  className="flex items-center justify-between gap-2 p-2 border border-[#d0d5dd] rounded-[8px] shadow-[0px_1px_2px_rgba(16,24,40,0.05)] cursor-pointer bg-white hover:bg-gray-50"
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     setShowTimeDropdown(!showTimeDropdown);
@@ -7138,7 +7142,7 @@ const toggleTransferDetails = (priceOptionId) => {
               Departure Time
             </div>
             <div
-              className={`flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50 ${
+              className={`flex items-center justify-between gap-2 p-2 border border-[#d0d5dd] rounded-[8px] shadow-[0px_1px_2px_rgba(16,24,40,0.05)] cursor-pointer bg-white hover:bg-gray-50 ${
                 isBookingInProgress ? "opacity-50 cursor-not-allowed" : ""
               }`}
               onClick={() =>

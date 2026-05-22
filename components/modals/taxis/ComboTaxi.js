@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import media from "../../media";
 import axiosTaxiSearch from "../../../services/bookings/TaxiSearch";
@@ -17,7 +17,6 @@ import { fetchTransferMode } from "../../../services/bookings/FetchTaxiRecommend
 import dayjs from "dayjs";
 import { add, format } from "date-fns";
 import { DatePicker } from "../../../containers/newitinerary/breif/route/RouteEditSection";
-import AirbnbCalendarSingleMonth from "../../calendar/SingleCalendar";
 
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
@@ -70,8 +69,6 @@ const ComboTaxi = (props) => {
   const currency = useSelector(state=>state.currency);
   
 
-  const [showDateDropdown, setShowDateDropdown] = useState(false);
-  const calendarRef = useRef(null);
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
   const [selectedDate, setSelectedDate] = useState(
     props?.comboStartDate || null
@@ -83,24 +80,6 @@ const ComboTaxi = (props) => {
   );
   const { number_of_adults, number_of_children, number_of_infants } =
     useSelector((state) => state.Itinerary);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (calendarRef.current && !calendarRef.current.contains(event.target)) {
-        setShowDateDropdown(false);
-      }
-    };
-
-    if (showDateDropdown) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [showDateDropdown]);
 
   useEffect(() => {
     if (props?.comboStartTime) {
@@ -510,61 +489,28 @@ const ComboTaxi = (props) => {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
 
                   {(selectedDate || props?.comboStartDate) && (
-                    <div className="date-dropdown-container relative w-full sm:w-auto">
-                      <div className="text-sm font-medium text-gray-700 mb-2">
-                        Departure Date
-                      </div>
-
-                      {/* Clickable date display box */}
-                      <div
-                        className="flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50"
-                        onClick={() => setShowDateDropdown(!showDateDropdown)}
-                      >
-                        <span className="text-sm font-medium">
-                          {dayjs(selectedDate || props?.comboStartDate)?.format("DD MMM YYYY")}
-                        </span>
-                        <button>
-                          <svg
-                            className={`w-5 h-5 text-gray-600 transition-transform`}
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M8 7V3m8 4V3m-9 8h10m2 10H5a2 2 0 01-2-2V7a2 2 0 012-2h14a2 2 0 012 2v12a2 2 0 01-2 2z"
-                            />
-                          </svg>
-                        </button>
-                      </div>
-
-                      {/* Calendar Dropdown */}
-                      {showDateDropdown && (
-                        <div
-                          ref={calendarRef}
-                          className="absolute z-[15] w-auto sm:w-72 mt-1 bg-white border rounded-md shadow-lg p-2"
-                        >
-                          <AirbnbCalendarSingleMonth
-                            valueStart={selectedDate || props?.comboStartDate}
-                            date={{}}
-                            onChangeDate={(e) => {
-                              console.log(e);
-                              const newDate = dayjs(e.start).format("YYYY-MM-DD");
-                              setSelectedDate(newDate);
-                              if (props.onDateChange) {
-                                props.onDateChange(newDate);
-                              } else {
-                                fetchDataWithNewDate(newDate);
-                              }
-
-                            }}
-                            setShowCalendar={() => setShowDateDropdown(false)}
-                          />
-                        </div>
-                      )}
+                    <div className="w-full sm:w-auto">
+                      <label className="block text-sm font-medium mb-1">
+                        Departure Date:
+                      </label>
+                      <DatePicker
+                        id="departureDate"
+                        date={selectedDate || props?.comboStartDate}
+                        defaultDate={props?.comboStartDate}
+                        onDateChange={(e) => {
+                          const newDate = dayjs(e.target.value).format(
+                            "YYYY-MM-DD"
+                          );
+                          setSelectedDate(newDate);
+                          if (props.onDateChange) {
+                            props.onDateChange(newDate);
+                          } else {
+                            fetchDataWithNewDate(newDate);
+                          }
+                        }}
+                        isOutsideRange={() => false}
+                        enableOutsideDays={true}
+                      />
                     </div>
                   )}
 
@@ -603,7 +549,7 @@ const ComboTaxi = (props) => {
                         Departure Time
                       </div>
                       <div
-                        className="flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50"
+                        className="flex items-center justify-between gap-2 p-2 border border-[#d0d5dd] rounded-[8px] shadow-[0px_1px_2px_rgba(16,24,40,0.05)] cursor-pointer bg-white hover:bg-gray-50"
                         onClick={() => setShowTimeDropdown(!showTimeDropdown)}
                       >
                         <span className="text-sm font-medium">
@@ -633,26 +579,21 @@ const ComboTaxi = (props) => {
                       </div>
 
                       {showTimeDropdown && (
-                        <div className="absolute z-[15]  mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto">
-                          <div className="sticky -top-1 bg-gray-100 p-2 border-b">
-                            <span className="font-medium text-sm">
-                              Select Time
-                            </span>
-                          </div>
-                          <div className="p-1">
-                            {timeSlots.map((slot, index) => (
-                              <div
-                                key={index}
-                                className={`p-2 hover:bg-blue-50 cursor-pointer text-sm rounded-md ${selectedTime === slot.display
-                                  ? "bg-blue-100"
+                        <div className="absolute right-0 z-[15] mt-1 w-48 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto">
+                          {timeSlots.map((slot, index) => (
+                            <div
+                              key={index}
+                              className={`p-2 hover:bg-gray-100 cursor-pointer text-sm ${
+                                slot.value ===
+                                (selectedTimeValue || props?.comboStartTime)
+                                  ? "bg-yellow-100 font-medium"
                                   : ""
-                                  }`}
-                                onClick={() => handleTimeSelection(slot)}
-                              >
-                                {slot.display}
-                              </div>
-                            ))}
-                          </div>
+                              }`}
+                              onClick={() => handleTimeSelection(slot)}
+                            >
+                              {slot.display}
+                            </div>
+                          ))}
                         </div>
                       )}
                     </div>
