@@ -224,22 +224,25 @@ const StartScreen: React.FC<StartScreenProps> = ({
   const travellerStories =
     themeConfig?.travellerStories ?? defaultTravellerStories;
 
-  const row1Heading =
-    themeConfig?.rows?.row1?.heading ?? "From Relaxation to Adventure";
-  const row1Icon = themeConfig?.rows?.row1?.icon ?? "🌅";
-  const row1Cards = themeConfig?.rows?.row1?.cards ?? defaultAllTrips;
+  const defaultRows = [
+    {
+      heading: "From Relaxation to Adventure",
+      icon: "🌅",
+      cards: defaultAllTrips,
+    },
+    {
+      heading: "Trending This April",
+      icon: "🔥",
+      cards: defaultTrendingTrips,
+    },
+    {
+      heading: "TTW's Trending Themes",
+      icon: "🎯",
+      cards: defaultCampaignThemes,
+    },
+  ];
 
-  const row2Heading =
-    themeConfig?.rows?.row2?.heading ?? "Trending This April";
-  const row2Icon = themeConfig?.rows?.row2?.icon ?? "🔥";
-  const row2Cards = themeConfig?.rows?.row2?.cards ?? defaultTrendingTrips;
-
-  const row3Heading =
-    themeConfig?.rows?.row3?.heading ?? "TTW's Trending Themes";
-  const row3Icon = themeConfig?.rows?.row3?.icon ?? "🎯";
-  const row3Cards = themeConfig?.rows?.row3?.cards ?? defaultCampaignThemes;
-
-  const row4 = themeConfig?.rows?.row4;
+  const rows = themeConfig?.rows ?? defaultRows;
 
   return (
     <div className="relative h-full">
@@ -332,115 +335,48 @@ const StartScreen: React.FC<StartScreenProps> = ({
           </div>
         </div>
 
-        {/* ── P1: From Relaxation to Adventure (combined, all 6 cards) ──────── */}
-        <div>
-          <div className="flex items-center gap-2 mb-3">
-            <span className="text-xl">{row1Icon}</span>
-            <h2
-              className="text-lg font-semibold text-gray-900"
-              style={{ fontFamily: "'Inter', sans-serif" }}
-            >
-              {row1Heading}
-            </h2>
-          </div>
-          <div
-            className="flex gap-3 overflow-x-auto pb-2"
-            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-          >
-            {row1Cards.map((trip, index) => (
-              <TripCard
-                key={`all-${index}`}
-                trip={trip}
-                delay={140 + index * 50}
-                mounted={mounted}
-                onSelect={onPromptSelect}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* ── P2: Trending This April 🔥 ───────────────────────────────────── */}
-        <div>
-          <div className="flex items-center gap-2 mb-3">
-            <span className="text-xl">{row2Icon}</span>
-            <h2
-              className="text-lg font-semibold text-gray-900"
-              style={{ fontFamily: "'Inter', sans-serif" }}
-            >
-              {row2Heading}
-            </h2>
-          </div>
-          <div
-            className="flex gap-3 overflow-x-auto pb-2"
-            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-          >
-            {row2Cards.map((trip, index) => (
-              <TrendingCard
-                key={`trending-${index}`}
-                trip={trip}
-                delay={300 + index * 50}
-                mounted={mounted}
-                onSelect={onPromptSelect}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* ── TTW's Trending Themes — 6 campaign cards ─────────────────────── */}
-        <div>
-          <div className="flex items-center gap-2 mb-3">
-            <span className="text-xl">{row3Icon}</span>
-            <h2
-              className="text-lg font-semibold text-gray-900"
-              style={{ fontFamily: "'Inter', sans-serif" }}
-            >
-              {row3Heading}
-            </h2>
-          </div>
-          <div
-            className="flex gap-3 overflow-x-auto pb-2"
-            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-          >
-            {row3Cards.map((trip, index) => (
-              <TrendingCard
-                key={`theme-${index}`}
-                trip={trip}
-                delay={460 + index * 50}
-                mounted={mounted}
-                onSelect={onPromptSelect}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* ── Optional Row 4 — themed activity row ─────────────────────────── */}
-        {row4 && (
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              {row4.icon && <span className="text-xl">{row4.icon}</span>}
-              <h2
-                className="text-lg font-semibold text-gray-900"
-                style={{ fontFamily: "'Inter', sans-serif" }}
+        {/* ── Theme rows — render any number of horizontally scrolling rows ── */}
+        {rows.map((row, rowIndex) => {
+          const baseDelay = 140 + rowIndex * 160;
+          return (
+            <div key={`row-${rowIndex}`}>
+              <div className="flex items-center gap-2 mb-3">
+                {row.icon && <span className="text-xl">{row.icon}</span>}
+                <h2
+                  className="text-lg font-semibold text-gray-900"
+                  style={{ fontFamily: "'Inter', sans-serif" }}
+                >
+                  {row.heading}
+                </h2>
+              </div>
+              <div
+                className="flex gap-3 overflow-x-auto pb-2"
+                style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
               >
-                {row4.heading}
-              </h2>
+                {row.cards.map((trip, cardIndex) => {
+                  const delay = baseDelay + cardIndex * 50;
+                  return "sublabel" in trip && trip.sublabel ? (
+                    <TrendingCard
+                      key={`row-${rowIndex}-card-${cardIndex}`}
+                      trip={trip as { image: string; label: string; sublabel: string; prompt: string; description?: string }}
+                      delay={delay}
+                      mounted={mounted}
+                      onSelect={onPromptSelect}
+                    />
+                  ) : (
+                    <TripCard
+                      key={`row-${rowIndex}-card-${cardIndex}`}
+                      trip={trip as { image: string; label: string; prompt: string; tags?: string; description?: string }}
+                      delay={delay}
+                      mounted={mounted}
+                      onSelect={onPromptSelect}
+                    />
+                  );
+                })}
+              </div>
             </div>
-            <div
-              className="flex gap-3 overflow-x-auto pb-2"
-              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-            >
-              {row4.cards.map((trip, index) => (
-                <TripCard
-                  key={`row4-${index}`}
-                  trip={trip}
-                  delay={620 + index * 50}
-                  mounted={mounted}
-                  onSelect={onPromptSelect}
-                />
-              ))}
-            </div>
-          </div>
-        )}
+          );
+        })}
 
       </div>
     </div>
@@ -500,14 +436,16 @@ const TripCard: React.FC<TripCardProps> = ({ trip, delay, mounted, onSelect }) =
       onClick={() => onSelect(trip.prompt)}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="group relative overflow-hidden rounded-2xl flex-shrink-0 max-w-[180px] md:max-w-[240px] aspect-[240/244]"
+      className="group relative overflow-hidden rounded-2xl flex-shrink-0 w-[180px] md:w-[240px] aspect-[240/244]"
       style={{
-        transform: hovered ? "scale(1.03)" : "scale(1)",
+        transform: hovered ? "translate3d(0,-3px,0)" : "translate3d(0,0,0)",
         transition:
           "transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease",
         boxShadow: hovered
           ? "0 12px 32px rgba(0,0,0,0.18)"
           : "0 2px 8px rgba(0,0,0,0.08)",
+        WebkitBackfaceVisibility: "hidden",
+        backfaceVisibility: "hidden",
       }}
     >
       {!imgLoaded && (
@@ -521,8 +459,7 @@ const TripCard: React.FC<TripCardProps> = ({ trip, delay, mounted, onSelect }) =
         onError={() => setImgLoaded(true)}
         className="w-full h-full object-cover"
         style={{
-          transform: hovered ? "scale(1.06)" : "scale(1)",
-          transition: "transform 0.4s ease, opacity 0.3s ease",
+          transition: "opacity 0.3s ease",
           opacity: imgLoaded ? 1 : 0,
         }}
       />
@@ -532,6 +469,7 @@ const TripCard: React.FC<TripCardProps> = ({ trip, delay, mounted, onSelect }) =
           background: imgLoaded
             ? "linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.15) 55%, transparent 100%)"
             : "transparent",
+          pointerEvents: "none",
         }}
       />
       {imgLoaded && trip.tags && (
@@ -618,14 +556,16 @@ const TrendingCard: React.FC<TrendingCardProps> = ({
       onClick={() => onSelect(trip.prompt)}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="group relative overflow-hidden rounded-2xl flex-shrink-0 max-w-[180px] md:max-w-[240px] aspect-[240/244]"
+      className="group relative overflow-hidden rounded-2xl flex-shrink-0 w-[180px] md:w-[240px] aspect-[240/244]"
       style={{
-        transform: hovered ? "scale(1.03)" : "scale(1)",
+        transform: hovered ? "translate3d(0,-3px,0)" : "translate3d(0,0,0)",
         transition:
           "transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease",
         boxShadow: hovered
           ? "0 12px 32px rgba(0,0,0,0.18)"
           : "0 2px 8px rgba(0,0,0,0.08)",
+        WebkitBackfaceVisibility: "hidden",
+        backfaceVisibility: "hidden",
       }}
     >
       {!imgLoaded && (
@@ -639,8 +579,7 @@ const TrendingCard: React.FC<TrendingCardProps> = ({
         onError={() => setImgLoaded(true)}
         className="w-full h-full object-cover"
         style={{
-          transform: hovered ? "scale(1.06)" : "scale(1)",
-          transition: "transform 0.4s ease, opacity 0.3s ease",
+          transition: "opacity 0.3s ease",
           opacity: imgLoaded ? 1 : 0,
         }}
       />
@@ -650,6 +589,7 @@ const TrendingCard: React.FC<TrendingCardProps> = ({
           background: imgLoaded
             ? "linear-gradient(to top, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.1) 60%, transparent 100%)"
             : "transparent",
+          pointerEvents: "none",
         }}
       />
 

@@ -1,102 +1,87 @@
 const baliTravellerStories = [
-  {
-    id: 1,
-    name: "Divya and Rahul",
-    tripName: "7N Honeymoon — Ubud and Seminyak",
-    duration: "7 Nights",
-    groupType: "Honeymoon",
-    destinations: ["Ubud", "Seminyak"],
-    image:
-      "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/DivyaRahul.jpg",
-    images: [
-      "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/DivyaRahul.jpg",
-    ],
-    shortDescription:
-      "The villa had a rice field view and a private pool. We left the pool exactly once. Worth it.",
-    viewItineraryLink:
-      "https://thetarzanway.com/chat/dfcd7318-cad3-4a3f-ab42-22586fac2350",
-    rating: 4.9,
-    prompt:
-      "Plan a 7-night Bali honeymoon for a couple from India — 4 nights in Ubud and 3 nights in Seminyak. We want a private pool villa with a rice field view in Ubud, and a stylish beachside stay in Seminyak. Include the most romantic experiences in each area, the best sunset dinners, a couples spa session, and a few standout meals without making the trip exhausting. Tell us the right transfer plan between Ubud and Seminyak, what is genuinely worth booking in advance, and where Rs 85,000 per person at mid-range actually lands.",
-  },
+
   {
     id: 2,
-    name: "Meghna",
-    tripName: "6D Girls Trip — Ubud, Canggu, Seminyak",
-    duration: "6 Days",
-    groupType: "Girls Trip",
-    destinations: ["Ubud", "Canggu", "Seminyak"],
+    name: "Shubham",
+    tripName: "8N Romantic Hidden Gem Bali — Dubai, Ubud, Sidemen, Nusa Penida",
+    duration: "8 Nights",
+    groupType: "Couple",
+    destinations: ["Dubai", "Ubud", "Sidemen Valley", "Nusa Penida"],
     image:
-      "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/Meghna.jpg",
+      "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/175731712356781172752380371094.jpg",
     images: [
-      "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/Meghna.jpg",
+       "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/175731712356781172752380371094.jpg",
+        "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/175575850516231250762939453125.jpg",
+        "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/176180557308500790596008300781.jpg"
+
     ],
     shortDescription:
-      "We ate at warungs every night. Spent the savings on one beach club afternoon. Perfect split.",
-    viewItineraryLink:
-      "https://thetarzanway.com/chat/656d83a6-24a1-4216-932c-e4dd91c4d38a",
-    rating: 4.7,
+      "Sidemen Valley had zero tourists and that was the whole point. The candlelight dinner on Nusa Penida sealed the trip. Dubai felt like a warm-up to Bali's quiet side.",
+    viewItineraryLink: "https://thetarzanway.com/chat/6f589740-15d8-4c80-9d72-5a3587c0098f",
+    rating: 4.9,
     prompt:
-      "Plan a 6-day Bali girls trip for a college group of 5 friends on a Rs 65,000 per person budget including flights from India. We want a smart mix of Ubud, Canggu, and Seminyak with affordable shared villas, warung dinners, and one good beach club afternoon. Build the day-by-day with scooter routes, the cafes worth the hype, sunset spots, and where exactly to splurge versus where cheap is completely fine.",
+      "Plan an 8-night romantic Bali trip for a couple from Delhi with a 2-night Dubai stopover. After Dubai we want hidden gem stays — 2 nights Ubud, 2 nights Sidemen Valley, and 2 nights Nusa Penida. Lean into adventure and quiet over the usual tourist circuit. Include the Burj Khalifa, a sunset desert safari, and a dhow cruise dinner in Dubai, then Ayung rafting and ATV in Ubud, Sidemen rice terrace walks and Temesi Waterfall, and a candlelight dinner in Nusa Penida. Stick to 4-star hotels and include flights and all transfers.",
   },
   {
     id: 3,
-    name: "The Kapoor Family",
-    tripName: "8D Family Trip — Ubud and Nusa Dua",
-    duration: "8 Days",
-    groupType: "Family",
-    destinations: ["Ubud", "Nusa Dua"],
+    name: "Neha and friends",
+    tripName: "10N Bali Friends Trip — Ubud, Nusa Penida, Gili Air, Seminyak",
+    duration: "10 Nights",
+    groupType: "Friends",
+    destinations: ["Ubud", "Nusa Penida", "Gili Air", "Seminyak"],
     image:
-      "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/Kapoor.jpg",
+       "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/175577940048974633216857910156.jpg",
     images: [
-      "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/Kapoor.jpg",
+        "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/176180557308500790596008300781.jpg",
+        "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/175577940048974633216857910156.jpg",
+        "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/176180543525607132911682128906.jpg"
     ],
     shortDescription:
-      "My 7-year-old fed a monkey at the Sacred Forest. She has told that story 200 times since.",
-    viewItineraryLink:
-      "https://thetarzanway.com/chat/6f589740-15d8-4c80-9d72-5a3587c0098f",
+      "Manta Point snorkeling ruined every other beach for us. Gili Air with no cars was the reset we needed. Seminyak nights with the girls — exactly the ending we wanted.",
+    viewItineraryLink: "https://thetarzanway.com/chat/656d83a6-24a1-4216-932c-e4dd91c4d38a",
     rating: 4.8,
     prompt:
-      "Plan an 8-day Bali family trip for 2 adults and 2 kids aged 6 and 10 — 4 nights in Ubud and 4 nights in Nusa Dua. Include the Sacred Monkey Forest, a kid-friendly cooking class, a gentle rice field walk, and a family resort with calm beaches in Nusa Dua. Tell us the right pacing for children, which cultural experiences kids actually enjoy, and how to plan around the heat and travel time between the two bases.",
+      "Plan a 10-night Bali trip for 3 friends flying from Bengaluru, mixing culture, adventure, heritage, and a few hidden gems. Split it across Ubud (3 nights), Nusa Penida (2 nights), Gili Air (2 nights), and Seminyak (3 nights), one room sharing. Include a quad bike and whitewater rafting day, the East Bali Lempuyang-Tirta Gangga-Taman Ujung circuit, Manta Point snorkeling in Nusa Penida, the Gili Air turtle snorkeling area and Nipah Beach, and the Uluwatu Kecak fire dance with sunset dinner. Pick 3-5 star hotels and lay out the right transfer flow between the islands.",
   },
   {
     id: 4,
-    name: "Aditya",
-    tripName: "10D Solo — Bali and Lombok",
-    duration: "10 Days",
-    groupType: "Solo",
-    destinations: ["Bali", "Lombok", "Gili Islands"],
-    image:
-      "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/Aditya.jpg",
-    images: [
-      "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/Aditya.jpg",
-    ],
-    shortDescription:
-      "Kuta Lombok on Day 8 was the best beach I have ever been to. Nobody was there.",
-    viewItineraryLink:
-      "https://thetarzanway.com/chat/f80715b0-5fdc-443b-b723-44bfb3b2121f",
-    rating: 4.9,
-    prompt:
-      "Plan a 10-day solo Bali and Lombok trip on a Rs 72,000 budget including flights from India. Cover Ubud, Canggu, the fast boat to the Gili Islands, and Kuta Lombok for proper quiet beach days. Tell me which Gili island suits a solo traveller, how to handle the boat crossings smoothly, and where to base myself on each leg so the trip flows without constant movement.",
-  },
-  {
-    id: 5,
-    name: "Riya and Sameer",
-    tripName: "7N Wellness Retreat — Ubud",
-    duration: "7 Nights",
+    name: "Parth",
+    tripName: "8N Romantic Adventure Escape — Seminyak, Ubud, Nusa Dua",
+    duration: "8 Nights",
     groupType: "Couple",
-    destinations: ["Ubud"],
+    destinations: ["Seminyak", "Ubud", "Nusa Dua"],
     image:
-      "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/RiyaSameer.jpg",
+     "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/176180543525607132911682128906.jpg",
     images: [
-      "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/RiyaSameer.jpg",
+       "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/176180543525607132911682128906.jpg",
+        "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/175990837930542778968811035156.jpg",
     ],
     shortDescription:
-      "We went for the yoga. We stayed for the food. We came back 8 months later.",
-    viewItineraryLink: "",
+      "The Kecak fire dance at Melasti Beach with a seaside dinner was something else. Nusa Penida in a day felt like seeing three different worlds. The floating breakfast in Ubud was the most Bali morning possible.",
+    viewItineraryLink: "https://thetarzanway.com/chat/dfcd7318-cad3-4a3f-ab42-22586fac2350",
     rating: 4.8,
     prompt:
-      "Plan a 7-night wellness Bali trip for a couple based entirely in Ubud. Include a structured yoga retreat or daily classes at a respected studio, sound healing, rice field walks, healthy cafes, and a Tirta Empul purification experience. Tell us the difference between staying at a wellness retreat versus booking a villa and attending classes separately, and where realistic mid-range wellness costs actually land.",
+      "Plan an 8-night romantic Bali trip for a couple from Ahmedabad — 3 nights in Seminyak, 3 nights in Ubud, and 2 nights in Nusa Dua. Mix adventure with romance and hidden gems. Include the Melasti Beach sunset Kecak dance with dinner, a full-day Nusa Penida tour, the Bali Swing, Tegallalang rice terraces, Tegenungan Waterfall, Mount Batur sunrise jeep tour with hot springs, the Sacred Monkey Forest, East Bali temples at Lempuyang and Tirta Gangga, a sea walker experience in Nusa Dua, and a romantic floating breakfast in the pool. Include airport transfers and pick 3-5 star hotels like Horison Seminyak, Ubud Raya Boutique Hotel, and The Lerina Hotel Nusa Dua.",
+  },
+    {
+    id: 1,
+    name: "Japnoor",
+    tripName: "9N Blissful Bali Retreat — Ubud, Nusa Penida, Seminyak",
+    duration: "9 Nights",
+    groupType: "Couple",
+    destinations: ["Ubud", "Nusa Penida", "Seminyak"],
+    image:
+       "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/176180557308500790596008300781.jpg",
+    images: [
+        "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/176180557308500790596008300781.jpg",
+        "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/176180543525607132911682128906.jpg"
+    ],
+    shortDescription:
+      "Mount Batur at sunrise was painful but unforgettable. Nusa Penida felt like another planet entirely. The Seminyak villa pool was where the trip finally slowed down.",
+    viewItineraryLink: "https://thetarzanway.com/chat/f80715b0-5fdc-443b-b723-44bfb3b2121f",
+    rating: 4.8,
+    prompt:
+      "Plan a 9-night Bali trip for a couple from Delhi — 4 nights in Ubud, 2 nights in Nusa Penida, and 3 nights in Seminyak. We want a balanced mix of culture, adventure, and beach time. Include the Tegallalang rice terraces, the Bali Swing, a Mount Batur sunrise jeep tour, an ATV jungle ride, the Lempuyang Gates of Heaven, and the Uluwatu Kecak fire dance. Suggest 3-5 star hotels with good ratings, the right transfer plan between islands including the Sanur ferry, and the romantic spots worth booking ahead like Rock Bar and Mozaic.",
   },
 ];
 

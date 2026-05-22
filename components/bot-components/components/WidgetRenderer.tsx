@@ -1,9 +1,12 @@
 import React, { useState, useContext, createContext } from "react";
 import { PiAirplaneTakeoff } from "react-icons/pi";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import axios from "axios";
 import { currencySymbols } from "../../../data/currencySymbols";
 import { MERCURY_HOST } from "../../../services/constants";
+import { openNotification } from "../../../store/actions/notification";
 import { FaTaxi, FaWhatsapp } from "react-icons/fa";
+import useMediaQuery from "../../media";
 
 // ─── Widget environment context ───────────────────────────────────────────────
 // Carries ambient data (e.g. botMode) down to individual cards without
@@ -116,6 +119,7 @@ const ALWAYS_ENABLED_ACTIONS = new Set<string>([
   "open_transfer_drawer",
   "payment.start",
   "sightseeing.open",
+  "pickup_drop.open",
   "visa.open",
   "esim.open",
   "contact.whatsapp",
@@ -1531,6 +1535,242 @@ function isHotelListView(children: WidgetNode[]): boolean {
   });
 }
 
+
+// Star-count → fixed color token. Each tier always renders identically.
+// 5 = purple, 4 = blue, 3 = teal/green, 2 = amber, 1/fallback = gray.
+const STAR_TAG_STYLES: Record<number, { bg: string; color: string; border: string }> = {
+  5: { bg: "#EEEDFE", color: "#3C3489", border: "#AFA9EC" }, // purple
+  4: { bg: "#E6F1FB", color: "#0C447C", border: "#85B7EB" }, // blue
+  3: { bg: "#E1F5EE", color: "#085041", border: "#5DCAA5" }, // teal
+  2: { bg: "#FAEEDA", color: "#633806", border: "#EF9F27" }, // amber
+  1: { bg: "#F1EFE8", color: "#444441", border: "#B4B2A9" }, // gray
+};
+
+function StarRatingTag({ label, starCount }: { label: string; starCount: number }) {
+  const s = STAR_TAG_STYLES[starCount] ?? STAR_TAG_STYLES[1];
+  return (
+    <span
+      style={{
+        padding: "3px 10px",
+        borderRadius: 9999,
+        fontSize: 11,
+        fontWeight: 600,
+        fontFamily: "'Inter', sans-serif",
+        background: s.bg,
+        color: s.color,
+        border: `1px solid ${s.border}`,
+        whiteSpace: "nowrap",
+        display: "inline-block",
+      }}
+    >
+      {label}
+    </span>
+  );
+}
+
+// Small spinner used inside dark buttons (white tones on translucent track).
+function MiniSpinner({ size = 12 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className="animate-spin">
+      <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.35)" strokeWidth="3" />
+      <path d="M12 2a10 10 0 0 1 10 10" stroke="#ffffff" strokeWidth="3" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+// Primary CTA for the HotelCard footer. Drives the detail-fetch flow:
+//   • idle / post-error dismiss  →  "Check Availability"  (probe call only)
+//   • detail success             →  "Select Rooms"        (re-probes, then
+//                                                          opens the drawer)
+// Loading copy adapts to which variant fired the in-flight call.
+function HotelPrimaryActionButton({
+  mode,
+  loading,
+  loadingMode,
+  disabled,
+  onClick,
+}: {
+  mode: "check" | "select";
+  loading: boolean;
+  loadingMode: "check" | "select";
+  disabled: boolean;
+  onClick: (e: React.MouseEvent) => void;
+}) {
+  const interactive = !disabled && !loading;
+  const isSelect = mode === "select";
+  // Yellow CTA with black border + black text — matches the booking-action
+  // accent used elsewhere in the chat surface.
+  const baseBg = "#f7e700";
+  const hoverBg = "#ffef3a";
+  const disabledBg = "#f3f1d4";
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={!interactive}
+      onMouseEnter={(e) => {
+        if (interactive) e.currentTarget.style.background = hoverBg;
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.background = disabled ? disabledBg : baseBg;
+      }}
+      style={{
+        padding: "9px 16px",
+        borderRadius: 10,
+        border: "1px solid #000000",
+        background: disabled ? disabledBg : baseBg,
+        color: "#000000",
+        fontFamily: "'Inter', sans-serif",
+        fontSize: 13,
+        fontWeight: 600,
+        cursor: interactive ? "pointer" : "not-allowed",
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 6,
+        transition: "background 0.15s ease",
+        boxSizing: "border-box",
+        whiteSpace: "nowrap",
+        lineHeight: "18px",
+        opacity: disabled ? 0.7 : 1,
+      }}
+    >
+      {loading ? (
+        <>
+          <DarkMiniSpinner />
+          {loadingMode === "select" ? "Loading rooms…" : "Checking…"}
+        </>
+      ) : isSelect ? (
+        <>
+          Select Rooms
+          {/* <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12" />
+            <polyline points="12 5 19 12 12 19" />
+          </svg> */}
+        </>
+      ) : (
+        "Check Availability"
+      )}
+    </button>
+  );
+}
+
+// Spinner variant for light backgrounds — same shape as MiniSpinner but with
+// dark tones so it's readable on the yellow CTA.
+function DarkMiniSpinner({ size = 12 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className="animate-spin">
+      <circle cx="12" cy="12" r="10" stroke="rgba(0,0,0,0.2)" strokeWidth="3" />
+      <path d="M12 2a10 10 0 0 1 10 10" stroke="#000000" strokeWidth="3" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+// Bottom-of-card error block shown when the hotel detail fetch fails. Hosts
+// the "Raise Query" CTA which calls the hotel-query endpoint; its response is
+// surfaced through openNotification (toaster), not inside the card.
+function HotelDetailErrorBlock({
+  message,
+  raising,
+  canRaise,
+  onRaiseQuery,
+  onDismiss,
+}: {
+  message: string;
+  raising: boolean;
+  canRaise: boolean;
+  onRaiseQuery: (e: React.MouseEvent) => void;
+  onDismiss: (e: React.MouseEvent) => void;
+}) {
+
+    const isDesktop = useMediaQuery("(min-width:767px)");
+  return (
+    <div
+      onClick={(e) => e.stopPropagation()}
+      style={{
+        marginTop: 12,
+        padding: "10px 12px",
+        borderRadius: 12,
+        background: "#fef2f2",
+        border: "1px solid #fecaca",
+        color: "#7f1d1d",
+        fontFamily: "'Inter', sans-serif",
+        display: "flex",
+        flexDirection: isDesktop ? "row" : "column",
+        alignItems: "center",
+        gap: 10,
+        flexWrap: "wrap",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          flex: 1,
+          minWidth: 0,
+        }}
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="8" x2="12" y2="12" />
+          <line x1="12" y1="16" x2="12.01" y2="16" />
+        </svg>
+        <span style={{ fontSize: isDesktop ? 13 : 10, lineHeight: "18px", flex: 1, minWidth: 0 }}>
+          {message}
+        </span>
+      </div>
+      <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
+        <button
+          type="button"
+          onClick={onDismiss}
+          disabled={raising}
+          style={{
+            padding: "6px 12px",
+            borderRadius: 8,
+            border: "1px solid #fecaca",
+            background: "#ffffff",
+            color: "#7f1d1d",
+            fontSize: isDesktop? 12 : 10,
+            fontWeight: 600,
+            cursor: raising ? "not-allowed" : "pointer",
+          }}
+        >
+          Dismiss
+        </button>
+        <button
+          type="button"
+          onClick={onRaiseQuery}
+          disabled={!canRaise || raising}
+          style={{
+            padding: "6px 12px",
+            borderRadius: 8,
+            border: "none",
+            background: "#7f1d1d",
+            color: "#ffffff",
+            fontSize: isDesktop ? 12: 10,
+            fontWeight: 600,
+            cursor: !canRaise || raising ? "not-allowed" : "pointer",
+            opacity: !canRaise ? 0.6 : 1,
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 5,
+          }}
+        >
+          {raising ? (
+            <>
+              <MiniSpinner />
+              Requesting…
+            </>
+          ) : (
+            "Request Offline Quote"
+          )}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function HotelCard({
   node,
   onAction,
@@ -1538,6 +1778,12 @@ function HotelCard({
   node: WidgetNode;
   onAction?: WidgetRendererProps["onAction"];
 }) {
+  const dispatch = useDispatch();
+  const itinerary = useItineraryState();
+  const itineraryId = useSelector(
+    (s: any) =>
+      (s?.ItineraryId as string | null) ?? (s?.Itinerary?.id as string | null) ?? "",
+  );
   const symbol = useItineraryCurrencySymbol();
   const titleNodes = findNodesByType(node, "Title");
   const captionNodes = findNodesByType(node, "Caption");
@@ -1627,24 +1873,171 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
     hotelTags.push(v);
   }
 
+  // ── Detail-fetch flow ────────────────────────────────────────────────────
+  // Card click and the Check Availability button both pre-flight the hotel
+  // detail endpoint. On success we open the drawer via the existing
+  // hotel.view action; on failure we surface a Raise Query CTA at the bottom
+  // of the card. The drawer's own fetch still runs after — this is just a
+  // gate so users see "raise a query" instead of a half-loaded drawer.
+  const accommodationId = ((clickPayload as any).id as string) ?? "";
+  const travclanHotelId =
+    ((clickPayload as any).travclan_hotel_id ??
+      (clickPayload as any).travclanHotelId ??
+      accommodationId) as string;
+  const dbCityId = ((clickPayload as any).dbCityId ??
+    (clickPayload as any).db_city_id) as string | undefined;
+  const startDate = ((clickPayload as any).startDate ??
+    (clickPayload as any).check_in) as string | undefined;
+  const endDate = ((clickPayload as any).endDate ??
+    (clickPayload as any).check_out) as string | undefined;
+  const traceId = ((clickPayload as any).traceId ??
+    (clickPayload as any).trace_id) as string | undefined;
+  const currencyCode = (((clickPayload as any).currency as string) ||
+    (itinerary?.currency as string) ||
+    "INR") as string;
+
+  const occupanciesFromPayload =
+    ((clickPayload as any).occupancies ?? (clickPayload as any).occupancy) as
+      | Array<{ num_adults?: number; child_ages?: number[] }>
+      | undefined;
+  const occupanciesFromItinerary = Array.isArray(
+    itinerary?.hotels_config?.room_configuration,
+  )
+    ? (itinerary!.hotels_config.room_configuration as any[]).map((r) => ({
+        num_adults: r.adults ?? r.num_adults ?? 2,
+        child_ages: r.childAges ?? r.child_ages ?? [],
+      }))
+    : null;
+  const occupancies =
+    occupanciesFromPayload?.length
+      ? occupanciesFromPayload
+      : occupanciesFromItinerary?.length
+        ? occupanciesFromItinerary
+        : [{ num_adults: itinerary?.number_of_adults ?? 2, child_ages: [] }];
+
+  type DetailStatus = "idle" | "loading" | "success" | "error";
+  const [detailStatus, setDetailStatus] = useState<DetailStatus>("idle");
+  const [detailError, setDetailError] = useState<string>("");
+  const [raisingQuery, setRaisingQuery] = useState(false);
+  // Which CTA fired the in-flight detail call. "check" probes only; "select"
+  // re-probes and (on success) opens the hotel drawer via onAction.
+  const [pendingAction, setPendingAction] = useState<"check" | "select">("check");
+
+  const getToken = (): string =>
+    (typeof window !== "undefined" &&
+      (localStorage.getItem("token") ??
+        localStorage.getItem("authToken") ??
+        localStorage.getItem("access_token"))) ||
+    "";
+
+  const fetchDetail = async (action: "check" | "select" = "check") => {
+    if (!clickAction || !accommodationId || detailStatus === "loading") return;
+    setPendingAction(action);
+    setDetailStatus("loading");
+    setDetailError("");
+    const token = getToken();
+    try {
+      await axios.post(
+        `${MERCURY_HOST}/api/v1/hotels/detail/?currency=${currencyCode}`,
+        {
+          trace_id: traceId,
+          check_in: startDate,
+          check_out: endDate,
+          hotel_id: travclanHotelId,
+          city_id: dbCityId,
+          currency: currencyCode,
+          source: ((clickPayload as any).source as string) ?? "Travclan",
+          occupancies,
+        },
+        token ? { headers: { Authorization: `Bearer ${token}` } } : undefined,
+      );
+      setDetailStatus("success");
+      // Probe-only: stay on the card so the user can pick "Select Rooms".
+      // Drawer is only opened on the second (explicit) click.
+      if (action === "select") onAction?.(clickAction);
+    } catch (err: any) {
+      const msg =
+        err?.response?.data?.errors?.[0]?.message?.[0] ??
+        err?.response?.data?.detail ??
+        err?.response?.data?.message ??
+        err?.message ??
+        "Couldn't load hotel details. Please try again.";
+      setDetailError(msg);
+      setDetailStatus("error");
+    }
+  };
+
+  const raiseQuery = async () => {
+    if (!accommodationId || !itineraryId || raisingQuery) return;
+    setRaisingQuery(true);
+    const token = getToken();
+    try {
+      await axios.post(
+        `${MERCURY_HOST}/api/v1/itinerary/${itineraryId}/get-offline-quote/?type=hotels`,
+        {
+          accommodation_id: accommodationId,
+          ...(startDate ? { check_in: startDate } : {}),
+          ...(endDate ? { check_out: endDate } : {}),
+        },
+        token ? { headers: { Authorization: `Bearer ${token}` } } : undefined,
+      );
+      dispatch(
+        openNotification({
+          type: "success",
+          heading: "Query raised",
+          text: "We've notified our team. We'll get back to you shortly.",
+        }),
+      );
+      setDetailError("");
+      setDetailStatus("idle");
+    } catch (err: any) {
+      const msg =
+        err?.response?.data?.errors?.[0]?.message?.[0] ??
+        err?.response?.data?.detail ??
+        err?.response?.data?.message ??
+        err?.message ??
+        "Couldn't raise query. Please try again.";
+      dispatch(
+        openNotification({
+          type: "error",
+          heading: "Couldn't raise query",
+          text: msg,
+        }),
+      );
+    } finally {
+      setRaisingQuery(false);
+    }
+  };
+
+  const detailLoading = detailStatus === "loading";
+  const ctaMode: "check" | "select" = detailStatus === "success" ? "select" : "check";
+  const cardClickable = !!clickAction && !!accommodationId;
+
+  const handleCardClick = () => {
+    if (!cardClickable || detailLoading) return;
+    fetchDetail(ctaMode);
+  };
+
   return (
     <div
-      onClick={() => clickAction && onAction?.(clickAction)}
+      onClick={handleCardClick}
       style={{
         background: "#ffffff",
         border: "1px solid #e5e5e5",
         borderRadius: 16,
         padding: "14px 16px",
-        cursor: clickAction ? "pointer" : "default",
         width: "100%",
         marginBottom: 12,
         boxSizing: "border-box",
+        cursor: cardClickable ? (detailLoading ? "progress" : "pointer") : "default",
         transition: "border-color 0.15s, box-shadow 0.15s, transform 0.15s",
       }}
       onMouseEnter={(e) => {
         (e.currentTarget as HTMLDivElement).style.borderColor = "#111827";
         (e.currentTarget as HTMLDivElement).style.boxShadow = "0 2px 8px rgba(0,0,0,0.06)";
-        (e.currentTarget as HTMLDivElement).style.transform = "translateX(3px)";
+        if (cardClickable && !detailLoading) {
+          (e.currentTarget as HTMLDivElement).style.transform = "translateX(3px)";
+        }
       }}
       onMouseLeave={(e) => {
         (e.currentTarget as HTMLDivElement).style.borderColor = "#e5e5e5";
@@ -1652,59 +2045,55 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
         (e.currentTarget as HTMLDivElement).style.transform = "translateX(0)";
       }}
     >
-      {/* Body: left column (title + rating + tags + divider + desc + price) + image */}
+      {/* Body: text column + image. Mobile stacks image above text. */}
       <div className="flex flex-col-reverse sm:flex-row gap-3 items-stretch">
         <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 8 }}>
-          {/* Title + stars on the same line */}
-          {(name || rating > 0) && (
-            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+          {/* Title + tags share one inline-flow block so tags continue the
+              name's line and wrap naturally when the name spills onto another
+              line — they behave like trailing words rather than a separate
+              row beneath the title. */}
+          {(name || hotelTags.length > 0) && (
+            <div
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                lineHeight: 1.5,
+                wordBreak: "break-word",
+              }}
+            >
               {name && (
-                <div
+                <span
                   style={{
                     fontSize: 16,
                     fontWeight: 600,
                     color: "var(--color-text-primary)",
-                    lineHeight: 1.3,
-                    fontFamily: "'Inter', sans-serif",
-                    flex: 1,
-                    minWidth: 0,
+                    marginRight: hotelTags.length > 0 ? 8 : 0,
+                    verticalAlign: "middle",
                   }}
                 >
                   {name}
-                </div>
+                </span>
               )}
-              {/* {rating > 0 && (
-                <div style={{ display: "flex", alignItems: "center", gap: 2, flexShrink: 0 }}>
-                  {starIcons}
-                </div>
-              )} */}
-            </div>
-          )}
-
-          {/* City name under the heading — sourced from the itinerary city */}
-          {cityName && (
-            <div
-              style={{
-                fontSize: 12,
-                color: "var(--color-text-secondary)",
-                fontFamily: "'Inter', sans-serif",
-              }}
-            >
-              {cityName}
-            </div>
-          )}
-
-          {/* Colorful tags row — each tag gets a distinct color */}
-          {hotelTags.length > 0 && (
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-              {hotelTags.map((t, i) => (
-                <ColorfulTag key={i} label={t} index={i} offset={hashLabel(name)} />
-              ))}
+              {hotelTags.map((t, i) => {
+                const starMatch = t.match(/^(\d)/);
+                const starCount = starMatch ? parseInt(starMatch[1], 10) : 0;
+                return (
+                  <span
+                    key={i}
+                    style={{
+                      display: "inline-block",
+                      verticalAlign: "middle",
+                      marginRight: 6,
+                    }}
+                  >
+                    <StarRatingTag label={t} starCount={starCount} />
+                  </span>
+                );
+              })}
             </div>
           )}
 
           {/* Divider */}
-          {(name || hotelTags.length > 0) && (address || description || priceFormatted) && (
+          {(name || hotelTags.length > 0) && description && (
             <div style={{ height: "0.5px", background: "#e5e5e5" }} />
           )}
 
@@ -1726,41 +2115,50 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
               {description}
             </p>
           )}
+        </div>
 
-          {/* Address — below description, with a location icon */}
-          {address && (
-            <div style={{ display: "flex", alignItems: "flex-start", gap: 6 }}>
-              <span style={{ flexShrink: 0, marginTop: 1 }}>
-                <MapPinIcon size={14} color="#6b7280" />
-              </span>
-              <p
-                style={{
-                  fontSize: 12,
-                  color: "var(--color-text-secondary)",
-                  margin: 0,
-                  fontFamily: "'Inter', sans-serif",
-                  display: "-webkit-box",
-                  WebkitLineClamp: 2,
-                  WebkitBoxOrient: "vertical",
-                  overflow: "hidden",
-                }}
-              >
-                {address}
-              </p>
+        {imgSrc && (
+          <div className="w-full sm:w-[140px] shrink-0 self-start">
+            <div className="w-full h-40 sm:h-[110px] rounded-xl overflow-hidden">
+              <img
+                src={imgSrc}
+                alt={imgAlt}
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              />
             </div>
-          )}
+          </div>
+        )}
+      </div>
 
-          {/* Price */}
-          {priceFormatted && (
-            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+      {/* Footer row — price on the left, primary CTA on the right. Wraps to
+          two lines on narrow widths so the CTA never overlaps the price. The
+          CTA copy switches from "Check Availability" to "Select Rooms" after
+          a successful probe so users can explicitly open the room drawer. */}
+      {(priceFormatted || (accommodationId && detailStatus !== "error")) && (
+        <div
+          style={{
+            marginTop: 14,
+            paddingTop: 12,
+            borderTop: "0.5px solid #e5e5e5",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 10,
+            flexWrap: "wrap",
+            rowGap: 10,
+          }}
+        >
+          {priceFormatted ? (
+            <div style={{ display: "flex", flexDirection: "row", gap: 2, minWidth: 0 }}>
               <PriceLabel />
-              <div style={{ display: "flex", alignItems: "baseline", gap: 4 }}>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 4, flexWrap: "wrap" }}>
                 <span
                   style={{
-                    fontSize: 15,
-                    fontWeight: 600,
+                    fontSize: 16,
+                    fontWeight: 700,
                     color: "var(--color-text-primary)",
                     fontFamily: "'Inter', sans-serif",
+                    lineHeight: 1.2,
                   }}
                 >
                   {priceFormatted}
@@ -1778,19 +2176,44 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
                 )}
               </div>
             </div>
+          ) : (
+            <span />
+          )}
+
+          {accommodationId && detailStatus !== "error" && (
+            <HotelPrimaryActionButton
+              mode={ctaMode}
+              loading={detailLoading}
+              loadingMode={pendingAction}
+              disabled={!cardClickable}
+              onClick={(e) => {
+                e.stopPropagation();
+                fetchDetail(ctaMode);
+              }}
+            />
           )}
         </div>
+      )}
 
-        {imgSrc && (
-          <div className="w-full h-40 sm:w-[120px] sm:h-[120px] shrink-0 rounded-xl overflow-hidden self-center">
-            <img
-              src={imgSrc}
-              alt={imgAlt}
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
-            />
-          </div>
-        )}
-      </div>
+      {/* Detail-fetch error block — only renders when the detail call has
+          failed. Hosts the Offline Quote CTA; its outcome is surfaced via
+          openNotification, not inside the card. */}
+      {detailStatus === "error" && (
+        <HotelDetailErrorBlock
+          message={detailError || "Couldn't load hotel details."}
+          raising={raisingQuery}
+          canRaise={!!accommodationId && !!itineraryId}
+          onRaiseQuery={(e) => {
+            e.stopPropagation();
+            raiseQuery();
+          }}
+          onDismiss={(e) => {
+            e.stopPropagation();
+            setDetailStatus("idle");
+            setDetailError("");
+          }}
+        />
+      )}
     </div>
   );
 }
@@ -3485,6 +3908,7 @@ function findRedirectToP1Button(node: WidgetNode): WidgetNode | null {
 
 const TRIP_EXTRAS_KINDS = new Set<string>([
   "sightseeing.open",
+  "pickup_drop.open",
   "visa.open",
   "esim.open",
 ]);
@@ -3531,6 +3955,22 @@ const TRIP_EXTRAS_THEMES: Record<string, TripExtrasTheme> = {
     ctaBackground: "#C2410C",
     ctaColor: "#FFFFFF",
     ctaShadow: "0 8px 18px rgba(194, 65, 12, 0.28)",
+  },
+  "pickup_drop.open": {
+    defaultHeadline: "Add Airport Transfer",
+    defaultSubline: "Book your airport pickup or drop for a smooth arrival.",
+    defaultCta: "Book transfer",
+    cardBackground:
+      "linear-gradient(135deg, #ecfeff 0%, #cffafe 50%, #a5f3fc 100%)",
+    border: "1px solid rgba(14, 165, 233, 0.32)",
+    iconBackground: "#FFFFFF",
+    iconColor: "#0369A1",
+    glyph: (
+      <FaTaxi size={22} aria-hidden="true" />
+    ),
+    ctaBackground: "#0369A1",
+    ctaColor: "#FFFFFF",
+    ctaShadow: "0 8px 18px rgba(3, 105, 161, 0.28)",
   },
   "visa.open": {
     defaultHeadline: "Add Visa Assistance",
@@ -3607,13 +4047,55 @@ function TripExtrasCard({
     return "";
   };
 
+  const payload = ((button.onClickAction as any)?.payload ?? {}) as Record<string, unknown>;
+  const cityName = asText(payload.cityName ?? (payload as any).city_name ?? (payload as any).city);
+  const taxiType = asText(payload.taxiType ?? (payload as any).taxi_type).toLowerCase();
+  const bookingId = asText(payload.bookingId ?? (payload as any).booking_id);
+  const hasBooking = bookingId.length > 0;
+
+  // Derive a contextual headline / CTA per extras kind so the widget reads as
+  // "Sightseeing Taxi in Ubud" / "Pickup/Drop Taxi in Ubud" without requiring
+  // the server to emit a Title node. The Add/Change distinction lives on the
+  // CTA so the headline stays clean.
+  let derivedHeadline: string | undefined;
+  let derivedSubline: string | undefined;
+  let derivedCta: string | undefined;
+
+  if (actionType === "sightseeing.open") {
+    derivedHeadline = cityName
+      ? `Sightseeing Taxi in ${cityName}`
+      : "Sightseeing Taxi";
+    derivedSubline = hasBooking
+      ? "Update your booked sightseeing ride for this city."
+      : "Browse curated day trips and intra-city rides for this stop.";
+    derivedCta = hasBooking ? "Change sightseeing" : "Explore sightseeing";
+  } else if (actionType === "pickup_drop.open") {
+    const isDrop = taxiType === "drop";
+    derivedHeadline = cityName
+      ? `Pickup/Drop Taxi in ${cityName}`
+      : "Pickup/Drop Taxi";
+    derivedSubline = hasBooking
+      ? `Update your booked ${isDrop ? "airport drop" : "airport pickup"} for this city.`
+      : `Book your ${isDrop ? "airport drop" : "airport pickup"} for a smooth ${isDrop ? "departure" : "arrival"}.`;
+    derivedCta = hasBooking
+      ? `Change ${isDrop ? "drop" : "pickup"}`
+      : `Book ${isDrop ? "drop" : "pickup"}`;
+  }
+
+  // Prefer the cityName-derived headline when we have a city, so server-emitted
+  // generic titles (e.g. "Add Airport Transfer") don't mask the city context.
   const headline =
-    asText(titleNodes[0]?.value) || theme.defaultHeadline;
+    (cityName && derivedHeadline) ||
+    asText(titleNodes[0]?.value) ||
+    derivedHeadline ||
+    theme.defaultHeadline;
   const subline =
     asText(captionNodes[0]?.value) ||
     asText(textNodes[0]?.value) ||
+    derivedSubline ||
     theme.defaultSubline;
-  const buttonLabel = (button.label as string) || theme.defaultCta;
+  const buttonLabel =
+    (button.label as string) || derivedCta || theme.defaultCta;
 
   const handleClick = () => {
     // if (widgetDisabled) return;

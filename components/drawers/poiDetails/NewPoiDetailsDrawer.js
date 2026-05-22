@@ -114,13 +114,20 @@ const NewPoiDetailsDrawer = (props) => {
         }
       );
       var newItinerary = itinerary;
+      // Ensure the new slab element carries a `time` value so CityDay.jsx
+      // buckets it into the slot the user picked. API echoes `time` when
+      // it stores one; if not, fall back to the picker's selection.
+      const newSlabElement = {
+        ...res?.data,
+        time: res?.data?.time || overrides.time || requestData?.time || null,
+      };
       const itineraryCities = newItinerary?.cities?.map((item) => {
         const city = item;
         if (item.id == props?.itinerary_city_id) {
           const day_by_day = city?.day_by_day;
           day_by_day[props?.dayIndex].slab_elements = [
             ...day_by_day[props?.dayIndex]?.slab_elements,
-            res?.data,
+            newSlabElement,
           ];
           city.day_by_day = day_by_day;
         }

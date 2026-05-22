@@ -98,22 +98,34 @@ const ActivityDetailsDrawer = (props) => {
 
   const fetchData = (data) => {
     const paxSource = data?._paxOverride || filterState;
+    const dateSource = data?._dateOverride || props.date;
+    // Day / time / amenity refetches re-render in place via the inline
+    // "Updating" overlay. Routing them through setLoading would swap the
+    // drawer for ActivityDetailsSkeleton, unmounting ActivityDetails and
+    // resetting the user's day + time-of-day picks back to defaults.
+    const isInlineUpdate = !!(
+      data?.amenities || data?._dateOverride || data?._timeOverride
+    );
 
-
-    if (!data?.amenities) {
+    if (isInlineUpdate) {
+      setUpdateAmenities(true);
+    } else {
       setLoading(true);
     }
 
     let requestData = {
-      start_date: getDate(props.date),
+      start_date: getDate(dateSource),
       number_of_adults: paxSource.adults,
       number_of_children: paxSource.children,
       children_ages: paxSource?.children_ages || paxSource.traveler_ages,
     };
 
+    if (data?._timeOverride) {
+      requestData.time_of_day = data._timeOverride;
+    }
+
     if (data?.amenities) {
       requestData.amenities = data.amenities;
-      setUpdateAmenities(true);
     }
 
     activityDetail
@@ -211,6 +223,11 @@ const ActivityDetailsDrawer = (props) => {
               user_ratings_total: res?.data?.activity?.user_ratings_total,
               start_time: formatTime(res?.data?.check_in?.split(" ")?.[1]) || null,
               end_time: formatTime(res?.data?.check_out?.split(" ")?.[1]) || null,
+              // Carry the picker's time-of-day onto the slab element so
+              // CityDay.jsx's getTimeOfDay(item.time) buckets the new item
+              // into the slot the user actually chose. Prefer the API's
+              // value if it returned one.
+              time: res?.data?.time || data?.time || requestData?.time || null,
             };
 
             const updatedDayByDay = city?.day_by_day?.map((day) => {

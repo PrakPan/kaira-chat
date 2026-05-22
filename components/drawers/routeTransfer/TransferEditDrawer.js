@@ -246,9 +246,12 @@ const TransferEditDrawer = (props) => {
   const [multiCitySuggestions, setMultiCitySuggestions] = useState(null);
   const [sightseeingSuggestions, setSightseeingSuggestions] = useState(null);
   const [airportSuggestions, setAirportSuggestions] = useState(null);
-  const [multicityTab, setMulticityTab] = useState(
-    ["sightseeing", "airport", "multicity"].includes(taxiTab) ? taxiTab : "sightseeing",
-  );
+  const [multicityTab, setMulticityTab] = useState(() => {
+    const initial = props?.initialTab;
+    if (["sightseeing", "airport", "multicity"].includes(initial)) return initial;
+    if (["sightseeing", "airport", "multicity"].includes(taxiTab)) return taxiTab;
+    return "sightseeing";
+  });
   const [tabLoaded, setTabLoaded] = useState({
     sightseeing: false,
     airport: false,
@@ -622,7 +625,7 @@ const TransferEditDrawer = (props) => {
             const startParam = includeDateFilter && sightseeingStartDate ? `&start_date=${sightseeingStartDate}` : "";
             const endParam = includeDateFilter && sightseeingEndDate ? `&end_date=${sightseeingEndDate}` : "";
             const typeParam = effectiveType ? `&suggestion_type=${effectiveType}` : "";
-            const multicityUrl = `/${router.query.id || ItineraryId || router.query.sessionId}/?currency=${currency?.currency || "INR"}${cityId ? `&itinerary_city_id=${cityId}` : ""}${startParam}${endParam}${typeParam}`;
+            const multicityUrl = `/${ItineraryId || router.query.id || router.query.sessionId }/?currency=${currency?.currency || "INR"}${cityId ? `&itinerary_city_id=${cityId}` : ""}${startParam}${endParam}${typeParam}`;
             return fetchMulticityRoundtrip
               .get(multicityUrl)
               .then((response) => {
@@ -1006,7 +1009,9 @@ const TransferEditDrawer = (props) => {
           });
         }
         dispatch(setTransfersBookings(response?.data?.data));
+        if(props?.getPaymentHandler){
         props?.getPaymentHandler();
+        }
         setSelectLoading(false);
         setUpdatingTransfer(false);
         // setShowDrawer(false);
@@ -2757,6 +2762,13 @@ const NewMultiModeContainer = ({
   const [pendingBookingData, setPendingBookingData] = useState(null);
   const [isProcessingWarning, setIsProcessingWarning] = useState(false);
   const [isProcessingBooking, setIsProcessingBooking] = useState(false);
+
+  // AllAboard pagination state for Train mode
+  const [allAboardOffset, setAllAboardOffset] = useState({});
+  const [loadingMore, setLoadingMore] = useState({});
+  const [hasMoreAllAboard, setHasMoreAllAboard] = useState({});
+  const ALL_ABOARD_LIMIT = 5;
+
   const { trackTransferBookingAdd } = useAnalytics();
  const { intercity } = useSelector(
   (state) => state.TransferBookings
@@ -3183,6 +3195,24 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
           delete newErrors[transferKey];
           return newErrors;
         });
+
+        // Track AllAboard pagination state
+        if (
+          option?.mode === "Train" &&
+          data.data.booking_source === "AllAboard"
+        ) {
+          setAllAboardOffset((prev) => ({ ...prev, [transferKey]: 0 }));
+          const resultCount = data.data.results?.length || 0;
+          setHasMoreAllAboard((prev) => ({
+            ...prev,
+            [transferKey]: resultCount >= ALL_ABOARD_LIMIT,
+          }));
+        } else {
+          setHasMoreAllAboard((prev) => ({
+            ...prev,
+            [transferKey]: false,
+          }));
+        }
       }
     } catch (error) {
       if (!isLoadMore) {
@@ -4233,7 +4263,7 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
                               currentTransferData.results.length > 0;
 
                             if (hasOmioResults) {
-  return currentTransferData.results.map(
+  const omioRendered = currentTransferData.results.flatMap(
     (result, resultIndex) => {
       const resultPrices = result.prices || [];
       return resultPrices.map(
@@ -4633,6 +4663,48 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
       );
     },
   );
+
+  // AllAboard "Load More" button for Train mode
+  const isAllAboard = currentTransferData.booking_source === "AllAboard";
+  if (isAllAboard && hasMoreAllAboard[transferKey]) {
+    omioRendered.push(
+      <div key="load-more-allaboard" className="flex justify-center mt-4 mb-2">
+        <button
+          onClick={() => {
+            const paxData = {
+              adults: pax?.adults || 1,
+              children: pax?.children || 0,
+              infants: pax?.infants || 0,
+            };
+            const departureDateTime = `${currentModeDepartureDate}T${currentModeDepartureTime}:00`;
+            loadMoreAllAboardResults(
+              currentTransferData,
+              paxData,
+              departureDateTime,
+            );
+          }}
+          disabled={loadingMore[transferKey]}
+          className="flex items-center gap-2 px-6 py-2.5 bg-[#07213A] text-white text-sm font-medium rounded-full hover:bg-[#07213A]/90 active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          {loadingMore[transferKey] ? (
+            <>
+              <PulseLoader size={8} speedMultiplier={0.6} color="#ffffff" />
+              {/* <span>Loading...</span> */}
+            </>
+          ) : (
+            <>
+              <span>Load More Trains</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </>
+          )}
+        </button>
+      </div>
+    );
+  }
+
+  return omioRendered;
 }
 
                             return currentTransferData.prices.map(
@@ -6089,6 +6161,12 @@ const OtherTransfer = ({
   const [loadingRequestKey, setLoadingRequestKey] = useState(null);
   const abortControllerRef = useRef(null);
 
+  // AllAboard pagination state for Train mode
+  const [allAboardOffset, setAllAboardOffset] = useState(0);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMoreAllAboard, setHasMoreAllAboard] = useState(false);
+  const ALL_ABOARD_LIMIT = 5;
+
   const { number_of_adults, number_of_children, number_of_infants } =
     useSelector((state) => state.Itinerary);
   const [showPax, setShowPax] = useState(false);
@@ -6129,10 +6207,6 @@ const OtherTransfer = ({
 
   const [expandedTransfers, setExpandedTransfers] = useState({});
 
-  // Pagination state for AllAboard results
-  const [allAboardOffset, setAllAboardOffset] = useState(0);
-  const [hasMoreAllAboard, setHasMoreAllAboard] = useState(false);
-  const [loadingMore, setLoadingMore] = useState(false);
 
 const toggleTransferDetails = (priceOptionId) => {
   setExpandedTransfers(prev => ({
@@ -6257,7 +6331,7 @@ const toggleTransferDetails = (priceOptionId) => {
         requestBody.offset = currentOffset;
 
         const response = await loadOtherTransfers.post(
-          `/search/?currency=${currency?.currency || "INR"}`,
+          searchUrl,
           requestBody,
           {
             headers: {

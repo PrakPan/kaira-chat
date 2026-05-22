@@ -87,6 +87,7 @@ export default function SlideThree(props) {
             roomConfiguration={roomConfiguration}
             setRoomConfiguration={(val) => dispatch(setRoomConfiguration(val))}
             groupType={groupType}
+            maxRooms={true}
           />
         </div>
 

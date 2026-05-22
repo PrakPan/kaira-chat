@@ -38,8 +38,8 @@ const franceItalyThemeConfig: ThemeConfig = {
       },
     ],
   },
-  rows: {
-    row1: {
+  rows: [
+    {
       heading: "The Five Faces of France and Italy",
       icon: "🌍",
       cards: [
@@ -85,7 +85,7 @@ const franceItalyThemeConfig: ThemeConfig = {
         },
       ],
     },
-    row2: {
+    {
       heading: "France & Italy Right Now",
       icon: "🎐",
       cards: [
@@ -131,7 +131,7 @@ const franceItalyThemeConfig: ThemeConfig = {
         },
       ],
     },
-    row3: {
+    {
       heading: "TTW's France & Italy Themes",
       icon: "🎯",
       cards: [
@@ -177,7 +177,7 @@ const franceItalyThemeConfig: ThemeConfig = {
         },
       ],
     },
-    row4: {
+    {
       heading: "Only Here — Experiences Worth Flying For",
       icon: "✨",
       cards: [
@@ -228,7 +228,7 @@ const franceItalyThemeConfig: ThemeConfig = {
         },
       ],
     },
-  },
+  ],
    travellerStories: franceItalyTravellerStories,
 };
 
