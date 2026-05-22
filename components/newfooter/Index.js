@@ -251,9 +251,9 @@ const NewFooter = () => {
         <Grid>
           <Brand>
             <div className="logo-line">
-              <div className="logo-mark">K</div>
+              <div className="logo-mark">t</div>
               <div className="brand-word">
-                <span className="name">the tarzan way</span>
+                <span className="name">the tarzanway</span>
                 <span className="tag">by Kaira · est. 2018</span>
               </div>
             </div>
@@ -266,8 +266,10 @@ const NewFooter = () => {
                 className="row"
                 onClick={() => (window.location.href = urls.WHATSAPP)}
               >
+                <div className="flex gap-2 items-center">
                 <RiWhatsappFill size={16} />
                 +91 7827441548
+                </div>
               </div>
               <a href="mailto:info@thetarzanway.com">
                 <HiOutlineMail size={16} />

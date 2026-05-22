@@ -1625,3 +1625,188 @@
 .skeletonHolder {
   position: relative;
 }
+
+/* ============ USER DASHBOARD ============
+   Layout for the "My Trips" / profile dashboard. Designed to feel like
+   a destination page: same Inter typography, same line/ink palette,
+   rounded 22px surfaces that echo `.itinCard`. Wrap the page root in
+   `destinationPage` so the design tokens (--ttw-ink, --ttw-line, etc.)
+   resolve here too. */
+.dashboardPage {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 88px 16px 56px;
+  box-sizing: border-box;
+  font-family: "Inter", -apple-system, sans-serif;
+
+  @media (min-width: 768px) {
+    padding: 120px 24px 72px;
+  }
+}
+
+.dashboardSection {
+  margin-top: 28px;
+
+  @media (min-width: 768px) {
+    margin-top: 40px;
+  }
+}
+
+.dashboardHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+
+  @media (min-width: 768px) {
+    margin-bottom: 28px;
+  }
+}
+
+.dashboardTitle {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ttw-ink);
+  margin: 0;
+  line-height: 1.2;
+
+  @media (min-width: 768px) {
+    font-size: 32px;
+  }
+}
+
+.dashboardCount {
+  font-weight: 500;
+  color: var(--ttw-ink-3);
+  margin-left: 8px;
+  font-size: 0.7em;
+  letter-spacing: 0;
+}
+
+.dashboardGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  width: 100%;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+.dashboardContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  width: 100%;
+}
+
+/* Outline pill, white-on-white, used for "Show more" pagination */
+.dashboardShowMore {
+  appearance: none;
+  background: white;
+  color: var(--ttw-ink);
+  border: 1px solid var(--ttw-line);
+  border-radius: 999px;
+  padding: 10px 22px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+
+  &:hover {
+    border-color: var(--ttw-ink);
+    background: #f8fafc;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+/* Dark filled pill — primary CTA, matches the active nav pill */
+.dashboardPrimaryCta {
+  appearance: none;
+  background: var(--ttw-ink);
+  color: white;
+  border: none;
+  border-radius: 999px;
+  padding: 12px 28px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    background: #1f2937;
+    transform: translateY(-1px);
+    box-shadow: 0 12px 24px -10px rgba(11, 18, 32, 0.35);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+/* Empty-state card — same surface treatment as ItineraryCardV2 */
+.dashboardEmpty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 32px 20px;
+  background: white;
+  border: 1px solid var(--ttw-line);
+  border-radius: 22px;
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
+
+  @media (min-width: 768px) {
+    padding: 56px 28px;
+  }
+}
+
+.dashboardEmptyImg {
+  width: 140px;
+  max-width: 40%;
+  height: auto;
+  margin-bottom: 12px;
+  opacity: 0.9;
+
+  @media (min-width: 768px) {
+    width: 180px;
+    margin-bottom: 16px;
+  }
+}
+
+.dashboardEmptyTitle {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ttw-ink);
+  margin: 0;
+
+  @media (min-width: 768px) {
+    font-size: 22px;
+  }
+}
+
+.dashboardEmptySubtitle {
+  font-size: 14px;
+  color: var(--ttw-ink-3);
+  margin: 0 0 16px;
+  max-width: 360px;
+
+  @media (min-width: 768px) {
+    font-size: 15px;
+  }
+}

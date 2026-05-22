@@ -13,7 +13,7 @@ import ThemeFaqs from "../themes/ThemeFaqs.jsx";
 import Destination1Carousel from "../../components/theme/Destination1Carousel.jsx";
 import Activity1Carousel from "../../components/theme/Activity1Carousel.jsx";
 import Reviews1Carousel from "../../components/theme/Reviews1Carousel.jsx";
-import Itinerary2Carousel from "../../components/theme/Itinerary2Carousel.jsx";
+import ItineraryCardV2 from "../../components/revamp/destination/ItineraryCardV2.jsx";
 import PrimaryHeading from "../../components/heading/PrimaryHeading.jsx";
 import SecondaryHeading from "../../components/heading/Secondary.jsx";
 import Itinerary1Carousel from "../../components/theme/Itinerary1Carousel.jsx";
@@ -313,7 +313,7 @@ export default function ThemePage(props) {
 
                     <CarouselNavigation slug={props?.slug} components={navComponents} />
 
-                    <PlanYourTripButton text={"+ Plan Itinerary For Free"} slug={props?.slug} />
+                    <PlanYourTripButton text={"+ Chat with Kaira"} slug={props?.slug} />
                   </div>
                 ) : null;
               }
@@ -544,7 +544,14 @@ export default function ThemePage(props) {
                           </>
                         )}
 
-                        <Itinerary2Carousel elements={component.elements} />
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                          {component.elements.map((el, i) => (
+                            <ItineraryCardV2
+                              key={el.id ?? el.page_id ?? i}
+                              itinerary={el}
+                            />
+                          ))}
+                        </div>
                       </div>
                     ) : component.carousel === "activity-1" ? (
                       <>
@@ -735,7 +742,7 @@ export default function ThemePage(props) {
                           slug={props?.slug}
                           page={"Country Page"}
                         />
-                        <PlanYourTripButton text={"+ Plan Itinerary For Free"} slug={props?.slug} />
+                        <PlanYourTripButton text={"+ Chat with Kaira"} slug={props?.slug} />
                       </>
                     ) : component.carousel === "destination-2" ? (
                       <>
@@ -748,7 +755,7 @@ export default function ThemePage(props) {
                           slug={props?.slug}
                           page={"Country Page"}
                         />
-                        <PlanYourTripButton text={"+ Plan Itinerary For Free"} slug={props?.slug} />
+                        <PlanYourTripButton text={"+ Chat with Kaira"} slug={props?.slug} />
                       </>
                     ) : component.carousel === "destination-5" || component.carousel === "poi-1" ? (
                       <>
@@ -1060,7 +1067,7 @@ export const PlanYourTripButton = (props) => {
       params: {
         page: props.page ? props.page : "",
         event_category: "Button Click",
-        event_label: "Plan Itinerary For Free!",
+        event_label: "Chat with Kaira!",
         event_action: "Banner",
       },
     });
@@ -1111,7 +1118,7 @@ export const PlanYourTripLadakhButton = (props) => {
       params: {
         page: props.page ? props.page : "",
         event_category: "Button Click",
-        event_label: "Plan Itinerary For Free!",
+        event_label: "Chat with Kaira!",
         event_action: "Banner",
       },
     });

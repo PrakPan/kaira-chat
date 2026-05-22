@@ -13,7 +13,7 @@ import ThemeFaqs from "../themes/ThemeFaqs.jsx";
 import Destination1Carousel from "../../components/theme/Destination1Carousel.jsx";
 import Activity1Carousel from "../../components/theme/Activity1Carousel.jsx";
 import Reviews1Carousel from "../../components/theme/Reviews1Carousel.jsx";
-import Itinerary2Carousel from "../../components/theme/Itinerary2Carousel.jsx";
+import ItineraryCardV2 from "../../components/revamp/destination/ItineraryCardV2.jsx";
 import Navigation from "../../components/championsTrophy/Navigation.jsx";
 import PrimaryHeading from "../../components/heading/PrimaryHeading.jsx";
 import SecondaryHeading from "../../components/heading/Secondary.jsx";
@@ -158,7 +158,7 @@ export default function ChampionsTrophy(props) {
                     </PrimaryHeading>
                     <Navigation components={navComponents} className="m-auto" />
 
-                    <PlanYourTripButton text={"+ Plan Itinerary For Free"} />
+                    <PlanYourTripButton text={"+ Chat with Kaira"} />
                   </div>
                 ) : null;
               }
@@ -231,7 +231,14 @@ export default function ChampionsTrophy(props) {
                           </>
                         )}
 
-                        <Itinerary2Carousel elements={component.elements} />
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                          {component.elements.map((el, i) => (
+                            <ItineraryCardV2
+                              key={el.id ?? el.page_id ?? i}
+                              itinerary={el}
+                            />
+                          ))}
+                        </div>
                       </div>
                     ) : component.carousel === "activity-1" ? (
                       <>
@@ -320,7 +327,7 @@ export const PlanYourTripButton = (props) => {
       params: {
         page: props.page ? props.page : "",
         event_category: "Button Click",
-        event_label: "Plan Itinerary For Free!",
+        event_label: "Chat with Kaira!",
         event_action: "Banner",
       },
     });
