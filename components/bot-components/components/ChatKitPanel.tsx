@@ -90,18 +90,18 @@ const SingleChips = styled.button`
 // `quick_reply_shimmer` client effect is active (server is preparing the next
 // batch of suggestions). Matches SingleChips dimensions so the row doesn't
 // jump when real replies land.
-const QuickReplyShimmerChip: React.FC<{ width: number }> = ({ width }) => (
+const QuickReplyShimmerChip: React.FC<{ width: string }> = ({ width }) => (
   <div
     aria-hidden="true"
     style={{
       width,
       height: 32,
       borderRadius: 6,
-      border: "1px solid #e0e0e0",
+      border: "1px solid #f3f4f6",
       background:
-        "linear-gradient(90deg, #f3f4f6 0%, #e5e7eb 50%, #f3f4f6 100%)",
+        "linear-gradient(90deg, #f9fafb 0%, #f3f4f6 50%, #f9fafb 100%)",
       backgroundSize: "200% 100%",
-      animation: "quickReplyShimmer 1.2s ease-in-out infinite",
+      animation: "quickReplyShimmer 1.4s ease-in-out infinite",
       flexShrink: 0,
     }}
   >
@@ -1512,7 +1512,8 @@ case "shimmer_day_by_day": {
           break;
         }
         case "quick_reply_shimmer": {
-          setQuickReplyLoading(Boolean((data as any)?.loading));
+          const loading = (data as any)?.loading;
+          setQuickReplyLoading(loading === undefined ? true : Boolean(loading));
           break;
         }
         default:
@@ -2891,7 +2892,7 @@ const handleShowLogin = useCallback(() => {
 
       {/* ── Quick reply chips ─────────────────────────────────────────────── */}
       {/* Hidden while itinerary creation is in progress — no quick replies/CTAs allowed */}
-      {(quickReplies.length > 0 || quickReplyLoading) && !isStreaming && !isComposerLocked && (
+      {(quickReplies.length > 0 || quickReplyLoading) && !isComposerLocked && (
         <div className="flex-shrink-0 px-[0.25rem] md:!px-6 pt-2 pb-1">
           <div className="mx-auto">
             <div
@@ -2899,7 +2900,7 @@ const handleShowLogin = useCallback(() => {
               style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             >
               {quickReplyLoading
-                ? [120, 88, 140, 100].map((w, idx) => (
+                ? ["28%", "24%", "30%", "26%"].map((w, idx) => (
                     <QuickReplyShimmerChip key={`qr-shimmer-${idx}`} width={w} />
                   ))
                 : quickReplies.map((reply, idx) => (
