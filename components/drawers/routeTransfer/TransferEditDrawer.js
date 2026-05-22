@@ -1156,7 +1156,7 @@ const TransferEditDrawer = (props) => {
 
               {email && email?.includes('tarzanway.com') && (
                 <a
-                  href={`https://mercury.tarzanway.com/admin/geos/route/search-route/?origin=${props?.origin || originCityId || mercuryTransfer?.source?.city}&destination=${props?.destination || destinationCityId || mercuryTransfer?.destination?.city}`}
+                  href={`https://dev.mercury.tarzanway.com/admin/geos/route/search-route/?origin=${props?.origin || originCityId || mercuryTransfer?.source?.city}&destination=${props?.destination || destinationCityId || mercuryTransfer?.destination?.city}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="ml-auto text-sm text-blue font-500"

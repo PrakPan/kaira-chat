@@ -1791,7 +1791,7 @@ const Details = (props) => {
 
       axios
       .post(
-            "https://mercury.tarzanway.com/payment/verify/",
+            "https://dev.mercury.tarzanway.com/payment/verify/",
             { ...response },
             { headers: { Authorization: `Bearer ${props.token}` } }
           )
