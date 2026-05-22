@@ -83,9 +83,9 @@ const resolveElementType = (item) => {
 // ─── Helper: get display name ─────────────────────────────────────────────────
 const getItemName = (item) => {
   return (
-    item?.heading ||
-    item?.restaurants?.[0]?.name ||
     item?.name ||
+    item?.restaurants?.[0]?.name ||
+    item?.heading ||
     ""
   );
 };
@@ -135,6 +135,97 @@ const getItemId = (item, resolvedType) => {
   return null;
 };
 
+// ─── Helper: get one-liner / subtitle (uses `one_liner` from API) ─────────────
+const getItemSubtitle = (item) => {
+  return (
+    item?.one_liner ||
+    item?.short_description ||
+    item?.description ||
+    item?.address ||
+    item?.restaurants?.[0]?.one_liner ||
+    item?.restaurants?.[0]?.short_description ||
+    item?.restaurants?.[0]?.address ||
+    null
+  );
+};
+
+// ─── Helper: derive right-column status label + tone ──────────────────────────
+//   restaurant   → "Reserved"
+//   activity/poi → "Confirmed"
+//   recommendation → no right column
+const getStatusInfo = (resolvedType) => {
+  if (resolvedType === "restaurant")
+    return { label: "Reserved", tone: "confirmed" };
+  if (resolvedType === "activity" || resolvedType === "poi")
+    return { label: "Confirmed", tone: "confirmed" };
+  return null;
+};
+
+// ─── Helper: card variant background / border per element type ────────────────
+//   restaurant      → peach wash (#FFF4E8), NO border
+//   activity / poi  → white card, #ECECEC 1px border, yellow left accent bar
+//   recommendation  → transparent, dashed #B8BECC border
+const getCardVariantClass = (resolvedType) => {
+  if (resolvedType === "restaurant") {
+    return "bg-[#FFF4E8] border-0 shadow-none";
+  }
+  if (resolvedType === "recommendation") {
+    return "bg-transparent border border-dashed border-[#B8BECC] shadow-none";
+  }
+  // activity, poi
+  return "bg-white border border-[#ECECEC] shadow-none";
+};
+
+// ─── Helper: clock-time to show in the right column ───────────────────────────
+const getDisplayTime = (item) => {
+  if (item?.start_time) return item.start_time;
+  if (item?.time && /^\d/.test(item.time)) return item.time;
+  return null;
+};
+
+// ─── Helper: pretty-print ideal_duration (e.g. 1 → "1h", 1.5 → "1h 30m") ──────
+const getDurationLabel = (item) => {
+  const d = item?.ideal_duration;
+  if (d == null || isNaN(Number(d))) return null;
+  const num = Number(d);
+  const hours = Math.floor(num);
+  const mins = Math.round((num - hours) * 60);
+  if (hours === 0 && mins === 0) return null;
+  if (hours === 0) return `${mins}m`;
+  if (mins === 0) return `${hours}h`;
+  return `${hours}h ${mins}m`;
+};
+
+// ─── Helper: collect tag strings (api `tags` array + duration chip) ───────────
+const getDisplayTags = (item) => {
+  const raw = Array.isArray(item?.tags) ? item.tags : [];
+  const cleaned = raw
+    .map((t) => (typeof t === "string" ? t.trim() : ""))
+    .filter(Boolean);
+  return cleaned;
+};
+
+// ─── Helper: format day-header date as "Fri 6 Jun" (uppercase via CSS) ────────
+const SHORT_MONTHS = [
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+];
+const SHORT_WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+const formatDayHeaderDate = (dateStr) => {
+  if (!dateStr) return null;
+  // API uses ISO "YYYY-MM-DD" — parse as a local date so we don't drift a day.
+  const m = String(dateStr).match(/^(\d{4})-(\d{2})-(\d{2})/);
+  let d;
+  if (m) {
+    d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+  } else {
+    d = new Date(dateStr);
+  }
+  if (isNaN(d.getTime())) return null;
+  return `${SHORT_WEEKDAYS[d.getDay()]} ${d.getDate()} ${SHORT_MONTHS[d.getMonth()]}`;
+};
+
 // ─── Recommendation SVG icon ──────────────────────────────────────────────────
 const RecommendationIcon = ({ size = 16 }) => (
   <svg
@@ -151,53 +242,53 @@ const RecommendationIcon = ({ size = 16 }) => (
   </svg>
 );
 
-// ─── Tag renderer ─────────────────────────────────────────────────────────────
-const renderTag = (item, extraClass = "") => {
-  const type = resolveElementType(item);
+// ─── Tag chip styles ──────────────────────────────────────────────────────────
+const CHIP_BASE =
+  "inline-flex items-center gap-[3px] px-[6px] py-[2px] rounded-[3px] ttw-type-chip whitespace-nowrap";
 
-  if (type === "activity") {
-    return (
-      <div className={`${extraClass}`}>
-        <span className="inline-flex items-center gap-[5px] px-[7px] py-[1px] rounded-[6px] border border-[#5cba663b] bg-[#EBFFEF] ttw-type-small shadow-none">
-          <span className="w-[7px] h-[7px] rounded-full bg-[#22C55E] shrink-0" />
-          Activity
-        </span>
-      </div>
-    );
+// All 8 tag variants ported from the v4 HTML.
+// Border on each tag = a lighter shade of that tag's own background color, so
+// the outline reads as a soft tonal edge rather than a separate accent color.
+// (duration is intentionally excluded — that's reserved for the duration chip)
+const TAG_STYLES = [
+  // .act-tag.booked      — ink bg, yellow text, lighter-ink border
+  "bg-[#0B1220] text-[#F7E700] border border-[#2D3548]",
+  // .act-tag.suggest     — transparent + soft gray border, ink-4 text
+  "bg-transparent text-[#8892A6] border border-[#D6DAE3]",
+  // .act-tag.food-tag    — ink bg, peach text, lighter-ink border
+  "bg-[#0B1220] text-[#FFE5D1] border border-[#2D3548]",
+  // .act-tag.kaira-pick  — yellow fill, ink text, lighter-yellow border
+  "bg-[#F7E700] text-[#0B1220] border border-[#FAEC5C]",
+  // .act-tag.curated     — peach fill, ink text, lighter-peach border
+  "bg-[#FFE5D1] text-[#0B1220] border border-[#FFF0E3]",
+  // .act-tag.local-fav   — green-soft fill, green text, lighter-green border
+  "bg-[#DFF3E7] text-[#1F8A5A] border border-[#EDF8F1]",
+  // .act-tag.hidden-gem  — violet-soft fill, violet text, lighter-violet border
+  "bg-[#F1E6FF] text-[#7E3DD4] border border-[#F8F2FF]",
+  // .act-tag.must-do     — pink-soft fill, pink text, lighter-pink border
+  "bg-[#FFE5EC] text-[#D9577A] border border-[#FFF0F4]",
+];
+
+// Stable string-hash so a given tag string always picks the same variant
+// across re-renders (random-looking but deterministic = no flicker).
+const hashString = (s) => {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) {
+    h = ((h << 5) - h + s.charCodeAt(i)) | 0;
   }
-
-  if (type === "recommendation") {
-    return (
-      <div className={`${extraClass}`}>
-        <RecommendationIcon size={14} />
-      </div>
-    );
-  }
-
-  if (type === "restaurant") {
-    return (
-      <div className={`${extraClass}`}>
-        <span className="inline-flex items-center gap-[5px] px-[7px] py-[1px] rounded-[6px] border border-[#D1D5DB] bg-white ttw-type-small shadow-none">
-          <span className="w-[7px] h-[7px] rounded-full bg-[#3B82F6] shrink-0" />
-          Restaurant
-        </span>
-      </div>
-    );
-  }
-
-  if (type === "poi") {
-    return (
-      <div className={`${extraClass}`}>
-        <span className="inline-flex items-center gap-[5px] px-[7px] py-[1px] rounded-[6px] border border-[#D1D5DB] bg-white ttw-type-small shadow-none">
-          <span className="w-[7px] h-[7px] rounded-full bg-[#7C3AED] shrink-0" />
-          Self Exploration
-        </span>
-      </div>
-    );
-  }
-
-  return null;
+  return Math.abs(h);
 };
+
+const pickTagStyle = (tag) =>
+  TAG_STYLES[hashString(String(tag)) % TAG_STYLES.length];
+
+// Duration chip — the ONLY chip with the paper-2 cream fill (HTML .act-tag.duration).
+const durationChipClass = "bg-[#F4F1E6] text-[#4A566E]";
+
+// Recommendation chip — only used for "recommendation" rows so the user
+// can still tell those apart from real bookable items.
+const recommendationChipClass =
+  "bg-[#F1E6FF] text-[#7E3DD4] border border-[#7E3DD440]";
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
@@ -399,50 +490,55 @@ useEffect(() => {
   const renderItem = (item, idxInSlot) => {
     const resolvedType = resolveElementType(item);
     const name = getItemName(item);
+    const subtitle = getItemSubtitle(item);
     const isRecommendationOnly = resolvedType === "recommendation";
     const isClickable = !isRecommendationOnly;
+    const status = getStatusInfo(resolvedType);
+    const containerClass = getCardVariantClass(resolvedType);
+    const displayTime = getDisplayTime(item);
+    const duration = getDurationLabel(item);
+    const dataTags = getDisplayTags(item);
 
     return (
-      <div key={idxInSlot} className="flex items-center gap-2">
-        {/* ── Left icon ── */}
+      <div
+        key={idxInSlot}
+        onClick={() => isClickable && handleItemClick(item)}
+        className={`relative grid grid-cols-[40px_minmax(0,1fr)_auto] gap-2.5 sm:gap-3 px-3 py-2.5 rounded-[10px] items-center transition-all ${containerClass} ${
+          isClickable
+            ? "cursor-pointer hover:border-[#8892A6] hover:-translate-y-[1px]"
+            : "cursor-default"
+        }`}
+      >
+        {/* Yellow vertical accent bar on every activity / POI card */}
+        {(resolvedType === "activity" || resolvedType === "poi") && (
+          <span className="absolute left-0 top-2.5 bottom-2.5 w-[3px] bg-[#F7E700] rounded-r-[3px]" />
+        )}
+
+        {/* ── Thumb ── */}
         {isRecommendationOnly ? (
-          <div className="w-10 h-10 flex items-center justify-center rounded-full bg-[#F7ECFF] shrink-0">
+          <div className="w-10 h-10 flex items-center justify-center rounded-[9px] bg-[#F1E6FF] shrink-0">
             <RecommendationIcon size={16} />
           </div>
         ) : (
           <img
             src={getItemImage(item)}
             alt={name}
-            className="w-10 h-10 rounded-full object-cover shrink-0"
+            className="w-10 h-10 rounded-[9px] object-cover shrink-0"
           />
         )}
 
-        {/* ── Name + tag ── */}
-        <div className="flex flex-col min-w-0">
-          {/* "Recommendation:" prefix — distinguishes a recommendation row
-              from a real bookable item (activity / restaurant / poi). */}
-          {/* {isRecommendationOnly && (
-            <span className="ttw-type-small text-[#07213A] font-medium leading-none mb-0.5">
-              Recommendation
-            </span>
-          )} */}
+        {/* ── Body: 1) name  2) one_liner  3) tags row ── */}
+        <div className="min-w-0">
+          {/* 1) name */}
           <TooltipWrapper
             onMouseEnter={(e) => handleMouseEnter(e, `${idxInSlot}-${name}`)}
             onMouseLeave={() => setHoveredItem(null)}
-            className="min-w-0"
+            className="min-w-0 block"
           >
-            <span
-              className={`ttw-type-small truncate block ${
- isClickable
- ? "cursor-pointer hover:underline"
- : "cursor-default"
- }`}
-              onClick={() => isClickable && handleItemClick(item)}
-            >
+            <h4 className="ttw-type-h6 text-[#0B1220] truncate m-0 leading-[1.25]">
               {name}
-            </span>
+            </h4>
 
-            {/* Tooltip */}
             {hoveredItem === `${idxInSlot}-${name}` && (
               <Tooltip
                 style={{ top: tooltipPosition.top, left: tooltipPosition.left }}
@@ -452,9 +548,55 @@ useEffect(() => {
             )}
           </TooltipWrapper>
 
-          {/* Tag — shown for all types except pure recommendations */}
-          {resolvedType !== "recommendation" && renderTag(item)}
+          {/* 2) one-liner */}
+          {subtitle && (
+            <p className="ttw-type-small text-[#4A566E] truncate m-0 mt-[3px] leading-[1.3]">
+              {subtitle}
+            </p>
+          )}
+
+          {/* 3) tags row — data tags from `item.tags` + duration */}
+          {(dataTags.length > 0 || duration || isRecommendationOnly) && (
+            <div className="flex gap-[5px] flex-wrap items-center mt-[6px]">
+              {isRecommendationOnly && (
+                <span className={`${CHIP_BASE} ${recommendationChipClass}`}>
+                  <RecommendationIcon size={10} />
+                  Recommendation
+                </span>
+              )}
+              {dataTags.map((t) => (
+                <span key={t} className={`${CHIP_BASE} ${pickTagStyle(t)}`}>
+                  {t}
+                </span>
+              ))}
+              {duration && (
+                <span className={`${CHIP_BASE} ${durationChipClass}`}>
+                  {duration}
+                </span>
+              )}
+            </div>
+          )}
         </div>
+
+        {/* ── Right column: time + status ── */}
+        {status && (
+          <div className="flex flex-col items-end shrink-0 text-right min-w-[56px] sm:min-w-[64px]">
+            {/* {displayTime && (
+              <span className="ttw-type-meta text-[#4A566E]">
+                {displayTime}
+              </span>
+            )} */}
+            <span
+              className={`ttw-type-status mt-[3px] ${
+                status.tone === "confirmed"
+                  ? "text-[#1F8A5A]"
+                  : "text-[#8892A6]"
+              }`}
+            >
+              {status.label}
+            </span>
+          </div>
+        )}
       </div>
     );
   };
@@ -488,18 +630,18 @@ useEffect(() => {
 
   return (
     <>
-     <div className="flex sm:flex-row flex-col border-b border-[#E8E8E8] last:border-b-0 w-full justify-center">
+     <div className="flex sm:flex-row flex-col border-b border-[#ECECEC] last:border-b-0 w-full justify-center bg-[#FBFAF3]">
 
-        {/* COL 1: Date label */}
-        <div className="sm:w-fit w-full shrink-0 px-4 sm:pt-6 pt-4 sm:pb-6 pb-2 flex sm:flex-col flex-row sm:items-start items-baseline gap-2 sm:min-w-[90px]">
-          <div className="flex flex-col items-baseline sm:items-start gap-2 shrink-0">
-            <p className="ttw-type-h4 m-0 leading-tight whitespace-nowrap">Day {props.index + 1} 
-              {/* {isDesktop ? "": props.day?.day_summary && <span className="ttw-type-small text-[#9CA3AF]">- {props.day?.day_summary}</span>} */}
-              </p>
+        {/* COL 1: Day number + date — matches HTML .day-num-block */}
+        <div className="sm:w-fit w-full shrink-0 px-4 sm:pt-6 pt-4 sm:pb-6 pb-2 flex sm:flex-col flex-row sm:items-start items-baseline gap-3 sm:min-w-[80px]">
+          <div className="flex flex-col  sm:items-start items-baseline gap-2 sm:gap-1 shrink-0">
+            <span className="ttw-type-day-num text-[#0B1220] m-0 whitespace-nowrap">
+              {String(props.index + 1).padStart(2, "0")}
+            </span>
             {props.day?.date && (
-              <p className="ttw-type-small text-[#9CA3AF] m-0 sm:mt-1 mt-0 leading-tight whitespace-nowrap">
-                {getDate(props.day.date)}
-              </p>
+              <span className="ttw-type-day-date text-[#8892A6] m-0 whitespace-nowrap">
+                {formatDayHeaderDate(props.day.date)}
+              </span>
             )}
           </div>
           {/* {props.day?.day_summary && (
@@ -556,50 +698,30 @@ useEffect(() => {
 
           {elements.length > 0 ? (
             hasAnyTime ? (
-              <div className="relative">
-                {/* Vertical timeline line — shown when there are slots to connect */}
-                {(presentSlots.length > 1 || elements.length > 1) && (
-                  <div
-                    className="absolute w-[1.5px] bg-[#E5E7EB] z-0"
-                    style={{ left: "3px", top: "8px", bottom: "8px" }}
-                  />
-                )}
-
-                <div className="flex flex-col gap-1">
-                  {presentSlots.map((slot) => (
-                    <div key={slot}>
-                      {/* Slot header */}
-                      <div className="flex items-center gap-3 mb-2">
-                        <div className="w-[7px] h-[7px] rounded-full bg-[#e5e5e5] shrink-0 z-10 relative" />
-                        <span className="ttw-type-body text-[#111]">
-                          {slot}
-                        </span>
-                      </div>
-
-                      {/* Items in slot */}
-                      <div className="ml-[22px] flex flex-col gap-3">
-                        {groups[slot].map((item, idxInSlot) =>
-                          renderItem(item, idxInSlot)
-                        )}
-                      </div>
+              <div className="flex flex-col gap-3.5">
+                {presentSlots.map((slot) => (
+                  <div key={slot}>
+                    {/* Slot header — uppercase mono label with trailing divider line */}
+                    <div className="flex items-center gap-2.5 mb-2">
+                      <span className="ttw-type-status text-[#8892A6]">
+                        {slot}
+                      </span>
+                      <span className="flex-1 h-px bg-[#ECECEC]" />
                     </div>
-                  ))}
-                </div>
+
+                    {/* Items in slot */}
+                    <div className="flex flex-col gap-2">
+                      {groups[slot].map((item, idxInSlot) =>
+                        renderItem(item, idxInSlot)
+                      )}
+                    </div>
+                  </div>
+                ))}
               </div>
             ) : (
-              // No item carries a `time` value — drop the time-slot headers
-              // but keep the vertical timeline rail so the column still reads
-              // as a connected day instead of a bare list.
-              <div className="relative">
-                {elements.length > 1 && (
-                  <div
-                    className="absolute w-[1.5px] bg-[#E5E7EB] z-0"
-                    style={{ left: "3px", top: "8px", bottom: "8px" }}
-                  />
-                )}
-                <div className="ml-[22px] flex flex-col gap-3">
-                  {elements.map((item, idxInSlot) => renderItem(item, idxInSlot))}
-                </div>
+              // No item carries a `time` value — render as a flat list of cards.
+              <div className="flex flex-col gap-2">
+                {elements.map((item, idxInSlot) => renderItem(item, idxInSlot))}
               </div>
             )
           ) : props?.isLastDay ? (

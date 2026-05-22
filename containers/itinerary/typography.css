@@ -134,3 +134,56 @@
 .ttw-type-num {
   font-variant-numeric: tabular-nums;
 }
+
+/* ── Itinerary day-card specifics ──────────────────────────────────────── */
+/* Small uppercase chip — used for activity/POI tags inside a day card */
+.ttw-type-chip {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.4;
+  box-shadow: none;
+}
+
+/* Monospace meta — used for the start time in the right column */
+.ttw-type-meta {
+  font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  line-height: 1.25;
+}
+
+/* Tight uppercase status — used for "Confirmed" / "Reserved" badges AND
+   for the time-of-day slot header ("Morning" / "Afternoon" / ...).
+   Uses mono so it matches the v4 HTML's .act-status / .time-label exactly. */
+.ttw-type-status {
+  font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1.25;
+}
+
+/* Day number — large serif italic, used for "01" / "02" in the day header */
+.ttw-type-day-num {
+  font-family: 'Instrument Serif', serif;
+  font-style: italic;
+  font-size: 36px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 0.9;
+}
+
+/* Day date — small uppercase mono, used for "FRI 6 JUN" under the day number */
+.ttw-type-day-date {
+  font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  line-height: 1.25;
+}
