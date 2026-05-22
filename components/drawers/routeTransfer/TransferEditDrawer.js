@@ -6326,6 +6326,8 @@ const toggleTransferDetails = (priceOptionId) => {
         requestBody.limit = 5;
         requestBody.offset = currentOffset;
 
+        const searchUrl = `/search/?currency=${currency?.currency || "INR"}`;
+
         const response = await loadOtherTransfers.post(
           searchUrl,
           requestBody,
