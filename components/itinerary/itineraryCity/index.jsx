@@ -529,7 +529,7 @@ const ItineraryCity = (props) => {
                     {
                       pathname: window.location.pathname,
                       query: {
-                        ...(currentItineraryId ? { id: currentItineraryId } : {}),
+                        // ...(currentItineraryId ? { id: currentItineraryId } : {}),
                         drawer: "activity",
                         itinerary_city_id: props?.city?.id,
                         city_id: props?.city?.city?.id,

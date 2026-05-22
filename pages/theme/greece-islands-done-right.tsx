@@ -37,8 +37,8 @@ const greeceThemeConfig: ThemeConfig = {
       },
     ],
   },
-  rows: {
-    row1: {
+  rows: [
+    {
       heading: "From the Acropolis to the Aegean",
       icon: "🏛️",
       cards: [
@@ -89,7 +89,7 @@ const greeceThemeConfig: ThemeConfig = {
         },
       ],
     },
-    row2: {
+    {
       heading: "Greece Right Now",
       icon: "🇬🇷",
       cards: [
@@ -140,7 +140,7 @@ const greeceThemeConfig: ThemeConfig = {
         },
       ],
     },
-    row3: {
+    {
       heading: "TTW's Greece Themes",
       icon: "🎯",
       cards: [
@@ -191,7 +191,7 @@ const greeceThemeConfig: ThemeConfig = {
         },
       ],
     },
-    row4: {
+    {
       heading: "Only in Greece — Experiences Worth Flying For",
       icon: "✨",
       cards: [
@@ -242,7 +242,7 @@ const greeceThemeConfig: ThemeConfig = {
         },
       ],
     },
-  },
+  ],
   travellerStories: greeceTravellerStories,
 };
 

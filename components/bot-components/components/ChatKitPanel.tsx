@@ -28,6 +28,10 @@ import { updateStays } from "../../../store/actions/StayBookings";
 import { updateTransferBookings } from "../../../store/actions/transferBookingsStore";
 import { removeAncillaryBooking } from "../../../store/actions/ancillaryBookings";
 import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
+import { axiosGetPaymentInfo } from "../../../services/itinerary/payment";
+import setCart from "../../../store/actions/Cart";
+import { setCurrency } from "../../../store/actions/currencyActions";
+import setItineraryStatus from "../../../store/actions/itineraryStatus";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 import BotLoginModal from "./BotLoginModal";
 
@@ -81,6 +85,34 @@ const SingleChips = styled.button`
     cursor: not-allowed;
   }
 `;
+
+// Placeholder chip rendered in the quick-reply row while the
+// `quick_reply_shimmer` client effect is active (server is preparing the next
+// batch of suggestions). Matches SingleChips dimensions so the row doesn't
+// jump when real replies land.
+const QuickReplyShimmerChip: React.FC<{ width: string }> = ({ width }) => (
+  <div
+    aria-hidden="true"
+    style={{
+      width,
+      height: 32,
+      borderRadius: 6,
+      border: "1px solid #f3f4f6",
+      background:
+        "linear-gradient(90deg, #f9fafb 0%, #f3f4f6 50%, #f9fafb 100%)",
+      backgroundSize: "200% 100%",
+      animation: "quickReplyShimmer 1.4s ease-in-out infinite",
+      flexShrink: 0,
+    }}
+  >
+    <style>{`
+      @keyframes quickReplyShimmer {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+      }
+    `}</style>
+  </div>
+);
 
 interface QuickReply {
   label: string;
@@ -319,6 +351,11 @@ onViewItinerary,
   const [showControls, setShowControls] = useState(false);
   const [errorDismissed, setErrorDismissed] = useState(false);
   const [quickReplies, setQuickReplies] = useState<QuickReply[]>([]);
+  // True while the server is preparing the next batch of quick replies. The
+  // `quick_reply_shimmer` client effect toggles this flag — we show shimmer
+  // chips in the quick-reply row until either real replies arrive (via
+  // load_quick_replies) or the flag is explicitly cleared (loading: false).
+  const [quickReplyLoading, setQuickReplyLoading] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [pendingMessage, setPendingMessage] = useState<string | null>(null);
@@ -432,6 +469,26 @@ onViewItinerary,
     },
     [localItineraryId, authToken, dispatch],
   );
+
+  // Mirrors getPaymentInfo() in ItineraryContainer.jsx — fetches /cart/ for
+  // the current itinerary and pushes the result into Redux (cart + currency +
+  // pricing_status). Passed to TransferEditDrawer so the drawer can refresh
+  // the cart after a booking completes, matching the /itinerary page flow.
+  const getPaymentInfo = useCallback(async () => {
+    if (!localItineraryId) return;
+    const token = localStorage.getItem("access_token");
+    try {
+      const res = await axiosGetPaymentInfo.get(`${localItineraryId}/cart/`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = res.data;
+      dispatch(setCart(data));
+      dispatch(setCurrency(data?.currency));
+      dispatch(setItineraryStatus("pricing_status", "SUCCESS"));
+    } catch (error) {
+      console.log("ERROR[PaymentInfo][Itinerary]", error);
+    }
+  }, [localItineraryId, dispatch]);
 
   // Mirrors updatedActivityBooking() in ActivityDetailsDrawer.jsx: after the
   // /bookings/activity/ POST returns, splice the new booking into the city's
@@ -769,10 +826,11 @@ onViewItinerary,
     date?: string;
   }>({ show: false });
 
-  // Sightseeing (intra-city taxi) drawer — opened by sightseeing.open
-  // widget actions. Reuses TransferEditDrawer in multicity mode so the user
-  // can browse the same suggestions that the city header's "Add Taxi" CTA
-  // surfaces in /itinerary.
+  // Sightseeing (intra-city taxi) drawer — opened by sightseeing.open and
+  // pickup_drop.open widget actions. Reuses TransferEditDrawer in multicity
+  // mode so the user can browse the same suggestions that the city header's
+  // "Add Taxi" CTA surfaces in /itinerary. `initialTab` chooses which of the
+  // drawer's internal tabs (sightseeing / airport) to open on mount.
   const [sightseeingDrawer, setSightseeingDrawer] = useState<{
     show: boolean;
     itinerary_city_id?: string;
@@ -781,6 +839,7 @@ onViewItinerary,
     cityData?: any;
     startDate?: string;
     endDate?: string;
+    initialTab?: "sightseeing" | "airport" | "multicity";
   }>({ show: false });
 
 
@@ -1052,7 +1111,12 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
   //   feedback type !== X + click X    →  POST   /feedback/{id}      (change)
   //   feedback type === X + click X    →  DELETE /feedback/{id}      (clear)
   const handleFeedback = useCallback(
-    async (messageId: string, type: "up" | "down") => {
+    async (
+      messageId: string,
+      type: "up" | "down",
+      message?: string,
+      label?: string,
+    ) => {
       if (!messageId) return;
       if (!authToken) {
         setShowLoginModal(true);
@@ -1075,6 +1139,7 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
           return next;
         });
 
+      const trimmedMessage = message?.trim();
       const current = feedbackByMessageId[messageId];
       setLoading(true);
       try {
@@ -1085,6 +1150,8 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
             message_id: messageId,
             type,
             platform: getPlatform(),
+            ...(trimmedMessage ? { message: trimmedMessage } : {}),
+            ...(label ? { label } : {}),
             ...(reduxUserId != null ? { author: parseInt(reduxUserId) } : {}),
           };
           const res = await axios.post(
@@ -1112,7 +1179,12 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
         } else {
           await axios.post(
             `${CHATKIT}/feedback/${current.feedbackId}`,
-            { type, platform: getPlatform() },
+            {
+              type,
+              platform: getPlatform(),
+              ...(trimmedMessage ? { message: trimmedMessage } : {}),
+              ...(label ? { label } : {}),
+            },
             { headers },
           );
           setFeedbackByMessageId((prev) => ({
@@ -1436,6 +1508,12 @@ case "shimmer_day_by_day": {
               )
             : [];
           setQuickReplies(parsed);
+          setQuickReplyLoading(false);
+          break;
+        }
+        case "quick_reply_shimmer": {
+          const loading = (data as any)?.loading;
+          setQuickReplyLoading(loading === undefined ? true : Boolean(loading));
           break;
         }
         default:
@@ -1452,6 +1530,7 @@ case "shimmer_day_by_day": {
 const sendMessage = useCallback(
   (text: string, attachmentIds?: string[], attachmentMeta?: MessageAttachment[]) => {
     setQuickReplies([]);
+    setQuickReplyLoading(false);
     lastSentMessageRef.current = text;
     lastSentActionRef.current = { kind: "message", text };
 
@@ -2691,7 +2770,10 @@ const handleShowLogin = useCallback(() => {
                   // it needs to fetch suggestions, then mirror the URL the
                   // itinerary page uses (?drawer=addCityTaxi&itinerary_city_id=...)
                   // so refresh / share preserves the open drawer.
-                  if (action.type === "sightseeing.open") {
+                  if (
+                    action.type === "sightseeing.open" ||
+                    action.type === "pickup_drop.open"
+                  ) {
                     const itineraryCityId = (payload.itineraryCityId ??
                       payload.itinerary_city_id ??
                       payload.city_id) as string | undefined;
@@ -2702,6 +2784,10 @@ const handleShowLogin = useCallback(() => {
                       sendWidgetAction(action.type, payload);
                       return;
                     }
+                    const initialTab: "sightseeing" | "airport" =
+                      action.type === "pickup_drop.open"
+                        ? "airport"
+                        : "sightseeing";
                     setSightseeingDrawer({
                       show: true,
                       itinerary_city_id: itineraryCityId,
@@ -2714,12 +2800,14 @@ const handleShowLogin = useCallback(() => {
                       endDate: (payload.endDate ??
                         payload.end_date ??
                         matchedCity?.end_date) as string | undefined,
+                      initialTab,
                     });
                     const url = new URL(window.location.href);
                     url.searchParams.set("drawer", "addCityTaxi");
                     if (itineraryCityId) {
                       url.searchParams.set("itinerary_city_id", itineraryCityId);
                     }
+                    url.searchParams.set("taxiTab", initialTab);
                     window.history.pushState({}, "", url.toString());
                     return;
                   }
@@ -2804,22 +2892,26 @@ const handleShowLogin = useCallback(() => {
 
       {/* ── Quick reply chips ─────────────────────────────────────────────── */}
       {/* Hidden while itinerary creation is in progress — no quick replies/CTAs allowed */}
-      {quickReplies.length > 0 && !isStreaming && !isComposerLocked && (
+      {(quickReplies.length > 0 || quickReplyLoading) && !isComposerLocked && (
         <div className="flex-shrink-0 px-[0.25rem] md:!px-6 pt-2 pb-1">
           <div className="mx-auto">
             <div
               className="flex gap-2 overflow-x-auto pb-1"
               style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             >
-              {quickReplies.map((reply, idx) => (
-                <SingleChips
-                  key={idx}
-                  onClick={() => handleQuickReply(reply)}
-                  disabled={isStreaming || isComposerLocked}
-                >
-                  {reply.label}
-                </SingleChips>
-              ))}
+              {quickReplyLoading
+                ? ["28%", "24%", "30%", "26%"].map((w, idx) => (
+                    <QuickReplyShimmerChip key={`qr-shimmer-${idx}`} width={w} />
+                  ))
+                : quickReplies.map((reply, idx) => (
+                    <SingleChips
+                      key={idx}
+                      onClick={() => handleQuickReply(reply)}
+                      disabled={isStreaming || isComposerLocked}
+                    >
+                      {reply.label}
+                    </SingleChips>
+                  ))}
             </div>
           </div>
         </div>
@@ -3019,6 +3111,7 @@ const handleShowLogin = useCallback(() => {
           }
           city={transferDrawer.city}
           dcity={transferDrawer.dcity}
+          getPaymentHandler={getPaymentInfo}
           handleClose={() => setTransferDrawer({ show: false })}
         />
       )}
@@ -3237,6 +3330,8 @@ const handleShowLogin = useCallback(() => {
           oCityData={sightseeingDrawer.cityData}
           dCityData={sightseeingDrawer.cityData}
           check_in={sightseeingDrawer.startDate}
+          initialTab={sightseeingDrawer.initialTab}
+          getPaymentHandler={getPaymentInfo}
           setShowLoginModal={setShowLoginModal}
           handleClose={() => {
             setSightseeingDrawer({ show: false });
@@ -3244,6 +3339,7 @@ const handleShowLogin = useCallback(() => {
             if (url.searchParams.get("drawer") === "addCityTaxi") {
               url.searchParams.delete("drawer");
               url.searchParams.delete("itinerary_city_id");
+              url.searchParams.delete("taxiTab");
               window.history.pushState({}, "", url.toString());
             }
           }}

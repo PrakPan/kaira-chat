@@ -296,7 +296,7 @@ const Details = (props) => {
 
         axios
           .post(
-            "https://dev.suppliers.tarzanway.com/sales/verify/",
+            "https://suppliers.tarzanway.com/sales/verify/",
             { ...response },
             { headers: { Authorization: `Bearer ${props.token}` } }
           )

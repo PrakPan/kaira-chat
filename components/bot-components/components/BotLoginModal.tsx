@@ -1,6 +1,5 @@
 import React, {
   useEffect,
-  useMemo,
   useRef,
   useState,
   useCallback,
@@ -114,11 +113,64 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
   const [userDetailsRequired, setUserDetailsRequired] = useState(false);
   const [userNameError, setUserNameError] = useState(false);
   const [phoneError, setPhoneError] = useState("");
+  const [keyboardInset, setKeyboardInset] = useState(0);
+  const [viewportHeight, setViewportHeight] = useState<number | null>(null);
 
   // Mount recaptcha script (used by LogInModal pattern)
   useEffect(() => {
     if (props.getCountryCodes) props.getCountryCodes();
   }, []);
+
+  // Track on-screen keyboard so the mobile bottom-sheet stays visible above it
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.visualViewport) return;
+    const vv = window.visualViewport;
+    const update = () => {
+      setKeyboardInset(
+        Math.max(0, window.innerHeight - vv.height - vv.offsetTop),
+      );
+      setViewportHeight(vv.height);
+    };
+    update();
+    vv.addEventListener("resize", update);
+    vv.addEventListener("scroll", update);
+    return () => {
+      vv.removeEventListener("resize", update);
+      vv.removeEventListener("scroll", update);
+    };
+  }, []);
+
+  const scrollFocusIntoView = useCallback((el: HTMLElement | null) => {
+    if (!el) return;
+    setTimeout(() => {
+      el.scrollIntoView({ block: "center", behavior: "smooth" });
+    }, 300);
+  }, []);
+
+  // When the keyboard opens/closes, re-scroll the active input into view
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const active = document.activeElement;
+    if (
+      active instanceof HTMLInputElement ||
+      active instanceof HTMLTextAreaElement
+    ) {
+      scrollFocusIntoView(active);
+    }
+  }, [viewportHeight, scrollFocusIntoView]);
+
+  // Lock body scroll while the modal is open so iOS doesn't auto-scroll
+  // the document and push the sheet behind the keyboard
+  useEffect(() => {
+    if (!props.show || typeof document === "undefined") return;
+    const prevOverflow = document.body.style.overflow;
+    const prevPosition = document.body.style.position;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      document.body.style.position = prevPosition;
+    };
+  }, [props.show]);
 
   // OTP resend timer
   useEffect(() => {
@@ -354,19 +406,6 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
         trackUserAccountUpdate,
       );
   };
-
-  // Display phone (mask for OTP screen)
-  const maskedPhone = useMemo(() => {
-    const p = phone.trim();
-    if (!p) return "";
-    if (p.length < 6) return p;
-    const visibleHead = p.slice(0, p.length - 4 - 0);
-    const tail = p.slice(-4);
-    const maskBody = "X".repeat(Math.max(0, p.length - visibleHead.length - 4));
-    return `${visibleHead.slice(0, p.length - 6)}${visibleHead
-      .slice(p.length - 6)
-      .replace(/\d/g, "X")}${tail}`;
-  }, [phone]);
 
   if (!props.show) return null;
 
@@ -608,6 +647,7 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
 
         {openCountryCodeOption && (
           <div
+            className="botLoginCountryDropdown"
             style={{
               position: "absolute",
               top: "100%",
@@ -659,6 +699,7 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
             value={phone}
             onChange={handleMobileChange}
             onBlur={handleMobileBlur}
+            onFocus={(e) => scrollFocusIntoView(e.currentTarget)}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 e.preventDefault();
@@ -844,7 +885,7 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
         <span>
           OTP sent to{" "}
           <strong style={{ color: COLORS.navy }}>
-            {maskedPhone || phone}
+            {phone}
           </strong>
         </span>
         <span
@@ -867,7 +908,15 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
           numInputs={4}
           inputType="tel"
           shouldAutoFocus
-          renderInput={(p) => <input {...p} />}
+          renderInput={(p) => (
+            <input
+              {...p}
+              onFocus={(e) => {
+                p.onFocus?.(e);
+                scrollFocusIntoView(e.currentTarget);
+              }}
+            />
+          )}
           renderSeparator={null as any}
           containerStyle="otpContainer"
           inputStyle="otpBoxNew"
@@ -1369,6 +1418,18 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
         .otpBoxNew:focus {
           border-color: ${COLORS.navy};
         }
+        .botLoginCountryDropdown [data-country-dropdown="true"] {
+          position: absolute !important;
+          top: 100% !important;
+          left: 0 !important;
+          right: auto !important;
+          bottom: auto !important;
+          transform: none !important;
+          width: min(320px, 90vw) !important;
+          height: auto !important;
+          max-height: 320px !important;
+          margin-top: 4px !important;
+        }
       `}</style>
 
       <div
@@ -1410,13 +1471,14 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
             position: "fixed",
             left: 0,
             right: 0,
-            bottom: 0,
+            bottom: keyboardInset,
             background: COLORS.white,
             borderRadius: "20px 20px 0 0",
-            maxHeight: "92vh",
+            maxHeight: viewportHeight ? `${viewportHeight}px` : "92vh",
             overflowY: "auto",
             zIndex: z as number,
             boxShadow: "0 -16px 40px rgba(0,0,0,0.18)",
+            transition: "bottom 0.2s ease-out",
           }}
         >
           {yellowStrip}

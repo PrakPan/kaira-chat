@@ -201,7 +201,11 @@ useEffect(() => {
     }, 30000);
     return () => clearTimeout(timeout);
   }
-}, [finalized_status]);
+}, [finalized_status, props.token]);
+
+useEffect(() => {
+  if (props.token) setShowLoginModal(false);
+}, [props.token]);
 
   useEffect(() => {
     if(router.query?.drawer === "payment"){
@@ -2251,12 +2255,13 @@ props.fromChat ? (
 
       <div className="z-[1650]">
         <BotLoginModal
-          show={showLoginModal}
+          show={showLoginModal && !props.token}
           onhide={_handleLoginClose}
           itinary_id={props.id}
           zIndex={"3300"}
           message={loginModalMessage}
           onSuccess={async () => {
+            setShowLoginModal(false);
             await attachUserToItinerary();
           }}
         ></BotLoginModal>
