@@ -560,7 +560,7 @@ const ItineraryCity = (props) => {
                     {
                       pathname: window.location.pathname,
                       query: {
-                        ...(currentItineraryId ? { id: currentItineraryId } : {}),
+                        // ...(currentItineraryId ? { id: currentItineraryId } : {}),
                         drawer: "addCityTaxi",
                         itinerary_city_id: props?.city?.id,
                         // Domestic itineraries default the taxi drawer to the
