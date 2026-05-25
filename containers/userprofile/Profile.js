@@ -17,6 +17,7 @@ const Container = styled.div`
   width: 90%;
   margin: auto;
   border-radius: 5px;
+  background-color: #fafaf5;
   @media screen and (min-width: 768px) {
     width: 100%;
   }
