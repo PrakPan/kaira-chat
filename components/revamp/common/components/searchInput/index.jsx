@@ -47,6 +47,15 @@ const VIBES = [
   { name: "Europe under 1 Lakh", emoji: "🏰", link: urls.travel_planner.EUROPE_1_LAKH },
 ];
 
+const CONTINENTS = [
+  { name: "Asia", emoji: "🌏", link: "/asia", meta: "23 countries" },
+  { name: "Europe", emoji: "🏰", link: "/europe" },
+  { name: "North America", emoji: "🗽", link: "/north_america" },
+  { name: "South America", emoji: "🏔️", link: "/south_america" },
+  { name: "Africa", emoji: "🦒", link: "/africa" },
+  { name: "Oceania", emoji: "🐨", link: "/oceania" },
+];
+
 const getParent = (path) => {
   if (!path) return "";
   const links = path.split("/");
@@ -329,6 +338,26 @@ const SearchInput = (props) => {
                 )}
 
                 <div className={styles.searchSection}>
+                  <h4>Browse by continent</h4>
+                  <div className={styles.searchList}>
+                    {CONTINENTS.map((c) => (
+                      <button
+                        type="button"
+                        key={c.name}
+                        className={styles.searchRow}
+                        onClick={() => navigateTo(c.link)}
+                      >
+                        <span className={styles.searchRowEmoji}>{c.emoji}</span>
+                        {c.name}
+                        {c.meta && (
+                          <span className={styles.searchRowMeta}>{c.meta}</span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className={styles.searchSection}>
                   <h4>Travel by vibe</h4>
                   <div className={styles.searchList}>
                     {VIBES.map((v) => (
@@ -351,7 +380,7 @@ const SearchInput = (props) => {
               <div className={styles.searchCtaRowText}>
                 Don't see your trip?{" "}
                 <span className={styles.serif}>Just tell Kaira</span> — she
-                plans 60+ countries.
+                plans 100+ countries.
               </div>
               <button
                 type="button"
