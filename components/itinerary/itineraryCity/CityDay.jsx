@@ -3,7 +3,6 @@ import ActivityAddDrawer from "../../drawers/poiDetails/activityAddDrawer";
 import { useDispatch, useSelector } from "react-redux";
 import TransferDrawer from "../../../containers/itinerary/TransferDrawer";
 import { useRouter } from "next/router";
-import styled from "styled-components";
 import { getDatesInRange } from "../../../helper/DateUtils";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 import useMediaQuery from "../../media";
@@ -13,38 +12,6 @@ import { FaTaxi } from "react-icons/fa6";
 import { IoBagCheckOutline } from "react-icons/io5";
 import { getDate } from "../../../helper/ConvertDateFormat";
 import ActivityDetailsDrawer from "../../drawers/activityDetails/ActivityDetailsDrawer";
-
-// ─── Styled components ────────────────────────────────────────────────────────
-
-const TooltipWrapper = styled.div`
-  position: relative;
-  display: inline-block;
-  max-width: 100%;
-`;
-
-const Tooltip = styled.div`
-  position: fixed;
-  background-color: #333;
-  color: white;
-  padding: 8px 12px;
-  border-radius: 6px;
-  font-size: 12px;
-  white-space: nowrap;
-  z-index: 9999;
-  pointer-events: none;
-  max-width: fit-content;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-
-  &::after {
-    content: "";
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    border: 6px solid transparent;
-    border-top-color: #333;
-  }
-`;
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -83,7 +50,7 @@ const resolveElementType = (item) => {
 // ─── Helper: get display name ─────────────────────────────────────────────────
 const getItemName = (item) => {
   return (
-    item?.name ||
+    item?.heading ||
     item?.restaurants?.[0]?.name ||
     item?.heading ||
     ""
@@ -196,13 +163,19 @@ const getDurationLabel = (item) => {
   return `${hours}h ${mins}m`;
 };
 
-// ─── Helper: collect tag strings (api `tags` array + duration chip) ───────────
+// ─── Helper: collect tag strings ──────────────────────────────────────────────
+// Priority: `agent_tags` first (curation signal from the agent). Fall back to
+// `tags` only when no agent_tags were returned. Capped at 2 — the v4 HTML
+// recommendation is "1 curation + 1 status + duration" per row.
 const getDisplayTags = (item) => {
-  const raw = Array.isArray(item?.tags) ? item.tags : [];
-  const cleaned = raw
-    .map((t) => (typeof t === "string" ? t.trim() : ""))
-    .filter(Boolean);
-  return cleaned;
+  const pick = (arr) =>
+    (Array.isArray(arr) ? arr : [])
+      .map((t) => (typeof t === "string" ? t.trim() : ""))
+      .filter(Boolean);
+
+  const agent = pick(item?.agent_tags);
+  const source = agent.length > 0 ? agent : pick(item?.tags);
+  return source.slice(0, 2);
 };
 
 // ─── Helper: format day-header date as "Fri 6 Jun" (uppercase via CSS) ────────
@@ -243,61 +216,130 @@ const RecommendationIcon = ({ size = 16 }) => (
 );
 
 // ─── Tag chip styles ──────────────────────────────────────────────────────────
+// Ported 1:1 from the v4 HTML `.act-tag` system. Colors/borders ride on inline
+// `style` props (not Tailwind arbitrary classes) because Tailwind's content
+// scanner sometimes misses arbitrary color values stored in object literals,
+// which made every chip render with the browser-default (transparent/white)
+// background. Inline style sidesteps the purge/JIT entirely.
 const CHIP_BASE =
-  "inline-flex items-center gap-[3px] px-[6px] py-[2px] rounded-[3px] ttw-type-chip whitespace-nowrap";
+  "inline-flex items-center gap-[3px] px-[6px] py-[2px] rounded-[3px] font-bold uppercase whitespace-nowrap";
 
-// All 8 tag variants ported from the v4 HTML.
-// Border on each tag = a lighter shade of that tag's own background color, so
-// the outline reads as a soft tonal edge rather than a separate accent color.
-// (duration is intentionally excluded — that's reserved for the duration chip)
-const TAG_STYLES = [
-  // .act-tag.booked      — ink bg, yellow text, lighter-ink border
-  "bg-[#0B1220] text-[#F7E700] border border-[#2D3548]",
-  // .act-tag.suggest     — transparent + soft gray border, ink-4 text
-  "bg-transparent text-[#8892A6] border border-[#D6DAE3]",
-  // .act-tag.food-tag    — ink bg, peach text, lighter-ink border
-  "bg-[#0B1220] text-[#FFE5D1] border border-[#2D3548]",
-  // .act-tag.kaira-pick  — yellow fill, ink text, lighter-yellow border
-  "bg-[#F7E700] text-[#0B1220] border border-[#FAEC5C]",
-  // .act-tag.curated     — peach fill, ink text, lighter-peach border
-  "bg-[#FFE5D1] text-[#0B1220] border border-[#FFF0E3]",
-  // .act-tag.local-fav   — green-soft fill, green text, lighter-green border
-  "bg-[#DFF3E7] text-[#1F8A5A] border border-[#EDF8F1]",
-  // .act-tag.hidden-gem  — violet-soft fill, violet text, lighter-violet border
-  "bg-[#F1E6FF] text-[#7E3DD4] border border-[#F8F2FF]",
-  // .act-tag.must-do     — pink-soft fill, pink text, lighter-pink border
-  "bg-[#FFE5EC] text-[#D9577A] border border-[#FFF0F4]",
+const CHIP_TEXT_STYLE = {
+  fontFamily: "'JetBrains Mono', 'SF Mono', Menlo, ui-monospace, monospace",
+  fontSize: "9px",
+  letterSpacing: "0.06em",
+  lineHeight: 1.4,
+};
+
+// Variant style map — keys match common agent_tags / tags strings.
+// ONLY backgrounds + borders + text color are mapped; the displayed text is
+// always the raw string from the API (no static label override, no icon).
+// Every variant ships a SOLID background (no transparent fills) so chips never
+// read as white against light card surfaces.
+const TAG_STYLE_BY_KEY = {
+  // .act-tag.booked — ink fill, yellow text
+  booked:      { background: "#0B1220", color: "#F7E700" },
+  tickets:     { background: "#0B1220", color: "#F7E700" },
+  // .act-tag.suggest — re-mapped from transparent to violet-soft so it pops
+  suggested:   { background: "#F1E6FF", color: "#7E3DD4", border: "1px solid rgba(126,61,212,0.25)" },
+  suggest:     { background: "#F1E6FF", color: "#7E3DD4", border: "1px solid rgba(126,61,212,0.25)" },
+  // "on your own" → green-soft (the activity-self / explore signal)
+  on_your_own: { background: "#DFF3E7", color: "#1F8A5A", border: "1px solid rgba(31,138,90,0.3)" },
+  // .act-tag.food-tag — ink fill, peach text
+  table_held:  { background: "#0B1220", color: "#FFE5D1" },
+  window_seat: { background: "#0B1220", color: "#FFE5D1" },
+  // .act-tag.kaira-pick — yellow fill, ink text
+  kaira_pick:  { background: "#F7E700", color: "#0B1220" },
+  kairas_pick:  { background: "#F7E700", color: "#0B1220" },
+  // .act-tag.curated — peach fill, ink text
+  curated:     { background: "#FFE5D1", color: "#0B1220" },
+  // .act-tag.local-fav — green-soft fill
+  local_fav:   { background: "#DFF3E7", color: "#1F8A5A", border: "1px solid rgba(31,138,90,0.3)" },
+  // .act-tag.hidden-gem — violet-soft fill
+  hidden_gem:  { background: "#F1E6FF", color: "#7E3DD4", border: "1px solid rgba(126,61,212,0.25)" },
+  // .act-tag.must-do — pink-soft fill
+  must_do:     { background: "#FFE5EC", color: "#D9577A", border: "1px solid rgba(217,87,122,0.25)" },
+  insider_spot: { background: "#FFE5D1", color: "#0B1220" },   
+  table_reserved: { background: "#0B1220", color: "#F7E700" },     
+  insta_worthy_view: { background: "#F1E6FF", color: "#7E3DD4", border: "1px solid rgba(126,61,212,0.25)" },
+};
+
+// Fallback palette — when the API sends a tag string we don't recognize, we
+// still want a colored chip. Deterministic hash → palette index so the same
+// string always lands on the same color across renders. NO transparent
+// variant here — every entry has a solid fill.
+const FALLBACK_STYLES = [
+  { background: "#DFF3E7", color: "#1F8A5A", border: "1px solid rgba(31,138,90,0.3)" },   // green-soft
+  { background: "#F1E6FF", color: "#7E3DD4", border: "1px solid rgba(126,61,212,0.25)" }, // violet-soft
+  { background: "#FFE5EC", color: "#D9577A", border: "1px solid rgba(217,87,122,0.25)" }, // pink-soft
+  { background: "#FFE5D1", color: "#0B1220" },                                            // peach
+  { background: "#F7E700", color: "#0B1220" },                                            // yellow
+  { background: "#0B1220", color: "#F7E700" },                                            // ink + yellow
 ];
 
-// Stable string-hash so a given tag string always picks the same variant
-// across re-renders (random-looking but deterministic = no flicker).
 const hashString = (s) => {
   let h = 0;
-  for (let i = 0; i < s.length; i++) {
-    h = ((h << 5) - h + s.charCodeAt(i)) | 0;
-  }
+  for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
   return Math.abs(h);
 };
 
-const pickTagStyle = (tag) =>
-  TAG_STYLES[hashString(String(tag)) % TAG_STYLES.length];
+// Normalize "Local Fav", "local-fav", "LOCAL FAV" → "local_fav" for lookup
+const normalizeTagKey = (raw) =>
+  String(raw || "").trim().toLowerCase().replace(/[\s-]+/g, "_");
 
-// Duration chip — the ONLY chip with the paper-2 cream fill (HTML .act-tag.duration).
-const durationChipClass = "bg-[#F4F1E6] text-[#4A566E]";
+// Pick a style for a tag. Known keys → mapped style; unknown → deterministic
+// fallback color. Caller renders the raw API string as the chip text.
+const resolveTagStyle = (raw) => {
+  const key = normalizeTagKey(raw);
+  if (TAG_STYLE_BY_KEY[key]) return TAG_STYLE_BY_KEY[key];
+  return FALLBACK_STYLES[hashString(key) % FALLBACK_STYLES.length];
+};
 
-// Recommendation chip — only used for "recommendation" rows so the user
-// can still tell those apart from real bookable items.
-const recommendationChipClass =
-  "bg-[#F1E6FF] text-[#7E3DD4] border border-[#7E3DD440]";
+// ─── Tag icon glyphs ──────────────────────────────────────────────────────────
+// Star is the default; check is for booking/reservation confirmations;
+// diamond is for "curated / hidden / insider" curation signals. Glyphs are
+// unicode so they inherit the chip's text color automatically (no separate
+// fill needed).
+const TAG_ICON_GLYPHS = {
+  star: "★",
+  diamond: "◆",
+  check: "✓",
+};
+
+const TAG_ICON_BY_KEY = {
+  // check — confirmed / booked / reserved / table-held
+  booked: "check",
+  tickets: "check",
+  table_held: "check",
+  window_seat: "check",
+  table_reserved: "check",
+  // diamond — curated / insider / hidden gem signals
+  curated: "diamond",
+  hidden_gem: "diamond",
+  insider_spot: "diamond",
+  // (everything else falls back to star)
+};
+
+const resolveTagIcon = (raw) => {
+  const key = normalizeTagKey(raw);
+  return TAG_ICON_GLYPHS[TAG_ICON_BY_KEY[key] || "star"];
+};
+
+// Duration chip — paper-2 cream fill (HTML .act-tag.duration)
+const DURATION_CHIP_STYLE = { background: "#F4F1E6", color: "#4A566E" };
+
+// Recommendation chip — for "recommendation" rows
+const RECOMMENDATION_CHIP_STYLE = {
+  background: "#F1E6FF",
+  color: "#7E3DD4",
+  border: "1px solid rgba(126,61,212,0.25)",
+};
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
 const CityDay = (props) => {
   const [elements, setElements] = useState([]);
   const [showDrawer, setShowDrawer] = useState(false);
-  const [hoveredItem, setHoveredItem] = useState(null);
-  const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
-
   const { finalized_status } = useSelector((state) => state.ItineraryStatus);
   const {
     trackActivityBookingAdd,
@@ -469,22 +511,6 @@ useEffect(() => {
       booking.number_of_infants,
   }));
 
-  // ── Tooltip handler ───────────────────────────────────────────────────────────
-
-  const handleMouseEnter = (e, itemKey) => {
-    const element = e.currentTarget.querySelector("h4, span");
-    if (!element) return;
-    const isTruncated = element.scrollWidth > element.clientWidth;
-    if (isTruncated) {
-      const rect = e.currentTarget.getBoundingClientRect();
-      setTooltipPosition({
-        top: rect.top - 10,
-        left: rect.left + rect.width / 2,
-      });
-      setHoveredItem(itemKey);
-    }
-  };
-
   // ── Render a single activity/POI/restaurant/recommendation row ────────────────
 
   const renderItem = (item, idxInSlot) => {
@@ -503,14 +529,14 @@ useEffect(() => {
       <div
         key={idxInSlot}
         onClick={() => isClickable && handleItemClick(item)}
-        className={`relative grid grid-cols-[40px_minmax(0,1fr)_auto] gap-2.5 sm:gap-3 px-3 py-2.5 rounded-[10px] items-center transition-all ${containerClass} ${
+        className={`relative grid grid-cols-[40px_minmax(0,1fr)] gap-2.5 sm:gap-3 px-3 py-2.5 rounded-[10px] items-start transition-all ${containerClass} ${
           isClickable
             ? "cursor-pointer hover:border-[#8892A6] hover:-translate-y-[1px]"
             : "cursor-default"
         }`}
       >
-        {/* Yellow vertical accent bar on every activity / POI card */}
-        {(resolvedType === "activity" || resolvedType === "poi") && (
+        {/* Yellow vertical accent bar — activity only (POIs no longer get one) */}
+        {resolvedType === "activity" && (
           <span className="absolute left-0 top-2.5 bottom-2.5 w-[3px] bg-[#F7E700] rounded-r-[3px]" />
         )}
 
@@ -529,74 +555,81 @@ useEffect(() => {
 
         {/* ── Body: 1) name  2) one_liner  3) tags row ── */}
         <div className="min-w-0">
-          {/* 1) name */}
-          <TooltipWrapper
-            onMouseEnter={(e) => handleMouseEnter(e, `${idxInSlot}-${name}`)}
-            onMouseLeave={() => setHoveredItem(null)}
-            className="min-w-0 block"
-          >
-            <h4 className="ttw-type-h6 text-[#0B1220] truncate m-0 leading-[1.25]">
-              {name}
-            </h4>
+          {/* 1) name — no truncation, wraps naturally */}
+          <h4 className="ttw-type-h6 text-[#0B1220] m-0 leading-[1.25] break-words">
+            {name}
+          </h4>
 
-            {hoveredItem === `${idxInSlot}-${name}` && (
-              <Tooltip
-                style={{ top: tooltipPosition.top, left: tooltipPosition.left }}
-              >
-                {name}
-              </Tooltip>
-            )}
-          </TooltipWrapper>
+          {/* 2) Row: [left: one-liner + tags] [right: confirmed/reserved].
+              Row height = content height (no stretch). The left side wraps
+              naturally; the right side stays pinned, never grows in height. */}
+          {(subtitle || dataTags.length > 0 || duration || isRecommendationOnly || status) && (
+            <div className="mt-[3px] flex items-baseline justify-between gap-3">
+              {/* LEFT: one-liner + tags, inline + wrapping */}
+              <div className="min-w-0 flex-1 leading-[1.5] break-words">
+                {subtitle && (
+                  <span className="ttw-type-small text-[#4A566E] align-middle">
+                    {subtitle}
+                  </span>
+                )}
+                {subtitle &&
+                  (dataTags.length > 0 || duration || isRecommendationOnly) && (
+                    <span className="inline-block w-[6px]" aria-hidden="true" />
+                  )}
+                {/* {isRecommendationOnly && (
+                  <span
+                    className={`${CHIP_BASE} align-middle mr-[5px]`}
+                    style={{ ...CHIP_TEXT_STYLE, ...RECOMMENDATION_CHIP_STYLE }}
+                  >
+                    <RecommendationIcon size={10} />
+                    Recommendation
+                  </span>
+                )} */}
+                {/* Tag group — wrapped in a single inline-block with
+                    `whitespace-nowrap` so all chips behave as ONE unit. If the
+                    group can't fit beside the one-liner, every chip drops to
+                    the next line together (no orphan first chip). */}
+                {(dataTags.length > 0 || duration) && (
+                  <span className="inline-block whitespace-nowrap align-middle">
+                    {dataTags.map((t, i) => (
+                      <span
+                        key={`${t}-${i}`}
+                        className={`${CHIP_BASE} align-middle mr-[5px]`}
+                        style={{ ...CHIP_TEXT_STYLE, ...resolveTagStyle(t) }}
+                      >
+                        <span aria-hidden="true" style={{ fontSize: "8px", lineHeight: 1 }}>
+                          {resolveTagIcon(t)}
+                        </span>
+                        {t.replace(/_/g, " ")}
+                      </span>
+                    ))}
+                    {duration && (
+                      <span
+                        className={`${CHIP_BASE} align-middle`}
+                        style={{ ...CHIP_TEXT_STYLE, ...DURATION_CHIP_STYLE }}
+                      >
+                        {duration}
+                      </span>
+                    )}
+                  </span>
+                )}
+              </div>
 
-          {/* 2) one-liner */}
-          {subtitle && (
-            <p className="ttw-type-small text-[#4A566E] truncate m-0 mt-[3px] leading-[1.3]">
-              {subtitle}
-            </p>
-          )}
-
-          {/* 3) tags row — data tags from `item.tags` + duration */}
-          {(dataTags.length > 0 || duration || isRecommendationOnly) && (
-            <div className="flex gap-[5px] flex-wrap items-center mt-[6px]">
-              {isRecommendationOnly && (
-                <span className={`${CHIP_BASE} ${recommendationChipClass}`}>
-                  <RecommendationIcon size={10} />
-                  Recommendation
-                </span>
-              )}
-              {dataTags.map((t) => (
-                <span key={t} className={`${CHIP_BASE} ${pickTagStyle(t)}`}>
-                  {t}
-                </span>
-              ))}
-              {duration && (
-                <span className={`${CHIP_BASE} ${durationChipClass}`}>
-                  {duration}
+              {/* RIGHT: confirmed / reserved — fixed-content, no height stretch */}
+              {status && (
+                <span
+                  className={`ttw-type-status shrink-0 whitespace-nowrap ${
+                    status.tone === "confirmed"
+                      ? "text-[#1F8A5A]"
+                      : "text-[#8892A6]"
+                  }`}
+                >
+                  {status.label}
                 </span>
               )}
             </div>
           )}
         </div>
-
-        {/* ── Right column: time + status ── */}
-        {status && (
-          <div className="flex flex-col items-end shrink-0 text-right min-w-[56px] sm:min-w-[64px]">
-            {/* {displayTime && (
-              <span className="ttw-type-meta text-[#4A566E]">
-                {displayTime}
-              </span>
-            )} */}
-            <span
-              className={`ttw-type-status mt-[3px] ${
-                status.tone === "confirmed"
-                  ? "text-[#1F8A5A]"
-                  : "text-[#8892A6]"
-              }`}
-            >
-              {status.label}
-            </span>
-          </div>
-        )}
       </div>
     );
   };

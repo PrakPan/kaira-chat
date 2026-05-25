@@ -3205,7 +3205,7 @@ const BottomCTABar = React.memo(
         <div className="z-20 fixed w-full md:w-[47.5%] max-ph:bottom-0 md:!bottom-[4.2rem] flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3 flex items-center justify-center">
           <button
             onClick={onConfirm}
-            className="flex items-center justify-center h-[40px] px-5 gap-2 rounded-[8px] bg-[#F7E700] font-semibold ttw-type-body font-inter"
+            className="flex items-center justify-center h-[40px] px-5 gap-2 rounded-[8px] bg-[#F7E700] ttw-type-body font-inter !font-bold"
           >
             Confirm Itinerary & View Prices →
           </button>
@@ -3259,14 +3259,14 @@ const BottomCTABar = React.memo(
         <div className="flex flex-col">
           {cost !== null ? (
             <>
-              <span className="ttw-type-small text-[#6E757A]">
+              <span className="text-black !font-semibold">
                 {perPerson
                   ? "Per Person"
                   : cart?.is_estimated_price && cost > 0
                     ? "Estimated Price"
                     : "Total Cost"}
               </span>
-              <span className="font-bold ttw-type-body">
+              <span className=" ttw-type-body !font-semibold">
                 {currencySymbol} {cost.toLocaleString("en-IN")}/-
               </span>
             </>
@@ -3303,7 +3303,7 @@ const BottomCTABar = React.memo(
           </svg>
           <button
             onClick={onViewCart}
-            className="flex items-center gap-2 h-[44px] px-4 rounded-[8px] bg-[#F7E700] ttw-type-body font-inter font-semibold"
+            className="flex items-center gap-2 h-[44px] px-4 rounded-[8px] bg-[#F7E700] ttw-type-body font-inter !font-bold"
           >
             View Cart
             {countCartItems > 0 && (
