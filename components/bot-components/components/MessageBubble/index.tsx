@@ -316,7 +316,7 @@ const FeedbackPopup: React.FC<{
   };
 
   const showOtherInput = label === "other";
-  const canSubmit = !!label && (!showOtherInput || message.trim().length > 0);
+  const canSubmit = !!label;
 
   return createPortal(
     <div

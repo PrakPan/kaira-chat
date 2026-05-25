@@ -31,6 +31,7 @@ import FilterChips from "./filtersmobile/FilterChips";
 import { IconButton } from "@mui/material";
 import CheckboxFormComponent from "../../FormComponents/CheckboxFormComponent";
 import BotLoginModal from "../../bot-components/components/BotLoginModal";
+import OfflineQuoteCTA from "../../ui/OfflineQuoteCTA";
 
 const FloatingView = styled.div`
   position: sticky;
@@ -1095,40 +1096,25 @@ const Booking = (props) => {
                       <div className="flex flex-row items-center justify-center text-center px-lg">
                         {isFetchingError.errorMsg}
                       </div>
-                      <GetInTouchContainer>
-                        <Button
-                          color="#111"
-                          fontWeight="500"
-                          fontSize="1rem"
-                          borderWidth="1px"
-                          width="100%"
-                          borderRadius="8px"
-                          bgColor="#f8e000"
-                          padding="12px"
-                          onclick={props._GetInTouch}
-                        >
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "center",
-                              gap: "0.5rem",
-                              alignItems: "center",
-                            }}
-                          >
-                            <ImageLoader
-                              dimensions={{ height: 50, width: 50 }}
-                              dimensionsMobile={{ height: 50, width: 50 }}
-                              height={"20px"}
-                              width={"20px"}
-                              leftalign
-                              url={
-                                "media/icons/login/customer-service-black.png"
-                              }
-                            />{" "}
-                            <span>Get in touch!</span>
-                          </div>
-                        </Button>
-                      </GetInTouchContainer>
+                      <OfflineQuoteCTA
+                        itinerary_id={router?.query?.id || props?.itinerary_id}
+                        type="hotels"
+                        startDate={getDate(currentBooking?.check_in)}
+                        onEditDates={() => {
+                          if (typeof handleClose === "function") {
+                            handleClose();
+                          } else if (
+                            typeof props?.setHideBookingModal === "function"
+                          ) {
+                            props.setHideBookingModal();
+                          }
+                        }}
+                        payload={{
+                          accommodation_id: selectedHotelId || null,
+                          check_in: getDate(currentBooking?.check_in),
+                          check_out: getDate(currentBooking?.check_out),
+                        }}
+                      />
                     </div>
                   ) : !noResults && !updateBookingState ? (
                     <OptionsContainer id="options">

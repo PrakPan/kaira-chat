@@ -454,13 +454,16 @@ export default function BotApp({
       },
     );
     const onUnauthorized = () => setShowApiLoginPrompt(true);
+    const onOpenSettings = () => setShowSettings(true);
     if (typeof window !== "undefined") {
       window.addEventListener("api:unauthorized", onUnauthorized);
+      window.addEventListener("open-itinerary-settings", onOpenSettings);
     }
     return () => {
       axios.interceptors.response.eject(id);
       if (typeof window !== "undefined") {
         window.removeEventListener("api:unauthorized", onUnauthorized);
+        window.removeEventListener("open-itinerary-settings", onOpenSettings);
       }
     };
   }, []);

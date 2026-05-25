@@ -75,6 +75,7 @@ import { Link } from "react-scroll";
 import SkeletonCard from "../../ui/SkeletonCard";
 import { is } from "date-fns/locale";
 import PickupDropDrawer from "../../../containers/itinerary/PickupDropDrawer";
+import OfflineQuoteCTA from "../../ui/OfflineQuoteCTA";
 
 const svgIcons = {
   time: (
@@ -263,6 +264,15 @@ const TransferEditDrawer = (props) => {
     useState(true);
   const [sightseeingRefetching, setSightseeingRefetching] = useState(false);
   const [transfersError, setTransfersError] = useState(null);
+  // Per-tab error so switching tabs (and switching back) preserves the
+  // error state for tabs whose fetch failed — `transfersError` is reset on
+  // every refetch which causes the inline error UI to disappear when the user
+  // navigates between tabs.
+  const [tabErrors, setTabErrors] = useState({
+    sightseeing: null,
+    airport: null,
+    multicity: null,
+  });
   const [selectLoading, setSelectLoading] = useState(false);
   const [isRouteSelected, setIsRouteSelected] = useState(false);
   const [transferType, setTransferType] = useState(
@@ -365,6 +375,7 @@ const TransferEditDrawer = (props) => {
   useEffect(() => {
     if (!showDrawer) {
       setTabLoaded({ sightseeing: false, airport: false, multicity: false });
+      setTabErrors({ sightseeing: null, airport: null, multicity: null });
     }
   }, [showDrawer]);
 
@@ -626,6 +637,12 @@ const TransferEditDrawer = (props) => {
             const endParam = includeDateFilter && sightseeingEndDate ? `&end_date=${sightseeingEndDate}` : "";
             const typeParam = effectiveType ? `&suggestion_type=${effectiveType}` : "";
             const multicityUrl = `/${ItineraryId || router.query.id || router.query.sessionId }/?currency=${currency?.currency || "INR"}${cityId ? `&itinerary_city_id=${cityId}` : ""}${startParam}${endParam}${typeParam}`;
+            const tabKey =
+              effectiveType === "pickup-drop"
+                ? "airport"
+                : effectiveType === "sightseeing"
+                ? "sightseeing"
+                : "multicity";
             return fetchMulticityRoundtrip
               .get(multicityUrl)
               .then((response) => {
@@ -634,7 +651,10 @@ const TransferEditDrawer = (props) => {
                   const errorMsg = response?.data?.errors?.[0]?.message?.[0]
                     || response?.data?.errors?.[0]?.message
                     || "No taxi options available for this route.";
-                  setTransfersError(typeof errorMsg === 'string' ? errorMsg : Array.isArray(errorMsg) ? errorMsg[0] : "No taxi options available for this route.");
+                  const normalizedErr = typeof errorMsg === 'string' ? errorMsg : Array.isArray(errorMsg) ? errorMsg[0] : "No taxi options available for this route.";
+                  setTransfersError(normalizedErr);
+                  setTabErrors((prev) => ({ ...prev, [tabKey]: normalizedErr }));
+                  setTabLoaded((prev) => ({ ...prev, [tabKey]: true }));
                   if (sightseeingFilterRefetch) {
                     setSightseeingRefetching(false);
                   } else {
@@ -656,13 +676,16 @@ const TransferEditDrawer = (props) => {
                   const multicitySuggs = suggestions.filter(isMulticityType);
                   setMultiCitySuggestions(multicitySuggs.length > 0 ? multicitySuggs : null);
                   setTabLoaded((prev) => ({ ...prev, multicity: true }));
+                  setTabErrors((prev) => ({ ...prev, multicity: null }));
                 } else if (effectiveType === "pickup-drop") {
                   setAirportSuggestions(suggestions.length > 0 ? suggestions : null);
                   setTabLoaded((prev) => ({ ...prev, airport: true }));
+                  setTabErrors((prev) => ({ ...prev, airport: null }));
                 } else if (effectiveType === "sightseeing") {
                   setRoundTripSuggestions(suggestions.length > 0 ? suggestions : null);
                   setSightseeingSuggestions(null);
                   setTabLoaded((prev) => ({ ...prev, sightseeing: true }));
+                  setTabErrors((prev) => ({ ...prev, sightseeing: null }));
                 } else {
                   // Legacy fallback: response contains all types — categorize.
                   const multicitySuggs = suggestions.filter(isMulticityType);
@@ -693,7 +716,10 @@ const TransferEditDrawer = (props) => {
                 const errorMsg = error?.response?.data?.errors?.[0]?.message?.[0]
                   || error?.response?.data?.errors?.[0]?.message
                   || "No taxi options available for this route. Please get in touch with us!";
-                setTransfersError(typeof errorMsg === 'string' ? errorMsg : Array.isArray(errorMsg) ? errorMsg[0] : "No taxi options available for this route. Please get in touch with us!");
+                const normalizedErr = typeof errorMsg === 'string' ? errorMsg : Array.isArray(errorMsg) ? errorMsg[0] : "No taxi options available for this route. Please get in touch with us!";
+                setTransfersError(normalizedErr);
+                setTabErrors((prev) => ({ ...prev, [tabKey]: normalizedErr }));
+                setTabLoaded((prev) => ({ ...prev, [tabKey]: true }));
                 console.error("Error::Fetching Multicity Round Trip", error);
               });
           })()
@@ -1325,10 +1351,17 @@ const TransferEditDrawer = (props) => {
               </>
             ))}
           </div>
-        ) : transfersError &&
-          roundTripSuggestions === null &&
-          multiCitySuggestions === null &&
-          airportSuggestions === null ? (
+        ) : (() => {
+            const currentTab = multicityTab || "multicity";
+            const currentTabSuggestions =
+              currentTab === "sightseeing"
+                ? roundTripSuggestions
+                : currentTab === "airport"
+                ? airportSuggestions
+                : multiCitySuggestions;
+            const currentTabError = tabErrors[currentTab] || transfersError;
+            return currentTabError && currentTabSuggestions === null;
+          })() ? (
           <div className="w-full flex justify-center py-10 px-4">
             <div className="bg-text-stroke rounded-2xl p-lg flex flex-col items-center text-center max-w-[440px] w-full border-sm border-text-disabled">
               <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center mb-sm shadow-soft">
@@ -1338,10 +1371,70 @@ const TransferEditDrawer = (props) => {
                 No options available
               </div>
               <p className="text-sm font-400 leading-md text-text-spacegrey">
-                {typeof transfersError === "string"
-                  ? transfersError
-                  : "We couldn't find options for this route right now."}
+                {(() => {
+                  const currentTab = multicityTab || "multicity";
+                  const err = tabErrors[currentTab] || transfersError;
+                  return typeof err === "string"
+                    ? err
+                    : "We couldn't find options for this route right now.";
+                })()}
               </p>
+              {(() => {
+                const activeTab = multicityTab || "multicity";
+                const taxi_type =
+                  activeTab === "airport"
+                    ? "airport"
+                    : activeTab === "sightseeing"
+                    ? "sightseeing"
+                    : "multicity";
+                const start_date =
+                  (activeTab === "sightseeing" && sightseeingStartDate) ||
+                  selectedBooking?.check_in ||
+                  check_in ||
+                  null;
+                const sourceName =
+                  city ||
+                  mercuryTransfer?.source?.city_name ||
+                  selectedBooking?.origin?.shortName;
+                const destinationName =
+                  dcity ||
+                  mercuryTransfer?.destination?.city_name ||
+                  selectedBooking?.destination?.shortName;
+                const payload = { taxi_type, start_date };
+                if (taxi_type === "airport") {
+                  payload.source = sourceName;
+                  payload.destination = destinationName;
+                  payload.airport_type = "pickup";
+                } else if (taxi_type === "sightseeing") {
+                  payload.source = sourceName;
+                  if (sightseeingStartDate && sightseeingEndDate) {
+                    const s = new Date(sightseeingStartDate);
+                    const e = new Date(sightseeingEndDate);
+                    const diff = Math.max(
+                      1,
+                      Math.round((e - s) / (1000 * 60 * 60 * 24))
+                    );
+                    payload.duration = diff;
+                  }
+                }
+                return (
+                  <div className="mt-1">
+                    <OfflineQuoteCTA
+                      itinerary_id={ItineraryId || router?.query?.id}
+                      type="taxi"
+                      startDate={start_date}
+                      onEditDates={() => {
+                        if (typeof actualClose === "function") {
+                          actualClose();
+                        } else if (typeof props?.setShowDrawer === "function") {
+                          props.setShowDrawer(false);
+                        }
+                      }}
+                      payload={payload}
+                    />
+                  </div>
+                );
+              })()}
             </div>
           </div>
         ) : (
