@@ -643,6 +643,7 @@ onViewItinerary,
     activityId?: string;
     date?: string;
     itinerary_city_id?: string;
+    source?: string;
   }>({ show: false });
 
   const [transferDrawer, setTransferDrawer] = useState<{
@@ -2537,6 +2538,9 @@ const handleShowLogin = useCallback(() => {
                       activityId,
                       date,
                       itinerary_city_id: itineraryCityId,
+                      source: (payload.source ?? payload.provider) as
+                        | string
+                        | undefined,
                     });
                     analyticsRef.current.trackActivityCardClicked?.(
                       localItineraryId || "",
@@ -2574,6 +2578,9 @@ const handleShowLogin = useCallback(() => {
                         itinerary_city_id: (payload.itineraryCityId ??
                           payload.itinerary_city_id ??
                           payload.city_id) as string | undefined,
+                        source: (payload.source ?? payload.provider) as
+                          | string
+                          | undefined,
                       });
                       analyticsRef.current.trackActivityCardClicked?.(
                         localItineraryId || "",
@@ -3039,6 +3046,7 @@ const handleShowLogin = useCallback(() => {
           show={activityDrawer.show}
           fromChat={true}
           activityId={activityDrawer.activityId}
+          source={activityDrawer.source}
           date={activityDrawer.date}
           handleCloseDrawer={() => setActivityDrawer({ show: false })}
           setShowDetails={() => setActivityDrawer({ show: false })}

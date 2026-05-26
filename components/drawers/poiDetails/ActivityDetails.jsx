@@ -789,12 +789,15 @@ const ActivityDetails = (props) => {
                     ? props.activityData?.prices[0]?.description
                     : null}
                 </div>
-                <div className="text-sm text-gray-600">
-                  For{" "}
-                  {props.activityData?.prices[0]?.pax_details.adults +
-                    props.activityData?.prices[0]?.pax_details.children}{" "}
-                  people
-                </div>
+                {props.activityData?.prices?.[0]?.pax_details && (
+                  <div className="text-sm text-gray-600">
+                    For{" "}
+                    {(props.activityData?.prices?.[0]?.pax_details?.adults || 0) +
+                      (props.activityData?.prices?.[0]?.pax_details?.children ||
+                        0)}{" "}
+                    people
+                  </div>
+                )}
               </div>
             )}
 

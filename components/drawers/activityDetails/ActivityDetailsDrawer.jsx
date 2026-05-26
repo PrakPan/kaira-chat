@@ -120,6 +120,14 @@ const ActivityDetailsDrawer = (props) => {
       children_ages: paxSource?.children_ages || paxSource.traveler_ages,
     };
 
+    // Source identifies which provider the activity came from (passed down
+    // from the search-result item). The detail endpoint needs it to resolve
+    // the correct upstream provider.
+    const sourceValue = data?._sourceOverride || props.source;
+    if (sourceValue) {
+      requestData.source = sourceValue;
+    }
+
     if (data?._timeOverride) {
       requestData.time_of_day = data._timeOverride;
     }

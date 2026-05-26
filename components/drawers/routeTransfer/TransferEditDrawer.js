@@ -59,9 +59,9 @@ import {
 import axios from "axios";
 import { MERCURY_HOST } from "../../../services/constants";
 import BackArrow from "../../ui/BackArrow";
-import { Pax } from "../activityDetails/Pax";
+import TransferPax from "./TransferPax";
+import TransferDateField from "./TransferDateField";
 import { TbArrowBack } from "react-icons/tb";
-import { DatePicker } from "../../../containers/newitinerary/breif/route/RouteEditSection";
 import { axiosGetTransfers } from "../../../services/itinerary/bookings";
 import setItineraryStatus from "../../../store/actions/itineraryStatus";
 import { useHandleClose } from "../../../hooks/useHandleClose";
@@ -4139,19 +4139,19 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
                         <div>
                           <div className="flex flex-col sm:flex-row sm:items-center gap-2 justify-between mb-4">
                             <div className="relative w-full sm:w-auto">
-                              <label className="text-sm font-medium mb-2 block">
-                                Departure Date:
+                              <label className="Body1M_16 mb-[4px] block">
+                                Departure Date
                               </label>
-                              <DatePicker
+                              <TransferDateField
                                 id="departure-date"
                                 date={currentModeDepartureDate}
+                                defaultDate={currentModeDepartureDate}
                                 onDateChange={(e) => {
                                   const selectedDate = dayjs(
                                     e.target.value,
                                   ).format("YYYY-MM-DD");
                                   handleDateSelect(selectedDate);
                                 }}
-                                defaultDate={currentModeDepartureDate}
                               />
                             </div>
 
@@ -4160,11 +4160,11 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
                                 className="time-dropdown-container relative w-full sm:w-auto"
                                 id="time-dropdown"
                               >
-                                <div className="text-sm font-medium text-gray-700 mb-2">
+                                <div className="Body1M_16 mb-[4px] block">
                                   Departure Time
                                 </div>
                                 <div
-                                  className="flex items-center justify-between gap-2 p-2 border border-[#d0d5dd] rounded-[8px] shadow-[0px_1px_2px_rgba(16,24,40,0.05)] cursor-pointer bg-white hover:bg-gray-50"
+                                  className="flex items-center justify-between gap-2 px-4 h-[46.4px] min-w-[160px] border border-[#E5E5E5] rounded-[6px] cursor-pointer bg-white hover:bg-gray-50"
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     setShowTimeDropdown(!showTimeDropdown);
@@ -4198,15 +4198,15 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
                                 </div>
 
                                 {showTimeDropdown && (
-                                  <div className="absolute right-0 mt-1 bg-white border rounded-md shadow-lg z-50 w-48 max-h-60 overflow-y-auto">
+                                  <div className="absolute right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-[100] w-48 max-h-60 overflow-y-auto">
                                     {timeOptions.map((time, idx) => (
                                       <div
                                         key={idx}
-                                        className={`p-2 hover:bg-gray-100 cursor-pointer text-sm ${
+                                        className={`px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm ${
                                           time.value ===
                                           currentModeDepartureTime
-                                            ? "bg-yellow-100 font-medium"
-                                            : ""
+                                            ? "bg-gray-100 font-medium text-[#212529]"
+                                            : "text-gray-700"
                                         }`}
                                         onClick={() =>
                                           handleTimeSelect(time.value)
@@ -4221,14 +4221,12 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
                             </div>
                           </div>
                           <div className="flex justify-end">
-                            <Pax
-                              setShowPax={setShowPax}
+                            <TransferPax
                               pax={pax}
                               setPax={(newPax) => {
                                 setPax(newPax);
                                 handlePaxChange(newPax, option);
                               }}
-                              showPax={showPax}
                               combo={true}
                             />
                           </div>
@@ -7193,16 +7191,12 @@ const toggleTransferDetails = (priceOptionId) => {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-4">
           {/* Date Dropdown */}
           <div className="w-full sm:w-auto">
-            <label className="block text-sm font-medium mb-1">
-              Departure Date:
-            </label>
-            <DatePicker
+            <label className="Body1M_16 mb-[4px] block">Departure Date</label>
+            <TransferDateField
               id="departureDate"
               date={departureDate || currentModeDepartureDate}
               defaultDate={currentModeDepartureDate}
               onDateChange={handleDateChange}
-              isOutsideRange={() => false}
-              enableOutsideDays={true}
               disabled={isBookingInProgress}
             />
           </div>
@@ -7212,11 +7206,9 @@ const toggleTransferDetails = (priceOptionId) => {
             className="time-dropdown-container relative w-full sm:w-auto"
             ref={ref}
           >
-            <div className="text-sm font-medium text-gray-700 mb-2">
-              Departure Time
-            </div>
+            <div className="Body1M_16 mb-[4px] block">Departure Time</div>
             <div
-              className={`flex items-center justify-between gap-2 p-2 border border-[#d0d5dd] rounded-[8px] shadow-[0px_1px_2px_rgba(16,24,40,0.05)] cursor-pointer bg-white hover:bg-gray-50 ${
+              className={`flex items-center justify-between gap-2 px-4 h-[46.4px] min-w-[160px] border border-[#E5E5E5] rounded-[6px] cursor-pointer bg-white hover:bg-gray-50 ${
                 isBookingInProgress ? "opacity-50 cursor-not-allowed" : ""
               }`}
               onClick={() =>
@@ -7245,15 +7237,15 @@ const toggleTransferDetails = (priceOptionId) => {
             </div>
 
             {showTimeDropdown && !isBookingInProgress && (
-              <div className="absolute right-0 z-[15] mt-1 w-48 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto">
+              <div className="absolute right-0 z-[100] mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
                 {timeOptions.map((time, index) => (
                   <div
                     key={index}
-                    className={`p-2 hover:bg-gray-100 cursor-pointer text-sm
+                    className={`px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm
                       ${
                         time.value === departureTime
-                          ? "bg-yellow-100 font-medium"
-                          : ""
+                          ? "bg-gray-100 font-medium text-[#212529]"
+                          : "text-gray-700"
                       }
                     `}
                     onClick={() => handleTimeSelect(time)}
@@ -7267,11 +7259,9 @@ const toggleTransferDetails = (priceOptionId) => {
         </div>
 
         <div className="flex justify-end ">
-          <Pax
-            setShowPax={setShowPax}
+          <TransferPax
             pax={pax}
             setPax={handlePaxChange}
-            showPax={showPax}
             combo={true}
             disabled={isBookingInProgress}
           />
