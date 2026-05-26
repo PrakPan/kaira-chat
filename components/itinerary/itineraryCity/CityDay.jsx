@@ -50,7 +50,7 @@ const resolveElementType = (item) => {
 // ─── Helper: get display name ─────────────────────────────────────────────────
 const getItemName = (item) => {
   return (
-    item?.heading ||
+    item?.name ||
     item?.restaurants?.[0]?.name ||
     item?.heading ||
     ""
@@ -129,18 +129,22 @@ const getStatusInfo = (resolvedType) => {
 };
 
 // ─── Helper: card variant background / border per element type ────────────────
-//   restaurant      → peach wash (#FFF4E8), NO border
-//   activity / poi  → white card, #ECECEC 1px border, yellow left accent bar
-//   recommendation  → transparent, dashed #B8BECC border
-const getCardVariantClass = (resolvedType) => {
+// Ported 1:1 from the v4 HTML. Returned as inline styles (not Tailwind classes)
+// because arbitrary color/border values returned from a function are not reliably
+// picked up by Tailwind's content scanner — same reason the tag chips use inline
+// styles. Inline `style` always renders, so the design is reproduced exactly.
+//   restaurant            → peach-soft fill (#FFF4E8), transparent 1px border  (.act.food)
+//   activity              → white card, #ECECEC 1px solid border               (.act)
+//   poi / recommendation  → transparent fill, 1px dashed #B8BECC border        (.act.suggested)
+const getCardVariantStyle = (resolvedType) => {
   if (resolvedType === "restaurant") {
-    return "bg-[#FFF4E8] border-0 shadow-none";
+    return { background: "#FFF4E8", border: "1px solid transparent" };
   }
-  if (resolvedType === "recommendation") {
-    return "bg-transparent border border-dashed border-[#B8BECC] shadow-none";
+  if (resolvedType === "recommendation" || resolvedType === "poi") {
+    return { background: "transparent", border: "1px dashed #B8BECC" };
   }
-  // activity, poi
-  return "bg-white border border-[#ECECEC] shadow-none";
+  // activity
+  return { background: "#FFFFFF", border: "1px solid #ECECEC" };
 };
 
 // ─── Helper: clock-time to show in the right column ───────────────────────────
@@ -222,11 +226,12 @@ const RecommendationIcon = ({ size = 16 }) => (
 // which made every chip render with the browser-default (transparent/white)
 // background. Inline style sidesteps the purge/JIT entirely.
 const CHIP_BASE =
-  "inline-flex items-center gap-[3px] px-[6px] py-[2px] rounded-[3px] font-bold uppercase whitespace-nowrap";
+  "inline-flex items-center gap-[3px] px-[6px] py-[2px] rounded-[3px] uppercase whitespace-nowrap";
 
 const CHIP_TEXT_STYLE = {
   fontFamily: "'JetBrains Mono', 'SF Mono', Menlo, ui-monospace, monospace",
   fontSize: "9px",
+  fontWeight: 600,
   letterSpacing: "0.06em",
   lineHeight: 1.4,
 };
@@ -520,7 +525,7 @@ useEffect(() => {
     const isRecommendationOnly = resolvedType === "recommendation";
     const isClickable = !isRecommendationOnly;
     const status = getStatusInfo(resolvedType);
-    const containerClass = getCardVariantClass(resolvedType);
+    const variantStyle = getCardVariantStyle(resolvedType);
     const displayTime = getDisplayTime(item);
     const duration = getDurationLabel(item);
     const dataTags = getDisplayTags(item);
@@ -529,9 +534,10 @@ useEffect(() => {
       <div
         key={idxInSlot}
         onClick={() => isClickable && handleItemClick(item)}
-        className={`relative grid grid-cols-[40px_minmax(0,1fr)] gap-2.5 sm:gap-3 px-3 py-2.5 rounded-[10px] items-start transition-all ${containerClass} ${
+        style={variantStyle}
+        className={`relative grid grid-cols-[40px_minmax(0,1fr)] gap-2.5 sm:gap-3 px-3 py-2.5 rounded-[10px] items-start transition-all ${
           isClickable
-            ? "cursor-pointer hover:border-[#8892A6] hover:-translate-y-[1px]"
+            ? "cursor-pointer hover:-translate-y-[1px]"
             : "cursor-default"
         }`}
       >
@@ -556,7 +562,10 @@ useEffect(() => {
         {/* ── Body: 1) name  2) one_liner  3) tags row ── */}
         <div className="min-w-0">
           {/* 1) name — no truncation, wraps naturally */}
-          <h4 className="ttw-type-h6 text-[#0B1220] m-0 leading-[1.25] break-words">
+          <h4
+            className="ttw-type-h6 text-[#0B1220] m-0 leading-[1.2] break-words"
+            style={{ fontWeight: 600 }}
+          >
             {name}
           </h4>
 
@@ -564,11 +573,14 @@ useEffect(() => {
               Row height = content height (no stretch). The left side wraps
               naturally; the right side stays pinned, never grows in height. */}
           {(subtitle || dataTags.length > 0 || duration || isRecommendationOnly || status) && (
-            <div className="mt-[3px] flex items-baseline justify-between gap-3">
+            <div className="mt-[1px] flex items-baseline justify-between gap-3">
               {/* LEFT: one-liner + tags, inline + wrapping */}
-              <div className="min-w-0 flex-1 leading-[1.5] break-words">
+              <div className="min-w-0 flex-1 leading-[1.3] break-words">
                 {subtitle && (
-                  <span className="ttw-type-small text-[#4A566E] align-middle">
+                  <span
+                    className="ttw-type-small text-[#4A566E] align-middle"
+                    style={{ fontSize: "11.5px", lineHeight: 1.3 }}
+                  >
                     {subtitle}
                   </span>
                 )}
@@ -666,7 +678,7 @@ useEffect(() => {
      <div className="flex sm:flex-row flex-col border-b border-[#ECECEC] last:border-b-0 w-full justify-center bg-[#FBFAF3]">
 
         {/* COL 1: Day number + date — matches HTML .day-num-block */}
-        <div className="sm:w-fit w-full shrink-0 px-4 sm:pt-6 pt-4 sm:pb-6 pb-2 flex sm:flex-col flex-row sm:items-start items-baseline gap-3 sm:min-w-[80px]">
+        <div className="sm:w-fit w-full shrink-0 pl-4 pr-2 sm:pr-0 sm:pt-6 pt-4 sm:pb-6 pb-2 flex sm:flex-col flex-row sm:items-start items-baseline gap-3 sm:min-w-[64px]">
           <div className="flex flex-col  sm:items-start items-baseline gap-2 sm:gap-1 shrink-0">
             <span className="ttw-type-day-num text-[#0B1220] m-0 whitespace-nowrap">
               {String(props.index + 1).padStart(2, "0")}
