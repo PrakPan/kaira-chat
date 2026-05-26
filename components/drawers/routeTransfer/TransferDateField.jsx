@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import dayjs from "dayjs";
-import { FaRegCalendar } from "react-icons/fa";
+import { FaRegCalendar, FaChevronDown } from "react-icons/fa";
 import AirbnbCalendarSingleMonth from "../../calendar/SingleCalendar";
 
 /**
@@ -40,12 +40,24 @@ const TransferDateField = ({ id, date, defaultDate, onDateChange, disabled = fal
       <div
         id={id}
         onClick={() => !disabled && setOpen((prev) => !prev)}
-        className={`flex h-[46.4px] min-w-[200px] items-center justify-between gap-2 rounded-[6px] border border-[#E5E5E5] bg-white px-4 ${
-          disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-gray-50"
+        className={`flex h-[46.4px] min-w-[200px] items-center gap-3 rounded-[10px] border bg-[#07213A0D] px-4 transition-colors ${
+          open ? "border-[#07213A]" : "border-[#07213A26]"
+        } ${
+          disabled
+            ? "opacity-50 cursor-not-allowed"
+            : "cursor-pointer hover:bg-[#07213A14] hover:border-[#07213A40]"
         }`}
       >
-        <span className="Body2M_14 text-[#212529]">{display}</span>
-        <FaRegCalendar className="text-gray-500 shrink-0" size={16} />
+        <FaRegCalendar className="shrink-0 text-[#07213A]" size={16} />
+        <span
+          className={`Body2M_14 flex-1 ${value ? "text-[#07213A]" : "text-[#07213A80]"}`}
+        >
+          {display}
+        </span>
+        <FaChevronDown
+          className={`shrink-0 text-[#07213A] transition-transform ${open ? "rotate-180" : ""}`}
+          size={14}
+        />
       </div>
 
       {open && !disabled && (
