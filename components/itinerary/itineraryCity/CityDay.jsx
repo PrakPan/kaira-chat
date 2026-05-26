@@ -530,12 +530,50 @@ useEffect(() => {
     const duration = getDurationLabel(item);
     const dataTags = getDisplayTags(item);
 
+    const statusBadge = status ? (
+      <span
+        className={`ttw-type-status shrink-0 whitespace-nowrap ${
+          status.tone === "confirmed" ? "text-[#1F8A5A]" : "text-[#8892A6]"
+        }`}
+      >
+        {status.label}
+      </span>
+    ) : null;
+
+    const tagGroup =
+      dataTags.length > 0 || duration ? (
+        <span className="inline-block whitespace-nowrap align-middle">
+          {dataTags.map((t, i) => (
+            <span
+              key={`${t}-${i}`}
+              className={`${CHIP_BASE} align-middle mr-[5px]`}
+              style={{ ...CHIP_TEXT_STYLE, ...resolveTagStyle(t) }}
+            >
+              <span aria-hidden="true" style={{ fontSize: "8px", lineHeight: 1 }}>
+                {resolveTagIcon(t)}
+              </span>
+              {t.replace(/_/g, " ")}
+            </span>
+          ))}
+          {duration && (
+            <span
+              className={`${CHIP_BASE} align-middle`}
+              style={{ ...CHIP_TEXT_STYLE, ...DURATION_CHIP_STYLE }}
+            >
+              {duration}
+            </span>
+          )}
+        </span>
+      ) : null;
+
     return (
       <div
         key={idxInSlot}
         onClick={() => isClickable && handleItemClick(item)}
         style={variantStyle}
-        className={`relative grid grid-cols-[40px_minmax(0,1fr)] gap-2.5 sm:gap-3 px-3 py-2.5 rounded-[10px] items-start transition-all ${
+        className={`relative grid grid-cols-[40px_minmax(0,1fr)] gap-2.5 sm:gap-3 px-3 py-2.5 rounded-[10px] ${
+          subtitle ? "items-start" : "items-center"
+        } transition-all ${
           isClickable
             ? "cursor-pointer hover:-translate-y-[1px]"
             : "cursor-default"
@@ -559,87 +597,55 @@ useEffect(() => {
           />
         )}
 
-        {/* ── Body: 1) name  2) one_liner  3) tags row ── */}
+        {/* ── Body ── */}
         <div className="min-w-0">
-          {/* 1) name — no truncation, wraps naturally */}
-          <h4
-            className="ttw-type-h6 text-[#0B1220] m-0 leading-[1.2] break-words"
-            style={{ fontWeight: 600 }}
-          >
-            {name}
-          </h4>
+          {subtitle ? (
+            <>
+              {/* 1) name — no truncation, wraps naturally */}
+              <h4
+                className="ttw-type-h6 text-[#0B1220] m-0 leading-[1.2] break-words"
+                style={{ fontWeight: 600 }}
+              >
+                {name}
+              </h4>
 
-          {/* 2) Row: [left: one-liner + tags] [right: confirmed/reserved].
-              Row height = content height (no stretch). The left side wraps
-              naturally; the right side stays pinned, never grows in height. */}
-          {(subtitle || dataTags.length > 0 || duration || isRecommendationOnly || status) && (
-            <div className="mt-[1px] flex items-baseline justify-between gap-3">
-              {/* LEFT: one-liner + tags, inline + wrapping */}
-              <div className="min-w-0 flex-1 leading-[1.3] break-words">
-                {subtitle && (
+              {/* 2) Row: [left: one-liner + tags] [right: confirmed/reserved].
+                  Row height = content height (no stretch). The left side wraps
+                  naturally; the right side stays pinned, never grows in height. */}
+              <div className="mt-[1px] flex items-baseline justify-between gap-3">
+                {/* LEFT: one-liner + tags, inline + wrapping */}
+                <div className="min-w-0 flex-1 leading-[1.3] break-words">
                   <span
                     className="ttw-type-small text-[#4A566E] align-middle"
                     style={{ fontSize: "11.5px", lineHeight: 1.3 }}
                   >
                     {subtitle}
                   </span>
-                )}
-                {subtitle &&
-                  (dataTags.length > 0 || duration || isRecommendationOnly) && (
+                  {(dataTags.length > 0 || duration || isRecommendationOnly) && (
                     <span className="inline-block w-[6px]" aria-hidden="true" />
                   )}
-                {/* {isRecommendationOnly && (
-                  <span
-                    className={`${CHIP_BASE} align-middle mr-[5px]`}
-                    style={{ ...CHIP_TEXT_STYLE, ...RECOMMENDATION_CHIP_STYLE }}
-                  >
-                    <RecommendationIcon size={10} />
-                    Recommendation
-                  </span>
-                )} */}
-                {/* Tag group — wrapped in a single inline-block with
-                    `whitespace-nowrap` so all chips behave as ONE unit. If the
-                    group can't fit beside the one-liner, every chip drops to
-                    the next line together (no orphan first chip). */}
-                {(dataTags.length > 0 || duration) && (
-                  <span className="inline-block whitespace-nowrap align-middle">
-                    {dataTags.map((t, i) => (
-                      <span
-                        key={`${t}-${i}`}
-                        className={`${CHIP_BASE} align-middle mr-[5px]`}
-                        style={{ ...CHIP_TEXT_STYLE, ...resolveTagStyle(t) }}
-                      >
-                        <span aria-hidden="true" style={{ fontSize: "8px", lineHeight: 1 }}>
-                          {resolveTagIcon(t)}
-                        </span>
-                        {t.replace(/_/g, " ")}
-                      </span>
-                    ))}
-                    {duration && (
-                      <span
-                        className={`${CHIP_BASE} align-middle`}
-                        style={{ ...CHIP_TEXT_STYLE, ...DURATION_CHIP_STYLE }}
-                      >
-                        {duration}
-                      </span>
-                    )}
-                  </span>
-                )}
-              </div>
+                  {tagGroup}
+                </div>
 
-              {/* RIGHT: confirmed / reserved — fixed-content, no height stretch */}
-              {status && (
-                <span
-                  className={`ttw-type-status shrink-0 whitespace-nowrap ${
-                    status.tone === "confirmed"
-                      ? "text-[#1F8A5A]"
-                      : "text-[#8892A6]"
-                  }`}
+                {/* RIGHT: confirmed / reserved — fixed-content, no height stretch */}
+                {statusBadge}
+              </div>
+            </>
+          ) : (
+            <>
+              {/* No one_liner: name on the left, status pinned right and
+                  baseline-aligned with the title's first line. */}
+              <div className="flex items-baseline justify-between gap-3">
+                <h4
+                  className="ttw-type-h6 text-[#0B1220] m-0 leading-[1.2] break-words min-w-0 flex-1"
+                  style={{ fontWeight: 600 }}
                 >
-                  {status.label}
-                </span>
-              )}
-            </div>
+                  {name}
+                </h4>
+                {statusBadge}
+              </div>
+              {tagGroup && <div className="mt-[3px]">{tagGroup}</div>}
+            </>
           )}
         </div>
       </div>
