@@ -40,7 +40,7 @@ const TransferDateField = ({ id, date, defaultDate, onDateChange, disabled = fal
       <div
         id={id}
         onClick={() => !disabled && setOpen((prev) => !prev)}
-        className={`flex h-[46.4px] min-w-[200px] items-center gap-3 rounded-[10px] border bg-[#07213A0D] px-4 transition-colors ${
+        className={`flex h-[46.4px] w-full min-w-0 items-center gap-2 rounded-[10px] border bg-[#07213A0D] px-3 transition-colors ${
           open ? "border-[#07213A]" : "border-[#07213A26]"
         } ${
           disabled
@@ -50,7 +50,7 @@ const TransferDateField = ({ id, date, defaultDate, onDateChange, disabled = fal
       >
         <FaRegCalendar className="shrink-0 text-[#07213A]" size={16} />
         <span
-          className={`Body2M_14 flex-1 ${value ? "text-[#07213A]" : "text-[#07213A80]"}`}
+          className={`Body2M_14 flex-1 truncate ${value ? "text-[#07213A]" : "text-[#07213A80]"}`}
         >
           {display}
         </span>
@@ -61,7 +61,7 @@ const TransferDateField = ({ id, date, defaultDate, onDateChange, disabled = fal
       </div>
 
       {open && !disabled && (
-        <div className="absolute left-0 z-[100] mt-2 bg-white border border-gray-200 rounded-lg shadow-lg min-w-[350px]">
+        <div className="absolute left-0 z-[100] mt-2 w-[350px] max-w-[calc(100vw-2rem)] bg-white border border-gray-200 rounded-lg shadow-lg">
           <AirbnbCalendarSingleMonth
             dateType="fixed"
             valueStart={value}

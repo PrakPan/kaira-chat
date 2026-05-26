@@ -182,7 +182,7 @@ const AirbnbCalendarSingleMonth = (props) => {
   };
 
   return (
-    <div className='w-[350px]'>
+    <div className='w-[350px] max-w-full'>
       <div className="flex flex-col gap-5 p-4">
         <div className='flex flex-col gap-[20px] w-full'>
           <div className="">

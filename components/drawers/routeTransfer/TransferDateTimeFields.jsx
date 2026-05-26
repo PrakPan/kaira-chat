@@ -37,10 +37,10 @@ const TransferDateTimeFields = ({
   labelClassName = "Body2M_14",
 }) => {
   return (
-    <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-4 gap-4">
-      <div className="flex flex-col sm:flex-row sm:items-end gap-4 w-full sm:w-auto">
+    <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-4 gap-3 sm:gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-end gap-3 sm:gap-4 w-full sm:w-auto sm:min-w-0">
         {/* Date */}
-        <div className="w-full sm:w-auto">
+        <div className="w-full sm:w-[200px] sm:min-w-0">
           <label className={`${labelClassName} mb-[4px] block`}>
             Departure Date
           </label>
@@ -55,7 +55,7 @@ const TransferDateTimeFields = ({
 
         {/* Time */}
         <div
-          className="time-dropdown-container relative w-full sm:w-auto"
+          className="time-dropdown-container relative w-full sm:w-[160px] sm:min-w-0"
           id={timeDropdownId}
           ref={timeDropdownRef}
         >
@@ -63,7 +63,7 @@ const TransferDateTimeFields = ({
             Departure Time
           </div>
           <div
-            className={`flex items-center gap-3 px-4 h-[46.4px] min-w-[160px] rounded-[10px] border bg-[#07213A0D] transition-colors ${
+            className={`flex items-center gap-2 px-3 h-[46.4px] w-full min-w-0 rounded-[10px] border bg-[#07213A0D] transition-colors ${
               showTimeDropdown ? "border-[#07213A]" : "border-[#07213A26]"
             } ${
               disabled
@@ -76,7 +76,7 @@ const TransferDateTimeFields = ({
             }}
           >
             <FaRegClock className="shrink-0 text-[#07213A]" size={16} />
-            <span className="Body2M_14 flex-1 text-[#07213A]">
+            <span className="Body2M_14 flex-1 truncate text-[#07213A]">
               {formatTimeForDisplay(departureTime)}
             </span>
             <FaChevronDown
@@ -108,7 +108,7 @@ const TransferDateTimeFields = ({
       </div>
 
       {/* Travellers */}
-      <div className="flex justify-end">
+      <div className="w-full sm:w-auto sm:shrink-0 flex justify-end">
         <TransferPax
           pax={pax}
           setPax={onPaxChange}

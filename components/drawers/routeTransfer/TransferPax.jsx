@@ -231,14 +231,13 @@ const TransferPax = ({ pax, setPax, combo = true, limit = null, disabled = false
       {/* Trigger — matches the settings/hotels field chrome */}
       <div
         onClick={openModal}
-        className={`flex h-[46.4px] min-w-[200px] items-center justify-between gap-[10px] rounded-[6px] border border-[#E5E5E5] bg-white px-4 ${
+        className={`flex h-[46.4px] w-full min-w-0 items-center gap-[10px] rounded-[6px] border border-[#E5E5E5] bg-white px-3 ${
           disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
         }`}
       >
-        <span className="Body2M_14 text-gray-700">
+        <span className="Body2M_14 truncate text-gray-700">
           Travellers | {total} {total > 1 ? "Passengers" : "Passenger"}
         </span>
-        <span className="text-blue">Change</span>
       </div>
 
       {isDesktop ? (

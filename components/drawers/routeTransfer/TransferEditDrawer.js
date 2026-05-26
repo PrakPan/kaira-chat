@@ -6118,7 +6118,7 @@ const OtherTransfer = ({
   const { trackTransferBookingAdd } = useAnalytics();
   const { intercity } = useSelector(
     (state) => state.TransferBookings,
-  )?.transferBookings;
+  )?.transferBookings ?? {};
   const currency = useSelector((state) => state.currency);
 
   const [pax, setPax] = useState({
