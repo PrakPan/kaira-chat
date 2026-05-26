@@ -679,6 +679,13 @@ export default function BotApp({
         setIsChatActive(true);
         setViewMode("itinerary");
         setMobilePanel(allDone || fromTailored ? "itinerary" : "map");
+        // Refresh UX: when the restored session's status API returns stage
+        // P2, land on the itinerary tab on mobile. Only fires from the
+        // restore path — live-stream display_itinerary effects must NOT
+        // yank the tab.
+        if (stage === "P2") {
+          mobileTabSwitchRef.current?.("itinerary");
+        }
       } catch (err) {
         console.error("Failed to restore itinerary directly:", err);
         setShowStartScreen(true);
@@ -1645,6 +1652,14 @@ export default function BotApp({
         if (restoredItineraryId) {
           setViewMode("itinerary");
           if (hasCompletedEffectInLoop) setMobilePanel("itinerary");
+          // Refresh UX: a display_itinerary or completion effect in the
+          // restored thread means the user already has an itinerary —
+          // land on the itinerary tab on mobile. Only fires from the
+          // restore path (loadThread); live-stream display_itinerary
+          // effects do NOT switch tabs.
+          if (hasDisplayItinerary || hasCompletedEffectInLoop) {
+            mobileTabSwitchRef.current?.("itinerary");
+          }
         } else if ((data.map_effects ?? []).length > 0) {
           // P1 chat-only thread (no itinerary yet) but has route/POI data —
           // sessionId-default of "itinerary" hides the map behind an empty
@@ -3827,7 +3842,7 @@ const MobileLayout = React.memo(
     };
     const inactiveTabStyle: React.CSSProperties = {
       borderRadius: "10px",
-      color: "#6E757A",
+      color: "#000",
     };
 
     return (
@@ -3859,7 +3874,7 @@ const MobileLayout = React.memo(
   <button
     key={tab.key}
     onClick={() => handleTabClick(tab.key)}
-    className="flex-1 px-2 py-2 text-[12px] font-medium transition-all duration-200 whitespace-nowrap flex items-center justify-center gap-1.5"
+    className="flex-1 px-2 py-2 text-[12px] font-semibold transition-all duration-200 whitespace-nowrap flex items-center justify-center gap-1.5"
     style={activeTab === tab.key ? activeTabStyle : inactiveTabStyle}
   >
     {tab.icon}
