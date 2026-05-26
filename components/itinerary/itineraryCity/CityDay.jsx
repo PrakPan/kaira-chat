@@ -712,7 +712,7 @@ useEffect(() => {
         </div>
 
         {/* COL 2: Content */}
-        <div className="flex-1 sm:pr-4 px-4 sm:pt-6 md:pt-4 pb-4 sm:pb-6 min-w-0">
+        <div className="flex-1 sm:pr-4 px-[0.3rem] md:px-4 sm:pt-6 md:pt-4 pb-4 sm:pb-6 min-w-0">
 
           {matchingIntracityBookings && matchingIntracityBookings.length > 0 && (
             <div className="flex flex-row gap-xs flex-wrap mb-3">
