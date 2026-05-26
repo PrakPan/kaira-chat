@@ -117,13 +117,12 @@ const getItemSubtitle = (item) => {
 };
 
 // ─── Helper: derive right-column status label + tone ──────────────────────────
-//   restaurant   → "Reserved"
-//   activity/poi → "Confirmed"
-//   recommendation → no right column
-const getStatusInfo = (resolvedType) => {
-  if (resolvedType === "restaurant")
-    return { label: "Reserved", tone: "confirmed" };
-  if (resolvedType === "activity" || resolvedType === "poi")
+//   activity (selected in cart) → "Confirmed"
+//   everything else             → no right column
+// POIs, restaurants and recommendations no longer show a status badge; only
+// activities the user has actually added to the cart read as "Confirmed".
+const getStatusInfo = (resolvedType, isSelectedInCart) => {
+  if (resolvedType === "activity" && isSelectedInCart)
     return { label: "Confirmed", tone: "confirmed" };
   return null;
 };
@@ -358,6 +357,18 @@ const CityDay = (props) => {
   const dispatch = useDispatch();
   const { id } = useSelector((state) => state.auth);
   const { customer } = useSelector((state) => state.Itinerary);
+  const cart = useSelector((state) => state.Cart);
+
+  // An activity reads as "Confirmed" only when its booking is in the cart and
+  // flagged selected. Matches SlabElement's cart-inclusion check.
+  const isSelectedInCart = (item) =>
+    !!cart?.summary &&
+    Object.values(cart.summary).some((category) =>
+      category?.bookings?.some(
+        (booking) =>
+          booking?.id === item?.booking?.id && booking?.selected === true
+      )
+    );
   const [showActivityDetails, setShowActivityDetails] = useState({ show: false });
 const [activityLoading, setActivityLoading] = useState(false);
 const isDraft = useSelector((state) => state.Itinerary.status) === "Draft";
@@ -524,7 +535,7 @@ useEffect(() => {
     const subtitle = getItemSubtitle(item);
     const isRecommendationOnly = resolvedType === "recommendation";
     const isClickable = !isRecommendationOnly;
-    const status = getStatusInfo(resolvedType);
+    const status = getStatusInfo(resolvedType, isSelectedInCart(item));
     const variantStyle = getCardVariantStyle(resolvedType);
     const displayTime = getDisplayTime(item);
     const duration = getDurationLabel(item);
@@ -572,7 +583,7 @@ useEffect(() => {
         onClick={() => isClickable && handleItemClick(item)}
         style={variantStyle}
         className={`relative grid grid-cols-[40px_minmax(0,1fr)] gap-2.5 sm:gap-3 px-3 py-2.5 rounded-[10px] ${
-          subtitle ? "items-start" : "items-center"
+          subtitle ? "items-center" : "items-center"
         } transition-all ${
           isClickable
             ? "cursor-pointer hover:-translate-y-[1px]"
@@ -593,7 +604,7 @@ useEffect(() => {
           <img
             src={getItemImage(item)}
             alt={name}
-            className="w-10 h-10 rounded-[9px] object-cover shrink-0"
+            className="w-10 h-10 rounded-[9px] object-cover shrink-0 items-center" 
           />
         )}
 
