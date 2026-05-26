@@ -542,14 +542,14 @@ useEffect(() => {
 
     const tagGroup =
       dataTags.length > 0 || duration ? (
-        <span className="inline-block whitespace-nowrap align-middle">
+        <span className="inline-block whitespace-nowrap align-middle !font-normal">
           {dataTags.map((t, i) => (
             <span
               key={`${t}-${i}`}
-              className={`${CHIP_BASE} align-middle mr-[5px]`}
+              className={`${CHIP_BASE} align-middle mr-[5px] !font-normal`}
               style={{ ...CHIP_TEXT_STYLE, ...resolveTagStyle(t) }}
             >
-              <span aria-hidden="true" style={{ fontSize: "8px", lineHeight: 1 }}>
+              <span aria-hidden="true" style={{ fontSize: "8px", lineHeight: 1, font:500}}>
                 {resolveTagIcon(t)}
               </span>
               {t.replace(/_/g, " ")}
