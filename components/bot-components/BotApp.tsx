@@ -2470,17 +2470,29 @@ Start Location: ${details.startLocation}`;
         overflow: isMobile ? "visible" : "hidden",
       }}
     >
-      {/* Header strip */}
-      <div className="bg-white flex flex-col px-3 py-3 border-b border-slate-100">
-        <div className="flex justify-between items-start">
-          <p className="font-inter font-semibold ttw-type-h4 leading-tight">
-            {itineraryReduxName || currentItineraryRef?.current?.name || ""}
-          </p>
+      {/* Header strip — editorial trip masthead */}
+      <div
+        className="flex flex-col px-4 py-4 border-b border-[#ECECEC]"
+        style={{ background: "linear-gradient(180deg, #FFFFFF 0%, #FBFAF3 100%)" }}
+      >
+        <div className="flex justify-between items-start gap-3">
+          <div className="min-w-0 flex-1">
+            {/* Kicker — mono eyebrow with yellow dot */}
+            <div className="flex items-center gap-2 mb-2">
+              <span className="w-[6px] h-[6px] rounded-full bg-[#F7E700] shadow-[0_0_0_3px_rgba(247,231,0,0.2)]" />
+              <span className="ttw-type-day-date text-[#8892A6]">
+                BUILT BY KAIRA
+              </span>
+            </div>
+            <p className="font-inter font-[600] text-[#0B1220] text-[22px] tracking-[-0.02em] m-0 leading-[1.1] break-words">
+              {itineraryReduxName || currentItineraryRef?.current?.name || ""}
+            </p>
+          </div>
 
-          <div className="flex gap-3 items-center">
+          <div className="flex gap-2 items-center shrink-0">
             {!isDraft && (
               <button
-                className="flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200"
+                className="flex items-center justify-center w-9 h-9 rounded-full border border-[#ECECEC] bg-white hover:bg-[#F4F1E6] transition-colors"
                 onClick={() => {
                   if (!authToken) {
                     setShowSettingsLoginPrompt(true);
@@ -2513,7 +2525,7 @@ Start Location: ${details.startLocation}`;
               />
             )}
             <button
-              className="flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200"
+              className="flex items-center justify-center w-9 h-9 rounded-full border border-[#ECECEC] bg-white hover:bg-[#F4F1E6] transition-colors"
               onClick={() => setShowShare(true)}
             >
               <Image src="/share.svg" height={22} width={22} alt="Share" />
@@ -2522,7 +2534,7 @@ Start Location: ${details.startLocation}`;
         </div>
 
         {!isDraft && (
-          <div className="flex flex-col gap-1.5 mt-1.5">
+          <div className="flex flex-col gap-1.5 mt-3">
             {/* Outer row — column on mobile (so the gallery slides below the
                 meta), single row on desktop (gallery sits to the right of
                 traveller/date, matching the original design). */}
@@ -2530,7 +2542,7 @@ Start Location: ${details.startLocation}`;
               <div className="flex items-center gap-4 flex-wrap">
                 {itineraryRedux?.group_type && (
                   <div className="flex flex-col">
-                    <span className="ttw-type-small font-inter uppercase tracking-wide">
+                    <span className="ttw-type-small font-inter uppercase tracking-wide ttw-type-day-date text-[#8892A6]">
                       Traveller Type
                     </span>
                     <div className="flex items-center gap-1.5 mt-0.5">
@@ -2572,7 +2584,7 @@ Start Location: ${details.startLocation}`;
                 )}
                 {itineraryRedux?.start_date && itineraryRedux?.end_date && (
                   <div className="flex flex-col">
-                    <span className="ttw-type-small font-inter uppercase tracking-wide">
+                    <span className="ttw-type-small font-inter uppercase tracking-wide ttw-type-day-date text-[#8892A6]">
                       Date of Travelling
                     </span>
                     <div className="flex items-center gap-1.5 mt-0.5">
@@ -3255,11 +3267,11 @@ const BottomCTABar = React.memo(
     const currencySymbol = currencySymbols[currency?.currency] || "₹";
 
     return (
-      <div className="z-20 fixed w-full md:w-[48%] max-ph:bottom-0 md:bottom-[4.2rem] flex-shrink-0 bg-[#fffaf5] border-t border-slate-100 px-4 py-2 flex items-center justify-between">
+      <div className="z-20 fixed w-full md:w-[48%] max-ph:bottom-0 md:bottom-[3.2rem] flex-shrink-0 bg-[#fffaf5] border-t border-slate-100 px-4 py-2 flex items-center justify-between">
         <div className="flex flex-col">
           {cost !== null ? (
             <>
-              <span className="text-black !font-semibold">
+              <span className="text-black  ttw-type-small !text-[12px]">
                 {perPerson
                   ? "Per Person"
                   : cart?.is_estimated_price && cost > 0
@@ -3303,7 +3315,7 @@ const BottomCTABar = React.memo(
           </svg>
           <button
             onClick={onViewCart}
-            className="flex items-center gap-2 h-[44px] px-4 rounded-[8px] bg-[#F7E700] ttw-type-body font-inter !font-bold"
+            className="flex items-center gap-2 h-[44px] px-4 rounded-[8px] bg-[#F7E700] ttw-type-body font-inter !font-semibold"
           >
             View Cart
             {countCartItems > 0 && (

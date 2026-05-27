@@ -620,27 +620,26 @@ useEffect(() => {
                 {name}
               </h4>
 
-              {/* 2) Row: [left: one-liner + tags] [right: confirmed/reserved].
+              {/* 2) Row: [left: one-liner] [right: confirmed/reserved].
                   Row height = content height (no stretch). The left side wraps
                   naturally; the right side stays pinned, never grows in height. */}
               <div className="mt-[1px] flex items-baseline justify-between gap-3">
-                {/* LEFT: one-liner + tags, inline + wrapping */}
-                <div className="min-w-0 flex-1 leading-[1.3] break-words">
+                {/* LEFT: one-liner, wrapping */}
+                <div className="min-w-0 flex-1 leading-[1.2] break-words">
                   <span
                     className="ttw-type-small text-[#4A566E] align-middle"
-                    style={{ fontSize: "11.5px", lineHeight: 1.3 }}
+                    style={{ fontSize: "11.5px", lineHeight: 1.2 }}
                   >
                     {subtitle}
                   </span>
-                  {(dataTags.length > 0 || duration || isRecommendationOnly) && (
-                    <span className="inline-block w-[6px]" aria-hidden="true" />
-                  )}
-                  {tagGroup}
                 </div>
 
                 {/* RIGHT: confirmed / reserved — fixed-content, no height stretch */}
                 {statusBadge}
               </div>
+
+              {/* 3) Tags on their own line below the one-liner */}
+              {tagGroup && <div className="">{tagGroup}</div>}
             </>
           ) : (
             <>

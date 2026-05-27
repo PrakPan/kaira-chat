@@ -91,8 +91,8 @@ export const ItineraryStatusLoader = ({ displayText, isVisible }) => {
     >
       <div
         style={{
-          background: "#FBEFE0",
-          border: "1px solid #F0E0CD",
+          background: "#FEF8CE",
+          border: "1px solid #F1E08C",
           borderRadius: 14,
           padding: "12px 16px",
           display: "flex",

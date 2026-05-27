@@ -105,24 +105,6 @@ const PlusCircleIcon = ({ id }) => (
   </svg>
 );
 
-const StarIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="14"
-    height="13"
-    viewBox="0 0 14 13"
-    fill="none"
-  >
-    <path
-      d="M6.30562 1.04912C6.45928 0.737826 6.53611 0.582179 6.64041 0.53245C6.73115 0.489183 6.83658 0.489183 6.92732 0.53245C7.03162 0.582179 7.10845 0.737826 7.26211 1.04912L8.71989 4.00243C8.76526 4.09433 8.78794 4.14028 8.82109 4.17596C8.85044 4.20755 8.88563 4.23314 8.92473 4.25132C8.96889 4.27186 9.01959 4.27927 9.121 4.29409L12.3818 4.77071C12.7252 4.8209 12.8969 4.846 12.9764 4.92987C13.0455 5.00284 13.078 5.10311 13.0649 5.20276C13.0497 5.31729 12.9254 5.43836 12.6768 5.6805L10.3182 7.97785C10.2446 8.04947 10.2079 8.08528 10.1841 8.12788C10.1631 8.16561 10.1497 8.20705 10.1445 8.24991C10.1386 8.29832 10.1473 8.3489 10.1646 8.45007L10.7212 11.695C10.7799 12.0372 10.8092 12.2084 10.7541 12.3099C10.7061 12.3983 10.6208 12.4602 10.5219 12.4786C10.4083 12.4996 10.2546 12.4188 9.94726 12.2572L7.03211 10.7241C6.94128 10.6764 6.89586 10.6525 6.84802 10.6431C6.80565 10.6348 6.76208 10.6348 6.71972 10.6431C6.67187 10.6525 6.62645 10.6764 6.53562 10.7241L3.62047 12.2572C3.31313 12.4188 3.15946 12.4996 3.04584 12.4786C2.94698 12.4602 2.86167 12.3983 2.81368 12.3099C2.75852 12.2084 2.78787 12.0372 2.84657 11.695L3.40311 8.45007C3.42046 8.3489 3.42914 8.29832 3.42327 8.24991C3.41807 8.20705 3.4046 8.16561 3.38359 8.12788C3.35987 8.08528 3.32311 8.04947 3.24958 7.97785L0.890894 5.68049C0.642296 5.43836 0.517997 5.31729 0.502872 5.20276C0.489712 5.10311 0.522223 5.00284 0.591355 4.92987C0.670811 4.846 0.842502 4.8209 1.18588 4.77071L4.44673 4.29409C4.54814 4.27927 4.59884 4.27186 4.643 4.25132C4.6821 4.23314 4.7173 4.20755 4.74664 4.17596C4.77979 4.14028 4.80247 4.09433 4.84784 4.00243L6.30562 1.04912Z"
-      fill="#F7E700"
-      stroke="#C1A51B"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-  </svg>
-);
-
 const EditIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -140,6 +122,42 @@ const EditIcon = () => (
     />
   </svg>
 );
+
+/* Hotel trust-strip glyphs — green stroke icons (ported 1:1 from v4 HTML) */
+const HotelTrustIcon = ({ type }) => {
+  const common = {
+    width: 11,
+    height: 11,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 2,
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+  };
+  if (type === "clock") {
+    return (
+      <svg xmlns="http://www.w3.org/2000/svg" {...common}>
+        <circle cx="12" cy="12" r="10" />
+        <polyline points="12 6 12 12 16 14" />
+      </svg>
+    );
+  }
+  if (type === "refresh") {
+    return (
+      <svg xmlns="http://www.w3.org/2000/svg" {...common}>
+        <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
+        <polyline points="3 3 3 8 8 8" />
+      </svg>
+    );
+  }
+  // check (Verified)
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" {...common}>
+      <polyline points="20 6 9 17 4 12" />
+    </svg>
+  );
+};
 
 /* ─── Main component ────────────────────────────────────────────────────── */
 const ItineraryCity = (props) => {
@@ -494,25 +512,27 @@ const ItineraryCity = (props) => {
     <div
       data-city-id={stay ? stay[props?.index]?.city_id : props?.city?.id}
       ref={(el) => (props.cityRefs.current[props.city.id] = el)}
-      className="rounded-lg flex flex-col w-full bg-white border-[0.5px] border-[#e5e5e5]"
+      className="rounded-[14px] flex flex-col w-full bg-[#FBFAF3] border border-[#ECECEC] overflow-hidden shadow-[0_1px_2px_rgba(11,18,32,0.04)]"
     >
-      {/* ── Card header ─────────────────────────────────────────────────── */}
-      <div className="px-4 pt-4 pb-3 w-full border-b border-[#EBEBEB] font-inter">
+      {/* ── Card header — editorial masthead ────────────────────────────── */}
+      <div className="px-4 sm:px-5 pt-4 sm:pt-[18px] pb-3.5 w-full border-b border-[#ECECEC] bg-[#FBFAF3]">
         {/*
           Row 1
-          LEFT : City name (bold, truncated)
-          RIGHT: [+ Activity] [+ Taxi] — always aligned to city name baseline
+          LEFT : duration eyebrow + city name (headline)
+          RIGHT: [+ Activity] [+ Taxi]
         */}
-        <div className="flex items-center justify-between gap-3">
-          <div className="md:ttw-type-h4 ttw-type-body font-semibold leading-snug min-w-0 flex items-center gap-1 overflow-hidden">
-            <span className="truncate">{props?.city?.city?.name}</span>
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0 flex-1 flex items-baseline flex-wrap gap-x-2 gap-y-1">
+            {/* City name — bold sans headline (matches v4 HTML .chapter-name) */}
+            <h3 className="ttw-type-h6 font-medium text-[#0B1220] !text-[22px] tracking-[-0.025em] leading-[1] m-0 break-words">
+              {props?.city?.city?.name}
+            </h3>
             {props?.city?.duration === 0 ? (
-              <span className="shrink-0"> (Transit City)</span>
+              <span className="ttw-type-small text-[#8892A6]">Transit City</span>
             ) : props?.city?.duration > 0 ? (
-              <>
-                <span className="max-ph:hidden md:inline shrink-0 md:ttw-type-h4 ttw-type-body font-semibold leading-snug"> - {props?.city?.duration} {props?.city?.duration > 1 ? "Nights" : "Night"}</span>
-                <span className="md:hidden shrink-0 md:ttw-type-h4 ttw-type-body font-semibold leading-snug"> - {props?.city?.duration}N</span>
-              </>
+              <span className="ttw-type-small text-[#000]">
+                -  {props?.city?.duration} {props?.city?.duration > 1 ? "Nights" : "Night"}
+              </span>
             ) : null}
           </div>
 
@@ -579,176 +599,195 @@ const ItineraryCity = (props) => {
         </div>
 
         {/*
-          Row 2
-          LEFT : Hotel name (truncated) • X Days, Y Night • rating ★
-          RIGHT: ✏ Change Hotel — aligned to the same row as hotel info
+          Hotel section — ported from v4 HTML .hotel-block.
+          One white bordered card per stay; data comes from the Stays redux
+          slice (multiHotelStays). "View room" opens the hotel detail, "Change
+          hotel" opens the change drawer (p2) or messages the bot (Draft/p1).
         */}
-        <div className="flex items-center justify-between gap-3 mt-1 min-w-0">
-          {/* Left side */}
-          <div className="flex items-center min-w-0 flex-1 overflow-hidden">
-            {hotels_status === "PENDING" ? (
-              <div className="flex items-center gap-2 animate-pulse">
-                <SkeletonCard
-                  width="110px"
-                  height="14px"
-                  borderRadius="6px"
-                  variant="default"
-                />
-                <SkeletonCard
-                  width="80px"
-                  height="14px"
-                  borderRadius="6px"
-                  variant="default"
-                />
-                <SkeletonCard
-                  width="36px"
-                  height="14px"
-                  borderRadius="6px"
-                  variant="default"
-                />
-              </div>
-            ) : hotelExists ? (
-              <div className="flex flex-col gap-1 min-w-0 w-full">
-                {multiHotelStays.map((hotel) => {
-                  const isDraftStage = itineraryDaybyDay.status === "Draft";
-                  return (
-                  <div
-                    key={hotel.id}
-                    className="flex items-center gap-1 ttw-type-body text-[#111827] min-w-0 flex-wrap"
-                  >
-                    {/* Hotel name — truncated in p2, full text in p1 (Draft) */}
-                    <span
-                      className={
-                        isDraftStage
-                          ? "underline cursor-pointer break-words"
-                          : "underline cursor-pointer truncate shrink min-w-0 max-w-[130px] md:max-w-[200px]"
-                      }
-                      onClick={() => {
-                        trackHotelCardClicked?.(
-                          currentItineraryId,
-                          hotel.id,
-                          "city_header_hotel_name",
-                        );
-                        return isDraftStage
-                          ? handleDraftHotelClick(hotel.id)
-                          : fetchDetails(hotel.id);
-                      }}
-                      title={hotel?.name}
-                    >
-                      {hotel?.name}
-                    </span>
-
-                    {/* Rating + star */}
-                    {(hotel?.rating && hotel?.rating !== 0 && hotel?.rating !== null) || (hotel.star_category && hotel?.star_category !== 0) ? (
-                      <>
-                        <span className="text-[#6B7280] shrink-0">•</span>
-                        <span className="font-[500] shrink-0">
-                          {hotel.rating || hotel.star_category}{" "}
-                        </span>
-                        <StarIcon />
-                      </>
-                    ) : null}
-                  </div>
-                  );
-                })}
-              </div>
-            ) : (
-              !(itineraryDaybyDay.status == "Draft") && (
-                <button
-                  className="text-blue cursor-pointer ttw-type-body font-medium hover:underline whitespace-nowrap"
-                  onClick={(e) => {
-                    trackHotelCardClicked?.(
-                      currentItineraryId,
-                      "",
-                      "city_header_add_stay",
-                    );
-                    handleStay(e, "Add", props.city.city.name, "Add", null);
-                  }}
-                >
-                  + Add Stay in {props?.city?.city?.name}
-                </button>
-              )
-            )}
+        {hotels_status === "PENDING" ? (
+          <div className="mt-3 rounded-[14px] border border-[#ECECEC] bg-white p-4 flex items-center gap-3 animate-pulse">
+            <SkeletonCard width="40px" height="40px" borderRadius="10px" variant="default" />
+            <div className="flex flex-col gap-2">
+              <SkeletonCard width="160px" height="14px" borderRadius="6px" variant="default" />
+              <SkeletonCard width="110px" height="12px" borderRadius="6px" variant="default" />
+            </div>
           </div>
+        ) : hotelExists ? (
+          multiHotelStays.map((hotel) => {
+            const isDraftStage = itineraryDaybyDay.status === "Draft";
+            const ratingValue = hotel?.rating || hotel?.star_category;
+            const roomName = hotel?.room_name || hotel?.room_type || hotel?.room;
 
-          {/* Right side: Change Hotel — only when hotel row is visible */}
-          {hotelExists && !(itineraryDaybyDay.status == "Draft") && (
-            <button
-              onClick={() => {
-                if (!localStorage?.getItem("access_token")) {
-                  props?.setShowLoginModal(true);
-                  return;
-                }
+            const openHotelDetail = () => {
+              trackHotelCardClicked?.(
+                currentItineraryId,
+                hotel.id,
+                "city_header_view_room",
+              );
+              return isDraftStage
+                ? handleDraftHotelClick(hotel.id)
+                : fetchDetails(hotel.id);
+            };
+
+            const changeHotel = () => {
+              if (!localStorage?.getItem("access_token")) {
+                props?.setShowLoginModal(true);
+                return;
+              }
+              if (isDraftStage) {
                 trackHotelCardClicked?.(
                   currentItineraryId,
-                  multiHotelStays?.[0]?.id || "",
-                  "city_header_change_hotel",
-                );
-                router.push(
-                  {
-                    pathname: window.location.pathname,
-                    query: {
-                      ...(currentItineraryId ? { id: currentItineraryId } : {}),
-                      drawer: "changeHotelBooking",
-                      itinerary_city_id: props?.city?.id,
-                      city_id: props?.city?.city?.id,
-                    },
-                  },
-                  undefined,
-                  { scroll: false },
-                );
-                props?.handleClickAc?.(
-                  props?.index,
-                  props?.city,
-                  props?.city?.city?.id,
-                  props?.city?.id,
-                  "Change",
-                );
-              }}
-              className="flex items-center gap-[5px] shrink-0 bg-[#fafafa] px-2 py-1.5 rounded-[8px] font-medium text-[#111827] hover:underline whitespace-nowrap ttw-type-small"
-            >
-              <EditIcon />
-              Change Hotel
-            </button>
-          )}
-
-          {/* Right side (Draft/p1): Change Hotel — sends message to bot */}
-          {hotelExists && itineraryDaybyDay.status == "Draft" && (
-            <button
-              onClick={() => {
-                if (!localStorage?.getItem("access_token")) {
-                  props?.setShowLoginModal(true);
-                  return;
-                }
-                trackHotelCardClicked?.(
-                  currentItineraryId,
-                  multiHotelStays?.[0]?.id || "",
+                  hotel.id || "",
                   "city_header_change_hotel_draft",
                 );
                 props?.onSendMessage?.(
                   `change hotel in ${props?.city?.city?.name}`,
                 );
-              }}
-              className="flex items-center gap-[5px] shrink-0 bg-[#fafafa] px-2 py-1.5 rounded-[8px] font-medium text-[#111827] hover:underline whitespace-nowrap ttw-type-small"
-            >
-              <EditIcon />
-              Change Hotel
-            </button>
-          )}
-        </div>
+                return;
+              }
+              trackHotelCardClicked?.(
+                currentItineraryId,
+                hotel.id || "",
+                "city_header_change_hotel",
+              );
+              router.push(
+                {
+                  pathname: window.location.pathname,
+                  query: {
+                    ...(currentItineraryId ? { id: currentItineraryId } : {}),
+                    drawer: "changeHotelBooking",
+                    itinerary_city_id: props?.city?.id,
+                    city_id: props?.city?.city?.id,
+                  },
+                },
+                undefined,
+                { scroll: false },
+              );
+              props?.handleClickAc?.(
+                props?.index,
+                props?.city,
+                props?.city?.city?.id,
+                props?.city?.id,
+                "Change",
+              );
+            };
+
+            return (
+              <div
+                key={hotel.id}
+                onClick={openHotelDetail}
+                className="mt-3 rounded-[12px] border border-[#ECECEC] bg-white px-3.5 py-3.5 cursor-pointer transition-all duration-150 hover:!border-black hover:translate-x-[2px]"
+              >
+                {/* Top row: icon + name/rating on the left, Change hotel on the right */}
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-start gap-2.5 min-w-0">
+                    <div className="w-9 h-9 rounded-[9px] bg-[#FFFDE7] grid place-items-center shrink-0 overflow-hidden text-[16px]">
+                      {hotel?.image ? (
+                        <img
+                          src={hotel.image}
+                          alt={hotel?.name || "Hotel"}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <span aria-hidden="true">🏨</span>
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openHotelDetail();
+                        }}
+                        title={hotel?.name}
+                        className="block text-left ttw-type-h6 text-[14px] tracking-[-0.01em] leading-[1.25] text-[#0c121e] break-words hover:underline"
+                      >
+                        {hotel?.name}
+                      </button>
+                      {(ratingValue || roomName) && (
+                        <div className="flex items-center gap-1.5 flex-wrap text-[11.5px] text-[#4A566E] mt-0.5">
+                          {ratingValue ? (
+                            <span className="text-[#f5a623] font-semibold whitespace-nowrap">
+                              ★ {ratingValue}
+                            </span>
+                          ) : null}
+                          {ratingValue && roomName ? (
+                            <span className="text-[#B8BECC]">·</span>
+                          ) : null}
+                          {roomName ? (
+                            <span className="break-words">{roomName}</span>
+                          ) : null}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      changeHotel();
+                    }}
+                    className="flex h-7 shrink-0 items-center justify-center gap-1 px-3.5 py-2 rounded-[8px] underline ttw-type-small whitespace-nowrap"
+                  >
+                    <EditIcon />
+                    Change Hotel
+                  </button>
+                </div>
+
+                {/* Trust strip */}
+                <div className="flex gap-x-3 gap-y-1 flex-wrap pt-2.5 mt-3 border-t border-[#ECECEC]">
+                  {[
+                    { type: "check", label: "Verified" },
+                    { type: "clock", label: "Live availability" },
+                    // { type: "refresh", label: "Free cancel · 24h" },
+                  ].map((t) => (
+                    <span
+                      key={t.label}
+                      className="ttw-type-status !font-semibold text-[#4A566E] flex items-center gap-[5px]"
+                    >
+                      <span className="text-[#1F8A5A] flex items-center">
+                        <HotelTrustIcon type={t.type} />
+                      </span>
+                      {t.label}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            );
+          })
+        ) : (
+          !(itineraryDaybyDay.status == "Draft") && (
+            <div className="mt-3 pt-3 border-t border-dashed border-[#E3DFCF]">
+              <button
+                className="text-[#0B1220] cursor-pointer ttw-type-body-strong hover:underline underline-offset-2 decoration-[#F7E700] decoration-2 whitespace-nowrap"
+                onClick={(e) => {
+                  trackHotelCardClicked?.(
+                    currentItineraryId,
+                    "",
+                    "city_header_add_stay",
+                  );
+                  handleStay(e, "Add", props.city.city.name, "Add", null);
+                }}
+              >
+                + Add Stay in {props?.city?.city?.name}
+              </button>
+            </div>
+          )
+        )}
 
         {/* Draft/p1: Change Transfer CTA — sends message to bot */}
         {itineraryDaybyDay.status == "Draft" &&
           hasIntracityTransfer && (
-            <div className="flex items-center justify-between gap-3 mt-1 min-w-0">
-              <div className="ttw-type-body text-[#111827]">Transfer</div>
+            <div className="flex items-center justify-between gap-3 mt-3 pt-3 border-t border-dashed border-[#E3DFCF] min-w-0">
+              <div className="ttw-type-body-strong text-[#0B1220]">Transfer</div>
               <button
                 onClick={() =>
                   props?.onSendMessage?.(
                     `change transfer in ${props?.city?.city?.name}`,
                   )
                 }
-                className="flex items-center gap-[5px] shrink-0 bg-[#fafafa] px-2 py-1.5 rounded-[8px] font-medium text-[#111827] hover:underline whitespace-nowrap ttw-type-small"
+                className="flex items-center gap-[5px] shrink-0 bg-[#F4F1E6] hover:bg-[#EDE7D2] px-2.5 py-1.5 rounded-full text-[#0B1220] whitespace-nowrap ttw-type-label transition-colors"
               >
                 <EditIcon />
                 Change Transfer
