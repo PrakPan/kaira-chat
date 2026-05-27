@@ -39,8 +39,8 @@ const VerticalLine = styled.div`
   height: ${(props) => props.height || "40px"};
   background: ${(props) =>
     props.gradient === "top"
-      ? "linear-gradient(to bottom, #DDDDDD, transparent)"
-      : "linear-gradient(to top, #DDDDDD, transparent)"};
+      ? "linear-gradient(to bottom, #CFC9B6, transparent)"
+      : "linear-gradient(to top, #CFC9B6, transparent)"};
   background-size: 10px 10px;
 `;
 
@@ -194,7 +194,7 @@ const TaxiPickupDropItem = ({
           {!firstCity && (
             <div className="flex items-center gap-2">
               <span
-                className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors"
+                className="font-semibold text-[#F7E700] cursor-pointer hover:text-white underline transition-colors"
                 onClick={(e) => handleTooltipAddClick(e, "drop")}
               >
                 + Add Taxi Drop in {originCityName}
@@ -205,7 +205,7 @@ const TaxiPickupDropItem = ({
           {!lastCity && (
             <div className="flex items-center gap-2">
               <span
-                className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors"
+                className="font-semibold text-[#F7E700] cursor-pointer hover:text-white underline transition-colors"
                 onClick={(e) => handleTooltipAddClick(e, "pickup")}
               >
                 + Add Taxi Pickup in {destinationCityName}
@@ -254,7 +254,7 @@ const TaxiPickupDropItem = ({
           <div key={`taxi-booking-${index}`} className="flex items-center gap-2">
             {booking.isAdd ? (
               <span
-                className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors"
+                className="font-semibold text-[#F7E700] cursor-pointer hover:text-white underline transition-colors"
                 onClick={(e) => handleTooltipAddClick(e, booking.addType)}
               >
                 {booking.addType === "pickup"
@@ -263,7 +263,7 @@ const TaxiPickupDropItem = ({
               </span>
             ) : (
               <span
-                className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors"
+                className="font-semibold text-[#F7E700] cursor-pointer hover:text-white underline transition-colors"
                 onClick={(e) => {
                   e.stopPropagation();
                   handleEdit(false, booking);
@@ -284,8 +284,8 @@ const TaxiPickupDropItem = ({
     <div key={-4} className="group relative" ref={dropdownRef}>
       <div className="flex items-center gap-2">
         <span
-          className={`text-blue font-[500] ttw-type-body ${
- displayText ? "hover:underline cursor-pointer" : ""
+          className={`text-[#0B1220] ttw-type-body-strong ${
+ displayText ? "hover:underline underline-offset-2 decoration-[#F7E700] decoration-2 cursor-pointer" : ""
  }`}
           onClick={handleClick}
         >
@@ -296,11 +296,11 @@ const TaxiPickupDropItem = ({
       {showClickTooltip && (
         <div className="relative mt-2">
           <div
-            className="absolute bg-gray-900 text-white ttw-type-small rounded-md px-3 py-2 shadow-xl border border-gray-600 min-w-fit"
+            className="absolute bg-[#0B1220] text-white ttw-type-small rounded-md px-3 py-2 shadow-xl border border-gray-600 min-w-fit"
             style={{ zIndex: 100 }}
           >
             {renderTooltipContent()}
-            <div className="absolute left-4 top-0 transform -translate-y-1 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-900"></div>
+            <div className="absolute left-4 top-0 transform -translate-y-1 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-[#0B1220]"></div>
           </div>
         </div>
       )}
@@ -686,7 +686,7 @@ const AirportBookingItem = ({
           {/* Show Drop first */}
           {!firstCity && <div className="flex items-center gap-2">
             <span
-              className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors"
+              className="font-semibold text-[#F7E700] cursor-pointer hover:text-white underline transition-colors"
               onClick={() => handlePickupDropDrawer("drop")}
             >
               {getTransferLocationText(bookingMode, "drop")}
@@ -696,7 +696,7 @@ const AirportBookingItem = ({
           
          {!lastCity && <div className="flex items-center gap-2">
             <span
-              className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors"
+              className="font-semibold text-[#F7E700] cursor-pointer hover:text-white underline transition-colors"
               onClick={() => handlePickupDropDrawer("pickup")}
             >
               {getTransferLocationText(bookingMode, "pickup")}
@@ -761,7 +761,7 @@ const AirportBookingItem = ({
           <div key={`booking-${index}`} className="flex items-center gap-2">
             {booking.isAdd ? (
               <span
-                className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors"
+                className="font-semibold text-[#F7E700] cursor-pointer hover:text-white underline transition-colors"
                 onClick={(e) => handleTooltipAddClick(e, booking.addType)}
               >
                 {getTransferLocationText(bookingMode, booking.addType)}
@@ -769,7 +769,7 @@ const AirportBookingItem = ({
             ) : (
               <>
                 <span
-                  className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors"
+                  className="font-semibold text-[#F7E700] cursor-pointer hover:text-white underline transition-colors"
                   onClick={(e) =>
                     handleTooltipBookingClick(e, booking, booking.displayType)
                   }
@@ -832,7 +832,7 @@ const AirportBookingItem = ({
             className="flex items-start gap-2 flex-wrap"
           >
             <span
-              className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors whitespace-nowrap"
+              className="font-semibold text-[#F7E700] cursor-pointer hover:text-white underline transition-colors whitespace-nowrap"
               onClick={(e) =>
                 handleBookingClick(e, booking, booking.displayType)
               }
@@ -865,7 +865,7 @@ const AirportBookingItem = ({
     <div key={-3} className="group relative" ref={dropdownRef}>
       <div className="flex items-center gap-2">
         <span
-          className={`text-blue font-[500] ttw-type-body ${displayText ? "hover:underline cursor-pointer" : ""
+          className={`text-[#0B1220] ttw-type-body-strong ${displayText ? "hover:underline underline-offset-2 decoration-[#F7E700] decoration-2 cursor-pointer" : ""
  }`}
           onClick={handleClick}
         >
@@ -879,11 +879,11 @@ const AirportBookingItem = ({
           dropBookings.length > 1) && (
           <div className="relative mt-2">
             <div
-              className="absolute bg-gray-900 text-white ttw-type-small rounded-md px-2 py-2 shadow-xl border border-gray-600 min-w-fit md:min-w-[320px] max-w-[450px] md:w-[800px]"
+              className="absolute bg-[#0B1220] text-white ttw-type-small rounded-md px-2 py-2 shadow-xl border border-gray-600 min-w-fit md:min-w-[320px] max-w-[450px] md:w-[800px]"
               style={{ zIndex: 100 }}
             >
               {renderDropdownContent()}
-              <div className="absolute left-4 top-0 transform -translate-y-1 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-900"></div>
+              <div className="absolute left-4 top-0 transform -translate-y-1 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-[#0B1220]"></div>
             </div>
           </div>
         )}
@@ -894,7 +894,7 @@ const AirportBookingItem = ({
       <div key={-3} className="group relative" ref={dropdownRef}>
         <div className="flex items-center gap-2">
           <span
-            className={`${isDesktop ? "Body1M_16" : "Body2M_14"} text-blue hover:underline cursor-pointer`}
+            className="ttw-type-body-strong text-[#0B1220] hover:underline underline-offset-2 decoration-[#F7E700] decoration-2 cursor-pointer"
             onClick={handleClick}
           >
             + Add Pickup and Drop
@@ -1542,7 +1542,7 @@ useEffect(() => {
  }`}
         >
           {!(upPresent && downPresent) && (
-            <div className={`${isDesktop ? "Body1M_16" : "Body2M_14"}`}>
+            <div className="ttw-type-h6 !font-medium text-[#0B1220] !text-[16px] md:!text-[18px] leading-[1.05]">
               {/* P1 fallback: when the draft itinerary hasn't surfaced a
                   start-city name yet, use the user's IP-derived city so the
                   label isn't blank under the start pin. */}
@@ -1612,11 +1612,7 @@ useEffect(() => {
                   }
                 }}
               >
-                <div
-                  className={`${
- isDesktop ? "Body1M_16" : "Body2M_14"
- } group-hover:text-blue `}
-                >
+                <div className="ttw-type-body-strong text-[#0B1220] transition-opacity group-hover:opacity-70">
                   {upPresent && downPresent ? city : ""}
                 </div>
                 {upPresent && downPresent && !(Itinerary.status == "Draft") && (
@@ -1630,7 +1626,7 @@ useEffect(() => {
               </div>
 
              {duration > 0 && (
-  <div className="Body3R_12">
+  <div className="ttw-type-meta text-[#8892A6] mt-0.5">
     Duration: {Itinerary.status === "Draft"
       ? formatDurationRange(duration)
       : duration}
@@ -1696,18 +1692,14 @@ useEffect(() => {
           isPageWide ? (
             <button
               onClick={handleAddTransfer}
-              className={`${
- isDesktop ? "Body1M_16" : "Body2M_14"
- } text-blue hover:underline text-left`}
+              className="ttw-type-body-strong text-[#0B1220] hover:underline underline-offset-2 decoration-[#F7E700] decoration-2 text-left"
             >
               + Add Transfer from {origin_city_name} to {destination_city_name}
             </button>
           ) :  (
             <button
               onClick={handleAddTransfer}
-              className={`${
- isDesktop ? "Body1M_16" : "Body2M_14"
- } text-blue hover:underline text-left`}
+              className="ttw-type-body-strong text-[#0B1220] hover:underline underline-offset-2 decoration-[#F7E700] decoration-2 text-left"
             >
               + Add Transfer
             </button>
