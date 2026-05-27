@@ -579,17 +579,129 @@ function resolveEntityTokens(
   });
 }
 
-// ─── ThinkingLoaderShell ──────────────────────────────────────────────────────
-// Optional lead line above a navy gradient row containing a yellow spinner
-// and the current step. Only one message is shown at a time — once a new
-// event arrives, the previous step is dropped from the card. Completed
-// steps don't render here; they move into the "Thought for Xs" collapsible
-// in ProgressLoader / ThinkingBlock once the loader finishes.
+// ─── Thinking step list ───────────────────────────────────────────────────────
+// Renders workflow steps as a vertical checklist inside a soft-yellow card
+// (matches the design mock). Completed steps get a green check + strikethrough;
+// the active step (streaming, not yet done) gets a pulsing-dot yellow marker and
+// bold text. Used both while thinking and inside the collapsed "Thought for Xs"
+// dropdown (where every step reads as done and a trailing "Done" row is added).
 
-const ThinkingLoaderShell: React.FC<{
-  lead?: string;
-  activeText: string;
-}> = ({ lead, activeText }) => (
+type Step = { text: string; done: boolean };
+
+const StepStatusIcon: React.FC<{ state: "done" | "current" }> = ({ state }) => {
+  if (state === "current") {
+    return (
+      <span
+        style={{
+          width: 18,
+          height: 18,
+          borderRadius: "50%",
+          background: "#F7E700",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 2,
+          flexShrink: 0,
+        }}
+      >
+        {[0, 1, 2].map((i) => (
+          <span
+            key={i}
+            style={{
+              width: 2.5,
+              height: 2.5,
+              borderRadius: "50%",
+              background: "#0B1220",
+              display: "inline-block",
+              animation: "thinkPulse 1.4s infinite ease-in-out",
+              animationDelay: `${[-0.32, -0.16, 0][i]}s`,
+            }}
+          />
+        ))}
+      </span>
+    );
+  }
+  return (
+    <span
+      style={{
+        width: 18,
+        height: 18,
+        borderRadius: "50%",
+        background: "#22A45D",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexShrink: 0,
+      }}
+    >
+      <svg
+        width="11"
+        height="11"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="#fff"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <polyline points="20 6 9 17 4 12" />
+      </svg>
+    </span>
+  );
+};
+
+const ThinkingStepsList: React.FC<{
+  steps: Step[];
+  streaming: boolean;
+  appendDone?: boolean;
+}> = ({ steps, streaming, appendDone }) => (
+  <div
+    style={{
+      background: "#FEFBEA",
+      border: "1px solid #F0E6B0",
+      borderRadius: 14,
+      padding: "12px 14px",
+      display: "flex",
+      flexDirection: "column",
+      gap: 10,
+    }}
+  >
+    {steps.map((step, i) => {
+      const current = streaming && !step.done;
+      return (
+        <div key={i} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <StepStatusIcon state={current ? "current" : "done"} />
+          <span
+            style={{
+              fontSize: 13,
+              lineHeight: 1.4,
+              color: current ? "#0B1220" : "#8A93A6",
+              fontWeight: current ? 700 : 500,
+              textDecoration: current ? "none" : "line-through",
+              wordBreak: "break-word",
+              overflowWrap: "anywhere",
+            }}
+          >
+            {step.text}
+          </span>
+        </div>
+      );
+    })}
+    {appendDone && (
+      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <StepStatusIcon state="done" />
+        <span style={{ fontSize: 13, fontWeight: 700, color: "#0B1220" }}>
+          Done
+        </span>
+      </div>
+    )}
+  </div>
+);
+
+const ThinkingActive: React.FC<{ lead?: string; steps: Step[] }> = ({
+  lead,
+  steps,
+}) => (
   <div
     style={{
       marginBottom: 12,
@@ -599,7 +711,6 @@ const ThinkingLoaderShell: React.FC<{
       fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
     }}
   >
-    {/* Optional lead */}
     {lead && (
       <div
         style={{
@@ -613,70 +724,11 @@ const ThinkingLoaderShell: React.FC<{
         {lead}
       </div>
     )}
-
-    {/* Navy gradient single-row loader */}
-    {activeText && (
-      <div
-        style={{
-          marginTop: lead ? 8 : 0,
-          background: "linear-gradient(135deg,#0D1429 0%,#1A2238 100%)",
-          color: "#fff",
-          borderRadius: 12,
-          padding: 12,
-          position: "relative",
-          overflow: "hidden",
-        }}
-      >
-        <div
-          aria-hidden
-          style={{
-            position: "absolute",
-            inset: 0,
-            background:
-              "radial-gradient(circle at 80% 20%, rgba(244,232,39,0.18) 0%, transparent 60%)",
-            pointerEvents: "none",
-          }}
-        />
-        <div
-          key={activeText}
-          style={{
-            position: "relative",
-            fontWeight: 700,
-            fontSize: 12.5,
-            display: "flex",
-            alignItems: "center",
-            gap: 7,
-            lineHeight: 1.45,
-            animation: "thinkRowIn 0.22s ease-out",
-          }}
-        >
-          <span
-            style={{
-              width: 13,
-              height: 13,
-              border: "2px solid rgba(244,232,39,0.3)",
-              borderTopColor: "#F4E827",
-              borderRadius: "50%",
-              animation: "thinkSpin 1s linear infinite",
-              flexShrink: 0,
-              display: "inline-block",
-              boxSizing: "border-box",
-            }}
-          />
-          <span style={{ wordBreak: "break-word", overflowWrap: "anywhere" }}>
-            {activeText}
-          </span>
-        </div>
-      </div>
-    )}
-
+    <ThinkingStepsList steps={steps} streaming />
     <style>{`
-      @keyframes thinkRowIn {
-        from { opacity: 0; transform: translateY(4px); }
-        to   { opacity: 1; transform: translateY(0); }
-      }
-      @keyframes thinkSpin {
-        to { transform: rotate(360deg); }
+      @keyframes thinkPulse {
+        0%, 80%, 100% { transform: scale(0.4); opacity: 0.3; }
+        40%           { transform: scale(1);   opacity: 1; }
       }
     `}</style>
   </div>
@@ -705,12 +757,10 @@ const ProgressLoader: React.FC<{ steps: ProgressStep[] }> = ({ steps }) => {
   // ── In-progress: lead + navy single-row loader showing only the current step.
   // Completed steps are exposed via the "Thought for Xs" collapsible below.
   if (!allDone) {
-    const activeStep = steps[steps.length - 1];
-
     return (
-      <ThinkingLoaderShell
+      <ThinkingActive
         lead="Great — locking it in. Give me ~30 seconds."
-        activeText={activeStep?.text ?? ""}
+        steps={steps}
       />
     );
   }
@@ -753,79 +803,7 @@ const ProgressLoader: React.FC<{ steps: ProgressStep[] }> = ({ steps }) => {
       </button>
 
       {expanded && (
-        <div style={{ paddingLeft: 2 }}>
-          {steps.map((step, i) => (
-            <div key={i} style={{ display: "flex", alignItems: "flex-start" }}>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  width: 20,
-                  flexShrink: 0,
-                }}
-              >
-                <div
-                  style={{
-                    width: 14,
-                    height: 14,
-                    borderRadius: "50%",
-                    border: "1.5px solid #d1d5db",
-                    background: "#fff",
-                    flexShrink: 0,
-                    marginTop: 2,
-                  }}
-                />
-                {i < steps.length - 1 && (
-                  <div
-                    style={{
-                      width: 1,
-                      flex: 1,
-                      background: "#e5e7eb",
-                      minHeight: 16,
-                    }}
-                  />
-                )}
-              </div>
-              <div
-                style={{
-                  fontSize: 14,
-                  color: "#9ca3af",
-                  paddingLeft: 10,
-                  paddingBottom: i < steps.length - 1 ? 12 : 0,
-                  lineHeight: "20px",
-                }}
-              >
-                {step.text}
-              </div>
-            </div>
-          ))}
-
-          <div style={{ display: "flex", alignItems: "center", marginTop: 7 }}>
-            <div
-              style={{ width: 20, display: "flex", justifyContent: "center" }}
-            >
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#9ca3af"
-                strokeWidth="1.8"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <path
-                  d="M9 12l2 2 4-4"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </div>
-            <span style={{ fontSize: 14, color: "#9ca3af", paddingLeft: 10 }}>
-              Done
-            </span>
-          </div>
-        </div>
+        <ThinkingStepsList steps={steps} streaming={false} appendDone />
       )}
     </div>
   );
@@ -868,12 +846,13 @@ const ThinkingBlock: React.FC<{
   // ── Thinking state: lead + navy single-row loader showing only the current
   // task. Completed tasks are exposed via the "Thought for Xs" collapsible.
   if (isThinking) {
-    const activeTask = tasks[tasks.length - 1];
-
     return (
-      <ThinkingLoaderShell
+      <ThinkingActive
         lead="Great — locking it in. Give me ~30 seconds."
-        activeText={activeTask ? cleanContent(activeTask.content) : ""}
+        steps={tasks.map((t) => ({
+          text: cleanContent(t.content),
+          done: t.done,
+        }))}
       />
     );
   }
@@ -925,107 +904,14 @@ const ThinkingBlock: React.FC<{
 
       {/* Expanded task list */}
       {expanded && (
-        <div style={{ paddingLeft: 2 }}>
-          {tasks.map((task, i) => (
-            <div
-              key={i}
-              style={{ display: "flex", alignItems: "flex-start", gap: 0 }}
-            >
-              {/* Icon + vertical line column */}
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  width: 20,
-                  flexShrink: 0,
-                }}
-              >
-                {/* Circle icon */}
-                <div
-                  style={{
-                    width: 14,
-                    height: 14,
-                    borderRadius: "50%",
-                    border: "1.5px solid #d1d5db",
-                    background: "#fff",
-                    flexShrink: 0,
-                    marginTop: 2,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                />
-                {/* Vertical connector (not after last item) */}
-                {i < tasks.length - 1 && (
-                  <div
-                    style={{
-                      width: 1,
-                      flex: 1,
-                      background: "#e5e7eb",
-                      minHeight: 16,
-                    }}
-                  />
-                )}
-              </div>
-
-              {/* Task text */}
-              <div
-                style={{
-                  fontSize: 14,
-                  fontWeight: 400,
-                  color: "#9ca3af",
-                  paddingLeft: 10,
-                  paddingBottom: i < tasks.length - 1 ? 12 : 0,
-                  lineHeight: "20px",
-                }}
-              >
-                {cleanContent(task.content)}
-              </div>
-            </div>
-          ))}
-
-          {/* Done row */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 0,
-              marginTop: "7px",
-            }}
-          >
-            <div
-              style={{ width: 20, display: "flex", justifyContent: "center" }}
-            >
-              {/* Circled checkmark */}
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#9ca3af"
-                strokeWidth="1.8"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <path
-                  d="M9 12l2 2 4-4"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </div>
-            <span
-              style={{
-                fontSize: 14,
-                color: "#9ca3af",
-                paddingLeft: 10,
-                fontWeight: 400,
-              }}
-            >
-              Done
-            </span>
-          </div>
-        </div>
+        <ThinkingStepsList
+          steps={tasks.map((t) => ({
+            text: cleanContent(t.content),
+            done: t.done,
+          }))}
+          streaming={false}
+          appendDone
+        />
       )}
     </div>
   );
