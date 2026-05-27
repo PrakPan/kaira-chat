@@ -84,7 +84,7 @@ export const ItineraryStatusLoader = ({ displayText, isVisible }) => {
     <div
       className="ttw-type-sans"
       style={{
-        width: "100%",
+        width: "fit-content",
         maxWidth: "100%",
         boxSizing: "border-box",
       }}

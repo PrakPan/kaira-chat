@@ -676,9 +676,9 @@ const ItineraryCity = (props) => {
               <div
                 key={hotel.id}
                 onClick={openHotelDetail}
-                className="mt-3 rounded-[12px] border border-[#ECECEC] bg-white px-3.5 py-3.5 cursor-pointer transition-all duration-150 hover:!border-black hover:translate-x-[2px]"
+                className="mt-3 rounded-[12px] border border-[#ECECEC] bg-white px-3.5 py-3.5 cursor-pointer transition-all duration-150 hover:!border-black hover:translate-x-[2px] shadow-none"
               >
-                {/* Top row: icon + name/rating on the left, Change hotel on the right */}
+                {/* Top row: icon + name/rating; Change Hotel top-right on desktop */}
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-start gap-2.5 min-w-0">
                     <div className="w-9 h-9 rounded-[9px] bg-[#FFFDE7] grid place-items-center shrink-0 overflow-hidden text-[16px]">
@@ -721,18 +721,20 @@ const ItineraryCity = (props) => {
                       )}
                     </div>
                   </div>
-
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      changeHotel();
-                    }}
-                    className="flex h-7 shrink-0 items-center justify-center gap-1 px-3.5 py-2 rounded-[8px] underline ttw-type-small whitespace-nowrap"
-                  >
-                    <EditIcon />
-                    Change Hotel
-                  </button>
+                  {/* Desktop — Change Hotel top-right */}
+                  {isDesktop && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        changeHotel();
+                      }}
+                      className="flex h-7 shrink-0 items-center justify-center gap-1 px-3.5 py-2 rounded-[8px] underline ttw-type-small whitespace-nowrap"
+                    >
+                      <EditIcon />
+                      Change Hotel
+                    </button>
+                  )}
                 </div>
 
                 {/* Trust strip */}
@@ -753,6 +755,23 @@ const ItineraryCity = (props) => {
                     </span>
                   ))}
                 </div>
+
+                {/* Mobile — Change Hotel below the trust strip, right-aligned */}
+                {!isDesktop && (
+                  <div className="flex justify-end mt-3">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        changeHotel();
+                      }}
+                      className="flex h-7 shrink-0 items-center justify-center gap-1 px-3.5 py-2 rounded-[8px] underline ttw-type-small whitespace-nowrap"
+                    >
+                      <EditIcon />
+                      Change Hotel
+                    </button>
+                  </div>
+                )}
               </div>
             );
           })
