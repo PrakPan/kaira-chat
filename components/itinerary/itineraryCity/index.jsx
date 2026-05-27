@@ -680,7 +680,11 @@ const ItineraryCity = (props) => {
               >
                 {/* Top row: icon + name/rating; Change Hotel top-right on desktop */}
                 <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-start gap-2.5 min-w-0">
+                  <div
+                    className={`flex ${
+                      isDraftStage ? "items-center" : "items-start"
+                    } gap-2.5 min-w-0`}
+                  >
                     <div className="w-9 h-9 rounded-[9px] bg-[#FFFDE7] grid place-items-center shrink-0 overflow-hidden text-[16px]">
                       {hotel?.image ? (
                         <img
@@ -692,7 +696,11 @@ const ItineraryCity = (props) => {
                         <span aria-hidden="true">🏨</span>
                       )}
                     </div>
-                    <div className="min-w-0">
+                    <div
+                      className={`min-w-0 ${
+                        isDraftStage ? "flex items-center gap-2 flex-wrap" : ""
+                      }`}
+                    >
                       <button
                         type="button"
                         onClick={(e) => {
@@ -704,20 +712,28 @@ const ItineraryCity = (props) => {
                       >
                         {hotel?.name}
                       </button>
-                      {(ratingValue || roomName) && (
-                        <div className="flex items-center gap-1.5 flex-wrap text-[11.5px] text-[#4A566E] mt-0.5">
-                          {ratingValue ? (
-                            <span className="text-[#f5a623] font-semibold whitespace-nowrap">
-                              ★ {ratingValue}
-                            </span>
-                          ) : null}
-                          {ratingValue && roomName ? (
-                            <span className="text-[#B8BECC]">·</span>
-                          ) : null}
-                          {roomName ? (
-                            <span className="break-words">{roomName}</span>
-                          ) : null}
-                        </div>
+                      {isDraftStage ? (
+                        ratingValue ? (
+                          <span className="text-[#f5a623] font-semibold whitespace-nowrap text-[11.5px]">
+                            ★ {ratingValue}
+                          </span>
+                        ) : null
+                      ) : (
+                        (ratingValue || roomName) && (
+                          <div className="flex items-center gap-1.5 flex-wrap text-[11.5px] text-[#4A566E] mt-0.5">
+                            {ratingValue ? (
+                              <span className="text-[#f5a623] font-semibold whitespace-nowrap">
+                                ★ {ratingValue}
+                              </span>
+                            ) : null}
+                            {ratingValue && roomName ? (
+                              <span className="text-[#B8BECC]">·</span>
+                            ) : null}
+                            {roomName ? (
+                              <span className="break-words">{roomName}</span>
+                            ) : null}
+                          </div>
+                        )
                       )}
                     </div>
                   </div>

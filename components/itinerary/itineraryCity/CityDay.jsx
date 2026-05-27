@@ -121,8 +121,11 @@ const getItemSubtitle = (item) => {
 //   everything else             → no right column
 // POIs, restaurants and recommendations no longer show a status badge; only
 // activities the user has actually added to the cart read as "Confirmed".
-const getStatusInfo = (resolvedType, isSelectedInCart) => {
-  if (resolvedType === "activity" && isSelectedInCart)
+const getStatusInfo = (resolvedType, isSelectedInCart, isDraft) => {
+  // P2: an activity reads as "Confirmed" only once it's selected in the cart.
+  // P1 (draft): there is no cart yet, so every agent-planned activity is shown
+  // as "Confirmed".
+  if (resolvedType === "activity" && (isSelectedInCart || isDraft))
     return { label: "Confirmed", tone: "confirmed" };
   return null;
 };
@@ -535,7 +538,7 @@ useEffect(() => {
     const subtitle = getItemSubtitle(item);
     const isRecommendationOnly = resolvedType === "recommendation";
     const isClickable = !isRecommendationOnly;
-    const status = getStatusInfo(resolvedType, isSelectedInCart(item));
+    const status = getStatusInfo(resolvedType, isSelectedInCart(item), isDraft);
     const variantStyle = getCardVariantStyle(resolvedType);
     const displayTime = getDisplayTime(item);
     const duration = getDurationLabel(item);
