@@ -15,6 +15,9 @@ import OverviewEditorial from "../../components/revamp/destination/OverviewEdito
 import CountryCardV2 from "../../components/revamp/destination/CountryCardV2.jsx";
 import ItineraryCardV2 from "../../components/revamp/destination/ItineraryCardV2.jsx";
 import ActivityCardV2 from "../../components/revamp/destination/ActivityCardV2.jsx";
+import DestinationStatsStrip from "../../components/revamp/destination/DestinationStatsStrip.jsx";
+import WhenToGoSection from "../../components/revamp/destination/WhenToGoSection.jsx";
+import PlanningSection from "../../components/revamp/destination/PlanningSection.jsx";
 import { imgUrlEndPoint } from "../../components/theme/ThemeConstants.js";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper";
@@ -268,7 +271,11 @@ const Index = (props) => {
             <span className={styles.serif}>actually flows.</span>
           </>
         }
-        prompts={heroPrompts}
+        prompts={
+          props.data?.model_prompts?.length
+            ? props.data.model_prompts
+            : heroPrompts
+        }
         polaroids={heroPolaroids}
         activities={heroActivities}
         pois={heroPois}
@@ -279,9 +286,9 @@ const Index = (props) => {
               <span className="star">★</span> <b>4.8</b> Google · 1,200+ reviews
             </span>
             <span>·</span>
-            <span>
+            {/* <span>
               <b>{props.locations?.length || 0}</b> destinations
-            </span>
+            </span> */}
             <span>·</span>
             <span>
               <b>IATA</b>-protected
@@ -291,44 +298,57 @@ const Index = (props) => {
       />
 
       {/* STATS STRIP */}
-      <div className={styles.statsStrip}>
-        <div className={styles.statsStripInner}>
-          <div className={styles.stat}>
-            <div className={styles.statLabel}>Destination</div>
-            <div className={styles.statValue}>
-              <span className={styles.serif}>{destinationLabel}</span>
-            </div>
-            <div className={styles.statSub}>Curated by Kaira</div>
-          </div>
-          <div className={styles.stat}>
-            <div className={styles.statLabel}>Top countries</div>
-            <div className={styles.statValue}>
-              <span className={styles.serif}>
-                {props.locations?.length || 0}
-              </span>{" "}
-              destinations
-            </div>
-            <div className={styles.statSub}>Hand-picked picks</div>
-          </div>
-          <div className={styles.stat}>
-            <div className={styles.statLabel}>Itineraries</div>
-            <div className={styles.statValue}>
-              <span className={styles.serif}>
-                {userItineraries?.length || 0}+
-              </span>{" "}
-              ready
-            </div>
-            <div className={styles.statSub}>Tweak anything in chat</div>
-          </div>
-          <div className={styles.stat}>
-            <div className={styles.statLabel}>Trusted by</div>
-            <div className={styles.statValue}>
-              <span className={styles.serif}>10K+</span> travellers
-            </div>
-            <div className={styles.statSub}>From across India</div>
-          </div>
-        </div>
-      </div>
+      <DestinationStatsStrip
+        data={props.data}
+        fallbacks={[
+          {
+            label: "Destination",
+            value: <span className={styles.serif}>{destinationLabel}</span>,
+            sub: "Curated by Kaira",
+          },
+          {
+            label: "Top countries",
+            value: (
+              <>
+                <span className={styles.serif}>
+                  {props.locations?.length || 0}
+                </span>{" "}
+                destinations
+              </>
+            ),
+            sub: "Hand-picked picks",
+          },
+          {
+            label: "Itineraries",
+            value: (
+              <>
+                <span className={styles.serif}>
+                  {userItineraries?.length || 0}+
+                </span>{" "}
+                ready
+              </>
+            ),
+            sub: "Tweak anything in chat",
+          },
+          {
+            label: "Trusted by",
+            value: (
+              <>
+                <span className={styles.serif}>10K+</span> travellers
+              </>
+            ),
+            sub: "From across India",
+          },
+        ]}
+      />
+
+      <WhenToGoSection
+        seasonalInfo={props.data?.seasonal_info}
+        destinationName={destinationLabel}
+        onSeeMore={() =>
+          handlePlanButtonClick(`When to go - ${destinationLabel}`)
+        }
+      />
 
       <div className={styles.container}>
         <DesktopBanner
@@ -624,6 +644,11 @@ const Index = (props) => {
 
 
       </div>
+
+      <PlanningSection
+        destinationInfo={props.data?.destination_info}
+        destinationName={destinationLabel}
+      />
 
       {/* FINAL CTA */}
       <section className={styles.finalCta}>

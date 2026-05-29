@@ -4,6 +4,9 @@ import NewMenu from "../newcityplanner/Menu";
 import validateTextSize from "../../services/textSizeValidator";
 import { convertDbNameToCapitalFirst } from "../../helper/convertDbnameToCapitalFirst";
 import HeroV2 from "../../components/revamp/destination/HeroV2";
+import DestinationStatsStrip from "../../components/revamp/destination/DestinationStatsStrip.jsx";
+import WhenToGoSection from "../../components/revamp/destination/WhenToGoSection.jsx";
+import PlanningSection from "../../components/revamp/destination/PlanningSection.jsx";
 import { imgUrlEndPoint } from "../../components/theme/ThemeConstants";
 import TailoredFormMobileModal from "../../components/modals/TailoredFomrMobile";
 import styles from "../../styles/pages/revamp/destination.module.scss";
@@ -77,54 +80,74 @@ const Experience = (props) => {
               : "",
           }))
           .filter((p) => p.image)}
+        prompts={
+          props.cityData?.model_prompts?.length
+            ? props.cityData.model_prompts
+            : []
+        }
         setShowTailoredModal={setShowTailoredModal}
       />
 
       {/* STATS STRIP */}
-      <div className={styles.statsStrip}>
-        <div className={styles.statsStripInner}>
-          <div className={styles.stat}>
-            <div className={styles.statLabel}>City</div>
-            <div className={styles.statValue}>
-              <span className={styles.serif}>{cityDisplayName}</span>
-            </div>
-            <div className={styles.statSub}>Curated by Kaira</div>
-          </div>
-          <div className={styles.stat}>
-            <div className={styles.statLabel}>Photos</div>
-            <div className={styles.statValue}>
-              <span className={styles.serif}>
-                {props.cityData?.images?.length || 0}
-              </span>{" "}
-              gallery shots
-            </div>
-            <div className={styles.statSub}>Real, not stock</div>
-          </div>
-          <div className={styles.stat}>
-            <div className={styles.statLabel}>Nearby cities</div>
-            <div className={styles.statValue}>
-              <span className={styles.serif}>
-                {props.reccomendedCitiesData?.length || 0}
-              </span>{" "}
-              suggested
-            </div>
-            <div className={styles.statSub}>Easy to combine</div>
-          </div>
-          <div className={styles.stat}>
-            <div className={styles.statLabel}>Trusted by</div>
-            <div className={styles.statValue}>
-              <span className={styles.serif}>10K+</span> travellers
-            </div>
-            <div className={styles.statSub}>Across India</div>
-          </div>
-        </div>
-      </div>
+      <DestinationStatsStrip
+        data={props.cityData}
+        fallbacks={[
+          {
+            label: "City",
+            value: <span className={styles.serif}>{cityDisplayName}</span>,
+            sub: "Curated by Kaira",
+          },
+          {
+            label: "Photos",
+            value: (
+              <>
+                <span className={styles.serif}>
+                  {props.cityData?.images?.length || 0}
+                </span>{" "}
+                gallery shots
+              </>
+            ),
+            sub: "Real, not stock",
+          },
+          {
+            label: "Nearby cities",
+            value: (
+              <>
+                <span className={styles.serif}>
+                  {props.reccomendedCitiesData?.length || 0}
+                </span>{" "}
+                suggested
+              </>
+            ),
+            sub: "Easy to combine",
+          },
+          {
+            label: "Trusted by",
+            value: (
+              <>
+                <span className={styles.serif}>10K+</span> travellers
+              </>
+            ),
+            sub: "Across India",
+          },
+        ]}
+      />
+
+      <WhenToGoSection
+        seasonalInfo={props.cityData?.seasonal_info}
+        destinationName={cityDisplayName}
+      />
 
       <NewMenu
         data={props.cityData}
         destination={props?.cityData?.name}
         nearbyCities={props.reccomendedCitiesData}
         removeDelete={true}
+      />
+
+      <PlanningSection
+        destinationInfo={props.cityData?.destination_info}
+        destinationName={cityDisplayName}
       />
 
       <TailoredFormMobileModal

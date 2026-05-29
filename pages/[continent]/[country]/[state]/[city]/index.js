@@ -87,6 +87,7 @@ const Experience = (props) => {
     experienceData={props.cityData?.page_data}
     slug={props.cityData?.page_data?.slug}
     city={props.cityData}
+    data={props.cityData}
   />
 ) : (
   <CityPage

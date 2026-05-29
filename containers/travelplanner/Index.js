@@ -38,6 +38,9 @@ import TailoredFormMobileModal from "../../components/modals/TailoredFomrMobile.
 import styles from "../../styles/pages/revamp/destination.module.scss";
 import ItineraryCardV2 from "../../components/revamp/destination/ItineraryCardV2.jsx";
 import OverviewEditorial from "../../components/revamp/destination/OverviewEditorial.jsx";
+import DestinationStatsStrip from "../../components/revamp/destination/DestinationStatsStrip.jsx";
+import WhenToGoSection from "../../components/revamp/destination/WhenToGoSection.jsx";
+import PlanningSection from "../../components/revamp/destination/PlanningSection.jsx";
 const MapBox = dynamic(() => import("../../components/Map.js"), {
   ssr: false,
 });
@@ -209,6 +212,11 @@ const Homepage = (props) => {
             <span className={styles.serif}>actually flows.</span>
           </>
         }
+        prompts={
+          props.experienceData?.model_prompts?.length
+            ? props.experienceData.model_prompts
+            : []
+        }
         polaroids={(props.experienceData?.locations || [])
           .slice(0, 4)
           .map((loc) => ({
@@ -242,44 +250,59 @@ const Homepage = (props) => {
       />
 
       {/* STATS STRIP */}
-      <div className={styles.statsStrip}>
-        <div className={styles.statsStripInner}>
-          <div className={styles.stat}>
-            <div className={styles.statLabel}>Destination</div>
-            <div className={styles.statValue}>
-              <span className={styles.serif}>{destinationName}</span>
-            </div>
-            <div className={styles.statSub}>Curated by Kaira</div>
-          </div>
-          <div className={styles.stat}>
-            <div className={styles.statLabel}>Top locations</div>
-            <div className={styles.statValue}>
-              <span className={styles.serif}>
-                {props.experienceData?.locations?.length || 0}
-              </span>{" "}
-              hand-picked
-            </div>
-            <div className={styles.statSub}>Across {destinationName}</div>
-          </div>
-          <div className={styles.stat}>
-            <div className={styles.statLabel}>Trip ideas</div>
-            <div className={styles.statValue}>
-              <span className={styles.serif}>
-                {(userItineraries?.length || 0) + (TTWItineraries?.length || 0)}+
-              </span>{" "}
-              ready
-            </div>
-            <div className={styles.statSub}>From real travellers</div>
-          </div>
-          <div className={styles.stat}>
-            <div className={styles.statLabel}>Trusted by</div>
-            <div className={styles.statValue}>
-              <span className={styles.serif}>10K+</span> travellers
-            </div>
-            <div className={styles.statSub}>Across India</div>
-          </div>
-        </div>
-      </div>
+      <DestinationStatsStrip
+        data={props.experienceData}
+        fallbacks={[
+          {
+            label: "Destination",
+            value: <span className={styles.serif}>{destinationName}</span>,
+            sub: "Curated by Kaira",
+          },
+          {
+            label: "Top locations",
+            value: (
+              <>
+                <span className={styles.serif}>
+                  {props.experienceData?.locations?.length || 0}
+                </span>{" "}
+                hand-picked
+              </>
+            ),
+            sub: `Across ${destinationName}`,
+          },
+          {
+            label: "Trip ideas",
+            value: (
+              <>
+                <span className={styles.serif}>
+                  {(userItineraries?.length || 0) +
+                    (TTWItineraries?.length || 0)}
+                  +
+                </span>{" "}
+                ready
+              </>
+            ),
+            sub: "From real travellers",
+          },
+          {
+            label: "Trusted by",
+            value: (
+              <>
+                <span className={styles.serif}>10K+</span> travellers
+              </>
+            ),
+            sub: "Across India",
+          },
+        ]}
+      />
+
+      <WhenToGoSection
+        seasonalInfo={props.experienceData?.seasonal_info}
+        destinationName={destinationName}
+        onSeeMore={() =>
+          handlePlanButtonClick(`When to go - ${destinationName}`)
+        }
+      />
 
       <div className={styles.container}>
         <div className={styles.crumb}>
@@ -539,6 +562,11 @@ const Homepage = (props) => {
         <PartnersSection />
         <ChatWithUs planner page_id={props.experienceData.id} /> */}
       </div>
+
+      <PlanningSection
+        destinationInfo={props.experienceData?.destination_info}
+        destinationName={destinationName}
+      />
 
       {/* FINAL CTA */}
       <section className={styles.finalCta}>
