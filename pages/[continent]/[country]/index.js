@@ -71,7 +71,7 @@ const TravelPlanner = (props) => {
       </Head>
 
       {props.pageData && props.Data?.page_data?.slug != "india" ? (
-          <ThemePage themePage experienceData={props.Data?.page_data} slug={props.Data?.page_data?.slug}/>
+          <ThemePage themePage experienceData={props.Data?.page_data} slug={props.Data?.page_data?.slug} data={props.Data}/>
         ) : (
       <CountryPage
         continetCarousel={props?.continetCarousel}

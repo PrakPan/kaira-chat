@@ -10,6 +10,9 @@ import OverviewEditorial from "../../components/revamp/destination/OverviewEdito
 import CountryCardV2 from "../../components/revamp/destination/CountryCardV2.jsx";
 import ItineraryCardV2 from "../../components/revamp/destination/ItineraryCardV2.jsx";
 import ActivityCardV2 from "../../components/revamp/destination/ActivityCardV2.jsx";
+import DestinationStatsStrip from "../../components/revamp/destination/DestinationStatsStrip.jsx";
+import WhenToGoSection from "../../components/revamp/destination/WhenToGoSection.jsx";
+import PlanningSection from "../../components/revamp/destination/PlanningSection.jsx";
 import { imgUrlEndPoint } from "../../components/theme/ThemeConstants.js";
 const MapBox = dynamic(() => import("../../components/Map.js"), {
   ssr: false,
@@ -152,7 +155,11 @@ const Index = (props) => {
             concierges check every booking before you pay.
           </>
         }
-        prompts={heroPrompts}
+        prompts={
+          props.data?.model_prompts?.length
+            ? props.data.model_prompts
+            : heroPrompts
+        }
         polaroids={heroPolaroids}
         activities={heroActivities}
         pois={heroPois}
@@ -163,10 +170,10 @@ const Index = (props) => {
               <span className="star">★</span> <b>4.8</b> Google · 1,200+ reviews
             </span>
             <span>·</span>
-            <span>
+            {/* <span>
               <b>{hotLocations.length || props.data?.locations?.length || 0}</b>{" "}
               cities curated
-            </span>
+            </span> */}
             <span>·</span>
             <span>
               <b>IATA</b>-protected
@@ -176,44 +183,55 @@ const Index = (props) => {
       />
 
       {/* STATS STRIP */}
-      <div className={styles.statsStrip}>
-        <div className={styles.statsStripInner}>
-          <div className={styles.stat}>
-            <div className={styles.statLabel}>Destination</div>
-            <div className={styles.statValue}>
-              <span className={styles.serif}>{destinationName}</span>
-            </div>
-            <div className={styles.statSub}>Curated by Kaira</div>
-          </div>
-          <div className={styles.stat}>
-            <div className={styles.statLabel}>Top locations</div>
-            <div className={styles.statValue}>
-              <span className={styles.serif}>{hotLocations.length || 0}</span>{" "}
-              hot picks
-            </div>
-            <div className={styles.statSub}>Hand-picked across {destinationName}</div>
-          </div>
-          <div className={styles.stat}>
-            <div className={styles.statLabel}>Itineraries</div>
-            <div className={styles.statValue}>
-              <span className={styles.serif}>
-                {userItineraries?.length || 0}+
-              </span>{" "}
-              ready
-            </div>
-            <div className={styles.statSub}>Tweak anything in chat</div>
-          </div>
-          <div className={styles.stat}>
-            <div className={styles.statLabel}>Continent</div>
-            <div className={styles.statValue}>
+      <DestinationStatsStrip
+        data={props.data}
+        fallbacks={[
+          {
+            label: "Destination",
+            value: <span className={styles.serif}>{destinationName}</span>,
+            sub: "Curated by Kaira",
+          },
+          {
+            label: "Top locations",
+            value: (
+              <>
+                <span className={styles.serif}>{hotLocations.length || 0}</span>{" "}
+                hot picks
+              </>
+            ),
+            sub: `Hand-picked across ${destinationName}`,
+          },
+          {
+            label: "Itineraries",
+            value: (
+              <>
+                <span className={styles.serif}>
+                  {userItineraries?.length || 0}+
+                </span>{" "}
+                ready
+              </>
+            ),
+            sub: "Tweak anything in chat",
+          },
+          {
+            label: "Continent",
+            value: (
               <span className={styles.serif}>
                 {convertDbNameToCapitalFirst(props.data?.continent || "")}
               </span>
-            </div>
-            <div className={styles.statSub}>Part of a wider Asia plan</div>
-          </div>
-        </div>
-      </div>
+            ),
+            sub: "Part of a wider Asia plan",
+          },
+        ]}
+      />
+
+      <WhenToGoSection
+        seasonalInfo={props.data?.seasonal_info}
+        destinationName={destinationName}
+        onSeeMore={() =>
+          handlePlanButtonClick(`When to go - ${destinationName}`)
+        }
+      />
 
       <div className={styles.container}>
         <DesktopBanner
@@ -500,6 +518,11 @@ const Index = (props) => {
         ) : null}
 
       </div>
+
+      <PlanningSection
+        destinationInfo={props.data?.destination_info}
+        destinationName={destinationName}
+      />
 
       {/* FINAL CTA */}
       <section className={styles.finalCta}>

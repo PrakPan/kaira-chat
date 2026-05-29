@@ -55,6 +55,9 @@ import ItineraryCardV2 from "../../components/revamp/destination/ItineraryCardV2
 import ActivityCardV2 from "../../components/revamp/destination/ActivityCardV2.jsx";
 import CountryCardV2 from "../../components/revamp/destination/CountryCardV2.jsx";
 import HeroV2 from "../../components/revamp/destination/HeroV2.jsx";
+import DestinationStatsStrip from "../../components/revamp/destination/DestinationStatsStrip.jsx";
+import WhenToGoSection from "../../components/revamp/destination/WhenToGoSection.jsx";
+import PlanningSection from "../../components/revamp/destination/PlanningSection.jsx";
 import destinationStyles from "../../styles/pages/revamp/destination.module.scss";
 import CarouselNavigation from "../../components/theme/Navigation.jsx";
 import PartnersSection from "../../components/theme/PartnersSection.jsx";
@@ -199,13 +202,17 @@ export default function ThemePage(props) {
           </>
         }
         description={props.experienceData.banner_text}
-        prompts={(props.experienceData?.locations || [])
-          .slice(0, 4)
-          .map((loc) => {
-            const n = loc.display_name || loc.name || loc.title || "";
-            return n ? `Plan ${n}` : null;
-          })
-          .filter(Boolean)}
+        prompts={
+          props.data?.model_prompts?.length
+            ? props.data.model_prompts
+            : (props.experienceData?.locations || [])
+                .slice(0, 4)
+                .map((loc) => {
+                  const n = loc.display_name || loc.name || loc.title || "";
+                  return n ? `Plan ${n}` : null;
+                })
+                .filter(Boolean)
+        }
         polaroids={(() => {
           const fromLocations = (props.experienceData?.locations || [])
             .slice(0, 4)
@@ -260,16 +267,72 @@ export default function ThemePage(props) {
               <span className="star">★</span> <b>4.8</b> Google · 1,200+ reviews
             </span>
             <span>·</span>
-            <span>
+            {/* <span>
               <b>{props.experienceData?.locations?.length || 0}</b> destinations
-            </span>
-            <span>·</span>
+            </span> */}
+            {/* <span>·</span> */}
             <span>
               <b>IATA</b>-protected
             </span>
           </>
         }
       />
+
+      <DestinationStatsStrip
+        data={props.data}
+        fallbacks={[
+          {
+            label: "Destination",
+            value: (
+              <span className={destinationStyles.serif}>
+                {convertDbNameToCapitalFirst(props.experienceData.slug || "")}
+              </span>
+            ),
+            sub: "Curated by Kaira",
+          },
+          {
+            label: "Top locations",
+            value: (
+              <>
+                <span className={destinationStyles.serif}>
+                  {props.experienceData?.locations?.length || 0}
+                </span>{" "}
+                hand-picked
+              </>
+            ),
+            sub: "Worth carving time for",
+          },
+          {
+            label: "Itineraries",
+            value: (
+              <>
+                <span className={destinationStyles.serif}>
+                  {props.experienceData?.itineraries?.length || 0}+
+                </span>{" "}
+                ready
+              </>
+            ),
+            sub: "Tweak anything in chat",
+          },
+          {
+            label: "Trusted by",
+            value: (
+              <>
+                <span className={destinationStyles.serif}>10K+</span> travellers
+              </>
+            ),
+            sub: "From across India",
+          },
+        ]}
+      />
+
+      <WhenToGoSection
+        seasonalInfo={props.data?.seasonal_info}
+        destinationName={convertDbNameToCapitalFirst(
+          props.experienceData.slug || ""
+        )}
+      />
+
       {props.slug === "ladakh" && <LadakhLogo />}
 
       {props.slug === "japan-cherry-blossom" && (
@@ -1242,6 +1305,13 @@ export default function ThemePage(props) {
           </>
         )}
       </SetWidthContainer>
+
+      <PlanningSection
+        destinationInfo={props.data?.destination_info}
+        destinationName={convertDbNameToCapitalFirst(
+          props.experienceData.slug || ""
+        )}
+      />
 
       <TailoredFormMobileModal
         destinationType={destination?.type}
