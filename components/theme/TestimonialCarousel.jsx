@@ -196,9 +196,9 @@ const TestimonialCarousel = (props) => {
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         {!props?.headingNotVisible && (
-          <h1 className="text-3xl max-sm:text-xl font-bold text-center mb-12 lg:mb-20 text-gray-900">
+          <h2 className="text-3xl max-sm:text-xl font-bold text-center mb-12 lg:mb-20 text-gray-900">
             What Our Happy Travelers Say
-          </h1>
+          </h2>
         )}
 
         <div className="max-ph:hidden">

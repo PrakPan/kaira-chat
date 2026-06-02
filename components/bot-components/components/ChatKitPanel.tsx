@@ -1297,7 +1297,10 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
         }
         case "display_itinerary": {
           emitEndpointsFromEffect(name, data);
-          onItineraryReceived(data.itinerary);
+          // Pass the full effect payload (not just `.itinerary`) so pax +
+          // travel-date carried at the effect-data root reach Redux. The
+          // handler unwraps `.itinerary` for the city/route shape itself.
+          onItineraryReceived(data);
           setHasDisplayItinerary(true);
           fireChatEventOnce("chat_itinerary_generated", () =>
             analyticsRef.current.trackChatItineraryGenerated?.(
@@ -1956,7 +1959,9 @@ useEffect(() => {
   let restoredHasDisplayItinerary = false;
   for (const effect of itineraryEffects) {
     if (effect.name === "display_itinerary" && effect.data?.itinerary) {
-      if (!threadIsCompleted) onItineraryReceived(effect.data.itinerary);
+      // Pass full effect.data so root-level pax + travel-date survive the
+      // reload replay (handler unwraps `.itinerary` for the route shape).
+      if (!threadIsCompleted) onItineraryReceived(effect.data);
       latestEndpointEffect = effect;
       restoredHasDisplayItinerary = true;
     } else if (effect.name === "display_transfers" && effect.data) {
