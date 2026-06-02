@@ -659,6 +659,7 @@ const ItineraryContainer = (props) => {
       //       }
     } catch (error) {
       console.log("ERROR[PaymentInfo][Itinerary]", error);
+      dispatch(setCart({ error: true }));
       setPaymentLoading(false);
     }
   };

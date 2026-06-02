@@ -487,6 +487,7 @@ onViewItinerary,
       dispatch(setItineraryStatus("pricing_status", "SUCCESS"));
     } catch (error) {
       console.log("ERROR[PaymentInfo][Itinerary]", error);
+      dispatch(setCart({ error: true }));
     }
   }, [localItineraryId, dispatch]);
 

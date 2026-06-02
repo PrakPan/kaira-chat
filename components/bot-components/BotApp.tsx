@@ -40,6 +40,7 @@ import { setStays } from "../../store/actions/StayBookings";
 import ConfirmationModal from "./components/ConfirmationModal";
 import { useSelector } from "react-redux";
 import setCart from "../../store/actions/Cart";
+import { openNotification } from "../../store/actions/notification";
 import { setUnreadMessages } from "../../store/actions/chatState";
 import axios from "axios";
 import { MERCURY_HOST } from "../../services/constants";
@@ -344,6 +345,7 @@ export default function BotApp({
         dispatch(setCart(res.data));
       } catch (e) {
         console.error("Failed to fetch payment data", e);
+        dispatch(setCart({ error: true }));
       } finally {
         setPaymentLoading(false);
       }
@@ -2729,13 +2731,28 @@ Start Location: ${details.startLocation}`;
                     },
                   )
                   .then(() =>
-                    alert(
-                      "Request received. Our team will get in touch with you shortly!",
+                    dispatch(
+                      openNotification({
+                        type: "success",
+                        heading: "Request received",
+                        text: "Our team will get in touch with you shortly!",
+                      }),
                     ),
                   )
                   .catch(() =>
-                    alert("Something went wrong. Please try again."),
+                    dispatch(
+                      openNotification({
+                        type: "error",
+                        heading: "Something went wrong",
+                        text: "Please try again.",
+                      }),
+                    ),
                   );
+              }}
+              onRetryCart={() => {
+                if (!activeItineraryId) return;
+                dispatch(setCart({}));
+                fetchPaymentData(activeItineraryId);
               }}
             />
           </div>
@@ -3023,11 +3040,28 @@ Start Location: ${details.startLocation}`;
                   },
                 )
                 .then(() =>
-                  alert(
-                    "Request received. Our team will get in touch with you shortly!",
+                  dispatch(
+                    openNotification({
+                      type: "success",
+                      heading: "Request received",
+                      text: "Our team will get in touch with you shortly!",
+                    }),
                   ),
                 )
-                .catch(() => alert("Something went wrong. Please try again."));
+                .catch(() =>
+                  dispatch(
+                    openNotification({
+                      type: "error",
+                      heading: "Something went wrong",
+                      text: "Please try again.",
+                    }),
+                  ),
+                );
+            },
+            onRetryCart: () => {
+              if (!activeItineraryId) return;
+              dispatch(setCart({}));
+              fetchPaymentData(activeItineraryId);
             },
           }}
           onSettingsClick={() => {
@@ -3217,6 +3251,7 @@ interface BottomCTABarProps {
   onConfirm: () => void;
   onViewCart: () => void;
   onGetInTouch?: () => void;
+  onRetryCart?: () => void;
   notes?: any[];
 }
 
@@ -3237,6 +3272,7 @@ const BottomCTABar = React.memo(
     onConfirm,
     onViewCart,
     onGetInTouch,
+    onRetryCart,
     notes,
   }: BottomCTABarProps) => {
     if (
@@ -3315,6 +3351,18 @@ const BottomCTABar = React.memo(
                 {currencySymbol} {cost.toLocaleString("en-IN")}/-
               </span>
             </>
+          ) : cart?.error ? (
+            <div className="flex items-center gap-2">
+              <span className="text-[13px] text-[#6E757A]">
+                Couldn&apos;t load price.
+              </span>
+              {/* <button
+                onClick={onRetryCart}
+                className="text-[13px] font-inter font-semibold text-[#AD5BE7] underline"
+              >
+                Retry
+              </button> */}
+            </div>
           ) : (
             <span className="text-[13px] text-[#6E757A] italic">
               Calculating price…
@@ -3346,17 +3394,26 @@ const BottomCTABar = React.memo(
               fill="#AD5BE7"
             />
           </svg>
-          <button
-            onClick={onViewCart}
-            className="flex items-center gap-2 h-[44px] px-4 rounded-[8px] bg-[#F7E700] text-[16px] font-inter font-semibold"
-          >
-            View Cart
-            {countCartItems > 0 && (
-              <span className="bg-[#07213A] text-white text-[11px] font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                {countCartItems}
-              </span>
-            )}
-          </button>
+          {cart?.error ? (
+            <button
+              onClick={onGetInTouch}
+              className="flex items-center gap-2 h-[44px] px-4 rounded-[8px] bg-[#F7E700] text-[16px] font-inter font-semibold"
+            >
+              Get in touch!
+            </button>
+          ) : (
+            <button
+              onClick={onViewCart}
+              className="flex items-center gap-2 h-[44px] px-4 rounded-[8px] bg-[#F7E700] text-[16px] font-inter font-semibold"
+            >
+              View Cart
+              {countCartItems > 0 && (
+                <span className="bg-[#07213A] text-white text-[11px] font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                  {countCartItems}
+                </span>
+              )}
+            </button>
+          )}
         </div>
       </div>
     );
