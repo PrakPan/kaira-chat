@@ -63,6 +63,7 @@ import TransferDateTimeFields from "./TransferDateTimeFields";
 import { TbArrowBack } from "react-icons/tb";
 import { axiosGetTransfers } from "../../../services/itinerary/bookings";
 import setItineraryStatus from "../../../store/actions/itineraryStatus";
+import SetRefetchAirportTransfers from "../../../store/actions/refetchAirportTransfers";
 import { useHandleClose } from "../../../hooks/useHandleClose";
 import { useRouter } from "next/router";
 import { useGenericAPIModal } from "../../modals/warning/Index";
@@ -1011,6 +1012,9 @@ const TransferEditDrawer = (props) => {
         if(props?.getPaymentHandler){
         props?.getPaymentHandler();
         }
+        // Updating this route reprices the city's airport transfers and deletes
+        // the previous bookings on the backend — re-poll status & re-fetch them.
+        dispatch(SetRefetchAirportTransfers());
         setSelectLoading(false);
         setUpdatingTransfer(false);
         // setShowDrawer(false);
@@ -3580,6 +3584,9 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
       );
 
       getPaymentHandler();
+      // Updating this route reprices the city's airport transfers and deletes
+      // the previous bookings on the backend — re-poll status & re-fetch them.
+      dispatch(SetRefetchAirportTransfers());
       actualClose();
 
       openNotification({
@@ -6877,6 +6884,9 @@ const toggleTransferDetails = (priceOptionId) => {
       );
 
       getPaymentHandler();
+      // Updating this route reprices the city's airport transfers and deletes
+      // the previous bookings on the backend — re-poll status & re-fetch them.
+      dispatch(SetRefetchAirportTransfers());
 
       if (!newTime && !newDate) {
         hideDrawer();

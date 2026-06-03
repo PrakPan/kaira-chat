@@ -24,6 +24,7 @@ import Stays from "./StayBookings";
 import ItineraryStatus from './itineraryStatus'; 
 import Passengers from "./Passengers"
 import CallPaymentInfo from "./callPaymentInfo"
+import RefetchAirportTransfers from "./refetchAirportTransfers"
 import uiReducer from "./ui";
 import Cart from "./Cart";
 import tailoredInfoReducer from "./tailoredInfo"
@@ -59,7 +60,8 @@ const rootReducer = combineReducers({
   Stays,
   ItineraryStatus,
   Passengers,
-  CallPaymentInfo,  
+  CallPaymentInfo,
+  RefetchAirportTransfers,
   UIState: uiReducer,
   Cart,
   tailoredInfoReducer:tailoredInfoReducer,

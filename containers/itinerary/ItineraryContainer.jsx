@@ -215,6 +215,9 @@ const ItineraryContainer = (props) => {
   const router = useRouter();
   const dispatch = useDispatch();
   const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
+  const RefetchAirportTransfers = useSelector(
+    (state) => state.RefetchAirportTransfers
+  );
   const {
     itinerary_status,
     transfers_status,
@@ -1041,6 +1044,29 @@ useEffect(() => {
 
     fetchPaymentInfo();
   }, [CallPaymentInfo]);
+
+  // When a route (flight/train/bus/ferry) or hotel changes, the backend
+  // reprices the city's airport transfers and deletes the previous bookings.
+  // Re-poll the status API — which surfaces the same loader shown during a
+  // route update via `displayText` — and let the poll re-fetch the transfer
+  // bookings once the TRANSFERS task reports SUCCESS again.
+  const refetchAirportTransfersHandler = () => {
+    transfersSuccessRef.current = false;
+    dispatch(setItineraryStatus("transfers_status", "PENDING"));
+    setPolling(true);
+    fetchDataRef.current?.(true, instanceIdRef.current);
+  };
+
+  // Skip the initial mount — only react to dispatches made after a successful
+  // transfer/hotel update.
+  const didMountRefetchTransfersRef = useRef(false);
+  useEffect(() => {
+    if (!didMountRefetchTransfersRef.current) {
+      didMountRefetchTransfersRef.current = true;
+      return;
+    }
+    refetchAirportTransfersHandler();
+  }, [RefetchAirportTransfers]);
 
   // useEffect(() => {
   //   const fetchPassengers = async () => {

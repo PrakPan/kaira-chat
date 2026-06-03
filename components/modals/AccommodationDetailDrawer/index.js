@@ -21,6 +21,7 @@ import { hotelDetails } from "../../../services/bookings/FetchAccommodation";
 import { updateAccommodationBooking } from "../../../services/bookings/UpdateBookings";
 import { openNotification } from "../../../store/actions/notification";
 import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
+import SetRefetchAirportTransfers from "../../../store/actions/refetchAirportTransfers";
 import { updateSingleStayCityAndCheckInWise } from "../../../store/actions/StayBookings";
 import { set } from "date-fns";
 
@@ -224,6 +225,9 @@ const AccommodationDetailDrawer = ({
         }
 
         dispatch(SetCallPaymentInfo(!callPaymentInfo));
+        // The backend reprices this city's airport transfers and deletes the
+        // previous bookings on a hotel change — re-poll status & re-fetch.
+        dispatch(SetRefetchAirportTransfers());
         dispatch(
           openNotification({
             type: "success",
