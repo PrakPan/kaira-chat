@@ -228,11 +228,9 @@ const StyledDateRangeContainer = styled.div`
     background: #f9fafb;
     padding: 12px;
     cursor: pointer;
-    /* Body · 14.5/1.55/400 */
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 14.5px;
+    font-family: inherit;
     font-weight: 400;
-    line-height: 1.55;
+    font-size: 0.875rem;
     color: #374151;
     display: flex;
     align-items: center;
@@ -294,18 +292,23 @@ const UpdateItineraryDates = ({
   const [focusedInput, setFocusedInput] = useState(null);
   const router = useRouter();
   const [dateType, setDateType] = useState("fixed");
-  const start = new Date(startDate);
-  const end = new Date(endDate);
+  const start = startDate ? new Date(startDate) : null;
+  const end = endDate ? new Date(endDate) : null;
+  const startValid = start && !isNaN(start.getTime());
+  const endValid = end && !isNaN(end.getTime());
 
-  start.setHours(0, 0, 0, 0);
-  end.setHours(0, 0, 0, 0);
+  if (startValid) start.setHours(0, 0, 0, 0);
+  if (endValid) end.setHours(0, 0, 0, 0);
 
   const date = {
     type: "fixed",
-    start_date: start.toISOString(),
-    end_date: end.toISOString(),
+    start_date: startValid ? start.toISOString() : null,
+    end_date: endValid ? end.toISOString() : null,
     month: "",
-    duration: Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1,
+    duration:
+      startValid && endValid
+        ? Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1
+        : 0,
   };
 
   const [momentStartDate, setMomentStartDate] = useState(
@@ -596,7 +599,7 @@ const UpdateItineraryDates = ({
           </button>
         ) : !cartValue ? (
           <div
-            className={`cursor-pointer ${cartValue ? "text-white" : "text-blue"} underline ttw-type-body`}
+            className={`cursor-pointer ${cartValue ? "text-white" : "text-blue"} underline text-sm`}
             onClick={handleCancel}
           >
             Reset
@@ -609,9 +612,9 @@ const UpdateItineraryDates = ({
         <button
           onClick={handleUpdateDates}
           disabled={isLoading}
-          className={`px-4 py-2 bg-[#07213A] text-white border-2 border-black rounded-lg font-medium ttw-type-body transition-opacity whitespace-nowrap ${
- isLoading ? "opacity-50 cursor-not-allowed" : ""
- }`}
+          className={`px-4 py-2 bg-[#07213A] text-white border-2 border-black rounded-lg font-medium text-sm transition-opacity whitespace-nowrap ${
+            isLoading ? "opacity-50 cursor-not-allowed" : ""
+          }`}
         >
           {isLoading ? "Applying..." : "Apply Date Change!"}
         </button>

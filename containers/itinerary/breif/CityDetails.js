@@ -24,7 +24,7 @@ const CityDetails = ({ data }) => {
       {imageLoading && (
         <SkeletonCard width={isDesktop ? "468px" : "100%"} height={"188px"} />
       )}
-      <div className="font-bold ttw-type-h3 py-2">{data.city_name}</div>
+      <div className="font-bold text-xl py-2">{data.city_name}</div>
       {<div>{data.short_description}</div>}
     </div>
   );

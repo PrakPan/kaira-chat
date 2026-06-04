@@ -95,7 +95,7 @@ const TransferElementsM = ({
             <div style={{ display: "flex", flexDirection: "column" }}></div>
           </TransportContainer>
         ) : null}
-        <div className="pt-1 line-clamp-3 ttw-type-body mb-0 mt-2">
+        <div className="pt-1 line-clamp-3 text-sm font-[350] mb-0 mt-2">
           {text}
         </div>
         {meta?.Time ? (

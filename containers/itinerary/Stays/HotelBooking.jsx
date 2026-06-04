@@ -53,11 +53,8 @@ const RoomTypeGrid = styled.div`
   grid-template-columns: 1rem auto auto;
   gap: 0.4rem;
   align-items: center;
-  /* Body · 14.5/1.55/400 */
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 14.5px;
-  font-weight: 400;
-  line-height: 1.55;
+  font-size: 14px;
+  line-height: 20px;
   width: fit-content;
 `;
 
@@ -469,7 +466,7 @@ const HotelBooking = ({
           <div className="pb-2">
             <SkeletonCard width="150px" height="25px" borderRadius="8px" variant="default" />
           </div>
-          <div className="rounded-3xl border-sm border-solid border-text-disabled p-md ">
+          <div className="rounded-3xl border-sm border-solid border-text-disabled p-md  ">
             <div className="relative flex lg:flex-row w-full flex-col gap-4">
               <div>
                 <SkeletonCard width="205px" height="192px" borderRadius="16px" variant="default" />
@@ -520,7 +517,7 @@ const HotelBooking = ({
         </div>
       ) : booking?.id ? (
         <>
-          <div className="text-black ttw-type-h4 leading-xl-sm pb-md">
+          <div className="text-black text-md-lg font-600 leading-xl-sm pb-md">
             {booking?.city_name || booking?.city || cities[index]?.city?.name}
             <span className="ml-1">
               (
@@ -539,7 +536,7 @@ const HotelBooking = ({
           >
             <div className={`relative flex lg:flex-row w-full flex-col gap-4`}>
               <div
-                className={`relative lg:h-[12rem] lg:w-[40%] w-full h-[12rem]`}
+                className={`relative lg:h-[12rem] lg:w-[40%] w-full  h-[12rem]`}
               >
                 <div style={{ display: imageLoaded ? "initial" : "none" }}>
                   <ImageLoader
@@ -583,7 +580,7 @@ const HotelBooking = ({
                 {booking?.star_category && booking?.star_category != "0" ? (
                   <div
                     starHotel
-                    className={`bg-text-smokywhite absolute rounded-67br ttw-type-body-strong leading-lg px-md py-xs absolute top-md left-md`}
+                    className={`bg-text-smokywhite absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md`}
                   >
                     {booking.star_category} star hotel
                   </div>
@@ -593,15 +590,15 @@ const HotelBooking = ({
               <div className="flex flex-col gap-2 text-[#01202B] lg:w-[70%] w-full justify-between">
                 <div className="flex flex-col gap-2">
                   <div className="flex flex-row justify-between items-center">
-                    <div className={`ttw-type-h4 leading-xl-sm font-600 mb-0`}>
+                    <div className={`text-md-lg leading-xl-sm font-600 mb-0`}>
                       {booking?.name}
                     </div>
 
                     <div
-                      className={`ml-auto ttw-type-h5 ${booking?.user_selected
- ? "text-[#277004]"
- : "text-[#E00000]"
- }`}
+                      className={`ml-auto text-md font-semibold ${booking?.user_selected
+                        ? "text-[#277004]"
+                        : "text-[#E00000]"
+                        }`}
                     >
                       {/* {booking?.user_selected ? "Included" : "Excluded"} */}
                     </div>
@@ -610,7 +607,7 @@ const HotelBooking = ({
                   <div className="flex flex-col gap-1">
                     <div className=" gap-2 flex flex-row items-center">    {svgIcons.loaction}
                       <div
-                        className="ttw-type-body text-text-spacegrey"
+                        className="text-sm-md text-text-spacegrey font-[400]"
                       >
 
                         {booking?.city_name || booking?.city}
@@ -618,16 +615,16 @@ const HotelBooking = ({
                     </div>
 
                     {booking?.rating ? (
-                      <div className="gap-1 flex flex-row tems-center">
+                      <div className="gap-1 flex flex-row  tems-center">
                         <div className="flex flex-row text-[#FFD201]">
                           {starRating(booking.rating)}
                         </div>
-                        <div className="ttw-type-body text-text-spacegrey">
+                        <div className="text-sm-md text-text-spacegrey font-[400]">
                           {booking.rating}
                         </div>
                         {booking?.user_ratings_total ? (<>
                           {" . "}
-                          <div className="ttw-type-body text-text-spacegrey underline">
+                          <div className="text-sm-md text-text-spacegrey font-[400] underline">
                             {booking.user_ratings_total} reviews
                           </div>
                         </>) : null}
@@ -638,14 +635,14 @@ const HotelBooking = ({
                   {tripsPage ? (
                     <div className="flex flex-row gap-2 items-center">
                       {svgIcons.calender}
-                      <div className="ttw-type-body text-text-spacegrey">
+                      <div className="text-sm-md text-text-spacegrey font-[400]">
                         {booking ? booking?.duration : 1} Nights stay
                       </div>
 
                       {booking?.number_of_adults ? (
                         <div className=" gap-2 flex flex-row items-center">
                           {svgIcons.user}
-                          <div className="ttw-type-body text-text-spacegrey min-w-fit">
+                          <div className="text-sm-md text-text-spacegrey font-[400] min-w-fit">
                             {booking.number_of_adults} Adults
                           </div>
                         </div>
@@ -659,10 +656,10 @@ const HotelBooking = ({
                     <div className="flex flex-row gap-3 lg:mt-2 mt-0">
                       {booking.check_in && (
                         <div className="flex flex-row gap-2 items-center">
-                          {/* <BsCalendar2 className="ttw-type-body text-[#7A7A7A]" /> */}
+                          {/* <BsCalendar2 className="text-sm text-[#7A7A7A]" /> */}
                           {svgIcons.calender}
                           <div>
-                            <div className="ttw-type-body text-text-spacegrey">
+                            <div className="text-sm-md text-text-spacegrey font-[400]">
                               {getDate(booking.check_in)}-
                               {getDate(booking.check_out)}
                             </div>
@@ -671,9 +668,9 @@ const HotelBooking = ({
                       )}
 
                       {booking?.number_of_adults ? (
-                        <div className="ttw-type-body text-text-spacegrey gap-2 flex flex-row items-center">
+                        <div className="text-sm-md text-text-spacegrey font-[400] gap-2 flex flex-row items-center">
                           {svgIcons.user}
-                          <div className="ttw-type-body text-text-spacegrey min-w-fit">
+                          <div className="text-sm-md text-text-spacegrey font-[400] min-w-fit">
                             {booking.number_of_adults} Adults{" "}
                             {booking?.number_of_children
                               ? booking?.number_of_children + " Children"
@@ -687,8 +684,8 @@ const HotelBooking = ({
                   ) : null}
 
                   <RoomTypeGrid>
-                    <BiBed className="ttw-type-body text-text-svgIconFill" />
-                    <div className="ttw-type-body text-text-spacegrey line-clamp-1">
+                    <BiBed className="text-md text-text-svgIconFill" />
+                    <div className="text-sm-md text-text-spacegrey font-[400] line-clamp-1">
                       {booking?.room}
                     </div>
                     {/* <div>
@@ -704,8 +701,8 @@ const HotelBooking = ({
                   {booking?.number_of_extra_beds &&
                     booking?.number_of_extra_beds > 0 ? (
                     <div className="flex flex-row items-center my-0">
-                      <BsPlus className="ttw-type-body text-[#7A7A7A]" />
-                      <div className="ttw-type-body text-text-spacegrey line-clamp-1">
+                      <BsPlus className="text-md text-[#7A7A7A]" />
+                      <div className="text-sm-md text-text-spacegrey font-[400] line-clamp-1">
                         {booking?.number_of_extra_beds}{" "}
                         {booking?.number_of_extra_beds > 1
                           ? "Extra beds"
@@ -718,7 +715,7 @@ const HotelBooking = ({
                     Addons(booking?.hotel_details?.pricing_type) ? (
                     <div className="flex flex-row gap-2 items-center lg:my-2 my-0">
                       {svgIcons.forkKnife}
-                      <div className="ttw-type-body text-text-spacegrey">
+                      <div className="text-sm-md text-text-spacegrey font-[400]">
                         {Addons(booking?.hotel_details?.pricing_type)}
                       </div>
                     </div>
@@ -726,24 +723,24 @@ const HotelBooking = ({
 
                   {booking && booking?.wifi && (
                     <div className="flex flex-row gap-2 items-center lg:my-2 my-0">
-                      <MdWifi className="ttw-type-body text-[#7A7A7A]" />
-                      <div className="ttw-type-body text-text-spacegrey"> Free Wifi</div>
+                      <MdWifi className="text-sm text-[#7A7A7A]" />
+                      <div className="text-sm-md text-text-spacegrey font-[400]"> Free Wifi</div>
                     </div>
                   )}
 
                   {booking && booking?.meals && (
                     <div className="flex flex-row gap-2 items-center lg:my-2 my-0">
                       {svgIcons.forkKnife}
-                      <div className="ttw-type-body text-text-spacegrey"> {booking.meals}</div>
+                      <div className="text-sm-md text-text-spacegrey font-[400]"> {booking.meals}</div>
                     </div>
                   )}
                 </div>
 
                 <div
                   className={`hidden lg:!flex flex-row gap-2 items-end justify-end w-full ${payment?.paid_user || !payment?.user_allowed_to_pay
- ? "lh:mb-0 mb-2"
- : "lg:mb-0 mb-0"
- }`}
+                    ? "lh:mb-0 mb-2"
+                    : "lg:mb-0 mb-0"
+                    }`}
                 >
                   {isPageWide && (
                     <button
@@ -784,8 +781,8 @@ const HotelBooking = ({
           <div>
             <div className="flex lg:flex-row flex-col justify-between lg:items-center rounded-3xl border-sm border-solid border-text-disabled p-md hover:bg-text-smoothwhite cursor-pointer">
               <div className="flex flex-col">
-                <div className="font-medium inline">
-                  <div className="text-black ttw-type-h4 leading-xl-sm pb-xs">
+                <div className="font-medium  inline">
+                  <div className="text-black text-md-lg font-600 leading-xl-sm pb-xs">
                     <div>
                       {booking?.city_name ||
                         booking?.city ||
@@ -797,11 +794,11 @@ const HotelBooking = ({
                   </div>
                 </div>
                 {booking?.check_in && (
-                  <div className="font-medium inline">
+                  <div className="font-medium  inline">
                     <div className="flex flex-row gap-2 items-center max-ph:pb-sm">
                       {svgIcons.calender}
                       <div>
-                        <div className="ttw-type-body text-text-spacegrey">
+                        <div className="text-sm-md text-text-spacegrey font-[400]">
                           {booking?.check_in && formatDate(booking?.check_in)} -{" "}
                           {booking?.check_out && formatDate(booking?.check_out)}
                         </div>

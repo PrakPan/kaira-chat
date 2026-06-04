@@ -163,6 +163,15 @@ loginMandatory?: boolean;
  *  in this thread). Used by BotApp to switch the mobile tab to the itinerary
  *  view. */
 onViewItinerary?: () => void;
+/** Patches just the Traveller Type (pax) and/or Date of Travelling on the
+ *  current trip. Fired by the `update_pax` / `update_travel_date` client
+ *  effects so the P1 header reflects edits without rebuilding the itinerary. */
+onTripMetaUpdate?: (meta: {
+  number_of_adults?: number;
+  number_of_children?: number;
+  number_of_infants?: number;
+  travel_date?: string;
+}) => void;
 }
 
 export interface TravellerStoryIntro {
@@ -743,6 +752,7 @@ isPanelVisible = true,
 onLoginSuccess,
 loginMandatory,
 onViewItinerary,
+onTripMetaUpdate,
 }: ChatKitPanelProps) {
   // ── State ────────────────────────────────────────────────────────────────
   const [input, setInput] = useState("");
@@ -1904,11 +1914,36 @@ case "shimmer_day_by_day": {
           setQuickReplies(parsed);
           break;
         }
+        case "update_pax": {
+          // Patch just the Traveller Type on the current trip. Server keys are
+          // no_of_*; forward only the values that are actually present so a
+          // partial update doesn't blank out the others.
+          const meta: {
+            number_of_adults?: number;
+            number_of_children?: number;
+            number_of_infants?: number;
+          } = {};
+          if (typeof data.no_of_adults === "number")
+            meta.number_of_adults = data.no_of_adults;
+          if (typeof data.no_of_children === "number")
+            meta.number_of_children = data.no_of_children;
+          if (typeof data.no_of_infants === "number")
+            meta.number_of_infants = data.no_of_infants;
+          onTripMetaUpdate?.(meta);
+          break;
+        }
+        case "update_travel_date": {
+          // Patch just the Date of Travelling on the current trip.
+          if (typeof data.travel_date === "string") {
+            onTripMetaUpdate?.({ travel_date: data.travel_date });
+          }
+          break;
+        }
         default:
           console.warn("[Effect] unhandled:", name);
       }
     },
-    [onLocationReceived, onNewQuery, onClearMap, onRouteReceived, onItineraryReceived, input, indexTransfersForLookup, emitEndpointsFromEffect, dispatch, callPaymentInfo],
+    [onLocationReceived, onNewQuery, onClearMap, onRouteReceived, onItineraryReceived, onTripMetaUpdate, input, indexTransfersForLookup, emitEndpointsFromEffect, dispatch, callPaymentInfo],
   );
 
   // Wire handleEffect into the ref so the stable onEffect wrapper picks it up

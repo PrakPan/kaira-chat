@@ -165,7 +165,7 @@ const NewSummaryContainer = (props) => {
       !isDatePast &&
       !props?.payment?.paid_user ? (
         <div>
-          <div className="relative rounded-md cursor-pointer mt-3">
+          <div className="relative  rounded-md cursor-pointer mt-3">
             <input
               class=" px-3 w-full py-2  border-2 border-[#ECEAEA] rounded-md focus:outline-none focus:border-yellow-400"
               type="text"
@@ -191,7 +191,7 @@ const NewSummaryContainer = (props) => {
                   duration={0.2}
                   ydistance={20}
                 >
-                  <div className="text-red-500 text-center font-normal ttw-type-body ">
+                  <div className="text-red-500 text-center font-normal text-sm ">
                     {isError.errorMsg}
                   </div>
                 </Slide>
@@ -210,7 +210,7 @@ const NewSummaryContainer = (props) => {
                   duration={0.1}
                   ydistance={12}
                 >
-                  <div className="text-green-500 text-center font-normal ttw-type-body ">
+                  <div className="text-green-500 text-center font-normal text-sm ">
                     {isSucess.Msg}
                   </div>
                 </Slide>
@@ -219,7 +219,7 @@ const NewSummaryContainer = (props) => {
 
             {iscouponApplied ? (
               <button
-                className=" absolute inset-y-0 right-1 top-0 flex items-center pr-3 "
+                className=" absolute  inset-y-0 right-1 top-0 flex items-center pr-3  "
                 type="submit"
                 onClick={(e) => handleSubmitRemove(e)}
               >
@@ -236,7 +236,7 @@ const NewSummaryContainer = (props) => {
               </button>
             ) : (
               <button
-                className=" absolute inset-y-0 right-1 top-0 flex items-center pr-3 "
+                className=" absolute inset-y-0 right-1 top-0 flex items-center pr-3  "
                 type="submit"
                 onClick={(e) => handleSubmit(e)}
               >
@@ -261,7 +261,7 @@ const NewSummaryContainer = (props) => {
   //  console.log("Iti1",props?.itinerary)
   return (
     <SummaryContainer
-      className=" ml-4 flex flex-col rounded-xl shadow-md border-2 border-[#ECEAEA] shadow-[#ECEAEA] "
+      className=" ml-4 flex flex-col rounded-xl shadow-md  border-2 border-[#ECEAEA] shadow-[#ECEAEA] "
       style={{ marginBottom: props.traveleritinerary ? "12.5vh" : "0" }}
       couponSlide={couponSlide}
     >

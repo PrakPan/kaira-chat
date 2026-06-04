@@ -266,6 +266,9 @@ const TAG_STYLE_BY_KEY = {
   insider_spot: { background: "#FFE5D1", color: "#0B1220" },   
   table_reserved: { background: "#0B1220", color: "#F7E700" },     
   insta_worthy_view: { background: "#F1E6FF", color: "#7E3DD4", border: "1px solid rgba(126,61,212,0.25)" },
+  tickets_held: { background: "#0B1220", color: "#F7E700" },
+  // green-soft "Included" chip — always shown on activity elements
+  included:    { background: "#DFF3E7", color: "#1F8A5A", border: "1px solid rgba(31,138,90,0.3)" },
 };
 
 // Fallback palette — when the API sends a tag string we don't recognize, we
@@ -308,6 +311,7 @@ const TAG_ICON_GLYPHS = {
   star: "★",
   diamond: "◆",
   check: "✓",
+  ticket: "🎫",
 };
 
 const TAG_ICON_BY_KEY = {
@@ -317,6 +321,9 @@ const TAG_ICON_BY_KEY = {
   table_held: "check",
   window_seat: "check",
   table_reserved: "check",
+  included: "check",
+  // ticket — tickets held
+  tickets_held: "ticket",
   // diamond — curated / insider / hidden gem signals
   curated: "diamond",
   hidden_gem: "diamond",
@@ -383,10 +390,12 @@ const isDraft = useSelector((state) => state.Itinerary.status) === "Draft";
   const activityId = item?.booking?.id || item?.id;
   if (!activityId) return;
 
+  const source = item?.booking?.source || item?.source;
+
   try {
     setActivityLoading(true);
     const response = await fetch(
-      `https://dev.mercury.tarzanway.com/api/v1/ancillaries/activity/${activityId}/?currency=INR`,
+      `https://mercury.tarzanway.com/api/v1/ancillaries/activity/${activityId}/?currency=INR`,
       {
         method: "POST",
         headers: {
@@ -398,11 +407,12 @@ const isDraft = useSelector((state) => state.Itinerary.status) === "Draft";
           number_of_adults: props?.pax?.adults || 2,
           number_of_children: props?.pax?.children || 0,
           children_ages: props?.pax?.children_ages || [],
+          ...(source && { source }),
         }),
       }
     );
     const data = await response.json();
-    setShowActivityDetails({ show: true, data, id: activityId });
+    setShowActivityDetails({ show: true, data, id: activityId, source });
   } catch (err) {
     console.error("Failed to fetch activity details", err);
   } finally {
@@ -541,6 +551,20 @@ useEffect(() => {
     const duration = getDurationLabel(item);
     const dataTags = getDisplayTags(item);
 
+    // Activity elements always show a green "Included" chip + a "Tickets held"
+    // chip (ticket glyph). API tags follow; drop any that duplicate the forced
+    // ones so they don't render twice.
+    const FORCED_ACTIVITY_TAGS = ["tickets_held", "included"];
+    const renderTags =
+      resolvedType === "activity"
+        ? [
+            ...FORCED_ACTIVITY_TAGS,
+            ...dataTags.filter(
+              (t) => !FORCED_ACTIVITY_TAGS.includes(normalizeTagKey(t))
+            ),
+          ]
+        : dataTags;
+
     const statusBadge = status ? (
       <span
         className={`ttw-type-status shrink-0 whitespace-nowrap ${
@@ -552,9 +576,9 @@ useEffect(() => {
     ) : null;
 
     const tagGroup =
-      dataTags.length > 0 || duration ? (
+      renderTags.length > 0 || duration ? (
         <span className="inline-block whitespace-nowrap align-middle !font-normal">
-          {dataTags.map((t, i) => (
+          {renderTags.map((t, i) => (
             <span
               key={`${t}-${i}`}
               className={`${CHIP_BASE} align-middle mr-[5px] !font-normal`}
@@ -691,7 +715,7 @@ useEffect(() => {
 
   return (
     <>
-     <div className="flex sm:flex-row flex-col border-b border-[#ECECEC] last:border-b-0 w-full justify-center bg-[#FBFAF3]">
+     <div className="flex sm:flex-row flex-col border-b border-[#ECECEC] last:border-b-0 w-full justify-center">
 
         {/* COL 1: Day number + date — matches HTML .day-num-block */}
         <div className="sm:w-fit w-full shrink-0 pl-4 pr-2 sm:pr-0 sm:pt-6 pt-4 sm:pb-6 pb-2 flex sm:flex-col flex-row sm:items-start items-baseline gap-3 sm:min-w-[64px]">
@@ -841,6 +865,7 @@ useEffect(() => {
     show={showActivityDetails.show}
     setShowDetails={setShowActivityDetails}
     activityId={showActivityDetails.id}
+    source={showActivityDetails.source}
     handleCloseDrawer={() =>
       setShowActivityDetails({ show: false })
     }

@@ -233,7 +233,7 @@ const TransferBooking = ({
                     <div className="absolute w-[20px] border border-black ml-4 mt-[27px]"></div>
                     <div className="mt-3 ml-1 md:ml-7 flex flex-col">
                       <div className=" w-full items-center">
-                        <div className="font-medium ttw-type-body flex items-center gap-2">
+                        <div className="font-medium text-[15px] flex items-center gap-2">
                           <div className="text-[#C5C1C1]">
                             {getModeIcon(booking?.booking_type, 15)}
                           </div>
@@ -298,7 +298,7 @@ const TransferBooking = ({
                             <>{booking?.name}</>
                           )}
                         </div>
-                        <div className="ttw-type-small ml-[20px]">
+                        <div className="text-[10px] ml-[20px]">
                           Duration: {booking?.duration}
                         </div>
                       </div>
@@ -306,7 +306,7 @@ const TransferBooking = ({
                       <>
                         <div
                           id={booking?.id}
-                          className="mb-2 mt-3 w-full flex flex-col lg:flex-row lg:items-center space-y-3 items-start justify-between py-[30px] cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2"
+                          className="mb-2 mt-3 w-full flex flex-col lg:flex-row lg:items-center space-y-3 items-start justify-between py-[30px] cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2"
                         >
                           <div className="flex flex-row items-start md:items-center justify-between gap-1 w-full">
                             <div className="grid place-items-center md:min-w-[6rem] md:max-w-[6rem] min-w-[4rem] max-w-[4rem] lg:min-h-[6rem] min-h-[4rem] rounded-2xl">
@@ -358,17 +358,17 @@ const TransferBooking = ({
                               )}
                             </div>
                             <div className="flex flex-col md:flex-row justify-between items-center w-full">
-                              <div className="flex flex-col w-full">
-                                <div className="ttw-type-body font-medium w-full">
+                              <div className="flex flex-col  w-full">
+                                <div className="text-[16px] font-medium w-full">
                                   <>{booking?.name}</>
                                 </div>
-                                <div className="flex sm:ttw-type-body ttw-type-body flex-row text-[#7A7A7A] font-light items-center">
+                                <div className="flex sm:text-sm text-[14px]  flex-row text-[#7A7A7A] font-light items-center">
                                   <>{booking?.type}</>
                                 </div>
 
                                 {isPageWide && booking?.transfer_details && (
-                                  <div className="text-[#01202B] font-normal flex justify-start items-center mt-1 flex-wrap">
-                                    <span className="pr-1 sm:ttw-type-body text-[0.82rem]">
+                                  <div className="text-[#01202B] font-normal flex  justify-start items-center mt-1 flex-wrap">
+                                    <span className="pr-1 sm:text-sm text-[0.82rem]">
                                       Facilities:
                                     </span>
                                     <span className="flex items-center gap-1">
@@ -386,7 +386,7 @@ const TransferBooking = ({
                                           details.push(
                                             <span
                                               key="seater"
-                                              className="sm:ttw-type-body text-[0.74rem] font-normal"
+                                              className="sm:text-sm text-[0.74rem] font-normal"
                                             >
                                               {seatingCapacity} Seat
                                               {seatingCapacity > 1 ? "s" : ""}
@@ -401,7 +401,7 @@ const TransferBooking = ({
                                           details.push(
                                             <span
                                               key="bags"
-                                              className="sm:ttw-type-body text-[0.74rem] font-normal"
+                                              className="sm:text-sm text-[0.74rem] font-normal"
                                             >
                                               {bagCapacity} Luggage bags
                                             </span>
@@ -415,7 +415,7 @@ const TransferBooking = ({
                                           details.push(
                                             <span
                                               key="fuel"
-                                              className="sm:ttw-type-body text-[0.74rem] font-normal"
+                                              className="sm:text-sm text-[0.74rem] font-normal"
                                             >
                                               Fuel Type: {fuelType}
                                             </span>
@@ -426,7 +426,7 @@ const TransferBooking = ({
                                           <React.Fragment key={index}>
                                             {item}
                                             {index !== details.length - 1 && (
-                                              <span className="sm:ttw-type-body text-[0.74rem] font-normal mx-1">
+                                              <span className="sm:text-sm text-[0.74rem] font-normal mx-1">
                                                 |
                                               </span>
                                             )}
@@ -453,9 +453,9 @@ const TransferBooking = ({
                             </div>
                           </div>
                           {!isPageWide && booking?.transfer_details && (
-                            <div className="text-[#01202B] font-normal flex items-center justify-center mt-1 sm:ttw-type-body text-[0.82rem]">
+                            <div className="text-[#01202B] font-normal flex items-center justify-center mt-1 sm:text-sm text-[0.82rem]">
                               <span className="pr-1">Facilities:</span>
-                              <div className="flex flex-wrap gap-x-2 gap-y-1 ">
+                              <div className="flex flex-wrap  gap-x-2 gap-y-1 ">
                                 {(() => {
                                   const details = [];
 
@@ -495,7 +495,7 @@ const TransferBooking = ({
                                   return details.map((text, index) => (
                                     <span
                                       key={index}
-                                      className="sm:ttw-type-body text-[0.74rem] font-normal flex items-center"
+                                      className="sm:text-sm text-[0.74rem] font-normal flex items-center"
                                     >
                                       {text}
                                       {index !== details.length - 1 && (
@@ -516,7 +516,7 @@ const TransferBooking = ({
                                 <div className="pr-2 w-full">
                                   <button
                                     onClick={() => handleRoute(booking)}
-                                    className="md:hidden mt-2 w-full ttw-type-small font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
+                                    className="md:hidden mt-2 w-full text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
                                   >
                                     View Details
                                   </button>
@@ -534,8 +534,8 @@ const TransferBooking = ({
           ) : (
             <div
               className={`grid w-full grid-cols-[30px_120px] min-h-[5rem] md:min-h-[8rem] ${
- isAirport ? "hidden" : ""
- }`}
+                isAirport ? "hidden" : ""
+              }`}
             >
               <div className="relative">
                 <LineContainer>
@@ -546,7 +546,7 @@ const TransferBooking = ({
               {isPageWide ? (
                 <button
                   onClick={handleAddTransfer}
-                  className="ttw-type-body-strong text-blue hover:underline w-full whitespace-nowrap"
+                  className="text-[14px] font-[600] leading-[60px] text-blue hover:underline w-full whitespace-nowrap"
                 >
                   + Add Transfer from {origin?.name || origin?.city_name} to{" "}
                   {destination?.name || destination?.city_name}
@@ -554,7 +554,7 @@ const TransferBooking = ({
               ) : (
                 <button
                   onClick={handleAddTransfer}
-                  className="ttw-type-body-strong text-blue hover:underline w-full whitespace-nowrap"
+                  className="text-[14px] font-[600] leading-[60px] text-blue hover:underline w-full whitespace-nowrap"
                 >
                   + Add Transfer
                 </button>
@@ -591,7 +591,7 @@ const TransferBooking = ({
                       className="mt-3 ml-1 md:ml-7 flex flex-col"
                     >
                       <div className=" w-full items-center">
-                        <div className="font-medium ttw-type-body inline flex items-center gap-2">
+                        <div className="font-medium text-[15px]  inline flex items-center gap-2">
                           <div className="text-[#C5C1C1]">
                             {getModeIcon(book?.booking_type, 15)}
                           </div>
@@ -644,17 +644,17 @@ const TransferBooking = ({
                             <>{book?.name}</>
                           )}
                         </div>
-                        <div className="ttw-type-small ml-[20px]">
+                        <div className="text-[10px] ml-[20px]">
                           Duration: {book?.duration}
                         </div>
                       </div>
 
                       <div
                         id={book?.id}
-                        className="mb-2 mt-3 w-full flex flex-col lg:flex-row lg:items-center space-y-3 items-start justify-between py-[30px] cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2"
+                        className="mb-2 mt-3 w-full flex flex-col lg:flex-row lg:items-center space-y-3 items-start justify-between py-[30px] cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2"
                       >
                         <div className="flex flex-row items-center justify-between gap-1 w-full">
-                          <div className="grid place-items-center lg:min-w-[6rem] min-w-[4rem] max-w-[4rem] lg:min-h-[6rem] min-h-[4rem] rounded-2xl">
+                          <div className="grid place-items-center lg:min-w-[6rem] min-w-[4rem] max-w-[4rem]  lg:min-h-[6rem] min-h-[4rem] rounded-2xl">
                             {book?.booking_type === "Taxi" ? (
                               <ImageLoader
                                 className="object-contain border rounded-[11px]"
@@ -685,8 +685,8 @@ const TransferBooking = ({
                             )}
                           </div>
                           <div className="flex justify-between items-center w-full">
-                            <div className="flex flex-col w-full">
-                              <div className="ttw-type-body font-medium w-full">
+                            <div className="flex flex-col  w-full">
+                              <div className="text-[16px] font-medium w-full">
                                 {book?.booking_type == "Taxi" ? (
                                   book?.transfer_details &&
                                   book?.transfer_details.gozo &&
@@ -706,7 +706,7 @@ const TransferBooking = ({
                                   <>{book?.name}</>
                                 )}
                               </div>
-                              <div className="flex sm:ttw-type-body ttw-type-body flex-row text-[#7A7A7A] font-light items-center">
+                              <div className="flex sm:text-sm text-[14px]  flex-row text-[#7A7A7A] font-light items-center">
                                 {book?.booking_type == "Taxi" ? (
                                   <>
                                     {book?.transfer_details?.quote
@@ -760,7 +760,7 @@ const TransferBooking = ({
                                     details.push(
                                       <span
                                         key="seater"
-                                        className="sm:ttw-type-body text-[0.74rem] font-normal"
+                                        className="sm:text-sm text-[0.74rem] font-normal"
                                       >
                                         {seatingCapacity} Seat
                                         {seatingCapacity > 1 ? "s" : ""}
@@ -772,7 +772,7 @@ const TransferBooking = ({
                                     details.push(
                                       <span
                                         key="bags"
-                                        className="sm:ttw-type-body text-[0.74rem] font-normal"
+                                        className="sm:text-sm text-[0.74rem] font-normal"
                                       >
                                         {bagCapacity} Luggage bag
                                         {bagCapacity > 1 ? "s" : ""}
@@ -784,7 +784,7 @@ const TransferBooking = ({
                                     details.push(
                                       <span
                                         key="fuel"
-                                        className="sm:ttw-type-body text-[0.74rem] font-normal"
+                                        className="sm:text-sm text-[0.74rem] font-normal"
                                       >
                                         Fuel Type: {fuelType}
                                       </span>
@@ -793,7 +793,7 @@ const TransferBooking = ({
 
                                   return (
                                     <div className="text-[#01202B] font-normal flex justify-start items-center mt-1 flex-wrap">
-                                      <span className="pr-1 sm:ttw-type-body text-[0.82rem]">
+                                      <span className="pr-1 sm:text-sm text-[0.82rem]">
                                         Facilities:
                                       </span>
                                       <span className="flex items-center gap-1">
@@ -801,7 +801,7 @@ const TransferBooking = ({
                                           <React.Fragment key={index}>
                                             {item}
                                             {index !== details.length - 1 && (
-                                              <span className="sm:ttw-type-body text-[0.74rem] font-normal mx-1">
+                                              <span className="sm:text-sm text-[0.74rem] font-normal mx-1">
                                                 |
                                               </span>
                                             )}
@@ -819,7 +819,7 @@ const TransferBooking = ({
                                     {addbooking ? (
                                       <button
                                         onClick={() => handleRoute(booking)}
-                                        className="ttw-type-body lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#F7E700] hover:text-white hover:bg-black"
+                                        className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#F7E700] hover:text-white hover:bg-black"
                                       >
                                         {isDesktop ? "Change Taxi" : "Change"}
                                       </button>
@@ -889,13 +889,13 @@ const TransferBooking = ({
                             if (fuelType) details.push(`Fuel: ${fuelType}`);
 
                             return (
-                              <div className="text-[#01202B] font-normal flex mt-1 sm:ttw-type-body text-[0.82rem]">
+                              <div className="text-[#01202B] font-normal flex mt-1 sm:text-sm text-[0.82rem]">
                                 <span className="pr-1">Facilities:</span>
-                                <div className="flex items-center gap-x-1">
+                                <div className="flex  items-center gap-x-1">
                                   {details.map((text, index) => (
                                     <span
                                       key={index}
-                                      className="sm:ttw-type-body text-[0.74rem] font-normal flex items-center"
+                                      className="sm:text-sm text-[0.74rem] font-normal flex items-center"
                                     >
                                       {text}
                                       {index !== details.length - 1 && (
@@ -916,7 +916,7 @@ const TransferBooking = ({
                               <div className="pr-2 w-full">
                                 <button
                                   onClick={() => handleRoute(booking)}
-                                  className="md:hidden mt-2 w-full ttw-type-small font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
+                                  className="md:hidden mt-2 w-full text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
                                 >
                                   View Details
                                 </button>
@@ -1003,7 +1003,7 @@ const FlightBooking = ({
           ]?.destination?.city_name && (
             <>
               {" "}
-              <div className="font-medium ttw-type-body inline flex items-center gap-1">
+              <div className="font-medium text-[15px]  inline flex items-center gap-1">
                 <FaPlaneDeparture color="#C5C1C1" /> &nbsp;
                 {booking?.transfer_details?.items[0]?.segments[0]?.origin
                   ?.city_name ||
@@ -1025,7 +1025,7 @@ const FlightBooking = ({
                 ]?.destination?.city_name ||
                   booking?.transfer_details?.destination?.city_name}
               </div>
-              <div className="ttw-type-small ml-[20px]">
+              <div className="text-[10px] ml-[20px]">
                 Duration: {booking?.duration}
               </div>{" "}
             </>
@@ -1034,12 +1034,12 @@ const FlightBooking = ({
 
       <div
         id={booking?.id}
-        className={`mb-2 mt-2 w-full lg:block ${"mb-2 mt-2 lg:block flex flex-col p-3 "} cursor-pointer relative shadow-sm rounded-2xl transition-all hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] border-[1px] hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-5 w-full`}
+        className={`mb-2 mt-2  w-full lg:block ${"mb-2 mt-2 lg:block flex flex-col p-3 "} cursor-pointer relative shadow-sm rounded-2xl transition-all  hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] border-[1px]  hover:border-[#F7E700]  shadow-[#ECEAEA] lg:p-5 w-full`}
         onClick={()=>{if(window.innerWidth <= 1000) handleRoute(booking)}}
       >
         <div
           className={` w-full 
- `}
+          `}
         >
           <div className="flex items-center justify-between w-full">
             <div className="flex items-center gap-2">
@@ -1048,7 +1048,7 @@ const FlightBooking = ({
                 height={34}
                 width={34}
               />
-              <div className="ttw-type-small">
+              <div className="text-xs font-semibold">
                 {
                   booking?.transfer_details?.items?.[0]?.segments?.[0]?.airline
                     ?.name
@@ -1091,8 +1091,8 @@ const FlightBooking = ({
 
         <div
           className={`flex ${
- window.innerWidth < 1000 ? "justify-between" : "justify-center"
- } items-center w-full`}
+            window.innerWidth < 1000 ? "justify-between" : "justify-center"
+          } items-center w-full`}
         >
           {window.innerWidth < 1000 && (
             <div className="flex justify-end mt-4 pr-2 w-full">

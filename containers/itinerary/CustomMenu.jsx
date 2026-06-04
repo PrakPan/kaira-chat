@@ -13,11 +13,7 @@ const MenuItem = styled.div`
   border-radius: ${({ isActive }) =>
     isActive ? "10% 10% 0 0" : "10% 10% 0 0"};
   transition: border-color 0.3s ease;
-  /* H4-ish tab label · 14.5/600/-0.01em */
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 14.5px;
   font-weight: 600;
-  letter-spacing: -0.01em;
   border-bottom: ${({ isActive }) =>
     isActive ? "4px solid #F7E700" : "4px solid transparent"};
   :hover {
@@ -52,12 +48,8 @@ const Label = styled.div`
   opacity: ${({ isActive }) => (isActive ? "" : "0.4")};
   white-space: nowrap;
   color: #01202B;
-  /* H4 tab label · 17/1.2/700/-0.015em */
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 17px;
-  font-weight: 700;
-  letter-spacing: -0.015em;
-  line-height: 1.2;
+  font-size: 16px;
+  font-weight: 500;
 
   :hover {
     opacity: 1;

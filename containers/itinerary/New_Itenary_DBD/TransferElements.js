@@ -52,7 +52,7 @@ const TransferElements = ({
 
   return (
     <>
-      <Container className="pt-3 ">
+      <Container className="pt-3  ">
         <div className="flex flex-row relative">
           <div className="flex align-items-center">
             {modes ? (
@@ -69,7 +69,7 @@ const TransferElements = ({
           <TInfoContainer>
             <div>
               <div>
-                <div className="ttw-type-h3 font-normal pr-2 ">{heading}</div>
+                <div className="text-xl font-normal pr-2 ">{heading}</div>
 
                 {meta == null || meta.estimated_cost == undefined ? null : (
                   getUserSelectedByBookings(
@@ -121,7 +121,7 @@ const TransferElements = ({
                 </TransportContainer>
               ) : null}
 
-              <div className="pt-1 line-clamp-3 font-normal ttw-type-body mb-3">
+              <div className="pt-1 line-clamp-3 font-normal text-sm mb-3">
                 {text}
               </div>
             </div>
@@ -131,7 +131,7 @@ const TransferElements = ({
               <div className="flex justify-center items-center gap-1 text-[#9F9F9F]">
                 <TransportIconFetcher
                   TransportMode={modes}
-                  classname=" ttw-type-h3"
+                  classname=" text-[20px]"
                 />{" "}
                 {meta?.Time}
               </div>

@@ -739,7 +739,7 @@ const Details = (props) => {
         ITINERARY_STATUSES.itinerary_finalized ? (
           <p
             onClick={() => setShowRegisteredUsers(true)}
-            className="hover-pointer text-center"
+            className="hover-pointer  text-center"
             style={{ fontSize: "0.85rem", textDecoration: "underline" }}
           >
             Registered Members

@@ -11,7 +11,7 @@ const StaysContainer = (props) => {
     <div id="stays" className="mt-5">
       <div
         id="staysBooking"
-        className="ttw-type-h3 cursor-pointer group transition duration-300 max-w-fit"
+        className="text-xl font-bold cursor-pointer group transition duration-300 max-w-fit"
       >
         Stays
         <span className="block max-w-0 group-hover:max-w-[65px] transition-all duration-500 h-0.5 bg-[#262626]"></span>
@@ -54,7 +54,7 @@ const StaysContainer = (props) => {
                   <div className="pb-2">
                     <SkeletonCard width="150px" height="25px" borderRadius="8px" variant="default" />
                   </div>
-                  <div className="rounded-3xl border-sm border-solid border-text-disabled p-md ">
+                  <div className="rounded-3xl border-sm border-solid border-text-disabled p-md  ">
                     <div className="relative flex lg:flex-row w-full flex-col gap-4">
                       <div>
                         <SkeletonCard width="205px" height="192px" borderRadius="16px" variant="default" />

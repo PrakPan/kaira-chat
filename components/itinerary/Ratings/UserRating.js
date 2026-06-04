@@ -73,13 +73,13 @@ const UserRatings = ({
       className="w-fit p-5 bg-white rounded-lg drop-shadow-2xl"
     >
       <div className="flex flex-col gap-2 items-center">
-        <div className="ttw-type-h4">Liked this itinerary?</div>
+        <div className="text-lg font-medium">Liked this itinerary?</div>
 
         <div className="bg-gray-100 rounded-full px-3 py-2 flex flex-row gap-2 items-center">
           <div className="flex flex-row gap-1 text-gray-300">{stars}</div>
         </div>
 
-        <div className="ttw-type-body font-light text-gray-600 leading-3">
+        <div className="text-sm font-light text-gray-600 leading-3">
           Please rate out of 5
         </div>
       </div>
@@ -98,7 +98,7 @@ export default connect(mapStateToPros)(UserRatings);
 const StarRating = ({ star, percent }) => {
   return (
     <div className="w-full flex flex-row items-end justify-between gap-1">
-      <div className="ttw-type-small text-blue w-fit text-nowrap">{star} star</div>
+      <div className="text-xs text-blue w-fit text-nowrap">{star} star</div>
 
       <div className="w-[80%] h-3 bg-gray-100 rounded-full">
         <div
@@ -107,7 +107,7 @@ const StarRating = ({ star, percent }) => {
         ></div>
       </div>
 
-      <div className="ttw-type-small w-fit text-nowrap">{percent}%</div>
+      <div className="text-xs w-fit text-nowrap">{percent}%</div>
     </div>
   );
 };

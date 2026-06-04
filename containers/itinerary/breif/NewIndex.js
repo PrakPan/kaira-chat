@@ -42,11 +42,9 @@ const RoutesRow = styled.div`
   padding: 8px;
   align-items: flex-start;
   align-self: stretch;
-  /* Body · 14.5/1.55/500 */
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 14.5px;
+  font-size: 14px;
   font-weight: 500;
-  line-height: 1.55;
+  line-height: 22px;
 `;
 
 const Details = (props) => {

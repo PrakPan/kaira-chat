@@ -116,8 +116,8 @@ const DaybyDay = ({
           clickType: clickType,
           itineraryCityId: itinerary_city_id,
           booking_id: id,
-          check_in: stayBookings[i]["check_in"],
-          check_out: stayBookings[i]["check_out"],
+          check_in: itineraryDaybyDay?.cities[i]?.start_date || stayBookings[i]["check_in"],
+          check_out: itineraryDaybyDay?.cities[i]?.end_date || stayBookings[i]["check_out"],
           hotel_duration: stayBookings[i]?.duration,
           city_id: cityId,
           city_name: stayBookings[i]["city_name"],
@@ -190,7 +190,7 @@ const DaybyDay = ({
     <>
       <div
         className={`flex flex-col gap-3 mt-4xl max-ph:mt-lg ${!isPageWide ? "" : "max-w-[51vw]"
- }`}
+          }`}
       >
 
         <div className="flex flex-col">

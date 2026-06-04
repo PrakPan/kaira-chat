@@ -24,14 +24,14 @@ const ItineraryOverview = (props) => {
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="ttw-type-h2 font-semibold">
+      <div className="text-[36px] font-semibold">
         Romantic Getaway to France{" "}
       </div>
       <div className="flex items-center gap-4 md:gap-5 overflow-auto hide-scrollbar">
         {details.map((item, index) => (
           <div
             key={index}
-            className="flex flex-col gap-1 ttw-type-body text-nowrap"
+            className="flex flex-col gap-1 text-[14px] text-nowrap"
           >
             <div className="text-[#7A7A7A] text-nowrap">{item.title}</div>
             <div className="font-medium">{item.value}</div>

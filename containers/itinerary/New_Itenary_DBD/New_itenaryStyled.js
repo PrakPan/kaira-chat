@@ -18,13 +18,10 @@ export const Container = styled.div`
 export const ArriveContainer = styled.div`
   display: flex;
   flex-direction: column;
-  /* Caption · 12/1.4/600 — arrival meta */
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   font-style: normal;
+  font-weight: 400;
   font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  line-height: 1.4;
+  line-height: 22px;
   @media screen and (min-width: 768px) {
     flex-direction: row;
   }
@@ -37,11 +34,8 @@ export const TransparentButton = styled.button`
   filter: drop-shadow(0px 1px 0px #f0f0f0);
   border-radius: 6px;
   display: flex;
-  /* Button label · 13.5/700 per design-system component rule */
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 13.5px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
+  font-weight: 500;
+  font-size: 14px;
 
   width: fit-content;
   flex-direction: row;
@@ -74,12 +68,8 @@ export const TransferInfo = styled.div`
 `;
 
 export const Timecontainer = styled.div`
-  /* Small body · 13/1.5/600 — day/time label */
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 500;
   font-size: 13px;
-  font-weight: 600;
-  line-height: 1.5;
-  font-variant-numeric: tabular-nums;
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -92,12 +82,8 @@ export const Timecontainer = styled.div`
 `;
 
 export const SubTimecontainer = styled.div`
-  /* Small body · 13/1.5/400 — sub-time meta */
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 500;
   font-size: 13px;
-  font-weight: 400;
-  line-height: 1.5;
-  font-variant-numeric: tabular-nums;
   display: flex;
 
   flex-direction: column;

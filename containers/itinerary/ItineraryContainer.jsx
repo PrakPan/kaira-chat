@@ -77,78 +77,135 @@ export const ItineraryStatusLoader = ({ displayText, isVisible }) => {
     return null;
   }
 
-  // Single-line cream card: red-orange target dot on the left + current
-  // message on the right. One message at a time — the row swaps in with a
-  // fade animation when `displayText` changes.
   return (
-    <div
-      className="ttw-type-sans"
-      style={{
-        width: "fit-content",
-        maxWidth: "100%",
-        boxSizing: "border-box",
-      }}
-    >
-      <div
-        style={{
-          background: "#FEF8CE",
-          border: "1px solid #F1E08C",
-          borderRadius: 14,
-          padding: "12px 16px",
-          display: "flex",
-          alignItems: "center",
-          gap: 12,
-        }}
-      >
-        <div
-          aria-hidden
-          style={{
-            width: 20,
-            height: 20,
-            borderRadius: "50%",
-            border: "2px solid #E5654A",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flexShrink: 0,
-          }}
-        >
-          <span
-            style={{
-              width: 8,
-              height: 8,
-              borderRadius: "50%",
-              background: "#E5654A",
-              display: "inline-block",
-              animation: "itinStatusPulse 1.2s ease-in-out infinite",
-            }}
-          />
+    <div className="">
+      <div className="bg-[#fefad8] border border-yellow-200 rounded-lg px-4 py-3 shadow-lg w-full md:max-w-sm ">
+        <div className="flex items-center gap-3">
+          {/* Rotating Hourglass Timer Icon */}
+          <div className="flex-shrink-0">
+            <div className="w-5 h-5 animate-spin">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-full h-full"
+              >
+                {/* Hourglass outline */}
+                <path
+                  d="M6 2V6.5L10.5 12L6 17.5V22H18V17.5L13.5 12L18 6.5V2H6Z"
+                  stroke="#000000"
+                  strokeWidth="1.5"
+                  fill="none"
+                />
+
+                {/* Top sand */}
+                <path d="M8 4H16V6L12 10L8 6V4Z" fill="#000000">
+                  <animate
+                    attributeName="opacity"
+                    values="1;0.7;1"
+                    dur="2s"
+                    repeatCount="indefinite"
+                  />
+                </path>
+
+                {/* Bottom sand */}
+                <path
+                  d="M8 20H16V18L12 14L8 18V20Z"
+                  fill="#ffffff"
+                  className="animate-pulse"
+                >
+                  <animate
+                    attributeName="opacity"
+                    values="0.3;1;0.3"
+                    dur="2s"
+                    repeatCount="indefinite"
+                  />
+                </path>
+
+                {/* Falling sand particles */}
+                <circle r="0.5" fill="#F59E0B">
+                  <animate
+                    attributeName="cy"
+                    values="10;14"
+                    dur="1s"
+                    repeatCount="indefinite"
+                  />
+                  <animate
+                    attributeName="cx"
+                    values="12;12"
+                    dur="1s"
+                    repeatCount="indefinite"
+                  />
+                  <animate
+                    attributeName="opacity"
+                    values="1;0"
+                    dur="1s"
+                    repeatCount="indefinite"
+                  />
+                </circle>
+
+                <circle r="0.3" fill="#F59E0B">
+                  <animate
+                    attributeName="cy"
+                    values="9;13"
+                    dur="1.2s"
+                    repeatCount="indefinite"
+                    begin="0.3s"
+                  />
+                  <animate
+                    attributeName="cx"
+                    values="11.5;11.5"
+                    dur="1.2s"
+                    repeatCount="indefinite"
+                    begin="0.3s"
+                  />
+                  <animate
+                    attributeName="opacity"
+                    values="1;0"
+                    dur="1.2s"
+                    repeatCount="indefinite"
+                    begin="0.3s"
+                  />
+                </circle>
+
+                <circle r="0.4" fill="#F59E0B">
+                  <animate
+                    attributeName="cy"
+                    values="10.5;14.5"
+                    dur="1.1s"
+                    repeatCount="indefinite"
+                    begin="0.6s"
+                  />
+                  <animate
+                    attributeName="cx"
+                    values="12.5;12.5"
+                    dur="1.1s"
+                    repeatCount="indefinite"
+                    begin="0.6s"
+                  />
+                  <animate
+                    attributeName="opacity"
+                    values="1;0"
+                    dur="1.1s"
+                    repeatCount="indefinite"
+                    begin="0.6s"
+                  />
+                </circle>
+              </svg>
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className="flex-1 min-w-0">
+            <div className="text-sm font-medium text-black leading-tight">
+              {displayText}
+            </div>
+            <div className="text-xs text-black mt-1">
+              This might take a few seconds...
+            </div>
+          </div>
         </div>
-        <span
-          key={displayText}
-          className="ttw-type-body"
-          style={{
-            flex: 1,
-            minWidth: 0,
-            color: "#0B1220",
-            wordBreak: "break-word",
-            overflowWrap: "anywhere",
-            animation: "itinStatusRowIn 0.22s ease-out",
-          }}
-        >
-          {displayText}
-        </span>
       </div>
-      <style>{`
-        @keyframes itinStatusRowIn {
-          from { opacity: 0; transform: translateY(4px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes itinStatusPulse {
-          0%, 100% { opacity: 1; transform: scale(1); }
-          50%      { opacity: 0.5; transform: scale(0.65); }
-        }
-      `}</style>
     </div>
   );
 };
@@ -158,6 +215,9 @@ const ItineraryContainer = (props) => {
   const router = useRouter();
   const dispatch = useDispatch();
   const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
+  const RefetchAirportTransfers = useSelector(
+    (state) => state.RefetchAirportTransfers
+  );
   const {
     itinerary_status,
     transfers_status,
@@ -251,6 +311,17 @@ const ItineraryContainer = (props) => {
       setShowSettings(true);
     }
   }, [router.isReady, router.query]);
+
+  // Open the Settings modal in response to a global event. Dispatched from
+  // OfflineQuoteCTA's "Update Dates" button so any deeply-nested search drawer
+  // can request the dates editor without prop-drilling setShowSettings.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const onOpenSettings = () => setShowSettings(true);
+    window.addEventListener("open-itinerary-settings", onOpenSettings);
+    return () =>
+      window.removeEventListener("open-itinerary-settings", onOpenSettings);
+  }, []);
 
     const resetRef = () => {
     dispatch(setItineraryStatus("pricing_status", "PENDING"));
@@ -602,6 +673,7 @@ const ItineraryContainer = (props) => {
       //       }
     } catch (error) {
       console.log("ERROR[PaymentInfo][Itinerary]", error);
+      dispatch(setCart({ error: true }));
       setPaymentLoading(false);
     }
   };
@@ -984,6 +1056,29 @@ useEffect(() => {
 
     fetchPaymentInfo();
   }, [CallPaymentInfo]);
+
+  // When a route (flight/train/bus/ferry) or hotel changes, the backend
+  // reprices the city's airport transfers and deletes the previous bookings.
+  // Re-poll the status API — which surfaces the same loader shown during a
+  // route update via `displayText` — and let the poll re-fetch the transfer
+  // bookings once the TRANSFERS task reports SUCCESS again.
+  const refetchAirportTransfersHandler = () => {
+    transfersSuccessRef.current = false;
+    dispatch(setItineraryStatus("transfers_status", "PENDING"));
+    setPolling(true);
+    fetchDataRef.current?.(true, instanceIdRef.current);
+  };
+
+  // Skip the initial mount — only react to dispatches made after a successful
+  // transfer/hotel update.
+  const didMountRefetchTransfersRef = useRef(false);
+  useEffect(() => {
+    if (!didMountRefetchTransfersRef.current) {
+      didMountRefetchTransfersRef.current = true;
+      return;
+    }
+    refetchAirportTransfersHandler();
+  }, [RefetchAirportTransfers]);
 
   // useEffect(() => {
   //   const fetchPassengers = async () => {

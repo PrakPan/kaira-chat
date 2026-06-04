@@ -141,8 +141,15 @@ function transformDraftToItinerary(draft: any) {
 
   return {
     name: draft?.name ?? "Your Itinerary",
-    start_date: null,
-    end_date: null,
+    start_date: draft?.start_date ?? null,
+    end_date: draft?.end_date ?? null,
+    travel_date: draft?.travel_date ?? null,
+    group_type: draft?.group_type ?? null,
+    number_of_adults: draft?.number_of_adults ?? draft?.no_of_adults ?? null,
+    number_of_children:
+      draft?.number_of_children ?? draft?.no_of_children ?? null,
+    number_of_infants:
+      draft?.number_of_infants ?? draft?.no_of_infants ?? null,
     cities,
     start_city: toEndpointCity(draft?.start_city),
     end_city: toEndpointCity(draft?.end_city),
@@ -1339,6 +1346,31 @@ export default function BotApp({
 
       const draft = data?.itinerary ?? data;
       const transformed = transformDraftToItinerary(draft);
+      // pax + travel-date can arrive either on the itinerary object or at the
+      // effect-data root (sibling to `.itinerary`). transformDraftToItinerary
+      // only sees the nested object, so backfill from the root here — keeps the
+      // P1 header (Traveller Type / Date of Travelling) populated on reload too.
+      const meta: any = data ?? {};
+      transformed.start_date = transformed.start_date ?? meta.start_date ?? null;
+      transformed.end_date = transformed.end_date ?? meta.end_date ?? null;
+      transformed.travel_date =
+        transformed.travel_date ?? meta.travel_date ?? null;
+      transformed.group_type = transformed.group_type ?? meta.group_type ?? null;
+      transformed.number_of_adults =
+        transformed.number_of_adults ??
+        meta.number_of_adults ??
+        meta.no_of_adults ??
+        null;
+      transformed.number_of_children =
+        transformed.number_of_children ??
+        meta.number_of_children ??
+        meta.no_of_children ??
+        null;
+      transformed.number_of_infants =
+        transformed.number_of_infants ??
+        meta.number_of_infants ??
+        meta.no_of_infants ??
+        null;
       // Fill in missing start/end city from the user's current location so the
       // P1 panel always shows a name + pin, matching the "use default user
       // location when not present" contract established in ChatKitPanel.
@@ -1429,6 +1461,34 @@ export default function BotApp({
       botMode,
       userLocation,
     ],
+  );
+
+  // Patch just the Traveller Type (pax) and/or Date of Travelling on the
+  // current trip in response to the `update_pax` / `update_travel_date` client
+  // effects. Merges onto the existing itinerary so the P1 header refreshes
+  // without rebuilding the whole route.
+  const handleTripMetaUpdate = useCallback(
+    (meta: {
+      number_of_adults?: number;
+      number_of_children?: number;
+      number_of_infants?: number;
+      travel_date?: string;
+    }) => {
+      const base = currentItineraryRef.current ?? {};
+      const next: any = { ...base };
+      if (meta.number_of_adults !== undefined)
+        next.number_of_adults = meta.number_of_adults;
+      if (meta.number_of_children !== undefined)
+        next.number_of_children = meta.number_of_children;
+      if (meta.number_of_infants !== undefined)
+        next.number_of_infants = meta.number_of_infants;
+      if (meta.travel_date !== undefined) next.travel_date = meta.travel_date;
+      currentItineraryRef.current = next;
+      dispatch(setItinerary(next));
+      dispatch(setItineraryDaybyDay(next));
+      dispatch(setBreif(next));
+    },
+    [dispatch],
   );
 
   const handleLocationReceived = useCallback(
@@ -2310,6 +2370,7 @@ export default function BotApp({
     onClearMap: handleClearMap,
     onRouteReceived: handleRouteReceived,
     onItineraryReceived: handleItineraryReceived,
+    onTripMetaUpdate: handleTripMetaUpdate,
     onRouteEndpointsReceived: handleRouteEndpointsReceived,
     onItineraryCompletionStart: handleItineraryCompletionStart,
     onItineraryCompletionDone: handleItineraryCompletionDone,
@@ -2470,29 +2531,17 @@ Start Location: ${details.startLocation}`;
         overflow: isMobile ? "visible" : "hidden",
       }}
     >
-      {/* Header strip — editorial trip masthead */}
-      <div
-        className="flex flex-col px-4 py-4 border-b border-[#ECECEC]"
-        style={{ background: "linear-gradient(180deg, #FFFFFF 0%, #FBFAF3 100%)" }}
-      >
-        <div className="flex justify-between items-start gap-3">
-          <div className="min-w-0 flex-1">
-            {/* Kicker — mono eyebrow with yellow dot */}
-            <div className="flex items-center gap-2 mb-2">
-              <span className="w-[6px] h-[6px] rounded-full bg-[#F7E700] shadow-[0_0_0_3px_rgba(247,231,0,0.2)]" />
-              <span className="ttw-type-day-date text-[#8892A6]">
-                BUILT BY KAIRA
-              </span>
-            </div>
-            <p className="font-inter font-[600] text-[#0B1220] text-[22px] tracking-[-0.02em] m-0 leading-[1.1] break-words">
-              {itineraryReduxName || currentItineraryRef?.current?.name || ""}
-            </p>
-          </div>
+      {/* Header strip */}
+      <div className="bg-white flex flex-col px-3 py-3 border-b border-slate-100">
+        <div className="flex justify-between items-start">
+          <p className="font-inter font-semibold text-lg leading-tight">
+            {itineraryReduxName || currentItineraryRef?.current?.name || ""}
+          </p>
 
-          <div className="flex gap-2 items-center shrink-0">
+          <div className="flex gap-3 items-center">
             {!isDraft && (
               <button
-                className="flex items-center justify-center w-9 h-9 rounded-full border border-[#ECECEC] bg-white hover:bg-[#F4F1E6] transition-colors"
+                className="flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200"
                 onClick={() => {
                   if (!authToken) {
                     setShowSettingsLoginPrompt(true);
@@ -2525,7 +2574,7 @@ Start Location: ${details.startLocation}`;
               />
             )}
             <button
-              className="flex items-center justify-center w-9 h-9 rounded-full border border-[#ECECEC] bg-white hover:bg-[#F4F1E6] transition-colors"
+              className="flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200"
               onClick={() => setShowShare(true)}
             >
               <Image src="/share.svg" height={22} width={22} alt="Share" />
@@ -2533,16 +2582,20 @@ Start Location: ${details.startLocation}`;
           </div>
         </div>
 
-        {!isDraft && (
-          <div className="flex flex-col gap-1.5 mt-3">
+        {(itineraryRedux?.group_type ||
+          itineraryRedux?.number_of_adults ||
+          itineraryRedux?.travel_date ||
+          (itineraryRedux?.start_date && itineraryRedux?.end_date)) && (
+          <div className="flex flex-col gap-1.5 mt-1.5">
             {/* Outer row — column on mobile (so the gallery slides below the
                 meta), single row on desktop (gallery sits to the right of
                 traveller/date, matching the original design). */}
             <div className="flex items-start gap-2 max-ph:flex-col max-ph:items-stretch md:items-center">
               <div className="flex items-center gap-4 flex-wrap">
-                {itineraryRedux?.group_type && (
+                {(itineraryRedux?.group_type ||
+                  itineraryRedux?.number_of_adults) && (
                   <div className="flex flex-col">
-                    <span className="ttw-type-small font-inter uppercase tracking-wide ttw-type-day-date text-[#8892A6]">
+                    <span className="text-[10px] font-inter uppercase tracking-wide">
                       Traveller Type
                     </span>
                     <div className="flex items-center gap-1.5 mt-0.5">
@@ -2570,21 +2623,56 @@ Start Location: ${details.startLocation}`;
                           fill="#ACACAC"
                         />
                       </svg>
-                      <span className="ttw-type-small font-inter font-medium">
-                        {itineraryRedux.group_type}
-                        {itineraryRedux.number_of_adults
-                          ? ` (${itineraryRedux.number_of_adults} Adult${itineraryRedux.number_of_adults > 1 ? "s" : ""})`
-                          : ""}
+                      <span className="text-[12px] font-inter font-medium">
+                        {itineraryRedux.group_type
+                          ? `${itineraryRedux.group_type}${
+                              itineraryRedux.number_of_adults
+                                ? ` (${itineraryRedux.number_of_adults} Adult${itineraryRedux.number_of_adults > 1 ? "s" : ""})`
+                                : ""
+                            }`
+                          : itineraryRedux.number_of_adults
+                            ? `${itineraryRedux.number_of_adults} Adult${itineraryRedux.number_of_adults > 1 ? "s" : ""}`
+                            : ""}
                         {itineraryRedux.number_of_children > 0
                           ? `, ${itineraryRedux.number_of_children} Child${itineraryRedux.number_of_children > 1 ? "ren" : ""}`
                           : ""}
+                        {itineraryRedux.number_of_infants > 0
+                          ? `, ${itineraryRedux.number_of_infants} Infant${itineraryRedux.number_of_infants > 1 ? "s" : ""}`
+                          : ""}
                       </span>
+                      {isDraft && (
+                        <button
+                          type="button"
+                          aria-label="Change traveller count"
+                          className="flex items-center justify-center hover:opacity-70"
+                          onClick={() =>
+                            handleItineraryContainerSendMessage(
+                              "change traveller count",
+                            )
+                          }
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="14"
+                            height="14"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                          >
+                            <path
+                              d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                              fill="#ACACAC"
+                            />
+                          </svg>
+                        </button>
+                      )}
                     </div>
                   </div>
                 )}
-                {itineraryRedux?.start_date && itineraryRedux?.end_date && (
+                {(itineraryRedux?.travel_date ||
+                  (itineraryRedux?.start_date &&
+                    itineraryRedux?.end_date)) && (
                   <div className="flex flex-col">
-                    <span className="ttw-type-small font-inter uppercase tracking-wide ttw-type-day-date text-[#8892A6]">
+                    <span className="text-[10px] font-inter uppercase tracking-wide">
                       Date of Travelling
                     </span>
                     <div className="flex items-center gap-1.5 mt-0.5">
@@ -2600,25 +2688,48 @@ Start Location: ${details.startLocation}`;
                           fill="#ACACAC"
                         />
                       </svg>
-                      <span className="ttw-type-small font-inter font-medium">
-                        {new Date(itineraryRedux.start_date).toLocaleDateString(
-                          "en-GB",
-                          {
-                            day: "numeric",
-                            month: "short",
-                            year: "numeric",
-                          },
-                        )}
-                        {" – "}
-                        {new Date(itineraryRedux.end_date).toLocaleDateString(
-                          "en-GB",
-                          {
-                            day: "numeric",
-                            month: "short",
-                            year: "numeric",
-                          },
-                        )}
+                      <span className="text-[12px] font-inter font-medium">
+                        {itineraryRedux.start_date && itineraryRedux.end_date
+                          ? `${new Date(
+                              itineraryRedux.start_date,
+                            ).toLocaleDateString("en-GB", {
+                              day: "numeric",
+                              month: "short",
+                              year: "numeric",
+                            })} – ${new Date(
+                              itineraryRedux.end_date,
+                            ).toLocaleDateString("en-GB", {
+                              day: "numeric",
+                              month: "short",
+                              year: "numeric",
+                            })}`
+                          : itineraryRedux.travel_date}
                       </span>
+                      {isDraft && (
+                        <button
+                          type="button"
+                          aria-label="Change travelling date"
+                          className="flex items-center justify-center hover:opacity-70"
+                          onClick={() =>
+                            handleItineraryContainerSendMessage(
+                              "change my travelling date",
+                            )
+                          }
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="14"
+                            height="14"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                          >
+                            <path
+                              d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                              fill="#ACACAC"
+                            />
+                          </svg>
+                        </button>
+                      )}
                     </div>
                   </div>
                 )}

@@ -35,23 +35,23 @@ export default function TransferElement(props) {
         <div className="w-full flex flex-col space-y-2 md:space-y-0 lg:space-y-0 md:flex-row lg:flex-row items-start md:items-center lg:items-center">
           <div className="flex flex-row lg:w-[11%] md:w-[21%] justify-center">
             {meta?.day_timing ? (
-              <span className="font-normal ttw-type-body text-gray-500">
+              <span className="font-normal text-sm text-gray-500">
                 {meta.day_timing}
               </span>
             ) : (
               <div className="flex items-center">
-                <WiSunrise className="ttw-type-h2 text-gray-500"></WiSunrise>
+                <WiSunrise className="text-2xl text-gray-500"></WiSunrise>
                 {isPageWide ? (
                   <></>
                 ) : (
-                  <span className="font-normal ttw-type-small text-gray-500 ml-2">
+                  <span className="font-normal text-xs text-gray-500 ml-2">
                     Morning
                   </span>
                 )}
               </div>
             )}
           </div>
-          <div className="font-medium ttw-type-body">{heading}</div>
+          <div className="font-medium text-sm">{heading}</div>
         </div>
 
         {selectedBookings.map((selectedBooking, index) => (
@@ -114,7 +114,7 @@ const Booking = ({ mode, meta, selectedBooking, data, heading }) => {
       <div className="flex flex-row items-center">
         <div
           className={`flex items-center justify-center w-[4rem] h-[4rem] ${!imageLoaded && "bg-gray-200 rounded-lg animate-pulse"
- }`}
+            }`}
         >
           <div className={`${imageLoaded ? "visible" : "invisible"}`}>
             {selectedBooking &&
@@ -149,7 +149,7 @@ const Booking = ({ mode, meta, selectedBooking, data, heading }) => {
         </div>
 
         <div className="flex flex-col ml-3">
-          <div className="ttw-type-small leading-7 ml-2">
+          <div className="text-xs leading-7 ml-2">
             {isOriginDestination()
               ? selectedBooking.city +
               " - " +
@@ -157,7 +157,7 @@ const Booking = ({ mode, meta, selectedBooking, data, heading }) => {
               : ""}
           </div>
 
-          <div className="font-normal ttw-type-small leading-4 ml-2">
+          <div className="font-normal text-xs leading-4 ml-2">
             {getFlightDuration() ? (
               `Duration:  ${getFlightDuration()}`
             ) : (

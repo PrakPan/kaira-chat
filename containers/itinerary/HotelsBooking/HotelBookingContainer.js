@@ -21,11 +21,8 @@ const RoomTypeGrid = styled.div`
   grid-template-columns: 1rem auto 5.5rem;
   gap: 0.4rem;
   align-items: center;
-  /* Body · 14.5/1.55/400 */
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 14.5px;
-  font-weight: 400;
-  line-height: 1.55;
+  font-size: 14px;
+  line-height: 20px;
   width: fit-content;
 `;
 
@@ -152,18 +149,18 @@ const HotelBookingContainer = ({
   return (
     <div
       id={booking?.id}
-      className={`flex gap-1 pt-4 flex-col justify-start `}
+      className={`flex gap-1 pt-4  flex-col justify-start `}
     >
       {booking ? (
         <div>
           <div className="flex flex-row justify-between items-center">
-            <div className="font-bold lg:ttw-type-h2 ttw-type-h3 pb-2 text-[#01202B]">
+            <div className="font-bold lg:text-2xl text-xl pb-2 text-[#01202B]">
               {cityName ? cityName : booking?.city}{" "}
               <span>({booking ? booking?.duration : 1}N)</span>
             </div>
           </div>
 
-          <div className="cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-4 p-3">
+          <div className="cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-4 p-3">
             <div
               // onClick={handleViewHotel}
               className={`relative flex lg:flex-row w-full flex-col gap-4`}
@@ -216,7 +213,7 @@ const HotelBookingContainer = ({
                 {(booking?.star_category && booking?.star_category!="0")? (
                   <div
                     starHotel
-                    className={`text-white bg-[#01202B] lg:px-4 px-3 lg:py-3 py-2 m-2 ttw-type-bodynsition-all shadow-slate-700/70 shadow-md hover:drop-shadow-xl absolute top-0 rounded-3xl`}
+                    className={`text-white bg-[#01202B] lg:px-4 px-3 lg:py-3 py-2 m-2 text-sm font-[400]nsition-all shadow-slate-700/70 shadow-md hover:drop-shadow-xl   absolute top-0 rounded-3xl`}
                   >
                     {booking.star_category} star hotel
                   </div>
@@ -227,14 +224,14 @@ const HotelBookingContainer = ({
                 <div className="flex flex-col gap-2">
                   <div className="flex flex-row justify-between items-center">
                     <div
-                      className={`${currentBooking ? "ttw-type-h2" : "ttw-type-h2"
- } font-semibold `}
+                      className={`${currentBooking ? "text-2xl" : "text-2xl"
+                        } font-semibold `}
                     >
                       {booking?.name}
                     </div>
 
                     {handleClick && (
-                      <div className={`ml-auto ttw-type-h5 ${booking.user_selected ? 'text-[#277004]' : 'text-[#E00000]'}`}>
+                      <div className={`ml-auto text-md font-semibold ${booking.user_selected ? 'text-[#277004]' : 'text-[#E00000]'}`}>
                         {booking.user_selected ? "Included" : "Excluded"}
                       </div>
                     )}
@@ -244,7 +241,7 @@ const HotelBookingContainer = ({
                     <div className="flex flex-col gap-1">
                       {!currentBooking && booking?.city && (
                         <div
-                          className="ttw-type-body"
+                          className="text-sm font-normal"
                           style={{ marginTop: "-0.5rem" }}
                         >
                           {booking.city}
@@ -252,13 +249,13 @@ const HotelBookingContainer = ({
                       )}
 
                       {booking?.city_name && (
-                        <div className="ttw-type-body line-clamp-2">
+                        <div className="text-sm font-normal line-clamp-2">
                           {booking?.city_name}
                         </div>
                       )}
 
                       {booking?.rating ? (
-                        <div className="gap-1 flex flex-row items-center">
+                        <div className="gap-1 flex flex-row  items-center">
                           <div className="flex flex-row text-[#FFD201]">
                             {starRating(booking?.rating)}
                           </div>
@@ -268,7 +265,7 @@ const HotelBookingContainer = ({
                           </div>
 
                           {booking?.num_reviews && (
-                            <div className="ttw-type-body text-[#7A7A7A] underline">
+                            <div className="text-sm text-[#7A7A7A] font-[400] underline">
                               {booking.num_reviews}{" "}
                               {booking?.booking_source === "Agoda"
                                 ? "user reviews"
@@ -282,16 +279,16 @@ const HotelBookingContainer = ({
 
                   {tripsPage ? (
                     <div className="flex flex-row gap-2 items-center">
-                      <BsCalendar2 className="ttw-type-body text-[#7A7A7A]" />
-                      <div className="ttw-type-body">
+                      <BsCalendar2 className="text-sm text-[#7A7A7A]" />
+                      <div className="text-sm font-[400]">
                         {booking ? booking?.duration : 1} Nights stay
                       </div>
 
                       {booking?.number_of_adults ||
                       currentBooking?.number_of_adults ? (
-                        <div className="ttw-type-body gap-2 flex flex-row items-center">
-                          <BsPeopleFill className="ttw-type-body text-[#7A7A7A]" />
-                          <div className="ttw-type-body min-w-fit">
+                        <div className="text-sm font-[400] gap-2 flex flex-row items-center">
+                          <BsPeopleFill className="text-sm text-[#7A7A7A]" />
+                          <div className="text-sm font-[400] min-w-fit">
                             {booking?.number_of_adults
                               ? booking?.number_of_adults
                               : currentBooking?.number_of_adults}{" "}
@@ -308,9 +305,9 @@ const HotelBookingContainer = ({
                     <div className="flex flex-row gap-3 lg:mt-2 mt-0">
                       {booking?.check_in && (
                         <div className="flex flex-row gap-2 items-center">
-                          <BsCalendar2 className="ttw-type-body text-[#7A7A7A]" />
+                          <BsCalendar2 className="text-sm text-[#7A7A7A]" />
                           <div>
-                            <div className="ttw-type-body">
+                            <div className="text-sm font-[400]">
                               {getDate(booking.check_in)}-
                               {getDate(booking.check_out)}
                             </div>
@@ -320,9 +317,9 @@ const HotelBookingContainer = ({
 
                       {booking?.number_of_adults ||
                       currentBooking?.number_of_adults ? (
-                        <div className="ttw-type-body gap-2 flex flex-row items-center">
-                          <BsPeopleFill className="ttw-type-body text-[#7A7A7A]" />
-                          <div className="ttw-type-body min-w-fit">
+                        <div className="text-sm font-[400] gap-2 flex flex-row items-center">
+                          <BsPeopleFill className="text-sm text-[#7A7A7A]" />
+                          <div className="text-sm font-[400] min-w-fit">
                             {booking?.number_of_adults
                               ? booking?.number_of_adults
                               : currentBooking?.number_of_adults}{" "}
@@ -338,8 +335,8 @@ const HotelBookingContainer = ({
                   {booking?.room_type_name ? (
                     <>
                       <RoomTypeGrid>
-                        <BiBed className="ttw-type-body text-[#7A7A7A]" />
-                        <div className="ttw-type-body line-clamp-1">
+                        <BiBed className="text-sm text-[#7A7A7A]" />
+                        <div className="text-sm font-[400] line-clamp-1">
                           {booking?.room_type_name}
                         </div>
 
@@ -358,8 +355,8 @@ const HotelBookingContainer = ({
                       {booking?.number_of_extra_beds &&
                       booking?.number_of_extra_beds > 0 ? (
                         <div className="flex flex-row items-center my-0">
-                          <BsPlus className="ttw-type-body text-[#7A7A7A]" />
-                          <div className="ttw-type-body line-clamp-1">
+                          <BsPlus className="text-md text-[#7A7A7A]" />
+                          <div className="text-sm font-[400] line-clamp-1">
                             {booking?.number_of_extra_beds}{" "}
                             {booking?.number_of_extra_beds > 1
                               ? "Extra beds"
@@ -375,8 +372,8 @@ const HotelBookingContainer = ({
                   {booking &&
                   Addons(booking?.pricing_type) ? (
                     <div className="flex flex-row gap-2 items-center lg:my-2 my-0">
-                      <ImSpoonKnife className="ttw-type-body text-[#7A7A7A]" />
-                      <div className="ttw-type-body">
+                      <ImSpoonKnife className="text-sm text-[#7A7A7A]" />
+                      <div className="text-sm font-[400]">
                         {Addons(booking?.pricing_type)}
                       </div>
                     </div>
@@ -386,8 +383,8 @@ const HotelBookingContainer = ({
                   booking?.amenities?.length &&
                   booking?.amenities?.includes("WIFI") ? (
                     <div className="flex flex-row gap-2 items-center lg:my-2 my-0">
-                      <MdWifi className="ttw-type-body text-[#7A7A7A]" />
-                      <div className="ttw-type-body">WIFI available</div>
+                      <MdWifi className="text-sm text-[#7A7A7A]" />
+                      <div className="text-sm font-[400]">WIFI available</div>
                     </div>
                   ) : (
                     <></>
@@ -396,10 +393,10 @@ const HotelBookingContainer = ({
 
                 {/* <div
                   className={`flex flex-row gap-2 items-end justify-end w-full ${
- payment?.paid_user || !payment?.user_allowed_to_pay
- ? "lh:mb-0 mb-2"
- : "lg:mb-0 mb-0"
- }`}
+                    payment?.paid_user || !payment?.user_allowed_to_pay
+                      ? "lh:mb-0 mb-2"
+                      : "lg:mb-0 mb-0"
+                  }`}
                 >
                   {isDesktop && (
                     <Button
@@ -438,10 +435,10 @@ const HotelBookingContainer = ({
         </div>
       ) : (
         <div>
-          <div className="flex lg:flex-row flex-col justify-between lg:items-center items-start cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] hover:border-[#F7E700] shadow-[#ECEAEA] p-3 ">
+          <div className="flex lg:flex-row flex-col justify-between lg:items-center items-start cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] p-3 ">
             <div className="flex flex-col">
-              <div className="font-medium inline">
-                <div className="font-bold flex flex-row lg:ttw-type-h2 ttw-type-h3 lg:pb-2 pb-1 text-[#01202B]">
+              <div className="font-medium  inline">
+                <div className="font-bold flex flex-row lg:text-2xl text-xl lg:pb-2 pb-1 text-[#01202B]">
                   <div>
                     {cityName ? cityName : cityData?.city}{" "}
                     <span>({cityData ? cityData?.duration : 1}N)</span>
@@ -449,11 +446,11 @@ const HotelBookingContainer = ({
                 </div>
               </div>
               {cityData?.checkin_date && (
-                <div className="font-medium inline">
+                <div className="font-medium  inline">
                   <div className="flex flex-row gap-2 items-center">
-                    <BsCalendar2 className="ttw-type-body text-[#7A7A7A]" />
+                    <BsCalendar2 className="text-sm text-[#7A7A7A]" />
                     <div>
-                      <div className="ttw-type-body ">
+                      <div className="text-sm font-[400] ">
                         {getHumanDate(cityData?.checkin_date)} -{" "}
                         {getHumanDate(cityData?.checkout_date)}
                       </div>

@@ -266,7 +266,7 @@ export const ItineraryCityWithDrawer = (props) => {
     <div className="flex flex-col w-full h-full bg-white pb-[120px] md:pb-[50px]">
       <Container>
       {/* Back Button */}
-      <div className="md:px-4 py-2 bg-white">
+      <div className="md:px-4 py-2  bg-white">
         <button
           onClick={() => props?.onClose(false)}
           className="flex items-center gap-1 text-gray-700 hover:text-gray-900"
@@ -280,14 +280,14 @@ export const ItineraryCityWithDrawer = (props) => {
               strokeLinejoin="round"
             />
           </svg>
-          <span className="ttw-type-body-strong">Back</span>
+          <span className="text-base font-medium">Back</span>
         </button>
       </div>
       </Container>
 
       {/* City Header */}
-      <div className="md:px-6 py-4 bg-white">
-        <h2 className="ttw-type-h3 font-medium mb-3">
+      <div className="md:px-6 py-4  bg-white">
+        <h2 className="text-[20px] font-medium mb-3">
           {props.city?.city?.name} - {props.city?.duration}{" "}
           {/* {props.city?.duration === 1 ? "Day" : "Days"}, {props.city?.duration}{" "} */}
           {props.city?.duration === 1 ? "Night" : "Nights"}
@@ -316,10 +316,10 @@ export const ItineraryCityWithDrawer = (props) => {
                 <path d="M16.25 8.25H14.25V10.25H16.25V8.25Z" fill="black" />
               </g>
             </svg>
-            <span className="ttw-type-body">{props.city?.hotels[0]?.name}</span>
+            <span className="text-[14px]">{props.city?.hotels[0]?.name}</span>
             {props.city?.hotels[0]?.rating && (
               <div className="flex items-center gap-1">
-                <span className="ttw-type-body">
+                <span className="text-[14px]">
                   {"|"} {props.city?.hotels[0].rating}
                 </span>
                 <svg
@@ -479,7 +479,7 @@ const DayCardExpanded = ({ day, dayIndex, index, ...props }) => {
       {/* Day Header */}
       <div className="py-3 flex items-center justify-between">
         <div>
-          <h3 className="ttw-type-body !font-inter">
+          <h3 className="text-[14px] !font-inter">
             Day {index + 1} {" | "}
             {new Date(day.date).toLocaleDateString("en-US", {
               month: "short",
@@ -514,7 +514,7 @@ const DayCardExpanded = ({ day, dayIndex, index, ...props }) => {
               <div className="flex gap-2">
                 {/* Time Period Label */}
                 <div className="w-16 md:w-20 flex-shrink-0">
-                  <span className="ttw-type-body text-gray-500">{period}</span>
+                  <span className="text-[14px]  text-gray-500">{period}</span>
                 </div>
 
                 {/* Activities */}
@@ -789,7 +789,7 @@ const ActivityCardExpanded = ({
             />
           ) : (
             <span
-              className="ttw-type-h4 cursor-pointer"
+              className="text-lg cursor-pointer"
               onClick={() => handleItemClick(element)}
             >
               {getActivityIcon()}
@@ -803,13 +803,13 @@ const ActivityCardExpanded = ({
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1">
             <h4
-              className="ttw-type-body font-normal mb-1 cursor-pointer hover:text-[#0066CC]"
+              className="text-[14px] font-normal mb-1 cursor-pointer hover:text-[#0066CC]"
               onClick={() => handleItemClick(element)}
             >
               {element.heading}
             </h4>
 
-            <div className="flex flex-wrap items-center gap-2 ttw-type-body text-[#6E757A]">
+            <div className="flex flex-wrap items-center gap-2 text-sm text-[#6E757A]">
               {/* Activity Type Badge */}
               {element.element_type === "activity" && element.booking?.id && (
                 <svg
@@ -827,7 +827,7 @@ const ActivityCardExpanded = ({
               )}
 
               {element.element_type !== "activity" && (
-                <span className="text-[#6E757A] ttw-type-body">
+                <span className="text-[#6E757A] text-sm">
                   {element.element_type === "recommendation"
                     ? "Dinner"
                     : "Self Exploration"}
@@ -836,16 +836,16 @@ const ActivityCardExpanded = ({
 
               {element.element_type == "activity" &&
                 (element.booking?.id ? (
-                  <span className="text-[#6E757A] ttw-type-body">Activity</span>
+                  <span className="text-[#6E757A] text-sm">Activity</span>
                 ) : (
-                  <span className="text-[#6E757A] ttw-type-body">
+                  <span className="text-[#6E757A] text-sm">
                     Self Exploration
                   </span>
                 ))}
 
               {/* Time */}
               {(element.start_time || element.end_time) && (
-                <span className="text-[#6E757A] ttw-type-body">
+                <span className="text-[#6E757A] text-sm">
                   {" | "} {formatTime(element.start_time)}
                   {element.end_time && ` - ${formatTime(element.end_time)}`}
                 </span>
@@ -854,7 +854,7 @@ const ActivityCardExpanded = ({
               {/* Rating */}
               {element.rating && (
                 <span className="flex items-center gap-1">
-                  <span className="text-[#6E757A] ttw-type-body">
+                  <span className="text-[#6E757A] text-sm">
                     {" | "} {element.rating}
                   </span>
                   <svg
@@ -873,7 +873,7 @@ const ActivityCardExpanded = ({
               )}
 
               {element.element_type === "activity" && element.booking?.id && (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#5CBA66] text-white rounded-[40px] ttw-type-small">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#5CBA66] text-white rounded-[40px] text-xs font-medium">
                   <span className="text-white">✓</span> Included
                 </span>
               )}
@@ -912,7 +912,7 @@ const ActivityCardExpanded = ({
               }}
             >
               {slabIndex > 0 && (
-                <MenuItem onClick={() => handleMoveElement(slabIndex - 1)} className="ttw-type-body">
+                <MenuItem onClick={() => handleMoveElement(slabIndex - 1)} className="text-[14px]">
                   Move Up
                 </MenuItem>
               )}

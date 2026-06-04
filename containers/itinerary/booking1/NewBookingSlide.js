@@ -34,6 +34,8 @@ import CountdownTimer from "../../../components/countdownTimer/CountdownTimer";
 import PricingSkeleton from "../../../components/itinerary/Skeleton/PricingSkeleton";
 import Drawer from "../../../components/ui/Drawer";
 import PassengerDetails from "../../../components/modals/passenger-details/PassengerDetails";
+import AddTravellerDetails from "../../../components/modals/passenger-details/AddTravellerDetails";
+import { FaCheckCircle } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
 import { PulseLoader } from "react-spinners";
 import { SocialShare } from "./SocialShare";
@@ -203,7 +205,7 @@ const CouponModal = ({
       onHide={() => onHide()}
     >
       <div className="flex justify-between items-center p-4 border-b bg-white flex-shrink-0">
-        <h2 className="ttw-type-h4">Apply Coupons</h2>
+        <h2 className="text-lg font-semibold">Apply Coupons</h2>
         <button onClick={onHide} className="">
           <IoMdClose />
         </button>
@@ -212,7 +214,7 @@ const CouponModal = ({
       {/* Content */}
       <div className="p-4 overflow-y-auto flex-1">
         <div>
-          <h3 className="ttw-type-h5 mb-4">Available Coupons</h3>
+          <h3 className="font-semibold text-base mb-4">Available Coupons</h3>
 
           <div className="space-y-4">
             {loading ? (
@@ -230,10 +232,10 @@ const CouponModal = ({
                 >
                   <div className="flex justify-between items-start gap-3 ">
                     <div className="flex-1">
-                      <div className="ttw-type-body inline-block border-sm border-dashed border-pureBlack py-xxs px-lg mb-md">
+                      <div className="text-base inline-block border-sm border-dashed border-pureBlack py-xxs px-lg mb-md">
                         {coupon.code}
                       </div>
-                      <div className="ttw-type-body-strong leading-lg mb-2">
+                      <div className="text-md  font-500 leading-lg mb-2">
                         {coupon.title}
                       </div>
                     </div>
@@ -247,16 +249,16 @@ const CouponModal = ({
                           payment.coupon_usage.id === coupon.id) ||
                         payment?.is_applicable
                       }
-                      className={`px-3 py-1 rounded font-medium ttw-type-body transition-colors whitespace-nowrap min-w-[60px] h-8 flex items-center justify-center ${
- appliedCoupon === coupon.code ||
- appliedCoupon === coupon.id ||
- (payment?.coupon_usage &&
- payment.coupon_usage.id === coupon.id)
- ? "bg-green-100 text-green-700 cursor-not-allowed"
- : applyingCouponId === coupon.id
- ? "bg-blue-400 cursor-not-allowed"
- : "bg-blue-500 hover:bg-blue-600"
- }`}
+                      className={`px-3 py-1 rounded font-medium text-sm transition-colors whitespace-nowrap min-w-[60px] h-8 flex items-center justify-center ${
+                        appliedCoupon === coupon.code ||
+                        appliedCoupon === coupon.id ||
+                        (payment?.coupon_usage &&
+                          payment.coupon_usage.id === coupon.id)
+                          ? "bg-green-100 text-green-700 cursor-not-allowed"
+                          : applyingCouponId === coupon.id
+                            ? "bg-blue-400  cursor-not-allowed"
+                            : "bg-blue-500  hover:bg-blue-600"
+                      }`}
                     >
                       {applyingCouponId === coupon.id ? (
                         <PulseLoader />
@@ -272,15 +274,15 @@ const CouponModal = ({
                   </div>
                   {coupon?.is_applicable ? (
                     <div>
-                      <div className="text-gray-600 ttw-type-body mb-2">
+                      <div className="text-gray-600 text-sm mb-2">
                         {coupon.description}
                       </div>
-                      <div className="text-gray-500 ttw-type-small">
+                      <div className="text-gray-500 text-xs">
                         Expires on: {coupon.expiry}
                       </div>
                     </div>
                   ) : (
-                    <div className="text-gray-600 ttw-type-body mb-2">
+                    <div className="text-gray-600 text-sm mb-2">
                       {coupon?.applicability_error}
                     </div>
                   )}
@@ -364,7 +366,7 @@ const LivePriceTimer = ({ priceValidUntil, lockInAmount = 2000 }) => {
 
   if (!isItineraryInFuture()) {
     return (
-      <div className="bg-red-500 text-white px-3 py-1 mt-2 rounded-full ttw-type-small mb-3 inline-block">
+      <div className="bg-red-500 text-white px-3 py-1 mt-2 rounded-full text-xs font-medium mb-3 inline-block">
         Itinerary dates have expired. Please update the dates to view updated
         prices.
       </div>
@@ -373,7 +375,7 @@ const LivePriceTimer = ({ priceValidUntil, lockInAmount = 2000 }) => {
 
   // if (!Cart?.lock_in_fee_paid && (!targetTime || timeLeft <= 0)) {
   //   return (
-  //     <div className="bg-red-500 text-white px-3 py-1 mt-2 rounded-full ttw-type-small mb-3 inline-block">
+  //     <div className="bg-red-500 text-white px-3 py-1 mt-2 rounded-full text-xs font-medium mb-3 inline-block">
   //       Prices Expired! -Lock this trip with ₹{lockInAmount?.toLocaleString('en-IN')} to refresh prices
   //     </div>
   //   );
@@ -381,7 +383,7 @@ const LivePriceTimer = ({ priceValidUntil, lockInAmount = 2000 }) => {
 
   if (!targetTime || timeLeft <= 0) {
     return (
-      <div className="bg-red-500 text-white px-3 py-1 mt-2 rounded-full ttw-type-small mb-3 inline-block">
+      <div className="bg-red-500 text-white px-3 py-1 mt-2 rounded-full text-xs font-medium mb-3 inline-block">
         Prices Expired! Click on reprice itinerary to check updated itinerary
         cost
       </div>
@@ -402,29 +404,29 @@ const LivePriceTimer = ({ priceValidUntil, lockInAmount = 2000 }) => {
   return (
     <div
       className={`${
- Cart?.paid_user ? "bg-[#98F0AB33]" : "bg-[#ffffe7]"
- } border-sm border-primary-yellow p-sm rounded-sm ttw-type-small w-100`}
+        Cart?.paid_user ? "bg-[#98F0AB33]" : "bg-[#ffffe7]"
+      } border-sm border-primary-yellow p-sm rounded-sm text-xs font-medium w-100`}
     >
       <div className="flex items-center gap-2xl justify-evenly">
         <div className="flex flex-col items-center">
-          <span className="ttw-type-h4 ttw-type-num leading-xl">{hours}</span>
-          <span className="ttw-type-small tex-spacegrey">Hours</span>
+          <span className="text-md-lg font-600 leading-xl">{hours}</span>
+          <span className="text-xs tex-spacegrey font-400">Hours</span>
         </div>
 
-        <span className="ttw-type-h4 ttw-type-num leading-xl">:</span>
+        <span className="text-md-lg font-600 leading-xl">:</span>
 
         <div className="flex flex-col items-center">
-          <span className="ttw-type-h4 ttw-type-num leading-xl">{minutes}</span>
-          <span className="ttw-type-small tex-spacegrey">Mins</span>
+          <span className="text-md-lg font-600 leading-xl">{minutes}</span>
+          <span className="text-xs tex-spacegrey font-400">Mins</span>
         </div>
 
-        <span className="ttw-type-h4 ttw-type-num leading-xl">:</span>
+        <span className="text-md-lg font-600 leading-xl">:</span>
 
         <div className="flex flex-col items-center">
-          <span className="ttw-type-h4 ttw-type-num leading-xl">
+          <span className="text-md-lg font-600 leading-xl">
             {remainingSeconds}
           </span>
-          <span className="ttw-type-small tex-spacegrey">Secs</span>
+          <span className="text-xs tex-spacegrey font-400">Secs</span>
         </div>
       </div>
     </div>
@@ -456,10 +458,10 @@ const PaymentCreated = ({ onClickButton, loading }) => {
         </div>
         <div className="flex justify-between max-ph:flex-col">
           <div>
-            <h2 className="ttw-type-h4 leading-xl">
+            <h2 className="text-lg font-600 leading-xl">
               Your last payment was cancelled.
             </h2>
-            <p className="ttw-type-body leading-xl text-text-spacegrey mb-zero max-ph:mb-md">
+            <p className="text-md font-400 leading-xl text-text-spacegrey mb-zero max-ph:mb-md">
               Oops! Something went wrong. Tap “Retry” to give it another shot.
             </p>
           </div>
@@ -503,10 +505,10 @@ const PaymentFailed = ({ onClickButton, loading }) => {
         </div>
         <div className="flex justify-between max-ph:flex-col">
           <div>
-            <h2 className="ttw-type-h4 leading-xl">
+            <h2 className="text-lg font-600 leading-xl">
               Your last payment was failed.
             </h2>
-            <p className="ttw-type-body leading-xl text-text-spacegrey mb-zero max-ph:mb-md">
+            <p className="text-md font-400 leading-xl text-text-spacegrey mb-zero max-ph:mb-md">
               Oops! Something went wrong. Tap “Retry” to give it another shot.
             </p>
           </div>
@@ -566,10 +568,10 @@ const PaymentSuccess = ({ amount, onDownloadInvoice, loading }) => {
         </div>
         <div className="flex justify-between max-ph:flex-col">
           <div>
-            <h2 className="ttw-type-h4 leading-xl">
+            <h2 className="text-lg font-600 leading-xl">
               All set—your payment was successful.
             </h2>
-            <p className="ttw-type-body leading-xl text-text-spacegrey mb-zero max-ph:mb-md">
+            <p className="text-md font-400 leading-xl text-text-spacegrey mb-zero max-ph:mb-md">
               Your full payment of{" "}
               {currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}
               {amount?.toLocaleString("en-IN")} has been received. No pending
@@ -649,31 +651,31 @@ const CouponSection = ({
   // console.log("Coupon", couponData)
   return (
     <div className="mb-4">
-      {/* <h3 className="font-medium ttw-type-body mb-3">Coupons</h3> */}
+      {/* <h3 className="font-medium text-base mb-3">Coupons</h3> */}
 
       {hasCouponApplied ? (
         <div className="bg-green-50 border border-green-200 rounded-lg p-3">
           {/* Show message from payment if available */}
 
           {couponData.usage_description && (
-            <div className=" text-green-600 mb-2 ttw-type-body-strong">
+            <div className=" text-green-600 mb-2 font-medium">
               {couponData.usage_description}
             </div>
           )}
 
           <div className="flex justify-between items-center">
             <div>
-              <div className="ttw-type-body-strong text-green-600">
+              <div className="text-sm font-medium text-green-600">
                 {couponData?.message}
               </div>
-              {/* <div className="ttw-type-body text-green-600">saved ₹{couponData.savings}</div> */}
+              {/* <div className="text-sm text-green-600">saved ₹{couponData.savings}</div> */}
             </div>
             <button
-              className={`ttw-type-body-strong transition-colors min-w-[60px] h-8 flex items-center justify-center rounded px-2 ${
- isRemoving
- ? "text-red-400 cursor-not-allowed"
- : "text-red-500 hover:text-red-600"
- }`}
+              className={`text-sm font-medium transition-colors min-w-[60px] h-8 flex items-center justify-center rounded px-2 ${
+                isRemoving
+                  ? "text-red-400 cursor-not-allowed"
+                  : "text-red-500 hover:text-red-600"
+              }`}
               onClick={() => onRemoveCoupon(couponData?.code || appliedCoupon)}
               disabled={isRemoving}
             >
@@ -686,13 +688,13 @@ const CouponSection = ({
           <div className="w-full py-md border-y-sm text-left flex items-center justify-between">
             <div className="flex items-center w-full justify-between">
               <div className="flex items-center gap-2">
-                <span className="ttw-type-body-strong leading-lg">
+                <span className="text-sm font-500 leading-lg">
                   Apply coupon
                 </span>
               </div>
               <button
                 onClick={onViewCoupons}
-                className="border-sm border-primary-indigo text-primary-indigo ttw-type-small leading-md rounded-md-lg px-md"
+                className="border-sm border-primary-indigo text-primary-indigo text-xs font-500 leading-md rounded-md-lg px-md"
               >
                 {" "}
                 Apply
@@ -700,7 +702,7 @@ const CouponSection = ({
             </div>
           </div>
 
-          {/* <p className="ttw-type-small text-gray-500 mt-2">
+          {/* <p className="text-xs text-gray-500 mt-2">
             Note: Coupons and discounts are not applicable on the itinerary
             lock-in fee.
           </p> */}
@@ -735,7 +737,7 @@ const PriceDetails = ({
   //   return (
   //     <div className="mb-4">
   //       <div className="text-center p-4 bg-gray-50 rounded-lg">
-  //         <p className="ttw-type-body text-gray-600">
+  //         <p className="text-sm text-gray-600">
   //           No inclusions selected. Please select items to see pricing.
   //         </p>
   //       </div>
@@ -752,17 +754,17 @@ const PriceDetails = ({
     <div className="mb-4">
       <h3
         className={`leading-md inline-block pb-xxs mb-md ${
- numericTotalPayable === 0
- ? "ttw-type-body-strong"
- : "ttw-type-body border-b-sm border-primary-yellow"
- }`}
+          numericTotalPayable === 0
+            ? "text-md font-500"
+            : "text-sm border-b-sm border-primary-yellow font-400"
+        }`}
       >
         {" "}
         {numericTotalPayable === 0 ? "Payment Summary" : "PRICE DETAILS"}{" "}
       </h3>
 
       <div className="space-y-2">
-        <div className="flex justify-between ttw-type-body leading-md mb-sm">
+        <div className="flex justify-between text-sm font-400 leading-md mb-sm">
           <span> Total Itinerary Cost </span>
           <span>
             {currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}
@@ -774,7 +776,7 @@ const PriceDetails = ({
 
         {/* {
           surchargesTaxes > 0 && (
-            <div className="flex justify-between ttw-type-body leading-md mb-sm">
+            <div className="flex justify-between text-sm font-400 leading-md mb-sm">
               <span>Surcharges and Taxes</span>
               <span>₹{surchargesTaxes.toLocaleString("en-IN")}</span>
             </div>
@@ -782,7 +784,7 @@ const PriceDetails = ({
         } */}
 
        
-          {Cart?.taxation_policy == "TCS" && <div className="flex justify-between ttw-type-body leading-md mb-sm">
+          {Cart?.taxation_policy == "TCS" && <div className="flex justify-between text-sm font-400 leading-md mb-sm">
             <span>GST</span>
             <span>
               {currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}
@@ -792,7 +794,7 @@ const PriceDetails = ({
       
 
         {Cart?.taxation_policy == "TCS" && (
-          <div className="flex justify-between ttw-type-body leading-md mb-sm">
+          <div className="flex justify-between text-sm font-400 leading-md mb-sm">
             <span>TCS</span>
             <span>
               {currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}
@@ -802,7 +804,7 @@ const PriceDetails = ({
         )}
 
         {couponDiscount >= 0 || couponDiscount < 0 ? (
-          <div className="flex justify-between text-green-600 ttw-type-body leading-md mb-sm">
+          <div className="flex justify-between text-green-600 text-sm font-400 leading-md mb-sm">
             <span>Coupon Discount</span>
             <span>
               {couponDiscount
@@ -817,7 +819,7 @@ const PriceDetails = ({
         ) : null}
 
         <div className="border-t-sm border-text-disabled pt-2 mt-2">
-          <div className="flex justify-between ttw-type-h4 leading-xl">
+          <div className="flex justify-between font-semibold text-md font-500 leading-xl">
             <span>Total Amount</span>
             <span>
               {" "}
@@ -987,7 +989,7 @@ const ItineraryInclusions = ({
 
   return (
     <div className="mb-4">
-      {/* <h3 className="font-medium ttw-type-body mb-3">Itinerary Inclusions</h3> */}
+      {/* <h3 className="font-medium text-base mb-3">Itinerary Inclusions</h3> */}
 
       {Object.entries(categories).map(([category, bookings], index) => {
         if (bookings.length === 0) return null;
@@ -1009,21 +1011,21 @@ const ItineraryInclusions = ({
             {/* Category Header */}
             <div
               className={`flex items-center justify-between p-3 bg-gray-50 cursor-pointer bg-text-white transition-colors ${
- !expandedCategories[category] ? "border-l-xl" : ""
- } `}
+                !expandedCategories[category] ? "border-l-xl" : ""
+              } `}
               style={{ borderColor: colors[index] }}
               onClick={() => toggleCategory(category)}
             >
               <div className="flex items-center gap-2 flex-1 ">
-                {/* <span className="ttw-type-h4">{getCategoryIcon(category)}</span> */}
+                {/* <span className="text-lg">{getCategoryIcon(category)}</span> */}
                 <div
                   className={`flex-1 ${
- expandedCategories[category] ? "border-l-xl" : ""
- } ml-[-16px] pl-md`}
+                    expandedCategories[category] ? "border-l-xl" : ""
+                  }  ml-[-16px] pl-md`}
                   style={{ borderColor: colors[index] }}
                 >
-                  <div className="ttw-type-body-strong leading-xl">{category}</div>
-                  <div className="ttw-type-body leading-md text-text-spacegrey">
+                  <div className="text-md leading-xl font-500">{category}</div>
+                  <div className="text-sm font-400 leading-md text-text-spacegrey">
                     {selectedCount} of {bookings.length} selected
                   </div>
                 </div>
@@ -1032,7 +1034,7 @@ const ItineraryInclusions = ({
               {categoryTotal > 0 && (
                 <>
                   {!arePricesHidden && (
-                    <div className="ttw-type-body leading-xl font-500 border-r-sm border-text-disabled pr-md mr-sm">
+                    <div className="text-md leading-xl font-500 border-r-sm border-text-disabled pr-md mr-sm">
                       {currencySymbols?.[currency]
                         ? currencySymbols?.[currency]
                         : "₹"}{" "}
@@ -1043,9 +1045,9 @@ const ItineraryInclusions = ({
               )}
 
               <RiArrowDropDownLine
-                className={`ttw-type-h2 transition-transform ${
- expandedCategories[category] ? "rotate-180" : ""
- }`}
+                className={`text-2xl transition-transform ${
+                  expandedCategories[category] ? "rotate-180" : ""
+                }`}
               />
             </div>
 
@@ -1066,17 +1068,17 @@ const ItineraryInclusions = ({
                     <div key={booking.id}>
                       <div
                         className={`p-3 flex items-start gap-3 hover:bg-gray-50 transition-colors ${
- !selectedInclusions[booking.id] ? "" : ""
- }`}
+                          !selectedInclusions[booking.id] ? "" : ""
+                        }`}
                       >
                         {/* Booking Details */}
                         <div className="flex-1 min-w-0">
-                          <div className="ttw-type-body-strong leading-xl mb-sm">
+                          <div className="text-md font-500 leading-xl mb-sm">
                             {booking.detail.name} 
-                            {booking?.detail?.booking_type === "Visa" ? <span className="ml-2 px-1.5 py-0.5 ttw-type-small bg-purple-100 text-purple-800 rounded">Visa</span> : booking?.detail?.booking_type === "eSIM" ? <span className="ml-2 px-1.5 py-0.5 ttw-type-small bg-green-100 text-green-800 rounded ">eSim</span> : null}
+                            {booking?.detail?.booking_type === "Visa" ? <span className="ml-2 px-1.5 py-0.5 text-xs font-medium bg-purple-100  text-purple-800 rounded">Visa</span> : booking?.detail?.booking_type === "eSIM" ? <span className="ml-2 px-1.5 py-0.5 text-xs font-medium bg-green-100  text-green-800 rounded ">eSim</span> : null}
                           </div>
                           {booking.status === "Paid" && (
-                            <div className="inline-block bg-green-100 text-green-700 ttw-type-small px-2 py-0.5 rounded mb-1">
+                            <div className="inline-block bg-green-100 text-green-700 text-xs font-semibold px-2 py-0.5 rounded mb-1">
                               PAID
                             </div>
                           )}
@@ -1084,7 +1086,7 @@ const ItineraryInclusions = ({
                           <div className="flex flex-wrap items-center gap-2">
                             <div className="flex items-center gap-1">
                               {/* <BsCalendar2 className="flex-shrink-0" /> */}
-                              {!isRoundTripFlight && <span className="ttw-type-body leading-md text-text-spacegrey">
+                              {!isRoundTripFlight && <span className="text-sm font-400 leading-md text-text-spacegrey">
                                 {formatDate(booking.detail.check_in)}{" "}
                                 {category == "Stays"
                                   ? "- " + formatDate(booking.detail.check_out)
@@ -1095,7 +1097,7 @@ const ItineraryInclusions = ({
                             {booking.detail.duration && (
                               <>
                                 <div className="border-r-sm border-text-spacegrey h-[12px]"></div>
-                                <span className="ttw-type-body leading-md text-text-spacegrey">
+                                <span className="text-sm font-400 leading-md text-text-spacegrey">
                                   {booking.detail.duration}N
                                 </span>
                               </>
@@ -1107,7 +1109,7 @@ const ItineraryInclusions = ({
                                 <div className="flex items-center gap-1 ">
                                   {/* <span>•</span> */}
                                   {/* <BsPeopleFill className="flex-shrink-0" /> */}
-                                  <span className="ttw-type-body leading-md text-text-spacegrey">
+                                  <span className="text-sm font-400 leading-md text-text-spacegrey">
                                     {booking.detail.pax.number_of_adults +
                                       (booking.detail?.pax?.number_of_children ||
                                         0) +
@@ -1136,7 +1138,7 @@ const ItineraryInclusions = ({
                               !arePricesHidden &&
                               booking.booking_cost > 0 && (
                                 <div className="flex items-center gap-1">
-                                  <span className="ttw-type-body-strong leading-md">
+                                  <span className="text-sm font-500 leading-md">
                                     {currencySymbols?.[currency] ? currencySymbols?.[currency] : '₹'}
                                     {getIndianPrice(
                                       Math.round(booking.booking_cost)
@@ -1170,8 +1172,8 @@ const ItineraryInclusions = ({
                               {/* Tooltip */}
                               <div
                                 className="absolute z-[999] bottom-full -left-20 -translate-x-1/2 mb-2
- hidden group-hover:!block whitespace-nowrap overflow-visible
- bg-black text-white ttw-type-small px-2 py-1 rounded cursor-pointer"
+                           hidden group-hover:!block whitespace-nowrap overflow-visible
+                          bg-black text-white text-xs px-2 py-1 rounded cursor-pointer"
                               >
                                 Reprice itinerary to add/remove this booking
                               </div>
@@ -1185,8 +1187,8 @@ const ItineraryInclusions = ({
                                   onChange={() => onToggleInclusion(booking.id)}
                                   disabled={booking.status === "Paid"}
                                   className="accent-primary-yellow cursor-pointer
- disabled:cursor-not-allowed disabled:opacity-50
- ttw-custom-greenCheckbox"
+                         disabled:cursor-not-allowed disabled:opacity-50
+                         ttw-custom-greenCheckbox"
                                 />
                               </label>
                             </span>
@@ -1195,7 +1197,7 @@ const ItineraryInclusions = ({
 
                         {/* Price - Desktop only */}
                         {!arePricesHidden && booking.booking_cost > 0 && (
-                          <div className="hidden md:block ttw-type-body-strong whitespace-nowrap">
+                          <div className="hidden md:block font-semibold text-sm whitespace-nowrap">
                             {currencySymbols?.[currency]
                               ? currencySymbols?.[currency]
                               : "₹"}
@@ -1236,19 +1238,19 @@ const ItineraryInclusions = ({
                             >
                           
                               <div className="flex-1 min-w-0">
-                                <div className="ttw-type-body-strong leading-md text-black">
+                                <div className="text-sm font-500 leading-md text-black">
                                   {childFlight?.name || childName}
                                 </div>
                                 <div className="flex flex-wrap items-center gap-2 mt-0.5">
                                   {childFlight?.check_in && (
-                                    <span className="ttw-type-small leading-md text-text-spacegrey">
+                                    <span className="text-xs font-400 leading-md text-text-spacegrey">
                                       {formatDate(childFlight.check_in)}
                                     </span>
                                   )}
                                   {childFlight?.duration && (
                                     <>
                                       <div className="border-r-sm border-text-spacegrey h-[10px]"></div>
-                                      <span className="ttw-type-small leading-md text-text-spacegrey">
+                                      <span className="text-xs font-400 leading-md text-text-spacegrey">
                                         {childFlight.duration}
                                       </span>
                                     </>
@@ -1267,7 +1269,7 @@ const ItineraryInclusions = ({
         );
       })}
 
-      <div className="ttw-type-small text-gray-500 mt-2 px-1">
+      <div className="text-xs text-gray-500 mt-2 px-1">
         Note: Unselect items you don't want to include in your booking
       </div>
     </div>
@@ -1297,6 +1299,24 @@ const Details = (props) => {
     return formattedDate;
   };
   const [showSetPassenger, setShowSetPassenger] = useState(false);
+  const [travellerDetailsOpen, setTravellerDetailsOpen] = useState(false);
+  const travellerDrawerRef = useRef(null);
+
+  useEffect(() => {
+    if (!travellerDetailsOpen) return undefined;
+    const handleOutside = (e) => {
+      const panel = travellerDrawerRef.current;
+      if (!panel) return;
+      if (e.target.closest(".react-dates-portal, .DayPicker, .CalendarMonth"))
+        return;
+      if (e.target.closest("[data-country-dropdown]")) return;
+      if (!panel.contains(e.target)) {
+        setTravellerDetailsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleOutside);
+    return () => document.removeEventListener("mousedown", handleOutside);
+  }, [travellerDetailsOpen]);
   const [showVisaDrawer, setShowVisaDrawer] = useState(false);
   const [showEsimDrawer, setShowEsimDrawer] = useState(false);
   const [getInTouchLoading, setGetInTouchLoading] = useState(false);
@@ -1771,7 +1791,7 @@ const Details = (props) => {
 
       axios
       .post(
-            "https://dev.mercury.tarzanway.com/payment/verify/",
+            "https://mercury.tarzanway.com/payment/verify/",
             { ...response },
             { headers: { Authorization: `Bearer ${props.token}` } }
           )
@@ -2207,8 +2227,8 @@ const Details = (props) => {
           mobileWidth={"100%"}
           style={{ zIndex: 1600 }}
           className={`!bg-primary-cornsilk ${
- showCouponModal ? "overflow-hidden" : ""
- }`}
+            showCouponModal ? "overflow-hidden" : ""
+          }`}
           onHide={() => handleCloseDrawer()}
         >
           <NavigationMenu />
@@ -2294,10 +2314,10 @@ const Details = (props) => {
                           </div>
                           <div className="flex justify-between max-ph:flex-col">
                             <div>
-                              <h2 className="ttw-type-h4 leading-xl">
+                              <h2 className="text-lg font-500 leading-xl">
                                 Update Itinerary Dates
                               </h2>
-                              <p className="ttw-type-body leading-xl text-text-spacegrey mb-zero max-ph:mb-md">
+                              <p className="text-md font-400 leading-xl text-text-spacegrey mb-zero max-ph:mb-md">
                                 Your itinerary dates are in the past. Please
                                 update the dates to view current pricing and
                                 continue with booking.
@@ -2331,10 +2351,10 @@ const Details = (props) => {
                             </div>
                             <div className="flex justify-between max-ph:flex-col">
                               <div>
-                                <h2 className="ttw-type-h4 leading-xl">
+                                <h2 className="text-lg font-500 leading-xl">
                                   Itinerary Prices Expired.
                                 </h2>
-                                <p className="ttw-type-body leading-xl text-text-spacegrey mb-zero max-ph:mb-md">
+                                <p className="text-md font-400 leading-xl text-text-spacegrey mb-zero max-ph:mb-md">
                                   Your itinerary prices have expired. Click on
                                   reprice itinerary to get the latest prices.
                                 </p>
@@ -2413,10 +2433,10 @@ const Details = (props) => {
                           </div>
                           <div className="flex justify-between max-ph:flex-col">
                             <div>
-                              <h2 className="ttw-type-h4 leading-xl">
+                              <h2 className="text-lg font-500 leading-xl">
                                 Itinerary Prices Expired.
                               </h2>
-                              <p className="ttw-type-body leading-xl text-text-spacegrey mb-zero max-ph:mb-md">
+                              <p className="text-md font-400 leading-xl text-text-spacegrey mb-zero max-ph:mb-md">
                                 Your itinerary prices have expired. Click on
                                 reprice itinerary to get the latest prices.
                               </p>
@@ -2449,45 +2469,72 @@ const Details = (props) => {
                     </div>
                   ) : (
                     <div>
-                      <div className="ttw-type-body-strong leading-lg mb-xs">
-                        {Itinerary?.customer_name || ""}
-                      </div>
-
-                      <div className="flex flex-row gap-xs ttw-type-body leading-md flex-wrap">
-                        <div>
-                          Dates:{" "}
-                          {convertDFormat(
-                            props?.itinerary?.start_date
-                              ? props?.itinerary?.start_date
-                              : null,
-                          )}{" "}
-                          -{" "}
-                          {convertDFormat(
-                            props?.itinerary?.end_date
-                              ? props?.itinerary?.end_date
-                              : null,
-                          )}
-                        </div>
-                        <div className="border-r-sm border-text-disabled"></div>
-                        <div>Trip: {props.trip_name}</div>
-                        <div className="border-r-sm border-text-disabled"></div>
-                        <div>
-                          Travellers: {pax} {pluralDetector("Adult", pax)}
-                          {props.itinerary?.number_of_children ? (
-                            <span>
-                              , {props.itinerary?.number_of_children} Children
-                            </span>
-                          ) : null}
-                          {props.itinerary?.number_of_infants ? (
-                            <span>
-                              , {props.itinerary?.number_of_infants}{" "}
-                              {pluralDetector(
-                                "Infant",
-                                props.itinerary?.number_of_infants
+                      <div className="flex justify-between items-start gap-2">
+                        <div className="flex-1">
+                          <div className="flex flex-wrap items-center gap-sm mb-xs">
+                            <div className="text-md font-500 leading-lg">
+                              {Itinerary?.customer_name || ""}
+                            </div>
+                            {Array.isArray(props?.itinerary?.travellers) &&
+                              props.itinerary.travellers.some(
+                                (t) => t?.is_lead && t?.first_name,
+                              ) && (
+                                <div className="flex items-center gap-1 text-green-600 text-xs">
+                                  <FaCheckCircle />
+                                  <span>Traveller details verified</span>
+                                </div>
                               )}
-                            </span>
-                          ) : null}
+                          </div>
+
+                          <div className="flex flex-row gap-xs text-sm font-400 leading-md flex-wrap">
+                            <div>
+                              Dates:{" "}
+                              {convertDFormat(
+                                props?.itinerary?.start_date
+                                  ? props?.itinerary?.start_date
+                                  : null,
+                              )}{" "}
+                              -{" "}
+                              {convertDFormat(
+                                props?.itinerary?.end_date
+                                  ? props?.itinerary?.end_date
+                                  : null,
+                              )}
+                            </div>
+                            <div className="border-r-sm border-text-disabled"></div>
+                            <div>Trip: {props.trip_name}</div>
+                            <div className="border-r-sm border-text-disabled"></div>
+                            <div>
+                              Travellers: {pax} {pluralDetector("Adult", pax)}
+                              {props.itinerary?.number_of_children ? (
+                                <span>
+                                  , {props.itinerary?.number_of_children}{" "}
+                                  Children
+                                </span>
+                              ) : null}
+                              {props.itinerary?.number_of_infants ? (
+                                <span>
+                                  , {props.itinerary?.number_of_infants}{" "}
+                                  {pluralDetector(
+                                    "Infant",
+                                    props.itinerary?.number_of_infants
+                                  )}
+                                </span>
+                              ) : null}
+                            </div>
+                          </div>
                         </div>
+                        <span
+                          className="text-xs text-blue underline cursor-pointer shrink-0 mt-1"
+                          onClick={() => setTravellerDetailsOpen(true)}
+                        >
+                          {Array.isArray(props?.itinerary?.travellers) &&
+                          props.itinerary.travellers.some(
+                            (t) => t?.is_lead && t?.first_name,
+                          )
+                            ? "Edit traveller details"
+                            : "Add traveller details"}
+                        </span>
                       </div>
                     </div>
                   )}
@@ -2579,7 +2626,7 @@ const Details = (props) => {
 
                     {/* Payment Status Message */}
                     {hasFullPaymentCompleted && (
-                      <div className="ttw-type-body mt-2 mb-4">
+                      <div className="text-sm mt-2 mb-4">
                         <span>
                           <LuClock4
                             color="green"
@@ -2641,7 +2688,7 @@ const Details = (props) => {
                           </Button>
                         </GetInTouchContainer>
 
-                        <div className="text-center ttw-type-body text-amber-600 mt-3 p-2 bg-amber-50 rounded">
+                        <div className="text-center text-sm text-amber-600 mt-3 p-2 bg-amber-50 rounded">
                           Please select at least one inclusion to proceed
                         </div>
                       </>
@@ -2664,11 +2711,11 @@ const Details = (props) => {
                         <div>
                           <div className="flex gap-2 items-center">
                             <img src={"/info.svg"} />
-                            <div className="ttw-type-body-strong leading-xl">
+                            <div className="text-md font-500 leading-xl">
                               Need help with your trip?
                             </div>
                           </div>
-                          <div className="ttw-type-body leading-xl text-text-spacegrey mb-2">
+                          <div className="text-sm-md font-400 leading-xl text-text-spacegrey mb-2">
                             Connect with a travel expert on WhatsApp
                           </div>
 
@@ -2695,7 +2742,7 @@ const Details = (props) => {
                                 <PulseLoader color="white" />
                               ) : (
                                 <div className="flex flex-row justify-center items-center">
-                                  <RiWhatsappFill className="text-[#4da750] mr-2 ttw-type-h3" />
+                                  <RiWhatsappFill className="text-[#4da750] mr-2 text-xl" />
                                   <div className="font-normal">
                                     Chat on WhatsApp
                                   </div>
@@ -2723,7 +2770,7 @@ const Details = (props) => {
                       return (
                         <div className="mt-md mb-md">
                           <hr className="text-text-placeholder mb-md" />
-                          <div className="ttw-type-body-strong leading-xl mb-sm text-[#01202B]">
+                          <div className="text-sm font-500 leading-xl mb-sm text-[#01202B]">
                             Enhance Your Trip
                           </div>
                           <div className="flex flex-col gap-2">
@@ -2736,23 +2783,23 @@ const Details = (props) => {
                             >
                               <div className="flex items-center gap-3">
                                 <div className="w-[36px] h-[36px] rounded-full bg-[#F5F0FF] flex items-center justify-center flex-shrink-0">
-                                  <span className="ttw-type-h4">🛂</span>
+                                  <span className="text-[18px]">🛂</span>
                                 </div>
                                 <div className="text-left">
-                                  <div className="ttw-type-small text-[#01202B] flex items-center gap-1">
+                                  <div className="text-[13px] font-600 text-[#01202B] flex items-center gap-1">
                                     {hasVisa ? `${visaCount} Visa added` : "Add Visa"}
                                     {hasVisa && (
-                                      <span className="inline-flex items-center justify-center w-[14px] h-[14px] rounded-full bg-[#22C55E] text-white ttw-type-small font-700">
+                                      <span className="inline-flex items-center justify-center w-[14px] h-[14px] rounded-full bg-[#22C55E] text-white text-[9px] font-700">
                                         ✓
                                       </span>
                                     )}
                                   </div>
-                                  <div className="ttw-type-small text-[#6E757A]">
+                                  <div className="text-[11px] text-[#6E757A]">
                                     Hassle-free visa assistance
                                   </div>
                                 </div>
                               </div>
-                              <span className="text-[#979393] ttw-type-h4">›</span>
+                              <span className="text-[#979393] text-lg">›</span>
                             </button>
 
                             <button
@@ -2764,23 +2811,23 @@ const Details = (props) => {
                             >
                               <div className="flex items-center gap-3">
                                 <div className="w-[36px] h-[36px] rounded-full bg-[#DDF4C5] flex items-center justify-center flex-shrink-0">
-                                  <span className="ttw-type-h4">📶</span>
+                                  <span className="text-[18px]">📶</span>
                                 </div>
                                 <div className="text-left">
-                                  <div className="ttw-type-small text-[#01202B] flex items-center gap-1">
+                                  <div className="text-[13px] font-600 text-[#01202B] flex items-center gap-1">
                                     {hasEsim ? `${esimCount} eSIM added` : "Add eSIM"}
                                     {hasEsim && (
-                                      <span className="inline-flex items-center justify-center w-[14px] h-[14px] rounded-full bg-[#22C55E] text-white ttw-type-small font-700">
+                                      <span className="inline-flex items-center justify-center w-[14px] h-[14px] rounded-full bg-[#22C55E] text-white text-[9px] font-700">
                                         ✓
                                       </span>
                                     )}
                                   </div>
-                                  <div className="ttw-type-small text-[#6E757A]">
+                                  <div className="text-[11px] text-[#6E757A]">
                                     Stay connected abroad
                                   </div>
                                 </div>
                               </div>
-                              <span className="text-[#979393] ttw-type-h4">›</span>
+                              <span className="text-[#979393] text-lg">›</span>
                             </button>
                           </div>
                         </div>
@@ -2789,7 +2836,7 @@ const Details = (props) => {
 
                     {/* Trip Conditions */}
                     <div className="bg-primary-lightPurple p-sm mt-xl">
-                      <div className="ttw-type-body-strong leading-xl mb-sm">
+                      <div className="text-sm font-500 leading-xl mb-sm">
                         Your Trip Will have
                       </div>
                       <div>
@@ -2803,10 +2850,10 @@ const Details = (props) => {
                               className="rounded-circle w-[25px] h-[25px] flex p-[5px] bg-text-white"
                             />
                             <div>
-                              <div className="ttw-type-body-strong leading-sm-md mb-xxs">
+                              <div className="text-sm font-500 leading-sm-md mb-xxs">
                                 {item.title}
                               </div>
-                              <div className="ttw-type-body leading-sm-md text-text-spacegrey">
+                              <div className="text-sm font-400 leading-sm-md text-text-spacegrey">
                                 {item.subheading}
                               </div>
                             </div>
@@ -2822,7 +2869,7 @@ const Details = (props) => {
                         target="_blank"
                         onClick={handleTermsConditions}
                       >
-                        <div className="ttw-type-body">Terms & Conditions</div>
+                        <div className="text-sm">Terms & Conditions</div>
                       </Link>
                     </div>
                   </div>
@@ -2904,6 +2951,41 @@ const Details = (props) => {
         ></IoMdClose>
         <div className="p-[40px]">
           <PassengerDetails />
+        </div>
+      </Drawer>
+
+      <Drawer
+        show={travellerDetailsOpen}
+        anchor={"right"}
+        backdrop
+        width={"720px"}
+        mobileWidth={"100%"}
+        style={{ zIndex: 1601 }}
+        className="font-lexend"
+        onHide={() => setTravellerDetailsOpen(false)}
+      >
+        <div ref={travellerDrawerRef} className="h-full bg-white">
+          <div className="sticky top-0 z-10 flex justify-between items-center px-lg py-md border-b-sm border-text-disabled bg-white">
+            <div>
+              <div className="text-md-lg font-500 leading-xl-md text-primary-indigo">
+                Traveller Details
+              </div>
+              <div className="text-xs font-400 leading-md text-text-spacegrey mt-xxs">
+                Add details for everyone travelling on this trip.
+              </div>
+            </div>
+            <IoMdClose
+              className="cursor-pointer text-text-spacegrey hover:text-primary-indigo"
+              onClick={() => setTravellerDetailsOpen(false)}
+              style={{ fontSize: "1.5rem" }}
+            />
+          </div>
+          <div className="px-lg py-lg">
+            <AddTravellerDetails
+              itinerary={props?.itinerary}
+              onSuccess={() => setTravellerDetailsOpen(false)}
+            />
+          </div>
         </div>
       </Drawer>
 

@@ -37,23 +37,15 @@ const CostContainer = styled.div`
 `;
 
 const Cost = styled.div`
-  /* H4 token · 17/1.2/700/-0.015em — primary price callout */
   text-align: right;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 17px;
-  font-weight: 700;
-  letter-spacing: -0.015em;
-  line-height: 1.2;
-  font-variant-numeric: tabular-nums;
+  line-height: 1.5;
+  font-weight: 800;
+  font-size: 1rem;
   &:after {
-    /* Small body · 13/1.5/400 — sub-label */
     content: "per member";
     display: block;
-    font-size: 13px;
-    font-weight: 400;
-    letter-spacing: 0;
-    line-height: 1.5;
-    text-transform: none;
+    font-size: 0.8rem;
+    font-weight: 300;
   }
 `;
 
@@ -69,12 +61,9 @@ const StrikedCost = styled.p`
   flex-grow: 1;
   margin-bottom: 0;
   margin-right: 6px;
-  /* Body · 14.5/1.55/400 — struck (compare-at) price */
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 14.5px;
   font-weight: 400;
-  line-height: 1.55;
-  font-variant-numeric: tabular-nums;
+  font-size: 1rem;
+  line-height: 1.5;
   text-align: center;
   &:before {
     position: absolute;
@@ -90,7 +79,7 @@ const StrikedCost = styled.p`
   }
 
   @media screen and (min-width: 768px) {
-    font-size: 14.5px;
+    font-size: 1rem;
     &:before {
       position: absolute;
       content: "";

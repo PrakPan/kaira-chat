@@ -15,8 +15,8 @@ const DateComponentWithEdit = ({
 
   return (
     <div className="group flex flex-row gap-3 items-center py-[1rem] relative">
-      <BsCalendar2 className="ttw-type-body text-[#7A7A7A]" />
-      <div className="ttw-type-body-strong text-black flex flex-row items-center gap-2">
+      <BsCalendar2 className="text-md text-[#7A7A7A]" />
+      <div className="text-md font-medium text-black flex flex-row items-center gap-2">
         {props.tripsPage ? (
           <div>{props?.itinerary?.duration + " Nights"}</div>
         ) : (
