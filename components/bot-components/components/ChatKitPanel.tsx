@@ -187,6 +187,15 @@ loginMandatory?: boolean;
  *  in this thread). Used by BotApp to switch the mobile tab to the itinerary
  *  view. */
 onViewItinerary?: () => void;
+/** Patches just the Traveller Type (pax) and/or Date of Travelling on the
+ *  current trip. Fired by the `update_pax` / `update_travel_date` client
+ *  effects so the P1 header reflects edits without rebuilding the itinerary. */
+onTripMetaUpdate?: (meta: {
+  number_of_adults?: number;
+  number_of_children?: number;
+  number_of_infants?: number;
+  travel_date?: string;
+}) => void;
 }
 
 export interface TravellerStoryIntro {
@@ -343,6 +352,7 @@ isPanelVisible = true,
 onLoginSuccess,
 loginMandatory,
 onViewItinerary,
+onTripMetaUpdate,
 }: ChatKitPanelProps) {
   // ── State ────────────────────────────────────────────────────────────────
   const [input, setInput] = useState("");
@@ -487,6 +497,7 @@ onViewItinerary,
       dispatch(setItineraryStatus("pricing_status", "SUCCESS"));
     } catch (error) {
       console.log("ERROR[PaymentInfo][Itinerary]", error);
+      dispatch(setCart({ error: true }));
     }
   }, [localItineraryId, dispatch]);
 
@@ -643,6 +654,7 @@ onViewItinerary,
     activityId?: string;
     date?: string;
     itinerary_city_id?: string;
+    source?: string;
   }>({ show: false });
 
   const [transferDrawer, setTransferDrawer] = useState<{
@@ -1296,7 +1308,10 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
         }
         case "display_itinerary": {
           emitEndpointsFromEffect(name, data);
-          onItineraryReceived(data.itinerary);
+          // Pass the full effect payload (not just `.itinerary`) so pax +
+          // travel-date carried at the effect-data root reach Redux. The
+          // handler unwraps `.itinerary` for the city/route shape itself.
+          onItineraryReceived(data);
           setHasDisplayItinerary(true);
           fireChatEventOnce("chat_itinerary_generated", () =>
             analyticsRef.current.trackChatItineraryGenerated?.(
@@ -1516,11 +1531,36 @@ case "shimmer_day_by_day": {
           setQuickReplyLoading(loading === undefined ? true : Boolean(loading));
           break;
         }
+        case "update_pax": {
+          // Patch just the Traveller Type on the current trip. Server keys are
+          // no_of_*; forward only the values that are actually present so a
+          // partial update doesn't blank out the others.
+          const meta: {
+            number_of_adults?: number;
+            number_of_children?: number;
+            number_of_infants?: number;
+          } = {};
+          if (typeof data.no_of_adults === "number")
+            meta.number_of_adults = data.no_of_adults;
+          if (typeof data.no_of_children === "number")
+            meta.number_of_children = data.no_of_children;
+          if (typeof data.no_of_infants === "number")
+            meta.number_of_infants = data.no_of_infants;
+          onTripMetaUpdate?.(meta);
+          break;
+        }
+        case "update_travel_date": {
+          // Patch just the Date of Travelling on the current trip.
+          if (typeof data.travel_date === "string") {
+            onTripMetaUpdate?.({ travel_date: data.travel_date });
+          }
+          break;
+        }
         default:
           console.warn("[Effect] unhandled:", name);
       }
     },
-    [onLocationReceived, onNewQuery, onClearMap, onRouteReceived, onItineraryReceived, input, indexTransfersForLookup, emitEndpointsFromEffect, dispatch, callPaymentInfo],
+    [onLocationReceived, onNewQuery, onClearMap, onRouteReceived, onItineraryReceived, onTripMetaUpdate, input, indexTransfersForLookup, emitEndpointsFromEffect, dispatch, callPaymentInfo],
   );
 
   // Wire handleEffect into the ref so the stable onEffect wrapper picks it up
@@ -1955,7 +1995,9 @@ useEffect(() => {
   let restoredHasDisplayItinerary = false;
   for (const effect of itineraryEffects) {
     if (effect.name === "display_itinerary" && effect.data?.itinerary) {
-      if (!threadIsCompleted) onItineraryReceived(effect.data.itinerary);
+      // Pass full effect.data so root-level pax + travel-date survive the
+      // reload replay (handler unwraps `.itinerary` for the route shape).
+      if (!threadIsCompleted) onItineraryReceived(effect.data);
       latestEndpointEffect = effect;
       restoredHasDisplayItinerary = true;
     } else if (effect.name === "display_transfers" && effect.data) {
@@ -2537,6 +2579,9 @@ const handleShowLogin = useCallback(() => {
                       activityId,
                       date,
                       itinerary_city_id: itineraryCityId,
+                      source: (payload.source ?? payload.provider) as
+                        | string
+                        | undefined,
                     });
                     analyticsRef.current.trackActivityCardClicked?.(
                       localItineraryId || "",
@@ -2574,6 +2619,9 @@ const handleShowLogin = useCallback(() => {
                         itinerary_city_id: (payload.itineraryCityId ??
                           payload.itinerary_city_id ??
                           payload.city_id) as string | undefined,
+                        source: (payload.source ?? payload.provider) as
+                          | string
+                          | undefined,
                       });
                       analyticsRef.current.trackActivityCardClicked?.(
                         localItineraryId || "",
@@ -3039,6 +3087,7 @@ const handleShowLogin = useCallback(() => {
           show={activityDrawer.show}
           fromChat={true}
           activityId={activityDrawer.activityId}
+          source={activityDrawer.source}
           date={activityDrawer.date}
           handleCloseDrawer={() => setActivityDrawer({ show: false })}
           setShowDetails={() => setActivityDrawer({ show: false })}

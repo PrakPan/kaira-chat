@@ -60,6 +60,7 @@ Thumbs.db
 # next.js
 /.next/
 /out/
+*.tsbuildinfo
 
 # production
 

@@ -11,7 +11,13 @@
   }
 }
 
+.heroHeading {
+  margin: 0;
+  font: inherit;
+}
+
 .title {
+  display: block;
   font-size: 2.5rem;
   font-weight: bold;
   margin: 0;

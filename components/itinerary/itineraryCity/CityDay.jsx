@@ -234,6 +234,8 @@ const isDraft = useSelector((state) => state.Itinerary.status) === "Draft";
   const activityId = item?.booking?.id || item?.id;
   if (!activityId) return;
 
+  const source = item?.booking?.source || item?.source;
+
   try {
     setActivityLoading(true);
     const response = await fetch(
@@ -249,11 +251,12 @@ const isDraft = useSelector((state) => state.Itinerary.status) === "Draft";
           number_of_adults: props?.pax?.adults || 2,
           number_of_children: props?.pax?.children || 0,
           children_ages: props?.pax?.children_ages || [],
+          ...(source && { source }),
         }),
       }
     );
     const data = await response.json();
-    setShowActivityDetails({ show: true, data, id: activityId });
+    setShowActivityDetails({ show: true, data, id: activityId, source });
   } catch (err) {
     console.error("Failed to fetch activity details", err);
   } finally {
@@ -658,6 +661,7 @@ useEffect(() => {
     show={showActivityDetails.show}
     setShowDetails={setShowActivityDetails}
     activityId={showActivityDetails.id}
+    source={showActivityDetails.source}
     handleCloseDrawer={() =>
       setShowActivityDetails({ show: false })
     }

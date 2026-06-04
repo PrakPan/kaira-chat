@@ -9,6 +9,7 @@ import { Text, Heading } from "../../../components/modals/flights/SectionOne";
 import { IoMdClose } from "react-icons/io";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { setTransfersBookings } from "../../../store/actions/transferBookingsStore";
+import SetRefetchAirportTransfers from "../../../store/actions/refetchAirportTransfers";
 import { Generalbuttonstyle } from "../../../components/ui/button/Generallinkbutton";
 import { Logo } from "../../../components/modals/flights/new-flight-searched/LogoContainer";
 import { openNotification } from "../../../store/actions/notification";
@@ -218,6 +219,9 @@ const Details = ({
         };
         dispatch(setTransfersBookings(updatedTransferBookings));
         getPaymentHandler();
+        // Changing the flight reprices this city's airport transfers (and
+        // deletes the previous bookings) on the backend — re-poll & re-fetch.
+        dispatch(SetRefetchAirportTransfers());
         dispatch(
           openNotification({
             type: "success",

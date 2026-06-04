@@ -59,11 +59,11 @@ import {
 import axios from "axios";
 import { MERCURY_HOST } from "../../../services/constants";
 import BackArrow from "../../ui/BackArrow";
-import { Pax } from "../activityDetails/Pax";
+import TransferDateTimeFields from "./TransferDateTimeFields";
 import { TbArrowBack } from "react-icons/tb";
-import { DatePicker } from "../../../containers/newitinerary/breif/route/RouteEditSection";
 import { axiosGetTransfers } from "../../../services/itinerary/bookings";
 import setItineraryStatus from "../../../store/actions/itineraryStatus";
+import SetRefetchAirportTransfers from "../../../store/actions/refetchAirportTransfers";
 import { useHandleClose } from "../../../hooks/useHandleClose";
 import { useRouter } from "next/router";
 import { useGenericAPIModal } from "../../modals/warning/Index";
@@ -1038,6 +1038,9 @@ const TransferEditDrawer = (props) => {
         if(props?.getPaymentHandler){
         props?.getPaymentHandler();
         }
+        // Updating this route reprices the city's airport transfers and deletes
+        // the previous bookings on the backend — re-poll status & re-fetch them.
+        dispatch(SetRefetchAirportTransfers());
         setSelectLoading(false);
         setUpdatingTransfer(false);
         // setShowDrawer(false);
@@ -2484,7 +2487,9 @@ const RouteContainer = (props) => {
     let calculatedStartTime;
 
     if (currentStep === 1) {
-      calculatedStartTime = dayjs(`${baseStartDate} 00:00`);
+      // Default the first leg's departure time to 11:00 AM for all transfer
+      // modes (instead of midnight).
+      calculatedStartTime = dayjs(`${baseStartDate} 11:00`);
     } else {
       const prevSelected = selectedData[currentStep - 2];
       const prevArrivalTime = prevSelected?.arrival_time;
@@ -3672,6 +3677,9 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
       );
 
       getPaymentHandler();
+      // Updating this route reprices the city's airport transfers and deletes
+      // the previous bookings on the backend — re-poll status & re-fetch them.
+      dispatch(SetRefetchAirportTransfers());
       actualClose();
 
       openNotification({
@@ -3780,7 +3788,9 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
     let calculatedStartTime;
 
     if (currentStep === 1) {
-      calculatedStartTime = dayjs(`${baseStartDate} 00:00`);
+      // Default the first leg's departure time to 11:00 AM for all transfer
+      // modes (instead of midnight).
+      calculatedStartTime = dayjs(`${baseStartDate} 11:00`);
     } else {
       const prevSelected = selectedData[currentStep - 2];
       const prevArrivalTime = prevSelected?.arrival_time;
@@ -4226,101 +4236,30 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
                     return (
                       <div key={key}>
                         <div>
-                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 justify-between mb-4">
-                            <div className="relative w-full sm:w-auto">
-                              <label className="text-sm font-medium mb-2 block">
-                                Departure Date:
-                              </label>
-                              <DatePicker
-                                id="departure-date"
-                                date={currentModeDepartureDate}
-                                onDateChange={(e) => {
-                                  const selectedDate = dayjs(
-                                    e.target.value,
-                                  ).format("YYYY-MM-DD");
-                                  handleDateSelect(selectedDate);
-                                }}
-                                defaultDate={currentModeDepartureDate}
-                              />
-                            </div>
-
-                            <div className="flex flex-col md:flex-row gap-2 mt-2">
-                              <div
-                                className="time-dropdown-container relative w-full sm:w-auto"
-                                id="time-dropdown"
-                              >
-                                <div className="text-sm font-medium text-gray-700 mb-2">
-                                  Departure Time
-                                </div>
-                                <div
-                                  className="flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setShowTimeDropdown(!showTimeDropdown);
-                                  }}
-                                >
-                                  <span className="text-sm font-medium">
-                                    {formatTimeForDisplay(
-                                      currentModeDepartureTime,
-                                    )}
-                                  </span>
-                                  <button
-                                    onClick={() =>
-                                      setShowTimeDropdown(!showTimeDropdown)
-                                    }
-                                  >
-                                    <svg
-                                      className={`w-5 h-5 text-gray-600 transition-transform`}
-                                      fill="none"
-                                      stroke="currentColor"
-                                      viewBox="0 0 24 24"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                      <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                                      />
-                                    </svg>
-                                  </button>
-                                </div>
-
-                                {showTimeDropdown && (
-                                  <div className="absolute right-0 mt-1 bg-white border rounded-md shadow-lg z-50 w-48 max-h-60 overflow-y-auto">
-                                    {timeOptions.map((time, idx) => (
-                                      <div
-                                        key={idx}
-                                        className={`p-2 hover:bg-gray-100 cursor-pointer text-sm ${
-                                          time.value ===
-                                          currentModeDepartureTime
-                                            ? "bg-yellow-100 font-medium"
-                                            : ""
-                                        }`}
-                                        onClick={() =>
-                                          handleTimeSelect(time.value)
-                                        }
-                                      >
-                                        {time.display}
-                                      </div>
-                                    ))}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="flex justify-end">
-                            <Pax
-                              setShowPax={setShowPax}
-                              pax={pax}
-                              setPax={(newPax) => {
-                                setPax(newPax);
-                                handlePaxChange(newPax, option);
-                              }}
-                              showPax={showPax}
-                              combo={true}
-                            />
-                          </div>
+                          <TransferDateTimeFields
+                            labelClassName="Body1M_16"
+                            dateId="departure-date"
+                            date={currentModeDepartureDate}
+                            defaultDate={currentModeDepartureDate}
+                            onDateChange={(e) => {
+                              const selectedDate = dayjs(e.target.value).format(
+                                "YYYY-MM-DD",
+                              );
+                              handleDateSelect(selectedDate);
+                            }}
+                            departureTime={currentModeDepartureTime}
+                            timeOptions={timeOptions}
+                            formatTimeForDisplay={formatTimeForDisplay}
+                            onTimeSelect={(time) => handleTimeSelect(time.value)}
+                            showTimeDropdown={showTimeDropdown}
+                            setShowTimeDropdown={setShowTimeDropdown}
+                            timeDropdownId="time-dropdown"
+                            pax={pax}
+                            onPaxChange={(newPax) => {
+                              setPax(newPax);
+                              handlePaxChange(newPax, option);
+                            }}
+                          />
                         </div>
 
                         {/* Show loading indicator when fetching new data */}
@@ -6279,7 +6218,7 @@ const OtherTransfer = ({
   const { trackTransferBookingAdd } = useAnalytics();
   const { intercity } = useSelector(
     (state) => state.TransferBookings,
-  )?.transferBookings;
+  )?.transferBookings ?? {};
   const currency = useSelector((state) => state.currency);
 
   const [pax, setPax] = useState({
@@ -6418,6 +6357,8 @@ const toggleTransferDetails = (priceOptionId) => {
         // Add limit/offset for pagination (always send for AllAboard support)
         requestBody.limit = 5;
         requestBody.offset = currentOffset;
+
+        const searchUrl = `/search/?currency=${currency?.currency || "INR"}`;
 
         const response = await loadOtherTransfers.post(
           searchUrl,
@@ -7036,6 +6977,9 @@ const toggleTransferDetails = (priceOptionId) => {
       );
 
       getPaymentHandler();
+      // Updating this route reprices the city's airport transfers and deletes
+      // the previous bookings on the backend — re-poll status & re-fetch them.
+      dispatch(SetRefetchAirportTransfers());
 
       if (!newTime && !newDate) {
         hideDrawer();
@@ -7279,92 +7223,22 @@ const toggleTransferDetails = (priceOptionId) => {
           <div className="text-xl font-600 leading-2xl mb-md"> {name}</div>
         </div>
 
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-4">
-          {/* Date Dropdown */}
-          <div className="w-full sm:w-auto">
-            <label className="block text-sm font-medium mb-1">
-              Departure Date:
-            </label>
-            <DatePicker
-              id="departureDate"
-              date={departureDate || currentModeDepartureDate}
-              defaultDate={currentModeDepartureDate}
-              onDateChange={handleDateChange}
-              isOutsideRange={() => false}
-              enableOutsideDays={true}
-              disabled={isBookingInProgress}
-            />
-          </div>
-
-          {/* Time Dropdown */}
-          <div
-            className="time-dropdown-container relative w-full sm:w-auto"
-            ref={ref}
-          >
-            <div className="text-sm font-medium text-gray-700 mb-2">
-              Departure Time
-            </div>
-            <div
-              className={`flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50 ${
-                isBookingInProgress ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-              onClick={() =>
-                !isBookingInProgress && setShowTimeDropdown((prev) => !prev)
-              }
-            >
-              <span className="text-sm font-medium">
-                {formatTimeForDisplay(departureTime)}
-              </span>
-              <button>
-                <svg
-                  className={`w-5 h-5 text-gray-600 transition-transform`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </button>
-            </div>
-
-            {showTimeDropdown && !isBookingInProgress && (
-              <div className="absolute right-0 z-[15] mt-1 w-48 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto">
-                {timeOptions.map((time, index) => (
-                  <div
-                    key={index}
-                    className={`p-2 hover:bg-gray-100 cursor-pointer text-sm
-                      ${
-                        time.value === departureTime
-                          ? "bg-yellow-100 font-medium"
-                          : ""
-                      }
-                    `}
-                    onClick={() => handleTimeSelect(time)}
-                  >
-                    {time.display}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="flex justify-end ">
-          <Pax
-            setShowPax={setShowPax}
-            pax={pax}
-            setPax={handlePaxChange}
-            showPax={showPax}
-            combo={true}
-            disabled={isBookingInProgress}
-          />
-        </div>
+        <TransferDateTimeFields
+          dateId="departureDate"
+          date={departureDate || currentModeDepartureDate}
+          defaultDate={currentModeDepartureDate}
+          onDateChange={handleDateChange}
+          departureTime={departureTime}
+          timeOptions={timeOptions}
+          formatTimeForDisplay={formatTimeForDisplay}
+          onTimeSelect={handleTimeSelect}
+          showTimeDropdown={showTimeDropdown}
+          setShowTimeDropdown={setShowTimeDropdown}
+          timeDropdownRef={ref}
+          pax={pax}
+          onPaxChange={handlePaxChange}
+          disabled={isBookingInProgress}
+        />
       </div>
 
       {/* Loading indicator for dynamic transfer loading */}

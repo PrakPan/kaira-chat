@@ -12,6 +12,7 @@ import HotelBookingDetails from "./Overview/HotelBookingDetails";
 import { updateAccommodationBooking } from "../../../services/bookings/UpdateBookings";
 import { ToastContainer } from "react-toastify";
 import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
+import SetRefetchAirportTransfers from "../../../store/actions/refetchAirportTransfers";
 import OverviewParam from "./Overview/OverviewParam";
 import { setShowHotelDrawer } from "../../../store/actions/ui";
 const Container = styled.div`
@@ -152,6 +153,9 @@ const POI = (props) => {
           props._updateStayBookingHandler([response.data]);
           props.setUpdateBookingState(false);
           dispatch(SetCallPaymentInfo(!CallPaymentInfo));
+          // The backend reprices this city's airport transfers and deletes the
+          // previous bookings on a hotel change — re-poll status & re-fetch.
+          dispatch(SetRefetchAirportTransfers());
           setTimeout(() => {
             props.getPaymentHandler();
           }, 1000);

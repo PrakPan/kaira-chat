@@ -26,6 +26,7 @@ import {
   setTransfersBookings,
   updateSingleTransferBooking,
 } from "../../../store/actions/transferBookingsStore";
+import SetRefetchAirportTransfers from "../../../store/actions/refetchAirportTransfers";
 import ComboSection from "./ComboSectionOne";
 import dayjs from "dayjs";
 import axios from "axios";
@@ -949,6 +950,9 @@ const ComboFlight = (props) => {
       props._updateFlightBookingHandler([response.data]);
 
       props.getPaymentHandler();
+      // Changing the flight reprices this city's airport transfers (and deletes
+      // the previous bookings) on the backend — re-poll status & re-fetch them.
+      dispatch(SetRefetchAirportTransfers());
       setMoreLoadingState(false);
       setUpdateBookingState(false);
       setIsProcessingBooking(false);

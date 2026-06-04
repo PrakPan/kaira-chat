@@ -19,6 +19,7 @@ import TransferEditDrawer from "../../drawers/routeTransfer/TransferEditDrawer";
 import LogInModal from "../Login";
 import { toast, ToastContainer } from "react-toastify";
 import { setTransfersBookings } from "../../../store/actions/transferBookingsStore";
+import SetRefetchAirportTransfers from "../../../store/actions/refetchAirportTransfers";
 import ComboFlight from "./ComboFlight";
 import BackArrow from "../../ui/BackArrow";
 import { useRouter } from "next/router";
@@ -269,6 +270,9 @@ const Booking = (props) => {
       .then((res) => {
         props._updateFlightBookingHandler([res.data]);
         props.getPaymentHandler();
+        // Changing the flight reprices this city's airport transfers (and
+        // deletes the previous bookings) on the backend — re-poll & re-fetch.
+        dispatch(SetRefetchAirportTransfers());
         setUpdateBookingState(false);
 
         const updatedTransferBookings = JSON.parse(

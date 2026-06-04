@@ -900,14 +900,15 @@ export default function ActivityDetails(props) {
                                 : ""
                               : ""}
                           </div>
-                          {(packageItem?.description || packageItem?.title) && (
-                            <div className="text-sm text-gray-600">
-                              For{" "}
-                              {packageItem.pax_details.adults +
-                                packageItem.pax_details.children}{" "}
-                              people
-                            </div>
-                          )}
+                          {(packageItem?.description || packageItem?.title) &&
+                            packageItem.pax_details?.adults && (
+                              <div className="text-sm text-gray-600">
+                                For{" "}
+                                {packageItem.pax_details.adults +
+                                  packageItem.pax_details.children}{" "}
+                                people
+                              </div>
+                            )}
                         </div>
                       </div>
                     </div>

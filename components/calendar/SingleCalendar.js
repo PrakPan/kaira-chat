@@ -3,7 +3,7 @@
 // ============================================
 
 import { useState, useEffect } from 'react';
-import Image from 'next/image';
+import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { Body2M_14 } from '../new-ui/Body';
 import { MediumIndigoButton, MediumIndigoOutlinedButton } from '../new-ui/Buttons';
 import {
@@ -149,31 +149,30 @@ const AirbnbCalendarSingleMonth = (props) => {
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           {/* Hide or disable "Previous" button when at current month */}
-          <div className="w-[36px] h-[36px] flex items-center justify-center">
+          <div className="w-9 h-9 shrink-0 flex items-center justify-center">
             {!isCurrentMonthOrBefore && (
               <button
                 onClick={() => navigateMonth(-1)}
-                className="p-2 hover:bg-gray-100 rounded-full"
+                aria-label="Previous month"
+                className="w-9 h-9 shrink-0 flex items-center justify-center rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400 active:scale-95 transition-all"
               >
-                <Image
-                  src={"/circle_right.svg"}
-                  width={20}
-                  height={20}
-                  className="transform -scale-x-100"
-                  alt="Previous"
-                />
+                <FiChevronLeft size={18} />
               </button>
             )}
           </div>
-          
+
           <div className="flex justify-center w-full">
             <Body2M_14>
               {months[currentMonth.getMonth()]} {currentMonth.getFullYear()}
             </Body2M_14>
           </div>
 
-          <button onClick={() => navigateMonth(1)} className="p-2 hover:bg-gray-100 rounded-full">
-            <Image src={"/circle_right.svg"} width={20} height={20} alt="Next" />
+          <button
+            onClick={() => navigateMonth(1)}
+            aria-label="Next month"
+            className="w-9 h-9 shrink-0 flex items-center justify-center rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400 active:scale-95 transition-all"
+          >
+            <FiChevronRight size={18} />
           </button>
         </div>
 
@@ -183,7 +182,7 @@ const AirbnbCalendarSingleMonth = (props) => {
   };
 
   return (
-    <div className='w-[350px]'>
+    <div className='w-[350px] max-w-full'>
       <div className="flex flex-col gap-5 p-4">
         <div className='flex flex-col gap-[20px] w-full'>
           <div className="">

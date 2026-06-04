@@ -560,9 +560,15 @@ const ItineraryCity = (props) => {
                     {
                       pathname: window.location.pathname,
                       query: {
-                        ...(currentItineraryId ? { id: currentItineraryId } : {}),
+                        // ...(currentItineraryId ? { id: currentItineraryId } : {}),
                         drawer: "addCityTaxi",
                         itinerary_city_id: props?.city?.id,
+                        // Domestic itineraries default the taxi drawer to the
+                        // multicity tab; everything else falls back to
+                        // sightseeing (the drawer's own default).
+                        ...(itineraryDaybyDay?.destination_type === "Domestic"
+                          ? { taxiTab: "multicity" }
+                          : {}),
                       },
                     },
                     undefined,

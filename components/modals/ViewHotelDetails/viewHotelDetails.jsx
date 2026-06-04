@@ -15,6 +15,7 @@ import { useRouter } from "next/router";
 import HotelBookingDetails from "./Overview/HotelBookingDetails";
 import { updateAccommodationBooking } from "../../../services/bookings/UpdateBookings";
 import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
+import SetRefetchAirportTransfers from "../../../store/actions/refetchAirportTransfers";
 import BackArrow from "../../ui/BackArrow";
 import Image from "next/image";
 
@@ -243,6 +244,9 @@ const ViewHotelDetails = (props) => {
         props._updateStayBookingHandler([response.data]);
         props.setUpdateBookingState(false);
         dispatch(SetCallPaymentInfo(!CallPaymentInfo));
+        // The backend reprices this city's airport transfers and deletes the
+        // previous bookings on a hotel change — re-poll status & re-fetch.
+        dispatch(SetRefetchAirportTransfers());
         setTimeout(() => {
           props.getPaymentHandler();
         }, 1000);
