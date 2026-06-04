@@ -35,9 +35,9 @@ import setItineraryStatus from "../../../store/actions/itineraryStatus";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 import BotLoginModal from "./BotLoginModal";
 
-const CHATKIT_API_URL = "https://dev.chat.tarzanway.com/chatkit";
+const CHATKIT_API_URL = "https://chat.tarzanway.com/chatkit";
 const PAGINATION_SCROLL_THRESHOLD = 80;
-const CHATKIT = "https://dev.chat.tarzanway.com"
+const CHATKIT = "https://chat.tarzanway.com"
 
 export interface AttachmentFile {
   /** Temporary local ID (before server responds) or server-assigned ID */
@@ -230,7 +230,7 @@ function useUserLocationData() {
         const ipRes = await fetch("https://api.ipify.org?format=json");
         const { ip } = await ipRes.json();
         const locRes = await fetch(
-          `https://dev.mercury.tarzanway.com/api/v1/geos/search/user_location/?ip=${ip}`,
+          `https://mercury.tarzanway.com/api/v1/geos/search/user_location/?ip=${ip}`,
         );
         const data: UserLocationData = await locRes.json();
         localStorage.setItem("userLocationData", JSON.stringify(data));
@@ -1071,7 +1071,7 @@ const handleSessionCreated = useCallback((ourSessionId: string) => {
   // ── useChat ───────────────────────────────────────────────────────────────
   const apiUrl =
     botMode === "p2"
-      ? "https://dev.chat.tarzanway.com/chatkit/p2"
+      ? "https://chat.tarzanway.com/chatkit/p2"
       : CHATKIT_API_URL;
 
   // Stable onEffect wrapper — must be a named useCallback, never inline inside

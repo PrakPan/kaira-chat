@@ -239,7 +239,7 @@ const isDraft = useSelector((state) => state.Itinerary.status) === "Draft";
   try {
     setActivityLoading(true);
     const response = await fetch(
-      `https://dev.mercury.tarzanway.com/api/v1/ancillaries/activity/${activityId}/?currency=INR`,
+      `https://mercury.tarzanway.com/api/v1/ancillaries/activity/${activityId}/?currency=INR`,
       {
         method: "POST",
         headers: {
