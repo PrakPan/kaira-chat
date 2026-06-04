@@ -23,16 +23,15 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import DestinationCard from "../../components/revamp/common/components/card/DestinationCard";
-import ActivityCardV2 from "../../components/revamp/destination/ActivityCardV2";
 import ItineraryCardV2 from "../../components/revamp/destination/ItineraryCardV2";
 import OverviewEditorial from "../../components/revamp/destination/OverviewEditorial";
+import ChatWithKairaCta from "../../components/revamp/destination/ChatWithKairaCta";
 import styles from "../../styles/pages/revamp/destination.module.scss";
 import {
   faChevronLeft,
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 import MostLovedItinerariesSection from "../../components/revamp/destination/MostLovedItinerariesSection";
-import CtaBoardingSection from "../../components/revamp/home/CtaBoardingSection.jsx";
 import Carousel3D from "../../components/theme/CurveImageGallery.jsx";
 import WhatMakesUsSection from "../../components/revamp/home/WhatMakesUsSection.jsx";
 import PartnersSection from "../../components/theme/PartnersSection.jsx";
@@ -43,12 +42,16 @@ import { convertDbNameToCapitalFirst } from "../../helper/convertDbnameToCapital
 import Link from "next/link.js";
 import POIDetailsDrawer from "../../components/drawers/poiDetails/POIDetailsDrawer.js";
 import TailoredFormMobileModal from "../../components/modals/TailoredFomrMobile.js";
+import ActivityCardV2 from "../../components/revamp/destination/ActivityCardV2.jsx";
+import CtaBoardingSection from "../../components/revamp/home/CtaBoardingSection.jsx";
 
 const MenuContainer = styled.div`
-  width: 95%;
-  margin: auto;
-  @media screen and (min-width: 768px) {
-    width: 85%;
+  max-width: 1240px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 28px;
+  @media (max-width: 640px) {
+    padding: 0 20px;
   }
 
   #Brief {
@@ -165,7 +168,7 @@ const Menu = (props) => {
       <PathNavigation path={props.data?.path} />
 
       {!!props.data.itineraries.length && (
-        <MenuItem id="Itinerary" className="mt-4 mb-4">
+        <MenuItem id="Itinerary" className={styles.block}>
           <div className={styles.sectionHead}>
             <div className={styles.sectionHeadLeft}>
               <h2>
@@ -189,7 +192,7 @@ const Menu = (props) => {
       )}
 
       {props.data.short_description && !props.thingsToDoPage && (
-        <MenuItem id="Brief" className="mt-[4rem] mb-[4rem]">
+        <MenuItem id="Brief" className={styles.block}>
           <OverviewEditorial
             heading={"A little about " + props.data.name}
             text={props.data.short_description}
@@ -199,7 +202,7 @@ const Menu = (props) => {
       )}
 
       {props.data.activities.length ? (
-        <MenuItem id="Activities">
+        <MenuItem id="Activities" className={styles.block}>
           <div className={styles.sectionHead}>
             <div className={styles.sectionHeadLeft}>
               <h2>
@@ -223,102 +226,65 @@ const Menu = (props) => {
             handlePlanButtonClick={handlePlanButtonClick}
           /> */}
 
-          <div className="relative px-2 sm:px-0">
+          <div className={styles.carouselWrap}>
             <Swiper
-              style={{ height: "auto" }}
               modules={[Navigation]}
               spaceBetween={16}
-              slidesPerView={1}
+              slidesPerView={1.1}
               navigation={{
                 nextEl: ".PlacesBragSection-next",
                 prevEl: ".PlacesBragSection-prev",
                 clickable: true,
               }}
               breakpoints={{
-                // when window width is >= 640px
                 640: {
-                  slidesPerView: 1.5,
+                  slidesPerView: 2.2,
                   spaceBetween: 16,
                 },
-                // when window width is >= 768px
                 768: {
-                  slidesPerView: 2,
-                  spaceBetween: 20,
-                },
-                // when window width is >= 1024px
-                1024: {
                   slidesPerView: 3,
-                  spaceBetween: 24,
+                  spaceBetween: 16,
+                },
+                1024: {
+                  slidesPerView: 4,
+                  spaceBetween: 16,
                 },
               }}
             >
-              {props.data.activities.map((destination) => (
-                <SwiperSlide key={destination.id}>
-                  <div className="w-full px-1">
+              {props.data.activities.map((destination, i) => (
+                <SwiperSlide key={destination.id || i}>
+                  <div className="h-full">
                     <ActivityCardV2
                       item={destination}
-                      onClick={() => handleOpenDrawer(destination, "activity")}
+                      kairaPick={i % 3 === 0}
+                      onClick={(d) => handleOpenDrawer(d, "activity")}
                     />
                   </div>
                 </SwiperSlide>
               ))}
             </Swiper>
-            <div className="PlacesBragSection-prev" aria-hidden>
-              <div
-                className="absolute left-3 sm:left-1 z-10"
-                style={{
-                  top: "calc(376px / 2)",
-                  transform: "translateY(-50%)",
-                }}
-              >
-                <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
-                  <FontAwesomeIcon
-                    icon={faChevronLeft}
-                    className="text-white group-hover:text-white text-md transition-colors duration-300 transform"
-                  />
-                </div>
-              </div>
+            <div
+              className={`PlacesBragSection-prev ${styles.carouselNav} ${styles.carouselNavPrev}`}
+              aria-hidden
+            >
+              <FontAwesomeIcon icon={faChevronLeft} />
             </div>
-
-            {/* Custom Next Button - centered to image height (376px) */}
-            <div className="PlacesBragSection-next" aria-hidden>
-              <div
-                className="absolute right-3 sm:right-1 z-10"
-                style={{
-                  top: "calc(376px / 2)",
-                  transform: "translateY(-50%)",
-                }}
-              >
-                <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
-                  <FontAwesomeIcon
-                    icon={faChevronRight}
-                    className="text-white hover:text-white text-md transition-colors duration-300 transform"
-                  />
-                </div>
-              </div>
+            <div
+              className={`PlacesBragSection-next ${styles.carouselNav} ${styles.carouselNavNext}`}
+              aria-hidden
+            >
+              <FontAwesomeIcon icon={faChevronRight} />
             </div>
           </div>
 
-          <div className=" flex items-center justify-center mt-8 lg:mt-10">
-            {/* <Link href={`/new-trip/?source=${props?.data?.slug || "home"}`}> */}
-              {/* <button
-                variant="filled"
-                size="medium"
-                onClick={() => {
-                  console.log("Create a Trip Now! clicked");
-                  setShowTailoredModal(true);
-                }}
-                className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
-              >
-                + Create a Trip Now!
-              </button> */}
-            {/* </Link> */}
+          <div className="flex items-center justify-center mt-4">
+            <ChatWithKairaCta onClick={() => setShowTailoredModal(true)} />
           </div>
         </MenuItem>
       ) : null}
 
       {!!props.data.pois.length && (
-        <MenuItem id="Places">
+        <MenuItem id="Places" className={styles.block}>
           <div className={styles.sectionHead}>
             <div className={styles.sectionHeadLeft}>
               <h2>
@@ -342,101 +308,64 @@ const Menu = (props) => {
             removeDelete={props?.removeDelete}
             removeChange={true}
           /> */}
-          <div className="relative px-2 sm:px-0">
+          <div className={styles.carouselWrap}>
             <Swiper
-              style={{ height: "auto" }}
               modules={[Navigation]}
               spaceBetween={16}
-              slidesPerView={1}
+              slidesPerView={1.1}
               navigation={{
                 nextEl: ".PlacesBragSection-n",
                 prevEl: ".PlacesBragSection-p",
                 clickable: true,
               }}
               breakpoints={{
-                // when window width is >= 640px
                 640: {
-                  slidesPerView: 1.5,
+                  slidesPerView: 2.2,
                   spaceBetween: 16,
                 },
-                // when window width is >= 768px
                 768: {
-                  slidesPerView: 2,
-                  spaceBetween: 20,
-                },
-                // when window width is >= 1024px
-                1024: {
                   slidesPerView: 3,
-                  spaceBetween: 24,
+                  spaceBetween: 16,
+                },
+                1024: {
+                  slidesPerView: 4,
+                  spaceBetween: 16,
                 },
               }}
             >
-              {props.data.pois.map((destination) => (
-                <SwiperSlide key={destination.id}>
-                  <div className="w-full px-1">
+              {props.data.pois.map((destination, i) => (
+                <SwiperSlide key={destination.id || i}>
+                  <div className="h-full">
                     <ActivityCardV2
                       item={destination}
-                      onClick={() => handleOpenDrawer(destination, "poi")}
+                      kairaPick={i % 3 === 0}
+                      onClick={(d) => handleOpenDrawer(d, "poi")}
                     />
                   </div>
                 </SwiperSlide>
               ))}
             </Swiper>
-            <div className="PlacesBragSection-p" aria-hidden>
-              <div
-                className="absolute left-3 sm:left-1 z-10"
-                style={{
-                  top: "calc(376px / 2)",
-                  transform: "translateY(-50%)",
-                }}
-              >
-                <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
-                  <FontAwesomeIcon
-                    icon={faChevronLeft}
-                    className="text-white group-hover:text-white text-md transition-colors duration-300 transform"
-                  />
-                </div>
-              </div>
+            <div
+              className={`PlacesBragSection-p ${styles.carouselNav} ${styles.carouselNavPrev}`}
+              aria-hidden
+            >
+              <FontAwesomeIcon icon={faChevronLeft} />
             </div>
-
-            {/* Custom Next Button - centered to image height (376px) */}
-            <div className="PlacesBragSection-n" aria-hidden>
-              <div
-                className="absolute right-3 sm:right-1 z-10"
-                style={{
-                  top: "calc(376px / 2)",
-                  transform: "translateY(-50%)",
-                }}
-              >
-                <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
-                  <FontAwesomeIcon
-                    icon={faChevronRight}
-                    className="text-white hover:text-white text-md transition-colors duration-300 transform"
-                  />
-                </div>
-              </div>
+            <div
+              className={`PlacesBragSection-n ${styles.carouselNav} ${styles.carouselNavNext}`}
+              aria-hidden
+            >
+              <FontAwesomeIcon icon={faChevronRight} />
             </div>
           </div>
 
-          <div className=" flex items-center justify-center mt-8 lg:mt-10">
-            {/* <Link href={`/new-trip/?source=${props?.data?.slug || "home"}`}> */}
-              {/* <button
-                variant="filled"
-                size="medium"
-                onClick={() => {
-                  console.log("Create a Trip Now! clicked");
-                  setShowTailoredModal(true);
-                }}
-                className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
-              >
-                + Create a Trip Now!
-              </button> */}
-            {/* </Link> */}
+          <div className="flex items-center justify-center mt-4">
+            <ChatWithKairaCta onClick={() => setShowTailoredModal(true)} />
           </div>
         </MenuItem>
       )}
 
-      <MenuItem id="nearby-places">
+      <MenuItem id="nearby-places" className={styles.block}>
         {/* <NearbyLocations
           nearbyCities={props.nearbyCities}
           state={props.destination}
@@ -457,7 +386,7 @@ const Menu = (props) => {
             </p>
           </div>
         </div>
-        <div className="relative px-2 sm:px-0">
+        <div className={styles.carouselWrap}>
           <Swiper
             style={{ height: "376px" }}
             modules={[Navigation]}
@@ -510,61 +439,27 @@ const Menu = (props) => {
               </SwiperSlide>
             ))}
           </Swiper>
-          <div className="PlacesBragSection-pr" aria-hidden>
-            <div
-              className="absolute left-3 sm:left-1 z-10"
-              style={{
-                top: "calc(376px / 2)",
-                transform: "translateY(-50%)",
-              }}
-            >
-              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
-                <FontAwesomeIcon
-                  icon={faChevronLeft}
-                  className="text-white group-hover:text-white text-md transition-colors duration-300 transform"
-                />
-              </div>
-            </div>
+          <div
+            className={`PlacesBragSection-pr ${styles.carouselNav} ${styles.carouselNavPrev}`}
+            aria-hidden
+          >
+            <FontAwesomeIcon icon={faChevronLeft} />
           </div>
-
-          {/* Custom Next Button - centered to image height (376px) */}
-          <div className="PlacesBragSection-ne" aria-hidden>
-            <div
-              className="absolute right-3 sm:right-1 z-10"
-              style={{
-                top: "calc(376px / 2)",
-                transform: "translateY(-50%)",
-              }}
-            >
-              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
-                <FontAwesomeIcon
-                  icon={faChevronRight}
-                  className="text-white hover:text-white text-md transition-colors duration-300 transform"
-                />
-              </div>
-            </div>
+          <div
+            className={`PlacesBragSection-ne ${styles.carouselNav} ${styles.carouselNavNext}`}
+            aria-hidden
+          >
+            <FontAwesomeIcon icon={faChevronRight} />
           </div>
         </div>
 
-        <div className=" flex items-center justify-center mt-8 lg:mt-10">
-          {/* <Link href={`/new-trip/?source=${props?.data?.slug || "home"}`}> */}
-            {/* <button
-              variant="filled"
-              size="medium"
-              onClick={() => {
-                console.log("Create a Trip Now! clicked");
-                setShowTailoredModal(true);
-              }}
-              className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
-            >
-              + Create a Trip Now!
-            </button> */}
-          {/* </Link> */}
+        <div className="flex items-center justify-center mt-4">
+          <ChatWithKairaCta onClick={() => setShowTailoredModal(true)} />
         </div>
       </MenuItem>
 
       {!!props.data.foods.length && (
-        <MenuItem id="Food" single>
+        <MenuItem id="Food" single className={styles.block}>
           <div className={styles.sectionHead}>
             <div className={styles.sectionHeadLeft}>
               <h2>
@@ -581,7 +476,7 @@ const Menu = (props) => {
       )}
 
       {props.data.conveyance_available && (
-        <MenuItem id="Reach" single>
+        <MenuItem id="Reach" single className={styles.block}>
           <div className={styles.sectionHead}>
             <div className={styles.sectionHeadLeft}>
               <h2>
@@ -667,8 +562,6 @@ const Menu = (props) => {
         {/* <AsSeenIn /> */}
         {/* <PartnersSection />
         <ChatWithUs /> */}
-
-        <CtaBoardingSection />
 
         {activeDrawer?.type === "poi" && (
           <POIDetailsDrawer

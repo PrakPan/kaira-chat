@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Button from "../ui/button/Index";
+import ChatWithKairaCta from "./../revamp/destination/ChatWithKairaCta";
 
 const Container = styled.div`
   display: none;
@@ -84,19 +85,41 @@ const Banner = (props) => {
           <div className="center-div">
             <Text className="">{renderText()}</Text>
           </div>
-          <Button
+          {/* <Button
             display="inline-block"
             boxShadow
             onclick={props.onclick}
-            hoverColor="white"
-            hoverBgColor="black"
-            bgColor="#F7e700"
+            // hoverColor=""
+            // hoverBgColor="black"
+            bgColor="#0f1a2e"
             borderStyle="none"
             padding="0.5rem 0.5rem"
             borderRadius="2rem"
+            color="white"
+            className="w-fit"
           >
-            {props.cta ? props.cta : "Start Planning"}
-          </Button>
+            <div className="flex items-center gap-2 w-[4rem]">
+              {props.cta ? props.cta : "Start Planning"}{" "}
+              <svg
+                viewBox="0 0 12 12"
+                height="14"
+                width="14"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M2 10L10 2M10 2H4M10 2V8"></path>
+              </svg>
+            </div>
+          </Button> */}
+           <div className="flex justify-center">
+              <ChatWithKairaCta
+                onClick={props.onclick}
+                label="Start Planning"
+              />
+            </div>
         </GridContainer>
       </Container>
     );

@@ -420,7 +420,7 @@ const Homepage = (props) => {
               />
             </div>
           ) : null} */}
-          <div className="flex justify-center mt-8">
+          {/* <div className="flex justify-center mt-8">
             <ChatWithKairaCta
               onClick={() =>
                 handlePlanButtonClick(
@@ -428,7 +428,7 @@ const Homepage = (props) => {
                 )
               }
             />
-          </div>
+          </div> */}
         </section>
 
         <JourneySimplified

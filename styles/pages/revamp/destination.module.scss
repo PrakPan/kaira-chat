@@ -1200,18 +1200,35 @@
 }
 
 /* ============ EDITORIAL OVERVIEW ============ */
-.editorial {
-  display: flex;
-  flex-direction: column;
-}
-.editorialHead {
-  margin-bottom: 24px;
+.editorialGrid {
+  display: grid;
+  grid-template-columns: 1.35fr 0.65fr;
+  gap: 48px;
+  align-items: start;
   @media (max-width: 1024px) {
-    margin-bottom: 18px;
+    grid-template-columns: 1fr;
+    gap: 28px;
   }
 }
-.editorialBody {
+.editorialImgCol {
   width: 100%;
+  @media (max-width: 1024px) {
+    order: -1;
+    max-width: 420px;
+  }
+}
+.editorialImg {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  border-radius: 22px;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  @media (max-width: 1024px) {
+    aspect-ratio: 16/10;
+    max-height: 320px;
+  }
 }
 .editorialText {
   display: flex;
@@ -1219,6 +1236,63 @@
   align-items: flex-start;
   justify-content: flex-start;
   text-align: left;
+}
+.editorialBody {
+  position: relative;
+  width: 100%;
+  transition: max-height 0.3s ease;
+}
+.editorialFade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 72px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, var(--ttw-bg) 92%);
+  pointer-events: none;
+}
+.editorialToggle {
+  margin-top: 12px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ttw-ink);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.editorialToggle:hover {
+  color: var(--ttw-ink-3);
+}
+.editorialImgTag {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 2;
+  padding: 6px 12px;
+  background: var(--ttw-yellow);
+  color: var(--ttw-ink);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  box-shadow: 0 6px 18px -8px rgba(11, 18, 32, 0.35);
+}
+.editorialImgScrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(11, 18, 32, 0.22) 0%,
+    rgba(11, 18, 32, 0) 35%,
+    rgba(11, 18, 32, 0) 65%,
+    rgba(11, 18, 32, 0.18) 100%
+  );
+  pointer-events: none;
 }
 .editorialKicker {
   display: inline-flex;
@@ -1243,15 +1317,15 @@
   color: var(--ttw-ink) !important;
   font-weight: 500;
 }
-.editorialHeading {
-  font-size: clamp(26px, 3.2vw, 38px);
-  font-weight: 600;
+.editorialText h3 {
+  font-size: clamp(28px, 3.2vw, 40px);
+  font-weight: 800;
   letter-spacing: -0.025em;
-  line-height: 1.08;
-  margin: 0;
+  line-height: 1.05;
+  margin-bottom: 18px;
   color: var(--ttw-ink);
 }
-.editorialHeading .serif {
+.editorialText h3 .serif {
   font-weight: 400;
 }
 .editorialText p {
@@ -1309,10 +1383,6 @@
 .editorialLink svg {
   width: 13px;
   height: 13px;
-}
-.editorialCta {
-  margin-top: 22px;
-  align-self: flex-start;
 }
 
 /* ============ ITINERARY V2 — horizontal trip card ============ */
@@ -1592,8 +1662,8 @@
   color: var(--ttw-ink-3); 
   line-height: 1.4;
   margin-bottom: 10px;
-  display: -webkit-box; 
-  // -webkit-line-clamp: 2;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }

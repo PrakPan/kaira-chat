@@ -80,7 +80,7 @@ const Experience = (props) => {
           href={`https://thetarzanway.com/${props.path}`}
         ></link>
       </Head>
-
+{/* 
       {props.pageData ? (
   <ThemePage
     themePage
@@ -89,15 +89,16 @@ const Experience = (props) => {
     city={props.cityData}
     data={props.cityData}
   />
-) : (
+) : ( */}
   <CityPage
     reccomendedCitiesData={props.reccomendedCitiesData}
     cityData={props.cityData}
+    hotLocations={props.hotLocationSearch}
     id={router.query.city}
     page_id={props.page_id}
     type={props?.Type}
   />
-)}
+{/* )} */}
 
     </Layout>
   );

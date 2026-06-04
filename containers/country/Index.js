@@ -276,7 +276,7 @@ const Index = (props) => {
               </span> */}
             </div>
             <div className={styles.countriesGrid}>
-              {hotLocations.slice(0, 4).map((loc, idx) => (
+              {hotLocations.slice(0, 6).map((loc, idx) => (
                 <CountryCardV2
                   key={loc.id || idx}
                   item={loc}
@@ -309,16 +309,12 @@ const Index = (props) => {
         ) : null}
 
         {/* OVERVIEW / EDITORIAL */}
-        {(props.data?.overview_heading ||
-          props.data?.overview_text ||
-          props?.data?.short_description) && (
+        {props.data?.overview_text && (
           <section className={`${styles.block} ${styles.editorialBlock}`}>
             <OverviewEditorial
               tag="Kaira's take"
               heading={props.data?.overview_heading}
-              text={
-                props.data?.overview_text || props?.data?.short_description
-              }
+              text={props.data?.overview_text}
               image={
                 props.data?.overview_image ||
                 (hotLocations[0] && hotLocations[0].image)
@@ -453,7 +449,7 @@ const Index = (props) => {
               </div>
             </div>
             <div className={styles.countriesGrid}>
-              {props.data.states.slice(0, 4).map((s, idx) => (
+              {props.data.states.slice(0, 6).map((s, idx) => (
                 <CountryCardV2 key={s.id || idx} item={s} hot={idx === 0} />
               ))}
             </div>
@@ -513,7 +509,7 @@ const Index = (props) => {
               </div>
             </div>
             <div className={styles.countriesGrid}>
-              {props.locations.slice(0, 4).map((loc, idx) => (
+              {props.locations.slice(0, 6).map((loc, idx) => (
                 <CountryCardV2 key={loc.id || idx} item={loc} hot={idx === 0} />
               ))}
             </div>

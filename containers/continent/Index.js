@@ -323,7 +323,7 @@ const Index = (props) => {
             value: (
               <>
                 <span className={styles.serif}>
-                  {userItineraries?.length || 0}+
+                  {props?.data?.itineraries_count || 0}+
                 </span>{" "}
                 ready
               </>
@@ -398,7 +398,7 @@ const Index = (props) => {
               </span> */}
             </div>
             <div className={styles.countriesGrid}>
-              {props.locations.slice(0, 4).map((loc, idx) => (
+              {props.locations.slice(0, 6).map((loc, idx) => (
                 <CountryCardV2
                   key={loc.id || idx}
                   item={loc}
@@ -420,7 +420,7 @@ const Index = (props) => {
 
         {/* OVERVIEW / EDITORIAL */}
         {props?.data?.slug != "europe-continent" &&
-          (props.data?.overview_heading || props.data?.overview_text) && (
+          props.data?.overview_text && (
             <section className={`${styles.block} ${styles.editorialBlock}`}>
               <OverviewEditorial
                 tag="Kaira's take"
@@ -612,7 +612,8 @@ const Index = (props) => {
                   </div>
                 ) : component.carousel === "review-1" ? (
                   <div className="relative">
-                    {renderCarousel(component.reviews, `Review-${idx}`)}
+                    <TestimonialCarousel  reviews={component.reviews} />
+                    {/* {renderCarousel(component.reviews, `Review-${idx}`)} */}
                   </div>
                 ) : component.carousel == "poi-1" ? (
                   <>

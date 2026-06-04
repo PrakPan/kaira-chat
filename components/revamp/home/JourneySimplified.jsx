@@ -35,7 +35,7 @@ const DEFAULT_STEPS = [
   {
     title: (
       <>
-        Tell Kaira your <span className="ttwSerif">vibe.</span>
+        Tell Kaira your <span className={styles.serif}>vibe.</span>
       </>
     ),
     body: "Write like you'd text a friend. Budget, dates, must-haves. Hindi, Hinglish, English — all fine.",
@@ -49,7 +49,7 @@ const DEFAULT_STEPS = [
   {
     title: (
       <>
-        A human <span className="ttwSerif">fine-tunes</span> it.
+        A human <span className={styles.serif}>fine-tunes</span> it.
       </>
     ),
     body: "An on-ground curator adjusts what Kaira can't feel — monsoon timing, overrated spots, the quiet ghat at 6am.",
@@ -63,7 +63,7 @@ const DEFAULT_STEPS = [
   {
     title: (
       <>
-        Pay for what you <span className="ttwSerif">pick.</span>
+        Pay for what you <span className={styles.serif}>pick.</span>
       </>
     ),
     body: "Transparent pricing. No hidden markups. Book, swap, or cancel anything — from inside the chat.",
@@ -181,15 +181,15 @@ const JourneySimplified = ({ steps, itinerary, cities = [], destinationName }) =
       : DEFAULT_STEPS);
   return (
     <section className={styles.section}>
-      <div className="ttwContainer">
-        <div className="ttwSectionHead">
+      <div className={styles.container}>
+        <div className={styles.head}>
           <div>
             <h2>
-              How it <span className={styles.serif} >works.</span>
+              How it <span className={styles.serif}>works.</span>
             </h2>
-            <p className="ttwLede">
+            <p className={styles.lede}>
               Kaira plans fast.{" "}
-              <span className="ttwSerif">Humans catch</span> what AI misses.
+              <span className={styles.serif}>Humans catch</span> what AI misses.
               You only pay for what you pick.
             </p>
           </div>
