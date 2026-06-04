@@ -40,6 +40,7 @@ import { setStays } from "../../store/actions/StayBookings";
 import ConfirmationModal from "./components/ConfirmationModal";
 import { useSelector } from "react-redux";
 import setCart from "../../store/actions/Cart";
+import { openNotification } from "../../store/actions/notification";
 import { setUnreadMessages } from "../../store/actions/chatState";
 import axios from "axios";
 import { MERCURY_HOST } from "../../services/constants";
@@ -358,6 +359,7 @@ export default function BotApp({
         dispatch(setCart(res.data));
       } catch (e) {
         console.error("Failed to fetch payment data", e);
+        dispatch(setCart({ error: true }));
       } finally {
         setPaymentLoading(false);
       }
@@ -700,6 +702,13 @@ export default function BotApp({
         setIsChatActive(true);
         setViewMode("itinerary");
         setMobilePanel(allDone || fromTailored ? "itinerary" : "map");
+        // Refresh UX: when the restored session's status API returns stage
+        // P2, land on the itinerary tab on mobile. Only fires from the
+        // restore path — live-stream display_itinerary effects must NOT
+        // yank the tab.
+        if (stage === "P2") {
+          mobileTabSwitchRef.current?.("itinerary");
+        }
       } catch (err) {
         console.error("Failed to restore itinerary directly:", err);
         setShowStartScreen(true);
@@ -1719,6 +1728,14 @@ export default function BotApp({
         if (restoredItineraryId) {
           setViewMode("itinerary");
           if (hasCompletedEffectInLoop) setMobilePanel("itinerary");
+          // Refresh UX: a display_itinerary or completion effect in the
+          // restored thread means the user already has an itinerary —
+          // land on the itinerary tab on mobile. Only fires from the
+          // restore path (loadThread); live-stream display_itinerary
+          // effects do NOT switch tabs.
+          if (hasDisplayItinerary || hasCompletedEffectInLoop) {
+            mobileTabSwitchRef.current?.("itinerary");
+          }
         } else if ((data.map_effects ?? []).length > 0) {
           // P1 chat-only thread (no itinerary yet) but has route/POI data —
           // sessionId-default of "itinerary" hides the map behind an empty
@@ -2809,13 +2826,28 @@ Start Location: ${details.startLocation}`;
                     },
                   )
                   .then(() =>
-                    alert(
-                      "Request received. Our team will get in touch with you shortly!",
+                    dispatch(
+                      openNotification({
+                        type: "success",
+                        heading: "Request received",
+                        text: "Our team will get in touch with you shortly!",
+                      }),
                     ),
                   )
                   .catch(() =>
-                    alert("Something went wrong. Please try again."),
+                    dispatch(
+                      openNotification({
+                        type: "error",
+                        heading: "Something went wrong",
+                        text: "Please try again.",
+                      }),
+                    ),
                   );
+              }}
+              onRetryCart={() => {
+                if (!activeItineraryId) return;
+                dispatch(setCart({}));
+                fetchPaymentData(activeItineraryId);
               }}
             />
           </div>
@@ -3103,11 +3135,28 @@ Start Location: ${details.startLocation}`;
                   },
                 )
                 .then(() =>
-                  alert(
-                    "Request received. Our team will get in touch with you shortly!",
+                  dispatch(
+                    openNotification({
+                      type: "success",
+                      heading: "Request received",
+                      text: "Our team will get in touch with you shortly!",
+                    }),
                   ),
                 )
-                .catch(() => alert("Something went wrong. Please try again."));
+                .catch(() =>
+                  dispatch(
+                    openNotification({
+                      type: "error",
+                      heading: "Something went wrong",
+                      text: "Please try again.",
+                    }),
+                  ),
+                );
+            },
+            onRetryCart: () => {
+              if (!activeItineraryId) return;
+              dispatch(setCart({}));
+              fetchPaymentData(activeItineraryId);
             },
           }}
           onSettingsClick={() => {
@@ -3189,6 +3238,7 @@ Start Location: ${details.startLocation}`;
               isHotelsPresent={isHotelsPresent}
               handleApply={settingsHandleApply}
               maxAdults={true}
+              maxRooms={true}
             />
           </BottomModal>
         ) : (
@@ -3198,6 +3248,7 @@ Start Location: ${details.startLocation}`;
               isHotelsPresent={isHotelsPresent}
               handleApply={settingsHandleApply}
               maxAdults={true}
+              maxRooms={true}
             />
           </ModalWithBackdrop>
         );
@@ -3295,6 +3346,7 @@ interface BottomCTABarProps {
   onConfirm: () => void;
   onViewCart: () => void;
   onGetInTouch?: () => void;
+  onRetryCart?: () => void;
   notes?: any[];
 }
 
@@ -3315,6 +3367,7 @@ const BottomCTABar = React.memo(
     onConfirm,
     onViewCart,
     onGetInTouch,
+    onRetryCart,
     notes,
   }: BottomCTABarProps) => {
     if (
@@ -3393,6 +3446,12 @@ const BottomCTABar = React.memo(
                 {currencySymbol} {cost.toLocaleString("en-IN")}/-
               </span>
             </>
+          ) : cart?.error ? (
+            <div className="flex items-center gap-2">
+              <span className="ttw-type-small text-[#6E757A]">
+                Couldn&apos;t load price.
+              </span>
+            </div>
           ) : (
             <span className="ttw-type-small text-[#6E757A] italic">
               Calculating price…
@@ -3424,17 +3483,26 @@ const BottomCTABar = React.memo(
               fill="#AD5BE7"
             />
           </svg>
-          <button
-            onClick={onViewCart}
-            className="flex items-center gap-2 h-[44px] px-4 rounded-[8px] bg-[#F7E700] ttw-type-body font-inter !font-semibold"
-          >
-            View Cart
-            {countCartItems > 0 && (
-              <span className="bg-[#07213A] text-white ttw-type-small font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                {countCartItems}
-              </span>
-            )}
-          </button>
+          {cart?.error ? (
+            <button
+              onClick={onGetInTouch}
+              className="flex items-center gap-2 h-[44px] px-4 rounded-[8px] bg-[#F7E700] ttw-type-body font-inter !font-semibold"
+            >
+              Get in touch!
+            </button>
+          ) : (
+            <button
+              onClick={onViewCart}
+              className="flex items-center gap-2 h-[44px] px-4 rounded-[8px] bg-[#F7E700] ttw-type-body font-inter !font-semibold"
+            >
+              View Cart
+              {countCartItems > 0 && (
+                <span className="bg-[#07213A] text-white ttw-type-small font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                  {countCartItems}
+                </span>
+              )}
+            </button>
+          )}
         </div>
       </div>
     );
@@ -3947,17 +4015,11 @@ const MobileLayout = React.memo(
       prevIsChatActiveRef.current = isChatActive;
     }, [isChatActive]);
 
-    // When itinerary activity starts, auto-move to itinerary tab so user sees content
+    // When itinerary activity starts on mobile, keep the user on the chat tab
+    // rather than yanking them into the itinerary view. The "View Itinerary"
+    // pill above the composer and the top tab bar let them switch manually.
     const prevHasActivityRef = React.useRef(hasItineraryActivity);
     React.useEffect(() => {
-      if (
-        !prevHasActivityRef.current &&
-        hasItineraryActivity &&
-        activeTab === "chat"
-      ) {
-        setActiveTab("itinerary");
-        setViewMode("itinerary");
-      }
       // Activity dropped (e.g. switched from a P2 thread to a P1 thread that
       // hasn't built an itinerary yet). The itinerary/routes/bookings tabs
       // disappear from the top bar AND their content div is gated by

@@ -294,6 +294,19 @@ const hashString = (s) => {
 const normalizeTagKey = (raw) =>
   String(raw || "").trim().toLowerCase().replace(/[\s-]+/g, "_");
 
+// Display-label overrides — chip text is uppercased via CSS, so only the
+// characters that the underscore→space default can't produce (e.g. the
+// apostrophe) need an explicit entry here.
+const TAG_LABEL_BY_KEY = {
+  kairas_pick: "Kaira's pick",
+  kaira_pick: "Kaira's pick",
+};
+
+const resolveTagLabel = (raw) => {
+  const key = normalizeTagKey(raw);
+  return TAG_LABEL_BY_KEY[key] || String(raw).replace(/_/g, " ");
+};
+
 // Pick a style for a tag. Known keys → mapped style; unknown → deterministic
 // fallback color. Caller renders the raw API string as the chip text.
 const resolveTagStyle = (raw) => {
@@ -587,7 +600,7 @@ useEffect(() => {
               <span aria-hidden="true" style={{ fontSize: "8px", lineHeight: 1, font:500}}>
                 {resolveTagIcon(t)}
               </span>
-              {t.replace(/_/g, " ")}
+              {resolveTagLabel(t)}
             </span>
           ))}
           {duration && (
