@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { FaUserFriends, FaChevronDown } from "react-icons/fa";
 import ModalWithBackdrop from "../../ui/ModalWithBackdrop";
 import BottomModal from "../../ui/LowerModal";
 import useMediaQuery from "../../media";
@@ -56,6 +57,16 @@ const TransferPax = ({ pax, setPax, combo = true, limit = null, disabled = false
   }, [pax?.adults, pax?.children, JSON.stringify(pax?.childAges), pax?.infants]);
 
   const total = adults + children + infants;
+
+  // "2 Adults, 1 Child, 1 Infant" — only the selected groups, proper singular/plural.
+  const summary =
+    [
+      adults > 0 ? `${adults} ${adults > 1 ? "Adults" : "Adult"}` : null,
+      children > 0 ? `${children} ${children > 1 ? "Children" : "Child"}` : null,
+      infants > 0 ? `${infants} ${infants > 1 ? "Infants" : "Infant"}` : null,
+    ]
+      .filter(Boolean)
+      .join(", ") || "Add travellers";
 
   const handleChildrenChange = (next) => {
     if (next < 0) return;
@@ -227,17 +238,26 @@ const TransferPax = ({ pax, setPax, combo = true, limit = null, disabled = false
   );
 
   return (
-    <div className="relative w-full sm:w-auto">
-      {/* Trigger — matches the settings/hotels field chrome */}
+    <div className="relative w-full">
+      {/* Trigger — matches the Departure Date/Time field chrome */}
       <div
         onClick={openModal}
-        className={`flex h-[46.4px] w-full min-w-0 items-center gap-[10px] rounded-[6px] border border-[#E5E5E5] bg-white px-3 ${
-          disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+        className={`flex h-[46.4px] w-full min-w-0 items-center gap-2 rounded-[10px] border bg-[#07213A0D] px-3 transition-colors ${
+          isOpen ? "border-[#07213A]" : "border-[#07213A26]"
+        } ${
+          disabled
+            ? "opacity-50 cursor-not-allowed"
+            : "cursor-pointer hover:bg-[#07213A14] hover:border-[#07213A40]"
         }`}
       >
-        <span className="Body2M_14 truncate text-gray-700">
-          Travellers | {total} {total > 1 ? "Passengers" : "Passenger"}
-        </span>
+        <FaUserFriends className="shrink-0 text-[#07213A]" size={16} />
+        <span className="Body2M_14 flex-1 truncate text-[#07213A]">{summary}</span>
+        <FaChevronDown
+          className={`shrink-0 text-[#07213A] transition-transform ${
+            isOpen ? "rotate-180" : ""
+          }`}
+          size={14}
+        />
       </div>
 
       {isDesktop ? (

@@ -14,7 +14,7 @@ import Button from "../../ui/button/Index";
 import ImageLoader from "../../../components/ImageLoader";
 import { logEvent } from "../../../services/ga/Index";
 import NewActivityBooking from "../../../containers/newitinerary/itineraryelements/NewActivityBooking";
-import { Pax } from "./Pax";
+import { Pax } from "../activityDetails/Pax";
 import { getHumanDate } from "../../../services/getHumanDate";
 import DyamicFilters from "./filters/DynamicFilters";
 import CheckboxFormComponent from "../../FormComponents/CheckboxFormComponent";

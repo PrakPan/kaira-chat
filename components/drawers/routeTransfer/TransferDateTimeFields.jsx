@@ -32,6 +32,7 @@ const TransferDateTimeFields = ({
   // Travellers
   pax,
   onPaxChange,
+  showTravellers = true,
   // Shared
   disabled = false,
   labelClassName = "Body2M_14",
@@ -108,14 +109,19 @@ const TransferDateTimeFields = ({
       </div>
 
       {/* Travellers */}
-      <div className="w-full sm:w-auto sm:shrink-0 flex justify-end">
-        <TransferPax
-          pax={pax}
-          setPax={onPaxChange}
-          combo={true}
-          disabled={disabled}
-        />
-      </div>
+      {showTravellers && (
+        <div className="w-full sm:w-[200px] sm:min-w-0 sm:shrink-0">
+          <label className={`${labelClassName} mb-[4px] block`}>
+            Travellers
+          </label>
+          <TransferPax
+            pax={pax}
+            setPax={onPaxChange}
+            combo={true}
+            disabled={disabled}
+          />
+        </div>
+      )}
     </div>
   );
 };
