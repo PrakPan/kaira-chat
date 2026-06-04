@@ -25,6 +25,12 @@ export default function NewActivityBooking(props) {
   const isDesktop = useMediaQuery("(min-width: 583px)");
   const currency = useSelector(state=>state.currency);
 
+  // Ventrata prices are per-unit/lead-in rates, so the displayed amount is a
+  // "starting from" figure rather than a fixed total. Prefix the price label
+  // for activities sourced from Ventrata.
+  const isVentrata =
+    String(props?.data?.source || "").toLowerCase() === "ventrata";
+
   useEffect(() => {
     if (props?.data && props.data?.rating) {
       const stars = [];
@@ -234,7 +240,13 @@ export default function NewActivityBooking(props) {
             </div>
             <div className="flex flex-row items-center justify-between">
               {props.data?.pricing?.total_price ? (
-                <div className="flex flex-col md:flex-row gap-2 items-baseline">
+                <div className="flex flex-col gap-1">
+                  {isVentrata && (
+                    <div className="text-text-spacegrey text-sm-md font-400 leading-lg">
+                      Starting from
+                    </div>
+                  )}
+                  <div className="flex flex-col md:flex-row gap-2 items-baseline">
                   <div className="text-text-charcolblack text-lg font-700 leading-2xl-md max-ph:mb-sm">
                     <span
                       className="!font-[lexend]"
@@ -246,6 +258,7 @@ export default function NewActivityBooking(props) {
                   </div>
                   <div className="text-text-spacegrey text-sm-md font-400 leading-lg mt-xxs">
                     for {props.data.pricing.total_pax} people*
+                  </div>
                   </div>
                 </div>
               ) : null}
@@ -489,13 +502,20 @@ export default function NewActivityBooking(props) {
 
           <div className="flex flex-row items-center justify-between py-1">
             {props.data?.pricing?.total_price ? (
-              <div className="flex gap-1">
-                <div className="text-text-charcolblack text-lg font-700 leading-2xl-md max-ph:mb-sm">
-                  <span>{currency?.currency ? currencySymbols?.[currency?.currency] : `₹`}</span>
-                  {getIndianPrice(Math.round(props.data.pricing.total_price))}
-                </div>
-                <div className="text-[14px] mt-[10px]">
-                  for {props.data.pricing.total_pax} people*
+              <div className="flex flex-col gap-1">
+                {isVentrata && (
+                  <div className="text-text-spacegrey text-[14px] font-400 leading-lg">
+                    Starting from
+                  </div>
+                )}
+                <div className="flex gap-1">
+                  <div className="text-text-charcolblack text-lg font-700 leading-2xl-md max-ph:mb-sm">
+                    <span>{currency?.currency ? currencySymbols?.[currency?.currency] : `₹`}</span>
+                    {getIndianPrice(Math.round(props.data.pricing.total_price))}
+                  </div>
+                  <div className="text-[14px] mt-[10px]">
+                    for {props.data.pricing.total_pax} people*
+                  </div>
                 </div>
               </div>
             ) : null}
