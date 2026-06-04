@@ -597,7 +597,7 @@ useEffect(() => {
               className={`${CHIP_BASE} align-middle mr-[5px] !font-normal`}
               style={{ ...CHIP_TEXT_STYLE, ...resolveTagStyle(t) }}
             >
-              <span aria-hidden="true" style={{ fontSize: "8px", lineHeight: 1, font:500}}>
+              <span aria-hidden="true" style={{ fontSize: "11px", lineHeight: 1, font:500}}>
                 {resolveTagIcon(t)}
               </span>
               {resolveTagLabel(t)}
