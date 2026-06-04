@@ -312,6 +312,17 @@ const ItineraryContainer = (props) => {
     }
   }, [router.isReady, router.query]);
 
+  // Open the Settings modal in response to a global event. Dispatched from
+  // OfflineQuoteCTA's "Update Dates" button so any deeply-nested search drawer
+  // can request the dates editor without prop-drilling setShowSettings.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const onOpenSettings = () => setShowSettings(true);
+    window.addEventListener("open-itinerary-settings", onOpenSettings);
+    return () =>
+      window.removeEventListener("open-itinerary-settings", onOpenSettings);
+  }, []);
+
     const resetRef = () => {
     dispatch(setItineraryStatus("pricing_status", "PENDING"));
     dispatch(setItineraryStatus("transfers_status", "PENDING"));

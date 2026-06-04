@@ -25,6 +25,8 @@ import axiossearchinstance, {
 } from "../../services/search/searchsuggest";
 import axiosTaxiSearch from "../../services/bookings/TaxiSearch";
 import Skeleton from "../../components/modals/taxis/Skeleton";
+import OfflineQuoteCTA from "../../components/ui/OfflineQuoteCTA";
+import { useRouter } from "next/router";
 
 const PickupDropDrawer = ({
   isOpen,
@@ -83,6 +85,7 @@ const PickupDropDrawer = ({
   const [destinationInput, setDestinationInput] = useState("");
   const [initialPropsAssigned, setInitialPropsAssigned] = useState(false);
   const hasAutoSearchedRef = useRef(false);
+  const router = useRouter();
 
   const sourceInputRef = useRef(null);
   const destinationInputRef = useRef(null);
@@ -1473,6 +1476,30 @@ const getTitle = () => {
               <div className="flex items-center space-x-2">
                 <FiAlertCircle className="text-red-500" size={16} />
                 <span className="text-red-700 text-sm">{searchError}</span>
+              </div>
+              <div className="mt-3 flex justify-center">
+                <OfflineQuoteCTA
+                  itinerary_id={router?.query?.id}
+                  type="taxi"
+                  startDate={formData.transferDate}
+                  onEditDates={() => {
+                    if (typeof onClose === "function") onClose();
+                  }}
+                  payload={{
+                    taxi_type: "airport",
+                    source:
+                      formData.sourceAddress ||
+                      hotelName ||
+                      originCityName,
+                    destination:
+                      formData.destinationAddress ||
+                      destinationHotelName ||
+                      destinationCityName,
+                    start_date: formData.transferDate,
+                    airport_type:
+                      transferType === "drop" ? "drop" : "pickup",
+                  }}
+                />
               </div>
             </div>
           )}

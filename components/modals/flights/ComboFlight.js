@@ -39,6 +39,7 @@ import { useGenericAPIModal } from "../warning/Index";
 import { PiAirplaneLanding, PiAirplaneTakeoff } from "react-icons/pi";
 import FlightFilters from "./new-flight-searched/FlightFilters";
 import { useAnalytics } from "../../../hooks/useAnalytics";
+import OfflineQuoteCTA from "../../ui/OfflineQuoteCTA";
 
 // const GridContainer = styled.div`
 // min-height: 65vh;
@@ -1321,9 +1322,39 @@ const ComboFlight = (props) => {
     }
 
     if (isFetchingError.error) {
+      const startDateForCta =
+        (props?.comboStartDate && props?.comboStartTime
+          ? `${props.comboStartDate} ${props.comboStartTime}`
+          : null) ||
+        props?.selectedBooking?.check_in ||
+        preferredDepartureTime;
       return (
-        <div className="flex flex-row items-center justify-center h-[80vh] text-center ">
-          {isFetchingError.errorMsg}
+        <div className="flex flex-col items-center justify-center h-[80vh] text-center gap-3 px-4">
+          <div>{isFetchingError.errorMsg}</div>
+          <OfflineQuoteCTA
+            itinerary_id={props?.itinerary_id}
+            type="flight"
+            token={props.token}
+            startDate={startDateForCta}
+            onEditDates={() => {
+              if (typeof props?.setHideFlightModal === "function") {
+                props.setHideFlightModal();
+              }
+            }}
+            payload={{
+              source:
+                sourceInput?.code ||
+                props?.source_code ||
+                props?.selectedBooking?.origin_iata,
+              destination:
+                destinationInput?.code ||
+                props?.destination_code ||
+                props?.selectedBooking?.destination_iata,
+              departure_date: (startDateForCta || "")
+                .split(" ")[0]
+                .split("T")[0],
+            }}
+          />
         </div>
       );
     }

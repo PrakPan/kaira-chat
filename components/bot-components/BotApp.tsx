@@ -463,13 +463,16 @@ export default function BotApp({
       },
     );
     const onUnauthorized = () => setShowApiLoginPrompt(true);
+    const onOpenSettings = () => setShowSettings(true);
     if (typeof window !== "undefined") {
       window.addEventListener("api:unauthorized", onUnauthorized);
+      window.addEventListener("open-itinerary-settings", onOpenSettings);
     }
     return () => {
       axios.interceptors.response.eject(id);
       if (typeof window !== "undefined") {
         window.removeEventListener("api:unauthorized", onUnauthorized);
+        window.removeEventListener("open-itinerary-settings", onOpenSettings);
       }
     };
   }, []);
@@ -1458,6 +1461,34 @@ export default function BotApp({
     ],
   );
 
+  // Patch just the Traveller Type (pax) and/or Date of Travelling on the
+  // current trip in response to the `update_pax` / `update_travel_date` client
+  // effects. Merges onto the existing itinerary so the P1 header refreshes
+  // without rebuilding the whole route.
+  const handleTripMetaUpdate = useCallback(
+    (meta: {
+      number_of_adults?: number;
+      number_of_children?: number;
+      number_of_infants?: number;
+      travel_date?: string;
+    }) => {
+      const base = currentItineraryRef.current ?? {};
+      const next: any = { ...base };
+      if (meta.number_of_adults !== undefined)
+        next.number_of_adults = meta.number_of_adults;
+      if (meta.number_of_children !== undefined)
+        next.number_of_children = meta.number_of_children;
+      if (meta.number_of_infants !== undefined)
+        next.number_of_infants = meta.number_of_infants;
+      if (meta.travel_date !== undefined) next.travel_date = meta.travel_date;
+      currentItineraryRef.current = next;
+      dispatch(setItinerary(next));
+      dispatch(setItineraryDaybyDay(next));
+      dispatch(setBreif(next));
+    },
+    [dispatch],
+  );
+
   const handleLocationReceived = useCallback(
     (locationData: { data: Location[] }) => {
       revealLeftPanel();
@@ -2298,6 +2329,7 @@ export default function BotApp({
     onClearMap: handleClearMap,
     onRouteReceived: handleRouteReceived,
     onItineraryReceived: handleItineraryReceived,
+    onTripMetaUpdate: handleTripMetaUpdate,
     onRouteEndpointsReceived: handleRouteEndpointsReceived,
     onItineraryCompletionStart: handleItineraryCompletionStart,
     onItineraryCompletionDone: handleItineraryCompletionDone,
@@ -2560,6 +2592,9 @@ Start Location: ${details.startLocation}`;
                             : ""}
                         {itineraryRedux.number_of_children > 0
                           ? `, ${itineraryRedux.number_of_children} Child${itineraryRedux.number_of_children > 1 ? "ren" : ""}`
+                          : ""}
+                        {itineraryRedux.number_of_infants > 0
+                          ? `, ${itineraryRedux.number_of_infants} Infant${itineraryRedux.number_of_infants > 1 ? "s" : ""}`
                           : ""}
                       </span>
                       {isDraft && (

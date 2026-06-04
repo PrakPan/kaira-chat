@@ -14,6 +14,8 @@ import { openNotification } from "../../../store/actions/notification";
 import Skeleton from "./Skeleton";
 import TransferEditDrawer from "../../drawers/routeTransfer/TransferEditDrawer";
 import { fetchTransferMode } from "../../../services/bookings/FetchTaxiRecommendations";
+import OfflineQuoteCTA from "../../ui/OfflineQuoteCTA";
+import { useRouter } from "next/router";
 
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
@@ -46,6 +48,7 @@ const ContentContainer = styled.div`
 `;
 
 const Booking = (props) => {
+  const router = useRouter();
   let isPageWide = media("(min-width: 768px)");
   const [optionsJSX, setOptionsJSX] = useState([]);
   const [moreOptionsJSX, setMoreOptionsJSX] = useState([]);
@@ -316,7 +319,38 @@ const Booking = (props) => {
 
               {error ? (
                 <OptionsContainer className=" center-div text-center">
-                  Oops, There seems to be a problem, please try again later!
+                  <div className="flex flex-col items-center gap-3">
+                    <div>
+                      Oops, There seems to be a problem, please try again later!
+                    </div>
+                    <OfflineQuoteCTA
+                      itinerary_id={
+                        props?.itinerary_id || router?.query?.id
+                      }
+                      type="taxi"
+                      token={props?.token}
+                      startDate={props?.selectedBooking?.check_in}
+                      onEditDates={() => {
+                        if (typeof props?.setHideTaxiModal === "function") {
+                          props.setHideTaxiModal();
+                        }
+                      }}
+                      payload={{
+                        taxi_type: "one-way",
+                        source:
+                          props.selectedBooking?.origin?.shortName ||
+                          props.selectedBooking?.origin?.city_name ||
+                          props?.oCityData?.city_name ||
+                          props?.oCityData?.city?.name,
+                        destination:
+                          props.selectedBooking?.destination?.shortName ||
+                          props.selectedBooking?.destination?.city_name ||
+                          props?.dCityData?.city_name ||
+                          props?.dCityData?.city?.name,
+                        start_date: props?.selectedBooking?.check_in,
+                      }}
+                    />
+                  </div>
                 </OptionsContainer>
               ) : null}
             </ContentContainer>

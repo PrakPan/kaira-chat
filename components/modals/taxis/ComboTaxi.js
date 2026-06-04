@@ -17,6 +17,7 @@ import { fetchTransferMode } from "../../../services/bookings/FetchTaxiRecommend
 import dayjs from "dayjs";
 import { add, format } from "date-fns";
 import TransferDateTimeFields from "../../drawers/routeTransfer/TransferDateTimeFields";
+import OfflineQuoteCTA from "../../ui/OfflineQuoteCTA";
 
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
@@ -589,7 +590,41 @@ const ComboTaxi = (props) => {
 
               {error ? (
                 <OptionsContainer className=" center-div text-center">
-                  Oops, There seems to be a problem, please try again later!
+                  <div className="flex flex-col items-center gap-3">
+                    <div>
+                      Oops, There seems to be a problem, please try again later!
+                    </div>
+                    <OfflineQuoteCTA
+                      itinerary_id={props?.itinerary_id}
+                      type="taxi"
+                      token={props?.token}
+                      startDate={
+                        props?.comboStartDate ||
+                        props?.selectedBooking?.check_in
+                      }
+                      onEditDates={() => {
+                        if (typeof props?.setHideTaxiModal === "function") {
+                          props.setHideTaxiModal();
+                        }
+                      }}
+                      payload={{
+                        taxi_type: "one-way",
+                        source:
+                          props.selectedBooking?.origin?.shortName ||
+                          props.selectedBooking?.origin?.city_name ||
+                          props?.oCityData?.city_name ||
+                          props?.oCityData?.city?.name,
+                        destination:
+                          props.selectedBooking?.destination?.shortName ||
+                          props.selectedBooking?.destination?.city_name ||
+                          props?.dCityData?.city_name ||
+                          props?.dCityData?.city?.name,
+                        start_date:
+                          props?.comboStartDate ||
+                          props?.selectedBooking?.check_in,
+                      }}
+                    />
+                  </div>
                 </OptionsContainer>
               ) : null}
             </ContentContainer>
