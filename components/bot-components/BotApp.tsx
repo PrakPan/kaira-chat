@@ -40,6 +40,7 @@ import { setStays } from "../../store/actions/StayBookings";
 import ConfirmationModal from "./components/ConfirmationModal";
 import { useSelector } from "react-redux";
 import setCart from "../../store/actions/Cart";
+import { openNotification } from "../../store/actions/notification";
 import { setUnreadMessages } from "../../store/actions/chatState";
 import axios from "axios";
 import { MERCURY_HOST } from "../../services/constants";
@@ -138,8 +139,15 @@ function transformDraftToItinerary(draft: any) {
 
   return {
     name: draft?.name ?? "Your Itinerary",
-    start_date: null,
-    end_date: null,
+    start_date: draft?.start_date ?? null,
+    end_date: draft?.end_date ?? null,
+    travel_date: draft?.travel_date ?? null,
+    group_type: draft?.group_type ?? null,
+    number_of_adults: draft?.number_of_adults ?? draft?.no_of_adults ?? null,
+    number_of_children:
+      draft?.number_of_children ?? draft?.no_of_children ?? null,
+    number_of_infants:
+      draft?.number_of_infants ?? draft?.no_of_infants ?? null,
     cities,
     start_city: toEndpointCity(draft?.start_city),
     end_city: toEndpointCity(draft?.end_city),
@@ -337,6 +345,7 @@ export default function BotApp({
         dispatch(setCart(res.data));
       } catch (e) {
         console.error("Failed to fetch payment data", e);
+        dispatch(setCart({ error: true }));
       } finally {
         setPaymentLoading(false);
       }
@@ -1332,6 +1341,31 @@ export default function BotApp({
 
       const draft = data?.itinerary ?? data;
       const transformed = transformDraftToItinerary(draft);
+      // pax + travel-date can arrive either on the itinerary object or at the
+      // effect-data root (sibling to `.itinerary`). transformDraftToItinerary
+      // only sees the nested object, so backfill from the root here — keeps the
+      // P1 header (Traveller Type / Date of Travelling) populated on reload too.
+      const meta: any = data ?? {};
+      transformed.start_date = transformed.start_date ?? meta.start_date ?? null;
+      transformed.end_date = transformed.end_date ?? meta.end_date ?? null;
+      transformed.travel_date =
+        transformed.travel_date ?? meta.travel_date ?? null;
+      transformed.group_type = transformed.group_type ?? meta.group_type ?? null;
+      transformed.number_of_adults =
+        transformed.number_of_adults ??
+        meta.number_of_adults ??
+        meta.no_of_adults ??
+        null;
+      transformed.number_of_children =
+        transformed.number_of_children ??
+        meta.number_of_children ??
+        meta.no_of_children ??
+        null;
+      transformed.number_of_infants =
+        transformed.number_of_infants ??
+        meta.number_of_infants ??
+        meta.no_of_infants ??
+        null;
       // Fill in missing start/end city from the user's current location so the
       // P1 panel always shows a name + pin, matching the "use default user
       // location when not present" contract established in ChatKitPanel.
@@ -2473,14 +2507,18 @@ Start Location: ${details.startLocation}`;
           </div>
         </div>
 
-        {!isDraft && (
+        {(itineraryRedux?.group_type ||
+          itineraryRedux?.number_of_adults ||
+          itineraryRedux?.travel_date ||
+          (itineraryRedux?.start_date && itineraryRedux?.end_date)) && (
           <div className="flex flex-col gap-1.5 mt-1.5">
             {/* Outer row — column on mobile (so the gallery slides below the
                 meta), single row on desktop (gallery sits to the right of
                 traveller/date, matching the original design). */}
             <div className="flex items-start gap-2 max-ph:flex-col max-ph:items-stretch md:items-center">
               <div className="flex items-center gap-4 flex-wrap">
-                {itineraryRedux?.group_type && (
+                {(itineraryRedux?.group_type ||
+                  itineraryRedux?.number_of_adults) && (
                   <div className="flex flex-col">
                     <span className="text-[10px] font-inter uppercase tracking-wide">
                       Traveller Type
@@ -2511,18 +2549,50 @@ Start Location: ${details.startLocation}`;
                         />
                       </svg>
                       <span className="text-[12px] font-inter font-medium">
-                        {itineraryRedux.group_type}
-                        {itineraryRedux.number_of_adults
-                          ? ` (${itineraryRedux.number_of_adults} Adult${itineraryRedux.number_of_adults > 1 ? "s" : ""})`
-                          : ""}
+                        {itineraryRedux.group_type
+                          ? `${itineraryRedux.group_type}${
+                              itineraryRedux.number_of_adults
+                                ? ` (${itineraryRedux.number_of_adults} Adult${itineraryRedux.number_of_adults > 1 ? "s" : ""})`
+                                : ""
+                            }`
+                          : itineraryRedux.number_of_adults
+                            ? `${itineraryRedux.number_of_adults} Adult${itineraryRedux.number_of_adults > 1 ? "s" : ""}`
+                            : ""}
                         {itineraryRedux.number_of_children > 0
                           ? `, ${itineraryRedux.number_of_children} Child${itineraryRedux.number_of_children > 1 ? "ren" : ""}`
                           : ""}
                       </span>
+                      {isDraft && (
+                        <button
+                          type="button"
+                          aria-label="Change traveller count"
+                          className="flex items-center justify-center hover:opacity-70"
+                          onClick={() =>
+                            handleItineraryContainerSendMessage(
+                              "change traveller count",
+                            )
+                          }
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="14"
+                            height="14"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                          >
+                            <path
+                              d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                              fill="#ACACAC"
+                            />
+                          </svg>
+                        </button>
+                      )}
                     </div>
                   </div>
                 )}
-                {itineraryRedux?.start_date && itineraryRedux?.end_date && (
+                {(itineraryRedux?.travel_date ||
+                  (itineraryRedux?.start_date &&
+                    itineraryRedux?.end_date)) && (
                   <div className="flex flex-col">
                     <span className="text-[10px] font-inter uppercase tracking-wide">
                       Date of Travelling
@@ -2541,24 +2611,47 @@ Start Location: ${details.startLocation}`;
                         />
                       </svg>
                       <span className="text-[12px] font-inter font-medium">
-                        {new Date(itineraryRedux.start_date).toLocaleDateString(
-                          "en-GB",
-                          {
-                            day: "numeric",
-                            month: "short",
-                            year: "numeric",
-                          },
-                        )}
-                        {" – "}
-                        {new Date(itineraryRedux.end_date).toLocaleDateString(
-                          "en-GB",
-                          {
-                            day: "numeric",
-                            month: "short",
-                            year: "numeric",
-                          },
-                        )}
+                        {itineraryRedux.start_date && itineraryRedux.end_date
+                          ? `${new Date(
+                              itineraryRedux.start_date,
+                            ).toLocaleDateString("en-GB", {
+                              day: "numeric",
+                              month: "short",
+                              year: "numeric",
+                            })} – ${new Date(
+                              itineraryRedux.end_date,
+                            ).toLocaleDateString("en-GB", {
+                              day: "numeric",
+                              month: "short",
+                              year: "numeric",
+                            })}`
+                          : itineraryRedux.travel_date}
                       </span>
+                      {isDraft && (
+                        <button
+                          type="button"
+                          aria-label="Change travelling date"
+                          className="flex items-center justify-center hover:opacity-70"
+                          onClick={() =>
+                            handleItineraryContainerSendMessage(
+                              "change my travelling date",
+                            )
+                          }
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="14"
+                            height="14"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                          >
+                            <path
+                              d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                              fill="#ACACAC"
+                            />
+                          </svg>
+                        </button>
+                      )}
                     </div>
                   </div>
                 )}
@@ -2638,13 +2731,28 @@ Start Location: ${details.startLocation}`;
                     },
                   )
                   .then(() =>
-                    alert(
-                      "Request received. Our team will get in touch with you shortly!",
+                    dispatch(
+                      openNotification({
+                        type: "success",
+                        heading: "Request received",
+                        text: "Our team will get in touch with you shortly!",
+                      }),
                     ),
                   )
                   .catch(() =>
-                    alert("Something went wrong. Please try again."),
+                    dispatch(
+                      openNotification({
+                        type: "error",
+                        heading: "Something went wrong",
+                        text: "Please try again.",
+                      }),
+                    ),
                   );
+              }}
+              onRetryCart={() => {
+                if (!activeItineraryId) return;
+                dispatch(setCart({}));
+                fetchPaymentData(activeItineraryId);
               }}
             />
           </div>
@@ -2932,11 +3040,28 @@ Start Location: ${details.startLocation}`;
                   },
                 )
                 .then(() =>
-                  alert(
-                    "Request received. Our team will get in touch with you shortly!",
+                  dispatch(
+                    openNotification({
+                      type: "success",
+                      heading: "Request received",
+                      text: "Our team will get in touch with you shortly!",
+                    }),
                   ),
                 )
-                .catch(() => alert("Something went wrong. Please try again."));
+                .catch(() =>
+                  dispatch(
+                    openNotification({
+                      type: "error",
+                      heading: "Something went wrong",
+                      text: "Please try again.",
+                    }),
+                  ),
+                );
+            },
+            onRetryCart: () => {
+              if (!activeItineraryId) return;
+              dispatch(setCart({}));
+              fetchPaymentData(activeItineraryId);
             },
           }}
           onSettingsClick={() => {
@@ -3126,6 +3251,7 @@ interface BottomCTABarProps {
   onConfirm: () => void;
   onViewCart: () => void;
   onGetInTouch?: () => void;
+  onRetryCart?: () => void;
   notes?: any[];
 }
 
@@ -3146,6 +3272,7 @@ const BottomCTABar = React.memo(
     onConfirm,
     onViewCart,
     onGetInTouch,
+    onRetryCart,
     notes,
   }: BottomCTABarProps) => {
     if (
@@ -3224,6 +3351,18 @@ const BottomCTABar = React.memo(
                 {currencySymbol} {cost.toLocaleString("en-IN")}/-
               </span>
             </>
+          ) : cart?.error ? (
+            <div className="flex items-center gap-2">
+              <span className="text-[13px] text-[#6E757A]">
+                Couldn&apos;t load price.
+              </span>
+              {/* <button
+                onClick={onRetryCart}
+                className="text-[13px] font-inter font-semibold text-[#AD5BE7] underline"
+              >
+                Retry
+              </button> */}
+            </div>
           ) : (
             <span className="text-[13px] text-[#6E757A] italic">
               Calculating price…
@@ -3255,17 +3394,26 @@ const BottomCTABar = React.memo(
               fill="#AD5BE7"
             />
           </svg>
-          <button
-            onClick={onViewCart}
-            className="flex items-center gap-2 h-[44px] px-4 rounded-[8px] bg-[#F7E700] text-[16px] font-inter font-semibold"
-          >
-            View Cart
-            {countCartItems > 0 && (
-              <span className="bg-[#07213A] text-white text-[11px] font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                {countCartItems}
-              </span>
-            )}
-          </button>
+          {cart?.error ? (
+            <button
+              onClick={onGetInTouch}
+              className="flex items-center gap-2 h-[44px] px-4 rounded-[8px] bg-[#F7E700] text-[16px] font-inter font-semibold"
+            >
+              Get in touch!
+            </button>
+          ) : (
+            <button
+              onClick={onViewCart}
+              className="flex items-center gap-2 h-[44px] px-4 rounded-[8px] bg-[#F7E700] text-[16px] font-inter font-semibold"
+            >
+              View Cart
+              {countCartItems > 0 && (
+                <span className="bg-[#07213A] text-white text-[11px] font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                  {countCartItems}
+                </span>
+              )}
+            </button>
+          )}
         </div>
       </div>
     );
