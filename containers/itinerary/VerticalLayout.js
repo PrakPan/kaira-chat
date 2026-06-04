@@ -50,6 +50,17 @@ const PinWrapper = styled.div`
   align-items: center;
 `;
 
+// Small inline loader shown in the pickup/drop transfer row while the city's
+// airport transfers are being repriced (transfers/pricing status PENDING). The
+// backend deletes the old airport bookings and recreates them asynchronously,
+// so without this the row would just vanish until the new bookings arrive.
+const PickupDropLoader = () => (
+  <div className="flex items-center gap-2 mt-1">
+    <span className="inline-block w-3.5 h-3.5 rounded-full border-2 border-gray-300 border-t-gray-500 animate-spin" />
+    <span className="text-[13px] text-[#a5a5a5]">Updating transfers…</span>
+  </div>
+);
+
 const TaxiPickupDropItem = ({
   handlePickupDropDrawer,
   handleAddCityTaxiAirport,
@@ -1640,6 +1651,11 @@ useEffect(() => {
           </div>
 
           {/* AIRPORT/STATION PICKUP DROP - Show only for flight/train/ferry/bus */}
+          {/* While the airport transfers are being repriced (transfers or
+              pricing PENDING), show a loader instead of silently hiding the row. */}
+          {(transfers_status === "PENDING" || pricing_status === "PENDING") && (
+            <PickupDropLoader />
+          )}
          {transfers_status != "PENDING" &&
   pricing_status != "PENDING" && (
     <div className="flex flex-col gap-1">
@@ -1714,6 +1730,10 @@ useEffect(() => {
           ) : null}
 
           {/* Second CTA: Add Taxi Pickup/Drop - Only when NO booking */}
+          {!isDraftMode &&
+            (transfers_status === "PENDING" || pricing_status === "PENDING") && (
+              <PickupDropLoader />
+            )}
           {!isDraftMode && transfers_status != "PENDING" && pricing_status != "PENDING" && (
             <TaxiPickupDropItem
               key={`taxi-no-booking`}
