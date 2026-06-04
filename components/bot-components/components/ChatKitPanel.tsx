@@ -230,7 +230,7 @@ function useUserLocationData() {
         const ipRes = await fetch("https://api.ipify.org?format=json");
         const { ip } = await ipRes.json();
         const locRes = await fetch(
-          `https://mercury.tarzanway.com/api/v1/geos/search/user_location/?ip=${ip}`,
+          `https://dev.mercury.tarzanway.com/api/v1/geos/search/user_location/?ip=${ip}`,
         );
         const data: UserLocationData = await locRes.json();
         localStorage.setItem("userLocationData", JSON.stringify(data));
