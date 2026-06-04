@@ -453,7 +453,18 @@ export default function ThemePage(props) {
 
                     {component.carousel === "Journey" && (
                       <div>
-                        <JourneySimplified oldForm={true} handlePlanButton={handlePlanButton} />
+                        <JourneySimplified
+                          oldForm={true}
+                          handlePlanButton={handlePlanButton}
+                          itinerary={
+                            props.experienceData?.itineraries?.[0] ||
+                            component?.itineraries?.[0]
+                          }
+                          cities={props.experienceData?.locations}
+                          destinationName={convertDbNameToCapitalFirst(
+                            props.experienceData?.slug || ""
+                          )}
+                        />
                       </div>
                     )}
 

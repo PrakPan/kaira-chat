@@ -19,7 +19,6 @@ import Itinerary1Carousel from "../../components/theme/Itinerary1Carousel.jsx";
 import DesktopPersonaliseBanner from "../../components/containers/Banner";
 import MobileBanner from "../city/Banner/Mobile";
 import validateTextSize from "../../services/textSizeValidator";
-import SecondaryButton from "../../components/ui/SecondaryButton.jsx";
 import BannerTwo from "./BannerTwo.js";
 import Continentcarousel from "../../components/continentcarousel/continentcarousel.js";
 import WhyPlanWithUs from "../../components/WhyPlanWithUs/Index.js";
@@ -78,6 +77,7 @@ import TravelVibeSection from "../../components/revamp/home/TravelVibeSection.js
 import JourneySimplified from "../../components/revamp/home/JourneySimplified.jsx";
 import styles from "../../styles/pages/revamp/destination.module.scss"
 import OverviewEditorial from "../../components/revamp/destination/OverviewEditorial.jsx";
+import ChatWithKairaCta from "../../components/revamp/destination/ChatWithKairaCta.jsx";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -386,9 +386,7 @@ export default function ThemePage(props) {
          <section className={`${styles.block} ${styles.editorialBlock}`}>
           <OverviewEditorial
              tag="Kaira's take"
-              heading={ props.experienceData.overview_heading ||
-                `Why we send first-timers to ${props?.slug}.`
-              }
+              heading={props.experienceData.overview_heading}
               text={
                 props.experienceData?.overview_text || props?.experienceData?.short_description
               }
@@ -397,8 +395,6 @@ export default function ThemePage(props) {
                 // ||
                 // (hotLocations[0] && hotLocations[0].image)
               }
-              ctaLabel={`Plan my ${props?.slug} trip`}
-             
             locations={props.experienceData.locations}
             overview_heading={props.experienceData.overview_heading}
             overview_text={props.experienceData.short_description}
@@ -616,7 +612,16 @@ export default function ThemePage(props) {
 
                     {component.carousel === "Journey" && (
                       <div>
-                        <JourneySimplified/>
+                        <JourneySimplified
+                          itinerary={
+                            props.experienceData?.itineraries?.[0] ||
+                            component?.itineraries?.[0]
+                          }
+                          cities={props.experienceData?.locations}
+                          destinationName={convertDbNameToCapitalFirst(
+                            props.experienceData?.slug || ""
+                          )}
+                        />
                       </div>
                     )}
 
@@ -1384,15 +1389,8 @@ export const PlanYourTripButton = (props) => {
   };
 
   return (
-
-    <div className="flex items-center justify-center mt-5 text-white bg-[#07213A] rounded-2xl  w-fit mx-auto hover:opacity-90 cursor-pointer">
-      <SecondaryButton onClick={handlePlanButton} className={props?.className}>
-        {props.text
-          ? props.text
-          : props.slug === "honeymoon-2025"
-            ? "Plan Your Honeymoon!"
-            : "Chat with Kaira"}
-      </SecondaryButton>
+    <div className="mt-5 w-fit mx-auto">
+      <ChatWithKairaCta onClick={handlePlanButton} />
 
       <TailoredFormMobileModal
         destinationType={"city-planner"}
@@ -1435,15 +1433,8 @@ export const PlanYourTripLadakhButton = (props) => {
   };
 
   return (
-    <div className="flex items-center justify-center mt-5 bg-white">
-      <button
-        onClick={handlePlanButton}
-        className={
-          "border-2 border-black rounded-lg px-5 py-2 mx-auto hover:text-white hover:bg-black transition-all "
-        }
-      >
-        {props.text}
-      </button>
+    <div className="flex items-center justify-center mt-5">
+      <ChatWithKairaCta onClick={handlePlanButton} />
 
       <TailoredFormMobileModal
         destinationType={"city-planner"}

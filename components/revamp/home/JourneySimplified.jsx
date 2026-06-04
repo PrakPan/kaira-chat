@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "./JourneySimplified.module.scss";
+import { getIndianPrice } from "../../../services/getIndianPrice";
 
 /*
  * "How it works" — three humanized steps.
@@ -75,7 +76,109 @@ const DEFAULT_STEPS = [
   },
 ];
 
-const JourneySimplified = ({ steps = DEFAULT_STEPS }) => {
+const cityName = (c) =>
+  typeof c === "string" ? c : c?.name || c?.title || c?.display_name || "";
+
+const getNights = (it) =>
+  it?.number_of_nights ||
+  it?.nights ||
+  it?.total_nights ||
+  it?.duration ||
+  it?.days ||
+  0;
+
+const getPrice = (it) =>
+  it?.total_price ||
+  it?.price ||
+  it?.starting_price ||
+  it?.payment_information?.per_person_discounted_cost ||
+  it?.payment_information?.discounted_cost ||
+  0;
+
+const shortPrice = (n) => {
+  if (!n) return "";
+  if (n >= 100000)
+    return `₹${(n / 100000).toFixed(n % 100000 === 0 ? 0 : 1)}L`;
+  return `₹${getIndianPrice(n)}`;
+};
+
+// Builds the three "how it works" steps from real page data. Steps 1 & 3 use
+// the page's first itinerary (destination, nights, price); step 2 swaps in the
+// page's own cities. Any piece without data falls back to DEFAULT_STEPS.
+const buildDynamicSteps = ({ itinerary, cities = [], destinationName }) => {
+  const next = DEFAULT_STEPS.map((s) => ({ ...s }));
+  const dest = destinationName || "";
+  const itinCities = ((itinerary && itinerary.cities) || [])
+    .map(cityName)
+    .filter(Boolean);
+  const pageCities = (cities || []).map(cityName).filter(Boolean);
+  const nights = getNights(itinerary);
+  const price = getPrice(itinerary);
+
+  if (itinerary) {
+    const topCities = itinCities.slice(0, 2).join(" + ");
+    const youText = [
+      `${dest || itinCities[0] || "Trip"}${nights ? ` ${nights} nights` : ""}`,
+      topCities || null,
+      price ? `${shortPrice(price)} couple` : null,
+    ]
+      .filter(Boolean)
+      .join(", ");
+
+    next[0] = {
+      ...next[0],
+      extra: (
+        <ChatDemo
+          you={{ label: "You", text: youText }}
+          kaira={{ label: "Kaira", text: "On it. Checking 1,147 platforms now…" }}
+        />
+      ),
+    };
+
+    next[2] = {
+      ...next[2],
+      extra: (
+        <ChatDemo
+          you={{
+            label: "Final itinerary",
+            text: `${nights ? `${nights} nights · ` : ""}flights + stays${
+              price ? ` · ${shortPrice(price)}` : ""
+            }`,
+          }}
+          kaira={{
+            label: "Kaira →",
+            text: " book in 30 seconds. Cancel up to 48h before.",
+          }}
+        />
+      ),
+    };
+  }
+
+  const swapCities = pageCities.length >= 2 ? pageCities : itinCities;
+  if (swapCities.length >= 2) {
+    const [c1, c2] = swapCities;
+    next[1] = {
+      ...next[1],
+      extra: (
+        <CuratorCard
+          name="Nimmi, 34 · On-ground curator"
+          blurb={`Swaps ${c1} → ${c2} this month. Knows the real ${
+            dest || "local"
+          } route.`}
+        />
+      ),
+    };
+  }
+
+  return next;
+};
+
+const JourneySimplified = ({ steps, itinerary, cities = [], destinationName }) => {
+  const resolvedSteps =
+    steps ||
+    (itinerary || (cities && cities.length)
+      ? buildDynamicSteps({ itinerary, cities, destinationName })
+      : DEFAULT_STEPS);
   return (
     <section className={styles.section}>
       <div className="ttwContainer">
@@ -93,7 +196,7 @@ const JourneySimplified = ({ steps = DEFAULT_STEPS }) => {
         </div>
 
         <div className={styles.grid}>
-          {steps.map((step, idx) => (
+          {resolvedSteps.map((step, idx) => (
             <div key={idx} className={styles.step}>
               <div className={styles.num}>{idx + 1}</div>
               <h3 className={styles.title}>{step.title}</h3>

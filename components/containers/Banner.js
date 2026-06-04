@@ -27,7 +27,14 @@ const GridContainer = styled.div`
   border-radius: 2rem;
 `;
 
+const Serif = styled.span`
+  font-family: "Instrument Serif", "Times New Roman", serif;
+  font-style: italic;
+`;
+
 const Text = styled.p`
+  font-family: "Inter", -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
   font-size: 1rem;
   margin: 0;
   text-align: center;
@@ -57,12 +64,25 @@ const Banner = (props) => {
     };
   });
 
+  const renderText = () => {
+    const { text, destinationName } = props;
+    if (!destinationName || typeof text !== "string") return text;
+    const parts = text.split(destinationName);
+    if (parts.length === 1) return text;
+    return parts.map((part, i) => (
+      <React.Fragment key={i}>
+        {part}
+        {i < parts.length - 1 && <Serif>{destinationName}</Serif>}
+      </React.Fragment>
+    ));
+  };
+
   if (showBanner)
     return (
       <Container className="flex place-self-end" newYear={props.newYear}>
         <GridContainer>
           <div className="center-div">
-            <Text className="">{props.text}</Text>
+            <Text className="">{renderText()}</Text>
           </div>
           <Button
             display="inline-block"

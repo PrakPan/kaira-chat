@@ -220,30 +220,30 @@ const ProfileDropDown = (props) => {
       text: "My Trips",
       icon: "media/icons/navigation/trip.svg",
     },
-    {
-      type: "main",
-      link: "http://blog.thetarzanway.com/",
-      text: "Travel Feed",
-      icon: "media/icons/navigation/chat.png",
-    },
-    {
-      type: "main",
-      link: "/testimonials",
-      text: "Reviews",
-      icon: "media/icons/navigation/testimonial.png",
-    },
-    {
-      type: "others",
-      link: "/contact",
-      text: "Contact Us",
-      icon: "media/icons/navigation/call.png",
-    },
-    {
-      type: "others",
-      link: "/covid-19-safe-travel-india",
-      text: "Covid 19 Safety",
-      icon: "media/icons/navigation/health-insurance.png",
-    },
+    // {
+    //   type: "main",
+    //   link: "http://blog.thetarzanway.com/",
+    //   text: "Travel Feed",
+    //   icon: "media/icons/navigation/chat.png",
+    // },
+    // {
+    //   type: "main",
+    //   link: "/testimonials",
+    //   text: "Reviews",
+    //   icon: "media/icons/navigation/testimonial.png",
+    // },
+    // {
+    //   type: "others",
+    //   link: "/contact",
+    //   text: "Contact Us",
+    //   icon: "media/icons/navigation/call.png",
+    // },
+    // {
+    //   type: "others",
+    //   link: "/covid-19-safe-travel-india",
+    //   text: "Covid 19 Safety",
+    //   icon: "media/icons/navigation/health-insurance.png",
+    // },
   ];
 
   if (!props.token) LinksArr = LinksArr.filter((e) => e.link != "/dashboard");
@@ -487,7 +487,7 @@ const ProfileDropDown = (props) => {
 
           {MainLinksDiv}
 
-          <Heading>OTHERS</Heading>
+          {/* <Heading>OTHERS</Heading> */}
 
           {OtherLinksDiv}
 

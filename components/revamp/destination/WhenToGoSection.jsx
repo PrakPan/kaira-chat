@@ -37,7 +37,7 @@ const WhenToGoSection = ({ seasonalInfo, destinationName, onSeeMore }) => {
               <p className={styles.lede}>{seasonalInfo.intro}</p>
             )}
           </div>
-          {onSeeMore && (
+          {/* {onSeeMore && (
             <span className={styles.sectionLink} onClick={onSeeMore}>
               See seasonal itineraries
               <svg
@@ -52,7 +52,7 @@ const WhenToGoSection = ({ seasonalInfo, destinationName, onSeeMore }) => {
                 <path d="m12 5 7 7-7 7" />
               </svg>
             </span>
-          )}
+          )} */}
         </div>
         <div className={styles.seasonsGrid}>
           {seasons.map((season, i) => {

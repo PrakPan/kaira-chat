@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Button from "../../components/ui/button/Index";
 import ChatWithUs from "../../components/containers/ChatWithUs/ChatWithUs";
 import Continentcarousel from "../../components/continentcarousel/continentcarousel";
 import PathNavigation from "../travelplanner/PathNavigation";
@@ -14,6 +13,7 @@ import HeroV2 from "../../components/revamp/destination/HeroV2.jsx";
 import OverviewEditorial from "../../components/revamp/destination/OverviewEditorial.jsx";
 import CountryCardV2 from "../../components/revamp/destination/CountryCardV2.jsx";
 import ItineraryCardV2 from "../../components/revamp/destination/ItineraryCardV2.jsx";
+import ChatWithKairaCta from "../../components/revamp/destination/ChatWithKairaCta.jsx";
 import ActivityCardV2 from "../../components/revamp/destination/ActivityCardV2.jsx";
 import DestinationStatsStrip from "../../components/revamp/destination/DestinationStatsStrip.jsx";
 import WhenToGoSection from "../../components/revamp/destination/WhenToGoSection.jsx";
@@ -29,7 +29,6 @@ import DestinationCard from "../../components/revamp/common/components/card/Dest
 import {
   faChevronLeft,
   faChevronRight,
-  faArrowRight,
 } from "@fortawesome/free-solid-svg-icons";
 import POIDetailsDrawer from "../../components/drawers/poiDetails/POIDetailsDrawer.js";
 import CtaBoardingSection from "../../components/revamp/home/CtaBoardingSection.jsx";
@@ -105,16 +104,19 @@ const Index = (props) => {
         .join(" ")
     : "";
 
-  const heroPolaroids = (props.locations || [])
-    .slice(0, 4)
-    .map((loc) => ({
-      image: loc.image
-        ? loc.image.startsWith("http")
-          ? loc.image
-          : `${imgUrlEndPoint}${loc.image}`
-        : "",
-      caption: loc.display_name || loc.name || loc.title,
-    }))
+  const normalizeImage = (img) =>
+    img ? (img.startsWith("http") ? img : `${imgUrlEndPoint}${img}`) : "";
+
+  const toPolaroid = (loc) => ({
+    image: normalizeImage(loc?.image),
+    caption: loc?.display_name || loc?.name || loc?.title,
+  });
+
+  // Polaroid priority on a continent page: countries first, then hot
+  // locations / cities, before falling back to activity / POI imagery.
+  const heroPolaroids = (props.locations || []).map(toPolaroid).filter((p) => p.image);
+  const heroCityFallback = (hotLocations.length ? hotLocations : props.data?.cities || [])
+    .map(toPolaroid)
     .filter((p) => p.image);
 
   const heroPrompts = (props.locations || [])
@@ -124,9 +126,6 @@ const Index = (props) => {
       return name ? `Plan ${name}` : null;
     })
     .filter(Boolean);
-
-  const normalizeImage = (img) =>
-    img ? (img.startsWith("http") ? img : `${imgUrlEndPoint}${img}`) : "";
 
   const componentsList = props?.data?.components || [];
   const heroActivities = componentsList
@@ -277,13 +276,14 @@ const Index = (props) => {
             : heroPrompts
         }
         polaroids={heroPolaroids}
+        fallbackSources={[{ items: heroCityFallback }]}
         activities={heroActivities}
         pois={heroPois}
         setShowTailoredModal={setShowTailoredModal}
         meta={
           <>
             <span>
-              <span className="star">★</span> <b>4.8</b> Google · 1,200+ reviews
+              <span className="star">★</span> <b>4.9</b> Google · 1,200+ reviews
             </span>
             <span>·</span>
             {/* <span>
@@ -359,6 +359,11 @@ const Index = (props) => {
               ? " to " + convertDbNameToCapitalFirst(props.data?.slug) + " now"
               : ""
           }!`}
+          destinationName={
+            props.data?.slug
+              ? convertDbNameToCapitalFirst(props.data?.slug)
+              : undefined
+          }
         />
 
         <div className={styles.crumb}>
@@ -380,7 +385,7 @@ const Index = (props) => {
                   sitting alongside the offbeat picks.
                 </p>
               </div>
-              <span
+              {/* <span
                 className={styles.sectionLink}
                 onClick={() =>
                   handlePlanButtonClick(
@@ -390,7 +395,7 @@ const Index = (props) => {
               >
                 See all destinations
                 <FontAwesomeIcon icon={faArrowRight} />
-              </span>
+              </span> */}
             </div>
             <div className={styles.countriesGrid}>
               {props.locations.slice(0, 4).map((loc, idx) => (
@@ -402,22 +407,13 @@ const Index = (props) => {
               ))}
             </div>
             <div className="flex justify-center mt-8">
-              <Button
-                onclick={() =>
+              <ChatWithKairaCta
+                onClick={() =>
                   handlePlanButtonClick(
                     `Top countries to visit in ${props?.data?.destination}`
                   )
                 }
-                borderWidth="1px"
-                fontWeight="300"
-                borderRadius="999px"
-                margin="0 auto"
-                padding="0.8rem 2rem"
-                bgColor="#0f1a2e"
-                color="white"
-              >
-                Create your free itinerary
-              </Button>
+              />
             </div>
           </section>
         ) : null}
@@ -431,7 +427,6 @@ const Index = (props) => {
                 heading={props.data?.overview_heading}
                 text={props.data?.overview_text}
                 image={props.data?.overview_image}
-                ctaLabel={`Plan my ${destinationLabel} trip`}
                 onCtaClick={() =>
                   handlePlanButtonClick(`Editorial overview - ${destinationLabel}`)
                 }
@@ -640,7 +635,11 @@ const Index = (props) => {
             );
           })}
 
-        <JourneySimplified />
+        <JourneySimplified
+          itinerary={userItineraries?.[0]}
+          cities={props.locations}
+          destinationName={destinationLabel}
+        />
 
 
       </div>
@@ -660,15 +659,11 @@ const Index = (props) => {
             Tell Kaira your dates and vibe. She'll have a real plan back in
             under 2 minutes.
           </p>
-          <button
-            className={styles.btnPrimary}
+          <ChatWithKairaCta
             onClick={() =>
               handlePlanButtonClick(`Final CTA - ${destinationLabel}`)
             }
-          >
-            Plan my {destinationLabel} trip
-            <FontAwesomeIcon icon={faArrowRight} />
-          </button>
+          />
           <div className={styles.finalCtaTrust}>
             No commitment · free to plan · pay only for what you pick.
           </div>

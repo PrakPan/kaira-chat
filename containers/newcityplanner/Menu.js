@@ -156,6 +156,11 @@ const Menu = (props) => {
             ? " to " + convertDbNameToCapitalFirst(props.data?.slug) + " now"
             : ""
           }!`}
+        destinationName={
+          props.data?.slug
+            ? convertDbNameToCapitalFirst(props.data?.slug)
+            : undefined
+        }
       ></DesktopBanner>
       <PathNavigation path={props.data?.path} />
 
