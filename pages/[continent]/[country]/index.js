@@ -70,16 +70,17 @@ const TravelPlanner = (props) => {
         ></link>
       </Head>
 
-      {props.pageData && props.Data?.page_data?.slug != "india" ? (
+      {/* {props.pageData && props.Data?.page_data?.slug != "india" ? (
           <ThemePage themePage experienceData={props.Data?.page_data} slug={props.Data?.page_data?.slug} data={props.Data}/>
-        ) : (
+        ) : ( */}
       <CountryPage
         continetCarousel={props?.continetCarousel}
         data={props?.Data}
         locations={props?.locations}
         page_id={props.page_id || ""}
         type={props?.Type}
-      ></CountryPage>)}
+      ></CountryPage>
+      {/* )} */}
     </Layout>
   );
 };

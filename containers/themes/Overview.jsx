@@ -1,4 +1,4 @@
-import Button from "../../components/ui/button/Index";
+import ChatWithKairaCta from "../../components/revamp/destination/ChatWithKairaCta";
 import ImageLoader from "../../components/ImageLoader";
 import media from "../../components/media";
 import { useState } from "react";
@@ -74,22 +74,8 @@ export default function Overview(props) {
           <div className="flex flex-col gap-3 justify-start">
             <SecondaryHeading className="">{props.text}</SecondaryHeading>
 
-            <div>
-              <Button
-                padding={isPageWide ? "0.75rem 1rem" : "0.5rem 0.75rem"}
-                fontSize={isPageWide ? "18px" : "15px"}
-                fontWeight={isPageWide ? "300" : "300"}
-                bgColor="#f7e700"
-                borderRadius="7px"
-                color="black"
-                borderWidth="1px"
-                onclick={handlePlanButton}
-                margin="3vh 0 1vh 0"
-              >
-                {props.slug === "honeymoon-2025"
-                  ? "Plan Your Honeymoon!" 
-                  : props.slug === "icc-champions-trophy-2025" ?  "Book Now!": "+ Plan Your Trip Now!"}
-              </Button>
+            <div style={{ margin: "3vh 0 1vh 0" }}>
+              <ChatWithKairaCta onClick={handlePlanButton} />
             </div>
 
             {props.slug === "honeymoon-2025" && (

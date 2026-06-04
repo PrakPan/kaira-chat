@@ -38,7 +38,7 @@ const CtaBoardingSection = ({
             justifyContent: "center",
           }}
         >
-          <KairaAvatar size="sm" minimal />
+          <KairaAvatar size="" minimal kairaAvatar={12} />
         </div>
 
         <h2

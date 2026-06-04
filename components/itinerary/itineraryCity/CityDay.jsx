@@ -269,6 +269,8 @@ const TAG_STYLE_BY_KEY = {
   insider_spot: { background: "#FFE5D1", color: "#0B1220" },   
   table_reserved: { background: "#0B1220", color: "#F7E700" },     
   insta_worthy_view: { background: "#F1E6FF", color: "#7E3DD4", border: "1px solid rgba(126,61,212,0.25)" },
+  table_held:{ background: "#0B1220", color: "#F7E700" },  
+  tickets_held: { background: "#0B1220", color: "#F7E700" },
 };
 
 // Fallback palette — when the API sends a tag string we don't recognize, we
@@ -330,6 +332,21 @@ const TAG_ICON_BY_KEY = {
 const resolveTagIcon = (raw) => {
   const key = normalizeTagKey(raw);
   return TAG_ICON_GLYPHS[TAG_ICON_BY_KEY[key] || "star"];
+};
+
+// ─── Tag display-label overrides ──────────────────────────────────────────────
+// By default a tag is shown as the raw API string with underscores swapped for
+// spaces (and uppercased via CSS). A few tags need a custom display string —
+// e.g. the possessive apostrophe in "KAIRA'S PICK" can't be derived from the
+// underscore key alone.
+const TAG_LABEL_BY_KEY = {
+  kairas_pick: "Kaira's Pick",
+  kaira_pick: "Kaira's Pick",
+};
+
+const resolveTagLabel = (raw) => {
+  const key = normalizeTagKey(raw);
+  return TAG_LABEL_BY_KEY[key] || String(raw || "").replace(/_/g, " ");
 };
 
 // Duration chip — paper-2 cream fill (HTML .act-tag.duration)
@@ -563,10 +580,10 @@ useEffect(() => {
               className={`${CHIP_BASE} align-middle mr-[5px] !font-normal`}
               style={{ ...CHIP_TEXT_STYLE, ...resolveTagStyle(t) }}
             >
-              <span aria-hidden="true" style={{ fontSize: "8px", lineHeight: 1, font:500}}>
+              <span aria-hidden="true" style={{ fontSize: "11px", lineHeight: 1, fontWeight: 500 }}>
                 {resolveTagIcon(t)}
               </span>
-              {t.replace(/_/g, " ")}
+              {resolveTagLabel(t)}
             </span>
           ))}
           {duration && (

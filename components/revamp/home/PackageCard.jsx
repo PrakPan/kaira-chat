@@ -18,6 +18,8 @@ import styles from "./LuxuryEuropeDestinations.module.scss";
  *   route       — string[] of waypoints, separated by arrows in the UI
  *   title       — ReactNode (supports inline serif spans)
  *   includes    — string[] of green-check inclusions
+ *   travellers  — optional string rendered as its own row below the
+ *                 inclusions, sharing the same green-check styling
  *   price       — { amount, per }
  *   ctaLabel    — call-to-action text (defaults to "Tailor in chat")
  *   onClick     — click/keydown handler (whole card)
@@ -39,6 +41,7 @@ const PackageCard = ({
   route,
   title,
   includes,
+  travellers,
   price,
   ctaLabel = "Tailor in chat",
   onClick,
@@ -92,6 +95,38 @@ const PackageCard = ({
                 {inc}
               </span>
             ))}
+          </div>
+        ) : null}
+
+        {travellers ? (
+          <div className={styles.includes}>
+            <div className="mt-[2px]">
+             <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="12"
+                        viewBox="0 0 16 12"
+                        fill="none"
+                      >
+                        <path
+                          d="M11.1133 6.75342C12.0266 7.37342 12.6666 8.21342 12.6666 9.33342V11.3334H15.3333V9.33342C15.3333 7.88008 12.9533 7.02008 11.1133 6.75342Z"
+                          fill="#ACACAC"
+                        />
+                        <path
+                          d="M9.99995 6.00008C11.4733 6.00008 12.6666 4.80675 12.6666 3.33341C12.6666 1.86008 11.4733 0.666748 9.99995 0.666748C9.68661 0.666748 9.39328 0.733415 9.11328 0.826748C9.66661 1.51341 9.99995 2.38675 9.99995 3.33341C9.99995 4.28008 9.66661 5.15341 9.11328 5.84008C9.39328 5.93341 9.68661 6.00008 9.99995 6.00008Z"
+                          fill="#ACACAC"
+                        />
+                        <path
+                          d="M6.00065 6.00008C7.47398 6.00008 8.66732 4.80675 8.66732 3.33341C8.66732 1.86008 7.47398 0.666748 6.00065 0.666748C4.52732 0.666748 3.33398 1.86008 3.33398 3.33341C3.33398 4.80675 4.52732 6.00008 6.00065 6.00008ZM6.00065 2.00008C6.73398 2.00008 7.33398 2.60008 7.33398 3.33341C7.33398 4.06675 6.73398 4.66675 6.00065 4.66675C5.26732 4.66675 4.66732 4.06675 4.66732 3.33341C4.66732 2.60008 5.26732 2.00008 6.00065 2.00008Z"
+                          fill="#ACACAC"
+                        />
+                        <path
+                          d="M6.00033 6.66675C4.22033 6.66675 0.666992 7.56008 0.666992 9.33341V11.3334H11.3337V9.33341C11.3337 7.56008 7.78032 6.66675 6.00033 6.66675ZM10.0003 10.0001H2.00033V9.34008C2.13366 8.86008 4.20033 8.00008 6.00033 8.00008C7.80032 8.00008 9.86699 8.86008 10.0003 9.33341V10.0001Z"
+                          fill="#ACACAC"
+                        />
+                      </svg>
+            </div>
+            <span className={styles.notinclude}>{travellers}</span>
           </div>
         ) : null}
 
