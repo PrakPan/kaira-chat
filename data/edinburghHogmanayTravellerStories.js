@@ -22,7 +22,7 @@ const edinburghHogmanayTravellerStories = [
   },
   {
     id: 2,
-    name: "Surbhi Minhas",
+    name: "Shubham",
     tripName: "7N Cultural Escape — London, Edinburgh",
     duration: "7 Nights",
     groupType: "Solo",
@@ -34,7 +34,7 @@ const edinburghHogmanayTravellerStories = [
       "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/168552977157271814346313476562.jpeg",
     ],
     shortDescription:
-      "Surbhi spent 7 nights soaking up royal London and historic Edinburgh on a solo cultural escape. London delivered Buckingham Palace, St James's Park, the Houses of Parliament and Big Ben, a hop-on River Thames cruise, the National Gallery, the Tower of London and Tower Bridge, the Warner Bros. Harry Potter Studio Tour, and grazing through Borough Market. Edinburgh wrapped the trip with the Old Town and Farmers' Market, Edinburgh Castle, the Scotch Whisky Experience, a full-day Glenfinnan and Highlands tour, Arthur's Seat, Holyroodhouse, the National Museum of Scotland and the Royal Botanic Garden.",
+      "Shubham spent 7 nights soaking up royal London and historic Edinburgh on a solo cultural escape. London delivered Buckingham Palace, St James's Park, the Houses of Parliament and Big Ben, a hop-on River Thames cruise, the National Gallery, the Tower of London and Tower Bridge, the Warner Bros. Harry Potter Studio Tour, and grazing through Borough Market. Edinburgh wrapped the trip with the Old Town and Farmers' Market, Edinburgh Castle, the Scotch Whisky Experience, a full-day Glenfinnan and Highlands tour, Arthur's Seat, Holyroodhouse, the National Museum of Scotland and the Royal Botanic Garden.",
     viewItineraryLink: "https://thetarzanway.com/chat/2b32a25e-aa9e-4976-9353-66bf88d19e0c",
     rating: 4.7,
     prompt:
@@ -42,7 +42,7 @@ const edinburghHogmanayTravellerStories = [
   },
   {
     id: 3,
-    name: "Surbhi Minhas",
+    name: "Saurabh",
     tripName: "10N Explorer's Journey — London, Edinburgh, Glasgow",
     duration: "10 Nights",
     groupType: "Friends",
@@ -55,7 +55,7 @@ const edinburghHogmanayTravellerStories = [
       "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/168552977157271814346313476562.jpeg",
     ],
     shortDescription:
-      "Surbhi and three friends took on a 10-night UK explorer's journey across London, Edinburgh and Glasgow. London brought Buckingham Palace, a Thames cruise, the Tower of London, Soho nightlife and a White Cliffs of Dover and Canterbury day trip, with dinners at the OXO Tower and Gordon's Wine Bar. Edinburgh delivered the castle, The Witchery, a Glenfinnan and Highlands tour, the Royal Yacht Britannia and a Harry Potter castle tour. Glasgow closed things out with George Square, Kelvingrove, the West End and Ashton Lane, the Necropolis, live music at King Tut's and whisky at The Pot Still.",
+      "Saurabh and three friends took on a 10-night UK explorer's journey across London, Edinburgh and Glasgow. London brought Buckingham Palace, a Thames cruise, the Tower of London, Soho nightlife and a White Cliffs of Dover and Canterbury day trip, with dinners at the OXO Tower and Gordon's Wine Bar. Edinburgh delivered the castle, The Witchery, a Glenfinnan and Highlands tour, the Royal Yacht Britannia and a Harry Potter castle tour. Glasgow closed things out with George Square, Kelvingrove, the West End and Ashton Lane, the Necropolis, live music at King Tut's and whisky at The Pot Still.",
     viewItineraryLink: "https://thetarzanway.com/chat/fbe36fff-181d-43da-8efe-e8ed93c3c1bb",
     rating: 4.8,
     prompt:
@@ -63,7 +63,7 @@ const edinburghHogmanayTravellerStories = [
   },
   {
     id: 4,
-    name: "Surbhi Minhas",
+    name: "Parul",
     tripName: "12N Cultural Exploration — London, Edinburgh, Glasgow, Inverness",
     duration: "12 Nights",
     groupType: "Family",
@@ -77,7 +77,7 @@ const edinburghHogmanayTravellerStories = [
       "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/168552986523129224777221679688.jpeg",
     ],
     shortDescription:
-      "Surbhi's family of four wound through the UK on a 12-night cultural exploration spanning London, Edinburgh, Glasgow and Inverness. London mixed royal parks, a Thames cruise and the London Eye with the Warner Bros. Harry Potter Studio and a SEA LIFE and Shrek's Adventure combo for family fun. Edinburgh brought the Royal Mile, the castle, Holyroodhouse, a Glenfinnan Highlands tour and Arthur's Seat. Glasgow added the cathedral, Kelvingrove, the Riverside and Science Centres and the Botanic Gardens, before a Highland finale in Inverness with a Loch Ness cruise, Urquhart Castle and an Isle of Skye day trip.",
+      "Parul's family of four wound through the UK on a 12-night cultural exploration spanning London, Edinburgh, Glasgow and Inverness. London mixed royal parks, a Thames cruise and the London Eye with the Warner Bros. Harry Potter Studio and a SEA LIFE and Shrek's Adventure combo for family fun. Edinburgh brought the Royal Mile, the castle, Holyroodhouse, a Glenfinnan Highlands tour and Arthur's Seat. Glasgow added the cathedral, Kelvingrove, the Riverside and Science Centres and the Botanic Gardens, before a Highland finale in Inverness with a Loch Ness cruise, Urquhart Castle and an Isle of Skye day trip.",
     viewItineraryLink: "https://thetarzanway.com/chat/6b62a616-e078-4f87-a377-f97795691687",
     rating: 4.8,
     prompt:
