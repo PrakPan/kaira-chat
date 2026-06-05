@@ -110,6 +110,12 @@
   &:focus { outline: none; }
 }
 
+.hamburgerCircle {
+  border-radius: 50% !important;
+  width: 40px;
+  height: 40px;
+}
+
 /* Mobile overlay */
 .mobileOverlay {
   display: none !important;

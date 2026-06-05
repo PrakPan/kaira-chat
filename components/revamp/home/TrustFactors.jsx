@@ -10,7 +10,7 @@ import React from "react";
  */
 const DEFAULT_ITEMS = [
   { before: "Fine-tuned by", value: "23", after: "local humans" },
-  { value: "47", after: "countries, real routes" },
+  { value: "100+", after: "countries, real routes" },
   { before: "Since", value: "2018" },
   { value: "~2s", after: "avg reply" },
   { value: "94%", after: "come back for trip 2" },

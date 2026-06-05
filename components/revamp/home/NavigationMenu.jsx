@@ -162,11 +162,9 @@ const NavigationMenu = (props) => {
 
         {/* Hamburger Menu Button */}
         <div className="flex gap-2 md:hidden">
-        {props.token?<>{(pathname!="/dashboard"&&pathname!="/new-trip")&&<button className="MediumIndigoButton mt-2 max-sm:text-[12px] " onClick={()=>router.push("/dashboard")}>
+        {props.token&&(pathname!="/dashboard"&&pathname!="/new-trip")&&<button className="MediumIndigoButton mt-2 max-sm:text-[12px] " onClick={()=>router.push("/dashboard")}>
                   My Trips
-        </button>}</>:<>{(pathname!="/dashboard"&&pathname!="/new-trip")&&<button className="MediumIndigoButton mt-2 max-sm:text-[12px]" onClick={()=>setShowMobilePlanner(true)}>
-                  Chat with Kaira <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 10L10 2M10 2H4M10 2V8"></path></svg>
-        </button>}</>}
+        </button>}
           <MobileMenu 
           id={props.id}
           _openAllNotificationsHandler={_openAllNotificationsHandler}
