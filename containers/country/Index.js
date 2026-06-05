@@ -9,7 +9,11 @@ import HeroV2 from "../../components/revamp/destination/HeroV2.jsx";
 import OverviewEditorial from "../../components/revamp/destination/OverviewEditorial.jsx";
 import CountryCardV2 from "../../components/revamp/destination/CountryCardV2.jsx";
 import ItineraryCardV2 from "../../components/revamp/destination/ItineraryCardV2.jsx";
+import ChatWithKairaCta from "../../components/revamp/destination/ChatWithKairaCta.jsx";
 import ActivityCardV2 from "../../components/revamp/destination/ActivityCardV2.jsx";
+import DestinationStatsStrip from "../../components/revamp/destination/DestinationStatsStrip.jsx";
+import WhenToGoSection from "../../components/revamp/destination/WhenToGoSection.jsx";
+import PlanningSection from "../../components/revamp/destination/PlanningSection.jsx";
 import { imgUrlEndPoint } from "../../components/theme/ThemeConstants.js";
 const MapBox = dynamic(() => import("../../components/Map.js"), {
   ssr: false,
@@ -20,7 +24,6 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faArrowRight,
   faChevronLeft,
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
@@ -92,20 +95,21 @@ const Index = (props) => {
 
   const destinationName = props.data?.name || "";
 
-  const heroPolaroids = (hotLocations.length
-    ? hotLocations
-    : props.data?.locations || []
-  )
-    .slice(0, 4)
-    .map((loc) => ({
-      image: loc.image
-        ? loc.image.startsWith("http")
-          ? loc.image
-          : `${imgUrlEndPoint}${loc.image}`
-        : "",
-      caption: loc.display_name || loc.name || loc.title,
-    }))
-    .filter((p) => p.image);
+  const normalizeImage = (img) =>
+    img ? (img.startsWith("http") ? img : `${imgUrlEndPoint}${img}`) : "";
+
+  const toPolaroid = (loc) => ({
+    image: normalizeImage(loc?.image),
+    caption: loc?.display_name || loc?.name || loc?.title,
+  });
+
+  // Polaroid priority on a country page: states, then hot locations, then any
+  // other city, before falling back to activity / POI imagery.
+  const stateImages = (props.data?.states || []).map(toPolaroid).filter((p) => p.image);
+  const hotLocationImages = hotLocations.map(toPolaroid).filter((p) => p.image);
+  const cityImages = (props.data?.locations || []).map(toPolaroid).filter((p) => p.image);
+
+  const heroPolaroids = [...stateImages, ...hotLocationImages];
 
   const heroPrompts = (hotLocations.length
     ? hotLocations
@@ -117,9 +121,6 @@ const Index = (props) => {
       return name ? `Plan ${name}` : null;
     })
     .filter(Boolean);
-
-  const normalizeImage = (img) =>
-    img ? (img.startsWith("http") ? img : `${imgUrlEndPoint}${img}`) : "";
 
   const heroActivities = (props.data?.activities || [])
     .map((a) => ({ image: normalizeImage(a?.image) }))
@@ -152,21 +153,26 @@ const Index = (props) => {
             concierges check every booking before you pay.
           </>
         }
-        prompts={heroPrompts}
+        prompts={
+          props.data?.model_prompts?.length
+            ? props.data.model_prompts
+            : heroPrompts
+        }
         polaroids={heroPolaroids}
+        fallbackSources={[{ items: cityImages }]}
         activities={heroActivities}
         pois={heroPois}
         setShowTailoredModal={setShowTailoredModal}
         meta={
           <>
             <span>
-              <span className="star">★</span> <b>4.8</b> Google · 1,200+ reviews
+              <span className="star">★</span> <b>4.9</b> Google · 1,200+ reviews
             </span>
             <span>·</span>
-            <span>
+            {/* <span>
               <b>{hotLocations.length || props.data?.locations?.length || 0}</b>{" "}
               cities curated
-            </span>
+            </span> */}
             <span>·</span>
             <span>
               <b>IATA</b>-protected
@@ -176,44 +182,55 @@ const Index = (props) => {
       />
 
       {/* STATS STRIP */}
-      <div className={styles.statsStrip}>
-        <div className={styles.statsStripInner}>
-          <div className={styles.stat}>
-            <div className={styles.statLabel}>Destination</div>
-            <div className={styles.statValue}>
-              <span className={styles.serif}>{destinationName}</span>
-            </div>
-            <div className={styles.statSub}>Curated by Kaira</div>
-          </div>
-          <div className={styles.stat}>
-            <div className={styles.statLabel}>Top locations</div>
-            <div className={styles.statValue}>
-              <span className={styles.serif}>{hotLocations.length || 0}</span>{" "}
-              hot picks
-            </div>
-            <div className={styles.statSub}>Hand-picked across {destinationName}</div>
-          </div>
-          <div className={styles.stat}>
-            <div className={styles.statLabel}>Itineraries</div>
-            <div className={styles.statValue}>
-              <span className={styles.serif}>
-                {userItineraries?.length || 0}+
-              </span>{" "}
-              ready
-            </div>
-            <div className={styles.statSub}>Tweak anything in chat</div>
-          </div>
-          <div className={styles.stat}>
-            <div className={styles.statLabel}>Continent</div>
-            <div className={styles.statValue}>
+      <DestinationStatsStrip
+        data={props.data}
+        fallbacks={[
+          {
+            label: "Destination",
+            value: <span className={styles.serif}>{destinationName}</span>,
+            sub: "Curated by Kaira",
+          },
+          {
+            label: "Top locations",
+            value: (
+              <>
+                <span className={styles.serif}>{hotLocations.length || 0}</span>{" "}
+                hot picks
+              </>
+            ),
+            sub: `Hand-picked across ${destinationName}`,
+          },
+          {
+            label: "Itineraries",
+            value: (
+              <>
+                <span className={styles.serif}>
+                  {userItineraries?.length || 0}+
+                </span>{" "}
+                ready
+              </>
+            ),
+            sub: "Tweak anything in chat",
+          },
+          {
+            label: "Continent",
+            value: (
               <span className={styles.serif}>
                 {convertDbNameToCapitalFirst(props.data?.continent || "")}
               </span>
-            </div>
-            <div className={styles.statSub}>Part of a wider Asia plan</div>
-          </div>
-        </div>
-      </div>
+            ),
+            sub: "Part of a wider Asia plan",
+          },
+        ]}
+      />
+
+      <WhenToGoSection
+        seasonalInfo={props.data?.seasonal_info}
+        destinationName={destinationName}
+        onSeeMore={() =>
+          handlePlanButtonClick(`When to go - ${destinationName}`)
+        }
+      />
 
       <div className={styles.container}>
         <DesktopBanner
@@ -224,6 +241,11 @@ const Index = (props) => {
               ? " to " + convertDbNameToCapitalFirst(props.data?.slug) + " now"
               : ""
           }!`}
+          destinationName={
+            props.data?.slug
+              ? convertDbNameToCapitalFirst(props.data?.slug)
+              : undefined
+          }
         />
 
         <div className={styles.crumb}>
@@ -245,16 +267,16 @@ const Index = (props) => {
                   alongside under-the-radar picks.
                 </p>
               </div>
-              <span
+              {/* <span
                 className={styles.sectionLink}
                 onClick={() => handlePlanButtonClick(`Popular cities in ${destinationName}`)}
               >
                 See all locations
                 <FontAwesomeIcon icon={faArrowRight} />
-              </span>
+              </span> */}
             </div>
             <div className={styles.countriesGrid}>
-              {hotLocations.slice(0, 4).map((loc, idx) => (
+              {hotLocations.slice(0, 6).map((loc, idx) => (
                 <CountryCardV2
                   key={loc.id || idx}
                   item={loc}
@@ -263,7 +285,7 @@ const Index = (props) => {
               ))}
             </div>
             <div className="flex justify-center mt-8">
-              <Button
+              {/* <Button
                 onclick={() =>
                   handlePlanButtonClick(`Popular cities in ${destinationName}`)
                 }
@@ -276,30 +298,27 @@ const Index = (props) => {
                 color="white"
               >
                 + Create a trip now!
-              </Button>
+              </Button> */}
+              <ChatWithKairaCta
+                onClick={() =>
+                  handlePlanButtonClick(`Popular cities in ${destinationName}`)
+                }
+              />
             </div>
           </section>
         ) : null}
 
         {/* OVERVIEW / EDITORIAL */}
-        {(props.data?.overview_heading ||
-          props.data?.overview_text ||
-          props?.data?.short_description) && (
+        {props.data?.overview_text && (
           <section className={`${styles.block} ${styles.editorialBlock}`}>
             <OverviewEditorial
               tag="Kaira's take"
-              heading={
-                props.data?.overview_heading ||
-                `Why we send first-timers to ${destinationName}.`
-              }
-              text={
-                props.data?.overview_text || props?.data?.short_description
-              }
+              heading={props.data?.overview_heading}
+              text={props.data?.overview_text}
               image={
                 props.data?.overview_image ||
                 (hotLocations[0] && hotLocations[0].image)
               }
-              ctaLabel={`Plan my ${destinationName} trip`}
               onCtaClick={() =>
                 handlePlanButtonClick(`Editorial overview - ${destinationName}`)
               }
@@ -397,7 +416,7 @@ const Index = (props) => {
               </div>
             </div>
             <div className="flex justify-center mt-8">
-              <Button
+              {/* <Button
                 onclick={() => setShowTailoredModal(true)}
                 borderWidth="1px"
                 fontWeight="400"
@@ -408,7 +427,8 @@ const Index = (props) => {
                 color="white"
               >
                 + Create a trip now!
-              </Button>
+              </Button> */}
+              <ChatWithKairaCta onClick={() => setShowTailoredModal(true)} />
             </div>
           </section>
         ) : null}
@@ -429,12 +449,12 @@ const Index = (props) => {
               </div>
             </div>
             <div className={styles.countriesGrid}>
-              {props.data.states.slice(0, 4).map((s, idx) => (
+              {props.data.states.slice(0, 6).map((s, idx) => (
                 <CountryCardV2 key={s.id || idx} item={s} hot={idx === 0} />
               ))}
             </div>
             <div className="flex justify-center mt-8">
-              <Button
+              {/* <Button
                 onclick={() =>
                   handlePlanButtonClick(
                     `Trending destinations across ${destinationName}`
@@ -449,12 +469,27 @@ const Index = (props) => {
                 color="white"
               >
                 + Create a trip now!
-              </Button>
+              </Button> */}
+              <ChatWithKairaCta
+                onClick={() =>
+                  handlePlanButtonClick(
+                    `Trending destinations across ${destinationName}`
+                  )
+                }
+              />
             </div>
           </section>
         ) : null}
 
-        <JourneySimplified />
+        <JourneySimplified
+          itinerary={userItineraries?.[0]}
+          cities={
+            props.data?.states?.length
+              ? props.data.states
+              : props.data?.locations
+          }
+          destinationName={destinationName}
+        />
 
         {/* OTHER COUNTRIES IN CONTINENT */}
         {props.locations && props.locations.length ? (
@@ -474,12 +509,12 @@ const Index = (props) => {
               </div>
             </div>
             <div className={styles.countriesGrid}>
-              {props.locations.slice(0, 4).map((loc, idx) => (
+              {props.locations.slice(0, 6).map((loc, idx) => (
                 <CountryCardV2 key={loc.id || idx} item={loc} hot={idx === 0} />
               ))}
             </div>
             <div className="flex justify-center mt-8">
-              <Button
+              {/* <Button
                 onclick={() =>
                   handlePlanButtonClick(
                     `Other destinations to explore in ${props.data.continent}`
@@ -494,12 +529,24 @@ const Index = (props) => {
                 color="white"
               >
                 + Create a trip now!
-              </Button>
+              </Button> */}
+              <ChatWithKairaCta
+                onClick={() =>
+                  handlePlanButtonClick(
+                    `Other destinations to explore in ${props.data.continent}`
+                  )
+                }
+              />
             </div>
           </section>
         ) : null}
 
       </div>
+
+      <PlanningSection
+        destinationInfo={props.data?.destination_info}
+        destinationName={destinationName}
+      />
 
       {/* FINAL CTA */}
       <section className={styles.finalCta}>
@@ -511,13 +558,11 @@ const Index = (props) => {
             Tell Kaira your dates and vibe. She'll have a real plan back in
             under 2 minutes.
           </p>
-          <button
-            className={styles.btnPrimary}
-            onClick={() => handlePlanButtonClick(`Final CTA - ${destinationName}`)}
-          >
-            Plan my {destinationName} trip
-            <FontAwesomeIcon icon={faArrowRight} />
-          </button>
+          <ChatWithKairaCta
+            onClick={() =>
+              handlePlanButtonClick(`Final CTA - ${destinationName}`)
+            }
+          />
           <div className={styles.finalCtaTrust}>
             No commitment · free to plan · pay only for what you pick.
           </div>

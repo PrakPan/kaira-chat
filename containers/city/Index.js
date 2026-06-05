@@ -4,6 +4,10 @@ import NewMenu from "../newcityplanner/Menu";
 import validateTextSize from "../../services/textSizeValidator";
 import { convertDbNameToCapitalFirst } from "../../helper/convertDbnameToCapitalFirst";
 import HeroV2 from "../../components/revamp/destination/HeroV2";
+import DestinationStatsStrip from "../../components/revamp/destination/DestinationStatsStrip.jsx";
+import WhenToGoSection from "../../components/revamp/destination/WhenToGoSection.jsx";
+import PlanningSection from "../../components/revamp/destination/PlanningSection.jsx";
+import ChatWithKairaCta from "../../components/revamp/destination/ChatWithKairaCta.jsx";
 import { imgUrlEndPoint } from "../../components/theme/ThemeConstants";
 import TailoredFormMobileModal from "../../components/modals/TailoredFomrMobile";
 import styles from "../../styles/pages/revamp/destination.module.scss";
@@ -34,6 +38,41 @@ const Experience = (props) => {
   const cityName = props.cityData.name;
   const cityDisplayName = convertDbNameToCapitalFirst(cityName);
 
+  const cityPolaroids = (props.cityData?.images || []).map((img) => ({
+    image: `${imgUrlEndPoint}${img.image}`,
+    caption: img.caption || cityDisplayName,
+  }));
+
+  const hotLocationPolaroids = (props.hotLocations || [])
+    .filter((loc) => loc?.image)
+    .map((loc) => ({
+      image: loc.image.startsWith("http")
+        ? loc.image
+        : `${imgUrlEndPoint}${loc.image}`,
+      caption: loc.name ? convertDbNameToCapitalFirst(loc.name) : cityDisplayName,
+    }));
+
+  const activityPolaroids = [
+    ...(props.cityData?.activities || []),
+    ...(props.cityData?.pois || []),
+  ]
+    .filter((item) => item?.image)
+    .map((item) => ({
+      image: item.image.startsWith("http")
+        ? item.image
+        : `${imgUrlEndPoint}${item.image}`,
+      caption: item.title || item.name || cityDisplayName,
+    }));
+
+  const polaroids = [
+    ...hotLocationPolaroids,
+    ...activityPolaroids,
+    ...cityPolaroids, 
+    
+  ].slice(0, 4);
+
+  
+
   return (
     <div className={styles.destinationPage}>
       <HeroV2
@@ -53,12 +92,7 @@ const Experience = (props) => {
             <span className={styles.serif}>actually flows.</span>
           </>
         }
-        polaroids={(props.cityData?.images || [])
-          .slice(0, 4)
-          .map((img) => ({
-            image: `${imgUrlEndPoint}${img.image}`,
-            caption: img.caption || cityDisplayName,
-          }))}
+        polaroids={polaroids}
         activities={(props.cityData?.activities || [])
           .map((a) => ({
             image: a?.image
@@ -77,48 +111,63 @@ const Experience = (props) => {
               : "",
           }))
           .filter((p) => p.image)}
+        prompts={
+          props.cityData?.model_prompts?.length
+            ? props.cityData.model_prompts
+            : []
+        }
         setShowTailoredModal={setShowTailoredModal}
       />
 
       {/* STATS STRIP */}
-      <div className={styles.statsStrip}>
-        <div className={styles.statsStripInner}>
-          <div className={styles.stat}>
-            <div className={styles.statLabel}>City</div>
-            <div className={styles.statValue}>
-              <span className={styles.serif}>{cityDisplayName}</span>
-            </div>
-            <div className={styles.statSub}>Curated by Kaira</div>
-          </div>
-          <div className={styles.stat}>
-            <div className={styles.statLabel}>Photos</div>
-            <div className={styles.statValue}>
-              <span className={styles.serif}>
-                {props.cityData?.images?.length || 0}
-              </span>{" "}
-              gallery shots
-            </div>
-            <div className={styles.statSub}>Real, not stock</div>
-          </div>
-          <div className={styles.stat}>
-            <div className={styles.statLabel}>Nearby cities</div>
-            <div className={styles.statValue}>
-              <span className={styles.serif}>
-                {props.reccomendedCitiesData?.length || 0}
-              </span>{" "}
-              suggested
-            </div>
-            <div className={styles.statSub}>Easy to combine</div>
-          </div>
-          <div className={styles.stat}>
-            <div className={styles.statLabel}>Trusted by</div>
-            <div className={styles.statValue}>
-              <span className={styles.serif}>10K+</span> travellers
-            </div>
-            <div className={styles.statSub}>Across India</div>
-          </div>
-        </div>
-      </div>
+      <DestinationStatsStrip
+        data={props.cityData}
+        fallbacks={[
+          {
+            label: "City",
+            value: <span className={styles.serif}>{cityDisplayName}</span>,
+            sub: "Curated by Kaira",
+          },
+          {
+            label: "Photos",
+            value: (
+              <>
+                <span className={styles.serif}>
+                  {props.cityData?.images?.length || 0}
+                </span>{" "}
+                gallery shots
+              </>
+            ),
+            sub: "Real, not stock",
+          },
+          {
+            label: "Nearby cities",
+            value: (
+              <>
+                <span className={styles.serif}>
+                  {props.reccomendedCitiesData?.length || 0}
+                </span>{" "}
+                suggested
+              </>
+            ),
+            sub: "Easy to combine",
+          },
+          {
+            label: "Trusted by",
+            value: (
+              <>
+                <span className={styles.serif}>10K+</span> travellers
+              </>
+            ),
+            sub: "Across India",
+          },
+        ]}
+      />
+
+      <WhenToGoSection
+        seasonalInfo={props.cityData?.seasonal_info}
+        destinationName={cityDisplayName}
+      />
 
       <NewMenu
         data={props.cityData}
@@ -126,6 +175,28 @@ const Experience = (props) => {
         nearbyCities={props.reccomendedCitiesData}
         removeDelete={true}
       />
+
+      <PlanningSection
+        destinationInfo={props.cityData?.destination_info}
+        destinationName={cityDisplayName}
+      />
+
+      {/* FINAL CTA */}
+      <section className={styles.finalCta}>
+        <div className={styles.finalCtaInner}>
+          <h2>
+            {cityDisplayName}, <span className={styles.serif}>your way.</span>
+          </h2>
+          <p>
+            Tell Kaira your dates and vibe. She'll have a real plan back in
+            under 2 minutes.
+          </p>
+          <ChatWithKairaCta onClick={() => setShowTailoredModal(true)} />
+          <div className={styles.finalCtaTrust}>
+            No commitment · free to plan · pay only for what you pick.
+          </div>
+        </div>
+      </section>
 
       <TailoredFormMobileModal
         destinationType={"city-planner"}

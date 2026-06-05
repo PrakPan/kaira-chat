@@ -761,6 +761,10 @@ onTripMetaUpdate,
   const [showControls, setShowControls] = useState(false);
   const [errorDismissed, setErrorDismissed] = useState(false);
   const [quickReplies, setQuickReplies] = useState<QuickReply[]>([]);
+  // True while the server has signalled (via `quick_reply_shimmer`) that quick
+  // replies are being computed but haven't arrived yet — renders skeleton chips
+  // in place of the real ones until `load_quick_replies` lands.
+  const [quickReplyShimmer, setQuickReplyShimmer] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [pendingMessage, setPendingMessage] = useState<string | null>(null);
@@ -1895,6 +1899,13 @@ case "shimmer_day_by_day": {
           dispatch(openNotification({ type: "success", heading: "Success!", text }));
           break;
         }
+        case "quick_reply_shimmer": {
+          // Server is about to compute quick replies — show skeleton chips in
+          // their place until `load_quick_replies` arrives.
+          setQuickReplies([]);
+          setQuickReplyShimmer(true);
+          break;
+        }
         case "load_quick_replies": {
           const raw =
             (data.replies as any[]) ??
@@ -1911,6 +1922,7 @@ case "shimmer_day_by_day": {
                     },
               )
             : [];
+          setQuickReplyShimmer(false);
           setQuickReplies(parsed);
           break;
         }
@@ -1953,6 +1965,7 @@ case "shimmer_day_by_day": {
 const sendMessage = useCallback(
   (text: string, attachmentIds?: string[], attachmentMeta?: MessageAttachment[]) => {
     setQuickReplies([]);
+    setQuickReplyShimmer(false);
     lastSentMessageRef.current = text;
     lastSentActionRef.current = { kind: "message", text };
 
@@ -3385,6 +3398,39 @@ const handleShowLogin = useCallback(() => {
             <div ref={messagesEndRef} />
           </div>
       </div>
+
+      {/* ── Quick reply skeleton ──────────────────────────────────────────── */}
+      {/* Shown while the server is computing quick replies (quick_reply_shimmer)
+          and the real chips haven't arrived yet. */}
+      {quickReplyShimmer &&
+        quickReplies.length === 0 &&
+        !isComposerLocked && (
+          <div className="flex-shrink-0 px-[0.25rem] md:!px-6 pt-2 pb-1">
+            <div className="mx-auto">
+              <div
+                className="flex gap-2 overflow-hidden pb-1"
+                style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+              >
+                {Array.from({ length: 10 }).map((_, idx) => (
+                  <div
+                    key={idx}
+                    className="flex-shrink-0 rounded-[6px]"
+                    style={{
+                      width: 96,
+                      height: 33,
+                      background:
+                        "linear-gradient(90deg, #ECEDEF 0%, #F6F7F8 50%, #ECEDEF 100%)",
+                      backgroundSize: "200% 100%",
+                      animation: "qrShimmer 1.4s ease-in-out infinite",
+                      animationDelay: `${idx * 90}ms`,
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+            <style>{`@keyframes qrShimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }`}</style>
+          </div>
+        )}
 
       {/* ── Quick reply chips ─────────────────────────────────────────────── */}
       {/* Hidden while itinerary creation is in progress — no quick replies/CTAs allowed */}

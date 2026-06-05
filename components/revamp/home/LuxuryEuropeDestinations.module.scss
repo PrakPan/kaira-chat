@@ -200,6 +200,14 @@
   }
 }
 
+.notinclude {
+  font-size: 11.5px;
+  color: var(--ttw-ink-3);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
 .meta {
   margin-top: auto;
   padding-top: 14px;

@@ -43,6 +43,7 @@ const HeroV2 = ({
   prompts = [],
   meta,
   polaroids = [],
+  fallbackSources = [],
   activities = [],
   pois = [],
   setShowTailoredModal,
@@ -146,11 +147,11 @@ const HeroV2 = ({
     }
   };
 
-  const seedPrompt = (text) => {
-    const stripped = text.replace(/^[^\s]+\s/, "").trim();
-    setValue(stripped);
-    textareaRef.current?.focus();
-    requestAnimationFrame(() => autoGrow(textareaRef.current));
+  const handlePromptClick = (text) => {
+    const seed = (
+      destinationLabel ? `${text}, ${destinationLabel}` : text
+    ).trim();
+    goToChat(seed);
   };
 
   const polaroidImages = (() => {
@@ -169,11 +170,17 @@ const HeroV2 = ({
         if (base.length >= 4) return;
         const img = it && it.image;
         if (!img || seen.has(img)) continue;
-        base.push({ image: img, caption: label });
+        base.push({ image: img, caption: it.caption || label });
         seen.add(img);
       }
     };
 
+    // Page-supplied sources are tried in order before falling back to the
+    // generic activity / POI imagery, so each page can prioritise the most
+    // relevant nested destinations (countries, states, hot locations, …).
+    (fallbackSources || []).forEach((src) =>
+      pushFrom(src?.items, src?.caption)
+    );
     pushFrom(activities, "Activity");
     pushFrom(pois, "POI");
 
@@ -332,7 +339,7 @@ const HeroV2 = ({
                     key={i}
                     type="button"
                     className={styles.heroV2Prompt}
-                    onClick={() => seedPrompt(p)}
+                    onClick={() => handlePromptClick(p)}
                   >
                     {p}
                   </button>

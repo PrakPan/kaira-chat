@@ -96,6 +96,8 @@ function transformDraftToItinerary(draft: any) {
             id: el.id ?? null,
             icon: el.icon ?? null,
             tags: el.tags ?? [],
+            agent_tags: el.agent_tags ?? [],
+            one_liner: el.one_liner ?? el.short_description ?? null,
             time: el.time ?? "",
             index: idx,
             rating: el.rating ?? null,
@@ -1758,6 +1760,15 @@ export default function BotApp({
           }
           else setViewMode("map");
           setMobilePanel("chat");
+        }
+
+        // Mobile: a restored thread with no itinerary must land on the chat
+        // tab. MobileLayout now defaults activeTab to "itinerary" on a sessionId
+        // refresh (to avoid the chat→itinerary flash for real itineraries), so
+        // chat-only threads need an explicit switch back or they'd strand on a
+        // blank itinerary tab (itinerary content is gated behind an itinerary id).
+        if (!restoredItineraryId) {
+          mobileTabSwitchRef.current?.("chat");
         }
 
         if (restoredItineraryId) {
@@ -3969,8 +3980,13 @@ const MobileLayout = React.memo(
     onSettingsClick,
     onLoginSuccess,
   }: MobileLayoutProps) => {
+    // On a sessionId refresh, BotApp seeds `mobilePanel` to "itinerary" (same
+    // signal desktop uses for its viewMode default). Honour it here so an
+    // itinerary reload lands directly on the itinerary tab instead of flashing
+    // the chat tab first while the async thread restore resolves. Chat-only
+    // threads (no itinerary) are switched back to chat by the restore flow.
     const [activeTab, setActiveTab] = React.useState<MobileTab>(
-      hasItineraryActivity ? "itinerary" : "chat",
+      mobilePanel === "itinerary" || hasItineraryActivity ? "itinerary" : "chat",
     );
     const hasUnread = (useSelector as any)(
       (s: any) => !!s.chatState?.unreadMessages,
@@ -4079,7 +4095,7 @@ const MobileLayout = React.memo(
     };
     const inactiveTabStyle: React.CSSProperties = {
       borderRadius: "10px",
-      color: "#6E757A",
+      color: "#0B1220",
     };
 
     return (
@@ -4216,7 +4232,7 @@ const MobileLayout = React.memo(
                       <line x1="6" y1="6" x2="18" y2="18" />
                     </svg>
                   </button>
-                  <p className="ttw-type-body pr-3 mb-0">
+                  <p className="ttw-type-body pr-1 mb-0">
                     Hey, I’m Kaira - Your AI Trip Planner
                   </p>
                   {/* Speech bubble arrow */}

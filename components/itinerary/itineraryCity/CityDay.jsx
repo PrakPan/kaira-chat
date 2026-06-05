@@ -558,24 +558,22 @@ useEffect(() => {
     const subtitle = getItemSubtitle(item);
     const isRecommendationOnly = resolvedType === "recommendation";
     const isClickable = !isRecommendationOnly;
-    const status = getStatusInfo(resolvedType, isSelectedInCart(item));
+    const selectedInCart = isSelectedInCart(item);
+    const status = getStatusInfo(resolvedType, selectedInCart);
     const variantStyle = getCardVariantStyle(resolvedType);
     const displayTime = getDisplayTime(item);
     const duration = getDurationLabel(item);
     const dataTags = getDisplayTags(item);
 
-    // Activity elements always show a green "Included" chip + a "Tickets held"
-    // chip (ticket glyph). API tags follow; drop any that duplicate the forced
-    // ones so they don't render twice.
-    const FORCED_ACTIVITY_TAGS = ["tickets_held", "included"];
+    // Activity elements show only the "Tickets held" chip (always) plus an
+    // "Included" chip — and the latter only once the activity is actually
+    // selected in the cart. No API tags render for activities. Everything else
+    // shows up to 2 data tags (already capped in getDisplayTags).
     const renderTags =
       resolvedType === "activity"
-        ? [
-            ...FORCED_ACTIVITY_TAGS,
-            ...dataTags.filter(
-              (t) => !FORCED_ACTIVITY_TAGS.includes(normalizeTagKey(t))
-            ),
-          ]
+        ? selectedInCart
+          ? ["included", "tickets_held"]
+          : ["tickets_held"]
         : dataTags;
 
     const statusBadge = status ? (
@@ -590,11 +588,11 @@ useEffect(() => {
 
     const tagGroup =
       renderTags.length > 0 || duration ? (
-        <span className="inline-block whitespace-nowrap align-middle !font-normal">
+        <span className="flex flex-wrap items-center gap-[5px] !font-normal">
           {renderTags.map((t, i) => (
             <span
               key={`${t}-${i}`}
-              className={`${CHIP_BASE} align-middle mr-[5px] !font-normal`}
+              className={`${CHIP_BASE} !font-normal`}
               style={{ ...CHIP_TEXT_STYLE, ...resolveTagStyle(t) }}
             >
               <span aria-hidden="true" style={{ fontSize: "11px", lineHeight: 1, font:500}}>
@@ -605,7 +603,7 @@ useEffect(() => {
           ))}
           {duration && (
             <span
-              className={`${CHIP_BASE} align-middle`}
+              className={CHIP_BASE}
               style={{ ...CHIP_TEXT_STYLE, ...DURATION_CHIP_STYLE }}
             >
               {duration}

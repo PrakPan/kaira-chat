@@ -56,6 +56,9 @@ const MessageBubbleResponsiveStyles: React.FC = () => (
       .msg {
         position: relative;
         padding-top: 14px;
+        /* Keep bubbles off the screen edges on phones. */
+        padding-left: 12px;
+        padding-right: 12px;
       }
       /* Bot bubble fills the row on mobile. The avatar is absolutely
          positioned (below), so it floats above the bubble's top-left
@@ -63,11 +66,9 @@ const MessageBubbleResponsiveStyles: React.FC = () => (
       .msg.kaira {
         max-width: 100% !important;
         width: 100%;
-        padding-left: 0;
       }
       .msg.kaira > .chatWrapper,
       .msg.kaira > div:not(.msg-avatar) { flex: 1 1 auto; min-width: 0; }
-      .msg.user  { padding-right: 2px; }
       .msg-avatar {
         position: absolute !important;
         top: 0 !important;
@@ -78,8 +79,8 @@ const MessageBubbleResponsiveStyles: React.FC = () => (
         border: 2px solid #fff !important;
         box-shadow: 0 1px 4px rgba(11,18,32,0.18);
       }
-      .msg.kaira .msg-avatar { left: 0; }
-      .msg.user  .msg-avatar { right: 0; }
+      .msg.kaira .msg-avatar { left: 12px; }
+      .msg.user  .msg-avatar { right: 12px; }
     }
   `}</style>
 );

@@ -5,7 +5,6 @@ import DesktopBanner from "../../components/containers/Banner";
 import Experiences from "../../components/containers/Experiences";
 import ChatWithUs from "../../components/containers/ChatWithUs/ChatWithUs";
 import Overview from "./Overview";
-import Button from "../../components/ui/button/Index";
 import MobileBanner from "./MobileBanner";
 import openTailoredModal from "../../services/openTailoredModal";
 import dynamic from "next/dynamic";
@@ -38,6 +37,10 @@ import TailoredFormMobileModal from "../../components/modals/TailoredFomrMobile.
 import styles from "../../styles/pages/revamp/destination.module.scss";
 import ItineraryCardV2 from "../../components/revamp/destination/ItineraryCardV2.jsx";
 import OverviewEditorial from "../../components/revamp/destination/OverviewEditorial.jsx";
+import ChatWithKairaCta from "../../components/revamp/destination/ChatWithKairaCta.jsx";
+import DestinationStatsStrip from "../../components/revamp/destination/DestinationStatsStrip.jsx";
+import WhenToGoSection from "../../components/revamp/destination/WhenToGoSection.jsx";
+import PlanningSection from "../../components/revamp/destination/PlanningSection.jsx";
 const MapBox = dynamic(() => import("../../components/Map.js"), {
   ssr: false,
 });
@@ -209,6 +212,11 @@ const Homepage = (props) => {
             <span className={styles.serif}>actually flows.</span>
           </>
         }
+        prompts={
+          props.experienceData?.model_prompts?.length
+            ? props.experienceData.model_prompts
+            : []
+        }
         polaroids={(props.experienceData?.locations || [])
           .slice(0, 4)
           .map((loc) => ({
@@ -242,44 +250,59 @@ const Homepage = (props) => {
       />
 
       {/* STATS STRIP */}
-      <div className={styles.statsStrip}>
-        <div className={styles.statsStripInner}>
-          <div className={styles.stat}>
-            <div className={styles.statLabel}>Destination</div>
-            <div className={styles.statValue}>
-              <span className={styles.serif}>{destinationName}</span>
-            </div>
-            <div className={styles.statSub}>Curated by Kaira</div>
-          </div>
-          <div className={styles.stat}>
-            <div className={styles.statLabel}>Top locations</div>
-            <div className={styles.statValue}>
-              <span className={styles.serif}>
-                {props.experienceData?.locations?.length || 0}
-              </span>{" "}
-              hand-picked
-            </div>
-            <div className={styles.statSub}>Across {destinationName}</div>
-          </div>
-          <div className={styles.stat}>
-            <div className={styles.statLabel}>Trip ideas</div>
-            <div className={styles.statValue}>
-              <span className={styles.serif}>
-                {(userItineraries?.length || 0) + (TTWItineraries?.length || 0)}+
-              </span>{" "}
-              ready
-            </div>
-            <div className={styles.statSub}>From real travellers</div>
-          </div>
-          <div className={styles.stat}>
-            <div className={styles.statLabel}>Trusted by</div>
-            <div className={styles.statValue}>
-              <span className={styles.serif}>10K+</span> travellers
-            </div>
-            <div className={styles.statSub}>Across India</div>
-          </div>
-        </div>
-      </div>
+      <DestinationStatsStrip
+        data={props.experienceData}
+        fallbacks={[
+          {
+            label: "Destination",
+            value: <span className={styles.serif}>{destinationName}</span>,
+            sub: "Curated by Kaira",
+          },
+          {
+            label: "Top locations",
+            value: (
+              <>
+                <span className={styles.serif}>
+                  {props.experienceData?.locations?.length || 0}
+                </span>{" "}
+                hand-picked
+              </>
+            ),
+            sub: `Across ${destinationName}`,
+          },
+          {
+            label: "Trip ideas",
+            value: (
+              <>
+                <span className={styles.serif}>
+                  {(userItineraries?.length || 0) +
+                    (TTWItineraries?.length || 0)}
+                  +
+                </span>{" "}
+                ready
+              </>
+            ),
+            sub: "From real travellers",
+          },
+          {
+            label: "Trusted by",
+            value: (
+              <>
+                <span className={styles.serif}>10K+</span> travellers
+              </>
+            ),
+            sub: "Across India",
+          },
+        ]}
+      />
+
+      <WhenToGoSection
+        seasonalInfo={props.experienceData?.seasonal_info}
+        destinationName={destinationName}
+        onSeeMore={() =>
+          handlePlanButtonClick(`When to go - ${destinationName}`)
+        }
+      />
 
       <div className={styles.container}>
         <div className={styles.crumb}>
@@ -309,18 +332,7 @@ const Homepage = (props) => {
             </div>
             {renderCarousel(props.experienceData.locations, "StateTopLocations")}
             <div className="flex justify-center mt-8">
-              <Button
-                onclick={() => setShowTailoredModal(true)}
-                borderWidth="1px"
-                fontWeight="400"
-                borderRadius="999px"
-                margin="0 auto"
-                padding="0.8rem 2rem"
-                bgColor="#0f1a2e"
-                color="white"
-              >
-                + Create a Trip Now!
-              </Button>
+              <ChatWithKairaCta onClick={() => setShowTailoredModal(true)} />
             </div>
           </section>
         ) : null}
@@ -344,18 +356,9 @@ const Homepage = (props) => {
             />
             {index % 2 ? (
               <div className="flex justify-center mt-8">
-                <Button
-                  onclick={() => handlePlanButtonClick(heading.name)}
-                  borderWidth="1px"
-                  fontWeight="500"
-                  borderRadius="999px"
-                  margin="0 auto"
-                  padding="0.6rem 2rem"
-                  bgColor="#0f1a2e"
-                  color="white"
-                >
-                  Create your travel plan now!
-                </Button>
+                <ChatWithKairaCta
+                  onClick={() => handlePlanButtonClick(heading.name)}
+                />
               </div>
             ) : null}
           </section>
@@ -392,10 +395,7 @@ const Homepage = (props) => {
         <section className={`${styles.block} ${styles.editorialBlock}`}>
           <OverviewEditorial
              tag="Kaira's take"
-              heading={
-                overviewHeading ||
-                `Why we send first-timers to ${destinationName}.`
-              }
+              heading={overviewHeading}
               text={
                 props.experienceData?.overview_text || props?.experienceData?.short_description
               }
@@ -404,7 +404,6 @@ const Homepage = (props) => {
                 // ||
                 // (hotLocations[0] && hotLocations[0].image)
               }
-              ctaLabel={`Plan my ${destinationName} trip`}
               onCtaClick={() =>
                 handlePlanButtonClick(`Editorial overview - ${destinationName}`)
               }
@@ -421,29 +420,22 @@ const Homepage = (props) => {
               />
             </div>
           ) : null} */}
-          <div className="flex justify-center mt-8">
-            <Button
-              onclick={() =>
+          {/* <div className="flex justify-center mt-8">
+            <ChatWithKairaCta
+              onClick={() =>
                 handlePlanButtonClick(
                   `A little about ${props?.experienceData?.slug}`
                 )
               }
-              borderWidth="1px"
-              fontWeight="500"
-              borderRadius="999px"
-              margin="0 auto"
-              padding="0.6rem 2rem"
-              bgColor="#0f1a2e"
-              color="white"
-            >
-              {props.experienceData.page_type !== "Theme"
-                ? `Craft a trip to ${destinationName} now!`
-                : "Create your travel plan now!"}
-            </Button>
-          </div>
+            />
+          </div> */}
         </section>
 
-        <JourneySimplified />
+        <JourneySimplified
+          itinerary={TTWItineraries?.[0] || headings?.[0]?.itineraries?.[0]}
+          cities={props.experienceData?.locations}
+          destinationName={destinationName}
+        />
 
         {/* COMMUNITY TOP PICKS */}
         {TTWItineraries.length ? (
@@ -486,6 +478,9 @@ const Homepage = (props) => {
               ? " to " + destinationName + " now"
               : ""
           }!`}
+          destinationName={
+            props.experienceData.slug ? destinationName : undefined
+          }
         />
 
         <div className="hidden-desktop">
@@ -517,18 +512,7 @@ const Homepage = (props) => {
             </div>
             {renderCarousel(props.locations, "OtherDestinations")}
             <div className="flex justify-center mt-8">
-              <Button
-                onclick={() => setShowTailoredModal(true)}
-                borderWidth="1px"
-                fontWeight="400"
-                borderRadius="999px"
-                margin="0 auto"
-                padding="0.8rem 2rem"
-                bgColor="#0f1a2e"
-                color="white"
-              >
-                + Create a Trip Now!
-              </Button>
+              <ChatWithKairaCta onClick={() => setShowTailoredModal(true)} />
             </div>
           </section>
         ) : null}
@@ -540,6 +524,11 @@ const Homepage = (props) => {
         <ChatWithUs planner page_id={props.experienceData.id} /> */}
       </div>
 
+      <PlanningSection
+        destinationInfo={props.experienceData?.destination_info}
+        destinationName={destinationName}
+      />
+
       {/* FINAL CTA */}
       <section className={styles.finalCta}>
         <div className={styles.finalCtaInner}>
@@ -550,13 +539,11 @@ const Homepage = (props) => {
             Tell Kaira your dates and vibe. She'll have a real plan back in
             under 2 minutes.
           </p>
-          <button
-            className={styles.btnPrimary}
-            onClick={() => handlePlanButtonClick(`Final CTA - ${destinationName}`)}
-          >
-            Plan my {destinationName} trip
-            <FontAwesomeIcon icon={faArrowRight} />
-          </button>
+          <ChatWithKairaCta
+            onClick={() =>
+              handlePlanButtonClick(`Final CTA - ${destinationName}`)
+            }
+          />
           <div className={styles.finalCtaTrust}>
             No commitment · free to plan · pay only for what you pick.
           </div>

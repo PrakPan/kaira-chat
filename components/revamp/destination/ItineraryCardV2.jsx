@@ -1,43 +1,7 @@
 import React from "react";
 import { imgUrlEndPoint } from "../../theme/ThemeConstants";
 import { getIndianPrice } from "../../../services/getIndianPrice";
-import ImageWithSkeleton from "./ImageWithSkeleton";
-import styles from "../../../styles/pages/revamp/destination.module.scss";
-
-
-const Arrow = () => <span className={styles.arrow} aria-hidden />;
-
-// Inline SVG arrow so the CTA chevron renders even on pages where FontAwesome's
-// auto-CSS hasn't been injected (e.g. dashboard / profile routes).
-const CtaArrow = () => (
-  <svg
-    width="13"
-    height="13"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2.2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    <line x1="5" y1="12" x2="19" y2="12" />
-    <polyline points="12 5 19 12 12 19" />
-  </svg>
-);
-
-const renderRoute = (cities = []) => {
-  if (!cities || !cities.length) return null;
-  const labels = cities
-    .map((c) => (typeof c === "string" ? c : c.name || c.title))
-    .filter(Boolean);
-  return labels.map((label, i) => (
-    <React.Fragment key={`${label}-${i}`}>
-      <span>{label}</span>
-      {i < labels.length - 1 && <Arrow />}
-    </React.Fragment>
-  ));
-};
+import PackageCard from "../home/PackageCard";
 
 const countItems = (arrLike) => {
   if (!arrLike) return 0;
@@ -53,14 +17,10 @@ const ItineraryCardV2 = ({ itinerary, onClick }) => {
     title,
     image,
     images,
-    duration,
-    nights,
     total_price,
     price,
     starting_price,
     payment_information,
-    curator,
-    curated_by,
     cities = [],
     tier,
     tag,
@@ -71,6 +31,8 @@ const ItineraryCardV2 = ({ itinerary, onClick }) => {
     flights,
     transfers,
     activities,
+    number_of_adults,
+    number_of_children,
   } = itinerary;
 
   const firstImage =
@@ -83,16 +45,7 @@ const ItineraryCardV2 = ({ itinerary, onClick }) => {
       : `${imgUrlEndPoint}${firstImage}`
     : "";
 
-  const durationN =
-    nights ||
-    duration ||
-    (cities && cities.length
-      ? cities.reduce((p, c) => p + (c.duration || 0), 0)
-      : 0);
-  const nightsLabel = durationN ? `${durationN} Nights` : null;
-
   const heading = title || name;
-  const curatorName = curator || curated_by || "Kaira";
   const tierLabel = tier || tag || "Most popular";
   const isPopular =
     String(tierLabel).toLowerCase().includes("best") ||
@@ -107,28 +60,41 @@ const ItineraryCardV2 = ({ itinerary, onClick }) => {
     payment_information?.discounted_cost;
 
   const routeCities = cities && cities.length ? cities : [];
+  const route = routeCities
+    .map((c) => (typeof c === "string" ? c : c.name || c.title))
+    .filter(Boolean);
 
-  // Counts for "includes" grid
+  // Counts for the inclusions row
   const staysCount = countItems(stays) || routeCities.length || 0;
   const activitiesCount =
     countItems(activities) ||
-    (routeCities.reduce(
-      (p, c) =>
-        p + countItems(c.activities) + countItems(c.pois),
+    routeCities.reduce(
+      (p, c) => p + countItems(c.activities) + countItems(c.pois),
       0
-    ) || 0);
-  const flightsCount =
-    countItems(flights) || (routeCities.length > 1 ? 2 : 1);
+    ) ||
+    0;
+  const flightsCount = countItems(flights) || (routeCities.length > 1 ? 2 : 1);
   const transfersCount =
     countItems(transfers) ||
     (routeCities.length ? Math.max(routeCities.length - 1, 1) : 0);
 
   const includes = [
-    { num: staysCount, label: "Stays" },
-    { num: flightsCount, label: "Flights" },
-    { num: transfersCount, label: "Transfers" },
-    { num: activitiesCount, label: "Activities" },
-  ].filter((i) => i.num > 0);
+    staysCount ? `${staysCount} Stays` : null,
+    flightsCount ? `${flightsCount} Flights` : null,
+    transfersCount ? `${transfersCount} Transfers` : null,
+    activitiesCount ? `${activitiesCount} Activities` : null,
+  ].filter(Boolean);
+
+  const travellers = [
+    number_of_adults
+      ? `${number_of_adults} adult${number_of_adults === 1 ? "" : "s"}`
+      : null,
+    number_of_children
+      ? `${number_of_children} child${number_of_children === 1 ? "" : "ren"}`
+      : null,
+  ]
+    .filter(Boolean)
+    .join(", ");
 
   const handleClick = () => {
     if (onClick) return onClick(itinerary);
@@ -138,71 +104,22 @@ const ItineraryCardV2 = ({ itinerary, onClick }) => {
   };
 
   return (
-    <div
-      role="button"
-      tabIndex={0}
+    <PackageCard
+      image={resolvedImage}
+      tier={tierLabel}
+      tierVariant={isPopular ? "popular" : "default"}
+      route={route}
+      title={heading}
+      includes={includes}
+      travellers={travellers || null}
+      price={
+        priceValue
+          ? { amount: `₹${getIndianPrice(priceValue)}`, per: "/ couple" }
+          : null
+      }
+      ctaLabel="View trip"
       onClick={handleClick}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") handleClick();
-      }}
-      className={styles.itinCard}
-    >
-      <ImageWithSkeleton
-        src={resolvedImage}
-        asBackground
-        className={styles.itinImg}
-      >
-        {nightsLabel && (
-          <div className={styles.itinNights}>{nightsLabel}</div>
-        )}
-        {tierLabel && (
-          <div
-            className={`${styles.itinTier} ${
-              isPopular ? styles.itinTierPopular : ""
-            }`}
-          >
-            {tierLabel}
-          </div>
-        )}
-      </ImageWithSkeleton>
-      <div className={styles.itinBody}>
-        {routeCities.length > 0 && (
-          <div className={styles.itinRoute}>{renderRoute(routeCities)}</div>
-        )}
-        <h3 className={styles.itinCardTitle}>{heading}</h3>
-        {/* <div className={styles.itinBy}>
-          <div className={styles.itinByAvatar} />
-          Curated by <b>{curatorName}</b>
-        </div> */}
-        {includes.length > 0 && (
-          <div className={styles.itinIncludes} style={{fontWeight: "bold"}}>
-            {includes.map((inc) => (
-              <div key={inc.label} className={styles.itinIncItem}>
-                <span className="num">{inc.num}</span>
-                <span>{inc.label}</span>
-              </div>
-            ))}
-          </div>
-        )}
-        <div className={styles.itinMeta} style={{fontWeight: "bold"}}>
-          {priceValue ? (
-            <div className={styles.itinPrice}>
-              <div className="from">From</div>
-              <div className="amount">
-                ₹{getIndianPrice(priceValue)}
-                <span className="per"> / couple</span>
-              </div>
-            </div>
-          ) : (
-            <div />
-          )}
-          <div className={styles.itinCta}>
-            View trip
-            <CtaArrow />
-          </div>
-        </div>
-      </div>
-    </div>
+    />
   );
 };
 
