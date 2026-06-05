@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import CityPage from "../../../../../containers/city/Index";
 import Layout from "../../../../../components/Layout";
 import axiosReccommendedCityInstance from "../../../../../services/poi/reccommededcities";
+import axiossearchallinstance from "../../../../../services/search/all";
 import axioslocationsinstance from "../../../../../services/search/search";
 import setHotLocationSearch from "../../../../../store/actions/hotLocationSearch";
 import {  MERCURY_HOST } from "../../../../../services/constants";
@@ -105,17 +106,36 @@ const Experience = (props) => {
 };
 
 export async function getStaticPaths() {
-  return {
-    paths: [
-      {
+  let paths = [];
+
+  try {
+    // mercury api — build a page for every city flagged with a CTA
+    const res = await axiossearchallinstance.get("/all/?type=City&fields=path,cta");
+    const data = res.data ?? [];
+
+    for (var i = 0; i < data.length; i++) {
+      if (!data[i]?.path || !data[i]?.cta) continue;
+      const pathArr = data[i].path.split("/");
+      const [continentSlug, countrySlug, stateSlug, citySlug] = pathArr;
+      if (!citySlug) continue;
+      paths.push({
         params: {
-          continent: "asia",
-          country: "thailand",
-          state: "bangkok",
-          city: "bangkok",
+          continent: continentSlug,
+          country: countrySlug,
+          state: stateSlug,
+          city: citySlug,
         },
-      },
-    ],
+      });
+    }
+  } catch (err) {
+    console.error(
+      "[ERROR][cityPage:axiossearchallinstance][/all/?type=City&fields=path,cta]: ",
+      err.message
+    );
+  }
+
+  return {
+    paths,
     fallback: false,
   };
 }
