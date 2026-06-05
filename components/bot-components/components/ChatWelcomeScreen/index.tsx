@@ -7,6 +7,209 @@ import type { ThemeConfig } from "../../types/themeConfig";
 
 const CHATKIT_API_URL = "https://chat.tarzanway.com/chatkit";
 
+// Right-pane design ported from chat-empty-v4 reference. Scoped under `.cws-root`
+// so the generic class names (.chip, .trust-line, etc.) can't leak globally.
+const CWS_STYLES = `
+.cws-root {
+  --yellow: #f7e700;
+  --ink: #0b1220;
+  --ink-rail: #0f1a2e;
+  --ink-2: #1a2436;
+  --ink-3: #445069;
+  --ink-4: #8a93a6;
+  --line: #ececec;
+  --line-soft: #f4f3ec;
+  --bg-2: #fafaf5;
+  --peach: #ffede0;
+  --coral: #ff9d6e;
+  --mint: #e0f2e9;
+  --sky-a: #a8d2f5;
+  --sky-b: #7ab8e8;
+  --green: #1f8a5a;
+  background: var(--bg-2);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--ink);
+}
+.cws-serif { font-family: 'Instrument Serif', serif; font-style: italic; font-weight: 400; letter-spacing: -0.015em; }
+
+/* scroll area — mirrors .pane-right-inner: top-aligned with top spacing,
+   bottom content scrolls when it doesn't fit. */
+.cws-pane-inner {
+  flex: 1; min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  width: 100%;
+  padding: 56px 32px 18px;
+  overflow-y: auto;
+}
+.cws-pane-inner::-webkit-scrollbar { display: none; }
+@media (max-width: 900px) {
+  .cws-pane-inner { padding: 40px 22px 24px; }
+}
+
+/* hero */
+.cws-kaira-hero {
+  display: flex; flex-direction: column;
+  align-items: center; text-align: center;
+  margin-bottom: 20px;
+}
+.cws-kaira-portrait {
+  position: relative;
+  width: 152px; height: 152px;
+  margin-bottom: 18px;
+  flex-shrink: 0;
+}
+.cws-kaira-portrait-ring {
+  position: absolute; inset: -5px; border-radius: 50%;
+  background: conic-gradient(from 0deg, var(--yellow) 0deg, var(--coral) 90deg, #ff6b9d 180deg, var(--peach) 270deg, var(--yellow) 360deg);
+  animation: cwsKairaSpin 8s linear infinite;
+  z-index: 1; filter: blur(0.5px);
+}
+@keyframes cwsKairaSpin { to { transform: rotate(360deg); } }
+.cws-kaira-portrait-img {
+  position: relative; z-index: 2;
+  width: 100%; height: 100%;
+  border-radius: 50%; object-fit: cover;
+  border: 4px solid white;
+  box-shadow: 0 10px 26px -8px rgba(11,18,32,0.22);
+  display: block;
+  background: linear-gradient(180deg, var(--sky-a), var(--sky-b));
+}
+.cws-kaira-portrait-dot {
+  position: absolute; bottom: 3px; right: 3px; z-index: 3;
+  width: 20px; height: 20px;
+  background: var(--green); border: 3px solid white; border-radius: 50%;
+  box-shadow: 0 0 0 3px rgba(31,138,90,0.18);
+  animation: cwsDotPulse 2.4s ease-in-out infinite;
+}
+@keyframes cwsDotPulse {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(31,138,90,0.18); }
+  50% { box-shadow: 0 0 0 6px rgba(31,138,90,0.05); }
+}
+.cws-kaira-portrait-bubble {
+  position: absolute; top: -8px; right: -10px; z-index: 4;
+  width: 36px; height: 36px;
+  background: white; border-radius: 50%;
+  display: grid; place-items: center;
+  box-shadow: 0 6px 16px -4px rgba(11,18,32,0.18);
+  font-size: 18px;
+  animation: cwsBubbleFloat 3.6s ease-in-out infinite;
+}
+@keyframes cwsBubbleFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+.cws-live-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 11px;
+  background: var(--mint); color: var(--green);
+  border-radius: 999px; font-size: 11.5px; font-weight: 700;
+  margin-bottom: 12px;
+}
+.cws-live-pill .cws-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--green);
+  animation: cwsLiveBlink 2s ease-in-out infinite;
+}
+@keyframes cwsLiveBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+.cws-usp-kicker {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 5px 12px;
+  background: var(--ink); color: var(--yellow);
+  border-radius: 999px;
+  font-size: 10.5px; font-weight: 800;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.cws-usp-icon { width: 11px; height: 11px; }
+.cws-usp-icon svg { width: 100%; height: 100%; }
+.cws-kaira-hero h1 {
+  font-size: 34px; font-weight: 800;
+  letter-spacing: -0.03em; line-height: 1.02;
+  margin-bottom: 10px; max-width: 440px;
+}
+@media (max-width: 480px) { .cws-kaira-hero h1 { font-size: 28px; line-height: 1.06; } }
+.cws-kaira-hero h1 .cws-serif { font-weight: 400; }
+.cws-kaira-hero h1 .cws-hl { position: relative; display: inline-block; padding: 0 4px; }
+.cws-kaira-hero h1 .cws-hl::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 3px;
+  height: 9px; background: var(--yellow); z-index: -1;
+  opacity: 0.85; transform: skewX(-6deg);
+}
+.cws-kaira-hero p {
+  font-size: 14px; color: var(--ink-3);
+  line-height: 1.5; max-width: 380px;
+}
+.cws-kaira-hero p b { color: var(--ink); font-weight: 600; }
+
+/* input — mirrors .chat-input spacing */
+.cws-input-wrap { margin-bottom: 12px; }
+
+/* chips */
+.cws-chip-row {
+  display: flex; flex-wrap: wrap;
+  gap: 6px; margin-bottom: 0;
+}
+.cws-chip {
+  padding: 6px 11px;
+  background: white; border: 1px solid var(--line);
+  border-radius: 999px;
+  font-family: inherit; font-size: 12px;
+  color: var(--ink-2); cursor: pointer;
+  transition: all 0.15s;
+  display: inline-flex; align-items: center; gap: 5px;
+  text-align: left;
+}
+.cws-chip:hover { background: var(--yellow); border-color: var(--yellow); color: var(--ink); }
+.cws-chip-icon { font-size: 13px; line-height: 1; }
+
+/* how it works */
+.cws-hiw-strip {
+  margin-top: 14px;
+  padding: 16px 18px;
+  background: white; border: 1px solid var(--line);
+  border-radius: 16px;
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 4px; position: relative;
+}
+.cws-hiw-step { text-align: center; padding: 4px 8px; position: relative; }
+.cws-hiw-step + .cws-hiw-step::before {
+  content: ''; position: absolute; left: -2px; top: 14px;
+  width: 12px; height: 2px; background: var(--line);
+}
+.cws-hiw-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 24px; height: 24px;
+  background: var(--yellow); color: var(--ink);
+  border-radius: 50%;
+  font-family: 'Instrument Serif', serif; font-style: italic;
+  font-weight: 600; font-size: 14px; line-height: 1;
+  margin-bottom: 6px;
+}
+.cws-hiw-text {
+  font-size: 12px; color: var(--ink); font-weight: 600;
+  letter-spacing: -0.005em; line-height: 1.3;
+}
+.cws-hiw-text .cws-sub {
+  display: block; font-size: 10.5px;
+  color: var(--ink-4); font-weight: 500; margin-top: 2px;
+}
+
+/* get inspired (mobile) — pinned bottom bar, stays put while content scrolls */
+.cws-inspire-cta {
+  flex-shrink: 0;
+  width: 100%;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 14px;
+  border: 0; border-top: 1px solid var(--line);
+  background: #F7ECFF; color: #922ADC;
+  font-family: inherit; font-size: 14px; font-weight: 600;
+  cursor: pointer;
+}
+@media (min-width: 768px) { .cws-inspire-cta { display: none !important; } }
+`;
+
 function getAuthToken(): string | null {
   return (
     localStorage.getItem("token") ??
@@ -219,7 +422,7 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
   const promptChips = themeConfig?.welcome?.promptChips ?? defaultPromptChips;
   const subtitle =
     themeConfig?.welcome?.subtitle ??
-    "Tell me where you want to go — I'll handle the rest.";
+    "AI plans, locals verify, you book in one tap.";
 
   const inputBox = (
     <MessageInputBox
@@ -240,21 +443,8 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
   );
 
   return (
-    <div
-      className="flex flex-col h-full bg-white"
-      // style={{ fontFamily: "'Inter', sans-serif" }}
-    >
-      <style>{`
-        .welcome-chip {
-          transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
-        }
-        .welcome-chip:hover {
-          background: #fffbeb;
-          border-color: #fbbf24;
-          transform: translateY(-1px);
-        }
-        .welcome-chip:active { transform: translateY(0); }
-      `}</style>
+    <div className="cws-root flex flex-col h-full">
+      <style>{CWS_STYLES}</style>
 
       {/* ── Mobile-only header — logo + injected menu actions. Mirrors
            ChatKitPanel's top bar so the welcome screen has parity with the
@@ -268,71 +458,83 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
         {mobileMenu && <div className="flex-shrink-0">{mobileMenu}</div>}
       </div>
 
-      {/* Scrollable content — top-aligned on mobile, centered on desktop */}
-      <div
-        className="flex-1 overflow-y-auto flex flex-col items-center w-full px-6 py-6 md:justify-center"
-        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-      >
-        {/* Avatar */}
-        <img
-          src="/KairaInsta.png"
-          alt="Kaira"
-          className="mb-4 rounded-full w-20 h-20 md:w-28 md:h-28 object-cover flex-shrink-0"
-        />
+      {/* Right-pane scroll area */}
+      <div className="cws-pane-inner" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
+        {/* ── Kaira hero ── */}
+        <div className="cws-kaira-hero">
+          <div className="cws-kaira-portrait">
+            <div className="cws-kaira-portrait-ring" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/KairaInsta.png" alt="Kaira" className="cws-kaira-portrait-img" />
+            <span className="cws-kaira-portrait-bubble">✈️</span>
+            <span className="cws-kaira-portrait-dot" />
+          </div>
 
-        {/* Heading */}
-        <h1
-          className="text-center font-semibold mb-2 ttw-type-h3 md:ttw-type-h2"
-          style={{ lineHeight: "1.3", letterSpacing: "-0.3px" }}
-        >
-          Your next trip is one conversation away
-        </h1>
+          <div className="cws-live-pill">
+            <span className="cws-dot" />
+            Kaira · online · replies in ~2s
+          </div>
 
-        {/* Subtitle */}
-        <p className="text-center text-[#6E757A] mb-5 ttw-type-body md:ttw-type-body leading-relaxed font-normal">
-          {subtitle}
-        </p>
+          <span className="cws-usp-kicker">
+            <span className="cws-usp-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 2 4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3z" />
+              </svg>
+            </span>
+            Real holidays · booked &amp; protected
+          </span>
 
-        {/* Prompt chips — 2-col grid on mobile and desktop */}
-        <div className="w-full max-w-sm md:max-w-3xl grid grid-cols-2 gap-2.5 mb-4 md:mb-6">
+          <h1>
+            We don&apos;t just chat — <span className="cws-serif">we sell</span>{" "}
+            <span className="cws-hl">holidays.</span>
+          </h1>
+          <p>{subtitle} <b>10,000+ trips delivered.</b></p>
+        </div>
+
+        {/* ── Input ── */}
+        <div className="cws-input-wrap">{inputBox}</div>
+
+        {/* ── Prompt chips (dynamic + default) ── */}
+        <div className="cws-chip-row">
           {promptChips.map((chip) => (
             <button
               key={chip.label}
+              type="button"
+              className="cws-chip"
               onClick={() => handleChipClick(chip.prompt)}
-              className="welcome-chip flex flex-col md:flex-row items-start md:items-center gap-1.5 md:gap-3 p-3 md:p-[10px] rounded-xl border-[0.9px] bg-white text-left"
             >
-              <span className="ttw-type-h3 md:ttw-type-h4 flex-shrink-0">{chip.icon}</span>
-              <div className="flex flex-col leading-tight min-w-0">
-                <span className="ttw-type-body  line-clamp-2 font-normal">{chip.label}</span>
-                {chip.sublabel && (
-                  <span className="ttw-type-small text-gray-400 mt-0.5 font-normal">{chip.sublabel}</span>
-                )}
-              </div>
+              {chip.icon && <span className="cws-chip-icon">{chip.icon}</span>}
+              {chip.label}
             </button>
           ))}
         </div>
+
+        {/* ── How it works strip ── */}
+        <div className="cws-hiw-strip">
+          <div className="cws-hiw-step">
+            <div className="cws-hiw-num">1</div>
+            <div className="cws-hiw-text">Tell me <span className="cws-serif">where</span><span className="cws-sub">~30 sec</span></div>
+          </div>
+          <div className="cws-hiw-step">
+            <div className="cws-hiw-num">2</div>
+            <div className="cws-hiw-text">I plan it <span className="cws-serif">all</span><span className="cws-sub">~90 sec</span></div>
+          </div>
+          <div className="cws-hiw-step">
+            <div className="cws-hiw-num">3</div>
+            <div className="cws-hiw-text">Book in <span className="cws-serif">one tap</span><span className="cws-sub">we handle the rest</span></div>
+          </div>
+        </div>
       </div>
 
-      {/* Input — desktop only, pinned at bottom (pb clears the TrustIndicators bar) */}
-      <div className="max-ph:hidden flex-shrink-0 bg-white px-6 pt-2 pb-[68px] flex justify-center">
-        <div className="w-full max-w-3xl">{inputBox}</div>
-      </div>
-
-      {/* Input — mobile only, pinned at bottom */}
-      <div className="md:hidden flex-shrink-0 bg-white flex flex-col justify-end">
-        <div className="px-4 pb-2 pt-2">{inputBox}</div>
-
-        {/* Get Inspired CTA — mobile only */}
-        <button
-          type="button"
-          onClick={() => setShowInspiration(true)}
-          className="w-full flex items-center justify-center gap-1 py-2 ttw-type-body font-medium"
-          style={{ background: "#F7ECFF", color: "#922ADC" }}
-        >
-          <span>Get Inspired</span>
-          <span aria-hidden>→</span>
-        </button>
-      </div>
+      {/* ── Get Inspired CTA — mobile only, pinned to the bottom on scroll ── */}
+      <button
+        type="button"
+        onClick={() => setShowInspiration(true)}
+        className="cws-inspire-cta md:hidden"
+      >
+        <span>Get Inspired</span>
+        <span aria-hidden>→</span>
+      </button>
 
       {/* Inspiration Bottom Sheet — mobile only */}
       {showInspiration && (

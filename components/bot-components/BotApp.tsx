@@ -3188,9 +3188,11 @@ Start Location: ${details.startLocation}`;
         />
       </div>
 
-      <div className="max-ph:hidden flex-shrink-0 w-full">
-        <TrustIndicators />
-      </div>
+      {isChatActive && (
+        <div className="max-ph:hidden flex-shrink-0 w-full">
+          <TrustIndicators />
+        </div>
+      )}
 
       <ConfirmationModal
         show={showConfirmModal}
