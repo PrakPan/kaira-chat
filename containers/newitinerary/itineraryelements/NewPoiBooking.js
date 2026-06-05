@@ -77,7 +77,7 @@ export default function NewPoiBooking(props) {
     <div className="rounded-3xl border-sm border-solid border-text-disabled p-md cursor-pointer hover:bg-text-smoothwhite relative mt-md w-100">
       {isDesktop ? <div
         id="poi"
-        className={`relative flex gap-1  flex-col justify-start`}
+        className={`relative flex gap-1 flex-col justify-start`}
       >
         <div
           style={{
@@ -170,28 +170,28 @@ export default function NewPoiBooking(props) {
             <SkeletonCard height={"100%"} />
           </div>
           <div className="flex flex-col justify-between">
-            <div className="flex flex-col gap-2 text-[#01202B]  w-full h-fit justify-start">
+            <div className="flex flex-col gap-2 text-[#01202B] w-full h-fit justify-start">
               <div className="flex flex-col justify-between">
                 <div className="flex flex-row justify-between">
-                  <div className="text-md-lg leading-xl-sm font-600 mb-0 max-ph:mt-sm">
+                  <div className="ttw-type-h4 leading-xl-sm font-600 mb-0 max-ph:mt-sm">
                     {props.data?.name || props.data?.display_name ? props.data.name || props.data?.display_name : null}
                   </div>
                 </div>
                 {stars && (
-                  <span className="flex flex-row items-center gap-1 text-sm text-[#7a7a7a]">
-                    <span className="flex flex-row text-[#FFD201] text-[12px]">
+                  <span className="flex flex-row items-center gap-1 ttw-type-body text-[#7a7a7a]">
+                    <span className="flex flex-row text-[#FFD201] ttw-type-small">
                       {stars}
                     </span>
-                    <span className="text-[12px]">{props.data?.rating}  </span>
-                    <span className="underline text-[12px]">
+                    <span className="ttw-type-small">{props.data?.rating}  </span>
+                    <span className="underline ttw-type-small">
                       {props.data?.user_ratings_total} user reviews
                     </span>
                   </span>
                 )}
               </div>
-              <div className="text-md-lg leading-xl-sm font-600 mb-0 max-ph:mt-sm flex items-center gap-2">
+              <div className="ttw-type-h4 leading-xl-sm font-600 mb-0 max-ph:mt-sm flex items-center gap-2">
                 {props?.data?.source === "Gmaps" && (
-                  <span className="flex items-center gap-[1px] text-[10px] bg-[#ECECEC] text-[#333] px-2 py-[2px] rounded-full font-medium">
+                  <span className="flex items-center gap-[1px] ttw-type-small bg-[#ECECEC] text-[#333] px-2 py-[2px] rounded-full font-medium">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       x="0px"
@@ -227,7 +227,7 @@ export default function NewPoiBooking(props) {
               </div>
 
               {props.data?.tags && (
-                <div className="text-[14px] flex flex-row items-center gap-1 flex-wrap">
+                <div className="ttw-type-body flex flex-row items-center gap-1 flex-wrap">
                   {props.data.tags?.slice(0, 2)?.map((e, i) => (
                     <span
                       key={i}
@@ -245,7 +245,7 @@ export default function NewPoiBooking(props) {
                 </div>
               )}
               <div>
-                <div className=" text-sm text-[#6E757A] line-clamp-3 text-[14px] py-2">
+                <div className=" ttw-type-body text-[#6E757A] line-clamp-3 ttw-type-body py-2">
                   {props.data?.one_liner_description}
                   {/* {props.data.short_description
                     .split(" ")
@@ -261,7 +261,7 @@ export default function NewPoiBooking(props) {
             <div className="flex flex-row items-center justify-between">
               {props.data?.pricing?.total_price ? (
                 <div className="flex flex-col md:flex-row gap-1">
-                  <div className="text-[24px] font-bold">
+                  <div className="ttw-type-h2 font-bold">
                     <span
                       className="!font-[lexend]"
                       style={{ fontFamily: "Lexend" }}
@@ -270,7 +270,7 @@ export default function NewPoiBooking(props) {
                     </span>
                     {getIndianPrice(Math.round(props.data.pricing.total_price))}
                   </div>
-                  <div className="text-[14px] self-end">
+                  <div className="ttw-type-body self-end">
                     for {props.data.pricing.total_pax} people*
                   </div>
                 </div>
@@ -375,7 +375,7 @@ export default function NewPoiBooking(props) {
             ></ImageLoader> */}
               {/* {props.data?.is_very_popular && (
               <div className="absolute top-4 left-0 z-[1090]">
-                <ClippathComp className="text-[12px] font-medium bg-red-400 text-white  px-[16px] py-[8px] -mr-2 md:-mr-3 z-[1090]">
+                <ClippathComp className="ttw-type-small font-medium bg-red-400 text-white px-[16px] py-[8px] -mr-2 md:-mr-3 z-[1090]">
                   Recommended
                 </ClippathComp>
               </div>
@@ -393,20 +393,20 @@ export default function NewPoiBooking(props) {
             </div>
           </div>
 
-          <div className="text-md-lg leading-xl-sm font-600 mb-0 max-ph:mt-sm">
+          <div className="ttw-type-h4 leading-xl-sm font-600 mb-0 max-ph:mt-sm">
             {props.data?.name ? props.data.name : null}
           </div>
 
           {stars && (
-            <span className="flex flex-row items-center gap-1 text-sm text-[#7a7a7a]">
-              <span className="flex flex-row text-[#FFD201] text-[12px]">
+            <span className="flex flex-row items-center gap-1 ttw-type-body text-[#7a7a7a]">
+              <span className="flex flex-row text-[#FFD201] ttw-type-small">
                 {stars}
               </span>
             </span>
           )}
 
           <div className="my-2">
-            <div className=" text-sm text-[#01202B] line-clamp-3 text-[14px]">
+            <div className=" ttw-type-body text-[#01202B] line-clamp-3 ttw-type-body">
               {props?.data?.short_description?.split(" ").slice(0, 40).join(" ")}
               <span className="font-bold text-gray-500"> ...more</span>
             </div>
@@ -414,11 +414,11 @@ export default function NewPoiBooking(props) {
           <div className="flex flex-row items-center justify-between">
             {props.data?.pricing?.total_price ? (
               <div className="flex gap-1">
-                <div className="text-[24px] font-bold">
+                <div className="ttw-type-h2 font-bold">
                   <span>{currency?.currency ? currencySymbols?.[currency?.currency] : `₹`}</span>
                   {getIndianPrice(Math.round(props.data.pricing.total_price))}
                 </div>
-                <div className="text-[14px] mt-[10px]">
+                <div className="ttw-type-body mt-[10px]">
                   for {props.data.pricing.total_pax} people*
                 </div>
               </div>

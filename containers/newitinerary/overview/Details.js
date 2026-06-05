@@ -193,7 +193,7 @@ const Details = (props) => {
 
       {props?.budget ? (
         <div
-          className="pr-[24px] pl-[24px] border-l  min-h-full"
+          className="pr-[24px] pl-[24px] border-l min-h-full"
           style={{ width: "max-content" }}
         >
           <Heading>Budget</Heading>

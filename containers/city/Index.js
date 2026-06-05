@@ -1,24 +1,21 @@
 import React, { useState } from "react";
 import FullScreenGallery from "../../components/fullscreengallery/Index";
-import DesktopPersonaliseBanner from "../../components/containers/Banner";
-import media from "../../components/media";
-import { useRouter } from "next/router";
 import NewMenu from "../newcityplanner/Menu";
-import MobileBanner from "./Banner/Mobile";
-import HeroBanner from "../../components/containers/HeroBanner/HeroBanner";
 import validateTextSize from "../../services/textSizeValidator";
-import openTailoredModal from "../../services/openTailoredModal";
 import { convertDbNameToCapitalFirst } from "../../helper/convertDbnameToCapitalFirst";
-import HeroSection from "../../components/revamp/destination/HeroSection";
+import HeroV2 from "../../components/revamp/destination/HeroV2";
+import DestinationStatsStrip from "../../components/revamp/destination/DestinationStatsStrip.jsx";
+import WhenToGoSection from "../../components/revamp/destination/WhenToGoSection.jsx";
+import PlanningSection from "../../components/revamp/destination/PlanningSection.jsx";
+import ChatWithKairaCta from "../../components/revamp/destination/ChatWithKairaCta.jsx";
 import { imgUrlEndPoint } from "../../components/theme/ThemeConstants";
 import TailoredFormMobileModal from "../../components/modals/TailoredFomrMobile";
+import styles from "../../styles/pages/revamp/destination.module.scss";
 
 const Experience = (props) => {
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [galleryimages, setGalleryImages] = useState([]);
-  const router = useRouter();
-  const [showTailoredModal,setShowTailoredModal] = useState(false);
-  let isPageWide = media("(min-width: 768px)");
+  const [showTailoredModal, setShowTailoredModal] = useState(false);
 
   const closeGalleryHandler = () => {
     let images = [];
@@ -29,82 +26,192 @@ const Experience = (props) => {
     setGalleryOpen(false);
   };
 
-  if (galleryOpen)
+  if (galleryOpen) {
     return (
       <FullScreenGallery
         closeGalleryHandler={closeGalleryHandler}
         images={galleryimages}
-      ></FullScreenGallery>
+      />
     );
-  else
-    return (
-      <div
-        className=""
-        style={isPageWide ? { minHeight: "100vh" } : {}}
-      >
-        {/* {isPageWide ? (
-          <DesktopPersonaliseBanner
-            onclick={() =>
-              openTailoredModal(router, props.cityData.id, props.cityData.name,props.type)
-            }
-            text={validateTextSize(
-              `Craft a personalized itinerary to ${props.cityData.name} now!`,
-              9,
-              `Craft a trip to ${props.cityData.name} now!`
-            )}
-          ></DesktopPersonaliseBanner>
-        ) : (
-          <MobileBanner
-            cityName={props.cityData.name}
-            onClick={() =>
-              openTailoredModal(router, props.cityData.id, props.cityData.name,props.type)
-            }
-          />
-        )} */}
-        <div>
-          {/* <HeroBanner
-            image={props.cityData.images[0].image}
-            destination={convertDbNameToCapitalFirst(props.cityData.name)}
-            cities={props.reccomendedCitiesData}
-            title={`${props.cityData.name} Trip Planner`}
-            page={"City Page"}
-            page_id={props?.page_id}
-            type={props?.type}
-          /> */}
+  }
 
-          <HeroSection
-            title={validateTextSize(
-              `Your ${props.cityData.name} Trip, Designed Around You`,
-              9,
-              `Craft a trip to ${props.cityData.name} now!`
-            )}
-            image={`${imgUrlEndPoint}${props.cityData.images[0].image}`}
-            slug={props?.cityData?.name}
-            setShowTailoredModal={setShowTailoredModal}
-          />
+  const cityName = props.cityData.name;
+  const cityDisplayName = convertDbNameToCapitalFirst(cityName);
 
-          <NewMenu
-            data={props.cityData}
-            destination={props?.cityData?.name}
-            nearbyCities={props.reccomendedCitiesData}
-            removeDelete={true}
-          />
+  const cityPolaroids = (props.cityData?.images || []).map((img) => ({
+    image: `${imgUrlEndPoint}${img.image}`,
+    caption: img.caption || cityDisplayName,
+  }));
 
-           <TailoredFormMobileModal
-            destinationType={"city-planner"}
-            page_id={props.page_id}
-            children_cities={props.children_cities}
-            destination={props.destination}
-            cities={props.cities}
-            onHide={() => {
-              setShowTailoredModal(false);
-            }}
-            show={showTailoredModal}
-            eventDates={props.eventDates}
-          />
+  const hotLocationPolaroids = (props.hotLocations || [])
+    .filter((loc) => loc?.image)
+    .map((loc) => ({
+      image: loc.image.startsWith("http")
+        ? loc.image
+        : `${imgUrlEndPoint}${loc.image}`,
+      caption: loc.name ? convertDbNameToCapitalFirst(loc.name) : cityDisplayName,
+    }));
+
+  const activityPolaroids = [
+    ...(props.cityData?.activities || []),
+    ...(props.cityData?.pois || []),
+  ]
+    .filter((item) => item?.image)
+    .map((item) => ({
+      image: item.image.startsWith("http")
+        ? item.image
+        : `${imgUrlEndPoint}${item.image}`,
+      caption: item.title || item.name || cityDisplayName,
+    }));
+
+  const polaroids = [
+    ...hotLocationPolaroids,
+    ...activityPolaroids,
+    ...cityPolaroids, 
+    
+  ].slice(0, 4);
+
+  
+
+  return (
+    <div className={styles.destinationPage}>
+      <HeroV2
+        destinationLabel={cityDisplayName || cityName}
+        kicker={`Plan your ${cityDisplayName} trip with Kaira`}
+        title={
+          <>
+            {cityDisplayName},{" "}
+            <span className={styles.serif}>however</span> you{" "}
+            <span className={styles.highlight}>want it.</span>
+          </>
+        }
+        description={
+          <>
+            Tell Kaira <b>your vibe and dates</b> — she'll craft a{" "}
+            <span className={styles.serif}>{cityDisplayName} trip</span> that{" "}
+            <span className={styles.serif}>actually flows.</span>
+          </>
+        }
+        polaroids={polaroids}
+        activities={(props.cityData?.activities || [])
+          .map((a) => ({
+            image: a?.image
+              ? a.image.startsWith("http")
+                ? a.image
+                : `${imgUrlEndPoint}${a.image}`
+              : "",
+          }))
+          .filter((p) => p.image)}
+        pois={(props.cityData?.pois || [])
+          .map((p) => ({
+            image: p?.image
+              ? p.image.startsWith("http")
+                ? p.image
+                : `${imgUrlEndPoint}${p.image}`
+              : "",
+          }))
+          .filter((p) => p.image)}
+        prompts={
+          props.cityData?.model_prompts?.length
+            ? props.cityData.model_prompts
+            : []
+        }
+        setShowTailoredModal={setShowTailoredModal}
+      />
+
+      {/* STATS STRIP */}
+      <DestinationStatsStrip
+        data={props.cityData}
+        fallbacks={[
+          {
+            label: "City",
+            value: <span className={styles.serif}>{cityDisplayName}</span>,
+            sub: "Curated by Kaira",
+          },
+          {
+            label: "Photos",
+            value: (
+              <>
+                <span className={styles.serif}>
+                  {props.cityData?.images?.length || 0}
+                </span>{" "}
+                gallery shots
+              </>
+            ),
+            sub: "Real, not stock",
+          },
+          {
+            label: "Nearby cities",
+            value: (
+              <>
+                <span className={styles.serif}>
+                  {props.reccomendedCitiesData?.length || 0}
+                </span>{" "}
+                suggested
+              </>
+            ),
+            sub: "Easy to combine",
+          },
+          {
+            label: "Trusted by",
+            value: (
+              <>
+                <span className={styles.serif}>10K+</span> travellers
+              </>
+            ),
+            sub: "Across India",
+          },
+        ]}
+      />
+
+      <WhenToGoSection
+        seasonalInfo={props.cityData?.seasonal_info}
+        destinationName={cityDisplayName}
+      />
+
+      <NewMenu
+        data={props.cityData}
+        destination={props?.cityData?.name}
+        nearbyCities={props.reccomendedCitiesData}
+        removeDelete={true}
+      />
+
+      <PlanningSection
+        destinationInfo={props.cityData?.destination_info}
+        destinationName={cityDisplayName}
+      />
+
+      {/* FINAL CTA */}
+      <section className={styles.finalCta}>
+        <div className={styles.finalCtaInner}>
+          <h2>
+            {cityDisplayName}, <span className={styles.serif}>your way.</span>
+          </h2>
+          <p>
+            Tell Kaira your dates and vibe. She'll have a real plan back in
+            under 2 minutes.
+          </p>
+          <ChatWithKairaCta onClick={() => setShowTailoredModal(true)} />
+          <div className={styles.finalCtaTrust}>
+            No commitment · free to plan · pay only for what you pick.
+          </div>
         </div>
-      </div>
-    );
+      </section>
+
+      <TailoredFormMobileModal
+        destinationType={"city-planner"}
+        page_id={props.page_id}
+        children_cities={props.children_cities}
+        destination={props.destination}
+        cities={props.cities}
+        onHide={() => {
+          setShowTailoredModal(false);
+        }}
+        show={showTailoredModal}
+        eventDates={props.eventDates}
+      />
+    </div>
+  );
 };
 
 export default Experience;

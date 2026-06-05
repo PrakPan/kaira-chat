@@ -182,17 +182,17 @@ const AddPoi = (props) => {
         className=" flex flex-col gap-3 overflow-y-scroll"
         style={{ height: `${height}px` }}
       >
-        <div className=" z-[900] flex flex-col gap-3  bg-white px-2 py-4">
+        <div className=" z-[900] flex flex-col gap-3 bg-white px-2 py-4">
           <BackArrow handleClick={(e) => props.setShowDrawer(false)} />
           <H3>
             Replacing {props?.name} in {props?.cityName}
           </H3>
           <div className="grid w-full gap-2 sm:grid-cols-[3fr_1fr]">
-            <div className="relative flex flex-row items-center  h-[44px]">
+            <div className="relative flex flex-row items-center h-[44px]">
               <IoMdSearch
                 id={"icon"}
                 onClick={searchHandler}
-                className="absolute cursor-pointer left-4 text-2xl"
+                className="absolute cursor-pointer left-4 ttw-type-h2"
               />
               <input
                 type="text"
@@ -201,7 +201,7 @@ const AddPoi = (props) => {
                 placeholder={`Search ${
                   elementType === "POI" ? "attractions" : "activities"
                 }`}
-                className="w-full flex items-center text-sm border-2 border-gray-300 rounded-lg px-5 py-2 focus:outline-none focus:border-[#F7E700] h-[44px]"
+                className="w-full flex items-center ttw-type-body border-2 border-gray-300 rounded-lg px-5 py-2 focus:outline-none focus:border-[#F7E700] h-[44px]"
               ></input>
             </div>
 
@@ -252,7 +252,7 @@ const AddPoi = (props) => {
               </button>
               <div className="flex gap-4">
                 <div
-                  className="relative px-[16px] py-[12px] bg-[#1B1B1B] text-white rounded-[8px] h-[44px] flex items-center gap-2  cursor-pointer"
+                  className="relative px-[16px] py-[12px] bg-[#1B1B1B] text-white rounded-[8px] h-[44px] flex items-center gap-2 cursor-pointer"
                   onClick={() => setShowDynamicfilters(true)}
                 >
                   <Image
@@ -303,10 +303,10 @@ const AddPoi = (props) => {
       {showDynamicfilters && (
         <div
           className={`
-        z-50 bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-lg space-y-5 text-sm z-[1091]
-        sm:absolute sm:top-[calc(100%+8px)] sm:right-0
-        max-sm:fixed max-sm:bottom-0 max-sm:w-full 
-      `}
+ z-50 bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-lg space-y-5 ttw-type-body z-[1091]
+ sm:absolute sm:top-[calc(100%+8px)] sm:right-0
+ max-sm:fixed max-sm:bottom-0 max-sm:w-full 
+ `}
           ref={filtersRef}
         >
           <DyamicFilters

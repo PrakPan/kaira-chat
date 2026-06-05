@@ -18,10 +18,10 @@ const EmptyItinerary: React.FC = () => {
           />
         </svg>
       </div>
-      <h3 className="text-lg font-semibold text-gray-700 mb-2">
+      <h3 className="ttw-type-h4 text-gray-700 mb-2">
         Building Your Itinerary
       </h3>
-      <p className="text-sm text-gray-500 max-w-md">
+      <p className="ttw-type-body text-gray-500 max-w-md">
         Please wait while we create your personalized travel plan...
       </p>
     </div>

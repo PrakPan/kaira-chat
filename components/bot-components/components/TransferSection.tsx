@@ -78,7 +78,7 @@ const TransferSection: React.FC<TransferSectionProps> = ({ transfer }) => {
           )}
         </div>
         {legs.length > 0 && (
-          <span className="text-[16px] font-[500]">{legs.join(", ")}</span>
+          <span className="ttw-type-body">{legs.join(", ")}</span>
         )}
       </div>
     </div>

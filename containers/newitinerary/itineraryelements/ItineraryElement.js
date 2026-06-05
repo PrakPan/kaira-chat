@@ -72,7 +72,7 @@ const ItineraryElement = (props) => {
       <div className="flex flex-row ">
         <div className=" flex justify-center items-center ">
           <div className="w-[6.15rem] grid place-items-center">
-            <FaHome className="text-black lg:text-[3.05rem]   text-[1.25rem]" />
+            <FaHome className="text-black lg:text-[3.05rem] text-[1.25rem]" />
           </div>
         </div>
         <div
@@ -83,7 +83,7 @@ const ItineraryElement = (props) => {
           }}
         >
           <div className="flex flex-col">
-            <div className="text-xl font-normal">{props.heading}</div>
+            <div className="ttw-type-h3 font-normal">{props.heading}</div>
 
             <Link
               to={
@@ -130,7 +130,7 @@ const ItineraryElement = (props) => {
             </Link>
 
             <div>
-              <div className="pt-1 line-clamp-3 font-normal text-sm mb-3">
+              <div className="pt-1 line-clamp-3 font-normal ttw-type-body mb-3">
                 {props.text ? props.text : null}
               </div>
             </div>

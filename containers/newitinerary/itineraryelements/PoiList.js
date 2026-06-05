@@ -85,11 +85,11 @@ const PoiList = (props) => {
   return (
     <>
       <div
-        className={`flex gap-1  lg:w-[50vw] w-[100vw] py-2 px-3 flex-col justify-start `}
+        className={`flex gap-1 lg:w-[50vw] w-[100vw] py-2 px-3 flex-col justify-start `}
       >
         {props.data.activity_data.activity.name ? (
           props.data?.activity_data?.activity?.cost ? (
-            <div className="cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2 ">
+            <div className="cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2 ">
               <div
                 onClick={() => setShowDetails({ show: true, data: props.data })}
                 id="Activity"
@@ -97,7 +97,7 @@ const PoiList = (props) => {
               >
                 <div
                   className={`'lg:h-[15rem]'
-              lg:w-[30%] w-full  h-[12rem]`}
+ lg:w-[30%] w-full h-[12rem]`}
                 >
                   <div style={{ display: imageLoaded ? "initial" : "none" }}>
                     <ImageLoader
@@ -141,19 +141,19 @@ const PoiList = (props) => {
                 <div className="flex flex-col gap-2 text-[#01202B] lg:w-[67%] w-full justify-start">
                   <div className="flex flex-col justify-between">
                     <div className="flex flex-row justify-between">
-                      <div className="text-2xl font-bold">
+                      <div className="ttw-type-h1">
                         {props.data.activity_data.activity.name}
                       </div>
                       {props.data.activity_data?.activity?.is_very_popular && (
                         <div>
-                          <ClippathComp className="text-sm font-bold bg-[#F7E700] text-#090909 pl-4 pr-2 py-1 -mr-2">
+                          <ClippathComp className="ttw-type-body-strong bg-[#F7E700] text-#090909 pl-4 pr-2 py-1 -mr-2">
                             Recommended
                           </ClippathComp>
                         </div>
                       )}
                     </div>
                     {stars && (
-                      <span className="flex flex-row items-center gap-1 text-sm text-[#7a7a7a]">
+                      <span className="flex flex-row items-center gap-1 ttw-type-body text-[#7a7a7a]">
                         <span className="flex flex-row text-[#FFD201]">
                           {stars}
                         </span>
@@ -172,18 +172,18 @@ const PoiList = (props) => {
                   </div>
 
                   <div className="my-2">
-                    <div className="font-light text-sm text-[#01202B] line-clamp-3">
+                    <div className="font-light ttw-type-body text-[#01202B] line-clamp-3">
                       {props.data.text}
                     </div>
                     <div className="font-bold text-gray-500"> ...more</div>
                   </div>
                   <div className="flex flex-row items-center justify-between">
                     <div className="flex flex-row gap-1">
-                      <div className="text-2xl font-bold">
+                      <div className="ttw-type-h1">
                         <span>₹</span>
                         {getIndianPrice(props.data.activity_data.activity.cost)}
                       </div>
-                      <div className="font-normal text-base self-end">
+                      <div className="font-normal ttw-type-body self-end">
                         per person*
                       </div>
                     </div>
@@ -230,7 +230,7 @@ const PoiList = (props) => {
             </div>
           ) : null
         ) : (
-          <div className="cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2 ">
+          <div className="cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2 ">
             <div
               onClick={() => {
                 setShowDetails({ show: true, data: props.data });
@@ -242,7 +242,7 @@ const PoiList = (props) => {
                 {" "}
                 <div
                   className={`relative 'lg:h-[15rem]'
-                h-[12rem]`}
+ h-[12rem]`}
                 >
                   <div style={{ display: imageLoaded ? "initial" : "none" }}>
                     <ImageLoader
@@ -289,19 +289,19 @@ const PoiList = (props) => {
                 <div>
                   <div className="flex flex-col justify-between">
                     <div className="flex flex-row justify-between">
-                      <div className="text-2xl font-bold">
+                      <div className="ttw-type-h1">
                         {props.data.activity_data.poi.name}
                       </div>
                       {props.data.activity_data?.poi?.is_very_popular && (
                         <div>
-                          <ClippathComp className="text-sm font-bold bg-[#F7E700] text-#090909 pl-4   pr-2 py-1 -mr-2">
+                          <ClippathComp className="ttw-type-body-strong bg-[#F7E700] text-#090909 pl-4 pr-2 py-1 -mr-2">
                             Recommended
                           </ClippathComp>
                         </div>
                       )}
                     </div>
                     {stars && (
-                      <span className="flex flex-row items-center gap-1 text-sm text-[#7a7a7a]">
+                      <span className="flex flex-row items-center gap-1 ttw-type-body text-[#7a7a7a]">
                         <span className="flex flex-row text-[#FFD201]">
                           {stars}
                         </span>
@@ -317,7 +317,7 @@ const PoiList = (props) => {
                   </div>
 
                   <div className="my-2">
-                    <div className="text-sm font-light text-[#01202B] line-clamp-3">
+                    <div className="ttw-type-body font-light text-[#01202B] line-clamp-3">
                       {props.data.text}
                     </div>
                     <div className="font-bold text-gray-500"> ...more</div>

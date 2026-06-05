@@ -82,7 +82,7 @@ const FullImgContent = (props) => {
     //   params: {
     //     page: props.page ? props.page : "",
     //     event_category: "Button Click",
-    //     event_label: "Plan Itinerary For Free!",
+    //     event_label: "Chat with Kaira!",
     //     event_action: "Banner",
     //   },
     // });
@@ -140,7 +140,7 @@ const FullImgContent = (props) => {
               onclick={handlePlanButton}
               margin="3vh 0 1vh 0"
             >
-              Plan Itinerary For Free!
+              Chat with Kaira!
             </Button>
           </div>
         ) : (

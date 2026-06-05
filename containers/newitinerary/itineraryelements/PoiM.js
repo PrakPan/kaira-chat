@@ -522,7 +522,7 @@ const ItineraryPoiElementM = (props) => {
                   e.stopPropagation();
                   handleEditActivity(props?.heading, true);
                 }}
-                className="inline-block  cursor-pointer min-w-max text-lg w-4 h-4 pl-2 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
+                className="inline-block cursor-pointer min-w-max ttw-type-h4 w-4 h-4 pl-2 transition-transform duration-300 ase-in-out group-hover:text-blue-500 group-hover:scale-110 active:scale-90"
               >
                 <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
               </div>
@@ -546,7 +546,7 @@ const ItineraryPoiElementM = (props) => {
             </RatingContainer>
           )}
           <div className="flex flex-row">
-            <div className="font-normal border-2 lg:text-base text-sm border-[#9F9F9F] rounded-md px-1 py-[2px] mt-2    block  bg-white text-[#9F9F9F]">
+            <div className="font-normal border-2 lg:ttw-type-body ttw-type-body border-[#9F9F9F] rounded-md px-1 py-[2px] mt-2 block bg-white text-[#9F9F9F]">
               {props.activity_data &&
                 props.activity_data.activity &&
                 props.activity_data.activity.id
@@ -558,7 +558,7 @@ const ItineraryPoiElementM = (props) => {
           {props.poi ? <div></div> : null}
         </div>
       </GridContainer>
-      <div className={`pt-2 text-sm font-[350] line-clamp-3`}>{props.text}</div>
+      <div className={`pt-2 ttw-type-body line-clamp-3`}>{props.text}</div>
       <MoreIcon onClick={() => setShow(true)}>
         <span>More</span>
         <MdNavigateNext style={{ fontSize: "1.3rem", marginTop: "0.1rem" }} />
@@ -603,7 +603,7 @@ const ItineraryPoiElementM = (props) => {
                 textAlign: "right",
               }}
             ></IoMdClose>
-            <div className="line-clamp-1 text-2xl font-normal ">
+            <div className="line-clamp-1 ttw-type-h2 font-normal ">
               Replacing {props.heading}
             </div>
           </div>
@@ -611,7 +611,7 @@ const ItineraryPoiElementM = (props) => {
             <IoMdSearch
               id={"icon"}
               onClick={searchHandler}
-              className="absolute cursor-pointer left-4 text-2xl"
+              className="absolute cursor-pointer left-4 ttw-type-h2"
             />
 
             <input
@@ -620,7 +620,7 @@ const ItineraryPoiElementM = (props) => {
               onChange={searchHandler}
               placeholder={`Search ${elementType === "POI" ? "attractions" : "activities"
                 }`}
-              className="w-full flex items-center text-sm border-2 border-gray-300 rounded-lg px-5 py-2 focus:outline-none focus:border-[#F7E700]"
+              className="w-full flex items-center ttw-type-body border-2 border-gray-300 rounded-lg px-5 py-2 focus:outline-none focus:border-[#F7E700]"
             ></input>
           </div>
 
@@ -756,12 +756,12 @@ const ItineraryPoiElementM = (props) => {
                   textAlign: "right",
                 }}
               ></IoMdClose>
-              <div className="text-2xl font-normal line-clamp-1">Filters</div>
+              <div className="ttw-type-h2 font-normal line-clamp-1">Filters</div>
             </div>
 
             <div className="flex w-[100%] flex-row justify-between mt-0">
               <div className="flex w-[100%] flex-col justify-start items-baseline">
-                <div className="mb-2 text-sm font-normal mt-3">
+                <div className="mb-2 ttw-type-body mt-3">
                   Experience Types
                 </div>
                 <GridResponsive>
@@ -771,10 +771,10 @@ const ItineraryPoiElementM = (props) => {
                         if (SelectedExprience !== i) SetSelectedExprience(i);
                         else SetSelectedExprience(-1);
                       }}
-                      className={`flex  font-normal min-w-fit text-sm cursor-pointer  justify-center items-center hover:bg-gray-100 active:bg-[#111] active:border-0 ${SelectedExprience == i
-                        ? "text-white border-0 bg-black "
-                        : "border-2 bg-white text-black"
-                        } active:text-white  border-[#D0D5DD]  rounded-lg px-2 py-1`}
+                      className={`flex font-normal min-w-fit ttw-type-body cursor-pointer justify-center items-center hover:bg-gray-100 active:bg-[#111] active:border-0 ${SelectedExprience == i
+ ? "text-white border-0 bg-black "
+ : "border-2 bg-white text-black"
+ } active:text-white border-[#D0D5DD] rounded-lg px-2 py-1`}
                       key={i}
                     >
                       {currentfilter.display}

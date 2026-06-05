@@ -119,16 +119,16 @@ const TravelPlanner = (props) => {
         ></link>
       </Head>
 
-      {props.pageData ? (
-    <ThemePage themePage experienceData={props.Data?.page_data} slug={props.Data?.page_data?.slug} state={props?.Data}/>
-  ) : (
+      {/* {props.pageData ? (
+    <ThemePage themePage experienceData={props.Data?.page_data} slug={props.Data?.page_data?.slug} state={props?.Data} data={props?.Data}/>
+  ) : ( */}
     <StatePage
       experienceData={props.Data}
       locations={props.locations}
       page_id={props.page_id || ""}
       type={props?.Type}
     />
-  )}
+  {/* )} */}
     </Layout>
   );
 };
@@ -143,7 +143,7 @@ export async function getStaticPaths() {
 
     const allPaths = [...data];
 
-    for (var i = 0; i < 2; i++) {
+    for (var i = 0; i < allPaths.length; i++) {
       const pathArr = allPaths[i].path.split("/");
       var [continentSlug, countrySlug, stateSlug] = pathArr;
       paths.push({

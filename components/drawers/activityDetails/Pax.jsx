@@ -272,10 +272,10 @@ export const Pax = ({ pax, setPax, combo, limit = null }) => {
         onClick={() => setShowPax((prev) => !prev)}
         className="flex items-center w-full bg-[#F9F9F9] py-[0.7rem] px-4 rounded-lg justify-between"
       >
-        <div className="text-[10px] md:text-[14px] font-medium">Travellers</div>
-        <div className="text-[10px] md:text-[14px] font-medium">&nbsp;|&nbsp;</div>
+        <div className="ttw-type-small md:ttw-type-body font-medium">Travellers</div>
+        <div className="ttw-type-small md:ttw-type-body font-medium">&nbsp;|&nbsp;</div>
         <div className="flex items-center gap-1">
-          <div className="text-[10px] font-medium">
+          <div className="ttw-type-small font-medium">
             {`${adults + children + infants} Passenger`}
           </div>
           <IoIosArrowDown />

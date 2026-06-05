@@ -222,7 +222,7 @@ const MidSectionV2 = (props) => {
                 ) : (
                   <button
                     onClick={handleAddTransfer}
-                    className="text-[14px] font-[600] leading-[54px] text-blue hover:underline"
+                    className="ttw-type-body-strong text-blue hover:underline"
                   >
                     + Add Transfer
                   </button>
@@ -231,10 +231,10 @@ const MidSectionV2 = (props) => {
                 {props.cityTransferBookings && props.cityTransferBookings?.id ? (
                   <div
                     className={`inline-flex items-center gap-2 ${
-                      !isPageWide ? "w-max" : ""
-                    }`}
+ !isPageWide ? "w-max" : ""
+ }`}
                   >
-                    <div className="text-base text-[#01202B]">
+                    <div className="ttw-type-body text-[#01202B]">
                       {" "}
                       {props.modes} {props.cityTransferBookings?.duration ? ": " + props.cityTransferBookings?.duration : null}
                     </div>
@@ -251,20 +251,20 @@ const MidSectionV2 = (props) => {
                         handleAddTransfer();
                         setIsHovered(false);
                       }}
-                      className="cursor-pointer min-w-max text-lg w-4 h-4 pl-3 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90 relative"
+                      className="cursor-pointer min-w-max ttw-type-h4 w-4 h-4 pl-3 transition-transform duration-300 ase-in-out group-hover:text-blue-500 group-hover:scale-110 active:scale-90 relative"
                       onMouseEnter={() => setIsHovered(true)}
                       onMouseLeave={() => setIsHovered(false)}
                     >
                       <HiOutlineRefresh className="transition-transform text-blue" />
                       <div
                         style={popupStyle}
-                        className="z-50 absolute -bottom-140 left-1/2 -translate-x-1/2 text-sm text-center flex flex-col gap-2 bg-[#2b2b2a]"
+                        className="z-50 absolute -bottom-140 left-1/2 -translate-x-1/2 ttw-type-body text-center flex flex-col gap-2 bg-[#2b2b2a]"
                       >
                         <div className="relative">
                           <span className="absolute -top-5 left-1/2 -translate-x-1/2 w-0 h-0 border-[10px] border-solid border-transparent border-b-red"></span>
                           <span className="absolute -top-[21px] left-1/2 -translate-x-1/2 w-0 h-0 border-[10px] border-solid border-transparent border-b-[#2b2b2a]"></span>
 
-                          <div className="text-nowrap font-normal text-white text-sm">
+                          <div className="text-nowrap font-normal text-white ttw-type-body">
                             Change
                           </div>
                         </div>
@@ -273,7 +273,7 @@ const MidSectionV2 = (props) => {
                   )}
               </Text>
             ) : (
-              <div className="font-normal text-base text-[#01202B]">
+              <div className="font-normal ttw-type-body text-[#01202B]">
                 {props.modes ? `${props.modes} :` : null} {props?.duration}
               </div>
             )}

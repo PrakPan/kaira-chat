@@ -48,10 +48,10 @@ const MapView: React.FC<MapViewProps> = ({
             alt="Preparing route"
             className="w-36 h-36 mb-3"
           />
-          <p className="text-[17px] font-semibold text-gray-900">
+          <p className="ttw-type-h4 font-semibold text-gray-900">
             Preparing your route
           </p>
-          <p className="text-base text-gray-400 text-center mt-1.5 max-w-[320px] leading-relaxed">
+          <p className="ttw-type-body text-gray-400 text-center mt-1.5 max-w-[320px] leading-relaxed">
             We're mapping the best way to travel based on your dates and destination.
           </p>
         </div>

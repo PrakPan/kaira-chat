@@ -19,7 +19,7 @@ const ItineraryElementM = (props) => {
       <div>
         <div className="flex flex-row items-start">
           <div className="flex justify-center items-center">
-            <FaHome className="text-black text-[28px] mr-4" />
+            <FaHome className="text-black ttw-type-h2 mr-4" />
           </div>
 
           <div className="flex flex-col">
@@ -70,7 +70,7 @@ const ItineraryElementM = (props) => {
         </div>
 
         <div>
-          <div className="pb-0 pt-2 text-sm font-[350]">
+          <div className="pb-0 pt-2 ttw-type-body">
             {props.text ? props.text : null}
           </div>
         </div>

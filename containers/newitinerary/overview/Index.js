@@ -174,7 +174,7 @@ const Overview = (props) => {
       <GridContainer className="gap-2">
         <div className="flex justify-between">
           <div
-            className={`${isDesktop ? "Heading text-2xl" : "Heading2SB font-semibold"}`}
+            className={`${isDesktop ? "Heading ttw-type-h2" : "Heading2SB font-semibold"}`}
           >
             {props.title}
           </div>

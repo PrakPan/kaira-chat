@@ -148,7 +148,7 @@ export default function VisaDetailDrawer({ show, visa, onHide, onBooked, onAdded
             />
             {showManageActions && (
               <button
-                className="ttw-btn-secondary whitespace-nowrap text-sm"
+                className="ttw-btn-secondary whitespace-nowrap ttw-type-body"
                 onClick={() => setShowSearch(true)}
               >
                 Change
@@ -169,7 +169,7 @@ export default function VisaDetailDrawer({ show, visa, onHide, onBooked, onAdded
             <div className="flex flex-col items-center justify-center mt-16 gap-3">
               <div className="text-[#6E757A] text-center">{error}</div>
               <button
-                className="bg-[#f7e700] border border-black text-black px-4 py-2 rounded-lg text-sm font-500"
+                className="bg-[#f7e700] border border-black text-black px-4 py-2 rounded-lg ttw-type-body-strong"
                 onClick={fetchDetail}
               >
                 Retry
@@ -179,37 +179,37 @@ export default function VisaDetailDrawer({ show, visa, onHide, onBooked, onAdded
             <>
               {/* Title & country */}
               <div className="mb-3">
-                <div className="text-[22px] font-600 text-[#01202B] leading-snug">
+                <div className="ttw-type-h3 font-600 text-[#01202B] leading-snug">
                   {displayVisa?.text}
                 </div>
                 {displayVisa?.country?.name && (
-                  <div className="text-[14px] text-[#6E757A] mt-1">{displayVisa.country.name}</div>
+                  <div className="ttw-type-body text-[#6E757A] mt-1">{displayVisa.country.name}</div>
                 )}
 
                 {/* Badges */}
                 <div className="flex flex-wrap gap-1 mt-2">
                   {displayVisa?.category && (
-                    <span className="text-[12px] bg-[#F5F0FF] text-[#5B1DB3] px-2 py-0.5 rounded-full">
+                    <span className="ttw-type-small bg-[#F5F0FF] text-[#5B1DB3] px-2 py-0.5 rounded-full">
                       {formatLabel(displayVisa.category)}
                     </span>
                   )}
                   {displayVisa?.entry_type && (
-                    <span className="text-[12px] bg-[#DDF4C5] text-[#2A6800] px-2 py-0.5 rounded-full">
+                    <span className="ttw-type-small bg-[#DDF4C5] text-[#2A6800] px-2 py-0.5 rounded-full">
                       {formatLabel(displayVisa.entry_type)}
                     </span>
                   )}
                   {displayVisa?.processing_type && (
-                    <span className="text-[12px] bg-[#fadadd] text-[#8B0000] px-2 py-0.5 rounded-full">
+                    <span className="ttw-type-small bg-[#fadadd] text-[#8B0000] px-2 py-0.5 rounded-full">
                       {formatLabel(displayVisa.processing_type)}
                     </span>
                   )}
                   {displayVisa?.purpose && (
-                    <span className="text-[12px] bg-[#d5f5d3] text-[#006400] px-2 py-0.5 rounded-full">
+                    <span className="ttw-type-small bg-[#d5f5d3] text-[#006400] px-2 py-0.5 rounded-full">
                       {formatLabel(displayVisa.purpose)}
                     </span>
                   )}
                   {displayVisa?.stay_period && (
-                    <span className="text-[12px] bg-[#FFF3E0] text-[#E65100] px-2 py-0.5 rounded-full">
+                    <span className="ttw-type-small bg-[#FFF3E0] text-[#E65100] px-2 py-0.5 rounded-full">
                       Stay: {displayVisa.stay_period}
                     </span>
                   )}
@@ -219,12 +219,12 @@ export default function VisaDetailDrawer({ show, visa, onHide, onBooked, onAdded
               {/* Price card */}
               {displayVisa?.price != null && (
                 <div className="bg-[#F8F8F8] rounded-xl p-4 mb-4">
-                  <div className="text-[13px] text-[#6E757A] mb-1">Visa Fee</div>
-                  <div className="text-[24px] font-700 text-[#01202B]">
+                  <div className="ttw-type-small text-[#6E757A] mb-1">Visa Fee</div>
+                  <div className="ttw-type-h2 font-700 text-[#01202B]">
                     {symbol}{getIndianPrice(Math.round(displayVisa.price))}
-                    <span className="text-[14px] font-400 text-[#6E757A] ml-1">/ person</span>
+                    <span className="ttw-type-body font-400 text-[#6E757A] ml-1">/ person</span>
                   </div>
-                  <div className="text-[12px] text-[#6E757A] mt-1">
+                  <div className="ttw-type-small text-[#6E757A] mt-1">
                     For {itinerary?.number_of_adults || 1} adult{(itinerary?.number_of_adults || 1) > 1 ? "s" : ""}
                     {itinerary?.number_of_children ? `, ${itinerary.number_of_children} child${itinerary.number_of_children > 1 ? "ren" : ""}` : ""}
                   </div>
@@ -237,35 +237,36 @@ export default function VisaDetailDrawer({ show, visa, onHide, onBooked, onAdded
                   href={displayVisa.checklist_file}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-[13px] text-[#01202B] font-500 underline mb-4"
+                  className="flex items-center gap-2 ttw-type-small text-[#01202B] font-500 underline mb-4"
                 >
                   📄 Download Visa Checklist
+                  
                 </a>
               )}
 
               {/* Description */}
               {displayVisa?.description && (
                 <div className="mb-4">
-                  <div className="text-[14px] font-600 text-[#01202B] mb-1">Description</div>
-                  <div className="text-[13px] text-[#6E757A] leading-relaxed">{displayVisa.description}</div>
+                  <div className="ttw-type-body font-600 text-[#01202B] mb-1">Description</div>
+                  <div className="ttw-type-small text-[#6E757A] leading-relaxed">{displayVisa.description}</div>
                 </div>
               )}
 
               {/* Requirements */}
               {displayVisa?.requirements && (
                 <div className="mb-4">
-                  <div className="text-[14px] font-600 text-[#01202B] mb-1">Requirements</div>
-                  <div className="text-[13px] text-[#6E757A] leading-relaxed">{displayVisa.requirements}</div>
+                  <div className="ttw-type-body font-600 text-[#01202B] mb-1">Requirements</div>
+                  <div className="ttw-type-small text-[#6E757A] leading-relaxed">{displayVisa.requirements}</div>
                 </div>
               )}
 
               {/* Inclusions */}
               {displayVisa?.inclusions?.length > 0 && (
                 <div className="mb-4">
-                  <div className="text-[14px] font-600 text-[#01202B] mb-2">Inclusions</div>
+                  <div className="ttw-type-body font-600 text-[#01202B] mb-2">Inclusions</div>
                   <div className="space-y-1">
                     {displayVisa.inclusions.map((inc, i) => (
-                      <div key={i} className="flex items-center gap-2 text-[13px] text-[#6E757A]">
+                      <div key={i} className="flex items-center gap-2 ttw-type-small text-[#6E757A]">
                         <span className="text-green-500">✓</span> {inc}
                       </div>
                     ))}
@@ -281,7 +282,7 @@ export default function VisaDetailDrawer({ show, visa, onHide, onBooked, onAdded
           <div className="border-t border-[#E5E5E5] px-6 py-4 bg-white">
             {showManageActions ? (
               <button
-                className="w-full bg-[#ef4444]  text-white font-500 text-[15px] py-3 rounded-xl flex items-center justify-center gap-2 disabled:opacity-60"
+                className="w-full bg-[#ef4444] text-white font-500 ttw-type-body py-3 rounded-xl flex items-center justify-center gap-2 disabled:opacity-60"
                 onClick={handleRemove}
                 disabled={removing}
               >
@@ -289,7 +290,7 @@ export default function VisaDetailDrawer({ show, visa, onHide, onBooked, onAdded
               </button>
             ) : (
               <button
-                className="w-full bg-[#f7e700] text-black font-500 text-[15px] py-3 rounded-xl flex items-center justify-center gap-2 disabled:opacity-60"
+                className="w-full bg-[#f7e700] text-black font-500 ttw-type-body py-3 rounded-xl flex items-center justify-center gap-2 disabled:opacity-60"
                 onClick={handleBook}
                 disabled={booking}
               >

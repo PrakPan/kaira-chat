@@ -698,7 +698,7 @@ const ClickHandler = (child) => {
             className={`overflow-y-scroll px-lg max-ph:px-sm`}
             style={{ height: `${height}px` }}
           >
-            <div className="py-4 bg-white z-[900] flex flex-col gap-3  pb-1 justify-start items-start mx-auto">
+            <div className="py-4 bg-white z-[900] flex flex-col gap-3 pb-1 justify-start items-start mx-auto">
               <div>
                 <Image
                   src="/backarrow.svg"
@@ -709,7 +709,7 @@ const ClickHandler = (child) => {
                 />
               </div>
               <div className="flex max-sm:flex-col max-sm:!items-start justify-between w-full items-center">
-                <div className=" line-clamp-1 text-[24px] font-semibold ">
+                <div className=" line-clamp-1 ttw-type-h2 font-semibold ">
                   Add {elementType == "POI" ? "Places to visit" : elementType}{" "}
                   in {props.cityName}
                 </div>
@@ -727,7 +727,7 @@ const ClickHandler = (child) => {
                   <IoMdSearch
                     id={"icon"}
                     onClick={searchHandler}
-                    className="absolute cursor-pointer left-4 text-2xl"
+                    className="absolute cursor-pointer left-4 ttw-type-h2"
                   />
 
                   <input
@@ -737,11 +737,11 @@ const ClickHandler = (child) => {
                     placeholder={`Search ${
                       elementType === "POI" ? "attractions" : "activities"
                     }`}
-                    className="w-full flex items-center text-sm border-2 border-gray-300 rounded-lg px-5 py-2 focus:outline-none focus:border-[#F7E700] h-[44px]"
+                    className="w-full flex items-center ttw-type-body border-2 border-gray-300 rounded-lg px-5 py-2 focus:outline-none focus:border-[#F7E700] h-[44px]"
                   ></input>
                 </div>
                 <select
-                  className="px-[16px] py-[12px] rounded-[8px] bg-white border-1 border-[#979393] h-[44px] text-[14px] font-medium flex items-center justify-between max-sm:hidden"
+                  className="px-[16px] py-[12px] rounded-[8px] bg-white border-1 border-[#979393] h-[44px] ttw-type-body font-medium flex items-center justify-between max-sm:hidden"
                   onChange={(e) => setStartDate(e.target.value)}
                   value={startDate}
                 >
@@ -799,12 +799,12 @@ const ClickHandler = (child) => {
                   {showDynamicfilters && (
                     <div
                       className={`
-                      z-[1091] bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-lg space-y-5 text-sm
-                
-                      sm:absolute sm:top-[calc(100%+8px)] sm:right-0 sm:block 
-                
-                       max-sm:fixed max-sm:bottom-0 max-sm:w-full max-sm:left-0 max-sm:block
-                    `}
+ z-[1091] bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-lg space-y-5 ttw-type-body
+ 
+ sm:absolute sm:top-[calc(100%+8px)] sm:right-0 sm:block 
+ 
+ max-sm:fixed max-sm:bottom-0 max-sm:w-full max-sm:left-0 max-sm:block
+ `}
                       ref={filtersRef}
                     >
                       <DyamicFilters
@@ -852,7 +852,7 @@ const ClickHandler = (child) => {
                     />
                   </div>
                   <div
-                    className="relative px-[16px] py-[12px] bg-[#1B1B1B] text-white rounded-[8px] h-[44px] flex items-center gap-2  cursor-pointer"
+                    className="relative px-[16px] py-[12px] bg-[#1B1B1B] text-white rounded-[8px] h-[44px] flex items-center gap-2 cursor-pointer"
                     onClick={() => setShowDynamicfilters(true)}
                   >
                     <Image
@@ -964,7 +964,7 @@ const ClickHandler = (child) => {
                             {" "}
                             
                             <button
-                              className="bg-[#f7e700] border border-black  text-black px-4 py-2 rounded-md"
+                              className="bg-[#f7e700] border border-black text-black px-4 py-2 rounded-md"
                               onClick={() => {
                                 if (props?.setShowSettings) {
                                   handleCloseDrawer();
@@ -1034,10 +1034,10 @@ const ClickHandler = (child) => {
           </div>
           {showCalender && (
             <div
-              className="fixed bottom-0 w-full bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-lg space-y-5 text-sm z-[1091]"
+              className="fixed bottom-0 w-full bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-lg space-y-5 ttw-type-body z-[1091]"
               ref={calendarRef}
             >
-              <div className="font-medium text-[14px]">Select Days</div>
+              <div className="font-medium ttw-type-body">Select Days</div>
               {[...Array(Math.max(0, resolvedCityDuration) + 1)].map((_, i) => {
                 const cityStartRaw = props?.start_date || props?.date || null;
                 const baseDateStr = props?.mercuryItinerary
@@ -1066,7 +1066,7 @@ const ClickHandler = (child) => {
                     className="cursor-pointer"
                     onClick={() => setStartDate(dateString)}
                   >
-                    <span className="font-bold text-[14px]">
+                    <span className="font-bold ttw-type-body">
                       {displayDate + " | "}
                     </span>
                     <span>Day {i + 1}</span>

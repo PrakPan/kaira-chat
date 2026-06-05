@@ -198,7 +198,7 @@ const AttachmentCard: React.FC<{
               fontWeight: 700,
               flexShrink: 0,
               letterSpacing: 0.5,
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
             }}
           >
             {ext.slice(0, 4)}
@@ -212,7 +212,7 @@ const AttachmentCard: React.FC<{
                 overflow: "hidden",
                 textOverflow: "ellipsis",
                 whiteSpace: "nowrap",
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
               }}
               title={att.name}
             >
@@ -223,7 +223,7 @@ const AttachmentCard: React.FC<{
                 fontSize: 11,
                 color: isError ? "#f87171" : "#9ca3af",
                 marginTop: 2,
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
               }}
             >
               {isError ? "Upload failed" : formatFileSize(att.size)}
@@ -396,22 +396,75 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
 
   return (
     <div
+      className="kp-chat-input"
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
       style={{
-        borderRadius: 24,
+        borderRadius: 16,
         border: isDragOver
-          ? "1.5px solid #3b82f6"
-          : "1.5px solid #e5e7eb",
-        background: isDragOver ? "#eff6ff" : "#fff",
-        boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
-        padding: "14px 14px",
-        fontFamily: "'Inter', sans-serif",
-        transition: "border-color 0.15s, background 0.15s",
+          ? "1.5px solid #0f1a2e"
+          : "1.5px solid #ececec",
+        background: isDragOver ? "#fafaf5" : "#fff",
+        padding: "12px 12px 8px 16px",
+        fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+        transition: "border-color 0.2s, background 0.2s, box-shadow 0.2s",
       }}
     >
+      <style>{`
+        .kp-chat-input:focus-within {
+          border-color: #0f1a2e !important;
+          box-shadow: 0 0 0 3px rgba(11,18,32,0.06);
+        }
+        .kp-icon-btn {
+          width: 28px; height: 28px;
+          background: transparent; border: 0;
+          color: #8a93a6; cursor: pointer;
+          display: grid; place-items: center;
+          border-radius: 7px;
+          transition: all 0.15s;
+        }
+        .kp-icon-btn:hover { color: #0b1220; background: #fafaf5; }
+        .kp-icon-btn svg { width: 15px; height: 15px; }
+        .kp-send {
+          margin-left: auto;
+          height: 30px;
+          padding: 0 14px;
+          background: #0f1a2e;
+          color: #fff;
+          border: 0;
+          border-radius: 999px;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+          font-size: 12px;
+          font-weight: 700;
+          transition: transform 0.15s, opacity 0.15s, background 0.15s;
+        }
+        .kp-send:hover { transform: translateX(2px); }
+        .kp-send:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+        .kp-send svg { width: 11px; height: 11px; }
+        .kp-stop {
+          margin-left: auto;
+          height: 30px;
+          padding: 0 14px;
+          background: #1c1917;
+          color: #fff;
+          border: 0;
+          border-radius: 999px;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+          font-size: 12px;
+          font-weight: 700;
+        }
+      `}</style>
+
       {/* Hidden file input */}
       <input
         ref={fileInputRef}
@@ -426,10 +479,10 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
         <div
           style={{
             textAlign: "center",
-            padding: "8px 0",
-            color: "#3b82f6",
-            fontSize: 13,
-            fontWeight: 500,
+            padding: "6px 0",
+            color: "#0f1a2e",
+            fontSize: 12,
+            fontWeight: 600,
           }}
         >
           Drop files here
@@ -442,7 +495,7 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
           style={{
             display: "flex",
             gap: 8,
-            marginBottom: 10,
+            marginBottom: 8,
             overflowX: "auto",
             paddingBottom: 2,
             scrollbarWidth: "none",
@@ -484,15 +537,15 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
           rows={1}
           className="w-full bg-transparent resize-none outline-none"
           style={{
-            fontFamily: "'Inter', sans-serif",
-            fontSize: 16,
-            color: "#000000",
+            fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+            fontSize: 14.5,
+            color: "#0b1220",
             lineHeight: "22px",
             minHeight: 24,
             maxHeight: 120,
             border: "none",
             padding: 0,
-            marginBottom: 8,
+            marginBottom: 0,
           }}
         />
 
@@ -507,10 +560,10 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
               left: 0,
               pointerEvents: "none",
               userSelect: "none",
-              fontFamily: "'Inter', sans-serif",
-              fontSize: 16,
+              fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+              fontSize: 14.5,
               lineHeight: "22px",
-              color: "#9ca3af",
+              color: "#8a93a6",
               whiteSpace: "nowrap",
               overflow: "hidden",
               maxWidth: "100%",
@@ -521,72 +574,65 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
         )}
       </div>
 
-      {/* Bottom action row */}
-      <div className="flex items-center justify-between">
+      {/* Footer action row — mirrors .chat-input-foot */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 4,
+          marginTop: 6,
+          paddingTop: 6,
+          borderTop: "1px solid #f4f3ec",
+        }}
+      >
         {/* Left: attach */}
         {showAttach ? (
           <button
             type="button"
             onClick={handleAttachClick}
-            className="flex items-center justify-center transition-colors hover:bg-gray-100 rounded-full"
+            className="kp-icon-btn"
             title="Attach"
           >
-            <PlusIcon />
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+            </svg>
+          </button>
+        ) : null}
+
+        {/* Mic (Dictate) */}
+        <Dictate
+          ref={dictateRef}
+          stopDictation={stopDictation}
+          onTranscriptChange={handleTranscriptChange}
+          disabled={disabled || isStreaming}
+        />
+
+        {/* Right: send/stop pill */}
+        {isStreaming ? (
+          <button
+            type="button"
+            onClick={onStop}
+            title="Stop generating"
+            className="kp-stop"
+          >
+            <StopIcon />
+            Stop
           </button>
         ) : (
-          <div />
+          <button
+            type="button"
+            onClick={handleSubmitInternal}
+            disabled={!canSend}
+            title="Send"
+            className="kp-send"
+          >
+            Send
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5 12h14" />
+              <path d="m12 5 7 7-7 7" />
+            </svg>
+          </button>
         )}
-
-        {/* Right: mic (Dictate) + send/stop */}
-        <div className="flex items-center gap-2">
-          {/* Dictate component handles mic button + recording state */}
-          <Dictate
-            ref={dictateRef}
-            stopDictation={stopDictation}
-            onTranscriptChange={handleTranscriptChange}
-            disabled={disabled || isStreaming}
-          />
-
-          {isStreaming ? (
-            <button
-              type="button"
-              onClick={onStop}
-              title="Stop generating"
-              className="flex items-center justify-center transition-all"
-              style={{
-                width: 32,
-                height: 32,
-                borderRadius: "50%",
-                background: "#1c1917",
-                color: "#fff",
-                border: "none",
-                cursor: "pointer",
-              }}
-            >
-              <StopIcon />
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={handleSubmitInternal}
-              disabled={!canSend}
-              title="Send"
-              className="flex items-center justify-center transition-all"
-              style={{
-                width: 32,
-                height: 32,
-                borderRadius: "50%",
-                background: "#07213A",
-                color: "#1c1917",
-                border: "none",
-                cursor: canSend ? "pointer" : "not-allowed",
-                boxShadow: canSend ? "0 2px 8px rgba(251,191,36,0.35)" : "none",
-              }}
-            >
-              <SendIcon />
-            </button>
-          )}
-        </div>
       </div>
     </div>
   );

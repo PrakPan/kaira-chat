@@ -13,8 +13,12 @@ const MapBox = dynamic(() => import("../../Map.js"), {
 });
 
 const Title = styled.p`
-  font-weight: 600;
-  font-size: 20px;
+  /* H3 token · 22/1.15/800/-0.02em */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
   margin-block: 1rem 0rem;
 `;
 
@@ -25,8 +29,12 @@ const MapInfo = styled.div`
 `;
 
 const Heading = styled.p`
-  font-size: 18px;
-  font-weight: 600;
+  /* H4 token · 17/1.2/700/-0.015em */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
   margin-block: 0rem;
 `;
 
@@ -46,8 +54,11 @@ const WeatherContainer = styled.div`
 `;
 
 const TextBold = styled.p`
-  line-height: 24px;
+  /* Body-strong · 14.5/1.55/600 */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14.5px;
   font-weight: 600;
+  line-height: 1.55;
   margin: 0;
   color: rgb(1, 32, 43);
 `;
@@ -69,8 +80,11 @@ const TimeStamp = styled.p`
   background-color: #000000bf;
   border-radius: 20px;
   color: white;
-  font-size: 14px;
+  /* Body-strong · 14.5/1.55/600 */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14.5px;
   font-weight: 600;
+  line-height: 1.55;
   position: absolute;
   bottom: 0px;
   right: 20px;

@@ -245,11 +245,14 @@ const StartScreen: React.FC<StartScreenProps> = ({
   const rows = themeConfig?.rows ?? defaultRows;
 
   return (
-    <div className="relative h-full">
+    <div
+      className="relative h-full"
+      style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}
+    >
     <div
   ref={scrollRef}
-  className="flex-1 h-full overflow-y-auto bg-white pb-16"
-  style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+  className="flex-1 h-full overflow-y-auto pb-16"
+  style={{ scrollbarWidth: "none", msOverflowStyle: "none", background: "#fafaf5" }}
 >
       <style>{`
         .start-screen-scroll::-webkit-scrollbar { display: none; }
@@ -302,7 +305,7 @@ const StartScreen: React.FC<StartScreenProps> = ({
           <div className="flex items-center gap-2 mb-3">
             <h2
               className="text-[14px] font-semibold text-[#1F4AAF]"
-              style={{ fontFamily: "'Inter', sans-serif" }}
+              style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}
             >
               Traveller Stories
             </h2>
@@ -344,7 +347,7 @@ const StartScreen: React.FC<StartScreenProps> = ({
                 {row.icon && <span className="text-xl">{row.icon}</span>}
                 <h2
                   className="text-lg font-semibold text-gray-900"
-                  style={{ fontFamily: "'Inter', sans-serif" }}
+                  style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}
                 >
                   {row.heading}
                 </h2>
@@ -388,7 +391,7 @@ const StartScreen: React.FC<StartScreenProps> = ({
         style={{
           height: 72,
           background:
-            "linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 60%, #fff 100%)",
+            "linear-gradient(to bottom, rgba(250,250,245,0) 0%, rgba(250,250,245,0.9) 60%, #fafaf5 100%)",
           opacity: showScrollHint ? 1 : 0,
           transition: "opacity 0.2s ease",
         }}
@@ -484,7 +487,7 @@ const TripCard: React.FC<TripCardProps> = ({ trip, delay, mounted, onSelect }) =
            style={{
     background: "#F7E700",
     color: "#07213A",
-    fontFamily: "Inter",
+      fontSize: "10px"
   }}
         >
           {trip.tags}
@@ -599,7 +602,7 @@ const TrendingCard: React.FC<TrendingCardProps> = ({
   style={{
     background: "#F7E700",
     color: "#07213A",
-    fontFamily: "Inter",
+    fontSize: "10px"
   }}
 >
   {trip.sublabel}
@@ -714,7 +717,7 @@ const TravellerStoryCard: React.FC<TravellerStoryCardProps> = ({
             <p
               className="text-[13px] font-semibold text-[#07213A] leading-snug mb-0"
               style={{
-                fontFamily: "'Inter', sans-serif",
+                // fontFamily: "'Inter', sans-serif",
                 display: "-webkit-box",
                 WebkitLineClamp: 2,
                 WebkitBoxOrient: "vertical",
@@ -734,7 +737,7 @@ const TravellerStoryCard: React.FC<TravellerStoryCardProps> = ({
                 style={{
                   background: "#FCE7F3",
                   color: "#9D174D",
-                  fontFamily: "Inter",
+                  // fontFamily: "Inter",
                 }}
               >
                 {story.groupType} Trip

@@ -5,7 +5,7 @@ import media from "../media";
 import PrimaryHeading from "../heading/PrimaryHeading";
 import TailoredFormMobileModal from "../modals/TailoredFomrMobile";
 import Destination1Carousel from "../theme/Destination1Carousel";
-import Itinerary2Carousel from "../theme/Itinerary2Carousel";
+import ItineraryCardV2 from "../revamp/destination/ItineraryCardV2";
 import Reviews1Carousel from "../theme/Reviews1Carousel";
 import Activity1Carousel from "../theme/Activity1Carousel";
 import openTailoredModal from "../../services/openTailoredModal";
@@ -182,7 +182,11 @@ const ComponentDisplay = ({ component, handlePlanButton, setDestination }) => (
     ) : component.carousel === "itinerary-1" ? (
       <></>
     ) : component.carousel === "itinerary-2" ? (
-      <Itinerary2Carousel elements={component.elements} />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+        {component.elements.map((el, i) => (
+          <ItineraryCardV2 key={el.id ?? el.page_id ?? i} itinerary={el} />
+        ))}
+      </div>
     ) : component.carousel === "activity-1" ? (
       <Activity1Carousel activities={component.activities} />
     ) : component.carousel === "review-1" ? (

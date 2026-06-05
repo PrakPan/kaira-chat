@@ -80,73 +80,39 @@ const Experience = (props) => {
           href={`https://thetarzanway.com/${props.path}`}
         ></link>
       </Head>
-
+{/* 
       {props.pageData ? (
   <ThemePage
     themePage
     experienceData={props.cityData?.page_data}
     slug={props.cityData?.page_data?.slug}
     city={props.cityData}
+    data={props.cityData}
   />
-) : (
+) : ( */}
   <CityPage
     reccomendedCitiesData={props.reccomendedCitiesData}
     cityData={props.cityData}
+    hotLocations={props.hotLocationSearch}
     id={router.query.city}
     page_id={props.page_id}
     type={props?.Type}
   />
-)}
+{/* )} */}
 
     </Layout>
   );
 };
 
 export async function getStaticPaths() {
-  let paths = [];
-
-  try {
-    //mercury api
-    const res = await axios.get(
-      `${MERCURY_HOST}/api/v1/geos/search/all/?type=City`
-    );
-
-    let data = res.data;
-
-    for (var i = 0; i < 2; i++) {
-      const pathArr = data[i].path.split("/");
-      var [continentSlug, countrySlug, stateSlug, citySlug] = pathArr;
-      if (data[i]) {
-        paths.push({
-          params: {
-            continent: continentSlug,
-            country:countrySlug!="None"? countrySlug.toLowerCase().replace(/ /g, "_"):countrySlug,
-            state: stateSlug,
-            city: citySlug,
-          }
-        });
-      }
-    }
-  } catch (err) {
-    console.log(
-      "[ERROR][cityPage:axiossearchInstance][/?type=Location&fields=path,cta]: ",
-      err.message
-    );
-  }
-
-  return{
-    paths:paths,
-    fallback:false
-  }
-
- return {
+  return {
     paths: [
       {
         params: {
-          continent: "europe",
-          country: "portugal",
-          state: "madeira",
-          city: "funchal_madeira",
+          continent: "asia",
+          country: "thailand",
+          state: "bangkok",
+          city: "bangkok",
         },
       },
     ],

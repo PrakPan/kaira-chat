@@ -1,167 +1,74 @@
 import styled from "styled-components";
-import ImageLoader from "../ImageLoader";
-import Socials from "./Socials";
-import { FiPhoneCall } from "react-icons/fi";
-import { HiOutlineMail } from "react-icons/hi";
-import Subscribe from "./Subscribe";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import { HiOutlineMail } from "react-icons/hi";
+import { RiWhatsappFill } from "react-icons/ri";
+
+import Socials from "./Socials";
 import linksArr from "./Links";
 import openTailoredModal from "../../services/openTailoredModal";
-import { useRouter } from "next/router";
 import urls from "../../services/urls";
-import { RiArrowDropDownLine, RiWhatsappFill } from "react-icons/ri";
 
-const Container = styled.div`
-  min-height: 10vw;
-  background-color: rgb(35, 35, 35);
-  padding: 1.5rem 1rem;
-  color: white;
+/* =========================================
+   Site footer — ink-rail background, yellow
+   accents, four-column layout matching the
+   homepage design system.
+   ========================================= */
+
+const Container = styled.footer`
+  background: #0f1a2e;
+  color: #fafaf5;
+  padding: 56px 0 32px;
+  position: relative;
   z-index: 1000;
-  position: relative;
-
-  @media screen and (min-width: 768px) {
-    padding: 1.5rem 0rem 1.5rem 0rem;
-  }
-  @media screen and (min-width: 1300px) {
-    padding: 1.5rem 5rem 1.5rem 5rem;
-  }
 `;
 
-const SubContainer = styled.div`
-  @media screen and (min-width: 768px) {
-    display: grid;
-    grid-template-columns: 1fr 3fr;
-    column-gap: 6%;
-    margin: 0;
-  }
-`;
-
-const Box = styled.div`
-  &.linkContainer {
-  }
-`;
-
-const LogoContainer = styled.div`
-  position: relative;
-  top: -5px;
-  img {
-    // filter: invert(1);
-  }
-  .CompanyName {
-    position: absolute;
-    top: 22px;
-    left: 40px;
-  }
-`;
-
-const CompanyName = styled.div`
-  display: flex;
-  align-items: flex-end;
-  font-size: 16px;
-  font-weight: 700;
-`;
-
-const CompanyText = styled.div`
-  font-size: 14px;
-  margin: 1.5rem 0;
-`;
-
-const LinksContainer = styled.div`
-  display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  margin: 0;
-  @media screen and (min-width: 768px) {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    margin-top: 1.5rem;
-  }
-`;
-
-const CopyWrite = styled.div`
-  font-size: 10px;
-  margin: 1.5rem 0 0 0;
-`;
-
-const Links = styled.div`
-  font-size: 14px;
-  margin: 0 0 1rem 0;
-  a,
-  p {
-    text-decoration: none;
-    color: white;
-  }
-  a:hover,
-  p:hover {
-    color: white;
-    text-decoration: underline;
-    cursor: pointer;
-    text-underline-offset: 10px;
-    text-decoration-thickness: 2px;
-  }
-`;
-
-const Heading = styled.p`
-  font-size: 16px;
-  font-weight: 700;
-
-  margin: 2rem 0rem 1rem 0rem;
-  @media screen and (min-width: 768px) {
-    margin: -0.3rem 0rem 1.85rem 0rem;
-  }
+const Inner = styled.div`
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 28px;
 `;
 
 const NewsletterBanner = styled.div`
-  position: relative;
-  z-index: 1001;
   background: #f7e700;
   border-radius: 24px;
-  padding: 32px 40px;
-  margin: 32px 0;
+  padding: 28px 32px;
+  margin-bottom: 48px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 20px;
 
+  h3 {
+    font-size: 24px;
+    font-weight: 800;
+    color: #0b1220;
+    margin: 0;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+
+    span {
+      font-family: "Instrument Serif", serif;
+      font-style: italic;
+      font-weight: 400;
+    }
+  }
+
   @media screen and (max-width: 768px) {
     flex-direction: column;
     text-align: center;
     padding: 24px 20px;
-    margin: 20px 16px;
   }
 `;
 
-const NewsletterContent = styled.div`
-  flex: 1;
-  min-width: 200px;
-
-  h3 {
-    font-size: 28px;
-    font-weight: 700;
-    color: #000;
-    margin: 0;
-    line-height: 1.2;
-
-    @media screen and (max-width: 768px) {
-      font-size: 24px;
-    }
-  }
-`;
-
-const NewsletterForm = styled.div`
+const NewsletterForm = styled.form`
   display: flex;
-  gap: 8px;
   align-items: center;
-  background: white;
-  border-radius: 12px;
+  background: #ffffff;
+  border-radius: 999px;
   padding: 4px;
-  min-width: 300px;
-
-  @media screen and (max-width: 768px) {
-    min-width: 100%;
-    width: 100%;
-  }
+  min-width: 320px;
 
   input {
     flex: 1;
@@ -170,177 +77,254 @@ const NewsletterForm = styled.div`
     padding: 12px 16px;
     font-size: 14px;
     background: transparent;
-    color: #666;
+    color: #0b1220;
 
-    &::placeholder {
-      color: #999;
-    }
+    &::placeholder { color: #8a93a6; }
   }
-
   button {
-    background: #000;
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 8px;
+    background: #0f1a2e;
+    color: #fff;
+    border: 0;
+    padding: 12px 20px;
+    border-radius: 999px;
     font-weight: 600;
     font-size: 14px;
     cursor: pointer;
-    white-space: nowrap;
-    transition: all 0.3s ease;
+    transition: transform 0.15s ease;
 
-    &:hover {
-      background: #333;
-      transform: translateY(-1px);
+    &:hover { transform: translateY(-1px); }
+  }
+
+  @media screen and (max-width: 768px) {
+    width: 100%;
+    min-width: 0;
+  }
+`;
+
+const Grid = styled.div`
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 40px;
+
+  @media screen and (max-width: 1024px) {
+    grid-template-columns: 1fr 1fr;
+  }
+  @media screen and (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const Brand = styled.div`
+  .logo-line {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .logo-mark {
+    width: 36px;
+    height: 36px;
+    background: #f7e700;
+    color: #0f1a2e;
+    border-radius: 9px;
+    display: grid;
+    place-items: center;
+    font-family: "Instrument Serif", serif;
+    font-style: italic;
+    font-size: 20px;
+    transform: rotate(-6deg);
+  }
+  .brand-word .name {
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: -0.015em;
+    color: #fff;
+  }
+  .brand-word .tag {
+    display: block;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.55);
+    margin-top: 2px;
+  }
+  .blurb {
+    margin-top: 18px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.55;
+    max-width: 320px;
+  }
+  .contact {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 13.5px;
+    color: rgba(255, 255, 255, 0.86);
+
+    a, .row {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: rgba(255, 255, 255, 0.86);
+      text-decoration: none;
+      cursor: pointer;
     }
+    a:hover { color: #f7e700; }
+    svg { color: #f7e700; }
   }
 `;
 
-const SubscribeBox = styled.div`
-  position: relative;
-  z-index: 1001;
-  height: 24.5rem;
-  padding-bottom: 2rem;
-  background: white;
-  @media screen and (min-width: 768px) {
-    height: 14rem;
-    margin-top: 2rem;
+const Col = styled.div`
+  h4 {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.45);
+    margin: 0 0 16px 0;
+  }
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  a, p {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.15s;
+    margin: 0;
+    cursor: pointer;
+  }
+  a:hover, p:hover { color: #f7e700; }
+`;
+
+const SocialRow = styled.div`
+  margin-top: 20px;
+
+  /* Existing Socials component renders FontAwesome icons; nudge into ink-rail */
+  svg {
+    color: rgba(255, 255, 255, 0.7);
+    transition: color 0.15s;
+  }
+  svg:hover { color: #f7e700; }
+`;
+
+const Bottom = styled.div`
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.45);
+
+  @media screen and (max-width: 640px) {
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
   }
 `;
 
-const NewFooter = (props) => {
+const NewFooter = () => {
   const router = useRouter();
-  const [shadow, setShadow] = useState(false);
-  const [showLogo, setShowLogo] = useState(false);
-
-  useEffect(() => {
-    setShowLogo(true);
-  }, []);
-
-  const LinksComponent = linksArr.map((e, i) => (
-    <div key={i}>
-      <Heading>{e.heading}</Heading>
-      {e.data.map((data, i) => (
-        <Links key={i}>
-          {typeof data.link != "string" ? (
-            <a href={data.link[0]} target="_blank">
-              {data.title}
-            </a>
-          ) : data.title == "Personalise" ? (
-            <p onClick={() => openTailoredModal(router)}>{data.title}</p>
-          ) : data.title == "Subscribe" ? (
-            <p onClick={() => setShadow(!shadow)}>{data.title}</p>
-          ) : (
-            <Link
-              href={data.link}
-              onClick={() => (window.location.href = data.link)}
-            >
-              {data.title}
-            </Link>
-          )}
-        </Links>
-      ))}
-    </div>
-  ));
 
   return (
-    <>
-      <Container className="font-inter">
-        <NewsletterBanner className="font-inter">
-          <NewsletterContent>
+    <Container className="font-inter">
+      <Inner>
+        <NewsletterBanner>
+          <div>
             <h3>
-              Good Vibes & Great Deals,
-              <br />
-              Straight to You.
+              Good vibes & <span>great deals,</span>
+              <br />straight to your inbox.
             </h3>
-          </NewsletterContent>
-          <form
-            className="flex gap-2 items-center bg-white rounded-xl p-1 min-w-[200px] w-full max-w-md mx-auto sm:flex-row flex-col sm:min-w-[300px]"
-            onSubmit={(e) => e.preventDefault()}
-          >
-            <input
-              type="email"
-              placeholder="Email Address"
-              className="flex-1 border-none outline-none px-4 py-3 text-sm bg-transparent text-gray-700 placeholder-gray-400 rounded-lg sm:rounded-none sm:rounded-l-lg w-full"
-              required
-            />
-            <button
-              type="submit"
-              className="bg-black text-white border-none px-6 py-3 rounded font-semibold text-sm cursor-pointer whitespace-nowrap transition-all duration-300 hover:bg-gray-800 sm:rounded-none sm:rounded-lg w-full sm:w-auto sm:mt-0"
-            >
-              Subscribe
-            </button>
-          </form>
+          </div>
+          <NewsletterForm onSubmit={(e) => e.preventDefault()}>
+            <input type="email" placeholder="you@example.com" required />
+            <button type="submit">Subscribe</button>
+          </NewsletterForm>
         </NewsletterBanner>
-        <SubContainer>
-          <Box>
-            {showLogo ? (
-              <LogoContainer>
-                <ImageLoader
-                  dimensions={{ width: 122, height: 100 }}
-                  dimensionsMobile={{ width: 120, height: 100 }}
-                  url="media/website/Christmas-Logo-07.png"
-                  widthmobile="60px"
-                  leftalign
-                  height="50px"
-                  width="3.8rem"
-                ></ImageLoader>
-                <CompanyName className="CompanyName">thetarzanway</CompanyName>
-              </LogoContainer>
-            ) : (
-              <div></div>
-            )}
 
-            <CompanyText>
-              The Tarzan Way designs personalised travel experiences powered by Kaira, our AI travel planner. From discovery to bookings, Kaira helps craft seamless, immersive journeys tailored to you.
-            </CompanyText>
-            <Socials></Socials>
-
-            <CompanyName style={{ margin: "1rem 0" }}>Contact Us</CompanyName>
-
-            <CompanyText style={{ display: "flex", margin: "0" }}>
-              <div style={{ display: "flex", gap:"1" }} onClick={() =>
-              (window.location.href = urls.WHATSAPP)} className="cursor-pointer">
-                {/* <FiPhoneCall
-                  style={{ fontSize: "1.15rem", marginRight: "0.5rem" }}
-                ></FiPhoneCall> */}
-                
-            
-              <RiWhatsappFill className="text-[#fff] text-xl" />
+        <Grid>
+          <Brand>
+            <div className="logo-line">
+              <div className="logo-mark">t</div>
+              <div className="brand-word">
+                <span className="name">the tarzanway</span>
+                <span className="tag">by Kaira · est. 2018</span>
+              </div>
+            </div>
+            <p className="blurb">
+              Trips planned in conversation, not forms. Powered by Kaira — our
+              AI travel agent. Fine-tuned by humans who&apos;ve been there.
+            </p>
+            <div className="contact">
+              <div
+                className="row"
+                onClick={() => (window.location.href = urls.WHATSAPP)}
+              >
+                <div className="flex gap-2 items-center">
+                <RiWhatsappFill size={16} />
                 +91 7827441548
+                </div>
               </div>
-            </CompanyText>
+              <a href="mailto:info@thetarzanway.com">
+                <HiOutlineMail size={16} />
+                info@thetarzanway.com
+              </a>
+            </div>
+            <SocialRow>
+              <Socials />
+            </SocialRow>
+          </Brand>
 
-            <CompanyText style={{ display: "flex", margin: "0.25rem 0 0 0" }}>
-              <div style={{ display: "flex" }}>
-                <HiOutlineMail
-                  style={{ fontSize: "1.15rem", marginRight: "0.5rem" }}
-                ></HiOutlineMail>
-                <Links>
-                  <a href="mailto:info@thetarzanway.com">
-                    info@thetarzanway.com
-                  </a>
-                </Links>
-              </div>
-            </CompanyText>
-          </Box>
-          <LinksContainer>{LinksComponent}</LinksContainer>
-        </SubContainer>
+          {linksArr.map((section, idx) => (
+            <Col key={idx}>
+              <h4>{section.heading}</h4>
+              <ul>
+                {section.data.map((item, i) => {
+                  if (item.title === "Personalise") {
+                    return (
+                      <li key={i}>
+                        <p onClick={() => openTailoredModal(router)}>{item.title}</p>
+                      </li>
+                    );
+                  }
+                  if (item.title === "Subscribe") {
+                    return null;
+                  }
+                  if (Array.isArray(item.link)) {
+                    return (
+                      <li key={i}>
+                        <a href={item.link[0]} target="_blank" rel="noreferrer">
+                          {item.title}
+                        </a>
+                      </li>
+                    );
+                  }
+                  return (
+                    <li key={i}>
+                      <Link href={item.link}>{item.title}</Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </Col>
+          ))}
+        </Grid>
 
-        <div
-          style={{
-            borderBottom: "1px solid rgba(255, 255, 255, 0.5)",
-            width: "80%",
-            margin: "auto",
-          }}
-        ></div>
-
-        <CopyWrite className="text-center">
-          Copyright © 2018 - {new Date().getFullYear()} Tarzan Way Travels
-          Private Limited ® - All Rights Reserved
-        </CopyWrite>
-      </Container>
-    </>
+        <Bottom>
+          <span>
+            © {new Date().getFullYear()} thetarzanway · made in india · built
+            for the world
+          </span>
+          <span>GST · Secure payments · ISO 27001</span>
+        </Bottom>
+      </Inner>
+    </Container>
   );
 };
 

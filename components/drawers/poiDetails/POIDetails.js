@@ -35,8 +35,12 @@ const svgIcons = {
 }
 
 export const Title = styled.p`
+  /* H3 token · 22/1.15/800/-0.02em */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 22px;
   font-weight: 800;
-  font-size: 20px;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
 `;
 
 export const Reviews = styled.div`
@@ -45,7 +49,12 @@ export const Reviews = styled.div`
   gap: 0.2rem;
   p,
   u {
+    /* Caption · 12/1.4/600/0.04em */
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    line-height: 1.4;
     color: #7a7a7a;
   }
   u {
@@ -54,12 +63,20 @@ export const Reviews = styled.div`
 `;
 
 export const Text = styled.p`
-  font-size: 14px;
+  /* Body · 14.5/1.55/400 */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14.5px;
+  font-weight: 400;
+  line-height: 1.55;
 `;
 
 export const Heading = styled.p`
-  font-size: 18px;
-  font-weight: 800;
+  /* H4 token · 17/1.2/700/-0.015em */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
 `;
 
 const Container = styled.div`
@@ -257,8 +274,8 @@ const POIDetails = (props) => {
           <div
             key={i}
             className={`cursor-pointer ${
-              startDate === dateString ? "text-black font-semibold" : "text-[#4a4a4a]"
-            }`}
+ startDate === dateString ? "text-black font-semibold" : "text-[#4a4a4a]"
+ }`}
             onClick={() => {
               if (dateString === startDate) {
                 setShowCalender(false);
@@ -274,7 +291,7 @@ const POIDetails = (props) => {
               }
             }}
           >
-            <span className="font-bold text-[14px]">
+            <span className="font-bold ttw-type-body">
               {displayDate + " | "}
             </span>
             <span>Day {i + 1}</span>
@@ -442,6 +459,7 @@ const POIDetails = (props) => {
                   }
                   setShowDrawer(true);
                 }}
+                className="ttw-type-body"
               >
                 Change
               </Button>
@@ -759,22 +777,22 @@ const POIDetails = (props) => {
                     onClick={() => setShowCalender((prev) => !prev)}
                   >
                     <div className="flex items-center gap-2">
-                      <span className="font-medium text-[14px]">
+                      <span className="font-medium ttw-type-body">
                         {getHumanDate(startDate) + " | "}
                       </span>
                       <span>Day {selectedDayNumber}</span>
                     </div>
                     <IoIosArrowDown
                       className={`transition-transform ml-2 ${
-                        showCalender ? "rotate-180" : ""
-                      }`}
+ showCalender ? "rotate-180" : ""
+ }`}
                     />
                   </div>
 
                   {showCalender && (props?.removeDelete == true) &&  (
                     <div
                       ref={calendarDesktopRef}
-                      className="absolute top-full left-0 mt-1 w-[260px] bg-white border border-gray-200 shadow-lg rounded-lg p-4 flex flex-col gap-3 text-sm z-[1091] max-h-[300px] overflow-y-auto"
+                      className="absolute top-full left-0 mt-1 w-[260px] bg-white border border-gray-200 shadow-lg rounded-lg p-4 flex flex-col gap-3 ttw-type-body z-[1091] max-h-[300px] overflow-y-auto"
                     >
                       <DayListContent />
                     </div>
@@ -863,12 +881,12 @@ const POIDetails = (props) => {
 
                       return (
                         <div key={i} className="flex gap-[22px] mb-2">
-                          <div className="text-[14px] font-semibold">{day}</div>
+                          <div className="ttw-type-body font-semibold">{day}</div>
                           <div
-                            className={`text-[14px] font-normal bg-[#FAFAFA] px-[8px] py-[2px] rounded-[10px] ${time == "Closed"
-                                ? " bg-[rgba(220,69,65,0.1)] text-[#DC4541]"
-                                : ""
-                              }`}
+                            className={`ttw-type-body font-normal bg-[#FAFAFA] px-[8px] py-[2px] rounded-[10px] ${time == "Closed"
+ ? " bg-[rgba(220,69,65,0.1)] text-[#DC4541]"
+ : ""
+ }`}
                           >
                             {time}
                           </div>
@@ -881,12 +899,12 @@ const POIDetails = (props) => {
             </div>
           )}
           {props?.data?.reviews && (
-            <div className="flex flex-col gap-[12px]">
+            <div className="flex flex-col gap-[12px] ttw-type-body">
               <div
                 id="reviews-poi"
                 className="flex !items-center justify-between"
               >
-                <div className="text-[18px] font-extrabold">Reviews</div>
+                <div className="ttw-type-h4 font-extrabold">Reviews</div>
 
                 <Reviews>
                   {props.data.rating ? (
@@ -938,7 +956,7 @@ const POIDetails = (props) => {
           ) : (
             <></>
           )}
-          <div className="flex flex-col gap-[12px]">
+          <div className="flex flex-col gap-[12px] ttw-type-body">
             <div className="flex gap-2">
               <div>
                 <svg
@@ -1005,7 +1023,7 @@ const POIDetails = (props) => {
               </div>
               <div>{props?.data?.address}</div>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between ttw-type-body">
               <div
                 style={{
                   display: "flex",

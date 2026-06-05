@@ -23,12 +23,15 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import DestinationCard from "../../components/revamp/common/components/card/DestinationCard";
+import ItineraryCardV2 from "../../components/revamp/destination/ItineraryCardV2";
+import OverviewEditorial from "../../components/revamp/destination/OverviewEditorial";
+import ChatWithKairaCta from "../../components/revamp/destination/ChatWithKairaCta";
+import styles from "../../styles/pages/revamp/destination.module.scss";
 import {
   faChevronLeft,
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 import MostLovedItinerariesSection from "../../components/revamp/destination/MostLovedItinerariesSection";
-import CtaBoardingSection from "../../components/revamp/home/CtaBoardingSection.jsx";
 import Carousel3D from "../../components/theme/CurveImageGallery.jsx";
 import WhatMakesUsSection from "../../components/revamp/home/WhatMakesUsSection.jsx";
 import PartnersSection from "../../components/theme/PartnersSection.jsx";
@@ -39,12 +42,16 @@ import { convertDbNameToCapitalFirst } from "../../helper/convertDbnameToCapital
 import Link from "next/link.js";
 import POIDetailsDrawer from "../../components/drawers/poiDetails/POIDetailsDrawer.js";
 import TailoredFormMobileModal from "../../components/modals/TailoredFomrMobile.js";
+import ActivityCardV2 from "../../components/revamp/destination/ActivityCardV2.jsx";
+import CtaBoardingSection from "../../components/revamp/home/CtaBoardingSection.jsx";
 
 const MenuContainer = styled.div`
-  width: 95%;
-  margin: auto;
-  @media screen and (min-width: 768px) {
-    width: 85%;
+  max-width: 1240px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 28px;
+  @media (max-width: 640px) {
+    padding: 0 20px;
   }
 
   #Brief {
@@ -125,7 +132,7 @@ const Menu = (props) => {
       params: {
         page: props.page ? props.page : "Home Page",
         event_category: "Button Click",
-        event_label: "Plan Itinerary For Free",
+        event_label: "Chat with Kaira",
         event_action: "How it works?",
       },
     });
@@ -152,55 +159,65 @@ const Menu = (props) => {
             ? " to " + convertDbNameToCapitalFirst(props.data?.slug) + " now"
             : ""
           }!`}
+        destinationName={
+          props.data?.slug
+            ? convertDbNameToCapitalFirst(props.data?.slug)
+            : undefined
+        }
       ></DesktopBanner>
       <PathNavigation path={props.data?.path} />
 
       {!!props.data.itineraries.length && (
-        <MenuItem id="Itinerary">
-          <H3
-            style={{
-              lineHeight: "48px",
-              marginBlock: isPageWide ? "3.5rem" : "1.5rem",
-            }}
-          >
-            Trips by our users to {props.data.name}
-          </H3>
-          {/* <MostLovedItinerariesSection
-            apiItineraries={props.data.itineraries}
-          /> */}
-          <TopRecommendations itineraries={props.data.itineraries} />
+        <MenuItem id="Itinerary" className={styles.block}>
+          <div className={styles.sectionHead}>
+            <div className={styles.sectionHeadLeft}>
+              <h2>
+                Real{" "}
+                <span className={styles.serif}>{props.data.name}</span> trips
+                our <span className={styles.serif}>travellers loved.</span>
+              </h2>
+              <p className={styles.lede}>
+                Hand-picked itineraries built from real{" "}
+                <span className={styles.serif}>traveller stories.</span> Tweak
+                anything once you start chatting.
+              </p>
+            </div>
+          </div>
+          <div className={styles.itinGrid}>
+            {props.data.itineraries.slice(0, 4).map((itinerary) => (
+              <ItineraryCardV2 key={itinerary.id} itinerary={itinerary} />
+            ))}
+          </div>
         </MenuItem>
       )}
 
       {props.data.short_description && !props.thingsToDoPage && (
-        <MenuItem id="Brief">
-          <H3 style={{ margin: "30px 0 30px 0" }}>
-            {"A little about " + props.data.name}
-          </H3>
-          <Brief
-            short_description={props.data.short_description}
-            lat={props.data.lat}
-            lon={props.data.long}
-            name={props.data.name}
-            elevation={
-              props.data.elevation &&
-              props.data.elevation.length &&
-              props.data.elevation[0]?.elevation
-            }
+        <MenuItem id="Brief" className={styles.block}>
+          <OverviewEditorial
+            heading={"A little about " + props.data.name}
+            text={props.data.short_description}
+            image={props.data.images?.[0]?.image}
           />
         </MenuItem>
       )}
 
       {props.data.activities.length ? (
-        <MenuItem id="Activities">
-          <H3
-            style={{
-              lineHeight: "48px",
-              marginBlock: isPageWide ? "3.5rem" : "1.5rem",
-            }}
-          >
-            Things to do in {props.data.name}
-          </H3>
+        <MenuItem id="Activities" className={styles.block}>
+          <div className={styles.sectionHead}>
+            <div className={styles.sectionHeadLeft}>
+              <h2>
+                Iconic{" "}
+                <span className={styles.serif}>experiences</span> in{" "}
+                {props.data.name}.
+              </h2>
+              <p className={styles.lede}>
+                The{" "}
+                <span className={styles.serif}>non-skippable bits.</span> All
+                bookable directly, all checked by humans before they go in your
+                trip.
+              </p>
+            </div>
+          </div>
           {/* <Activity
             data={props.data}
             activities={props.data.activities}
@@ -209,123 +226,79 @@ const Menu = (props) => {
             handlePlanButtonClick={handlePlanButtonClick}
           /> */}
 
-          <div className="relative px-2 sm:px-0">
+          <div className={styles.carouselWrap}>
             <Swiper
-              style={{ height: "auto" }}
               modules={[Navigation]}
               spaceBetween={16}
-              slidesPerView={1}
+              slidesPerView={1.1}
               navigation={{
                 nextEl: ".PlacesBragSection-next",
                 prevEl: ".PlacesBragSection-prev",
                 clickable: true,
               }}
               breakpoints={{
-                // when window width is >= 640px
                 640: {
-                  slidesPerView: 1.5,
+                  slidesPerView: 2.2,
                   spaceBetween: 16,
                 },
-                // when window width is >= 768px
                 768: {
-                  slidesPerView: 2,
-                  spaceBetween: 20,
-                },
-                // when window width is >= 1024px
-                1024: {
                   slidesPerView: 3,
-                  spaceBetween: 24,
+                  spaceBetween: 16,
+                },
+                1024: {
+                  slidesPerView: 4,
+                  spaceBetween: 16,
                 },
               }}
             >
-              {props.data.activities.map((destination) => (
-                <SwiperSlide key={destination.id}>
-                  <div className="w-full px-1">
-                    <DestinationCard
-                      title={destination?.display_name || destination.title || destination.name}
-                      description={
-                        destination.description || destination.tagline
-                      }
-                      image={destination.image}
-                      rating={destination.rating}
-                      one_liner_description={destination?.one_liner_description}
-                      reviewCount={destination.user_ratings_total}
-                      showImageText={false}
-                      tags={
-                        destination.tags ||
-                        (destination.continent ? [destination.continent] : [])
-                      }
-                      gradientOverlay={destination.gradientOverlay}
-                      onClick={() => handleOpenDrawer(destination, "activity")}
+              {props.data.activities.map((destination, i) => (
+                <SwiperSlide key={destination.id || i}>
+                  <div className="h-full">
+                    <ActivityCardV2
+                      item={destination}
+                      kairaPick={i % 3 === 0}
+                      onClick={(d) => handleOpenDrawer(d, "activity")}
                     />
                   </div>
                 </SwiperSlide>
               ))}
             </Swiper>
-            <div className="PlacesBragSection-prev" aria-hidden>
-              <div
-                className="absolute left-3 sm:left-1 z-10"
-                style={{
-                  top: "calc(376px / 2)",
-                  transform: "translateY(-50%)",
-                }}
-              >
-                <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
-                  <FontAwesomeIcon
-                    icon={faChevronLeft}
-                    className="text-white group-hover:text-white text-md transition-colors duration-300 transform"
-                  />
-                </div>
-              </div>
+            <div
+              className={`PlacesBragSection-prev ${styles.carouselNav} ${styles.carouselNavPrev}`}
+              aria-hidden
+            >
+              <FontAwesomeIcon icon={faChevronLeft} />
             </div>
-
-            {/* Custom Next Button - centered to image height (376px) */}
-            <div className="PlacesBragSection-next" aria-hidden>
-              <div
-                className="absolute right-3 sm:right-1 z-10"
-                style={{
-                  top: "calc(376px / 2)",
-                  transform: "translateY(-50%)",
-                }}
-              >
-                <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
-                  <FontAwesomeIcon
-                    icon={faChevronRight}
-                    className="text-white hover:text-white text-md transition-colors duration-300 transform"
-                  />
-                </div>
-              </div>
+            <div
+              className={`PlacesBragSection-next ${styles.carouselNav} ${styles.carouselNavNext}`}
+              aria-hidden
+            >
+              <FontAwesomeIcon icon={faChevronRight} />
             </div>
           </div>
 
-          <div className=" flex items-center justify-center mt-8 lg:mt-10">
-            {/* <Link href={`/new-trip/?source=${props?.data?.slug || "home"}`}> */}
-              <button
-                variant="filled"
-                size="medium"
-                onClick={() => {
-                  console.log("Create a Trip Now! clicked");
-                  setShowTailoredModal(true);
-                }}
-                className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
-              >
-                + Create a Trip Now!
-              </button>
-            {/* </Link> */}
+          <div className="flex items-center justify-center mt-4">
+            <ChatWithKairaCta onClick={() => setShowTailoredModal(true)} />
           </div>
         </MenuItem>
       ) : null}
 
       {!!props.data.pois.length && (
-        <MenuItem id="Places">
-          <H3
-            style={{
-              lineHeight: "48px",
-              marginBlock: isPageWide ? "3.5rem" : "1.5rem",
-            }}
-          >
-            Places to visit in {props.data.name}
-          </H3>
+        <MenuItem id="Places" className={styles.block}>
+          <div className={styles.sectionHead}>
+            <div className={styles.sectionHeadLeft}>
+              <h2>
+                Places to{" "}
+                <span className={styles.serif}>visit</span> in{" "}
+                {props.data.name}.
+              </h2>
+              <p className={styles.lede}>
+                The corners worth your{" "}
+                <span className={styles.serif}>memory card.</span> Curated, not
+                alphabetical.
+              </p>
+            </div>
+          </div>
           {/* <Poi
             elevation={props.elevation}
             data={props.data}
@@ -335,128 +308,85 @@ const Menu = (props) => {
             removeDelete={props?.removeDelete}
             removeChange={true}
           /> */}
-          <div className="relative px-2 sm:px-0">
+          <div className={styles.carouselWrap}>
             <Swiper
-              style={{ height: "auto" }}
               modules={[Navigation]}
               spaceBetween={16}
-              slidesPerView={1}
+              slidesPerView={1.1}
               navigation={{
                 nextEl: ".PlacesBragSection-n",
                 prevEl: ".PlacesBragSection-p",
                 clickable: true,
               }}
               breakpoints={{
-                // when window width is >= 640px
                 640: {
-                  slidesPerView: 1.5,
+                  slidesPerView: 2.2,
                   spaceBetween: 16,
                 },
-                // when window width is >= 768px
                 768: {
-                  slidesPerView: 2,
-                  spaceBetween: 20,
-                },
-                // when window width is >= 1024px
-                1024: {
                   slidesPerView: 3,
-                  spaceBetween: 24,
+                  spaceBetween: 16,
+                },
+                1024: {
+                  slidesPerView: 4,
+                  spaceBetween: 16,
                 },
               }}
             >
-              {props.data.pois.map((destination) => (
-                <SwiperSlide key={destination.id}>
-                  <div className="w-full px-1">
-                    <DestinationCard
-                      title={destination?.display_name || destination.title || destination.name}
-                      description={
-                        destination.description || destination.tagline
-                      }
-                      one_liner_description={destination?.one_liner_description}
-                      image={destination.image}
-                      rating={destination.rating}
-                      reviewCount={destination.user_ratings_total}
-                      showImageText={false}
-                      tags={
-                        destination.tags ||
-                        (destination.continent ? [destination.continent] : [])
-                      }
-                      onClick={() => handleOpenDrawer(destination, "poi")}
-                      gradientOverlay={destination.gradientOverlay}
+              {props.data.pois.map((destination, i) => (
+                <SwiperSlide key={destination.id || i}>
+                  <div className="h-full">
+                    <ActivityCardV2
+                      item={destination}
+                      kairaPick={i % 3 === 0}
+                      onClick={(d) => handleOpenDrawer(d, "poi")}
                     />
                   </div>
                 </SwiperSlide>
               ))}
             </Swiper>
-            <div className="PlacesBragSection-p" aria-hidden>
-              <div
-                className="absolute left-3 sm:left-1 z-10"
-                style={{
-                  top: "calc(376px / 2)",
-                  transform: "translateY(-50%)",
-                }}
-              >
-                <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
-                  <FontAwesomeIcon
-                    icon={faChevronLeft}
-                    className="text-white group-hover:text-white text-md transition-colors duration-300 transform"
-                  />
-                </div>
-              </div>
+            <div
+              className={`PlacesBragSection-p ${styles.carouselNav} ${styles.carouselNavPrev}`}
+              aria-hidden
+            >
+              <FontAwesomeIcon icon={faChevronLeft} />
             </div>
-
-            {/* Custom Next Button - centered to image height (376px) */}
-            <div className="PlacesBragSection-n" aria-hidden>
-              <div
-                className="absolute right-3 sm:right-1 z-10"
-                style={{
-                  top: "calc(376px / 2)",
-                  transform: "translateY(-50%)",
-                }}
-              >
-                <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
-                  <FontAwesomeIcon
-                    icon={faChevronRight}
-                    className="text-white hover:text-white text-md transition-colors duration-300 transform"
-                  />
-                </div>
-              </div>
+            <div
+              className={`PlacesBragSection-n ${styles.carouselNav} ${styles.carouselNavNext}`}
+              aria-hidden
+            >
+              <FontAwesomeIcon icon={faChevronRight} />
             </div>
           </div>
 
-          <div className=" flex items-center justify-center mt-8 lg:mt-10">
-            {/* <Link href={`/new-trip/?source=${props?.data?.slug || "home"}`}> */}
-              <button
-                variant="filled"
-                size="medium"
-                onClick={() => {
-                  console.log("Create a Trip Now! clicked");
-                  setShowTailoredModal(true);
-                }}
-                className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
-              >
-                + Create a Trip Now!
-              </button>
-            {/* </Link> */}
+          <div className="flex items-center justify-center mt-4">
+            <ChatWithKairaCta onClick={() => setShowTailoredModal(true)} />
           </div>
         </MenuItem>
       )}
 
-      <MenuItem id="nearby-places">
+      <MenuItem id="nearby-places" className={styles.block}>
         {/* <NearbyLocations
           nearbyCities={props.nearbyCities}
           state={props.destination}
           page={"City Page"}
           data={props.data}
         /> */}
-        <H3
-          style={{
-            marginBlock: isPageWide ? "3.5rem" : "1.5rem",
-          }}
-        >
-          Nearby Locations to {props.data.name}
-        </H3>
-        <div className="relative px-2 sm:px-0">
+        <div className={styles.sectionHead}>
+          <div className={styles.sectionHeadLeft}>
+            <h2>
+              Nearby{" "}
+              <span className={styles.serif}>locations</span> to{" "}
+              {props.data.name}.
+            </h2>
+            <p className={styles.lede}>
+              Easy to combine with your{" "}
+              <span className={styles.serif}>{props.data.name} trip</span> —
+              add them with one tap.
+            </p>
+          </div>
+        </div>
+        <div className={styles.carouselWrap}>
           <Swiper
             style={{ height: "376px" }}
             modules={[Navigation]}
@@ -509,89 +439,56 @@ const Menu = (props) => {
               </SwiperSlide>
             ))}
           </Swiper>
-          <div className="PlacesBragSection-pr" aria-hidden>
-            <div
-              className="absolute left-3 sm:left-1 z-10"
-              style={{
-                top: "calc(376px / 2)",
-                transform: "translateY(-50%)",
-              }}
-            >
-              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
-                <FontAwesomeIcon
-                  icon={faChevronLeft}
-                  className="text-white group-hover:text-white text-md transition-colors duration-300 transform"
-                />
-              </div>
-            </div>
+          <div
+            className={`PlacesBragSection-pr ${styles.carouselNav} ${styles.carouselNavPrev}`}
+            aria-hidden
+          >
+            <FontAwesomeIcon icon={faChevronLeft} />
           </div>
-
-          {/* Custom Next Button - centered to image height (376px) */}
-          <div className="PlacesBragSection-ne" aria-hidden>
-            <div
-              className="absolute right-3 sm:right-1 z-10"
-              style={{
-                top: "calc(376px / 2)",
-                transform: "translateY(-50%)",
-              }}
-            >
-              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
-                <FontAwesomeIcon
-                  icon={faChevronRight}
-                  className="text-white hover:text-white text-md transition-colors duration-300 transform"
-                />
-              </div>
-            </div>
+          <div
+            className={`PlacesBragSection-ne ${styles.carouselNav} ${styles.carouselNavNext}`}
+            aria-hidden
+          >
+            <FontAwesomeIcon icon={faChevronRight} />
           </div>
         </div>
 
-        <div className=" flex items-center justify-center mt-8 lg:mt-10">
-          {/* <Link href={`/new-trip/?source=${props?.data?.slug || "home"}`}> */}
-            <button
-              variant="filled"
-              size="medium"
-              onClick={() => {
-                console.log("Create a Trip Now! clicked");
-                setShowTailoredModal(true);
-              }}
-              className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
-            >
-              + Create a Trip Now!
-            </button>
-          {/* </Link> */}
+        <div className="flex items-center justify-center mt-4">
+          <ChatWithKairaCta onClick={() => setShowTailoredModal(true)} />
         </div>
       </MenuItem>
 
       {!!props.data.foods.length && (
-        <MenuItem id="Food" single>
-          <H3
-            style={{
-              lineHeight: "48px",
-              marginBlock: isPageWide ? "3.5rem" : "1.5rem",
-            }}
-          >
-            Food to eat
-          </H3>
+        <MenuItem id="Food" single className={styles.block}>
+          <div className={styles.sectionHead}>
+            <div className={styles.sectionHeadLeft}>
+              <h2>
+                Food to <span className={styles.serif}>eat.</span>
+              </h2>
+              <p className={styles.lede}>
+                What the locals{" "}
+                <span className={styles.serif}>actually order.</span>
+              </p>
+            </div>
+          </div>
           <FoodToEat foods={props.data.foods} />
         </MenuItem>
       )}
 
       {props.data.conveyance_available && (
-        <MenuItem id="Reach" single>
-          <H3
-            style={{
-              lineHeight: "48px",
-              marginBlock: isPageWide ? "3.5rem" : "1.5rem",
-              marginBottom: "1rem",
-            }}
-          >
-            How to reach
-          </H3>
+        <MenuItem id="Reach" single className={styles.block}>
+          <div className={styles.sectionHead}>
+            <div className={styles.sectionHeadLeft}>
+              <h2>
+                How to <span className={styles.serif}>reach.</span>
+              </h2>
+            </div>
+          </div>
           <P className="font-light">{props.data.conveyance_available}</P>
         </MenuItem>
       )}
 
-      {props.data.survival_tips_and_tricks && (
+      {/* {props.data.survival_tips_and_tricks && (
         <MenuItem id="Survival" single>
           <H3
             style={{
@@ -619,7 +516,7 @@ const Menu = (props) => {
           </H3>
           <P>{props.data.folklore_or_story}</P>
         </MenuItem>
-      )}
+      )} */}
 
       <MenuItem id="Why">
         {/* <H3
@@ -634,7 +531,7 @@ const Menu = (props) => {
           page_id={props.data.id}
           destination={props.destination}
         /> */}
-        <WhatMakesUsSection />
+        {/* <WhatMakesUsSection /> */}
       </MenuItem>
 
       <MenuItem id="Customers">
@@ -648,8 +545,8 @@ const Menu = (props) => {
           Happy Community of The Tarzan Way
         </H3>
         <Reviews />  */}
-        <Carousel3D />
-        <TestimonialCarousel />
+        {/* <Carousel3D />
+        <TestimonialCarousel /> */}
       </MenuItem>
 
       <MenuItem>
@@ -663,10 +560,8 @@ const Menu = (props) => {
           What they say?
         </H3> */}
         {/* <AsSeenIn /> */}
-        <PartnersSection />
-        <ChatWithUs />
-
-        <CtaBoardingSection />
+        {/* <PartnersSection />
+        <ChatWithUs /> */}
 
         {activeDrawer?.type === "poi" && (
           <POIDetailsDrawer
