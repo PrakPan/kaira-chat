@@ -109,12 +109,12 @@ export async function getStaticPaths() {
   let paths = [];
 
   try {
-    // mercury api — build a page for every city flagged with a CTA
-    const res = await axiossearchallinstance.get("/all/?type=City&fields=path,cta");
+    // mercury api — build a page for every city that has a valid path
+    const res = await axiossearchallinstance.get("/all/?type=City");
     const data = res.data ?? [];
 
     for (var i = 0; i < data.length; i++) {
-      if (!data[i]?.path || !data[i]?.cta) continue;
+      if (!data[i]?.path) continue;
       const pathArr = data[i].path.split("/");
       const [continentSlug, countrySlug, stateSlug, citySlug] = pathArr;
       if (!citySlug) continue;
@@ -129,7 +129,7 @@ export async function getStaticPaths() {
     }
   } catch (err) {
     console.error(
-      "[ERROR][cityPage:axiossearchallinstance][/all/?type=City&fields=path,cta]: ",
+      "[ERROR][cityPage:axiossearchallinstance][/all/?type=City]: ",
       err.message
     );
   }
