@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { useSelector } from "react-redux";
 import type { Message, ProgressStep, ThinkingTask } from "../../hooks/useChat";
 import { WidgetRenderer } from "../WidgetRenderer";
+import { getUserAvatarColor, getUserInitial } from "../../utils/avatarColor";
 
 const USER_IMAGE_CDN = "https://d31aoa0ehgvjdi.cloudfront.net/";
 
@@ -87,8 +88,17 @@ const MessageBubbleResponsiveStyles: React.FC = () => (
 
 const UserAvatar: React.FC = () => {
   const avatarSrc = useUserAvatarSrc();
+  const token = useSelector((state: any) => state?.auth?.token);
+  const name = useSelector((state: any) => state?.auth?.name);
   const [errored, setErrored] = useState(false);
   const showImage = !!avatarSrc && !errored;
+  // Logged in with no picture → colored letter avatar (persisted color).
+  const showLetter = !showImage && !!token;
+  const [color, setColor] = useState<string | null>(null);
+  useEffect(() => {
+    setColor(showLetter ? getUserAvatarColor(name) : null);
+  }, [showLetter, name]);
+
   return (
     <div
       aria-hidden
@@ -99,8 +109,8 @@ const UserAvatar: React.FC = () => {
         borderRadius: "50%",
         flexShrink: 0,
         overflow: "hidden",
-        background: "#0f1a2e",
-        color: "#f7e700",
+        background: color || "#0f1a2e",
+        color: color ? "#fff" : "#f7e700",
         display: "grid",
         placeItems: "center",
         fontSize: 12,
@@ -115,6 +125,8 @@ const UserAvatar: React.FC = () => {
           onError={() => setErrored(true)}
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
         />
+      ) : showLetter ? (
+        getUserInitial(name)
       ) : (
         <UserFallbackIcon />
       )}

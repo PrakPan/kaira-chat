@@ -2,11 +2,17 @@ import React, { useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import * as authaction from "../../../../store/actions/auth";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import LogInModal from "../../../userauth/LogInModal";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import { getPlatform } from "../../hooks/useChat";
 import BotLoginModal from "../BotLoginModal";
+import {
+  getUserAvatarColor,
+  getUserInitial,
+  clearUserAvatarColor,
+} from "../../utils/avatarColor";
 
 const CHATKIT_API_URL = "https://dev.chat.tarzanway.com/chatkit";
 
@@ -352,6 +358,7 @@ const SidebarProfile: React.FC<{
     localStorage.removeItem("authToken");
     localStorage.removeItem("access_token");
     localStorage.removeItem("user_image");
+    clearUserAvatarColor(); // ← next user gets a fresh letter-avatar color
     setLocalImg(null); // ← clears the avatar immediately
     try {
       dispatch((authaction as any).authLogout?.() ?? { type: "AUTH_LOGOUT" });
@@ -366,13 +373,24 @@ const SidebarProfile: React.FC<{
   };
 
   const imgUrlEndPoint = "https://d31aoa0ehgvjdi.cloudfront.net/";
+  // Same default avatar NavigationMenu/ProfileDropDown fall back to. Shown when
+  // the user is logged out instead of the "T"/initials placeholder.
+  const defaultProfileImg = imgUrlEndPoint + "media/icons/navigation/profile-user.png";
   const avatarSrc = token
     ? image && image !== "null" && image !== null
       ? imgUrlEndPoint + image
       : localImg && localImg !== "null"
         ? imgUrlEndPoint + localImg
         : null
-    : null;
+    : defaultProfileImg;
+
+  // Logged in with no picture → show a colored letter avatar (Google-Workspace
+  // style). The color is persisted in localStorage so it never changes.
+  const showColorAvatar = !!token && !avatarSrc;
+  const [avatarColor, setAvatarColor] = useState<string | null>(null);
+  useEffect(() => {
+    setAvatarColor(showColorAvatar ? getUserAvatarColor(name) : null);
+  }, [showColorAvatar, name]);
 
   const initials = name
     ? name
@@ -390,6 +408,11 @@ const SidebarProfile: React.FC<{
         setOpen((v) => !v);
       }}
       className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center cursor-pointer border-2 border-gray-200 hover:border-gray-400 transition-colors flex-shrink-0 bg-gray-100 focus:outline-none"
+      style={
+        showColorAvatar && avatarColor
+          ? { background: avatarColor, borderColor: avatarColor }
+          : undefined
+      }
       aria-label="Profile menu"
     >
       {avatarSrc ? (
@@ -401,6 +424,10 @@ const SidebarProfile: React.FC<{
           height={32}
           className="object-cover"
         />
+      ) : showColorAvatar ? (
+        <span className="ttw-type-small font-bold text-white select-none">
+          {getUserInitial(name)}
+        </span>
       ) : (
         <span className="ttw-type-small font-bold text-gray-600 select-none">
           {initials}
@@ -589,6 +616,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   isComplete,
   onLoginSuccess,
 }) => {
+  const router = useRouter();
   const [threads, setThreads] = useState<Thread[]>([]);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerLoading, setDrawerLoading] = useState(false);
@@ -688,7 +716,10 @@ const Sidebar: React.FC<SidebarProps> = ({
           style={{ minHeight: 56 }}
         >
           {!isCollapsed ? (
-            <div className="flex items-center gap-2 overflow-hidden">
+            <div
+              className="flex items-center gap-2 overflow-hidden cursor-pointer"
+              onClick={() => router.push("/")}
+            >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/logoblack.svg" height={22} width={22} alt="logo" />
               <span className="font-semibold text-gray-800 ttw-type-body whitespace-nowrap">
@@ -697,7 +728,10 @@ const Sidebar: React.FC<SidebarProps> = ({
             </div>
           ) : (
             <SidebarTooltip label="thetarzanway">
-              <div className="flex items-center justify-center w-full">
+              <div
+                className="flex items-center justify-center w-full cursor-pointer"
+                onClick={() => router.push("/")}
+              >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src="/logoblack.svg" height={22} width={22} alt="logo" />
               </div>

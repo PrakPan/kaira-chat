@@ -263,10 +263,14 @@ const TAG_STYLE_BY_KEY = {
   hidden_gem:  { background: "#F1E6FF", color: "#7E3DD4", border: "1px solid rgba(126,61,212,0.25)" },
   // .act-tag.must-do — pink-soft fill
   must_do:     { background: "#FFE5EC", color: "#D9577A", border: "1px solid rgba(217,87,122,0.25)" },
-  insider_spot: { background: "#FFE5D1", color: "#0B1220" },   
-  table_reserved: { background: "#0B1220", color: "#F7E700" },     
+  insider_spot: { background: "#FFE5D1", color: "#0B1220" },
+  table_reserved: { background: "#0B1220", color: "#F7E700" },
   insta_worthy_view: { background: "#F1E6FF", color: "#7E3DD4", border: "1px solid rgba(126,61,212,0.25)" },
   tickets_held: { background: "#0B1220", color: "#F7E700" },
+  // guide chips — shown on activities when the API sends a `guide` value
+  guided:      { background: "#E6F0FF", color: "#1D6FE0", border: "1px solid rgba(29,111,224,0.25)" },
+  self_guided: { background: "#DFF3E7", color: "#1F8A5A", border: "1px solid rgba(31,138,90,0.3)" },
+  semi_guided: { background: "#F1E6FF", color: "#7E3DD4", border: "1px solid rgba(126,61,212,0.25)" },
   // green-soft "Included" chip — always shown on activity elements
   included:    { background: "#DFF3E7", color: "#1F8A5A", border: "1px solid rgba(31,138,90,0.3)" },
 };
@@ -317,14 +321,45 @@ const resolveTagStyle = (raw) => {
 
 // ─── Tag icon glyphs ──────────────────────────────────────────────────────────
 // Star is the default; check is for booking/reservation confirmations;
-// diamond is for "curated / hidden / insider" curation signals. Glyphs are
-// unicode so they inherit the chip's text color automatically (no separate
-// fill needed).
-const TAG_ICON_GLYPHS = {
-  star: "★",
-  diamond: "◆",
-  check: "✓",
-  ticket: "🎫",
+// diamond is for "curated / hidden / insider" curation signals. Rendered as
+// SVGs (not unicode glyphs) so the icon's box equals the drawn shape — flexbox
+// `items-center` then centers it exactly, with no font-metric drift on zoom.
+// Each uses `fill: currentColor` so it inherits the chip's text color.
+const TagGlyph = ({ name, size = 9 }) => {
+  const common = {
+    width: size,
+    height: size,
+    viewBox: "0 0 24 24",
+    "aria-hidden": true,
+    style: { display: "block", flexShrink: 0 },
+  };
+  if (name === "check") {
+    return (
+      <svg
+        {...common}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={3}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <polyline points="20 6 9 17 4 12" />
+      </svg>
+    );
+  }
+  if (name === "diamond") {
+    return (
+      <svg {...common} fill="currentColor">
+        <path d="M12 2 22 12 12 22 2 12z" />
+      </svg>
+    );
+  }
+  // star (default)
+  return (
+    <svg {...common} fill="currentColor">
+      <path d="M12 2.5l2.81 6.07 6.69.69-4.99 4.49 1.38 6.56L12 17.3l-5.89 3.51 1.38-6.56L2.5 9.26l6.69-.69z" />
+    </svg>
+  );
 };
 
 const TAG_ICON_BY_KEY = {
@@ -336,7 +371,11 @@ const TAG_ICON_BY_KEY = {
   table_reserved: "check",
   included: "check",
   // ticket — tickets held
-  tickets_held: "ticket",
+  tickets_held: "check",
+  // diamond — guided experiences (curation signal)
+  guided: "diamond",
+  self_guided: "diamond",
+  semi_guided: "diamond",
   // diamond — curated / insider / hidden gem signals
   curated: "diamond",
   hidden_gem: "diamond",
@@ -346,7 +385,7 @@ const TAG_ICON_BY_KEY = {
 
 const resolveTagIcon = (raw) => {
   const key = normalizeTagKey(raw);
-  return TAG_ICON_GLYPHS[TAG_ICON_BY_KEY[key] || "star"];
+  return TAG_ICON_BY_KEY[key] || "star";
 };
 
 // Duration chip — paper-2 cream fill (HTML .act-tag.duration)
@@ -565,15 +604,18 @@ useEffect(() => {
     const duration = getDurationLabel(item);
     const dataTags = getDisplayTags(item);
 
-    // Activity elements show only the "Tickets held" chip (always) plus an
-    // "Included" chip — and the latter only once the activity is actually
-    // selected in the cart. No API tags render for activities. Everything else
-    // shows up to 2 data tags (already capped in getDisplayTags).
+    // Activity elements show the "Tickets held" chip (always) plus a guide
+    // chip ("Guided" / "Self Guided" / "Semi Guided") — but only when the API
+    // actually sends a `guide` value for the activity. No other API tags render
+    // for activities. Everything else shows up to 2 data tags (already capped
+    // in getDisplayTags).
+    const guideTag =
+      typeof item?.guide === "string" && item.guide.trim()
+        ? item.guide.trim()
+        : null;
     const renderTags =
       resolvedType === "activity"
-        ? selectedInCart
-          ? ["included", "tickets_held"]
-          : ["tickets_held"]
+        ? [...(guideTag ? [guideTag] : []), "tickets_held"]
         : dataTags;
 
     const statusBadge = status ? (
@@ -595,8 +637,15 @@ useEffect(() => {
               className={`${CHIP_BASE} !font-normal`}
               style={{ ...CHIP_TEXT_STYLE, ...resolveTagStyle(t) }}
             >
-              <span aria-hidden="true" style={{ fontSize: "11px", lineHeight: 1, font:500}}>
-                {resolveTagIcon(t)}
+              <span
+                aria-hidden="true"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <TagGlyph name={resolveTagIcon(t)} />
               </span>
               {resolveTagLabel(t)}
             </span>

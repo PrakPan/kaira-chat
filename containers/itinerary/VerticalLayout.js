@@ -61,6 +61,22 @@ const PickupDropLoader = () => (
   </div>
 );
 
+// P1 (Draft) stage loader for the transfer row. The existing TransferSkeleton
+// is sized for the finalized layout (fixed 200px text bar + margins) and
+// overflows the narrower draft column, breaking the layout — so the draft
+// stage gets its own compact shimmer that mirrors the draft transfer row
+// (icon dot + city line + duration line). It is replaced by the real transfer
+// the moment the draft surfaces a city/booking for the leg.
+const P1TransferLoader = () => (
+  <div className="flex gap-2 mt-2 animate-pulse">
+    <div className="w-[18px] h-[18px] rounded-full bg-gray-200 flex-shrink-0 mt-[2px]" />
+    <div className="flex flex-col gap-2">
+      <div className="w-[140px] h-[14px] rounded bg-gray-200" />
+      <div className="w-[90px] h-[10px] rounded bg-gray-200" />
+    </div>
+  </div>
+);
+
 const TaxiPickupDropItem = ({
   handlePickupDropDrawer,
   handleAddCityTaxiAirport,
@@ -1704,6 +1720,11 @@ useEffect(() => {
     </div>
   )}
         </>
+      ) : Itinerary.status == "Draft" ? (
+        // P1 (Draft) stage: the leg's transfer hasn't been surfaced yet, so
+        // show the compact draft loader. It disappears once (booking_id || city)
+        // becomes truthy (the transfer "comes in") and the branch above renders.
+        <P1TransferLoader />
       ) : (
         <>
           {/* NO BOOKING - Show both CTAs */}
