@@ -6249,6 +6249,11 @@ const OtherTransfer = ({
   const isStaff = !!email && email.includes("tarzanway.com");
   const [selfPrices, setSelfPrices] = useState(null);
   const [verifyingPrices, setVerifyingPrices] = useState(false);
+  // priceOptionId of the self-price row currently being edited, or null.
+  const [editingPriceId, setEditingPriceId] = useState(null);
+  // Per-person edits for self-price rows, keyed by priceOptionId. The backend
+  // returns the total price; staff edit (and we verify) the per-person amount.
+  const [perPersonEdits, setPerPersonEdits] = useState({});
 
   // Initialize with props values directly
   const [departureTime, setDepartureTime] = useState(currentModeDepartureTime);
@@ -6381,6 +6386,8 @@ const toggleTransferDetails = (priceOptionId) => {
       if (!isLoadMore) {
         setOtherTransfer(null);
         setSelfPrices(null);
+        setPerPersonEdits({});
+        setEditingPriceId(null);
         setAllAboardOffset(0);
         setHasMoreAllAboard(false);
       } else {
@@ -6700,7 +6707,13 @@ const toggleTransferDetails = (priceOptionId) => {
   };
 
   // FIXED: Add guards to prevent multiple simultaneous booking calls
-  const handleModeSelect = (index, priceOptionId, selectedPriceData, mode) => {
+  const handleModeSelect = (
+    index,
+    priceOptionId,
+    selectedPriceData,
+    mode,
+    bookingMeta = null,
+  ) => {
     if (updateLoading || isBookingInProgress) {
       return;
     }
@@ -6754,7 +6767,7 @@ const toggleTransferDetails = (priceOptionId) => {
       // FIXED: Use setTimeout to prevent immediate execution during state updates
       setTimeout(() => {
         if (!isBookingInProgress) {
-          handleUpdateTransferWithData(newLocalData);
+          handleUpdateTransferWithData(newLocalData, null, null, bookingMeta);
         }
       }, 100);
     }
@@ -6864,6 +6877,7 @@ const toggleTransferDetails = (priceOptionId) => {
     updatedData,
     newTime = null,
     newDate = null,
+    bookingMeta = null,
   ) => {
     // Prevent multiple simultaneous booking calls
     if (isBookingInProgress) {
@@ -6899,7 +6913,9 @@ const toggleTransferDetails = (priceOptionId) => {
       try {
         // Call warning API
         const warningResponse = await updateFlightBookingWarning.post(
-          `${itinerary_id}/transfers/${mode?.toLowerCase()}/warning/`,
+          `${itinerary_id}/transfers/${(
+            bookingMeta?.transferMode || mode
+          )?.toLowerCase()}/warning/`,
           newRequestBody,
           {
             headers: {
@@ -6917,13 +6933,14 @@ const toggleTransferDetails = (priceOptionId) => {
             requestBody: newRequestBody,
             newTime,
             newDate,
+            bookingMeta,
           });
           setShowWarningModal(true);
           setIsProcessingWarning(false);
         } else {
           // Proceed directly with booking
           setIsProcessingWarning(false);
-          await handleBookingConfirm(newRequestBody, newTime, newDate);
+          await handleBookingConfirm(newRequestBody, newTime, newDate, bookingMeta);
         }
       } catch (error) {
         setIsProcessingWarning(false);
@@ -6973,6 +6990,7 @@ const toggleTransferDetails = (priceOptionId) => {
     newRequestBody,
     newTime = null,
     newDate = null,
+    bookingMeta = null,
   ) => {
     setIsProcessingBooking(true);
 
@@ -6995,7 +7013,9 @@ const toggleTransferDetails = (priceOptionId) => {
 
     try {
       const response = await UpdateTransferMode.post(
-        `${itinerary_id}/bookings/${otherTransfer?.mode?.toLowerCase()}/`,
+        `${itinerary_id}/bookings/${(
+          bookingMeta?.transferMode || otherTransfer?.mode
+        )?.toLowerCase()}/`,
         requestPayload,
         {
           headers: {
@@ -7114,6 +7134,7 @@ const toggleTransferDetails = (priceOptionId) => {
         pendingBookingData.requestBody,
         pendingBookingData.newTime,
         pendingBookingData.newDate,
+        pendingBookingData.bookingMeta,
       );
       setPendingBookingData(null);
     }
@@ -7211,33 +7232,71 @@ const toggleTransferDetails = (priceOptionId) => {
     }
   };
 
-  // Staff-only: edit a single self-price amount in local state before verifying.
-  const updateSelfPrice = (recordIdx, priceIdx, value) => {
-    setSelfPrices((prev) => {
-      if (!Array.isArray(prev)) return prev;
-      return prev.map((record, ri) => {
-        if (ri !== recordIdx) return record;
-        const prices = Array.isArray(record?.prices) ? record.prices : [];
-        return {
-          ...record,
-          prices: prices.map((p, pi) =>
-            pi === priceIdx ? { ...p, price: value } : p,
-          ),
-        };
-      });
-    });
+  // Travellers a self_price entry's (total) amount is split across.
+  const getSelfPriceTravellers = (data) =>
+    (data?.number_of_adults || 0) +
+      (data?.number_of_children || 0) +
+      (data?.number_of_infants || 0) ||
+    (pax?.adults || 0) + (pax?.children || 0) + (pax?.infants || 0) ||
+    1;
+
+  // Per-person amount shown/edited for a self_price row. The backend returns
+  // the total fare; staff edit (and we verify) the per-person value, so we
+  // default to total / travellers and let the staff edit override it.
+  const getSelfPricePerPerson = (data, priceOption, priceOptionId) => {
+    const edit = perPersonEdits[priceOptionId];
+    if (edit != null && edit !== "") return edit;
+    const total = Number(priceOption?.price);
+    const travellers = getSelfPriceTravellers(data);
+    if (!Number.isFinite(total) || travellers <= 0) return "";
+    return String(Math.round(total / travellers));
   };
 
-  // Staff-only: flip the (possibly edited) manually-entered self_prices to
-  // "verified" so they become bookable, then re-fetch so they show as results.
-  const handleMarkPricesVerified = async () => {
-    if (verifyingPrices || !Array.isArray(selfPrices) || !selfPrices.length) {
-      return;
-    }
+  // Record a per-person edit for a self_price row, keyed by priceOptionId.
+  const updateSelfPrice = (priceOptionId, value) => {
+    setPerPersonEdits((prev) => ({ ...prev, [priceOptionId]: value }));
+  };
 
-    // The backend verifies the self-price for the route edge (edge_id is the
-    // same id sent as edge_id in the search request).
-    const edge_id = selectedResult?.transfer?.id || otherTransfer?.id;
+  // Collect EVERY self_price (per-person) for the verify call — adding any one
+  // price to the itinerary marks all of these prices verified.
+  const collectAllSelfPricesForVerify = () => {
+    if (!Array.isArray(selfPrices)) return [];
+    const out = [];
+    selfPrices.forEach((entry) => {
+      const data = entry?.data;
+      if (!data) return;
+      (Array.isArray(data.prices) ? data.prices : []).forEach((p, priceIdx) => {
+        const priceOptionId = `${data?.id}-${priceIdx}`;
+        out.push({
+          class: p?.class ?? null,
+          price: Number(getSelfPricePerPerson(data, p, priceOptionId)),
+          currency: p?.currency || currency?.currency || "INR",
+        });
+      });
+    });
+    return out;
+  };
+
+  // Staff-only: a 400 search response returns manually-entered (unverified)
+  // self_prices in the new shape:
+  //   self_prices: [{ success, trace_id, data: { ...prices[] } }]
+  // These are listed in the "Unverified prices" box. When staff clicks
+  // "Add to Itinerary" on a price we: (1) verify all prices for the route edge,
+  // (2) re-run the search so booking uses the freshly verified prices + a valid
+  // trace_id (the 400's trace_id would ignore the new prices), then (3) book the
+  // matching price from that fresh result.
+  const handleSelfPriceAddToItinerary = async (
+    index,
+    priceOptionId,
+    selectedPriceData,
+    modeVal,
+    spTransfer,
+    spTraceId,
+  ) => {
+    if (updateLoading || isBookingInProgress || verifyingPrices) return;
+    setEditingPriceId(null);
+
+    const edge_id = spTransfer?.id || selectedResult?.transfer?.id;
     if (!edge_id) {
       dispatch(
         openNotification({
@@ -7249,69 +7308,48 @@ const toggleTransferDetails = (priceOptionId) => {
       return;
     }
 
-    // Collect the (possibly edited) prices and validate every amount.
-    let hasInvalidPrice = false;
-    const prices = selfPrices.flatMap((record) =>
-      (Array.isArray(record?.prices) ? record.prices : []).map((p) => {
-        const amount = Number(p?.price);
-        if (!Number.isFinite(amount) || amount <= 0) hasInvalidPrice = true;
-        return {
-          class: p?.class ?? null,
-          price: amount,
-          currency: p?.currency,
-        };
-      }),
+    // Adding any price marks ALL self_prices verified, so send every price
+    // (per-person) to the verify API.
+    const prices = collectAllSelfPricesForVerify();
+    const hasInvalidPrice = prices.some(
+      (p) => !Number.isFinite(p.price) || p.price <= 0,
     );
 
-    if (hasInvalidPrice) {
+    if (hasInvalidPrice || prices.length === 0) {
       dispatch(
         openNotification({
           type: "error",
-          text: "Please enter a valid amount for every price before verifying.",
+          text: "Please enter a valid amount for every price before adding.",
           heading: "Invalid price",
         }),
       );
       return;
     }
 
+    setLoadingOptionId(priceOptionId);
     setVerifyingPrices(true);
-    try {
-      const bearer =
-        token ||
-        authToken ||
-        (typeof window !== "undefined"
-          ? localStorage.getItem("access_token")
-          : "");
 
+    const bearer =
+      token ||
+      authToken ||
+      (typeof window !== "undefined"
+        ? localStorage.getItem("access_token")
+        : "");
+    const authHeaders = {
+      Authorization: `Bearer ${bearer}`,
+      "Content-Type": "application/json",
+    };
+
+    // 1) Verify all prices for the route edge.
+    try {
       await loadOtherTransfers.post(
         "/self-prices/verify/",
         { edge_id, prices },
-        {
-          headers: {
-            Authorization: `Bearer ${bearer}`,
-            "Content-Type": "application/json",
-          },
-        },
+        { headers: authHeaders },
       );
-
-      dispatch(
-        openNotification({
-          type: "success",
-          text: "Prices verified. Reloading options...",
-          heading: "Verified",
-        }),
-      );
-      setSelfPrices(null);
-
-      // Re-run the search using the route edge (selectedResult.transfer) so the
-      // verified prices come back as bookable results.
-      const reloadTransfer = selectedResult?.transfer || otherTransfer;
-      const finalDate = departureDate || currentModeDepartureDate;
-      const finalTime = departureTime || currentModeDepartureTime;
-      if (reloadTransfer?.id && finalDate && finalTime) {
-        loadTransfers(reloadTransfer, pax, `${finalDate}T${finalTime}:00`);
-      }
     } catch (err) {
+      setVerifyingPrices(false);
+      setLoadingOptionId(null);
       dispatch(
         openNotification({
           type: "error",
@@ -7322,9 +7360,110 @@ const toggleTransferDetails = (priceOptionId) => {
           heading: "Error!",
         }),
       );
-    } finally {
-      setVerifyingPrices(false);
+      return;
     }
+
+    // 2) create-booking uses the trace_id + result_index from a SEARCH response,
+    // but the trace_id we hold is from the original (unverified) 400 — booking
+    // with it would ignore the verified prices. Re-run the search so we book
+    // against the freshly verified prices and a valid trace_id.
+    const finalDate = departureDate || currentModeDepartureDate;
+    const finalTime = departureTime || currentModeDepartureTime;
+    const departureDateTime = `${finalDate}T${finalTime}:00`;
+
+    let freshData = null;
+    let freshTraceId = spTraceId;
+    try {
+      const searchResp = await loadOtherTransfers.post(
+        `/search/?currency=${currency?.currency || "INR"}`,
+        {
+          edge_id,
+          start_datetime: departureDateTime,
+          number_of_adults: pax.adults,
+          number_of_children: pax.children,
+          number_of_infants: pax.infants,
+          limit: 5,
+          offset: 0,
+        },
+        { headers: authHeaders },
+      );
+      const sd = searchResp.data;
+      if (sd?.success && sd?.data) {
+        freshData = sd.data;
+        freshTraceId = sd.trace_id || spTraceId;
+      }
+    } catch (e) {
+      // handled below
+    }
+
+    setVerifyingPrices(false);
+
+    if (!freshData) {
+      setLoadingOptionId(null);
+      dispatch(
+        openNotification({
+          type: "error",
+          text: "Prices were verified, but the route couldn't be reloaded for booking. Please try again.",
+          heading: "Error!",
+        }),
+      );
+      // Reload the listing so staff see the latest (now verified) state.
+      if (finalDate && finalTime) {
+        loadTransfers(
+          selectedResult?.transfer || spTransfer,
+          pax,
+          departureDateTime,
+        );
+      }
+      return;
+    }
+
+    // 3) Promote the fresh verified result and book the price matching the one
+    // the user clicked (match by class, then result_index, then position).
+    setOtherTransfer(freshData);
+    setTraceId(freshTraceId);
+    setSelfPrices(null);
+    setError(null);
+
+    const freshPrices = Array.isArray(freshData.prices) ? freshData.prices : [];
+    const selectedClass = selectedPriceData?.selectedPrice?.class;
+    const selectedResultIndex = selectedPriceData?.selectedPrice?.result_index;
+    let matchedIndex = freshPrices.findIndex(
+      (p) => selectedClass != null && p?.class === selectedClass,
+    );
+    if (matchedIndex < 0 && selectedResultIndex != null) {
+      matchedIndex = freshPrices.findIndex(
+        (p) => p?.result_index === selectedResultIndex,
+      );
+    }
+    if (matchedIndex < 0) matchedIndex = 0;
+    const matchedPrice = freshPrices[matchedIndex];
+
+    if (!matchedPrice) {
+      setLoadingOptionId(null);
+      dispatch(
+        openNotification({
+          type: "error",
+          text: "Verified, but this price option is no longer available. Please pick another.",
+          heading: "Error!",
+        }),
+      );
+      return;
+    }
+
+    const freshSelectedData = {
+      ...freshData,
+      selectedPrice: {
+        ...matchedPrice,
+        result_index: matchedPrice.result_index,
+      },
+      trace_id: freshTraceId,
+    };
+    const freshPriceOptionId = `${freshData.id}-${matchedIndex}`;
+    setLoadingOptionId(freshPriceOptionId);
+    handleModeSelect(index, freshPriceOptionId, freshSelectedData, freshData.mode || modeVal, {
+      transferMode: freshData.mode || modeVal,
+    });
   };
 
   // Cleanup abort controller on unmount
@@ -7478,7 +7617,10 @@ const toggleTransferDetails = (priceOptionId) => {
         </div>
       )}
 
-      {/* Staff-only: unverified self_prices returned with the error response */}
+      {/* Staff-only: unverified self_prices returned with the 400 error response.
+          New shape: self_prices: [{ success, trace_id, data: { ...prices[] } }].
+          Each price has its own "Add to Itinerary" button which first verifies
+          the price (so it becomes bookable) and then runs the booking flow. */}
       {isStaff &&
         !isCurrentTransferLoading() &&
         Array.isArray(selfPrices) &&
@@ -7491,74 +7633,218 @@ const toggleTransferDetails = (priceOptionId) => {
                 </span>
               </div>
               <p className="text-sm font-400 leading-relaxed text-text-spacegrey mb-4">
-                These prices were entered manually and haven&apos;t been
-                verified, so they aren&apos;t shown to travellers. Review them
-                and mark them verified to make this route bookable.
+                These prices were entered manually and haven&apos;t been verified
+                yet, so they aren&apos;t shown to travellers. Adding any price to
+                the itinerary will mark these prices verified and make this route
+                bookable.
               </p>
 
               <div className="flex flex-col gap-3">
-                {selfPrices.map((record, recordIdx) => {
-                  const recordPrices = Array.isArray(record?.prices)
-                    ? record.prices
+                {selfPrices.map((entry, entryIdx) => {
+                  const data = entry?.data;
+                  if (!data) return null;
+                  const entryPrices = Array.isArray(data?.prices)
+                    ? data.prices
                     : [];
+                  const spTraceId = entry?.trace_id;
                   return (
                     <div
-                      key={record?.id || recordIdx}
+                      key={data?.id || entryIdx}
                       className="flex flex-col gap-2"
                     >
-                      {record?.text && (
+                      {data?.text && (
                         <div className="text-sm font-600 text-text-charcolblack">
-                          {record.text}
+                          {data.text}
                         </div>
                       )}
-                      {recordPrices.length === 0 ? (
+                      {entryPrices.length === 0 ? (
                         <div className="text-xs font-400 text-text-spacegrey">
                           No price options returned.
                         </div>
                       ) : (
-                        recordPrices.map((priceOption, priceIdx) => {
+                        entryPrices.map((priceOption, priceIdx) => {
                           const currencySymbol =
                             currencySymbols?.[priceOption?.currency] ||
                             (priceOption?.currency === "INR"
                               ? "₹"
-                              : priceOption?.currency || "");
+                              : priceOption?.currency ||
+                                currencySymbols?.[currency?.currency] ||
+                                "₹");
+                          const priceOptionId = `${data?.id}-${priceIdx}`;
+                          const isOptionLoading =
+                            loadingOptionId === priceOptionId;
+                          const isEditing = editingPriceId === priceOptionId;
+                          const editDisabled =
+                            isOptionLoading ||
+                            verifyingPrices ||
+                            isBookingInProgress;
+                          // Per-person amount is the editable value (verify
+                          // accepts per-person); the total for all travellers is
+                          // derived and shown beneath it.
+                          const travellerCount =
+                            getSelfPriceTravellers(data);
+                          const perPersonValue = getSelfPricePerPerson(
+                            data,
+                            priceOption,
+                            priceOptionId,
+                          );
+                          const perPersonNumber = Number(perPersonValue);
+                          const totalForTravellers = Number.isFinite(
+                            perPersonNumber,
+                          )
+                            ? perPersonNumber * travellerCount
+                            : null;
                           return (
                             <div
-                              key={priceOption?.result_index || priceIdx}
-                              className="flex items-center justify-between rounded-2xl border border-text-disabled bg-white p-3"
+                              key={priceOptionId}
+                              className="flex items-center justify-between gap-3 rounded-2xl border border-text-disabled bg-white p-3"
                             >
-                              <div className="flex flex-col gap-1 w-full">
+                              <div className="flex flex-col gap-1">
                                 <div className="flex items-center gap-2 flex-wrap">
                                   {priceOption?.class && (
                                     <span className="text-xs font-500 bg-gray-100 px-2 py-[2px] rounded-md text-text-spacegrey">
                                       {priceOption.class}
                                     </span>
                                   )}
-                                  <div className="flex items-center bg-white">
-                                    <span className="text-md font-600 text-text-charcolblack mr-1">
-                                      {currencySymbol}
-                                    </span>
-                                    <input
-                                      type="number"
-                                      inputMode="decimal"
-                                      min="0"
-                                      step="1"
-                                      value={priceOption?.price ?? ""}
-                                      onChange={(e) =>
-                                        updateSelfPrice(
-                                          recordIdx,
-                                          priceIdx,
-                                          e.target.value,
-                                        )
-                                      }
-                                      className="w-28 text-lg font-700 text-text-charcolblack outline-none bg-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                  {isEditing ? (
+                                    <div className="flex items-center gap-1">
+                                      <span className="text-lg font-700 text-text-charcolblack">
+                                        {currencySymbol}
+                                      </span>
+                                      <input
+                                        type="number"
+                                        inputMode="decimal"
+                                        min="0"
+                                        step="1"
+                                        autoFocus
+                                        value={perPersonValue ?? ""}
+                                        onChange={(e) =>
+                                          updateSelfPrice(
+                                            priceOptionId,
+                                            e.target.value,
+                                          )
+                                        }
+                                        onBlur={() => setEditingPriceId(null)}
+                                        onKeyDown={(e) => {
+                                          if (e.key === "Enter")
+                                            setEditingPriceId(null);
+                                        }}
+                                        className="w-24 text-lg font-700 text-text-charcolblack outline-none border-b border-amber-400 bg-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                      />
+                                      <span className="text-xs font-400 text-text-spacegrey">
+                                        per person
+                                      </span>
+                                      <button
+                                        type="button"
+                                        onClick={() => setEditingPriceId(null)}
+                                        className="text-green-600 p-1"
+                                        title="Done"
+                                      >
+                                        <svg
+                                          className="w-4 h-4"
+                                          fill="none"
+                                          stroke="currentColor"
+                                          viewBox="0 0 24 24"
+                                        >
+                                          <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M5 13l4 4L19 7"
+                                          />
+                                        </svg>
+                                      </button>
+                                    </div>
+                                  ) : (
+                                    <div className="flex items-center gap-1">
+                                      <span className="text-lg font-700 text-text-charcolblack">
+                                        {currencySymbol} {perPersonValue}
+                                      </span>
+                                      <span className="text-xs font-400 text-text-spacegrey">
+                                        per person
+                                      </span>
+                                      <button
+                                        type="button"
+                                        disabled={editDisabled}
+                                        onClick={() =>
+                                          setEditingPriceId(priceOptionId)
+                                        }
+                                        className="text-text-spacegrey hover:text-amber-600 p-1 disabled:opacity-40 disabled:cursor-not-allowed"
+                                        title="Edit price"
+                                      >
+                                        <svg
+                                          className="w-4 h-4"
+                                          fill="none"
+                                          stroke="currentColor"
+                                          viewBox="0 0 24 24"
+                                        >
+                                          <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                                          />
+                                        </svg>
+                                      </button>
+                                    </div>
+                                  )}
+                                </div>
+                                <span className="text-xs font-400 text-text-spacegrey">
+                                  {totalForTravellers != null
+                                    ? `${currencySymbol} ${formatPriceWithComma(
+                                        Math.round(totalForTravellers),
+                                      )} for ${travellerCount} ${
+                                        travellerCount === 1
+                                          ? "traveller"
+                                          : "travellers"
+                                      }`
+                                    : `${travellerCount} travellers`}
+                                </span>
+                              </div>
+
+                              <div
+                                className={`cursor-pointer ${
+                                  (isBookingInProgress || verifyingPrices) &&
+                                  !isOptionLoading
+                                    ? "cursor-not-allowed opacity-50"
+                                    : ""
+                                }`}
+                                onClick={() => {
+                                  if (
+                                    (isBookingInProgress || verifyingPrices) &&
+                                    !isOptionLoading
+                                  )
+                                    return;
+                                  const selectedPriceData = {
+                                    ...data,
+                                    selectedPrice: {
+                                      ...priceOption,
+                                      result_index: priceOption.result_index,
+                                    },
+                                  };
+                                  handleSelfPriceAddToItinerary(
+                                    currentStep - 1,
+                                    priceOptionId,
+                                    selectedPriceData,
+                                    data?.mode,
+                                    data,
+                                    spTraceId,
+                                  );
+                                }}
+                              >
+                                {isOptionLoading ? (
+                                  <div className="flex items-center gap-1">
+                                    <PulseLoader
+                                      size={12}
+                                      speedMultiplier={0.6}
+                                      color="#000000"
                                     />
                                   </div>
-                                </div>
-                                <span className="text-xs font-400 text-text-spacegrey mt-[2px]">
-                                  Unverified {record?.mode || mode || "transfer"}{" "}
-                                  fare
-                                </span>
+                                ) : (
+                                  <button className="ttw-btn-fill-yellow whitespace-nowrap">
+                                    Add to Itinerary
+                                  </button>
+                                )}
                               </div>
                             </div>
                           );
@@ -7568,19 +7854,6 @@ const toggleTransferDetails = (priceOptionId) => {
                   );
                 })}
               </div>
-
-              <button
-                type="button"
-                onClick={handleMarkPricesVerified}
-                disabled={verifyingPrices}
-                className="mt-5 w-full flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[#07213A] text-white text-sm font-600 hover:bg-[#0a2942] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
-              >
-                {verifyingPrices ? (
-                  <PulseLoader size={6} color="#fff" speedMultiplier={0.6} />
-                ) : (
-                  "Mark Prices as Verified"
-                )}
-              </button>
             </div>
           </div>
         )}

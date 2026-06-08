@@ -7,6 +7,7 @@ import axiosuserinstance from "../../services/user/info";
 import * as ga from "../../services/ga/Index";
 import { logEvent } from "../../services/ga/Index";
 import { CLIENT_ID, CLIENT_SECRET } from "../../services/constants";
+import { openNotification } from "./notification";
 
 
 //Open login modal
