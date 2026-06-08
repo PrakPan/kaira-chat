@@ -454,6 +454,15 @@ export default function ActivityDetails(props) {
                 noLazy
               ></ImageLoader>
 
+              {props.data?.is_very_popular ? (
+                <div className="absolute top-1 left-2 bg-[#FFD201] text-[#01202B] px-[16px] py-[2px] rounded-full flex flex-row items-center gap-1 text-[14px] font-600">
+                  <FaStar size={12} />
+                  Very Popular
+                </div>
+              ) : (
+                <></>
+              )}
+
               {props.data?.ideal_duration_number ? (
                 <div className="absolute bottom-1 left-2 bg-[#000000] text-white px-[16px] py-[2px] rounded-full flex flex-row items-center gap-2">
                   <div className="text-[14px]">Approx Time:</div>
@@ -484,10 +493,17 @@ export default function ActivityDetails(props) {
           </div>
 
           <div className="flex flex-col gap-3">
-            <div className="flex justify-between">
-              <div className="text-md-lg leading-xl-sm font-600 mb-0">
-                {props.data?.display_name || props.data.name}
+            <div className="flex flex-col">
+              <div className="flex justify-between">
+                <div className="text-md-lg leading-xl-sm font-600 mb-0">
+                  {props.data?.display_name || props.data.name}
+                </div>
               </div>
+              {props.data?.one_liner_description && (
+                <div className="text-[14px] text-[#7a7a7a] mt-1">
+                  {props.data.one_liner_description}
+                </div>
+              )}
             </div>
 
             <div className="flex gap-2">
@@ -598,8 +614,22 @@ export default function ActivityDetails(props) {
               </div>
             )}
 
-            {props.data?.tags && (
+            {props.data?.distance_from_city_centre != null &&
+              props.data?.distance_from_city_centre !== "" && (
+                <div className="text-[12px] text-[#7a7a7a]">
+                  {Number(props.data.distance_from_city_centre).toFixed(1)} km
+                  from city centre
+                </div>
+              )}
+
+            {(props.data?.category ||
+              (props.data?.tags && props.data?.tags?.length > 0)) && (
               <div className="text-[14px] flex flex-row items-center gap-1 flex-wrap">
+                {props.data?.category && (
+                  <span className="rounded-full px-2 py-1 bg-[#01202B] text-white">
+                    {props.data.category}
+                  </span>
+                )}
                 {props.data.tags?.map((e, i) => (
                   <span
                     key={i}
@@ -657,33 +687,39 @@ export default function ActivityDetails(props) {
             )}
           </div>
 
-          {props?.hotel_pickup_included ? (
-            <div className="flex items-center gap-1 text-[14px] bg-[#e6f9ec] text-[#3BAF75] font-semibold rounded-sm w-max px-1">
-              <Image
-                src="/hotelPickupIncluded.svg"
-                alt="hotel-pickup-included"
-                width={20}
-                height={20}
-              />
-              <span className=" px-2 py-1 mb-0 rounded-md text-xs font-medium">
-                Hotel Pickup Included
-              </span>
-            </div>
-          ) : (
-            <div className="flex items-center gap-1 text-[14px] bg-[#FCE3DB] text-[#EE724B] font-semibold w-max rounded-sm px-1">
-              <Image
-                src="/notHotelPickupIncluded.svg"
-                alt="not-hotel-pickup-included"
-                width={20}
-                height={20}
-              />
-              <span className=" px-2 py-1 mb-0 rounded-md text-xs font-medium">
-                Hotel pickup not included
-              </span>
-            </div>
-          )}
+          <div className="flex flex-wrap items-center gap-2">
+            {props?.hotel_pickup_included ? (
+              <div className="flex items-center gap-1 bg-[#e6f9ec] text-[#3BAF75] rounded-md w-max pl-1 pr-2 py-1">
+                <Image
+                  src="/hotelPickupIncluded.svg"
+                  alt="hotel-pickup-included"
+                  width={18}
+                  height={18}
+                />
+                <span className="text-xs font-medium">Hotel Pickup Included</span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-1 bg-[#FCE3DB] text-[#EE724B] rounded-md w-max pl-1 pr-2 py-1">
+                <Image
+                  src="/notHotelPickupIncluded.svg"
+                  alt="not-hotel-pickup-included"
+                  width={18}
+                  height={18}
+                />
+                <span className="text-xs font-medium">Hotel pickup not included</span>
+              </div>
+            )}
 
-          <div className="flex items-center gap-4 flex-wraptext-[14px] text-gray-800">
+            {props?.data?.animal_welfare_check && (
+              <div className="flex items-center gap-1 bg-[#e6f9ec] text-[#3BAF75] rounded-md w-max px-2 py-1">
+                <span className="text-xs font-medium">
+                  Follows animal-welfare guidelines
+                </span>
+              </div>
+            )}
+          </div>
+
+          <div className="flex items-center gap-4 flex-wrap text-[14px] text-gray-800">
             {props?.data?.tour_type === "Private Tour" && (
               <div className="flex items-center gap-1">
                 <Image
@@ -737,11 +773,55 @@ export default function ActivityDetails(props) {
             )}
           </div>
 
+          {(props.data?.starting_point ||
+            (Array.isArray(props.data?.other_starting_points) &&
+              props.data?.other_starting_points.length > 0)) && (
+            <div className="flex flex-col gap-2 mb-[30px]">
+              <div className="text-[20px] font-semibold">Starting point</div>
+              <div className="border-b-[1px]"></div>
+              {props.data?.starting_point && (
+                <div className="text-[14px] text-[#01202B]">
+                  {props.data.starting_point}
+                </div>
+              )}
+              {Array.isArray(props.data?.other_starting_points) &&
+                props.data?.other_starting_points.length > 0 && (
+                  <div className="text-[14px]">
+                    <div className="text-[#7a7a7a] mb-1">
+                      Other starting points
+                    </div>
+                    <ul style={{ paddingLeft: "0.5rem" }}>
+                      {props.data.other_starting_points.map((point, i) => (
+                        <li key={i} className="mb-1">
+                          - {point?.address || point?.name || String(point)}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+            </div>
+          )}
+
           <div>
             {props.data?.general_guidelines?.length ? (
               <div className="flex flex-col">
-                <div className="text-[20px] font-semibold">
-                  <div>General guidelines</div>
+                <div
+                  className="text-[20px] font-semibold cursor-pointer"
+                  onClick={() =>
+                    setBoolDetail((prev) => ({
+                      ...prev,
+                      generalGuidelines: !prev.generalGuidelines,
+                    }))
+                  }
+                >
+                  <div className="flex items-center justify-between">
+                    <span>General guidelines</span>
+                    <IoIosArrowDown
+                      className={`transition-transform ${
+                        boolDetails?.generalGuidelines ? "rotate-180" : ""
+                      }`}
+                    />
+                  </div>
                   <div className="border-b-[1px] mt-2 mb-2"></div>
                 </div>
                 {boolDetails?.generalGuidelines && (
@@ -758,8 +838,23 @@ export default function ActivityDetails(props) {
 
             {props.data?.things_to_bring?.length ? (
               <div className="flex flex-col">
-                <div className="text-[20px] font-semibold">
-                  <div>Things to bring</div>
+                <div
+                  className="text-[20px] font-semibold cursor-pointer"
+                  onClick={() =>
+                    setBoolDetail((prev) => ({
+                      ...prev,
+                      thingsToBring: !prev.thingsToBring,
+                    }))
+                  }
+                >
+                  <div className="flex items-center justify-between">
+                    <span>Things to bring</span>
+                    <IoIosArrowDown
+                      className={`transition-transform ${
+                        boolDetails?.thingsToBring ? "rotate-180" : ""
+                      }`}
+                    />
+                  </div>
                   <div className="border-b-[1px] mt-2 mb-2"></div>
                 </div>
                 {boolDetails?.thingsToBring && (
@@ -776,8 +871,23 @@ export default function ActivityDetails(props) {
 
             {props.data?.not_suitable_for?.length ? (
               <div className="flex flex-col">
-                <div className="text-[20px] font-semibold">
-                  <div>Not suitable for</div>
+                <div
+                  className="text-[20px] font-semibold cursor-pointer"
+                  onClick={() =>
+                    setBoolDetail((prev) => ({
+                      ...prev,
+                      notSuitableFor: !prev.notSuitableFor,
+                    }))
+                  }
+                >
+                  <div className="flex items-center justify-between">
+                    <span>Not suitable for</span>
+                    <IoIosArrowDown
+                      className={`transition-transform ${
+                        boolDetails?.notSuitableFor ? "rotate-180" : ""
+                      }`}
+                    />
+                  </div>
                   <div className="border-b-[1px] mt-2 mb-2"></div>
                 </div>
                 {boolDetails?.notSuitableFor && (
@@ -794,8 +904,23 @@ export default function ActivityDetails(props) {
 
             {props.data?.tips_tricks?.length ? (
               <div className="flex flex-col">
-                <div className="text-[20px] font-semibold">
-                  <div>Tips, Tricks and Cautions</div>
+                <div
+                  className="text-[20px] font-semibold cursor-pointer"
+                  onClick={() =>
+                    setBoolDetail((prev) => ({
+                      ...prev,
+                      tipsTricks: !prev.tipsTricks,
+                    }))
+                  }
+                >
+                  <div className="flex items-center justify-between">
+                    <span>Tips, Tricks and Cautions</span>
+                    <IoIosArrowDown
+                      className={`transition-transform ${
+                        boolDetails?.tipsTricks ? "rotate-180" : ""
+                      }`}
+                    />
+                  </div>
                   <div className="border-b-[1px] mt-2 mb-2"></div>
                 </div>
                 {boolDetails?.tipsTricks && (
