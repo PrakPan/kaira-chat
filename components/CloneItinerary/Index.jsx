@@ -10,6 +10,7 @@ import { openNotification } from "../../store/actions/notification";
 import { togglePreference } from "../../store/actions/slideOneActions";
 import Buttons from "../settings/Buttons";
 import DateComponent from "../settings/DateComponent";
+import { SectionLabel, InclusionChip } from "../settings/FormUI";
 import { Body2R_14 } from "../new-ui/Body";
 import SelectedDestination from "../tailoredform/slideone/destinations/selecteddestination/Index";
 import { useRouter } from "next/router";
@@ -23,7 +24,16 @@ const parseDateString = (dateString) => {
   return new Date(year, month - 1, day);
 };
 
-const CloneItinerary = ({ isHotelsPresent }) => {
+const CloneItinerary = ({
+  isHotelsPresent = false,
+  // Bot/chat reuse: explicit source itinerary id (the bot has no router.query.id),
+  // an end-location picker, and callbacks so the caller can keep the user in-page
+  // (poll + skeleton) instead of the default hard redirect.
+  sourceItineraryId,
+  showEndLocation = false,
+  onSuccess,
+  onCancel,
+}) => {
   const dispatch = useDispatch();
   const itinerary = useSelector((state) => state.Itinerary);
   const isDesktop = useMediaQuery("(min-width:767px)");
@@ -34,7 +44,13 @@ const CloneItinerary = ({ isHotelsPresent }) => {
   const [showCities, setShowCities] = useState(false);
   const [showSearchStarting, setShowSearchStarting] = useState(false);
   const [destination, setDestination] = useState(router.query.destination);
+  // End location (optional, shown only when showEndLocation is true).
+  const [endingLocation, setEndingLocation] = useState(false);
+  const [showEndCities, setShowEndCities] = useState(false);
+  const [showSearchEnding, setShowSearchEnding] = useState(false);
+  const [endDestination, setEndDestination] = useState(null);
   const { id } = useSelector((state) => state.auth);
+  const sourceId = sourceItineraryId || router.query.id;
 
   // Initialize states with values from itinerary
   const [addHotels, setAddHotels] = useState(
@@ -175,11 +191,16 @@ const CloneItinerary = ({ isHotelsPresent }) => {
     }
 
     const req = {
-      itinerary_id: router.query.id,
+      itinerary_id: sourceId,
       start_location: startingLocation?.place_id || null,
-      end_location: startingLocation?.place_id || null,
-      currency: startingLocation?.currency || "INR",
-      date: {
+      end_location:
+        (showEndLocation && endingLocation?.place_id) ||
+        startingLocation?.place_id ||
+        null,
+      currency:
+        startingLocation?.currency || endingLocation?.currency || "INR",
+      dates: {
+        type:"fixed",
         start_date: formatDateForAPI(date.start_date),
         end_date: formatDateForAPI(date.end_date),
       },
@@ -213,11 +234,14 @@ const CloneItinerary = ({ isHotelsPresent }) => {
             })
           );
 
-          // Close the modal
-          dispatch(setCloneItineraryDrawer(false));
-
-          
-          window.location.href = `/itinerary/${newItineraryId}`;
+          if (onSuccess) {
+            // Caller keeps the user in-page (e.g. bot: skeleton + status poll).
+            onSuccess(newItineraryId);
+          } else {
+            // Default: close the clone drawer and hard-redirect.
+            dispatch(setCloneItineraryDrawer(false));
+            window.location.href = `/itinerary/${newItineraryId}`;
+          }
         } else {
           throw new Error("No itinerary ID returned");
         }
@@ -240,131 +264,177 @@ const CloneItinerary = ({ isHotelsPresent }) => {
   };
 
   const handleCancel = () => {
+    if (onCancel) {
+      onCancel();
+      return;
+    }
     dispatch(setCloneItineraryDrawer(false));
   };
 
+  const inclusions = [
+    {
+      id: "add-activities-transfers",
+      label: "Activities & Transfers",
+      checked: addActivityTransfers,
+      set: setAddActivityTransfers,
+    },
+    { id: "add-flights", label: "Flights", checked: addFlights, set: setAddFlights },
+    { id: "add-hotels", label: "Hotels", checked: addHotels, set: setAddHotels },
+  ];
+
   return (
-    <div className={`flex flex-col gap-[24px] md:max-w-[537px]`}>
-      <div className="Heading1SB font-semibold">Craft a similar Trip</div>
-
-      <div className="flex flex-col gap-[4px]">
-        <Body2R_14>Start Location</Body2R_14>
-        <SelectedDestination
-          startingLocation={startingLocation}
-          setStartingLocation={setStartingLocation}
-          showSearchStarting={showSearchStarting}
-          setShowSearchStarting={setShowSearchStarting}
-          setShowCities={setShowCities}
-          selectlocation
-          destination={destination}
-          CITIES={null}
-          openCities={() => setShowCities(true)}
-          setDestination={setDestination}
-        ></SelectedDestination>
-        {/* {props.errors.startLocation !== null && (
-          <p className="mt-1 text-sm text-red-600 font-medium">
-            {props.errors.startLocation}
-          </p>
-        )} */}
-      </div>
-
-      <DateComponent
-        settings={true}
-        handleApplyDates={handleApplyDates}
-        setDate={setDate}
-        date={date}
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        maxHeight: "85vh",
+        borderRadius: 20,
+        overflow: "hidden",
+        background:
+          "radial-gradient(ellipse at top right, rgba(255,230,0,0.18), transparent 55%), linear-gradient(180deg,#FFFDF7,#FFFFFF)",
+      }}
+    >
+      {/* yellow top strip — matches BotLoginModal */}
+      <div
+        style={{
+          height: 6,
+          background: "linear-gradient(90deg,#FFE600,#F2D700)",
+          flexShrink: 0,
+        }}
       />
 
-      <div>
-        <div className="Body1M_16 mb-[12px]">Pick Your Inclusions</div>
-        <div className="flex flex-wrap md:grid md:grid-cols-3 justify-between items-center ">
-          <label
-            htmlFor="add-activities-transfers"
-            className="flex items-center gap-2 p-2 rounded-md w-fit cursor-pointer"
-          >
-            <input
-              id="add-activities-transfers"
-              type="checkbox"
-              checked={addActivityTransfers}
-              onChange={(e) => setAddActivityTransfers(e.target.checked)}
-              className="focus:outline-none cursor-pointer"
-            />
-            <div className="Body2R_14">Activities & Transfers</div>
-          </label>
-
-          <label
-            htmlFor="add-flights"
-            className="flex items-center gap-2 p-2 rounded-md w-fit cursor-pointer justify-self-center"
-          >
-            <input
-              id="add-flights"
-              type="checkbox"
-              checked={addFlights}
-              onChange={(e) => setAddFlights(e.target.checked)}
-              className="focus:outline-none cursor-pointer"
-            />
-            <div className="Body2R_14">Flights</div>
-          </label>
-
-          <label
-            htmlFor="add-hotels"
-            className="flex items-center gap-2 p-2 rounded-md w-fit cursor-pointer"
-          >
-            <input
-              id="add-hotels"
-              type="checkbox"
-              checked={addHotels}
-              onChange={(e) => setAddHotels(e.target.checked)}
-              className="focus:outline-none cursor-pointer"
-            />
-            <div className="Body2R_14">Hotels</div>
-          </label>
+      {/* header */}
+      <div style={{ flexShrink: 0, padding: "16px 16px 10px" }}>
+        <div
+          style={{
+            fontFamily: "'Instrument Serif', Georgia, serif",
+            fontSize: 28,
+            lineHeight: 1.1,
+            letterSpacing: "-0.01em",
+            color: "#0F1B2D",
+          }}
+        >
+          Craft a <em style={{ fontStyle: "italic", color: "#5C5A55" }}>similar</em> trip
         </div>
+        <p style={{ fontSize: 13, color: "#5C5A55", marginTop: 4 }}>
+          Tweak the start, dates and travellers — I'll build your own editable copy.
+        </p>
       </div>
 
-      {!addHotels ? (
-        <EnterPassenger
-          roomConfiguration={roomConfiguration}
-          setRoomConfiguration={setRoomConfiguration}
-          groupType={itinerary?.group_type}
-          numberOfAdults={numberOfAdults}
-          numberOfChildren={numberOfChildren}
-          numberOfInfants={numberOfInfants}
-          setNumberOfAdults={setNumberOfAdults}
-          setNumberOfChildren={setNumberOfChildren}
-          setNumberOfInfants={setNumberOfInfants}
+      {/* scrollable body */}
+      <div
+        style={{
+          flex: 1,
+          minHeight: 0,
+          overflowY: "auto",
+          padding: "4px 16px 16px",
+          display: "flex",
+          flexDirection: "column",
+          gap: 18,
+        }}
+      >
+        <div className="flex flex-col gap-[6px]">
+          <SectionLabel>Start Location</SectionLabel>
+          <SelectedDestination
+            startingLocation={startingLocation}
+            setStartingLocation={setStartingLocation}
+            showSearchStarting={showSearchStarting}
+            setShowSearchStarting={setShowSearchStarting}
+            setShowCities={setShowCities}
+            selectlocation
+            destination={destination}
+            CITIES={null}
+            openCities={() => setShowCities(true)}
+            setDestination={setDestination}
+          ></SelectedDestination>
+        </div>
+
+        {showEndLocation && (
+          <div className="flex flex-col gap-[6px]">
+            <SectionLabel>End Location</SectionLabel>
+            <SelectedDestination
+              startingLocation={endingLocation}
+              setStartingLocation={setEndingLocation}
+              showSearchStarting={showSearchEnding}
+              setShowSearchStarting={setShowSearchEnding}
+              setShowCities={setShowEndCities}
+              selectlocation
+              destination={endDestination}
+              CITIES={null}
+              openCities={() => setShowEndCities(true)}
+              setDestination={setEndDestination}
+            ></SelectedDestination>
+          </div>
+        )}
+
+        <DateComponent
           settings={true}
+          handleApplyDates={handleApplyDates}
+          setDate={setDate}
+          date={date}
         />
-      ) : (
+
         <div>
-          <div className="Body1M_16 mb-[8px] text-black">Travellers and Rooms</div>
-          <Pax
-            numberOfAdults={numberOfAdults}
-            setNumberOfAdults={setNumberOfAdults}
-            numberOfChildren={numberOfChildren}
-            setNumberOfChildren={setNumberOfChildren}
-            numberOfInfants={numberOfInfants}
-            setNumberOfInfants={setNumberOfInfants}
+          <SectionLabel>Pick your inclusions</SectionLabel>
+          <div className="flex flex-wrap gap-2 mt-[2px]">
+            {inclusions.map((opt) => (
+              <InclusionChip key={opt.id} opt={opt} />
+            ))}
+          </div>
+        </div>
+
+        {!addHotels ? (
+          <EnterPassenger
             roomConfiguration={roomConfiguration}
             setRoomConfiguration={setRoomConfiguration}
             groupType={itinerary?.group_type}
+            numberOfAdults={numberOfAdults}
+            numberOfChildren={numberOfChildren}
+            numberOfInfants={numberOfInfants}
+            setNumberOfAdults={setNumberOfAdults}
+            setNumberOfChildren={setNumberOfChildren}
+            setNumberOfInfants={setNumberOfInfants}
+            settings={true}
           />
-        </div>
-      )}
+        ) : (
+          <div>
+            <SectionLabel>Travellers and rooms</SectionLabel>
+            <Pax
+              numberOfAdults={numberOfAdults}
+              setNumberOfAdults={setNumberOfAdults}
+              numberOfChildren={numberOfChildren}
+              setNumberOfChildren={setNumberOfChildren}
+              numberOfInfants={numberOfInfants}
+              setNumberOfInfants={setNumberOfInfants}
+              roomConfiguration={roomConfiguration}
+              setRoomConfiguration={setRoomConfiguration}
+              groupType={itinerary?.group_type}
+            />
+          </div>
+        )}
 
-      <div>
-        <div className="Body1M_16">Choose your experience</div>
-        <div className="mt-[12px]">
-          <Preferences
-            tailoredFormModal={false}
-            selectedPreferences={selectedPreferences}
-            setSelectedPreferences={handleSetSelectedPreferences}
-          />
+        <div>
+          <SectionLabel>Choose your experience</SectionLabel>
+          <div className="mt-[10px]">
+            <Preferences
+              tailoredFormModal={false}
+              selectedPreferences={selectedPreferences}
+              setSelectedPreferences={handleSetSelectedPreferences}
+            />
+          </div>
         </div>
       </div>
 
+      {/* sticky footer */}
       <div
-        className={`${isDesktop ? "flex justify-between w-full" : "w-full"}`}
+        style={{
+          flexShrink: 0,
+          borderTop: "1px solid #EFEAD9",
+          background: "rgba(255,255,255,0.92)",
+          backdropFilter: "blur(6px)",
+          WebkitBackdropFilter: "blur(6px)",
+          padding: "12px 16px",
+        }}
       >
         <Buttons
           handleCancel={handleCancel}

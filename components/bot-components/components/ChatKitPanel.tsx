@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback, useMemo } from "react"
 import { useRouter } from "next/router";
 import axios from "axios";
 import { useChat, generateSessionId, getPlatform, type UserLocationData, type MessageAttachment, Message } from "../hooks/useChat";
-import { MessageBubble, isButtonOnlyWidget } from "./MessageBubble";
+import { MessageBubble, isButtonOnlyWidget, ItineraryCloneCta } from "./MessageBubble";
 import { MessageInputBox } from "./MessageInputBox";
 import { CHATKIT_API_DOMAIN_KEY as CHATKIT_DOMAIN_KEY } from "../lib/chatkitConfig";
 import type { Location, BotMode } from "../types";
@@ -16,6 +16,10 @@ import AccommodationDetailDrawer from "../../modals/AccommodationDetailDrawer";
 import POIDetailsDrawer from "../../drawers/poiDetails/POIDetailsDrawer";
 import VisaSearchDrawer from "../../drawers/visaDetails/VisaSearchDrawer";
 import EsimPackagesDrawer from "../../drawers/esimDetails/EsimPackagesDrawer";
+import CloneItinerary from "../../CloneItinerary/Index";
+import ModalWithBackdrop from "../../ui/ModalWithBackdrop";
+import BottomModal from "../../ui/LowerModal";
+import useMediaQuery from "../../../hooks/useMedia";
 import { MERCURY_HOST } from "../../../services/constants";
 import { openNotification } from "../../../store/actions/notification";
 import setItinerary, {
@@ -897,6 +901,23 @@ onTripMetaUpdate,
 
   const dispatch = useDispatch();
   const router = useRouter();
+  const isDesktopViewport = useMediaQuery("(min-width:767px)");
+
+  // ── "Create my version" (clone) — logged-in CTA on another user's itinerary ──
+  // The CTA opens a popup (CloneItinerary form) that collects start/end
+  // location, dates and pax, then calls get-my-itinerary. On success we keep the
+  // user in-page and hand the new id to the SAME build pipeline the bot uses
+  // (skeleton → /{id}/status/ polling → load) via onItineraryCompletionStart/Done.
+  const [showCloneModal, setShowCloneModal] = useState(false);
+  const handleCloneSuccess = useCallback(
+    (newId: string) => {
+      if (!newId) return;
+      setShowCloneModal(false);
+      onItineraryCompletionStart?.("pending");
+      onItineraryCompletionDone?.(newId);
+    },
+    [onItineraryCompletionStart, onItineraryCompletionDone],
+  );
 
   // Shared helper for drawer CTAs opened from chat widgets. The chat flow
   // used to round-trip through sendWidgetAction("*.add", …); we now call the
@@ -3400,6 +3421,16 @@ const handleShowLogin = useCallback(() => {
               );
             })}
 
+            {/* Steal / clone CTA — pinned below the last message when the viewer
+                is looking at someone else's itinerary. Renders nothing for the
+                owner or in a brand-new chat. Reactive to login/logout. */}
+            {messages.length > 0 && !isStreaming && (
+              <ItineraryCloneCta
+                onRequestLogin={() => setShowLoginModal(true)}
+                onCreateVersion={() => setShowCloneModal(true)}
+              />
+            )}
+
             {/* {showError && (
               <div className="mt-2 px-2.5 py-2.5 ttw-type-small text-red-600 flex items-center gap-2">
                 <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 flex-shrink-0">
@@ -3575,6 +3606,48 @@ const handleShowLogin = useCallback(() => {
           <span aria-hidden>→</span>
         </button>
       )}
+
+      {/* ── Clone form popup (logged-in "Create My Version") ──────────────────
+          Desktop → centered modal, mobile → bottom sheet. Reuses the
+          CloneItinerary form (start/end location, dates, pax, inclusions) and,
+          on success, keeps the user in-page (skeleton + status poll). */}
+      {showCloneModal &&
+        typeof document !== "undefined" &&
+        createPortal(
+          isDesktopViewport ? (
+            <ModalWithBackdrop
+              show={showCloneModal}
+              onHide={() => setShowCloneModal(false)}
+              width="560px"
+              borderRadius="20px"
+              backdropStyle={{ zIndex: 3300 }}
+            >
+              <CloneItinerary
+                sourceItineraryId={localItineraryId}
+                showEndLocation
+                onSuccess={handleCloneSuccess}
+                onCancel={() => setShowCloneModal(false)}
+              />
+            </ModalWithBackdrop>
+          ) : (
+            <BottomModal
+              show={showCloneModal}
+              onHide={() => setShowCloneModal(false)}
+              height="auto"
+              borderRadius="20px 20px 0 0"
+              isMobile
+              backdropStyle={{ zIndex: 3300 }}
+            >
+              <CloneItinerary
+                sourceItineraryId={localItineraryId}
+                showEndLocation
+                onSuccess={handleCloneSuccess}
+                onCancel={() => setShowCloneModal(false)}
+              />
+            </BottomModal>
+          ),
+          document.body,
+        )}
 
       {/* ── Login modal portal ────────────────────────────────────────────── */}
       {showLoginModal &&

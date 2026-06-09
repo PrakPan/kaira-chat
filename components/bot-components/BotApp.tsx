@@ -102,7 +102,7 @@ function transformDraftToItinerary(draft: any) {
             time: el.time ?? "",
             index: idx,
             rating: el.rating ?? null,
-            heading: el.heading ?? el.name ?? "",
+            heading: el.name ?? el.heading ?? "",
             end_time: el.end_time ?? "",
             start_time: el.start_time ?? "",
             element_type: el.type ?? el.element_type ?? "poi",

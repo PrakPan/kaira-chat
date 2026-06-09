@@ -1896,6 +1896,460 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   );
 };
 
+// ─── Itinerary "steal / clone" CTA ────────────────────────────────────────────
+// Shown at the bottom of the chat when a viewer is looking at SOMEONE ELSE'S
+// itinerary. Two reactive states (driven by redux auth, so it flips instantly
+// on login/logout with no page reload):
+//   • Logged-out  → "Steal this itinerary" → opens the bot login modal.
+//   • Logged-in   → "Create my version"    → clones via onCreateVersion (the
+//                    parent calls the clone API then polls + shows skeletons).
+// It renders nothing when there's no itinerary open or the viewer owns it.
+
+const CtaIcon: React.FC<{ name: string; size?: number }> = ({ name, size = 15 }) => {
+  const common = {
+    width: size,
+    height: size,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 1.9,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+    style: { display: "block" },
+    "aria-hidden": true,
+  };
+  switch (name) {
+    case "copy":
+      return (
+        <svg {...common}>
+          <rect x="9" y="9" width="11" height="11" rx="2.5" />
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+        </svg>
+      );
+    case "edit": // customize → sliders
+      return (
+        <svg {...common}>
+          <line x1="4" y1="8" x2="20" y2="8" />
+          <line x1="4" y1="16" x2="20" y2="16" />
+          <circle cx="9" cy="8" r="2.4" />
+          <circle cx="15" cy="16" r="2.4" />
+        </svg>
+      );
+    case "price": // tag
+      return (
+        <svg {...common}>
+          <path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0l-7.2-7.2A2 2 0 0 1 2.8 12V4a2 2 0 0 1 2-2h8a2 2 0 0 1 1.4.6l6.4 6.4a2 2 0 0 1 0 2.8Z" />
+          <circle cx="7.5" cy="7.5" r="1.4" />
+        </svg>
+      );
+    case "save": // bookmark
+      return (
+        <svg {...common}>
+          <path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4.2L5 21V4a1 1 0 0 1 1-1Z" />
+        </svg>
+      );
+    case "swap": // repeat / swap
+      return (
+        <svg {...common}>
+          <path d="M17 2l4 4-4 4" />
+          <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+          <path d="M7 22l-4-4 4-4" />
+          <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+        </svg>
+      );
+    default: // arrow
+      return (
+        <svg {...common}>
+          <path d="M5 12h14M13 6l6 6-6 6" />
+        </svg>
+      );
+  }
+};
+
+interface ItineraryCloneCtaProps {
+  /** Logged-out primary action — open the bot login modal. */
+  onRequestLogin?: () => void;
+  /** Logged-in primary action — clone the itinerary (parent polls + skeletons). */
+  onCreateVersion?: () => void | Promise<void>;
+}
+
+export const ItineraryCloneCta: React.FC<ItineraryCloneCtaProps> = ({
+  onRequestLogin,
+  onCreateVersion,
+}) => {
+  // Reactive auth + itinerary — re-renders on login/logout with no reload.
+  const token = useSelector((state: any) => state?.auth?.token);
+  const authId = useSelector((state: any) => state?.auth?.id);
+  const authName = useSelector((state: any) => state?.auth?.name);
+  const itinerary = useSelector((state: any) => state?.Itinerary);
+
+  const loggedIn = !!token;
+  const ownerId = itinerary?.customer;
+  // `customer_name` is the populated signal in both P1 (draft) and P2 — the bot
+  // Itinerary object doesn't always carry `id`/`customer`, so key off the name.
+  const ownerName =
+    typeof itinerary?.customer_name === "string"
+      ? itinerary.customer_name.trim()
+      : "";
+  const hasOwner = !!ownerName;
+  // Hide on the viewer's OWN itinerary: match by customer id when present,
+  // otherwise fall back to comparing the creator's name to the logged-in name.
+  const isOwn =
+    loggedIn &&
+    ((ownerId != null && String(authId ?? "") === String(ownerId)) ||
+      (!!authName &&
+        !!ownerName &&
+        authName.trim().toLowerCase() === ownerName.toLowerCase()));
+
+  // Only when looking at another person's itinerary.
+  if (!hasOwner || isOwn) return null;
+
+  const handlePrimary = () => {
+    if (!loggedIn) {
+      onRequestLogin?.();
+      return;
+    }
+    // Logged in → open the clone form popup (parent-managed: collects
+    // start/end location, dates, pax, then calls get-my-itinerary).
+    onCreateVersion?.();
+  };
+
+  const ownerFirst = ownerName ? ownerName.split(/\s+/)[0] : "";
+  const sub = loggedIn
+    ? "Clone the whole trip into your workspace — the original stays untouched, your copy is fully yours to remix and reprice."
+    : "Log in and I'll drop an editable copy into your trips — yours to reshape, reprice and book.";
+  const benefits: Array<[string, string]> = loggedIn
+    ? [
+        ["edit", "Customize every activity, day by day"],
+        ["price", "Get live, bookable pricing"],
+        ["save", "Auto-saved to your trips"],
+      ]
+    : [
+        ["copy", "Copy the full plan in one tap"],
+        ["swap", "Swap hotels, stays & activities"],
+        ["price", "See live pricing for your dates"],
+      ];
+  const primaryLabel = loggedIn ? "Create My Version" : "Log In to Continue";
+  const microItems = loggedIn
+    ? ["Saved to My Trips", "Original stays untouched"]
+    : ["Free to start", "No card needed", "30-second login"];
+
+  // Headline — Inter (matches the rest of the chat), yellow "mark".
+  const headline = loggedIn ? (
+    <>
+      Clone it. <span style={{ color: "#F5D70E" }}>Make it yours.</span>
+    </>
+  ) : (
+    <>
+      Make this trip <span style={{ color: "#F5D70E" }}>yours.</span>
+    </>
+  );
+
+  // Wrapped in the same Kaira message layout as every other bot reply: avatar
+  // on the left, content on the right, matching spacing/padding.
+  const FONT = "'Inter', -apple-system, BlinkMacSystemFont, sans-serif";
+
+  return (
+    <div
+      className="msg kaira"
+      style={{
+        display: "flex",
+        gap: 10,
+        maxWidth: "98%",
+        marginBottom: 14,
+        fontFamily: FONT,
+        animation: "msgInK 0.3s ease-out",
+      }}
+    >
+      {/* Kaira avatar — identical to other messages */}
+      <div
+        aria-hidden
+        className="msg-avatar"
+        style={{
+          width: 30,
+          height: 30,
+          borderRadius: "50%",
+          flexShrink: 0,
+          overflow: "hidden",
+          background: "linear-gradient(180deg, #a8d2f5, #7ab8e8)",
+        }}
+      >
+        <img
+          src="/KairaInsta.png"
+          alt="Kaira"
+          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+        />
+      </div>
+
+      {/* Card */}
+      <div
+      style={{
+        position: "relative",
+        flex: 1,
+        minWidth: 0,
+        overflow: "hidden",
+        borderRadius: 16,
+        borderBottomLeftRadius: 5,
+        border: "1px solid #2C3360",
+        background:
+          "radial-gradient(120% 140% at 100% 0%, #232a4f 0%, #181D38 55%)",
+        color: "#fff",
+        boxShadow: "0 26px 60px -34px rgba(8,11,28,0.85)",
+        fontFamily: FONT,
+      }}
+    >
+      {/* top-right yellow glow */}
+      <div
+        style={{
+          position: "absolute",
+          top: -60,
+          right: -50,
+          width: 200,
+          height: 200,
+          borderRadius: "50%",
+          background:
+            "radial-gradient(circle, rgba(245,215,14,0.32), transparent 62%)",
+          pointerEvents: "none",
+        }}
+      />
+      <div style={{ position: "relative", padding: "16px 16px 16px" }}>
+        {/* eyebrow */}
+        <div
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 7,
+            fontFamily: FONT,
+            fontSize: 10,
+            fontWeight: 700,
+            letterSpacing: "0.08em",
+            textTransform: "uppercase",
+            color: "#F5D70E",
+            background: "rgba(245,215,14,0.10)",
+            border: "1px solid rgba(245,215,14,0.28)",
+            padding: "6px 11px",
+            borderRadius: 999,
+            marginBottom: 14,
+          }}
+        >
+          <span
+            style={{
+              width: 6,
+              height: 6,
+              borderRadius: "50%",
+              background: "#F5D70E",
+              boxShadow: "0 0 0 3px rgba(245,215,14,0.25)",
+            }}
+          />
+          {loggedIn ? "Ready to clone · private copy" : "Shared · itinerary"}
+        </div>
+
+        {/* owner chip */}
+        {ownerName && (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 9,
+              background: "rgba(255,255,255,0.06)",
+              border: "1px solid rgba(255,255,255,0.12)",
+              borderRadius: 12,
+              padding: "8px 11px",
+              marginBottom: 16,
+            }}
+          >
+            <span
+              style={{
+                width: 24,
+                height: 24,
+                borderRadius: "50%",
+                flexShrink: 0,
+                display: "grid",
+                placeItems: "center",
+                color: "#fff",
+                fontSize: 11,
+                fontWeight: 700,
+                background: getAvatarColorForName(ownerName),
+              }}
+            >
+              {getUserInitial(ownerName)}
+            </span>
+            <span style={{ fontSize: 12.5, color: "#C7CCE6", lineHeight: 1.35 }}>
+              {loggedIn ? (
+                <>
+                  Cloning from <b style={{ color: "#fff", fontWeight: 700 }}>{ownerFirst}'s</b> plan —
+                  your copy stays private.
+                </>
+              ) : (
+                <>
+                  Crafted by <b style={{ color: "#fff", fontWeight: 700 }}>{ownerFirst}</b> — make it
+                  yours in under a minute.
+                </>
+              )}
+            </span>
+          </div>
+        )}
+
+        {/* headline */}
+        <h3
+          style={{
+            fontFamily: FONT,
+            fontWeight: 800,
+            fontSize: 22,
+            lineHeight: 1.18,
+            letterSpacing: "-0.01em",
+            color: "#fff",
+            margin: "0 0 8px",
+          }}
+        >
+          {headline}
+        </h3>
+        <p
+          style={{
+            fontSize: 13.5,
+            lineHeight: 1.58,
+            color: "#B9BFDB",
+            margin: "0 0 18px",
+          }}
+        >
+          {sub}
+        </p>
+
+        {/* benefits — bordered single-column list (v2) */}
+        <div
+          style={{
+            borderRadius: 14,
+            overflow: "hidden",
+            border: "1px solid rgba(255,255,255,0.1)",
+            marginBottom: 18,
+          }}
+        >
+          {benefits.map(([icon, label], i) => (
+            <div
+              key={label}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 11,
+                padding: "11px 13px",
+                borderBottom:
+                  i < benefits.length - 1
+                    ? "1px solid rgba(255,255,255,0.08)"
+                    : "none",
+              }}
+            >
+              <span
+                style={{
+                  width: 26,
+                  height: 26,
+                  borderRadius: "50%",
+                  flexShrink: 0,
+                  display: "grid",
+                  placeItems: "center",
+                  background: "rgba(245,215,14,0.16)",
+                  color: "#F5D70E",
+                }}
+              >
+                <CtaIcon name={icon} size={14} />
+              </span>
+              <span
+                style={{
+                  fontSize: 13,
+                  fontWeight: 600,
+                  color: "#E6E8F4",
+                  lineHeight: 1.3,
+                }}
+              >
+                {label}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {/* primary */}
+        <button
+          type="button"
+          onClick={handlePrimary}
+          style={{
+            width: "100%",
+            border: 0,
+            cursor: "pointer",
+            fontFamily: "inherit",
+            fontWeight: 800,
+            fontSize: 15.5,
+            color: "#181D38",
+            background: "#F5D70E",
+            padding: "15px 16px",
+            borderRadius: 13,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 9,
+            boxShadow: "0 14px 30px -12px rgba(245,215,14,0.6)",
+            transition: "transform 0.15s ease, filter 0.2s ease",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = "translateY(-1px)";
+            e.currentTarget.style.filter = "saturate(1.06)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = "translateY(0)";
+            e.currentTarget.style.filter = "none";
+          }}
+        >
+          {primaryLabel}
+          <CtaIcon name="arrow" size={16} />
+        </button>
+
+        {/* micro */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexWrap: "wrap",
+            gap: 8,
+            marginTop: 13,
+            fontFamily: FONT,
+            fontSize: 11,
+            fontWeight: 500,
+            letterSpacing: "0.01em",
+            color: "#878FB4",
+          }}
+        >
+          {microItems.map((m, i) => (
+            <React.Fragment key={m}>
+              {i > 0 && (
+                <span
+                  style={{
+                    width: 3,
+                    height: 3,
+                    borderRadius: "50%",
+                    background: "#878FB4",
+                  }}
+                />
+              )}
+              {m}
+            </React.Fragment>
+          ))}
+        </div>
+      </div>
+      <style>{`
+        @keyframes ctaRise {
+          from { opacity: 0; transform: translateY(10px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes msgInK {
+          from { opacity: 0; transform: translateY(8px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
+      </div>
+      <MessageBubbleResponsiveStyles />
+    </div>
+  );
+};
+
 export const ThinkingDots: React.FC = () => (
   <div
     style={{

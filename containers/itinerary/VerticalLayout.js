@@ -1102,6 +1102,23 @@ const CityItem = ({
 
   const Itinerary = useSelector(state =>state.Itinerary)
 
+  // P1/Draft transfer-loader safety net. The draft row shows P1TransferLoader
+  // while a leg's transfer is still expected (transfers_status PENDING — set by
+  // display_itinerary right after the day-by-day lands). It must stop when
+  // display_transfers resolves the leg to "no transfer" (transfers_status flips
+  // to SUCCESS) — handled directly in the render below — but also when
+  // display_transfers never arrives at all. Bound that wait so the loader can't
+  // spin forever; once elapsed we drop the loader for this leg.
+  const [transferWaitElapsed, setTransferWaitElapsed] = useState(false);
+  useEffect(() => {
+    if (Itinerary?.status === "Draft") {
+      setTransferWaitElapsed(false);
+      const t = setTimeout(() => setTransferWaitElapsed(true), 12000);
+      return () => clearTimeout(t);
+    }
+    setTransferWaitElapsed(false);
+  }, [Itinerary?.status, transfers_status]);
+
 useEffect(() => {
   const isDrawerClosed = !drawer;
   
@@ -1721,10 +1738,16 @@ useEffect(() => {
   )}
         </>
       ) : Itinerary.status == "Draft" ? (
-        // P1 (Draft) stage: the leg's transfer hasn't been surfaced yet, so
-        // show the compact draft loader. It disappears once (booking_id || city)
-        // becomes truthy (the transfer "comes in") and the branch above renders.
-        <P1TransferLoader />
+        // P1 (Draft) stage: the leg's transfer hasn't surfaced yet. Show the
+        // compact draft loader ONLY while a transfer is still expected
+        // (transfers_status PENDING) and within the bounded wait. It disappears
+        // when (booking_id || city) becomes truthy (the transfer "comes in" and
+        // the branch above renders), when display_transfers resolves this leg to
+        // no transfer (transfers_status → SUCCESS), or when display_transfers
+        // never arrives (the wait elapses) — so it can no longer spin forever.
+         !transferWaitElapsed ? (
+          <P1TransferLoader />
+        ) : null
       ) : (
         <>
           {/* NO BOOKING - Show both CTAs */}
