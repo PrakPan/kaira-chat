@@ -63,11 +63,6 @@ const HeadingContent = ({ title, subtitle }) => {
     goToChat(seed, attachments);
   };
 
-  const seedFromPrompt = (label) => {
-    setValue(label);
-    inputRef.current?.focus();
-  };
-
   const autoGrow = (el) => {
     if (!el) return;
     el.style.height = "auto";
@@ -238,7 +233,7 @@ const HeadingContent = ({ title, subtitle }) => {
             key={p.label}
             type="button"
             className={styles.prompt}
-            onClick={() => seedFromPrompt(p.label)}
+            onClick={() => goToChat(p.label)}
           >
             <span>{p.emoji}</span>
             <span>{p.label}</span>
