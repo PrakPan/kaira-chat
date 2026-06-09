@@ -15,25 +15,25 @@ const internationalLuxuryThemeConfig: ThemeConfig = {
         icon: "💍",
         label: "Plan my honeymoon with zero compromises",
         prompt:
-          "I want to plan a luxury honeymoon where the experience matters most. Help me choose between destinations like Santorini, Amalfi Coast, Kyoto, or the Maldives, then build a 10–12 night itinerary with incredible stays, unforgettable experiences, and what to book first.",
+          "Compare Santorini, the Maldives, Kyoto, and the Amalfi Coast, and tell me which is best for my honeymoon. Then build a 10–12 night luxury itinerary around it.",
       },
       {
         icon: "💰",
         label: "What does a premium international trip really cost from India?",
         prompt:
-          "I want to understand the real cost of a high-end international trip from India. Compare flights, luxury stays, private transfers, yacht days, and premium experiences across destinations like Santorini, Amalfi Coast, and Koh Samui. Show me where spending more genuinely improves the trip.",
+          "Compare the real cost of luxury travel in Santorini, Koh Samui, and the Amalfi Coast. Show me what premium hotels, flights, and experiences actually cost.",
       },
       {
         icon: "✨",
         label: "I want something rare — not the usual bucket-list trip",
         prompt:
-          "I want an international trip that feels unique and hard to replicate. Suggest rare experiences like Lapland northern lights cabins, Croatia sailing routes, or Kyoto ryokans. Explain costs, booking timelines, and which destination best fits someone looking beyond typical luxury travel.",
+          "Compare unique trips like Lapland aurora cabins, Croatia sailing, and Kyoto ryokans. Tell me which is most special, what it costs, and when to book.",
       },
       {
         icon: "🥂",
         label: "Build me a dream trip for two — ₹5 lakh per person",
         prompt:
-          "I want to plan a premium international trip for two with a budget of around ₹5 lakh per person. Help me choose the best destinations, explain what this budget realistically allows, and build a complete 10-night itinerary with stays, experiences, and booking priorities.",
+          "Compare destinations like Japan, Greece, Bali, and Vietnam for my budget. Then build the best possible premium itinerary for two.",
       },
     ],
   },
@@ -49,7 +49,7 @@ const internationalLuxuryThemeConfig: ThemeConfig = {
           tags: "Greece · Romantic",
           description: "The view that justifies the price.",
           prompt:
-            "I want to do Santorini properly with a private cave suite overlooking the caldera. Help me choose between Oia and Imerovigli, compare luxury vs premium stays, and build the perfect 3-night itinerary with a catamaran cruise, sunset dinner, and smooth travel route.",
+            "I want to experience Santorini from a private cave suite overlooking the caldera. Help me choose the right area and plan the perfect 3-night escape.",
         },
         {
           image:
@@ -58,7 +58,7 @@ const internationalLuxuryThemeConfig: ThemeConfig = {
           tags: "Italy · Premium",
           description: "The coast, without the crowds.",
           prompt:
-            "I want to experience Amalfi Coast and Capri in a quieter, more elegant way. Help me choose between Positano, Ravello, and Praiano, then build a 4-night itinerary with private boat days, hidden coves, and one unforgettable Capri stay.",
+            "Show me the most elegant way to experience Amalfi Coast and Capri. Plan a 4-night itinerary with private boat days, hidden coves, and an unforgettable stay.",
         },
         {
           image:
@@ -67,7 +67,7 @@ const internationalLuxuryThemeConfig: ThemeConfig = {
           tags: "France · Glamour",
           description: "The Riviera that money built.",
           prompt:
-            "I want to spend 4 nights on the French Riviera in a refined, non-touristy way. Help me choose between Nice, Èze, and Cap d'Antibes, compare boutique stays vs luxury hotels, and build the ideal Riviera itinerary with yacht time, fine dining, and Monaco done right.",
+            "Help me discover the French Riviera beyond the obvious tourist route. Build a refined 4-night itinerary with yacht time, great dining, and the best base to stay in.",
         },
         {
           image:
@@ -76,7 +76,7 @@ const internationalLuxuryThemeConfig: ThemeConfig = {
           tags: "Bali · Beach",
           description: "Private Bali done properly.",
           prompt:
-            "I want to experience Bali in a quieter, more private way away from Seminyak and Canggu. Help me choose between Nusa Dua, Bukit Peninsula, and Ubud, then build a 6-night itinerary with luxury villas, peaceful stays, and experiences genuinely worth paying extra for.",
+            "I want a quieter, more private side of Bali away from the crowds. Design a 6-night luxury escape with beautiful villas and meaningful experiences.",
         },
         {
           image:
@@ -85,7 +85,7 @@ const internationalLuxuryThemeConfig: ThemeConfig = {
           tags: "Thailand · Beach",
           description: "Your villa. Your beach. Your day.",
           prompt:
-            "I want to spend 5 nights in Koh Samui at a private pool villa. Help me compare Chaweng, Choeng Mon, and Plai Laem, explain which resorts truly stand out, and build a luxury itinerary with boat trips, spa experiences, and beach dinners.",
+            "Help me find the best private villa experience in Koh Samui. Plan a 5-night stay with island-hopping, spa days, and memorable beachfront dinners.",
         },
         {
           image:
@@ -94,7 +94,7 @@ const internationalLuxuryThemeConfig: ThemeConfig = {
           tags: "Finland · Arctic",
           description: "Aurora above. Warm inside.",
           prompt:
-            "I want to plan a Lapland trip focused on northern lights and a real glass-ceiling cabin stay. Help me choose the best properties, ideal months, and how many nights I need. Then build the full itinerary with husky safaris, snowmobiles, and what needs early booking.",
+            "I want to see the northern lights from a glass-roof cabin in Lapland. Tell me when to go, where to stay, and build the ideal Arctic itinerary.",
         },
       ],
     },
@@ -109,7 +109,7 @@ const internationalLuxuryThemeConfig: ThemeConfig = {
           sublabel: "Greece · Timing",
           description: "Same view. Half the crowd.",
           prompt:
-            "I'm deciding between Santorini in August or September. Compare crowds, hotel pricing, sunsets, sea temperatures, and overall atmosphere at a premium caldera-view stay. Then build the ideal 3-night September itinerary and explain if it's genuinely better or just cheaper.",
+            "I'm deciding when to visit Santorini for a luxury caldera-view stay. Compare August and September, then build the ideal 3-night itinerary for the better month.",
         },
         {
           image:
@@ -118,7 +118,7 @@ const internationalLuxuryThemeConfig: ThemeConfig = {
           sublabel: "Italy · Timing",
           description: "The coast at its best pace.",
           prompt:
-            "I want to visit the Amalfi Coast outside peak summer. Compare May and October for weather, crowds, boat trips, restaurant reservations, and overall vibe. Then build the ideal 4-night itinerary for the better month.",
+            "I want to experience the Amalfi Coast outside peak summer. Help me choose between May and October, then create the perfect 4-night itinerary.",
         },
         {
           image:
@@ -127,7 +127,7 @@ const internationalLuxuryThemeConfig: ThemeConfig = {
           sublabel: "Finland · Season",
           description: "Aurora skies or winter magic.",
           prompt:
-            "I'm choosing between Lapland in September or December. Compare aurora visibility, snow, activities, pricing, and the glass igloo experience. Then build the ideal 4-night itinerary based on the better season for northern lights vs winter scenery.",
+            "I can't decide between autumn auroras and a snowy winter Lapland trip. Compare September and December, then build the ideal 4-night itinerary.",
         },
         {
           image:
@@ -136,7 +136,7 @@ const internationalLuxuryThemeConfig: ThemeConfig = {
           sublabel: "Japan · Season",
           description: "Two versions of Kyoto, both unforgettable.",
           prompt:
-            "I want to stay in a Kyoto ryokan during cherry blossom or autumn foliage season. Compare crowds, atmosphere, temple gardens, pricing, and booking difficulty. Then build a 5-day itinerary for the better first Kyoto experience.",
+            "I'm choosing between Kyoto's cherry blossom and autumn foliage seasons. Tell me which offers the better first experience and plan a 5-day itinerary around it.",
         },
         {
           image:
@@ -145,7 +145,7 @@ const internationalLuxuryThemeConfig: ThemeConfig = {
           sublabel: "Croatia · Timing",
           description: "Sail Croatia before summer crowds.",
           prompt:
-            "I want to plan a Croatia sailing trip and choose between June and August. Compare crowds, sailing conditions, charter prices, and overall atmosphere. Then build the ideal 7-day Split-to-Dubrovnik sailing itinerary with the best overnight stops and experiences.",
+            "I want to sail Croatia at the best possible time. Compare June and August, then create the ideal 7-day Split-to-Dubrovnik sailing itinerary.",
         },
       ],
     },
@@ -160,7 +160,7 @@ const internationalLuxuryThemeConfig: ThemeConfig = {
           sublabel: "Romantic · Premium",
           description: "The trip people remember forever.",
           prompt:
-            "I want to plan a luxury honeymoon that feels unforgettable in every way. Help me choose between Santorini, Amalfi Coast, or Kyoto based on privacy, food, and atmosphere, then build the ideal 10-night itinerary with exceptional stays, key experiences, and what to reserve first.",
+            "I'm planning a once-in-a-lifetime honeymoon and can't choose between Santorini, the Amalfi Coast, and Kyoto. Recommend the best fit and build the perfect 10-night itinerary around it.",
         },
         {
           image:
@@ -169,7 +169,7 @@ const internationalLuxuryThemeConfig: ThemeConfig = {
           sublabel: "Premium · Art and History",
           description: "The best hotel. The real history.",
           prompt:
-            "I want a premium trip that combines beautiful stays with meaningful cultural experiences. Compare destinations like Kyoto, Amalfi Coast, and the Loire Valley, then build a 10-night itinerary with the right hotels, immersive experiences, and thoughtful pacing.",
+            "I want a trip that blends luxury with authentic local culture. Compare Kyoto, the Amalfi Coast, and the Loire Valley, then create the ideal 10-night itinerary.",
         },
         {
           image:
@@ -178,7 +178,7 @@ const internationalLuxuryThemeConfig: ThemeConfig = {
           sublabel: "Premium · Active",
           description: "Wild days. Five-star nights.",
           prompt:
-            "I want a trip that feels adventurous during the day but exceptional every night. Compare Croatia sailing, Lapland northern lights, and Kenya safari experiences, then build the ideal 10-night itinerary with stays, structure, and realistic pricing.",
+            "I want adventure-filled days and unforgettable places to stay each night. Compare Croatia sailing, Lapland, and Kenya safari, then build the perfect 10-night trip.",
         },
         {
           image:
@@ -187,7 +187,7 @@ const internationalLuxuryThemeConfig: ThemeConfig = {
           sublabel: "Beach · Total Rest",
           description: "Private villas, slow days, zero effort.",
           prompt:
-            "I want a beach trip focused on privacy, calm water, great food, and effortless luxury. Compare Koh Samui, Bali, and the Maldives, then build the perfect 7-night itinerary with the right stay, worthwhile experiences, and realistic total costs.",
+            "I'm looking for the perfect luxury beach holiday with privacy, great food, and beautiful water. Help me choose between Koh Samui, Bali, and the Maldives, then plan a 7-night escape.",
         },
         {
           image:
@@ -196,7 +196,7 @@ const internationalLuxuryThemeConfig: ThemeConfig = {
           sublabel: "Group · Premium",
           description: "Four people. One exceptional trip.",
           prompt:
-            "I want to plan a premium trip for two couples with both privacy and shared experiences. Compare options like Amalfi villas, Croatia sailing charters, and Kyoto ryokans, then build the ideal 8-night itinerary with the right property, pacing, and pricing.",
+            "I'm planning a special trip for two couples and can't decide between Amalfi villas, Croatia sailing, and Kyoto ryokans. Recommend the best fit and build the ideal 8-night itinerary.",
         },
       ],
     },
@@ -211,7 +211,7 @@ const internationalLuxuryThemeConfig: ThemeConfig = {
           tags: "Japan · Cultural",
           description: "Private baths & quiet nights.",
           prompt:
-            "I want to stay at a Kyoto ryokan with a truly private onsen experience. Compare the best ryokans for reserved baths, explain the etiquette, which rooms are worth booking, realistic 2-night costs, and how early reservations open.",
+            "I want a traditional Kyoto ryokan stay with a private onsen. Recommend the best ryokans and what a 2-night stay really costs.",
         },
         {
           image:
@@ -220,7 +220,7 @@ const internationalLuxuryThemeConfig: ThemeConfig = {
           tags: "Italy · Coastal",
           description: "Sea caves beyond the ferry routes.",
           prompt:
-            "I want to charter a private boat on the Amalfi Coast for swimming, sea caves, and a waterside lunch. Compare departures from Positano vs Praiano, ideal boat sizes for 2–4 people, realistic pricing, and how to fit it into a perfect 4-night itinerary.",
+            "I want the perfect private boat day on the Amalfi Coast. Help me choose the best departure point and build it into a 4-night itinerary.",
         },
         {
           image:
@@ -229,7 +229,7 @@ const internationalLuxuryThemeConfig: ThemeConfig = {
           tags: "Finland · Arctic",
           description: "Glass igloos beneath Arctic skies.",
           prompt:
-            "I want to stay in a Finnish Lapland glass igloo and watch the northern lights from bed. Compare the best igloo resorts, best aurora months, realistic costs, and build the ideal itinerary with husky safaris and snowmobile experiences.",
+            "I want to watch the northern lights from a glass igloo in Finnish Lapland. Recommend the best stays, the ideal time to visit, and build the perfect Arctic itinerary.",
         },
         {
           image:
@@ -238,7 +238,7 @@ const internationalLuxuryThemeConfig: ThemeConfig = {
           tags: "France · Luxury",
           description: "Champagne evenings on open water.",
           prompt:
-            "I want to charter a private yacht on the French Riviera for a sunset dinner with champagne and coastal views. Compare routes from Nice, Antibes, and Monaco, realistic charter costs, yacht sizes for 2–6 people, and how to build it into a 4-night Riviera trip.",
+            "I want a private yacht experience on the French Riviera. Help me choose between Nice, Antibes, and Monaco, then build the ideal 4-night trip.",
         },
         {
           image:
@@ -247,7 +247,7 @@ const internationalLuxuryThemeConfig: ThemeConfig = {
           tags: "Croatia · Exclusive",
           description: "A private island stay with staff.",
           prompt:
-            "I want to rent a private villa on Hvar Island with sea views and full service for 4–6 people. Compare hillside vs waterfront villas, realistic weekly costs, best months to visit, and how to fit Hvar into a larger Croatia itinerary.",
+            "I want a private sea-view villa on Hvar Island. Compare the best villa locations and show me how to fit Hvar into a Croatia itinerary.",
         },
       ],
     },
