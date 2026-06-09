@@ -3,7 +3,11 @@ import { createPortal } from "react-dom";
 import { useSelector } from "react-redux";
 import type { Message, ProgressStep, ThinkingTask } from "../../hooks/useChat";
 import { WidgetRenderer } from "../WidgetRenderer";
-import { getUserAvatarColor, getUserInitial } from "../../utils/avatarColor";
+import {
+  getUserAvatarColor,
+  getAvatarColorForName,
+  getUserInitial,
+} from "../../utils/avatarColor";
 
 const USER_IMAGE_CDN = "https://d31aoa0ehgvjdi.cloudfront.net/";
 
@@ -90,14 +94,38 @@ const UserAvatar: React.FC = () => {
   const avatarSrc = useUserAvatarSrc();
   const token = useSelector((state: any) => state?.auth?.token);
   const name = useSelector((state: any) => state?.auth?.name);
+  // When an existing itinerary is open, the chat belongs to that itinerary's
+  // customer — show their initial, not the viewer's avatar. A brand-new chat
+  // has no itinerary customer_name, so we fall back to the logged-in user.
+  const customerNameRaw = useSelector(
+    (state: any) => state?.Itinerary?.customer_name,
+  );
+  const itineraryCustomer =
+    typeof customerNameRaw === "string" && customerNameRaw.trim()
+      ? customerNameRaw.trim()
+      : null;
+  const viewingItinerary = !!itineraryCustomer;
+
   const [errored, setErrored] = useState(false);
-  const showImage = !!avatarSrc && !errored;
-  // Logged in with no picture → colored letter avatar (persisted color).
-  const showLetter = !showImage && !!token;
+
+  // Viewing an itinerary → always the customer's letter avatar (we don't have
+  // their photo). New chat → the logged-in user's avatar (photo if available).
+  const showImage = !viewingItinerary && !!avatarSrc && !errored;
+  const showLetter = !showImage && (viewingItinerary || !!token);
+  const letterName = viewingItinerary ? itineraryCustomer : name;
+
   const [color, setColor] = useState<string | null>(null);
   useEffect(() => {
-    setColor(showLetter ? getUserAvatarColor(name) : null);
-  }, [showLetter, name]);
+    if (!showLetter) {
+      setColor(null);
+    } else if (viewingItinerary) {
+      // Other person's color is derived from their name (never persisted, so it
+      // doesn't clobber the logged-in user's own stored color).
+      setColor(getAvatarColorForName(letterName));
+    } else {
+      setColor(getUserAvatarColor(letterName));
+    }
+  }, [showLetter, viewingItinerary, letterName]);
 
   return (
     <div
@@ -126,7 +154,7 @@ const UserAvatar: React.FC = () => {
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
         />
       ) : showLetter ? (
-        getUserInitial(name)
+        getUserInitial(letterName)
       ) : (
         <UserFallbackIcon />
       )}

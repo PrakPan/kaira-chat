@@ -53,6 +53,17 @@ export const getUserAvatarColor = (name?: string | null): string => {
   return color;
 };
 
+/**
+ * Deterministic palette color for an arbitrary person's name, with NO
+ * persistence. Use for people other than the logged-in user (e.g. the customer
+ * of an itinerary someone is viewing) so we never overwrite the logged-in
+ * user's own stored color. The same name always maps to the same color.
+ */
+export const getAvatarColorForName = (name?: string | null): string => {
+  if (!name || !name.trim()) return AVATAR_COLORS[0];
+  return AVATAR_COLORS[hashString(name.trim()) % AVATAR_COLORS.length];
+};
+
 /** First alphabetic character of the user's name, uppercased. Falls back to "U". */
 export const getUserInitial = (name?: string | null): string => {
   if (!name || !name.trim()) return "U";
