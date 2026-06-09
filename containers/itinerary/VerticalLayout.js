@@ -1653,7 +1653,7 @@ useEffect(() => {
           {/* AIRPORT/STATION PICKUP DROP - Show only for flight/train/ferry/bus */}
           {/* While the airport transfers are being repriced (transfers or
               pricing PENDING), show a loader instead of silently hiding the row. */}
-          {(transfers_status === "PENDING" || pricing_status === "PENDING") && (
+          {(transfers_status === "PENDING" || pricing_status === "PENDING") && !(Itinerary.status == "Draft") && (
             <PickupDropLoader />
           )}
          {transfers_status != "PENDING" &&
