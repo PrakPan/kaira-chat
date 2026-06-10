@@ -46,7 +46,7 @@ export default function Destination1Carousel(props) {
               ? `${component.name}, ${component.state.country}`
               : component.name
           }
-          tagline={component.tagline}
+          tagline={component?.one_liner_description || component.tagline}
           most_popular_for={component.most_popular_for}
           img={component.image}
           budget={component.price}
