@@ -2177,12 +2177,12 @@ export const ItineraryCloneCta: React.FC<ItineraryCloneCtaProps> = ({
             <span style={{ fontSize: 12.5, color: "#C7CCE6", lineHeight: 1.35 }}>
               {loggedIn ? (
                 <>
-                  Cloning from <b style={{ color: "#fff", fontWeight: 700 }}>{ownerFirst}'s</b> plan —
+                  Cloning from <b style={{ color: "#fff", fontWeight: 700 }}>{ownerName}'s</b> plan —
                   your copy stays private.
                 </>
               ) : (
                 <>
-                  Crafted by <b style={{ color: "#fff", fontWeight: 700 }}>{ownerFirst}</b> — make it
+                  Crafted by <b style={{ color: "#fff", fontWeight: 700 }}>{ownerName}</b> — make it
                   yours in under a minute.
                 </>
               )}

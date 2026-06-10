@@ -8,7 +8,7 @@ const ModalWithBackdrop = ({
   closeIcon = true,
   width = "auto",
   height = "auto",
-  borderRadius = "8px",
+  borderRadius = "20px",
   animation = true,
   backdropStyle = {},
   children,

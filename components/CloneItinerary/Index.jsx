@@ -24,6 +24,24 @@ const parseDateString = (dateString) => {
   return new Date(year, month - 1, day);
 };
 
+// Map an itinerary's start/end city object → the shape SelectedDestination uses.
+// Handles both the mercury (start_city / start_location) and bot field names.
+const cityToLocation = (c) => {
+  if (!c) return null;
+  const place_id = c.gmaps_place_id || c.place_id || null;
+  const name = c.city_name || c.name || c.text || null;
+  if (!place_id && !name) return null;
+  return {
+    name,
+    place_id,
+    lat: c.latitude ?? c.lat ?? null,
+    long: c.longitude ?? c.long ?? null,
+    country: c.country ?? null,
+    currency: c.currency ?? null,
+    country_code: c.country_code ?? null,
+  };
+};
+
 const CloneItinerary = ({
   isHotelsPresent = false,
   // Bot/chat reuse: explicit source itinerary id (the bot has no router.query.id),
@@ -40,12 +58,25 @@ const CloneItinerary = ({
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const initialInputId = Date.now();
-  const [startingLocation, setStartingLocation] = useState(false);
+
+  // Default the start/end location to the OPENED itinerary's locations (not the
+  // viewer's current location). End falls back to start when the itinerary has
+  // no distinct end location.
+  const itineraryStartLoc = cityToLocation(
+    itinerary?.start_city || itinerary?.start_location
+  );
+  const itineraryEndLoc =
+    cityToLocation(itinerary?.end_city || itinerary?.end_location) ||
+    itineraryStartLoc;
+
+  const [startingLocation, setStartingLocation] = useState(
+    itineraryStartLoc || false
+  );
   const [showCities, setShowCities] = useState(false);
   const [showSearchStarting, setShowSearchStarting] = useState(false);
   const [destination, setDestination] = useState(router.query.destination);
   // End location (optional, shown only when showEndLocation is true).
-  const [endingLocation, setEndingLocation] = useState(false);
+  const [endingLocation, setEndingLocation] = useState(itineraryEndLoc || false);
   const [showEndCities, setShowEndCities] = useState(false);
   const [showSearchEnding, setShowSearchEnding] = useState(false);
   const [endDestination, setEndDestination] = useState(null);
@@ -441,6 +472,7 @@ const CloneItinerary = ({
           handleUpdate={handleUpdate}
           isLoading={isLoading}
           isEdit={true}
+          updateLabel="Clone Itinerary"
         />
       </div>
     </div>
