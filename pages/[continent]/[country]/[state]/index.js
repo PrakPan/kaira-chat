@@ -194,6 +194,7 @@ export async function getStaticProps(context) {
     .get(`${MERCURY_HOST}/api/v1/geos/state/${Id}`)
     .then((res) => {
      const stateData = res.data.data.state;
+     locations = stateData?.nearest_states || [];
      data = stateData;
     if (stateData?.page_data && Object.keys(stateData?.page_data).length > 0) {
       isThemePage = true;
@@ -212,7 +213,7 @@ export async function getStaticProps(context) {
       `${MERCURY_HOST}/api/v1/geos/state/?fields=id,name,budget,tagline&country_name=${country}&limit=100`
     )
     .then((res) => {
-      locations = res.data.data.states;
+      // locations = res?.data?.data?.nearest_states || res.data.data.states;
     })
     .catch((err) => {
       console.log(

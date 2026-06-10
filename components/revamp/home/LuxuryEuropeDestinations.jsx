@@ -171,8 +171,8 @@ const LuxuryEuropeDestinations = ({
         <p className={styles.footnote}>
           Prices indicative —{" "}
           <span className="ttwSerif">Kaira re-prices live</span> based on your
-          dates.{" "}
-          <a href="/connected-trips">See how packages work →</a>
+          dates, travellers, and starting location...{" "}
+          {/* <a href="/connected-trips">See how packages work →</a> */}
         </p>
       </div>
     </section>
