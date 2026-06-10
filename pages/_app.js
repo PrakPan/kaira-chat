@@ -18,6 +18,7 @@ import { cleanExpiredLocalStorage } from "../services/localStorageUtils";
 import { usePathname } from "next/navigation";
 import BotApp from "../components/bot-components/BotApp";
 import JupyterAnalytics from "../components/JupyterAnalytics";
+import { captureAdParams } from "../helper/adAttribution";
 
 // Polyfill for requestIdleCallback (Safari compatibility)
 if (typeof window !== "undefined" && !window.requestIdleCallback) {
@@ -110,6 +111,36 @@ function MyApp({ Component, pageProps }) {
     router.events.on("routeChangeComplete", handleRouteChange);
     return () => router.events.off("routeChangeComplete", handleRouteChange);
   }, [router.events]);
+
+  // Persist ad attribution params (utm_*, gclid, ...) across navigation:
+  // capture from the URL into sessionStorage, then re-append any missing ones
+  // back onto the URL so they stay visible as the user navigates.
+  useEffect(() => {
+    if (!router.isReady) return;
+
+    const persistAdParams = () => {
+      const stored = captureAdParams();
+
+      // Add-only: never overwrite a param already present in the URL. This
+      // protects overloaded keys like `source` (e.g. `?source=tailored`).
+      const missing = {};
+      Object.entries(stored).forEach(([key, value]) => {
+        if (router.query[key] === undefined) missing[key] = value;
+      });
+
+      if (Object.keys(missing).length > 0) {
+        router.replace(
+          { pathname: router.pathname, query: { ...router.query, ...missing } },
+          undefined,
+          { shallow: true },
+        );
+      }
+    };
+
+    persistAdParams();
+    router.events.on("routeChangeComplete", persistAdParams);
+    return () => router.events.off("routeChangeComplete", persistAdParams);
+  }, [router.isReady, router.events]);
 
   return (
     <>

@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import styled, { keyframes } from "styled-components";
 import getPlatform from "../../../utils/getPlatform";
 import { useRouter } from "next/router";
+import { getAdParams } from "../../../helper/adAttribution";
 const fadeInAnimation = keyframes`${fadeIn}`;
 
 
@@ -165,17 +166,23 @@ export const useSourceParams = () => {
     // Fallback to router.query if window.location gave nothing
     if (Object.keys(queryObj).length === 0) {
       Object.assign(queryObj, router.query);
-      
+
     }
 
+    // Merge persisted ad attribution as a fallback so the itinerary payload
+    // always carries utm_*/gclid even if the URL was stripped during navigation.
+    // URL value wins when present; storage fills the gaps.
+    const stored = getAdParams();
+    const merged = { ...stored, ...queryObj };
+
     const resolvedSource =
-      queryObj.source || router?.asPath || queryObj.utm_source;
-      
+      merged.source || router?.asPath || merged.utm_source;
+
 
     return {
       path: router.asPath,
       platform,
-      ...queryObj,
+      ...merged,
       source: resolvedSource,
     };
   }, [router.query, router.asPath, platform]);
