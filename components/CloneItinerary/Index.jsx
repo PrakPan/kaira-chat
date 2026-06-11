@@ -76,10 +76,10 @@ const CloneItinerary = ({
   const [showSearchStarting, setShowSearchStarting] = useState(false);
   const [destination, setDestination] = useState(router.query.destination);
   // End location (optional, shown only when showEndLocation is true).
-  const [endingLocation, setEndingLocation] = useState(itineraryEndLoc || false);
-  const [showEndCities, setShowEndCities] = useState(false);
-  const [showSearchEnding, setShowSearchEnding] = useState(false);
-  const [endDestination, setEndDestination] = useState(null);
+  // const [endingLocation, setEndingLocation] = useState(itineraryEndLoc || false);
+  // const [showEndCities, setShowEndCities] = useState(false);
+  // const [showSearchEnding, setShowSearchEnding] = useState(false);
+  // const [endDestination, setEndDestination] = useState(null);
   const { id } = useSelector((state) => state.auth);
   const sourceId = sourceItineraryId || router.query.id;
 
@@ -224,12 +224,9 @@ const CloneItinerary = ({
     const req = {
       itinerary_id: sourceId,
       start_location: startingLocation?.place_id || null,
-      end_location:
-        (showEndLocation && endingLocation?.place_id) ||
-        startingLocation?.place_id ||
-        null,
-      currency:
-        startingLocation?.currency || endingLocation?.currency || "INR",
+      // End location is intentionally kept the same as the start location.
+      end_location: startingLocation?.place_id || null,
+      currency: startingLocation?.currency || "INR",
       dates: {
         type:"fixed",
         start_date: formatDateForAPI(date.start_date),
@@ -244,7 +241,7 @@ const CloneItinerary = ({
       add_flights: addFlights,
       add_transfers_and_activities: addActivityTransfers,
       room_configuration: roomConfiguration,
-      experience_filters: selectedPreferences,
+      // experience_filters: selectedPreferences,
     };
 
     axios
@@ -335,7 +332,7 @@ const CloneItinerary = ({
       />
 
       {/* header */}
-      <div style={{ flexShrink: 0, padding: "16px 16px 10px" }}>
+      <div style={{ flexShrink: 0, padding: "20px 20px 12px" }}>
         <div
           style={{
             fontFamily: "'Instrument Serif', Georgia, serif",
@@ -358,10 +355,10 @@ const CloneItinerary = ({
           flex: 1,
           minHeight: 0,
           overflowY: "auto",
-          padding: "4px 16px 16px",
+          padding: "8px 20px 20px",
           display: "flex",
           flexDirection: "column",
-          gap: 18,
+          gap: 24,
         }}
       >
         <div className="flex flex-col gap-[6px]">
@@ -380,7 +377,7 @@ const CloneItinerary = ({
           ></SelectedDestination>
         </div>
 
-        {showEndLocation && (
+        {/* {showEndLocation && (
           <div className="flex flex-col gap-[6px]">
             <SectionLabel>End Location</SectionLabel>
             <SelectedDestination
@@ -396,7 +393,7 @@ const CloneItinerary = ({
               setDestination={setEndDestination}
             ></SelectedDestination>
           </div>
-        )}
+        )} */}
 
         <DateComponent
           settings={true}
@@ -444,7 +441,7 @@ const CloneItinerary = ({
           </div>
         )}
 
-        <div>
+        {/* <div>
           <SectionLabel>Choose your experience</SectionLabel>
           <div className="mt-[10px]">
             <Preferences
@@ -453,7 +450,7 @@ const CloneItinerary = ({
               setSelectedPreferences={handleSetSelectedPreferences}
             />
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* sticky footer */}
@@ -464,7 +461,7 @@ const CloneItinerary = ({
           background: "rgba(255,255,255,0.92)",
           backdropFilter: "blur(6px)",
           WebkitBackdropFilter: "blur(6px)",
-          padding: "12px 16px",
+          padding: "14px 20px",
         }}
       >
         <Buttons

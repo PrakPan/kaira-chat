@@ -257,18 +257,20 @@ const Homepage = (props) => {
             label: "Destination",
             value: <span className={styles.serif}>{destinationName}</span>,
             sub: "Curated by Kaira",
+            when: !!destinationName,
           },
           {
             label: "Top locations",
             value: (
               <>
                 <span className={styles.serif}>
-                  {props.experienceData?.locations?.length || 0}
+                  {props.experienceData?.locations?.length}
                 </span>{" "}
                 hand-picked
               </>
             ),
             sub: `Across ${destinationName}`,
+            when: props.experienceData?.locations?.length > 0,
           },
           {
             label: "Trip ideas",
@@ -283,6 +285,18 @@ const Homepage = (props) => {
               </>
             ),
             sub: "From real travellers",
+            when:
+              (userItineraries?.length || 0) + (TTWItineraries?.length || 0) >
+              0,
+          },
+          {
+            label: "Planning",
+            value: (
+              <>
+                <span className={styles.serif}>Free</span> with Kaira
+              </>
+            ),
+            sub: "AI itineraries, instantly",
           },
           {
             label: "Trusted by",

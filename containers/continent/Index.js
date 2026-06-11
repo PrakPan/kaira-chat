@@ -305,30 +305,40 @@ const Index = (props) => {
             label: "Destination",
             value: <span className={styles.serif}>{destinationLabel}</span>,
             sub: "Curated by Kaira",
+            when: !!destinationLabel,
           },
           {
             label: "Top countries",
             value: (
               <>
-                <span className={styles.serif}>
-                  {props.locations?.length || 0}
-                </span>{" "}
+                <span className={styles.serif}>{props.locations?.length}</span>{" "}
                 destinations
               </>
             ),
             sub: "Hand-picked picks",
+            when: props.locations?.length > 0,
           },
           {
             label: "Itineraries",
             value: (
               <>
                 <span className={styles.serif}>
-                  {props?.data?.itineraries_count || 0}+
+                  {props?.data?.itineraries_count}+
                 </span>{" "}
                 ready
               </>
             ),
             sub: "Tweak anything in chat",
+            when: props?.data?.itineraries_count > 0,
+          },
+          {
+            label: "Planning",
+            value: (
+              <>
+                <span className={styles.serif}>Free</span> with Kaira
+              </>
+            ),
+            sub: "AI itineraries, instantly",
           },
           {
             label: "Trusted by",

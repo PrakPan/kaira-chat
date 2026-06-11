@@ -164,7 +164,7 @@ const handleUpdate = () => {
     add_flights: addFlights,
     add_transfers_and_activities: addActivityTransfers,
     room_configuration: roomConfiguration,
-    experience_filters: selectedPreferences,
+    // experience_filters: selectedPreferences,
   }
 
   handleApply(req)
@@ -224,7 +224,7 @@ const handleUpdate = () => {
           background: "linear-gradient(90deg,#FFE600,#F2D700)",
         }}
       />
-      <div className={`flex flex-col gap-[18px] md:max-w-[537px] z-[9999] px-4 py-4`}>
+      <div className={`flex flex-col gap-6 md:max-w-[537px] z-[9999] px-4 py-5`}>
         <div>
           <div
             style={{
@@ -290,7 +290,7 @@ const handleUpdate = () => {
         </div>
       )}
 
-      <div>
+      {/* <div>
         <SectionLabel>Choose your experience</SectionLabel>
         <div className="mt-[10px]">
           <Preferences
@@ -299,7 +299,7 @@ const handleUpdate = () => {
             setSelectedPreferences={handleSetSelectedPreferences}
           />
         </div>
-      </div>
+      </div> */}
 
       <div className={`${isDesktop ? "flex justify-between w-full" : "w-full"}`}>
         <Buttons

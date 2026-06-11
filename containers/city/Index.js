@@ -127,30 +127,42 @@ const Experience = (props) => {
             label: "City",
             value: <span className={styles.serif}>{cityDisplayName}</span>,
             sub: "Curated by Kaira",
+            when: !!cityDisplayName,
           },
           {
             label: "Photos",
             value: (
               <>
                 <span className={styles.serif}>
-                  {props.cityData?.images?.length || 0}
+                  {props.cityData?.images?.length}
                 </span>{" "}
                 gallery shots
               </>
             ),
             sub: "Real, not stock",
+            when: props.cityData?.images?.length > 0,
           },
           {
             label: "Nearby cities",
             value: (
               <>
                 <span className={styles.serif}>
-                  {props.reccomendedCitiesData?.length || 0}
+                  {props.reccomendedCitiesData?.length}
                 </span>{" "}
                 suggested
               </>
             ),
             sub: "Easy to combine",
+            when: props.reccomendedCitiesData?.length > 0,
+          },
+          {
+            label: "Planning",
+            value: (
+              <>
+                <span className={styles.serif}>Free</span> with Kaira
+              </>
+            ),
+            sub: "AI itineraries, instantly",
           },
           {
             label: "Trusted by",

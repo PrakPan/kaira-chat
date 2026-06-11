@@ -168,7 +168,7 @@ const Index = (props) => {
             <span>
               <span className="star">★</span> <b>4.9</b> Google · 1,200+ reviews
             </span>
-            <span>·</span>
+            {/* <span>·</span> */}
             {/* <span>
               <b>{hotLocations.length || props.data?.locations?.length || 0}</b>{" "}
               cities curated
@@ -189,28 +189,29 @@ const Index = (props) => {
             label: "Destination",
             value: <span className={styles.serif}>{destinationName}</span>,
             sub: "Curated by Kaira",
+            when: !!destinationName,
           },
           {
             label: "Top locations",
             value: (
               <>
-                <span className={styles.serif}>{hotLocations.length || 0}</span>{" "}
-                hot picks
+                <span className={styles.serif}>{hotLocations.length}</span> hot
+                picks
               </>
             ),
             sub: `Hand-picked across ${destinationName}`,
+            when: hotLocations.length > 0,
           },
           {
             label: "Itineraries",
             value: (
               <>
-                <span className={styles.serif}>
-                  {userItineraries?.length || 0}+
-                </span>{" "}
+                <span className={styles.serif}>{props?.data?.itineraries_count || userItineraries?.length}+</span>{" "}
                 ready
               </>
             ),
             sub: "Tweak anything in chat",
+            when: userItineraries?.length > 0,
           },
           {
             label: "Continent",
@@ -220,6 +221,25 @@ const Index = (props) => {
               </span>
             ),
             sub: "Part of a wider Asia plan",
+            when: !!props.data?.continent,
+          },
+          {
+            label: "Planning",
+            value: (
+              <>
+                <span className={styles.serif}>Free</span> with Kaira
+              </>
+            ),
+            sub: "AI itineraries, instantly",
+          },
+          {
+            label: "Trusted by",
+            value: (
+              <>
+                <span className={styles.serif}>10K+</span> travellers
+              </>
+            ),
+            sub: "From across India",
           },
         ]}
       />

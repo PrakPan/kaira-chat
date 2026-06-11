@@ -152,7 +152,11 @@ const buildApiStats = (data) => {
 
 const DestinationStatsStrip = ({ data, fallbacks = [] }) => {
   const apiStats = buildApiStats(data);
-  const stats = [...apiStats, ...fallbacks].slice(0, 4);
+  // Drop fallbacks explicitly flagged empty (e.g. a count that resolves to 0)
+  // so the strip never renders a "0" / "0+" stat — meaningful evergreen
+  // fallbacks fill the slot instead.
+  const validFallbacks = fallbacks.filter((f) => f && f.when !== false);
+  const stats = [...apiStats, ...validFallbacks].slice(0, 4);
 
   if (stats.length === 0) return null;
 

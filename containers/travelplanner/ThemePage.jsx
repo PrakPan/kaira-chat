@@ -289,30 +289,42 @@ export default function ThemePage(props) {
               </span>
             ),
             sub: "Curated by Kaira",
+            when: !!props.experienceData.slug,
           },
           {
             label: "Top locations",
             value: (
               <>
                 <span className={destinationStyles.serif}>
-                  {props.experienceData?.locations?.length || 0}
+                  {props.experienceData?.locations?.length}
                 </span>{" "}
                 hand-picked
               </>
             ),
             sub: "Worth carving time for",
+            when: props.experienceData?.locations?.length > 0,
           },
           {
             label: "Itineraries",
             value: (
               <>
                 <span className={destinationStyles.serif}>
-                  {props.experienceData?.itineraries?.length || 0}+
+                  {props.experienceData?.itineraries?.length}+
                 </span>{" "}
                 ready
               </>
             ),
             sub: "Tweak anything in chat",
+            when: props.experienceData?.itineraries?.length > 0,
+          },
+          {
+            label: "Planning",
+            value: (
+              <>
+                <span className={destinationStyles.serif}>Free</span> with Kaira
+              </>
+            ),
+            sub: "AI itineraries, instantly",
           },
           {
             label: "Trusted by",
