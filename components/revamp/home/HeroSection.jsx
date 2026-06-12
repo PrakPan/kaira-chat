@@ -23,7 +23,7 @@ export const KairaAvatar = ({ size = "lg", minimal = false }) => {
           </div>
         )}
       </div> */}
-        <img src="/KairaInsta.png" alt="Kaira avatar" className={styles.kairaImg} />
+        <img src="/KairaInsta.jpg" alt="Kaira avatar" width="600" height="600" className={styles.kairaImg} />
     </div>
   );
 };
@@ -31,22 +31,22 @@ export const KairaAvatar = ({ size = "lg", minimal = false }) => {
 const POLAROIDS = [
   {
     cls: "p1",
-    img: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=300&q=80",
+    img: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=300&q=80&auto=format",
     caption: "Kyoto, 2am ramen",
   },
   {
     cls: "p2",
-    img: "https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=300&q=80",
+    img: "https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=300&q=80&auto=format",
     caption: "Malé, day 2",
   },
   {
     cls: "p3",
-    img: "https://images.unsplash.com/photo-1528127269322-539801943592?w=300&q=80",
+    img: "https://images.unsplash.com/photo-1528127269322-539801943592?w=300&q=80&auto=format",
     caption: "Hoi An at 6am",
   },
   {
     cls: "p4",
-    img: "https://images.unsplash.com/photo-1533105079780-92b9be482077?w=300&q=80",
+    img: "https://images.unsplash.com/photo-1533105079780-92b9be482077?w=300&q=80&auto=format",
     caption: "Santorini, sunset",
   },
 ];

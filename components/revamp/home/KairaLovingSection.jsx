@@ -29,7 +29,7 @@ const DEFAULT_PICKS = [
     ),
     blurb:
       "Kyoto's last petals, Kanazawa in the quiet, a ryokan night near Hakone. 9 days, around ₹1.6L per person.",
-    img: "https://images.unsplash.com/photo-1522383225653-ed111181a951?w=400&q=80",
+    img: "https://images.unsplash.com/photo-1522383225653-ed111181a951?w=400&q=80&auto=format",
     seed: "Japan shoulder season, 9 days",
   },
   {
@@ -41,7 +41,7 @@ const DEFAULT_PICKS = [
     ),
     blurb:
       "Hoi An before peak heat, a sleeper train north, pho and coffee the way Anh makes them. 8 days, ₹68K per person.",
-    img: "https://images.unsplash.com/photo-1528127269322-539801943592?w=400&q=80",
+    img: "https://images.unsplash.com/photo-1528127269322-539801943592?w=400&q=80&auto=format",
     seed: "Vietnam dry tail end, 8 days",
   },
 ];

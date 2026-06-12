@@ -36,12 +36,17 @@ export default class MyDocument extends Document {
             name="viewport"
             content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=5"
           />
-          <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"
-          />
 
-          {/* ---------- Fonts (NON render-blocking) ---------- */}
+          {/* ---------- Fonts (non render-blocking, SSR-safe) ----------
+              All families in a single request. Loaded as media="print" so the
+              CSS download never blocks first paint; the inline script flips it
+              to media="all" once it lands. With display=swap, text paints in
+              the fallback immediately and swaps in with no invisible-text gap.
+
+              NOTE: a string `onLoad` on <link> is silently dropped by React's
+              SSR, so the old preload→stylesheet swap never fired — every Google
+              font stayed at rel="preload" and was never applied. That's why
+              Instrument Serif fell back to plain (Times) italic. */}
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link
             rel="preconnect"
@@ -49,26 +54,33 @@ export default class MyDocument extends Document {
             crossOrigin="true"
           />
           <link
-            rel="preload"
-            as="style"
-            href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap"
-            onLoad="this.onload=null;this.rel='stylesheet'"
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap"
+            media="print"
+            data-ttw-fonts="true"
+          />
+          <script
+            dangerouslySetInnerHTML={{
+              __html:
+                "(function(){var l=document.querySelector('link[data-ttw-fonts]');if(!l)return;if(l.sheet){l.media='all';}else{l.addEventListener('load',function(){l.media='all';});}})();",
+            }}
           />
           <noscript>
             <link
-              href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap"
               rel="stylesheet"
+              href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap"
             />
           </noscript>
           <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 
-          <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB-AJwAHLnOSTh25KkTQdxyTFB7-v0uMaw"></script>
-          <script src="https://cdn.platform.openai.com/deployments/chatkit/chatkit.js"></script>
+          {/* Third-party SDKs deferred so they don't block initial render */}
+          <script defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB-AJwAHLnOSTh25KkTQdxyTFB7-v0uMaw"></script>
+          <script defer src="https://cdn.platform.openai.com/deployments/chatkit/chatkit.js"></script>
 
 
           {/* ---------- Partytown ---------- */}
-          <Partytown debug={isProduction} forward={["gtag", "mixpanel", "clarity"]} />
+          <Partytown debug={false} forward={["gtag", "mixpanel", "clarity"]} />
 
           {/* ---------- Google Tag Manager ---------- */}
           {isProduction && cleanGTMId && (

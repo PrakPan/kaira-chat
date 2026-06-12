@@ -42,6 +42,7 @@ const Socials = (props) => {
       <IconContainer
         hoverbg={"#1D9BF0"}
         href="https://twitter.com/thetarzanway"
+        aria-label="The Tarzan Way on Twitter"
       >
         <FaTwitter />
       </IconContainer>
@@ -49,6 +50,7 @@ const Socials = (props) => {
       <IconContainer
         hoverbg={"#3b5998"}
         href="https://www.facebook.com/thetarzanway"
+        aria-label="The Tarzan Way on Facebook"
       >
         <FaFacebookF />
       </IconContainer>
@@ -58,6 +60,7 @@ const Socials = (props) => {
           "radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%,#d6249f 60%,#285AEB 90%)"
         }
         href="https://www.instagram.com/thetarzanway"
+        aria-label="The Tarzan Way on Instagram"
       >
         <FaInstagram />
       </IconContainer>
@@ -65,6 +68,7 @@ const Socials = (props) => {
       <IconContainer
         hoverbg={"#0072b1"}
         href="https://linkedin.com/company/thetarzanway"
+        aria-label="The Tarzan Way on LinkedIn"
       >
         <FaLinkedinIn />
       </IconContainer>
@@ -72,6 +76,7 @@ const Socials = (props) => {
       <IconContainer
         hoverbg={"#E60023"}
         href="https://www.pinterest.com/thetarzanway/"
+        aria-label="The Tarzan Way on Pinterest"
       >
         <FaPinterestP />
       </IconContainer>

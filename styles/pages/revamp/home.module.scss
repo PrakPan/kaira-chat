@@ -42,6 +42,7 @@
   color: var(--ttw-ink);
   font-family: "Inter", -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   display: flex;
   justify-content: center;
   flex-direction: column;

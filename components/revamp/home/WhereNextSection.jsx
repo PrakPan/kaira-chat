@@ -15,7 +15,7 @@ const DEFAULT_VIBES = [
         Japan under <span className="ttwSerif">cherry blossoms</span>
       </>
     ),
-    image: "https://images.unsplash.com/photo-1522383225653-ed111181a951?w=800&q=80",
+    image: "https://images.unsplash.com/photo-1522383225653-ed111181a951?w=800&q=80&auto=format",
     seed: "Japan under cherry blossoms, honeymoon",
   },
   {
@@ -25,7 +25,7 @@ const DEFAULT_VIBES = [
         Santorini at <span className="ttwSerif">sunset</span>
       </>
     ),
-    image: "https://images.unsplash.com/photo-1533105079780-92b9be482077?w=800&q=80",
+    image: "https://images.unsplash.com/photo-1533105079780-92b9be482077?w=800&q=80&auto=format",
     seed: "Santorini sunset, couples",
   },
   {
@@ -35,7 +35,7 @@ const DEFAULT_VIBES = [
         Sydney and <span className="ttwSerif">the harbour</span>
       </>
     ),
-    image: "https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?w=800&q=80",
+    image: "https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?w=800&q=80&auto=format",
     seed: "Sydney and the harbour, scenic",
   },
 ];

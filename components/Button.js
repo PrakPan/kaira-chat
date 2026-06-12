@@ -6,7 +6,9 @@ const Button = React.forwardRef((props, ref) => {
   let isPageWide = media("(min-width: 768px)");
   const [hover, setHover] = useState(false);
 
-  const Container = styled.button`
+  const Container = styled.button.attrs({
+    "aria-label": props["aria-label"],
+  })`
     &:hover {
       color: ${props.hoverColor ? props.hoverColor : "white"};
       background-color: ${props.hoverBgColor ? props.hoverBgColor : "black"};

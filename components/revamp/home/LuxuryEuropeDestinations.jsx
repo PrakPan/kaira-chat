@@ -32,7 +32,7 @@ const DEFAULT_FILTERS = [
 const DEFAULT_PACKAGES = [
   {
     id: "bali",
-    image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=600&q=80",
+    image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=600&q=80&auto=format",
     tier: "Most booked",
     tierVariant: "popular",
     route: ["Mumbai", "Ubud", "Seminyak", "Nusa Penida"],
@@ -48,7 +48,7 @@ const DEFAULT_PACKAGES = [
   },
   {
     id: "japan",
-    image: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&q=80",
+    image: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&q=80&auto=format",
     tier: "Premium",
     tierVariant: "premium",
     route: ["Delhi", "Tokyo", "Hakone", "Kyoto", "Osaka"],
@@ -64,7 +64,7 @@ const DEFAULT_PACKAGES = [
   },
   {
     id: "vietnam",
-    image: "https://images.unsplash.com/photo-1528127269322-539801943592?w=600&q=80",
+    image: "https://images.unsplash.com/photo-1528127269322-539801943592?w=600&q=80&auto=format",
     tier: "Family-friendly",
     route: ["Bangalore", "Hanoi", "Hạ Long", "Hoi An"],
     title: (
@@ -79,7 +79,7 @@ const DEFAULT_PACKAGES = [
   },
   {
     id: "thailand",
-    image: "https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=600&q=80",
+    image: "https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=600&q=80&auto=format",
     tier: "Quick escape",
     route: ["Mumbai", "Bangkok", "Krabi", "Phi Phi"],
     title: (

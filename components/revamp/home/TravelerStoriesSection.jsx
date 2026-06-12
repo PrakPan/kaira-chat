@@ -14,7 +14,7 @@ import styles from "./TravelerStoriesSection.module.scss";
 const DEFAULT_STORIES = [
   {
     id: 1,
-    image: "https://images.unsplash.com/photo-1528127269322-539801943592?w=600&q=80",
+    image: "https://images.unsplash.com/photo-1528127269322-539801943592?w=600&q=80&auto=format",
     badge: "Vietnam · 5 nights",
     moment: (
       <>
@@ -28,7 +28,7 @@ const DEFAULT_STORIES = [
   },
   {
     id: 2,
-    image: "https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=600&q=80",
+    image: "https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=600&q=80&auto=format",
     badge: "Maldives · 4 nights",
     moment: (
       <>
@@ -42,7 +42,7 @@ const DEFAULT_STORIES = [
   },
   {
     id: 3,
-    image: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&q=80",
+    image: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&q=80&auto=format",
     badge: "Japan · 9 nights",
     moment: (
       <>
@@ -56,7 +56,7 @@ const DEFAULT_STORIES = [
   },
   {
     id: 4,
-    image: "https://images.unsplash.com/photo-1512100356356-de1b84283e18?w=600&q=80",
+    image: "https://images.unsplash.com/photo-1512100356356-de1b84283e18?w=600&q=80&auto=format",
     badge: "Bali · 7 nights",
     moment: (
       <>
@@ -70,7 +70,7 @@ const DEFAULT_STORIES = [
   },
   {
     id: 5,
-    image: "https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=600&q=80",
+    image: "https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=600&q=80&auto=format",
     badge: "Thailand · 6 nights",
     moment: (
       <>
@@ -84,7 +84,7 @@ const DEFAULT_STORIES = [
   },
   {
     id: 6,
-    image: "https://images.unsplash.com/photo-1477587458883-47145ed94245?w=600&q=80",
+    image: "https://images.unsplash.com/photo-1477587458883-47145ed94245?w=600&q=80&auto=format",
     badge: "Rajasthan · 5 nights",
     moment: (
       <>

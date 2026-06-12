@@ -208,6 +208,7 @@ const Mobile = (props) => {
       {!props.token?<Button
             className={`${styles.hamburger} ${styles.hamburgerCircle}`}
             variant="filled"
+            aria-label="Open menu"
           >
             <FontAwesomeIcon icon={faUser} className="w-4 h-4" />
           </Button>:<ImageLoader
