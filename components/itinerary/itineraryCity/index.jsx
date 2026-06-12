@@ -627,7 +627,7 @@ const ItineraryCity = (props) => {
                       className={
                         isDraftStage
                           ? "underline cursor-pointer break-words"
-                          : "underline cursor-pointer truncate shrink min-w-0 max-w-[130px] md:max-w-[200px]"
+                          : "underline cursor-pointer truncate shrink min-w-0 max-w-[130px] md:max-w-none md:overflow-visible md:whitespace-normal md:break-words"
                       }
                       onClick={() => {
                         trackHotelCardClicked?.(
