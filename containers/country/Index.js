@@ -54,6 +54,7 @@ const Index = (props) => {
     setActiveDrawer(null);
   };
 
+
   useEffect(() => {
     const hot_locations = [];
     if (props?.data?.locations) {

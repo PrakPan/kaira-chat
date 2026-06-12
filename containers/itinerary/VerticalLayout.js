@@ -28,6 +28,16 @@ import { useAnalytics } from "../../hooks/useAnalytics";
 import useMediaQuery from "../../components/media";
 import { setCloneItineraryDrawer } from "../../store/actions/cloneItinerary";
 
+// Transfer links adopt the CityDay slab-element heading styling (the activity
+// title: Inter, tight tracking/leading). Color stays on each link's existing
+// utility class (text-blue), and font size/weight stay on their existing
+// classes too, so they keep their current scale and link color.
+const TRANSFER_LINK_FONT = {
+  fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+  letterSpacing: "0",
+  lineHeight: 1.1,
+};
+
 const Container = styled.div`
   display: flex;
   align-items: center;
@@ -314,6 +324,7 @@ const TaxiPickupDropItem = ({
           className={`text-blue font-[500] text-[14px] ${
             displayText ? "hover:underline cursor-pointer" : ""
           }`}
+          style={TRANSFER_LINK_FONT}
           onClick={handleClick}
         >
           {displayText}
@@ -894,6 +905,7 @@ const AirportBookingItem = ({
         <span
           className={`text-blue font-[500] text-[14px] ${displayText ? "hover:underline cursor-pointer" : ""
             }`}
+          style={TRANSFER_LINK_FONT}
           onClick={handleClick}
         >
           {displayText}
@@ -922,6 +934,7 @@ const AirportBookingItem = ({
         <div className="flex items-center gap-2">
           <span
             className={`${isDesktop ? "Body1M_16" : "Body2M_14"} text-blue hover:underline cursor-pointer`}
+            style={TRANSFER_LINK_FONT}
             onClick={handleClick}
           >
             + Add Pickup and Drop
@@ -1660,6 +1673,7 @@ useEffect(() => {
                   className={`${
                     isDesktop ? "Body1M_16" : "Body2M_14"
                   } group-hover:text-blue `}
+                  style={TRANSFER_LINK_FONT}
                 >
                   {upPresent && downPresent ? city : ""}
                 </div>
@@ -1759,6 +1773,7 @@ useEffect(() => {
               className={`${
                 isDesktop ? "Body1M_16" : "Body2M_14"
               } text-blue hover:underline text-left`}
+              style={TRANSFER_LINK_FONT}
             >
               + Add Transfer from {origin_city_name} to {destination_city_name}
             </button>
@@ -1768,6 +1783,7 @@ useEffect(() => {
               className={`${
                 isDesktop ? "Body1M_16" : "Body2M_14"
               } text-blue hover:underline text-left`}
+              style={TRANSFER_LINK_FONT}
             >
               + Add Transfer
             </button>

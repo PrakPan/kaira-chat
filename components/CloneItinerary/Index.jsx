@@ -335,14 +335,26 @@ const CloneItinerary = ({
       <div style={{ flexShrink: 0, padding: "20px 20px 12px" }}>
         <div
           style={{
-            fontFamily: "'Instrument Serif', Georgia, serif",
+            fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
             fontSize: 28,
+            fontWeight: 500,
             lineHeight: 1.1,
             letterSpacing: "-0.01em",
-            color: "#0F1B2D",
+            color: "#0B1220",
           }}
         >
-          Craft a <em style={{ fontStyle: "italic", color: "#5C5A55" }}>similar</em> trip
+          Craft a{" "}
+          <em
+            style={{
+              fontFamily: "'Instrument Serif', 'Times New Roman', serif",
+              fontStyle: "italic",
+              fontWeight: 400,
+              letterSpacing: "-0.015em",
+            }}
+          >
+            similar
+          </em>{" "}
+          trip
         </div>
         <p style={{ fontSize: 13, color: "#5C5A55", marginTop: 4 }}>
           Tweak the start, dates and travellers — I'll build your own editable copy.

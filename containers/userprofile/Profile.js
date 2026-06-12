@@ -11,6 +11,10 @@ import * as authaction from "../../store/actions/auth";
 import { userImageUploadInstance } from "../../services/user/edit";
 import { getCountryCodes } from "../../store/actions/countryCodes";
 import { useAnalytics } from "../../hooks/useAnalytics";
+import {
+  getUserAvatarColor,
+  getUserInitial,
+} from "../../components/bot-components/utils/avatarColor";
 
 const Container = styled.div`
   padding: 0.5rem;
@@ -54,6 +58,15 @@ const Profile = (props) => {
   const fileInputRef = useRef();
   const imageEditRef = useRef();
   const {trackUserAccountUpdate} = useAnalytics()
+
+  // Logged in with no profile picture → colored letter avatar (matches the bot
+  // Sidebar). The color is persisted per-user in localStorage so it never changes.
+  const showColorAvatar =
+    !!props.token && (!props.image || props.image === "null");
+  const [avatarColor, setAvatarColor] = useState(null);
+  useEffect(() => {
+    setAvatarColor(showColorAvatar ? getUserAvatarColor(props.name) : null);
+  }, [showColorAvatar, props.name]);
 
   useEffect(() => {
     props.getCountryCodes();
@@ -221,19 +234,40 @@ const Profile = (props) => {
       <OverviewContainer>
         <ImageNameContainer className={`center-div`}>
           <div className={`relative ${loading && "animate-pulse"}`}>
-            <ImageLoader
-              borderRadius="50%"
-              url={
-                props.image !== "null" && props.image !== null
-                  ? props.image
-                  : "media/icons/navigation/profile-user.png"
-              }
-              width="10rem"
-              height="10rem"
-              dimesions={{ width: 1600, height: 1600 }}
-              dimensionsMobile={{ width: 1600, height: 1600 }}
-              noPlaceholder={true}
-            />
+            {showColorAvatar ? (
+              <div
+                style={{
+                  width: "10rem",
+                  height: "10rem",
+                  borderRadius: "50%",
+                  background: avatarColor || "#2563EB",
+                  color: "#fff",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontWeight: 700,
+                  fontSize: "4rem",
+                  textTransform: "uppercase",
+                  userSelect: "none",
+                }}
+              >
+                {getUserInitial(props.name)}
+              </div>
+            ) : (
+              <ImageLoader
+                borderRadius="50%"
+                url={
+                  props.image !== "null" && props.image !== null
+                    ? props.image
+                    : "media/icons/navigation/profile-user.png"
+                }
+                width="10rem"
+                height="10rem"
+                dimesions={{ width: 1600, height: 1600 }}
+                dimensionsMobile={{ width: 1600, height: 1600 }}
+                noPlaceholder={true}
+              />
+            )}
 
             <div
               ref={imageEditRef}

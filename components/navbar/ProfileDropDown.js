@@ -14,6 +14,10 @@ import { useSelector } from "react-redux";
 import { useAnalytics } from "../../hooks/useAnalytics";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  getUserAvatarColor,
+  getUserInitial,
+} from "../bot-components/utils/avatarColor";
 
 const DropdownContainer = styled.div`
   position: absolute;
@@ -225,6 +229,27 @@ const ProfileDropDown = (props) => {
   const [toggleMenu, setToggleMenu] = useState(false);
   const { trackUserLogout } = useAnalytics();
   const { id } = useSelector((state) => state.auth);
+
+  // Resolve the user's profile picture (props → cached localStorage value).
+  const rawImage =
+    props.image && props.image !== "null" && props.image !== null
+      ? props.image
+      : typeof window !== "undefined" &&
+        localStorage.getItem("user_image") !== "null" &&
+        localStorage.getItem("user_image") !== null
+      ? localStorage.getItem("user_image")
+      : null;
+
+  // Logged in with no picture → colored letter avatar (matches the bot Sidebar).
+  // The color is persisted per-user in localStorage so it never changes.
+  const isLoggedIn =
+    !!props.token ||
+    (typeof window !== "undefined" && !!localStorage.getItem("access_token"));
+  const showColorAvatar = isLoggedIn && !rawImage;
+  const [avatarColor, setAvatarColor] = useState(null);
+  useEffect(() => {
+    setAvatarColor(showColorAvatar ? getUserAvatarColor(props.name) : null);
+  }, [showColorAvatar, props.name]);
 
   if (props.name) {
     firstname = getFirstName(props.name);
@@ -483,22 +508,42 @@ const ProfileDropDown = (props) => {
 
       <div className="w-full flex flex-row items-center gap-1">
         <CircularImageWrapper onClick={() => setToggleMenu(!toggleMenu)}>
-          <ImageLoader
-            url={
-              props.image && props.image !== "null" && props.image !== null
-                ? props.image
-                : localStorage.getItem("user_image") !== "null" &&
-                  localStorage.getItem("user_image") !== null
-                ? localStorage.getItem("user_image")
-                : "media/icons/navigation/profile-user.png"
-            }
-            width="2rem"
-            height="2rem"
-            dimensions={{ width: 300, height: 300 }}
-            dimensionsMobile={{ width: 200, height: 200 }}
-            noPlaceholder={true}
-            // Remove the borderRadius prop - let the wrapper handle it
-          />
+          {showColorAvatar ? (
+            <div
+              style={{
+                width: "100%",
+                height: "100%",
+                background: avatarColor || "#2563EB",
+                color: "#fff",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontWeight: 700,
+                fontSize: "0.95rem",
+                textTransform: "uppercase",
+                userSelect: "none",
+              }}
+            >
+              {getUserInitial(props.name)}
+            </div>
+          ) : (
+            <ImageLoader
+              url={
+                props.image && props.image !== "null" && props.image !== null
+                  ? props.image
+                  : localStorage.getItem("user_image") !== "null" &&
+                    localStorage.getItem("user_image") !== null
+                  ? localStorage.getItem("user_image")
+                  : "media/icons/navigation/profile-user.png"
+              }
+              width="2rem"
+              height="2rem"
+              dimensions={{ width: 300, height: 300 }}
+              dimensionsMobile={{ width: 200, height: 200 }}
+              noPlaceholder={true}
+              // Remove the borderRadius prop - let the wrapper handle it
+            />
+          )}
         </CircularImageWrapper>
         <div className="Body2R_14">{props.name}</div>
         {isPageLoaded ? (

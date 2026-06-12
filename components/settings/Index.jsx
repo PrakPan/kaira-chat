@@ -224,18 +224,30 @@ const handleUpdate = () => {
           background: "linear-gradient(90deg,#FFE600,#F2D700)",
         }}
       />
-      <div className={`flex flex-col gap-6 md:max-w-[537px] z-[9999] px-4 py-5`}>
+      <div className={`flex flex-col gap-6 md:max-w-[537px] z-[9999] px-4 py-4`}>
         <div>
           <div
             style={{
-              fontFamily: "'Instrument Serif', Georgia, serif",
+              fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
               fontSize: 28,
+              fontWeight: 500,
               lineHeight: 1.1,
               letterSpacing: "-0.01em",
-              color: "#0F1B2D",
+              color: "#0B1220",
             }}
           >
-            Update your <em style={{ fontStyle: "italic", color: "#5C5A55" }}>trip</em> preferences
+            Update your{" "}
+            <em
+              style={{
+                fontFamily: "'Instrument Serif', 'Times New Roman', serif",
+                fontStyle: "italic",
+                fontWeight: 400,
+                letterSpacing: "-0.015em",
+              }}
+            >
+              trip
+            </em>{" "}
+            preferences
           </div>
           <p style={{ fontSize: 13, color: "#5C5A55", marginTop: 4 }}>
             Adjust dates, travellers and inclusions — I'll reprice it for you.
