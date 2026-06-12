@@ -18,9 +18,10 @@ const CountryCardV2 = ({ item, hot = false, onClick }) => {
     item.continent ||
     (hot ? "Most popular" : "");
   const bestFor =
-    item.best_for ||
+  
     item.one_liner_description ||
     item.tagline ||
+      item.best_for ||
     item.description ||
     "";
   const name = item.display_name || item.title || item.name || "";

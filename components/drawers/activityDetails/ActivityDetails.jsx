@@ -10,7 +10,14 @@ import { dateFormat } from "../../../helper/DateUtils";
 import { FaStar, FaStarHalfAlt, FaClock } from "react-icons/fa";
 import { FaPerson } from "react-icons/fa6";
 import { IoIosArrowDown, IoIosArrowUp, IoMdClose } from "react-icons/io";
-import { IoFastFood, IoTicket } from "react-icons/io5";
+import {
+  IoFastFood,
+  IoTicket,
+  IoCheckmarkCircle,
+  IoCloseCircle,
+  IoLocationOutline,
+  IoTimeOutline,
+} from "react-icons/io5";
 import { MdTransferWithinAStation } from "react-icons/md";
 import { BiSolidCustomize } from "react-icons/bi";
 import Image from "next/image";
@@ -20,6 +27,73 @@ import BackArrow from "../../ui/BackArrow";
 import Button from "../../../components/ui/button/Index";
 import { currencySymbols } from "../../../data/currencySymbols";
 const colors = ["#d5f5d3", "#fadadd", "#F5F0FF", "#DDF4C5"];
+
+// ─── Shared presentational helpers ─────────────────────────────────────────
+// Section heading used across Inclusions / Exclusions / Starting point etc.
+const SectionTitle = ({ children, className = "" }) => (
+  <h3 className={`text-[18px] font-bold leading-[26px] text-[#01202B] ${className}`}>
+    {children}
+  </h3>
+);
+
+const Divider = () => <div className="h-px w-full bg-[#ECECEC]" />;
+
+// Bulleted list with an icon glyph. variant: "include" | "exclude" | default dot.
+const IconList = ({ items, variant }) => (
+  <ul className="flex flex-col gap-2.5">
+    {items.map((item, i) => (
+      <li
+        key={i}
+        className="flex items-start gap-2.5 text-[14px] leading-[22px] text-[#4a4a4a]"
+      >
+        {variant === "include" ? (
+          <IoCheckmarkCircle className="mt-[2px] shrink-0 text-[17px] text-[#3BAF75]" />
+        ) : variant === "exclude" ? (
+          <IoCloseCircle className="mt-[2px] shrink-0 text-[17px] text-[#EE724B]" />
+        ) : (
+          <span className="mt-[8px] h-[5px] w-[5px] shrink-0 rounded-full bg-[#C2C2C2]" />
+        )}
+        <span>{item}</span>
+      </li>
+    ))}
+  </ul>
+);
+
+// Collapsible section header (General guidelines, Things to bring, …).
+const CollapsibleSection = ({ title, open, onToggle, children }) => (
+  <div className="flex flex-col">
+    <button
+      type="button"
+      onClick={onToggle}
+      className="flex w-full items-center justify-between py-3.5 text-left"
+    >
+      <span className="text-[18px] font-bold text-[#01202B]">{title}</span>
+      <IoIosArrowDown
+        className={`shrink-0 text-[#01202B] transition-transform duration-200 ${
+          open ? "rotate-180" : ""
+        }`}
+      />
+    </button>
+    {open && <div className="pb-3.5">{children}</div>}
+  </div>
+);
+
+// Small rounded info pill used for hotel pickup / tour type / guide facts.
+const FactPill = ({ icon, children, tone = "neutral" }) => {
+  const tones = {
+    neutral: "bg-[#F4F5F6] text-[#3a3a3a]",
+    green: "bg-[#E9F8EF] text-[#2E9C68]",
+    red: "bg-[#FCE9E2] text-[#E0663F]",
+  };
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-medium ${tones[tone]}`}
+    >
+      {icon}
+      {children}
+    </span>
+  );
+};
 
 export default function ActivityDetails(props) {
   let isPageWide = media("(min-width: 768px)");
@@ -404,34 +478,48 @@ export default function ActivityDetails(props) {
   );
 
   return (
-    <div className="h-[100vh] overflow-y-auto px-4">
-      <div className="flex flex-col gap-4 mb-[100px] pb-[20px]">
-        <div className="mt-xl">
+    <div className="h-[100vh] overflow-y-auto bg-white">
+      {/* Sticky header — back action stays reachable while scrolling */}
+      <div className="sticky top-0 z-30 flex items-center gap-3 border-b border-[#F0F0F0] bg-white/95 px-4 py-3 backdrop-blur">
+        <button
+          type="button"
+          onClick={(e) => props.handleCloseDrawer(e)}
+          className="flex h-9 w-9 items-center justify-center rounded-full transition-colors hover:bg-[#F4F4F4]"
+        >
           <Image
             src="/backarrow.svg"
+            alt="back"
             className="cursor-pointer"
-            width={22}
+            width={20}
             height={2}
-            onClick={(e) => props.handleCloseDrawer(e)}
           />
-        </div>
-        {props.updateAmenities && (
-          <div className="fixed top-[65%] left-[50%] -translate-x-[50%] z-50 flex flex-row items-center gap-2">
-            Updating
-            <div className="w-5 h-5 border-2 rounded-full border-t-black animate-spin"></div>
-          </div>
-        )}
+        </button>
+        <span className="truncate text-[15px] font-semibold text-[#01202B]">
+          Activity details
+        </span>
+      </div>
 
+      {props.updateAmenities && (
+        <div className="fixed top-[65%] left-[50%] -translate-x-[50%] z-50 flex flex-row items-center gap-2 rounded-full bg-white px-4 py-2 shadow-lg">
+          Updating
+          <div className="w-5 h-5 border-2 rounded-full border-t-black animate-spin"></div>
+        </div>
+      )}
+
+      <div className="px-4 pt-4 pb-[140px]">
         <div
-          className={`flex flex-col gap-4 ${
- props.updateAmenities && "opacity-50"
- }`}
+          className={`flex flex-col gap-5 ${
+            props.updateAmenities && "opacity-50"
+          }`}
         >
-          <div className="h-[180px] md:h-[300px] relative">
-            <div style={{ display: imageLoaded ? "initial" : "none" }}>
+          <div className="relative h-[200px] md:h-[320px] w-full overflow-hidden rounded-2xl">
+            <div
+              className="h-full w-full"
+              style={{ display: imageLoaded ? "block" : "none" }}
+            >
               <ImageLoader
-                borderRadius="8px"
-                marginTop="23px"
+                borderRadius="16px"
+                marginTop="0"
                 widthMobile="100%"
                 width="100%"
                 height="100%"
@@ -454,10 +542,20 @@ export default function ActivityDetails(props) {
                 noLazy
               ></ImageLoader>
 
+              {/* gradient scrim keeps the bottom badge legible over any image */}
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/55 to-transparent" />
+
+              {props.data?.is_very_popular ? (
+                <div className="absolute bottom-3 right-3 bg-[#FFD201] text-[#01202B] px-3 py-1 rounded-full flex flex-row items-center gap-1 text-[13px] font-semibold shadow-sm">
+                  <FaStar size={12} />
+                  Very Popular
+                </div>
+              ) : null}
+
               {props.data?.ideal_duration_number ? (
-                <div className="absolute bottom-1 left-2 bg-[#000000] text-white px-[16px] py-[2px] rounded-full flex flex-row items-center gap-2">
-                  <div className="ttw-type-body">Approx Time:</div>
-                  <div className="ttw-type-body">
+                <div className="absolute bottom-3 left-3 bg-black/55 text-white px-3 py-1.5 rounded-full flex flex-row items-center gap-1.5 backdrop-blur">
+                  <IoTimeOutline size={14} />
+                  <div className="text-[13px]">
                     {props.data.ideal_duration_number}{" "}
                     {props.data.ideal_duration_number > 1
                       ? props.data?.ideal_duration_unit?.toLowerCase()
@@ -466,31 +564,136 @@ export default function ActivityDetails(props) {
                           ?.slice(0, -1)}
                   </div>
                 </div>
-              ) : (
-                <></>
-              )}
+              ) : null}
             </div>
 
             <div
               style={{
-                display: !imageLoaded ? "initial" : "none",
+                display: !imageLoaded ? "block" : "none",
               }}
             >
               <SkeletonCard
                 width={"100%"}
-                height={isPageWide ? "300px" : "180px"}
+                height={isPageWide ? "320px" : "200px"}
               />
             </div>
           </div>
 
-          <div className="flex flex-col gap-3">
-            <div className="flex justify-between">
-              <div className="ttw-type-h4 leading-xl-sm font-600 mb-0">
+          <div className="flex flex-col gap-5">
+            <div className="flex flex-col gap-1">
+              <h1 className="text-[22px] font-bold leading-[28px] text-[#01202B]">
                 {props.data?.display_name || props.data.name}
-              </div>
+              </h1>
+              {props.data?.one_liner_description && (
+                <p className="text-[14px] leading-[20px] text-[#7a7a7a]">
+                  {props.data.one_liner_description}
+                </p>
+              )}
+
+              {props?.data?.rating && (
+                <div className="mt-1 flex items-center gap-1.5">
+                  <div className="flex flex-row gap-0.5 text-[#FFD201]">
+                    {stars}
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span className="text-[12px] text-[#7a7a7a]">
+                      {props.data.rating}
+                    </span>
+                    {props.data?.user_ratings_total > 0 && (
+                      <u className="text-[12px] text-[#7a7a7a]">
+                        · {props.data.user_ratings_total} user reviews
+                      </u>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {props.data?.distance_from_city_centre != null &&
+                props.data?.distance_from_city_centre !== "" && (
+                  <div className="mt-1.5 inline-flex w-fit items-center gap-1.5 rounded-full bg-[#FFF6E0] px-3 py-1 text-[12px] font-semibold text-[#01202B]">
+                    <IoLocationOutline className="text-[13px] text-[#E0A100]" />
+                    {Number(props.data.distance_from_city_centre).toFixed(1)} km
+                    from city centre
+                  </div>
+                )}
             </div>
 
-            <div className="flex gap-2">
+            {/* Timing on the left end, Travellers on the right end. With
+                justify-between a lone control naturally falls back to the
+                left end (only one flex child → starts at flex-start). */}
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              {!hideSchedule &&
+                (props?.fromChat || availableTimePeriods.length > 0) && (
+                  <div className="flex flex-wrap items-center gap-2">
+                    {/* FIX: wrap trigger + dropdown in a relative container so
+                        the desktop dropdown can be positioned with absolute
+                        top-full. Always rendered — a 1-night stay still has 2
+                        options (arrival + checkout), and even a single-day
+                        option is informational. */}
+                    {props?.fromChat && (
+                      <div className="relative">
+                        <div
+                          ref={dateBoxRef}
+                          className="flex items-center w-auto bg-[#F7F7F7] py-[0.7rem] px-4 rounded-lg justify-between cursor-pointer gap-2"
+                          onClick={() => setShowCalender((prev) => !prev)}
+                        >
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium text-[14px]">
+                              {getHumanDate(startDate) + " | "}
+                            </span>
+                            <span className="text-[14px]">
+                              Day {selectedDayNumber}
+                            </span>
+                          </div>
+                          <IoIosArrowDown
+                            className={`transition-transform ml-2 ${
+                              showCalender ? "rotate-180" : ""
+                            }`}
+                          />
+                        </div>
+
+                        {showCalender && (
+                          <div
+                            ref={calendarDesktopRef}
+                            className="max-ph:hidden md:flex md:flex-col absolute top-full left-0 mt-1 w-[260px] bg-white border border-gray-200 shadow-lg rounded-lg p-4 gap-3 text-sm z-[1091] max-h-[300px] overflow-y-auto"
+                          >
+                            <DayListContent />
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {availableTimePeriods.length > 0 && (
+                      <div className="inline-flex w-fit bg-[#F7F7F7] rounded-lg p-1 gap-1">
+                        {availableTimePeriods.map((period) => {
+                          const isSelected = selectedTimeOfDay === period;
+                          return (
+                            <button
+                              key={period}
+                              type="button"
+                              onClick={() => {
+                                if (period === selectedTimeOfDay) return;
+                                setSelectedTimeOfDay(period);
+                                props.fetchData({
+                                  _dateOverride: startDate,
+                                  _timeOverride: period,
+                                });
+                              }}
+                              className={`flex-none px-4 py-2 rounded-md text-[14px] font-medium transition-colors ${
+                                isSelected
+                                  ? "bg-[#07213A] text-white"
+                                  : "bg-transparent text-[#7a7a7a] hover:text-[#01202B]"
+                              }`}
+                            >
+                              {period}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                )}
+
               {!isDraft && (
                 <Pax
                   pax={{
@@ -500,110 +703,20 @@ export default function ActivityDetails(props) {
                   setPax={handlePaxChange}
                 />
               )}
-
-              {/* FIX: wrap trigger + dropdown in a relative container so
-                  the desktop dropdown can be positioned with absolute top-full.
-                  Always rendered — a 1-night stay still has 2 options (arrival
-                  + checkout), and even a single-day option is informational. */}
-              {!hideSchedule && props?.fromChat && (
-                <div className="relative">
-               
-                  <div
-                    ref={dateBoxRef}
-                    className="flex items-center w-auto bg-[#F9F9F9] py-[0.7rem] px-4 rounded-lg justify-between cursor-pointer"
-                    onClick={() => setShowCalender((prev) => !prev)}
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium ttw-type-body">
-                        {getHumanDate(startDate) + " | "}
-                      </span>
-                      <span>Day {selectedDayNumber}</span>
-                    </div>
-                    <IoIosArrowDown
-                      className={`transition-transform ml-2 ${
- showCalender ? "rotate-180" : ""
- }`}
-                    />
-                  </div>
-
-                
-                  {showCalender && (
-                    <div
-                      ref={calendarDesktopRef}
-                      className="max-ph:hidden md:flex md:flex-col absolute top-full left-0 mt-1 w-[260px] bg-white border border-gray-200 shadow-lg rounded-lg p-4 gap-3 ttw-type-body z-[1091] max-h-[300px] overflow-y-auto"
-                    >
-                      <DayListContent />
-                    </div>
-                  )}
-                </div>
-              )}
             </div>
 
-            {!hideSchedule && availableTimePeriods.length > 0 && (
-              <div className="inline-flex w-fit sm:w-fit bg-[#F9F9F9] rounded-lg p-1 gap-1">
-                {availableTimePeriods.map((period) => {
-                  const isSelected = selectedTimeOfDay === period;
-                  return (
-                    <button
-                      key={period}
-                      type="button"
-                      onClick={() => {
-                        if (period === selectedTimeOfDay) return;
-                        setSelectedTimeOfDay(period);
-                        props.fetchData({
-                          _dateOverride: startDate,
-                          _timeOverride: period,
-                        });
-                      }}
-                      className={`flex-1 sm:flex-none px-4 py-2 rounded-md text-[14px] font-medium transition-colors ${
-                        isSelected
-                          ? "bg-[#07213A] text-white"
-                          : "bg-transparent text-[#7a7a7a] hover:text-[#01202B]"
-                      }`}
-                    >
-                      {period}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-
-            {props?.data?.rating && (
-              <div className="flex items-center gap-1">
-                {props.data?.rating && (
-                  <div
-                    style={{ color: "#FFD201", marginBottom: "0.3rem" }}
-                    className="flex flex-row gap-1"
-                  >
-                    {stars}
-                  </div>
+            {(props.data?.category ||
+              (props.data?.tags && props.data?.tags?.length > 0)) && (
+              <div className="flex flex-row items-center gap-2 flex-wrap">
+                {props.data?.category && (
+                  <span className="rounded-full px-3 py-1.5 text-[12px] font-medium bg-[#01202B] text-white">
+                    {props.data.category}
+                  </span>
                 )}
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  {props.data?.rating && (
-                    <p
-                      className="ttw-type-small text-[#7a7a7a]"
-                      style={{ marginBlock: "auto" }}
-                    >
-                      {props.data.rating} ·
-                    </p>
-                  )}
-
-                  {props.data?.user_ratings_total > 0 && (
-                    <u className="ttw-type-small text-[#7a7a7a]">
-                      {props.data.user_ratings_total}
-                      {" user reviews"}
-                    </u>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {props.data?.tags && (
-              <div className="ttw-type-body flex flex-row items-center gap-1 flex-wrap">
                 {props.data.tags?.map((e, i) => (
                   <span
                     key={i}
-                    className={`rounded-full px-2 py-1`}
+                    className="rounded-full px-3 py-1.5 text-[12px] font-medium text-[#01202B]"
                     style={{ backgroundColor: colors[i % colors.length] }}
                   >
                     {e}
@@ -613,324 +726,286 @@ export default function ActivityDetails(props) {
             )}
 
             {props.data?.short_description && (
-              <div className="flex flex-col gap-2">
-                <div className="ttw-type-body text-[#01202B]">
-                  {props.data.short_description}
-                </div>
-              </div>
+              <p className="text-[14px] leading-[22px] text-[#3a3a3a]">
+                {props.data.short_description}
+              </p>
             )}
 
             {props.data?.inclusions && props.data?.inclusions?.length > 0 && (
-              <div className="flex flex-col gap-2 mb-[30px]">
-                <div className="ttw-type-h3 font-semibold text-green">
-                  Inclusions
-                </div>
-                <div className="border-b-[1px]"></div>
-                <div className="ttw-type-body">
-                  <ul style={{ paddingLeft: "0.5rem" }}>
-                    {props.data.inclusions.map((inclusion, i) => (
-                      <li key={i} className="mb-1">
-                        - {inclusion}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
+              <section className="flex flex-col gap-3">
+                <SectionTitle className="!text-[#2E9C68]">Inclusions</SectionTitle>
+                <Divider />
+                <IconList items={props.data.inclusions} variant="include" />
+              </section>
             )}
 
             {props.data?.exclusions && props.data?.exclusions?.length > 0 && (
-              <div className="flex flex-col gap-2 mb-[30px]">
-                <div className="ttw-type-h3 font-semibold text-red">
-                  Exclusions
-                </div>
-                <div className="border-b-[1px]"></div>
-                <div className="ttw-type-body">
-                  <ul style={{ paddingLeft: "0.5rem" }}>
-                    {props.data.exclusions.map((exclusion, i) => (
-                      <li key={i} className="mb-1">
-                        - {exclusion}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
+              <section className="flex flex-col gap-3">
+                <SectionTitle className="!text-[#E0663F]">Exclusions</SectionTitle>
+                <Divider />
+                <IconList items={props.data.exclusions} variant="exclude" />
+              </section>
             )}
           </div>
 
-          {props?.hotel_pickup_included ? (
-            <div className="flex items-center gap-1 ttw-type-body bg-[#e6f9ec] text-[#3BAF75] font-semibold rounded-sm w-max px-1">
-              <Image
-                src="/hotelPickupIncluded.svg"
-                alt="hotel-pickup-included"
-                width={20}
-                height={20}
-              />
-              <span className=" px-2 py-1 mb-0 rounded-md ttw-type-small">
+          <div className="flex flex-wrap items-center gap-2">
+            {props?.hotel_pickup_included ? (
+              <FactPill
+                tone="green"
+                icon={
+                  <Image
+                    src="/hotelPickupIncluded.svg"
+                    alt=""
+                    width={16}
+                    height={16}
+                  />
+                }
+              >
                 Hotel Pickup Included
-              </span>
-            </div>
-          ) : (
-            <div className="flex items-center gap-1 ttw-type-body bg-[#FCE3DB] text-[#EE724B] font-semibold w-max rounded-sm px-1">
-              <Image
-                src="/notHotelPickupIncluded.svg"
-                alt="not-hotel-pickup-included"
-                width={20}
-                height={20}
-              />
-              <span className=" px-2 py-1 mb-0 rounded-md ttw-type-small">
+              </FactPill>
+            ) : (
+              <FactPill
+                tone="red"
+                icon={
+                  <Image
+                    src="/notHotelPickupIncluded.svg"
+                    alt=""
+                    width={16}
+                    height={16}
+                  />
+                }
+              >
                 Hotel pickup not included
-              </span>
-            </div>
-          )}
+              </FactPill>
+            )}
 
-          <div className="flex items-center gap-4 flex-wraptext-[14px] text-gray-800">
+            {props?.data?.animal_welfare_check && (
+              <FactPill tone="green">Follows animal-welfare guidelines</FactPill>
+            )}
+
             {props?.data?.tour_type === "Private Tour" && (
-              <div className="flex items-center gap-1">
-                <Image
-                  src="/privateTour.svg"
-                  alt="private-tour"
-                  width={20}
-                  height={20}
-                />
-                <span>Private Tour</span>
-              </div>
+              <FactPill icon={<Image src="/privateTour.svg" alt="" width={16} height={16} />}>
+                Private Tour
+              </FactPill>
             )}
             {props?.data?.tour_type === "Shared Tour" && (
-              <div className="flex items-center gap-1">
-                <Image
-                  src="/sharedTour.svg"
-                  alt="shared-tour"
-                  width={20}
-                  height={20}
-                />
-                <span>Shared Tour</span>
-              </div>
+              <FactPill icon={<Image src="/sharedTour.svg" alt="" width={16} height={16} />}>
+                Shared Tour
+              </FactPill>
             )}
-
             {props?.data?.guide === "Guided" && (
-              <div className="flex items-center gap-1">
-                <Image src="/guided.svg" alt="guided" width={20} height={20} />
-                <span>Guided</span>
-              </div>
+              <FactPill icon={<Image src="/guided.svg" alt="" width={16} height={16} />}>
+                Guided
+              </FactPill>
             )}
             {props?.data?.guide === "Self Guided" && (
-              <div className="flex items-center gap-1">
-                <Image
-                  src="/selfGuided.svg"
-                  alt="self-guided"
-                  width={20}
-                  height={20}
-                />
-                <span>Self Guided</span>
-              </div>
+              <FactPill icon={<Image src="/selfGuided.svg" alt="" width={16} height={16} />}>
+                Self Guided
+              </FactPill>
             )}
             {props?.data?.guide === "Semi Guided" && (
-              <div className="flex items-center gap-1">
-                <Image
-                  src="/semiGuided.svg"
-                  alt="semi-guided"
-                  width={20}
-                  height={20}
-                />
-                <span>Semi Guided</span>
-              </div>
+              <FactPill icon={<Image src="/semiGuided.svg" alt="" width={16} height={16} />}>
+                Semi Guided
+              </FactPill>
             )}
           </div>
 
-          <div>
-            {props.data?.general_guidelines?.length ? (
-              <div className="flex flex-col">
-                <div className="ttw-type-h3 font-semibold">
-                  <div>General guidelines</div>
-                  <div className="border-b-[1px] mt-2 mb-2"></div>
+          {(props.data?.starting_point ||
+            (Array.isArray(props.data?.other_starting_points) &&
+              props.data?.other_starting_points.length > 0)) && (
+            <section className="flex flex-col gap-3">
+              <SectionTitle>Starting point</SectionTitle>
+              <Divider />
+              {props.data?.starting_point && (
+                <div className="flex items-start gap-2 text-[14px] text-[#01202B]">
+                  <IoLocationOutline className="mt-[2px] shrink-0 text-[17px] text-[#01202B]" />
+                  <span>{props.data.starting_point}</span>
                 </div>
-                {boolDetails?.generalGuidelines && (
-                  <div className="ttw-type-body">
-                    <ul style={{ paddingLeft: "0.5rem" }}>
-                      {props.data.general_guidelines?.map((e, i) => (
-                        <li key={i}>- {e}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            ) : null}
-
-            {props.data?.things_to_bring?.length ? (
-              <div className="flex flex-col">
-                <div className="ttw-type-h3 font-semibold">
-                  <div>Things to bring</div>
-                  <div className="border-b-[1px] mt-2 mb-2"></div>
-                </div>
-                {boolDetails?.thingsToBring && (
-                  <div className="ttw-type-body">
-                    <ul style={{ paddingLeft: "0.5rem" }}>
-                      {props.data.things_to_bring?.map((e, i) => (
-                        <li key={i}>- {e}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            ) : null}
-
-            {props.data?.not_suitable_for?.length ? (
-              <div className="flex flex-col">
-                <div className="ttw-type-h3 font-semibold">
-                  <div>Not suitable for</div>
-                  <div className="border-b-[1px] mt-2 mb-2"></div>
-                </div>
-                {boolDetails?.notSuitableFor && (
-                  <div className="ttw-type-body">
-                    <ul style={{ paddingLeft: "0.5rem" }}>
-                      {props.data.not_suitable_for?.map((e, i) => (
-                        <li key={i}>- {e}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            ) : null}
-
-            {props.data?.tips_tricks?.length ? (
-              <div className="flex flex-col">
-                <div className="ttw-type-h3 font-semibold">
-                  <div>Tips, Tricks and Cautions</div>
-                  <div className="border-b-[1px] mt-2 mb-2"></div>
-                </div>
-                {boolDetails?.tipsTricks && (
-                  <div className="ttw-type-body">
-                    <ul style={{ paddingLeft: "0.5rem" }}>
-                      {props.data.tips_tricks?.map((e, i) => (
-                        <li key={i}>- {e}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            ) : null}
-          </div>
-
-          {props.data?.amenities && props.data?.amenities?.length ? (
-            <div className="flex flex-col gap-2 mb-[30px]">
-              <div className="ttw-type-h3 font-semibold">Add - Ons</div>
-              <div className="border-b-[1px]"></div>
-              <div className="flex flex-col gap-2">
-                {props.data.amenities.map((amenity, index) => (
-                  <div key={index}>
-                    <Amenity
-                      index={index}
-                      amenity={amenity}
-                      handleAmenityChange={handleAmenityChange}
-                      travelers={props.filterState?.number_of_travelers}
+              )}
+              {Array.isArray(props.data?.other_starting_points) &&
+                props.data?.other_starting_points.length > 0 && (
+                  <div className="text-[14px]">
+                    <div className="text-[#7a7a7a] mb-2">
+                      Other starting points
+                    </div>
+                    <IconList
+                      items={props.data.other_starting_points.map(
+                        (point) =>
+                          point?.address || point?.name || String(point),
+                      )}
                     />
                   </div>
-                ))}
-              </div>
+                )}
+            </section>
+          )}
+
+          {(props.data?.general_guidelines?.length ||
+            props.data?.things_to_bring?.length ||
+            props.data?.not_suitable_for?.length ||
+            props.data?.tips_tricks?.length) ? (
+            <div className="flex flex-col divide-y divide-[#ECECEC] border-y border-[#ECECEC]">
+              {props.data?.general_guidelines?.length ? (
+                <CollapsibleSection
+                  title="General guidelines"
+                  open={boolDetails?.generalGuidelines}
+                  onToggle={() =>
+                    setBoolDetail((prev) => ({
+                      ...prev,
+                      generalGuidelines: !prev.generalGuidelines,
+                    }))
+                  }
+                >
+                  <IconList items={props.data.general_guidelines} />
+                </CollapsibleSection>
+              ) : null}
+
+              {props.data?.things_to_bring?.length ? (
+                <CollapsibleSection
+                  title="Things to bring"
+                  open={boolDetails?.thingsToBring}
+                  onToggle={() =>
+                    setBoolDetail((prev) => ({
+                      ...prev,
+                      thingsToBring: !prev.thingsToBring,
+                    }))
+                  }
+                >
+                  <IconList items={props.data.things_to_bring} />
+                </CollapsibleSection>
+              ) : null}
+
+              {props.data?.not_suitable_for?.length ? (
+                <CollapsibleSection
+                  title="Not suitable for"
+                  open={boolDetails?.notSuitableFor}
+                  onToggle={() =>
+                    setBoolDetail((prev) => ({
+                      ...prev,
+                      notSuitableFor: !prev.notSuitableFor,
+                    }))
+                  }
+                >
+                  <IconList items={props.data.not_suitable_for} />
+                </CollapsibleSection>
+              ) : null}
+
+              {props.data?.tips_tricks?.length ? (
+                <CollapsibleSection
+                  title="Tips, Tricks and Cautions"
+                  open={boolDetails?.tipsTricks}
+                  onToggle={() =>
+                    setBoolDetail((prev) => ({
+                      ...prev,
+                      tipsTricks: !prev.tipsTricks,
+                    }))
+                  }
+                >
+                  <IconList items={props.data.tips_tricks} />
+                </CollapsibleSection>
+              ) : null}
             </div>
           ) : null}
 
-          {!isDraft && props?.data?.prices && props?.data?.prices?.length && (
-            <div className="mb-4">
-              <h3 className="font-medium ttw-type-body mb-3">Package Options</h3>
+          {props.data?.amenities && props.data?.amenities?.length ? (
+            <section className="flex flex-col gap-3">
+              <SectionTitle>Add-Ons</SectionTitle>
+              <Divider />
+              <div className="flex flex-col gap-2">
+                {props.data.amenities.map((amenity, index) => (
+                  <Amenity
+                    key={index}
+                    index={index}
+                    amenity={amenity}
+                    handleAmenityChange={handleAmenityChange}
+                    travelers={props.filterState?.number_of_travelers}
+                  />
+                ))}
+              </div>
+            </section>
+          ) : null}
+
+          {!isDraft && props?.data?.prices && props?.data?.prices?.length ? (
+            <section className="flex flex-col gap-3">
+              <SectionTitle>Package Options</SectionTitle>
+              <Divider />
 
               <div className="flex flex-col gap-3 w-full">
-                {props.data.prices.map((packageItem, index) => (
-                  <div
-                    key={packageItem.result_index}
-                    className={`border-2 rounded-lg p-3 cursor-pointer transition-colors ${
- selectedPackage?.result_index === packageItem.result_index
- ? "border-yellow-400 bg-yellow-50"
- : "border-gray-200 bg-white hover:border-gray-300"
- }`}
-                    onClick={() => setSelectedPackage(packageItem)}
-                  >
-                    <div className="flex items-center justify-between w-full">
-                      <div className="flex flex-col gap-2 w-full">
-                        <div className="flex justify-between w-full items-start">
-                          <div className="flex items-center gap-3">
-                            <div
-                              className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
- selectedPackage?.result_index ===
- packageItem.result_index
- ? "border-yellow-400 bg-yellow-400"
- : "border-gray-300"
- }`}
-                            >
-                              {selectedPackage?.result_index ===
-                                packageItem.result_index && (
-                                <div className="w-2 h-2 rounded-full bg-white"></div>
-                              )}
-                            </div>
-                            <div className="font-medium text-gray-900">
-                              {props.data?.is_package
-                                ? packageItem?.title
-                                  ? packageItem.title
-                                  : ""
-                                : ""}
-                            </div>
-                            {!(packageItem?.description) &&
-                              !packageItem?.title &&
-                              packageItem.pax_details?.adults && (
-                                <div className="ttw-type-body text-gray-600">
-                                  For{" "}
-                                  {packageItem.pax_details?.adults +
-                                    packageItem.pax_details?.children}{" "}
-                                  people
-                                </div>
-                              )}
+                {props.data.prices.map((packageItem) => {
+                  const isSel =
+                    selectedPackage?.result_index === packageItem.result_index;
+                  return (
+                    <div
+                      key={packageItem.result_index}
+                      className={`rounded-xl border p-4 cursor-pointer transition-colors ${
+                        isSel
+                          ? "border-[#FFD201] bg-[#FFFBEB]"
+                          : "border-[#ECECEC] bg-white hover:border-[#D5D5D5]"
+                      }`}
+                      onClick={() => setSelectedPackage(packageItem)}
+                    >
+                      <div className="flex items-start justify-between w-full gap-3">
+                        <div className="flex items-start gap-3">
+                          <div
+                            className={`mt-0.5 w-5 h-5 shrink-0 rounded-full border-2 flex items-center justify-center ${
+                              isSel
+                                ? "border-[#FFD201] bg-[#FFD201]"
+                                : "border-gray-300"
+                            }`}
+                          >
+                            {isSel && (
+                              <div className="w-2 h-2 rounded-full bg-white"></div>
+                            )}
                           </div>
-                          <div className="text-right">
-                            <div className="font-bold ttw-type-h4">
-                              {`${
-                                currency?.currency
-                                  ? currencySymbols?.[currency?.currency]
-                                  : "₹"
-                              }`}
-                              {formatAmount(packageItem.total_price)}
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="flex flex-col ">
-                          <div className="font-normal text-gray-900 ttw-type-body">
-                            {props.data?.is_package
-                              ? packageItem?.description
-                                ? packageItem.description
-                                : ""
-                              : ""}
-                          </div>
-                          {(packageItem?.description || packageItem?.title) &&
-                            packageItem.pax_details?.adults && (
+                          <div className="flex flex-col gap-0.5">
+                            {props.data?.is_package && packageItem?.title ? (
+                              <div className="font-medium text-[#01202B]">
+                                {packageItem.title}
+                              </div>
+                            ) : null}
+                            {props.data?.is_package &&
+                            packageItem?.description ? (
+                              <div className="text-sm text-gray-600">
+                                {packageItem.description}
+                              </div>
+                            ) : null}
+                            {packageItem.pax_details?.adults ? (
                               <div className="text-sm text-gray-600">
                                 For{" "}
                                 {packageItem.pax_details.adults +
                                   packageItem.pax_details.children}{" "}
                                 people
                               </div>
-                            )}
+                            ) : null}
+                          </div>
+                        </div>
+                        <div className="text-right text-[18px] font-bold text-[#01202B]">
+                          {`${
+                            currency?.currency
+                              ? currencySymbols?.[currency?.currency]
+                              : "₹"
+                          }`}
+                          {formatAmount(packageItem.total_price)}
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
-            </div>
-          )}
+            </section>
+          ) : null}
         </div>
 
         {props?.data?.cancellation_policies && (
-          <>
-            <div className="ttw-type-h3 font-semibold">
-              Cancellation Policies
-            </div>
+          <section className="mt-5 flex flex-col gap-3">
+            <SectionTitle>Cancellation Policies</SectionTitle>
+            <Divider />
             <div
               dangerouslySetInnerHTML={{
                 __html: props?.data?.cancellation_policies,
               }}
-              className="flex flex-col gap-1 ttw-type-body ml-4"
+              className="flex flex-col gap-1 text-sm text-[#4a4a4a] ml-4"
             ></div>
-          </>
+          </section>
         )}
       </div>
 
@@ -944,12 +1019,17 @@ export default function ActivityDetails(props) {
         </div>
       )} */}
 
-      {(!isDraft || typeof props?.onAddToItinerary === "function") && <div className="scroll-none border-t-2 fixed bottom-0 right-0 left-0 gap-1 py-[12px] px-[20px] bg-white shadow-md z-50">
-        <div className="flex justify-between items-center">
-          <>
-            {selectedPackage?.total_price && (
-              <div className="font-bold">
-                <span className="ttw-type-h2">
+      {(!isDraft || typeof props?.onAddToItinerary === "function") && (
+        // z-[9] keeps the bar above page content but BELOW the Travellers
+        // modal: the shared Pax wrapper is `relative z-[10]`, which traps its
+        // BottomModal in a z-10 stacking context. Any bar z-index >= 10 paints
+        // over that whole subtree (modal included). Staying under 10 lets the
+        // modal cover the bar when open; they never overlap while it's closed.
+        <div className="scroll-none fixed bottom-0 right-0 left-0 z-[9] border-t border-[#ECECEC] bg-white px-5 py-3 shadow-[0_-4px_20px_rgba(0,0,0,0.06)]">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex min-w-0 flex-col">
+              {selectedPackage?.total_price ? (
+                <span className="text-[24px] font-extrabold leading-none text-[#01202B]">
                   {`${
                     currency?.currency
                       ? currencySymbols?.[currency?.currency]
@@ -960,25 +1040,26 @@ export default function ActivityDetails(props) {
                     ? formatAmount(selectedPackage.total_price)
                     : selectedPackage.total_price}
                 </span>
-              </div>
-            )}
-          </>
+              ) : null}
+              <span className="mt-1 truncate text-[12px] text-[#8a8a8a]">
+                for{" "}
+                {(props?.filterState.adults + props?.filterState?.children) ||
+                  (itinerary?.number_of_adults +
+                    itinerary?.number_of_children)}{" "}
+                people · on {getHumanDate(startDate) || dateFormat(props?.date)}
+              </span>
+            </div>
 
-          <button onClick={handleUpdate} className="ttw-btn-fill-yellow">
-            Add to Itinerary
-          </button>
-        </div>
-        <div className={`flex justify-between items-center`}>
-          <span className="ttw-type-small font-normal">
-            {" "}
-            for { (props?.filterState.adults + props?.filterState?.children) || (itinerary?.number_of_adults + itinerary?.number_of_children)}{" "}
-            people{" "}
-          </span>
-          <div className="ttw-type-body sm:ttw-type-body">
-            on {getHumanDate(startDate) || dateFormat(props?.date)}
+            <button
+              onClick={handleUpdate}
+              disabled={loading}
+              className="ttw-btn-fill-yellow shrink-0 !rounded-xl !px-6 !py-3 !text-[15px] disabled:opacity-60"
+            >
+              {loading ? "Adding…" : "Add to Itinerary"}
+            </button>
           </div>
         </div>
-      </div>}
+      )}
     </div>
   );
 }
@@ -1024,26 +1105,37 @@ export const Amenity = ({ index, amenity, handleAmenityChange, travelers }) => {
   return (
     <div
       key={index}
-      className="relative gap-3 bg-[#FAFAFA] p-[10px] rounded-[4px]"
+      className="relative rounded-xl border border-[#ECECEC] bg-[#FAFAFA] p-4"
     >
-      <div className="flex flex-col gap-1">
-        <div className="flex flex-row items-center gap-2 ttw-type-body font-medium">
-          {amenity.name}
+      <div className="flex items-start gap-2.5">
+        <span className="mt-0.5 shrink-0 text-[18px] text-[#01202B]">
+          {getAmenityIcon(amenity.type)}
+        </span>
+        <div className="flex flex-col gap-1">
+          <div className="text-[15px] font-semibold text-[#01202B]">
+            {amenity.name}
+          </div>
+          {amenity.description && (
+            <div className="text-[13px] leading-[18px] text-[#6a6a6a]">
+              {amenity.description}
+            </div>
+          )}
+          {travelers ? (
+            <div className="mt-0.5 flex items-center gap-1 text-[12px] font-medium text-[#3a3a3a]">
+              <Image src="/ticket.svg" alt="ticket" width={13.33} height={10.67} />
+              {travelers} tickets
+            </div>
+          ) : null}
         </div>
-        <div className="ttw-type-body">{amenity.description}</div>
-        {travelers ? <div className="flex ttw-type-small font-medium">
-          <Image src="/ticket.svg" alt="ticket" width={13.33} height={10.67} />
-          {travelers} tickets
-        </div> : null}
       </div>
 
       {amenity.price == 0 ? (
-        <div className=" ttw-type-h5 text-[#277004] ">
+        <div className="mt-3 text-[15px] font-semibold text-[#277004]">
           Included for free
         </div>
       ) : (
-        <div className="flex items-center justify-between">
-          <div className="font-semibold ttw-type-h2">
+        <div className="mt-3 flex items-end justify-between">
+          <div className="font-bold text-[20px] text-[#01202B]">
             {`${
               currency?.currency ? currencySymbols?.[currency?.currency] : "₹"
             }`}
@@ -1054,7 +1146,9 @@ export const Amenity = ({ index, amenity, handleAmenityChange, travelers }) => {
                 ? getIndianPrice(rounded)
                 : rounded.toLocaleString("en-US");
             })()}{" "}
-            <span className="ttw-type-body font-normal">per person*</span>
+            <span className="text-[13px] font-normal text-[#6a6a6a]">
+              per person*
+            </span>
           </div>
 
           <div

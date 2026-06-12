@@ -106,7 +106,13 @@ const Profile = (props) => {
           },
         })
         .then((response) => {
-          props.setUserDetails(response.data);
+          // Force the image keys to null so the cached picture is cleared from
+          // localStorage and redux, regardless of the delete response shape.
+          props.setUserDetails({
+            ...response.data,
+            profile_pic: null,
+            user_image: null,
+          });
           setLoading(false);
           setEditImage(false);
         })

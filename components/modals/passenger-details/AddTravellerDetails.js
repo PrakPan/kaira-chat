@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { useDispatch } from "react-redux";
-import { useRouter } from "next/router";
+import { useDispatch, useSelector } from "react-redux";
 import LeadPaxDetails from "./LeadPaxDetails";
 import OtherPassengers from "./OtherPassengers";
 import { MERCURY_HOST } from "../../../services/constants";
@@ -118,8 +117,15 @@ const extractErrorMessage = (error) => {
 };
 
 const AddTravellerDetails = ({ itinerary, onSuccess }) => {
-  const router = useRouter();
   const dispatch = useDispatch();
+  const reduxItineraryId = useSelector((state) => state.ItineraryId);
+
+  // Resolve the itinerary id from the caller-owned prop first, falling back
+  // to the dedicated Redux slice. Deliberately avoids router.query.id: this
+  // drawer also renders inside the /chat/{sessionId} route, where `id` is the
+  // chat session UUID and would corrupt the request.
+  const resolvedItineraryId =
+    itinerary?.id || itinerary?.itinerary_id || reduxItineraryId || null;
 
   const expectedAdults = itinerary?.number_of_adults || 1;
   const expectedChildren = itinerary?.number_of_children || 0;
@@ -224,10 +230,21 @@ const AddTravellerDetails = ({ itinerary, onSuccess }) => {
 
     const guests = [lead, ...adults, ...children, ...infants].map(emptyToNull);
 
+    if (!resolvedItineraryId) {
+      dispatch(
+        openNotification({
+          type: "error",
+          text: "Missing itinerary reference. Please reopen and try again.",
+          heading: "Couldn't save traveller details",
+        })
+      );
+      return;
+    }
+
     try {
       setSubmitting(true);
       await axios.post(
-        `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/guests/bookings/add/`,
+        `${MERCURY_HOST}/api/v1/itinerary/${resolvedItineraryId}/guests/bookings/add/`,
         { guests },
         {
           headers: {

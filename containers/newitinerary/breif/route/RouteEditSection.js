@@ -747,6 +747,7 @@ const RouteEditSection = (props) => {
           if (err?.response?.status === 403) {
             props.openNotification({
               text: err?.response?.data?.messages?.[0] || "You are not allowed to make changes to this itinerary",
+              text: err?.response?.data?.messages?.[0] || "You are not allowed to make changes to this itinerary",
               heading: "Error!",
               type: "error",
             });

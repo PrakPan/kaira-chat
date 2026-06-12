@@ -7,6 +7,7 @@ import axiosuserinstance from "../../services/user/info";
 import * as ga from "../../services/ga/Index";
 import { logEvent } from "../../services/ga/Index";
 import { CLIENT_ID, CLIENT_SECRET } from "../../services/constants";
+import { openNotification } from "./notification";
 
 
 //Open login modal
@@ -79,10 +80,6 @@ export const setUserDetails = (userdetails) => {
       localStorage.setItem("is_phone_verified", userdetails.is_phone_verified);
     userdetails.is_email_verified &&
       localStorage.setItem("is_email_verified", userdetails.is_email_verified);
-    userdetails.profile_pic &&
-      localStorage.setItem("user_image", userdetails.profile_pic);
-    userdetails.user_image &&
-      localStorage.setItem("user_image", userdetails.user_image);
     userdetails.whatsapp_opt_in &&
       localStorage.setItem("whatsapp_opt_in", userdetails.whatsapp_opt_in);
     userdetails.email_last_verified_on &&
@@ -91,10 +88,25 @@ export const setUserDetails = (userdetails) => {
         userdetails.email_last_verified_on
       );
 
-    if (userdetails.profile_pic) {
-      userdetails["image"] = userdetails.profile_pic;
-    } else if (userdetails.user_image) {
-      userdetails["image"] = userdetails.user_image;
+    // Resolve the profile image from whichever key the payload carries.
+    const newImage =
+      userdetails.profile_pic || userdetails.user_image || userdetails.image;
+    // Only touch the cached image when this payload actually carries image
+    // info (one of these keys is present). Detail-only updates (e.g. name /
+    // country) leave the existing image intact.
+    const carriesImageInfo =
+      "profile_pic" in userdetails ||
+      "user_image" in userdetails ||
+      "image" in userdetails;
+
+    if (newImage) {
+      localStorage.setItem("user_image", newImage);
+      userdetails["image"] = newImage;
+    } else if (carriesImageInfo) {
+      // Image was removed / cleared on the server — drop the stale cache so it
+      // doesn't get re-hydrated on reload, and clear it in redux too.
+      localStorage.removeItem("user_image");
+      userdetails["image"] = null;
     }
   } catch {}
   return {
@@ -533,11 +545,19 @@ export const changeUserDetails = (userdetails,trackUserAccountUpdate) => {
         const responseData = res.data;
         trackUserAccountUpdate(responseData.data.user?.id,userdetails);
 
+        const profilePic = responseData.data.user?.profile_pic;
+
         localStorage.setItem("name", responseData.data.user?.name);
         localStorage.setItem("email", responseData.data.user?.email);
         localStorage.setItem("phone", responseData.data.user?.phone);
         localStorage.setItem("user_id", responseData.data.user?.id);
-        localStorage.setItem("user_image", responseData.data.user?.profile_pic);
+        // Don't cache a literal "null"/"undefined" string when there is no
+        // profile pic — clear it so the stale image isn't re-hydrated.
+        if (profilePic) {
+          localStorage.setItem("user_image", profilePic);
+        } else {
+          localStorage.removeItem("user_image");
+        }
         localStorage.setItem("country",responseData.data.user?.country)
         localStorage.setItem(
           "whatsapp_opt_in",
@@ -555,7 +575,8 @@ export const changeUserDetails = (userdetails,trackUserAccountUpdate) => {
           "email_last_verified_on",
           responseData.data.email_last_verified_on
         );
-        dispatch(setUserDetails(userdetails));
+        // Keep redux in sync with the server's image state on every update.
+        dispatch(setUserDetails({ ...userdetails, profile_pic: profilePic ?? null }));
         dispatch(authSetLoginMessage(null));
         dispatch(authCloseLogin());
       })
