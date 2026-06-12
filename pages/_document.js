@@ -61,7 +61,7 @@ export default class MyDocument extends Document {
             />
           </noscript>
           <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 
           <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB-AJwAHLnOSTh25KkTQdxyTFB7-v0uMaw"></script>
           <script src="https://cdn.platform.openai.com/deployments/chatkit/chatkit.js"></script>

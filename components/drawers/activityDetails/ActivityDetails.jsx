@@ -26,17 +26,24 @@ import { Pax } from "./Pax";
 import BackArrow from "../../ui/BackArrow";
 import Button from "../../../components/ui/button/Index";
 import { currencySymbols } from "../../../data/currencySymbols";
-const colors = ["#d5f5d3", "#fadadd", "#F5F0FF", "#DDF4C5"];
+// ─── Kaira design-system palette (inline-hex, matching the file convention) ──
+// ink scale: #0b1220 / #1a2436 / #445069 / #8a93a6 / #b8becc · paper: #fafaf5
+// #f4f3ec · line #ececec · yellow #f7e700 / wash #fffde7 · green #1f8a5a /
+// soft #e7f5ee · red #b84034 / soft #fff1ee. Soft semantic surfaces below are
+// what the category tags rotate through (retoned pastels).
+const categorySurfaces = ["#e7f5ee", "#fff1ee", "#eef2fb", "#f0e9d6"];
 
 // ─── Shared presentational helpers ─────────────────────────────────────────
 // Section heading used across Inclusions / Exclusions / Starting point etc.
 const SectionTitle = ({ children, className = "" }) => (
-  <h3 className={`text-[18px] font-bold leading-[26px] text-[#01202B] ${className}`}>
+  <h3
+    className={`font-sans text-[17px] font-bold leading-[24px] tracking-[-0.01em] text-[#0b1220] ${className}`}
+  >
     {children}
   </h3>
 );
 
-const Divider = () => <div className="h-px w-full bg-[#ECECEC]" />;
+const Divider = () => <div className="h-px w-full bg-[#ececec]" />;
 
 // Bulleted list with an icon glyph. variant: "include" | "exclude" | default dot.
 const IconList = ({ items, variant }) => (
@@ -44,14 +51,14 @@ const IconList = ({ items, variant }) => (
     {items.map((item, i) => (
       <li
         key={i}
-        className="flex items-start gap-2.5 text-[14px] leading-[22px] text-[#4a4a4a]"
+        className="flex items-start gap-2.5 text-[15px] leading-[23px] text-[#445069]"
       >
         {variant === "include" ? (
-          <IoCheckmarkCircle className="mt-[2px] shrink-0 text-[17px] text-[#3BAF75]" />
+          <IoCheckmarkCircle className="mt-[2px] shrink-0 text-[17px] text-[#1f8a5a]" />
         ) : variant === "exclude" ? (
-          <IoCloseCircle className="mt-[2px] shrink-0 text-[17px] text-[#EE724B]" />
+          <IoCloseCircle className="mt-[2px] shrink-0 text-[17px] text-[#b84034]" />
         ) : (
-          <span className="mt-[8px] h-[5px] w-[5px] shrink-0 rounded-full bg-[#C2C2C2]" />
+          <span className="mt-[8px] h-[5px] w-[5px] shrink-0 rounded-full bg-[#b8becc]" />
         )}
         <span>{item}</span>
       </li>
@@ -67,9 +74,11 @@ const CollapsibleSection = ({ title, open, onToggle, children }) => (
       onClick={onToggle}
       className="flex w-full items-center justify-between py-3.5 text-left"
     >
-      <span className="text-[18px] font-bold text-[#01202B]">{title}</span>
+      <span className="font-sans text-[17px] font-bold tracking-[-0.01em] text-[#0b1220]">
+        {title}
+      </span>
       <IoIosArrowDown
-        className={`shrink-0 text-[#01202B] transition-transform duration-200 ${
+        className={`shrink-0 text-[#445069] transition-transform duration-200 ${
           open ? "rotate-180" : ""
         }`}
       />
@@ -78,12 +87,14 @@ const CollapsibleSection = ({ title, open, onToggle, children }) => (
   </div>
 );
 
-// Small rounded info pill used for hotel pickup / tour type / guide facts.
+// Small info chip used for hotel pickup / tour type / guide facts.
+// neutral renders the canonical Kaira "chip" (white + hairline border); the
+// green/red tones use the soft semantic surfaces.
 const FactPill = ({ icon, children, tone = "neutral" }) => {
   const tones = {
-    neutral: "bg-[#F4F5F6] text-[#3a3a3a]",
-    green: "bg-[#E9F8EF] text-[#2E9C68]",
-    red: "bg-[#FCE9E2] text-[#E0663F]",
+    neutral: "bg-white border border-[#ececec] text-[#1a2436]",
+    green: "bg-[#e7f5ee] border border-transparent text-[#1f8a5a]",
+    red: "bg-[#fff1ee] border border-transparent text-[#b84034]",
   };
   return (
     <span
@@ -452,7 +463,7 @@ export default function ActivityDetails(props) {
           <div
             key={i}
             className={`cursor-pointer ${
- startDate === dateString ? "text-black font-semibold" : "text-[#4a4a4a]"
+ startDate === dateString ? "text-[#0b1220] font-semibold" : "text-[#445069]"
  }`}
             onClick={() => {
               if (dateString === startDate) {
@@ -478,13 +489,13 @@ export default function ActivityDetails(props) {
   );
 
   return (
-    <div className="h-[100vh] overflow-y-auto bg-white">
+    <div className="h-[100vh] overflow-y-auto bg-[#fafaf5] font-sans">
       {/* Sticky header — back action stays reachable while scrolling */}
-      <div className="sticky top-0 z-30 flex items-center gap-3 border-b border-[#F0F0F0] bg-white/95 px-4 py-3 backdrop-blur">
+      <div className="sticky top-0 z-30 flex items-center gap-3 border-b border-[#ececec] bg-[#fafaf5]/95 px-4 py-3 backdrop-blur">
         <button
           type="button"
           onClick={(e) => props.handleCloseDrawer(e)}
-          className="flex h-9 w-9 items-center justify-center rounded-full transition-colors hover:bg-[#F4F4F4]"
+          className="flex h-9 w-9 items-center justify-center rounded-full transition-colors hover:bg-[#f4f3ec]"
         >
           <Image
             src="/backarrow.svg"
@@ -494,7 +505,7 @@ export default function ActivityDetails(props) {
             height={2}
           />
         </button>
-        <span className="truncate text-[15px] font-semibold text-[#01202B]">
+        <span className="truncate text-[15px] font-semibold tracking-[-0.01em] text-[#0b1220]">
           Activity details
         </span>
       </div>
@@ -546,16 +557,16 @@ export default function ActivityDetails(props) {
               <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/55 to-transparent" />
 
               {props.data?.is_very_popular ? (
-                <div className="absolute bottom-3 right-3 bg-[#FFD201] text-[#01202B] px-3 py-1 rounded-full flex flex-row items-center gap-1 text-[13px] font-semibold shadow-sm">
-                  <FaStar size={12} />
+                <div className="absolute bottom-3 right-3 flex flex-row items-center gap-1.5 rounded-full bg-[#f7e700] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.06em] text-[#0b1220] shadow-sm">
+                  <FaStar size={11} />
                   Very Popular
                 </div>
               ) : null}
 
               {props.data?.ideal_duration_number ? (
-                <div className="absolute bottom-3 left-3 bg-black/55 text-white px-3 py-1.5 rounded-full flex flex-row items-center gap-1.5 backdrop-blur">
+                <div className="absolute bottom-3 left-3 flex flex-row items-center gap-1.5 rounded-full bg-black/55 px-3 py-1.5 text-white backdrop-blur">
                   <IoTimeOutline size={14} />
-                  <div className="text-[13px]">
+                  <div className="font-mono text-[11px] uppercase tracking-[0.05em]">
                     {props.data.ideal_duration_number}{" "}
                     {props.data.ideal_duration_number > 1
                       ? props.data?.ideal_duration_unit?.toLowerCase()
@@ -580,27 +591,27 @@ export default function ActivityDetails(props) {
           </div>
 
           <div className="flex flex-col gap-5">
-            <div className="flex flex-col gap-1">
-              <h1 className="text-[22px] font-bold leading-[28px] text-[#01202B]">
+            <div className="flex flex-col gap-1.5">
+              <h1 className="text-[24px] font-bold leading-[29px] tracking-[-0.02em] text-[#0b1220]">
                 {props.data?.display_name || props.data.name}
               </h1>
               {props.data?.one_liner_description && (
-                <p className="text-[14px] leading-[20px] text-[#7a7a7a]">
+                <p className="font-serif text-[18px] italic leading-[24px] text-[#445069]">
                   {props.data.one_liner_description}
                 </p>
               )}
 
               {props?.data?.rating && (
                 <div className="mt-1 flex items-center gap-1.5">
-                  <div className="flex flex-row gap-0.5 text-[#FFD201]">
+                  <div className="flex flex-row gap-0.5 text-[#f7e700]">
                     {stars}
                   </div>
                   <div className="flex items-center gap-1">
-                    <span className="text-[12px] text-[#7a7a7a]">
+                    <span className="font-mono text-[12px] text-[#445069]">
                       {props.data.rating}
                     </span>
                     {props.data?.user_ratings_total > 0 && (
-                      <u className="text-[12px] text-[#7a7a7a]">
+                      <u className="text-[12px] text-[#8a93a6]">
                         · {props.data.user_ratings_total} user reviews
                       </u>
                     )}
@@ -610,18 +621,19 @@ export default function ActivityDetails(props) {
 
               {props.data?.distance_from_city_centre != null &&
                 props.data?.distance_from_city_centre !== "" && (
-                  <div className="mt-1.5 inline-flex w-fit items-center gap-1.5 rounded-full bg-[#FFF6E0] px-3 py-1 text-[12px] font-semibold text-[#01202B]">
-                    <IoLocationOutline className="text-[13px] text-[#E0A100]" />
+                  <div className="mt-1.5 inline-flex w-fit items-center gap-1.5 rounded-full bg-[#f4f3ec] px-3 py-1 font-mono text-[11px] uppercase tracking-[0.05em] text-[#445069]">
+                    <IoLocationOutline className="text-[13px] text-[#445069]" />
                     {Number(props.data.distance_from_city_centre).toFixed(1)} km
-                    from city centre
+                    from centre
                   </div>
                 )}
             </div>
 
-            {/* Timing on the left end, Travellers on the right end. With
-                justify-between a lone control naturally falls back to the
-                left end (only one flex child → starts at flex-start). */}
-            <div className="flex flex-wrap items-center justify-between gap-2">
+            {/* Desktop: timing on the left end, Travellers on the right end
+                (justify-between; a lone control falls back to the left). Mobile:
+                flex-col-reverse stacks Travellers above the timing section even
+                though timing comes first in the DOM. */}
+            <div className="flex flex-col-reverse items-start gap-3 md:flex-row md:flex-wrap md:items-center md:justify-between md:gap-2">
               {!hideSchedule &&
                 (props?.fromChat || availableTimePeriods.length > 0) && (
                   <div className="flex flex-wrap items-center gap-2">
@@ -634,7 +646,7 @@ export default function ActivityDetails(props) {
                       <div className="relative">
                         <div
                           ref={dateBoxRef}
-                          className="flex items-center w-auto bg-[#F7F7F7] py-[0.7rem] px-4 rounded-lg justify-between cursor-pointer gap-2"
+                          className="flex items-center w-auto bg-[#f4f3ec] py-[0.7rem] px-4 rounded-lg justify-between cursor-pointer gap-2 text-[#0b1220]"
                           onClick={() => setShowCalender((prev) => !prev)}
                         >
                           <div className="flex items-center gap-2">
@@ -664,7 +676,7 @@ export default function ActivityDetails(props) {
                     )}
 
                     {availableTimePeriods.length > 0 && (
-                      <div className="inline-flex w-fit bg-[#F7F7F7] rounded-lg p-1 gap-1">
+                      <div className="inline-flex w-fit bg-[#f4f3ec] rounded-lg p-1 gap-1">
                         {availableTimePeriods.map((period) => {
                           const isSelected = selectedTimeOfDay === period;
                           return (
@@ -681,8 +693,8 @@ export default function ActivityDetails(props) {
                               }}
                               className={`flex-none px-4 py-2 rounded-md text-[14px] font-medium transition-colors ${
                                 isSelected
-                                  ? "bg-[#07213A] text-white"
-                                  : "bg-transparent text-[#7a7a7a] hover:text-[#01202B]"
+                                  ? "bg-[#0b1220] text-[#fafaf5]"
+                                  : "bg-transparent text-[#8a93a6] hover:text-[#0b1220]"
                               }`}
                             >
                               {period}
@@ -709,15 +721,18 @@ export default function ActivityDetails(props) {
               (props.data?.tags && props.data?.tags?.length > 0)) && (
               <div className="flex flex-row items-center gap-2 flex-wrap">
                 {props.data?.category && (
-                  <span className="rounded-full px-3 py-1.5 text-[12px] font-medium bg-[#01202B] text-white">
+                  <span className="rounded-full px-3 py-1.5 text-[12px] font-semibold bg-[#0b1220] text-[#fafaf5]">
                     {props.data.category}
                   </span>
                 )}
                 {props.data.tags?.map((e, i) => (
                   <span
                     key={i}
-                    className="rounded-full px-3 py-1.5 text-[12px] font-medium text-[#01202B]"
-                    style={{ backgroundColor: colors[i % colors.length] }}
+                    className="rounded-full px-3 py-1.5 text-[12px] font-medium text-[#1a2436]"
+                    style={{
+                      backgroundColor:
+                        categorySurfaces[i % categorySurfaces.length],
+                    }}
                   >
                     {e}
                   </span>
@@ -726,23 +741,25 @@ export default function ActivityDetails(props) {
             )}
 
             {props.data?.short_description && (
-              <p className="text-[14px] leading-[22px] text-[#3a3a3a]">
+              <p className="text-[15px] leading-[23px] text-[#445069]">
                 {props.data.short_description}
               </p>
             )}
 
             {props.data?.inclusions && props.data?.inclusions?.length > 0 && (
-              <section className="flex flex-col gap-3">
-                <SectionTitle className="!text-[#2E9C68]">Inclusions</SectionTitle>
-                <Divider />
+              <section className="flex flex-col gap-3 rounded-[14px] bg-[#e7f5ee] p-4">
+                <div className="flex items-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.1em] text-[#1f8a5a]">
+                  ✓ Inclusions
+                </div>
                 <IconList items={props.data.inclusions} variant="include" />
               </section>
             )}
 
             {props.data?.exclusions && props.data?.exclusions?.length > 0 && (
-              <section className="flex flex-col gap-3">
-                <SectionTitle className="!text-[#E0663F]">Exclusions</SectionTitle>
-                <Divider />
+              <section className="flex flex-col gap-3 rounded-[14px] bg-[#fff1ee] p-4">
+                <div className="flex items-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.1em] text-[#b84034]">
+                  ✗ Exclusions
+                </div>
                 <IconList items={props.data.exclusions} variant="exclude" />
               </section>
             )}
@@ -817,15 +834,15 @@ export default function ActivityDetails(props) {
               <SectionTitle>Starting point</SectionTitle>
               <Divider />
               {props.data?.starting_point && (
-                <div className="flex items-start gap-2 text-[14px] text-[#01202B]">
-                  <IoLocationOutline className="mt-[2px] shrink-0 text-[17px] text-[#01202B]" />
+                <div className="flex items-start gap-2 text-[15px] text-[#1a2436]">
+                  <IoLocationOutline className="mt-[2px] shrink-0 text-[17px] text-[#445069]" />
                   <span>{props.data.starting_point}</span>
                 </div>
               )}
               {Array.isArray(props.data?.other_starting_points) &&
                 props.data?.other_starting_points.length > 0 && (
                   <div className="text-[14px]">
-                    <div className="text-[#7a7a7a] mb-2">
+                    <div className="text-[#8a93a6] mb-2">
                       Other starting points
                     </div>
                     <IconList
@@ -843,7 +860,7 @@ export default function ActivityDetails(props) {
             props.data?.things_to_bring?.length ||
             props.data?.not_suitable_for?.length ||
             props.data?.tips_tricks?.length) ? (
-            <div className="flex flex-col divide-y divide-[#ECECEC] border-y border-[#ECECEC]">
+            <div className="flex flex-col divide-y divide-[#ececec] border-y border-[#ececec]">
               {props.data?.general_guidelines?.length ? (
                 <CollapsibleSection
                   title="General guidelines"
@@ -938,8 +955,8 @@ export default function ActivityDetails(props) {
                       key={packageItem.result_index}
                       className={`rounded-xl border p-4 cursor-pointer transition-colors ${
                         isSel
-                          ? "border-[#FFD201] bg-[#FFFBEB]"
-                          : "border-[#ECECEC] bg-white hover:border-[#D5D5D5]"
+                          ? "border-[#f7e700] bg-[#fffde7]"
+                          : "border-[#ececec] bg-white hover:border-[#b8becc]"
                       }`}
                       onClick={() => setSelectedPackage(packageItem)}
                     >
@@ -948,28 +965,28 @@ export default function ActivityDetails(props) {
                           <div
                             className={`mt-0.5 w-5 h-5 shrink-0 rounded-full border-2 flex items-center justify-center ${
                               isSel
-                                ? "border-[#FFD201] bg-[#FFD201]"
-                                : "border-gray-300"
+                                ? "border-[#f7e700] bg-[#f7e700]"
+                                : "border-[#b8becc]"
                             }`}
                           >
                             {isSel && (
-                              <div className="w-2 h-2 rounded-full bg-white"></div>
+                              <div className="w-2 h-2 rounded-full bg-[#0b1220]"></div>
                             )}
                           </div>
                           <div className="flex flex-col gap-0.5">
                             {props.data?.is_package && packageItem?.title ? (
-                              <div className="font-medium text-[#01202B]">
+                              <div className="font-medium text-[#0b1220]">
                                 {packageItem.title}
                               </div>
                             ) : null}
                             {props.data?.is_package &&
                             packageItem?.description ? (
-                              <div className="text-sm text-gray-600">
+                              <div className="text-sm text-[#445069]">
                                 {packageItem.description}
                               </div>
                             ) : null}
                             {packageItem.pax_details?.adults ? (
-                              <div className="text-sm text-gray-600">
+                              <div className="text-sm text-[#445069]">
                                 For{" "}
                                 {packageItem.pax_details.adults +
                                   packageItem.pax_details.children}{" "}
@@ -978,7 +995,7 @@ export default function ActivityDetails(props) {
                             ) : null}
                           </div>
                         </div>
-                        <div className="text-right text-[18px] font-bold text-[#01202B]">
+                        <div className="text-right font-mono text-[18px] font-semibold text-[#0b1220]">
                           {`${
                             currency?.currency
                               ? currencySymbols?.[currency?.currency]
@@ -1003,7 +1020,7 @@ export default function ActivityDetails(props) {
               dangerouslySetInnerHTML={{
                 __html: props?.data?.cancellation_policies,
               }}
-              className="flex flex-col gap-1 text-sm text-[#4a4a4a] ml-4"
+              className="flex flex-col gap-1 text-sm text-[#445069] ml-4"
             ></div>
           </section>
         )}
@@ -1025,11 +1042,11 @@ export default function ActivityDetails(props) {
         // BottomModal in a z-10 stacking context. Any bar z-index >= 10 paints
         // over that whole subtree (modal included). Staying under 10 lets the
         // modal cover the bar when open; they never overlap while it's closed.
-        <div className="scroll-none fixed bottom-0 right-0 left-0 z-[9] border-t border-[#ECECEC] bg-white px-5 py-3 shadow-[0_-4px_20px_rgba(0,0,0,0.06)]">
+        <div className="scroll-none fixed bottom-0 right-0 left-0 z-[9] border-t border-[#ececec] bg-[#fafaf5] px-5 py-3 shadow-[0_-4px_20px_rgba(11,18,32,0.06)]">
           <div className="flex items-center justify-between gap-4">
             <div className="flex min-w-0 flex-col">
               {selectedPackage?.total_price ? (
-                <span className="text-[24px] font-extrabold leading-none text-[#01202B]">
+                <span className="font-mono text-[24px] font-semibold leading-none text-[#0b1220]">
                   {`${
                     currency?.currency
                       ? currencySymbols?.[currency?.currency]
@@ -1041,7 +1058,7 @@ export default function ActivityDetails(props) {
                     : selectedPackage.total_price}
                 </span>
               ) : null}
-              <span className="mt-1 truncate text-[12px] text-[#8a8a8a]">
+              <span className="mt-1 truncate text-[12px] text-[#8a93a6]">
                 for{" "}
                 {(props?.filterState.adults + props?.filterState?.children) ||
                   (itinerary?.number_of_adults +
@@ -1105,37 +1122,42 @@ export const Amenity = ({ index, amenity, handleAmenityChange, travelers }) => {
   return (
     <div
       key={index}
-      className="relative rounded-xl border border-[#ECECEC] bg-[#FAFAFA] p-4"
+      className="relative rounded-[18px] border border-[#ececec] bg-white p-4 transition-shadow hover:shadow-[0_16px_40px_-20px_rgba(11,18,32,0.15)]"
     >
-      <div className="flex items-start gap-2.5">
-        <span className="mt-0.5 shrink-0 text-[18px] text-[#01202B]">
+      <div className="flex items-start gap-3">
+        <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-[#f4f3ec] text-[16px] text-[#0b1220]">
           {getAmenityIcon(amenity.type)}
         </span>
         <div className="flex flex-col gap-1">
-          <div className="text-[15px] font-semibold text-[#01202B]">
+          {amenity.type && (
+            <div className="font-mono text-[10px] font-medium uppercase tracking-[0.1em] text-[#8a93a6]">
+              {amenity.type}
+            </div>
+          )}
+          <div className="text-[16px] font-semibold leading-[20px] tracking-[-0.01em] text-[#0b1220]">
             {amenity.name}
           </div>
           {amenity.description && (
-            <div className="text-[13px] leading-[18px] text-[#6a6a6a]">
+            <div className="text-[13px] leading-[18px] text-[#445069]">
               {amenity.description}
             </div>
           )}
           {travelers ? (
-            <div className="mt-0.5 flex items-center gap-1 text-[12px] font-medium text-[#3a3a3a]">
+            <div className="mt-0.5 flex items-center gap-1 text-[12px] font-medium text-[#445069]">
               <Image src="/ticket.svg" alt="ticket" width={13.33} height={10.67} />
-              {travelers} tickets
+              {travelers} {travelers > 1 ? "tickets" : "ticket"}
             </div>
           ) : null}
         </div>
       </div>
 
       {amenity.price == 0 ? (
-        <div className="mt-3 text-[15px] font-semibold text-[#277004]">
+        <div className="mt-3 text-[15px] font-semibold text-[#1f8a5a]">
           Included for free
         </div>
       ) : (
         <div className="mt-3 flex items-end justify-between">
-          <div className="font-bold text-[20px] text-[#01202B]">
+          <div className="font-mono font-semibold text-[20px] text-[#0b1220]">
             {`${
               currency?.currency ? currencySymbols?.[currency?.currency] : "₹"
             }`}
@@ -1146,7 +1168,7 @@ export const Amenity = ({ index, amenity, handleAmenityChange, travelers }) => {
                 ? getIndianPrice(rounded)
                 : rounded.toLocaleString("en-US");
             })()}{" "}
-            <span className="text-[13px] font-normal text-[#6a6a6a]">
+            <span className="font-sans text-[13px] font-normal text-[#8a93a6]">
               per person*
             </span>
           </div>

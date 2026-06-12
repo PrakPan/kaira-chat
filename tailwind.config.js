@@ -13,6 +13,8 @@ module.exports = {
   theme: {
     fontFamily: {
       sans: ["Inter", "sans-serif"],
+      serif: ["Instrument Serif", "serif"],
+      mono: ["JetBrains Mono", "ui-monospace", "monospace"],
     },
     extend: {
       fontFamily: {
