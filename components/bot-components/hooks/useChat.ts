@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback } from "react";
+import { getAdParams } from "../../../helper/adAttribution";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -138,6 +139,36 @@ export function getPlatform(): "mobile" | "desktop" {
   return "desktop";
 }
 
+// ─── Source / attribution fields ────────────────────────────────────────────
+// Mirrors useSourceParams() used by the itinerary-initiate payload: the current
+// path, platform, and any ad-attribution params (utm_*, gclid, fbclid, …). URL
+// values win; persisted ad params (sessionStorage) fill the gaps so attribution
+// survives navigation that strips the query string.
+export function buildSourceFields(): Record<string, unknown> {
+  const platform = getPlatform();
+  if (typeof window === "undefined") return { platform };
+
+  const queryObj: Record<string, unknown> = {};
+  const urlParams = new URLSearchParams(window.location.search);
+  for (const [key, value] of urlParams.entries()) {
+    if (value === "true") queryObj[key] = true;
+    else if (value === "false") queryObj[key] = false;
+    else if (!isNaN(Number(value)) && value !== "") queryObj[key] = Number(value);
+    else queryObj[key] = value;
+  }
+
+  const stored = getAdParams();
+  const merged: Record<string, unknown> = { ...stored, ...queryObj };
+  const path = window.location.pathname + window.location.search;
+
+  return {
+    path,
+    platform,
+    ...merged,
+    source: merged.source || path || merged.utm_source,
+  };
+}
+
 function buildFirstMessageBody(
   text: string,
   opts: {
@@ -160,6 +191,7 @@ function buildFirstMessageBody(
     user_location: opts.userLocation,
     domain_key: opts.domainKey,
     platform: getPlatform(),
+    source: buildSourceFields(),
     ...buildAuthFields(opts),
   };
   if (opts.botMode === "p2" && opts.itineraryId) body.itinerary_id = opts.itineraryId;
