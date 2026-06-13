@@ -46,7 +46,7 @@ const filmyGetawaysThemeConfig: ThemeConfig = {
       icon: "🎥",
       cards: [
         {
-          image: `${IMAGE_BASE}/Queen -- Solo Paris and Amsterdam.jpg`,
+          image: `${IMAGE_BASE}/Queen -- Solo Paris and Amsterdam.png `,
           label: "Queen — Solo Paris and Amsterdam",
           tags: "Bollywood · Europe",
           description: "Go alone. Come back with stories.",
@@ -54,7 +54,7 @@ const filmyGetawaysThemeConfig: ThemeConfig = {
             "I want a Queen-inspired solo trip through Paris and Amsterdam. Build the perfect itinerary with safe areas, memorable experiences, and the freedom that made the journey so special.",
         },
         {
-          image: `${IMAGE_BASE}/ZNMD -- Spain Awaits You.jpg `,
+          image: `${IMAGE_BASE}/ZNMD -- Spain Awaits You.png `,
           label: "ZNMD — Spain Awaits You",
           tags: "Bollywood · Spain",
           description: "Spain. Friendship. No regrets.",
@@ -62,7 +62,7 @@ const filmyGetawaysThemeConfig: ThemeConfig = {
             "I want to recreate the ZNMD Spain journey through Pamplona, La Tomatina, Seville, and Barcelona. Build the ultimate itinerary with key experiences, costs, and festival dates.",
         },
         {
-          image: `${IMAGE_BASE}/Dil Chahta Hai -- Goa Forever.jpg`,
+          image: `${IMAGE_BASE}/Dil Chahta Hai -- Goa Forever.png `,
           label: "Dil Chahta Hai — Goa Forever",
           tags: "Bollywood · Goa",
           description: "Friends, feni, and the sea.",
@@ -70,7 +70,7 @@ const filmyGetawaysThemeConfig: ThemeConfig = {
             "I want a Dil Chahta Hai-style Goa getaway with beaches, nightlife, and unforgettable moments with friends. Build the perfect itinerary with the best places to stay, eat, and explore.",
         },
         {
-          image: `${IMAGE_BASE}/DDLJ -- The Switzerland Dream.jpg `,
+          image: `${IMAGE_BASE}/DDLJ -- The Switzerland Dream.png `,
           label: "DDLJ — The Switzerland Dream",
           tags: "Bollywood · Europe",
           description: "Trains, Alps, and romance.",
@@ -78,7 +78,7 @@ const filmyGetawaysThemeConfig: ThemeConfig = {
             "I want the classic DDLJ experience through Switzerland and Europe. Build the ideal itinerary with scenic trains, charming towns, and iconic mountain views.",
         },
         {
-          image: `${IMAGE_BASE}/Yeh Jawaani -- Mountains to Palaces.jpg`,
+          image: `${IMAGE_BASE}/Yeh Jawaani -- Mountains to Palace.jpg `,
           label: "Yeh Jawaani — Mountains to Palaces",
           tags: "Bollywood · India",
           description: "Mountains. Desert. Road trip vibes.",
@@ -91,32 +91,8 @@ const filmyGetawaysThemeConfig: ThemeConfig = {
       heading: "Hollywood Said Go Here. We Agree.",
       icon: "🍿",
       cards: [
-        {
-          image: `${IMAGE_BASE}/Before Sunrise -- Vienna at Midnight.jpg `,
-          label: "Before Sunrise — Vienna at Midnight",
-          tags: "Hollywood · Austria",
-          description: "A night that never feels planned.",
-          prompt:
-            "Build a Before Sunrise-style Vienna itinerary focused on slow walks, cafés, parks, and midnight conversations. Capture the exact feel of Jesse and Celine's journey across the city.",
-        },
-        {
-          image: `${IMAGE_BASE}/Eat Pray Love -- Bali and Italy.jpg `,
-          label: "Eat Pray Love — Bali and Italy",
-          tags: "Hollywood · Bali + Italy",
-          description: "Some trips change everything.",
-          prompt:
-            "Plan a combined Italy and Bali trip inspired by Eat Pray Love. Cover Rome, Naples, and Ubud with real experiences still worth doing today and total cost from India.",
-        },
-        {
-          image: `${IMAGE_BASE}/Mamma Mia -- Greek Islands.jpg `,
-          label: "Mamma Mia — Greek Islands",
-          tags: "Hollywood · Greece",
-          description: "Where life turns into music.",
-          prompt:
-            "Build an 8-day Greek islands trip inspired by Mamma Mia. Include Skopelos, Skiathos, and Santorini options with the most cinematic stays and island routes.",
-        },
-        {
-          image: `${IMAGE_BASE}/Midnight in Paris -- Walk Into the Film.jpg `,
+         {
+          image: `${IMAGE_BASE}/Game of Thrones.png `,
           label: "Midnight in Paris — Walk Into the Film",
           tags: "Hollywood · France",
           description: "When Paris stops performing.",
@@ -124,7 +100,31 @@ const filmyGetawaysThemeConfig: ThemeConfig = {
             "Create a Midnight in Paris-inspired 3-day itinerary covering Montmartre, Seine bridges, and Left Bank cafés. Include best timing for light, crowds, and cinematic moments.",
         },
         {
-          image: `${IMAGE_BASE}/The Secret Life of Walter Mitty -- Iceland.jpg `,
+          image: `${IMAGE_BASE}/Before Sunrise -- Vienna at Midnight.png `,
+          label: "Before Sunrise — Vienna at Midnight",
+          tags: "Hollywood · Austria",
+          description: "A night that never feels planned.",
+          prompt:
+            "Build a Before Sunrise-style Vienna itinerary focused on slow walks, cafés, parks, and midnight conversations. Capture the exact feel of Jesse and Celine's journey across the city.",
+        },
+        {
+          image: `${IMAGE_BASE}/Eat Pray Love -- Bali and Italy.png `,
+          label: "Eat Pray Love — Bali and Italy",
+          tags: "Hollywood · Bali + Italy",
+          description: "Some trips change everything.",
+          prompt:
+            "Plan a combined Italy and Bali trip inspired by Eat Pray Love. Cover Rome, Naples, and Ubud with real experiences still worth doing today and total cost from India.",
+        },
+        {
+          image: `${IMAGE_BASE}/Mamma Mia -- Greek Islands.png `,
+          label: "Mamma Mia — Greek Islands",
+          tags: "Hollywood · Greece",
+          description: "Where life turns into music.",
+          prompt:
+            "Build an 8-day Greek islands trip inspired by Mamma Mia. Include Skopelos, Skiathos, and Santorini options with the most cinematic stays and island routes.",
+        },
+        {
+          image: `${IMAGE_BASE}/The Secret Life of Walter Mitty -- Iceland.png `,
           label: "The Secret Life of Walter Mitty — Iceland",
           tags: "Hollywood · Iceland",
           description: "Reality feels optional here.",
@@ -138,7 +138,7 @@ const filmyGetawaysThemeConfig: ThemeConfig = {
       icon: "🎟️",
       cards: [
         {
-          image: `${IMAGE_BASE}/Friends Who Travel Far.jpg `,
+          image: `${IMAGE_BASE}/Friends Who Travel Far.png `,
           label: "Friends Who Travel Far",
           tags: "Bollywood · Group",
           description: "Three friends. One wild route.",
@@ -146,7 +146,7 @@ const filmyGetawaysThemeConfig: ThemeConfig = {
             "Plan a ZNMD style Spain trip for three friends covering Pamplona, La Tomatina, Seville, and Barcelona. Include festival dates, booking timelines, travel between cities, stays, and cost from India.",
         },
         {
-          image: `${IMAGE_BASE}/The Romantic Escape.jpg `,
+          image: `${IMAGE_BASE}/The Romantic Escape.png `,
           label: "The Romantic Escape",
           tags: "Bollywood · Romantic",
           description: "Europe made for two.",
@@ -154,7 +154,7 @@ const filmyGetawaysThemeConfig: ThemeConfig = {
             "Build a DDLJ-inspired 10-day honeymoon in Switzerland and nearby Europe. Focus on alpine trains, scenic villages, romantic routes, seasons, and total cost from India.",
         },
         {
-          image: `${IMAGE_BASE}/The Solo Reset Trip.jpg `,
+          image: `${IMAGE_BASE}/The Solo Reset.jpg `,
           label: "The Solo Reset Trip",
           tags: "Films · Solo",
           description: "Go alone. Come back new.",
@@ -162,7 +162,7 @@ const filmyGetawaysThemeConfig: ThemeConfig = {
             "Choose between Queen (Paris–Amsterdam) or Eat Pray Love (Bali–Italy) for a solo trip. Recommend one and build a detailed itinerary with key experiences and cost from India.",
         },
         {
-          image: `${IMAGE_BASE}/The Film Route Europe Trip.jpg `,
+          image: `${IMAGE_BASE}/The Film Route Europe Trip.png `,
           label: "The Film Route Europe Trip",
           tags: "Hollywood · Europe",
           description: "Cities that feel unreal.",
@@ -170,7 +170,7 @@ const filmyGetawaysThemeConfig: ThemeConfig = {
             "Create a 12-day Europe trip inspired by Before Sunrise (Vienna), Midnight in Paris, and Letters to Juliet (Verona). Include routes, key experiences, train travel, and total cost from India.",
         },
         {
-          image: `${IMAGE_BASE}/Cruise Through the Mediterranean.jpg `,
+          image: `${IMAGE_BASE}/Cruise Through the Mediterranean.png `,
           label: "Cruise Through the Mediterranean",
           tags: "Bollywood · Europe",
           description: "Sea, luxury, escape.",
@@ -184,7 +184,7 @@ const filmyGetawaysThemeConfig: ThemeConfig = {
       icon: "🎦",
       cards: [
         {
-          image: `${IMAGE_BASE}/Rohtang Pass -- 3 Idiots and YJHD.jpg `,
+          image: `${IMAGE_BASE}/Rohtang Pass -- 3 Idiots and YJHD.png `,
           label: "Rohtang Pass — 3 Idiots and YJHD",
           tags: "Bollywood · Himalayas",
           description: "The road everyone remembers.",
@@ -192,7 +192,7 @@ const filmyGetawaysThemeConfig: ThemeConfig = {
             "Plan a 5-day Manali trip covering Rohtang Pass, inspired by 3 Idiots and Yeh Jawaani Hai Deewani. Include permit details, road conditions in snow vs summer, and full itinerary with Solang Valley, Old Manali, and Beas River.",
         },
         {
-          image: `${IMAGE_BASE}/Corsica -- Where Tamasha Was Shot.jpg `,
+          image: `${IMAGE_BASE}/Corsica -- Where Tamasha Was Shot.png `,
           label: "Corsica — Where Tamasha Was Shot",
           tags: "Bollywood · France",
           description: "Cliffs, sea, and silence.",
@@ -200,7 +200,7 @@ const filmyGetawaysThemeConfig: ThemeConfig = {
             "Build a 5-day Corsica itinerary covering Bonifacio, Palombaggia, and mountain villages inspired by Tamasha. Include how to reach from France/Italy and how to combine it with Paris.",
         },
         {
-          image: `${IMAGE_BASE}/Juliet's Courtyard -- Verona.jpg `,
+          image: `${IMAGE_BASE}/Juliet's Courtyard.jpg `,
           label: "Juliet's Courtyard — Verona",
           tags: "Hollywood · Italy",
           description: "Walls, wishes, and stories.",
@@ -208,7 +208,7 @@ const filmyGetawaysThemeConfig: ThemeConfig = {
             "Create a 2-day Verona itinerary covering Juliet's Courtyard, Piazza delle Erbe, the Roman amphitheatre, and river walks. Include what feels real vs touristy and how to fit it into a wider Italy trip.",
         },
         {
-          image: `${IMAGE_BASE}/Amsterdam -- Queen's Canal Walk.jpg `,
+          image: `${IMAGE_BASE}/Amsterdam -- Queen's Canal Walk.png `,
           label: "Amsterdam — Queen's Canal Walk",
           tags: "Bollywood · Netherlands",
           description: "A city that slows you.",
@@ -216,7 +216,7 @@ const filmyGetawaysThemeConfig: ThemeConfig = {
             "Plan a 3-day Amsterdam trip inspired by Queen. Include Jordaan canals, Haarlemmerstraat, Vondelpark, and key solo/couple experiences. Structure it as a Paris extension with safe, cinematic walking routes.",
         },
         {
-          image: `${IMAGE_BASE}/Santorini -- Mamma Mia Vibes.jpg `,
+          image: `${IMAGE_BASE}/Santorini -- Mamma Mia Vibes.png `,
           label: "Santorini — Mamma Mia Vibes",
           tags: "Hollywood · Greece",
           description: "Sunsets that feel unreal.",
