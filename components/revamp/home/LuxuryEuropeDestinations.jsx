@@ -42,7 +42,7 @@ const DEFAULT_PACKAGES = [
       </>
     ),
     includes: ["Flights", "4-star villas", "Private transfers", "2 candle-lit dinners"],
-    price: { amount: "₹1,18,000", per: "per couple · 7 nights" },
+    price: { amount: "₹59,000", per: "/ person" },
     category: "honeymoon",
     seed: "Bali honeymoon, 7 nights, premium",
   },
@@ -58,7 +58,7 @@ const DEFAULT_PACKAGES = [
       </>
     ),
     includes: ["Flights + JR Pass", "Boutique stays", "1 ryokan night", "Sushi-counter dinner"],
-    price: { amount: "₹1,84,000", per: "per person · 10 nights" },
+    price: { amount: "₹1,84,000", per: "/ person" },
     category: "premium",
     seed: "Japan 10 days, Tokyo + Kyoto + Osaka, premium",
   },
@@ -73,7 +73,7 @@ const DEFAULT_PACKAGES = [
       </>
     ),
     includes: ["Flights", "Family rooms", "Junk-boat night", "Lantern-making class"],
-    price: { amount: "₹68,000", per: "per person · 8 nights" },
+    price: { amount: "₹68,000", per: "/ person" },
     category: "family",
     seed: "Vietnam family 8 days, Hanoi Hoi An Halong",
   },
@@ -88,7 +88,7 @@ const DEFAULT_PACKAGES = [
       </>
     ),
     includes: ["Flights", "Beachfront stays", "Phi Phi day cruise", "Street-food walk"],
-    price: { amount: "₹52,000", per: "per person · 6 nights" },
+    price: { amount: "₹52,000", per: "/ person" },
     category: "quick",
     seed: "Thailand 6 nights, Bangkok + Phi Phi",
   },

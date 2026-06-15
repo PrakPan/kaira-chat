@@ -615,8 +615,8 @@ export default function BotApp({
 
   // ── restoreItineraryDirectly — used for old itineraries with no chatkit threads ──
   const restoreItineraryDirectly = useCallback(
-    async (itineraryId: string) => {
-      if (!itineraryId || itineraryId === "undefined") return;
+    async (itineraryId: string): Promise<string | null> => {
+      if (!itineraryId || itineraryId === "undefined") return null;
       try {
         const { axiosGetItineraryStatus } =
           await import("../../services/itinerary/daybyday/preview");
@@ -625,7 +625,7 @@ export default function BotApp({
         );
         const status = statusRes.data?.celery;
         const stage = statusRes.data?.stage;
-        if (!status) return;
+        if (!status) return null;
 
         // Stage P1 — no itinerary yet (or still in chat-only stage). Don't
         // dispatch celery statuses or enable itinerary polling; otherwise
@@ -638,7 +638,7 @@ export default function BotApp({
           setShowStartScreen(false);
           setHasBotResponded(true);
           setIsChatActive(true);
-          return;
+          return stage ?? "P1";
         }
 
         dispatch(
@@ -715,11 +715,16 @@ export default function BotApp({
         if (stage === "P2") {
           mobileTabSwitchRef.current?.("itinerary");
         }
+        // fromTailored forces a P2 experience even while celery is still
+        // building, so report "P2" to callers (loadThread keys its
+        // itinerary-tab default off this).
+        return stage === "P2" || fromTailored ? "P2" : (stage ?? null);
       } catch (err) {
         console.error("Failed to restore itinerary directly:", err);
         setShowStartScreen(true);
         setHasBotResponded(false);
         setIsChatActive(false);
+        return null;
       }
     },
     [dispatch, setChatBotIdOnce, fromTailored],
@@ -1627,7 +1632,11 @@ export default function BotApp({
   }, []);
 
   const loadThread = useCallback(
-    async (threadId: string, sessionIdOverride?: string) => {
+    async (
+      threadId: string,
+      sessionIdOverride?: string,
+      knownStage?: string | null,
+    ) => {
       if (isLoadingThreadRef.current) return;
       isLoadingThreadRef.current = true;
       // Stays true through ChatKitPanel's restoredThread useEffect, which
@@ -1742,6 +1751,15 @@ export default function BotApp({
           if (hasDisplayItinerary || hasCompletedEffectInLoop) {
             mobileTabSwitchRef.current?.("itinerary");
           }
+        } else if (knownStage === "P2") {
+          // Stage P2 per the status API, but this thread carries no
+          // display_itinerary / completion effect to restore from (so
+          // restoredItineraryId is null). An itinerary still exists —
+          // restoreItineraryDirectly has already hydrated the canonical
+          // trip + enabled polling. Keep the desktop on the itinerary tab;
+          // falling through to the map/chat branches below would strand the
+          // user on the map on every refresh.
+          setViewMode("itinerary");
         } else if ((data.map_effects ?? []).length > 0) {
           // P1 chat-only thread (no itinerary yet) but has route/POI data —
           // sessionId-default of "itinerary" hides the map behind an empty
@@ -1771,7 +1789,14 @@ export default function BotApp({
         // refresh (to avoid the chat→itinerary flash for real itineraries), so
         // chat-only threads need an explicit switch back or they'd strand on a
         // blank itinerary tab (itinerary content is gated behind an itinerary id).
-        if (!restoredItineraryId) {
+        //
+        // Skip this when the status API reports P2: an itinerary exists even
+        // though the thread carries no display_itinerary effect, and
+        // restoreItineraryDirectly has already switched to the itinerary tab.
+        // handleTabClick("chat") also runs setViewMode("map"), so firing it
+        // here would clobber the itinerary view and strand a P2 refresh on the
+        // map (the very bug this avoids).
+        if (!restoredItineraryId && knownStage !== "P2") {
           mobileTabSwitchRef.current?.("chat");
         }
 
@@ -2041,7 +2066,7 @@ export default function BotApp({
         const listData = await listRes.json();
         const threads = listData.data ?? [];
         if (threads.length > 0) {
-          await loadThread(threads[0].id);
+          await loadThread(threads[0].id, undefined, stage);
         } else if (stage === "P2" && allDone) {
           // P2 trip confirmed but no chat thread yet — seed a summary prompt
           // so the user lands with context. botMode is already "p2" via
@@ -2210,9 +2235,10 @@ export default function BotApp({
       // loadThread → threads.get_by_id → status check serially. Skipped when
       // the thread row didn't carry a session_id; loadThread will derive it
       // from the get_by_id response in that case.
+      let stageFromRestore: string | null = null;
       if (knownSessionId) {
         try {
-          await restoreItineraryDirectly(knownSessionId);
+          stageFromRestore = await restoreItineraryDirectly(knownSessionId);
         } catch (err) {
           console.warn(
             "[handleThreadSelect] restoreItineraryDirectly failed, falling back to loadThread-only:",
@@ -2224,7 +2250,7 @@ export default function BotApp({
       // Then load thread for chat history. loadThread re-runs the status
       // check internally when its effects carry an itinerary id — same
       // redundant ordering restoreLatestThread relies on, kept for parity.
-      await loadThread(threadId, knownSessionId);
+      await loadThread(threadId, knownSessionId, stageFromRestore);
       setChatKey((prev) => prev + 1);
     },
     [loadThread, dispatch, restoreItineraryDirectly],
@@ -4225,7 +4251,7 @@ const MobileLayout = React.memo(
             >
               {/* Chat Banner */}
               {showChatBanner && (
-                <div className="relative bg-[#F7E700] text-black px-4 py-2 rounded-[12px] shadow-lg max-w-[290px] animate-slideIn">
+                <div className="relative bg-[#F7E700] text-black px-[19px] py-2 rounded-[12px] shadow-lg max-w-[290px] animate-slideIn">
                   <button
                     onClick={() => setShowChatBanner(false)}
                     className="absolute top-2 right-2 text-black hover:text-gray-700"
@@ -4338,7 +4364,7 @@ const MobileLayout = React.memo(
           >
             {/* Chat Banner */}
             {showChatBanner && (
-              <div className="relative bg-[#F7E700] text-black px-4 py-2 rounded-[12px] shadow-lg max-w-[290px] animate-slideIn">
+              <div className="relative bg-[#F7E700] text-black px-[19px] py-2 rounded-[12px] shadow-lg max-w-[290px] animate-slideIn">
                 <button
                   onClick={() => setShowChatBanner(false)}
                   className="absolute top-2 right-2 text-black hover:text-gray-700"

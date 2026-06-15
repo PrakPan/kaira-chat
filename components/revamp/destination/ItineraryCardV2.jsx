@@ -52,12 +52,28 @@ const ItineraryCardV2 = ({ itinerary, onClick }) => {
     String(tierLabel).toLowerCase().includes("value") ||
     String(tierLabel).toLowerCase().includes("popular");
 
-  const priceValue =
+  const totalPax =
+    (Number(number_of_adults) || 0) + (Number(number_of_children) || 0);
+
+  // Prefer an already per-person value when the backend provides one.
+  const perPersonValue =
+    payment_information?.per_person_discounted_cost ||
+    payment_information?.per_person_cost;
+
+  // Otherwise derive it from the total cost divided by the number of travellers.
+  const totalValue =
     total_price ||
     price ||
     starting_price ||
-    payment_information?.per_person_discounted_cost ||
     payment_information?.discounted_cost;
+
+  // Only ever show a per-person price. If we can't get one (no per-person
+  // value from the backend and no total/pax to derive it), show no price.
+  const perPersonPrice = perPersonValue
+    ? perPersonValue
+    : totalValue && totalPax > 0
+    ? Math.round(totalValue / totalPax)
+    : null;
 
   const routeCities = cities && cities.length ? cities : [];
   const route = routeCities
@@ -113,8 +129,8 @@ const ItineraryCardV2 = ({ itinerary, onClick }) => {
       includes={includes}
       travellers={travellers || null}
       price={
-        priceValue
-          ? { amount: `₹${getIndianPrice(priceValue)}`, per: "/ couple" }
+        perPersonPrice
+          ? { amount: `₹${getIndianPrice(perPersonPrice)}`, per: "/ person" }
           : null
       }
       ctaLabel="View trip"

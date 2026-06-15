@@ -136,10 +136,12 @@ const PackageCard = ({
               {price.from !== false ? (
                 <span className={styles.priceFrom}>{price.fromLabel || "From"}</span>
               ) : null}
-              <span className={styles.priceAmount}>{price.amount}</span>
-              {price.per ? (
-                <span className={styles.pricePer}>{price.per}</span>
-              ) : null}
+              <span className={styles.priceRow}>
+                <span className={styles.priceAmount}>{price.amount}</span>
+                {price.per ? (
+                  <span className={styles.pricePer}>{price.per}</span>
+                ) : null}
+              </span>
             </div>
           ) : (
             <span />

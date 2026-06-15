@@ -52,17 +52,20 @@ const buildIncludes = (trip) => {
 const buildPrice = (trip) => {
   const info = trip?.payment_information || {};
   if (info.are_prices_hidden) return null;
-  const usePerPerson = info.show_per_person_cost;
-  const raw = usePerPerson ? info.per_person_discounted_cost : info.discounted_cost;
-  if (raw == null) return null;
-  const duration = trip?.duration;
-  const per = [
-    usePerPerson ? "per person" : "total",
-    duration ? `${duration} night${duration === 1 ? "" : "s"}` : null,
-  ]
-    .filter(Boolean)
-    .join(" · ");
-  return { amount: `₹${getIndianPrice(raw)}`, per };
+
+  const totalPax =
+    (Number(trip?.number_of_adults) || 0) + (Number(trip?.number_of_children) || 0);
+
+  // Only ever show a per-person price: prefer a per-person value from the
+  // backend, otherwise derive it from the total cost divided by travellers.
+  const perPersonValue =
+    info.per_person_discounted_cost ||
+    (info.discounted_cost != null && totalPax > 0
+      ? Math.round(info.discounted_cost / totalPax)
+      : null);
+
+  if (perPersonValue == null) return null;
+  return { amount: `₹${getIndianPrice(perPersonValue)}`, per: "/ person" };
 };
 
 const tripToPackage = (trip) => {

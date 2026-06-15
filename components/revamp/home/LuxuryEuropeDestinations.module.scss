@@ -229,6 +229,11 @@
   letter-spacing: 0.06em;
   font-weight: 600;
 }
+.priceRow {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+}
 .priceAmount {
   font-size: 19px;
   font-weight: 800;

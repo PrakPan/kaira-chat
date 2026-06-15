@@ -1866,7 +1866,9 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
         ) : null}
 
         {/* Fallback bubble dots */}
-        {showDots && <ThinkingDots />}
+        {
+         showDots && 
+        <ThinkingDots />}
 
         {/* Feedback (thumbs up / down) — only on completed bot text replies.
             Suppressed for network errors; the retry CTA inside ErrorBubble
@@ -2350,38 +2352,148 @@ export const ItineraryCloneCta: React.FC<ItineraryCloneCtaProps> = ({
   );
 };
 
-export const ThinkingDots: React.FC = () => (
-  <div
-    style={{
-      display: "inline-flex",
-      alignItems: "center",
-      gap: 6,
-      padding: "12px 16px",
-      // borderRadius: "18px 18px 18px 4px",
-      // background: "#f1f3f4",
-      alignSelf: "flex-start",
-      marginTop: 4,
-    }}
-  >
-    {[0, 1, 2].map((i) => (
+// ─── ThinkingDots ─────────────────────────────────────────────────────────────
+// "Kaira is working" indicator shown while an assistant reply is streaming but
+// no content/tasks have arrived yet. Modeled exactly on the Claude Code loader
+// in the shared reference: a monospace `* Word…` in a clay/terracotta tone with
+// a bright gleam shimmering through it (Claude's "thinking" sweep), followed by
+// a muted-gray `(Ns · thinking more)`. Row is `minHeight: 30` and vertically
+// centered so it lines up with the 30px Kaira avatar. Sizing uses clamp() so it
+// scales from small phones up to desktop.
+const THINKING_PHRASES = [
+  "Reticulating",
+  "Plotting",
+  "Wandering",
+  "Daydreaming",
+];
+
+// Advances once per ThinkingDots mount. Each new reply ("next chat") shows the
+// NEXT phrase, while any single thinking session keeps ONE fixed phrase for its
+// whole lifetime — no rotating through the list mid-wait.
+let thinkingPhraseCursor = 0;
+
+export const ThinkingDots: React.FC = () => {
+  const [seconds, setSeconds] = useState(0);
+  React.useEffect(() => {
+    const id = setInterval(() => setSeconds((s) => s + 1), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  // Pick a single phrase for this session, fixed for the component's life.
+  // Each new ThinkingDots instance (the next chat reply) advances to the next
+  // phrase, cycling back to the start after the last. The lazy initializer
+  // runs once per mount, so the phrase never changes while we wait.
+  const [phrase] = useState(() => {
+    const p = THINKING_PHRASES[thinkingPhraseCursor % THINKING_PHRASES.length];
+    thinkingPhraseCursor += 1;
+    return p;
+  });
+
+  // Only nudge "thinking more" once the wait has actually gotten long
+  // (>30s). Before that, just show the elapsed seconds.
+  const showThinkingMore = seconds > 30;
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "clamp(6px, 1.8vw, 8px)",
+        minHeight: 30,
+        fontFamily:
+          "'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
+        fontSize: "clamp(12.5px, 3.5vw, 14px)",
+        lineHeight: 1.4,
+      }}
+    >
+      {/* Yellow pulsing-dot marker — matches the "current" step icon in the
+          thinking steps list (StepStatusIcon, state="current"). */}
       <span
-        key={i}
+        aria-hidden
         style={{
-          width: 10,
-          height: 10,
+          width: 18,
+          height: 18,
           borderRadius: "50%",
-          background: "#111",
-          display: "inline-block",
-          animation: "thinkPulse 1.4s infinite ease-in-out",
-          animationDelay: `${[-0.32, -0.16, 0][i]}s`,
+          background: "#F7E700",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 2,
+          flexShrink: 0,
         }}
-      />
-    ))}
-    <style>{`
-      @keyframes thinkPulse {
-        0%, 80%, 100% { transform: scale(0.4); opacity: 0.3; }
-        40%            { transform: scale(1);   opacity: 1; }
-      }
-    `}</style>
-  </div>
-);
+      >
+        {[0, 1, 2].map((i) => (
+          <span
+            key={i}
+            style={{
+              width: 2.5,
+              height: 2.5,
+              borderRadius: "50%",
+              background: "#0B1220",
+              display: "inline-block",
+              animation: "thinkPulse 1.4s infinite ease-in-out",
+              animationDelay: `${[-0.32, -0.16, 0][i]}s`,
+            }}
+          />
+        ))}
+      </span>
+
+      {/* `Word…` — black with a subtle gleam shimmering through */}
+      <span
+        className="thinkShimmerText"
+        style={{
+          fontWeight: 500,
+          whiteSpace: "nowrap",
+          display: "inline-block",
+          lineHeight: 1.4,
+          // paddingBottom: 2,
+        }}
+      >
+        {phrase}…
+      </span>
+
+      {/* `(Ns)` — muted gray; appends "· thinking more" only after 30s */}
+      <span style={{ color: "#9B9B9B", fontWeight: 400, whiteSpace: "nowrap" }}>
+        ({seconds}s{showThinkingMore ? " · thinking more" : ""})
+      </span>
+
+      <style>{`
+        @keyframes thinkPulse {
+          0%, 80%, 100% { transform: scale(0.4); opacity: 0.3; }
+          40%           { transform: scale(1);   opacity: 1; }
+        }
+        @keyframes thinkShimmerSweep {
+          0%   { background-position: 0% 0; }
+          100% { background-position: -200% 0; }
+        }
+        .thinkShimmerText {
+          /* Black text with a soft gray gleam gliding through. The gradient
+             tiles and the keyframe shifts exactly one tile width, so it loops
+             seamlessly — no jump or pause. */
+          background-image: linear-gradient(
+            90deg,
+            #0B0B0B 0%,
+            #0B0B0B 35%,
+            #8A8A8A 50%,
+            #0B0B0B 65%,
+            #0B0B0B 100%
+          );
+          background-size: 200% 100%;
+          background-repeat: repeat;
+          -webkit-background-clip: text;
+          background-clip: text;
+          -webkit-text-fill-color: transparent;
+          color: transparent;
+          animation: thinkShimmerSweep 2.6s linear infinite;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .thinkShimmerText {
+            animation: none;
+            color: #0B0B0B;
+            -webkit-text-fill-color: #0B0B0B;
+          }
+        }
+      `}</style>
+    </div>
+  );
+};

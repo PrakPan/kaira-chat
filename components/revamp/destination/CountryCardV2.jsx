@@ -26,7 +26,6 @@ const CountryCardV2 = ({ item, hot = false, onClick }) => {
     "";
   const name = item.display_name || item.title || item.name || "";
   const meta = [];
-  if (item.nights) meta.push({ label: item.nights });
   if (item.user_ratings_total || item.trips_count)
     meta.push({
       label: (
