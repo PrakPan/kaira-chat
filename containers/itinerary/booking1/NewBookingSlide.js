@@ -1645,16 +1645,36 @@ const Details = (props) => {
         //   await resetSession();
         // }
         dispatch(resetChatSession());
+
+        // Close the payment drawer now that the reprice succeeded. Stay on the
+        // current view (no navigation) — just hide the drawer and drop the
+        // `drawer` query param from the URL.
+        setShowPaymentDrawer(false);
+        setShowDetailedPayment(false);
+        if (isDirectlyOpenPaymentDrawer) {
+          setIsDirectlyOpenPaymentDrawer(false);
+          props.setShowFooterBannerMobile?.();
+        }
+        if (typeof window !== "undefined") {
+          const url = new URL(window.location.href);
+          url.searchParams.delete("drawer");
+          window.history.replaceState({}, "", url.toString());
+        }
       }
     } catch (error) {
       console.error("Error Repricing :", error);
       // Request failed before any polling could run — release the chat
       // lock so the user isn't stuck.
       dispatch(setItineraryStatus("is_polling", false));
+      // We flipped all statuses to PENDING above to show the loader; the
+      // reprice failed so nothing changed server-side. Re-fetch the real
+      // statuses to restore them (otherwise pricing_status stays "PENDING"
+      // and the PricingSkeleton loader shows forever).
+      fetchItineraryStatus();
       dispatch(
         openNotification({
           text:
-            error?.response?.data?.message ||
+           error?.response?.data?.errors?.[0]?.message?.[0] || error?.response?.data?.message ||
             error.message ||
             "Failed to reprice itinerary",
           heading: "Error!",
