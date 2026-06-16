@@ -295,6 +295,7 @@ const ItineraryContainer = (props) => {
   const pricingSuccessRef = useRef(false);
   const transfersSuccessRef = useRef(false);
   const hotelsSuccessRef = useRef(false);
+  const galleryFetchedRef = useRef(false);
   const fetchDataRef = useRef(null);
   const instanceIdRef = useRef(0);
 
@@ -335,6 +336,7 @@ const ItineraryContainer = (props) => {
     pricingSuccessRef.current = false;
     transfersSuccessRef.current = false;
     hotelsSuccessRef.current = false;
+    galleryFetchedRef.current = false;
   };
 
   const divideTravellers = (val) => {
@@ -399,6 +401,14 @@ const ItineraryContainer = (props) => {
   };
 
   const fetchGallery = async () => {
+    // Idempotent: gallery is itinerary-scoped, so fetch it once per itinerary.
+    // It's triggered early (as soon as the ITINERARY task succeeds in
+    // fetchItinerary) so images aren't gated behind the slower
+    // hotels/transfers/pricing tasks — that lag was leaving the gallery empty
+    // on first arrival at P2 until a manual refresh. The reset in resetRef
+    // clears the guard for a genuine refetch.
+    if (galleryFetchedRef.current) return;
+    galleryFetchedRef.current = true;
     try {
       const response = await axios.get(
         `${MERCURY_HOST}/api/v1/itinerary/${props.id}/gallery/`
@@ -407,6 +417,8 @@ const ItineraryContainer = (props) => {
       dispatch(setGalleryImages(response.data));
     } catch (err) {
       console.error("Error fetching gallery:", err);
+      // Allow a retry on the next trigger if the fetch failed.
+      galleryFetchedRef.current = false;
     } finally {
     }
   };
@@ -894,6 +906,11 @@ const fetchStatus = async () => {
             data?.status;
           dispatch(setItinerary({ ...data, status: resolvedStatus }));
 
+          // Gallery is itinerary-scoped — fetch it as soon as the itinerary
+          // content is ready rather than waiting for all celery tasks
+          // (hotels/transfers/pricing) to finish. Idempotent via galleryFetchedRef.
+          if (props.id) fetchGallery();
+
           // props.setItinerary(data);
           props.setItineraryDaybyDay(data);
           props.setBreif(data);
@@ -1000,6 +1017,7 @@ useEffect(() => {
   pricingSuccessRef.current = false;
   transfersSuccessRef.current = false;
   hotelsSuccessRef.current = false;
+  galleryFetchedRef.current = false;
 
   // Wipe redux ONCE here, not inside the poll loop
   dispatch(setItineraryStatus("itinerary_status", "PENDING"));

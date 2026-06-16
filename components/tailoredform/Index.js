@@ -636,7 +636,7 @@ const Enquiry = (props) => {
               itineraryInititateData.basic_route.length > 0
             ) {
               sessionStorage.setItem(
-                `tailored_skeleton_${itineraryId}`,
+                `tailored_skeleton_${finalItineraryId}`,
                 JSON.stringify({
                   basic_route: itineraryInititateData.basic_route,
                   start_city: itineraryInititateData.start_city ?? null,
@@ -645,14 +645,19 @@ const Enquiry = (props) => {
               );
             }
           } catch {}
-          router.push(`/chat/${itineraryId}?source=tailored`);
+          // Route to the SAME id that was just completed on the backend
+          // (finalItineraryId), not the local `itineraryId` state — the latter
+          // can hold a stale/previous itinerary id (e.g. after viewing an
+          // existing itinerary then creating a new one), which sent the user to
+          // /chat/<old id> while the new itinerary built correctly server-side.
+          router.push(`/chat/${finalItineraryId}?source=tailored`);
         };
 
         if (hasGtag) {
           try {
             window.gtag("event", "conversion", {
               send_to: "AW-738037519/IF5rCMyxhL8ZEI-e9t8C",
-              transaction_id: itineraryId,
+              transaction_id: finalItineraryId,
               value: 1.0,
               currency: currency?.currency || "INR",
               event_callback: function () {
@@ -679,7 +684,7 @@ const Enquiry = (props) => {
           try {
             window.dataLayer.push({
               event: "itinerary_completed",
-              itinerary_id: itineraryId,
+              itinerary_id: finalItineraryId,
               platform: platform,
               currency: currency?.currency || "INR",
               group_type: slideThreeData.groupType || "Solo",
