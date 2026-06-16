@@ -128,6 +128,7 @@ const TransferBooking = ({
       undefined,
       {
         scroll: false,
+        shallow: true,
       }
     );
   };
@@ -160,7 +161,7 @@ const TransferBooking = ({
       undefined,
       {
         scroll: false,
-        shallow: false,
+        shallow: true,
       }
     );
   };
@@ -990,6 +991,7 @@ const FlightBooking = ({
       undefined,
       {
         scroll: false,
+        shallow: true,
       }
     );
   };

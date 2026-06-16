@@ -51,7 +51,7 @@ const tabBtn = (
   <button
     onClick={onClick}
     className={`flex-1 px-3 py-1.5  transition-all duration-200 flex items-center justify-center gap-2 ${
- viewMode === mode ? "text-white" : "text-[#4A566E]"
+ viewMode === mode ? "text-white" : "text-[#000]"
  }`}
     style={viewMode === mode ? activeStyle : inactiveStyle}
   >
@@ -75,7 +75,7 @@ const tabBtn = (
         <button
           onClick={() => setViewMode("map")}
           className={`flex-1 px-3 py-1.5 ttw-type-body-strong transition-all duration-200 flex items-center justify-center gap-2 ${
- viewMode === "map" ? "text-white" : "text-[#4A566E]"
+ viewMode === "map" ? "text-white" : "text-[#000]"
  }`}
           style={viewMode === "map" ? activeStyle : inactiveStyle}
         >

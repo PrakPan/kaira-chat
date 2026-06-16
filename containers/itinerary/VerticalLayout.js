@@ -1202,6 +1202,7 @@ useEffect(() => {
       undefined,
       {
         scroll: false,
+        shallow: true,
       }
     );
   };
@@ -1223,6 +1224,7 @@ useEffect(() => {
       undefined,
       {
         scroll: false,
+        shallow: true,
       }
     );
   };
@@ -1247,7 +1249,7 @@ useEffect(() => {
         },
       },
       undefined,
-      { scroll: false },
+      { scroll: false, shallow: true },
     );
   };
 
@@ -1268,6 +1270,7 @@ useEffect(() => {
       undefined,
       {
         scroll: false,
+        shallow: true,
       }
     );
   } else {

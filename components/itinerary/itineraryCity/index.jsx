@@ -371,7 +371,7 @@ const ItineraryCity = (props) => {
         },
       },
       undefined,
-      { scroll: false },
+      { scroll: false, shallow: true },
     );
     setLoading(false);
   };
@@ -409,7 +409,7 @@ const ItineraryCity = (props) => {
         query: {},
       },
       undefined,
-      { scroll: false },
+      { scroll: false, shallow: true },
     );
   };
 
@@ -536,7 +536,7 @@ const ItineraryCity = (props) => {
                       },
                     },
                     undefined,
-                    { scroll: false },
+                    { scroll: false, shallow: true },
                   );
                 }}
                 className="flex h-7 items-center justify-center gap-1 px-3.5 py-2 rounded-[8px] border border-black text-[13px] whitespace-nowrap"
@@ -572,7 +572,7 @@ const ItineraryCity = (props) => {
                       },
                     },
                     undefined,
-                    { scroll: false },
+                    { scroll: false, shallow: true },
                   );
                 }}
                 className="flex h-7 items-center justify-center gap-1 px-3.5 py-2 rounded-[8px] border border-black text-[13px] whitespace-nowrap"
@@ -701,7 +701,7 @@ const ItineraryCity = (props) => {
                     },
                   },
                   undefined,
-                  { scroll: false },
+                  { scroll: false, shallow: true },
                 );
                 props?.handleClickAc?.(
                   props?.index,

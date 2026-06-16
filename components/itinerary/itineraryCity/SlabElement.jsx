@@ -214,7 +214,7 @@ const isIncluded = cart?.summary && Object.values(cart.summary).some(
         query: {}, // remove "drawer"
       },
       undefined,
-      { scroll: false }
+      { scroll: false, shallow: true }
     );
   };
 
@@ -250,6 +250,7 @@ const isIncluded = cart?.summary && Object.values(cart.summary).some(
       undefined,
       {
         scroll: false,
+        shallow: true,
       }
     );
 

@@ -120,6 +120,7 @@ const TransferDrawer = ({
       undefined,
       {
         scroll: false,
+        shallow: true,
       },
     );
   };

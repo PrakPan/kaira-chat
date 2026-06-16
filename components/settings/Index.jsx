@@ -224,7 +224,7 @@ const handleUpdate = () => {
           background: "linear-gradient(90deg,#FFE600,#F2D700)",
         }}
       />
-      <div className={`flex flex-col gap-6 md:max-w-[537px] z-[9999] px-4 py-4`}>
+      <div className={`flex flex-col gap-6 md:max-w-[537px] z-[9999] max-ph:px-2 pt-2 max-ph:py-2 pb-4 md:!px-4 md:!py-4`}>
         <div>
           <div
             style={{

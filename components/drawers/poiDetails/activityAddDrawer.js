@@ -678,7 +678,7 @@ const ClickHandler = (child) => {
         query: {}, // remove "drawer"
       },
       undefined,
-      { scroll: false },
+      { scroll: false, shallow: true },
     );
   };
   return (

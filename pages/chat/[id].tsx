@@ -30,8 +30,16 @@ const ChatSessionPage = ({ checkAuthState }: { checkAuthState: () => void }) => 
       <Head>
         <title>{title}</title>
       </Head>
+      {/*
+        No `key={sessionId}` here on purpose. BotApp switches sessions in place
+        (thread-select / itinerary-creation change the URL via history.pushState,
+        which Next's router doesn't observe). Keying on router.query.id made the
+        first drawer CTA after a switch remount BotApp — the CTA's router.push is
+        the moment Next reconciles the stale id, flipping the key — which showed
+        up as a drawer flash + full data refetch. BotApp now handles browser
+        back/forward between sessions itself (see its popstate effect).
+      */}
       <BotApp
-        key={sessionId}
         sessionId={sessionId}
         fromTailored={fromTailored}
       />

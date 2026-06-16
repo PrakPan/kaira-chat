@@ -65,6 +65,7 @@ const CitySummary = (props) => {
         undefined,
         {
           scroll: false,
+          shallow: true,
         }
       );
     } catch (error) {
@@ -112,6 +113,7 @@ const CitySummary = (props) => {
       undefined,
       {
         scroll: false,
+        shallow: true,
       }
     );
     setPoi(poiData);
@@ -142,6 +144,7 @@ const CitySummary = (props) => {
       undefined,
       {
         scroll: false,
+        shallow: true,
       }
     );
   };
@@ -169,7 +172,7 @@ const CitySummary = (props) => {
         query: {}, // remove "drawer"
       },
       undefined,
-      { scroll: false }
+      { scroll: false, shallow: true }
     );
   };
 
@@ -216,7 +219,7 @@ const CitySummary = (props) => {
         },
       },
       undefined,
-      { scroll: false }
+      { scroll: false, shallow: true }
     );
 
     // try {

@@ -2176,6 +2176,69 @@ export default function BotApp({
     }
   }, [sessionId, restoreLatestThread]);
 
+  // ── Browser back/forward between chat sessions ────────────────────────────
+  // The /chat/[id] page no longer keys BotApp on router.query.id (that key
+  // flipped on the first drawer CTA after a session switch — when Next finally
+  // reconciled the pushState URL — remounting BotApp and refetching). Session
+  // switches (thread-select, itinerary creation) already reload the panel in
+  // place. That leaves browser back/forward, which used to rely on the remount;
+  // we reload the previous session in place here instead.
+  const activeChatSessionIdRef = useRef(activeChatSessionId);
+  activeChatSessionIdRef.current = activeChatSessionId;
+  useEffect(() => {
+    const onPopState = () => {
+      const match = window.location.pathname.match(/\/chat\/([a-f0-9-]{36})/);
+      const urlSession = match?.[1];
+      // Only react to landing on a *different* chat session. Same-session
+      // popstate (e.g. backing out of a ?drawer= query) is owned by the router
+      // / drawers and must not trigger a reload.
+      if (!urlSession || urlSession === activeChatSessionIdRef.current) return;
+
+      // Reset the previous session's panel state in place (mirrors the
+      // handleThreadSelect reset) so the restored session doesn't paint over
+      // stale cities / cart / transfers.
+      userSelectedThreadRef.current = false;
+      isLoadingThreadRef.current = false;
+      // Keep the initial-restore effect above from double-firing for this id.
+      hasRestoredRef.current = true;
+      setRestoredThread(null);
+      setLocations([]);
+      setCurrentRoute(null);
+      setSkeletonCities([]);
+      skeletonCitiesRef.current = [];
+      setActiveItineraryId(null);
+      setItineraryPollingEnabled(false);
+      setShowItineraryShimmer(false);
+      setIsItineraryCompleting(false);
+      itineraryCreatedInSessionRef.current = false;
+      setBotMode("p1");
+      setItineraryId("");
+      setViewMode("map");
+      setHasBotResponded(false);
+      setShowStartScreen(false);
+      setIsChatActive(true);
+      currentItineraryRef.current = null;
+      setShowPaymentDrawer(false);
+
+      dispatch(setItinerary({}));
+      dispatch(setCart({}));
+      dispatch(setStays([]));
+      dispatch(setTransfersBookings(null));
+      dispatch(setItineraryStatus("itinerary_status", "PENDING"));
+      dispatch(setItineraryStatus("transfers_status", "PENDING"));
+      dispatch(setItineraryStatus("hotels_status", "PENDING"));
+      dispatch(setItineraryStatus("pricing_status", "PENDING"));
+      dispatch(setItineraryStatus("finalized_status", "PENDING"));
+
+      setActiveChatSessionId(urlSession);
+      setChatKey((prev) => prev + 1);
+      restoreLatestThread(urlSession);
+    };
+
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, [restoreLatestThread, dispatch]);
+
   const handleThreadSelect = useCallback(
     async (threadId: string, knownSessionId?: string) => {
       // Reset load guard so the new thread can load
@@ -3273,8 +3336,9 @@ Start Location: ${details.startLocation}`;
             onHide={() => setShowSettings(false)}
             width="100%"
             height="max-content"
-            paddingX="16px"
-            paddingY="31px"
+            paddingX="0px"
+            paddingY="0px"
+            borderRadius="20px"
           >
             <Settings
               setShowSettings={setShowSettings}

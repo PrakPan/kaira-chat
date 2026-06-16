@@ -99,7 +99,7 @@ const japanThemeConfig: ThemeConfig = {
         {
           image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/ObonR2.jpg",
           label: "Obon Week — Ancestral Fire and Dance",
-          sublabel: "Mid-August — the most Japanese week of the year",
+          sublabel: "Mid-August",
           description: "Fire, dance, and ancestors.",
           prompt:
             "I want to experience Obon in Japan in August. Which city or town gives the most authentic experience? Plan a trip around the Obon period including bon odori dances, lantern ceremonies, and the best places to witness it.",

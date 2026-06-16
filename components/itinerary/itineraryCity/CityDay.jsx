@@ -500,7 +500,7 @@ const isDraft = useSelector((state) => state.Itinerary.status) === "Draft";
         },
       },
       undefined,
-      { scroll: false }
+      { scroll: false, shallow: true }
     );
   };
 
@@ -540,7 +540,7 @@ const handleItemClick = (item) => {
       },
     },
     undefined,
-    { scroll: false }
+    { scroll: false, shallow: true }
   );
 };
 useEffect(() => {
@@ -830,7 +830,7 @@ useEffect(() => {
                         },
                       },
                       undefined,
-                      { scroll: false },
+                      { scroll: false, shallow: true },
                     );
                   }}
                   className="rounded-9xl ttw-type-small font-400 leading-md px-sm py-xxs text-white bg-[#5CBA66] flex gap-2 items-center justify-center hover:opacity-90"

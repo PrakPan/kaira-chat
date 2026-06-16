@@ -1497,7 +1497,7 @@ props.fromChat ? (
                       query: {
                         drawer: "handleEditRoute",
                       },
-                    });
+                    }, undefined, { shallow: true });
                   }
                   _handleMenuTabsChange(label);
                 }}

@@ -512,6 +512,10 @@ export function useChat({
   // thread_id returned by the API — used for subsequent messages only
   const threadIdRef = useRef<string | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
+  // Monotonic token identifying the in-flight stream. A new send bumps it so a
+  // preempted stream's `finally` can tell it no longer owns the global
+  // streaming flag and must not clear it out from under the newer stream.
+  const streamSeqRef = useRef(0);
 
   // Guard: fire onSessionCreated only once per hook instance
   const sessionCreatedFiredRef = useRef(false);
@@ -702,9 +706,16 @@ export function useChat({
       content: string,
       attachmentIds?: string[],
       attachments?: MessageAttachment[],
+      opts?: { interrupt?: boolean },
     ) => {
       const trimmed = content.trim();
-      if ((!trimmed && (!attachmentIds || attachmentIds.length === 0)) || isStreaming) return;
+      if (!trimmed && (!attachmentIds || attachmentIds.length === 0)) return;
+      // While a response is streaming we ignore new sends — except interrupts.
+      // The composer unlocks early once the answer is rendered and only quick
+      // replies are still loading; those sends arrive with { interrupt } so we
+      // abort the tail of the old stream and start fresh instead of dropping
+      // the message.
+      if (isStreaming && !opts?.interrupt) return;
 
       cancelStream();
       setError(null);
@@ -737,6 +748,7 @@ export function useChat({
       ]);
       setIsStreaming(true);
 
+      const seq = ++streamSeqRef.current;
       const controller = new AbortController();
       abortControllerRef.current = controller;
 
@@ -888,8 +900,13 @@ export function useChat({
             return { ...m, isStreaming: false, progressSteps: finalSteps };
           })
         );
-        setIsStreaming(false);
-        abortControllerRef.current = null;
+        // Only the most recent stream owns the global streaming flag. If a send
+        // preempted this one (quick-reply interrupt) it already bumped
+        // streamSeqRef, so we must not clear isStreaming under the newer stream.
+        if (streamSeqRef.current === seq) {
+          setIsStreaming(false);
+          abortControllerRef.current = null;
+        }
       }
     },
     [isStreaming, locationReady, userLocation, apiUrl, domainKey, model, botMode, itineraryId, onEffect, onFirstToken, cancelStream, buildHeaders, handleThreadId]

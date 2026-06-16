@@ -803,6 +803,11 @@ onTripMetaUpdate,
   // in place of the real ones until `load_quick_replies` lands.
   const [quickReplyShimmer, setQuickReplyShimmer] = useState(false);
   const [quickReplyLoading, setQuickReplyLoading] = useState(false);
+  // Mirror the shimmer flag in a ref so the stable sendMessage wrapper can tell,
+  // at call time, whether a send needs to interrupt the quick-reply tail of an
+  // otherwise-finished stream.
+  const quickReplyShimmerRef = useRef(false);
+  quickReplyShimmerRef.current = quickReplyShimmer;
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [pendingMessage, setPendingMessage] = useState<string | null>(null);
@@ -1589,6 +1594,12 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
     loginMandatory,
   });
 
+  // Quick replies stream in on the tail of the response, after the answer is
+  // fully rendered but while the SSE connection is still open (so `isStreaming`
+  // is still true). Treat that window as "not streaming" for the composer so
+  // the user can keep typing and sending while the chips populate.
+  const isStreamingResponse = isStreaming && !quickReplyShimmer;
+
   // Wrap sendWidgetAction so we can replay the same action after a post-login
   // retry (e.g. inject.context that triggered prompt_login while logged out).
   const sendWidgetAction = useCallback(
@@ -2054,7 +2065,12 @@ const sendMessage = useCallback(
         [text].filter(Boolean),
       );
     }
-    rawSendMessage(text, attachmentIds, attachmentMeta);
+    // If only quick replies are still loading, the answer is already done —
+    // interrupt that tail so the new message isn't dropped by the hook's
+    // in-flight guard.
+    rawSendMessage(text, attachmentIds, attachmentMeta, {
+      interrupt: quickReplyShimmerRef.current,
+    });
   },
   [rawSendMessage],
 );
@@ -2785,7 +2801,7 @@ const handleShowLogin = useCallback(() => {
     const uploadedAttachments = attachments.filter((a) => a.status === "uploaded");
     // Block sending while itinerary creation is in progress
     if (isItineraryCompleting) return;
-    if ((!hasText && uploadedAttachments.length === 0) || isStreaming) return;
+    if ((!hasText && uploadedAttachments.length === 0) || isStreamingResponse) return;
     setErrorDismissed(true);
     const attachmentIds = uploadedAttachments.map((a) => a.id);
     // Build attachment metadata with persistent object URLs for inline preview
@@ -2805,7 +2821,7 @@ const handleShowLogin = useCallback(() => {
     );
     setInput("");
     setAttachments([]);
-  }, [input, isStreaming, sendMessage, attachments, isItineraryCompleting]);
+  }, [input, isStreamingResponse, sendMessage, attachments, isItineraryCompleting]);
 
   const handleQuickReply = useCallback(
     (reply: QuickReply) => {
@@ -3564,7 +3580,7 @@ const handleShowLogin = useCallback(() => {
             onChange={setInput}
             onSubmit={handleSubmit}
             onStop={cancelStream}
-            isStreaming={isStreaming}
+            isStreaming={isStreamingResponse}
             disabled={isComposerLocked}
             placeholder={
               isItineraryCompleting

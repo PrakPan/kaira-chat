@@ -469,6 +469,7 @@ const DayCardExpanded = ({ day, dayIndex, index, ...props }) => {
       undefined,
       {
         scroll: false,
+        shallow: true,
       },
     );
   };
@@ -638,6 +639,7 @@ const ActivityCardExpanded = ({
         undefined,
         {
           scroll: false,
+          shallow: true,
         },
       );
     }

@@ -2036,7 +2036,7 @@ const TransferEditDrawer = (props) => {
                             },
                           },
                           undefined,
-                          { scroll: false },
+                          { scroll: false, shallow: true },
                         );
                       }}
                     />
@@ -2130,7 +2130,7 @@ const TransferEditDrawer = (props) => {
                                   },
                                 },
                                 undefined,
-                                { scroll: false },
+                                { scroll: false, shallow: true },
                               );
                             }}
                             onChange={() => {
