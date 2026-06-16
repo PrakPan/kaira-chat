@@ -509,7 +509,6 @@ const handleItemClick = (item) => {
   if (!resolvedType || resolvedType === "recommendation") return;
 
   const itemId = getItemId(item, resolvedType);
-  console.log("ItemId",itemId)
   if (!itemId) return;
 
   if(resolvedType === "poi") {

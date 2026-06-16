@@ -349,27 +349,41 @@ const POIDetails = (props) => {
       );
 
       if (res?.status == 200) {
-        const newItinerary = JSON.parse(JSON.stringify(itinerary));
-        var itineraryCities = newItinerary;
-        itineraryCities = newItinerary.cities.map((city) => {
-          const cityTemp = city;
-          if (city.id === props?.itinerary_city_id) {
-            console.log(
-              "here:",
-              cityTemp.day_by_day[dayIndex]?.slab_elements
-            );
-            cityTemp.day_by_day[dayIndex]?.slab_elements.splice(
-              slabIndex,
-              1
+        // Re-fetch the itinerary instead of mutating slab_elements locally.
+        // `poi_index` is the element's position in the flat slab_elements
+        // array and the backend renumbers it after every delete; renumbering
+        // on the frontend is fragile (a stale index sends the next delete past
+        // the array → "no poi element found", or splices out the wrong
+        // element). Pulling the fresh response guarantees the indices used by
+        // the next delete are correct.
+        try {
+          const refreshed = await axios.get(
+            `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/`,
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+              },
+            }
+          );
+          if (refreshed?.data) {
+            // Preserve the resolved status — the itinerary GET can lag and
+            // return a stale "Draft", which would hide finalized-only tabs.
+            const priorStatus = itinerary?.status;
+            const resolvedStatus =
+              priorStatus && priorStatus !== "Draft"
+                ? priorStatus
+                : refreshed.data?.status;
+            dispatch(
+              setItinerary({ ...refreshed.data, status: resolvedStatus })
             );
           }
-          return cityTemp;
-        });
-        newItinerary.cities = itineraryCities;
+        } catch (refreshErr) {
+          console.log("Failed to refresh itinerary after delete:", refreshErr);
+        }
+
         props?.handleCloseDrawer(e);
         // props?.getPaymentHandler();
 
-        dispatch(setItinerary(newItinerary));
         dispatch(
           openNotification({
             type: "success",
