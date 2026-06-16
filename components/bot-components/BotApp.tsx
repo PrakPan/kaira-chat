@@ -439,6 +439,32 @@ export default function BotApp({
     (state: any) => state.ItineraryStatus?.display_text,
   );
   const statusNotes = useSelector((state: any) => state.ItineraryStatus?.notes);
+
+  // ── Single source of truth for "itinerary is complete" (drives the
+  // Route/Bookings tabs in ViewToggle + MobileLayout) ──────────────────────
+  // Previously each call site recomputed this from `state.Itinerary.status`,
+  // which is set LATE — only after ItineraryContainer finishes polling and
+  // fetches the canonical itinerary. On first arrival at P2 that field is
+  // still "Draft"/undefined, so Route + Bookings tabs (and the gallery-backed
+  // views) were missing until a manual refresh. The ItineraryStatus slice's
+  // `finalized_status`/`itinerary_status` are set EARLY (synchronously from
+  // the status endpoint in restoreItineraryDirectly), so prefer those and
+  // fall back to the Itinerary.status heuristic for older code paths.
+  const itineraryIsComplete =
+    !!activeItineraryId &&
+    activeItineraryId !== "skeleton" &&
+    activeItineraryId !== "draft" &&
+    (finalizedStatus === "SUCCESS" ||
+      itineraryStatus === "SUCCESS" ||
+      (!!(
+        itineraryRedux &&
+        (itineraryRedux.name || itineraryRedux.cities?.length)
+      ) &&
+        itineraryRedux?.status !== "Draft" &&
+        itineraryRedux?.status !== undefined &&
+        itineraryRedux?.status !== null &&
+        itineraryRedux?.status !== "undefined"));
+
   const [showShare, setShowShare] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showSettingsLoginPrompt, setShowSettingsLoginPrompt] = useState(false);
@@ -2858,6 +2884,7 @@ Start Location: ${details.startLocation}`;
               viewMode={viewMode}
               setViewMode={setViewMode}
               hasItineraryActivity={!!activeItineraryId}
+              isComplete={itineraryIsComplete}
             />
 
             {/* MAP tab */}
@@ -2930,19 +2957,7 @@ Start Location: ${details.startLocation}`;
           hasBotResponded={hasBotResponded}
           isChatActive={isChatActive}
           hasItineraryActivity={!!activeItineraryId}
-          isComplete={
-            activeItineraryId !== "skeleton" &&
-            activeItineraryId !== "draft" &&
-            !!activeItineraryId &&
-            !!(
-              itineraryRedux &&
-              (itineraryRedux.name || itineraryRedux.cities?.length)
-            ) &&
-            itineraryRedux?.status !== "Draft" &&
-            itineraryRedux?.status !== undefined &&
-            itineraryRedux?.status !== null &&
-            itineraryRedux?.status !== "undefined"
-          }
+          isComplete={itineraryIsComplete}
           showChatBot={showChatBot}
           chatBotItineraryId={chatBotItineraryId}
           chatBotInjectedMessage={chatBotInjectedMessageRef.current}
