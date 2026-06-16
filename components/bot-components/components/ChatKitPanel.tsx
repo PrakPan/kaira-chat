@@ -2828,9 +2828,14 @@ const handleShowLogin = useCallback(() => {
       if (isStreaming) return;
       // Block quick replies while itinerary creation is in progress
       if (isItineraryCompleting) return;
+      // Gate logged-out users behind login
+      if (!isLoggedIn) {
+        setShowLoginModal(true);
+        return;
+      }
       sendMessage(reply.value ?? reply.label);
     },
-    [isStreaming, sendMessage, isItineraryCompleting],
+    [isStreaming, sendMessage, isItineraryCompleting, isLoggedIn],
   );
 
   const showError = !!error && !errorDismissed;
@@ -3593,6 +3598,8 @@ const handleShowLogin = useCallback(() => {
             onFilesSelected={handleFilesSelected}
             attachments={attachments}
             onRemoveAttachment={handleRemoveAttachment}
+            requireAuth={!isLoggedIn}
+            onAuthRequired={() => setShowLoginModal(true)}
           />
         </div>
         {/* Overlay blocks all typing/interaction while itinerary creation

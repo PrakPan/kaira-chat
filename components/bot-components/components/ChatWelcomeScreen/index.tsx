@@ -1,8 +1,9 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import { MessageInputBox } from "../MessageInputBox";
 import type { AttachmentFile } from "../ChatKitPanel";
 import { useSelector } from "react-redux";
 import StartScreen from "../StartScreen";
+import BotLoginModal from "../BotLoginModal";
 import type { ThemeConfig } from "../../types/themeConfig";
 
 const CHATKIT_API_URL = "https://dev.chat.tarzanway.com/chatkit";
@@ -234,6 +235,9 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
   const [inputValue, setInputValue] = useState("");
   const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
   const [showInspiration, setShowInspiration] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
+  // Action to resume once the user logs in (submit / chip / inspiration prompt)
+  const pendingActionRef = useRef<(() => void) | null>(null);
 
   // Lock body scroll while the bottom sheet is open
   useEffect(() => {
@@ -247,17 +251,33 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
 
   const handleInspirationSelect = (prompt: string) => {
     setShowInspiration(false);
-    onSubmit?.(prompt);
+    runWhenAuthed(() => onSubmit?.(prompt));
   };
 
   const reduxToken = useSelector((state: any) => state.auth.token);
   const reduxUserId = useSelector((state: any) => state.auth.id);
   const authToken = reduxToken ?? getAuthToken();
+  const isLoggedIn = !!authToken;
+
+  // Gate any user action behind login. If logged out, stash the action and
+  // open the login modal — it resumes automatically on successful login.
+  const runWhenAuthed = (action: () => void) => {
+    if (!isLoggedIn) {
+      pendingActionRef.current = action;
+      setShowLogin(true);
+      return;
+    }
+    action();
+  };
 
   const handleSubmit = () => {
     const val = inputValue.trim();
     const uploadedAttachments = attachments.filter((a) => a.status === "uploaded");
     if (!val && uploadedAttachments.length === 0) return;
+    if (!isLoggedIn) {
+      setShowLogin(true);
+      return;
+    }
     const attachmentIds = uploadedAttachments.map((a) => a.id);
     onSubmit?.(val, attachmentIds.length > 0 ? attachmentIds : undefined);
     setInputValue("");
@@ -265,7 +285,7 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
   };
 
   const handleChipClick = (prompt: string) => {
-    onSubmit?.(prompt);
+    runWhenAuthed(() => onSubmit?.(prompt));
   };
 
   // ── Attachment upload logic ──────────────────────────────────────────────
@@ -439,6 +459,8 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
       onFilesSelected={handleFilesSelected}
       attachments={attachments}
       onRemoveAttachment={handleRemoveAttachment}
+      requireAuth={!isLoggedIn}
+      onAuthRequired={() => setShowLogin(true)}
     />
   );
 
@@ -616,6 +638,20 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
           </div>
         </div>
       )}
+
+      {/* Login gate — shown when a logged-out user tries to use the input,
+          a prompt chip, or an inspiration prompt. */}
+      <BotLoginModal
+        show={showLogin}
+        onhide={() => setShowLogin(false)}
+        zIndex={"3300"}
+        onSuccess={() => {
+          setShowLogin(false);
+          const action = pendingActionRef.current;
+          pendingActionRef.current = null;
+          if (action) setTimeout(action, 0);
+        }}
+      />
     </div>
   );
 };

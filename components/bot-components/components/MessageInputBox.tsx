@@ -254,6 +254,11 @@ interface MessageInputBoxProps {
   attachments?: AttachmentFile[];
   /** Remove an attachment by id */
   onRemoveAttachment?: (id: string) => void;
+  /** When true, any interaction (focus, attach, send) is blocked and
+   *  onAuthRequired is invoked instead — used to gate logged-out users. */
+  requireAuth?: boolean;
+  /** Called when the user tries to interact while requireAuth is true. */
+  onAuthRequired?: () => void;
 }
 
 export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
@@ -269,6 +274,8 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
   onFilesSelected,
   attachments = [],
   onRemoveAttachment,
+  requireAuth = false,
+  onAuthRequired,
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const dictateRef = useRef<any>(null);
@@ -335,14 +342,22 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
   };
 
   const handleSubmitInternal = () => {
+    if (requireAuth) {
+      onAuthRequired?.();
+      return;
+    }
     dictateRef.current?.stop();
     onSubmit();
   };
 
   // ── File selection ──────────────────────────────────────────────────────
   const handleAttachClick = useCallback(() => {
+    if (requireAuth) {
+      onAuthRequired?.();
+      return;
+    }
     fileInputRef.current?.click();
-  }, []);
+  }, [requireAuth, onAuthRequired]);
 
   const handleFileInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -532,6 +547,12 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
           value={value}
           onChange={(e) => handleChange(e.target.value)}
           onKeyDown={handleKeyDown}
+          onFocus={(e) => {
+            if (requireAuth) {
+              e.currentTarget.blur();
+              onAuthRequired?.();
+            }
+          }}
           disabled={disabled || isStreaming}
           placeholder=""
           rows={1}
