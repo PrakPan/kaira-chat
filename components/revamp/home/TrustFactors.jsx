@@ -13,7 +13,7 @@ const DEFAULT_ITEMS = [
   { value: "100+", after: "countries, real routes" },
   { before: "Since", value: "2018" },
   { value: "~2s", after: "avg reply" },
-  { value: "94%", after: "come back for trip 2" },
+  { value: "94%", after: "come back for second trip" },
 ];
 
 const StripValue = ({ children }) => (
@@ -43,13 +43,17 @@ const TrustFactors = ({ items = DEFAULT_ITEMS }) => {
           style={{
             display: "flex",
             justifyContent: "space-between",
-            flexWrap: "wrap",
+            flexWrap: "nowrap",
             gap: "24px",
             listStyle: "none",
             margin: 0,
             padding: 0,
             fontSize: "13.5px",
             fontWeight: 500,
+            overflowX: "auto",
+            WebkitOverflowScrolling: "touch",
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
           }}
         >
           {items.map((item, idx) => (
@@ -59,6 +63,8 @@ const TrustFactors = ({ items = DEFAULT_ITEMS }) => {
                 display: "inline-flex",
                 alignItems: "center",
                 gap: "8px",
+                flexShrink: 0,
+                whiteSpace: "nowrap",
               }}
             >
               {item.node ? (
