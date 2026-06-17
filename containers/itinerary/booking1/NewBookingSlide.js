@@ -1851,6 +1851,22 @@ const Details = (props) => {
     } catch (error) {}
   };
 
+  // The payment API blocks checkout until traveller details are verified,
+  // returning: { errors: [{ message: ["Traveller details must be verified
+  // before initiating payment"] }] }. Detect that specific case so we can open
+  // the Add Traveller Details drawer instead of just surfacing a toast.
+  const isTravellerVerificationError = (error) => {
+    const errors = error?.response?.data?.errors || [];
+    return errors.some((e) => {
+      const msgs = Array.isArray(e?.message) ? e.message : [e?.message];
+      return msgs.some(
+        (m) =>
+          typeof m === "string" &&
+          m.toLowerCase().includes("traveller details must be verified"),
+      );
+    });
+  };
+
   const _fullPaymentHandler = async (id) => {
     setPaymentLoading(true);
 
@@ -1900,6 +1916,19 @@ const Details = (props) => {
     } catch (error) {
       console.error("Error initiating full payment:", error);
       props.getPaymentHandler();
+
+      if (isTravellerVerificationError(error)) {
+        setPaymentLoading(false);
+        setTravellerDetailsOpen(true);
+        dispatch(
+          openNotification({
+            text: "Please verify your traveller details before proceeding to payment.",
+            heading: "Traveller details required",
+            type: "error",
+          }),
+        );
+        return;
+      }
 
       const errorMsg =
         error?.response?.data?.errors?.[0]?.message?.[0] ||
@@ -1962,6 +1991,20 @@ const Details = (props) => {
       }
     } catch (error) {
       console.error("Error initiating lock payment:", error);
+
+      if (isTravellerVerificationError(error)) {
+        setPaymentLoading(false);
+        setTravellerDetailsOpen(true);
+        dispatch(
+          openNotification({
+            text: "Please verify your traveller details before proceeding to payment.",
+            heading: "Traveller details required",
+            type: "error",
+          })
+        );
+        return;
+      }
+
       dispatch(
         openNotification({
           text:

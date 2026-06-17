@@ -1,8 +1,9 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import { MessageInputBox } from "../MessageInputBox";
 import type { AttachmentFile } from "../ChatKitPanel";
 import { useSelector } from "react-redux";
 import StartScreen from "../StartScreen";
+import BotLoginModal from "../BotLoginModal";
 import type { ThemeConfig } from "../../types/themeConfig";
 
 const CHATKIT_API_URL = "https://chat.tarzanway.com/chatkit";
@@ -31,6 +32,10 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
   const [inputValue, setInputValue] = useState("");
   const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
   const [showInspiration, setShowInspiration] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  // Prompt held back when an unauthenticated user triggers a send/chip/card.
+  // Replayed once login succeeds so the trip starts without a second tap.
+  const pendingPromptRef = useRef<{ message: string; attachmentIds?: string[] } | null>(null);
 
   // Lock body scroll while the bottom sheet is open
   useEffect(() => {
@@ -42,26 +47,43 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
     };
   }, [showInspiration]);
 
-  const handleInspirationSelect = (prompt: string) => {
-    setShowInspiration(false);
-    onSubmit?.(prompt);
-  };
-
   const reduxToken = useSelector((state: any) => state.auth.token);
   const reduxUserId = useSelector((state: any) => state.auth.id);
   const authToken = reduxToken ?? getAuthToken();
+  const isLoggedIn = !!authToken;
+
+  const handleInspirationSelect = (prompt: string) => {
+    setShowInspiration(false);
+    if (!isLoggedIn) {
+      pendingPromptRef.current = { message: prompt };
+      setShowLoginModal(true);
+      return;
+    }
+    onSubmit?.(prompt);
+  };
 
   const handleSubmit = () => {
     const val = inputValue.trim();
     const uploadedAttachments = attachments.filter((a) => a.status === "uploaded");
     if (!val && uploadedAttachments.length === 0) return;
     const attachmentIds = uploadedAttachments.map((a) => a.id);
-    onSubmit?.(val, attachmentIds.length > 0 ? attachmentIds : undefined);
+    const ids = attachmentIds.length > 0 ? attachmentIds : undefined;
+    if (!isLoggedIn) {
+      pendingPromptRef.current = { message: val, attachmentIds: ids };
+      setShowLoginModal(true);
+      return;
+    }
+    onSubmit?.(val, ids);
     setInputValue("");
     setAttachments([]);
   };
 
   const handleChipClick = (prompt: string) => {
+    if (!isLoggedIn) {
+      pendingPromptRef.current = { message: prompt };
+      setShowLoginModal(true);
+      return;
+    }
     onSubmit?.(prompt);
   };
 
@@ -236,6 +258,8 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
       onFilesSelected={handleFilesSelected}
       attachments={attachments}
       onRemoveAttachment={handleRemoveAttachment}
+      requireLogin={!isLoggedIn}
+      onAuthRequired={() => setShowLoginModal(true)}
     />
   );
 
@@ -413,6 +437,28 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
             </div>
           </div>
         </div>
+      )}
+
+      {/* ── Login gate — shown when an unauthenticated user taps the composer,
+           a prompt chip, or an inspiration card. On success the held-back
+           prompt is replayed so the trip starts immediately. ── */}
+      {showLoginModal && !isLoggedIn && (
+        <BotLoginModal
+          show={showLoginModal}
+          onhide={() => setShowLoginModal(false)}
+          zIndex={3300}
+          message="Please login to continue"
+          onSuccess={async () => {
+            setShowLoginModal(false);
+            const pending = pendingPromptRef.current;
+            pendingPromptRef.current = null;
+            if (pending) {
+              onSubmit?.(pending.message, pending.attachmentIds);
+              setInputValue("");
+              setAttachments([]);
+            }
+          }}
+        />
       )}
     </div>
   );

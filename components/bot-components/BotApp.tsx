@@ -479,9 +479,16 @@ export default function BotApp({
   const [showSettings, setShowSettings] = useState(false);
   const [showSettingsLoginPrompt, setShowSettingsLoginPrompt] = useState(false);
   const [showApiLoginPrompt, setShowApiLoginPrompt] = useState(false);
+  // Login gate for the start-screen / welcome surfaces (prompt cards, theme
+  // prompts, traveller stories). Holds the action to replay after login.
+  const [showPromptLoginPrompt, setShowPromptLoginPrompt] = useState(false);
+  const pendingPromptActionRef = useRef<(() => void) | null>(null);
   const [isHotelsPresent, setIsHotelsPresent] = useState(false);
 
   const authToken = useSelector((state: any) => state.auth?.token);
+  const isLoggedIn = !!(
+    authToken ?? (typeof window !== "undefined" ? getAuthToken() : null)
+  );
 
   // Open the login modal whenever any axios call returns a 401. The
   // interceptor only flips the prompt state — the original error still
@@ -2301,7 +2308,7 @@ export default function BotApp({
     }
   };
 
-  const handlePromptSelect = (prompt: string, attachmentIds?: string[]) => {
+  const executePromptSelect = (prompt: string, attachmentIds?: string[]) => {
     // chatSendMessageRef is set by both desktop and mobile ChatKitPanel onSendReady
     const sendFn = sendMessageRef.current ?? chatSendMessageRef.current;
     if (isChatActive && sendFn) {
@@ -2313,13 +2320,35 @@ export default function BotApp({
     }
   };
 
+  const handlePromptSelect = (prompt: string, attachmentIds?: string[]) => {
+    // Gate the start-screen / theme prompt cards behind login.
+    if (!isLoggedIn) {
+      pendingPromptActionRef.current = () =>
+        executePromptSelect(prompt, attachmentIds);
+      setShowPromptLoginPrompt(true);
+      return;
+    }
+    executePromptSelect(prompt, attachmentIds);
+  };
+
   // Open the traveller-story detail view inside ChatKitPanel without pushing a
   // message to the bot. CTAs on that detail view will call handlePromptSelect
   // which routes through the /chatkit p1 API.
-  const handleTravellerStorySelect = useCallback((story: TravellerStory) => {
-    setActiveTravellerStory(story);
-    setIsChatActive(true);
-  }, []);
+  const handleTravellerStorySelect = useCallback(
+    (story: TravellerStory) => {
+      if (!isLoggedIn) {
+        pendingPromptActionRef.current = () => {
+          setActiveTravellerStory(story);
+          setIsChatActive(true);
+        };
+        setShowPromptLoginPrompt(true);
+        return;
+      }
+      setActiveTravellerStory(story);
+      setIsChatActive(true);
+    },
+    [isLoggedIn],
+  );
 
   const handleSendMessage = useCallback((message: string) => {
     if (sendMessageRef.current) sendMessageRef.current(message);
@@ -3247,6 +3276,21 @@ Start Location: ${details.startLocation}`;
           message="Please login to continue"
           onSuccess={async () => {
             setShowApiLoginPrompt(false);
+          }}
+        />
+      )}
+
+      {showPromptLoginPrompt && !isLoggedIn && (
+        <BotLoginModal
+          show={showPromptLoginPrompt}
+          onhide={() => setShowPromptLoginPrompt(false)}
+          zIndex={3300}
+          message="Please login to continue"
+          onSuccess={async () => {
+            setShowPromptLoginPrompt(false);
+            const action = pendingPromptActionRef.current;
+            pendingPromptActionRef.current = null;
+            action?.();
           }}
         />
       )}

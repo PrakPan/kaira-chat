@@ -102,6 +102,11 @@ function NotificationPopup(props) {
   }, [props.show]);
 
   useEffect(() => {
+    // While the toast is sliding out (show=false), the reducer has reset
+    // `type` to "", which would flip the color to the green default and make
+    // an error toast flash green during the 0.5s exit transition. Keep the
+    // current color until the next time the toast actually opens.
+    if (!props.show) return;
     if (props.type === "error") {
       setColor({
         color: "#d21f3c",
