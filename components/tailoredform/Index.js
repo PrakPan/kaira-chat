@@ -80,6 +80,11 @@ const Enquiry = (props) => {
   const [loadingItineraryId, setLoadingItineraryId] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const hasCompletedRef = useRef(false);
+  // Authoritative itinerary id, refreshed on every successful initiate
+  // response so completion never reads a stale value from Redux/local state.
+  const latestItineraryIdRef = useRef(null);
+  // Monotonic counter to discard out-of-order initiate responses.
+  const initiateSeqRef = useRef(0);
   const [isRecalculatingRoute, setIsRecalculatingRoute] = useState(false);
 
   const slideOneData = useSelector(
@@ -149,6 +154,19 @@ const Enquiry = (props) => {
       hasCompletedRef.current = false;
     }
   }, [slideIndex]);
+
+  // On a fresh form open, drop any itinerary id left over from a previous
+  // (possibly abandoned) tailored-form session. The store is in-memory and
+  // only cleared on a *successful* completion, so without this reset the next
+  // creation could navigate to /chat/<old id>.
+  useEffect(() => {
+    dispatch(setItineraryInitiateData(null));
+    setItineraryId(null);
+    latestItineraryIdRef.current = null;
+    initiateSeqRef.current = 0;
+    hasCompletedRef.current = false;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     {
@@ -465,6 +483,10 @@ const Enquiry = (props) => {
 
     const token = localStorage.getItem("access_token");
 
+    // Claim a sequence number so a slow/earlier initiate response can't
+    // overwrite the id from a newer one (route edits re-initiate repeatedly).
+    const seq = ++initiateSeqRef.current;
+
     try {
       setIsLoading(true);
       setApiSucceeded(false);
@@ -477,6 +499,14 @@ const Enquiry = (props) => {
         },
       });
       const resData = res.data;
+
+      // A newer initiate has been fired since this request started — its id is
+      // authoritative, so ignore this stale response entirely.
+      if (seq !== initiateSeqRef.current) {
+        return;
+      }
+
+      const newItineraryId = resData?.itinerary_id ?? null;
 
       if(resData){
         setApiSucceeded(true);
@@ -492,8 +522,11 @@ const Enquiry = (props) => {
 
       setError(null);
 
-      setItineraryId(resData.itinerary_id);
-      setLoadingItineraryId(resData.itinerary_id);
+      // Update the id from THIS response everywhere. The ref is the source of
+      // truth read by completeItineraryCreate.
+      latestItineraryIdRef.current = newItineraryId;
+      setItineraryId(newItineraryId);
+      setLoadingItineraryId(newItineraryId);
 
       setRoute([resData.start_city, ...resData.basic_route, resData.end_city]);
 
@@ -533,8 +566,10 @@ const Enquiry = (props) => {
         return;
       }
     } catch (err) {
+      // Ignore errors from a superseded initiate request.
+      if (seq !== initiateSeqRef.current) return;
       console.log("ERROR: ", err.message);
-      setError(err.response.data?.errors?.[0]?.message?.[0] || err.message);
+      setError(err.response?.data?.errors?.[0]?.message?.[0] || err.message);
       setApiSucceeded(false);
       setLoadingItineraryId(null);
       setIsLoading(false);
@@ -548,8 +583,18 @@ const Enquiry = (props) => {
   const completeItineraryCreate = () => {
     const platform = getPlatform();
 
+    // Prevent double / re-entrant completion (multiple entry points: slide 3
+    // button, login onSuccess/onSkipLogin, Flickity).
+    if (hasCompletedRef.current) {
+      return;
+    }
+
+    // Prefer the ref (refreshed on every initiate response) so we can never
+    // complete against a stale id from the in-memory Redux slice.
     const finalItineraryId =
-      itineraryInititateData?.itinerary_id || itineraryId;
+      latestItineraryIdRef.current ||
+      itineraryInititateData?.itinerary_id ||
+      itineraryId;
 
     if (!finalItineraryId) {
       console.error("❌ No itinerary ID available for completion");
@@ -593,6 +638,7 @@ const Enquiry = (props) => {
       add_transfers_and_activities: slideThreeData.addInclusions,
     });
 
+    hasCompletedRef.current = true;
     setIsSubmitting(true);
     setIsLoading(true);
     localStorage.removeItem("MyPlans");
@@ -615,73 +661,46 @@ const Enquiry = (props) => {
         dispatch(setItineraryInitiateData(null));
         dispatch(setItineraryCreated(true));
 
-        const isProduction = process.env.NODE_ENV === "production";
-        const hasGtag = typeof window.gtag === "function";
-        const hasDataLayer = Array.isArray(window.dataLayer);
-
-        let hasNavigated = false;
-
-        const navigateToItinerary = () => {
-          if (hasNavigated) {
-            return;
+        // Stash the route so /chat can render a skeleton itinerary before the
+        // status API call returns. Closure-captured here because
+        // setItineraryInitiateData(null) above has already cleared Redux.
+        try {
+          if (
+            typeof window !== "undefined" &&
+            Array.isArray(itineraryInititateData?.basic_route) &&
+            itineraryInititateData.basic_route.length > 0
+          ) {
+            sessionStorage.setItem(
+              `tailored_skeleton_${finalItineraryId}`,
+              JSON.stringify({
+                basic_route: itineraryInititateData.basic_route,
+                start_city: itineraryInititateData.start_city ?? null,
+                end_city: itineraryInititateData.end_city ?? null,
+              }),
+            );
           }
-          hasNavigated = true;
-          // Stash the route so /chat can render a skeleton itinerary before
-          // the status API call returns. Closure-captured here because
-          // setItineraryInitiateData(null) above has already cleared Redux.
-          try {
-            if (
-              typeof window !== "undefined" &&
-              Array.isArray(itineraryInititateData?.basic_route) &&
-              itineraryInititateData.basic_route.length > 0
-            ) {
-              sessionStorage.setItem(
-                `tailored_skeleton_${finalItineraryId}`,
-                JSON.stringify({
-                  basic_route: itineraryInititateData.basic_route,
-                  start_city: itineraryInititateData.start_city ?? null,
-                  end_city: itineraryInititateData.end_city ?? null,
-                }),
-              );
-            }
-          } catch {}
-          // Route to the SAME id that was just completed on the backend
-          // (finalItineraryId), not the local `itineraryId` state — the latter
-          // can hold a stale/previous itinerary id (e.g. after viewing an
-          // existing itinerary then creating a new one), which sent the user to
-          // /chat/<old id> while the new itinerary built correctly server-side.
-          router.push(`/chat/${finalItineraryId}?source=tailored`);
-        };
+        } catch {}
 
-        if (hasGtag) {
-          try {
+        // Fire analytics best-effort — navigation is NOT gated on them. The
+        // route change to /chat is a client-side navigation (no page unload),
+        // so the gtag/dataLayer beacons still send. Gating navigation on
+        // gtag's event_callback previously left users stranded on the
+        // dashboard whenever the callback never fired.
+        try {
+          if (typeof window.gtag === "function") {
             window.gtag("event", "conversion", {
               send_to: "AW-738037519/IF5rCMyxhL8ZEI-e9t8C",
               transaction_id: finalItineraryId,
               value: 1.0,
               currency: currency?.currency || "INR",
-              event_callback: function () {
-                navigateToItinerary();
-              },
-              event_timeout: 2000,
             });
-
-            setTimeout(() => {
-              if (!hasNavigated) {
-                navigateToItinerary();
-              }
-            }, 2500);
-          } catch (error) {
-            console.error("✗ Error firing Google Ads conversion:", error);
-
-            navigateToItinerary();
           }
-        } else {
-          navigateToItinerary();
+        } catch (error) {
+          console.error("✗ Error firing Google Ads conversion:", error);
         }
 
-        if (hasDataLayer) {
-          try {
+        try {
+          if (Array.isArray(window.dataLayer)) {
             window.dataLayer.push({
               event: "itinerary_completed",
               itinerary_id: finalItineraryId,
@@ -694,20 +713,21 @@ const Enquiry = (props) => {
               add_hotels: slideThreeData.addHotels,
               timestamp: new Date().toISOString(),
             });
-          } catch (error) {
-            console.error("✗ Error pushing to dataLayer:", error);
           }
+        } catch (error) {
+          console.error("✗ Error pushing to dataLayer:", error);
         }
 
-        setTimeout(() => {
-          if (!hasNavigated) {
-          }
-        }, 1000);
+        // Route to the SAME id that was just completed on the backend
+        // (finalItineraryId), never the stale local/Redux id.
+        router.push(`/chat/${finalItineraryId}?source=tailored`);
       })
       .catch((err) => {
+        // Allow another attempt after a failed completion.
+        hasCompletedRef.current = false;
         setIsSubmitting(false);
         setIsLoading(false);
-        setError(err.response.data?.errors?.[0]?.message?.[0]);
+        setError(err.response?.data?.errors?.[0]?.message?.[0] || err.message);
       });
   };
 
