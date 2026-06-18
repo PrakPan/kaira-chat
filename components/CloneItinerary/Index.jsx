@@ -319,7 +319,7 @@ const CloneItinerary = ({
         borderRadius: 20,
         overflow: "hidden",
         background:
-          "radial-gradient(ellipse at top right, rgba(255,230,0,0.18), transparent 55%), linear-gradient(180deg,#FFFDF7,#FFFFFF)",
+          "#fafafa",
       }}
     >
       {/* yellow top strip — matches BotLoginModal */}
@@ -336,7 +336,7 @@ const CloneItinerary = ({
         <div
           style={{
             fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-            fontSize: 28,
+            fontSize: isDesktop ? 28 : 24,
             fontWeight: 500,
             lineHeight: 1.1,
             letterSpacing: "-0.01em",

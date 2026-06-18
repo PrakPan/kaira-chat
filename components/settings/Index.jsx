@@ -214,7 +214,7 @@ const handleUpdate = () => {
         borderRadius: 20,
         overflow: "hidden",
         background:
-          "radial-gradient(ellipse at top right, rgba(255,230,0,0.18), transparent 55%), linear-gradient(180deg,#FFFDF7,#FFFFFF)",
+          "#fafafa",
       }}
     >
       {/* yellow top strip — matches BotLoginModal */}
@@ -224,12 +224,12 @@ const handleUpdate = () => {
           background: "linear-gradient(90deg,#FFE600,#F2D700)",
         }}
       />
-      <div className={`flex flex-col gap-6 md:max-w-[537px] z-[9999] max-ph:px-2 pt-2 max-ph:py-2 pb-4 md:!px-4 md:!py-4`}>
+      <div className={`flex flex-col gap-6 md:max-w-[537px] z-[9999] max-ph:px-2 pt-4 max-ph:py-2 pb-4 md:!px-4 md:!py-4`}>
         <div>
           <div
             style={{
               fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-              fontSize: 28,
+              fontSize: isDesktop ? 28 : 24,
               fontWeight: 500,
               lineHeight: 1.1,
               letterSpacing: "-0.01em",
