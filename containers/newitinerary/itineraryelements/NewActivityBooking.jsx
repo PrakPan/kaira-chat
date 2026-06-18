@@ -13,7 +13,8 @@ import useMediaQuery from "../../../components/media";
 import { currencySymbols } from "../../../data/currencySymbols";
 import { useSelector } from "react-redux";
 
-const colors = ["#d5f5d3", "#fadadd", "#F5F0FF", "#DDF4C5"];
+// Kaira soft semantic surfaces (retoned pastels) for the category tags.
+const colors = ["#e7f5ee", "#fff1ee", "#eef2fb", "#f0e9d6"];
 
 export default function NewActivityBooking(props) {
   const [stars, setStars] = useState(null);
@@ -176,7 +177,7 @@ export default function NewActivityBooking(props) {
             </div>
           </div>
           <div className="flex flex-col justify-between">
-            <div className="flex flex-col gap-3 text-[#01202B] w-full h-fit justify-start">
+            <div className="flex flex-col gap-3 text-[#0b1220] w-full h-fit justify-start">
               <div className="flex flex-col justify-between">
                 <div className="flex flex-row justify-between">
                   <div className="ttw-type-h4 leading-xl-sm font-600 mb-0 max-ph:mt-sm">
@@ -184,8 +185,8 @@ export default function NewActivityBooking(props) {
                   </div>
                 </div>
                 {stars && (
-                  <span className="flex flex-row items-center gap-1 ttw-type-body text-[#7a7a7a]">
-                    <span className="flex flex-row text-[#FFD201] ttw-type-small">
+                  <span className="flex flex-row items-center gap-1 ttw-type-body text-[#8a93a6]">
+                    <span className="flex flex-row text-[#f7e700] ttw-type-small">
                       {stars}
                     </span>
                     <span className="ttw-type-small">{props.data?.rating} . </span>
@@ -210,14 +211,14 @@ export default function NewActivityBooking(props) {
                       ?.map((e, i) => (
                         <span
                           key={i}
-                          className={`rounded-full px-2 py-1`}
+                          className={`rounded-full px-2.5 py-1 text-[12px] font-medium text-[#1a2436]`}
                           style={{ backgroundColor: colors[i % colors.length] }}
                         >
                           {e}
                         </span>
                       ))}
                   {props?.data?.tags?.length > 2 && (
-                    <span className={`border-1 rounded-full px-2 py-1`}>
+                    <span className={`rounded-full border border-[#ececec] px-2.5 py-1 text-[12px] text-[#445069]`}>
                       +
                       {props?.data?.tags?.length -
                         2
@@ -225,14 +226,13 @@ export default function NewActivityBooking(props) {
                       more
                     </span>
                   )}
+                </div>
+              )}
 
-                  {/* One-Liner Description */}
-                  {
-                    props?.data?.one_liner_description &&
-                    <div className=" ttw-type-body text-[#6E757A] line-clamp-3 ttw-type-body">
-                      {props.data.one_liner_description}
-                    </div>
-                  }
+              {/* One-Liner Description — own line, below the tags */}
+              {props?.data?.one_liner_description && (
+                <div className="ttw-type-body text-[#445069] line-clamp-3">
+                  {props.data.one_liner_description}
                 </div>
               )}
 
@@ -247,11 +247,8 @@ export default function NewActivityBooking(props) {
                     </div>
                   )}
                   <div className="flex flex-col md:flex-row gap-2 items-baseline">
-                  <div className="text-text-charcolblack text-lg font-700 leading-2xl-md max-ph:mb-sm">
-                    <span
-                      className="!font-[lexend]"
-                      style={{ fontFamily: "Lexend" }}
-                    >
+                  <div className="text-text-charcolblack text-lg font-700 leading-2xl-md max-ph:mb-sm font-mono">
+                    <span>
                       {currency?.currency ? currencySymbols?.[currency?.currency] : `₹`}
                     </span>
                     {getIndianPrice(Math.round(props.data.pricing.total_price))}
@@ -398,8 +395,8 @@ export default function NewActivityBooking(props) {
           </div>
 
           {stars && (
-            <span className="flex flex-row items-center gap-1 ttw-type-body text-[#7a7a7a] mt-1">
-              <span className="flex flex-row text-[#FFD201] ttw-type-small">
+            <span className="flex flex-row items-center gap-1 ttw-type-body text-[#8a93a6] mt-1">
+              <span className="flex flex-row text-[#f7e700] ttw-type-small">
                 {stars}
               </span>
             </span>
@@ -417,14 +414,14 @@ export default function NewActivityBooking(props) {
                 ?.map((e, i) => (
                   <span
                     key={i}
-                    className={` rounded-full px-2 py-1`}
+                    className={`rounded-full px-2.5 py-1 text-[12px] font-medium text-[#1a2436]`}
                     style={{ backgroundColor: colors[i % colors.length] }}
                   >
                     {e}
                   </span>
                 ))}
               {props?.data?.tags?.length > 2 && (
-                <span className={` rounded-full px-2 py-1`}>
+                <span className={`rounded-full border border-[#ececec] px-2.5 py-1 text-[12px] text-[#445069]`}>
                   +
                   {props?.data?.tags?.length - 2
                     ? 1
@@ -439,7 +436,7 @@ export default function NewActivityBooking(props) {
 
           {
             props?.data?.one_liner_description &&
-            <div className=" ttw-type-body text-[#6E757A] line-clamp-3 ttw-type-body py-2">
+            <div className=" ttw-type-body text-[#445069] line-clamp-3 ttw-type-body py-2">
               {props.data.one_liner_description}
             </div>
           }
@@ -509,7 +506,7 @@ export default function NewActivityBooking(props) {
                   </div>
                 )}
                 <div className="flex gap-1">
-                  <div className="text-text-charcolblack text-lg font-700 leading-2xl-md max-ph:mb-sm">
+                  <div className="text-text-charcolblack text-lg font-700 leading-2xl-md max-ph:mb-sm font-mono">
                     <span>{currency?.currency ? currencySymbols?.[currency?.currency] : `₹`}</span>
                     {getIndianPrice(Math.round(props.data.pricing.total_price))}
                   </div>
@@ -578,7 +575,7 @@ export default function NewActivityBooking(props) {
       />
       {props.data?.is_recommended && (
         <div > {/* <RecommendedBadge /> */}
-          <div className=" bg-tag-grass text-white absolute rounded-67br ttw-type-body-strong leading-lg px-md py-xs absolute top-xl left-xl">
+          <div className="bg-[#1f8a5a] text-white absolute rounded-67br ttw-type-body-strong leading-lg px-md py-xs top-xl left-xl">
 
             <span>Recommended</span>
           </div>

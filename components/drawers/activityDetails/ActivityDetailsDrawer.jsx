@@ -301,6 +301,7 @@ const ActivityDetailsDrawer = (props) => {
       backdrop
       width={"50%"}
       mobileWidth={"100%"}
+      bgColor="#fafaf5"
       style={{ zIndex: props.itineraryDrawer ? 1503 : 1501 }}
       className="font-lexend overflow-y-hidden pb-[40px]"
       onHide={props.handleCloseDrawer}

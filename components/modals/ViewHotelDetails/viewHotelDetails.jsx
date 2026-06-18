@@ -300,6 +300,7 @@ const ViewHotelDetails = (props) => {
       anchor={"right"}
       backdrop
       className=""
+      bgColor="#fafaf5"
       onHide={props.onHide}
       style={{ zIndex: 1252 }}
       width={"50vw"}

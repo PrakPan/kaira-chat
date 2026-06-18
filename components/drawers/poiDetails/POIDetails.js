@@ -41,6 +41,7 @@ export const Title = styled.p`
   font-weight: 800;
   letter-spacing: -0.02em;
   line-height: 1.15;
+  color: #0b1220;
 `;
 
 export const Reviews = styled.div`
@@ -55,7 +56,7 @@ export const Reviews = styled.div`
     font-weight: 600;
     letter-spacing: 0.04em;
     line-height: 1.4;
-    color: #7a7a7a;
+    color: #8a93a6;
   }
   u {
     margin-inline: 0.2rem;
@@ -68,6 +69,7 @@ export const Text = styled.p`
   font-size: 14.5px;
   font-weight: 400;
   line-height: 1.55;
+  color: #445069;
 `;
 
 export const Heading = styled.p`
@@ -75,15 +77,18 @@ export const Heading = styled.p`
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 17px;
   font-weight: 700;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.01em;
   line-height: 1.2;
+  color: #0b1220;
 `;
 
 const Container = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
-  font-family: Lexend;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #fafaf5;
+  color: #0b1220;
 `;
 
 const BackContainer = styled.div`
@@ -92,7 +97,7 @@ const BackContainer = styled.div`
   gap: 0.5rem;
   position: sticky;
   z-index: 1;
-  background: white;
+  background: #fafaf5;
   top: 0;
   padding-block: 0.75rem;
 
@@ -143,7 +148,7 @@ const ScrollContainer = styled.div`
 //   font-size: 20px;
 //   margin-block: 1rem 1rem;
 // `;
-const colors = ["#d5f5d3", "#fadadd", "#F5F0FF", "#DDF4C5"];
+const colors = ["#e7f5ee", "#fff1ee", "#eef2fb", "#f0e9d6"];
 
 const POIDetails = (props) => {
   const isSmallScreen = useMediaQuery("(max-width:586px)");
@@ -274,7 +279,7 @@ const POIDetails = (props) => {
           <div
             key={i}
             className={`cursor-pointer ${
- startDate === dateString ? "text-black font-semibold" : "text-[#4a4a4a]"
+ startDate === dateString ? "text-[#0b1220] font-semibold" : "text-[#445069]"
  }`}
             onClick={() => {
               if (dateString === startDate) {
@@ -422,7 +427,7 @@ const POIDetails = (props) => {
       {props.data.tags?.map((e, i) => (
         <div
           key={i}
-          className={`border-2 rounded-full px-2 py-1`}
+          className={`rounded-full px-3 py-1.5 text-[12px] font-medium text-[#1a2436]`}
           style={{ backgroundColor: colors[i % colors.length] }}
         >
           {e}
@@ -466,6 +471,11 @@ const POIDetails = (props) => {
               <Button
                 padding="7px 25px"
                 borderRadius="7px"
+                bgColor="#ffffff"
+                color="#0b1220"
+                borderStyle="solid"
+                borderWidth="1px"
+                borderColor="#ececec"
                 onclick={() => {
                   if (!token) {
                     props?.setShowLoginModal(true);
@@ -787,7 +797,7 @@ const POIDetails = (props) => {
                 <div className="relative">
                   <div
                     ref={dateBoxRef}
-                    className="flex items-center w-auto bg-[#F9F9F9] py-[0.7rem] px-4 rounded-lg justify-between cursor-pointer"
+                    className="flex items-center w-auto bg-[#f4f3ec] py-[0.7rem] px-4 rounded-lg justify-between cursor-pointer text-[#0b1220]"
                     onClick={() => setShowCalender((prev) => !prev)}
                   >
                     <div className="flex items-center gap-2">
@@ -814,7 +824,7 @@ const POIDetails = (props) => {
                 </div>
               </div>
 
-              <div className="inline-flex w-fit sm:w-fit bg-[#F9F9F9] rounded-lg p-1 gap-1">
+              <div className="inline-flex w-fit sm:w-fit bg-[#f4f3ec] rounded-lg p-1 gap-1">
                 {TIME_PERIODS.map((period) => {
                   const isSelected = selectedTimeOfDay === period;
                   return (
@@ -833,8 +843,8 @@ const POIDetails = (props) => {
                       }}
                       className={`flex-1 sm:flex-none px-4 py-2 rounded-md text-[14px] font-medium transition-colors mb-3 ${
                         isSelected
-                          ? "bg-[#07213A] text-white"
-                          : "bg-transparent text-[#7a7a7a] hover:text-[#01202B]"
+                          ? "bg-[#0b1220] text-[#fafaf5]"
+                          : "bg-transparent text-[#8a93a6] hover:text-[#0b1220]"
                       }`}
                     >
                       {period}
@@ -895,10 +905,10 @@ const POIDetails = (props) => {
 
                       return (
                         <div key={i} className="flex gap-[22px] mb-2">
-                          <div className="ttw-type-body font-semibold">{day}</div>
+                          <div className="ttw-type-body font-semibold text-[#445069]">{day}</div>
                           <div
-                            className={`ttw-type-body font-normal bg-[#FAFAFA] px-[8px] py-[2px] rounded-[10px] ${time == "Closed"
- ? " bg-[rgba(220,69,65,0.1)] text-[#DC4541]"
+                            className={`ttw-type-body font-mono bg-[#f4f3ec] text-[#0b1220] px-[8px] py-[2px] rounded-[10px] ${time == "Closed"
+ ? " bg-[rgba(184,64,52,0.1)] text-[#b84034]"
  : ""
  }`}
                           >
@@ -918,12 +928,12 @@ const POIDetails = (props) => {
                 id="reviews-poi"
                 className="flex !items-center justify-between"
               >
-                <div className="ttw-type-h4 font-extrabold">Reviews</div>
+                <div className="ttw-type-h4 font-extrabold text-[#0b1220] tracking-[-0.01em]">Reviews</div>
 
                 <Reviews>
                   {props.data.rating ? (
                     <div
-                      style={{ color: "#FFD201" }}
+                      style={{ color: "#f7e700" }}
                       className="flex flex-row gap-1"
                     >
                       {stars}
@@ -932,7 +942,7 @@ const POIDetails = (props) => {
 
                   <div className="flex items-center">
                     {props.data?.rating ? (
-                      <p className="m-0">{props.data.rating}</p>
+                      <p className="m-0 font-mono">{props.data.rating}</p>
                     ) : null}
 
                     {/* {props.data?.user_ratings_total ? (
@@ -1035,7 +1045,7 @@ const POIDetails = (props) => {
                   </defs>
                 </svg>
               </div>
-              <div>{props?.data?.address}</div>
+              <div className="text-[#445069]">{props?.data?.address}</div>
             </div>
             <div className="flex justify-between ttw-type-body">
               <div
@@ -1049,7 +1059,7 @@ const POIDetails = (props) => {
                 <a
                   href={`https://www.google.com/maps/place/?q=place_id:${props?.data?.gmaps_place_id}`}
                   target="_blank"
-                  style={{ color: "#0000EE", fontSize: "14px" }}
+                  style={{ color: "#0b1220", fontSize: "14px", textDecoration: "underline" }}
                 >
                   View on Google Maps
                 </a>

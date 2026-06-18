@@ -71,18 +71,18 @@ const RoomType = (props) => {
   const roomsByRate = getRoomsByRate();
 
   return (
-    <div className={`flex flex-col gap-3 rounded-lg cursor-pointer ${props.isSelected ? 'border-2 border-blue-500' : ''}`}>
+    <div className={`flex flex-col gap-3 rounded-lg cursor-pointer ${props.isSelected ? 'border-2 border-[#f7e700]' : ''}`}>
 
       {roomsByRate.map(({ rate, rateIndex, rooms }) => (
         <div key={rateIndex} className="flex flex-col gap-2">
 
           {roomsByRate.length > 1 && (
-            <div className="text-sm font-semibold text-black px-2">
+            <div className="text-sm font-semibold text-[#0b1220] px-2">
               {``}{getIndianPrice(Math.round(rate.final_rate))}
               {rate.refundable ? (
-                <span className="text-[#3BAF75]">Refundable</span>
+                <span className="text-[#1f8a5a]">Refundable</span>
               ) : (
-                <span className="text-[#EE724B]">Non-Refundable</span>
+                <span className="text-[#b84034]">Non-Refundable</span>
               )}
             </div>
           )}
@@ -93,7 +93,7 @@ const RoomType = (props) => {
             return (
               <div
                 key={`${rateIndex}-${roomIndex}`}
-                className="flex flex-col gap-3 rounded-3xl border-sm border-solid border-text-disabled p-md hover:bg-text-smoothwhite cursor-pointer "
+                className="flex flex-col gap-3 rounded-3xl border-sm border-solid border-[#ececec] p-md hover:bg-[#faf9f4] cursor-pointer "
               >
                 <div className="relative flex lg:flex-row w-full flex-col gap-4">
                   {room?.images?.length > 0 && (
@@ -107,7 +107,7 @@ const RoomType = (props) => {
 
                   <div className="w-full">
                     {room.name ? (
-                      <div className="text-md-lg leading-xl-sm font-600 mb-0">
+                      <div className="text-md-lg leading-xl-sm font-600 mb-0 text-[#0b1220]">
                         {room.name}{" "} <span> X 1 room </span>
                       </div>
                     ) : null}
@@ -155,16 +155,16 @@ const RoomType = (props) => {
                     </ul>
 
                     <div className="flex flex-row md:flex-row gap-1 items-center w-full font-bold">
-                      <div className="text-text-charcolblack text-lg font-700 leading-2xl-md">
+                      <div className="font-mono text-[#0b1220] text-lg font-700 leading-2xl-md">
                         {`${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}` + getIndianPrice(Math.round(props.price)) + "/-"}
                       </div>
-                      <div className="text-text-spacegrey text-sm-md font-400 leading-lg mt-xxs">for {pax} people</div>
+                      <div className="text-[#445069] text-sm-md font-400 leading-lg mt-xxs">for {pax} people</div>
                     </div>
                   </div>
 
                   <div>
                     <div className="flex flex-col justify-between h-100 max-ph:flex-row">
-                      <div className="text-blue whitespace-nowrap">
+                      <div className="text-[#0b1220] whitespace-nowrap">
                         {isCurrentRoomOpen ? (
                           <div
                             className="w-fit flex flex-row items-center gap-1  p-1 rounded-lg cursor-pointer"
@@ -192,7 +192,7 @@ const RoomType = (props) => {
                           Add to Itinerary
                         </button>
 
-                        <div className="text-text-spacegrey text-sm font-400 leading-lg mt-xxs">
+                        <div className="text-[#445069] text-sm font-400 leading-lg mt-xxs">
                           on {props.checkInDate} ({props.city})
                         </div>
                       </div>
