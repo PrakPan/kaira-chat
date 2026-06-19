@@ -254,6 +254,12 @@ interface MessageInputBoxProps {
   attachments?: AttachmentFile[];
   /** Remove an attachment by id */
   onRemoveAttachment?: (id: string) => void;
+  /** When true the user is not logged in — every interaction (focus, typing,
+   *  attach, mic, drop, send) is intercepted and routed to onAuthRequired
+   *  instead of performing the action. */
+  requireLogin?: boolean;
+  /** Called when a gated interaction is attempted while requireLogin is true. */
+  onAuthRequired?: () => void;
 }
 
 export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
@@ -269,6 +275,8 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
   onFilesSelected,
   attachments = [],
   onRemoveAttachment,
+  requireLogin = false,
+  onAuthRequired,
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const dictateRef = useRef<any>(null);
@@ -335,14 +343,22 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
   };
 
   const handleSubmitInternal = () => {
+    if (requireLogin) {
+      onAuthRequired?.();
+      return;
+    }
     dictateRef.current?.stop();
     onSubmit();
   };
 
   // ── File selection ──────────────────────────────────────────────────────
   const handleAttachClick = useCallback(() => {
+    if (requireLogin) {
+      onAuthRequired?.();
+      return;
+    }
     fileInputRef.current?.click();
-  }, []);
+  }, [requireLogin, onAuthRequired]);
 
   const handleFileInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -386,12 +402,16 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
       e.stopPropagation();
       dragCounterRef.current = 0;
       setIsDragOver(false);
+      if (requireLogin) {
+        onAuthRequired?.();
+        return;
+      }
       const files = e.dataTransfer.files;
       if (files && files.length > 0) {
         onFilesSelected?.(Array.from(files));
       }
     },
-    [onFilesSelected],
+    [onFilesSelected, requireLogin, onAuthRequired],
   );
 
   return (
@@ -479,6 +499,19 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
           value={value}
           onChange={(e) => handleChange(e.target.value)}
           onKeyDown={handleKeyDown}
+          onMouseDown={(e) => {
+            if (requireLogin) {
+              e.preventDefault();
+              onAuthRequired?.();
+            }
+          }}
+          onFocus={() => {
+            if (requireLogin) {
+              onAuthRequired?.();
+              textareaRef.current?.blur();
+            }
+          }}
+          readOnly={requireLogin}
           disabled={disabled || isStreaming}
           placeholder=""
           rows={1}
@@ -540,12 +573,23 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
         {/* Right: mic (Dictate) + send/stop */}
         <div className="flex items-center gap-2">
           {/* Dictate component handles mic button + recording state */}
-          <Dictate
-            ref={dictateRef}
-            stopDictation={stopDictation}
-            onTranscriptChange={handleTranscriptChange}
-            disabled={disabled || isStreaming}
-          />
+          <div
+            style={{ display: "flex" }}
+            onClickCapture={(e) => {
+              if (requireLogin) {
+                e.preventDefault();
+                e.stopPropagation();
+                onAuthRequired?.();
+              }
+            }}
+          >
+            <Dictate
+              ref={dictateRef}
+              stopDictation={stopDictation}
+              onTranscriptChange={handleTranscriptChange}
+              disabled={disabled || isStreaming}
+            />
+          </div>
 
           {isStreaming ? (
             <button

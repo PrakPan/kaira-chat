@@ -746,19 +746,19 @@ const RouteEditSection = (props) => {
           setItineraryLoading(false);
           if (err?.response?.status === 403) {
             props.openNotification({
-              text: "You are not allowed to make changes to this itinerary",
+              text: err?.response?.data?.messages?.[0] || "You are not allowed to make changes to this itinerary",
               heading: "Error!",
               type: "error",
             });
           } else if (err?.response?.status === 400) {
             props.openNotification({
-              text: err?.response?.data?.messages[0],
+              text: err?.response?.data?.messages?.[0] || "Invalid request",
               heading: "Error!",
               type: "error",
             });
           } else {
             props.openNotification({
-              text: "There seems to be a problem, please try again!",
+              text: err?.response?.data?.messages?.[0] || "There seems to be a problem, please try again!",
               heading: "Error!",
               type: "error",
             });
@@ -794,19 +794,19 @@ const RouteEditSection = (props) => {
           setItineraryLoading(false);
           if (err?.response?.status === 403) {
             props.openNotification({
-              text: "You are not allowed to make changes to this itinerary",
+              text: err?.response?.data?.errors?.[0]?.message?.[0] || "You are not allowed to make changes to this itinerary",
               heading: "Error!",
               type: "error",
             });
           } else if (err?.response?.status === 400) {
             props.openNotification({
-              text: err?.message,
+              text: err?.response?.data?.errors?.[0]?.message?.[0] || err?.message,
               heading: "Error!",
               type: "error",
             });
           } else {
             props.openNotification({
-              text: "There seems to be a problem, please try again!",
+              text: err?.response?.data?.errors?.[0]?.message?.[0] || "There seems to be a problem, please try again!",
               heading: "Error!",
               type: "error",
             });

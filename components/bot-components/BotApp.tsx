@@ -231,6 +231,16 @@ export default function BotApp({
     sessionId && !isFreshP1Redirect ? "itinerary" : "map",
   );
   const [botMode, setBotMode] = useState<BotMode>("p1");
+  // Mirror of botMode that updates synchronously. loadThread runs right after
+  // restoreItineraryDirectly within the same tick (thread select / restore),
+  // so it can't see the latest botMode from state — reading this ref instead
+  // avoids a stale value (e.g. switching a P2 thread → a P1 chat thread would
+  // otherwise paint the empty itinerary panel instead of the map).
+  const botModeRef = useRef<BotMode>("p1");
+  const applyBotMode = useCallback((mode: BotMode) => {
+    botModeRef.current = mode;
+    setBotMode(mode);
+  }, []);
   const [itineraryId, setItineraryId] = useState("");
   const [chatKey, setChatKey] = useState(0);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
@@ -439,13 +449,46 @@ export default function BotApp({
     (state: any) => state.ItineraryStatus?.display_text,
   );
   const statusNotes = useSelector((state: any) => state.ItineraryStatus?.notes);
+
+  // ── Single source of truth for "itinerary is complete" (drives the
+  // Route/Bookings tabs in ViewToggle + MobileLayout) ──────────────────────
+  // Previously each call site recomputed this from `state.Itinerary.status`,
+  // which is set LATE — only after ItineraryContainer finishes polling and
+  // fetches the canonical itinerary. On first arrival at P2 that field is
+  // still "Draft"/undefined, so Route + Bookings tabs (and the gallery-backed
+  // views) were missing until a manual refresh. The ItineraryStatus slice's
+  // `finalized_status`/`itinerary_status` are set EARLY (synchronously from
+  // the status endpoint in restoreItineraryDirectly), so prefer those and
+  // fall back to the Itinerary.status heuristic for older code paths.
+  const itineraryIsComplete =
+    !!activeItineraryId &&
+    activeItineraryId !== "skeleton" &&
+    activeItineraryId !== "draft" &&
+    (finalizedStatus === "SUCCESS" ||
+      itineraryStatus === "SUCCESS" ||
+      (!!(
+        itineraryRedux &&
+        (itineraryRedux.name || itineraryRedux.cities?.length)
+      ) &&
+        itineraryRedux?.status !== "Draft" &&
+        itineraryRedux?.status !== undefined &&
+        itineraryRedux?.status !== null &&
+        itineraryRedux?.status !== "undefined"));
+
   const [showShare, setShowShare] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showSettingsLoginPrompt, setShowSettingsLoginPrompt] = useState(false);
   const [showApiLoginPrompt, setShowApiLoginPrompt] = useState(false);
+  // Login gate for the start-screen / welcome surfaces (prompt cards, theme
+  // prompts, traveller stories). Holds the action to replay after login.
+  const [showPromptLoginPrompt, setShowPromptLoginPrompt] = useState(false);
+  const pendingPromptActionRef = useRef<(() => void) | null>(null);
   const [isHotelsPresent, setIsHotelsPresent] = useState(false);
 
   const authToken = useSelector((state: any) => state.auth?.token);
+  const isLoggedIn = !!(
+    authToken ?? (typeof window !== "undefined" ? getAuthToken() : null)
+  );
 
   // Open the login modal whenever any axios call returns a 401. The
   // interceptor only flips the prompt state — the original error still
@@ -616,7 +659,7 @@ export default function BotApp({
         // and either redirects to /thank-you or shows a stale loader.
         // The chatkit thread alone drives the P1 UI.
         if (stage === "P1" && !fromTailored) {
-          setBotMode("p1");
+          applyBotMode("p1");
           setShowChatBot(true);
           setShowStartScreen(false);
           setHasBotResponded(true);
@@ -654,7 +697,7 @@ export default function BotApp({
               allDone ? "SUCCESS" : "PENDING",
             ),
           );
-          setBotMode("p2");
+          applyBotMode("p2");
           setItineraryId(itineraryId);
           if (!allDone) {
             setIsItineraryCompleting(true);
@@ -670,7 +713,7 @@ export default function BotApp({
           // completion flags the bot's own creation flow sets so the
           // "completing" UI stays visible until polling reaches SUCCESS, and
           // the post-completion `inject.context` summary fires automatically.
-          setBotMode("p2");
+          applyBotMode("p2");
           setItineraryId(itineraryId);
           setIsItineraryCompleting(true);
           itineraryCreatedInSessionRef.current = true;
@@ -959,7 +1002,7 @@ export default function BotApp({
         setShowStartScreen(false);
         setViewMode("itinerary");
         // Switch to p2 mode so subsequent messages use /chatkit/p2
-        setBotMode("p2");
+        applyBotMode("p2");
         setItineraryId(id);
         if (summary) chatBotInjectedMessageRef.current = summary;
       } catch (e) {
@@ -1729,7 +1772,7 @@ export default function BotApp({
           // P1 chat-only thread (no itinerary yet) but has route/POI data —
           // sessionId-default of "itinerary" hides the map behind an empty
           // itinerary panel, so flip to "map" so the route pins are visible.
-          if(botMode == "p1"){
+          if(botModeRef.current == "p1"){
             setViewMode("map");
             setMobilePanel("map");
           }
@@ -1738,11 +1781,14 @@ export default function BotApp({
           // destination suggestions). The sessionId-default of "itinerary"
           // would paint an empty itinerary panel on desktop — flip to "map"
           // so the user sees the map alongside the chat. Mobile defaults to
-          // the chat tab in this case.
+          // the chat tab in this case. Read botModeRef (not botMode state),
+          // which is fresh after restoreItineraryDirectly ran this same tick —
+          // a stale "p2" here is what wrongly painted the empty itinerary panel
+          // when switching from a P2 thread to a P1 chat thread.
           if(data?.items?.data?.[0]?.content?.[0]?.text == "Hey Kaira! provide summary of my itinerary"){
              setViewMode("itinerary");
           }
-          else if(botMode == "p2"){
+          else if(botModeRef.current == "p2"){
             setViewMode("itinerary");
           }
           else setViewMode("map");
@@ -1807,12 +1853,12 @@ export default function BotApp({
 
                 if (allDone) {
                   dispatch(setItineraryStatus("finalized_status", "SUCCESS"));
-                  setBotMode("p2");
+                  applyBotMode("p2");
                   setItineraryId(restoredItineraryId);
                   isTripFinalized = true;
                 } else {
                   dispatch(setItineraryStatus("finalized_status", "PENDING"));
-                  setBotMode("p2");
+                  applyBotMode("p2");
                   setItineraryId(restoredItineraryId);
                   setIsItineraryCompleting(true);
                 }
@@ -1822,7 +1868,7 @@ export default function BotApp({
                 // Skip enabling itinerary polling below — ItineraryContainer
                 // would otherwise poll and redirect to /thank-you on FAILURE.
                 stageIsP1 = true;
-                setBotMode("p1");
+                applyBotMode("p1");
                 setItineraryId("");
               }
             }
@@ -1994,7 +2040,7 @@ export default function BotApp({
       } else {
         // Stage P1 — chatkit only. Mark the chat as active and ensure botMode
         // stays on p1 so ChatKitPanel routes through the /chatkit p1 endpoint.
-        setBotMode("p1");
+        applyBotMode("p1");
         setShowChatBot(true);
         setShowStartScreen(false);
         setIsChatActive(true);
@@ -2074,7 +2120,7 @@ export default function BotApp({
       /* noop */
     }
     hasRestoredRef.current = true;
-    setBotMode("p1");
+    applyBotMode("p1");
     setShowStartScreen(false);
     setIsChatActive(true);
     setHasBotResponded(true);
@@ -2154,7 +2200,7 @@ export default function BotApp({
       setShowItineraryShimmer(false);
       setIsItineraryCompleting(false);
       itineraryCreatedInSessionRef.current = false;
-      setBotMode("p1");
+      applyBotMode("p1");
       setItineraryId("");
       setViewMode("map");
       setHasBotResponded(false);
@@ -2231,7 +2277,7 @@ export default function BotApp({
     // Do NOT reset chatBotItineraryId here — ChatBot must not remount on new chat
     setRestoredThread(null);
     setActiveThreadId(null);
-    setBotMode("p1");
+    applyBotMode("p1");
     setItineraryId("");
     setSkeletonCities([]);
     skeletonCitiesRef.current = [];
@@ -2262,7 +2308,7 @@ export default function BotApp({
     }
   };
 
-  const handlePromptSelect = (prompt: string, attachmentIds?: string[]) => {
+  const executePromptSelect = (prompt: string, attachmentIds?: string[]) => {
     // chatSendMessageRef is set by both desktop and mobile ChatKitPanel onSendReady
     const sendFn = sendMessageRef.current ?? chatSendMessageRef.current;
     if (isChatActive && sendFn) {
@@ -2274,13 +2320,35 @@ export default function BotApp({
     }
   };
 
+  const handlePromptSelect = (prompt: string, attachmentIds?: string[]) => {
+    // Gate the start-screen / theme prompt cards behind login.
+    if (!isLoggedIn) {
+      pendingPromptActionRef.current = () =>
+        executePromptSelect(prompt, attachmentIds);
+      setShowPromptLoginPrompt(true);
+      return;
+    }
+    executePromptSelect(prompt, attachmentIds);
+  };
+
   // Open the traveller-story detail view inside ChatKitPanel without pushing a
   // message to the bot. CTAs on that detail view will call handlePromptSelect
   // which routes through the /chatkit p1 API.
-  const handleTravellerStorySelect = useCallback((story: TravellerStory) => {
-    setActiveTravellerStory(story);
-    setIsChatActive(true);
-  }, []);
+  const handleTravellerStorySelect = useCallback(
+    (story: TravellerStory) => {
+      if (!isLoggedIn) {
+        pendingPromptActionRef.current = () => {
+          setActiveTravellerStory(story);
+          setIsChatActive(true);
+        };
+        setShowPromptLoginPrompt(true);
+        return;
+      }
+      setActiveTravellerStory(story);
+      setIsChatActive(true);
+    },
+    [isLoggedIn],
+  );
 
   const handleSendMessage = useCallback((message: string) => {
     if (sendMessageRef.current) sendMessageRef.current(message);
@@ -2337,7 +2405,7 @@ export default function BotApp({
     botMode,
     sessionId: activeChatSessionId,
     itineraryId,
-    onBotModeChange: setBotMode,
+    onBotModeChange: applyBotMode,
     onItineraryIdChange: setItineraryId,
     onSendReady: handleSendReady,
     onLoadRouteOnMap: handleLoadRouteOnMap,
@@ -2858,6 +2926,7 @@ Start Location: ${details.startLocation}`;
               viewMode={viewMode}
               setViewMode={setViewMode}
               hasItineraryActivity={!!activeItineraryId}
+              isComplete={itineraryIsComplete}
             />
 
             {/* MAP tab */}
@@ -2930,19 +2999,7 @@ Start Location: ${details.startLocation}`;
           hasBotResponded={hasBotResponded}
           isChatActive={isChatActive}
           hasItineraryActivity={!!activeItineraryId}
-          isComplete={
-            activeItineraryId !== "skeleton" &&
-            activeItineraryId !== "draft" &&
-            !!activeItineraryId &&
-            !!(
-              itineraryRedux &&
-              (itineraryRedux.name || itineraryRedux.cities?.length)
-            ) &&
-            itineraryRedux?.status !== "Draft" &&
-            itineraryRedux?.status !== undefined &&
-            itineraryRedux?.status !== null &&
-            itineraryRedux?.status !== "undefined"
-          }
+          isComplete={itineraryIsComplete}
           showChatBot={showChatBot}
           chatBotItineraryId={chatBotItineraryId}
           chatBotInjectedMessage={chatBotInjectedMessageRef.current}
@@ -3219,6 +3276,21 @@ Start Location: ${details.startLocation}`;
           message="Please login to continue"
           onSuccess={async () => {
             setShowApiLoginPrompt(false);
+          }}
+        />
+      )}
+
+      {showPromptLoginPrompt && !isLoggedIn && (
+        <BotLoginModal
+          show={showPromptLoginPrompt}
+          onhide={() => setShowPromptLoginPrompt(false)}
+          zIndex={3300}
+          message="Please login to continue"
+          onSuccess={async () => {
+            setShowPromptLoginPrompt(false);
+            const action = pendingPromptActionRef.current;
+            pendingPromptActionRef.current = null;
+            action?.();
           }}
         />
       )}

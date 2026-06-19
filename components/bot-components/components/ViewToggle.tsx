@@ -15,19 +15,30 @@ import { FiMap, FiNavigation, FiCalendar, FiBookmark } from "react-icons/fi";
  * hasItineraryActivity — passed from BotApp, true when shimmer/draft/real itinerary exists.
  * "Complete" = itinerary exists AND status is NOT "Draft" AND NOT nullish.
  */
-const ViewToggle: React.FC<ViewToggleProps> = ({ viewMode, setViewMode, hasItineraryActivity }) => {
+const ViewToggle: React.FC<ViewToggleProps> = ({
+  viewMode,
+  setViewMode,
+  hasItineraryActivity,
+  isComplete: isCompleteProp,
+}) => {
   const itinerary = useSelector((state: any) => state.Itinerary);
 
   // Is there any itinerary object at all with meaningful content?
   const hasItinerary = !!(itinerary && (itinerary.name || itinerary.cities?.length));
 
   // Is the itinerary fully built (not a draft/skeleton)?
+  // Prefer the prop from BotApp (derived from the authoritative ItineraryStatus
+  // slice, which is populated early) so the Route/Bookings tabs appear on first
+  // arrival at P2 instead of only after a refresh. Fall back to the local
+  // Itinerary.status heuristic when the prop isn't supplied.
   const isComplete =
-    hasItinerary &&
-    itinerary.status !== "Draft" &&
-    itinerary.status !== undefined &&
-    itinerary.status !== null &&
-    itinerary.status !== "undefined";
+    isCompleteProp !== undefined
+      ? isCompleteProp
+      : hasItinerary &&
+        itinerary.status !== "Draft" &&
+        itinerary.status !== undefined &&
+        itinerary.status !== null &&
+        itinerary.status !== "undefined";
 
   // Only show the tab strip if the bot has started building an itinerary
   if (!hasItineraryActivity) {

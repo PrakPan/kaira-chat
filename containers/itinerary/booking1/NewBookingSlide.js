@@ -43,6 +43,7 @@ import media from "../../../components/media";
 import SocialShareMobile from "./SocialShareMobile";
 import setItineraryStatus from "../../../store/actions/itineraryStatus";
 import {
+  axiosGetItinerary,
   axiosGetItineraryStatus,
   axiosUpdateItineraryDates,
 } from "../../../services/itinerary/daybyday/preview";
@@ -1650,16 +1651,36 @@ const Details = (props) => {
         //   await resetSession();
         // }
         dispatch(resetChatSession());
+
+        // Close the payment drawer now that the reprice succeeded. Stay on the
+        // current view (no navigation) — just hide the drawer and drop the
+        // `drawer` query param from the URL.
+        setShowPaymentDrawer(false);
+        setShowDetailedPayment(false);
+        if (isDirectlyOpenPaymentDrawer) {
+          setIsDirectlyOpenPaymentDrawer(false);
+          props.setShowFooterBannerMobile?.();
+        }
+        if (typeof window !== "undefined") {
+          const url = new URL(window.location.href);
+          url.searchParams.delete("drawer");
+          window.history.replaceState({}, "", url.toString());
+        }
       }
     } catch (error) {
       console.error("Error Repricing :", error);
       // Request failed before any polling could run — release the chat
       // lock so the user isn't stuck.
       dispatch(setItineraryStatus("is_polling", false));
+      // We flipped all statuses to PENDING above to show the loader; the
+      // reprice failed so nothing changed server-side. Re-fetch the real
+      // statuses to restore them (otherwise pricing_status stays "PENDING"
+      // and the PricingSkeleton loader shows forever).
+      fetchItineraryStatus();
       dispatch(
         openNotification({
           text:
-            error?.response?.data?.message ||
+           error?.response?.data?.errors?.[0]?.message?.[0] || error?.response?.data?.message ||
             error.message ||
             "Failed to reprice itinerary",
           heading: "Error!",
@@ -1836,6 +1857,25 @@ const Details = (props) => {
     } catch (error) {}
   };
 
+  // Refetch the itinerary detail (which carries the `travellers` array) and
+  // push it into Redux so the proceed-to-pay gate and the verified badge
+  // reflect the freshly saved traveller details without a full reload.
+  const refreshItineraryDetails = async () => {
+    try {
+      const res = await axiosGetItinerary.get(`/${router.query.id}/`);
+      if (res?.data) {
+        dispatch(
+          setItinerary({
+            ...res.data,
+            status: res.data?.status || Itinerary?.status,
+          }),
+        );
+      }
+    } catch (err) {
+      console.error("[ERROR]: refreshItineraryDetails: ", err.message);
+    }
+  };
+
   const _fullPaymentHandler = async (id) => {
     setPaymentLoading(true);
 
@@ -1947,6 +1987,7 @@ const Details = (props) => {
       }
     } catch (error) {
       console.error("Error initiating lock payment:", error);
+
       dispatch(
         openNotification({
           text:
@@ -2033,6 +2074,20 @@ const Details = (props) => {
   };
 
   const handlePayNow = (label) => {
+    // Gate payment on traveller details. The itinerary detail API returns a
+    // `travellers` array (mirrored in Redux). When it's empty, traveller
+    // details haven't been added yet — open the drawer to collect them
+    // instead of hitting the payment API. Once filled, refreshItineraryDetails
+    // repopulates `travellers` and the user can proceed.
+    if (
+      (label === "full" || label === "lockin") &&
+      Array.isArray(Itinerary?.travellers) &&
+      Itinerary.travellers.length === 0
+    ) {
+      setTravellerDetailsOpen(true);
+      return;
+    }
+
     if (label === "_saleCreateHandler") {
       _saleCreateHandler(props.id);
     } else if (label === "lockin") {
@@ -2981,12 +3036,14 @@ const Details = (props) => {
           </div>
           <div className="px-lg py-lg">
             <AddTravellerDetails
-              itinerary={props?.itinerary}
+              itinerary={Itinerary}
               onSuccess={() => {
                 setTravellerDetailsOpen(false);
-                // Re-fetch the cart so `traveler_details_verified` reflects the
-                // just-saved traveller details.
-                props.getPaymentHandler?.();
+                // Traveller details saved — refetch the itinerary detail so the
+                // `travellers` array in Redux is populated and the next
+                // proceed-to-pay call hits the payment API.
+                refreshItineraryDetails();
+                 props.getPaymentHandler?.();
               }}
             />
           </div>

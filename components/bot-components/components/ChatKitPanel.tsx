@@ -2292,6 +2292,10 @@ const handleShowLogin = useCallback(() => {
   );
 
   const handleSubmit = useCallback(() => {
+    if (!isLoggedIn) {
+      setShowLoginModal(true);
+      return;
+    }
     setShowLoginPrompt(false);
     const hasText = !!input.trim();
     const uploadedAttachments = attachments.filter((a) => a.status === "uploaded");
@@ -2317,16 +2321,20 @@ const handleShowLogin = useCallback(() => {
     );
     setInput("");
     setAttachments([]);
-  }, [input, isStreaming, sendMessage, attachments, isItineraryCompleting]);
+  }, [input, isStreaming, sendMessage, attachments, isItineraryCompleting, isLoggedIn]);
 
   const handleQuickReply = useCallback(
     (reply: QuickReply) => {
+      if (!isLoggedIn) {
+        setShowLoginModal(true);
+        return;
+      }
       if (isStreaming) return;
       // Block quick replies while itinerary creation is in progress
       if (isItineraryCompleting) return;
       sendMessage(reply.value ?? reply.label);
     },
-    [isStreaming, sendMessage, isItineraryCompleting],
+    [isStreaming, sendMessage, isItineraryCompleting, isLoggedIn],
   );
 
   const showError = !!error && !errorDismissed;
@@ -2986,6 +2994,8 @@ const handleShowLogin = useCallback(() => {
             onFilesSelected={handleFilesSelected}
             attachments={attachments}
             onRemoveAttachment={handleRemoveAttachment}
+            requireLogin={!isLoggedIn}
+            onAuthRequired={() => setShowLoginModal(true)}
           />
         </div>
         {/* Overlay blocks all typing/interaction while itinerary creation

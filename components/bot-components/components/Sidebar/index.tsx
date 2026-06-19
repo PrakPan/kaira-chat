@@ -688,19 +688,23 @@ const Sidebar: React.FC<SidebarProps> = ({
           style={{ minHeight: 56 }}
         >
           {!isCollapsed ? (
-            <div className="flex items-center gap-2 overflow-hidden">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logoblack.svg" height={22} width={22} alt="logo" />
-              <span className="font-semibold text-gray-800 text-sm whitespace-nowrap">
-                thetarzanway
-              </span>
-            </div>
-          ) : (
-            <SidebarTooltip label="thetarzanway">
-              <div className="flex items-center justify-center w-full">
+            <Link href="/" passHref legacyBehavior>
+              <a className="flex items-center gap-2 overflow-hidden cursor-pointer">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src="/logoblack.svg" height={22} width={22} alt="logo" />
-              </div>
+                <span className="font-semibold text-gray-800 text-sm whitespace-nowrap">
+                  thetarzanway
+                </span>
+              </a>
+            </Link>
+          ) : (
+            <SidebarTooltip label="thetarzanway">
+              <Link href="/" passHref legacyBehavior>
+                <a className="flex items-center justify-center w-full cursor-pointer">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/logoblack.svg" height={22} width={22} alt="logo" />
+                </a>
+              </Link>
             </SidebarTooltip>
           )}
         </div>
