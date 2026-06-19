@@ -189,11 +189,16 @@
   grid-template-columns: repeat(4, 1fr);
   gap: 28px;
   @media (max-width: 1024px) {
-    grid-template-columns: repeat(2, 1fr);
+    display: flex;
+    flex-wrap: nowrap;
     gap: 18px;
-  }
-  @media (max-width: 640px) {
-    grid-template-columns: 1fr;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 }
 .stat {
@@ -202,6 +207,10 @@
   gap: 4px;
   padding-left: 14px;
   border-left: 2px solid var(--ttw-yellow);
+  @media (max-width: 1024px) {
+    flex: 0 0 auto;
+    min-width: 180px;
+  }
 }
 .statLabel {
   font-size: 11px;

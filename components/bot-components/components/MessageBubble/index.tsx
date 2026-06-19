@@ -2360,11 +2360,36 @@ export const ItineraryCloneCta: React.FC<ItineraryCloneCtaProps> = ({
 // a muted-gray `(Ns · thinking more)`. Row is `minHeight: 30` and vertically
 // centered so it lines up with the 30px Kaira avatar. Sizing uses clamp() so it
 // scales from small phones up to desktop.
+// Shown as "Word…" while Kaira thinks. Kept deliberately context-agnostic:
+// each one reads sensibly for ANY query — a contact question as much as a trip
+// plan — while still carrying a light travel/journey flavour. Avoid
+// activity-specific verbs (e.g. "Booking stays") that look odd on a generic ask.
 const THINKING_PHRASES = [
   "Reticulating",
   "Plotting",
   "Wandering",
   "Daydreaming",
+  "Mapping",
+  "Charting",
+  "Navigating",
+  "Exploring",
+  "Scouting",
+  "Routing",
+  "Pathfinding",
+  "Wayfinding",
+  "Roaming",
+  "Pondering",
+  "Meandering",
+  "Orienting",
+  "Surveying",
+  "Venturing",
+  "Trailblazing",
+  "Gathering ideas",
+  "Connecting the dots",
+  "Plotting a course",
+  "Getting my bearings",
+  "Consulting the map",
+  "Checking the compass",
 ];
 
 // Advances once per ThinkingDots mount. Each new reply ("next chat") shows the

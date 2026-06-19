@@ -103,4 +103,11 @@ export interface ViewToggleProps {
   setViewMode: (mode: ViewMode) => void;
   /** True when the bot has started building an itinerary (shimmer, draft, or complete) */
   hasItineraryActivity: boolean;
+  /**
+   * True when the itinerary is fully built (not a Draft/skeleton) — gates the
+   * Route + Bookings tabs. Passed from BotApp, which derives it from the
+   * authoritative, early-set ItineraryStatus slice. When omitted, ViewToggle
+   * falls back to inspecting state.Itinerary.status itself.
+   */
+  isComplete?: boolean;
 }

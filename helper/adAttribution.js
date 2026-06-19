@@ -24,6 +24,13 @@ export const AD_PARAM_KEYS = [
   "ref",
 ];
 
+// `source` is overloaded: it carries genuine ad attribution (source=google,
+// source=newsletter, ...) but is ALSO used as internal UI routing state. These
+// internal values must never be persisted as attribution — otherwise they get
+// re-appended onto param-less URLs (e.g. a plain /chat refresh would gain
+// ?source=tailored and be mistaken for a tailored-form landing).
+const INTERNAL_SOURCE_VALUES = ["tailored"];
+
 // Read the whitelisted ad params (as strings) from the current URL.
 function readAdParamsFromUrl() {
   if (typeof window === "undefined") return {};
@@ -31,7 +38,20 @@ function readAdParamsFromUrl() {
   const params = {};
   for (const key of AD_PARAM_KEYS) {
     const value = urlParams.get(key);
-    if (value !== null && value !== "") params[key] = value;
+    if (value === null || value === "") continue;
+    // Skip internal UI `source` values so they aren't persisted/re-appended.
+    if (key === "source" && INTERNAL_SOURCE_VALUES.includes(value)) continue;
+    params[key] = value;
+  }
+  return params;
+}
+
+// Drop internal UI `source` values from a params object (defends against a
+// sessionStorage entry persisted before this guard existed).
+function stripInternalSource(params) {
+  if (params && INTERNAL_SOURCE_VALUES.includes(params.source)) {
+    const { source, ...rest } = params;
+    return rest;
   }
   return params;
 }
@@ -41,7 +61,7 @@ export function getAdParams() {
   if (typeof window === "undefined") return {};
   try {
     const raw = sessionStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : {};
+    return raw ? stripInternalSource(JSON.parse(raw)) : {};
   } catch (e) {
     return {};
   }

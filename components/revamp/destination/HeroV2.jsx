@@ -1,10 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
+import { useSelector } from "react-redux";
 import {
   setPendingFiles,
   setPendingSeed,
 } from "../../../services/heroChatHandoff";
 import { truncateAtSentence } from "../../../helper/truncateAtSentence";
+import BotLoginModal from "../../bot-components/components/BotLoginModal";
 import styles from "../../../styles/pages/revamp/destination.module.scss";
 
 const FALLBACK_POLAROIDS = [
@@ -59,6 +61,35 @@ const HeroV2 = ({
   const [isListening, setIsListening] = useState(false);
   const [micSupported, setMicSupported] = useState(true);
 
+  // ── Login gate ──────────────────────────────────────────────────────────
+  const reduxToken = useSelector((state) => state.auth?.token);
+  const [hasLocalToken, setHasLocalToken] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
+  const pendingActionRef = useRef(null);
+  const isLoggedIn = !!reduxToken || hasLocalToken;
+
+  useEffect(() => {
+    setHasLocalToken(
+      !!(
+        localStorage.getItem("token") ||
+        localStorage.getItem("authToken") ||
+        localStorage.getItem("access_token")
+      )
+    );
+  }, []);
+
+  // Run `action` if logged in, otherwise stash it and open the login modal.
+  // The stashed action resumes automatically on successful login.
+  const requireAuth = (action) => {
+    if (!isLoggedIn) {
+      pendingActionRef.current = action || null;
+      setShowLogin(true);
+      return false;
+    }
+    if (action) action();
+    return true;
+  };
+
   useEffect(() => {
     setMicSupported(!!getSpeechRecognition());
   }, []);
@@ -90,10 +121,14 @@ const HeroV2 = ({
     e?.preventDefault?.();
     const seed = (value || "").trim();
     if (!seed && attachments.length === 0) {
+      if (!isLoggedIn) {
+        setShowLogin(true);
+        return;
+      }
       if (setShowTailoredModal) setShowTailoredModal(true);
       return;
     }
-    goToChat(seed, attachments);
+    requireAuth(() => goToChat(seed, attachments));
   };
 
   const handleFilePick = (e) => {
@@ -151,7 +186,7 @@ const HeroV2 = ({
     const seed = (
       destinationLabel ? `${text}, ${destinationLabel}` : text
     ).trim();
-    goToChat(seed);
+    requireAuth(() => goToChat(seed));
   };
 
   const polaroidImages = (() => {
@@ -212,6 +247,12 @@ const HeroV2 = ({
               <textarea
                 ref={textareaRef}
                 value={value}
+                onFocus={(e) => {
+                  if (!isLoggedIn) {
+                    e.currentTarget.blur();
+                    setShowLogin(true);
+                  }
+                }}
                 onChange={(e) => {
                   setValue(e.target.value);
                   autoGrow(e.target);
@@ -273,7 +314,9 @@ const HeroV2 = ({
                   className={styles.heroV2IconBtn}
                   title="Attach a document"
                   aria-label="Attach a document"
-                  onClick={() => fileInputRef.current?.click()}
+                  onClick={() =>
+                    requireAuth(() => fileInputRef.current?.click())
+                  }
                 >
                   <svg
                     viewBox="0 0 24 24"
@@ -300,7 +343,7 @@ const HeroV2 = ({
                   }
                   aria-label="Dictate"
                   disabled={!micSupported}
-                  onClick={startMic}
+                  onClick={() => requireAuth(startMic)}
                 >
                   <svg
                     viewBox="0 0 24 24"
@@ -367,6 +410,20 @@ const HeroV2 = ({
           </div>
         </div>
       </div>
+
+      {/* Login gate — shown when a logged-out user interacts with the hero
+          input or taps a suggested prompt. */}
+      <BotLoginModal
+        show={showLogin}
+        onhide={() => setShowLogin(false)}
+        zIndex={"3300"}
+        onSuccess={() => {
+          setShowLogin(false);
+          const action = pendingActionRef.current;
+          pendingActionRef.current = null;
+          if (action) action();
+        }}
+      />
     </section>
   );
 };
