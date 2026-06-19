@@ -1325,6 +1325,11 @@ const Details = (props) => {
   const Itinerary = useSelector((state) => state.Itinerary);
   const Cart = useSelector((state) => state.Cart);
   const { currency } = useSelector((state) => state.currency);
+  // Source of truth for traveller details completeness. The backend's cart API
+  // accounts for pax changes (added/removed travellers) that the itinerary's
+  // `travellers` array alone can't reflect, so prefer this flag over inspecting
+  // the travellers list.
+  const travellerDetailsVerified = !!Cart?.traveler_details_verified;
   const [selectedPaymentOption, setSelectedPaymentOption] = useState("full");
 
   const [selectedOption, setSelectedOption] = useState("full");
@@ -2475,15 +2480,12 @@ const Details = (props) => {
                             <div className="text-md font-500 leading-lg">
                               {Itinerary?.customer_name || ""}
                             </div>
-                            {Array.isArray(props?.itinerary?.travellers) &&
-                              props.itinerary.travellers.some(
-                                (t) => t?.is_lead && t?.first_name,
-                              ) && (
-                                <div className="flex items-center gap-1 text-green-600 text-xs">
-                                  <FaCheckCircle />
-                                  <span>Traveller details verified</span>
-                                </div>
-                              )}
+                            {travellerDetailsVerified && (
+                              <div className="flex items-center gap-1 text-green-600 text-xs">
+                                <FaCheckCircle />
+                                <span>Traveller details verified</span>
+                              </div>
+                            )}
                           </div>
 
                           <div className="flex flex-row gap-xs text-sm font-400 leading-md flex-wrap">
@@ -2528,10 +2530,7 @@ const Details = (props) => {
                           className="text-xs text-blue underline cursor-pointer shrink-0 mt-1"
                           onClick={() => setTravellerDetailsOpen(true)}
                         >
-                          {Array.isArray(props?.itinerary?.travellers) &&
-                          props.itinerary.travellers.some(
-                            (t) => t?.is_lead && t?.first_name,
-                          )
+                          {travellerDetailsVerified
                             ? "Edit traveller details"
                             : "Add traveller details"}
                         </span>
@@ -2983,7 +2982,12 @@ const Details = (props) => {
           <div className="px-lg py-lg">
             <AddTravellerDetails
               itinerary={props?.itinerary}
-              onSuccess={() => setTravellerDetailsOpen(false)}
+              onSuccess={() => {
+                setTravellerDetailsOpen(false);
+                // Re-fetch the cart so `traveler_details_verified` reflects the
+                // just-saved traveller details.
+                props.getPaymentHandler?.();
+              }}
             />
           </div>
         </div>

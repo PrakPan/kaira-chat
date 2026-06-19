@@ -110,6 +110,18 @@ export const deleteActivityFromItinerary = (data) => (dispatch, getState) => {
   dispatch({ type: actionTypes.SET_ITINERARY, payload: next });
 };
 
+// Replaces the itinerary's `travellers` array with the just-saved guests so
+// the traveller-details drawer re-hydrates from fresh state on reopen without
+// needing to refetch the itinerary detail API.
+export const updateItineraryTravellers = (travellers) => (dispatch, getState) => {
+  const itinerary = getState().Itinerary;
+  const next = {
+    ...itinerary,
+    travellers: Array.isArray(travellers) ? travellers : [],
+  };
+  dispatch({ type: actionTypes.SET_ITINERARY, payload: next });
+};
+
 // Clears the hotels array on the matching itinerary_city. Stays redux is
 // updated separately (via updateStays) so the city placeholder stays around
 // for the "+ Add Stay" CTA without needing a refetch.
