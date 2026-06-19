@@ -9,7 +9,7 @@ import { Typography } from "@mui/material";
 const Accordion = styled((props) => (
   <MuiAccordion disableGutters elevation={0} square {...props} />
 ))(({ theme }) => ({
-  border: `1px solid ${theme.palette.divider}`,
+  border: `1px solid #ececec`,
   "&:not(:last-child)": {
     borderBottom: 0,
   },
@@ -27,7 +27,7 @@ const AccordionSummary = styled((props) => (
   backgroundColor:
     theme.palette.mode === "dark"
       ? "rgba(255, 255, 255, .05)"
-      : "rgba(0, 0, 0, .03)",
+      : "#f4f3ec",
   flexDirection: "row-reverse",
   "& .MuiAccordionSummary-expandIconWrapper.Mui-expanded": {
     transform: "rotate(90deg)",
@@ -39,7 +39,7 @@ const AccordionSummary = styled((props) => (
 
 const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
   padding: theme.spacing(2),
-  borderTop: "1px solid rgba(0, 0, 0, .125)",
+  borderTop: "1px solid #ececec",
 }));
 
 export default function CustomizedAccordions() {

@@ -173,7 +173,7 @@ const TransferPax = ({ pax, setPax, combo = true, limit = null, disabled = false
               className="w-full"
               style={{ marginTop: "16px", display: "flex", flexDirection: "column", gap: "16px" }}
             >
-              <div className="text-[12px] text-[#6E757A]">
+              <div className="text-[12px] text-[#445069]">
                 Enter the age of each child below
               </div>
               {childAges.map((age, index) => (
@@ -197,7 +197,7 @@ const TransferPax = ({ pax, setPax, combo = true, limit = null, disabled = false
                       onChange={(e) => handleChildAgeChange(index, e.target.value)}
                       disabled
                     />
-                    <span className="text-sm text-gray-500">years</span>
+                    <span className="text-sm text-[#8a93a6]">years</span>
                     <CounterButton
                       onClick={() => handleChildAgeChange(index, age + 1)}
                       disabled={age >= 12}
@@ -242,18 +242,18 @@ const TransferPax = ({ pax, setPax, combo = true, limit = null, disabled = false
       {/* Trigger — matches the Departure Date/Time field chrome */}
       <div
         onClick={openModal}
-        className={`flex h-[46.4px] w-full min-w-0 items-center gap-2 rounded-[10px] border bg-[#07213A0D] px-3 transition-colors ${
-          isOpen ? "border-[#07213A]" : "border-[#07213A26]"
+        className={`flex h-[46.4px] w-full min-w-0 items-center gap-2 rounded-[10px] border bg-[#f4f3ec] px-3 transition-colors ${
+          isOpen ? "border-[#0b1220]" : "border-[#ececec]"
         } ${
           disabled
             ? "opacity-50 cursor-not-allowed"
-            : "cursor-pointer hover:bg-[#07213A14] hover:border-[#07213A40]"
+            : "cursor-pointer hover:bg-[#ececec] hover:border-[#ececec]"
         }`}
       >
-        <FaUserFriends className="shrink-0 text-[#07213A]" size={16} />
-        <span className="Body2M_14 flex-1 truncate text-[#07213A]">{summary}</span>
+        <FaUserFriends className="shrink-0 text-[#0b1220]" size={16} />
+        <span className="Body2M_14 flex-1 truncate text-[#0b1220]">{summary}</span>
         <FaChevronDown
-          className={`shrink-0 text-[#07213A] transition-transform ${
+          className={`shrink-0 text-[#0b1220] transition-transform ${
             isOpen ? "rotate-180" : ""
           }`}
           size={14}

@@ -143,6 +143,7 @@ const ChangePoiDetailDrawer = (props) => {
       backdrop
       width={"50%"}
       mobileWidth={"100%"}
+      bgColor="#fafaf5"
       style={{ zIndex: 1506 }}
       className=""
       onHide={(e) => {

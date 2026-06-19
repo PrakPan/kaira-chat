@@ -19,7 +19,7 @@ function Skeleton() {
 
   const SkeletonItem = (
     <div >
-      <div className="flex flex-col rounded-3xl border-sm border-solid border-text-disabled p-md relative mt-md">
+      <div className="flex flex-col rounded-3xl border-sm border-solid border-[#ececec] p-md relative mt-md">
         <div className="flex justify-between max-ph:flex-col">
           <div>
             <div className="flex justify-between w-100">
@@ -27,7 +27,7 @@ function Skeleton() {
                 <SkeletonCard width="300px" height="25px" borderRadius="8px" variant="default"  />
               </div>
             </div>
-            <div className="text-sm font-400 leading-lg-md text-text-spacegrey mt-xxs"> 
+            <div className="text-sm font-400 leading-lg-md text-[#445069] mt-xxs">
               <SkeletonCard width="70px" height="12px" borderRadius="8px" variant="default"  />
               </div>
             <div className="flex flex-row justify-between">

@@ -319,7 +319,7 @@ const Section = (props) => {
 
   if (props.data)
     return (
-      <div className="flex flex-col rounded-3xl border-sm border-solid border-text-disabled p-md  hover:bg-text-smoothwhite relative mt-md">
+      <div className="flex flex-col rounded-3xl border-sm border-solid border-[#ececec] p-md  hover:bg-[#faf9f4] relative mt-md">
         {showWarningModal && ReactDOM.createPortal((
           <div className="fixed z-[1666] inset-0 bg-black bg-opacity-50 flex items-end md:items-center justify-center">
             <div className="bg-white w-full max-w-lg md:mx-4 mb-0 md:mb-auto md:rounded-lg rounded-t-2xl md:rounded-b-lg relative transform transition-transform duration-300 ease-out animate-slide-up md:animate-none max-h-[90vh] md:max-h-none overflow-hidden">
@@ -372,7 +372,7 @@ const Section = (props) => {
         <div className="flex justify-between max-ph:flex-col">
           <div>
             <div className="flex justify-between w-100">
-              <span className="text-md font-600 leading-xl ">
+              <span className="text-md font-600 leading-xl text-[#0b1220] ">
                 {props.data?.taxi_category?.model_name ? (
                   <>
                     {props.data.taxi_category.model_name}{" "}
@@ -392,11 +392,11 @@ const Section = (props) => {
               </span>
             </div>
 
-            {<div className="text-sm font-400 leading-lg-md text-text-spacegrey">{props.data?.taxi_category?.type}</div>}
+            {<div className="text-sm font-400 leading-lg-md text-[#445069]">{props.data?.taxi_category?.type}</div>}
 
             <div className="flex flex-row justify-between">
               <div className="flex flex-col ">
-                <div className="font-400 text-[14px] leading-xl-sm flex gap-1 ">
+                <div className="font-400 text-[14px] leading-xl-sm flex gap-1 text-[#445069] ">
                   {props.data?.taxi_category?.seating_capacity ?  props.data?.taxi_category?.seating_capacity + "-seater" : null}
                    {bagCapacity > 0 && (
                         
@@ -457,7 +457,7 @@ const Section = (props) => {
           </div>
           <div className="flex flex-col justify-between items-end max-ph:flex-row max-ph:items-center">
             <div>
-              <span className="text-lg font-700 2xl-md">
+              <span className="text-lg font-mono text-[#0b1220] 2xl-md">
                 {`${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}` + getIndianPrice(Math.ceil(props.data.price.total))}
               </span>
             </div>

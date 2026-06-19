@@ -19,7 +19,7 @@ const EsimCard = ({ pkg, onSelect, currency }) => {
 
   return (
     <div
-      className="rounded-2xl border border-[#E5E5E5] p-4 cursor-pointer hover:bg-[#FAFAFA] transition-colors flex gap-4 mt-3 w-full"
+      className="rounded-2xl border border-[#ececec] bg-white p-4 cursor-pointer hover:bg-[#f4f3ec] transition-colors flex gap-4 mt-3 w-full"
       onClick={() => onSelect(pkg)}
     >
       <div className="flex-shrink-0">
@@ -43,32 +43,32 @@ const EsimCard = ({ pkg, onSelect, currency }) => {
       </div>
 
       <div className="flex flex-col justify-between flex-1 min-w-0 gap-1">
-        <div className="ttw-type-body font-600 text-[#01202B] line-clamp-1">{pkg?.title}</div>
+        <div className="ttw-type-body font-600 text-[#0b1220] line-clamp-1">{pkg?.title}</div>
 
-        <div className="flex items-center gap-2 ttw-type-small text-[#6E757A]">
+        <div className="flex items-center gap-2 ttw-type-small text-[#445069]">
           {pkg?.data && (
-            <span className="font-600 text-[#01202B]">{pkg.data}</span>
+            <span className="font-600 text-[#0b1220]">{pkg.data}</span>
           )}
           {pkg?.data && pkg?.day && <span>·</span>}
           {pkg?.day && (
             <span>{pkg.day} day{pkg.day > 1 ? "s" : ""}</span>
           )}
-          {pkg?.is_roaming && <><span>·</span><span className="text-[#2A6800]">Roaming ✓</span></>}
+          {pkg?.is_roaming && <><span>·</span><span className="text-[#1f8a5a]">Roaming ✓</span></>}
         </div>
 
         <div className="flex flex-wrap gap-1">
           {pkg?.esim_type && (
-            <span className="ttw-type-small bg-[#F5F0FF] text-[#5B1DB3] px-2 py-0.5 rounded-full">
+            <span className="ttw-type-small bg-[#eef2fb] text-[#1a2436] px-2 py-0.5 rounded-full">
               {pkg.esim_type}
             </span>
           )}
           {pkg?.rechargeability && (
-            <span className="ttw-type-small bg-[#DDF4C5] text-[#2A6800] px-2 py-0.5 rounded-full">
+            <span className="ttw-type-small bg-[#e7f5ee] text-[#1f8a5a] px-2 py-0.5 rounded-full">
               Rechargeable
             </span>
           )}
           {pkg?.plan_type && (
-            <span className="ttw-type-small bg-[#F8F8F8] text-[#6E757A] px-2 py-0.5 rounded-full capitalize border border-[#E5E5E5]">
+            <span className="ttw-type-small bg-[#f4f3ec] text-[#445069] px-2 py-0.5 rounded-full capitalize border border-[#ececec]">
               {pkg.plan_type}
             </span>
           )}
@@ -76,13 +76,13 @@ const EsimCard = ({ pkg, onSelect, currency }) => {
 
         <div className="flex items-center justify-between mt-0.5">
           {displayPrice != null ? (
-            <div className="ttw-type-body font-700 text-[#01202B]">
+            <div className="ttw-type-body font-700 font-mono text-[#0b1220]">
               {symbol}{getIndianPrice(Math.round(displayPrice))}
             </div>
           ) : (
-            <div className="ttw-type-small text-[#6E757A]">View pricing</div>
+            <div className="ttw-type-small text-[#445069]">View pricing</div>
           )}
-          <button className="ttw-type-small font-500 text-[#01202B] underline flex-shrink-0">
+          <button className="ttw-type-small font-500 text-[#0b1220] underline flex-shrink-0">
             View Details
           </button>
         </div>
@@ -153,13 +153,14 @@ export default function EsimPackagesDrawer({ show, onHide, onBooked, onAdded, on
         backdrop
         width="50%"
         mobileWidth="100%"
+        bgColor="#fafaf5"
         style={{ zIndex }}
         className="!overflow-y-hidden"
         onHide={onHide}
       >
         <div className="overflow-y-scroll h-screen px-6 max-ph:px-4">
           {/* Header */}
-          <div className="py-4 bg-white z-[900] flex flex-col gap-3 pb-2 sticky top-0">
+          <div className="py-4 bg-[#fafaf5] z-[900] flex flex-col gap-3 pb-2 sticky top-0">
             <div>
               <Image
                 src="/backarrow.svg"
@@ -169,10 +170,10 @@ export default function EsimPackagesDrawer({ show, onHide, onBooked, onAdded, on
                 onClick={onHide}
               />
             </div>
-            <div className="ttw-type-h2 font-semibold">Add eSIM</div>
+            <div className="ttw-type-h2 font-semibold text-[#0b1220]">Add eSIM</div>
 
             {!loading && packages.length > 0 && (
-              <div className="ttw-type-body text-[#6E757A]">
+              <div className="ttw-type-body text-[#445069]">
                 {meta?.total
                   ? `${packages.length} of ${meta.total} package${meta.total !== 1 ? "s" : ""} available`
                   : `${packages.length} package${packages.length !== 1 ? "s" : ""} available`}
@@ -184,7 +185,7 @@ export default function EsimPackagesDrawer({ show, onHide, onBooked, onAdded, on
           {loading ? (
             <div className="flex flex-col gap-3 mt-2">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="rounded-2xl border border-[#E5E5E5] p-4 animate-pulse">
+                <div key={i} className="rounded-2xl border border-[#ececec] p-4 animate-pulse">
                   <div className="flex gap-4">
                     <div className="w-[70px] h-[50px] bg-gray-200 rounded-xl flex-shrink-0" />
                     <div className="flex-1 space-y-2">
@@ -198,7 +199,7 @@ export default function EsimPackagesDrawer({ show, onHide, onBooked, onAdded, on
             </div>
           ) : error ? (
             <div className="flex flex-col items-center justify-center mt-16 gap-3">
-              <div className="text-[#6E757A] text-center">{error}</div>
+              <div className="text-[#445069] text-center">{error}</div>
               <button
                 className="bg-[#f7e700] border border-black text-black px-4 py-2 rounded-lg ttw-type-body-strong"
                 onClick={() => fetchPackages(1, false)}
@@ -208,7 +209,7 @@ export default function EsimPackagesDrawer({ show, onHide, onBooked, onAdded, on
             </div>
           ) : packages.length === 0 ? (
             <div className="flex flex-col items-center justify-center mt-16 gap-2">
-              <div className="text-[#6E757A] text-center">
+              <div className="text-[#445069] text-center">
                 No eSIM packages found for this itinerary.
               </div>
             </div>
@@ -226,7 +227,7 @@ export default function EsimPackagesDrawer({ show, onHide, onBooked, onAdded, on
                 <button
                   onClick={handleLoadMore}
                   disabled={loadingMore}
-                  className="w-full mt-4 py-3 rounded-xl border border-[#E5E5E5] ttw-type-small font-500 text-[#01202B] hover:bg-[#FAFAFA] transition-colors disabled:opacity-50"
+                  className="w-full mt-4 py-3 rounded-xl border border-[#ececec] ttw-type-small font-500 text-[#0b1220] hover:bg-[#f4f3ec] transition-colors disabled:opacity-50"
                 >
                   {loadingMore ? "Loading..." : `Load more (${meta.total - packages.length} remaining)`}
                 </button>

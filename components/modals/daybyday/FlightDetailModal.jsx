@@ -159,7 +159,7 @@ const FlightDetailModal = ({
           {
             <div>
               {loading ? (
-                <div className="w-16 h-5 bg-gray-300 opacity-50 rounded"></div>
+                <div className="w-16 h-5 bg-[#ececec] opacity-50 rounded"></div>
               ) : (
                 <>
                   {/* <Text>{name}</Text> */}
@@ -209,17 +209,17 @@ const FlightDetailModal = ({
                         />
                       </div>
                       <div className="flex flex-col gap-1">
-                        <div className="text-sm md:text-md font-semibold flex items-center gap-2 flex-wrap">
+                        <div className="text-sm md:text-md font-semibold flex items-center gap-2 flex-wrap text-[#0b1220]">
                           {segments?.[0]?.airline?.name ||
                             segments?.[0]?.airline?.name}
                           {(
                             data?.transfer_details?.items?.[0]?.transfer_details?.items?.[0]?.is_refundable) && (
-                            <span className="bg-[#4CAF50] text-white  px-2.5 py-0.5 rounded text-[12px] font-medium">
+                            <span className="bg-[#e7f5ee] text-[#1f8a5a]  px-2.5 py-0.5 rounded text-[12px] font-medium">
                               Refundable
                             </span>
                           )}
                         </div>
-                        <div className="text-xs md:text-sm text-gray-600">
+                        <div className="text-xs md:text-sm text-[#445069]">
                           {segments?.[0]?.airline?.code ||
                             segments?.[0]?.airline?.code}
                           -
@@ -237,7 +237,7 @@ const FlightDetailModal = ({
                               )}`
                             : null}
                         </div> */}
-                        <div className="text-xs md:text-base text-gray-500">For {totalPax} people</div>
+                        <div className="text-xs md:text-base text-[#8a93a6]">For {totalPax} people</div>
                       </div>
                     )}
                   </div>
@@ -316,7 +316,7 @@ const FlightDetailModal = ({
       )}
 
       {!isEmbedded && (
-        <div className="p-4 bg-white">
+        <div className="p-4 bg-[#fafaf5]">
           <button
             className="w-100 ttw-btn-fill-error justify-center "
             onClick={handleDelete}

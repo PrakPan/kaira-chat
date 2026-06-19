@@ -65,6 +65,7 @@ const CityDetailsDrawer = (props) => {
       show={true}
       anchor={"right"}
       backdrop
+      bgColor="#fafaf5"
       style={{ zIndex: 1501 }}
       className=""
       onHide={() => {

@@ -17,7 +17,7 @@ const TextContainer = styled.div`
 `;
 
 const HelperText = styled.p`
-  color: black;
+  color: #445069;
   font-size: 0.75rem;
   margin: 0 0 0.5rem 0;
   display: block;
@@ -28,7 +28,7 @@ const HelperText = styled.p`
 
   @media screen and (min-width: 768px) {
     text-align: left;
-    background-color: white;
+    background-color: #fafaf5;
     margin: 0.5rem 0 0 0;
     padding: 0;
   }
@@ -40,6 +40,7 @@ const Name = styled.p`
   display: block;
   margin: 0;
   text-align: center;
+  color: #0b1220;
   @media screen and (min-width: 768px) {
     text-align: left;
   }
@@ -55,7 +56,7 @@ const DetailsContainer = styled.div`
 const Detail = styled.p`
   font-size: 0.75rem;
   margin: 0;
-  color: hsl(0, 0%, 50%);
+  color: #8a93a6;
   text-align: center;
   @media screen and (min-width: 768px) {
     text-align: left;

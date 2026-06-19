@@ -96,7 +96,7 @@ const ComboSection = (props) => {
   if (!props.data) return null;
 
   return (
-    <Container className="rounded-3xl border-sm border-solid border-text-disabled p-md  hover:bg-text-smoothwhite relative mt-md">
+    <Container className="rounded-3xl border-sm border-solid border-[#ececec] p-md  hover:bg-[#faf9f4] relative mt-md">
       <TaxiCard>
         {/* <ImageContainer> */}
         {/* {props.data?.taxi_category?.image ? (
@@ -129,7 +129,7 @@ const ComboSection = (props) => {
           <div className="flex justify-between max-ph:flex-col">
             <div>
               <div className="flex justify-between w-100">
-                <span className="text-md font-600 leading-xl ">
+                <span className="text-md font-600 leading-xl text-[#0b1220] ">
                   {props.data?.taxi_category?.type ? (
                     <>
                       {props.data.taxi_category.type}{" "}
@@ -146,11 +146,11 @@ const ComboSection = (props) => {
                 </span>
               </div>
 
-              {<div className="text-sm font-400 leading-lg-md text-text-spacegrey">{props.data?.taxi_category?.model_name}</div>}
+              {<div className="text-sm font-400 leading-lg-md text-[#445069]">{props.data?.taxi_category?.model_name}</div>}
 
               <div className="flex flex-row justify-between">
                 <div className="flex flex-col ">
-                  <div className="font-600 text-md-lg leading-xl-sm">
+                  <div className="font-600 text-md-lg leading-xl-sm text-[#0b1220]">
                     {props.data?.taxi_category?.seating_capacity + "-seater"}
                   </div>
                   <FacilitiesContainer>
@@ -177,7 +177,7 @@ const ComboSection = (props) => {
                           props.data?.instructions?.length ? (
                           <AccordionText>
                             {props.data.instructions.map((e, index) => (
-                              <div className="text-sm font-400 leading-lg-md text-text-spacegrey"
+                              <div className="text-sm font-400 leading-lg-md text-[#445069]"
                                 key={index}
 
                               >
@@ -189,7 +189,7 @@ const ComboSection = (props) => {
 
                         {bagCapacity > 0 && (
                           <AccordionText>
-                            <div className="text-sm font-400 leading-lg-md text-text-spacegrey"
+                            <div className="text-sm font-400 leading-lg-md text-[#445069]"
                             >
                               - {bagCapacity} Luggage bags
                             </div>
@@ -203,7 +203,7 @@ const ComboSection = (props) => {
             </div>
             <div className="flex flex-col justify-between h-full items-end  max-ph:flex-row">
               <div>
-                <span className="text-lg font-700 2xl-md">
+                <span className="text-lg font-mono text-[#0b1220] 2xl-md">
                   {`${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}` + getIndianPrice(Math.ceil(props.data.price.total))}
                 </span>
               </div>

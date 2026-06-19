@@ -129,7 +129,7 @@ const TaxiDetailModal = ({
 
   return !showTaxi ? (
     <>
-      <div className=" bg-gray-50 w-full h-full flex flex-col">
+      <div className=" bg-[#f4f3ec] w-full h-full flex flex-col">
         {!isEmbedded && (
           <div className="p-4 flex items-center justify-between">
             <BackArrow handleClick={handleClose} />
@@ -137,9 +137,9 @@ const TaxiDetailModal = ({
         )}
 
         <div className="px-4 flex justify-between">
-          <h1 className="text-xl font-bold text-gray-800 ">
+          <h1 className="text-xl font-bold text-[#1a2436] ">
             {loading ? (
-              <div className="w-64 h-7 bg-gray-300 opacity-50 rounded"></div>
+              <div className="w-64 h-7 bg-[#ececec] opacity-50 rounded"></div>
             ) : (
             !noHeading && (data?.name || `Taxi from ${data?.transfer_details?.trips?.[0]?.origin?.address} to ${data?.transfer_details?.trips?.[0]?.destination?.address}`)
             )}
@@ -147,7 +147,7 @@ const TaxiDetailModal = ({
           {!isEmbedded && !noChange && (
             <div className="font-lexend flex justify-between items-start !m-0">
               {loading ? (
-                <div className="w-16 h-5 bg-gray-300 opacity-50 rounded"></div>
+                <div className="w-16 h-5 bg-[#ececec] opacity-50 rounded"></div>
               ) : (
                 <>
                   {/* <Text>{name}</Text> */}
@@ -175,29 +175,29 @@ const TaxiDetailModal = ({
         </div>
 
         <div className="flex-1 px-4 pt-4">
-          <div className="bg-white p-6 rounded-2xl shadow-sm relative border border-gray-100">
+          <div className="bg-white p-6 rounded-2xl shadow-sm relative border border-[#ececec]">
             <div className="relative flex justify-center items-center mb-6 mt-2">
               <div
-                className="absolute left-0 right-1/2 border-t border-dashed border-gray-300 h-0"
+                className="absolute left-0 right-1/2 border-t border-dashed border-[#b8becc] h-0"
                 style={{ marginRight: "20px" }}
               ></div>
 
-              <div className="bg-gray-200 px-4 py-1 rounded-full text-sm z-10 relative">
+              <div className="bg-[#f4f3ec] px-4 py-1 rounded-full text-sm z-10 relative">
                 {loading ? (
-                  <div className="w-24 h-4 bg-gray-300 opacity-50 rounded "></div>
+                  <div className="w-24 h-4 bg-[#ececec] opacity-50 rounded "></div>
                 ) : (
                   (data?.transfer_type === "sightseeing" && (data?.transfer_details?.trips?.[0]?.origin?.address  && (data?.transfer_details?.trips?.[0]?.destination?.address))) ? `${distance} | ${duration_text}` : `${distance} | ${duration_text}`
                 )}
               </div>
 
               <div
-                className="absolute right-0 left-1/2 border-t border-dashed border-gray-300 h-0"
+                className="absolute right-0 left-1/2 border-t border-dashed border-[#b8becc] h-0"
                 style={{ marginLeft: "20px" }}
               ></div>
 
-              <div className="absolute left-0 w-3 h-3 bg-gray-300 rounded-full"></div>
+              <div className="absolute left-0 w-3 h-3 bg-[#b8becc] rounded-full"></div>
 
-              <div className="absolute right-0 w-3 h-3 bg-gray-300 rounded-full"></div>
+              <div className="absolute right-0 w-3 h-3 bg-[#b8becc] rounded-full"></div>
             </div>
 
             <div className="flex justify-between mb-6">
@@ -205,15 +205,15 @@ const TaxiDetailModal = ({
                 <div>
                   {loading ? (
                     <>
-                      <div className="w-32 h-5 bg-gray-300 opacity-50 rounded mb-1"></div>
-                      <div className="w-36 h-4 bg-gray-300 opacity-50 rounded"></div>
+                      <div className="w-32 h-5 bg-[#ececec] opacity-50 rounded mb-1"></div>
+                      <div className="w-36 h-4 bg-[#ececec] opacity-50 rounded"></div>
                     </>
                   ) : (
                     <>
-                      <p className="font-bold text-lg">
+                      <p className="font-bold text-lg text-[#0b1220]">
                         {data?.transfer_type === "sightseeing" && data?.transfer_details?.trips?.[0]?.origin?.address && data?.transfer_details?.trips?.[0]?.destination?.address ? data?.transfer_details?.trips?.[0]?.origin?.address  : data?.transfer_details?.trips?.[0]?.origin?.address}
                       </p>
-                      <p className="text-gray-600 text-sm flex flex-col sm:flex-row sm:gap-1">
+                      <p className="text-[#445069] text-sm flex flex-col sm:flex-row sm:gap-1">
                         <span>{depart.time}</span>
                         <span>{depart.date}</span>
                       </p>
@@ -226,17 +226,17 @@ const TaxiDetailModal = ({
                 <div className="text-right">
                   {loading ? (
                     <>
-                      <div className="w-32 h-5 bg-gray-300 opacity-50 rounded mb-1"></div>
-                      <div className="w-36 h-4 bg-gray-300 opacity-50 rounded"></div>
+                      <div className="w-32 h-5 bg-[#ececec] opacity-50 rounded mb-1"></div>
+                      <div className="w-36 h-4 bg-[#ececec] opacity-50 rounded"></div>
                     </>
                   ) : (
                     <>
                       {data?.transfer_details?.trips?.[0]?.destination?.address && (
-                        <p className="font-bold text-lg">
+                        <p className="font-bold text-lg text-[#0b1220]">
                           {data?.transfer_details?.trips?.[0]?.destination?.address}
                         </p>
                       )}
-                     {arrival.time && arrival.date && <p className="text-gray-600 text-sm flex flex-col sm:flex-row sm:gap-1">
+                     {arrival.time && arrival.date && <p className="text-[#445069] text-sm flex flex-col sm:flex-row sm:gap-1">
                         <span>{arrival.time ? arrival.time : ""}</span>
                         <span>{arrival.date ? arrival.date : ""}</span>
                       </p>}
@@ -246,10 +246,10 @@ const TaxiDetailModal = ({
               </div>
             </div>
 
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <p className="font-semibold text-gray-800 mb-4">
+            <div className="bg-[#f4f3ec] p-4 rounded-lg">
+              <p className="font-semibold text-[#0b1220] mb-4">
                 {loading ? (
-                  <div className="w-24 h-5 bg-gray-300 opacity-50 rounded"></div>
+                  <div className="w-24 h-5 bg-[#ececec] opacity-50 rounded"></div>
                 ) : (
                   "TAXI DETAILS"
                 )}
@@ -258,13 +258,13 @@ const TaxiDetailModal = ({
               <div className="flex flex-col md:flex-row gap-4 max-sm:gap-[2rem]">
                 <div className="flex flex-col gap-4 max-sm:gap-[2rem] items-center">
                 <div
-                  className="w-full md:w-auto border border-gray-200 rounded-lg  flex justify-center items-center"
+                  className="w-full md:w-auto border border-[#ececec] rounded-lg  flex justify-center items-center"
                   // style={{ height: "140px" }}
                 >
                   {loading ? (
-                    <div className="w-full h-full bg-gray-300 opacity-50 rounded"></div>
+                    <div className="w-full h-full bg-[#ececec] opacity-50 rounded"></div>
                   ) : (
-                    
+
                     <div className="w-full md:w-[180px] h-[140px]  relative flex justify-center items-center">
                       {data?.transfer_details?.quote?.taxi_category?.image || data?.transfer_details?.quote?.vehicle?.image ? (
                         <ImageLoader
@@ -275,23 +275,23 @@ const TaxiDetailModal = ({
                           dimensionsMobile={{width:20, height:20}}
                         />
                       ) : (
-                        <FaTaxi className="w-16 h-16 text-gray-400" />
+                        <FaTaxi className="w-16 h-16 text-[#8a93a6]" />
                       )}
                     </div>
-  
+
                   )}
-                  
+
                 </div>
 
                 {taxiType && <div>
-                      <p className="text-gray-500 text-sm"><span className="font-semibold text-gray-800">
+                      <p className="text-[#8a93a6] text-sm"><span className="font-semibold text-[#0b1220]">
                           {loading ? (
-                            <div className="w-20 h-5 bg-gray-300 opacity-50 rounded"></div>
+                            <div className="w-20 h-5 bg-[#ececec] opacity-50 rounded"></div>
                           ) : (
                             taxiType ? taxiType : ""
                           )}
                       </span></p>
-                     
+
                     </div>}
                 </div>
 
@@ -299,10 +299,10 @@ const TaxiDetailModal = ({
                   <div className="grid grid-cols-2 gap-4">
                     {
                       <div>
-                        <p className="text-gray-500 text-sm">Model</p>
-                        <p className="font-semibold text-gray-800">
+                        <p className="text-[#445069] text-sm">Model</p>
+                        <p className="font-semibold text-[#0b1220]">
                           {loading ? (
-                            <div className="w-20 h-5 bg-gray-300 opacity-50 rounded"></div>
+                            <div className="w-20 h-5 bg-[#ececec] opacity-50 rounded"></div>
                           ) : (
                             model ? model : "NA"
                           )}
@@ -313,10 +313,10 @@ const TaxiDetailModal = ({
                     {/* Fuel Type */}
                     {
                       <div>
-                        <p className="text-gray-500 text-sm">Fuel Type</p>
-                        <p className="font-semibold text-gray-800">
+                        <p className="text-[#445069] text-sm">Fuel Type</p>
+                        <p className="font-semibold text-[#0b1220]">
                           {loading ? (
-                            <div className="w-20 h-5 bg-gray-300 opacity-50 rounded"></div>
+                            <div className="w-20 h-5 bg-[#ececec] opacity-50 rounded"></div>
                           ) : (
                             fuelType ? fuelType : "NA"
                           )}
@@ -327,10 +327,10 @@ const TaxiDetailModal = ({
                     {/* Luggage Bags */}
                     {
                       <div>
-                        <p className="text-gray-500 text-sm">Luggage Bags</p>
-                        <p className="font-semibold text-gray-800">
+                        <p className="text-[#445069] text-sm">Luggage Bags</p>
+                        <p className="font-semibold text-[#0b1220]">
                           {loading ? (
-                            <div className="w-10 h-5 bg-gray-300 opacity-50 rounded"></div>
+                            <div className="w-10 h-5 bg-[#ececec] opacity-50 rounded"></div>
                           ) : (
                             luggageBags ? luggageBags : "NA"
                           )}
@@ -341,10 +341,10 @@ const TaxiDetailModal = ({
                     {/* Seat Capacity */}
                     {
                       <div>
-                        <p className="text-gray-500 text-sm">Seat Capacity</p>
-                        <p className="font-semibold text-gray-800">
+                        <p className="text-[#445069] text-sm">Seat Capacity</p>
+                        <p className="font-semibold text-[#0b1220]">
                           {loading ? (
-                            <div className="w-24 h-5 bg-gray-300 opacity-50 rounded"></div>
+                            <div className="w-24 h-5 bg-[#ececec] opacity-50 rounded"></div>
                           ) : (
                             seatCapacity ? seatCapacity : "NA"
                           )}
@@ -376,7 +376,7 @@ const TaxiDetailModal = ({
 
         {/* Delete Booking Button (Fixed) */}
         {handleDelete && type !== "combo" && (
-          <div className="p-4 bg-white">
+          <div className="p-4 bg-[#fafaf5]">
             <button
               className="w-full bg-red-500 text-white py-2 rounded-lg flex items-center justify-center"
               onClick={() => handleDelete(booking || data)}

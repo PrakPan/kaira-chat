@@ -31,8 +31,8 @@ export default function CheckboxLabels(props) {
                 }
                 sx={{
                   "& .MuiSvgIcon-root": { fontSize: 16 },
-                  color: "black",
-                  "&.Mui-checked": { color: "black" },
+                  color: "#445069",
+                  "&.Mui-checked": { color: "#0b1220" },
                 }}
                 defaultChecked={filter === props.default ? true : false}
               />

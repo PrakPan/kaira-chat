@@ -22,12 +22,14 @@ const Heading = styled.p`
   font-weight: 700;
   margin: 0 0 0.5rem 0;
   line-height: 1;
+  color: #0b1220;
 `;
 
 const Location = styled.p`
   font-size: 13px;
   font-weight: 400;
   margin: 0;
+  color: #1a2436;
 `;
 
 const IconHeading = styled.p`
@@ -35,6 +37,7 @@ const IconHeading = styled.p`
   font-weight: 700;
   margin: 0;
   line-height: 1;
+  color: #0b1220;
 `;
 
 const Text = styled.p`
@@ -42,7 +45,7 @@ const Text = styled.p`
   font-weight: 300;
   margin: 0;
   letter-spacing: 1px;
-  color: rgba(91, 89, 89, 1);
+  color: #445069;
 `;
 
 const Section = (props) => {

@@ -19,6 +19,7 @@ const Container = styled.div`
 const Text = styled.div`
   font-size: 1.2rem;
   line-height: 2rem;
+  color: #0b1220;
 `;
 
 const Section = (props) => {
@@ -30,7 +31,7 @@ const Section = (props) => {
         <IoMdClose
           className="hover-pointer"
           onClick={props.setHideTaxiModal}
-          style={{ fontSize: "1.5rem" }}
+          style={{ fontSize: "1.5rem", color: "#0b1220" }}
         ></IoMdClose>
         {props.selectedBooking.transfer_type === "Multicity" ? (
           <Text>
@@ -52,7 +53,7 @@ const Section = (props) => {
         )}
       </div>
 
-      <div className="group text-blue md:ml-8 flex flex-row items-center cursor-pointer hover:translate-x-1 transition-all">
+      <div className="group text-[#445069] md:ml-8 flex flex-row items-center cursor-pointer hover:translate-x-1 transition-all">
         <button
           onClick={(e) => {
             props.handleTransferEdit(e);

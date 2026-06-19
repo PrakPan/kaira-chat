@@ -133,6 +133,7 @@ export default function EsimDetailDrawer({ show, pkg, onHide, onBooked, onAdded,
       backdrop
       width="50%"
       mobileWidth="100%"
+      bgColor="#fafaf5"
       style={{ zIndex: drawerZIndex }}
       className="!overflow-y-hidden"
       onHide={onHide}
@@ -140,7 +141,7 @@ export default function EsimDetailDrawer({ show, pkg, onHide, onBooked, onAdded,
       <div className="h-screen flex flex-col overflow-hidden">
         <div className="overflow-y-scroll flex-1 px-6 max-ph:px-4 pb-24">
           {/* Back */}
-          <div className="py-4 bg-white sticky top-0 z-10 flex items-center justify-between">
+          <div className="py-4 bg-[#fafaf5] sticky top-0 z-10 flex items-center justify-between">
             <Image
               src="/backarrow.svg"
               className="cursor-pointer"
@@ -169,7 +170,7 @@ export default function EsimDetailDrawer({ show, pkg, onHide, onBooked, onAdded,
             </div>
           ) : error ? (
             <div className="flex flex-col items-center justify-center mt-16 gap-3">
-              <div className="text-[#6E757A] text-center">{error}</div>
+              <div className="text-[#445069] text-center">{error}</div>
               <button
                 className="bg-[#f7e700] border border-black text-black px-4 py-2 rounded-lg ttw-type-body-strong"
                 onClick={fetchDetail}
@@ -196,45 +197,45 @@ export default function EsimDetailDrawer({ show, pkg, onHide, onBooked, onAdded,
               )}
 
               {/* Title */}
-              <div className="ttw-type-h3 font-600 text-[#01202B] leading-snug mb-1">
+              <div className="ttw-type-h3 font-600 text-[#0b1220] leading-snug mb-1">
                 {displayPkg?.title}
               </div>
 
               {/* Key specs row */}
-              <div className="flex items-center gap-3 ttw-type-small text-[#6E757A] mb-3">
+              <div className="flex items-center gap-3 ttw-type-small text-[#445069] mb-3">
                 {displayPkg?.data && (
-                  <span className="font-600 text-[#01202B]">{displayPkg.data}</span>
+                  <span className="font-600 text-[#0b1220]">{displayPkg.data}</span>
                 )}
                 {displayPkg?.day != null && (
                   <><span>·</span><span>{displayPkg.day} day{displayPkg.day > 1 ? "s" : ""}</span></>
                 )}
                 {displayPkg?.is_unlimited && (
-                  <><span>·</span><span className="text-[#2A6800]">Unlimited</span></>
+                  <><span>·</span><span className="text-[#1f8a5a]">Unlimited</span></>
                 )}
                 {displayPkg?.is_roaming && (
-                  <><span>·</span><span className="text-[#2A6800]">Roaming ✓</span></>
+                  <><span>·</span><span className="text-[#1f8a5a]">Roaming ✓</span></>
                 )}
               </div>
 
               {/* Badges */}
               <div className="flex flex-wrap gap-1 mb-4">
                 {displayPkg?.esim_type && (
-                  <span className="ttw-type-small bg-[#F5F0FF] text-[#5B1DB3] px-2 py-0.5 rounded-full">
+                  <span className="ttw-type-small bg-[#eef2fb] text-[#1a2436] px-2 py-0.5 rounded-full">
                     {displayPkg.esim_type}
                   </span>
                 )}
                 {displayPkg?.rechargeability && (
-                  <span className="ttw-type-small bg-[#DDF4C5] text-[#2A6800] px-2 py-0.5 rounded-full">
+                  <span className="ttw-type-small bg-[#e7f5ee] text-[#1f8a5a] px-2 py-0.5 rounded-full">
                     Rechargeable
                   </span>
                 )}
                 {displayPkg?.plan_type && (
-                  <span className="ttw-type-small bg-[#F8F8F8] text-[#6E757A] px-2 py-0.5 rounded-full border border-[#E5E5E5] capitalize">
+                  <span className="ttw-type-small bg-[#f4f3ec] text-[#445069] px-2 py-0.5 rounded-full border border-[#ececec] capitalize">
                     {displayPkg.plan_type}
                   </span>
                 )}
                 {displayPkg?.activation_policy && (
-                  <span className="ttw-type-small bg-[#FFF3E0] text-[#E65100] px-2 py-0.5 rounded-full capitalize">
+                  <span className="ttw-type-small bg-[#f0e9d6] text-[#1a2436] px-2 py-0.5 rounded-full capitalize">
                     {displayPkg.activation_policy.replace(/-/g, " ")}
                   </span>
                 )}
@@ -242,12 +243,12 @@ export default function EsimDetailDrawer({ show, pkg, onHide, onBooked, onAdded,
 
               {/* Price card — detail.price is already in the requested currency */}
               {displayPkg?.price != null && (
-                <div className="bg-[#F8F8F8] rounded-xl p-4 mb-4">
-                  <div className="ttw-type-small text-[#6E757A] mb-1">Price</div>
-                  <div className="ttw-type-h2 font-700 text-[#01202B]">
+                <div className="bg-[#f4f3ec] rounded-xl p-4 mb-4">
+                  <div className="ttw-type-small text-[#445069] mb-1">Price</div>
+                  <div className="ttw-type-h2 font-700 font-mono text-[#0b1220]">
                     {symbol}{getIndianPrice(Math.round(displayPkg.price))}
                   </div>
-                  <div className="ttw-type-small text-[#6E757A] mt-0.5">
+                  <div className="ttw-type-small text-[#445069] mt-0.5">
                     Per traveller · {itinerary?.number_of_adults || 1} adult{(itinerary?.number_of_adults || 1) > 1 ? "s" : ""}
                   </div>
                 </div>
@@ -255,20 +256,20 @@ export default function EsimDetailDrawer({ show, pkg, onHide, onBooked, onAdded,
 
               {/* Warning */}
               {displayPkg?.warning && (
-                <div className="bg-[#FFF8E1] border border-[#FFD740] rounded-xl p-3 mb-4 flex gap-2">
+                <div className="bg-[#fffde7] border border-[#f7e700] rounded-xl p-3 mb-4 flex gap-2">
                   <span>⚠️</span>
-                  <div className="ttw-type-small text-[#7A5800]">{displayPkg.warning}</div>
+                  <div className="ttw-type-small text-[#445069]">{displayPkg.warning}</div>
                 </div>
               )}
 
               {/* Package info bullet points */}
               {displayPkg?.info?.length > 0 && (
                 <div className="mb-4">
-                  <div className="ttw-type-body font-600 text-[#01202B] mb-2">What's Included</div>
+                  <div className="ttw-type-body font-600 text-[#0b1220] mb-2">What's Included</div>
                   <div className="space-y-1.5">
                     {displayPkg.info.map((item, i) => (
-                      <div key={i} className="flex items-start gap-2 ttw-type-small text-[#6E757A]">
-                        <span className="text-green-500 mt-0.5 flex-shrink-0">✓</span>
+                      <div key={i} className="flex items-start gap-2 ttw-type-small text-[#445069]">
+                        <span className="text-[#1f8a5a] mt-0.5 flex-shrink-0">✓</span>
                         <span>{typeof item === "string" ? item : JSON.stringify(item)}</span>
                       </div>
                     ))}
@@ -279,31 +280,31 @@ export default function EsimDetailDrawer({ show, pkg, onHide, onBooked, onAdded,
               {/* Other info */}
               {displayPkg?.other_info && (
                 <div className="mb-4">
-                  <div className="ttw-type-body font-600 text-[#01202B] mb-1">Coverage Info</div>
-                  <div className="ttw-type-small text-[#6E757A] leading-relaxed">{displayPkg.other_info}</div>
+                  <div className="ttw-type-body font-600 text-[#0b1220] mb-1">Coverage Info</div>
+                  <div className="ttw-type-small text-[#445069] leading-relaxed">{displayPkg.other_info}</div>
                 </div>
               )}
 
               {/* Fair usage policy */}
               {displayPkg?.fair_usage_policy && (
-                <div className="bg-[#F0F4FF] rounded-xl p-3 mb-4">
-                  <div className="ttw-type-small font-600 text-[#01202B] mb-0.5">Fair Usage Policy</div>
-                  <div className="ttw-type-small text-[#6E757A]">{displayPkg.fair_usage_policy}</div>
+                <div className="bg-[#eef2fb] rounded-xl p-3 mb-4">
+                  <div className="ttw-type-small font-600 text-[#0b1220] mb-0.5">Fair Usage Policy</div>
+                  <div className="ttw-type-small text-[#445069]">{displayPkg.fair_usage_policy}</div>
                 </div>
               )}
 
               {/* APN Setup */}
               {(displayPkg?.apn_type || displayPkg?.apn_value) && (
-                <div className="bg-[#F5F0FF] rounded-xl p-4 mb-4">
-                  <div className="ttw-type-small font-600 text-[#01202B] mb-2">APN Setup</div>
+                <div className="bg-[#eef2fb] rounded-xl p-4 mb-4">
+                  <div className="ttw-type-small font-600 text-[#0b1220] mb-2">APN Setup</div>
                   {displayPkg.apn_type && (
-                    <div className="ttw-type-small text-[#6E757A]">
-                      Type: <span className="text-[#01202B] font-500">{displayPkg.apn_type}</span>
+                    <div className="ttw-type-small text-[#445069]">
+                      Type: <span className="text-[#0b1220] font-500">{displayPkg.apn_type}</span>
                     </div>
                   )}
                   {displayPkg.apn_value && (
-                    <div className="ttw-type-small text-[#6E757A] mt-0.5">
-                      APN: <span className="text-[#01202B] font-600 font-mono">{displayPkg.apn_value}</span>
+                    <div className="ttw-type-small text-[#445069] mt-0.5">
+                      APN: <span className="text-[#0b1220] font-600 font-mono">{displayPkg.apn_value}</span>
                     </div>
                   )}
                 </div>
@@ -311,16 +312,16 @@ export default function EsimDetailDrawer({ show, pkg, onHide, onBooked, onAdded,
 
               {/* Install window */}
               {displayPkg?.install_window_days != null && (
-                <div className="ttw-type-small text-[#6E757A] mb-4">
-                  📅 Must be installed within <span className="font-600 text-[#01202B]">{displayPkg.install_window_days} days</span> of purchase
+                <div className="ttw-type-small text-[#445069] mb-4">
+                  📅 Must be installed within <span className="font-600 text-[#0b1220]">{displayPkg.install_window_days} days</span> of purchase
                 </div>
               )}
 
               {/* Installation instructions */}
               {displayPkg?.qr_installation && (
                 <div className="mb-4">
-                  <div className="ttw-type-body font-600 text-[#01202B] mb-1">QR Installation</div>
-                  <div className="ttw-type-small text-[#6E757A] leading-relaxed">
+                  <div className="ttw-type-body font-600 text-[#0b1220] mb-1">QR Installation</div>
+                  <div className="ttw-type-small text-[#445069] leading-relaxed">
                     {stripHtml(displayPkg.qr_installation)}
                   </div>
                 </div>
@@ -331,7 +332,7 @@ export default function EsimDetailDrawer({ show, pkg, onHide, onBooked, onAdded,
 
         {/* Sticky CTA */}
         {!loading && !error && (traceId || displayPkg?.id) && (
-          <div className="border-t border-[#E5E5E5] px-6 py-4 bg-white">
+          <div className="border-t border-[#ececec] px-6 py-4 bg-[#fafaf5]">
             {showManageActions ? (
               <button
                 className="w-full bg-[#ef4444] text-white font-500 ttw-type-body py-3 rounded-xl flex items-center justify-center gap-2 disabled:opacity-60"

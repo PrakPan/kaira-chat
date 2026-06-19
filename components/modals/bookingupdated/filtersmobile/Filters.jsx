@@ -44,13 +44,14 @@ export default function Filters(props) {
       show={props.showFilter}
       anchor={"right"}
       backdrop
+      bgColor="#fafaf5"
       style={{ zIndex: 1508 }}
       className=""
       onHide={() => props.setshowFilter(false)}
     >
       <div className="w-[80vw] md:w-[27vw] h-[100vh] flex flex-col">
         {/* Header - Fixed at top */}
-        <div className="px-lg pt-md pb-sm border-b border-border-subtle">
+        <div className="px-lg pt-md pb-sm border-b border-[#ececec]">
           <div className="mb-md">
             <Image 
               src="/backarrow.svg" 
@@ -62,7 +63,7 @@ export default function Filters(props) {
           </div>
           
           <div className="flex w-full flex-row justify-between items-center">
-            <div className="text-xl font-600 leading-2xl">Filters</div>
+            <div className="text-xl font-600 leading-2xl text-[#0b1220]">Filters</div>
             {props?.isFilterChangesApplied && (
               <button 
                 className="font-md font-500 leading-lg-md underline text-text-error" 
@@ -137,7 +138,7 @@ export default function Filters(props) {
         </div>
 
         {/* Sticky footer buttons */}
-        <div className="border-t border-border-subtle bg-white px-lg py-md">
+        <div className="border-t border-[#ececec] bg-[#fafaf5] px-lg py-md">
           <div className="flex gap-3 justify-end">
             <button className="ttw-btn-secondary-flat" onClick={() => props.setshowFilter(false)}>
               Cancel

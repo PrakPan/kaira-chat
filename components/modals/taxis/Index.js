@@ -238,6 +238,7 @@ const Booking = (props) => {
       <Drawer
         anchor={"right"}
         backdrop
+        bgColor="#fafaf5"
         style={{ zIndex: 1501 }}
         className=""
         show={props.showTaxiModal}
@@ -265,7 +266,7 @@ const Booking = (props) => {
                     margin: "auto",
                     height: isPageWide ? "80vh" : "40vh",
                   }}
-                  className="center-div text-center "
+                  className="center-div text-center text-[#445069]"
                 >
                   <LoadingLottie height="5rem" width="5rem" margin="none" />
                   Please wait while we update your bookings
@@ -310,7 +311,7 @@ const Booking = (props) => {
               ) : null}
 
               {noResults ? (
-                <OptionsContainer className=" center-div text-center">
+                <OptionsContainer className=" center-div text-center text-[#445069]">
                   Oops, we couldn't find what you were searching but we are
                   already adding new and approved accommodations to our database
                   everyday!
@@ -318,7 +319,7 @@ const Booking = (props) => {
               ) : null}
 
               {error ? (
-                <OptionsContainer className=" center-div text-center">
+                <OptionsContainer className=" center-div text-center text-[#445069]">
                   <div className="flex flex-col items-center gap-3">
                     <div>
                       Oops, There seems to be a problem, please try again later!

@@ -18,7 +18,7 @@ const Container = styled.div`
 
 const Booking = (props) => {
   return (
-    <Container className="border" style={{ borderRadius: "10px" }}>
+    <Container className="border border-[#ececec]" style={{ borderRadius: "10px" }}>
       <SectionOne selectedBooking={props.selectedBooking}></SectionOne>
       <SectionFour setShowTaxiModal={props.setShowTaxiModal}></SectionFour>
     </Container>

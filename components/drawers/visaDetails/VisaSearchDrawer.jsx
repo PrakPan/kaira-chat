@@ -28,44 +28,44 @@ const VisaCard = ({ visa, onSelect, currency }) => {
 
   return (
     <div
-      className="rounded-2xl border border-[#E5E5E5] p-4 cursor-pointer hover:bg-[#FAFAFA] transition-colors mt-3 w-full"
+      className="rounded-2xl border border-[#ececec] bg-white p-4 cursor-pointer hover:bg-[#f4f3ec] transition-colors mt-3 w-full"
       onClick={() => onSelect(visa)}
     >
       <div className="flex flex-col gap-2">
         {/* Title */}
-        <div className="ttw-type-body font-600 leading-snug text-[#01202B]">
+        <div className="ttw-type-body font-600 leading-snug text-[#0b1220]">
           {visa?.text}
         </div>
 
         {/* Country */}
         {visa?.country?.name && (
-          <div className="ttw-type-small text-[#6E757A]">{visa.country.name}</div>
+          <div className="ttw-type-small text-[#445069]">{visa.country.name}</div>
         )}
 
         {/* Badges */}
         <div className="flex flex-wrap gap-1">
           {visa?.category && (
-            <span className="ttw-type-small bg-[#F5F0FF] text-[#5B1DB3] px-2 py-0.5 rounded-full">
+            <span className="ttw-type-small bg-[#eef2fb] text-[#1a2436] px-2 py-0.5 rounded-full">
               {formatLabel(visa.category)}
             </span>
           )}
           {visa?.entry_type && (
-            <span className="ttw-type-small bg-[#DDF4C5] text-[#2A6800] px-2 py-0.5 rounded-full">
+            <span className="ttw-type-small bg-[#e7f5ee] text-[#1a2436] px-2 py-0.5 rounded-full">
               {formatLabel(visa.entry_type)}
             </span>
           )}
           {visa?.processing_type && (
-            <span className="ttw-type-small bg-[#fadadd] text-[#8B0000] px-2 py-0.5 rounded-full">
+            <span className="ttw-type-small bg-[#fff1ee] text-[#1a2436] px-2 py-0.5 rounded-full">
               {formatLabel(visa.processing_type)}
             </span>
           )}
           {visa?.purpose && (
-            <span className="ttw-type-small bg-[#d5f5d3] text-[#006400] px-2 py-0.5 rounded-full">
+            <span className="ttw-type-small bg-[#e7f5ee] text-[#1a2436] px-2 py-0.5 rounded-full">
               {formatLabel(visa.purpose)}
             </span>
           )}
           {visa?.stay_period && (
-            <span className="ttw-type-small bg-[#FFF3E0] text-[#E65100] px-2 py-0.5 rounded-full">
+            <span className="ttw-type-small bg-[#f0e9d6] text-[#1a2436] px-2 py-0.5 rounded-full">
               Stay: {visa.stay_period}
             </span>
           )}
@@ -75,15 +75,15 @@ const VisaCard = ({ visa, onSelect, currency }) => {
         <div className="flex items-center justify-between mt-1">
           {totalPrice != null ? (
             <div className="flex flex-col">
-              <div className="ttw-type-body font-700 text-[#01202B]">
+              <div className="ttw-type-body font-700 font-mono text-[#0b1220]">
                 {symbol}{getIndianPrice(Math.round(totalPrice))}
-                <span className="ttw-type-small font-400 text-[#6E757A] ml-1">/ person</span>
+                <span className="ttw-type-small font-400 font-sans text-[#445069] ml-1">/ person</span>
               </div>
             </div>
           ) : (
-            <div className="ttw-type-small text-[#6E757A]">View pricing</div>
+            <div className="ttw-type-small text-[#445069]">View pricing</div>
           )}
-          <button className="ttw-type-small font-500 text-[#01202B] underline flex-shrink-0">
+          <button className="ttw-type-small font-500 text-[#0b1220] underline flex-shrink-0">
             View Details
           </button>
         </div>
@@ -180,13 +180,14 @@ export default function VisaSearchDrawer({ show, onHide, onBooked, onAdded, onRe
         backdrop
         width="50%"
         mobileWidth="100%"
+        bgColor="#fafaf5"
         style={{ zIndex }}
         className="!overflow-y-hidden"
         onHide={onHide}
       >
         <div className="overflow-y-scroll h-screen px-6 max-ph:px-4">
           {/* Header */}
-          <div className="py-4 bg-white z-[900] flex flex-col gap-3 pb-2 sticky top-0">
+          <div className="py-4 bg-[#fafaf5] z-[900] flex flex-col gap-3 pb-2 sticky top-0">
             <div>
               <Image
                 src="/backarrow.svg"
@@ -196,7 +197,7 @@ export default function VisaSearchDrawer({ show, onHide, onBooked, onAdded, onRe
                 onClick={onHide}
               />
             </div>
-            <div className="ttw-type-h2 font-semibold">Add Visa</div>
+            <div className="ttw-type-h2 font-semibold text-[#0b1220]">Add Visa</div>
 
             {/* Filters */}
             {(filterOptions.purposes.length > 0 ||
@@ -206,7 +207,7 @@ export default function VisaSearchDrawer({ show, onHide, onBooked, onAdded, onRe
               <div className="flex flex-wrap gap-2">
                 {filterOptions.purposes.length > 0 && (
                   <select
-                    className="px-3 py-2 rounded-lg bg-white border border-[#979393] ttw-type-small font-medium"
+                    className="px-3 py-2 rounded-lg bg-[#f4f3ec] border border-[#ececec] text-[#0b1220] ttw-type-small font-medium"
                     value={filters.purpose}
                     onChange={(e) => handleFilterChange("purpose", e.target.value)}
                   >
@@ -218,7 +219,7 @@ export default function VisaSearchDrawer({ show, onHide, onBooked, onAdded, onRe
                 )}
                 {filterOptions.processing_types.length > 0 && (
                   <select
-                    className="px-3 py-2 rounded-lg bg-white border border-[#979393] ttw-type-small font-medium"
+                    className="px-3 py-2 rounded-lg bg-[#f4f3ec] border border-[#ececec] text-[#0b1220] ttw-type-small font-medium"
                     value={filters.processing_type}
                     onChange={(e) => handleFilterChange("processing_type", e.target.value)}
                   >
@@ -230,7 +231,7 @@ export default function VisaSearchDrawer({ show, onHide, onBooked, onAdded, onRe
                 )}
                 {filterOptions.categories.length > 0 && (
                   <select
-                    className="px-3 py-2 rounded-lg bg-white border border-[#979393] ttw-type-small font-medium"
+                    className="px-3 py-2 rounded-lg bg-[#f4f3ec] border border-[#ececec] text-[#0b1220] ttw-type-small font-medium"
                     value={filters.category}
                     onChange={(e) => handleFilterChange("category", e.target.value)}
                   >
@@ -242,7 +243,7 @@ export default function VisaSearchDrawer({ show, onHide, onBooked, onAdded, onRe
                 )}
                 {filterOptions.entry_types.length > 0 && (
                   <select
-                    className="px-3 py-2 rounded-lg bg-white border border-[#979393] ttw-type-small font-medium"
+                    className="px-3 py-2 rounded-lg bg-[#f4f3ec] border border-[#ececec] text-[#0b1220] ttw-type-small font-medium"
                     value={filters.entry_type}
                     onChange={(e) => handleFilterChange("entry_type", e.target.value)}
                   >
@@ -256,7 +257,7 @@ export default function VisaSearchDrawer({ show, onHide, onBooked, onAdded, onRe
             )}
 
             {!loading && (
-              <div className="ttw-type-body text-[#6E757A]">
+              <div className="ttw-type-body text-[#445069]">
                 {visas.length > 0 ? `Showing ${visas.length} visa option${visas.length !== 1 ? "s" : ""}` : ""}
               </div>
             )}
@@ -266,7 +267,7 @@ export default function VisaSearchDrawer({ show, onHide, onBooked, onAdded, onRe
           {loading ? (
             <div className="flex flex-col gap-3 mt-2">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="rounded-2xl border border-[#E5E5E5] p-4 animate-pulse">
+                <div key={i} className="rounded-2xl border border-[#ececec] p-4 animate-pulse">
                   <div className="flex gap-4">
                     <div className="w-[80px] h-[60px] bg-gray-200 rounded-xl flex-shrink-0" />
                     <div className="flex-1 space-y-2">
@@ -280,7 +281,7 @@ export default function VisaSearchDrawer({ show, onHide, onBooked, onAdded, onRe
             </div>
           ) : error ? (
             <div className="flex flex-col items-center justify-center mt-16 gap-3">
-              <div className="text-[#6E757A] text-center">{error}</div>
+              <div className="text-[#445069] text-center">{error}</div>
               <button
                 className="bg-[#f7e700] border border-black text-black px-4 py-2 rounded-lg ttw-type-body-strong"
                 onClick={() => fetchVisas()}
@@ -290,7 +291,7 @@ export default function VisaSearchDrawer({ show, onHide, onBooked, onAdded, onRe
             </div>
           ) : visas.length === 0 ? (
             <div className="flex flex-col items-center justify-center mt-16 gap-2">
-              <div className="text-[#6E757A] text-center">
+              <div className="text-[#445069] text-center">
                 No visa options available for this itinerary.
               </div>
             </div>
