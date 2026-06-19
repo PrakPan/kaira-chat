@@ -43,6 +43,7 @@ import media from "../../../components/media";
 import SocialShareMobile from "./SocialShareMobile";
 import setItineraryStatus from "../../../store/actions/itineraryStatus";
 import {
+  axiosGetItinerary,
   axiosGetItineraryStatus,
   axiosUpdateItineraryDates,
 } from "../../../services/itinerary/daybyday/preview";
@@ -1851,20 +1852,23 @@ const Details = (props) => {
     } catch (error) {}
   };
 
-  // The payment API blocks checkout until traveller details are verified,
-  // returning: { errors: [{ message: ["Traveller details must be verified
-  // before initiating payment"] }] }. Detect that specific case so we can open
-  // the Add Traveller Details drawer instead of just surfacing a toast.
-  const isTravellerVerificationError = (error) => {
-    const errors = error?.response?.data?.errors || [];
-    return errors.some((e) => {
-      const msgs = Array.isArray(e?.message) ? e.message : [e?.message];
-      return msgs.some(
-        (m) =>
-          typeof m === "string" &&
-          m.toLowerCase().includes("traveller details must be verified"),
-      );
-    });
+  // Refetch the itinerary detail (which carries the `travellers` array) and
+  // push it into Redux so the proceed-to-pay gate and the verified badge
+  // reflect the freshly saved traveller details without a full reload.
+  const refreshItineraryDetails = async () => {
+    try {
+      const res = await axiosGetItinerary.get(`/${router.query.id}/`);
+      if (res?.data) {
+        dispatch(
+          setItinerary({
+            ...res.data,
+            status: res.data?.status || Itinerary?.status,
+          }),
+        );
+      }
+    } catch (err) {
+      console.error("[ERROR]: refreshItineraryDetails: ", err.message);
+    }
   };
 
   const _fullPaymentHandler = async (id) => {
@@ -1916,19 +1920,6 @@ const Details = (props) => {
     } catch (error) {
       console.error("Error initiating full payment:", error);
       props.getPaymentHandler();
-
-      if (isTravellerVerificationError(error)) {
-        setPaymentLoading(false);
-        setTravellerDetailsOpen(true);
-        dispatch(
-          openNotification({
-            text: "Please verify your traveller details before proceeding to payment.",
-            heading: "Traveller details required",
-            type: "error",
-          }),
-        );
-        return;
-      }
 
       const errorMsg =
         error?.response?.data?.errors?.[0]?.message?.[0] ||
@@ -1991,19 +1982,6 @@ const Details = (props) => {
       }
     } catch (error) {
       console.error("Error initiating lock payment:", error);
-
-      if (isTravellerVerificationError(error)) {
-        setPaymentLoading(false);
-        setTravellerDetailsOpen(true);
-        dispatch(
-          openNotification({
-            text: "Please verify your traveller details before proceeding to payment.",
-            heading: "Traveller details required",
-            type: "error",
-          })
-        );
-        return;
-      }
 
       dispatch(
         openNotification({
@@ -2091,6 +2069,20 @@ const Details = (props) => {
   };
 
   const handlePayNow = (label) => {
+    // Gate payment on traveller details. The itinerary detail API returns a
+    // `travellers` array (mirrored in Redux). When it's empty, traveller
+    // details haven't been added yet — open the drawer to collect them
+    // instead of hitting the payment API. Once filled, refreshItineraryDetails
+    // repopulates `travellers` and the user can proceed.
+    if (
+      (label === "full" || label === "lockin") &&
+      Array.isArray(Itinerary?.travellers) &&
+      Itinerary.travellers.length === 0
+    ) {
+      setTravellerDetailsOpen(true);
+      return;
+    }
+
     if (label === "_saleCreateHandler") {
       _saleCreateHandler(props.id);
     } else if (label === "lockin") {
@@ -3045,8 +3037,14 @@ const Details = (props) => {
           </div>
           <div className="px-lg py-lg">
             <AddTravellerDetails
-              itinerary={props?.itinerary}
-              onSuccess={() => setTravellerDetailsOpen(false)}
+              itinerary={Itinerary}
+              onSuccess={() => {
+                setTravellerDetailsOpen(false);
+                // Traveller details saved — refetch the itinerary detail so the
+                // `travellers` array in Redux is populated and the next
+                // proceed-to-pay call hits the payment API.
+                refreshItineraryDetails();
+              }}
             />
           </div>
         </div>
