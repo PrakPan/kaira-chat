@@ -66,24 +66,17 @@ const IconList = ({ items, variant }) => (
   </ul>
 );
 
-// Collapsible section header (General guidelines, Things to bring, …).
-const CollapsibleSection = ({ title, open, onToggle, children }) => (
+// Static section header (General guidelines, Things to bring, …). Always
+// expanded — collapse/expand was removed so all details stay visible. The
+// `open`/`onToggle` props are accepted but ignored to keep call sites simple.
+const CollapsibleSection = ({ title, children }) => (
   <div className="flex flex-col">
-    <button
-      type="button"
-      onClick={onToggle}
-      className="flex w-full items-center justify-between py-3.5 text-left"
-    >
+    <div className="flex w-full items-center justify-between py-3.5 text-left">
       <span className="font-sans text-[17px] font-bold tracking-[-0.01em] text-[#0b1220]">
         {title}
       </span>
-      <IoIosArrowDown
-        className={`shrink-0 text-[#445069] transition-transform duration-200 ${
-          open ? "rotate-180" : ""
-        }`}
-      />
-    </button>
-    {open && <div className="pb-3.5">{children}</div>}
+    </div>
+    <div className="pb-3.5">{children}</div>
   </div>
 );
 
