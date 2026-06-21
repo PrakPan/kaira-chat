@@ -54,6 +54,7 @@ const CloneItinerary = ({
 }) => {
   const dispatch = useDispatch();
   const itinerary = useSelector((state) => state.Itinerary);
+  const isDomestic = itinerary?.destination_type === "Domestic";
   const isDesktop = useMediaQuery("(min-width:767px)");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -244,8 +245,8 @@ const CloneItinerary = ({
       add_hotels: addHotels,
       add_flights: addFlights,
       add_transfers_and_activities: addActivityTransfers,
-      visa: addVisa,
-      esim: addEsim,
+      visa: isDomestic ? false : addVisa,
+      esim: isDomestic ? false : addEsim,
       room_configuration: roomConfiguration,
       // experience_filters: selectedPreferences,
     };
@@ -314,8 +315,12 @@ const CloneItinerary = ({
     },
     { id: "add-flights", label: "Flights", checked: addFlights, set: setAddFlights },
     { id: "add-hotels", label: "Hotels", checked: addHotels, set: setAddHotels },
-    { id: "add-visa", label: "Visa", checked: addVisa, set: setAddVisa },
-    { id: "add-esim", label: "eSIM", checked: addEsim, set: setAddEsim },
+    ...(isDomestic
+      ? []
+      : [
+          { id: "add-visa", label: "Visa", checked: addVisa, set: setAddVisa },
+          { id: "add-esim", label: "eSIM", checked: addEsim, set: setAddEsim },
+        ]),
   ];
 
   return (
