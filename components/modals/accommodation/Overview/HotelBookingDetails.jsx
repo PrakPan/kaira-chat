@@ -29,19 +29,19 @@ import ScrollableMenuTabs from "../../../ScrollableMenuTabs";
 
 const svgIcons = {
   "loaction": <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 10 14" fill="none">
-    <path d="M4.99968 13.6666C3.8219 13.6666 2.86079 13.4805 2.11634 13.1083C1.3719 12.736 0.999675 12.2555 0.999675 11.6666C0.999675 11.3999 1.08023 11.1527 1.24134 10.9249C1.40245 10.6971 1.62745 10.4999 1.91634 10.3333L2.96634 11.3166C2.86634 11.361 2.75801 11.411 2.64134 11.4666C2.52468 11.5221 2.43301 11.5888 2.36634 11.6666C2.51079 11.8444 2.84412 11.9999 3.36634 12.1333C3.88856 12.2666 4.43301 12.3333 4.99968 12.3333C5.56634 12.3333 6.11357 12.2666 6.64134 12.1333C7.16912 11.9999 7.50523 11.8444 7.64968 11.6666C7.5719 11.5777 7.4719 11.5055 7.34968 11.4499C7.22746 11.3944 7.11079 11.3444 6.99968 11.2999L8.03301 10.2999C8.34412 10.4777 8.58301 10.6805 8.74968 10.9083C8.91634 11.136 8.99968 11.3888 8.99968 11.6666C8.99968 12.2555 8.62746 12.736 7.88301 13.1083C7.13857 13.4805 6.17745 13.6666 4.99968 13.6666ZM5.01634 9.99992C6.11634 9.18881 6.94412 8.37492 7.49968 7.55825C8.05523 6.74158 8.33301 5.92214 8.33301 5.09992C8.33301 3.96659 7.9719 3.11103 7.24968 2.53325C6.52745 1.95547 5.77745 1.66659 4.99968 1.66659C4.2219 1.66659 3.4719 1.95547 2.74968 2.53325C2.02745 3.11103 1.66634 3.96659 1.66634 5.09992C1.66634 5.84436 1.93856 6.61936 2.48301 7.42492C3.02745 8.23047 3.8719 9.08881 5.01634 9.99992ZM4.99968 11.6666C3.43301 10.511 2.26356 9.38881 1.49134 8.29992C0.719119 7.21103 0.333008 6.14436 0.333008 5.09992C0.333008 4.31103 0.474675 3.61936 0.758008 3.02492C1.04134 2.43047 1.40523 1.93325 1.84968 1.53325C2.29412 1.13325 2.79412 0.833252 3.34968 0.633252C3.90523 0.433252 4.45523 0.333252 4.99968 0.333252C5.54412 0.333252 6.09412 0.433252 6.64968 0.633252C7.20523 0.833252 7.70523 1.13325 8.14968 1.53325C8.59412 1.93325 8.95801 2.43047 9.24134 3.02492C9.52468 3.61936 9.66634 4.31103 9.66634 5.09992C9.66634 6.14436 9.28023 7.21103 8.50801 8.29992C7.73579 9.38881 6.56634 10.511 4.99968 11.6666ZM4.99968 6.33325C5.36634 6.33325 5.68023 6.2027 5.94134 5.94159C6.20245 5.68047 6.33301 5.36658 6.33301 4.99992C6.33301 4.63325 6.20245 4.31936 5.94134 4.05825C5.68023 3.79714 5.36634 3.66658 4.99968 3.66658C4.63301 3.66658 4.31912 3.79714 4.05801 4.05825C3.7969 4.31936 3.66634 4.63325 3.66634 4.99992C3.66634 5.36658 3.7969 5.68047 4.05801 5.94159C4.31912 6.2027 4.63301 6.33325 4.99968 6.33325Z" fill="#ACACAC" />
+    <path d="M4.99968 13.6666C3.8219 13.6666 2.86079 13.4805 2.11634 13.1083C1.3719 12.736 0.999675 12.2555 0.999675 11.6666C0.999675 11.3999 1.08023 11.1527 1.24134 10.9249C1.40245 10.6971 1.62745 10.4999 1.91634 10.3333L2.96634 11.3166C2.86634 11.361 2.75801 11.411 2.64134 11.4666C2.52468 11.5221 2.43301 11.5888 2.36634 11.6666C2.51079 11.8444 2.84412 11.9999 3.36634 12.1333C3.88856 12.2666 4.43301 12.3333 4.99968 12.3333C5.56634 12.3333 6.11357 12.2666 6.64134 12.1333C7.16912 11.9999 7.50523 11.8444 7.64968 11.6666C7.5719 11.5777 7.4719 11.5055 7.34968 11.4499C7.22746 11.3944 7.11079 11.3444 6.99968 11.2999L8.03301 10.2999C8.34412 10.4777 8.58301 10.6805 8.74968 10.9083C8.91634 11.136 8.99968 11.3888 8.99968 11.6666C8.99968 12.2555 8.62746 12.736 7.88301 13.1083C7.13857 13.4805 6.17745 13.6666 4.99968 13.6666ZM5.01634 9.99992C6.11634 9.18881 6.94412 8.37492 7.49968 7.55825C8.05523 6.74158 8.33301 5.92214 8.33301 5.09992C8.33301 3.96659 7.9719 3.11103 7.24968 2.53325C6.52745 1.95547 5.77745 1.66659 4.99968 1.66659C4.2219 1.66659 3.4719 1.95547 2.74968 2.53325C2.02745 3.11103 1.66634 3.96659 1.66634 5.09992C1.66634 5.84436 1.93856 6.61936 2.48301 7.42492C3.02745 8.23047 3.8719 9.08881 5.01634 9.99992ZM4.99968 11.6666C3.43301 10.511 2.26356 9.38881 1.49134 8.29992C0.719119 7.21103 0.333008 6.14436 0.333008 5.09992C0.333008 4.31103 0.474675 3.61936 0.758008 3.02492C1.04134 2.43047 1.40523 1.93325 1.84968 1.53325C2.29412 1.13325 2.79412 0.833252 3.34968 0.633252C3.90523 0.433252 4.45523 0.333252 4.99968 0.333252C5.54412 0.333252 6.09412 0.433252 6.64968 0.633252C7.20523 0.833252 7.70523 1.13325 8.14968 1.53325C8.59412 1.93325 8.95801 2.43047 9.24134 3.02492C9.52468 3.61936 9.66634 4.31103 9.66634 5.09992C9.66634 6.14436 9.28023 7.21103 8.50801 8.29992C7.73579 9.38881 6.56634 10.511 4.99968 11.6666ZM4.99968 6.33325C5.36634 6.33325 5.68023 6.2027 5.94134 5.94159C6.20245 5.68047 6.33301 5.36658 6.33301 4.99992C6.33301 4.63325 6.20245 4.31936 5.94134 4.05825C5.68023 3.79714 5.36634 3.66658 4.99968 3.66658C4.63301 3.66658 4.31912 3.79714 4.05801 4.05825C3.7969 4.31936 3.66634 4.63325 3.66634 4.99992C3.66634 5.36658 3.7969 5.68047 4.05801 5.94159C4.31912 6.2027 4.63301 6.33325 4.99968 6.33325Z" fill="#8a93a6" />
   </svg>,
   "forkKnife": <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-    <path d="M4.5 8.17993L4.125 8.08228C3.62973 7.95376 3.24289 7.69825 2.94629 7.31177C2.64666 6.92116 2.50006 6.4894 2.5 6.00024V1.83325H2.83301V5.83325H4.5V1.83325H4.83301V5.83325H6.5V1.83325H6.83301V6.00024C6.83294 6.48947 6.68643 6.92112 6.38672 7.31177C6.09005 7.69833 5.70342 7.95379 5.20801 8.08228L4.83301 8.17993V14.1663H4.5V8.17993ZM11.167 7.9563L10.8252 7.84204C10.3606 7.68716 9.96663 7.36068 9.65039 6.80981C9.33149 6.25416 9.16699 5.6159 9.16699 4.88306C9.16703 3.98692 9.4016 3.25792 9.84863 2.66821C10.2952 2.07924 10.7855 1.83335 11.333 1.83325C11.879 1.83325 12.3699 2.08008 12.8174 2.67505C13.2656 3.27107 13.5 4.00364 13.5 4.89966C13.5 5.63238 13.3354 6.2666 13.0176 6.81567C12.7019 7.36102 12.308 7.68663 11.8418 7.84204L11.5 7.9563V14.1663H11.167V7.9563Z" stroke="#ACACAC" />
+    <path d="M4.5 8.17993L4.125 8.08228C3.62973 7.95376 3.24289 7.69825 2.94629 7.31177C2.64666 6.92116 2.50006 6.4894 2.5 6.00024V1.83325H2.83301V5.83325H4.5V1.83325H4.83301V5.83325H6.5V1.83325H6.83301V6.00024C6.83294 6.48947 6.68643 6.92112 6.38672 7.31177C6.09005 7.69833 5.70342 7.95379 5.20801 8.08228L4.83301 8.17993V14.1663H4.5V8.17993ZM11.167 7.9563L10.8252 7.84204C10.3606 7.68716 9.96663 7.36068 9.65039 6.80981C9.33149 6.25416 9.16699 5.6159 9.16699 4.88306C9.16703 3.98692 9.4016 3.25792 9.84863 2.66821C10.2952 2.07924 10.7855 1.83335 11.333 1.83325C11.879 1.83325 12.3699 2.08008 12.8174 2.67505C13.2656 3.27107 13.5 4.00364 13.5 4.89966C13.5 5.63238 13.3354 6.2666 13.0176 6.81567C12.7019 7.36102 12.308 7.68663 11.8418 7.84204L11.5 7.9563V14.1663H11.167V7.9563Z" stroke="#8a93a6" />
   </svg>,
   "calender": <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-    <path d="M3.33333 14.6666C2.96667 14.6666 2.65267 14.5361 2.39133 14.2753C2.13044 14.0139 2 13.6999 2 13.3333V3.99992C2 3.63325 2.13044 3.31947 2.39133 3.05859C2.65267 2.79725 2.96667 2.66659 3.33333 2.66659H4V1.33325H5.33333V2.66659H10.6667V1.33325H12V2.66659H12.6667C13.0333 2.66659 13.3473 2.79725 13.6087 3.05859C13.8696 3.31947 14 3.63325 14 3.99992V13.3333C14 13.6999 13.8696 14.0139 13.6087 14.2753C13.3473 14.5361 13.0333 14.6666 12.6667 14.6666H3.33333ZM3.33333 13.3333H12.6667V6.66659H3.33333V13.3333ZM3.33333 5.33325H12.6667V3.99992H3.33333V5.33325ZM3.33333 5.33325V3.99992V5.33325Z" fill="#ACACAC" />
+    <path d="M3.33333 14.6666C2.96667 14.6666 2.65267 14.5361 2.39133 14.2753C2.13044 14.0139 2 13.6999 2 13.3333V3.99992C2 3.63325 2.13044 3.31947 2.39133 3.05859C2.65267 2.79725 2.96667 2.66659 3.33333 2.66659H4V1.33325H5.33333V2.66659H10.6667V1.33325H12V2.66659H12.6667C13.0333 2.66659 13.3473 2.79725 13.6087 3.05859C13.8696 3.31947 14 3.63325 14 3.99992V13.3333C14 13.6999 13.8696 14.0139 13.6087 14.2753C13.3473 14.5361 13.0333 14.6666 12.6667 14.6666H3.33333ZM3.33333 13.3333H12.6667V6.66659H3.33333V13.3333ZM3.33333 5.33325H12.6667V3.99992H3.33333V5.33325ZM3.33333 5.33325V3.99992V5.33325Z" fill="#8a93a6" />
   </svg>,
   "user": <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 12" fill="none">
-    <path d="M11.1133 6.75342C12.0266 7.37342 12.6666 8.21342 12.6666 9.33342V11.3334H15.3333V9.33342C15.3333 7.88008 12.9533 7.02008 11.1133 6.75342Z" fill="#ACACAC" />
-    <path d="M9.99995 6.00008C11.4733 6.00008 12.6666 4.80675 12.6666 3.33341C12.6666 1.86008 11.4733 0.666748 9.99995 0.666748C9.68661 0.666748 9.39328 0.733415 9.11328 0.826748C9.66661 1.51341 9.99995 2.38675 9.99995 3.33341C9.99995 4.28008 9.66661 5.15341 9.11328 5.84008C9.39328 5.93341 9.68661 6.00008 9.99995 6.00008Z" fill="#ACACAC" />
-    <path d="M6.00065 6.00008C7.47398 6.00008 8.66732 4.80675 8.66732 3.33341C8.66732 1.86008 7.47398 0.666748 6.00065 0.666748C4.52732 0.666748 3.33398 1.86008 3.33398 3.33341C3.33398 4.80675 4.52732 6.00008 6.00065 6.00008ZM6.00065 2.00008C6.73398 2.00008 7.33398 2.60008 7.33398 3.33341C7.33398 4.06675 6.73398 4.66675 6.00065 4.66675C5.26732 4.66675 4.66732 4.06675 4.66732 3.33341C4.66732 2.60008 5.26732 2.00008 6.00065 2.00008Z" fill="#ACACAC" />
-    <path d="M6.00033 6.66675C4.22033 6.66675 0.666992 7.56008 0.666992 9.33341V11.3334H11.3337V9.33341C11.3337 7.56008 7.78032 6.66675 6.00033 6.66675ZM10.0003 10.0001H2.00033V9.34008C2.13366 8.86008 4.20033 8.00008 6.00033 8.00008C7.80032 8.00008 9.86699 8.86008 10.0003 9.33341V10.0001Z" fill="#ACACAC" />
+    <path d="M11.1133 6.75342C12.0266 7.37342 12.6666 8.21342 12.6666 9.33342V11.3334H15.3333V9.33342C15.3333 7.88008 12.9533 7.02008 11.1133 6.75342Z" fill="#8a93a6" />
+    <path d="M9.99995 6.00008C11.4733 6.00008 12.6666 4.80675 12.6666 3.33341C12.6666 1.86008 11.4733 0.666748 9.99995 0.666748C9.68661 0.666748 9.39328 0.733415 9.11328 0.826748C9.66661 1.51341 9.99995 2.38675 9.99995 3.33341C9.99995 4.28008 9.66661 5.15341 9.11328 5.84008C9.39328 5.93341 9.68661 6.00008 9.99995 6.00008Z" fill="#8a93a6" />
+    <path d="M6.00065 6.00008C7.47398 6.00008 8.66732 4.80675 8.66732 3.33341C8.66732 1.86008 7.47398 0.666748 6.00065 0.666748C4.52732 0.666748 3.33398 1.86008 3.33398 3.33341C3.33398 4.80675 4.52732 6.00008 6.00065 6.00008ZM6.00065 2.00008C6.73398 2.00008 7.33398 2.60008 7.33398 3.33341C7.33398 4.06675 6.73398 4.66675 6.00065 4.66675C5.26732 4.66675 4.66732 4.06675 4.66732 3.33341C4.66732 2.60008 5.26732 2.00008 6.00065 2.00008Z" fill="#8a93a6" />
+    <path d="M6.00033 6.66675C4.22033 6.66675 0.666992 7.56008 0.666992 9.33341V11.3334H11.3337V9.33341C11.3337 7.56008 7.78032 6.66675 6.00033 6.66675ZM10.0003 10.0001H2.00033V9.34008C2.13366 8.86008 4.20033 8.00008 6.00033 8.00008C7.80032 8.00008 9.86699 8.86008 10.0003 9.33341V10.0001Z" fill="#8a93a6" />
   </svg>,
   "delete": <svg xmlns="http://www.w3.org/2000/svg" width="15" height="14" viewBox="0 0 15 14" fill="none">
     <path d="M12.75 3.48827C10.8075 3.29577 8.85333 3.1966 6.905 3.1966C5.75 3.1966 4.595 3.25494 3.44 3.3716L2.25 3.48827" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
@@ -482,6 +482,7 @@ const HotelBookingDetails = (props) => {
         show={runTimeShowPopup}
         anchor={"right"}
         backdrop
+        bgColor="#fafaf5"
         className="font-lexend"
         onHide={handleCloseDrawer}
         width={"50%"}
@@ -497,13 +498,13 @@ const HotelBookingDetails = (props) => {
             <div>
               {data?.star_category && data?.star_category!="0" ?
                 <>
-                  <span className="bg-text-smokywhite rounded-67br text-sm font-500 leading-lg px-md py-xs mb-md inline-block">
+                  <span className="bg-[#f4f3ec] text-[#445069] rounded-67br text-sm font-500 leading-lg px-md py-xs mb-md inline-block">
                     {data?.star_category} Star Hotel
                   </span>
                 </> : null
               }
               <FlexBox>
-                <div className="text-xl text-black font-600 leading-2xl">
+                <div className="text-xl text-[#0b1220] font-600 leading-2xl">
                   {data?.hotel_details?.name}
                 </div>
 
@@ -525,12 +526,12 @@ const HotelBookingDetails = (props) => {
 
               <div className="flex gap-sm mt-sm">
                 {
-                  <div className="flex gap-xs text-sm-md text-text-spacegrey font-[400]"> <span> {svgIcons.loaction} </span> <span> {data?.hotel_details?.city}{","} {data?.hotel_details?.country} </span></div>
+                  <div className="flex gap-xs text-sm-md text-[#445069] font-[400]"> <span> {svgIcons.loaction} </span> <span> {data?.hotel_details?.city}{","} {data?.hotel_details?.country} </span></div>
                 }
 
                 {data?.rating && (
-                  <div className="gap-1 flex flex-row  items-center text-sm-md text-text-spacegrey font-[400] pl-sm border-l-sm border-solid border-text-disabled">
-                    <div className="flex flex-row text-[#FFD201]">
+                  <div className="gap-1 flex flex-row  items-center text-sm-md text-[#445069] font-[400] pl-sm border-l-sm border-solid border-[#ececec]">
+                    <div className="flex flex-row text-[#f7e700]">
                       {starRating(data?.rating)}
                     </div>
                     <div>
@@ -574,7 +575,7 @@ const HotelBookingDetails = (props) => {
                               />
 
                               {images[0]?.caption ? (
-                                <div className="bg-text-smokywhite absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
+                                <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
                                   {images[0]?.caption}
                                 </div>
                               ) : null}
@@ -612,7 +613,7 @@ const HotelBookingDetails = (props) => {
                               />
 
                               {images[2]?.caption ? (
-                                <div className="bg-text-smokywhite absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
+                                <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
                                   {images[2]?.caption}
                                 </div>
                               ) : null}
@@ -650,7 +651,7 @@ const HotelBookingDetails = (props) => {
                               />
 
                               {images[3]?.caption ? (
-                                <div className="bg-text-smokywhite absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
+                                <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
                                   {images[3]?.caption}
                                 </div>
                               ) : null}
@@ -691,7 +692,7 @@ const HotelBookingDetails = (props) => {
                             />
 
                             {images[0]?.caption ? (
-                              <div className="bg-text-smokywhite absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
+                              <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
                                 {images[0]?.caption}
                               </div>
                             ) : null}
@@ -729,7 +730,7 @@ const HotelBookingDetails = (props) => {
                             />
 
                             {images[1]?.caption ? (
-                              <div className="bg-text-smokywhite absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
+                              <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
                                 {images[1]?.caption}
                               </div>
                             ) : null}
@@ -767,7 +768,7 @@ const HotelBookingDetails = (props) => {
                             />
 
                             {images[2]?.caption ? (
-                              <div className="bg-text-smokywhite absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
+                              <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
                                 {images[2]?.caption}
                               </div>
                             ) : null}
@@ -808,7 +809,7 @@ const HotelBookingDetails = (props) => {
                             />
 
                             {images[0]?.caption ? (
-                              <div className="bg-text-smokywhite absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
+                              <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
                                 {images[0]?.caption}
                               </div>
                             ) : null}
@@ -846,7 +847,7 @@ const HotelBookingDetails = (props) => {
                             />
 
                             {images[1]?.caption ? (
-                              <div className="bg-text-smokywhite absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
+                              <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
                                 {images[1]?.caption}
                               </div>
                             ) : null}
@@ -885,7 +886,7 @@ const HotelBookingDetails = (props) => {
                           />
 
                           {images[0]?.caption ? (
-                            <div className="bg-text-smokywhite absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
+                            <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
                               {images[0]?.caption}
                             </div>
                           ) : null}
@@ -948,7 +949,7 @@ const HotelBookingDetails = (props) => {
                               />
 
                               {images[0]?.caption ? (
-                                <div className="bg-text-smokywhite absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
+                                <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
                                   {images[0]?.caption}
                                 </div>
                               ) : null}
@@ -986,7 +987,7 @@ const HotelBookingDetails = (props) => {
                               />
 
                               {images[1]?.caption ? (
-                                <div className="bg-text-smokywhite absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
+                                <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
                                   {images[1]?.caption}
                                 </div>
                               ) : null}
@@ -1024,7 +1025,7 @@ const HotelBookingDetails = (props) => {
                               />
 
                               {images[2]?.caption ? (
-                                <div className="bg-text-smokywhite absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
+                                <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
                                   {images[2]?.caption}
                                 </div>
                               ) : null}
@@ -1065,7 +1066,7 @@ const HotelBookingDetails = (props) => {
                               />
 
                               {images[0]?.caption ? (
-                                <div className="bg-text-smokywhite absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
+                                <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
                                   {images[0]?.caption}
                                 </div>
                               ) : null}
@@ -1103,7 +1104,7 @@ const HotelBookingDetails = (props) => {
                               />
 
                               {images[1]?.caption ? (
-                                <div className="bg-text-smokywhite absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
+                                <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
                                   {images[1]?.caption}
                                 </div>
                               ) : null}
@@ -1144,7 +1145,7 @@ const HotelBookingDetails = (props) => {
                               />
 
                               {images[0]?.caption ? (
-                                <div className="bg-text-smokywhite absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
+                                <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
                                   {images[0]?.caption}
                                 </div>
                               ) : null}
@@ -1176,7 +1177,7 @@ const HotelBookingDetails = (props) => {
 
                 {/* Tabs Start  */}
                 <div className="flex flex-col">
-                  <div className="sticky top-0 z-10 bg-white border-b-sm border-solid border-text-disabled">
+                  <div className="sticky top-0 z-10 bg-[#fafaf5] border-b-sm border-solid border-[#ececec]">
                     <ScrollableMenuTabs
                       classStyle="w-100"
                       items={items}
@@ -1189,7 +1190,7 @@ const HotelBookingDetails = (props) => {
                       {data?.hotel_details?.description ? (
                         <div className="flex flex-col gap-1">
                           <div
-                            className="text-sm-xl font-400 leading-xl gl-dynamic-render-elements"
+                            className="text-sm-xl font-400 leading-xl gl-dynamic-render-elements text-[#445069]"
                             dangerouslySetInnerHTML={{
                               __html: data?.hotel_details?.description,
                             }}
@@ -1203,9 +1204,9 @@ const HotelBookingDetails = (props) => {
                           data?.hotel_details?.check_out?.date ? (
                           <div className="flex justify-between w-[80%] mt-lg">
                             <div>
-                              <div className="text-sm-xl font-600 leading-xl mb-xxs-md">Check In</div>
+                              <div className="text-sm-xl font-600 leading-xl mb-xxs-md text-[#0b1220]">Check In</div>
 
-                              <div className="text-sm-md font-400 leading-xl"> {dateFormat(data?.hotel_details?.check_in.date)}
+                              <div className="text-sm-md font-400 leading-xl text-[#445069]"> {dateFormat(data?.hotel_details?.check_in.date)}
                                 {data?.hotel_details?.check_in.begin_time && (
                                   <>
                                     |
@@ -1218,9 +1219,9 @@ const HotelBookingDetails = (props) => {
                             </div>
 
                             <div>
-                              <div className="text-sm-xl font-600 leading-xl mb-xxs-md">Check Out </div>
+                              <div className="text-sm-xl font-600 leading-xl mb-xxs-md text-[#0b1220]">Check Out </div>
 
-                              <div className="text-sm-md font-400 leading-xl ">
+                              <div className="text-sm-md font-400 leading-xl text-[#445069]">
                                 {dateFormat(data?.hotel_details?.check_out.date)}
                                 {data?.hotel_details?.check_out.time && (
                                   <>
@@ -1234,8 +1235,8 @@ const HotelBookingDetails = (props) => {
                             </div>
 
                             <div>
-                              <div className="text-sm-xl font-600 leading-xl mb-xxs-md">Guests </div>
-                              <div className="text-sm-md font-400 leading-xl">
+                              <div className="text-sm-xl font-600 leading-xl mb-xxs-md text-[#0b1220]">Guests </div>
+                              <div className="text-sm-md font-400 leading-xl text-[#445069]">
                                 {data?.number_of_adults} Adults {data?.number_of_children > 0 && <> {data.number_of_children} Children </>}
                               </div>
                             </div>
@@ -1249,11 +1250,11 @@ const HotelBookingDetails = (props) => {
                       {data?.hotel_details?.check_in?.instructions?.length > 0 &&
                         <>
                           <div className="mt-lg">
-                            <div className="text-sm-xl font-600 leading-xl mb-xxs-md">Check In Instructions</div>
+                            <div className="text-sm-xl font-600 leading-xl mb-xxs-md text-[#0b1220]">Check In Instructions</div>
                             <div className="flex flex-col gap-1">
                               {data?.hotel_details?.check_in?.instructions.map((item, index) => (
                                 <div key={index}
-                                  className="text-sm-xl font-400 leading-xl gl-dynamic-render-elements"
+                                  className="text-sm-xl font-400 leading-xl gl-dynamic-render-elements text-[#445069]"
                                   dangerouslySetInnerHTML={{
                                     __html: item,
                                   }}
@@ -1265,23 +1266,23 @@ const HotelBookingDetails = (props) => {
 
                       {data?.hotel_details?.facilities?.length > 0 && <>
                         <div>
-                          <hr className="my-lg" />
-                          <div className="text-md-lg font-600 leading-xl mb-lg">Hotel Amenities</div>
+                          <hr className="my-lg border-[#ececec]" />
+                          <div className="text-md-lg font-600 leading-xl mb-lg text-[#0b1220]">Hotel Amenities</div>
                           <ul className="grid grid-cols-3 gap-y-2 gap-x-4 !pl-md">
                             {activeFacilities.length > 0 && activeFacilities.map((item, index) => (
                               <>
-                                <li className="text-sm-md font-400 leading-xl list-disc" key={index}>
+                                <li className="text-sm-md font-400 leading-xl list-disc text-[#445069]" key={index}>
                                   {item}
                                 </li>
                               </>
                             ))}
                           </ul>
-                          {!viewMoreFacilites && <div className="text-sm underline font-500 leading-lg cursor-pointer" onClick={() => calculateVisibleFacilites(data?.hotel_details?.facilities || [], true)}> + {data?.hotel_details?.facilities?.length - activeFacilities?.length}  more</div>}
-                          {viewMoreFacilites && <div className="text-sm underline font-500 leading-lg cursor-pointer" onClick={() => calculateVisibleFacilites(data?.hotel_details?.facilities || [], false)}> Show Less</div>}
+                          {!viewMoreFacilites && <div className="text-sm underline font-500 leading-lg cursor-pointer text-[#0b1220]" onClick={() => calculateVisibleFacilites(data?.hotel_details?.facilities || [], true)}> + {data?.hotel_details?.facilities?.length - activeFacilities?.length}  more</div>}
+                          {viewMoreFacilites && <div className="text-sm underline font-500 leading-lg cursor-pointer text-[#0b1220]" onClick={() => calculateVisibleFacilites(data?.hotel_details?.facilities || [], false)}> Show Less</div>}
                         </div>
                       </>}
 
-                      <hr className="my-lg" />
+                      <hr className="my-lg border-[#ececec]" />
                     </div>
 
                     <div id="section-2">
@@ -1289,7 +1290,7 @@ const HotelBookingDetails = (props) => {
 
                       {data?.hotel_details?.rates && (
                         <>
-                          <div className="text-md-lg font-600 leading-xl mb-lg">Selected Rooms</div>
+                          <div className="text-md-lg font-600 leading-xl mb-lg text-[#0b1220]">Selected Rooms</div>
                           <Rooms
                             data={data?.hotel_details?.rates}
                             checkInDate={data?.check_in?.split(" ")[0]}
@@ -1301,21 +1302,21 @@ const HotelBookingDetails = (props) => {
                         </>
                       )}
 
-                      <hr className="my-lg" />
+                      <hr className="my-lg border-[#ececec]" />
                     </div>
 
                     <div id="section-3">
 
                       {data?.rating > 0 && (
                         <div>
-                          <div className="text-md-lg font-600 leading-xl mb-lg">Reviews</div>
+                          <div className="text-md-lg font-600 leading-xl mb-lg text-[#0b1220]">Reviews</div>
                           <div className="grid grid-cols-3 gap-y-2 gap-x-4">
                             <div className="flex flex-row gap-sm-md">
-                              <div className="text-2xl-md font-600 leading-2xl"> {data?.rating}</div>
+                              <div className="text-2xl-md font-600 leading-2xl text-[#0b1220]"> {data?.rating}</div>
                               <div>
                                 {data?.rating && (
-                                  <div className="gap-1 flex flex-column text-sm-md text-text-spacegrey font-[400]">
-                                    <div className="flex flex-row text-[#FFD201]">
+                                  <div className="gap-1 flex flex-column text-sm-md text-[#445069] font-[400]">
+                                    <div className="flex flex-row text-[#f7e700]">
                                       {starRating(data?.rating)}
                                     </div>
                                     {data?.hotel_details?.user_ratings_total > 0 || data?.user_ratings_total > 0 && (
@@ -1330,7 +1331,7 @@ const HotelBookingDetails = (props) => {
                             <div>
 
                               {data?.hotel_details?.category_ratings && data?.hotel_details?.category_ratings?.length > 0 && <>
-                                <div className="text-sm-xl font-500 leading-xl mb-sm-md">Rating Categories</div>
+                                <div className="text-sm-xl font-500 leading-xl mb-sm-md text-[#0b1220]">Rating Categories</div>
                                 <table className="w-100">
                                   <tbody>
                                     {data?.hotel_details?.category_ratings.map(
@@ -1338,7 +1339,7 @@ const HotelBookingDetails = (props) => {
                                         <tr>
                                           {item?.category != "recommendation_percent" && (
                                             <>
-                                              <td className="text-sm-md font-400 ">
+                                              <td className="text-sm-md font-400 text-[#445069]">
                                                 {item?.category?.slice(0, 1).toUpperCase() +
                                                   item?.category?.slice(
                                                     1,
@@ -1347,10 +1348,10 @@ const HotelBookingDetails = (props) => {
                                               </td>
                                               <td colSpan={5}></td>
                                               <td className="flex items-center gap-1 ">
-                                                <div className="flex text-[#FFD201]">
+                                                <div className="flex text-[#f7e700]">
                                                   {getStars(item?.rating)}
                                                 </div>
-                                                <span className="text-sm-md font-400"> {item?.rating} </span>
+                                                <span className="text-sm-md font-400 text-[#445069]"> {item?.rating} </span>
                                               </td>
                                             </>
                                           )}
@@ -1366,18 +1367,18 @@ const HotelBookingDetails = (props) => {
                         </div>
                       )}
 
-                      <hr className="my-lg" />
+                      <hr className="my-lg border-[#ececec]" />
                     </div>
 
                     <div id="section-4" className="mb-lg">
                       {data?.hotel_details?.google_maps_link ? (
                         <div>
-                          <div className="text-md-lg font-600 leading-xl mb-lg">Location</div>
+                          <div className="text-md-lg font-600 leading-xl mb-lg text-[#0b1220]">Location</div>
                           <div className="flex gap-2">
                             <div>
                               {svgIcons.loaction}
                             </div>
-                            <div className="text-sm-md text-text-spacegrey font-[400] mb-sm">
+                            <div className="text-sm-md text-[#445069] font-[400] mb-sm">
                               {[
                                 data?.hotel_details?.addr1,
                                 data?.hotel_details?.addr2,
@@ -1404,7 +1405,7 @@ const HotelBookingDetails = (props) => {
                             <a
                               href={data?.hotel_details?.google_maps_link}
                               target="_blank"
-                              style={{ color: "black", fontSize: "14px" }}
+                              style={{ color: "#0b1220", fontSize: "14px" }}
                             >
                               View on Google Maps
                             </a>
@@ -1413,12 +1414,12 @@ const HotelBookingDetails = (props) => {
                       ) : data?.hotel_details?.coordinates?.latitude &&
                         data?.hotel_details?.coordinates?.longitude ? (
                         <div>
-                          <div className="text-md-lg font-600 leading-xl mb-lg">Location</div>
+                          <div className="text-md-lg font-600 leading-xl mb-lg text-[#0b1220]">Location</div>
                           <div className="flex gap-2">
                             <div>
                               {svgIcons.loaction}
                             </div>
-                            <div className="text-sm-md text-text-spacegrey font-[400] mb-sm">
+                            <div className="text-sm-md text-[#445069] font-[400] mb-sm">
                               {[
                                 data?.hotel_details?.addr1,
                                 data?.hotel_details?.addr2,
@@ -1444,7 +1445,7 @@ const HotelBookingDetails = (props) => {
                                   },${data?.hotel_details?.coordinates?.longitude
                                   }+(${data?.hotel_details?.name?.split(" ").join("+")})`}
                                 target="_blank"
-                                className="tex-sm-md text-blue"
+                                className="tex-sm-md text-[#0b1220]"
                               >
                                 View on Google Maps
                               </a>

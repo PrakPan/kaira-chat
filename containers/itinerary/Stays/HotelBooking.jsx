@@ -185,7 +185,7 @@ const HotelBooking = ({
           booking_id: booking.id,
           city_id: booking.city_id,
         },
-      }, undefined, { scroll: false });
+      }, undefined, { scroll: false, shallow: true });
       handleBookedHotelViewDetails(index, booking.id, booking, booking.city_id);
     });
 
@@ -229,7 +229,7 @@ const HotelBooking = ({
           city_id: booking.city_id,
           city_name: stayBookings[index]["city_name"],
         },
-      }, undefined, { scroll: false });
+      }, undefined, { scroll: false, shallow: true });
 
       handleClickAc(index, booking, booking.city_id, clickType);
     });
@@ -396,6 +396,7 @@ const HotelBooking = ({
       undefined,
       {
         scroll: false,
+        shallow: true,
       }
     );
   }

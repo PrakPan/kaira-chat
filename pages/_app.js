@@ -5,6 +5,7 @@ import "../styles/globals.css";
 import { store } from "../store/store";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "overlayscrollbars/overlayscrollbars.css";
+import "../containers/itinerary/typography.css";
 import { useRouter } from "next/router";
 import * as ga from "../services/ga/Index";
 import { FACEBOOK_PIXEL_ID, GOOGLE_CLIENT_ID } from "../services/constants";
@@ -15,6 +16,8 @@ import Script from "next/script";
 import { useDispatch, useSelector } from "react-redux";
 import { authLogout } from "../store/actions/auth";
 import { cleanExpiredLocalStorage } from "../services/localStorageUtils";
+import { bootstrapUserLocation } from "../services/userLocationBootstrap";
+import { changeUserLocation } from "../store/actions/userLocation";
 import { usePathname } from "next/navigation";
 import BotApp from "../components/bot-components/BotApp";
 import JupyterAnalytics from "../components/JupyterAnalytics";
@@ -67,6 +70,12 @@ function MyApp({ Component, pageProps }) {
   useEffect(() => {
     cleanExpiredLocalStorage();
   }, []);
+
+  // Resolve + cache the visitor's location app-wide (3-day cache, Delhi
+  // fallback) so the location field never hangs on "Getting your location…".
+  useEffect(() => {
+    bootstrapUserLocation((loc) => dispatch(changeUserLocation({ location: loc })));
+  }, [dispatch]);
 
   // Token expiry watcher
   useEffect(() => {

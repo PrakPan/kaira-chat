@@ -56,7 +56,7 @@ const HowItWorksSlideshow = (props) => {
       params: {
         page: props.page ? props.page : "Home Page",
         event_category: "Button Click",
-        event_label: "Plan Itinerary For Free",
+        event_label: "Chat with Kaira",
         event_action: "How it works?",
       },
     });
@@ -210,7 +210,7 @@ const HowItWorksSlideshow = (props) => {
           padding="0.5rem 2rem"
           borderWidth="1px"
         >
-          {"Plan Itinerary For Free"}
+          {"Chat with Kaira"}
         </Button>
       ) : null}
     </div>

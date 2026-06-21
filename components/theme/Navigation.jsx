@@ -5,7 +5,7 @@ import media from "../media";
 import openTailoredModal from "../../services/openTailoredModal";
 import TailoredFormMobileModal from "../modals/TailoredFomrMobile";
 import Destination1Carousel from "./Destination1Carousel";
-import Itinerary2Carousel from "./Itinerary2Carousel";
+import ItineraryCardV2 from "../revamp/destination/ItineraryCardV2";
 import Activity1Carousel from "./Activity1Carousel";
 import Reviews1Carousel from "./Reviews1Carousel";
 import PrimaryHeading from "../heading/PrimaryHeading";
@@ -112,9 +112,11 @@ const NavigationMenu = ({ navItems, activeTab, setActiveTab, slug }) => {
             <div
               key={tab.heading}
               onClick={() => handleClick(index)}
-              className={`text-nowrap cursor-pointer border-1 rounded-full px-3 md:px-5 py-2 md:py-3 font-semibold text-[15px] text-[#7C7C7C] ${
-                activeTab == index ? "border-black bg-[#F7E700] text-black" : ""
-              }  ${slug === "perfect-proposals-2025" ? "mx-auto" : ""}`}
+              className={`text-nowrap cursor-pointer border rounded-full px-3 md:px-5 py-2 md:py-3 font-medium text-[15px] transition-colors ${
+                activeTab == index
+                  ? "bg-[#0d0d0d] text-white border-[#0d0d0d]"
+                  : "bg-white text-[#7C7C7C] border-[#e5e7eb] hover:border-[#0d0d0d]"
+              } ${slug === "perfect-proposals-2025" ? "mx-auto" : ""}`}
             >
               {tab.heading}
             </div>
@@ -139,11 +141,11 @@ const NavigationMenu = ({ navItems, activeTab, setActiveTab, slug }) => {
               <div
                 key={tab.heading}
                 onClick={() => handleClick(index)}
-                className={`text-nowrap cursor-pointer border-1 rounded-full px-3 md:px-5 py-2 md:py-3 font-semibold text-[15px] text-[#7C7C7C] ${
+                className={`text-nowrap cursor-pointer border rounded-full px-3 md:px-5 py-2 md:py-3 font-medium text-[15px] transition-colors ${
                   activeTab == index
-                    ? "border-black bg-[#F7E700] text-black"
-                    : ""
-                } ${slug === "perfect-proposals-2025" ? "mx-auto" : ""} `}
+                    ? "bg-[#0d0d0d] text-white border-[#0d0d0d]"
+                    : "bg-white text-[#7C7C7C] border-[#e5e7eb] hover:border-[#0d0d0d]"
+                } ${slug === "perfect-proposals-2025" ? "mx-auto" : ""}`}
               >
                 {tab.heading}
               </div>
@@ -162,11 +164,7 @@ const NavigationMenu = ({ navItems, activeTab, setActiveTab, slug }) => {
                   <div
                     key={tab.heading}
                     onClick={() => handleClick(index)}
-                    className={`text-nowrap cursor-pointer border-1 rounded-full px-3 md:px-5 py-2 md:py-3 font-semibold text-[15px] text-[#7C7C7C] ${
-                      activeTab == index
-                        ? "border-black bg-[#F7E700] text-black"
-                        : ""
-                    }`}
+                    className="text-nowrap cursor-pointer border rounded-full px-3 md:px-5 py-2 md:py-3 font-medium text-[15px] transition-colors bg-[#0d0d0d] text-white border-[#0d0d0d]"
                   >
                     {tab.heading}
                   </div>
@@ -194,11 +192,20 @@ const ComponentDisplay = ({ component, handlePlanButton, setDestination, slug}) 
     ) : component.carousel === "destination-2" ? (
       <></>
     ) : component.carousel === "itinerary-1" ? (
-      <> <Itinerary1Carousel
-                                itineraries={component.itineraries}
-                              /></>
+
+      <>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+        {component.itineraries.map((el, i) => (
+          <ItineraryCardV2 key={el.id ?? el.page_id ?? i} itinerary={el} />
+        ))}
+      </div>
+      </>
     ) : component.carousel === "itinerary-2" ? (
-      <Itinerary2Carousel elements={component.elements} />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+        {component.elements.map((el, i) => (
+          <ItineraryCardV2 key={el.id ?? el.page_id ?? i} itinerary={el} />
+        ))}
+      </div>
     ) : component.carousel === "activity-1" ? (
       <Activity1Carousel activities={component.activities} />
     ) : component.carousel === "review-1" ? (

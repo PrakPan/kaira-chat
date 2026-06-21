@@ -258,6 +258,7 @@ const AccommodationDetailDrawer = ({
         show={show}
         anchor="right"
         backdrop
+        bgColor="#fafaf5"
         className="font-lexend"
         onHide={onHide}
         style={{ zIndex: 1252 }}

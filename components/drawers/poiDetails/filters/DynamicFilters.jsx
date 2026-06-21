@@ -45,14 +45,14 @@ export default function DyamicFilters(props) {
       {props?.showFilter && (
         <>
           {props?.elementType === "Activity" ? (
-            <div className="sm:w-[452px]  flex flex-col gap-3 justify-between items-start mx-auto">
+            <div className="sm:w-[452px] flex flex-col gap-3 justify-between items-start mx-auto">
               <div className="flex flex-col gap-3 justify-between w-[95%] mx-auto mt-4">
-                <div className="border-b border-b-[#CAC3C3] flex justify-between items-center">
-                  <div className="text-[20px] font-normal line-clamp-1 font-semibold">
+                <div className="border-b border-b-[#ececec] flex justify-between items-center">
+                  <div className="ttw-type-h3 font-normal line-clamp-1 font-semibold text-[#0b1220]">
                     Filters
                   </div>
                   <div
-                    className="!text-blue-500 cursor-pointer underline"
+                    className="!text-[#0b1220] cursor-pointer underline"
                     onClick={() => {
                       setSelectedRating([]);
                       setRecommended(false);
@@ -109,7 +109,7 @@ export default function DyamicFilters(props) {
                   className="w-1/2 "
                   onClick={() => props.setshowFilter(false)}
                 >
-                  <div className="text-[#01202B] ">Cancel</div>
+                  <div className="text-[#0b1220] ">Cancel</div>
                 </ButtonYellow>
                 <ButtonYellow className="w-1/2 " onClick={handleApply}>
                   <div id="apply-button">Apply</div>
@@ -117,14 +117,14 @@ export default function DyamicFilters(props) {
               </div>
             </div>
           ) : (
-            <div className="sm:w-[452px]  flex flex-col gap-3 justify-between items-start mx-auto">
+            <div className="sm:w-[452px] flex flex-col gap-3 justify-between items-start mx-auto">
               <div className="flex flex-col gap-3 justify-between w-[95%] mx-auto mt-4">
-                <div className="border-b border-b-[#CAC3C3] flex justify-between items-center">
-                  <div className="text-[20px] font-normal line-clamp-1 font-semibold">
+                <div className="border-b border-b-[#ececec] flex justify-between items-center">
+                  <div className="ttw-type-h3 font-normal line-clamp-1 font-semibold text-[#0b1220]">
                     Filters
                   </div>
                   <div
-                    className="!text-blue-500 cursor-pointer underline"
+                    className="!text-[#0b1220] cursor-pointer underline"
                     onClick={() => {
                       setSelectedRating([]);
                       setRecommended(false);
@@ -151,7 +151,7 @@ export default function DyamicFilters(props) {
                   className="w-1/2 "
                   onClick={() => props.setshowFilter(false)}
                 >
-                  <div className="text-[#01202B] ">Cancel</div>
+                  <div className="text-[#0b1220] ">Cancel</div>
                 </ButtonYellow>
                 <ButtonYellow className="w-1/2 " onClick={handleApply}>
                   <div id="apply-button">Apply</div>

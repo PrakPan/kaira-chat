@@ -7,7 +7,7 @@ const Container = styled.div`
   display: grid;
   grid-template-columns: 7.5rem auto;
   border-style: none none solid none;
-  border-color: rgba(238, 238, 238, 1);
+  border-color: #ececec;
   border-width: 1px;
   @media screen and (min-width: 768px) {
     grid-template-columns: 8.5rem auto;
@@ -22,7 +22,7 @@ const Section = (props) => {
           className="center-dv"
           style={{
             padding: "0.75rem 0.5rem",
-            borderColor: "rgba(238, 238, 238, 1)",
+            borderColor: "#ececec",
             borderWidth: "1px",
             borderStyle: "none solid none none",
           }}
@@ -38,6 +38,7 @@ const Section = (props) => {
               margin: "0 0rem 0.25rem 0rem",
               fontSize: "15px",
               fontWeight: "700",
+              color: "#0b1220",
             }}
             className=" text-center"
           >

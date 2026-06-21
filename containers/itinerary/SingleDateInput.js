@@ -5,7 +5,6 @@ import { BiCalendarAlt } from "react-icons/bi";
 import moment from "moment";
 import styled from "styled-components";
 import { SingleDatePicker } from "react-dates";
-import media from "../../components/media";
 
 const Container = styled.div`
   position: relative;
@@ -29,6 +28,8 @@ const Container = styled.div`
     font-family: poppins;
     font-weight: 400;
     font-size: 1rem;
+    /* Leave room for the calendar icon so the date text never runs under it. */
+    padding-right: 2.25rem;
   }
 
    .SingleDatePicker_picker,
@@ -87,8 +88,9 @@ const CalenderIcon = styled.div`
   display: flex;
   align-items: center;
   pointer-events: none;
-  color: #aaa;
-  z-index: 0;
+  /* Match the blue calendar icon used in the field label. */
+  color: grey;
+  z-index: 1;
 `;
 
 const SingleDateInput = ({
@@ -99,7 +101,6 @@ const SingleDateInput = ({
   onFocus,
 }) => {
   const [focused, setFocused] = useState(false);
-  let isPageWide = media("(min-width: 768px)");
 
    const handleFocusChange = ({ focused }) => {
     setFocused(focused);
@@ -129,9 +130,9 @@ const SingleDateInput = ({
         noBorder
         small
       />
-      {isPageWide && <CalenderIcon>
+      <CalenderIcon>
         <BiCalendarAlt size={20} />
-      </CalenderIcon>}
+      </CalenderIcon>
     </Container>
   );
 };

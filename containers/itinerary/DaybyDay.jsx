@@ -126,6 +126,7 @@ const DaybyDay = ({
       undefined,
       {
         scroll: false,
+        shallow: true,
       }
     );
     data.clickType = clickType;

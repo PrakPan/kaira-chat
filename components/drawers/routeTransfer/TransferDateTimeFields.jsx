@@ -64,24 +64,24 @@ const TransferDateTimeFields = ({
             Departure Time
           </div>
           <div
-            className={`flex items-center gap-2 px-3 h-[46.4px] w-full min-w-0 rounded-[10px] border bg-[#07213A0D] transition-colors ${
-              showTimeDropdown ? "border-[#07213A]" : "border-[#07213A26]"
+            className={`flex items-center gap-2 px-3 h-[46.4px] w-full min-w-0 rounded-[10px] border bg-[#f4f3ec] transition-colors ${
+              showTimeDropdown ? "border-[#0b1220]" : "border-[#ececec]"
             } ${
               disabled
                 ? "opacity-50 cursor-not-allowed"
-                : "cursor-pointer hover:bg-[#07213A14] hover:border-[#07213A40]"
+                : "cursor-pointer hover:bg-[#ececec] hover:border-[#ececec]"
             }`}
             onClick={(e) => {
               e.stopPropagation();
               if (!disabled) setShowTimeDropdown((prev) => !prev);
             }}
           >
-            <FaRegClock className="shrink-0 text-[#07213A]" size={16} />
-            <span className="Body2M_14 flex-1 truncate text-[#07213A]">
+            <FaRegClock className="shrink-0 text-[#0b1220]" size={16} />
+            <span className="Body2M_14 flex-1 truncate text-[#0b1220]">
               {formatTimeForDisplay(departureTime)}
             </span>
             <FaChevronDown
-              className={`shrink-0 text-[#07213A] transition-transform ${
+              className={`shrink-0 text-[#0b1220] transition-transform ${
                 showTimeDropdown ? "rotate-180" : ""
               }`}
               size={14}
@@ -89,14 +89,14 @@ const TransferDateTimeFields = ({
           </div>
 
           {showTimeDropdown && !disabled && (
-            <div className="absolute right-0 z-[100] mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+            <div className="absolute right-0 z-[100] mt-2 w-48 bg-[#fafaf5] border border-[#ececec] rounded-lg shadow-lg max-h-60 overflow-y-auto">
               {timeOptions.map((time, index) => (
                 <div
                   key={index}
-                  className={`px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm ${
+                  className={`px-4 py-2 hover:bg-[#f4f3ec] cursor-pointer text-sm ${
                     time.value === departureTime
-                      ? "bg-gray-100 font-medium text-[#212529]"
-                      : "text-gray-700"
+                      ? "bg-[#f4f3ec] font-medium text-[#0b1220]"
+                      : "text-[#445069]"
                   }`}
                   onClick={() => onTimeSelect(time)}
                 >

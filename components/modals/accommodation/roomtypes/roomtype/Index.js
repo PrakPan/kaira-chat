@@ -52,7 +52,7 @@ const RoomType = (props) => {
   return (
     <>
       {props.rooms.map((room, index) => (
-        <div key={index} className="flex flex-col gap-3 rounded-3xl border-sm border-solid border-text-disabled p-md hover:bg-text-smoothwhite cursor-pointer">
+        <div key={index} className="flex flex-col gap-3 rounded-3xl border-sm border-solid border-[#ececec] p-md hover:bg-[#faf9f4] cursor-pointer">
           <div className="relative flex lg:flex-row w-full flex-col gap-4">
             {room?.images?.length > 0 && (
               <div className="relative lg:h-[12rem] lg:w-[45%] w-full  h-[12rem]">
@@ -62,7 +62,7 @@ const RoomType = (props) => {
 
             <div className="w-full">
               {room.name ? (
-                <div className="text-md-lg leading-xl-sm font-600 mb-0">
+                <div className="text-md-lg leading-xl-sm font-600 mb-0 text-[#0b1220]">
                   {room.name}{" "} <span> X 1 Room </span>
                 </div>
               ) : null}
@@ -107,7 +107,7 @@ const RoomType = (props) => {
 
             <div>
               <div className="flex flex-col justify-between h-100 max-ph:flex-row">
-                <div className="text-blue whitespace-nowrap">
+                <div className="text-[#0b1220] whitespace-nowrap">
                   {openRooms[index] ? (
                     <div
                       className="w-fit flex flex-row items-center gap-1  p-1 rounded-lg cursor-pointer"
@@ -150,7 +150,7 @@ const RoomType = (props) => {
 
               {room?.facilities?.length > 0 ? (
                 <div className="flex flex-col gap-2">
-                  <div className="text-md-lg font-600 leading-xl mb-lg">Room Amenities</div>
+                  <div className="text-md-lg font-600 leading-xl mb-lg text-[#0b1220]">Room Amenities</div>
                   <div className="text-[14px]">
                     <ul className="grid grid-cols-3 gap-y-2 gap-x-4 !pl-md">
                       {room.facilities.map((item, index) => (

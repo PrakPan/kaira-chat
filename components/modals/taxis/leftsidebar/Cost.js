@@ -26,6 +26,15 @@ export default function ContinuousSlider() {
         defaultValue={30}
         aria-label="Disabled slider"
         size="small"
+        sx={{
+          color: "#0b1220",
+          "& .MuiSlider-rail": { backgroundColor: "#ececec", opacity: 1 },
+          "& .MuiSlider-markLabel": {
+            fontFamily:
+              "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+            color: "#0b1220",
+          },
+        }}
       />
     </Container>
   );

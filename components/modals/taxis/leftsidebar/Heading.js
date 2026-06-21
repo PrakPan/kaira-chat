@@ -6,6 +6,7 @@ const Heading = styled.p`
   margin: 0 0 0.5rem 0;
   font-size: 0.9rem;
   letter-spacing: 1px;
+  color: #0b1220;
 `;
 
 export default function CheckboxLabels(props) {

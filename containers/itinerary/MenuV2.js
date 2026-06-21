@@ -1149,7 +1149,7 @@ Start Location: ${details.startLocation}`;
           <div className="fixed z-[9] bottom-[70px] max-sm:bottom-[97px] right-[10px] flex flex-col items-end gap-2">
             {/* Chat Banner */}
             {showChatBanner && !isPageWide && (
-              <div className="relative bg-[#F7E700] text-black px-4 py-2 rounded-[12px] shadow-lg max-w-[290px] animate-slideIn">
+              <div className="relative bg-[#F7E700] text-black px-1 py-2 rounded-[12px] shadow-lg max-w-[290px] animate-slideIn">
                 <button
                   onClick={() => {
                     setShowChatBanner(false);
@@ -1497,7 +1497,7 @@ props.fromChat ? (
                       query: {
                         drawer: "handleEditRoute",
                       },
-                    });
+                    }, undefined, { shallow: true });
                   }
                   _handleMenuTabsChange(label);
                 }}

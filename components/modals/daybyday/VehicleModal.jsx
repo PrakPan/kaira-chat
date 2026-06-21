@@ -108,7 +108,7 @@ const VehicleDetailModal = ({
 
   return (
     <>
-      <div className=" bg-gray-50 w-full h-full flex flex-col">
+      <div className=" bg-[#f4f3ec] w-full h-full flex flex-col">
         {!isEmbedded && (
           <div className="p-4 flex items-center">
             <BackArrow handleClick={handleClose} />
@@ -118,9 +118,9 @@ const VehicleDetailModal = ({
           {!isEmbedded && (
             <div className="flex items-center px-4">
               {isPageWide && (
-                <div className="bg-blue-100 rounded-lg p-2 mr-3">
+                <div className="bg-[#eef2fb] rounded-lg p-2 mr-3">
                   {loading ? (
-                    <div className="w-20 h-12 bg-gray-300 opacity-50 rounded-lg"></div>
+                    <div className="w-20 h-12 bg-[#ececec] opacity-50 rounded-lg"></div>
                   ) : (
                     <TransfersIcon
                       TransportMode={booking_type || transfer_details?.mode}
@@ -134,9 +134,9 @@ const VehicleDetailModal = ({
                   )}
                 </div>
               )}
-              <span className=" md:text-xl font-semibold text-gray-800">
+              <span className=" md:text-xl font-semibold text-[#0b1220]">
                 {loading ? (
-                  <div className="w-32 h-5 bg-gray-300 opacity-50 rounded"></div>
+                  <div className="w-32 h-5 bg-[#ececec] opacity-50 rounded"></div>
                 ) : (
                   name
                 )}
@@ -146,7 +146,7 @@ const VehicleDetailModal = ({
           {!isEmbedded && (
             <div className=" flex justify-between items-start !m-0 p-4">
               {loading ? (
-                <div className="w-16 h-5 bg-gray-300 opacity-50 rounded"></div>
+                <div className="w-16 h-5 bg-[#ececec] opacity-50 rounded"></div>
               ) : (
                 <>
                   {/* <Text>{name}</Text> */}
@@ -170,9 +170,9 @@ const VehicleDetailModal = ({
 
         {/* Ticket Section Label */}
         <div className="px-4 pt-2 pb-2">
-          <h2 className="text-lg font-medium">
+          <h2 className="text-lg font-medium text-[#0b1220]">
             {loading ? (
-              <div className="w-24 h-5 bg-gray-300 opacity-50 rounded"></div>
+              <div className="w-24 h-5 bg-[#ececec] opacity-50 rounded"></div>
             ) : (
              ""
             )}
@@ -181,7 +181,7 @@ const VehicleDetailModal = ({
 
         {/* Scrollable Ticket Details */}
         <div className="flex-1 px-4">
-          <div className="bg-white p-6 rounded-2xl shadow-sm relative border border-gray-100">
+          <div className="bg-white p-6 rounded-2xl shadow-sm relative border border-[#ececec]">
             {/* Route Info */}
             <div className="flex justify-between">
               <div className="flex flex-col items-start">
@@ -189,19 +189,19 @@ const VehicleDetailModal = ({
                 <div>
                   {loading ? (
                     <>
-                      <div className="w-32 h-4 bg-gray-300 opacity-50 rounded mb-1"></div>
-                      <div className="w-20 h-3 bg-gray-300 opacity-50 rounded mb-1"></div>
-                      <div className="w-24 h-3 bg-gray-300 opacity-50 rounded"></div>
+                      <div className="w-32 h-4 bg-[#ececec] opacity-50 rounded mb-1"></div>
+                      <div className="w-20 h-3 bg-[#ececec] opacity-50 rounded mb-1"></div>
+                      <div className="w-24 h-3 bg-[#ececec] opacity-50 rounded"></div>
                     </>
                   ) : (
                     <>
-                      <p className="font-semibold text-md">
+                      <p className="font-semibold text-md text-[#0b1220]">
                         {transfer_details?.source?.city_name}
                       </p>
-                      <p className="text-black opacity-50 text-[12px]">
+                      <p className="text-[#445069] text-[12px]">
                         {depart?.time}
                       </p>
-                      <p className="text-black opacity-50 text-[12px]">
+                      <p className="text-[#445069] text-[12px]">
                         {depart?.date}
                       </p>
                     </>
@@ -210,9 +210,9 @@ const VehicleDetailModal = ({
               </div>
 
               <div className="flex flex-col items-center">
-                <span className="text-xs md:text-sm">
+                <span className="text-xs md:text-sm text-[#445069]">
                   {loading ? (
-                    <div className="w-4 md:w-12 h-3 bg-gray-300 opacity-50 rounded"></div>
+                    <div className="w-4 md:w-12 h-3 bg-[#ececec] opacity-50 rounded"></div>
                   ) : (
                     `
                     ${
@@ -222,7 +222,7 @@ const VehicleDetailModal = ({
                     `
                   )}
                 </span>
-                <div className="border-t border-dashed w-6 md:w-64"></div>
+                <div className="border-t border-dashed border-[#b8becc] w-6 md:w-64"></div>
               </div>
 
               <div className="flex flex-col items-end">
@@ -230,19 +230,19 @@ const VehicleDetailModal = ({
                 <div className="text-right">
                   {loading ? (
                     <>
-                      <div className="w-32 h-4 bg-gray-300 opacity-50 rounded mb-1"></div>
-                      <div className="w-20 h-3 bg-gray-300 opacity-50 rounded mb-1"></div>
-                      <div className="w-24 h-3 bg-gray-300 opacity-50 rounded"></div>
+                      <div className="w-32 h-4 bg-[#ececec] opacity-50 rounded mb-1"></div>
+                      <div className="w-20 h-3 bg-[#ececec] opacity-50 rounded mb-1"></div>
+                      <div className="w-24 h-3 bg-[#ececec] opacity-50 rounded"></div>
                     </>
                   ) : (
                     <>
-                      <p className="font-semibold text-md">
+                      <p className="font-semibold text-md text-[#0b1220]">
                         {transfer_details?.destination?.city_name}
                       </p>
-                      <p className="text-black opacity-50 text-[12px]">
+                      <p className="text-[#445069] text-[12px]">
                         {arrival?.time}
                       </p>
-                      <p className="text-black opacity-50 text-[12px]">
+                      <p className="text-[#445069] text-[12px]">
                         {arrival?.date}
                       </p>
                     </>
@@ -253,10 +253,10 @@ const VehicleDetailModal = ({
 
             {/* Transfer Details */}
            
-<div className="mt-8 pt-4 border-t border-gray-200">
-  <p className="text-gray-400 font-medium text-sm mb-4">
+<div className="mt-8 pt-4 border-t border-[#ececec]">
+  <p className="text-[#0b1220] font-medium text-sm mb-4">
     {loading ? (
-      <div className="w-24 h-4 bg-gray-300 opacity-50 rounded"></div>
+      <div className="w-24 h-4 bg-[#ececec] opacity-50 rounded"></div>
     ) : (
       "TRANSFER DETAILS"
     )}
@@ -266,27 +266,27 @@ const VehicleDetailModal = ({
     <div>
       {loading ? (
         <>
-          <div className="w-32 h-4 bg-gray-300 opacity-50 rounded mb-1"></div>
-          <div className="w-24 h-3 bg-gray-300 opacity-50 rounded"></div>
+          <div className="w-32 h-4 bg-[#ececec] opacity-50 rounded mb-1"></div>
+          <div className="w-24 h-3 bg-[#ececec] opacity-50 rounded"></div>
         </>
       ) : (
         <>
-          <p className="font-semibold text-md">
+          <p className="font-semibold text-md text-[#0b1220]">
             {number_of_adults} Adults, {number_of_children} Children
           </p>
-          <p className="text-gray-500 text-sm">Passengers</p>
+          <p className="text-[#445069] text-sm">Passengers</p>
         </>
       )}
-      
+
 
 
     </div>
     {!loading && (transfer_details?.prices?.[0]?.class || transfer_details?.results?.[0]?.prices?.[0]?.class_name) && (
       <div className="">
-        <p className="font-semibold text-md">
+        <p className="font-semibold text-md text-[#0b1220]">
           {transfer_details.prices[0].class || transfer_details.results?.[0]?.prices?.[0]?.class_name}
         </p>
-        <p className="text-gray-500 text-sm">Class</p>
+        <p className="text-[#445069] text-sm">Class</p>
       </div>
     )}
 
@@ -298,8 +298,8 @@ const VehicleDetailModal = ({
 
 {/* Journey Details - Only for Omio/12go with segments - MOVED TO NEW SECTION */}
 {!loading && transfer_details?.results?.[0]?.segments && transfer_details.results[0].segments.length > 0 && (
-  <div className="mt-6 pt-4 border-t border-gray-200">
-    <p className="text-gray-400 font-medium text-sm mb-4">
+  <div className="mt-6 pt-4 border-t border-[#ececec]">
+    <p className="text-[#0b1220] font-medium text-sm mb-4">
       JOURNEY DETAILS
     </p>
     
@@ -325,10 +325,10 @@ const VehicleDetailModal = ({
               <div className="flex flex-col items-end w-20 shrink-0">
                 {depTime && (
                   <>
-                    <span className="text-sm font-semibold leading-tight">
+                    <span className="text-sm font-semibold leading-tight text-[#0b1220]">
                       {depTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true })}
                     </span>
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-[#8a93a6]">
                       {depTime.toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                     </span>
                   </>
@@ -338,9 +338,9 @@ const VehicleDetailModal = ({
                 <div className="w-1.5 h-1.5 rounded-full bg-blue-500 ring-4 ring-black"></div>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-800 line-clamp-2" title={segment.departure_station?.name}>
+                <p className="text-sm font-medium text-[#1a2436] line-clamp-2" title={segment.departure_station?.name}>
                   {segment.departure_station?.name} <br />
-                  {segment.vehicle_number ? <span className="text-xs text-gray-500">
+                  {segment.vehicle_number ? <span className="text-xs text-[#8a93a6]">
                   {segment.vehicle_number}
                 </span> : null}
                 </p>
@@ -351,17 +351,17 @@ const VehicleDetailModal = ({
             {/* Journey Line with Operator */}
             <div className="flex items-start gap-3 ml-20 my-2">
               <div className="flex flex-col items-center shrink-0">
-                <div className="w-0.5 bg-gray-300" style={{ height: "40px" }}></div>
+                <div className="w-0.5 bg-[#b8becc]" style={{ height: "40px" }}></div>
               </div>
               <div className="pt-1 flex items-center gap-2 flex-wrap">
                 {segment.operator?.image && (
-                  <img 
-                    src={segment.operator.image} 
+                  <img
+                    src={segment.operator.image}
                     alt={segment.operator.name}
                     className="h-5 w-auto object-contain"
                   />
                 )}
-                <span className="text-xs font-medium text-gray-700">
+                <span className="text-xs font-medium text-[#445069]">
                   {segment.duration_formatted || `${Math.floor(segment.duration / 60)}h ${segment.duration % 60}m`}
                 </span>
               </div>
@@ -371,10 +371,10 @@ const VehicleDetailModal = ({
             {arrTime && (
               <div className="flex items-start gap-3">
                 <div className="flex flex-col items-end w-20 shrink-0">
-                  <span className="text-sm font-semibold leading-tight">
+                  <span className="text-sm font-semibold leading-tight text-[#0b1220]">
                     {arrTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true })}
                   </span>
-                  <span className="text-xs text-gray-500">
+                  <span className="text-xs text-[#8a93a6]">
                     {arrTime.toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                   </span>
                 </div>
@@ -382,7 +382,7 @@ const VehicleDetailModal = ({
                   <div className="w-1.5 h-1.5 rounded-full bg-blue-500 ring-4 ring-black"></div>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-800 line-clamp-2" title={segment.arrival_station?.name}>
+                  <p className="text-sm font-medium text-[#1a2436] line-clamp-2" title={segment.arrival_station?.name}>
                     {segment.arrival_station?.name}
                   </p>
                 </div>
@@ -393,7 +393,7 @@ const VehicleDetailModal = ({
             {!isLast && nextSegment && arrTime && (
               <div className="flex items-center gap-3 ml-20 my-3">
                 <div className="flex flex-col items-center shrink-0">
-                  <div className="w-0.5 h-4 bg-gray-200"></div>
+                  <div className="w-0.5 h-4 bg-[#ececec]"></div>
                 </div>
                 <div className="flex items-center gap-1.5 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-md text-xs font-medium text-amber-800">
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -424,7 +424,7 @@ const VehicleDetailModal = ({
           <>
             {" "}
             <div className="flex flex-col">
-              <div className="w-fit py-2 mb-2 text-lg font-bold">
+              <div className="w-fit py-2 mb-2 text-lg font-bold text-[#0b1220]">
                 Cancellation Policies
               </div>
 
@@ -432,7 +432,7 @@ const VehicleDetailModal = ({
                 dangerouslySetInnerHTML={{
                   __html: cancellation_policies,
                 }}
-                className="flex flex-col gap-1 text-sm ml-4"
+                className="flex flex-col gap-1 text-sm ml-4 text-[#445069]"
               ></div>
             </div>
           </>
@@ -450,7 +450,7 @@ const VehicleDetailModal = ({
         )} */}
         {/* Delete Booking Button (Fixed) */}
         {handleDelete && type != "combo" && (
-          <div className="p-4 bg-white">
+          <div className="p-4 bg-[#fafaf5]">
             <button
               className="w-full bg-red-500 text-white py-2 rounded-lg flex items-center justify-center"
               onClick={() => handleDelete(booking || data)}

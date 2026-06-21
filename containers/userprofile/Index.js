@@ -1,55 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { connect, useSelector } from "react-redux";
 import axiomyplansinstance from "../../services/sales/MyPlans";
-import styled from "styled-components";
 import CheckAuthRedirect from "../../components/HOC/CheckAuthRedirect";
 import Profile from "./Profile";
 import media from "../../components/media";
-import ImageLoader from "../../components/ImageLoader";
 import { useRouter } from "next/router";
-import openTailoredModal from "../../services/openTailoredModal";
-import ExperienceCard from "../../components/cards/newitinerarycard-main/ExperienceCard";
+import ItineraryCardV2 from "../../components/revamp/destination/ItineraryCardV2";
 import ExperienceCardSkeleton from "../../components/cards/newitinerarycard-main/ExperienceCardSkeleton";
-import Button from "../../components/ui/button/Index";
 import { logEvent } from "../../services/ga/Index";
-import H2 from "../../components/heading/H2";
-import { useSearchParams } from "next/navigation";
 import TailoredFormMobileModal from "../../components/modals/TailoredFomrMobile";
-
-const Container = styled.div`
-  width: 100%;
-  margin: 12vh auto;
-  overflow-x: hidden; 
-  max-width: 100vw;
-  @media screen and (min-width: 768px) {
-    width: 70%;
-    padding-top: 10vh;
-    margin: auto;
-  }
-`;
-
-const ContentContainer = styled.div`
-  border-radius: 5px;
-  padding: 0rem;
-  margin: auto;
-  @media screen and (min-width: 768px) {
-    padding: 0;
-    width: 85%;
-  }
-`;
-
-const NoPlans = styled.p`
-  font-weight: 300;
-  font-size: 1.25rem;
-  letter-spacing: 1px;
-  text-align: center;
-  margin: 0 0.5rem;
-  color: black;
-  @media screen and (min-width: 768px) {
-    margin: 0;
-    text-align: left;
-  }
-`;
+import styles from "../../styles/pages/revamp/destination.module.scss";
 
 const UserDashboard = (props) => {
   const [myPlansArr, setMyPlansArr] = useState([]);
@@ -57,11 +17,11 @@ const UserDashboard = (props) => {
   const [totalPlans, setTotalPlans] = useState(null);
   const [showMoreResults, setShowMoreResults] = useState(false);
   const [showMoreLoading, setShowMoreLoading] = useState(false);
-  const [showTailoredModal,setShowTailoredModal] = useState(false);
+  const [showTailoredModal, setShowTailoredModal] = useState(false);
   const [offSet, setOffSet] = useState(0);
   let isPageWide = media("(min-width: 768px)");
   let router = useRouter();
-  const currency = useSelector(state=>state.UserLocation)?.location;
+  const currency = useSelector((state) => state.UserLocation)?.location;
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -73,7 +33,7 @@ const UserDashboard = (props) => {
   const fetchData = (showMore = false) => {
     if (showMore) setShowMoreLoading(true);
     axiomyplansinstance
-      .get(`/?currency=${'INR'}&limit=9&offset=${offSet}`, {
+      .get(`/?currency=${"INR"}&limit=9&offset=${offSet}`, {
         headers: {
           Authorization: `Bearer ${props.token}`,
         },
@@ -109,9 +69,7 @@ const UserDashboard = (props) => {
   };
 
   const handleButtonClick = () => {
-    // openTailoredModal(router);
     setShowTailoredModal(true);
-
     logEvent({
       action: "Plan_Itinerary",
       params: {
@@ -123,154 +81,102 @@ const UserDashboard = (props) => {
     });
   };
 
+  // Single empty-state block — used for both desktop and mobile. The previous
+  // implementation duplicated the markup; consolidating it keeps copy &
+  // styling in sync and reduces drift.
+  const renderEmptyState = () => (
+    <div className={styles.dashboardEmpty}>
+      <img
+        src="/images/website/noplans.svg"
+        alt="No trips yet"
+        className={styles.dashboardEmptyImg}
+        onError={(e) => {
+          // Fallback to legacy CDN path if the local asset isn't present.
+          e.currentTarget.src =
+            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/noplans.svg";
+        }}
+      />
+      <h3 className={styles.dashboardEmptyTitle}>No trips planned yet</h3>
+      <p className={styles.dashboardEmptySubtitle}>
+        Tell us where you'd like to go and we'll craft a personalized itinerary
+        in minutes.
+      </p>
+      <button
+        type="button"
+        onClick={() => setShowTailoredModal(true)}
+        className={styles.dashboardPrimaryCta}
+      >
+        Start planning
+      </button>
+    </div>
+  );
+
   return (
     <CheckAuthRedirect
       authRedirectPath="/"
       redirectOnFail={() => router.push("/")}
     >
-      <Container className="">
-        {/* <ContentContainer className="bg-blue w-full"> */}
-        <Profile></Profile>
-        {/* </ContentContainer> */}
-      </Container>
+      {/* `destinationPage` scope brings in the --ttw-* design tokens that the
+          dashboard classes reference (ink, line, etc.). */}
+      <div className={`${styles.destinationPage} ${styles.dashboardPage}`}>
+        <Profile />
 
-      <ContentContainer className="w-full mb-5">
-        <div style={{ display: "flex" }} className="">
-          <H2
-            style={{
-              align: "left",
-              textAlign: "left",
-              aligndesktop: "left",
-              fontSize: isPageWide ? "32px" : "24px",
-              margin: !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem",
-            }}
-          >
-            {totalPlans ? `My Trips (${totalPlans})` : "My Trips"}
-          </H2>
-        </div>
+        <section className={styles.dashboardSection}>
+          <header className={styles.dashboardHeader}>
+            <h2 className={styles.dashboardTitle}>
+              My Trips
+              {totalPlans ? (
+                <span className={styles.dashboardCount}>({totalPlans})</span>
+              ) : null}
+            </h2>
+          </header>
 
-        {isPageWide && !myPlansArr.length && !loading ? (
-          <NoPlans className="">
-            You don't have any plans yet.{" "}
-            <a
-              onClick={() => setShowTailoredModal(true)}
-              style={{ color: "black", textDecoration: "none !important" }}
-            >
-              Start Planning
-            </a>
-          </NoPlans>
-        ) : null}
-
-        {!isPageWide && !myPlansArr.length && !loading ? (
-          <>
-            <NoPlans className="">
-              You don't have any plans yet.{" "}
-            </NoPlans>
-            <a
-              onClick={() => setShowTailoredModal(true)}
-              className="font-nunito"
-              style={{
-                color: "black",
-                fontWeight: "300",
-                display: "block",
-                margin: "0.5rem auto",
-                textDecoration: "none !important",
-                textAlign: "center",
-                fontSize: "1.25rem",
-                letterSpacing: "1px",
-              }}
-            >
-              Start Planning
-            </a>
-          </>
-        ) : null}
-
-        {loading ? (
-          <div className="grid grid-cols-1 justify-items-center lg:grid-cols-3 md:grid-cols-3 gap-4 px-3 md:px-0 lg:px-0">
-            <ExperienceCardSkeleton />
-            <ExperienceCardSkeleton />
-            <ExperienceCardSkeleton />
-          </div>
-        ) : myPlansArr.length ? (
-          <div className="flex flex-col items-center gap-3 mb-5">
-            <div className="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-3 gap-4 px-3 md:px-0 lg:px-0">
-              {myPlansArr.map((plan, i) => (
-                <ExperienceCard
-                  key={i}
-                  data={plan}
-                  myplan={props?.myplan}
-                  hardcoded={plan?.payment_info ? true : false}
-                  filter={
-                    plan?.experience_filters
-                      ? plan?.experience_filters?.length
-                        ? plan?.experience_filters[0]
-                        : null
-                      : null
-                  }
-                  rating={plan?.rating_count}
-                  slug={plan?.slug}
-                  id={plan?.id}
-                  budget={plan?.budget}
-                  group_type={plan?.group_type}
-                  number_of_adults={plan?.number_of_adults}
-                  text={plan?.short_text}
-                  experience={plan?.name}
-                  duration={
-                    plan?.duration
-                      ? plan.duration
-                      : plan?.duration_number && plan?.duration_unit
-                        ? plan.duration_number + " " + plan.duration_unit
-                        : null
-                  }
-                  location={plan["experience_region"]}
-                  starting_cost={
-                    plan?.payment_information
-                      ? plan?.payment_information?.per_person_discounted_cost
-                        ? plan?.payment_information?.per_person_discounted_cost
-                        : plan?.starting_price
-                      : plan?.starting_price
-                  }
-                  images={plan?.images}
-                  locations={plan?.itinerary_locations}
-                  page={"Dashboard Page"}
-                ></ExperienceCard>
-              ))}
+          {loading ? (
+            <div className={styles.dashboardGrid}>
+              <ExperienceCardSkeleton />
+              <ExperienceCardSkeleton />
+              <ExperienceCardSkeleton />
+              <ExperienceCardSkeleton />
             </div>
-            {showMoreResults && !showMoreLoading ? (
-              <button
-                onClick={handleShowMore}
-                className="border-1 border-black rounded-lg py-2 px-5 text-sm hover:text-white hover:bg-black transition ease-in-out duration-500"
-              >
-                Show More
-              </button>
-            ) : showMoreResults && showMoreLoading ? (
-              <div className="w-full grid grid-cols-1 justify-items-center lg:grid-cols-3 md:grid-cols-3 gap-4 px-3 md:px-0 lg:px-0">
-                <ExperienceCardSkeleton />
-                <ExperienceCardSkeleton />
-                <ExperienceCardSkeleton />
+          ) : myPlansArr.length ? (
+            <div className={styles.dashboardContent}>
+              <div className={styles.dashboardGrid}>
+                {myPlansArr.map((plan, i) => (
+                  <ItineraryCardV2
+                    key={plan?.id ?? i}
+                    itinerary={plan}
+                  />
+                ))}
               </div>
-            ) : (
-              <Button
-                onclick={handleButtonClick}
-                borderWidth="1px"
-                fontWeight="500"
-                borderRadius="6px"
-                margin="2rem auto"
-                padding="0.5rem 2rem"
-              >
-                Create your new travel plan now!
-              </Button>
-            )}
-          </div>
-        ) : (
-          <ImageLoader
-            width="40%"
-            widthmobile="40%"
-            margin="7.5vh auto"
-            url={"media/website/noplans.svg"}
-          ></ImageLoader>
-        )}
-      </ContentContainer>
+
+              {showMoreResults && !showMoreLoading ? (
+                <button
+                  type="button"
+                  onClick={handleShowMore}
+                  className={styles.dashboardShowMore}
+                >
+                  Show more
+                </button>
+              ) : showMoreResults && showMoreLoading ? (
+                <div className={styles.dashboardGrid}>
+                  <ExperienceCardSkeleton />
+                  <ExperienceCardSkeleton />
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleButtonClick}
+                  className={styles.dashboardPrimaryCta}
+                >
+                  Create your new travel plan now
+                </button>
+              )}
+            </div>
+          ) : (
+            renderEmptyState()
+          )}
+        </section>
+      </div>
 
       <TailoredFormMobileModal
         destinationType={"city-planner"}

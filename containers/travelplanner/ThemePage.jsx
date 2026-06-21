@@ -13,14 +13,12 @@ import ThemeFaqs from "../themes/ThemeFaqs.jsx";
 import Destination1Carousel from "../../components/theme/Destination1Carousel.jsx";
 import Activity1Carousel from "../../components/theme/Activity1Carousel.jsx";
 import Reviews1Carousel from "../../components/theme/Reviews1Carousel.jsx";
-import Itinerary2Carousel from "../../components/theme/Itinerary2Carousel.jsx";
 import PrimaryHeading from "../../components/heading/PrimaryHeading.jsx";
 import SecondaryHeading from "../../components/heading/Secondary.jsx";
 import Itinerary1Carousel from "../../components/theme/Itinerary1Carousel.jsx";
 import DesktopPersonaliseBanner from "../../components/containers/Banner";
 import MobileBanner from "../city/Banner/Mobile";
 import validateTextSize from "../../services/textSizeValidator";
-import SecondaryButton from "../../components/ui/SecondaryButton.jsx";
 import BannerTwo from "./BannerTwo.js";
 import Continentcarousel from "../../components/continentcarousel/continentcarousel.js";
 import WhyPlanWithUs from "../../components/WhyPlanWithUs/Index.js";
@@ -52,6 +50,14 @@ import JourneyType from "../../components/theme/journeyType.jsx";
 import OverviewThailand from "../themes/OverviewThailand.jsx";
 import HeroSection from "../../components/revamp/destination/HeroSection.jsx";
 import MostLovedItinerariesSection from "../../components/revamp/destination/MostLovedItinerariesSection.jsx";
+import ItineraryCardV2 from "../../components/revamp/destination/ItineraryCardV2.jsx";
+import ActivityCardV2 from "../../components/revamp/destination/ActivityCardV2.jsx";
+import CountryCardV2 from "../../components/revamp/destination/CountryCardV2.jsx";
+import HeroV2 from "../../components/revamp/destination/HeroV2.jsx";
+import DestinationStatsStrip from "../../components/revamp/destination/DestinationStatsStrip.jsx";
+import WhenToGoSection from "../../components/revamp/destination/WhenToGoSection.jsx";
+import PlanningSection from "../../components/revamp/destination/PlanningSection.jsx";
+import destinationStyles from "../../styles/pages/revamp/destination.module.scss";
 import CarouselNavigation from "../../components/theme/Navigation.jsx";
 import PartnersSection from "../../components/theme/PartnersSection.jsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -69,6 +75,9 @@ import {
 import TestimonialCarousel from "../../components/theme/TestimonialCarousel.jsx";
 import TravelVibeSection from "../../components/revamp/home/TravelVibeSection.jsx";
 import JourneySimplified from "../../components/revamp/home/JourneySimplified.jsx";
+import styles from "../../styles/pages/revamp/destination.module.scss"
+import OverviewEditorial from "../../components/revamp/destination/OverviewEditorial.jsx";
+import ChatWithKairaCta from "../../components/revamp/destination/ChatWithKairaCta.jsx";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -140,7 +149,7 @@ export default function ThemePage(props) {
   };
 
   return (
-    <div className="mb-5">
+    <div className={`mb-5 ${destinationStyles.destinationPage}`}>
       {/* {props?.slug === 'la-tomatina-spain-2025' && <ThemeHeadline text={`Join the World's Biggest Tomato Fight – La Tomatina 2025`} />} */}
       {/* {isPageWide ? (
         <DesktopPersonaliseBanner
@@ -170,46 +179,172 @@ export default function ThemePage(props) {
         />
       )} */}
 
-      {props?.slug === "ladakhh" ? (
-        <>
-          <HeroBannerLadakh
-            image={props.experienceData.image}
-            page_id={props.state?.id}
-            type={
-              props?.slug === "ladakh"
-                ? "state"
-                : props?.slug === "thailand"
-                  ? "country"
-                  : "country"
-            }
-            destination={convertDbNameToCapitalFirst(props.experienceData.slug)}
-            cities={props.experienceData.locations}
-            children_cities={props.experienceData.children}
-            title={props.experienceData.banner_heading}
-            subheading={props.experienceData.banner_text}
-            page={"State Page"}
-            eventDates={props.eventDates}
-            url={props?.experienceData?.image}
-            setShowTailoredModal={setShowTailoredModal}
-          />
-        </>
-      ) : (
-        // <ThemeBanner
-        //   image={props.experienceData.image}
-        //   page_id={props.experienceData.id}
-        //   destination={props.experienceData.destination}
-        //   cities={props.experienceData.locations}
-        //   children_cities={props.experienceData.children}
-        //   title={props.experienceData.banner_heading}
-        //   subheading={props.experienceData.banner_text}
-        //   page={"State Page"}
-        //   slug={props.slug}
-        // />
-        <HeroSection title={props.experienceData.banner_heading}
-          subtitle={props.experienceData.banner_text}
-          image={`${imgUrlEndPoint}${props.experienceData.image}`} slug={props?.slug} 
-          setShowTailoredModal={setShowTailoredModal}/>
-      )}
+      <HeroV2
+        destinationLabel={convertDbNameToCapitalFirst(
+          props.experienceData.slug || ""
+        )}
+        kicker={
+          props.experienceData?.locations?.length
+            ? `${props.experienceData.locations.length}+ ${convertDbNameToCapitalFirst(
+                props.experienceData.slug || ""
+              )} destinations curated`
+            : `Plan your ${convertDbNameToCapitalFirst(
+                props.experienceData.slug || ""
+              )} trip with Kaira`
+        }
+         title={
+          <>
+            {convertDbNameToCapitalFirst(
+                props.experienceData.slug || ""
+              )},{" "}
+            <span className={styles.serif}>however</span> you{" "}
+            <span className={styles.highlight}>want it.</span>
+          </>
+        }
+        description={props.experienceData.banner_text}
+        prompts={
+          props.data?.model_prompts?.length
+            ? props.data.model_prompts
+            : (props.experienceData?.locations || [])
+                .slice(0, 4)
+                .map((loc) => {
+                  const n = loc.display_name || loc.name || loc.title || "";
+                  return n ? `Plan ${n}` : null;
+                })
+                .filter(Boolean)
+        }
+        polaroids={(() => {
+          const fromLocations = (props.experienceData?.locations || [])
+            .slice(0, 4)
+            .map((loc) => ({
+              image: loc.image
+                ? loc.image.startsWith("http")
+                  ? loc.image
+                  : `${imgUrlEndPoint}${loc.image}`
+                : "",
+              caption: loc.display_name || loc.name || loc.title,
+            }))
+            .filter((p) => p.image);
+          if (fromLocations.length) return fromLocations;
+          if (props.experienceData?.image) {
+            return [
+              {
+                image: `${imgUrlEndPoint}${props.experienceData.image}`,
+                caption: convertDbNameToCapitalFirst(
+                  props.experienceData.slug || ""
+                ),
+              },
+            ];
+          }
+          return [];
+        })()}
+        activities={(() => {
+          const normalize = (img) =>
+            img ? (img.startsWith("http") ? img : `${imgUrlEndPoint}${img}`) : "";
+          const direct = (props.experienceData?.activities || []).map((a) => ({
+            image: normalize(a?.image),
+          }));
+          const fromComponents = (props.experienceData?.components || [])
+            .flatMap((c) => c?.activities || [])
+            .map((a) => ({ image: normalize(a?.image) }));
+          return [...direct, ...fromComponents].filter((p) => p.image);
+        })()}
+        pois={(() => {
+          const normalize = (img) =>
+            img ? (img.startsWith("http") ? img : `${imgUrlEndPoint}${img}`) : "";
+          const direct = (props.experienceData?.pois || []).map((p) => ({
+            image: normalize(p?.image),
+          }));
+          const fromComponents = (props.experienceData?.components || [])
+            .flatMap((c) => c?.pois || [])
+            .map((p) => ({ image: normalize(p?.image) }));
+          return [...direct, ...fromComponents].filter((p) => p.image);
+        })()}
+        setShowTailoredModal={setShowTailoredModal}
+        meta={
+          <>
+            <span>
+              <span className="star">★</span> <b>4.8</b> Google · 1,200+ reviews
+            </span>
+            <span>·</span>
+            {/* <span>
+              <b>{props.experienceData?.locations?.length || 0}</b> destinations
+            </span> */}
+            {/* <span>·</span> */}
+            <span>
+              <b>IATA</b>-protected
+            </span>
+          </>
+        }
+      />
+
+      <DestinationStatsStrip
+        data={props.data}
+        fallbacks={[
+          {
+            label: "Destination",
+            value: (
+              <span className={destinationStyles.serif}>
+                {convertDbNameToCapitalFirst(props.experienceData.slug || "")}
+              </span>
+            ),
+            sub: "Curated by Kaira",
+            when: !!props.experienceData.slug,
+          },
+          {
+            label: "Top locations",
+            value: (
+              <>
+                <span className={destinationStyles.serif}>
+                  {props.experienceData?.locations?.length}
+                </span>{" "}
+                hand-picked
+              </>
+            ),
+            sub: "Worth carving time for",
+            when: props.experienceData?.locations?.length > 0,
+          },
+          {
+            label: "Itineraries",
+            value: (
+              <>
+                <span className={destinationStyles.serif}>
+                  {props.experienceData?.itineraries?.length}+
+                </span>{" "}
+                ready
+              </>
+            ),
+            sub: "Tweak anything in chat",
+            when: props.experienceData?.itineraries?.length > 0,
+          },
+          {
+            label: "Planning",
+            value: (
+              <>
+                <span className={destinationStyles.serif}>Free</span> with Kaira
+              </>
+            ),
+            sub: "AI itineraries, instantly",
+          },
+          {
+            label: "Trusted by",
+            value: (
+              <>
+                <span className={destinationStyles.serif}>10K+</span> travellers
+              </>
+            ),
+            sub: "From across India",
+          },
+        ]}
+      />
+
+      <WhenToGoSection
+        seasonalInfo={props.data?.seasonal_info}
+        destinationName={convertDbNameToCapitalFirst(
+          props.experienceData.slug || ""
+        )}
+      />
+
       {props.slug === "ladakh" && <LadakhLogo />}
 
       {props.slug === "japan-cherry-blossom" && (
@@ -259,10 +394,40 @@ export default function ThemePage(props) {
       )}
 
       <SetWidthContainer>
+
+         <section className={`${styles.block} ${styles.editorialBlock}`}>
+          <OverviewEditorial
+             tag="Kaira's take"
+              heading={props.experienceData.overview_heading}
+              text={
+                props.experienceData?.overview_text || props?.experienceData?.short_description
+              }
+              image={
+                props.experienceData?.overview_image 
+                // ||
+                // (hotLocations[0] && hotLocations[0].image)
+              }
+            locations={props.experienceData.locations}
+            overview_heading={props.experienceData.overview_heading}
+            overview_text={props.experienceData.short_description}
+          />
+          {/* {props.experienceData.locations?.length ? (
+            <div style={{ marginTop: 32 }}>
+              <MapBox
+                InfoWindowContainer={InfoWindowContainer}
+                locations={props.experienceData.locations}
+                height="300px"
+              />
+            </div>
+          ) : null} */}
+          <div className="flex justify-center mt-8">
+             <PlanYourTripButton text={"Chat with Kaira"} slug={props?.slug} />
+          </div>
+        </section>
         {props?.slug === "japan-cherry-blossom" && (
           <PathNavigation path={"asia/japan"} />
         )}
-        {props.experienceData.overview_heading &&
+        {/* {props.experienceData.overview_heading &&
           props.experienceData.overview_text &&
           props?.slug !== "ladakh" &&
           props?.slug !== "thailand" && props?.slug !== "dubai" && props?.slug !== "japan" && props?.slug !== "singapore" && props?.slug !== "bali" && props?.slug != 'europe-continent' ? (
@@ -272,8 +437,8 @@ export default function ThemePage(props) {
             image={props.experienceData.overview_image}
             slug={props.slug}
           />
-        ) : null}
-        {props?.slug == "thailand" && (
+        ) : null} */}
+        {/* {props?.slug == "thailand" && (
           <>
             <OverviewThailand
               heading={props.experienceData.overview_heading}
@@ -294,7 +459,7 @@ export default function ThemePage(props) {
               slug={props?.slug}
             />
           </>
-        )}
+        )} */}
 
         <div className="mt-5">
           {components &&
@@ -319,7 +484,7 @@ export default function ThemePage(props) {
 
                     <CarouselNavigation slug={props?.slug} components={navComponents} />
 
-                    <PlanYourTripButton text={"+ Plan Itinerary For Free"} slug={props?.slug} />
+                    <PlanYourTripButton text={"Chat with Kaira"} slug={props?.slug} />
                   </div>
                 ) : null;
               }
@@ -459,7 +624,16 @@ export default function ThemePage(props) {
 
                     {component.carousel === "Journey" && (
                       <div>
-                        <JourneySimplified/>
+                        <JourneySimplified
+                          itinerary={
+                            props.experienceData?.itineraries?.[0] ||
+                            component?.itineraries?.[0]
+                          }
+                          cities={props.experienceData?.locations}
+                          destinationName={convertDbNameToCapitalFirst(
+                            props.experienceData?.slug || ""
+                          )}
+                        />
                       </div>
                     )}
 
@@ -477,34 +651,73 @@ export default function ThemePage(props) {
                     {/* Render specific carousel components based on type */}
                     {component.carousel === "destination-1" ? (
                       <>
-                        <Destination1Carousel
-                          handlePlanButton={handlePlanButton}
-                          setDestination={setDestination}
-                          setShowTailoredModal={setShowTailoredModal}
-                          packages={[
-                            ...component.cities.map((item) => ({
-                              ...item,
-                              type: "City",
-                            })),
-                            ...component.states.map((item) => ({
-                              ...item,
-                              type: "State",
-                            })),
-                            ...component.countries.map((item) => ({
-                              ...item,
-                              type: "Country",
-                            })),
-                          ]}
-
-                        />
+                        <div className={destinationStyles.carouselWrap}>
+                          <Swiper
+                            modules={[Navigation]}
+                            spaceBetween={16}
+                            slidesPerView={1.1}
+                            navigation={{
+                              nextEl: `.Dest1-next-${index}`,
+                              prevEl: `.Dest1-prev-${index}`,
+                              clickable: true,
+                            }}
+                            breakpoints={{
+                              640: { slidesPerView: 2, spaceBetween: 16 },
+                              768: { slidesPerView: 2.5, spaceBetween: 16 },
+                              1024: { slidesPerView: 3, spaceBetween: 16 },
+                            }}
+                          >
+                            {[
+                              ...component.cities.map((item) => ({
+                                ...item,
+                                type: "City",
+                              })),
+                              ...component.states.map((item) => ({
+                                ...item,
+                                type: "State",
+                              })),
+                              ...component.countries.map((item) => ({
+                                ...item,
+                                type: "Country",
+                              })),
+                            ].map((item, i) => (
+                              <SwiperSlide key={item.id || `dest1-${i}`}>
+                                <div className="h-full">
+                                  <CountryCardV2
+                                    item={item}
+                                    hot={i === 0}
+                                  />
+                                </div>
+                              </SwiperSlide>
+                            ))}
+                          </Swiper>
+                          <div
+                            className={`Dest1-prev-${index} ${destinationStyles.carouselNav} ${destinationStyles.carouselNavPrev}`}
+                            aria-hidden
+                          >
+                            <FontAwesomeIcon icon={faChevronLeft} />
+                          </div>
+                          <div
+                            className={`Dest1-next-${index} ${destinationStyles.carouselNav} ${destinationStyles.carouselNavNext}`}
+                            aria-hidden
+                          >
+                            <FontAwesomeIcon icon={faChevronRight} />
+                          </div>
+                        </div>
                         <PlanYourTripButton text={"Start your journey now!"} slug={props?.slug} />
                       </>
                     ) : component.carousel === "itinerary-1" ? (
                       <>
-                        <Itinerary1Carousel
-                          itineraries={component.itineraries}
-                        />
-                        {/* < MostLovedItinerariesSection apiItineraries={component.itineraries} /> */}
+                        <div className={destinationStyles.itinGrid}>
+                          {component.itineraries
+                            ?.slice(0, 4)
+                            ?.map((it, i) => (
+                              <ItineraryCardV2
+                                key={it.id || i}
+                                itinerary={it}
+                              />
+                            ))}
+                        </div>
                         {props?.slug == "ladakh" ? (
                           <PlanYourTripLadakhButton
                             className={
@@ -550,101 +763,58 @@ export default function ThemePage(props) {
                           </>
                         )}
 
-                        <Itinerary2Carousel elements={component.elements} />
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+                          {component.elements.map((el, i) => (
+                            <ItineraryCardV2
+                              key={el.id ?? el.page_id ?? i}
+                              itinerary={el}
+                            />
+                          ))}
+                        </div>
                       </div>
                     ) : component.carousel === "activity-1" ? (
                       <>
-                        {/* <Activity1Carousel
-                          activities={component.activities}
-                          slug={props?.slug}
-                        />{" "} */}
-                        <div className="relative px-2 sm:px-0">
+                        <div className={destinationStyles.carouselWrap}>
                           <Swiper
-                            style={{ height: "auto" }}
                             modules={[Navigation]}
                             spaceBetween={16}
-                            slidesPerView={1}
+                            slidesPerView={1.1}
                             navigation={{
                               nextEl: ".PlacesBragSection-next",
                               prevEl: ".PlacesBragSection-prev",
                               clickable: true,
                             }}
                             breakpoints={{
-                              // when window width is >= 640px
-                              640: {
-                                slidesPerView: 1.5,
-                                spaceBetween: 16,
-                              },
-                              // when window width is >= 768px
-                              768: {
-                                slidesPerView: 2,
-                                spaceBetween: 20,
-                              },
-                              // when window width is >= 1024px
-                              1024: {
-                                slidesPerView: 4,
-                                spaceBetween: 24,
-                              },
+                              640: { slidesPerView: 2.2, spaceBetween: 16 },
+                              768: { slidesPerView: 3, spaceBetween: 16 },
+                              1024: { slidesPerView: 4, spaceBetween: 16 },
                             }}
                           >
-                            {component.activities.map((destination) => (
-                              <SwiperSlide key={destination.id}>
-                                <div className="w-full px-1">
-                                  <DestinationCard
-                                    title={destination?.display_name || destination.title || destination.name}
-                                    description={
-                                      destination.description || destination.tagline
+                            {component.activities.map((activity, i) => (
+                              <SwiperSlide key={activity.id || i}>
+                                <div className="h-full">
+                                  <ActivityCardV2
+                                    item={activity}
+                                    kairaPick={i % 3 === 0}
+                                    onClick={(d) =>
+                                      handleOpenDrawer(d, "activity")
                                     }
-                                    image={destination.image}
-                                    rating={destination.rating}
-                                    one_liner_description={destination?.one_liner_description}
-                                    reviewCount={destination.user_ratings_total}
-                                    showImageText={false}
-                                    height="280px"
-                                    tags={
-                                      destination.tags ||
-                                      (destination.continent ? [destination.continent] : [])
-                                    }
-                                    gradientOverlay={destination.gradientOverlay}
-                                    onClick={() => handleOpenDrawer(destination, "activity")}
                                   />
                                 </div>
                               </SwiperSlide>
                             ))}
                           </Swiper>
-                          <div className="PlacesBragSection-prev" aria-hidden>
-                            <div
-                              className="absolute left-3 sm:left-1 z-10"
-                              style={{
-                                top: "calc(280px / 2)",
-                                transform: "translateY(-50%)",
-                              }}
-                            >
-                              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
-                                <FontAwesomeIcon
-                                  icon={faChevronLeft}
-                                  className="text-white group-hover:text-white text-md transition-colors duration-300 transform"
-                                />
-                              </div>
-                            </div>
+                          <div
+                            className={`PlacesBragSection-prev ${destinationStyles.carouselNav} ${destinationStyles.carouselNavPrev}`}
+                            aria-hidden
+                          >
+                            <FontAwesomeIcon icon={faChevronLeft} />
                           </div>
-
-                          {/* Custom Next Button - centered to image height (376px) */}
-                          <div className="PlacesBragSection-next" aria-hidden>
-                            <div
-                              className="absolute right-3 sm:right-1 z-10"
-                              style={{
-                                top: "calc(280px / 2)",
-                                transform: "translateY(-50%)",
-                              }}
-                            >
-                              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
-                                <FontAwesomeIcon
-                                  icon={faChevronRight}
-                                  className="text-white hover:text-white text-md transition-colors duration-300 transform"
-                                />
-                              </div>
-                            </div>
+                          <div
+                            className={`PlacesBragSection-next ${destinationStyles.carouselNav} ${destinationStyles.carouselNavNext}`}
+                            aria-hidden
+                          >
+                            <FontAwesomeIcon icon={faChevronRight} />
                           </div>
                         </div>
                         <PlanYourTripButton
@@ -689,16 +859,43 @@ export default function ThemePage(props) {
                       </div>
                     ) : component.carousel === "destination-3" || component.carousel === "country-1" ? (
                       <>
-                        <SwiperLocations
-                          locations={component?.countries}
-                          page_id={component?.id}
-                          destination={component?.name}
-                          viewall
-                          country
-                          page={"Country Page"}
-                          continent={component?.countries}
-                          setShowTailoredModal={setShowTailoredModal}
-                        ></SwiperLocations>
+                        <div className={destinationStyles.carouselWrap}>
+                          <Swiper
+                            modules={[Navigation]}
+                            spaceBetween={16}
+                            slidesPerView={1.1}
+                            navigation={{
+                              nextEl: `.Dest3-next-${index}`,
+                              prevEl: `.Dest3-prev-${index}`,
+                              clickable: true,
+                            }}
+                            breakpoints={{
+                              640: { slidesPerView: 2, spaceBetween: 16 },
+                              768: { slidesPerView: 2.5, spaceBetween: 16 },
+                              1024: { slidesPerView: 3, spaceBetween: 16 },
+                            }}
+                          >
+                            {(component?.countries || []).map((item, i) => (
+                              <SwiperSlide key={item.id || `dest3-${i}`}>
+                                <div className="h-full">
+                                  <CountryCardV2 item={item} hot={i === 0} />
+                                </div>
+                              </SwiperSlide>
+                            ))}
+                          </Swiper>
+                          <div
+                            className={`Dest3-prev-${index} ${destinationStyles.carouselNav} ${destinationStyles.carouselNavPrev}`}
+                            aria-hidden
+                          >
+                            <FontAwesomeIcon icon={faChevronLeft} />
+                          </div>
+                          <div
+                            className={`Dest3-next-${index} ${destinationStyles.carouselNav} ${destinationStyles.carouselNavNext}`}
+                            aria-hidden
+                          >
+                            <FontAwesomeIcon icon={faChevronRight} />
+                          </div>
+                        </div>
                         <PlanYourTripButton
                           text={"Create your travel plan now!"}
                           slug={props?.slug}
@@ -706,15 +903,43 @@ export default function ThemePage(props) {
                       </>
                     ) : component.carousel === "state-1" ? (
                       <>
-                        <OldLocations
-                          locations={component?.states}
-                          page_id={component?.id}
-                          destination={component?.name}
-                          viewall
-                          country={component?.name}
-                          planner
-                          page={"Country Page"}
-                        ></OldLocations>
+                        <div className={destinationStyles.carouselWrap}>
+                          <Swiper
+                            modules={[Navigation]}
+                            spaceBetween={16}
+                            slidesPerView={1.1}
+                            navigation={{
+                              nextEl: `.State1-next-${index}`,
+                              prevEl: `.State1-prev-${index}`,
+                              clickable: true,
+                            }}
+                            breakpoints={{
+                              640: { slidesPerView: 2, spaceBetween: 16 },
+                              768: { slidesPerView: 2.5, spaceBetween: 16 },
+                              1024: { slidesPerView: 3, spaceBetween: 16 },
+                            }}
+                          >
+                            {(component?.states || []).map((item, i) => (
+                              <SwiperSlide key={item.id || `state1-${i}`}>
+                                <div className="h-full">
+                                  <CountryCardV2 item={item} hot={i === 0} />
+                                </div>
+                              </SwiperSlide>
+                            ))}
+                          </Swiper>
+                          <div
+                            className={`State1-prev-${index} ${destinationStyles.carouselNav} ${destinationStyles.carouselNavPrev}`}
+                            aria-hidden
+                          >
+                            <FontAwesomeIcon icon={faChevronLeft} />
+                          </div>
+                          <div
+                            className={`State1-next-${index} ${destinationStyles.carouselNav} ${destinationStyles.carouselNavNext}`}
+                            aria-hidden
+                          >
+                            <FontAwesomeIcon icon={faChevronRight} />
+                          </div>
+                        </div>
                         <PlanYourTripButton
                           text={"Create your travel plan now!"}
                           slug={props?.slug}
@@ -722,26 +947,90 @@ export default function ThemePage(props) {
                       </>
                     ) : component.carousel === "destination-4" ? (
                       <>
-                        <div className="space-y-4">
-                          <Locations
-                            locations={component?.cities}
-                            page={"Continent Page"}
-                            viewall
-                          ></Locations>
+                        <div className={destinationStyles.carouselWrap}>
+                          <Swiper
+                            modules={[Navigation]}
+                            spaceBetween={16}
+                            slidesPerView={1.1}
+                            navigation={{
+                              nextEl: `.Dest4-next-${index}`,
+                              prevEl: `.Dest4-prev-${index}`,
+                              clickable: true,
+                            }}
+                            breakpoints={{
+                              640: { slidesPerView: 2, spaceBetween: 16 },
+                              768: { slidesPerView: 2.5, spaceBetween: 16 },
+                              1024: { slidesPerView: 3, spaceBetween: 16 },
+                            }}
+                          >
+                            {(component?.cities || []).map((item, i) => (
+                              <SwiperSlide key={item.id || `dest4-${i}`}>
+                                <div className="h-full">
+                                  <CountryCardV2 item={item} hot={i === 0} />
+                                </div>
+                              </SwiperSlide>
+                            ))}
+                          </Swiper>
+                          <div
+                            className={`Dest4-prev-${index} ${destinationStyles.carouselNav} ${destinationStyles.carouselNavPrev}`}
+                            aria-hidden
+                          >
+                            <FontAwesomeIcon icon={faChevronLeft} />
+                          </div>
+                          <div
+                            className={`Dest4-next-${index} ${destinationStyles.carouselNav} ${destinationStyles.carouselNavNext}`}
+                            aria-hidden
+                          >
+                            <FontAwesomeIcon icon={faChevronRight} />
+                          </div>
                         </div>
                       </>
                     ) : component.carousel === "Activity-2" ? (
                       <>
-                        <Activity2
-                          data={component.activities}
-                          activities={component?.activities}
-                          city={component?.name}
-                          // handlePlanButtonClick={()=>{}}
-                          // {handlePlanButtonClick}
-                          slug={props?.slug}
-                          page={"Country Page"}
-                        />
-                        <PlanYourTripButton text={"+ Plan Itinerary For Free"} slug={props?.slug} />
+                        <div className={destinationStyles.carouselWrap}>
+                          <Swiper
+                            modules={[Navigation]}
+                            spaceBetween={16}
+                            slidesPerView={1.1}
+                            navigation={{
+                              nextEl: `.Act2-next-${index}`,
+                              prevEl: `.Act2-prev-${index}`,
+                              clickable: true,
+                            }}
+                            breakpoints={{
+                              640: { slidesPerView: 2.2, spaceBetween: 16 },
+                              768: { slidesPerView: 3, spaceBetween: 16 },
+                              1024: { slidesPerView: 4, spaceBetween: 16 },
+                            }}
+                          >
+                            {(component.activities || []).map((activity, i) => (
+                              <SwiperSlide key={activity.id || `act2-${i}`}>
+                                <div className="h-full">
+                                  <ActivityCardV2
+                                    item={activity}
+                                    kairaPick={i % 3 === 0}
+                                    onClick={(d) =>
+                                      handleOpenDrawer(d, "activity")
+                                    }
+                                  />
+                                </div>
+                              </SwiperSlide>
+                            ))}
+                          </Swiper>
+                          <div
+                            className={`Act2-prev-${index} ${destinationStyles.carouselNav} ${destinationStyles.carouselNavPrev}`}
+                            aria-hidden
+                          >
+                            <FontAwesomeIcon icon={faChevronLeft} />
+                          </div>
+                          <div
+                            className={`Act2-next-${index} ${destinationStyles.carouselNav} ${destinationStyles.carouselNavNext}`}
+                            aria-hidden
+                          >
+                            <FontAwesomeIcon icon={faChevronRight} />
+                          </div>
+                        </div>
+                        <PlanYourTripButton text={"+ Chat with Kaira"} slug={props?.slug} />
                       </>
                     ) : component.carousel === "destination-2" ? (
                       <>
@@ -754,102 +1043,51 @@ export default function ThemePage(props) {
                           slug={props?.slug}
                           page={"Country Page"}
                         />
-                        <PlanYourTripButton text={"+ Plan Itinerary For Free"} slug={props?.slug} />
+                        <PlanYourTripButton text={"Chat with Kaira"} slug={props?.slug} />
                       </>
                     ) : component.carousel === "destination-5" || component.carousel === "poi-1" ? (
                       <>
-                        {/* <Poi
-                          elevation={component?.elevation}
-                          data={component?.data}
-                          thingsToDoPage={component?.thingsToDoPage}
-                          pois={component?.pois}
-                          city={component?.name}
-                        /> */}
-                        <div className="relative px-2 sm:px-0">
+                        <div className={destinationStyles.carouselWrap}>
                           <Swiper
-                            style={{ height: "auto" }}
                             modules={[Navigation]}
                             spaceBetween={16}
-                            slidesPerView={1}
+                            slidesPerView={1.1}
                             navigation={{
                               nextEl: ".PlacesBragSection-n",
                               prevEl: ".PlacesBragSection-p",
                               clickable: true,
                             }}
                             breakpoints={{
-                              // when window width is >= 640px
-                              640: {
-                                slidesPerView: 1.5,
-                                spaceBetween: 16,
-                              },
-                              // when window width is >= 768px
-                              768: {
-                                slidesPerView: 2,
-                                spaceBetween: 20,
-                              },
-                              // when window width is >= 1024px
-                              1024: {
-                                slidesPerView: 4,
-                                spaceBetween: 24,
-                              },
+                              640: { slidesPerView: 2.2, spaceBetween: 16 },
+                              768: { slidesPerView: 3, spaceBetween: 16 },
+                              1024: { slidesPerView: 4, spaceBetween: 16 },
                             }}
                           >
-                            {component?.pois.map((destination) => (
-                              <SwiperSlide key={destination.id}>
-                                <div className="w-full px-1">
-                                  <DestinationCard
-                                    title={destination?.display_name || destination.title || destination.name}
-                                    description={destination.description || destination.tagline}
-                                    one_liner_description={destination?.one_liner_description}
-                                    image={destination.image}
-                                    rating={destination.rating}
-                                    reviewCount={destination.user_ratings_total}
-                                    showImageText={false}
-                                    height="280px"
-                                    tags={
-                                      destination.tags ||
-                                      (destination.continent ? [destination.continent] : [])
+                            {component?.pois.map((poi, i) => (
+                              <SwiperSlide key={poi.id || i}>
+                                <div className="h-full">
+                                  <ActivityCardV2
+                                    item={poi}
+                                    kairaPick={i % 3 === 0}
+                                    onClick={(d) =>
+                                      handleOpenDrawer(d, "poi")
                                     }
-                                    onClick={() => handleOpenDrawer(destination, "poi")}
-                                    gradientOverlay={destination.gradientOverlay}
                                   />
                                 </div>
                               </SwiperSlide>
                             ))}
                           </Swiper>
-                          <div className="PlacesBragSection-p" aria-hidden>
-                            <div
-                              className="absolute left-3 sm:left-1 z-10"
-                              style={{
-                                top: "calc(280px / 2)",
-                                transform: "translateY(-50%)",
-                              }}
-                            >
-                              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
-                                <FontAwesomeIcon
-                                  icon={faChevronLeft}
-                                  className="text-white group-hover:text-white text-md transition-colors duration-300 transform"
-                                />
-                              </div>
-                            </div>
+                          <div
+                            className={`PlacesBragSection-p ${destinationStyles.carouselNav} ${destinationStyles.carouselNavPrev}`}
+                            aria-hidden
+                          >
+                            <FontAwesomeIcon icon={faChevronLeft} />
                           </div>
-
-                          {/* Custom Next Button - centered to image height (376px) */}
-                          <div className="PlacesBragSection-n" aria-hidden>
-                            <div
-                              className="absolute right-3 sm:right-1 z-10"
-                              style={{
-                                top: "calc(280px / 2)",
-                                transform: "translateY(-50%)",
-                              }}
-                            >
-                              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
-                                <FontAwesomeIcon
-                                  icon={faChevronRight}
-                                  className="text-white hover:text-white text-md transition-colors duration-300 transform"
-                                />
-                              </div>
-                            </div>
+                          <div
+                            className={`PlacesBragSection-n ${destinationStyles.carouselNav} ${destinationStyles.carouselNavNext}`}
+                            aria-hidden
+                          >
+                            <FontAwesomeIcon icon={faChevronRight} />
                           </div>
                         </div>
                       </>
@@ -874,11 +1112,43 @@ export default function ThemePage(props) {
                       </>
                     ) : component.carousel === "destination-7" ? (
                       <>
-                        <Destination7Carousel
-                          heading={component?.heading}
-                          text={component?.text}
-                          cities={component?.cities}
-                        />
+                        <div className={destinationStyles.carouselWrap}>
+                          <Swiper
+                            modules={[Navigation]}
+                            spaceBetween={16}
+                            slidesPerView={1.1}
+                            navigation={{
+                              nextEl: `.Dest7-next-${index}`,
+                              prevEl: `.Dest7-prev-${index}`,
+                              clickable: true,
+                            }}
+                            breakpoints={{
+                              640: { slidesPerView: 2, spaceBetween: 16 },
+                              768: { slidesPerView: 2.5, spaceBetween: 16 },
+                              1024: { slidesPerView: 3, spaceBetween: 16 },
+                            }}
+                          >
+                            {(component?.cities || []).map((item, i) => (
+                              <SwiperSlide key={item.id || `dest7-${i}`}>
+                                <div className="h-full">
+                                  <CountryCardV2 item={item} hot={i === 0} />
+                                </div>
+                              </SwiperSlide>
+                            ))}
+                          </Swiper>
+                          <div
+                            className={`Dest7-prev-${index} ${destinationStyles.carouselNav} ${destinationStyles.carouselNavPrev}`}
+                            aria-hidden
+                          >
+                            <FontAwesomeIcon icon={faChevronLeft} />
+                          </div>
+                          <div
+                            className={`Dest7-next-${index} ${destinationStyles.carouselNav} ${destinationStyles.carouselNavNext}`}
+                            aria-hidden
+                          >
+                            <FontAwesomeIcon icon={faChevronRight} />
+                          </div>
+                        </div>
                         <PlanYourTripLadakhButton
                           page_id={props.state?.id}
                           type={"state"}
@@ -894,10 +1164,49 @@ export default function ThemePage(props) {
                       </>
                     ) : component.carousel === "Activity-3" ? (
                       <>
-                        <Activity3Carousel
-                          activities={component.activities}
-                          slug={props?.slug}
-                        />{" "}
+                        <div className={destinationStyles.carouselWrap}>
+                          <Swiper
+                            modules={[Navigation]}
+                            spaceBetween={16}
+                            slidesPerView={1.1}
+                            navigation={{
+                              nextEl: `.Act3-next-${index}`,
+                              prevEl: `.Act3-prev-${index}`,
+                              clickable: true,
+                            }}
+                            breakpoints={{
+                              640: { slidesPerView: 2.2, spaceBetween: 16 },
+                              768: { slidesPerView: 3, spaceBetween: 16 },
+                              1024: { slidesPerView: 4, spaceBetween: 16 },
+                            }}
+                          >
+                            {(component.activities || []).map((activity, i) => (
+                              <SwiperSlide key={activity.id || `act3-${i}`}>
+                                <div className="h-full">
+                                  <ActivityCardV2
+                                    item={activity}
+                                    kairaPick={i % 3 === 0}
+                                    onClick={(d) =>
+                                      handleOpenDrawer(d, "activity")
+                                    }
+                                  />
+                                </div>
+                              </SwiperSlide>
+                            ))}
+                          </Swiper>
+                          <div
+                            className={`Act3-prev-${index} ${destinationStyles.carouselNav} ${destinationStyles.carouselNavPrev}`}
+                            aria-hidden
+                          >
+                            <FontAwesomeIcon icon={faChevronLeft} />
+                          </div>
+                          <div
+                            className={`Act3-next-${index} ${destinationStyles.carouselNav} ${destinationStyles.carouselNavNext}`}
+                            aria-hidden
+                          >
+                            <FontAwesomeIcon icon={faChevronRight} />
+                          </div>
+                        </div>
                         <PlanYourTripLadakhButton
                           page_id={props.state?.id}
                           type={"state"}
@@ -1008,11 +1317,18 @@ export default function ThemePage(props) {
               </PrimaryHeading>
             </div> */}
             {/* <AsSeenIn /> */}
-            <PartnersSection />
-            <ChatWithUs planner page_id={props.experienceData?.id}></ChatWithUs>
+            {/* <PartnersSection />
+            <ChatWithUs planner page_id={props.experienceData?.id}></ChatWithUs> */}
           </>
         )}
       </SetWidthContainer>
+
+      <PlanningSection
+        destinationInfo={props.data?.destination_info}
+        destinationName={convertDbNameToCapitalFirst(
+          props.experienceData.slug || ""
+        )}
+      />
 
       <TailoredFormMobileModal
         destinationType={destination?.type}
@@ -1078,22 +1394,15 @@ export const PlanYourTripButton = (props) => {
       params: {
         page: props.page ? props.page : "",
         event_category: "Button Click",
-        event_label: "Plan Itinerary For Free!",
+        event_label: "Chat with Kaira!",
         event_action: "Banner",
       },
     });
   };
 
   return (
-
-    <div className="flex items-center justify-center mt-5 text-white bg-[#07213A] rounded-md  w-fit mx-auto hover:opacity-90 cursor-pointer">
-      <SecondaryButton onClick={handlePlanButton} className={props?.className}>
-        {props.text
-          ? props.text
-          : props.slug === "honeymoon-2025"
-            ? "Plan Your Honeymoon!"
-            : "+ Plan Your Trip Now!"}
-      </SecondaryButton>
+    <div className="mt-5 w-fit mx-auto">
+      <ChatWithKairaCta onClick={handlePlanButton} />
 
       <TailoredFormMobileModal
         destinationType={"city-planner"}
@@ -1129,22 +1438,15 @@ export const PlanYourTripLadakhButton = (props) => {
       params: {
         page: props.page ? props.page : "",
         event_category: "Button Click",
-        event_label: "Plan Itinerary For Free!",
+        event_label: "Chat with Kaira!",
         event_action: "Banner",
       },
     });
   };
 
   return (
-    <div className="flex items-center justify-center mt-5 bg-white">
-      <button
-        onClick={handlePlanButton}
-        className={
-          "border-2 border-black rounded-lg px-5 py-2 mx-auto hover:text-white hover:bg-black transition-all "
-        }
-      >
-        {props.text}
-      </button>
+    <div className="flex items-center justify-center mt-5">
+      <ChatWithKairaCta onClick={handlePlanButton} />
 
       <TailoredFormMobileModal
         destinationType={"city-planner"}

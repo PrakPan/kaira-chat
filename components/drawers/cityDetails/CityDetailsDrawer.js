@@ -65,6 +65,7 @@ const CityDetailsDrawer = (props) => {
       show={true}
       anchor={"right"}
       backdrop
+      bgColor="#fafaf5"
       style={{ zIndex: 1501 }}
       className=""
       onHide={() => {
@@ -73,7 +74,7 @@ const CityDetailsDrawer = (props) => {
             pathname: window.location.pathname,
           },
           undefined,
-          { scroll: false }
+          { scroll: false, shallow: true }
         );
       }}
     >
@@ -85,7 +86,7 @@ const CityDetailsDrawer = (props) => {
                 pathname: window.location.pathname,
               },
               undefined,
-              { scroll: false }
+              { scroll: false, shallow: true }
             )
           }
           className="hover-pointer"
@@ -104,9 +105,13 @@ const CityDetailsDrawer = (props) => {
             }
             data={data}
             onHide={() =>
-              router.push({
-                pathname: window.location.pathname,
-              })
+              router.push(
+                {
+                  pathname: window.location.pathname,
+                },
+                undefined,
+                { scroll: false, shallow: true }
+              )
             }
             dayId={dayId}
           ></CityDetails>

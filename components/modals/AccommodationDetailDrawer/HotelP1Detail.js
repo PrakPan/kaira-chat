@@ -16,7 +16,7 @@ import { MERCURY_HOST } from "../../../services/constants";
 const svgIcons = {
   location: (
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 10 14" fill="none">
-      <path d="M4.99968 13.6666C3.8219 13.6666 2.86079 13.4805 2.11634 13.1083C1.3719 12.736 0.999675 12.2555 0.999675 11.6666C0.999675 11.3999 1.08023 11.1527 1.24134 10.9249C1.40245 10.6971 1.62745 10.4999 1.91634 10.3333L2.96634 11.3166C2.86634 11.361 2.75801 11.411 2.64134 11.4666C2.52468 11.5221 2.43301 11.5888 2.36634 11.6666C2.51079 11.8444 2.84412 11.9999 3.36634 12.1333C3.88856 12.2666 4.43301 12.3333 4.99968 12.3333C5.56634 12.3333 6.11357 12.2666 6.64134 12.1333C7.16912 11.9999 7.50523 11.8444 7.64968 11.6666C7.5719 11.5777 7.4719 11.5055 7.34968 11.4499C7.22746 11.3944 7.11079 11.3444 6.99968 11.2999L8.03301 10.2999C8.34412 10.4777 8.58301 10.6805 8.74968 10.9083C8.91634 11.136 8.99968 11.3888 8.99968 11.6666C8.99968 12.2555 8.62746 12.736 7.88301 13.1083C7.13857 13.4805 6.17745 13.6666 4.99968 13.6666ZM5.01634 9.99992C6.11634 9.18881 6.94412 8.37492 7.49968 7.55825C8.05523 6.74158 8.33301 5.92214 8.33301 5.09992C8.33301 3.96659 7.9719 3.11103 7.24968 2.53325C6.52745 1.95547 5.77745 1.66659 4.99968 1.66659C4.2219 1.66659 3.4719 1.95547 2.74968 2.53325C2.02745 3.11103 1.66634 3.96659 1.66634 5.09992C1.66634 5.84436 1.93856 6.61936 2.48301 7.42492C3.02745 8.23047 3.8719 9.08881 5.01634 9.99992ZM4.99968 11.6666C3.43301 10.511 2.26356 9.38881 1.49134 8.29992C0.719119 7.21103 0.333008 6.14436 0.333008 5.09992C0.333008 4.31103 0.474675 3.61936 0.758008 3.02492C1.04134 2.43047 1.40523 1.93325 1.84968 1.53325C2.29412 1.13325 2.79412 0.833252 3.34968 0.633252C3.90523 0.433252 4.45523 0.333252 4.99968 0.333252C5.54412 0.333252 6.09412 0.433252 6.64968 0.633252C7.20523 0.833252 7.70523 1.13325 8.14968 1.53325C8.59412 1.93325 8.95801 2.43047 9.24134 3.02492C9.52468 3.61936 9.66634 4.31103 9.66634 5.09992C9.66634 6.14436 9.28023 7.21103 8.50801 8.29992C7.73579 9.38881 6.56634 10.511 4.99968 11.6666ZM4.99968 6.33325C5.36634 6.33325 5.68023 6.2027 5.94134 5.94159C6.20245 5.68047 6.33301 5.36658 6.33301 4.99992C6.33301 4.63325 6.20245 4.31936 5.94134 4.05825C5.68023 3.79714 5.36634 3.66658 4.99968 3.66658C4.63301 3.66658 4.31912 3.79714 4.05801 4.05825C3.7969 4.31936 3.66634 4.63325 3.66634 4.99992C3.66634 5.36658 3.7969 5.68047 4.05801 5.94159C4.31912 6.2027 4.63301 6.33325 4.99968 6.33325Z" fill="#ACACAC" />
+      <path d="M4.99968 13.6666C3.8219 13.6666 2.86079 13.4805 2.11634 13.1083C1.3719 12.736 0.999675 12.2555 0.999675 11.6666C0.999675 11.3999 1.08023 11.1527 1.24134 10.9249C1.40245 10.6971 1.62745 10.4999 1.91634 10.3333L2.96634 11.3166C2.86634 11.361 2.75801 11.411 2.64134 11.4666C2.52468 11.5221 2.43301 11.5888 2.36634 11.6666C2.51079 11.8444 2.84412 11.9999 3.36634 12.1333C3.88856 12.2666 4.43301 12.3333 4.99968 12.3333C5.56634 12.3333 6.11357 12.2666 6.64134 12.1333C7.16912 11.9999 7.50523 11.8444 7.64968 11.6666C7.5719 11.5777 7.4719 11.5055 7.34968 11.4499C7.22746 11.3944 7.11079 11.3444 6.99968 11.2999L8.03301 10.2999C8.34412 10.4777 8.58301 10.6805 8.74968 10.9083C8.91634 11.136 8.99968 11.3888 8.99968 11.6666C8.99968 12.2555 8.62746 12.736 7.88301 13.1083C7.13857 13.4805 6.17745 13.6666 4.99968 13.6666ZM5.01634 9.99992C6.11634 9.18881 6.94412 8.37492 7.49968 7.55825C8.05523 6.74158 8.33301 5.92214 8.33301 5.09992C8.33301 3.96659 7.9719 3.11103 7.24968 2.53325C6.52745 1.95547 5.77745 1.66659 4.99968 1.66659C4.2219 1.66659 3.4719 1.95547 2.74968 2.53325C2.02745 3.11103 1.66634 3.96659 1.66634 5.09992C1.66634 5.84436 1.93856 6.61936 2.48301 7.42492C3.02745 8.23047 3.8719 9.08881 5.01634 9.99992ZM4.99968 11.6666C3.43301 10.511 2.26356 9.38881 1.49134 8.29992C0.719119 7.21103 0.333008 6.14436 0.333008 5.09992C0.333008 4.31103 0.474675 3.61936 0.758008 3.02492C1.04134 2.43047 1.40523 1.93325 1.84968 1.53325C2.29412 1.13325 2.79412 0.833252 3.34968 0.633252C3.90523 0.433252 4.45523 0.333252 4.99968 0.333252C5.54412 0.333252 6.09412 0.433252 6.64968 0.633252C7.20523 0.833252 7.70523 1.13325 8.14968 1.53325C8.59412 1.93325 8.95801 2.43047 9.24134 3.02492C9.52468 3.61936 9.66634 4.31103 9.66634 5.09992C9.66634 6.14436 9.28023 7.21103 8.50801 8.29992C7.73579 9.38881 6.56634 10.511 4.99968 11.6666ZM4.99968 6.33325C5.36634 6.33325 5.68023 6.2027 5.94134 5.94159C6.20245 5.68047 6.33301 5.36658 6.33301 4.99992C6.33301 4.63325 6.20245 4.31936 5.94134 4.05825C5.68023 3.79714 5.36634 3.66658 4.99968 3.66658C4.63301 3.66658 4.31912 3.79714 4.05801 4.05825C3.7969 4.31936 3.66634 4.63325 3.66634 4.99992C3.66634 5.36658 3.7969 5.68047 4.05801 5.94159C4.31912 6.2027 4.63301 6.33325 4.99968 6.33325Z" fill="#8a93a6" />
     </svg>
   ),
   maps: (
@@ -148,7 +148,7 @@ const ImgSlot = memo(({
         noLazy
       />
       {caption && (
-        <div className="bg-text-smokywhite absolute rounded-67br text-sm font-500 leading-lg px-md py-xs top-md left-md">
+        <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs top-md left-md">
           {caption}
         </div>
       )}
@@ -339,6 +339,7 @@ const HotelP1Detail = ({
       show={show}
       anchor="right"
       backdrop
+      bgColor="#fafaf5"
       className="font-lexend"
       onHide={onHide}
       width="50%"
@@ -363,21 +364,21 @@ const HotelP1Detail = ({
           <div>
             {/* Star category badge */}
             {data.name ? (
-              <span className=" text-sm md:text-xl font-semibold">
+              <span className=" text-sm md:text-xl font-semibold text-[#0b1220]">
                 {data?.name}
               </span>
             ) : null}
 
             {/* Location + rating row */}
             <div className="flex gap-sm mt-sm flex-wrap">
-              <div className="flex gap-xs text-sm-md text-text-spacegrey font-[400] items-center">
+              <div className="flex gap-xs text-sm-md text-[#445069] font-[400] items-center">
                 {svgIcons.location}
                 <span>{[data.city_name, data.state_name, data.country_name].filter(Boolean).join(", ")}</span>
               </div>
 
               {data.rating_ext && (
-                <div className="gap-1 flex flex-row items-center text-sm-md text-text-spacegrey font-[400] pl-sm border-l-sm border-solid border-text-disabled">
-                  <div className="flex flex-row text-[#FFD201]">
+                <div className="gap-1 flex flex-row items-center text-sm-md text-[#445069] font-[400] pl-sm border-l-sm border-solid border-[#ececec]">
+                  <div className="flex flex-row text-[#f7e700]">
                     {starRating(data.rating_ext)}
                   </div>
                   <div>{data.rating_ext}</div>
@@ -468,7 +469,7 @@ const HotelP1Detail = ({
 
               {/* ── Tabs ── */}
               <div className="flex flex-col">
-                <div className="sticky top-0 z-10 bg-white border-b-sm border-solid border-text-disabled">
+                <div className="sticky top-0 z-10 bg-[#fafaf5] border-b-sm border-solid border-[#ececec]">
                   <ScrollableMenuTabs
                     classStyle="w-100"
                     items={tabs}
@@ -483,7 +484,7 @@ const HotelP1Detail = ({
                     {data.description && (
                       <div className="flex flex-col gap-1 mt-lg">
                         <div
-                          className="text-sm-xl font-400 leading-xl gl-dynamic-render-elements"
+                          className="text-sm-xl font-400 leading-xl gl-dynamic-render-elements text-[#445069]"
                           dangerouslySetInnerHTML={{ __html: data.description }}
                         />
                       </div>
@@ -494,44 +495,44 @@ const HotelP1Detail = ({
                       <div className="flex gap-4 mt-lg flex-wrap">
                         {data.accommodation_type && (
                           <div>
-                            <div className="text-sm-xl font-600 leading-xl mb-xxs-md">Type</div>
-                            <div className="text-sm-md font-400 leading-xl">{data.accommodation_type}</div>
+                            <div className="text-sm-xl font-600 leading-xl mb-xxs-md text-[#0b1220]">Type</div>
+                            <div className="text-sm-md font-400 leading-xl text-[#445069]">{data.accommodation_type}</div>
                           </div>
                         )}
                         {data.price_lower_range_ext && (
                           <div>
-                            <div className="text-sm-xl font-600 leading-xl mb-xxs-md">Starting from</div>
-                            <div className="text-sm-md font-400 leading-xl">
+                            <div className="text-sm-xl font-600 leading-xl mb-xxs-md text-[#0b1220]">Starting from</div>
+                            <div className="text-sm-md font-400 leading-xl text-[#445069]">
                               {data.currency} {Math.round(data.price_lower_range_ext).toLocaleString()}
                             </div>
                           </div>
                         )}
                         {data.distance_from_city_centre && (
                           <div>
-                            <div className="text-sm-xl font-600 leading-xl mb-xxs-md">Distance from centre</div>
-                            <div className="text-sm-md font-400 leading-xl">{data.distance_from_city_centre} km</div>
+                            <div className="text-sm-xl font-600 leading-xl mb-xxs-md text-[#0b1220]">Distance from centre</div>
+                            <div className="text-sm-md font-400 leading-xl text-[#445069]">{data.distance_from_city_centre} km</div>
                           </div>
                         )}
                       </div>
                     )}
 
-                    <hr className="my-lg" />
+                    <hr className="my-lg border-[#ececec]" />
                   </div>
 
                   {/* ── Section 3: Amenities ── */}
                   {data.hotel_facilities?.length > 0 && (
                     <div id="section-3">
-                      <div className="text-md-lg font-600 leading-xl mb-lg">Hotel Amenities</div>
+                      <div className="text-md-lg font-600 leading-xl mb-lg text-[#0b1220]">Hotel Amenities</div>
                       <ul className="grid grid-cols-3 gap-y-2 gap-x-4 !pl-md">
                         {activeFacilities.map((item, i) => (
-                          <li key={i} className="text-sm-md font-400 leading-xl list-disc">
+                          <li key={i} className="text-sm-md font-400 leading-xl list-disc text-[#445069]">
                             {item}
                           </li>
                         ))}
                       </ul>
                       {!viewMoreFacilities && data.hotel_facilities.length > 6 && (
                         <div
-                          className="text-sm underline font-500 leading-lg cursor-pointer mt-2"
+                          className="text-sm underline font-500 leading-lg cursor-pointer mt-2 text-[#0b1220]"
                           onClick={() => calculateVisibleFacilities(data.hotel_facilities, true)}
                         >
                           + {data.hotel_facilities.length - activeFacilities.length} more
@@ -539,23 +540,23 @@ const HotelP1Detail = ({
                       )}
                       {viewMoreFacilities && (
                         <div
-                          className="text-sm underline font-500 leading-lg cursor-pointer mt-2"
+                          className="text-sm underline font-500 leading-lg cursor-pointer mt-2 text-[#0b1220]"
                           onClick={() => calculateVisibleFacilities(data.hotel_facilities, false)}
                         >
                           Show Less
                         </div>
                       )}
-                      <hr className="my-lg" />
+                      <hr className="my-lg border-[#ececec]" />
                     </div>
                   )}
 
                   {/* ── Section 2: Location ── */}
                  {/* ── Section 2: Location ── */}
                   <div id="section-2" className="mb-lg">
-                    <div className="text-md-lg font-600 leading-xl mb-lg">Location</div>
+                    <div className="text-md-lg font-600 leading-xl mb-lg text-[#0b1220]">Location</div>
                     <div className="flex gap-2 mb-sm">
                       {svgIcons.location}
-                      <div className="text-sm-md text-text-spacegrey font-[400]">
+                      <div className="text-sm-md text-[#445069] font-[400]">
                         {[data.addr1, data.addr2, data.city_name, data.state_name, data.country_name]
                           .filter(Boolean)
                           .join(", ")}
@@ -572,7 +573,7 @@ const HotelP1Detail = ({
                           }
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-sm-md text-blue"
+                          className="text-sm-md text-[#0b1220]"
                         >
                           View on Google Maps
                         </a>
@@ -591,17 +592,17 @@ const HotelP1Detail = ({
             to the chat orchestrator; they do not book directly. */}
         {data && (onAddHotel || onChangeHotel) && (
           <div
-            className="fixed bottom-0 left-0 right-0 md:absolute flex items-center justify-between gap-3 border-t-2 bg-white px-[20px] py-[12px] shadow-md"
+            className="fixed bottom-0 left-0 right-0 md:absolute flex items-center justify-between gap-3 border-t-2 bg-[#fafaf5] px-[20px] py-[12px] shadow-md"
             style={{ zIndex: 50 }}
           >
             <div className="flex flex-col">
               {check_in && check_out && (
-                <span className="text-[12px] text-text-spacegrey">
+                <span className="text-[12px] text-[#445069]">
                   {check_in} → {check_out}
                 </span>
               )}
               {data.price_lower_range_ext && (
-                <span className="text-[14px] font-semibold">
+                <span className="text-[14px] font-semibold text-[#0b1220]">
                   From {data.currency} {Math.round(data.price_lower_range_ext).toLocaleString()}
                 </span>
               )}

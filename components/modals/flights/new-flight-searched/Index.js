@@ -21,10 +21,10 @@ const Container = styled.div`
   margin: auto;
   ${(props) =>
     props.isSelected &&
-    "background : #FFFBBB ; border : 1px solid #F7E700!important"};
+    "background : #fffde7 ; border : 1px solid #f7e700!important"};
   margin-bottom: 0.75rem;
   border-radius: 8px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #ececec;
   transition: all 0.2s ease;
 
   &:hover {
@@ -85,15 +85,15 @@ const Flight = (props) => {
             />
           </div>
           <div className="flex flex-col gap-1">
-            <div className="text-sm md:text-md font-semibold flex items-center gap-2 flex-wrap">
+            <div className="text-sm md:text-md font-semibold flex items-center gap-2 flex-wrap text-[#0b1220]">
               {props.data?.segments?.[0]?.airline?.name}
               {props.data?.is_refundable && (
-                <span className="bg-[#4CAF50] text-white  px-2.5 py-0.5 rounded text-[12px] font-medium">
+                <span className="bg-[#1f8a5a] text-white  px-2.5 py-0.5 rounded text-[12px] font-medium">
                   Refundable
                 </span>
               )}
             </div>
-            <div className="text-xs md:text-sm text-gray-600">
+            <div className="text-xs md:text-sm text-[#445069]">
               {props.data?.segments?.[0]?.airline?.code}-
               {props.data?.segments?.[0]?.airline?.flight_number}
             </div>
@@ -101,12 +101,12 @@ const Flight = (props) => {
         </div>
         {isPageWide && (
           <div className="text-right">
-            <div className="text-md md:text-md font-bold">
+            <div className="text-md md:text-md font-mono font-bold text-[#0b1220]">
               {props.data?.final_fare
                 ? `${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}${getIndianPrice(props.data?.final_fare)}`
                 : null}
             </div>
-            <div className="text-xs text-gray-500">for {(props?.pax?.adults || 0) + (props?.pax?.children || 0) + (props?.pax?.infants || 0)} person</div>
+            <div className="text-xs text-[#8a93a6]">for {(props?.pax?.adults || 0) + (props?.pax?.children || 0) + (props?.pax?.infants || 0)} person</div>
           </div>
         )}
       </div>
@@ -149,14 +149,14 @@ const Flight = (props) => {
 
       {/* Mobile: Price and View Details Row */}
       {!isPageWide && (
-        <div className="flex justify-between items-center pt-2 border-t">
+        <div className="flex justify-between items-center pt-2 border-t border-[#ececec]">
           <div className="text-left">
-            <div className="text-md font-bold">
+            <div className="text-md font-mono font-bold text-[#0b1220]">
               {props.data?.final_fare
                 ? `${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}${getIndianPrice(props.data?.final_fare)}`
                 : null}
             </div>
-            <div className="text-sm text-gray-600">for {totalPax} person</div>
+            <div className="text-sm text-[#445069]">for {totalPax} person</div>
           </div>
           <div
             className="text-blue-600 text-sm font-medium cursor-pointer flex items-center gap-1"
@@ -222,6 +222,7 @@ const Flight = (props) => {
         show={showFareDrawer}
         anchor={"right"}
         backdrop
+        bgColor="#fafaf5"
         style={{ zIndex: 1501 }}
         className=" pb-0 md:pb-[100px]"
         width={"50vw"}
@@ -236,7 +237,7 @@ const Flight = (props) => {
               setShowFareDrawer(false);
             }}
           />
-          <div className="text-xl py-2 font-semibold">
+          <div className="text-xl py-2 font-semibold text-[#0b1220]">
             Flight from{" "}
             {selectedFareData?.segments?.[0]?.origin?.city_name ||
               props.data?.segments[0]?.origin?.city_name}{" "}
@@ -247,7 +248,7 @@ const Flight = (props) => {
               props.data?.segments[props.data?.segments?.length - 1]
                 ?.destination?.city_name}
           </div>
-          <div className="p-4 border rounded-lg border-gray-400 mt-1">
+          <div className="p-4 border rounded-lg border-[#ececec] mt-1">
             <div className="flex flex-row gap-2 justify-between md:items-start items-center mt-2">
               <div className="flex flex-row items-center gap-3">
                 <div
@@ -264,17 +265,17 @@ const Flight = (props) => {
                   />
                 </div>
                 <div className="flex flex-col gap-1">
-                  <div className="text-sm md:text-md font-semibold flex items-center gap-2 flex-wrap">
+                  <div className="text-sm md:text-md font-semibold flex items-center gap-2 flex-wrap text-[#0b1220]">
                     {selectedFareData?.segments?.[0]?.airline?.name ||
                       props.data?.segments?.[0]?.airline?.name}
                     {(selectedFareData?.is_refundable ||
                       props.data?.is_refundable) && (
-                      <span className="bg-[#4CAF50] text-white  px-2.5 py-0.5 rounded text-[12px] font-medium">
+                      <span className="bg-[#1f8a5a] text-white  px-2.5 py-0.5 rounded text-[12px] font-medium">
                         Refundable
                       </span>
                     )}
                   </div>
-                  <div className="text-xs md:text-sm text-gray-600">
+                  <div className="text-xs md:text-sm text-[#445069]">
                     {selectedFareData?.segments?.[0]?.airline?.code ||
                       props.data?.segments?.[0]?.airline?.code}
                     -
@@ -285,14 +286,14 @@ const Flight = (props) => {
               </div>
               {isPageWide && (
                 <div className="text-right">
-                  <div className="text-md md:text-md font-bold">
+                  <div className="text-md md:text-md font-mono font-bold text-[#0b1220]">
                     {selectedFareData?.final_fare || props.data?.final_fare
                       ? `${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}${getIndianPrice(
                           selectedFareData?.final_fare || props.data?.final_fare
                         )}`
                       : null}
                   </div>
-                  <div className="text-xs text-gray-500">for {totalPax} person</div>
+                  <div className="text-xs text-[#8a93a6]">for {totalPax} person</div>
                 </div>
               )}
             </div>
@@ -447,15 +448,15 @@ const FareOptionsTable = ({
       {/* Desktop View - Table Layout */}
       <div className="max-ph:hidden md:block bg-white rounded-lg overflow-hidden mt-2">
         {/* Header - Updated grid to include Check-In Bag column */}
-        <div className="grid grid-cols-[1fr_1fr_1fr_1fr_1.5fr_auto] gap-4 px-2 py-1 border-b">
-          <div className="text-[14px] font-normal text-gray-500">Cabin Bag</div>
-          <div className="text-[14px] font-normal text-gray-500">Check-In Bag</div>
-          <div className="text-[14px] font-normal text-gray-500">Class</div>
-          <div className="text-[14px] font-normal text-gray-500">Refundable</div>
-          <div className="text-[14px] font-normal text-gray-500 text-left">
+        <div className="grid grid-cols-[1fr_1fr_1fr_1fr_1.5fr_auto] gap-4 px-2 py-1 border-b border-[#ececec]">
+          <div className="text-[14px] font-normal text-[#8a93a6]">Cabin Bag</div>
+          <div className="text-[14px] font-normal text-[#8a93a6]">Check-In Bag</div>
+          <div className="text-[14px] font-normal text-[#8a93a6]">Class</div>
+          <div className="text-[14px] font-normal text-[#8a93a6]">Refundable</div>
+          <div className="text-[14px] font-normal text-[#8a93a6] text-left">
             For {totalPax} {totalPax === 1 ? "person" : "persons"}
           </div>
-          <div className="w-16 text-[14px] font-normal text-gray-500 text-left">
+          <div className="w-16 text-[14px] font-normal text-[#8a93a6] text-left">
             Fare Rule
           </div>
         </div>
@@ -465,22 +466,22 @@ const FareOptionsTable = ({
           {otherResults.map((result, index) => (
             <div
               key={result.result_index || index}
-              className="grid grid-cols-[1fr_1fr_1fr_1fr_1.5fr_auto] gap-4 px-2 py-2 hover:bg-gray-50 transition-colors items-start"
+              className="grid grid-cols-[1fr_1fr_1fr_1fr_1.5fr_auto] gap-4 px-2 py-2 hover:bg-[#f4f3ec] transition-colors items-start"
             >
-              <div className="text-base text-gray-900">
+              <div className="text-base text-[#1a2436]">
                 {result.segments?.[0]?.cabin_baggage_allowance || "7 Kg"}
               </div>
-              <div className="text-base text-gray-900">
+              <div className="text-base text-[#1a2436]">
                 {result.segments?.[0]?.baggage_allowance || "N/A"}
               </div>
-              <div className="text-base text-gray-900">
+              <div className="text-base text-[#1a2436]">
                 {result.segments?.[0]?.cabin_class?.replace(" Class", "") ||
                   "Economy"}
               </div>
-              <div className="text-base text-gray-900">
+              <div className="text-base text-[#1a2436]">
                 {result.is_refundable ? "Yes" : "No"}
               </div>
-              <div className="text-base font-normal text-gray-900 text-left">
+              <div className="text-base font-normal font-mono text-[#0b1220] text-left">
                 {`${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}`}{getIndianPrice(result.final_fare)}
               </div>
               <div className="flex items-start justify-start gap-1">
@@ -507,7 +508,7 @@ const FareOptionsTable = ({
                     />
                   </svg>
                 </button>
-                <p className="text-gray-400 justify-center items-center">|</p>
+                <p className="text-[#8a93a6] justify-center items-center">|</p>
                 <input
                   type="checkbox"
                   className="w-4 h-4 cursor-pointer accent-blue-600 items-center justify-center mt-[3px]"
@@ -525,11 +526,11 @@ const FareOptionsTable = ({
         {otherResults.map((result, index) => (
           <div
             key={result.result_index || index}
-            className="bg-white rounded-lg border border-gray-200 overflow-hidden"
+            className="bg-white rounded-lg border border-[#ececec] overflow-hidden"
           >
             {/* Card Header */}
-            <div className="bg-gray-50 px-4 py-2.5 flex items-center justify-between border-b border-gray-200">
-              <h3 className="text-base font-medium text-gray-700">Details</h3>
+            <div className="bg-[#f4f3ec] px-4 py-2.5 flex items-center justify-between border-b border-[#ececec]">
+              <h3 className="text-base font-medium text-[#0b1220]">Details</h3>
               <div className="flex items-center gap-2">
                 <button
                   className="p-1"
@@ -566,37 +567,37 @@ const FareOptionsTable = ({
             {/* Card Content - Added Check-In Bag row */}
             <div className="px-4 py-3 space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-gray-500 text-sm">Cabin Bag</span>
-                <span className="text-gray-900 text-base font-medium">
+                <span className="text-[#8a93a6] text-sm">Cabin Bag</span>
+                <span className="text-[#1a2436] text-base font-medium">
                   {result.segments?.[0]?.cabin_baggage_allowance || "7 kg"}
                 </span>
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-gray-500 text-sm">Check-In Bag</span>
-                <span className="text-gray-900 text-md font-medium">
+                <span className="text-[#8a93a6] text-sm">Check-In Bag</span>
+                <span className="text-[#1a2436] text-md font-medium">
                   {result.segments?.[0]?.baggage_allowance || "N/A"}
                 </span>
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-gray-500 text-sm">Class</span>
-                <span className="text-gray-900 text-md font-medium">
+                <span className="text-[#8a93a6] text-sm">Class</span>
+                <span className="text-[#1a2436] text-md font-medium">
                   {result.segments?.[0]?.cabin_class?.replace(" Class", "") ||
                     "Economy"}
                 </span>
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-gray-500 text-sm">Refundable</span>
-                <span className="text-gray-900 text-md font-medium">
+                <span className="text-[#8a93a6] text-sm">Refundable</span>
+                <span className="text-[#1a2436] text-md font-medium">
                   {result.is_refundable ? "Yes" : "No"}
                 </span>
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-gray-500 text-sm">For {totalPax} person</span>
-                <span className="text-gray-900 text-md font-semibold">
+                <span className="text-[#8a93a6] text-sm">For {totalPax} person</span>
+                <span className="text-[#0b1220] text-md font-mono font-semibold">
                   {`${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}`}{getIndianPrice(result.final_fare)}
                 </span>
               </div>

@@ -28,7 +28,7 @@ const LocationsBlog = (props) => {
       props.locations.map((location) => {
         cardsarr.push(
           <Card
-            key={location.tagline}
+            key={location?.one_liner_description || location.tagline}
             location={location.name}
             heading={location.tagline}
             img={location.image}

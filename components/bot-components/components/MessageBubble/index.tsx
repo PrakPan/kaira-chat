@@ -1,7 +1,187 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { createPortal } from "react-dom";
+import { useSelector } from "react-redux";
 import type { Message, ProgressStep, ThinkingTask } from "../../hooks/useChat";
 import { WidgetRenderer } from "../WidgetRenderer";
+import {
+  getUserAvatarColor,
+  getAvatarColorForName,
+  getUserInitial,
+} from "../../utils/avatarColor";
+
+const USER_IMAGE_CDN = "https://d31aoa0ehgvjdi.cloudfront.net/";
+
+function useUserAvatarSrc(): string | null {
+  const reduxImage = useSelector((state: any) => state?.auth?.image);
+  const token = useSelector((state: any) => state?.auth?.token);
+  const [localImg, setLocalImg] = useState<string | null>(() =>
+    typeof window !== "undefined" ? localStorage.getItem("user_image") : null,
+  );
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    setLocalImg(token ? localStorage.getItem("user_image") : null);
+  }, [token]);
+
+  if (!token) return null;
+  const candidate =
+    reduxImage && reduxImage !== "null" ? reduxImage : localImg;
+  if (!candidate || candidate === "null") return null;
+  if (/^https?:\/\//i.test(candidate)) return candidate;
+  return USER_IMAGE_CDN + candidate;
+}
+
+const UserFallbackIcon: React.FC = () => (
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <circle cx="12" cy="8" r="4" />
+    <path d="M20 21a8 8 0 1 0-16 0" />
+  </svg>
+);
+
+// Shared responsive rules for the message bubble. On phones the avatar
+// (Kaira on the left, user on the right) eats horizontal room in the flex
+// row — we lift it out of flow and re-pin it as a small floating badge
+// overlapping the bubble's top corner. Also tightens the bubble max-width
+// and adds a hint of horizontal padding so cards don't kiss the screen
+// edge. Desktop layout is unchanged.
+// `!important` is required because the avatar divs set sizing/display
+// inline, and we override `.msg.kaira` / `.msg.user` inline `maxWidth`.
+const MessageBubbleResponsiveStyles: React.FC = () => (
+  <style>{`
+    @media (max-width: 767px) {
+      .msg {
+        position: relative;
+        padding-top: 14px;
+        /* Keep bubbles off the screen edges on phones. */
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+      /* Bot bubble fills the row on mobile. The avatar is absolutely
+         positioned (below), so it floats above the bubble's top-left
+         corner without pushing the content. */
+      .msg.kaira {
+        max-width: 100% !important;
+        width: 100%;
+      }
+      .msg.kaira > .chatWrapper,
+      .msg.kaira > div:not(.msg-avatar) { flex: 1 1 auto; min-width: 0; }
+      .msg-avatar {
+        position: absolute !important;
+        top: 0 !important;
+        width: 24px !important;
+        height: 24px !important;
+        box-sizing: border-box !important;
+        z-index: 2;
+        border: 2px solid #fff !important;
+        box-shadow: 0 1px 4px rgba(11,18,32,0.18);
+      }
+      .msg.kaira .msg-avatar { left: 12px; }
+      .msg.user  .msg-avatar { right: 12px; }
+    }
+  `}</style>
+);
+
+const UserAvatar: React.FC = () => {
+  const avatarSrc = useUserAvatarSrc();
+  const token = useSelector((state: any) => state?.auth?.token);
+  const name = useSelector((state: any) => state?.auth?.name);
+  // When an existing itinerary is open, the chat belongs to that itinerary's
+  // customer — show their initial, not the viewer's avatar. A brand-new chat
+  // has no itinerary customer_name, so we fall back to the logged-in user.
+  const customerNameRaw = useSelector(
+    (state: any) => state?.Itinerary?.customer_name,
+  );
+  const itineraryCustomer =
+    typeof customerNameRaw === "string" && customerNameRaw.trim()
+      ? customerNameRaw.trim()
+      : null;
+
+  // The logged-in user's own name — redux first, then the copy localStorage
+  // persists under "name". Used to detect when the open itinerary actually
+  // belongs to the viewer themselves.
+  const loggedInName = useMemo(() => {
+    const fromRedux =
+      typeof name === "string" && name.trim() ? name.trim() : null;
+    if (fromRedux) return fromRedux;
+    if (typeof window === "undefined") return null;
+    const stored = localStorage.getItem("name");
+    return stored && stored.trim() ? stored.trim() : null;
+  }, [name]);
+
+  // If the itinerary's customer_name matches the logged-in user, it's their own
+  // itinerary — show their own profile (photo/avatar) instead of a generic
+  // customer letter avatar.
+  const isOwnItinerary =
+    !!itineraryCustomer &&
+    !!loggedInName &&
+    itineraryCustomer.toLowerCase() === loggedInName.toLowerCase();
+
+  const viewingItinerary = !!itineraryCustomer && !isOwnItinerary;
+
+  const [errored, setErrored] = useState(false);
+
+  // Viewing an itinerary → always the customer's letter avatar (we don't have
+  // their photo). New chat → the logged-in user's avatar (photo if available).
+  const showImage = !viewingItinerary && !!avatarSrc && !errored;
+  const showLetter = !showImage && (viewingItinerary || !!token);
+  const letterName = viewingItinerary ? itineraryCustomer : name;
+
+  const [color, setColor] = useState<string | null>(null);
+  useEffect(() => {
+    if (!showLetter) {
+      setColor(null);
+    } else if (viewingItinerary) {
+      // Other person's color is derived from their name (never persisted, so it
+      // doesn't clobber the logged-in user's own stored color).
+      setColor(getAvatarColorForName(letterName));
+    } else {
+      setColor(getUserAvatarColor(letterName));
+    }
+  }, [showLetter, viewingItinerary, letterName]);
+
+  return (
+    <div
+      aria-hidden
+      className="msg-avatar"
+      style={{
+        width: 30,
+        height: 30,
+        borderRadius: "50%",
+        flexShrink: 0,
+        overflow: "hidden",
+        background: color || "#0f1a2e",
+        color: color ? "#fff" : "#f7e700",
+        display: "grid",
+        placeItems: "center",
+        fontSize: 12,
+        fontWeight: 700,
+        fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+      }}
+    >
+      {showImage ? (
+        <img
+          src={avatarSrc!}
+          alt="You"
+          onError={() => setErrored(true)}
+          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+        />
+      ) : showLetter ? (
+        getUserInitial(letterName)
+      ) : (
+        <UserFallbackIcon />
+      )}
+    </div>
+  );
+};
 
 // ─── Image lightbox (full-size preview) ───────────────────────────────────────
 const ImageLightbox: React.FC<{ url: string; alt?: string; onClose: () => void }> = ({
@@ -846,6 +1026,161 @@ function resolveEntityTokens(
   });
 }
 
+// ─── Thinking step list ───────────────────────────────────────────────────────
+// Renders workflow steps as a vertical checklist inside a soft-yellow card
+// (matches the design mock). Completed steps get a green check + strikethrough;
+// the active step (streaming, not yet done) gets a pulsing-dot yellow marker and
+// bold text. Used both while thinking and inside the collapsed "Thought for Xs"
+// dropdown (where every step reads as done and a trailing "Done" row is added).
+
+type Step = { text: string; done: boolean };
+
+const StepStatusIcon: React.FC<{ state: "done" | "current" }> = ({ state }) => {
+  if (state === "current") {
+    return (
+      <span
+        style={{
+          width: 18,
+          height: 18,
+          borderRadius: "50%",
+          background: "#F7E700",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 2,
+          flexShrink: 0,
+        }}
+      >
+        {[0, 1, 2].map((i) => (
+          <span
+            key={i}
+            style={{
+              width: 2.5,
+              height: 2.5,
+              borderRadius: "50%",
+              background: "#0B1220",
+              display: "inline-block",
+              animation: "thinkPulse 1.4s infinite ease-in-out",
+              animationDelay: `${[-0.32, -0.16, 0][i]}s`,
+            }}
+          />
+        ))}
+      </span>
+    );
+  }
+  return (
+    <span
+      style={{
+        width: 18,
+        height: 18,
+        borderRadius: "50%",
+        background: "#22A45D",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexShrink: 0,
+      }}
+    >
+      <svg
+        width="11"
+        height="11"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="#fff"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <polyline points="20 6 9 17 4 12" />
+      </svg>
+    </span>
+  );
+};
+
+const ThinkingStepsList: React.FC<{
+  steps: Step[];
+  streaming: boolean;
+  appendDone?: boolean;
+}> = ({ steps, streaming, appendDone }) => (
+  <div
+    style={{
+      background: "#FEFBEA",
+      border: "1px solid #F0E6B0",
+      borderRadius: 14,
+      padding: "12px 14px",
+      display: "flex",
+      flexDirection: "column",
+      gap: 10,
+    }}
+  >
+    {steps.map((step, i) => {
+      const current = streaming && !step.done;
+      return (
+        <div key={i} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <StepStatusIcon state={current ? "current" : "done"} />
+          <span
+            style={{
+              fontSize: 13,
+              lineHeight: 1.4,
+              color: current ? "#0B1220" : "#8A93A6",
+              fontWeight: current ? 700 : 500,
+              textDecoration: current ? "none" : "line-through",
+              wordBreak: "break-word",
+              overflowWrap: "anywhere",
+            }}
+          >
+            {step.text}
+          </span>
+        </div>
+      );
+    })}
+    {appendDone && (
+      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <StepStatusIcon state="done" />
+        <span style={{ fontSize: 13, fontWeight: 700, color: "#0B1220" }}>
+          Done
+        </span>
+      </div>
+    )}
+  </div>
+);
+
+const ThinkingActive: React.FC<{ lead?: string; steps: Step[] }> = ({
+  lead,
+  steps,
+}) => (
+  <div
+    style={{
+      marginBottom: 12,
+      width: "100%",
+      maxWidth: "100%",
+      boxSizing: "border-box",
+      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+    }}
+  >
+    {lead && (
+      <div
+        style={{
+          fontWeight: 700,
+          fontSize: 13.5,
+          marginBottom: 8,
+          color: "#0D1429",
+          lineHeight: 1.4,
+        }}
+      >
+        {lead}
+      </div>
+    )}
+    <ThinkingStepsList steps={steps} streaming />
+    <style>{`
+      @keyframes thinkPulse {
+        0%, 80%, 100% { transform: scale(0.4); opacity: 0.3; }
+        40%           { transform: scale(1);   opacity: 1; }
+      }
+    `}</style>
+  </div>
+);
+
 // ─── ProgressLoader ───────────────────────────────────────────────────────────
 
 const ProgressLoader: React.FC<{ steps: ProgressStep[] }> = ({ steps }) => {
@@ -866,77 +1201,20 @@ const ProgressLoader: React.FC<{ steps: ProgressStep[] }> = ({ steps }) => {
   const latest = steps[steps.length - 1];
   if (!latest) return null;
 
-  // ── In-progress: bordered card with bulb + current message ──
+  // ── In-progress: lead + navy single-row loader showing only the current step.
+  // Completed steps are exposed via the "Thought for Xs" collapsible below.
   if (!allDone) {
     return (
-      <div
-        style={{
-          marginBottom: 12,
-          borderRadius: 12,
-          border: "1px solid #e5e7eb",
-          background: "#ffffff",
-          padding: "10px 14px 12px",
-          fontFamily: "'Inter', sans-serif",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 6,
-            marginBottom: 8,
-          }}
-        >
-          <svg
-            width="15"
-            height="15"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#6b7280"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M9 21h6M12 3a6 6 0 0 1 6 6c0 2.22-1.21 4.16-3 5.2V17a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1v-2.8C7.21 13.16 6 11.22 6 9a6 6 0 0 1 6-6z" />
-          </svg>
-          <span style={{ fontSize: 14, color: "#6b7280", fontWeight: 500 }}>
-            Thinking
-          </span>
-          <svg width="12" height="12" viewBox="0 0 20 20" fill="#9ca3af">
-            <path
-              fillRule="evenodd"
-              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-              clipRule="evenodd"
-            />
-          </svg>
-        </div>
-
-        <div
-          key={latest.text}
-          style={{
-            fontSize: 14,
-            fontWeight: 600,
-            color: "#374151",
-            paddingLeft: 2,
-            animation: "thinkFadeIn 0.15s ease-out",
-          }}
-        >
-          {latest.text}
-        </div>
-
-        <style>{`
-          @keyframes thinkFadeIn {
-            from { opacity: 0; transform: translateY(4px); }
-            to   { opacity: 1; transform: translateY(0); }
-          }
-        `}</style>
-      </div>
+      <ThinkingActive
+        lead="Great — locking it in. Give me ~30 seconds."
+        steps={steps}
+      />
     );
   }
 
   // ── Done: no card, collapsible toggle ──
   return (
-    <div style={{ marginBottom: 12, fontFamily: "'Inter', sans-serif" }}>
+    <div style={{ marginBottom: 12, fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}>
       <button
         onClick={() => setExpanded((v) => !v)}
         style={{
@@ -972,79 +1250,7 @@ const ProgressLoader: React.FC<{ steps: ProgressStep[] }> = ({ steps }) => {
       </button>
 
       {expanded && (
-        <div style={{ paddingLeft: 2 }}>
-          {steps.map((step, i) => (
-            <div key={i} style={{ display: "flex", alignItems: "flex-start" }}>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  width: 20,
-                  flexShrink: 0,
-                }}
-              >
-                <div
-                  style={{
-                    width: 14,
-                    height: 14,
-                    borderRadius: "50%",
-                    border: "1.5px solid #d1d5db",
-                    background: "#fff",
-                    flexShrink: 0,
-                    marginTop: 2,
-                  }}
-                />
-                {i < steps.length - 1 && (
-                  <div
-                    style={{
-                      width: 1,
-                      flex: 1,
-                      background: "#e5e7eb",
-                      minHeight: 16,
-                    }}
-                  />
-                )}
-              </div>
-              <div
-                style={{
-                  fontSize: 14,
-                  color: "#9ca3af",
-                  paddingLeft: 10,
-                  paddingBottom: i < steps.length - 1 ? 12 : 0,
-                  lineHeight: "20px",
-                }}
-              >
-                {step.text}
-              </div>
-            </div>
-          ))}
-
-          <div style={{ display: "flex", alignItems: "center", marginTop: 7 }}>
-            <div
-              style={{ width: 20, display: "flex", justifyContent: "center" }}
-            >
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#9ca3af"
-                strokeWidth="1.8"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <path
-                  d="M9 12l2 2 4-4"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </div>
-            <span style={{ fontSize: 14, color: "#9ca3af", paddingLeft: 10 }}>
-              Done
-            </span>
-          </div>
-        </div>
+        <ThinkingStepsList steps={steps} streaming={false} appendDone />
       )}
     </div>
   );
@@ -1084,82 +1290,17 @@ const ThinkingBlock: React.FC<{
 
   const cleanContent = (text: string) => text.replace(/\*\*/g, "");
 
-  // Current active task (last non-done, or last task while streaming)
-  const currentTask = isThinking
-    ? ([...tasks].reverse().find((t) => !t.done) ?? tasks[tasks.length - 1])
-    : null;
-
-  // ── Thinking state: bordered card ──────────────────────────────────────────
+  // ── Thinking state: lead + navy single-row loader showing only the current
+  // task. Completed tasks are exposed via the "Thought for Xs" collapsible.
   if (isThinking) {
     return (
-      <div
-        style={{
-          marginBottom: 12,
-          borderRadius: 12,
-          border: "1px solid #e5e7eb",
-          background: "#ffffff",
-          padding: "10px 14px 12px",
-          fontFamily: "'Inter', sans-serif",
-        }}
-      >
-        {/* Header */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 6,
-            marginBottom: 8,
-          }}
-        >
-          {/* Lightbulb icon */}
-          <svg
-            width="15"
-            height="15"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#6b7280"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M9 21h6M12 3a6 6 0 0 1 6 6c0 2.22-1.21 4.16-3 5.2V17a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1v-2.8C7.21 13.16 6 11.22 6 9a6 6 0 0 1 6-6z" />
-          </svg>
-          <span style={{ fontSize: 14, color: "#6b7280", fontWeight: 500 }}>
-            Thinking
-          </span>
-          {/* Right chevron */}
-          <svg width="12" height="12" viewBox="0 0 20 20" fill="#9ca3af">
-            <path
-              fillRule="evenodd"
-              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-              clipRule="evenodd"
-            />
-          </svg>
-        </div>
-
-        {/* Current single task — bold, animated fade */}
-        {currentTask && (
-          <div
-            key={currentTask.content}
-            style={{
-              fontSize: 14,
-              fontWeight: 600,
-              color: "#374151",
-              paddingLeft: 2,
-              animation: "thinkFadeIn 0.15s ease-out",
-            }}
-          >
-            {cleanContent(currentTask.content)}
-          </div>
-        )}
-
-        <style>{`
-          @keyframes thinkFadeIn {
-            from { opacity: 0; transform: translateY(4px); }
-            to   { opacity: 1; transform: translateY(0); }
-          }
-        `}</style>
-      </div>
+      <ThinkingActive
+        lead="Great — locking it in. Give me ~30 seconds."
+        steps={tasks.map((t) => ({
+          text: cleanContent(t.content),
+          done: t.done,
+        }))}
+      />
     );
   }
 
@@ -1170,7 +1311,7 @@ const ThinkingBlock: React.FC<{
     <div
       style={{
         marginBottom: 12,
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
       }}
     >
       {/* Header — clickable */}
@@ -1210,107 +1351,14 @@ const ThinkingBlock: React.FC<{
 
       {/* Expanded task list */}
       {expanded && (
-        <div style={{ paddingLeft: 2 }}>
-          {tasks.map((task, i) => (
-            <div
-              key={i}
-              style={{ display: "flex", alignItems: "flex-start", gap: 0 }}
-            >
-              {/* Icon + vertical line column */}
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  width: 20,
-                  flexShrink: 0,
-                }}
-              >
-                {/* Circle icon */}
-                <div
-                  style={{
-                    width: 14,
-                    height: 14,
-                    borderRadius: "50%",
-                    border: "1.5px solid #d1d5db",
-                    background: "#fff",
-                    flexShrink: 0,
-                    marginTop: 2,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                />
-                {/* Vertical connector (not after last item) */}
-                {i < tasks.length - 1 && (
-                  <div
-                    style={{
-                      width: 1,
-                      flex: 1,
-                      background: "#e5e7eb",
-                      minHeight: 16,
-                    }}
-                  />
-                )}
-              </div>
-
-              {/* Task text */}
-              <div
-                style={{
-                  fontSize: 14,
-                  fontWeight: 400,
-                  color: "#9ca3af",
-                  paddingLeft: 10,
-                  paddingBottom: i < tasks.length - 1 ? 12 : 0,
-                  lineHeight: "20px",
-                }}
-              >
-                {cleanContent(task.content)}
-              </div>
-            </div>
-          ))}
-
-          {/* Done row */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 0,
-              marginTop: "7px",
-            }}
-          >
-            <div
-              style={{ width: 20, display: "flex", justifyContent: "center" }}
-            >
-              {/* Circled checkmark */}
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#9ca3af"
-                strokeWidth="1.8"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <path
-                  d="M9 12l2 2 4-4"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </div>
-            <span
-              style={{
-                fontSize: 14,
-                color: "#9ca3af",
-                paddingLeft: 10,
-                fontWeight: 400,
-              }}
-            >
-              Done
-            </span>
-          </div>
-        </div>
+        <ThinkingStepsList
+          steps={tasks.map((t) => ({
+            text: cleanContent(t.content),
+            done: t.done,
+          }))}
+          streaming={false}
+          appendDone
+        />
       )}
     </div>
   );
@@ -1335,7 +1383,7 @@ const RetryButton: React.FC<{ onRetry: () => void }> = ({ onRetry }) => (
       border: "none",
       background: "transparent",
       color: "#dc2626",
-      fontFamily: "'Inter', sans-serif",
+      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
       fontSize: 13,
       fontWeight: 600,
       cursor: "pointer",
@@ -1386,7 +1434,7 @@ const ErrorBubble: React.FC<{
         border: "1px solid #fecaca",
         background: "#fef2f2",
         color: "#7f1d1d",
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
         fontSize: 14,
         lineHeight: "20px",
         animation: "errFadeIn 0.18s ease-out",
@@ -1443,6 +1491,99 @@ const ErrorBubble: React.FC<{
   );
 };
 
+// ─── Chat typography (matches design-system.html · 04 · Typography) ──────────
+// Applied to any markdown-rendered content inside a chat bubble. Sizes use
+// clamp() so a paragraph that's tight on a 375px phone scales smoothly up to
+// the design's 14.5/17/19/22px steps on desktop.
+const ChatMdStyles: React.FC = () => (
+  <style>{`
+    .chat-md {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: clamp(13.5px, 3.6vw, 14.5px);
+      line-height: 1.55;
+      color: #1a2436;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    .chat-md p { margin: 0 0 6px; }
+    .chat-md p:last-child { margin-bottom: 0; }
+    .chat-md ul, .chat-md ol { margin: 6px 0; padding-left: 18px; }
+    .chat-md ul + p, .chat-md ol + p { margin-top: 6px; }
+    .chat-md li { margin-bottom: 2px; }
+    .chat-md li::marker { color: #8a93a6; }
+    .chat-md h1 {
+      font-size: clamp(17px, 4.6vw, 19px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin: 8px 0 6px;
+      color: #0b1220;
+    }
+    .chat-md h2 {
+      font-size: clamp(15.5px, 4vw, 17px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin: 8px 0 6px;
+      color: #0b1220;
+    }
+    .chat-md h3 {
+      font-size: clamp(14px, 3.7vw, 15.5px);
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      line-height: 1.3;
+      margin: 6px 0 4px;
+      color: #0b1220;
+    }
+    .chat-md h1:first-child,
+    .chat-md h2:first-child,
+    .chat-md h3:first-child { margin-top: 0; }
+    .chat-md strong, .chat-md b { font-weight: 700; color: #0b1220; }
+    .chat-md em {
+      font-family: 'Instrument Serif', 'Inter', serif;
+      font-style: italic;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+    }
+    .chat-md code {
+      font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+      font-size: clamp(11.5px, 3vw, 13px);
+      background: #fafaf5;
+      border: 1px solid #f4f3ec;
+      padding: 1px 5px;
+      border-radius: 4px;
+      color: #1a2436;
+    }
+    .chat-md a {
+      color: #0b1220;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .chat-md hr {
+      border: none;
+      border-top: 1px dashed #ececec;
+      margin: 10px 0;
+    }
+    .chat-md blockquote {
+      border-left: 3px solid #ececec;
+      padding-left: 10px;
+      margin: 8px 0;
+      color: #445069;
+      font-size: clamp(13px, 3.4vw, 14px);
+    }
+    /* User bubble inverts text colour, but inherits the same scale. */
+    .chat-md.user { color: #fff; }
+    .chat-md.user strong, .chat-md.user b { color: #fff; }
+    .chat-md.user a { color: #f7e700; }
+    .chat-md.user code {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.16);
+      color: #fff;
+    }
+    
+  `}</style>
+);
+
 // ─── MessageBubble ────────────────────────────────────────────────────────────
 
 export const MessageBubble: React.FC<MessageBubbleProps> = ({
@@ -1463,23 +1604,92 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
 
   if (message.type === "widget" && message.widgetItem) {
     const buttonOnly = isButtonOnlyWidget(message.widgetItem.widget);
-    return (
-      <div>
-        <WidgetRenderer
-          widget={message.widgetItem.widget}
-          onAction={onWidgetAction}
-          disabled={widgetDisabled}
-        />
-        <div className="ml-5">
-        {!buttonOnly && onFeedback && message.id && (
-          <FeedbackButtons
-            messageId={message.id}
-            feedback={feedback}
-            loading={feedbackLoading}
-            onFeedback={onFeedback}
+
+    // Pure CTA widgets (e.g. "Confirm This Route") render bare — no avatar,
+    // no bubble surround. They're a UI prompt, not a Kaira utterance, so the
+    // conversation visual shouldn't anchor them to her.
+    if (buttonOnly) {
+      return (
+        <div>
+          <WidgetRenderer
+            widget={message.widgetItem.widget}
+            onAction={onWidgetAction}
+            disabled={widgetDisabled}
           />
-        )}
         </div>
+      );
+    }
+
+    return (
+      <div
+        className="msg kaira"
+        style={{
+          display: "flex",
+          gap: 10,
+          maxWidth: "98%",
+          marginBottom: 14,
+          animation: "msgInK 0.3s ease-out",
+        }}
+      >
+        {/* Kaira avatar — same gradient ring + image as text replies, so
+            content widget messages read as part of the same turn. Hidden on
+            phones (see MessageBubbleResponsiveStyles) to give the widget
+            card full width. */}
+        <div
+          aria-hidden
+          className="msg-avatar"
+          style={{
+            width: 30,
+            height: 30,
+            borderRadius: "50%",
+            flexShrink: 0,
+            overflow: "hidden",
+            background: "linear-gradient(180deg, #a8d2f5, #7ab8e8)",
+          }}
+        >
+          <img
+            src="/KairaInsta.png"
+            alt="Kaira"
+            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          />
+        </div>
+        <div style={{ minWidth: 0, flex: 1 }}>
+          {/* Content widgets sit on the Kaira bubble surface — inner cards
+              (transport, activity, POI) stay white on top of this base. */}
+          <div
+            style={{
+              background: "#fafaf5",
+              borderRadius: 16,
+              borderBottomLeftRadius: 5,
+              padding: "11px 12px",
+              wordBreak: "break-word",
+              overflowWrap: "anywhere",
+            }}
+          >
+            <WidgetRenderer
+              widget={message.widgetItem.widget}
+              onAction={onWidgetAction}
+              disabled={widgetDisabled}
+            />
+          </div>
+          <div className="ml-1">
+            {onFeedback && message.id && (
+              <FeedbackButtons
+                messageId={message.id}
+                feedback={feedback}
+                loading={feedbackLoading}
+                onFeedback={onFeedback}
+              />
+            )}
+          </div>
+        </div>
+        <MessageBubbleResponsiveStyles />
+        <style>{`
+          @keyframes msgInK {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+        `}</style>
       </div>
     );
   }
@@ -1488,75 +1698,88 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
     const hasAttachments = (message.attachments?.length ?? 0) > 0;
     return (
       <div
+        className="msg user"
         style={{
           display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-end",
-          marginBottom: 16,
-          gap: 6,
+          flexDirection: "row-reverse",
+          gap: 10,
+          maxWidth: "85%",
+          marginLeft: "auto",
+          marginBottom: 14,
+          fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+          animation: "msgIn 0.3s ease-out",
         }}
       >
-        {hasAttachments && (
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              justifyContent: "flex-end",
-              gap: 6,
-              maxWidth: "85%",
-            }}
-          >
-            {message.attachments!.map((att) => {
-              const isImage = att.mimeType?.startsWith("image/");
-              if (isImage && att.previewUrl) {
+        <UserAvatar />
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6, minWidth: 0 }}>
+          {hasAttachments && (
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                justifyContent: "flex-end",
+                gap: 6,
+                maxWidth: "100%",
+              }}
+            >
+              {message.attachments!.map((att) => {
+                const isImage = att.mimeType?.startsWith("image/");
+                if (isImage && att.previewUrl) {
+                  return (
+                    <ImageAttachment
+                      key={att.id}
+                      url={att.previewUrl}
+                      name={att.name}
+                    />
+                  );
+                }
                 return (
-                  <ImageAttachment
+                  <div
                     key={att.id}
-                    url={att.previewUrl}
-                    name={att.name}
-                  />
+                    style={{
+                      padding: "8px 12px",
+                      background: "#f3f4f6",
+                      borderRadius: 8,
+                      fontSize: 13,
+                      color: "#374151",
+                      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+                      maxWidth: 220,
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
+                    title={att.name}
+                  >
+                    📎 {att.name ?? "Attachment"}
+                  </div>
                 );
-              }
-              return (
-                <div
-                  key={att.id}
-                  style={{
-                    padding: "8px 12px",
-                    background: "#f3f4f6",
-                    borderRadius: 8,
-                    fontSize: 13,
-                    color: "#374151",
-                    fontFamily: "'Inter', sans-serif",
-                    maxWidth: 220,
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                  }}
-                  title={att.name}
-                >
-                  📎 {att.name ?? "Attachment"}
-                </div>
-              );
-            })}
-          </div>
-        )}
-        {message.content && (
-          <div
-            style={{
-              maxWidth: "85%",
-              background: "#f8fafc",
-              color: "#0d0d0d",
-              padding: "10px 16px",
-              borderRadius: 12,
-              fontFamily: "'Inter', sans-serif",
-              fontSize: 16,
-              lineHeight: "24px",
-              fontWeight: 400,
-            }}
-          >
-            {message.content}
-          </div>
-        )}
+              })}
+            </div>
+          )}
+          {message.content && (
+            <div
+              className="chat-md user"
+              style={{
+                padding: "11px 15px",
+                background: "#0f1a2e",
+                borderRadius: 16,
+                borderBottomRightRadius: 5,
+                wordBreak: "break-word",
+                overflowWrap: "anywhere",
+              }}
+            >
+              {message.content}
+            </div>
+          )}
+        </div>
+        <ChatMdStyles />
+        <MessageBubbleResponsiveStyles />
+        <style>{`
+          @keyframes msgIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+        `}</style>
       </div>
     );
   }
@@ -1568,117 +1791,755 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   const streaming = !!message.isStreaming;
   const allTasksDone = hasTasks && message.thinkingTasks!.every((t) => t.done);
 
+  // When a turn ends without producing anything (e.g. server emits
+  // prompt_login and closes the stream before any text/task/progress), the
+  // assistant placeholder is left empty + not-streaming. Rendering it would
+  // show a bare Kaira avatar with no bubble — and after the post-login replay
+  // adds a fresh streaming placeholder, the user sees two stacked Kaira
+  // avatars. Drop the empty husk.
+  if (!hasProgress && !hasTasks && !hasContent && !streaming && !message.isError) {
+    return null;
+  }
+
   // Show thinking block if we have tasks (whether streaming or done)
   const showThinking = hasTasks;
   // Show dots only when truly nothing else: no progress, no tasks, no content
   const showDots = !hasProgress && !hasTasks && !hasContent && streaming;
 
+  // Plain text replies sit inside a soft Kaira-style bubble (mirrors
+  // `.msg.kaira .msg-bubble` in chat-active-v2.html). Thinking/progress
+  // blocks and error bubbles have their own card design and keep it.
+  const showPlainBubble = hasContent && !message.isError;
+
   return (
     <div
+      className="msg kaira"
       style={{
         display: "flex",
-        justifyContent: "flex-start",
-        marginBottom: 16,
+        gap: 10,
+        maxWidth: "98%",
+        marginBottom: 14,
+        animation: "msgInK 0.3s ease-out",
       }}
     >
       <div
+        aria-hidden
+        className="msg-avatar"
         style={{
-          display: "flex",
-          alignItems: "flex-start",
-          gap: 10,
-          width: "98%",
+          width: 30,
+          height: 30,
+          borderRadius: "50%",
+          flexShrink: 0,
+          overflow: "hidden",
+          background: "linear-gradient(180deg, #a8d2f5, #7ab8e8)",
         }}
       >
-        <div
-          className="chatWrapper"
-          style={{ padding: "10px 16px", color: "#0d0d0d", minWidth: "98%" }}
-        >
-          {/* Progress steps (e.g. from progress_update events) */}
-          {hasProgress && <ProgressLoader steps={message.progressSteps!} />}
+        <img
+          src="/KairaInsta.png"
+          alt="Kaira"
+          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+        />
+      </div>
+      <div
+        className="chatWrapper"
+        style={{
+          color: "#1a2436",
+          minWidth: 0,
+          flex: 1,
+          fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+        }}
+      >
+        {/* Progress steps (e.g. from progress_update events) */}
+        {hasProgress && <ProgressLoader steps={message.progressSteps!} />}
 
-          {/* Thinking block — shows tasks, collapses to pill once done + content arrives */}
-          {showThinking && (
-            <ThinkingBlock
-              tasks={message.thinkingTasks!}
-              // Still "streaming" visually until both workflow done AND content has started
-              isStreaming={!allTasksDone || (!hasContent && streaming)}
+        {/* Thinking block — shows tasks, collapses to pill once done + content arrives */}
+        {showThinking && (
+          <ThinkingBlock
+            tasks={message.thinkingTasks!}
+            // Still "streaming" visually until both workflow done AND content has started
+            isStreaming={!allTasksDone || (!hasContent && streaming)}
+          />
+        )}
+
+        {/* Main response content */}
+        {hasContent && message.isError ? (
+          <ErrorBubble
+            variant={message.errorVariant ?? "generic"}
+            text={message.content}
+            onRetry={onRetry}
+          />
+        ) : showPlainBubble ? (
+          <div
+            className="chat-md kaira"
+            style={{
+              padding: "11px 15px",
+              background: "#fafaf5",
+              borderRadius: 16,
+              borderBottomLeftRadius: 5,
+              willChange: "contents",
+              transition: "opacity 0.1s ease",
+              wordBreak: "break-word",
+              overflowWrap: "anywhere",
+            }}
+          >
+            {renderContent(message.content, entities ?? {})}
+          </div>
+        ) : null}
+
+        {/* Fallback bubble dots */}
+        {
+         showDots && 
+        <ThinkingDots />}
+
+        {/* Feedback (thumbs up / down) — only on completed bot text replies.
+            Suppressed for network errors; the retry CTA inside ErrorBubble
+            takes its place. */}
+        {hasContent &&
+          !streaming &&
+          onFeedback &&
+          message.id &&
+          !(message.isError && message.errorVariant === "network") && (
+            <FeedbackButtons
+              messageId={message.id}
+              feedback={feedback}
+              loading={feedbackLoading}
+              onFeedback={onFeedback}
             />
           )}
-
-          {/* Main response content */}
-          {hasContent && message.isError ? (
-            <ErrorBubble
-              variant={message.errorVariant ?? "generic"}
-              text={message.content}
-              onRetry={onRetry}
-            />
-          ) : hasContent ? (
-            <div
-              style={{
-                willChange: "contents",
-                transition: "opacity 0.1s ease",
-              }}
-            >
-              {renderContent(message.content, entities ?? {})}
-            </div>
-          ) : null}
-
-          {/* Fallback bubble dots */}
-          {showDots && <ThinkingDots />}
-
-          {/* Feedback (thumbs up / down) — only on completed bot text replies.
-              Suppressed for network errors; the retry CTA inside ErrorBubble
-              takes its place. */}
-          {hasContent &&
-            !streaming &&
-            onFeedback &&
-            message.id &&
-            !(message.isError && message.errorVariant === "network") && (
-              <FeedbackButtons
-                messageId={message.id}
-                feedback={feedback}
-                loading={feedbackLoading}
-                onFeedback={onFeedback}
-              />
-            )}
-        </div>
       </div>
+      <ChatMdStyles />
+      <MessageBubbleResponsiveStyles />
+      <style>{`
+        @keyframes msgInK {
+          from { opacity: 0; transform: translateY(8px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
   );
 };
 
-export const ThinkingDots: React.FC = () => (
-  <div
-    style={{
-      display: "inline-flex",
-      alignItems: "center",
-      gap: 6,
-      padding: "12px 16px",
-      // borderRadius: "18px 18px 18px 4px",
-      // background: "#f1f3f4",
-      alignSelf: "flex-start",
-      marginTop: 4,
-    }}
-  >
-    {[0, 1, 2].map((i) => (
-      <span
-        key={i}
+// ─── Itinerary "steal / clone" CTA ────────────────────────────────────────────
+// Shown at the bottom of the chat when a viewer is looking at SOMEONE ELSE'S
+// itinerary. Two reactive states (driven by redux auth, so it flips instantly
+// on login/logout with no page reload):
+//   • Logged-out  → "Steal this itinerary" → opens the bot login modal.
+//   • Logged-in   → "Create my version"    → clones via onCreateVersion (the
+//                    parent calls the clone API then polls + shows skeletons).
+// It renders nothing when there's no itinerary open or the viewer owns it.
+
+const CtaIcon: React.FC<{ name: string; size?: number }> = ({ name, size = 15 }) => {
+  const common = {
+    width: size,
+    height: size,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 1.9,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+    style: { display: "block" },
+    "aria-hidden": true,
+  };
+  switch (name) {
+    case "copy":
+      return (
+        <svg {...common}>
+          <rect x="9" y="9" width="11" height="11" rx="2.5" />
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+        </svg>
+      );
+    case "edit": // customize → sliders
+      return (
+        <svg {...common}>
+          <line x1="4" y1="8" x2="20" y2="8" />
+          <line x1="4" y1="16" x2="20" y2="16" />
+          <circle cx="9" cy="8" r="2.4" />
+          <circle cx="15" cy="16" r="2.4" />
+        </svg>
+      );
+    case "price": // tag
+      return (
+        <svg {...common}>
+          <path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0l-7.2-7.2A2 2 0 0 1 2.8 12V4a2 2 0 0 1 2-2h8a2 2 0 0 1 1.4.6l6.4 6.4a2 2 0 0 1 0 2.8Z" />
+          <circle cx="7.5" cy="7.5" r="1.4" />
+        </svg>
+      );
+    case "save": // bookmark
+      return (
+        <svg {...common}>
+          <path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4.2L5 21V4a1 1 0 0 1 1-1Z" />
+        </svg>
+      );
+    case "swap": // repeat / swap
+      return (
+        <svg {...common}>
+          <path d="M17 2l4 4-4 4" />
+          <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+          <path d="M7 22l-4-4 4-4" />
+          <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+        </svg>
+      );
+    default: // arrow
+      return (
+        <svg {...common}>
+          <path d="M5 12h14M13 6l6 6-6 6" />
+        </svg>
+      );
+  }
+};
+
+interface ItineraryCloneCtaProps {
+  /** Logged-out primary action — open the bot login modal. */
+  onRequestLogin?: () => void;
+  /** Logged-in primary action — clone the itinerary (parent polls + skeletons). */
+  onCreateVersion?: () => void | Promise<void>;
+}
+
+export const ItineraryCloneCta: React.FC<ItineraryCloneCtaProps> = ({
+  onRequestLogin,
+  onCreateVersion,
+}) => {
+  // Reactive auth + itinerary — re-renders on login/logout with no reload.
+  const token = useSelector((state: any) => state?.auth?.token);
+  const authId = useSelector((state: any) => state?.auth?.id);
+  const authName = useSelector((state: any) => state?.auth?.name);
+  const itinerary = useSelector((state: any) => state?.Itinerary);
+
+  const loggedIn = !!token;
+  const ownerId = itinerary?.customer;
+  // `customer_name` is the populated signal in both P1 (draft) and P2 — the bot
+  // Itinerary object doesn't always carry `id`/`customer`, so key off the name.
+  const ownerName =
+    typeof itinerary?.customer_name === "string"
+      ? itinerary.customer_name.trim()
+      : "";
+  const hasOwner = !!ownerName;
+  // Hide on the viewer's OWN itinerary: match by customer id when present,
+  // otherwise fall back to comparing the creator's name to the logged-in name.
+  const isOwn =
+    loggedIn &&
+    ((ownerId != null && String(authId ?? "") === String(ownerId)) ||
+      (!!authName &&
+        !!ownerName &&
+        authName.trim().toLowerCase() === ownerName.toLowerCase()));
+
+  // Only when looking at another person's itinerary.
+  if (!hasOwner || isOwn) return null;
+
+  const handlePrimary = () => {
+    if (!loggedIn) {
+      onRequestLogin?.();
+      return;
+    }
+    // Logged in → open the clone form popup (parent-managed: collects
+    // start/end location, dates, pax, then calls get-my-itinerary).
+    onCreateVersion?.();
+  };
+
+  const ownerFirst = ownerName ? ownerName.split(/\s+/)[0] : "";
+  const sub = loggedIn
+    ? "Clone the whole trip into your workspace — the original stays untouched, your copy is fully yours to remix and reprice."
+    : "Log in and I'll drop an editable copy into your trips — yours to reshape, reprice and book.";
+  const benefits: Array<[string, string]> = loggedIn
+    ? [
+        ["edit", "Customize every activity, day by day"],
+        ["price", "Get live, bookable pricing"],
+        ["save", "Auto-saved to your trips"],
+      ]
+    : [
+        ["copy", "Copy the full plan in one tap"],
+        ["swap", "Swap hotels, stays & activities"],
+        ["price", "See live pricing for your dates"],
+      ];
+  const primaryLabel = loggedIn ? "Create My Version" : "Log In to Continue";
+  const microItems = loggedIn
+    ? ["Saved to My Trips", "Original stays untouched"]
+    : ["Free to start", "No card needed", "30-second login"];
+
+  // Headline — Inter (matches the rest of the chat), yellow "mark".
+  const headline = loggedIn ? (
+    <>
+      Clone it. <span style={{ color: "#F5D70E" }}>Make it yours.</span>
+    </>
+  ) : (
+    <>
+      Make this trip <span style={{ color: "#F5D70E" }}>yours.</span>
+    </>
+  );
+
+  // Wrapped in the same Kaira message layout as every other bot reply: avatar
+  // on the left, content on the right, matching spacing/padding.
+  const FONT = "'Inter', -apple-system, BlinkMacSystemFont, sans-serif";
+
+  return (
+    <div
+      className="msg kaira"
+      style={{
+        display: "flex",
+        gap: 10,
+        maxWidth: "98%",
+        marginBottom: 14,
+        fontFamily: FONT,
+        animation: "msgInK 0.3s ease-out",
+      }}
+    >
+      {/* Kaira avatar — identical to other messages */}
+      <div
+        aria-hidden
+        className="msg-avatar"
         style={{
-          width: 10,
-          height: 10,
+          width: 30,
+          height: 30,
           borderRadius: "50%",
-          background: "#111",
-          display: "inline-block",
-          animation: "thinkPulse 1.4s infinite ease-in-out",
-          animationDelay: `${[-0.32, -0.16, 0][i]}s`,
+          flexShrink: 0,
+          overflow: "hidden",
+          background: "linear-gradient(180deg, #a8d2f5, #7ab8e8)",
+        }}
+      >
+        <img
+          src="/KairaInsta.png"
+          alt="Kaira"
+          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+        />
+      </div>
+
+      {/* Card */}
+      <div
+      style={{
+        position: "relative",
+        flex: 1,
+        minWidth: 0,
+        overflow: "hidden",
+        borderRadius: 16,
+        borderBottomLeftRadius: 5,
+        border: "1px solid #2C3360",
+        background:
+          "radial-gradient(120% 140% at 100% 0%, #232a4f 0%, #181D38 55%)",
+        color: "#fff",
+        boxShadow: "0 26px 60px -34px rgba(8,11,28,0.85)",
+        fontFamily: FONT,
+      }}
+    >
+      {/* top-right yellow glow */}
+      <div
+        style={{
+          position: "absolute",
+          top: -60,
+          right: -50,
+          width: 200,
+          height: 200,
+          borderRadius: "50%",
+          background:
+            "radial-gradient(circle, rgba(245,215,14,0.32), transparent 62%)",
+          pointerEvents: "none",
         }}
       />
-    ))}
-    <style>{`
-      @keyframes thinkPulse {
-        0%, 80%, 100% { transform: scale(0.4); opacity: 0.3; }
-        40%            { transform: scale(1);   opacity: 1; }
-      }
-    `}</style>
-  </div>
-);
+      <div style={{ position: "relative", padding: "16px 16px 16px" }}>
+        {/* eyebrow */}
+        <div
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 7,
+            fontFamily: FONT,
+            fontSize: 10,
+            fontWeight: 700,
+            letterSpacing: "0.08em",
+            textTransform: "uppercase",
+            color: "#F5D70E",
+            background: "rgba(245,215,14,0.10)",
+            border: "1px solid rgba(245,215,14,0.28)",
+            padding: "6px 11px",
+            borderRadius: 999,
+            marginBottom: 14,
+          }}
+        >
+          <span
+            style={{
+              width: 6,
+              height: 6,
+              borderRadius: "50%",
+              background: "#F5D70E",
+              boxShadow: "0 0 0 3px rgba(245,215,14,0.25)",
+            }}
+          />
+          {loggedIn ? "Ready to clone · private copy" : "Shared · itinerary"}
+        </div>
+
+        {/* owner chip */}
+        {ownerName && (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 9,
+              background: "rgba(255,255,255,0.06)",
+              border: "1px solid rgba(255,255,255,0.12)",
+              borderRadius: 12,
+              padding: "8px 11px",
+              marginBottom: 16,
+            }}
+          >
+            <span
+              style={{
+                width: 24,
+                height: 24,
+                borderRadius: "50%",
+                flexShrink: 0,
+                display: "grid",
+                placeItems: "center",
+                color: "#fff",
+                fontSize: 11,
+                fontWeight: 700,
+                background: getAvatarColorForName(ownerName),
+              }}
+            >
+              {getUserInitial(ownerName)}
+            </span>
+            <span style={{ fontSize: 12.5, color: "#C7CCE6", lineHeight: 1.35 }}>
+              {loggedIn ? (
+                <>
+                  Cloning from <b style={{ color: "#fff", fontWeight: 700 }}>{ownerName}'s</b> plan —
+                  your copy stays private.
+                </>
+              ) : (
+                <>
+                  Crafted by <b style={{ color: "#fff", fontWeight: 700 }}>{ownerName}</b> — make it
+                  yours in under a minute.
+                </>
+              )}
+            </span>
+          </div>
+        )}
+
+        {/* headline */}
+        <h3
+          style={{
+            fontFamily: FONT,
+            fontWeight: 800,
+            fontSize: 22,
+            lineHeight: 1.18,
+            letterSpacing: "-0.01em",
+            color: "#fff",
+            margin: "0 0 8px",
+          }}
+        >
+          {headline}
+        </h3>
+        <p
+          style={{
+            fontSize: 13.5,
+            lineHeight: 1.58,
+            color: "#B9BFDB",
+            margin: "0 0 18px",
+          }}
+        >
+          {sub}
+        </p>
+
+        {/* benefits — bordered single-column list (v2) */}
+        <div
+          style={{
+            borderRadius: 14,
+            overflow: "hidden",
+            border: "1px solid rgba(255,255,255,0.1)",
+            marginBottom: 18,
+          }}
+        >
+          {benefits.map(([icon, label], i) => (
+            <div
+              key={label}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 11,
+                padding: "11px 13px",
+                borderBottom:
+                  i < benefits.length - 1
+                    ? "1px solid rgba(255,255,255,0.08)"
+                    : "none",
+              }}
+            >
+              <span
+                style={{
+                  width: 26,
+                  height: 26,
+                  borderRadius: "50%",
+                  flexShrink: 0,
+                  display: "grid",
+                  placeItems: "center",
+                  background: "rgba(245,215,14,0.16)",
+                  color: "#F5D70E",
+                }}
+              >
+                <CtaIcon name={icon} size={14} />
+              </span>
+              <span
+                style={{
+                  fontSize: 13,
+                  fontWeight: 600,
+                  color: "#E6E8F4",
+                  lineHeight: 1.3,
+                }}
+              >
+                {label}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {/* primary */}
+        <button
+          type="button"
+          onClick={handlePrimary}
+          style={{
+            width: "100%",
+            border: 0,
+            cursor: "pointer",
+            fontFamily: "inherit",
+            fontWeight: 800,
+            fontSize: 15.5,
+            color: "#181D38",
+            background: "#F5D70E",
+            padding: "15px 16px",
+            borderRadius: 13,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 9,
+            boxShadow: "0 14px 30px -12px rgba(245,215,14,0.6)",
+            transition: "transform 0.15s ease, filter 0.2s ease",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = "translateY(-1px)";
+            e.currentTarget.style.filter = "saturate(1.06)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = "translateY(0)";
+            e.currentTarget.style.filter = "none";
+          }}
+        >
+          {primaryLabel}
+          <CtaIcon name="arrow" size={16} />
+        </button>
+
+        {/* micro */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexWrap: "wrap",
+            gap: 8,
+            marginTop: 13,
+            fontFamily: FONT,
+            fontSize: 11,
+            fontWeight: 500,
+            letterSpacing: "0.01em",
+            color: "#878FB4",
+          }}
+        >
+          {microItems.map((m, i) => (
+            <React.Fragment key={m}>
+              {i > 0 && (
+                <span
+                  style={{
+                    width: 3,
+                    height: 3,
+                    borderRadius: "50%",
+                    background: "#878FB4",
+                  }}
+                />
+              )}
+              {m}
+            </React.Fragment>
+          ))}
+        </div>
+      </div>
+      <style>{`
+        @keyframes ctaRise {
+          from { opacity: 0; transform: translateY(10px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes msgInK {
+          from { opacity: 0; transform: translateY(8px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
+      </div>
+      <MessageBubbleResponsiveStyles />
+    </div>
+  );
+};
+
+// ─── ThinkingDots ─────────────────────────────────────────────────────────────
+// "Kaira is working" indicator shown while an assistant reply is streaming but
+// no content/tasks have arrived yet. Modeled exactly on the Claude Code loader
+// in the shared reference: a monospace `* Word…` in a clay/terracotta tone with
+// a bright gleam shimmering through it (Claude's "thinking" sweep), followed by
+// a muted-gray `(Ns · thinking more)`. Row is `minHeight: 30` and vertically
+// centered so it lines up with the 30px Kaira avatar. Sizing uses clamp() so it
+// scales from small phones up to desktop.
+// Shown as "Word…" while Kaira thinks. Kept deliberately context-agnostic:
+// each one reads sensibly for ANY query — a contact question as much as a trip
+// plan — while still carrying a light travel/journey flavour. Avoid
+// activity-specific verbs (e.g. "Booking stays") that look odd on a generic ask.
+const THINKING_PHRASES = [
+  "Reticulating",
+  "Plotting",
+  "Wandering",
+  "Daydreaming",
+  "Mapping",
+  "Charting",
+  "Navigating",
+  "Exploring",
+  "Scouting",
+  "Routing",
+  "Pathfinding",
+  "Wayfinding",
+  "Roaming",
+  "Pondering",
+  "Meandering",
+  "Orienting",
+  "Surveying",
+  "Venturing",
+  "Trailblazing",
+  "Gathering ideas",
+  "Connecting the dots",
+  "Plotting a course",
+  "Getting my bearings",
+  "Consulting the map",
+  "Checking the compass",
+];
+
+// Advances once per ThinkingDots mount. Each new reply ("next chat") shows the
+// NEXT phrase, while any single thinking session keeps ONE fixed phrase for its
+// whole lifetime — no rotating through the list mid-wait.
+let thinkingPhraseCursor = 0;
+
+export const ThinkingDots: React.FC = () => {
+  const [seconds, setSeconds] = useState(0);
+  React.useEffect(() => {
+    const id = setInterval(() => setSeconds((s) => s + 1), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  // Pick a single phrase for this session, fixed for the component's life.
+  // Each new ThinkingDots instance (the next chat reply) advances to the next
+  // phrase, cycling back to the start after the last. The lazy initializer
+  // runs once per mount, so the phrase never changes while we wait.
+  const [phrase] = useState(() => {
+    const p = THINKING_PHRASES[thinkingPhraseCursor % THINKING_PHRASES.length];
+    thinkingPhraseCursor += 1;
+    return p;
+  });
+
+  // Only nudge "thinking more" once the wait has actually gotten long
+  // (>30s). Before that, just show the elapsed seconds.
+  const showThinkingMore = seconds > 30;
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "clamp(6px, 1.8vw, 8px)",
+        minHeight: 30,
+        fontFamily:
+          "'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
+        fontSize: "clamp(12.5px, 3.5vw, 14px)",
+        lineHeight: 1.4,
+      }}
+    >
+      {/* Yellow pulsing-dot marker — matches the "current" step icon in the
+          thinking steps list (StepStatusIcon, state="current"). */}
+      <span
+        aria-hidden
+        style={{
+          width: 18,
+          height: 18,
+          borderRadius: "50%",
+          background: "#F7E700",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 2,
+          flexShrink: 0,
+        }}
+      >
+        {[0, 1, 2].map((i) => (
+          <span
+            key={i}
+            style={{
+              width: 2.5,
+              height: 2.5,
+              borderRadius: "50%",
+              background: "#0B1220",
+              display: "inline-block",
+              animation: "thinkPulse 1.4s infinite ease-in-out",
+              animationDelay: `${[-0.32, -0.16, 0][i]}s`,
+            }}
+          />
+        ))}
+      </span>
+
+      {/* `Word…` — black with a subtle gleam shimmering through */}
+      <span
+        className="thinkShimmerText"
+        style={{
+          fontWeight: 500,
+          whiteSpace: "nowrap",
+          display: "inline-block",
+          lineHeight: 1.4,
+          // paddingBottom: 2,
+        }}
+      >
+        {phrase}…
+      </span>
+
+      {/* `(Ns)` — muted gray; appends "· thinking more" only after 30s */}
+      <span style={{ color: "#9B9B9B", fontWeight: 400, whiteSpace: "nowrap" }}>
+        ({seconds}s{showThinkingMore ? " · thinking more" : ""})
+      </span>
+
+      <style>{`
+        @keyframes thinkPulse {
+          0%, 80%, 100% { transform: scale(0.4); opacity: 0.3; }
+          40%           { transform: scale(1);   opacity: 1; }
+        }
+        @keyframes thinkShimmerSweep {
+          0%   { background-position: 0% 0; }
+          100% { background-position: -200% 0; }
+        }
+        .thinkShimmerText {
+          /* Black text with a soft gray gleam gliding through. The gradient
+             tiles and the keyframe shifts exactly one tile width, so it loops
+             seamlessly — no jump or pause. */
+          background-image: linear-gradient(
+            90deg,
+            #0B0B0B 0%,
+            #0B0B0B 35%,
+            #8A8A8A 50%,
+            #0B0B0B 65%,
+            #0B0B0B 100%
+          );
+          background-size: 200% 100%;
+          background-repeat: repeat;
+          -webkit-background-clip: text;
+          background-clip: text;
+          -webkit-text-fill-color: transparent;
+          color: transparent;
+          animation: thinkShimmerSweep 2.6s linear infinite;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .thinkShimmerText {
+            animation: none;
+            color: #0B0B0B;
+            -webkit-text-fill-color: #0B0B0B;
+          }
+        }
+      `}</style>
+    </div>
+  );
+};

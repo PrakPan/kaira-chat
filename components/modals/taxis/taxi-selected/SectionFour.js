@@ -23,7 +23,7 @@ const Section = (props) => {
           color="white"
           borderRadius="0 0 10px 10px"
           borderStyle="solid none none none"
-          borderColor="rgba(222, 222, 222, 1)"
+          borderColor="#ececec"
           borderWidth="1px"
           onclickparam={null}
           onclick={() => console.log("")}

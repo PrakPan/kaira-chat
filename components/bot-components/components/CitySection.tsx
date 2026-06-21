@@ -130,12 +130,12 @@ const ActivityRow: React.FC<{ item: SlabElement; index: number }> = ({
           <RecommendationIcon />
         </div>
         <div className="flex flex-col min-w-0 justify-center">
-          <h4 className="text-sm text-[#111827] font-normal truncate mb-0 leading-4">
+          <h4 className="ttw-type-body text-[#111827] font-normal truncate mb-0 leading-4">
             {itemName}
           </h4>
           {item?.time && (
             <div className="flex items-center gap-1 flex-shrink-0">
-              <span className="text-xs text-[#666666]">{item.time}</span>
+              <span className="ttw-type-small text-[#666666]">{item.time}</span>
             </div>
           )}
         </div>
@@ -152,31 +152,31 @@ const ActivityRow: React.FC<{ item: SlabElement; index: number }> = ({
       />
       <div className="flex flex-col items-start justify-center gap-1 min-w-0 flex-1">
         <div className="flex items-center gap-2 w-full">
-          <h4 className="text-xs md:text-sm text-[#000] !font-normal truncate mb-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap cursor-pointer hover:text-[#0066CC]">
+          <h4 className="ttw-type-small md:ttw-type-body text-[#000] !font-normal truncate mb-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap cursor-pointer hover:text-[#0066CC]">
             {itemName}
           </h4>
         </div>
         <div className="flex items-center gap-2">
 
           {item?.type === "activity" && (
-          <span className="flex items-center px-1.5 md:px-2 py-0.5 bg-[#5CBA66] text-white text-[10px] md:text-xs rounded-full font-medium flex-shrink-0 whitespace-nowrap">
+          <span className="flex items-center px-1.5 md:px-2 py-0.5 bg-[#5CBA66] text-white ttw-type-small md:ttw-type-small rounded-full font-medium flex-shrink-0 whitespace-nowrap">
             Activity
           </span>
         )}
         {item?.type === "restaurant" && (
-          <span className="flex items-center px-1.5 md:px-2 py-0.5 bg-[#FDECEA] text-[#C62828] text-[10px] md:text-xs rounded-full font-medium flex-shrink-0 whitespace-nowrap">
+          <span className="flex items-center px-1.5 md:px-2 py-0.5 bg-[#FDECEA] text-[#C62828] ttw-type-small md:ttw-type-small rounded-full font-medium flex-shrink-0 whitespace-nowrap">
             Restaurant
           </span>
         )}
         {(item?.type === "poi" || (!item?.type && item?.poi)) && (
-          <span className="flex items-center px-1.5 md:px-2 py-0.5 bg-[#EEF2FF] text-[#4338CA] text-[10px] md:text-xs rounded-full font-medium flex-shrink-0 whitespace-nowrap">
+          <span className="flex items-center px-1.5 md:px-2 py-0.5 bg-[#EEF2FF] text-[#4338CA] ttw-type-small md:ttw-type-small rounded-full font-medium flex-shrink-0 whitespace-nowrap">
             Self Exploration
           </span>
         )}
 
         {/* Included tag — only for included activities */}
         {/* {(item?.activity || (item?.type === "activity" && item?.time)) && (
-          <span className="flex gap-2 items-center px-1.5 md:px-2 py-0.5 bg-[#5CBA66] text-white text-[10px] md:text-xs rounded-full font-medium flex-shrink-0 whitespace-nowrap">
+          <span className="flex gap-2 items-center px-1.5 md:px-2 py-0.5 bg-[#5CBA66] text-white ttw-type-small md:ttw-type-small rounded-full font-medium flex-shrink-0 whitespace-nowrap">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="10"
@@ -195,7 +195,7 @@ const ActivityRow: React.FC<{ item: SlabElement; index: number }> = ({
          
           {item?.time && (
             <div className="flex items-center gap-1 flex-shrink-0">
-              <span className="text-xs text-[#666666]">{item.time}</span>
+              <span className="ttw-type-small text-[#666666]">{item.time}</span>
             </div>
           )}
         </div>
@@ -238,7 +238,7 @@ const DayRow: React.FC<DayRowProps> = ({ day, isLastDay, cityName, index, isLoad
     <div className="flex border-b border-[#E8E8E8] hover:bg-[#FAFAFA] transition-colors">
       {/* Date column — matches CityDay exactly: w-20 md:w-24, px-2 md:px-4, py-3 md:py-4 */}
       <div className="w-20 md:w-24 px-2 md:px-4 py-3 md:py-4 border-r border-[#E8E8E8] flex items-start">
-        <span className="text-xs md:text-sm text-[#000]">
+        <span className="ttw-type-small md:ttw-type-body text-[#000]">
           {day.day ? day.day : formatDateLabel(day.date)}
         </span>
       </div>
@@ -270,13 +270,13 @@ const DayRow: React.FC<DayRowProps> = ({ day, isLastDay, cityName, index, isLoad
     <div className="flex items-center gap-2 md:gap-3">
       <IoBagCheckOutline size={16} className="w-[30px] md:w-[40px] h-[20px] md:h-[27px]" />
       <div className="flex-1 min-w-0">
-        <div className="text-xs md:text-sm mt-1">Check out from {cityName}</div>
+        <div className="ttw-type-small md:ttw-type-body mt-1">Check out from {cityName}</div>
       </div>
     </div>
   ) : (
     <div className="flex items-center gap-2">
       <MdOutlineDownhillSkiing size={16} className="w-[30px] md:w-[40px] h-[20px] md:h-[27px]" />
-      <span className="text-xs md:text-sm">No activity is added.</span>
+      <span className="ttw-type-small md:ttw-type-body">No activity is added.</span>
     </div>
   )}
 </div>
@@ -309,13 +309,13 @@ const HotelRow: React.FC<HotelRowProps> = ({ hotels }) => {
             <div className="flex flex-row">
               <div className="flex gap-2 pr-[8px]">
                 <HotelIcon />
-                <div className="text-[14px] font-400 leading-0 cursor-pointer">
+                <div className="ttw-type-body font-400 leading-0 cursor-pointer">
                   {hotel.name}
                 </div>
               </div>
               {hotel?.rating && hotel.rating !== 0 && (
                 <div className="flex flex-row items-center pl-[8px]">
-                  <div className="text-[#000] text-[12px] ml-1 mr-1 font-[500]">
+                  <div className="text-[#000] ttw-type-small ml-1 mr-1">
                     {hotel.rating}
                   </div>
                   <StarIcon />
@@ -338,7 +338,7 @@ const CitySection: React.FC<CitySectionProps & { isLoading?: boolean }> = ({ rou
       <div className="flex items-start justify-between p-3 rounded-t-lg w-full border-1 border-[#FBEAC7]">
         <div className="space-y-1 font-inter w-full">
           {/* City name + duration — matches ItineraryCity md:text-[18px] font-semibold leading-0 */}
-          <div className="md:text-[18px] font-semibold leading-0">
+          <div className="md:ttw-type-h4 font-semibold leading-0">
             {route.city.name}
             {" - "}
             {route.city.duration}{" "}

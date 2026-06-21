@@ -34,7 +34,7 @@ export default function Guide(props) {
 
   return (
     <div className="flex flex-col justify-start items-baseline">
-      <div className="mb-2 font-medium text-[14px]">Guide</div>
+      <div className="mb-2 font-medium ttw-type-body">Guide</div>
 
       <div className="flex flex-row items-center gap-2 flex-wrap">
         <div

@@ -17,7 +17,7 @@ import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
 import { FaStar, FaStarHalfAlt, FaClock } from "react-icons/fa";
 import { FaPerson } from "react-icons/fa6";
 import { IoIosArrowDown, IoIosArrowUp, IoMdClose } from "react-icons/io";
-import { IoFastFood, IoTicket } from "react-icons/io5";
+import { IoFastFood, IoTicket, IoCheckmarkCircle, IoCloseCircle } from "react-icons/io5";
 import { MdTransferWithinAStation } from "react-icons/md";
 import { BiSolidCustomize } from "react-icons/bi";
 import ImageLoader from "../../ImageLoader";
@@ -73,8 +73,12 @@ const svgIcons = {
   ),
 };
 export const Title = styled.p`
+  /* H3 token · 22/1.15/800/-0.02em */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 22px;
   font-weight: 800;
-  font-size: 20px;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
 `;
 
 export const Reviews = styled.div`
@@ -83,8 +87,13 @@ export const Reviews = styled.div`
   gap: 0.2rem;
   p,
   u {
+    /* Caption · 12/1.4/600/0.04em */
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 12px;
-    color: #7a7a7a;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    line-height: 1.4;
+    color: #8a93a6;
   }
   u {
     margin-inline: 0.2rem;
@@ -92,19 +101,28 @@ export const Reviews = styled.div`
 `;
 
 export const Text = styled.p`
-  font-size: 14px;
+  /* Body · 14.5/1.55/400 */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14.5px;
+  font-weight: 400;
+  line-height: 1.55;
 `;
 
 export const Heading = styled.p`
-  font-size: 18px;
-  font-weight: 800;
+  /* H4 token · 17/1.2/700/-0.015em */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
 `;
 
 const Container = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
-  font-family: Lexend;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #fafaf5;
 `;
 
 const BackContainer = styled.div`
@@ -113,7 +131,7 @@ const BackContainer = styled.div`
   gap: 0.5rem;
   position: sticky;
   z-index: 1;
-  background: white;
+  background: #fafaf5;
   top: 0;
   padding-block: 0.75rem;
 
@@ -164,7 +182,50 @@ const ScrollContainer = styled.div`
 //   margin-block: 1rem 1rem;
 // `;
 
-const colors = ["#d5f5d3", "#fadadd", "#F5F0FF", "#DDF4C5"];
+const colors = ["#e7f5ee", "#fff1ee", "#eef2fb", "#f0e9d6"];
+
+// ─── Kaira presentational helpers (mirrors activityDetails/ActivityDetails) ──
+// Dot-bulleted list with optional include/exclude icon glyphs.
+const IconList = ({ items, variant }) => (
+  <ul className="flex flex-col gap-2.5">
+    {items.map((item, i) => (
+      <li
+        key={i}
+        className="flex items-start gap-2.5 text-[15px] leading-[23px] text-[#445069]"
+      >
+        {variant === "include" ? (
+          <IoCheckmarkCircle className="mt-[2px] shrink-0 text-[17px] text-[#1f8a5a]" />
+        ) : variant === "exclude" ? (
+          <IoCloseCircle className="mt-[2px] shrink-0 text-[17px] text-[#b84034]" />
+        ) : (
+          <span className="mt-[8px] h-[5px] w-[5px] shrink-0 rounded-full bg-[#b8becc]" />
+        )}
+        <span>{item}</span>
+      </li>
+    ))}
+  </ul>
+);
+
+// Collapsible section header (General guidelines, Things to bring, …).
+const CollapsibleSection = ({ title, open, onToggle, children }) => (
+  <div className="flex flex-col">
+    <button
+      type="button"
+      onClick={onToggle}
+      className="flex w-full items-center justify-between py-3.5 text-left"
+    >
+      <span className="font-sans text-[17px] font-bold tracking-[-0.01em] text-[#0b1220]">
+        {title}
+      </span>
+      <IoIosArrowDown
+        className={`shrink-0 text-[#445069] transition-transform duration-200 ${
+          open ? "rotate-180" : ""
+        }`}
+      />
+    </button>
+    {open && <div className="pb-3.5">{children}</div>}
+  </div>
+);
 
 const ActivityDetails = (props) => {
   let isPageWide = useMediaQuery("(min-width: 768px)");
@@ -299,6 +360,34 @@ const ActivityDetails = (props) => {
         props?.handleCloseDrawer(e);
         dispatch(setItinerary(newItinerary));
 
+        // Re-fetch the canonical itinerary after a successful delete — mirrors
+        // the POI/restaurant flow in POIDetails.js. The local splice/filter
+        // above gives instant feedback, but slab indices are renumbered by the
+        // backend after every delete, so pulling the fresh response keeps the
+        // indices used by the next delete correct.
+        try {
+          const refreshed = await axios.get(
+            `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/`,
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+              },
+            },
+          );
+          if (refreshed?.data) {
+            // Preserve the resolved status — the itinerary GET can lag and
+            // return a stale "Draft", which would hide finalized-only tabs.
+            const priorStatus = itinerary?.status;
+            const resolvedStatus =
+              priorStatus && priorStatus !== "Draft"
+                ? priorStatus
+                : refreshed.data?.status;
+            dispatch(setItinerary({ ...refreshed.data, status: resolvedStatus }));
+          }
+        } catch (refreshErr) {
+          console.log("Failed to refresh itinerary after delete:", refreshErr);
+        }
+
         dispatch(
           openNotification({
             type: "success",
@@ -337,7 +426,7 @@ const ActivityDetails = (props) => {
       {props.data?.tags?.map((e, i) => (
         <div
           key={i}
-          className={`rounded-full px-2 py-1`}
+          className={`rounded-full px-2 py-1 text-[#1a2436]`}
           style={{ backgroundColor: colors[i % colors.length] }}
         >
           {e}
@@ -346,13 +435,9 @@ const ActivityDetails = (props) => {
     </div>
   );
 
-  var tips = (
-    <ul style={{ paddingLeft: "0.5rem" }}>
-      {props.data.tips?.map((e, i) => (
-        <li key={i}>- {e}</li>
-      ))}
-    </ul>
-  );
+  var tips = props.data.tips?.length ? (
+    <IconList items={props.data.tips} />
+  ) : null;
 
   var stars = [];
   for (let i = 0; i < Math.floor(props.data.rating); i++) {
@@ -366,7 +451,7 @@ const ActivityDetails = (props) => {
     <>
       {props?.data ? (
         <Container
-          className="px-lg max-ph:px-sm gap-xl"
+          className="px-lg max-ph:px-sm gap-xl pb-[32px]"
           itineraryDrawer={props.itineraryDrawer}
         >
           <div className="mt-[1rem]">
@@ -412,9 +497,9 @@ const ActivityDetails = (props) => {
                     ></ImageLoader>
 
                     {props.data?.ideal_duration_number ? (
-                      <div className="absolute bottom-1 left-2 bg-[#000000] text-white px-[16px] py-[2px] rounded-full flex flex-row items-center gap-2">
-                        <div className="text-[14px]">Approx Time:</div>
-                        <div className="text-[14px]">
+                      <div className="absolute bottom-1 left-2 bg-[#0b1220] text-[#fafaf5] px-[16px] py-[2px] rounded-full flex flex-row items-center gap-2">
+                        <div className="ttw-type-body">Approx Time:</div>
+                        <div className="ttw-type-body">
                           {props.data.ideal_duration_number}{" "}
                           {props.data.ideal_duration_number > 1
                             ? props.data?.ideal_duration_unit?.toLowerCase()
@@ -504,40 +589,22 @@ const ActivityDetails = (props) => {
 
             {props.activityData?.inclusions &&
               props.activityData?.inclusions?.length > 0 && (
-                <div className="flex flex-col gap-2 mb-[30px]">
-                  <div className="text-[20px] font-semibold text-green">
-                    Inclusions
+                <div className="flex flex-col gap-3 rounded-[14px] bg-[#e7f5ee] p-4 mb-[30px]">
+                  <div className="flex items-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.1em] text-[#1f8a5a]">
+                    ✓ Inclusions
                   </div>
-                  <div className="border-b-[1px]"></div>
-                  <div className="text-[14px]">
-                    <ul style={{ paddingLeft: "0.5rem" }}>
-                      {props.activityData.inclusions.map((inclusion, i) => (
-                        <li key={i} className="mb-1">
-                          - {inclusion}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                  <IconList items={props.activityData.inclusions} variant="include" />
                 </div>
               )}
 
             {/* Exclusions Section */}
             {props.activityData?.exclusions &&
               props.activityData?.exclusions?.length > 0 && (
-                <div className="flex flex-col gap-2 mb-[30px]">
-                  <div className="text-[20px] font-semibold text-red">
-                    Exclusions
+                <div className="flex flex-col gap-3 rounded-[14px] bg-[#fff1ee] p-4 mb-[30px]">
+                  <div className="flex items-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.1em] text-[#b84034]">
+                    ✗ Exclusions
                   </div>
-                  <div className="border-b-[1px]"></div>
-                  <div className="text-[14px]">
-                    <ul style={{ paddingLeft: "0.5rem" }}>
-                      {props.activityData.exclusions.map((exclusion, i) => (
-                        <li key={i} className="mb-1">
-                          - {exclusion}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                  <IconList items={props.activityData.exclusions} variant="exclude" />
                 </div>
               )}
             {props.data?.address && (
@@ -548,33 +615,33 @@ const ActivityDetails = (props) => {
             )}
           </div>
 
-          {props.data?.hotel_pickup_included ? (
-            <div className="flex items-center gap-1 text-[14px] bg-[#e6f9ec] text-[#3BAF75] font-semibold rounded-sm w-max px-1">
-              <Image
-                src="/hotelPickupIncluded.svg"
-                alt="hotel-pickup-included"
-                width={20}
-                height={20}
-              />
-              <span className=" px-2 py-1 mb-0 rounded-md text-xs font-medium">
-                Hotel Pickup Included
-              </span>
-            </div>
-          ) : (
-            <div className="flex items-center gap-1 text-[14px] bg-[#FCE3DB] text-[#EE724B] font-semibold w-max rounded-sm px-1">
-              <Image
-                src="/notHotelPickupIncluded.svg"
-                alt="not-hotel-pickup-included"
-                width={20}
-                height={20}
-              />
-              <span className=" px-2 py-1 mb-0 rounded-md text-xs font-medium">
-                Hotel pickup not included
-              </span>
-            </div>
-          )}
+          <div className="flex items-center gap-4 flex-wrap ttw-type-body text-[#445069]">
+            {props.data?.hotel_pickup_included ? (
+              <div className="flex items-center gap-1 bg-[#e7f5ee] text-[#1f8a5a] font-semibold rounded-sm px-1">
+                <Image
+                  src="/hotelPickupIncluded.svg"
+                  alt="hotel-pickup-included"
+                  width={20}
+                  height={20}
+                />
+                <span className=" px-2 py-1 mb-0 rounded-md ttw-type-small">
+                  Hotel Pickup Included
+                </span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-1 bg-[#fff1ee] text-[#b84034] font-semibold rounded-sm px-1">
+                <Image
+                  src="/notHotelPickupIncluded.svg"
+                  alt="not-hotel-pickup-included"
+                  width={20}
+                  height={20}
+                />
+                <span className=" px-2 py-1 mb-0 rounded-md ttw-type-small">
+                  Hotel pickup not included
+                </span>
+              </div>
+            )}
 
-          <div className="flex items-center gap-4 flex-wrap text-[14px] text-gray-800">
             {/* Tour Type */}
             {props?.data?.tour_type === "Private Tour" && (
               <div className="flex items-center gap-1">
@@ -630,137 +697,78 @@ const ActivityDetails = (props) => {
             )}
           </div>
 
-          <div className="flex flex-col gap-2">
-            {props.data?.general_guidelines?.length ? (
-              <div className="flex flex-col">
-                <div
-                  className="text-[20px] font-semibold"
-                  // onClick={() =>
-                  //   setBoolDetail((prev) => ({
-                  //     ...prev,
-                  //     generalGuidelines: !prev.generalGuidelines,
-                  //   }))
-                  // }
+          {(props.data?.general_guidelines?.length ||
+            props.data?.things_to_bring?.length ||
+            props.data?.not_suitable_for?.length ||
+            props.data?.tips_tricks?.length) ? (
+            <div className="flex flex-col divide-y divide-[#ececec] border-y border-[#ececec]">
+              {props.data?.general_guidelines?.length ? (
+                <CollapsibleSection
+                  title="General guidelines"
+                  open={boolDetails?.generalGuidelines}
+                  onToggle={() =>
+                    setBoolDetail((prev) => ({
+                      ...prev,
+                      generalGuidelines: !prev.generalGuidelines,
+                    }))
+                  }
                 >
-                  <div>General guidelines</div>
-                  <div className="border-b-[1px] mt-2 mb-2"></div>
-                  {/* {boolDetails?.generalGuidelines ? (
-                    <IoIosArrowUp />
-                  ) : (
-                    <IoIosArrowDown />
-                  )} */}
-                </div>
-                {boolDetails?.generalGuidelines && (
-                  <div className="text-[14px]">
-                    <ul style={{ paddingLeft: "0.5rem" }}>
-                      {props.data.general_guidelines?.map((e, i) => (
-                        <li key={i}>- {e}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            ) : null}
+                  <IconList items={props.data.general_guidelines} />
+                </CollapsibleSection>
+              ) : null}
 
-            {props.data?.things_to_bring?.length ? (
-              <div className="flex flex-col">
-                <div
-                  className="text-[20px] font-semibold"
-                  // onClick={() =>
-                  //   setBoolDetail((prev) => ({
-                  //     ...prev,
-                  //     thingsToBring: !prev.thingsToBring,
-                  //   }))
-                  // }
+              {props.data?.things_to_bring?.length ? (
+                <CollapsibleSection
+                  title="Things to bring"
+                  open={boolDetails?.thingsToBring}
+                  onToggle={() =>
+                    setBoolDetail((prev) => ({
+                      ...prev,
+                      thingsToBring: !prev.thingsToBring,
+                    }))
+                  }
                 >
-                  <div>Things to bring</div>
-                  <div className="border-b-[1px] mt-2 mb-2"></div>
-                  {/* {boolDetails?.thingsToBring ? (
-                    <IoIosArrowUp />
-                  ) : (
-                    <IoIosArrowDown />
-                  )} */}
-                </div>
-                {boolDetails?.thingsToBring && (
-                  <div className="text-[14px]">
-                    <ul style={{ paddingLeft: "0.5rem" }}>
-                      {props.data.things_to_bring.map((e, i) => (
-                        <li key={i}>- {e}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            ) : null}
+                  <IconList items={props.data.things_to_bring} />
+                </CollapsibleSection>
+              ) : null}
 
-            {props.data?.not_suitable_for?.length ? (
-              <div className="flex flex-col">
-                <div
-                  className="text-[20px] font-semibold"
-                  // onClick={() =>
-                  //   setBoolDetail((prev) => ({
-                  //     ...prev,
-                  //     notSuitableFor: !prev.notSuitableFor,
-                  //   }))
-                  // }
+              {props.data?.not_suitable_for?.length ? (
+                <CollapsibleSection
+                  title="Not suitable for"
+                  open={boolDetails?.notSuitableFor}
+                  onToggle={() =>
+                    setBoolDetail((prev) => ({
+                      ...prev,
+                      notSuitableFor: !prev.notSuitableFor,
+                    }))
+                  }
                 >
-                  <div>Not suitable for</div>
-                  <div className="border-b-[1px] mt-2 mb-2"></div>
-                  {/* {boolDetails?.notSuitableFor ? (
-                    <IoIosArrowUp />
-                  ) : (
-                    <IoIosArrowDown />
-                  )} */}
-                </div>
-                {boolDetails?.notSuitableFor && (
-                  <div className="text-[14px]">
-                    <ul style={{ paddingLeft: "0.5rem" }}>
-                      {props.data.not_suitable_for.map((e, i) => (
-                        <li key={i}>- {e}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            ) : null}
+                  <IconList items={props.data.not_suitable_for} />
+                </CollapsibleSection>
+              ) : null}
 
-            {props.data?.tips_tricks?.length ? (
-              <div className="flex flex-col">
-                <div
-                  className="text-[20px] font-semibold"
-                  // onClick={() =>
-                  //   setBoolDetail((prev) => ({
-                  //     ...prev,
-                  //     tipsTricks: !prev.tipsTricks,
-                  //   }))
-                  // }
+              {props.data?.tips_tricks?.length ? (
+                <CollapsibleSection
+                  title="Tips, Tricks and Cautions"
+                  open={boolDetails?.tipsTricks}
+                  onToggle={() =>
+                    setBoolDetail((prev) => ({
+                      ...prev,
+                      tipsTricks: !prev.tipsTricks,
+                    }))
+                  }
                 >
-                  <div>Tips, Tricks and Cautions</div>
-                  <div className="border-b-[1px] mt-2 mb-2"></div>
-                  {/* {boolDetails?.tipsTricks ? (
-                    <IoIosArrowUp />
-                  ) : (
-                    <IoIosArrowDown />
-                  )} */}
-                </div>
-                {boolDetails?.tipsTricks && (
-                  <div className="text-[14px]">
-                    <ul style={{ paddingLeft: "0.5rem" }}>
-                      {props.data.tips_tricks.map((e, i) => (
-                        <li key={i}>- {e}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            ) : null}
-          </div>
+                  <IconList items={props.data.tips_tricks} />
+                </CollapsibleSection>
+              ) : null}
+            </div>
+          ) : null}
 
           {props?.activityData?.selected_amenities &&
             props?.activityData?.selected_amenities?.length > 0 && (
               <div className="flex flex-col gap-2 relative">
-                <div className="text-[20px] font-semibold">Add - Ons</div>
-                <div className="border-b-[1px]"></div>
+                <div className="font-sans text-[17px] font-bold leading-[24px] tracking-[-0.01em] text-[#0b1220]">Add - Ons</div>
+                <div className="border-b-[1px] border-[#ececec]"></div>
                 <div className="flex flex-col gap-2">
                   {props?.activityData?.selected_amenities.map(
                     (amenity, index) => (
@@ -776,21 +784,21 @@ const ActivityDetails = (props) => {
             (props.activityData?.prices[0]?.title ||
               props.activityData?.prices[0]?.description) && (
               <div className="flex flex-col">
-                <div className="text-[20px] font-semibold mb-2">
+                <div className="font-sans text-[17px] font-bold leading-[24px] tracking-[-0.01em] mb-2 text-[#0b1220]">
                   Package Details
                 </div>
-                <div className="font-medium text-gray-900">
+                <div className="font-medium text-[#0b1220]">
                   {props.activityData?.prices[0]?.title
                     ? props.activityData?.prices[0]?.title
                     : null}
                 </div>
-                <div className="font-normal text-gray-900">
+                <div className="font-normal text-[#445069]">
                   {props.activityData?.prices[0]?.description
                     ? props.activityData?.prices[0]?.description
                     : null}
                 </div>
                 {props.activityData?.prices?.[0]?.pax_details && (
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm text-[#8a93a6]">
                     For{" "}
                     {(props.activityData?.prices?.[0]?.pax_details?.adults || 0) +
                       (props.activityData?.prices?.[0]?.pax_details?.children ||
@@ -803,14 +811,14 @@ const ActivityDetails = (props) => {
 
           {props?.data?.cancellation_policies && (
             <>
-              <div className="text-[20px] font-semibold">
+              <div className="font-sans text-[17px] font-bold leading-[24px] tracking-[-0.01em] text-[#0b1220]">
                 Cancellation Policies
               </div>
               <div
                 dangerouslySetInnerHTML={{
                   __html: props?.data?.cancellation_policies,
                 }}
-                className="flex flex-col gap-1 text-sm ml-4"
+                className="flex flex-col gap-1 ttw-type-body ml-4"
               ></div>
             </>
           )}
@@ -863,7 +871,7 @@ const ActivityDetails = (props) => {
                 <Reviews>
                   {props.data.rating ? (
                     <div
-                      style={{ color: "#FFD201" }}
+                      style={{ color: "#f7e700" }}
                       className="flex flex-row gap-1"
                     >
                       {stars}
@@ -1017,13 +1025,16 @@ const Amenity = ({ index, amenity, handleAmenityChange, travelers }) => {
   };
 
   return (
-    <div key={index} className=" gap-3  bg-[#FAFAFA] p-[10px] rounded-[4px]">
+    <div
+      key={index}
+      className="gap-3 rounded-[18px] border border-[#ececec] bg-white p-4 transition-shadow hover:shadow-[0_16px_40px_-20px_rgba(11,18,32,0.15)]"
+    >
       <div className="flex flex-col gap-1">
-        <div className="flex flex-row items-center gap-2 text-[16px] font-medium">
+        <div className="flex flex-row items-center gap-2 ttw-type-body font-medium text-[#0b1220]">
           {/* {getAmenityIcon(amenity?.type)} */}
           {amenity.name}
         </div>
-        <div className="text-[14px]">{amenity.description}</div>
+        <div className="ttw-type-body text-[#445069]">{amenity.description}</div>
       </div>
     </div>
   );

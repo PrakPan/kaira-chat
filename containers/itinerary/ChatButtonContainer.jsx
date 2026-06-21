@@ -29,7 +29,7 @@ function ChatButtonContainer({ onOpenChat }) {
         query: { ...router.query, drawer: "chat" },
       },
       undefined,
-      { scroll: false }
+      { scroll: false, shallow: true }
     );
     dispatch(setUnreadMessages(false));
   };

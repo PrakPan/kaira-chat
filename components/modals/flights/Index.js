@@ -53,7 +53,7 @@ const FloatingView = styled.div`
 const Floating = styled.div`
   position: sticky;
   bottom: 65px;
-  background: #01202b;
+  background: #0b1220;
   border-radius: 50%;
   width: 50px;
   height: 50px;
@@ -418,6 +418,7 @@ const Booking = (props) => {
       <Drawer
         anchor={"right"}
         backdrop
+        bgColor="#fafaf5"
         style={{ zIndex: 1501 }}
         className=""
         show={props.showFlightModal}
@@ -616,7 +617,7 @@ const Booking = (props) => {
                 // setIsRouteSelected(false);
               }}
             />
-            <div className="text-lg md:text-xl lg:text-xl font-semibold mt-1">
+            <div className="text-lg md:text-xl lg:text-xl font-semibold mt-1 text-[#0b1220]">
               Changing {props.selectedBooking?.name}
             </div>
             <ComboFlight

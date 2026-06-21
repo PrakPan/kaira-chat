@@ -75,17 +75,17 @@ const Item = styled.div`
   padding: 3px 0;
   text-align: center;
   border-radius: 10px;
-  background: ${(props) => (props.isSelected ? "#01202b" : "white")};
+  background: ${(props) => (props.isSelected ? "#0b1220" : "white")};
   border: ${(props) =>
-    props.isSelected ? "2px solid #01202b" : " 2px solid #d0d5dd"};
+    props.isSelected ? "2px solid #0b1220" : " 2px solid #ececec"};
   border-bottom: ${(props) =>
-    props.isSelected ? "4px solid #F7E700" : " 2px solid #d0d5dd"};
-  color: ${(props) => (props.isSelected ? "white" : "black")};
+    props.isSelected ? "4px solid #f7e700" : " 2px solid #ececec"};
+  color: ${(props) => (props.isSelected ? "#fafaf5" : "#0b1220")};
 
   &:hover {
-    background: #01202bcf;
-    border: 2px solid #01202bcf;
-    color: white;
+    background: #0b1220cf;
+    border: 2px solid #0b1220cf;
+    color: #fafaf5;
   }
   cursor: pointer;
 `;
@@ -102,6 +102,7 @@ const FloatingView = styled.div`
   position: fixed;
   bottom: 75px;
   background: #f7e700;
+  /* yellow CTA accent — left as-is per Kaira yellow rule */
   border-radius: 50%;
   width: 50px;
   height: 50px;
@@ -130,7 +131,7 @@ const SortItem = styled.div`
   font-weight: 500;
   cursor: pointer;
   :hover {
-    background: #f7f3f3;
+    background: #f4f3ec;
   }
 `;
 
@@ -260,7 +261,7 @@ const Section = (props) => {
         <div className="flex flex-col gap-1">
           <div
             onClick={() => setShowPax(true)}
-            className="relative w-fit px-3 py-2 rounded-lg border-2 cursor-pointer hover:border-black transition-all flex flex-row items-center gap-2"
+            className="relative w-fit px-3 py-2 rounded-lg border-2 border-[#ececec] cursor-pointer hover:border-[#0b1220] transition-all flex flex-row items-center gap-2 text-[#0b1220]"
           >
             <IoPerson className="text-2xl" />
 
@@ -375,6 +376,7 @@ const Section = (props) => {
         <Drawer
           anchor={"right"}
           backdrop
+          bgColor="#fafaf5"
           style={{ zIndex: 1502 }}
           className=""
           show={props.showFilter}
@@ -519,7 +521,7 @@ const Pax = ({ setShowPax, pax, setPax, classType, setClassType }) => {
     <div onClick={handleClose} className="fixed inset-0 z-50">
       <div
         ref={ref}
-        className="absolute top-[270px] md:top-[240px] left-2 right-2 md:right-5 md:left-auto bg-neutral-100 shadow-2xl drop-shadow-3xl p-3 rounded-lg space-y-5 text-sm"
+        className="absolute top-[270px] md:top-[240px] left-2 right-2 md:right-5 md:left-auto bg-[#fafaf5] shadow-2xl drop-shadow-3xl p-3 rounded-lg space-y-5 text-sm text-[#0b1220]"
       >
         <div className="flex flex-col gap-1">
           <div>Adults (12y +)</div>
@@ -570,22 +572,24 @@ const Pax = ({ setShowPax, pax, setPax, classType, setClassType }) => {
 
         <div className="flex flex-col gap-1">
           <div>Choose Travel Class</div>
-          <div className="w-fit flex flex-col md:flex-row border-2 border-gray-400 rounded-lg">
+          <div className="w-fit flex flex-col md:flex-row border-2 border-[#ececec] rounded-lg">
             <div
               onClick={() => setCabinClass({ key: "All", value: 1 })}
               style={{
-                backgroundColor: cabinClass.value === 1 ? "#F8E000" : "",
+                backgroundColor: cabinClass.value === 1 ? "#0b1220" : "",
+                color: cabinClass.value === 1 ? "#fafaf5" : "",
               }}
-              className="px-3 py-2 rounded-lg cursor-pointer hover:bg-[#F8E000]"
+              className="px-3 py-2 rounded-lg cursor-pointer hover:bg-[#f4f3ec]"
             >
               All
             </div>
             <div
               onClick={() => setCabinClass({ key: "Economy", value: 2 })}
               style={{
-                backgroundColor: cabinClass.value === 2 ? "#F8E000" : "",
+                backgroundColor: cabinClass.value === 2 ? "#0b1220" : "",
+                color: cabinClass.value === 2 ? "#fafaf5" : "",
               }}
-              className="px-3 py-2 rounded-lg cursor-pointer hover:bg-[#F8E000]"
+              className="px-3 py-2 rounded-lg cursor-pointer hover:bg-[#f4f3ec]"
             >
               Economy
             </div>
@@ -595,9 +599,10 @@ const Pax = ({ setShowPax, pax, setPax, classType, setClassType }) => {
                 setCabinClass({ key: "Premium Economy", value: 3 })
               }
               style={{
-                backgroundColor: cabinClass.value === 3 ? "#F8E000" : "",
+                backgroundColor: cabinClass.value === 3 ? "#0b1220" : "",
+                color: cabinClass.value === 3 ? "#fafaf5" : "",
               }}
-              className="px-3 py-2 rounded-lg cursor-pointer hover:bg-[#F8E000]"
+              className="px-3 py-2 rounded-lg cursor-pointer hover:bg-[#f4f3ec]"
             >
               Premium Economy
             </div>
@@ -605,9 +610,10 @@ const Pax = ({ setShowPax, pax, setPax, classType, setClassType }) => {
             <div
               onClick={() => setCabinClass({ key: "Business", value: 4 })}
               style={{
-                backgroundColor: cabinClass.value === 4 ? "#F8E000" : "",
+                backgroundColor: cabinClass.value === 4 ? "#0b1220" : "",
+                color: cabinClass.value === 4 ? "#fafaf5" : "",
               }}
-              className="px-3 py-2 rounded-lg cursor-pointer hover:bg-[#F8E000]"
+              className="px-3 py-2 rounded-lg cursor-pointer hover:bg-[#f4f3ec]"
             >
               Business
             </div>
@@ -617,9 +623,10 @@ const Pax = ({ setShowPax, pax, setPax, classType, setClassType }) => {
                 setCabinClass({ key: "Premium Business", value: 5 })
               }
               style={{
-                backgroundColor: cabinClass.value === 5 ? "#F8E000" : "",
+                backgroundColor: cabinClass.value === 5 ? "#0b1220" : "",
+                color: cabinClass.value === 5 ? "#fafaf5" : "",
               }}
-              className="px-3 py-2 rounded-lg cursor-pointer hover:bg-[#F8E000]"
+              className="px-3 py-2 rounded-lg cursor-pointer hover:bg-[#f4f3ec]"
             >
               Premium Business
             </div>
@@ -627,16 +634,17 @@ const Pax = ({ setShowPax, pax, setPax, classType, setClassType }) => {
             <div
               onClick={() => setCabinClass({ key: "First Class", value: 6 })}
               style={{
-                backgroundColor: cabinClass.value === 6 ? "#F8E000" : "",
+                backgroundColor: cabinClass.value === 6 ? "#0b1220" : "",
+                color: cabinClass.value === 6 ? "#fafaf5" : "",
               }}
-              className="px-3 py-2 rounded-lg cursor-pointer hover:bg-[#F8E000]"
+              className="px-3 py-2 rounded-lg cursor-pointer hover:bg-[#f4f3ec]"
             >
               First Class
             </div>
           </div>
         </div>
 
-        <div className="border-t-2 border-t-white pt-2">
+        <div className="border-t-2 border-t-[#ececec] pt-2">
           <button
             onClick={handleDone}
             className="bg-[#F8E000] py-2 px-4 rounded-lg border-2 transition-all border-black hover:bg-black hover:text-white"
@@ -654,7 +662,7 @@ const TimeIcon = ({ time, isSelected }) => {
     case "Morning":
       return (
         <div
-          style={{ color: isSelected ? "#F7E700" : "" }}
+          style={{ color: isSelected ? "#f7e700" : "" }}
           className="flex flex-col items-center"
         >
           <BsFillSunriseFill className="text-lg md:text-2xl" />
@@ -664,7 +672,7 @@ const TimeIcon = ({ time, isSelected }) => {
     case "Afternoon":
       return (
         <div
-          style={{ color: isSelected ? "#F7E700" : "" }}
+          style={{ color: isSelected ? "#f7e700" : "" }}
           className="flex flex-col items-center"
         >
           <IoMdSunny className="text-lg md:text-2xl" />
@@ -674,7 +682,7 @@ const TimeIcon = ({ time, isSelected }) => {
     case "Evening":
       return (
         <div
-          style={{ color: isSelected ? "#F7E700" : "" }}
+          style={{ color: isSelected ? "#f7e700" : "" }}
           className="flex flex-col items-center"
         >
           <BsSunsetFill className="text-lg md:text-2xl" />
@@ -684,7 +692,7 @@ const TimeIcon = ({ time, isSelected }) => {
     case "Night":
       return (
         <div
-          style={{ color: isSelected ? "#F7E700" : "" }}
+          style={{ color: isSelected ? "#f7e700" : "" }}
           className="flex flex-col items-center"
         >
           <MdNightsStay className="text-lg md:text-2xl" />

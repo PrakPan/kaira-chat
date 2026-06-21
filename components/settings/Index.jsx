@@ -5,6 +5,7 @@ import EnterPassenger from "../tailoredform/slidetwo/EnterPassenger";
 import Pax from "../tailoredform/slidetwo/pax/Pax";
 import Preferences from "../tailoredform/slidetwo/preferences/Index";
 import Buttons from "./Buttons";
+import { SectionLabel, InclusionChip } from "./FormUI";
 import useMediaQuery from "../../hooks/useMedia";
 import { useDispatch } from "react-redux";
 import { openNotification } from "../../store/actions/notification";
@@ -30,7 +31,9 @@ const Settings = ({setShowSettings, isHotelsPresent, handleApply, maxAdults=fals
   const [addActivityTransfers, setAddActivityTransfers] = useState(
     itinerary?.add_transfers_and_activities ?? false
   );
-  
+  const [addVisa, setAddVisa] = useState(itinerary?.visa ?? false);
+  const [addEsim, setAddEsim] = useState(itinerary?.esim ?? false);
+
   const [roomConfiguration, setRoomConfiguration] = useState(
     itinerary?.hotels_config?.room_configuration || []
   );
@@ -79,6 +82,8 @@ useEffect(() => {
     setAddHotels(itinerary?.add_hotels ?? isHotelsPresent);
     setAddFlights(itinerary?.add_flights ?? false);
     setAddActivityTransfers(itinerary?.add_transfers_and_activities ?? false);
+    setAddVisa(itinerary?.visa ?? false);
+    setAddEsim(itinerary?.esim ?? false);
     setRoomConfiguration(itinerary?.hotels_config?.room_configuration || []);
     setNumberOfAdults(itinerary?.number_of_adults || 1);
     setNumberOfChildren(itinerary?.number_of_children || 0);
@@ -162,8 +167,10 @@ const handleUpdate = () => {
     add_hotels: addHotels,
     add_flights: addFlights,
     add_transfers_and_activities: addActivityTransfers,
+    visa: addVisa,
+    esim: addEsim,
     room_configuration: roomConfiguration,
-    experience_filters: selectedPreferences,
+    // experience_filters: selectedPreferences,
   }
 
   handleApply(req)
@@ -196,11 +203,86 @@ const handleUpdate = () => {
     setShowSettings(false);
   }
 
-  return (
-    <div className={`flex flex-col gap-[24px] md:max-w-[537px] z-[9999] p-3`}>
-      <div className="Heading1SB font-semibold">Update Your Trip Preferences</div>
+  const inclusions = [
+    {
+      id: "add-activities-transfers",
+      label: "Activities & Transfers",
+      checked: addActivityTransfers,
+      set: setAddActivityTransfers,
+    },
+    { id: "add-flights", label: "Flights", checked: addFlights, set: setAddFlights },
+    { id: "add-hotels", label: "Hotels", checked: addHotels, set: setAddHotels },
+    { id: "add-visa", label: "Visa", checked: addVisa, set: setAddVisa },
+    { id: "add-esim", label: "eSIM", checked: addEsim, set: setAddEsim },
+  ];
 
-      <DateComponent 
+  return (
+    <div
+      style={{
+        borderRadius: 20,
+        overflow: "hidden",
+        background:
+          "#fafafa",
+      }}
+    >
+      {/* yellow top strip — matches BotLoginModal */}
+      <div
+        style={{
+          height: 6,
+          background: "linear-gradient(90deg,#FFE600,#F2D700)",
+        }}
+      />
+      <div className={`flex flex-col gap-4 md:max-w-[537px] z-[9999] px-3 py-4 md:!px-5 md:!py-5`}>
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <div
+              style={{
+                fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+                fontSize: isDesktop ? 28 : 24,
+                fontWeight: 500,
+                lineHeight: 1.1,
+                letterSpacing: "-0.01em",
+                color: "#0B1220",
+              }}
+            >
+              Update your{" "}
+              <em
+                style={{
+                  fontFamily: "'Instrument Serif', 'Times New Roman', serif",
+                  fontStyle: "italic",
+                  fontWeight: 400,
+                  letterSpacing: "-0.015em",
+                }}
+              >
+                trip
+              </em>{" "}
+              preferences
+            </div>
+            <p style={{ fontSize: 13, color: "#5C5A55", marginTop: 4 }}>
+              Adjust dates, travellers and inclusions — I'll reprice it for you.
+            </p>
+          </div>
+
+          <button
+            onClick={handleCancel}
+            aria-label="Close"
+            className="flex-shrink-0 grid place-items-center transition-colors"
+            style={{
+              width: 32,
+              height: 32,
+              borderRadius: 10,
+              border: "1px solid #E6E1D2",
+              background: "#FFFFFF",
+              color: "#5C5A55",
+            }}
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+      <DateComponent
         settings={true} 
         handleApplyDates={handleApplyDates} 
         setDate={setDate} 
@@ -208,55 +290,11 @@ const handleUpdate = () => {
       />
 
       <div>
-        <div className="Body1M_16 mb-[12px]">Pick Your Inclusions</div>
-        <div className="flex flex-wrap md:grid md:grid-cols-[1.5fr_1fr_1fr] justify-between items-center">
-
-           <label
-            htmlFor="add-activities-transfers"
-            className="flex items-center gap-2 p-2 rounded-md w-fit cursor-pointer"
-          >
-            <input
-              id="add-activities-transfers"
-              type="checkbox"
-              checked={addActivityTransfers}
-              onChange={(e) => setAddActivityTransfers(e.target.checked)}
-              className="focus:outline-none cursor-pointer"
-            />
-            <div className="Body2R_14">Activities & Transfers</div>
-          </label>
-
-
-          <label
-            htmlFor="add-flights"
-            className="flex items-center gap-2 p-2 rounded-md w-fit cursor-pointer justify-self-center"
-          >
-            <input
-              id="add-flights"
-              type="checkbox"
-              checked={addFlights}
-              onChange={(e) => setAddFlights(e.target.checked)}
-              className="focus:outline-none cursor-pointer"
-            />
-            <div className="Body2R_14">Flights</div>
-          </label>
-
-
-          <label
-            htmlFor="add-hotels"
-            className="flex items-center gap-2 p-2 rounded-md w-fit cursor-pointer"
-          >
-            <input
-              id="add-hotels"
-              type="checkbox"
-              checked={addHotels}
-              onChange={(e) => setAddHotels(e.target.checked)}
-              className="focus:outline-none cursor-pointer"
-            />
-            <div className="Body2R_14">Hotels</div>
-          </label>
-
-          
-         
+        <SectionLabel>Pick your inclusions</SectionLabel>
+        <div className="flex flex-wrap gap-2 mt-[2px]">
+          {inclusions.map((opt) => (
+            <InclusionChip key={opt.id} opt={opt} />
+          ))}
         </div>
       </div>
 
@@ -276,7 +314,7 @@ const handleUpdate = () => {
         />
       ) : (
         <div>
-          <div className="Body1M_16 mb-[8px] text-black">Travellers and Rooms</div>
+          <SectionLabel>Travellers and rooms</SectionLabel>
           <Pax
             numberOfAdults={numberOfAdults}
             setNumberOfAdults={setNumberOfAdults}
@@ -292,24 +330,25 @@ const handleUpdate = () => {
         </div>
       )}
 
-      <div>
-        <div className="Body1M_16">Choose your experience</div>
-        <div className="mt-[12px]">
+      {/* <div>
+        <SectionLabel>Choose your experience</SectionLabel>
+        <div className="mt-[10px]">
           <Preferences
             tailoredFormModal={false}
             selectedPreferences={selectedPreferences}
             setSelectedPreferences={handleSetSelectedPreferences}
           />
         </div>
-      </div>
+      </div> */}
 
       <div className={`${isDesktop ? "flex justify-between w-full" : "w-full"}`}>
-        <Buttons 
-          handleCancel={handleCancel} 
-          handleUpdate={handleUpdate} 
+        <Buttons
+          handleCancel={handleCancel}
+          handleUpdate={handleUpdate}
           isLoading={isLoading}
           isEdit={true}
         />
+      </div>
       </div>
     </div>
   );

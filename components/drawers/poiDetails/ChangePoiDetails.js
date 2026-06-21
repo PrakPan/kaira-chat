@@ -22,8 +22,13 @@ import Button from "../../../components/ui/button/Index";
 import { PulseLoader } from "react-spinners";
 
 export const Title = styled.p`
+  /* H3 token · 22/1.15/800/-0.02em */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 22px;
   font-weight: 800;
-  font-size: 20px;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: #0b1220;
 `;
 
 export const Reviews = styled.div`
@@ -32,8 +37,13 @@ export const Reviews = styled.div`
   gap: 0.2rem;
   p,
   u {
+    /* Caption · 12/1.4/600/0.04em */
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 12px;
-    color: #7a7a7a;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    line-height: 1.4;
+    color: #8a93a6;
   }
   u {
     margin-inline: 0.2rem;
@@ -41,12 +51,22 @@ export const Reviews = styled.div`
 `;
 
 export const Text = styled.p`
-  font-size: 14px;
+  /* Body · 14.5/1.55/400 */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14.5px;
+  font-weight: 400;
+  line-height: 1.55;
+  color: #445069;
 `;
 
 export const Heading = styled.p`
-  font-size: 18px;
-  font-weight: 800;
+  /* H4 token · 17/1.2/700/-0.015em */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+  color: #0b1220;
 `;
 
 const Container = styled.div`
@@ -54,7 +74,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 32px;
-  font-family: Lexend;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   padding: ${(props) => (props.itineraryDrawer ? "0 1rem 1rem 1rem" : "1rem")};
 `;
 
@@ -64,7 +84,7 @@ const BackContainer = styled.div`
   gap: 0.5rem;
   position: sticky;
   z-index: 1;
-  background: white;
+  background: #fafaf5;
   top: 0;
   padding-block: 0.75rem;
 
@@ -111,7 +131,7 @@ const ScrollContainer = styled.div`
   // const Heading = styled.div
 `;
 
-const colors = ["#d5f5d3", "#fadadd", "#F5F0FF", "#DDF4C5"];
+const colors = ["#e7f5ee", "#fff1ee", "#eef2fb", "#f0e9d6"];
 
 export default function ChangePoiDetails(props) {
   const isSmallScreen = media("(max-width:586px)");
@@ -206,9 +226,9 @@ export default function ChangePoiDetails(props) {
   };
 
   return (
-    <div className="flex flex-col gap-4 pb-[100px] h-[100vh] overflow-y-auto">
+    <div className="flex flex-col gap-4 pb-[100px] h-[100vh] overflow-y-auto bg-[#fafaf5] font-sans text-[#0b1220]">
       <div className="flex flex-col gap-4 px-[20px] pb-4">
-        <div className="sticky top-0 z-1 flex flex-row items-center gap-2 pt-4 bg-white">
+        <div className="sticky top-0 z-1 flex flex-row items-center gap-2 pt-4 bg-[#fafaf5]">
           <BackArrow
             handleClick={() => props.setShowDetails({ show: false, data: {} })}
           />
@@ -316,13 +336,13 @@ export default function ChangePoiDetails(props) {
           )}
 
           <div className="flex flex-col gap-3">
-            <div className="text-[20px] font-[800]">{props.data.name}</div>
+            <div className="ttw-type-h3 text-[#0b1220]">{props.data.name}</div>
 
             {props?.data?.rating && (
               <div className="flex items-center gap-1">
                 {props.data?.rating && (
                   <div
-                    style={{ color: "#FFD201", marginBottom: "0.3rem" }}
+                    style={{ color: "#f7e700", marginBottom: "0.3rem" }}
                     className="flex flex-row gap-1"
                   >
                     {stars}
@@ -332,7 +352,7 @@ export default function ChangePoiDetails(props) {
                 <div style={{ display: "flex", alignItems: "center" }}>
                   {props.data?.rating && (
                     <p
-                      className="text-[12px] text-[#7a7a7a]"
+                      className="ttw-type-small font-mono text-[#445069]"
                       style={{ marginBlock: "auto" }}
                     >
                       {props.data.rating} ·
@@ -340,7 +360,7 @@ export default function ChangePoiDetails(props) {
                   )}
 
                   {props.data?.user_ratings_total > 0 && (
-                    <u className="text-[12px] text-[#7a7a7a]">
+                    <u className="ttw-type-small text-[#8a93a6]">
                       {props.data.user_ratings_total}
                       {" user reviews"}
                     </u>
@@ -349,11 +369,11 @@ export default function ChangePoiDetails(props) {
               </div>
             )}
             {props.data?.experience_filters && (
-              <div className="text-[14px] flex flex-row items-center gap-1 flex-wrap">
+              <div className="ttw-type-body flex flex-row items-center gap-1 flex-wrap">
                 {props.data.experience_filters?.map((e, i) => (
                   <span
                     key={i}
-                    className={`border-2 rounded-full px-2 py-1`}
+                    className={`border-2 border-transparent rounded-full px-2 py-1 text-[#1a2436]`}
                     style={{ backgroundColor: colors[i % colors.length] }}
                   >
                     {e}
@@ -363,7 +383,7 @@ export default function ChangePoiDetails(props) {
             )}
             {props.data?.short_description && (
               <div className="flex flex-col gap-2">
-                <div className="text-[14px] text-[#01202B]">
+                <div className="ttw-type-body text-[#445069]">
                   {props.data.short_description}
                 </div>
               </div>
@@ -373,20 +393,20 @@ export default function ChangePoiDetails(props) {
           <div className="flex flex-col md:flex-row md:items-center gap-2 justify-between">
             {props.data?.prices?.total_price ? (
               <div className="flex flex-col gap-1">
-                <div className="flex flex-row gap-2 items-center text-sm">
-                  <span className="font-bold text-lg md:text-2xl">
+                <div className="flex flex-row gap-2 items-center ttw-type-body text-[#445069]">
+                  <span className="font-bold font-mono ttw-type-h4 md:ttw-type-h2 text-[#0b1220]">
                     ₹{getIndianPrice(Math.round(props.data.prices.total_price))}
                   </span>
                   {`for ${props.data.prices?.total_pax} people`}
                 </div>
 
                 {inclusiveCost.length ? (
-                  <div className="text-sm flex flex-row items-center gap-1 flex-wrap">
+                  <div className="ttw-type-body flex flex-row items-center gap-1 flex-wrap text-[#445069]">
                     Inclusive of{" "}
                     {inclusiveCost.map((item, index) => (
                       <span
                         key={index}
-                        className="border-2 rounded-full px-2 py-1"
+                        className="border-2 border-[#ececec] rounded-full px-2 py-1 text-[#1a2436]"
                       >
                         {item}
                       </span>
@@ -401,9 +421,9 @@ export default function ChangePoiDetails(props) {
             {props.data?.general_guidelines &&
             props.data?.general_guidelines?.length ? (
               <div className="flex flex-col">
-                <div className="text-[20px] font-semibold">
+                <div className="ttw-type-h3 font-semibold">
                   <div>General guidelines</div>
-                  <div className="border-b-[1px] mt-2 mb-2"></div>
+                  <div className="border-b-[1px] border-[#ececec] mt-2 mb-2"></div>
                   {/* {!boolDetails?.generalGuidelines ? (
                     <IoIosArrowDown
                       className="cursor-pointer"
@@ -427,7 +447,7 @@ export default function ChangePoiDetails(props) {
                   )} */}
                 </div>
                 {boolDetails?.generalGuidelines && (
-                  <div className="text-[14px]">
+                  <div className="ttw-type-body">
                     <ul style={{ paddingLeft: "0.5rem" }}>
                       {props.data.general_guidelines?.map((e, i) => (
                         <li key={i}>- {e}</li>
@@ -443,9 +463,9 @@ export default function ChangePoiDetails(props) {
             {props.data?.things_to_bring &&
             props.data?.things_to_bring?.length ? (
               <div className="flex flex-col">
-                <div className="text-[20px] font-semibold">
+                <div className="ttw-type-h3 font-semibold">
                   <div>Things to bring</div>
-                  <div className="border-b-[1px] mt-2 mb-2"></div>
+                  <div className="border-b-[1px] border-[#ececec] mt-2 mb-2"></div>
                   {/* {!boolDetails?.thingsToBring ? (
                     <IoIosArrowDown
                       className="cursor-pointer"
@@ -469,7 +489,7 @@ export default function ChangePoiDetails(props) {
                   )} */}
                 </div>
                 {!boolDetails?.thingsToBring && (
-                  <div className="text-[14px]">
+                  <div className="ttw-type-body">
                     <ul style={{ paddingLeft: "0.5rem" }}>
                       {props.data.things_to_bring?.map((e, i) => (
                         <li key={i}>- {e}</li>
@@ -485,9 +505,9 @@ export default function ChangePoiDetails(props) {
             {props.data?.not_suitable_for &&
             props.data?.not_suitable_for?.length ? (
               <div className="flex flex-col">
-                <div className="text-[20px] font-semibold">
+                <div className="ttw-type-h3 font-semibold">
                   <div>Not suitable for</div>
-                  <div className="border-b-[1px] mt-2 mb-2"></div>
+                  <div className="border-b-[1px] border-[#ececec] mt-2 mb-2"></div>
                   {/* {!boolDetails?.notSuitableFor ? (
                     <IoIosArrowDown
                       className="cursor-pointer"
@@ -511,7 +531,7 @@ export default function ChangePoiDetails(props) {
                   )} */}
                 </div>
                 {boolDetails?.notSuitableFor && (
-                  <div className="text-[14px]">
+                  <div className="ttw-type-body">
                     <ul style={{ paddingLeft: "0.5rem" }}>
                       {props.data.not_suitable_for?.map((e, i) => (
                         <li key={i}>- {e}</li>
@@ -526,9 +546,9 @@ export default function ChangePoiDetails(props) {
 
             {props.data?.tips_tricks && props.data?.tips_tricks?.length ? (
               <div className="flex flex-col">
-                <div className="text-[20px] font-semibold">
+                <div className="ttw-type-h3 font-semibold">
                   <div>Tips, Tricks and Cautions</div>
-                  <div className="border-b-[1px] mt-2 mb-2"></div>
+                  <div className="border-b-[1px] border-[#ececec] mt-2 mb-2"></div>
                   {/* {!boolDetails?.tipsTricks ? (
                     <IoIosArrowDown
                       className="cursor-pointer"
@@ -552,7 +572,7 @@ export default function ChangePoiDetails(props) {
                   )} */}
                 </div>
                 {boolDetails?.tipsTricks && (
-                  <div className="text-[14px]">
+                  <div className="ttw-type-body">
                     <ul style={{ paddingLeft: "0.5rem" }}>
                       {props.data.tips_tricks?.map((e, i) => (
                         <li key={i}>- {e}</li>
@@ -579,13 +599,13 @@ export default function ChangePoiDetails(props) {
 
                     return (
                       <div key={i} className="flex gap-[22px] mb-2">
-                        <div className="text-[14px] font-semibold">{day}</div>
+                        <div className="ttw-type-body font-semibold text-[#445069]">{day}</div>
                         <div
-                          className={`text-[14px] font-normal bg-[#FAFAFA] px-[8px] py-[2px] rounded-[10px] ${
-                            time == "Closed"
-                              ? " bg-[rgba(220,69,65,0.1)]  text-[#DC4541]"
-                              : ""
-                          }`}
+                          className={`ttw-type-body font-mono bg-[#f4f3ec] text-[#0b1220] px-[8px] py-[2px] rounded-[10px] ${
+ time == "Closed"
+ ? " bg-[rgba(184,64,52,0.1)] text-[#b84034]"
+ : ""
+ }`}
                         >
                           {time}
                         </div>
@@ -605,7 +625,7 @@ export default function ChangePoiDetails(props) {
               <Reviews>
                 {props.data.rating ? (
                   <div
-                    style={{ color: "#FFD201" }}
+                    style={{ color: "#f7e700" }}
                     className="flex flex-row gap-1"
                   >
                     {stars}
@@ -614,7 +634,7 @@ export default function ChangePoiDetails(props) {
 
                 <div className="flex items-center">
                   {props.data?.rating ? (
-                    <p className="m-0">{props.data.rating}</p>
+                    <p className="m-0 font-mono">{props.data.rating}</p>
                   ) : null}
 
                   {/* {props.data?.user_ratings_total ? (
@@ -707,7 +727,7 @@ export default function ChangePoiDetails(props) {
               </defs>
             </svg>
           </div>
-          <div>{props?.data?.address}</div>
+          <div className="text-[#445069]">{props?.data?.address}</div>
         </div>
 
         <div className="flex justify-between">
@@ -722,15 +742,15 @@ export default function ChangePoiDetails(props) {
             <a
               href={`https://www.google.com/maps/place/?q=place_id:${props?.data?.gmaps_place_id}`}
               target="_blank"
-              style={{ color: "#0000EE", fontSize: "14px" }}
+              style={{ color: "#0b1220", fontSize: "14px", textDecoration: "underline" }}
             >
               View on Google Maps
             </a>
           </div>
         </div>
 
-        <div className="border-t-2 fixed bottom-0 right-0 left-0 flex justify-end gap-1 py-[12px] px-[20px] bg-white shadow-md z-50">
-          <div className="flex flex-col gap-1">
+        <div className="border-t-2 border-[#ececec] fixed bottom-0 right-0 left-0 flex justify-end gap-1 py-[12px] px-[20px] bg-[#fafaf5] shadow-md z-50">
+          <div className="flex flex-col gap-1 text-[#445069]">
             <Button
               onclick={handleUpdate}
               bgColor={"#F7E700"}
@@ -780,23 +800,23 @@ const Amenity = ({ index, amenity, handleAmenityChange, travelers }) => {
   };
 
   return (
-    <div key={index} className=" gap-3  bg-[#FAFAFA] p-[10px] rounded-[4px]">
+    <div key={index} className=" gap-3 bg-[#f4f3ec] p-[10px] rounded-[4px]">
       <div className="flex flex-col gap-1">
-        <div className="flex flex-row items-center gap-2 text-[16px] font-medium">
+        <div className="flex flex-row items-center gap-2 ttw-type-body font-medium text-[#0b1220]">
           {/* {getAmenityIcon(amenity?.type)} */}
           {amenity.name}
         </div>
-        <div className="text-[14px]">{amenity.description}</div>
-        <div className="flex text-[12px] font-medium">
+        <div className="ttw-type-body text-[#445069]">{amenity.description}</div>
+        <div className="flex ttw-type-small font-medium text-[#445069]">
           <Image src="/ticket.svg" alt="ticket" width={13.33} height={10.67} />
           {travelers} tickets
         </div>
       </div>
 
       <div className="flex items-center justify-between">
-        <div className="font-semibold text-[24px]">
+        <div className="font-semibold font-mono ttw-type-h2 text-[#0b1220]">
           ₹{getIndianPrice(amenity.price)}{" "}
-          <span className="text-[14px] font-normal">per person*</span>
+          <span className="ttw-type-body font-normal font-sans text-[#8a93a6]">per person*</span>
         </div>
 
         <button

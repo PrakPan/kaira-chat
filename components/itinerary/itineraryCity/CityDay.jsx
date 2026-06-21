@@ -3,7 +3,6 @@ import ActivityAddDrawer from "../../drawers/poiDetails/activityAddDrawer";
 import { useDispatch, useSelector } from "react-redux";
 import TransferDrawer from "../../../containers/itinerary/TransferDrawer";
 import { useRouter } from "next/router";
-import styled from "styled-components";
 import { getDatesInRange } from "../../../helper/DateUtils";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 import useMediaQuery from "../../media";
@@ -13,38 +12,6 @@ import { FaTaxi } from "react-icons/fa6";
 import { IoBagCheckOutline } from "react-icons/io5";
 import { getDate } from "../../../helper/ConvertDateFormat";
 import ActivityDetailsDrawer from "../../drawers/activityDetails/ActivityDetailsDrawer";
-
-// ─── Styled components ────────────────────────────────────────────────────────
-
-const TooltipWrapper = styled.div`
-  position: relative;
-  display: inline-block;
-  max-width: 100%;
-`;
-
-const Tooltip = styled.div`
-  position: fixed;
-  background-color: #333;
-  color: white;
-  padding: 8px 12px;
-  border-radius: 6px;
-  font-size: 12px;
-  white-space: nowrap;
-  z-index: 9999;
-  pointer-events: none;
-  max-width: fit-content;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-
-  &::after {
-    content: "";
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    border: 6px solid transparent;
-    border-top-color: #333;
-  }
-`;
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -83,9 +50,9 @@ const resolveElementType = (item) => {
 // ─── Helper: get display name ─────────────────────────────────────────────────
 const getItemName = (item) => {
   return (
-    item?.heading ||
-    item?.restaurants?.[0]?.name ||
     item?.name ||
+    item?.restaurants?.[0]?.name ||
+    item?.heading ||
     ""
   );
 };
@@ -135,6 +102,161 @@ const getItemId = (item, resolvedType) => {
   return null;
 };
 
+// ─── Helper: get one-liner / subtitle (uses `one_liner` from API) ─────────────
+const getItemSubtitle = (item) => {
+  return (
+    item?.one_liner ||
+    item?.short_description ||
+    item?.description ||
+    item?.address ||
+    item?.restaurants?.[0]?.one_liner ||
+    item?.restaurants?.[0]?.short_description ||
+    item?.restaurants?.[0]?.address ||
+    null
+  );
+};
+
+// ─── Helper: derive right-column status label + tone ──────────────────────────
+//   activity (selected in cart) → "Confirmed"
+//   everything else             → no right column
+// POIs, restaurants and recommendations no longer show a status badge; only
+// activities the user has actually added to the cart read as "Confirmed".
+const getStatusInfo = (resolvedType, isSelectedInCart) => {
+  if (resolvedType === "activity" && isSelectedInCart)
+    return { label: "Confirmed", tone: "confirmed" };
+  return null;
+};
+
+// ─── Helper: card variant background / border per element type ────────────────
+// Ported 1:1 from the v4 HTML. Returned as inline styles (not Tailwind classes)
+// because arbitrary color/border values returned from a function are not reliably
+// picked up by Tailwind's content scanner — same reason the tag chips use inline
+// styles. Inline `style` always renders, so the design is reproduced exactly.
+//   restaurant            → peach-soft fill (#FFF4E8), transparent 1px border  (.act.food)
+//   activity              → white card, #ECECEC 1px solid border               (.act)
+//   poi / recommendation  → transparent fill, 1px dashed #B8BECC border        (.act.suggested)
+const getCardVariantStyle = (resolvedType) => {
+  if (resolvedType === "restaurant") {
+    return { background: "#FFF4E8", border: "1px solid transparent" };
+  }
+  if (resolvedType === "recommendation" || resolvedType === "poi") {
+    return { background: "transparent", border: "1px dashed #B8BECC" };
+  }
+  // activity
+  return { background: "#FFFFFF", border: "1px solid #ECECEC" };
+};
+
+// ─── Helper: clock-time to show in the right column ───────────────────────────
+const getDisplayTime = (item) => {
+  if (item?.start_time) return item.start_time;
+  if (item?.time && /^\d/.test(item.time)) return item.time;
+  return null;
+};
+
+// ─── Helper: pretty-print ideal_duration (e.g. 1 → "1h", 1.5 → "1h 30m") ──────
+const getDurationLabel = (item) => {
+  const d = item?.ideal_duration;
+  if (d == null || isNaN(Number(d))) return null;
+  const num = Number(d);
+  const hours = Math.floor(num);
+  const mins = Math.round((num - hours) * 60);
+  if (hours === 0 && mins === 0) return null;
+  if (hours === 0) return `${mins}m`;
+  if (mins === 0) return `${hours}h`;
+  return `${hours}h ${mins}m`;
+};
+
+// ─── Helper: collect tag strings ──────────────────────────────────────────────
+// Priority: `agent_tags` first (curation signal from the agent). Fall back to
+// `tags` only when no agent_tags were returned. Capped at 2 — the v4 HTML
+// recommendation is "1 curation + 1 status + duration" per row.
+const getDisplayTags = (item) => {
+  const pick = (arr) =>
+    (Array.isArray(arr) ? arr : [])
+      .map((t) => (typeof t === "string" ? t.trim() : ""))
+      .filter(Boolean);
+
+  const agent = pick(item?.agent_tags);
+  const source = agent.length > 0 ? agent : pick(item?.tags);
+  return source.slice(0, 2);
+};
+
+// ─── Helper: format day-header date as "Fri 6 Jun" (uppercase via CSS) ────────
+const SHORT_MONTHS = [
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+];
+const SHORT_WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+const formatDayHeaderDate = (dateStr) => {
+  if (!dateStr) return null;
+  // API uses ISO "YYYY-MM-DD" — parse as a local date so we don't drift a day.
+  const m = String(dateStr).match(/^(\d{4})-(\d{2})-(\d{2})/);
+  let d;
+  if (m) {
+    d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+  } else {
+    d = new Date(dateStr);
+  }
+  if (isNaN(d.getTime())) return null;
+  return `${SHORT_WEEKDAYS[d.getDay()]} ${d.getDate()} ${SHORT_MONTHS[d.getMonth()]}`;
+};
+
+// ─── Helper: editorial day-summary heading ────────────────────────────────────
+// Renders the day_summary like the design ("Easing into Auckland"): the leading
+// words stay Inter (Medium 500, inherited from the heading), and the final word
+// is set in Instrument Serif italic via `ttw-type-serif`. Mirrors the split used
+// in OverviewEditorial.jsx.
+//
+// The API sometimes appends a trailing emoji/icon (e.g. "…Shibuya lights 🌸").
+// That icon must stay upright — it should never become the italic "last word"
+// (which also wrongly left the real words un-italicised). So we peel any
+// trailing pictographic icon off first, italicise the last *word*, then re-append
+// the icon in an upright span.
+const TRAILING_ICON_RE =
+  /(?:\s*[\p{Extended_Pictographic}\u{1F1E6}-\u{1F1FF}](?:️|‍[\p{Extended_Pictographic}\u{1F1E6}-\u{1F1FF}])*)+\s*$/u;
+
+const renderDaySummary = (text) => {
+  if (typeof text !== "string" || !text.trim()) return null;
+
+  let body = text.trim();
+  let icon = "";
+  const iconMatch = body.match(TRAILING_ICON_RE);
+  if (iconMatch) {
+    icon = iconMatch[0].trim();
+    body = body.slice(0, iconMatch.index).trim();
+  }
+
+  // Icon rendered upright (not inside `ttw-type-serif`, so no italics).
+  const iconNode = icon ? (
+    <span className="not-italic" style={{ fontStyle: "normal" }}>
+      {" "}
+      {icon}
+    </span>
+  ) : null;
+
+  const words = body ? body.split(/\s+/) : [];
+  if (words.length === 0) {
+    // Summary was icon-only — show just the upright icon.
+    return icon ? <>{icon}</> : null;
+  }
+  if (words.length === 1) {
+    return (
+      <>
+        <span className="ttw-type-serif">{words[0]}</span>
+        {iconNode}
+      </>
+    );
+  }
+  const last = words.pop();
+  return (
+    <>
+      {words.join(" ")} <span className="ttw-type-serif">{last}</span>
+      {iconNode}
+    </>
+  );
+};
+
 // ─── Recommendation SVG icon ──────────────────────────────────────────────────
 const RecommendationIcon = ({ size = 16 }) => (
   <svg
@@ -151,52 +273,184 @@ const RecommendationIcon = ({ size = 16 }) => (
   </svg>
 );
 
-// ─── Tag renderer ─────────────────────────────────────────────────────────────
-const renderTag = (item, extraClass = "") => {
-  const type = resolveElementType(item);
+// ─── Tag chip styles ──────────────────────────────────────────────────────────
+// Ported 1:1 from the v4 HTML `.act-tag` system. Colors/borders ride on inline
+// `style` props (not Tailwind arbitrary classes) because Tailwind's content
+// scanner sometimes misses arbitrary color values stored in object literals,
+// which made every chip render with the browser-default (transparent/white)
+// background. Inline style sidesteps the purge/JIT entirely.
+const CHIP_BASE =
+  "inline-flex items-center gap-[3px] px-[6px] py-[2px] rounded-[3px] uppercase whitespace-nowrap";
 
-  if (type === "activity") {
+const CHIP_TEXT_STYLE = {
+  fontFamily: "'JetBrains Mono', 'SF Mono', Menlo, ui-monospace, monospace",
+  fontSize: "9px",
+  fontWeight: 600,
+  letterSpacing: "0.06em",
+  lineHeight: 1.1,
+};
+
+// Variant style map — keys match common agent_tags / tags strings.
+// ONLY backgrounds + borders + text color are mapped; the displayed text is
+// always the raw string from the API (no static label override, no icon).
+// Every variant ships a SOLID background (no transparent fills) so chips never
+// read as white against light card surfaces.
+const TAG_STYLE_BY_KEY = {
+  // .act-tag.booked — ink fill, yellow text
+  booked:      { background: "#0B1220", color: "#F7E700" },
+  tickets:     { background: "#0B1220", color: "#F7E700" },
+  // .act-tag.suggest — re-mapped from transparent to violet-soft so it pops
+  suggested:   { background: "#F1E6FF", color: "#7E3DD4", border: "1px solid rgba(126,61,212,0.25)" },
+  suggest:     { background: "#F1E6FF", color: "#7E3DD4", border: "1px solid rgba(126,61,212,0.25)" },
+  // "on your own" → green-soft (the activity-self / explore signal)
+  on_your_own: { background: "#DFF3E7", color: "#1F8A5A", border: "1px solid rgba(31,138,90,0.3)" },
+  // .act-tag.food-tag — ink fill, peach text
+  table_held:  { background: "#0B1220", color: "#FFE5D1" },
+  window_seat: { background: "#0B1220", color: "#FFE5D1" },
+  // .act-tag.kaira-pick — yellow fill, ink text
+  kaira_pick:  { background: "#F7E700", color: "#0B1220" },
+  kairas_pick:  { background: "#F7E700", color: "#0B1220" },
+  // .act-tag.curated — peach fill, ink text
+  curated:     { background: "#FFE5D1", color: "#0B1220" },
+  // .act-tag.local-fav — green-soft fill
+  local_fav:   { background: "#DFF3E7", color: "#1F8A5A", border: "1px solid rgba(31,138,90,0.3)" },
+  // .act-tag.hidden-gem — violet-soft fill
+  hidden_gem:  { background: "#F1E6FF", color: "#7E3DD4", border: "1px solid rgba(126,61,212,0.25)" },
+  // .act-tag.must-do — pink-soft fill
+  must_do:     { background: "#FFE5EC", color: "#D9577A", border: "1px solid rgba(217,87,122,0.25)" },
+  insider_spot: { background: "#FFE5D1", color: "#0B1220" },
+  table_reserved: { background: "#0B1220", color: "#F7E700" },
+  insta_worthy_view: { background: "#F1E6FF", color: "#7E3DD4", border: "1px solid rgba(126,61,212,0.25)" },
+  tickets_held: { background: "#0B1220", color: "#F7E700" },
+  // guide chips — shown on activities when the API sends a `guide` value
+  guided:      { background: "#E6F0FF", color: "#1D6FE0", border: "1px solid rgba(29,111,224,0.25)" },
+  self_guided: { background: "#DFF3E7", color: "#1F8A5A", border: "1px solid rgba(31,138,90,0.3)" },
+  semi_guided: { background: "#F1E6FF", color: "#7E3DD4", border: "1px solid rgba(126,61,212,0.25)" },
+  // green-soft "Included" chip — always shown on activity elements
+  included:    { background: "#DFF3E7", color: "#1F8A5A", border: "1px solid rgba(31,138,90,0.3)" },
+};
+
+// Fallback palette — when the API sends a tag string we don't recognize, we
+// still want a colored chip. Deterministic hash → palette index so the same
+// string always lands on the same color across renders. NO transparent
+// variant here — every entry has a solid fill.
+const FALLBACK_STYLES = [
+  { background: "#DFF3E7", color: "#1F8A5A", border: "1px solid rgba(31,138,90,0.3)" },   // green-soft
+  { background: "#F1E6FF", color: "#7E3DD4", border: "1px solid rgba(126,61,212,0.25)" }, // violet-soft
+  { background: "#FFE5EC", color: "#D9577A", border: "1px solid rgba(217,87,122,0.25)" }, // pink-soft
+  { background: "#FFE5D1", color: "#0B1220" },                                            // peach
+  { background: "#F7E700", color: "#0B1220" },                                            // yellow
+  { background: "#0B1220", color: "#F7E700" },                                            // ink + yellow
+];
+
+const hashString = (s) => {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+  return Math.abs(h);
+};
+
+// Normalize "Local Fav", "local-fav", "LOCAL FAV" → "local_fav" for lookup
+const normalizeTagKey = (raw) =>
+  String(raw || "").trim().toLowerCase().replace(/[\s-]+/g, "_");
+
+// Display-label overrides — chip text is uppercased via CSS, so only the
+// characters that the underscore→space default can't produce (e.g. the
+// apostrophe) need an explicit entry here.
+const TAG_LABEL_BY_KEY = {
+  kairas_pick: "Kaira's pick",
+  kaira_pick: "Kaira's pick",
+};
+
+const resolveTagLabel = (raw) => {
+  const key = normalizeTagKey(raw);
+  return TAG_LABEL_BY_KEY[key] || String(raw).replace(/_/g, " ");
+};
+
+// Pick a style for a tag. Known keys → mapped style; unknown → deterministic
+// fallback color. Caller renders the raw API string as the chip text.
+const resolveTagStyle = (raw) => {
+  const key = normalizeTagKey(raw);
+  if (TAG_STYLE_BY_KEY[key]) return TAG_STYLE_BY_KEY[key];
+  return FALLBACK_STYLES[hashString(key) % FALLBACK_STYLES.length];
+};
+
+// ─── Tag icon glyphs ──────────────────────────────────────────────────────────
+// Star is the default; check is for booking/reservation confirmations;
+// diamond is for "curated / hidden / insider" curation signals. Rendered as
+// SVGs (not unicode glyphs) so the icon's box equals the drawn shape — flexbox
+// `items-center` then centers it exactly, with no font-metric drift on zoom.
+// Each uses `fill: currentColor` so it inherits the chip's text color.
+const TagGlyph = ({ name, size = 9 }) => {
+  const common = {
+    width: size,
+    height: size,
+    viewBox: "0 0 24 24",
+    "aria-hidden": true,
+    style: { display: "block", flexShrink: 0 },
+  };
+  if (name === "check") {
     return (
-      <div className={`${extraClass}`}>
-        <span className="inline-flex items-center gap-[5px] px-[7px] py-[1px] rounded-[6px] border border-[#5cba663b] bg-[#EBFFEF] text-[12px] shadow-none">
-          <span className="w-[7px] h-[7px] rounded-full bg-[#22C55E] shrink-0" />
-          Activity
-        </span>
-      </div>
+      <svg
+        {...common}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={3}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <polyline points="20 6 9 17 4 12" />
+      </svg>
     );
   }
-
-  if (type === "recommendation") {
+  if (name === "diamond") {
     return (
-      <div className={`${extraClass}`}>
-        <RecommendationIcon size={14} />
-      </div>
+      <svg {...common} fill="currentColor">
+        <path d="M12 2 22 12 12 22 2 12z" />
+      </svg>
     );
   }
+  // star (default)
+  return (
+    <svg {...common} fill="currentColor">
+      <path d="M12 2.5l2.81 6.07 6.69.69-4.99 4.49 1.38 6.56L12 17.3l-5.89 3.51 1.38-6.56L2.5 9.26l6.69-.69z" />
+    </svg>
+  );
+};
 
-  if (type === "restaurant") {
-    return (
-      <div className={`${extraClass}`}>
-        <span className="inline-flex items-center gap-[5px] px-[7px] py-[1px] rounded-[6px] border border-[#D1D5DB] bg-white text-[12px] shadow-none">
-          <span className="w-[7px] h-[7px] rounded-full bg-[#3B82F6] shrink-0" />
-          Restaurant
-        </span>
-      </div>
-    );
-  }
+const TAG_ICON_BY_KEY = {
+  // check — confirmed / booked / reserved / table-held
+  booked: "check",
+  tickets: "check",
+  table_held: "check",
+  window_seat: "check",
+  table_reserved: "check",
+  included: "check",
+  // ticket — tickets held
+  tickets_held: "check",
+  // diamond — guided experiences (curation signal)
+  guided: "diamond",
+  self_guided: "diamond",
+  semi_guided: "diamond",
+  // diamond — curated / insider / hidden gem signals
+  curated: "diamond",
+  hidden_gem: "diamond",
+  insider_spot: "diamond",
+  // (everything else falls back to star)
+};
 
-  if (type === "poi") {
-    return (
-      <div className={`${extraClass}`}>
-        <span className="inline-flex items-center gap-[5px] px-[7px] py-[1px] rounded-[6px] border border-[#D1D5DB] bg-white text-[12px] shadow-none">
-          <span className="w-[7px] h-[7px] rounded-full bg-[#7C3AED] shrink-0" />
-          Self Exploration
-        </span>
-      </div>
-    );
-  }
+const resolveTagIcon = (raw) => {
+  const key = normalizeTagKey(raw);
+  return TAG_ICON_BY_KEY[key] || "star";
+};
 
-  return null;
+// Duration chip — paper-2 cream fill (HTML .act-tag.duration)
+const DURATION_CHIP_STYLE = { background: "#F4F1E6", color: "#4A566E" };
+
+// Recommendation chip — for "recommendation" rows
+const RECOMMENDATION_CHIP_STYLE = {
+  background: "#F1E6FF",
+  color: "#7E3DD4",
+  border: "1px solid rgba(126,61,212,0.25)",
 };
 
 // ─── Main component ───────────────────────────────────────────────────────────
@@ -204,9 +458,6 @@ const renderTag = (item, extraClass = "") => {
 const CityDay = (props) => {
   const [elements, setElements] = useState([]);
   const [showDrawer, setShowDrawer] = useState(false);
-  const [hoveredItem, setHoveredItem] = useState(null);
-  const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
-
   const { finalized_status } = useSelector((state) => state.ItineraryStatus);
   const {
     trackActivityBookingAdd,
@@ -220,6 +471,18 @@ const CityDay = (props) => {
   const dispatch = useDispatch();
   const { id } = useSelector((state) => state.auth);
   const { customer } = useSelector((state) => state.Itinerary);
+  const cart = useSelector((state) => state.Cart);
+
+  // An activity reads as "Confirmed" only when its booking is in the cart and
+  // flagged selected. Matches SlabElement's cart-inclusion check.
+  const isSelectedInCart = (item) =>
+    !!cart?.summary &&
+    Object.values(cart.summary).some((category) =>
+      category?.bookings?.some(
+        (booking) =>
+          booking?.id === item?.booking?.id && booking?.selected === true
+      )
+    );
   const [showActivityDetails, setShowActivityDetails] = useState({ show: false });
 const [activityLoading, setActivityLoading] = useState(false);
 const isDraft = useSelector((state) => state.Itinerary.status) === "Draft";
@@ -239,7 +502,7 @@ const isDraft = useSelector((state) => state.Itinerary.status) === "Draft";
   try {
     setActivityLoading(true);
     const response = await fetch(
-      `https://mercury.tarzanway.com/api/v1/ancillaries/activity/${activityId}/?currency=INR`,
+      `https://dev.mercury.tarzanway.com/api/v1/ancillaries/activity/${activityId}/?currency=INR`,
       {
         method: "POST",
         headers: {
@@ -292,7 +555,7 @@ const isDraft = useSelector((state) => state.Itinerary.status) === "Draft";
         },
       },
       undefined,
-      { scroll: false }
+      { scroll: false, shallow: true }
     );
   };
 
@@ -331,7 +594,7 @@ const handleItemClick = (item) => {
       },
     },
     undefined,
-    { scroll: false }
+    { scroll: false, shallow: true }
   );
 };
 useEffect(() => {
@@ -380,82 +643,158 @@ useEffect(() => {
       booking.number_of_infants,
   }));
 
-  // ── Tooltip handler ───────────────────────────────────────────────────────────
-
-  const handleMouseEnter = (e, itemKey) => {
-    const element = e.currentTarget.querySelector("h4, span");
-    if (!element) return;
-    const isTruncated = element.scrollWidth > element.clientWidth;
-    if (isTruncated) {
-      const rect = e.currentTarget.getBoundingClientRect();
-      setTooltipPosition({
-        top: rect.top - 10,
-        left: rect.left + rect.width / 2,
-      });
-      setHoveredItem(itemKey);
-    }
-  };
-
   // ── Render a single activity/POI/restaurant/recommendation row ────────────────
 
   const renderItem = (item, idxInSlot) => {
     const resolvedType = resolveElementType(item);
     const name = getItemName(item);
+    const subtitle = getItemSubtitle(item);
     const isRecommendationOnly = resolvedType === "recommendation";
     const isClickable = !isRecommendationOnly;
+    const selectedInCart = isSelectedInCart(item);
+    const status = getStatusInfo(resolvedType, selectedInCart);
+    const variantStyle = getCardVariantStyle(resolvedType);
+    const displayTime = getDisplayTime(item);
+    const duration = getDurationLabel(item);
+    const dataTags = getDisplayTags(item);
+
+    // Activity elements show the "Tickets held" chip (always) plus a guide
+    // chip ("Guided" / "Self Guided" / "Semi Guided") — but only when the API
+    // actually sends a `guide` value for the activity. No other API tags render
+    // for activities. Everything else shows up to 2 data tags (already capped
+    // in getDisplayTags).
+    const guideTag =
+      typeof item?.guide === "string" && item.guide.trim()
+        ? item.guide.trim()
+        : null;
+    const renderTags =
+      resolvedType === "activity"
+        ? [...(guideTag ? [guideTag] : []), "tickets_held"]
+        : dataTags;
+
+    const statusBadge = status ? (
+      <span
+        className={`ttw-type-status shrink-0 whitespace-nowrap ${
+          status.tone === "confirmed" ? "text-[#1F8A5A]" : "text-[#8892A6]"
+        }`}
+      >
+        {status.label}
+      </span>
+    ) : null;
+
+    const tagGroup =
+      renderTags.length > 0 || duration ? (
+        <span className="flex flex-wrap items-center gap-[5px] !font-normal">
+          {renderTags.map((t, i) => (
+            <span
+              key={`${t}-${i}`}
+              className={`${CHIP_BASE} !font-normal`}
+              style={{ ...CHIP_TEXT_STYLE, ...resolveTagStyle(t) }}
+            >
+              <span
+                aria-hidden="true"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <TagGlyph name={resolveTagIcon(t)} />
+              </span>
+              {resolveTagLabel(t)}
+            </span>
+          ))}
+          {duration && (
+            <span
+              className={CHIP_BASE}
+              style={{ ...CHIP_TEXT_STYLE, ...DURATION_CHIP_STYLE }}
+            >
+              {duration}
+            </span>
+          )}
+        </span>
+      ) : null;
 
     return (
-      <div key={idxInSlot} className="flex items-center gap-2">
-        {/* ── Left icon ── */}
+      <div
+        key={idxInSlot}
+        onClick={() => isClickable && handleItemClick(item)}
+        style={variantStyle}
+        className={`relative grid grid-cols-[40px_minmax(0,1fr)] gap-2.5 sm:gap-3 px-3 py-2.5 rounded-[10px] ${
+          subtitle ? "items-center" : "items-center"
+        } transition-all ${
+          isClickable
+            ? "cursor-pointer hover:-translate-y-[1px]"
+            : "cursor-default"
+        }`}
+      >
+        {/* Yellow vertical accent bar — activity only (POIs no longer get one) */}
+        {resolvedType === "activity" && (
+          <span className="absolute left-0 top-2.5 bottom-2.5 w-[3px] bg-[#F7E700] rounded-r-[3px]" />
+        )}
+
+        {/* ── Thumb ── */}
         {isRecommendationOnly ? (
-          <div className="w-10 h-10 flex items-center justify-center rounded-full bg-[#F7ECFF] shrink-0">
+          <div className="w-10 h-10 flex items-center justify-center rounded-[9px] bg-[#F1E6FF] shrink-0">
             <RecommendationIcon size={16} />
           </div>
         ) : (
           <img
             src={getItemImage(item)}
             alt={name}
-            className="w-10 h-10 rounded-full object-cover shrink-0"
+            className="w-10 h-10 rounded-[9px] object-cover shrink-0 items-center" 
           />
         )}
 
-        {/* ── Name + tag ── */}
-        <div className="flex flex-col min-w-0">
-          {/* "Recommendation:" prefix — distinguishes a recommendation row
-              from a real bookable item (activity / restaurant / poi). */}
-          {/* {isRecommendationOnly && (
-            <span className="text-[11px] text-[#07213A] font-medium leading-none mb-0.5">
-              Recommendation
-            </span>
-          )} */}
-          <TooltipWrapper
-            onMouseEnter={(e) => handleMouseEnter(e, `${idxInSlot}-${name}`)}
-            onMouseLeave={() => setHoveredItem(null)}
-            className="min-w-0"
-          >
-            <span
-              className={`text-[13px] font-[400] leading-snug truncate block ${
-                isClickable
-                  ? "cursor-pointer hover:underline"
-                  : "cursor-default"
-              }`}
-              onClick={() => isClickable && handleItemClick(item)}
-            >
-              {name}
-            </span>
-
-            {/* Tooltip */}
-            {hoveredItem === `${idxInSlot}-${name}` && (
-              <Tooltip
-                style={{ top: tooltipPosition.top, left: tooltipPosition.left }}
+        {/* ── Body ── */}
+        <div className="min-w-0">
+          {subtitle ? (
+            <>
+              {/* 1) name — no truncation, wraps naturally */}
+              <h4
+                className="ttw-type-h6 text-[#0B1220] m-0 leading-[1.1] break-words"
+                style={{ fontWeight: 600 }}
               >
                 {name}
-              </Tooltip>
-            )}
-          </TooltipWrapper>
+              </h4>
 
-          {/* Tag — shown for all types except pure recommendations */}
-          {resolvedType !== "recommendation" && renderTag(item)}
+              {/* 2) Row: [left: one-liner] [right: confirmed/reserved].
+                  Row height = content height (no stretch). The left side wraps
+                  naturally; the right side stays pinned, never grows in height. */}
+              <div className="-mt-[1px] flex items-baseline justify-between gap-3">
+                {/* LEFT: one-liner, wrapping */}
+                <div className="min-w-0 flex-1 leading-[1.1] break-words">
+                  <span
+                    className="ttw-type-small text-[#4A566E] align-middle"
+                    style={{ fontSize: "11.5px", lineHeight: 1.1 }}
+                  >
+                    {subtitle}
+                  </span>
+                </div>
+
+                {/* RIGHT: confirmed / reserved — fixed-content, no height stretch */}
+                {statusBadge}
+              </div>
+
+              {/* 3) Tags on their own line below the one-liner */}
+              {tagGroup && <div className="mt-[5px]">{tagGroup}</div>}
+            </>
+          ) : (
+            <>
+              {/* No one_liner: name on the left, status pinned right and
+                  baseline-aligned with the title's first line. */}
+              <div className="flex items-baseline justify-between gap-3">
+                <h4
+                  className="ttw-type-h6 text-[#0B1220] m-0 leading-[1.2] break-words min-w-0 flex-1"
+                  style={{ fontWeight: 600 }}
+                >
+                  {name}
+                </h4>
+                {statusBadge}
+              </div>
+              {tagGroup && <div className="mt-[3px]">{tagGroup}</div>}
+            </>
+          )}
         </div>
       </div>
     );
@@ -490,23 +829,34 @@ useEffect(() => {
 
   return (
     <>
-     <div className="flex sm:flex-row flex-col border-b border-[#E8E8E8] last:border-b-0 w-full justify-center">
+     <div className="flex sm:flex-row flex-col border-b border-[#ECECEC] last:border-b-0 w-full justify-center">
 
-        {/* COL 1: Date label */}
-        <div className="sm:w-fit w-full shrink-0 px-4 sm:pt-6 pt-4 sm:pb-6 pb-2 flex sm:flex-col flex-row sm:items-start items-baseline gap-2 sm:min-w-[90px]">
-          <div className="flex flex-col items-baseline sm:items-start gap-2 shrink-0">
-            <p className="text-[18px] font-[600] m-0 leading-tight whitespace-nowrap">Day {props.index + 1} 
-              {/* {isDesktop ? "": props.day?.day_summary && <span className="text-[12px] text-[#9CA3AF]">- {props.day?.day_summary}</span>} */}
-              </p>
+        {/* COL 1: Day number + date — matches HTML .day-num-block */}
+        <div className="sm:w-fit w-full shrink-0 pl-4 pr-2 sm:pr-0 sm:pt-6 pt-4 sm:pb-6 pb-2 flex sm:flex-col flex-row sm:items-start items-baseline gap-3 sm:min-w-[64px]">
+          <div className="flex flex-col  sm:items-start items-baseline gap-2 sm:gap-1 shrink-0">
+            <span className="ttw-type-day-num text-[#0B1220] m-0 whitespace-nowrap">
+              {String(props.index + 1).padStart(2, "0")}
+            </span>
             {props.day?.date && (
-              <p className="text-[12px] text-[#9CA3AF] m-0 sm:mt-1 mt-0 leading-tight whitespace-nowrap">
-                {getDate(props.day.date)}
-              </p>
+              <span className="ttw-type-day-date text-[#8892A6] m-0 whitespace-nowrap">
+                {formatDayHeaderDate(props.day.date)}
+              </span>
             )}
           </div>
+
+          {/* Mobile-only: day summary to the right of the day number + date.
+              On desktop the editorial heading in COL 2 carries this instead. */}
+          {props.day?.day_summary && (
+            <h3
+              className="ttw-type-h6 text-[#0B1220] m-0 leading-[1.1] break-words flex-1 min-w-0 self-center sm:hidden"
+              style={{ fontWeight: 500 }}
+            >
+              {renderDaySummary(props.day.day_summary)}
+            </h3>
+          )}
           {/* {props.day?.day_summary && (
             <p
-              className="text-[12px] text-[#6B7280] m-0 sm:mt-1 mt-0 leading-tight hidden sm:block"
+              className="ttw-type-small text-[#6B7280] m-0 sm:mt-1 mt-0 leading-tight hidden sm:block"
               style={{
                 display: "-webkit-box",
                 WebkitLineClamp: 2,
@@ -521,7 +871,20 @@ useEffect(() => {
         </div>
 
         {/* COL 2: Content */}
-        <div className="flex-1 sm:pr-4 px-4 sm:pt-6 md:pt-4 pb-4 sm:pb-6 min-w-0">
+        <div className="flex-1 sm:pr-4 px-[0.3rem] md:px-4 sm:pt-6 md:pt-4 pb-4 sm:pb-6 min-w-0">
+
+          {/* Editorial day summary — baseline-aligned with the "01" day number.
+              The number is 36px serif, so on desktop the smaller heading is
+              nudged down to share the number's baseline. Only shown when the API
+              sends day_summary; otherwise the content reads as before. */}
+          {props.day?.day_summary && (
+            <h3
+              className="ttw-type-h4 text-[#0B1220] m-0 mb-3 sm:mt-[14px] leading-[0.9] break-words !pt-4 max-sm:hidden"
+              style={{ fontWeight: 500 }}
+            >
+              {renderDaySummary(props.day.day_summary)}
+            </h3>
+          )}
 
           {matchingIntracityBookings && matchingIntracityBookings.length > 0 && (
             <div className="flex flex-row gap-xs flex-wrap mb-3">
@@ -545,10 +908,10 @@ useEffect(() => {
                         },
                       },
                       undefined,
-                      { scroll: false },
+                      { scroll: false, shallow: true },
                     );
                   }}
-                  className="rounded-9xl text-[12px] font-400 leading-md px-sm py-xxs text-white bg-[#5CBA66] flex gap-2 items-center justify-center hover:opacity-90"
+                  className="rounded-9xl ttw-type-small font-400 leading-md px-sm py-xxs text-white bg-[#5CBA66] flex gap-2 items-center justify-center hover:opacity-90"
                 >
                   <FaTaxi /> Sightseeing Taxi Included
                 </button>
@@ -558,68 +921,55 @@ useEffect(() => {
 
           {elements.length > 0 ? (
             hasAnyTime ? (
-              <div className="relative">
-                {/* Vertical timeline line — shown when there are slots to connect */}
-                {(presentSlots.length > 1 || elements.length > 1) && (
-                  <div
-                    className="absolute w-[1.5px] bg-[#E5E7EB] z-0"
-                    style={{ left: "3px", top: "8px", bottom: "8px" }}
-                  />
-                )}
-
-                <div className="flex flex-col gap-1">
-                  {presentSlots.map((slot) => (
-                    <div key={slot}>
-                      {/* Slot header */}
-                      <div className="flex items-center gap-3 mb-2">
-                        <div className="w-[7px] h-[7px] rounded-full bg-[#e5e5e5] shrink-0 z-10 relative" />
-                        <span className="text-[14px] font-[500] text-[#111]">
-                          {slot}
-                        </span>
-                      </div>
-
-                      {/* Items in slot */}
-                      <div className="ml-[22px] flex flex-col gap-3">
-                        {groups[slot].map((item, idxInSlot) =>
-                          renderItem(item, idxInSlot)
-                        )}
-                      </div>
+              <div className="flex flex-col gap-3.5">
+                {presentSlots.map((slot) => (
+                  <div key={slot}>
+                    {/* Slot header — uppercase mono label with trailing divider line */}
+                    <div className="flex items-center gap-2.5 mb-2">
+                      <span className="ttw-type-status text-[#8892A6]">
+                        {slot}
+                      </span>
+                      <span className="flex-1 h-px bg-[#ECECEC]" />
                     </div>
-                  ))}
-                </div>
+
+                    {/* Items in slot */}
+                    <div className="flex flex-col gap-2">
+                      {groups[slot].map((item, idxInSlot) =>
+                        renderItem(item, idxInSlot)
+                      )}
+                    </div>
+                  </div>
+                ))}
               </div>
             ) : (
-              // No item carries a `time` value — drop the time-slot headers
-              // but keep the vertical timeline rail so the column still reads
-              // as a connected day instead of a bare list.
-              <div className="relative">
-                {elements.length > 1 && (
-                  <div
-                    className="absolute w-[1.5px] bg-[#E5E7EB] z-0"
-                    style={{ left: "3px", top: "8px", bottom: "8px" }}
-                  />
-                )}
-                <div className="ml-[22px] flex flex-col gap-3">
-                  {elements.map((item, idxInSlot) => renderItem(item, idxInSlot))}
-                </div>
+              // No item carries a `time` value — render as a flat list of cards.
+              <div className="flex flex-col gap-2">
+                {elements.map((item, idxInSlot) => renderItem(item, idxInSlot))}
               </div>
             )
           ) : props?.isLastDay ? (
-            <div className="flex items-center gap-2 md:ml-5 md:py-2">
-              <IoBagCheckOutline size={15} />
-              <span className="text-[13px]">
-                Check out from {props?.city?.name}
-              </span>
-            </div>
-
-          ) : (
+            // day_summary (when present) is already shown as the editorial
+            // heading on desktop and beside the day/date on mobile. Only fall
+            // back to the checkout message when there's no day_summary.
+            !props?.day?.day_summary ? (
+              <div className="flex items-center gap-2 md:ml-5 md:py-2">
+                <IoBagCheckOutline size={15} />
+                <span className="ttw-type-small">
+                  Check out from {props?.city?.name}
+                </span>
+              </div>
+            ) : null
+          ) : !props?.day?.day_summary ? (
+            // day_summary (when present) already shows as the editorial heading
+            // above, so it stands on its own — only fall back to the empty-state
+            // "No activity added." line when there's no day_summary.
             <div className="flex items-center gap-2 md:ml-5 md:py-2">
               <MdOutlineDownhillSkiing size={15} className="text-[#9CA3AF]" />
-              <span className="text-[13px] text-[#6B7280]">
+              <span className="ttw-type-small text-[#6B7280]">
                 No activity added.
               </span>
             </div>
-          )}
+          ) : null}
         </div>
       </div>
 

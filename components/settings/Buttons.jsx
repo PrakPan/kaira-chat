@@ -22,7 +22,7 @@ const Buttons = (props) => {
                     padding="8px 16px"
                     fontSize="12px"
                   >
-                   {props?.isEdit ? "Update Itinerary":"Continue"}
+                   {props?.updateLabel ? props.updateLabel : props?.isEdit ? "Update Itinerary":"Continue"}
                   </Button>
         {/* <button onClick={props.handleUpdate} className={`MediumIndigoButton ${!isDesktop ? 'w-1/2' : ''}`}>Update</button> */}
     </div>

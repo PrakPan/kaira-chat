@@ -13,6 +13,7 @@ const Heading = styled.p`
   font-weight: 600;
   text-align: center;
   margin: 0 0 1.5rem 0;
+  color: #0b1220;
 `;
 
 const Label = styled.p`
@@ -41,6 +42,7 @@ const Pannel = (props) => {
             fontSize: "1.75rem",
             textAlign: "right",
             margin: "1rem",
+            color: "#0b1220",
           }}
         ></TbArrowBack>
       </div>
@@ -72,8 +74,8 @@ const Pannel = (props) => {
                     }
                     sx={{
                       "& .MuiSvgIcon-root": { fontSize: 16 },
-                      color: "black",
-                      "&.Mui-checked": { color: "black" },
+                      color: "#445069",
+                      "&.Mui-checked": { color: "#0b1220" },
                     }}
                     defaultChecked={
                       props.filtersState

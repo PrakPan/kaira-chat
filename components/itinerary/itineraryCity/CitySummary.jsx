@@ -65,6 +65,7 @@ const CitySummary = (props) => {
         undefined,
         {
           scroll: false,
+          shallow: true,
         }
       );
     } catch (error) {
@@ -112,6 +113,7 @@ const CitySummary = (props) => {
       undefined,
       {
         scroll: false,
+        shallow: true,
       }
     );
     setPoi(poiData);
@@ -142,6 +144,7 @@ const CitySummary = (props) => {
       undefined,
       {
         scroll: false,
+        shallow: true,
       }
     );
   };
@@ -169,7 +172,7 @@ const CitySummary = (props) => {
         query: {}, // remove "drawer"
       },
       undefined,
-      { scroll: false }
+      { scroll: false, shallow: true }
     );
   };
 
@@ -216,7 +219,7 @@ const CitySummary = (props) => {
         },
       },
       undefined,
-      { scroll: false }
+      { scroll: false, shallow: true }
     );
 
     // try {
@@ -504,6 +507,7 @@ const CitySummary = (props) => {
 
       {props?.intracityBookings &&
         formattedTaxiDetails &&
+        formattedTaxiDetails?.[0]?.id &&
         props?.intracityBookings?.length > 0 && (
           <div className="text-sm font-normal flex flex-col gap-1 w-auto md:flex-row">
             <div className="text-[14px] font-medium leading-[22px] w-[80px]">

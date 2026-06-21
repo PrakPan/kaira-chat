@@ -15,6 +15,7 @@ const Heading = styled.p`
   font-weight: 700;
   margin: 0;
   line-height: 1;
+  color: #0b1220;
 `;
 
 const Text = styled.p`
@@ -22,7 +23,7 @@ const Text = styled.p`
   font-weight: 300;
   margin: 0;
   letter-spacing: 1px;
-  color: rgba(91, 89, 89, 1);
+  color: #445069;
 `;
 
 const Section = (props) => {

@@ -163,6 +163,7 @@ const NewPoiDetailsDrawer = (props) => {
       backdrop
       width={"50%"}
       mobileWidth={"100%"}
+      bgColor="#fafaf5"
       style={{ zIndex: props.itineraryDrawer ? 1503 : 1501 }}
       className=" overflow-y-hidden"
       onHide={props.handleCloseDrawer}
@@ -193,8 +194,8 @@ const NewPoiDetailsDrawer = (props) => {
           )}
         </>
       ) : (
-        <div className="h-[100vh] px-4">
-          <div className="z-1 flex flex-row items-center gap-2 pt-4 bg-white">
+        <div className="h-[100vh] px-4 bg-[#fafaf5]">
+          <div className="z-1 flex flex-row items-center gap-2 pt-4 bg-[#fafaf5]">
             <BackArrow handleClick={(e) => props.handleCloseDrawer(e)} />
           </div>
           <OptionsContainer className="px-2 center-div space-y-5">

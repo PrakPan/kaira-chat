@@ -100,6 +100,7 @@ const Section = (props) => {
         show={props.showFilter}
         anchor={"right"}
         backdrop
+        bgColor="#fafaf5"
         style={{ zIndex: 1508 }}
         className=""
         onHide={() => props.setshowFilter(false)}
@@ -115,7 +116,7 @@ const Section = (props) => {
                   textAlign: "right",
                 }}
               ></IoMdClose>
-              <div className="text-2xl font-normal line-clamp-1">Filters</div>
+              <div className="text-2xl font-normal line-clamp-1 text-[#0b1220]">Filters</div>
             </div>
 
             <StarCategory
@@ -175,13 +176,13 @@ const Section = (props) => {
               className="w-1/2 "
               onClick={() => props.setshowFilter(false)}
             >
-              <div className="text-[#01202B] ">Cancel</div>
+              <div className="text-[#0b1220] ">Cancel</div>
             </ButtonYellow>
             <ButtonYellow
               className="w-1/2"
               onClick={handleApply}
             >
-              <div className="text-[#01202B] ">Apply</div>
+              <div className="text-[#0b1220] ">Apply</div>
             </ButtonYellow>
           </div>
         </div>

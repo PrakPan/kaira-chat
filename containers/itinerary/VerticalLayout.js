@@ -28,6 +28,16 @@ import { useAnalytics } from "../../hooks/useAnalytics";
 import useMediaQuery from "../../components/media";
 import { setCloneItineraryDrawer } from "../../store/actions/cloneItinerary";
 
+// Transfer links adopt the CityDay slab-element heading styling (the activity
+// title: Inter, tight tracking/leading). Color stays on each link's existing
+// utility class (text-blue), and font size/weight stay on their existing
+// classes too, so they keep their current scale and link color.
+const TRANSFER_LINK_FONT = {
+  fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+  letterSpacing: "0",
+  lineHeight: 1.1,
+};
+
 const Container = styled.div`
   display: flex;
   align-items: center;
@@ -58,6 +68,22 @@ const PickupDropLoader = () => (
   <div className="flex items-center gap-2 mt-1">
     <span className="inline-block w-3.5 h-3.5 rounded-full border-2 border-gray-300 border-t-gray-500 animate-spin" />
     <span className="text-[13px] text-[#a5a5a5]">Updating transfers…</span>
+  </div>
+);
+
+// P1 (Draft) stage loader for the transfer row. The existing TransferSkeleton
+// is sized for the finalized layout (fixed 200px text bar + margins) and
+// overflows the narrower draft column, breaking the layout — so the draft
+// stage gets its own compact shimmer that mirrors the draft transfer row
+// (icon dot + city line + duration line). It is replaced by the real transfer
+// the moment the draft surfaces a city/booking for the leg.
+const P1TransferLoader = () => (
+  <div className="flex gap-2 mt-2 animate-pulse">
+    <div className="w-[18px] h-[18px] rounded-full bg-gray-200 flex-shrink-0 mt-[2px]" />
+    <div className="flex flex-col gap-2">
+      <div className="w-[140px] h-[14px] rounded bg-gray-200" />
+      <div className="w-[90px] h-[10px] rounded bg-gray-200" />
+    </div>
   </div>
 );
 
@@ -298,6 +324,7 @@ const TaxiPickupDropItem = ({
           className={`text-blue font-[500] text-[14px] ${
             displayText ? "hover:underline cursor-pointer" : ""
           }`}
+          style={TRANSFER_LINK_FONT}
           onClick={handleClick}
         >
           {displayText}
@@ -878,6 +905,7 @@ const AirportBookingItem = ({
         <span
           className={`text-blue font-[500] text-[14px] ${displayText ? "hover:underline cursor-pointer" : ""
             }`}
+          style={TRANSFER_LINK_FONT}
           onClick={handleClick}
         >
           {displayText}
@@ -906,6 +934,7 @@ const AirportBookingItem = ({
         <div className="flex items-center gap-2">
           <span
             className={`${isDesktop ? "Body1M_16" : "Body2M_14"} text-blue hover:underline cursor-pointer`}
+            style={TRANSFER_LINK_FONT}
             onClick={handleClick}
           >
             + Add Pickup and Drop
@@ -1086,6 +1115,23 @@ const CityItem = ({
 
   const Itinerary = useSelector(state =>state.Itinerary)
 
+  // P1/Draft transfer-loader safety net. The draft row shows P1TransferLoader
+  // while a leg's transfer is still expected (transfers_status PENDING — set by
+  // display_itinerary right after the day-by-day lands). It must stop when
+  // display_transfers resolves the leg to "no transfer" (transfers_status flips
+  // to SUCCESS) — handled directly in the render below — but also when
+  // display_transfers never arrives at all. Bound that wait so the loader can't
+  // spin forever; once elapsed we drop the loader for this leg.
+  const [transferWaitElapsed, setTransferWaitElapsed] = useState(false);
+  useEffect(() => {
+    if (Itinerary?.status === "Draft") {
+      setTransferWaitElapsed(false);
+      const t = setTimeout(() => setTransferWaitElapsed(true), 12000);
+      return () => clearTimeout(t);
+    }
+    setTransferWaitElapsed(false);
+  }, [Itinerary?.status, transfers_status]);
+
 useEffect(() => {
   const isDrawerClosed = !drawer;
   
@@ -1156,6 +1202,7 @@ useEffect(() => {
       undefined,
       {
         scroll: false,
+        shallow: true,
       }
     );
   };
@@ -1177,6 +1224,7 @@ useEffect(() => {
       undefined,
       {
         scroll: false,
+        shallow: true,
       }
     );
   };
@@ -1201,7 +1249,7 @@ useEffect(() => {
         },
       },
       undefined,
-      { scroll: false },
+      { scroll: false, shallow: true },
     );
   };
 
@@ -1222,6 +1270,7 @@ useEffect(() => {
       undefined,
       {
         scroll: false,
+        shallow: true,
       }
     );
   } else {
@@ -1299,10 +1348,20 @@ useEffect(() => {
         setVisible(true);
       }
 
+      // `city` can be undefined for airport transfer deletes, which produced
+      // "undefined deleted successfully". Fall back to a Taxi Pickup/Drop label.
+      const deletedLabel =
+        city ||
+        (dataPassed?.is_airport_drop
+          ? "Taxi Drop"
+          : dataPassed?.is_airport_pickup
+          ? "Taxi Pickup"
+          : "Booking");
+
       dispatch(
         openNotification({
           type: "success",
-          text: `${city} deleted successfully`,
+          text: `${deletedLabel} deleted successfully`,
           heading: "Success!",
         })
       );
@@ -1627,6 +1686,7 @@ useEffect(() => {
                   className={`${
                     isDesktop ? "Body1M_16" : "Body2M_14"
                   } group-hover:text-blue `}
+                  style={TRANSFER_LINK_FONT}
                 >
                   {upPresent && downPresent ? city : ""}
                 </div>
@@ -1704,6 +1764,17 @@ useEffect(() => {
     </div>
   )}
         </>
+      ) : Itinerary.status == "Draft" ? (
+        // P1 (Draft) stage: the leg's transfer hasn't surfaced yet. Show the
+        // compact draft loader ONLY while a transfer is still expected
+        // (transfers_status PENDING) and within the bounded wait. It disappears
+        // when (booking_id || city) becomes truthy (the transfer "comes in" and
+        // the branch above renders), when display_transfers resolves this leg to
+        // no transfer (transfers_status → SUCCESS), or when display_transfers
+        // never arrives (the wait elapses) — so it can no longer spin forever.
+         !transferWaitElapsed ? (
+          <P1TransferLoader />
+        ) : null
       ) : (
         <>
           {/* NO BOOKING - Show both CTAs */}
@@ -1715,6 +1786,7 @@ useEffect(() => {
               className={`${
                 isDesktop ? "Body1M_16" : "Body2M_14"
               } text-blue hover:underline text-left`}
+              style={TRANSFER_LINK_FONT}
             >
               + Add Transfer from {origin_city_name} to {destination_city_name}
             </button>
@@ -1724,6 +1796,7 @@ useEffect(() => {
               className={`${
                 isDesktop ? "Body1M_16" : "Body2M_14"
               } text-blue hover:underline text-left`}
+              style={TRANSFER_LINK_FONT}
             >
               + Add Transfer
             </button>

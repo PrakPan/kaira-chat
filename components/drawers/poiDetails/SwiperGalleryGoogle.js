@@ -32,7 +32,7 @@ const SwiperGallery = (props) => {
                 height={"400"}
                 heightmobile={'400'}
               />
-              <div className="bg-black text-white bg-opacity-50 py-1 px-2 text-lg absolute bottom-0 right-[50%] translate-x-[50%] mx-auto z-50">
+              <div className="bg-black text-white bg-opacity-50 py-1 px-2 ttw-type-h4 absolute bottom-0 right-[50%] translate-x-[50%] mx-auto z-50">
                 {image?.html_attribution}
               </div>
             </SwiperSlide>

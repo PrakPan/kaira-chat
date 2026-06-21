@@ -86,8 +86,8 @@ const PinSection = (props) => {
       <Heading
         pinColour={props.pinColour}
         className={`${
-          props.setCurrentPopup ? "ml-4 heading" : "lg:ml-8 ml-2 heading"
-        } `}
+ props.setCurrentPopup ? "ml-4 heading" : "lg:ml-8 ml-2 heading"
+ } `}
       >
         {props.duration >= 0 && props.duration !== null
           ? props.city +

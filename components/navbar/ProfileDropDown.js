@@ -14,15 +14,20 @@ import { useSelector } from "react-redux";
 import { useAnalytics } from "../../hooks/useAnalytics";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  getUserAvatarColor,
+  getUserInitial,
+} from "../bot-components/utils/avatarColor";
 
 const DropdownContainer = styled.div`
   position: absolute;
-  top: 100%;
-  right: 0;
+  top: calc(100% + 8px);
+  // right: 0;
+  left: 0.2rem;
   background-color: white;
-  border-radius: 0.5rem;
-  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-  width: 250px;
+  border-radius: 0.75rem;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 4px 16px 0px;
+  width: 210px;
   max-height: 80vh;
   overflow-y: auto;
   z-index: 1000;
@@ -37,16 +42,57 @@ const ListContainer = styled.div`
 `;
 
 const ListItem = styled.div`
-  padding: 1rem 15px;
-  display: flex;
-  gap: 13px;
+  padding: 0.85rem 18px;
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  column-gap: 12px;
   align-items: center;
   font-family: Poppins;
+  font-size: 14px;
+  color: #01202b;
   cursor: pointer;
   transition: background-color 0.2s ease;
 
   &:hover {
     background-color: #f5f5f5;
+  }
+
+  /* Pin every leading icon into the fixed 20px column so each label
+     starts at the same offset */
+  > *:first-child {
+    width: 20px !important;
+    height: 20px !important;
+    min-width: 0;
+    max-width: 20px;
+    margin: 0 !important;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  > *:first-child img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain;
+  }
+`;
+
+/* Plain fixed-size box for icons. ImageLoader wraps react-lazyload, which
+   drops its inline size style, so we constrain the icon from this outer box
+   that we fully control. */
+const IconSlot = styled.div`
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+
+  img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain;
   }
 `;
 
@@ -184,6 +230,27 @@ const ProfileDropDown = (props) => {
   const { trackUserLogout } = useAnalytics();
   const { id } = useSelector((state) => state.auth);
 
+  // Resolve the user's profile picture (props → cached localStorage value).
+  const rawImage =
+    props.image && props.image !== "null" && props.image !== null
+      ? props.image
+      : typeof window !== "undefined" &&
+        localStorage.getItem("user_image") !== "null" &&
+        localStorage.getItem("user_image") !== null
+      ? localStorage.getItem("user_image")
+      : null;
+
+  // Logged in with no picture → colored letter avatar (matches the bot Sidebar).
+  // The color is persisted per-user in localStorage so it never changes.
+  const isLoggedIn =
+    !!props.token ||
+    (typeof window !== "undefined" && !!localStorage.getItem("access_token"));
+  const showColorAvatar = isLoggedIn && !rawImage;
+  const [avatarColor, setAvatarColor] = useState(null);
+  useEffect(() => {
+    setAvatarColor(showColorAvatar ? getUserAvatarColor(props.name) : null);
+  }, [showColorAvatar, props.name]);
+
   if (props.name) {
     firstname = getFirstName(props.name);
   } else firstname = "Traveler";
@@ -220,30 +287,30 @@ const ProfileDropDown = (props) => {
       text: "My Trips",
       icon: "media/icons/navigation/trip.svg",
     },
-    {
-      type: "main",
-      link: "http://blog.thetarzanway.com/",
-      text: "Travel Feed",
-      icon: "media/icons/navigation/chat.png",
-    },
-    {
-      type: "main",
-      link: "/testimonials",
-      text: "Reviews",
-      icon: "media/icons/navigation/testimonial.png",
-    },
-    {
-      type: "others",
-      link: "/contact",
-      text: "Contact Us",
-      icon: "media/icons/navigation/call.png",
-    },
-    {
-      type: "others",
-      link: "/covid-19-safe-travel-india",
-      text: "Covid 19 Safety",
-      icon: "media/icons/navigation/health-insurance.png",
-    },
+    // {
+    //   type: "main",
+    //   link: "http://blog.thetarzanway.com/",
+    //   text: "Travel Feed",
+    //   icon: "media/icons/navigation/chat.png",
+    // },
+    // {
+    //   type: "main",
+    //   link: "/testimonials",
+    //   text: "Reviews",
+    //   icon: "media/icons/navigation/testimonial.png",
+    // },
+    // {
+    //   type: "others",
+    //   link: "/contact",
+    //   text: "Contact Us",
+    //   icon: "media/icons/navigation/call.png",
+    // },
+    // {
+    //   type: "others",
+    //   link: "/covid-19-safe-travel-india",
+    //   text: "Covid 19 Safety",
+    //   icon: "media/icons/navigation/health-insurance.png",
+    // },
   ];
 
   if (!props.token) LinksArr = LinksArr.filter((e) => e.link != "/dashboard");
@@ -341,20 +408,22 @@ const ProfileDropDown = (props) => {
           }
         >
           {e.icon && (
-            <ImageLoader
-              leftalign
-              url={e.icon}
-              height="20px"
-              width="20px"
-              dimensions={{ height: 50, width: 50 }}
-              dimensionsMobile={{ height: 50, width: 50 }}
-              widthmobile="20px"
-              noPlaceholder={true}
-            />
+            <IconSlot>
+              <ImageLoader
+                leftalign
+                url={e.icon}
+                height="20px"
+                width="20px"
+                dimensions={{ height: 50, width: 50 }}
+                dimensionsMobile={{ height: 50, width: 50 }}
+                widthmobile="20px"
+                noPlaceholder={true}
+              />
+            </IconSlot>
           )}
           {e.link && (
             <StyledLink
-              style={{ textDecoration: "none" }}
+              style={{ textDecoration: "none",padding:0 }}
               href={e.link}
               className="next-link"
               passHref={true}
@@ -378,16 +447,18 @@ const ProfileDropDown = (props) => {
           }
         >
           {e.icon && (
-            <ImageLoader
-              leftalign
-              url={e.icon}
-              height="20px"
-              width="20px"
-              dimensions={{ height: 50, width: 50 }}
-              dimensionsMobile={{ height: 50, width: 50 }}
-              widthmobile="20px"
-              noPlaceholder={true}
-            />
+            <IconSlot>
+              <ImageLoader
+                leftalign
+                url={e.icon}
+                height="20px"
+                width="20px"
+                dimensions={{ height: 50, width: 50 }}
+                dimensionsMobile={{ height: 50, width: 50 }}
+                widthmobile="20px"
+                noPlaceholder={true}
+              />
+            </IconSlot>
           )}
           {e.link && (
             <StyledLink
@@ -437,22 +508,42 @@ const ProfileDropDown = (props) => {
 
       <div className="w-full flex flex-row items-center gap-1">
         <CircularImageWrapper onClick={() => setToggleMenu(!toggleMenu)}>
-          <ImageLoader
-            url={
-              props.image && props.image !== "null" && props.image !== null
-                ? props.image
-                : localStorage.getItem("user_image") !== "null" &&
-                  localStorage.getItem("user_image") !== null
-                ? localStorage.getItem("user_image")
-                : "media/icons/navigation/profile-user.png"
-            }
-            width="2rem"
-            height="2rem"
-            dimensions={{ width: 300, height: 300 }}
-            dimensionsMobile={{ width: 200, height: 200 }}
-            noPlaceholder={true}
-            // Remove the borderRadius prop - let the wrapper handle it
-          />
+          {showColorAvatar ? (
+            <div
+              style={{
+                width: "100%",
+                height: "100%",
+                background: avatarColor || "#2563EB",
+                color: "#fff",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontWeight: 700,
+                fontSize: "0.95rem",
+                textTransform: "uppercase",
+                userSelect: "none",
+              }}
+            >
+              {getUserInitial(props.name)}
+            </div>
+          ) : (
+            <ImageLoader
+              url={
+                props.image && props.image !== "null" && props.image !== null
+                  ? props.image
+                  : localStorage.getItem("user_image") !== "null" &&
+                    localStorage.getItem("user_image") !== null
+                  ? localStorage.getItem("user_image")
+                  : "media/icons/navigation/profile-user.png"
+              }
+              width="2rem"
+              height="2rem"
+              dimensions={{ width: 300, height: 300 }}
+              dimensionsMobile={{ width: 200, height: 200 }}
+              noPlaceholder={true}
+              // Remove the borderRadius prop - let the wrapper handle it
+            />
+          )}
         </CircularImageWrapper>
         <div className="Body2R_14">{props.name}</div>
         {isPageLoaded ? (
@@ -487,7 +578,7 @@ const ProfileDropDown = (props) => {
 
           {MainLinksDiv}
 
-          <Heading>OTHERS</Heading>
+          {/* <Heading>OTHERS</Heading> */}
 
           {OtherLinksDiv}
 
@@ -500,16 +591,18 @@ const ProfileDropDown = (props) => {
               }}
               className="cursor-pointer"
             >
-              <ImageLoader
-                leftalign
-                url={"media/icons/navigation/logout.png"}
-                height="20px"
-                width="20px"
-                dimensions={{ height: 50, width: 50 }}
-                dimensionsMobile={{ height: 50, width: 50 }}
-                widthmobile="20px"
-                noPlaceholder={true}
-              />
+              <IconSlot>
+                <ImageLoader
+                  leftalign
+                  url={"media/icons/navigation/logout.png"}
+                  height="20px"
+                  width="20px"
+                  dimensions={{ height: 50, width: 50 }}
+                  dimensionsMobile={{ height: 50, width: 50 }}
+                  widthmobile="20px"
+                  noPlaceholder={true}
+                />
+              </IconSlot>
               <div>Logout</div>
             </ListItem>
           )}

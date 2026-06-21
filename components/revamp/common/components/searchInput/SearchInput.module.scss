@@ -1,0 +1,384 @@
+/* =========================================
+   Nav search trigger + slide-down modal panel
+   Matches the destination-page header design:
+   pill-shaped trigger button with ⌘K hint,
+   full-screen panel with popular destinations
+   (from hot_destinations API), live results
+   (from search-suggest API), and curated vibe
+   shortcuts from the footer's Travel Styles.
+   ========================================= */
+
+$ink: #0b1220;
+$ink-2: #1a2436;
+$ink-3: #445069;
+$ink-4: #8a93a6;
+$line: #ececec;
+$bg-2: #fafaf5;
+$ink-rail: #0f1a2e;
+$peach: #ffede0;
+$rose: #ffe5ea;
+$coral: #ff9d6e;
+
+.navSearch {
+  flex: 1;
+  max-width: 480px;
+  margin: 0 28px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 14px 9px 16px;
+  background: $bg-2;
+  border: 1px solid $line;
+  border-radius: 999px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.18s;
+  color: $ink-4;
+
+  @media (max-width: 1100px) {
+    max-width: 320px;
+    margin: 0 16px;
+  }
+  @media (max-width: 768px) {
+    margin: 0 8px;
+    padding: 9px 12px;
+  }
+}
+.navSearch:hover {
+  background: white;
+  border-color: $ink-3;
+  color: $ink;
+  box-shadow: 0 4px 14px -6px rgba(11, 18, 32, 0.14);
+}
+.navSearch svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+.navSearchPlaceholder {
+  flex: 1;
+  text-align: left;
+  font-size: 14px;
+  color: $ink-4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.navSearchKbd {
+  padding: 2px 7px;
+  background: white;
+  border: 1px solid $line;
+  border-radius: 5px;
+  font-family: "Instrument Serif", "Times New Roman", serif;
+  font-style: italic;
+  font-size: 11px;
+  color: $ink-3;
+  box-shadow: 0 1px 0 $line;
+
+  @media (max-width: 640px) {
+    display: none;
+  }
+}
+
+/* ============ SEARCH PANEL ============ */
+.searchPanel {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.searchPanelOpen {
+  pointer-events: auto;
+  opacity: 1;
+}
+.searchPanelBackdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(11, 18, 32, 0.42);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.searchPanelInner {
+  position: relative;
+  max-width: 720px;
+  margin: 76px auto 0;
+  background: white;
+  border-radius: 22px;
+  box-shadow: 0 28px 60px -20px rgba(11, 18, 32, 0.4);
+  overflow: hidden;
+  transform: translateY(-12px);
+  transition: transform 0.25s cubic-bezier(0.2, 0.7, 0.3, 1);
+  max-height: calc(100vh - 120px);
+  display: flex;
+  flex-direction: column;
+
+  @media (max-width: 768px) {
+    margin: 56px 16px 0;
+    max-height: calc(100vh - 80px);
+  }
+}
+.searchPanelOpen .searchPanelInner {
+  transform: translateY(0);
+}
+.searchInputRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 22px;
+  border-bottom: 1px solid $line;
+  flex-shrink: 0;
+}
+.searchInputRow svg {
+  width: 18px;
+  height: 18px;
+  color: $ink-3;
+  flex-shrink: 0;
+}
+.searchInputRow input {
+  flex: 1;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  font-family: inherit;
+  font-size: 17px;
+  color: $ink;
+  letter-spacing: -0.01em;
+  min-width: 0;
+}
+.searchInputRow input::placeholder {
+  color: $ink-4;
+}
+.searchClose {
+  padding: 4px 10px;
+  background: $bg-2;
+  border: 0;
+  border-radius: 6px;
+  font-family: "Instrument Serif", "Times New Roman", serif;
+  font-style: italic;
+  font-size: 13px;
+  color: $ink-3;
+  cursor: pointer;
+}
+.searchClose:hover {
+  background: $line;
+  color: $ink;
+}
+.searchBody {
+  overflow-y: auto;
+  flex: 1;
+  padding: 4px 0 8px;
+}
+.searchSection {
+  padding: 18px 22px 6px;
+}
+.searchSection h4 {
+  font-size: 11px;
+  font-weight: 700;
+  color: $ink-4;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 12px;
+}
+.searchPopular {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+
+  @media (max-width: 640px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+.popularItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid $line;
+  border-radius: 12px;
+  background: white;
+  color: $ink;
+  text-decoration: none;
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s;
+  width: 100%;
+}
+.popularItem:hover {
+  border-color: $ink-rail;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px -8px rgba(11, 18, 32, 0.18);
+  color: $ink;
+}
+.popularItemImg {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  background-size: cover;
+  background-position: center;
+  background-color: $bg-2;
+  flex-shrink: 0;
+}
+.popularItemInfo {
+  flex: 1;
+  min-width: 0;
+}
+.popularItemName {
+  font-size: 13.5px;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.popularItemMeta {
+  font-size: 11px;
+  color: $ink-4;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.searchList {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+.searchRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: $ink-2;
+  font-size: 13.5px;
+  background: transparent;
+  border: 0;
+  font-family: inherit;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.searchRow:hover {
+  background: $bg-2;
+  color: $ink;
+}
+.searchRowEmoji {
+  font-size: 16px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.searchRowMeta {
+  margin-left: auto;
+  color: $ink-4;
+  font-size: 11px;
+}
+.searchEmpty {
+  padding: 28px 22px;
+  text-align: center;
+  font-family: "Instrument Serif", "Times New Roman", serif;
+  font-style: italic;
+  color: $ink-3;
+  font-size: 15px;
+}
+.searchEmpty .accent {
+  color: $coral;
+}
+.searchCtaRow {
+  margin: 16px 22px 18px;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, $peach 0%, $rose 100%);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+.searchCtaRowText {
+  font-size: 13.5px;
+  color: $ink;
+  line-height: 1.4;
+}
+.searchCtaRowText .serif {
+  font-family: "Instrument Serif", "Times New Roman", serif;
+  font-style: italic;
+  font-weight: 400;
+}
+.searchCtaRowBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 14px;
+  background: $ink-rail;
+  color: white;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 600;
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: transform 0.15s;
+  border: 0;
+  cursor: pointer;
+  font-family: inherit;
+}
+.searchCtaRowBtn:hover {
+  transform: translateY(-1px);
+  color: white;
+}
+.searchCtaRowBtn svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* Skeleton row for live results loading */
+.skeletonRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+}
+.skeletonAvatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  background: linear-gradient(
+    90deg,
+    #ececec 0%,
+    #f6f5f0 50%,
+    #ececec 100%
+  );
+  background-size: 200% 100%;
+  animation: navSearchShimmer 1.4s ease-in-out infinite;
+  flex-shrink: 0;
+}
+.skeletonText {
+  flex: 1;
+  height: 12px;
+  border-radius: 4px;
+  background: linear-gradient(
+    90deg,
+    #ececec 0%,
+    #f6f5f0 50%,
+    #ececec 100%
+  );
+  background-size: 200% 100%;
+  animation: navSearchShimmer 1.4s ease-in-out infinite;
+}
+@keyframes navSearchShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

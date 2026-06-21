@@ -13,7 +13,7 @@ const Label = styled.div`
   font-size: 0.75rem;
   &:hover {
     cursor: pointer;
-    background-color: rgba(247, 231, 0, 0.5);
+    background-color: #f4f3ec;
   }
 `;
 
@@ -34,8 +34,10 @@ export default function CheckboxLabels(props) {
           key={i}
           style={{
             backgroundColor: _isFilterAlreadySelected(filter)
-              ? "rgba(247, 231, 0, 0.5)"
-              : "transparent",
+              ? "#0b1220"
+              : "#f4f3ec",
+            color: _isFilterAlreadySelected(filter) ? "#fafaf5" : "#445069",
+            borderColor: "#ececec",
           }}
           className="border"
           onClick={() => _onChangeHandler(filter)}

@@ -1,0 +1,114 @@
+/* "This week, I'm loving..." — Kaira's weekly editorial picks. */
+
+.section {
+  padding: 72px 0 40px;
+  position: relative;
+
+  @media (max-width: 640px) {
+    padding: 48px 0;
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.kMini { flex-shrink: 0; }
+
+.headerTitle {
+  font-size: clamp(26px, 3.2vw, 36px);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  font-weight: 800;
+  color: var(--ttw-ink);
+  margin: 0;
+}
+
+.quote {
+  font-family: "Instrument Serif", serif;
+  font-style: italic;
+  font-size: clamp(20px, 2.4vw, 26px);
+  line-height: 1.3;
+  color: var(--ttw-ink);
+  max-width: 780px;
+  margin-bottom: 36px;
+  padding-left: 20px;
+  border-left: 3px solid var(--ttw-yellow);
+}
+.quoteHl {
+  background: var(--ttw-yellow);
+  padding: 0 3px;
+  font-style: italic;
+}
+
+.picks {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pick {
+  background: var(--ttw-bg);
+  border: 1px solid var(--ttw-line);
+  border-radius: 20px;
+  padding: 0;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  text-decoration: none;
+  color: inherit;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 32px -12px rgba(11, 18, 32, 0.18);
+  }
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pickImg {
+  background-size: cover;
+  background-position: center;
+
+  @media (max-width: 640px) {
+    aspect-ratio: 16 / 9;
+  }
+}
+
+.pickBody { padding: 20px; }
+
+.pickTag {
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ttw-coral-deep);
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.pickTitle {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+  margin: 0 0 6px 0;
+  color: var(--ttw-ink);
+}
+
+.pickBlurb {
+  font-size: 13.5px;
+  color: var(--ttw-ink-3);
+  line-height: 1.5;
+  margin: 0;
+}

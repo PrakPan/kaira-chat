@@ -1,132 +1,305 @@
-
-
-import { useRef, useState, useEffect } from "react";
-import {
-  ANIMATION_CONFIG,
-  createEntranceAnimation,
-  gsap,
-  splitTextIntoWords,
-  useGSAP,
-} from "../common/gsapConfig";
-import styles from "./HeadingContent.module.scss";
-import Link from "next/link";
-import Button from "../common/components/button";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import openTailoredModal from "../../../services/openTailoredModal";
-import { closeTailoredModal } from "../../../services/openTailoredModalV2";
-import TailoredFormMobileModal from "../../modals/TailoredFomrMobile";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
+import { useSelector } from "react-redux";
+import styles from "./HeadingContent.module.scss";
+import {
+  setPendingFiles,
+  setPendingSeed,
+} from "../../../services/heroChatHandoff";
+import BotLoginModal from "../../bot-components/components/BotLoginModal";
+
+const SEED_PROMPTS = [
+  { emoji: "🇯🇵", label: "10-day Japan trip" },
+  { emoji: "💍", label: "Santorini or Amalfi" },
+  { emoji: "🏰", label: "Europe in summer" },
+  { emoji: "🌌", label: "Northern Lights" },
+  { emoji: "✨", label: "Surprise me" },
+];
+
+const getSpeechRecognition = () => {
+  if (typeof window === "undefined") return null;
+  return (
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition ||
+    null
+  );
+};
 
 const HeadingContent = ({ title, subtitle }) => {
-  const headingRef = useRef(null);
-  const containerRef = useRef(null);
-  const contentWrapperRef = useRef(null);
-  const buttonRef = useRef(null);
-  const [showMoiblePlanner, setShowMobilePlanner] = useState(false);
   const router = useRouter();
+  const inputRef = useRef(null);
+  const fileInputRef = useRef(null);
+  const recognitionRef = useRef(null);
 
-  // Ensure first paint happens BEFORE animation
+  const [value, setValue] = useState("");
+  const [attachments, setAttachments] = useState([]);
+  const [isListening, setIsListening] = useState(false);
+  const [micSupported, setMicSupported] = useState(true);
+
+  // ── Login gate ──────────────────────────────────────────────────────────
+  const reduxToken = useSelector((state) => state.auth?.token);
+  const [hasLocalToken, setHasLocalToken] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
+  const pendingActionRef = useRef(null);
+  const isLoggedIn = !!reduxToken || hasLocalToken;
+
+  // Re-sync with localStorage whenever the redux token changes so that
+  // login/logout performed on this page (without a reload) is reflected
+  // immediately — otherwise a stale `true` keeps the chat input ungated.
   useEffect(() => {
-    document.documentElement.classList.add("hero-painted");
+    setHasLocalToken(
+      !!(
+        localStorage.getItem("token") ||
+        localStorage.getItem("authToken") ||
+        localStorage.getItem("access_token")
+      )
+    );
+  }, [reduxToken]);
+
+  // Run `action` if logged in, otherwise stash it and open the login modal.
+  // The stashed action resumes automatically on successful login.
+  const requireAuth = (action) => {
+    if (!isLoggedIn) {
+      pendingActionRef.current = action || null;
+      setShowLogin(true);
+      return false;
+    }
+    if (action) action();
+    return true;
+  };
+
+  useEffect(() => {
+    setMicSupported(!!getSpeechRecognition());
   }, []);
 
-  useGSAP(
-    () => {
-      if (
-        !headingRef.current ||
-        !contentWrapperRef.current ||
-        !buttonRef.current
-      ) {
-        return;
+  useEffect(() => {
+    return () => {
+      // Tear down any active recognition session on unmount
+      try {
+        recognitionRef.current?.stop?.();
+      } catch {
+        /* noop */
       }
+    };
+  }, []);
 
-      // Split heading text AFTER first paint
-      const wordElements = splitTextIntoWords(headingRef.current);
+  const goToChat = (seed, files) => {
+    if (files && files.length) setPendingFiles(files);
+    if (seed) setPendingSeed(seed);
+    const url = seed ? `/chat?seed=${encodeURIComponent(seed)}` : "/chat";
+    router.push(url);
+  };
 
-      // IMPORTANT:
-      // Visible on first paint → LCP-safe
-      gsap.set(wordElements, {
-        y: 0,
-        opacity: 1,
-        willChange: "transform",
+  const handleSubmit = (e) => {
+    e?.preventDefault?.();
+    const seed = (value || "").trim();
+    if (!seed && attachments.length === 0) {
+      if (!isLoggedIn) setShowLogin(true);
+      return;
+    }
+    requireAuth(() => goToChat(seed, attachments));
+  };
+
+  const handlePromptClick = (label) => {
+    requireAuth(() => goToChat(label));
+  };
+
+  const autoGrow = (el) => {
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = Math.min(el.scrollHeight, 120) + "px";
+  };
+
+  const handleFilePick = (e) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    setAttachments((prev) => [...prev, ...files]);
+    e.target.value = "";
+  };
+
+  const removeAttachment = (idx) => {
+    setAttachments((prev) => prev.filter((_, i) => i !== idx));
+  };
+
+  const startMic = () => {
+    const Ctor = getSpeechRecognition();
+    if (!Ctor) return;
+    if (isListening) {
+      recognitionRef.current?.stop?.();
+      return;
+    }
+    const rec = new Ctor();
+    rec.lang = "en-IN";
+    rec.interimResults = true;
+    rec.continuous = false;
+    let interim = "";
+
+    rec.onresult = (event) => {
+      interim = "";
+      let finalText = "";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) finalText += transcript;
+        else interim += transcript;
+      }
+      setValue((prev) => {
+        const base = (prev || "").replace(/\s*$/, "");
+        const merged = `${base}${base ? " " : ""}${finalText || interim}`.trim();
+        return merged;
       });
+      requestAnimationFrame(() => autoGrow(inputRef.current));
+    };
 
-      gsap.set([contentWrapperRef.current, buttonRef.current], {
-        y: 0,
-        opacity: 1,
-        willChange: "transform",
-      });
-
-      const tl = gsap.timeline({ delay: 0.1 });
-
-      // Animate transform ONLY
-      tl.from(wordElements, {
-        y: 40,
-        stagger: ANIMATION_CONFIG.stagger.long,
-        duration: ANIMATION_CONFIG.duration.medium,
-        ease: ANIMATION_CONFIG.ease.out,
-      });
-
-      tl.from(
-        [contentWrapperRef.current, buttonRef.current],
-        {
-          y: 20,
-          duration: ANIMATION_CONFIG.duration.fast,
-          ease: ANIMATION_CONFIG.ease.out,
-          stagger: 0.05,
-        },
-        "-=0.3"
-      );
-    },
-    { scope: containerRef }
-  );
+    rec.onerror = () => setIsListening(false);
+    rec.onend = () => setIsListening(false);
+    recognitionRef.current = rec;
+    try {
+      rec.start();
+      setIsListening(true);
+    } catch {
+      setIsListening(false);
+    }
+  };
 
   return (
-    <div ref={containerRef} className={styles.headingContent}>
-      <div ref={headingRef}>
-        <h1 className={styles.heroHeading}>
-          <span className={`${styles.title} heading-text`}>
-            Your Trip, Your Vibe
-          </span>
-          <span className={`${styles.title} heading-text`}>
-            Our AI&apos;s on It
-          </span>
-        </h1>
+    <div className={styles.headingContent}>
+      <div className={styles.kicker}>
+        <span className={styles.kickerDot}></span>
+        Kaira is online · replies in ~2s
       </div>
 
-      <div ref={contentWrapperRef} className={styles.contentWrapper}>
-        <p className={`${styles.subtitle} text-text-focused`}>
-          Solo? Couple? Group? We Plan Like It’s Just for You — Because It Is
-        </p>
-      </div>
+      <h1 className={styles.title}>
+        {title || (
+          <>
+            Your next trip is{" "}
+            <span className="ttwSerif">one conversation</span> away.
+          </>
+        )}
+      </h1>
 
-      <div ref={buttonRef}>
-        {/* <Link href="/new-trip"> */}
-        <Button
-          variant="filled"
-          color="default"
-          size="medium"
-          className="mt-6 !bg-primary-indigo !border-primary-indigo hover:!bg-primary-indigo/90"
-          onClick={() => {
-            router.push("/chat");
+      <p className={styles.lede}>
+        {subtitle || (
+          <>
+            Tell Kaira your <b>vibe, budget, dates</b> — she hunts flights and
+            stays from across the web, then a{" "}
+            <span className="ttwSerif">local human</span> fine-tunes the plan.
+            You pay only for what you pick.
+          </>
+        )}
+      </p>
+
+      <form className={styles.inputShell} onSubmit={handleSubmit}>
+        <textarea
+          ref={inputRef}
+          className={styles.inputArea}
+          rows={1}
+          placeholder="Try: 10 days Japan, cherry blossoms, under ₹2L per person"
+          value={value}
+          onFocus={(e) => {
+            if (!isLoggedIn) {
+              e.currentTarget.blur();
+              setShowLogin(true);
+            }
           }}
-        >
-          <div className="flex items-center space-x-2">
-            <FontAwesomeIcon icon={faPlus} className="w-4 h-4" />
-            <span>Plan & Book My Trip with AI</span>
+          onChange={(e) => {
+            setValue(e.target.value);
+            autoGrow(e.target);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              handleSubmit(e);
+            }
+          }}
+        />
+
+        {attachments.length > 0 && (
+          <div className={styles.attachRow}>
+            {attachments.map((file, idx) => (
+              <span key={`${file.name}-${idx}`} className={styles.attachChip}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+                </svg>
+                {file.name}
+                <button
+                  type="button"
+                  aria-label={`Remove ${file.name}`}
+                  className={styles.attachRemove}
+                  onClick={() => removeAttachment(idx)}
+                >
+                  ×
+                </button>
+              </span>
+            ))}
           </div>
-        </Button>
-        {/* </Link> */}
+        )}
+
+        <div className={styles.inputFoot}>
+          <input
+            ref={fileInputRef}
+            type="file"
+            multiple
+            hidden
+            onChange={handleFilePick}
+          />
+          <button
+            type="button"
+            className={styles.iconBtn}
+            title="Attach a document"
+            aria-label="Attach a document"
+            onClick={() => requireAuth(() => fileInputRef.current?.click())}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            className={`${styles.iconBtn} ${isListening ? styles.iconBtnActive : ""}`}
+            title={micSupported ? (isListening ? "Stop dictating" : "Dictate") : "Voice input not supported in this browser"}
+            aria-label="Dictate"
+            disabled={!micSupported}
+            onClick={() => requireAuth(startMic)}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="9" y="2" width="6" height="12" rx="3" />
+              <path d="M19 10a7 7 0 0 1-14 0M12 19v3" />
+            </svg>
+          </button>
+          <button type="submit" className={styles.sendBtn} aria-label="Send to Kaira">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z" />
+            </svg>
+          </button>
+        </div>
+      </form>
+
+      <div className={styles.prompts}>
+        {SEED_PROMPTS.map((p) => (
+          <button
+            key={p.label}
+            type="button"
+            className={styles.prompt}
+            onClick={() => handlePromptClick(p.label)}
+          >
+            <span>{p.emoji}</span>
+            <span>{p.label}</span>
+          </button>
+        ))}
       </div>
 
-      <TailoredFormMobileModal
-        destinationType={"city-planner"}
-        onHide={() => {
-          setShowMobilePlanner(false);
-          // closeTailoredModal(router);
+      {/* Login gate — shown when a logged-out user interacts with the home
+          hero input or taps a suggested prompt. */}
+      <BotLoginModal
+        show={showLogin}
+        onhide={() => setShowLogin(false)}
+        zIndex={"3300"}
+        onSuccess={() => {
+          setShowLogin(false);
+          const action = pendingActionRef.current;
+          pendingActionRef.current = null;
+          if (action) action();
         }}
-        show={showMoiblePlanner}
       />
     </div>
   );

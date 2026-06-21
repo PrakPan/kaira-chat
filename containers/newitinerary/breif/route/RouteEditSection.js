@@ -747,12 +747,13 @@ const RouteEditSection = (props) => {
           if (err?.response?.status === 403) {
             props.openNotification({
               text: err?.response?.data?.messages?.[0] || "You are not allowed to make changes to this itinerary",
+              text: err?.response?.data?.messages?.[0] || "You are not allowed to make changes to this itinerary",
               heading: "Error!",
               type: "error",
             });
           } else if (err?.response?.status === 400) {
             props.openNotification({
-              text: err?.response?.data?.messages?.[0] || "Invalid request",
+              text: err?.response?.data?.messages?.[0],
               heading: "Error!",
               type: "error",
             });
@@ -951,8 +952,8 @@ const handleRouteTabClick = (label) => {
 
               {destinationChanges && (
                 <div className="flex flex-row items-center gap-2">
-                  <FaInfoCircle className="text-2xl text-yellow-500" />
-                  <div className="text-sm">Changes to be saved</div>
+                  <FaInfoCircle className="ttw-type-h2 text-yellow-500" />
+                  <div className="ttw-type-body">Changes to be saved</div>
                 </div>
               )}
             </div>
@@ -978,7 +979,7 @@ const handleRouteTabClick = (label) => {
         {isDesktop && (
           <div className="w-full h-fit hide-scrollbar overflow-y-auto py-5">
             {editDestination && !itineraryLoading ? (
-              <div className="w-full flex flex-row  gap-5">
+              <div className="w-full flex flex-row gap-5">
                 <EditDestinations
                   destinations={destinations}
                   setDestinations={setDestinations}
@@ -994,8 +995,8 @@ const handleRouteTabClick = (label) => {
 
                     {destinationChanges && (
                       <div className="flex flex-row items-center gap-2">
-                        <FaInfoCircle className="text-2xl text-yellow-500" />
-                        <div className="text-sm">Changes to be saved</div>
+                        <FaInfoCircle className="ttw-type-h2 text-yellow-500" />
+                        <div className="ttw-type-body">Changes to be saved</div>
                       </div>
                     )}
                   </div>
@@ -1018,7 +1019,7 @@ const handleRouteTabClick = (label) => {
         )}
 
         {!itineraryLoading && (
-          <div className={`w-full  ${isDesktop ? "" : "px-3"}`}>
+          <div className={`w-full ${isDesktop ? "" : "px-3"}`}>
             <ActionPanel
               setEdit={props.setEdit}
               editDestination={editDestination}
@@ -1082,12 +1083,12 @@ const Header = (props) => {
 
   return (
     <div className="w-full md:w-[85%] p-3 border-b-2 border-b-gray-200 space-y-5">
-      <h1 className="text-xl md:text-3xl lg:text-3xl font-semibold">
+      <h1 className="ttw-type-h3 md:ttw-type-h1 lg:ttw-type-h1 font-semibold">
         {props?.title}
       </h1>
-      <div className="flex flex-row pb-3 gap-5 text-sm items-center justify-start overflow-x-auto text-nowrap">
+      <div className="flex flex-row pb-3 gap-5 ttw-type-body items-center justify-start overflow-x-auto text-nowrap">
         <div className="flex flex-col gap-1">
-          <div className="text-sm text-gray-500">Group Type</div>
+          <div className="ttw-type-body text-gray-500">Group Type</div>
           <div className="flex flex-row gap-2">
             {props?.group_type}
             <span>
@@ -1112,7 +1113,7 @@ const Header = (props) => {
 
         {props?.budget && (
           <div className="flex flex-col gap-1">
-            <div className="text-sm text-gray-500">Budget</div>
+            <div className="ttw-type-body text-gray-500">Budget</div>
             <div>{props?.budget}</div>
           </div>
         )}
@@ -1120,7 +1121,7 @@ const Header = (props) => {
         <div className="flex flex-row gap-4 items-center">
           <div className="flex flex-col gap-1">
             <div className="flex flex-row gap-2 items-center">
-              <div className="text-sm text-gray-500">
+              <div className="ttw-type-body text-gray-500">
                 Dates ({props?.duration})
               </div>
             </div>
@@ -1156,25 +1157,25 @@ export const EditPanel = ({ editDestination, setEditDestination }) => {
   }
 
   return (
-    <div className="w-full pt-3 flex items-center justify-center border-b-2 px-2 text-sm md:text-lg lg:text-lg">
+    <div className="w-full pt-3 flex items-center justify-center border-b-2 px-2 ttw-type-body md:ttw-type-h4 lg:ttw-type-h4">
       <div className="flex flex-row gap-4">
         <div
           onClick={() => handleEditPanel()}
           className={`cursor-pointer ${
-            editDestination
-              ? "bg-black border-b-2 border-b-[#F7E700] text-[#F7E700] px-3 py-2 rounded-t-lg"
-              : "text-gray-500 px-3 py-2"
-          } `}
+ editDestination
+ ? "bg-black border-b-2 border-b-[#F7E700] text-[#F7E700] px-3 py-2 rounded-t-lg"
+ : "text-gray-500 px-3 py-2"
+ } `}
         >
           Edit/Remove Destination
         </div>
         {/* <div
           onClick={() => handleEditPanel(true)}
           className={`cursor-pointer ${
-            !editDestination
-              ? "bg-black border-b-2 border-b-[#F7E700] text-[#F7E700] px-3 py-2 rounded-t-lg"
-              : "text-gray-500 px-3 py-2"
-          } `}
+ !editDestination
+ ? "bg-black border-b-2 border-b-[#F7E700] text-[#F7E700] px-3 py-2 rounded-t-lg"
+ : "text-gray-500 px-3 py-2"
+ } `}
         >
           Edit Dates
         </div> */}
@@ -1262,12 +1263,12 @@ export const EditDestinations = (props) => {
   return (
     <div className="w-full flex flex-col items-center justify-center pb-[150px] gap-3">
       <div className="w-full flex flex-row justify-between">
-        <div className="text-[20px] pb-3 text-black">Route</div>
+        <div className="ttw-type-h3 pb-3 text-black">Route</div>
 
         <div>
           <button
             onClick={handleAddDestination}
-            className="text-blue cursor-pointer underline text-sm"
+            className="text-blue cursor-pointer underline ttw-type-body"
           >
             + Add Destination
           </button>
@@ -1561,12 +1562,12 @@ export const Destination = (props) => {
             <CustomMapPin color={cityData?.color || pinColour} />
           )}
           <div className="flex flex-row items-center justify-center gap-2">
-            <div className="text-base lg:text-[16px] cursor-pointer font-medium">
+            <div className="ttw-type-body lg:ttw-type-body cursor-pointer font-medium">
               {cityData.city_name || cityData.name || cityData.text}
             </div>
             {!(startingCity || endingCity) && cityData?.nights >= 0 && (
-              <div className="text-sm text-gray-500">
-                <span className="text-[16px] text-gray-500">I</span> &nbsp;
+              <div className="ttw-type-body text-gray-500">
+                <span className="ttw-type-body text-gray-500">I</span> &nbsp;
                 {`${cityData.nights} ${
                   cityData.nights > 1 ? "Nights" : "Night"
                 }`}
@@ -1596,8 +1597,8 @@ export const Destination = (props) => {
       {index < props?.totalDestinations - 1 && (
         <div
           className={`absolute z-0
-                         left-[39px] top-[45px]
-                    `}
+ left-[39px] top-[45px]
+ `}
         >
           <DottedLine />
         </div>
@@ -1818,14 +1819,14 @@ export const DestinationPopUp = (props) => {
       } bg-gray-200 rounded-lg`}
     >
       <div className="relative flex flex-col gap-3 p-3">
-        <BiSolidLeftArrow className="text-2xl absolute left-[-18px] top-3 text-gray-200" />
+        <BiSolidLeftArrow className="ttw-type-h2 absolute left-[-18px] top-3 text-gray-200" />
 
         <RxCrossCircled
           onClick={() => setPopUp(false)}
-          className="text-2xl cursor-pointer absolute right-2 top-2"
+          className="ttw-type-h2 cursor-pointer absolute right-2 top-2"
         />
 
-        <div className="text-sm font-semibold px-2">
+        <div className="ttw-type-body-strong px-2">
           {startingCity
             ? "Where is your trip starting from?"
             : endingCity
@@ -1838,9 +1839,9 @@ export const DestinationPopUp = (props) => {
           ref={searchContainerRef}
           className="relative w-full"
         >
-          <div className="flex flex-row items-center justify-between gap-3 w-full text-sm rounded-lg p-2 bg-white border-2 border-gray-300">
+          <div className="flex flex-row items-center justify-between gap-3 w-full ttw-type-body rounded-lg p-2 bg-white border-2 border-gray-300">
             <IoLocationSharp
-              className={`text-xl`}
+              className={`ttw-type-h3`}
               style={{ color: cityData?.color }}
             />
             <input
@@ -1859,7 +1860,7 @@ export const DestinationPopUp = (props) => {
                 setSearch("");
                 setValidDestination(false);
               }}
-              className="text-2xl cursor-pointer"
+              className="ttw-type-h2 cursor-pointer"
             />
           </div>
 
@@ -1873,14 +1874,14 @@ export const DestinationPopUp = (props) => {
                   className="cursor-pointer flex flex-row items-center gap-3 hover:bg-gray-100 rounded-full p-2"
                 >
                   <div className="w-10 h-10 bg-gray-200 rounded-full p-2 flex items-center justify-center flex-shrink-0">
-                    <IoLocationSharp className="text-lg text-black" />
+                    <IoLocationSharp className="ttw-type-h4 text-black" />
                   </div>
                   <div className="flex flex-col min-w-0">
-                    <div className="text-sm truncate">
+                    <div className="ttw-type-body truncate">
                       {startingCity || endingCity ? res.text : res.name}
                     </div>
                     {!(startingCity || endingCity) && (
-                      <div className="text-sm text-gray-500 truncate">
+                      <div className="ttw-type-body text-gray-500 truncate">
                         {res.country}
                       </div>
                     )}
@@ -1892,21 +1893,21 @@ export const DestinationPopUp = (props) => {
         </div>
 
         {!(startingCity || endingCity) && (
-          <div className="flex flex-row items-center justify-between w-full text-sm rounded-lg p-2 bg-white border-2 border-gray-300">
+          <div className="flex flex-row items-center justify-between w-full ttw-type-body rounded-lg p-2 bg-white border-2 border-gray-300">
             <div className="flex flex-row items-center gap-3">
               <FaCalendarDays className="" />
-              <div className="text-sm">Number of nights</div>
+              <div className="ttw-type-body">Number of nights</div>
             </div>
 
             <div className="flex flex-row items-center justify-between gap-2">
               <FaCircleMinus
                 onClick={() => handleSetNights(true)}
-                className="text-2xl cursor-pointer"
+                className="ttw-type-h2 cursor-pointer"
               />
               <div className="text-center">{nights}</div>
               <FaCirclePlus
                 onClick={() => handleSetNights()}
-                className="text-2xl cursor-pointer"
+                className="ttw-type-h2 cursor-pointer"
               />
             </div>
           </div>
@@ -1917,7 +1918,7 @@ export const DestinationPopUp = (props) => {
             !destination?.resource_id ||
             !destination?.name) &&
           search && (
-            <div className="text-xs text-red-600 px-2">
+            <div className="ttw-type-small text-red-600 px-2">
               Please select a destination from the dropdown
             </div>
           )}
@@ -1930,7 +1931,7 @@ export const DestinationPopUp = (props) => {
               !destination?.resource_id ||
               !destination?.name)
           }
-          className="w-full bg-yellow rounded-lg border-2 border-black p-2 text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-yellow rounded-lg border-2 border-black p-2 ttw-type-body-strong disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Update
         </button>
@@ -2061,7 +2062,7 @@ export const EditDates = ({
       <div className="w-full mg:w-[50%] lg:w-[50%] flex flex-col items-center pb-5 gap-3">
         <div className="w-full flex flex-col items-end">
           <div className="w-full md:w-[50%] ld:w-[50%] flex flex-row justify-start mb-5">
-            <div className="text-[24px] font-semibold leading-6">
+            <div className="ttw-type-h2 font-semibold leading-6">
               City Departures
             </div>
           </div>
@@ -2093,7 +2094,7 @@ export const EditDates = ({
       </div>
       {isDesktop && (
         <div className="fixed w-[40%] flex flex-col gap-5 right-[5%] pb-5">
-          <div className="text-[24px] font-semibold">Trip Dates</div>
+          <div className="ttw-type-h2 font-semibold">Trip Dates</div>
 
           <CustomCalendar
             startDate={new Date(startDate)}
@@ -2104,13 +2105,13 @@ export const EditDates = ({
           <div className="flex flex-row gap-1 items-center">
             {!isValidDates ? (
               <>
-                <RxCrossCircled className="text-sm text-white bg-red-500 rounded-full" />
-                <span className="text-sm">{invalidDateError}</span>
+                <RxCrossCircled className="ttw-type-body text-white bg-red-500 rounded-full" />
+                <span className="ttw-type-body">{invalidDateError}</span>
               </>
             ) : (
               <>
-                <MdDone className="text-sm text-white bg-[#0F9E03] rounded-full" />
-                <span className="text-sm">
+                <MdDone className="ttw-type-body text-white bg-[#0F9E03] rounded-full" />
+                <span className="ttw-type-body">
                   Dates in individual cities match with itinerary dates
                 </span>
               </>
@@ -2329,11 +2330,11 @@ export const DestinationDates = (props) => {
         >
           <div
             className={`w-2 h-2 ${
-              pinColour ? "bg-white" : "bg-yellow"
-            } rounded-full`}
+ pinColour ? "bg-white" : "bg-yellow"
+ } rounded-full`}
           ></div>
         </div>
-        <div className="text-[16px] font-semibold">
+        <div className="ttw-type-body font-semibold">
           {cityData.city_name || cityData.name || cityData.text}
         </div>
       </div>
@@ -2381,14 +2382,14 @@ export const DestinationDates = (props) => {
               </label>
               <div
                 className={`${
-                  !isValidDates
-                    ? isInvalidDate().error
-                      ? isInvalidDate().invalid
-                        ? "w-[80%] border-2 border-red-500 rounded-lg"
-                        : "w-[80%] border-2 border-[#ffbb33] rounded-lg"
-                      : "w-[80%]"
-                    : "w-[80%] "
-                } `}
+ !isValidDates
+ ? isInvalidDate().error
+ ? isInvalidDate().invalid
+ ? "w-[80%] border-2 border-red-500 rounded-lg"
+ : "w-[80%] border-2 border-[#ffbb33] rounded-lg"
+ : "w-[80%]"
+ : "w-[80%] "
+ } `}
               >
                 <DatePicker
                   defaultDate={getDate(previousDate)}
@@ -2417,14 +2418,14 @@ export const DestinationDates = (props) => {
                 <label htmlFor="endDate">Departure Date</label>
                 <div
                   className={`${
-                    !isValidDates
-                      ? isInvalidDate(true).error
-                        ? isInvalidDate(true).invalid
-                          ? "w-[80%] border-2 border-red-500 rounded-lg"
-                          : "w-[80%] border-2 border-[#ffbb33] rounded-lg"
-                        : "w-[80%]"
-                      : "w-[80%] "
-                  } `}
+ !isValidDates
+ ? isInvalidDate(true).error
+ ? isInvalidDate(true).invalid
+ ? "w-[80%] border-2 border-red-500 rounded-lg"
+ : "w-[80%] border-2 border-[#ffbb33] rounded-lg"
+ : "w-[80%]"
+ : "w-[80%] "
+ } `}
                 >
                   <DatePicker
                     defaultDate={getDate(previousDate)}
@@ -2545,7 +2546,7 @@ export const CustomCalendar = ({
 export const Month = ({ firstDay, days, startDate, endDate }) => {
   return (
     <div className="flex flex-col gap-2">
-      <div className="text-sm">{format(firstDay, "MMMM yyyy")}</div>
+      <div className="ttw-type-body">{format(firstDay, "MMMM yyyy")}</div>
       <div className="flex flex-row border-b-2 pb-2">
         {days.map((day, index) => {
           if (index < 7)
@@ -2553,14 +2554,14 @@ export const Month = ({ firstDay, days, startDate, endDate }) => {
               <div
                 key={index}
                 style={{ flex: 1, textAlign: "center" }}
-                className="text-sm text-[#7C7C7C]"
+                className="ttw-type-body text-[#7C7C7C]"
               >
                 {format(day.date, "EEE")}
               </div>
             );
         })}
       </div>
-      <div className="grid grid-cols-7 text-lg">
+      <div className="grid grid-cols-7 ttw-type-h4">
         {days.map((day, index) => {
           if (day.date.getMonth() !== firstDay.getMonth()) {
             return <div key={index} className="p-2"></div>;
@@ -2808,9 +2809,9 @@ body.react-dates__block-scroll {
               </div>
               {currentMonthHasDates && (
                 <div className="relative z-15 bg-yellow-50 border-l-2 border-yellow-400 px-2 py-1 mx-1 mb-2">
-                  <div className="flex items-center gap-1 text-xs text-gray-700">
+                  <div className="flex items-center gap-1 ttw-type-small text-gray-700">
                     <div className="w-1.5 h-1.5 bg-[#ffe8bc] rounded-sm flex-shrink-0"></div>
-                    <span className="text-[10px] leading-tight">
+                    <span className="ttw-type-small">
                       {formatDateRange()}
                     </span>
                   </div>
@@ -2824,8 +2825,8 @@ body.react-dates__block-scroll {
           return (
             <div
               className={`w-full h-full flex items-center justify-center border-none ${
-                isHighlighted ? "bg-yellow-50 " : ""
-              }`}
+ isHighlighted ? "bg-yellow-50 " : ""
+ }`}
             >
               {day.date()}
             </div>
@@ -2922,10 +2923,10 @@ export const ErrorMessage = ({ error, setError }) => {
       id="err_message"
       className="animate-slideDown fixed mx-2 top-5 md:right-5 lg:right-5 bg-red-500 rounded-lg text-white p-3 flex flex-row items-center gap-3"
     >
-      <div className="text-sm md:text-lg lg:text-lg">{error}</div>
+      <div className="ttw-type-body md:ttw-type-h4 lg:ttw-type-h4">{error}</div>
       <RxCrossCircled
         onClick={() => setError(false)}
-        className="text-2xl cursor-pointer"
+        className="ttw-type-h2 cursor-pointer"
       />
     </div>
   );

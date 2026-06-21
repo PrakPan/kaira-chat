@@ -9,6 +9,7 @@ import { ChatKitPanel } from "./components/ChatKitPanel";
 import MapView from "./components/MapView";
 import ViewToggle from "./components/ViewToggle";
 import Sidebar from "./components/Sidebar";
+import { getUserAvatarColor, getUserInitial } from "./utils/avatarColor";
 import StartScreen, { type TravellerStory } from "./components/StartScreen";
 import type { ThemeConfig } from "./types/themeConfig";
 import ChatWelcomeScreen from "./components/ChatWelcomeScreen";
@@ -60,6 +61,10 @@ import { useAnalytics } from "../../hooks/useAnalytics";
 import Login from "../modals/Login";
 import { FiMap, FiNavigation, FiCalendar, FiBookmark } from "react-icons/fi";
 import { tr } from "date-fns/locale";
+import {
+  takePendingFiles,
+  takePendingSeed,
+} from "../../services/heroChatHandoff";
 
 type MobilePanel = "map" | "chat" | "itinerary";
 type LeftPanelMode = "default" | "itinerary-loading" | "itinerary-ready";
@@ -93,10 +98,12 @@ function transformDraftToItinerary(draft: any) {
             id: el.id ?? null,
             icon: el.icon ?? null,
             tags: el.tags ?? [],
+            agent_tags: el.agent_tags ?? [],
+            one_liner: el.one_liner ?? el.short_description ?? null,
             time: el.time ?? "",
             index: idx,
             rating: el.rating ?? null,
-            heading: el.heading ?? el.name ?? "",
+            heading: el.name ?? el.heading ?? "",
             end_time: el.end_time ?? "",
             start_time: el.start_time ?? "",
             element_type: el.type ?? el.element_type ?? "poi",
@@ -206,6 +213,17 @@ export default function BotApp({
   const [initialAttachmentIds, setInitialAttachmentIds] = useState<
     string[] | undefined
   >(undefined);
+  // Hero handoff: seed prompt and/or selected files arriving from the
+  // homepage chat input. Files are queued to ChatKitPanel for upload via
+  // `initialFiles`. The seed pre-fills the composer (`initialInputText`)
+  // when files are present so the user can review before sending; when
+  // there are no files, it's auto-sent through the regular
+  // `handlePromptSelect` path.
+  const [initialFiles, setInitialFiles] = useState<File[] | undefined>(
+    undefined,
+  );
+  const [initialInputText, setInitialInputText] = useState<string | null>(null);
+  const hasConsumedHeroHandoffRef = useRef(false);
   const [activeTravellerStory, setActiveTravellerStory] =
     useState<TravellerStory | null>(null);
   const sendMessageRef = useRef<((msg: string) => void) | null>(null);
@@ -641,8 +659,8 @@ export default function BotApp({
 
   // ── restoreItineraryDirectly — used for old itineraries with no chatkit threads ──
   const restoreItineraryDirectly = useCallback(
-    async (itineraryId: string) => {
-      if (!itineraryId || itineraryId === "undefined") return;
+    async (itineraryId: string): Promise<string | null> => {
+      if (!itineraryId || itineraryId === "undefined") return null;
       try {
         const { axiosGetItineraryStatus } =
           await import("../../services/itinerary/daybyday/preview");
@@ -651,7 +669,7 @@ export default function BotApp({
         );
         const status = statusRes.data?.celery;
         const stage = statusRes.data?.stage;
-        if (!status) return;
+        if (!status) return null;
 
         // Stage P1 — no itinerary yet (or still in chat-only stage). Don't
         // dispatch celery statuses or enable itinerary polling; otherwise
@@ -664,7 +682,7 @@ export default function BotApp({
           setShowStartScreen(false);
           setHasBotResponded(true);
           setIsChatActive(true);
-          return;
+          return stage ?? "P1";
         }
 
         dispatch(
@@ -741,11 +759,16 @@ export default function BotApp({
         if (stage === "P2") {
           mobileTabSwitchRef.current?.("itinerary");
         }
+        // fromTailored forces a P2 experience even while celery is still
+        // building, so report "P2" to callers (loadThread keys its
+        // itinerary-tab default off this).
+        return stage === "P2" || fromTailored ? "P2" : (stage ?? null);
       } catch (err) {
         console.error("Failed to restore itinerary directly:", err);
         setShowStartScreen(true);
         setHasBotResponded(false);
         setIsChatActive(false);
+        return null;
       }
     },
     [dispatch, setChatBotIdOnce, fromTailored],
@@ -1653,7 +1676,11 @@ export default function BotApp({
   }, []);
 
   const loadThread = useCallback(
-    async (threadId: string, sessionIdOverride?: string) => {
+    async (
+      threadId: string,
+      sessionIdOverride?: string,
+      knownStage?: string | null,
+    ) => {
       if (isLoadingThreadRef.current) return;
       isLoadingThreadRef.current = true;
       // Stays true through ChatKitPanel's restoredThread useEffect, which
@@ -1662,7 +1689,7 @@ export default function BotApp({
       // pre-emptive/post-status setViewMode("itinerary") below.
       isRestoringRef.current = true;
       try {
-        const res = await fetch("https://chat.tarzanway.com/chatkit", {
+        const res = await fetch("https://dev.chat.tarzanway.com/chatkit", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -1768,6 +1795,15 @@ export default function BotApp({
           if (hasDisplayItinerary || hasCompletedEffectInLoop) {
             mobileTabSwitchRef.current?.("itinerary");
           }
+        } else if (knownStage === "P2") {
+          // Stage P2 per the status API, but this thread carries no
+          // display_itinerary / completion effect to restore from (so
+          // restoredItineraryId is null). An itinerary still exists —
+          // restoreItineraryDirectly has already hydrated the canonical
+          // trip + enabled polling. Keep the desktop on the itinerary tab;
+          // falling through to the map/chat branches below would strand the
+          // user on the map on every refresh.
+          setViewMode("itinerary");
         } else if ((data.map_effects ?? []).length > 0) {
           // P1 chat-only thread (no itinerary yet) but has route/POI data —
           // sessionId-default of "itinerary" hides the map behind an empty
@@ -1793,6 +1829,22 @@ export default function BotApp({
           }
           else setViewMode("map");
           setMobilePanel("chat");
+        }
+
+        // Mobile: a restored thread with no itinerary must land on the chat
+        // tab. MobileLayout now defaults activeTab to "itinerary" on a sessionId
+        // refresh (to avoid the chat→itinerary flash for real itineraries), so
+        // chat-only threads need an explicit switch back or they'd strand on a
+        // blank itinerary tab (itinerary content is gated behind an itinerary id).
+        //
+        // Skip this when the status API reports P2: an itinerary exists even
+        // though the thread carries no display_itinerary effect, and
+        // restoreItineraryDirectly has already switched to the itinerary tab.
+        // handleTabClick("chat") also runs setViewMode("map"), so firing it
+        // here would clobber the itinerary view and strand a P2 refresh on the
+        // map (the very bug this avoids).
+        if (!restoredItineraryId && knownStage !== "P2") {
+          mobileTabSwitchRef.current?.("chat");
         }
 
         if (restoredItineraryId) {
@@ -2048,7 +2100,7 @@ export default function BotApp({
 
       // ── Step 3: chatkit threads.list → loadThread (threads.get_by_id) ────
       try {
-        const listRes = await fetch("https://chat.tarzanway.com/chatkit", {
+        const listRes = await fetch("https://dev.chat.tarzanway.com/chatkit", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -2061,7 +2113,7 @@ export default function BotApp({
         const listData = await listRes.json();
         const threads = listData.data ?? [];
         if (threads.length > 0) {
-          await loadThread(threads[0].id);
+          await loadThread(threads[0].id, undefined, stage);
         } else if (stage === "P2" && allDone) {
           // P2 trip confirmed but no chat thread yet — seed a summary prompt
           // so the user lands with context. botMode is already "p2" via
@@ -2171,6 +2223,69 @@ export default function BotApp({
     }
   }, [sessionId, restoreLatestThread]);
 
+  // ── Browser back/forward between chat sessions ────────────────────────────
+  // The /chat/[id] page no longer keys BotApp on router.query.id (that key
+  // flipped on the first drawer CTA after a session switch — when Next finally
+  // reconciled the pushState URL — remounting BotApp and refetching). Session
+  // switches (thread-select, itinerary creation) already reload the panel in
+  // place. That leaves browser back/forward, which used to rely on the remount;
+  // we reload the previous session in place here instead.
+  const activeChatSessionIdRef = useRef(activeChatSessionId);
+  activeChatSessionIdRef.current = activeChatSessionId;
+  useEffect(() => {
+    const onPopState = () => {
+      const match = window.location.pathname.match(/\/chat\/([a-f0-9-]{36})/);
+      const urlSession = match?.[1];
+      // Only react to landing on a *different* chat session. Same-session
+      // popstate (e.g. backing out of a ?drawer= query) is owned by the router
+      // / drawers and must not trigger a reload.
+      if (!urlSession || urlSession === activeChatSessionIdRef.current) return;
+
+      // Reset the previous session's panel state in place (mirrors the
+      // handleThreadSelect reset) so the restored session doesn't paint over
+      // stale cities / cart / transfers.
+      userSelectedThreadRef.current = false;
+      isLoadingThreadRef.current = false;
+      // Keep the initial-restore effect above from double-firing for this id.
+      hasRestoredRef.current = true;
+      setRestoredThread(null);
+      setLocations([]);
+      setCurrentRoute(null);
+      setSkeletonCities([]);
+      skeletonCitiesRef.current = [];
+      setActiveItineraryId(null);
+      setItineraryPollingEnabled(false);
+      setShowItineraryShimmer(false);
+      setIsItineraryCompleting(false);
+      itineraryCreatedInSessionRef.current = false;
+      setBotMode("p1");
+      setItineraryId("");
+      setViewMode("map");
+      setHasBotResponded(false);
+      setShowStartScreen(false);
+      setIsChatActive(true);
+      currentItineraryRef.current = null;
+      setShowPaymentDrawer(false);
+
+      dispatch(setItinerary({}));
+      dispatch(setCart({}));
+      dispatch(setStays([]));
+      dispatch(setTransfersBookings(null));
+      dispatch(setItineraryStatus("itinerary_status", "PENDING"));
+      dispatch(setItineraryStatus("transfers_status", "PENDING"));
+      dispatch(setItineraryStatus("hotels_status", "PENDING"));
+      dispatch(setItineraryStatus("pricing_status", "PENDING"));
+      dispatch(setItineraryStatus("finalized_status", "PENDING"));
+
+      setActiveChatSessionId(urlSession);
+      setChatKey((prev) => prev + 1);
+      restoreLatestThread(urlSession);
+    };
+
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, [restoreLatestThread, dispatch]);
+
   const handleThreadSelect = useCallback(
     async (threadId: string, knownSessionId?: string) => {
       // Reset load guard so the new thread can load
@@ -2230,9 +2345,10 @@ export default function BotApp({
       // loadThread → threads.get_by_id → status check serially. Skipped when
       // the thread row didn't carry a session_id; loadThread will derive it
       // from the get_by_id response in that case.
+      let stageFromRestore: string | null = null;
       if (knownSessionId) {
         try {
-          await restoreItineraryDirectly(knownSessionId);
+          stageFromRestore = await restoreItineraryDirectly(knownSessionId);
         } catch (err) {
           console.warn(
             "[handleThreadSelect] restoreItineraryDirectly failed, falling back to loadThread-only:",
@@ -2244,7 +2360,7 @@ export default function BotApp({
       // Then load thread for chat history. loadThread re-runs the status
       // check internally when its effects carry an itinerary id — same
       // redundant ordering restoreLatestThread relies on, kept for parity.
-      await loadThread(threadId, knownSessionId);
+      await loadThread(threadId, knownSessionId, stageFromRestore);
       setChatKey((prev) => prev + 1);
     },
     [loadThread, dispatch, restoreItineraryDirectly],
@@ -2319,6 +2435,53 @@ export default function BotApp({
       setIsChatActive(true);
     }
   };
+
+  // ── Consume the hero/external chat handoff ────────────────────────────────
+  // The homepage chat input routes here with `?seed=...` in the URL and
+  // optionally a list of File objects parked in the in-memory handoff
+  // buffer (services/heroChatHandoff.js). Drains both once on first
+  // route-ready render so they're not re-applied on subsequent navigations.
+  useEffect(() => {
+    if (hasConsumedHeroHandoffRef.current) return;
+    if (!router.isReady) return;
+    hasConsumedHeroHandoffRef.current = true;
+
+    const queryParam = router.query.seed;
+    const querySeed = Array.isArray(queryParam) ? queryParam[0] : queryParam;
+    const handoffSeed = takePendingSeed();
+    const seed = (querySeed || handoffSeed || "").toString().trim();
+    const files = takePendingFiles();
+
+    if (!seed && (!files || files.length === 0)) return;
+
+    if (files && files.length > 0) {
+      // Pre-fill composer + upload files; let the user click send so the
+      // first message includes any newly-uploaded attachment IDs.
+      setShowStartScreen(false);
+      setIsChatActive(true);
+      setInitialInputText(seed);
+      setInitialFiles(files);
+    } else if (seed) {
+      // Plain seed (no files): existing prompt-auto-send flow already
+      // funnels through `handlePromptSelect`, which sets `initialPrompt`
+      // and flips `isChatActive`. ChatKitPanel's `initialPrompt` effect
+      // sends it as the first message after location is ready.
+      handlePromptSelect(seed);
+    }
+
+    // Drop the seed from the URL once consumed so a refresh doesn't replay it.
+    if (querySeed && typeof window !== "undefined") {
+      try {
+        const url = new URL(window.location.href);
+        url.searchParams.delete("seed");
+        window.history.replaceState({}, "", url.toString());
+      } catch {
+        /* noop */
+      }
+    }
+    // We deliberately want this to run only once. The ref guards re-runs.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router.isReady]);
 
   const handlePromptSelect = (prompt: string, attachmentIds?: string[]) => {
     // Gate the start-screen / theme prompt cards behind login.
@@ -2424,6 +2587,8 @@ export default function BotApp({
     onLoginSuccess: attachUserToItinerary,
     loginMandatory: router.query.login === "false" ? false : undefined,
     onViewItinerary: () => mobileTabSwitchRef.current?.("itinerary"),
+    initialFiles,
+    initialInputText,
   };
 
   const handleConfirmItinerary = (details: any) => {
@@ -2779,7 +2944,9 @@ Start Location: ${details.startLocation}`;
               className="flex-1 overflow-y-auto"
               style={{ scrollbarWidth: "none" }}
             >
-              {showTailoredSkeleton && <ItineraryShimmer />}
+              {showTailoredSkeleton && (
+                <ItineraryShimmer cities={skeletonCities} />
+              )}
               <div
                 style={
                   showTailoredSkeleton ? { display: "none" } : undefined
@@ -2897,8 +3064,8 @@ Start Location: ${details.startLocation}`;
         >
           <div
             className={`absolute inset-0 z-10 overflow-y-auto transition-opacity duration-500 ease-in-out pointer-events-${
-              showStartScreen && leftPanelMode === "default" ? "auto" : "none"
-            }`}
+ showStartScreen && leftPanelMode === "default" ? "auto" : "none"
+ }`}
             style={{
               opacity: showStartScreen && leftPanelMode === "default" ? 1 : 0,
             }}
@@ -2960,10 +3127,10 @@ Start Location: ${details.startLocation}`;
         >
           <div
             className={`absolute inset-0 z-10 bg-white ease-in-out ${
-              isChatActive
-                ? "opacity-0 pointer-events-none translate-y-2"
-                : "opacity-100 pointer-events-auto translate-y-0"
-            }`}
+ isChatActive
+ ? "opacity-0 pointer-events-none translate-y-2"
+ : "opacity-100 pointer-events-auto translate-y-0"
+ }`}
           >
             <ChatWelcomeScreen
               onSubmit={handlePromptSelect}
@@ -2973,10 +3140,10 @@ Start Location: ${details.startLocation}`;
           </div>
           <div
             className={`flex-1 overflow-hidden min-h-0 ease-in-out ${
-              isChatActive
-                ? "opacity-100 translate-y-0"
-                : "opacity-0 translate-y-2 pointer-events-none"
-            }`}
+ isChatActive
+ ? "opacity-100 translate-y-0"
+ : "opacity-0 translate-y-2 pointer-events-none"
+ }`}
           >
             {!isMobile && (
               <ChatKitPanel
@@ -3174,9 +3341,11 @@ Start Location: ${details.startLocation}`;
         />
       </div>
 
-      <div className="max-ph:hidden flex-shrink-0 w-full">
-        <TrustIndicators />
-      </div>
+      {isChatActive && (
+        <div className="max-ph:hidden flex-shrink-0 w-full">
+          <TrustIndicators />
+        </div>
+      )}
 
       <ConfirmationModal
         show={showConfirmModal}
@@ -3225,10 +3394,12 @@ Start Location: ${details.startLocation}`;
           <BottomModal
             show={true}
             onHide={() => setShowSettings(false)}
+            closeIcon={false}
             width="100%"
             height="max-content"
-            paddingX="16px"
-            paddingY="31px"
+            paddingX="0px"
+            paddingY="0px"
+            borderRadius="20px"
           >
             <Settings
               setShowSettings={setShowSettings}
@@ -3239,7 +3410,7 @@ Start Location: ${details.startLocation}`;
             />
           </BottomModal>
         ) : (
-          <ModalWithBackdrop show={true} onHide={() => setShowSettings(false)}>
+          <ModalWithBackdrop show={true} onHide={() => setShowSettings(false)} closeIcon={false}>
             <Settings
               setShowSettings={setShowSettings}
               isHotelsPresent={isHotelsPresent}
@@ -3393,7 +3564,7 @@ const BottomCTABar = React.memo(
         <div className="z-20 fixed w-full md:w-[47.5%] max-ph:bottom-0 md:!bottom-[4.2rem] flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3 flex items-center justify-center">
           <button
             onClick={onConfirm}
-            className="flex items-center justify-center h-[40px] px-5 gap-2 rounded-[8px] bg-[#F7E700] font-semibold text-[14px] font-inter"
+            className="flex items-center justify-center h-[40px] px-5 gap-2 rounded-[8px] bg-[#F7E700] ttw-type-body font-inter !font-bold"
           >
             Confirm Itinerary & View Prices →
           </button>
@@ -3408,12 +3579,12 @@ const BottomCTABar = React.memo(
     if (isPricingFailedWithEmptyNotes) {
       return (
         <div className="z-20 fixed w-full md:w-[48%] max-ph:bottom-0 md:bottom-[4.2rem] flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3 flex items-center justify-between">
-          <p className="text-red-600 text-sm">
+          <p className="text-red-600 ttw-type-body">
             Get in touch to finalize the pricing!
           </p>
           <button
             onClick={onGetInTouch}
-            className="flex items-center gap-2 h-[44px] px-4 rounded-[8px] bg-[#F7E700] text-[16px] font-inter font-semibold"
+            className="flex items-center gap-2 h-[44px] px-4 rounded-[8px] bg-[#F7E700] ttw-type-body font-inter font-semibold"
           >
             Get in touch!
           </button>
@@ -3443,18 +3614,18 @@ const BottomCTABar = React.memo(
     const currencySymbol = currencySymbols[currency?.currency] || "₹";
 
     return (
-      <div className="z-20 fixed w-full md:w-[48%] max-ph:bottom-0 md:bottom-[4.2rem] flex-shrink-0 bg-[#fffaf5] border-t border-slate-100 px-4 py-2 flex items-center justify-between">
+      <div className="z-20 fixed w-full md:w-[48%] max-ph:bottom-0 md:bottom-[3.2rem] flex-shrink-0 bg-[#fffaf5] border-t border-slate-100 px-4 py-2 flex items-center justify-between">
         <div className="flex flex-col">
           {cost !== null ? (
             <>
-              <span className="text-[11px] text-[#6E757A]">
+              <span className="text-black  ttw-type-small !text-[12px]">
                 {perPerson
                   ? "Per Person"
                   : cart?.is_estimated_price && cost > 0
                     ? "Estimated Price"
                     : "Total Cost"}
               </span>
-              <span className="font-bold text-[16px]">
+              <span className=" ttw-type-body !font-semibold">
                 {currencySymbol} {cost.toLocaleString("en-IN")}/-
               </span>
             </>
@@ -3471,7 +3642,7 @@ const BottomCTABar = React.memo(
               </button> */}
             </div>
           ) : (
-            <span className="text-[13px] text-[#6E757A] italic">
+            <span className="ttw-type-small text-[#6E757A] italic">
               Calculating price…
             </span>
           )}
@@ -3479,9 +3650,9 @@ const BottomCTABar = React.memo(
         <div className="flex gap-3 items-center">
           <div
             style={popupStyle}
-            className="z-50 absolute -top-11 text-sm text-center flex flex-col gap-2 bg-white"
+            className="z-50 absolute -top-11 ttw-type-body text-center flex flex-col gap-2 bg-white"
           >
-            <div className="text-nowrap font-normal text-black text-sm">
+            <div className="text-nowrap font-normal text-black ttw-type-body">
               No Hidden Charges,
               <br />
               Includes taxes
@@ -3531,7 +3702,7 @@ BottomCTABar.displayName = "BottomCTABar";
 // ── MobileLayout — full-screen views with top tab bar + mobile header ─────────
 type MobileTab = "chat" | "map" | "routes" | "itinerary" | "bookings";
 
-const CHATKIT_API_URL_MOBILE = "https://chat.tarzanway.com/chatkit";
+const CHATKIT_API_URL_MOBILE = "https://dev.chat.tarzanway.com/chatkit";
 
 function getAuthToken(): string | null {
   return (
@@ -3658,6 +3829,10 @@ export const MobileHeaderMenu = React.memo(
     };
 
     const imgUrlEndPoint = "https://d31aoa0ehgvjdi.cloudfront.net/";
+    // Same default avatar the desktop sidebar falls back to. Shown when the
+    // user is logged out instead of the "T"/initials placeholder.
+    const defaultProfileImg =
+      imgUrlEndPoint + "media/icons/navigation/profile-user.png";
 
     const avatarSrc = token
       ? image && image !== "null" && image !== null
@@ -3665,7 +3840,14 @@ export const MobileHeaderMenu = React.memo(
         : localImg && localImg !== "null"
           ? imgUrlEndPoint + localImg
           : null
-      : null;
+      : defaultProfileImg;
+
+    // Logged in with no picture → colored letter avatar (matches desktop).
+    const showColorAvatar = !!token && !avatarSrc;
+    const [avatarColor, setAvatarColor] = useState<string | null>(null);
+    useEffect(() => {
+      setAvatarColor(showColorAvatar ? getUserAvatarColor(name) : null);
+    }, [showColorAvatar, name]);
     const initials = name
       ? name
           .trim()
@@ -3736,7 +3918,7 @@ export const MobileHeaderMenu = React.memo(
                     </div>
                   ) : threads.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-full text-center py-12 gap-3">
-                      <p className="text-sm text-gray-500">No chats yet</p>
+                      <p className="ttw-type-body text-gray-500">No chats yet</p>
                     </div>
                   ) : (
                     <div className="flex flex-col gap-0.5">
@@ -3750,7 +3932,7 @@ export const MobileHeaderMenu = React.memo(
                             );
                             setHistoryOpen(false);
                           }}
-                          className={`w-full text-left px-3 py-2.5 rounded-lg text-[13px] truncate ${activeThreadId === t.id ? "bg-[#07213A] text-white font-medium" : "text-gray-700 hover:bg-gray-50"}`}
+                          className={`w-full text-left px-3 py-2.5 rounded-lg ttw-type-small truncate ${activeThreadId === t.id ? "bg-[#07213A] text-white font-medium" : "text-gray-700 hover:bg-gray-50"}`}
                           title={t.title || "Untitled"}
                         >
                           {t.title || "Untitled"}
@@ -3828,6 +4010,11 @@ export const MobileHeaderMenu = React.memo(
             <button
               onClick={() => setProfileOpen((v) => !v)}
               className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center border-2 border-gray-200 bg-gray-100"
+              style={
+                showColorAvatar && avatarColor
+                  ? { background: avatarColor, borderColor: avatarColor }
+                  : undefined
+              }
               aria-label="Profile"
             >
               {avatarSrc ? (
@@ -3837,8 +4024,12 @@ export const MobileHeaderMenu = React.memo(
                   alt={name || "Profile"}
                   className="w-full h-full object-cover"
                 />
+              ) : showColorAvatar ? (
+                <span className="ttw-type-small font-bold text-white select-none">
+                  {getUserInitial(name)}
+                </span>
               ) : (
-                <span className="text-[11px] font-bold text-gray-600">
+                <span className="ttw-type-small font-bold text-gray-600">
                   {initials}
                 </span>
               )}
@@ -3850,7 +4041,7 @@ export const MobileHeaderMenu = React.memo(
               >
                 {!token ? (
                   <button
-                    className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
+                    className="w-full text-left px-4 py-2.5 ttw-type-body text-gray-700 hover:bg-gray-50"
                     onClick={() => {
                       setProfileOpen(false);
                       setShowLogin(true);
@@ -3862,12 +4053,12 @@ export const MobileHeaderMenu = React.memo(
                   <>
                     <a
                       href="/dashboard"
-                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
+                      className="flex items-center gap-2 px-4 py-2.5 ttw-type-body text-gray-700 hover:bg-gray-50"
                     >
                       My Trips
                     </a>
                     <button
-                      className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50"
+                      className="w-full flex items-center gap-2 px-4 py-2.5 ttw-type-body text-red-500 hover:bg-red-50"
                       onClick={handleLogout}
                     >
                       Logout
@@ -3917,7 +4108,7 @@ const MobileHeader = React.memo(
       <div className="flex items-center gap-2">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/logoblack.svg" height={22} width={22} alt="logo" />
-        <span className="font-semibold text-gray-800 text-sm">
+        <span className="font-semibold text-gray-800 ttw-type-body">
           thetarzanway
         </span>
       </div>
@@ -3987,8 +4178,13 @@ const MobileLayout = React.memo(
     onSettingsClick,
     onLoginSuccess,
   }: MobileLayoutProps) => {
+    // On a sessionId refresh, BotApp seeds `mobilePanel` to "itinerary" (same
+    // signal desktop uses for its viewMode default). Honour it here so an
+    // itinerary reload lands directly on the itinerary tab instead of flashing
+    // the chat tab first while the async thread restore resolves. Chat-only
+    // threads (no itinerary) are switched back to chat by the restore flow.
     const [activeTab, setActiveTab] = React.useState<MobileTab>(
-      hasItineraryActivity ? "itinerary" : "chat",
+      mobilePanel === "itinerary" || hasItineraryActivity ? "itinerary" : "chat",
     );
     const hasUnread = (useSelector as any)(
       (s: any) => !!s.chatState?.unreadMessages,
@@ -4097,7 +4293,7 @@ const MobileLayout = React.memo(
     };
     const inactiveTabStyle: React.CSSProperties = {
       borderRadius: "10px",
-      color: "#000",
+      color: "#0B1220",
     };
 
     return (
@@ -4116,7 +4312,7 @@ const MobileLayout = React.memo(
 
         {/* ── Top tab bar — only when itinerary is active ── */}
         {hasItineraryActivity && visibleTabs.length > 0 && (
-          <div className="flex-shrink-0  bg-white border-b border-gray-100 flex items-center gap-2">
+          <div className="flex-shrink-0 bg-white border-b border-gray-100 flex items-center gap-2">
             <div
               className="flex flex-1 gap-1 p-[3px]"
               style={{
@@ -4215,7 +4411,7 @@ const MobileLayout = React.memo(
             >
               {/* Chat Banner */}
               {showChatBanner && (
-                <div className="relative bg-[#F7E700] text-black px-4 py-2 rounded-[12px] shadow-lg max-w-[290px] animate-slideIn">
+                <div className="relative bg-[#F7E700] text-black px-[19px] py-2 rounded-[12px] shadow-lg max-w-[290px] animate-slideIn">
                   <button
                     onClick={() => setShowChatBanner(false)}
                     className="absolute top-2 right-2 text-black hover:text-gray-700"
@@ -4234,7 +4430,7 @@ const MobileLayout = React.memo(
                       <line x1="6" y1="6" x2="18" y2="18" />
                     </svg>
                   </button>
-                  <p className="text-[14px] pr-3 mb-0">
+                  <p className="ttw-type-body pr-1 mb-0">
                     Hey, I’m Kaira - Your AI Trip Planner
                   </p>
                   {/* Speech bubble arrow */}
@@ -4282,7 +4478,7 @@ const MobileLayout = React.memo(
                 );
                 onDismissMobileEffectPopup?.();
               }}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#07213A] text-white text-[13px] font-semibold shadow-2xl active:scale-95 transition-transform"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#07213A] text-white ttw-type-small font-semibold shadow-2xl active:scale-95 transition-transform"
               style={{ whiteSpace: "nowrap" }}
             >
               {mobileEffectPopup?.type === "itinerary" ? (
@@ -4328,7 +4524,7 @@ const MobileLayout = React.memo(
           >
             {/* Chat Banner */}
             {showChatBanner && (
-              <div className="relative bg-[#F7E700] text-black px-4 py-2 rounded-[12px] shadow-lg max-w-[290px] animate-slideIn">
+              <div className="relative bg-[#F7E700] text-black px-[19px] py-2 rounded-[12px] shadow-lg max-w-[290px] animate-slideIn">
                 <button
                   onClick={() => setShowChatBanner(false)}
                   className="absolute top-2 right-2 text-black hover:text-gray-700"
@@ -4347,7 +4543,7 @@ const MobileLayout = React.memo(
                     <line x1="6" y1="6" x2="18" y2="18" />
                   </svg>
                 </button>
-                <p className="text-[14px] pr-3 mb-0">
+                <p className="ttw-type-body pr-3 mb-0">
                   Hey, I’m Kaira - Your AI Trip Planner
                 </p>
                 <div className="absolute -bottom-2 right-8 w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[#F7E700]" />
@@ -4384,7 +4580,7 @@ const MobileLayout = React.memo(
         {!hasItineraryActivity && activeTab === "map" && (
           <button
             onClick={() => handleTabClick("chat")}
-            className="fixed z-[100] flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#07213A] text-white text-[13px] font-semibold shadow-2xl active:scale-95 transition-transform"
+            className="fixed z-[100] flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#07213A] text-white ttw-type-small font-semibold shadow-2xl active:scale-95 transition-transform"
             style={{ bottom: 24, right: 16, whiteSpace: "nowrap" }}
             aria-label="Back to chat"
           >

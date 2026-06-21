@@ -122,30 +122,6 @@ const Mobile = (props) => {
       text: "My Trips",
       icon: "media/icons/navigation/trip.svg",
     },
-    {
-      type: "main",
-      link: "http://blog.thetarzanway.com/",
-      text: "Travel Feed",
-      icon: "media/icons/navigation/chat.png",
-    },
-    {
-      type: "main",
-      link: "/testimonials",
-      text: "Reviews",
-      icon: "media/icons/navigation/testimonial.png",
-    },
-    {
-      type: "others",
-      link: "/contact",
-      text: "Contact Us",
-      icon: "media/icons/navigation/call.png",
-    },
-    {
-      type: "others",
-      link: "/covid-19-safe-travel-india",
-      text: "Covid 19 Safety",
-      icon: "media/icons/navigation/health-insurance.png",
-    },
   ];
 
   if (!props.token) LinksArr = LinksArr.filter((e) => e.link != "/dashboard");
@@ -230,8 +206,9 @@ const Mobile = (props) => {
       style={{ maxWidth: '48px', maxHeight: '48px', minWidth: '48px', minHeight: '48px'}} >
 
       {!props.token?<Button
-            className={styles.hamburger}
+            className={`${styles.hamburger} ${styles.hamburgerCircle}`}
             variant="filled"
+            aria-label="Open menu"
           >
             <FontAwesomeIcon icon={faUser} className="w-4 h-4" />
           </Button>:<ImageLoader
@@ -274,8 +251,6 @@ const Mobile = (props) => {
           </>}
 
           {MainLinksDiv}
-
-          <Heading>OTHERS</Heading>
 
           {OtherLinksDiv}
 

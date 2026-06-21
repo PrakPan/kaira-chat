@@ -70,16 +70,17 @@ const TravelPlanner = (props) => {
         ></link>
       </Head>
 
-      {props.pageData && props.Data?.page_data?.slug != "india" ? (
-          <ThemePage themePage experienceData={props.Data?.page_data} slug={props.Data?.page_data?.slug}/>
-        ) : (
+      {/* {props.pageData && props.Data?.page_data?.slug != "india" ? (
+          <ThemePage themePage experienceData={props.Data?.page_data} slug={props.Data?.page_data?.slug} data={props.Data}/>
+        ) : ( */}
       <CountryPage
         continetCarousel={props?.continetCarousel}
         data={props?.Data}
         locations={props?.locations}
         page_id={props.page_id || ""}
         type={props?.Type}
-      ></CountryPage>)}
+      ></CountryPage>
+      {/* )} */}
     </Layout>
   );
 };
@@ -92,7 +93,7 @@ export async function getStaticPaths() {
       `${MERCURY_HOST}/api/v1/geos/search/all/?type=Country`
     );
     const data = res.data;
-    for (var i = 0; i < 3; i++) {
+    for (var i = 0; i < data?.length; i++) {
       const pathArr = data[i].path.split("/");
       var [continentSlug, countrySlug] = pathArr;
       paths.push({
@@ -146,11 +147,11 @@ export async function getStaticProps(context) {
     const continentData = await axiospagelistinstance.get(
       "/?page_type=Continent&fields=id,page_type,slug,overview_image,tagline,path"
     );
-    for (let i = 0; i < 2; i++) {
+    for (let i = 0; i < continentData.data.data.pages.length; i++) {
       let continentSlug=continentData.data.data.pages[i].slug
       
       const countrydetailsResponse = await axioscountrydetailsinstance.get(
-        `?limit=100&offset=0&continent=${continentSlug}`
+        `?limit=111&offset=0&continent=${continentSlug}`
       );
 
       let hot_data = countrydetailsResponse.data.data.countries.filter(

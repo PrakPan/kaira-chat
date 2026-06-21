@@ -17,6 +17,19 @@ const RightContainer = styled.div`
   color: #1360d3;
 `;
 
+// Fallback used when the user-location lookup never resolves, so the field
+// can't hang on "Getting your location…" forever.
+const DELHI_FALLBACK = {
+  text: "New Delhi, IN",
+  city: "New Delhi",
+  country: "India",
+  country_code: "IN",
+  currency: "INR",
+  place_id: "ChIJLbZ-NFv9DDkRzk0gTkm3wlI",
+  lat: 28.6139,
+  long: 77.209,
+};
+
 const SelectedDestination = (props) => {
   const [searchFinalized, setSearchFinalized] = useState(false);
   const [focusLocation, setFocusLocation] = useState(false);
@@ -79,10 +92,16 @@ const SelectedDestination = (props) => {
 }, []);
 
   useEffect(() => {
+    // A location is already selected (e.g. the clone popup pre-fills the
+    // itinerary's location) — never show the spinner, never overwrite it.
+    if (props.startingLocation) {
+      setLoading(false);
+      return;
+    }
     if (userLocation && isValidLocation(userLocation)) {
       setLoading(false);
-      
-      if (!props.startingLocation && !hasManuallyCleared) {
+
+      if (!hasManuallyCleared) {
         props.setStartingLocation({
           name: userLocation.text || userLocation.city,
           place_id: userLocation.place_id,
@@ -96,7 +115,24 @@ const SelectedDestination = (props) => {
     } else if (!userLocation) {
       setLoading(true);
     }
-  }, [userLocation, hasManuallyCleared]);
+  }, [userLocation, hasManuallyCleared, props.startingLocation]);
+
+  // Safety net: if the user-location bootstrap never resolves (no cookie within
+  // a few seconds), drop a New Delhi default into the cookie so the 500ms poll
+  // above picks it up — the field falls back to Delhi instead of spinning.
+  useEffect(() => {
+    if (props.startingLocation) return;
+    const t = setTimeout(() => {
+      if (!Cookies.get("userLocation") && !props.startingLocation) {
+        try {
+          Cookies.set("userLocation", JSON.stringify(DELHI_FALLBACK), {
+            expires: 3,
+          });
+        } catch (e) {}
+      }
+    }, 4500);
+    return () => clearTimeout(t);
+  }, [props.startingLocation]);
 
   const handleLocationChange = (newLocation) => {
     setHasManuallyCleared(false); 

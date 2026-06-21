@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import CityPage from "../../../../../containers/city/Index";
 import Layout from "../../../../../components/Layout";
 import axiosReccommendedCityInstance from "../../../../../services/poi/reccommededcities";
+import axiossearchallinstance from "../../../../../services/search/all";
 import axioslocationsinstance from "../../../../../services/search/search";
 import setHotLocationSearch from "../../../../../store/actions/hotLocationSearch";
 import {  MERCURY_HOST } from "../../../../../services/constants";
@@ -80,23 +81,25 @@ const Experience = (props) => {
           href={`https://thetarzanway.com/${props.path}`}
         ></link>
       </Head>
-
+{/* 
       {props.pageData ? (
   <ThemePage
     themePage
     experienceData={props.cityData?.page_data}
     slug={props.cityData?.page_data?.slug}
     city={props.cityData}
+    data={props.cityData}
   />
-) : (
+) : ( */}
   <CityPage
     reccomendedCitiesData={props.reccomendedCitiesData}
     cityData={props.cityData}
+    hotLocations={props.hotLocationSearch}
     id={router.query.city}
     page_id={props.page_id}
     type={props?.Type}
   />
-)}
+{/* )} */}
 
     </Layout>
   );
@@ -106,50 +109,33 @@ export async function getStaticPaths() {
   let paths = [];
 
   try {
-    //mercury api
-    const res = await axios.get(
-      `${MERCURY_HOST}/api/v1/geos/search/all/?type=City`
-    );
+    // mercury api — build a page for every city that has a valid path
+    const res = await axiossearchallinstance.get("/all/?type=City");
+    const data = res.data ?? [];
 
-    let data = res.data;
-
-    for (var i = 0; i < 2; i++) {
+    for (var i = 0; i < data.length; i++) {
+      if (!data[i]?.path) continue;
       const pathArr = data[i].path.split("/");
-      var [continentSlug, countrySlug, stateSlug, citySlug] = pathArr;
-      if (data[i]) {
-        paths.push({
-          params: {
-            continent: continentSlug,
-            country:countrySlug!="None"? countrySlug.toLowerCase().replace(/ /g, "_"):countrySlug,
-            state: stateSlug,
-            city: citySlug,
-          }
-        });
-      }
+      const [continentSlug, countrySlug, stateSlug, citySlug] = pathArr;
+      if (!citySlug) continue;
+      paths.push({
+        params: {
+          continent: continentSlug,
+          country: countrySlug,
+          state: stateSlug,
+          city: citySlug,
+        },
+      });
     }
   } catch (err) {
-    console.log(
-      "[ERROR][cityPage:axiossearchInstance][/?type=Location&fields=path,cta]: ",
+    console.error(
+      "[ERROR][cityPage:axiossearchallinstance][/all/?type=City]: ",
       err.message
     );
   }
 
-  return{
-    paths:paths,
-    fallback:false
-  }
-
- return {
-    paths: [
-      {
-        params: {
-          continent: "europe",
-          country: "portugal",
-          state: "madeira",
-          city: "funchal_madeira",
-        },
-      },
-    ],
+  return {
+    paths,
     fallback: false,
   };
 }

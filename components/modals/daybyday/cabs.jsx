@@ -34,9 +34,9 @@ const CabDetailModal = ({ segments, provider, resultIndex, setShowDetails ,fareR
     };
   
     return (
-      <div className="relative flex flex-col gap-4 bg-gray-100 p-2 rounded-md">
+      <div className="relative flex flex-col gap-4 bg-[#f4f3ec] p-2 rounded-md">
         <div className="flex flex-col gap-2">
-          <div className="w-fit py-2 text-lg font-bold">Flight Details</div>
+          <div className="w-fit py-2 text-lg font-bold text-[#0b1220]">Flight Details</div>
   
           <FlightSegment segments={segments} />
         </div>

@@ -119,16 +119,16 @@ const TravelPlanner = (props) => {
         ></link>
       </Head>
 
-      {props.pageData ? (
-    <ThemePage themePage experienceData={props.Data?.page_data} slug={props.Data?.page_data?.slug} state={props?.Data}/>
-  ) : (
+      {/* {props.pageData ? (
+    <ThemePage themePage experienceData={props.Data?.page_data} slug={props.Data?.page_data?.slug} state={props?.Data} data={props?.Data}/>
+  ) : ( */}
     <StatePage
       experienceData={props.Data}
       locations={props.locations}
       page_id={props.page_id || ""}
       type={props?.Type}
     />
-  )}
+  {/* )} */}
     </Layout>
   );
 };
@@ -143,7 +143,7 @@ export async function getStaticPaths() {
 
     const allPaths = [...data];
 
-    for (var i = 0; i < 2; i++) {
+    for (var i = 0; i < allPaths.length; i++) {
       const pathArr = allPaths[i].path.split("/");
       var [continentSlug, countrySlug, stateSlug] = pathArr;
       paths.push({
@@ -194,6 +194,7 @@ export async function getStaticProps(context) {
     .get(`${MERCURY_HOST}/api/v1/geos/state/${Id}`)
     .then((res) => {
      const stateData = res.data.data.state;
+     locations = stateData?.nearest_states || [];
      data = stateData;
     if (stateData?.page_data && Object.keys(stateData?.page_data).length > 0) {
       isThemePage = true;
@@ -212,7 +213,7 @@ export async function getStaticProps(context) {
       `${MERCURY_HOST}/api/v1/geos/state/?fields=id,name,budget,tagline&country_name=${country}&limit=100`
     )
     .then((res) => {
-      locations = res.data.data.states;
+      // locations = res?.data?.data?.nearest_states || res.data.data.states;
     })
     .catch((err) => {
       console.log(

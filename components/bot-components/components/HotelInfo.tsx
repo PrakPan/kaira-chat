@@ -54,7 +54,7 @@ const HotelInfo: React.FC<HotelInfoProps> = ({ hotelName }) => {
                             </g>
                           </svg>
         {/* </div> */}
-        <p className="text-sm font-medium text-gray-700 mt-1">
+        <p className="ttw-type-body-strong text-gray-700 mt-1">
           {hotelName}
         </p>
       </div>

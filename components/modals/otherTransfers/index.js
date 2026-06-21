@@ -63,6 +63,7 @@ const Booking = (props) => {
       <Drawer
         anchor={"right"}
         backdrop
+        bgColor="#fafaf5"
         style={{ zIndex: 1501 }}
         className=""
         show={props.showTaxiModal}

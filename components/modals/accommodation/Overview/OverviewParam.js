@@ -198,6 +198,7 @@ const OverviewParam = (props) => {
       show={props.show}
       anchor={"right"}
       backdrop
+      bgColor="#fafaf5"
       className=""
       onHide={props.onHide}
       width={"50vw"}
@@ -222,6 +223,11 @@ const OverviewParam = (props) => {
             <Button
               padding="7px 25px"
               borderRadius="7px"
+              bgColor="#ffffff"
+              color="#0b1220"
+              borderStyle="solid"
+              borderWidth="1px"
+              borderColor="#ececec"
               onclick={() => props.BookingButtonFun()}
             >
               Change
@@ -234,7 +240,7 @@ const OverviewParam = (props) => {
 
       {props.data?.rating ? (
         <div className="gap-1 flex flex-row  items-center">
-          <div className="flex flex-row text-[#FFD201]">
+          <div className="flex flex-row text-[#f7e700]">
             {starRating(props.data?.rating)}
           </div>
           <div>
@@ -242,7 +248,7 @@ const OverviewParam = (props) => {
             {" . "}
           </div>
           {props.data?.num_reviews && (
-            <div className="text-sm text-[#7A7A7A] font-[400] underline">
+            <div className="text-sm text-[#445069] font-[400] underline">
               {props.data?.num_reviews}{" "}
               {props.data?.agoda_accommodation
                 ? "user reviews"
@@ -264,7 +270,7 @@ const OverviewParam = (props) => {
                 {" . "}
               </div>
               {props?.currentBooking?.number_of_reviews && (
-                <div className="text-sm text-[#7A7A7A] font-medium underline">
+                <div className="text-sm text-[#445069] font-medium underline">
                   {props?.currentBooking?.number_of_reviews}{" "}
                   {props?.currentBooking?.source === "Agoda"
                     ? "user reviews"
@@ -1004,7 +1010,7 @@ const OverviewParam = (props) => {
             <a
               href={props.data?.google_maps_link}
               target="_blank"
-              style={{ color: "black", fontSize: "14px" }}
+              style={{ color: "#0b1220", fontSize: "14px" }}
             >
               View on Google Map
             </a>
@@ -1046,7 +1052,7 @@ const OverviewParam = (props) => {
                 ?.split(" ")
                 .join("+")})`}
               target="_blank"
-              style={{ color: "black", fontSize: "14px" }}
+              style={{ color: "#0b1220", fontSize: "14px" }}
             >
               View on Google Map
             </a>

@@ -1,122 +1,94 @@
-import React, { useState } from "react";
-import Image from "next/image";
-import Button from "../common/components/button";
-import { Pinned, Japan } from "../assets";
-import Link from "next/link";
 import { useRouter } from "next/router";
-import useMediaQuery from "../../media";
-import TailoredFormMobileModal from "../../modals/TailoredFomrMobile";
+import styles from "./WhereNextSection.module.scss";
 
-const WhereNextSection = () => {
+/*
+ * "Pick a feeling" — the vibes grid.
+ * Pass `vibes` to reuse for any destination/theme grid; each vibe is
+ *   { pill, caption, image, seed }.
+ */
+
+const DEFAULT_VIBES = [
+  {
+    pill: "Premium · Honeymoon",
+    caption: (
+      <>
+        Japan under <span className="ttwSerif">cherry blossoms</span>
+      </>
+    ),
+    image: "https://images.unsplash.com/photo-1522383225653-ed111181a951?w=800&q=80&auto=format",
+    seed: "Japan under cherry blossoms, honeymoon",
+  },
+  {
+    pill: "Iconic · Couples",
+    caption: (
+      <>
+        Santorini at <span className="ttwSerif">sunset</span>
+      </>
+    ),
+    image: "https://images.unsplash.com/photo-1533105079780-92b9be482077?w=800&q=80&auto=format",
+    seed: "Santorini sunset, couples",
+  },
+  {
+    pill: "Adventure · Scenic",
+    caption: (
+      <>
+        Sydney and <span className="ttwSerif">the harbour</span>
+      </>
+    ),
+    image: "https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?w=800&q=80&auto=format",
+    seed: "Sydney and the harbour, scenic",
+  },
+];
+
+const WhereNextSection = ({ vibes = DEFAULT_VIBES, total = 47 }) => {
   const router = useRouter();
-  // Statistics data
-  const stats = [
-    {
-      value: "100K+",
-      label: "Happy Travellers & Counting",
-    },
-    {
-      value: "500+",
-      label: "Total Tour Destinations",
-    },
-    {
-      value: "4.8",
-      label: "Rated By Travellers",
-    },
-  ];
-  const isDesktop = useMediaQuery("(min-width:767px)");
-  const [showMoiblePlanner,setShowMobilePlanner] = useState(false);
-  
+
   return (
-    <section
-      className="py-12 sm:py-16 lg:py-20 px-0 sm:px-4 lg:px-8"
-      style={{ backgroundColor: "#FEFFC0" }}
-    >
-      <div className="max-w-7xl mx-auto">
-        <div className="">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            {/* Content Side */}
-            <div className="order-2 lg:order-1"
-              style={{ padding: "1rem" }}
-            >
-              <h2
-                className="font-bold text-2xl sm:text-xl lg:text-4xl  leading-tight"
-              // style={{ fontSize: "40px" }}
-              >
-                Where Will You Go Next?&nbsp;
-                {isDesktop ? <br /> : null}
-                Let's Plan It.
-              </h2>
-
-              <p
-                className="font-normal text-gray-700 mb-6 lg:mb-8 leading-relaxed max-w-lg"
-                style={{ fontSize: "18px" }}
-              >
-                Pick a place, pack your bags, and leave the planning to us —
-                your next adventure is just a click away!
-              </p>
-
-              {/* CTA Button */}
-              <div className="mb-8 lg:mb-10">
-                {/* <Link href="/new-trip"> */}
-                  <Button
-                    variant="filled"
-                    size="medium"
-                    onClick={() => {
-                      router.push("/chat");
-                    }}
-                    className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
-                  >
-                    + Create a Trip Now!
-                  </Button>
-                {/* </Link> */}
-              </div>
-
-              {/* Statistics Section */}
-              <div className="grid grid-cols-3 gap-4 sm:gap-6">
-                {stats.map((stat, index) => (
-                  <div key={index} className="text-center">
-                    <div className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">
-                      {stat.value}
-                    </div>
-                    <div className="text-xs sm:text-sm text-gray-700 font-medium leading-tight">
-                      {stat.label}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Image Side */}
-            <div className="order-1 lg:order-2">
-              <div className="relative overflow-hidden">
-                {/* Main Image */}
-                <div className="relative h-[400px] sm:h-[500px] lg:h-[600px]">
-                  <Image
-                    src={Pinned}
-                    alt="Beautiful Italy coastal town with colorful buildings and boats"
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 640px) 100vw,
-                           (max-width: 1024px) 90vw,
-                            600px"
-                    loading="lazy"
-                  />
-                </div>
-              </div>
-            </div>
+    <section className={styles.section}>
+      <div className="ttwContainer">
+        <div className="ttwSectionHead">
+          <div>
+            <h2>Pick a feeling.</h2>
+            <p className="ttwLede">
+              From slow-lived honeymoons to{" "}
+              <span className="ttwSerif">altitude-sick</span> wins. Every card
+              below drops you into a chat, already briefed.
+            </p>
           </div>
+          {/* <a href="/destinations" className="ttwSectionLink">
+            Browse all {total} countries
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" height={12} width={12}>
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </a> */}
+        </div>
+
+        <div className={styles.grid}>
+          {vibes.map((v, i) => (
+            <div
+              key={i}
+              className={styles.card}
+              role="button"
+              tabIndex={0}
+              onClick={() =>
+                router.push(`/chat?seed=${encodeURIComponent(v.seed || "")}`)
+              }
+              onKeyDown={(e) => {
+                if (e.key === "Enter")
+                  router.push(`/chat?seed=${encodeURIComponent(v.seed || "")}`);
+              }}
+            >
+              <div
+                className={styles.img}
+                style={{ backgroundImage: `url('${v.image}')` }}
+              />
+              <span className={styles.pill}>{v.pill}</span>
+              <div className={styles.caption}>{v.caption}</div>
+            </div>
+          ))}
         </div>
       </div>
-
-      <TailoredFormMobileModal
-        destinationType={"city-planner"}
-        onHide={() => {
-          setShowMobilePlanner(false);
-          // closeTailoredModal(router);
-        }}
-        show={showMoiblePlanner}
-      />
     </section>
   );
 };

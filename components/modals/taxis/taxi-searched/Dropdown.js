@@ -29,10 +29,10 @@ const DropDown = (props) => {
             textAlign: "right",
             fontWeight: "600",
             backgroundColor: "white",
-            color: "black",
+            color: "#0b1220",
             borderStyle: "none none solid none",
             borderWidth: "1px",
-            borderColor: "#e4e4e4",
+            borderColor: "#ececec",
           }}
         >
           How many cars?

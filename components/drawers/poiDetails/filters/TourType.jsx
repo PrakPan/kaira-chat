@@ -31,7 +31,7 @@ export default function TourType(props) {
 
   return (
     <div className="flex flex-col justify-start items-baseline">
-      <div className="mb-2 font-medium text-[14px]">Tour Type</div>
+      <div className="mb-2 font-medium ttw-type-body">Tour Type</div>
 
       <div className="flex flex-row items-center gap-2 flex-wrap">
         <div

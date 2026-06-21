@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Button from "../ui/button/Index";
+import ChatWithKairaCta from "./../revamp/destination/ChatWithKairaCta";
 
 const Container = styled.div`
   display: none;
@@ -27,7 +28,14 @@ const GridContainer = styled.div`
   border-radius: 2rem;
 `;
 
+const Serif = styled.span`
+  font-family: "Instrument Serif", "Times New Roman", serif;
+  font-style: italic;
+`;
+
 const Text = styled.p`
+  font-family: "Inter", -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
   font-size: 1rem;
   margin: 0;
   text-align: center;
@@ -57,26 +65,61 @@ const Banner = (props) => {
     };
   });
 
+  const renderText = () => {
+    const { text, destinationName } = props;
+    if (!destinationName || typeof text !== "string") return text;
+    const parts = text.split(destinationName);
+    if (parts.length === 1) return text;
+    return parts.map((part, i) => (
+      <React.Fragment key={i}>
+        {part}
+        {i < parts.length - 1 && <Serif>{destinationName}</Serif>}
+      </React.Fragment>
+    ));
+  };
+
   if (showBanner)
     return (
       <Container className="flex place-self-end" newYear={props.newYear}>
         <GridContainer>
           <div className="center-div">
-            <Text className="">{props.text}</Text>
+            <Text className="">{renderText()}</Text>
           </div>
-          <Button
+          {/* <Button
             display="inline-block"
             boxShadow
             onclick={props.onclick}
-            hoverColor="white"
-            hoverBgColor="black"
-            bgColor="#F7e700"
+            // hoverColor=""
+            // hoverBgColor="black"
+            bgColor="#0f1a2e"
             borderStyle="none"
             padding="0.5rem 0.5rem"
             borderRadius="2rem"
+            color="white"
+            className="w-fit"
           >
-            {props.cta ? props.cta : "Start Planning"}
-          </Button>
+            <div className="flex items-center gap-2 w-[4rem]">
+              {props.cta ? props.cta : "Start Planning"}{" "}
+              <svg
+                viewBox="0 0 12 12"
+                height="14"
+                width="14"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M2 10L10 2M10 2H4M10 2V8"></path>
+              </svg>
+            </div>
+          </Button> */}
+           <div className="flex justify-center">
+              <ChatWithKairaCta
+                onClick={props.onclick}
+                label="Plan with Kaira"
+              />
+            </div>
         </GridContainer>
       </Container>
     );

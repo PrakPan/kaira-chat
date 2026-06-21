@@ -7,6 +7,7 @@ import media from "./media";
 import NotificationPopup from "./ui/NotificationPopup";
 import { changeUserLocation } from "../store/actions/userLocation";
 import Cookies from "js-cookie";
+import { bootstrapUserLocation } from "../services/userLocationBootstrap";
 import NavigationMenu from "./revamp/home/NavigationMenu";
 import TailoredFormMobileModal from "./modals/OldFormTailoredFomrMobile";
 import { useRouter } from "next/router";
@@ -28,34 +29,7 @@ const Layout = React.memo((props) => {
     }, [router.isReady, router.asPath]);
 
   useLayoutEffect(() => {
-    const userLocation = Cookies.get("userLocation");
-
-    if (!userLocation) getUserIp();
-    else {
-      props.changeUserLocation({ location: JSON.parse(userLocation) });
-    }
-
-    async function getUserIp() {
-      try {
-        const res = await axios.get("https://api.ipify.org?format=json");
-        const IpAddress = res.data.ip;
-        if (IpAddress) getUserLocation(IpAddress);
-      } catch (e) {}
-    }
-
-    async function getUserLocation(ip) {
-      try {
-        const res = await axios.get(
-          `https://mercury.tarzanway.com/api/v1/geos/search/user_location/?ip=${ip}`
-        );
-
-        const data = res.data;
-        if (res.data) {
-          Cookies.set("userLocation", JSON.stringify(data), { expires: 3 });
-          props.changeUserLocation({ location: data });
-        }
-      } catch (e) {}
-    }
+    bootstrapUserLocation((loc) => props.changeUserLocation({ location: loc }));
   }, []);
 
   useEffect(() => {

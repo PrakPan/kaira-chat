@@ -1674,6 +1674,7 @@ useEffect(() => {
       <Container>
         <NotesPopup
           notes={notes}
+          // notes={["Activities are being priced, please check back later for the final cost."," Transfers are being priced, please check back later for the final cost."," Hotels are being priced, please check back later for the final cost."," Itinerary is being priced, please check back later for the final cost."," Please check back later for the final cost."," Activities are being priced, please check back later for the final cost."," Transfers are being priced, please check back later for the final cost."," Hotels are being priced, please check back later for the final cost."," Itinerary is being priced, please check back later for the final cost."," Please check back later for the final cost."," Activities are being priced, please check back later for the final cost."," Transfers are being priced, please check back later for the final cost."," Hotels are being priced, please check back later for the final cost."," Itinerary is being priced, please check back later for the final cost."," Please check back later for the final cost."," Activities are being priced, please check back later for the final cost."," Transfers are being priced, please check back later for the final cost."," Hotels are being priced, please check back later for the final cost."," Itinerary is being priced, please check back later for the final cost."," Please check back later for the final cost."]}
           itineraryId={router.query.id}
           isLoggedIn={!!props.token}
           onClose={() => setShowNotesPopup(false)}
@@ -1848,7 +1849,7 @@ useEffect(() => {
             show={isOpen == true}
             mobileWidth="100%"
             backdrop
-            closeIcon={true}
+            closeIcon={false}
             onHide={() => dispatch(setCloneItineraryDrawer(false))}
             borderRadius={"12px"}
             animation={false}
@@ -1868,6 +1869,7 @@ useEffect(() => {
           <BottomModal
             show={isOpen == true}
             onHide={() => dispatch(setCloneItineraryDrawer(false))}
+            closeIcon={false}
             width="100%"
             height="max-content"
             paddingX="16px"

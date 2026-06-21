@@ -47,12 +47,11 @@ const ViewToggle: React.FC<ViewToggleProps> = ({
 
   // Shared button style helper
   const activeStyle: React.CSSProperties = {
-    borderRadius: "10px",
-    border: "1px solid #FFFACD",
-    background: "#07213A",
-    boxShadow: "0 2px 8px rgba(195, 195, 195, 0.35)",
+    borderRadius: "12px",
+    background: "#0F1A2E",
+    boxShadow: "0 2px 8px rgba(11,18,32,0.18)",
   };
-  const inactiveStyle: React.CSSProperties = { borderRadius: "10px" };
+  const inactiveStyle: React.CSSProperties = { borderRadius: "12px" };
 
 const tabBtn = (
   label: string,
@@ -62,9 +61,9 @@ const tabBtn = (
 ) => (
   <button
     onClick={onClick}
-    className={`flex-1 px-4 py-2 text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
-      viewMode === mode ? "text-white" : "text-black"
-    }`}
+    className={`flex-1 px-3 py-1.5  transition-all duration-200 flex items-center justify-center gap-2 ${
+ viewMode === mode ? "text-white" : "text-[#000]"
+ }`}
     style={viewMode === mode ? activeStyle : inactiveStyle}
   >
     {icon}
@@ -73,21 +72,22 @@ const tabBtn = (
 );
 
   return (
-    <div className="px-4 py-3 flex-shrink-0 text-sm md:text-[14px]">
+    <div className="px-4 py-2 flex-shrink-0 ttw-type-body md:ttw-type-body">
       <div
-        className="flex gap-1"
+        className="flex gap-1 p-[3px]"
         style={{
-          borderRadius: "10px",
-          border: "1px solid #E5E5E5",
-          background: "#fff",
+          borderRadius: "12px",
+          border: "1px solid #ECECEC",
+          background: "#fff"
+          // "#F4F1E6",
         }}
       >
         {/* Map — always visible when the strip is shown */}
         <button
           onClick={() => setViewMode("map")}
-          className={`flex-1 px-4 py-2.5 text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
-            viewMode === "map" ? "text-white" : "text-black"
-          }`}
+          className={`flex-1 px-3 py-1.5 ttw-type-body-strong transition-all duration-200 flex items-center justify-center gap-2 ${
+ viewMode === "map" ? "text-white" : "text-[#000]"
+ }`}
           style={viewMode === "map" ? activeStyle : inactiveStyle}
         >
           <FiMap size={14} />

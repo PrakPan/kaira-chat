@@ -86,8 +86,9 @@ const GetInTouchContainer = styled.div`
 const SortContainer = styled.div`
   position: absolute;
   z-index: 20;
-  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-  background: white;
+  box-shadow: rgba(11, 18, 32, 0.12) 0px 3px 8px;
+  background: #fafaf5;
+  border: 1px solid #ececec;
   border-radius: 0.5rem;
   right: 0;
   padding: 0.5rem;
@@ -100,9 +101,9 @@ const SortItem = styled.div`
   font-weight: 500;
   cursor: pointer;
   :hover {
-    background: #f7f3f3;
+    background: #f4f3ec;
   }
-  color: #000;
+  color: #0b1220;
 `;
 
 const Booking = (props) => {
@@ -843,6 +844,7 @@ const Booking = (props) => {
           show={props?.showBookingModal}
           anchor={"right"}
           backdrop
+          bgColor="#fafaf5"
           style={{ zIndex: 1251 }}
           className=" "
           onHide={handleClose}
@@ -872,7 +874,7 @@ const Booking = (props) => {
               )}
             </div>
 
-            <div className="lg:w-[50vw] w-[100vw] py-2 top-0 bg-white z-[900] px-xl">
+            <div className="lg:w-[50vw] w-[100vw] py-2 top-0 bg-[#fafaf5] z-[900] px-xl">
               <SectionOne
                 booking_city={
                   currentBooking?.city_name || props?.selectedBooking?.city_name
@@ -939,7 +941,7 @@ const Booking = (props) => {
 
               {totalCount ? (
                 <div className="flex flex-row items-center justify-between mt-lg">
-                  <div className="font-400 text-sm-md leading-xl text-text-spacegrey">
+                  <div className="font-400 text-sm-md leading-xl text-[#445069]">
                     Showing {totalCount ? `${totalCount} ` : null}
                     stays in{" "}
                     {currentBooking?.city_name ||
@@ -976,7 +978,7 @@ const Booking = (props) => {
                             >
                               <path
                                 d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z"
-                                fill="black"
+                                fill="#0b1220"
                               />
                             </svg>
                           </IconButton>

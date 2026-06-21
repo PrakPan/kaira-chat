@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { IoIosArrowDown } from "react-icons/io";
+import { FaUserFriends } from "react-icons/fa";
 import ModalWithBackdrop from "../../ui/ModalWithBackdrop";
 import BottomModal from "../../ui/LowerModal";
 import useMediaQuery from "../../media";
@@ -141,6 +142,17 @@ export const Pax = ({ pax, setPax, combo, limit = null }) => {
 
   const total = adults + children + infants;
 
+  // "2 Adults, 1 Child, 1 Infant" — only the selected groups, proper
+  // singular/plural. Matches the route-transfer travellers trigger.
+  const summary =
+    [
+      adults > 0 ? `${adults} ${adults > 1 ? "Adults" : "Adult"}` : null,
+      children > 0 ? `${children} ${children > 1 ? "Children" : "Child"}` : null,
+      infants > 0 ? `${infants} ${infants > 1 ? "Infants" : "Infant"}` : null,
+    ]
+      .filter(Boolean)
+      .join(", ") || "Add travellers";
+
   // Shared travellers modal body — matches the bus / train / taxi selector
   // (see TransferPax.jsx). Reused on desktop (ModalWithBackdrop) and mobile
   // (BottomModal) so every Travellers field opens the same modal.
@@ -270,16 +282,15 @@ export const Pax = ({ pax, setPax, combo, limit = null }) => {
       {/* Trigger (unchanged) */}
       <div
         onClick={() => setShowPax((prev) => !prev)}
-        className="flex items-center w-full bg-[#F9F9F9] py-[0.7rem] px-4 rounded-lg justify-between"
+        className="flex items-center gap-1.5 w-full bg-[#f4f3ec] py-[0.7rem] px-4 rounded-lg"
       >
-        <div className="text-[10px] md:text-[14px] font-medium">Travellers</div>
-        <div className="text-[10px] md:text-[14px] font-medium">&nbsp;|&nbsp;</div>
-        <div className="flex items-center gap-1">
-          <div className="text-[10px] font-medium">
-            {`${adults + children + infants} Passenger`}
-          </div>
-          <IoIosArrowDown />
+        <FaUserFriends className="shrink-0 text-[#0b1220]" size={16} />
+        <div className="ttw-type-small md:ttw-type-body font-medium">Travellers</div>
+        <div className="ttw-type-small md:ttw-type-body font-medium">|</div>
+        <div className="ttw-type-small font-medium whitespace-nowrap">
+          {summary}
         </div>
+        <IoIosArrowDown className="shrink-0" />
       </div>
 
       {isDesktop ? (
