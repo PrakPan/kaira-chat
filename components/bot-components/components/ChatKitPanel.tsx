@@ -39,9 +39,9 @@ import setItineraryStatus from "../../../store/actions/itineraryStatus";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 import BotLoginModal from "./BotLoginModal";
 
-const CHATKIT_API_URL = "https://dev.chat.tarzanway.com/chatkit";
+const CHATKIT_API_URL = "https://chat.tarzanway.com/chatkit";
 const PAGINATION_SCROLL_THRESHOLD = 80;
-const CHATKIT = "https://dev.chat.tarzanway.com"
+const CHATKIT = "https://chat.tarzanway.com"
 
 export interface AttachmentFile {
   /** Temporary local ID (before server responds) or server-assigned ID */
@@ -1564,7 +1564,7 @@ const handleSessionCreated = useCallback((ourSessionId: string) => {
   // ── useChat ───────────────────────────────────────────────────────────────
   const apiUrl =
     botMode === "p2"
-      ? "https://dev.chat.tarzanway.com/chatkit/p2"
+      ? "https://chat.tarzanway.com/chatkit/p2"
       : CHATKIT_API_URL;
 
   // Stable onEffect wrapper — must be a named useCallback, never inline inside
@@ -1596,9 +1596,12 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
 
   // Quick replies stream in on the tail of the response, after the answer is
   // fully rendered but while the SSE connection is still open (so `isStreaming`
-  // is still true). Treat that window as "not streaming" for the composer so
-  // the user can keep typing and sending while the chips populate.
-  const isStreamingResponse = isStreaming && !quickReplyShimmer;
+  // is still true). Treat that whole window — the shimmer skeleton *and* the
+  // loaded chips — as "not streaming" for the composer so the user can keep
+  // typing and sending throughout the quick-reply phase, not just while the
+  // shimmer shows.
+  const inQuickReplyPhase = quickReplyShimmer || quickReplies.length > 0;
+  const isStreamingResponse = isStreaming && !inQuickReplyPhase;
 
   // Wrap sendWidgetAction so we can replay the same action after a post-login
   // retry (e.g. inject.context that triggered prompt_login while logged out).
