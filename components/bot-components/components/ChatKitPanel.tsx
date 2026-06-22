@@ -914,6 +914,12 @@ onTripMetaUpdate,
   // user in-page and hand the new id to the SAME build pipeline the bot uses
   // (skeleton → /{id}/status/ polling → load) via onItineraryCompletionStart/Done.
   const [showCloneModal, setShowCloneModal] = useState(false);
+  // Clone CTA visibility gate. The CTA is only meaningful on another user's
+  // *finalized* (P2) itinerary — it stays hidden in P1 / Draft stages. In P2 it
+  // is shown once per page load: the moment the viewer initiates a new chat turn
+  // it is suppressed for the rest of the session, so it doesn't re-appear below
+  // every subsequent message. A page refresh resets this back to false.
+  const [cloneCtaSuppressed, setCloneCtaSuppressed] = useState(false);
   const handleCloneSuccess = useCallback(
     (newId: string) => {
       if (!newId) return;
@@ -2842,6 +2848,9 @@ const handleShowLogin = useCallback(() => {
         ? URL.createObjectURL(a.file)
         : undefined,
     }));
+    // A genuine new chat turn → suppress the clone CTA for the rest of this
+    // page session (it only shows once per refresh).
+    setCloneCtaSuppressed(true);
     sendMessage(
       input.trim(),
       attachmentIds.length > 0 ? attachmentIds : undefined,
@@ -2861,6 +2870,9 @@ const handleShowLogin = useCallback(() => {
         setShowLoginModal(true);
         return;
       }
+      // A genuine new chat turn → suppress the clone CTA for the rest of this
+      // page session (it only shows once per refresh).
+      setCloneCtaSuppressed(true);
       sendMessage(reply.value ?? reply.label);
     },
     [isStreaming, sendMessage, isItineraryCompleting, isLoggedIn],
@@ -3472,8 +3484,15 @@ const handleShowLogin = useCallback(() => {
 
             {/* Steal / clone CTA — pinned below the last message when the viewer
                 is looking at someone else's itinerary. Renders nothing for the
-                owner or in a brand-new chat. Reactive to login/logout. */}
-            {messages.length > 0 && !isStreaming && (
+                owner or in a brand-new chat. Reactive to login/logout.
+                Only shown on a finalized (P2) itinerary — hidden while the trip
+                is still in P1 or Draft — and only once per page load: once the
+                viewer starts a new chat turn it stays hidden until refresh. */}
+            {messages.length > 0 &&
+              !isStreaming &&
+              botMode === "p2" &&
+              itinerary?.status !== "Draft" &&
+              !cloneCtaSuppressed && (
               <ItineraryCloneCta
                 onRequestLogin={() => setShowLoginModal(true)}
                 onCreateVersion={() => setShowCloneModal(true)}
