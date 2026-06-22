@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useRouter } from "next/router";
 import FullScreenGallery from "../../components/fullscreengallery/Index";
 import NewMenu from "../newcityplanner/Menu";
 import validateTextSize from "../../services/textSizeValidator";
@@ -16,6 +17,12 @@ const Experience = (props) => {
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [galleryimages, setGalleryImages] = useState([]);
   const [showTailoredModal, setShowTailoredModal] = useState(false);
+  const router = useRouter();
+
+  // Chat with Kaira CTA → navigate the user to the /chat page.
+  const handleChatWithKaira = () => {
+    router.push("/chat");
+  };
 
   const closeGalleryHandler = () => {
     let images = [];
@@ -203,7 +210,10 @@ const Experience = (props) => {
             Tell Kaira your dates and vibe. She'll have a real plan back in
             under 2 minutes.
           </p>
-          <ChatWithKairaCta onClick={() => setShowTailoredModal(true)} />
+          <ChatWithKairaCta
+            onClick={handleChatWithKaira}
+            // onClick={() => setShowTailoredModal(true)}
+          />
           <div className={styles.finalCtaTrust}>
             No commitment · free to plan · pay only for what you pick.
           </div>

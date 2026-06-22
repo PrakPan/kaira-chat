@@ -45,6 +45,7 @@ import { useAnalyticsSession } from "../../hooks/useAnalyticsSession";
 import Image from "next/image";
 import RoutePreparationLoader from "./RoutePreparationLoader";
 import BotLoginModal from "../bot-components/components/BotLoginModal";
+import { FaX } from "react-icons/fa6";
 
 {
   /* <Login/> to see this itinerary's cost */
@@ -870,7 +871,16 @@ const Enquiry = (props) => {
       <div className="container">
         <div className="py-2xl">
           <div className="text-md-lg font-600 leading-xl-sm mb-md">
+            <div className="flex justify-between">
+            <span>
             Plan Your Trip
+            </span>
+            <FaX className="cursor-pointer" onClick={() => {
+                    if (props?.onHide) {
+                      props.onHide();
+                    } else router.push("/");
+                  }}/>
+            </div>
           </div>
           <StepsProgress
             slideIndex={slideIndex}
