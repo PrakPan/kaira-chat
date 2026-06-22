@@ -251,7 +251,8 @@ const NewFooter = () => {
         <Grid>
           <Brand>
             <div className="logo-line">
-              <div className="logo-mark">t</div>
+              {/* <div className="logo-mark">t</div> */}
+              <img src="https://d31aoa0ehgvjdi.cloudfront.net/media/website/logoyellow.png" alt="The Tarzan Way" width={36} height={36} />
               <div className="brand-word">
                 <span className="name">the tarzanway</span>
                 <span className="tag">by Kaira · est. 2018</span>
@@ -267,7 +268,7 @@ const NewFooter = () => {
                 onClick={() => (window.location.href = urls.WHATSAPP)}
               >
                 <div className="flex gap-2 items-center">
-                <RiWhatsappFill size={16} />
+                <RiWhatsappFill size={16} color="green" />
                 +91 7827441548
                 </div>
               </div>
@@ -318,8 +319,7 @@ const NewFooter = () => {
 
         <Bottom>
           <span>
-            © {new Date().getFullYear()} thetarzanway · Planning trips since
-            2018, from India, for travellers everywhere.
+            © {new Date().getFullYear()} Tarzan Way Travels Private Limited · Made in India · Built for the world
           </span>
           <span>GST · Secure payments · ISO 27001</span>
         </Bottom>
