@@ -2874,6 +2874,9 @@ const handleShowLogin = useCallback(() => {
       // page session (it only shows once per refresh).
       setCloneCtaSuppressed(true);
       sendMessage(reply.value ?? reply.label);
+      // Clear any half-typed message so it can't be sent on the streaming tail
+      // of the turn this quick reply just kicked off.
+      setInput("");
     },
     [isStreaming, sendMessage, isItineraryCompleting, isLoggedIn],
   );
