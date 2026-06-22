@@ -926,7 +926,7 @@ const POIDetails = (props) => {
             <div className="flex flex-col gap-[12px] ttw-type-body">
               <div
                 id="reviews-poi"
-                className="flex !items-center justify-between"
+                className="flex flex-col gap-[4px]"
               >
                 <div className="ttw-type-h4 font-extrabold text-[#0b1220] tracking-[-0.01em]">Reviews</div>
 
@@ -951,23 +951,13 @@ const POIDetails = (props) => {
                   </div>
                 </Reviews>
               </div>
-              {isSmallScreen ? (
-                <>
-                  {props?.data?.reviews?.map((item) => (
-                    <div className="w-full">
-                      <ReviewPoi review={item} />
-                    </div>
-                  ))}
-                </>
-              ) : (
-                <ScrollContainer>
-                  {props?.data?.reviews?.map((item) => (
-                    <div className="w-[289px]">
-                      <ReviewPoi review={item} />
-                    </div>
-                  ))}
-                </ScrollContainer>
-              )}
+              <div className="flex flex-wrap gap-[21px]">
+                {props?.data?.reviews?.map((item) => (
+                  <div className="w-full sm:w-[289px]">
+                    <ReviewPoi review={item} />
+                  </div>
+                ))}
+              </div>
             </div>
           )}
           {props.data?.tips && props.data?.tips.length > 0 ? (

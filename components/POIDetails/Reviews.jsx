@@ -1,10 +1,14 @@
 import React, { useState } from "react";
 import GoogleImageLoader from "../drawers/poiDetails/GoogleImageLoader";
 
-const ReviewPoi = ({ review }) => {
+const ReviewPoi = ({ review, fullWidth = false }) => {
   const [viewMore, setViewMore] = useState(false);
   return (
-    <div className="w-full sm:w-[289px] sm:h-[208px] border rounded-[10px] p-[12px]">
+    <div
+      className={`border rounded-[10px] p-[12px] ${
+        fullWidth ? "w-full" : "w-full sm:w-[289px] sm:h-[208px]"
+      }`}
+    >
       <div className="w-[39px]"><GoogleImageLoader
         url={review?.profile_photo_url}
         width={"39px"}

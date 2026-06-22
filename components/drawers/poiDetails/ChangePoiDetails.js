@@ -619,7 +619,7 @@ export default function ChangePoiDetails(props) {
         )}
         {props?.data?.reviews && (
           <div className="flex flex-col gap-[12px]">
-            <div id="reviews-poi" className="flex justify-between">
+            <div id="reviews-poi" className="flex flex-col gap-[4px]">
               <Heading>Reviews</Heading>
 
               <Reviews>
@@ -643,23 +643,13 @@ export default function ChangePoiDetails(props) {
                 </div>
               </Reviews>
             </div>
-            {isSmallScreen ? (
-              <>
-                {props?.data?.reviews?.map((item) => (
-                  <div className="w-[289px]">
-                    <ReviewPoi review={item} />
-                  </div>
-                ))}
-              </>
-            ) : (
-              <ScrollContainer>
-                {props?.data?.reviews?.map((item) => (
-                  <div className="w-[289px]">
-                    <ReviewPoi review={item} />
-                  </div>
-                ))}
-              </ScrollContainer>
-            )}
+            <div className="flex flex-wrap gap-[21px]">
+              {props?.data?.reviews?.map((item) => (
+                <div className="w-full sm:w-[289px]">
+                  <ReviewPoi review={item} />
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
