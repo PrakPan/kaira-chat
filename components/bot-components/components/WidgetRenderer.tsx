@@ -468,6 +468,14 @@ function findNodesByType(node: WidgetNode, type: string): WidgetNode[] {
 // apart from descriptions / titles.
 const PRICE_TEXT_RE = /^\s*(?:[₹$€£]|[A-Z]{3})?\s*[\d][\d,]*(?:\.\d+)?\s*$/;
 
+// Fallback hero shown on hotel cards when the server sends no image, or when the
+// supplied image URL fails to load (broken/expired CDN link). Keeps the card
+// layout intact instead of collapsing the image column. Uses a neutral hotel
+// exterior/lobby (no pool, no specific amenity) so it never contradicts what a
+// given property actually offers.
+const HOTEL_PLACEHOLDER_IMAGE =
+  "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=600&q=80";
+
 // Reads the itinerary currency held on Cart (aligned with booking), falling
 // back to the global currency slice. Returns the matching glyph so every card
 // can show a uniform symbol regardless of what the server embedded in the
@@ -2124,17 +2132,22 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
           )}
         </div>
 
-        {imgSrc && (
-          <div className="w-full sm:w-[140px] shrink-0 self-start">
-            <div className="w-full h-40 sm:h-[110px] rounded-xl overflow-hidden">
-              <img
-                src={imgSrc}
-                alt={imgAlt}
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              />
-            </div>
+        <div className="w-full sm:w-[140px] shrink-0 self-start">
+          <div className="w-full h-40 sm:h-[110px] rounded-xl overflow-hidden">
+            <img
+              src={imgSrc || HOTEL_PLACEHOLDER_IMAGE}
+              alt={imgAlt || name || "Hotel"}
+              loading="lazy"
+              onError={(e) => {
+                const el = e.currentTarget;
+                if (el.src !== HOTEL_PLACEHOLDER_IMAGE) {
+                  el.src = HOTEL_PLACEHOLDER_IMAGE;
+                }
+              }}
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
           </div>
-        )}
+        </div>
       </div>
 
       {/* Footer row — price on the left, primary CTA on the right. Wraps to

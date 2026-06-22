@@ -156,7 +156,7 @@ const MyTripsSection = ({ apiItineraries, className = "" }) => {
                 includes={pkg.includes}
                 price={pkg.price}
                 ctaLabel="Open in planner"
-                onClick={() => router.push(`/trips/${pkg.slug}`)}
+                onClick={() => router.push(`/chat/${trip.id}`)}
               />
             );
           })}

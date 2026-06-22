@@ -54,6 +54,7 @@ const CloneItinerary = ({
 }) => {
   const dispatch = useDispatch();
   const itinerary = useSelector((state) => state.Itinerary);
+  const isDomestic = itinerary?.destination_type === "Domestic";
   const isDesktop = useMediaQuery("(min-width:767px)");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -91,6 +92,8 @@ const CloneItinerary = ({
   const [addActivityTransfers, setAddActivityTransfers] = useState(
     itinerary?.add_transfers_and_activities ?? false
   );
+  const [addVisa, setAddVisa] = useState(itinerary?.visa ?? false);
+  const [addEsim, setAddEsim] = useState(itinerary?.esim ?? false);
 
   const [roomConfiguration, setRoomConfiguration] = useState(
     itinerary?.hotels_config?.room_configuration || []
@@ -144,6 +147,8 @@ const CloneItinerary = ({
       setAddHotels(itinerary?.add_hotels ?? isHotelsPresent);
       setAddFlights(itinerary?.add_flights ?? false);
       setAddActivityTransfers(itinerary?.add_transfers_and_activities ?? false);
+      setAddVisa(itinerary?.visa ?? false);
+      setAddEsim(itinerary?.esim ?? false);
       setRoomConfiguration(itinerary?.hotels_config?.room_configuration || []);
       setNumberOfAdults(itinerary?.number_of_adults || 1);
       setNumberOfChildren(itinerary?.number_of_children || 0);
@@ -240,6 +245,8 @@ const CloneItinerary = ({
       add_hotels: addHotels,
       add_flights: addFlights,
       add_transfers_and_activities: addActivityTransfers,
+      visa: isDomestic ? false : addVisa,
+      esim: isDomestic ? false : addEsim,
       room_configuration: roomConfiguration,
       // experience_filters: selectedPreferences,
     };
@@ -308,6 +315,12 @@ const CloneItinerary = ({
     },
     { id: "add-flights", label: "Flights", checked: addFlights, set: setAddFlights },
     { id: "add-hotels", label: "Hotels", checked: addHotels, set: setAddHotels },
+    ...(isDomestic
+      ? []
+      : [
+          { id: "add-visa", label: "Visa", checked: addVisa, set: setAddVisa },
+          { id: "add-esim", label: "eSIM", checked: addEsim, set: setAddEsim },
+        ]),
   ];
 
   return (
@@ -332,33 +345,56 @@ const CloneItinerary = ({
       />
 
       {/* header */}
-      <div style={{ flexShrink: 0, padding: "20px 20px 12px" }}>
-        <div
-          style={{
-            fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-            fontSize: isDesktop ? 28 : 24,
-            fontWeight: 500,
-            lineHeight: 1.1,
-            letterSpacing: "-0.01em",
-            color: "#0B1220",
-          }}
-        >
-          Craft a{" "}
-          <em
+      <div
+        style={{ flexShrink: 0, padding: "20px 20px 12px" }}
+        className="flex items-start justify-between gap-3"
+      >
+        <div>
+          <div
             style={{
-              fontFamily: "'Instrument Serif', 'Times New Roman', serif",
-              fontStyle: "italic",
-              fontWeight: 400,
-              letterSpacing: "-0.015em",
+              fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+              fontSize: isDesktop ? 28 : 24,
+              fontWeight: 500,
+              lineHeight: 1.1,
+              letterSpacing: "-0.01em",
+              color: "#0B1220",
             }}
           >
-            similar
-          </em>{" "}
-          trip
+            Craft a{" "}
+            <em
+              style={{
+                fontFamily: "'Instrument Serif', 'Times New Roman', serif",
+                fontStyle: "italic",
+                fontWeight: 400,
+                letterSpacing: "-0.015em",
+              }}
+            >
+              similar
+            </em>{" "}
+            trip
+          </div>
+          <p style={{ fontSize: 13, color: "#5C5A55", marginTop: 4 }}>
+            Tweak the start, dates and travellers — I'll build your own editable copy.
+          </p>
         </div>
-        <p style={{ fontSize: 13, color: "#5C5A55", marginTop: 4 }}>
-          Tweak the start, dates and travellers — I'll build your own editable copy.
-        </p>
+
+        <button
+          onClick={handleCancel}
+          aria-label="Close"
+          className="flex-shrink-0 grid place-items-center transition-colors"
+          style={{
+            width: 32,
+            height: 32,
+            borderRadius: 10,
+            border: "1px solid #E6E1D2",
+            background: "#FFFFFF",
+            color: "#5C5A55",
+          }}
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
       </div>
 
       {/* scrollable body */}
@@ -367,10 +403,10 @@ const CloneItinerary = ({
           flex: 1,
           minHeight: 0,
           overflowY: "auto",
-          padding: "8px 20px 20px",
+          padding: "12px 20px 20px",
           display: "flex",
           flexDirection: "column",
-          gap: 24,
+          gap: 16,
         }}
       >
         <div className="flex flex-col gap-[6px]">

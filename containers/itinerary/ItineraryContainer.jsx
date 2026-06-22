@@ -1849,7 +1849,7 @@ useEffect(() => {
             show={isOpen == true}
             mobileWidth="100%"
             backdrop
-            closeIcon={true}
+            closeIcon={false}
             onHide={() => dispatch(setCloneItineraryDrawer(false))}
             borderRadius={"12px"}
             animation={false}
@@ -1869,6 +1869,7 @@ useEffect(() => {
           <BottomModal
             show={isOpen == true}
             onHide={() => dispatch(setCloneItineraryDrawer(false))}
+            closeIcon={false}
             width="100%"
             height="max-content"
             paddingX="16px"

@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, Fragment } from "react";
 import { connect, useSelector } from "react-redux";
 
 import ItineraryCity from "../../components/itinerary/itineraryCity";
@@ -80,11 +80,22 @@ const DaybyDay = ({
   // visible UI is the "+ Add Taxi Pickup/Drop" CTAs — confusing the user
   // into thinking the itinerary lost its day-by-day. Show a skeleton until
   // either cities arrive or the status resolves.
+  //
+  // NOTE: for an already-built P2 thread, restoreItineraryDirectly hits the
+  // status API which returns ITINERARY: "SUCCESS" and immediately dispatches
+  // itinerary_status = "SUCCESS" — but the detail API (which actually fills
+  // cities) hasn't returned yet. On a slow network that left a gap where the
+  // status was SUCCESS while cities were still empty, leaking the empty
+  // "Add Transfer" placeholder. Keep the skeleton through SUCCESS too, so it
+  // only disappears once cities actually arrive (hasNoCities → false) or the
+  // status terminally FAILs.
   const itineraryStatus = useSelector(
     (state) => state.ItineraryStatus?.itinerary_status,
   );
   const hasNoCities = !itineraryDaybyDay?.cities?.length;
-  const isItineraryLoading = hasNoCities && itineraryStatus === "PENDING";
+  const isItineraryLoading =
+    hasNoCities &&
+    (itineraryStatus === "PENDING" || itineraryStatus === "SUCCESS");
 
   let isPageWide = media("(min-width: 768px)");
   const cityRefs = useRef({});
@@ -149,40 +160,112 @@ const DaybyDay = ({
 
 
   if (isItineraryLoading) {
+    // Skeleton mirrors the real day-by-day layout (components/itinerary/
+    // itineraryCity): a stack of city cards — each with a header (city name +
+    // Activity/Taxi pills + hotel line) and a few day rows (date column +
+    // activity rows with a round icon and text lines) — joined by transfer
+    // connectors. Widths use % so it scales; spacing/sizes mirror the live
+    // card's md: / max-ph: responsive breakpoints so it lines up on mobile.
+    // `food` rows tint the icon + tags with the restaurant peach (#FFF4E8),
+    // matching getActivityStyle's restaurant fill so the skeleton previews
+    // dining cards alongside plain activities.
+    const SkelDayRow = ({ last, food }) => {
+      const icon = food ? "dbd-skel-food" : "dbd-skel";
+      const tag = food ? "dbd-skel-food" : "dbd-skel";
+      return (
+        <div
+          className={`flex ${last ? "" : "border-b border-[#E8E8E8]"}`}
+          aria-hidden="true"
+        >
+          <div className="w-20 md:w-24 px-2 md:px-4 py-3 md:py-4 border-r border-[#E8E8E8] flex items-start">
+            <div className="dbd-skel h-3 w-10 md:w-12" />
+          </div>
+          <div className="flex-1 px-2 md:px-4 py-3 md:py-4 flex items-start gap-3">
+            <div className={`${icon} w-8 h-8 md:w-10 md:h-10 rounded-full flex-shrink-0`} />
+            <div className="flex flex-col gap-2 flex-1 min-w-0">
+              <div className="dbd-skel h-3 w-3/4" />
+              <div className="flex gap-2">
+                <div className={`${tag} h-4 w-16 md:w-20 rounded-full`} />
+                <div className="dbd-skel h-4 w-12 md:w-14 rounded-full" />
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    const SkelCity = ({ days }) => (
+      <div className="rounded-lg flex flex-col w-full bg-white border-[0.5px] border-[#e5e5e5] overflow-hidden">
+        {/* Header — city name + Activity/Taxi pills, then hotel line */}
+        <div className="px-4 pt-4 pb-3 border-b border-[#EBEBEB] flex flex-col gap-2.5">
+          <div className="flex items-center justify-between gap-3">
+            <div className="dbd-skel h-4 md:h-[18px] w-[38%] max-w-[180px]" />
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <div className="dbd-skel h-7 w-[68px] md:w-[80px] rounded-[8px]" />
+              <div className="dbd-skel h-7 w-[56px] md:w-[64px] rounded-[8px]" />
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="dbd-skel h-3 w-[110px]" />
+            <div className="dbd-skel h-3 w-[70px]" />
+          </div>
+        </div>
+        {/* Day rows — every other row previews a restaurant (peach) card */}
+        {Array.from({ length: days }).map((_, i) => (
+          <SkelDayRow
+            key={`skel-day-${i}`}
+            last={i === days - 1}
+            food={i % 2 === 1}
+          />
+        ))}
+      </div>
+    );
+
+    // Connector between cards — the inter-city transfer pin + label.
+    const SkelConnector = () => (
+      <div className="flex items-center gap-3 py-1 pl-1" aria-hidden="true">
+        <div className="dbd-skel w-4 h-4 rounded-full flex-shrink-0" />
+        <div className="dbd-skel h-3 w-[45%] max-w-[220px]" />
+      </div>
+    );
+
+    const skeletonCities = [3, 2, 2];
+
     return (
       <div
         className={`flex flex-col gap-3 mt-4xl max-ph:mt-lg ${!isPageWide ? "" : "max-w-[51vw]"}`}
         aria-busy="true"
         aria-live="polite"
+        aria-label="Loading itinerary"
       >
         <style>{`
           @keyframes daybydaySkeletonShimmer {
             0%   { background-position: -400px 0; }
             100% { background-position: 400px 0; }
           }
-          .daybyday-skel {
-            background: linear-gradient(90deg, #e5e7eb 0%, #f3f4f6 50%, #e5e7eb 100%);
+          .dbd-skel {
+            background: linear-gradient(90deg, #e9eaee 0%, #f4f5f7 50%, #e9eaee 100%);
             background-size: 800px 100%;
             animation: daybydaySkeletonShimmer 1.4s linear infinite;
-            border-radius: 8px;
+            border-radius: 6px;
+          }
+          /* Restaurant (peach-soft) tint — mirrors getActivityStyle's #FFF4E8 */
+          .dbd-skel-food {
+            background: linear-gradient(90deg, #ffe9d4 0%, #fff6ec 50%, #ffe9d4 100%);
+            background-size: 800px 100%;
+            animation: daybydaySkeletonShimmer 1.4s linear infinite;
+            border-radius: 6px;
+          }
+          @media (prefers-reduced-motion: reduce) {
+            .dbd-skel, .dbd-skel-food { animation: none; }
           }
         `}</style>
-        <div className="flex flex-col gap-4 px-3 py-2">
-          {[0, 1, 2].map((i) => (
-            <div key={`skel-city-${i}`} className="flex flex-col gap-3">
-              <div className="flex items-center gap-3">
-                <div className="daybyday-skel" style={{ width: 28, height: 28, borderRadius: "50%" }} />
-                <div className="daybyday-skel" style={{ height: 16, width: "45%" }} />
-              </div>
-              <div className="flex flex-col gap-2 pl-10">
-                <div className="daybyday-skel" style={{ height: 12, width: "85%" }} />
-                <div className="daybyday-skel" style={{ height: 12, width: "70%" }} />
-                <div className="daybyday-skel" style={{ height: 12, width: "55%" }} />
-              </div>
-              <div className="daybyday-skel" style={{ height: 110, width: "100%" }} />
-            </div>
-          ))}
-        </div>
+        {skeletonCities.map((days, i) => (
+          <Fragment key={`skel-city-${i}`}>
+            <SkelCity days={days} />
+            {i < skeletonCities.length - 1 && <SkelConnector />}
+          </Fragment>
+        ))}
       </div>
     );
   }

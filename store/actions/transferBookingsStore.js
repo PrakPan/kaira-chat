@@ -19,80 +19,53 @@ export const updateTransferBookings = (
 ) => {
   return (dispatch, getState) => {
     const state = getState();
-    const updatedData = { ...state.TransferBookings?.transferBookings };
+    const source = state.TransferBookings?.transferBookings;
+    if (!source) return;
 
+    // Every id we need to remove: the deleted booking plus any explicit
+    // children passed in. The delete endpoint for a multicity combo is called
+    // with the PARENT id (e.g. a sightseeing taxi that belongs to a combo), and
+    // the child legs reference that parent via their `parent` field — not their
+    // own `id`. So a booking must be removed when EITHER its own id is targeted
+    // OR it belongs to a deleted parent. Matching on `parent` lets a single
+    // parent-id delete cascade to every leg without the caller enumerating them.
+    const idsToDelete = new Set([bookingIdToDelete, ...(childIds || [])]);
+    const shouldDelete = (booking) =>
+      idsToDelete.has(booking?.id) || idsToDelete.has(booking?.parent);
 
-    // Create a Set of all IDs to delete (parent + children)
-    if (childIds && childIds.length > 0) {
-      const idsToDelete = new Set([bookingIdToDelete, ...childIds]);
+    // Clone each category one level deep so we never mutate the live state
+    // (a shallow spread of the root still shares the nested category objects).
+    const updatedData = { ...source };
 
-      Object.keys(updatedData).forEach((category) => {
-        if (updatedData[category]) {
-          if (category === "intercity") {
-            // Handle intercity bookings
-            Object.keys(updatedData[category]).forEach((key) => {
-              const booking = updatedData[category][key];
+    Object.keys(updatedData).forEach((category) => {
+      const group = updatedData[category];
+      if (!group) return;
 
-              // Check if this booking's ID is in the set of IDs to delete
-              if (booking?.id && idsToDelete.has(booking.id)) {
-                // For multicity combo, delete the entire key
-                if (comboType === "multicity") {
-                  delete updatedData[category][key];
-                } else {
-                  // For regular bookings, set to empty object
-                  updatedData[category][key] = {};
-                }
-              }
-            });
-          } else if (category === "intracity" || category === "airport") {
-            // Handle intracity and airport bookings (arrays)
-            Object.keys(updatedData[category]).forEach((key) => {
-              if (Array.isArray(updatedData[category][key])) {
-                // Filter out bookings with IDs in the delete set
-                updatedData[category][key] = updatedData[category][key].filter(
-                  (booking) => !idsToDelete.has(booking?.id),
-                );
-              }
-            });
+      if (category === "intercity") {
+        const next = { ...group };
+        Object.keys(next).forEach((key) => {
+          // Keep the route key (origin_itinerary_city_id:destination_itinerary_city_id)
+          // so the leg slot stays in place — just empty out the booking.
+          if (shouldDelete(next[key])) {
+            next[key] = {};
           }
-        }
-      });
-
-      dispatch({
-        type: actionTypes.UPDATE_TRANSFER_BOOKINGS,
-        payload: updatedData,
-      });
-    } else {
-      Object.keys(updatedData).forEach((category) => {
-        if (updatedData[category]) {
-          if (category === "intercity") {
-            Object.keys(updatedData[category]).forEach((key) => {
-              if (updatedData[category][key]?.id === bookingIdToDelete) {
-                updatedData[category][key] = {};
-              }
-            });
-          } else if (category === "intracity" || category === "airport") {
-            Object.keys(updatedData[category]).forEach((key) => {
-              if (Array.isArray(updatedData[category][key])) {
-                updatedData[category][key] = updatedData[category][key].map(
-                  (booking) => {
-                    if (booking.id === bookingIdToDelete) {
-                      return [];
-                    }
-                    return booking;
-                  },
-                );
-              }
-            });
+        });
+        updatedData[category] = next;
+      } else if (category === "intracity" || category === "airport") {
+        const next = { ...group };
+        Object.keys(next).forEach((key) => {
+          if (Array.isArray(next[key])) {
+            next[key] = next[key].filter((booking) => !shouldDelete(booking));
           }
-        }
-      });
+        });
+        updatedData[category] = next;
+      }
+    });
 
-      dispatch({
-        type: actionTypes.UPDATE_TRANSFER_BOOKINGS,
-        payload: updatedData,
-      });
-    }
+    dispatch({
+      type: actionTypes.UPDATE_TRANSFER_BOOKINGS,
+      payload: updatedData,
+    });
   };
 };
 

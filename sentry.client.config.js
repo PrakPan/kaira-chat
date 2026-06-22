@@ -3,10 +3,10 @@ import { SENTRY_DSN, SENTRY_ENV, SENTRY_RELEASE } from "./services/constants";
 
 Sentry.init({
   
-  // dsn: SENTRY_DSN,
+  dsn: SENTRY_DSN,
   // debug: true,
-  // release: "thetarzanway-frontend@" + SENTRY_RELEASE,
-  // environment: SENTRY_ENV,
+  release: "thetarzanway-frontend@" + SENTRY_RELEASE,
+  environment: SENTRY_ENV,
 
   // Replay may only be enabled for the client-side
   integrations: [
@@ -18,10 +18,10 @@ Sentry.init({
   // of transactions for tracing.
   // We recommend adjusting this value in production
   // tracesSampleRate: 1.0,
-  // debug: false,
+  debug: false,
 
   // No performance tracing
-  // tracesSampleRate: 0,
+  tracesSampleRate: 0,
 
   //  No session replay
 

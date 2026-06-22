@@ -9,10 +9,11 @@ import {
 import BotLoginModal from "../../bot-components/components/BotLoginModal";
 
 const SEED_PROMPTS = [
-  { emoji: "🇯🇵", label: "10-day Japan trip" },
-  { emoji: "💍", label: "Santorini or Amalfi" },
-  { emoji: "🏰", label: "Europe in summer" },
-  { emoji: "🌌", label: "Northern Lights" },
+  { emoji: "🇯🇵", label: "10 days Japan" },
+  { emoji: "💍", label: "Bali honeymoon" },
+  { emoji: "🏰", label: "Europe under a lakh" },
+  { emoji: "🚗", label: "New Zealand Road Trip" },
+  { emoji: "💸", label: "Destination under 1 lakh per person" },
   { emoji: "✨", label: "Surprise me" },
 ];
 
@@ -43,6 +44,9 @@ const HeadingContent = ({ title, subtitle }) => {
   const pendingActionRef = useRef(null);
   const isLoggedIn = !!reduxToken || hasLocalToken;
 
+  // Re-sync with localStorage whenever the redux token changes so that
+  // login/logout performed on this page (without a reload) is reflected
+  // immediately — otherwise a stale `true` keeps the chat input ungated.
   useEffect(() => {
     setHasLocalToken(
       !!(
@@ -51,7 +55,7 @@ const HeadingContent = ({ title, subtitle }) => {
         localStorage.getItem("access_token")
       )
     );
-  }, []);
+  }, [reduxToken]);
 
   // Run `action` if logged in, otherwise stash it and open the login modal.
   // The stashed action resumes automatically on successful login.
@@ -168,8 +172,7 @@ const HeadingContent = ({ title, subtitle }) => {
       <h1 className={styles.title}>
         {title || (
           <>
-            Your next trip is{" "}
-            <span className="ttwSerif">one conversation</span> away.
+            Plan your trip in <span className="ttwSerif">minutes.</span>
           </>
         )}
       </h1>
@@ -177,10 +180,9 @@ const HeadingContent = ({ title, subtitle }) => {
       <p className={styles.lede}>
         {subtitle || (
           <>
-            Tell Kaira your <b>vibe, budget, dates</b> — she hunts flights and
-            stays from across the web, then a{" "}
-            <span className="ttwSerif">local human</span> fine-tunes the plan.
-            You pay only for what you pick.
+            AI plans it, a <span className="ttwSerif">human expert</span> adds
+            the vibe. No markups. No package pressure.{" "}
+            <b>Pay only for what you book.</b>
           </>
         )}
       </p>

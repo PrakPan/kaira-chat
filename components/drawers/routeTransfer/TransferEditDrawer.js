@@ -293,6 +293,12 @@ const TransferEditDrawer = (props) => {
   const [airportSearchType, setAirportSearchType] = useState(null);
   const [airportSearchTrips, setAirportSearchTrips] = useState(null);
   const [airportSearchBookingId, setAirportSearchBookingId] = useState(null);
+  // Tracks which tabs have had an offline quote requested, so the "Quote
+  // Requested" state stays scoped to its own tab instead of leaking across the
+  // multicity / sightseeing / airport tabs that share one CTA position.
+  const [offlineQuoteRequestedTabs, setOfflineQuoteRequestedTabs] = useState(
+    {},
+  );
 
   const [showFlightModal, setShowFlightModal] = useState(false);
   const [showComboFlightModal, setShowComboFlightModal] = useState(false);
@@ -1395,7 +1401,15 @@ const TransferEditDrawer = (props) => {
                   (activeTab === "sightseeing" && sightseeingStartDate) ||
                   selectedBooking?.check_in ||
                   check_in ||
-                  null;
+                  // Airport pickup/drop has no booking/check_in in the empty
+                  // state, so fall back to the city's date instead of null.
+                  (activeTab === "airport"
+                    ? oCityData?.start_date ||
+                      dCityData?.start_date ||
+                      existingAirportPickup?.check_in ||
+                      existingAirportDrop?.check_in ||
+                      null
+                    : null);
                 const sourceName =
                   city ||
                   mercuryTransfer?.source?.city_name ||
@@ -1427,6 +1441,13 @@ const TransferEditDrawer = (props) => {
                       itinerary_id={ItineraryId || router?.query?.id}
                       type="taxi"
                       startDate={start_date}
+                      submitted={!!offlineQuoteRequestedTabs[activeTab]}
+                      onSubmitted={() =>
+                        setOfflineQuoteRequestedTabs((prev) => ({
+                          ...prev,
+                          [activeTab]: true,
+                        }))
+                      }
                       onEditDates={() => {
                         if (typeof actualClose === "function") {
                           actualClose();

@@ -9,6 +9,7 @@ import { ChatKitPanel } from "./components/ChatKitPanel";
 import MapView from "./components/MapView";
 import ViewToggle from "./components/ViewToggle";
 import Sidebar from "./components/Sidebar";
+import { getUserAvatarColor, getUserInitial } from "./utils/avatarColor";
 import StartScreen, { type TravellerStory } from "./components/StartScreen";
 import type { ThemeConfig } from "./types/themeConfig";
 import ChatWelcomeScreen from "./components/ChatWelcomeScreen";
@@ -496,9 +497,16 @@ export default function BotApp({
   const [showSettings, setShowSettings] = useState(false);
   const [showSettingsLoginPrompt, setShowSettingsLoginPrompt] = useState(false);
   const [showApiLoginPrompt, setShowApiLoginPrompt] = useState(false);
+  // Login gate for the start-screen / welcome surfaces (prompt cards, theme
+  // prompts, traveller stories). Holds the action to replay after login.
+  const [showPromptLoginPrompt, setShowPromptLoginPrompt] = useState(false);
+  const pendingPromptActionRef = useRef<(() => void) | null>(null);
   const [isHotelsPresent, setIsHotelsPresent] = useState(false);
 
   const authToken = useSelector((state: any) => state.auth?.token);
+  const isLoggedIn = !!(
+    authToken ?? (typeof window !== "undefined" ? getAuthToken() : null)
+  );
 
   // Open the login modal whenever any axios call returns a 401. The
   // interceptor only flips the prompt state — the original error still
@@ -2416,7 +2424,7 @@ export default function BotApp({
     }
   };
 
-  const handlePromptSelect = (prompt: string, attachmentIds?: string[]) => {
+  const executePromptSelect = (prompt: string, attachmentIds?: string[]) => {
     // chatSendMessageRef is set by both desktop and mobile ChatKitPanel onSendReady
     const sendFn = sendMessageRef.current ?? chatSendMessageRef.current;
     if (isChatActive && sendFn) {
@@ -2475,13 +2483,35 @@ export default function BotApp({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.isReady]);
 
+  const handlePromptSelect = (prompt: string, attachmentIds?: string[]) => {
+    // Gate the start-screen / theme prompt cards behind login.
+    if (!isLoggedIn) {
+      pendingPromptActionRef.current = () =>
+        executePromptSelect(prompt, attachmentIds);
+      setShowPromptLoginPrompt(true);
+      return;
+    }
+    executePromptSelect(prompt, attachmentIds);
+  };
+
   // Open the traveller-story detail view inside ChatKitPanel without pushing a
   // message to the bot. CTAs on that detail view will call handlePromptSelect
   // which routes through the /chatkit p1 API.
-  const handleTravellerStorySelect = useCallback((story: TravellerStory) => {
-    setActiveTravellerStory(story);
-    setIsChatActive(true);
-  }, []);
+  const handleTravellerStorySelect = useCallback(
+    (story: TravellerStory) => {
+      if (!isLoggedIn) {
+        pendingPromptActionRef.current = () => {
+          setActiveTravellerStory(story);
+          setIsChatActive(true);
+        };
+        setShowPromptLoginPrompt(true);
+        return;
+      }
+      setActiveTravellerStory(story);
+      setIsChatActive(true);
+    },
+    [isLoggedIn],
+  );
 
   const handleSendMessage = useCallback((message: string) => {
     if (sendMessageRef.current) sendMessageRef.current(message);
@@ -2914,7 +2944,9 @@ Start Location: ${details.startLocation}`;
               className="flex-1 overflow-y-auto"
               style={{ scrollbarWidth: "none" }}
             >
-              {showTailoredSkeleton && <ItineraryShimmer />}
+              {showTailoredSkeleton && (
+                <ItineraryShimmer cities={skeletonCities} />
+              )}
               <div
                 style={
                   showTailoredSkeleton ? { display: "none" } : undefined
@@ -3362,6 +3394,7 @@ Start Location: ${details.startLocation}`;
           <BottomModal
             show={true}
             onHide={() => setShowSettings(false)}
+            closeIcon={false}
             width="100%"
             height="max-content"
             paddingX="0px"
@@ -3377,7 +3410,7 @@ Start Location: ${details.startLocation}`;
             />
           </BottomModal>
         ) : (
-          <ModalWithBackdrop show={true} onHide={() => setShowSettings(false)}>
+          <ModalWithBackdrop show={true} onHide={() => setShowSettings(false)} closeIcon={false}>
             <Settings
               setShowSettings={setShowSettings}
               isHotelsPresent={isHotelsPresent}
@@ -3414,6 +3447,21 @@ Start Location: ${details.startLocation}`;
           message="Please login to continue"
           onSuccess={async () => {
             setShowApiLoginPrompt(false);
+          }}
+        />
+      )}
+
+      {showPromptLoginPrompt && !isLoggedIn && (
+        <BotLoginModal
+          show={showPromptLoginPrompt}
+          onhide={() => setShowPromptLoginPrompt(false)}
+          zIndex={3300}
+          message="Please login to continue"
+          onSuccess={async () => {
+            setShowPromptLoginPrompt(false);
+            const action = pendingPromptActionRef.current;
+            pendingPromptActionRef.current = null;
+            action?.();
           }}
         />
       )}
@@ -3781,6 +3829,10 @@ export const MobileHeaderMenu = React.memo(
     };
 
     const imgUrlEndPoint = "https://d31aoa0ehgvjdi.cloudfront.net/";
+    // Same default avatar the desktop sidebar falls back to. Shown when the
+    // user is logged out instead of the "T"/initials placeholder.
+    const defaultProfileImg =
+      imgUrlEndPoint + "media/icons/navigation/profile-user.png";
 
     const avatarSrc = token
       ? image && image !== "null" && image !== null
@@ -3788,7 +3840,14 @@ export const MobileHeaderMenu = React.memo(
         : localImg && localImg !== "null"
           ? imgUrlEndPoint + localImg
           : null
-      : null;
+      : defaultProfileImg;
+
+    // Logged in with no picture → colored letter avatar (matches desktop).
+    const showColorAvatar = !!token && !avatarSrc;
+    const [avatarColor, setAvatarColor] = useState<string | null>(null);
+    useEffect(() => {
+      setAvatarColor(showColorAvatar ? getUserAvatarColor(name) : null);
+    }, [showColorAvatar, name]);
     const initials = name
       ? name
           .trim()
@@ -3951,6 +4010,11 @@ export const MobileHeaderMenu = React.memo(
             <button
               onClick={() => setProfileOpen((v) => !v)}
               className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center border-2 border-gray-200 bg-gray-100"
+              style={
+                showColorAvatar && avatarColor
+                  ? { background: avatarColor, borderColor: avatarColor }
+                  : undefined
+              }
               aria-label="Profile"
             >
               {avatarSrc ? (
@@ -3960,6 +4024,10 @@ export const MobileHeaderMenu = React.memo(
                   alt={name || "Profile"}
                   className="w-full h-full object-cover"
                 />
+              ) : showColorAvatar ? (
+                <span className="ttw-type-small font-bold text-white select-none">
+                  {getUserInitial(name)}
+                </span>
               ) : (
                 <span className="ttw-type-small font-bold text-gray-600">
                   {initials}

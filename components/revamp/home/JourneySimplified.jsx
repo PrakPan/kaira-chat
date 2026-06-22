@@ -1,4 +1,10 @@
 import React from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper";
+import "swiper/css";
+import "swiper/css/navigation";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import styles from "./JourneySimplified.module.scss";
 import { getIndianPrice } from "../../../services/getIndianPrice";
 
@@ -35,38 +41,60 @@ const DEFAULT_STEPS = [
   {
     title: (
       <>
-        Tell Kaira your <span className={styles.serif}>vibe.</span>
+        Tell Kaira what&apos;s{" "}
+        <span className={styles.serif}>on your mind.</span>
       </>
     ),
-    body: "Write like you'd text a friend. Budget, dates, must-haves. Hindi, Hinglish, English — all fine.",
+    body: "Budget, dates, must-haves. Write like you'd text a friend — Hindi, Hinglish, English, all fine.",
     extra: (
       <ChatDemo
-        you={{ label: "You", text: "Kerala 6 days, backwaters + hills, ₹1.4L couple" }}
-        kaira={{ label: "Kaira", text: "On it. Checking 1,147 platforms now…" }}
+        you={{ label: "You", text: "Vietnam, 6 days, Hoi An + cruise, ₹1.4L couple" }}
+        kaira={{ label: "Kaira", text: "Here are a few options…" }}
       />
     ),
   },
   {
     title: (
       <>
-        A human <span className={styles.serif}>fine-tunes</span> it.
+        A travel expert <span className={styles.serif}>fine-tunes</span> it.
       </>
     ),
     body: "An on-ground curator adjusts what Kaira can't feel — monsoon timing, overrated spots, the quiet ghat at 6am.",
     extra: (
       <CuratorCard
-        name="Nimmi, 34 · Kochi"
-        blurb="Swaps Munnar → Thekkady this month. Knows the real cardamom road."
+        name="Nimmi · On-ground curator"
+        blurb="Swaps Hoi An → Da Nang this month. Knows the real cardamom road."
       />
     ),
   },
   {
     title: (
       <>
-        Pay for what you <span className={styles.serif}>pick.</span>
+        Change anything. <span className={styles.serif}>Unlimited</span>{" "}
+        revisions.
       </>
     ),
-    body: "Transparent pricing. No hidden markups. Book, swap, or cancel anything — from inside the chat.",
+    body: "Different hotels? An extra night? More activities? Keep tweaking until it feels right.",
+    extra: (
+      <ChatDemo
+        you={{
+          label: "You",
+          text: "Thinking of hostels this time to meet new people.",
+        }}
+        kaira={{
+          label: "Expert",
+          text: "Alright, updating. Lmk if you want to see more options.",
+        }}
+      />
+    ),
+  },
+  {
+    title: (
+      <>
+        Book only what you <span className={styles.serif}>pick.</span>
+      </>
+    ),
+    body: "Pay only for what you choose. Transparent pricing, no hidden markups. Book, swap, or cancel anything from inside the chat.",
     extra: (
       <ChatDemo
         you={{ label: "Final itinerary", text: "6 nights · flights + stays · ₹1,38,400" }}
@@ -107,6 +135,7 @@ const shortPrice = (n) => {
 // page's own cities. Any piece without data falls back to DEFAULT_STEPS.
 const buildDynamicSteps = ({ itinerary, cities = [], destinationName }) => {
   const next = DEFAULT_STEPS.map((s) => ({ ...s }));
+  const last = next.length - 1;
   const dest = destinationName || "";
   const itinCities = ((itinerary && itinerary.cities) || [])
     .map(cityName)
@@ -135,8 +164,8 @@ const buildDynamicSteps = ({ itinerary, cities = [], destinationName }) => {
       ),
     };
 
-    next[2] = {
-      ...next[2],
+    next[last] = {
+      ...next[last],
       extra: (
         <ChatDemo
           you={{
@@ -195,15 +224,44 @@ const JourneySimplified = ({ steps, itinerary, cities = [], destinationName }) =
           </div>
         </div>
 
-        <div className={styles.grid}>
-          {resolvedSteps.map((step, idx) => (
-            <div key={idx} className={styles.step}>
-              <div className={styles.num}>{idx + 1}</div>
-              <h3 className={styles.title}>{step.title}</h3>
-              <p className={styles.body}>{step.body}</p>
-              {step.extra}
-            </div>
-          ))}
+        <div className={styles.carouselWrap}>
+          <Swiper
+            modules={[Navigation]}
+            spaceBetween={20}
+            slidesPerView={1.1}
+            navigation={{
+              nextEl: ".journey-next",
+              prevEl: ".journey-prev",
+            }}
+            breakpoints={{
+              640: { slidesPerView: 2, spaceBetween: 20 },
+              1024: { slidesPerView: 3, spaceBetween: 20 },
+            }}
+          >
+            {resolvedSteps.map((step, idx) => (
+              <SwiperSlide key={idx} className={styles.slide}>
+                <div className={styles.step}>
+                  <div className={styles.num}>{idx + 1}</div>
+                  <h3 className={styles.title}>{step.title}</h3>
+                  <p className={styles.body}>{step.body}</p>
+                  {step.extra}
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+
+          <div
+            aria-label="Previous step"
+            className={`journey-prev ${styles.navBtn} ${styles.navPrev}`}
+          >
+            <FontAwesomeIcon icon={faChevronLeft} />
+          </div>
+          <div
+            aria-label="Next step"
+            className={`journey-next ${styles.navBtn} ${styles.navNext}`}
+          >
+            <FontAwesomeIcon icon={faChevronRight} />
+          </div>
         </div>
       </div>
     </section>

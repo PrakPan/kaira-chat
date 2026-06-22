@@ -202,6 +202,61 @@ const formatDayHeaderDate = (dateStr) => {
   return `${SHORT_WEEKDAYS[d.getDay()]} ${d.getDate()} ${SHORT_MONTHS[d.getMonth()]}`;
 };
 
+// ─── Helper: editorial day-summary heading ────────────────────────────────────
+// Renders the day_summary like the design ("Easing into Auckland"): the leading
+// words stay Inter (Medium 500, inherited from the heading), and the final word
+// is set in Instrument Serif italic via `ttw-type-serif`. Mirrors the split used
+// in OverviewEditorial.jsx.
+//
+// The API sometimes appends a trailing emoji/icon (e.g. "…Shibuya lights 🌸").
+// That icon must stay upright — it should never become the italic "last word"
+// (which also wrongly left the real words un-italicised). So we peel any
+// trailing pictographic icon off first, italicise the last *word*, then re-append
+// the icon in an upright span.
+const TRAILING_ICON_RE =
+  /(?:\s*[\p{Extended_Pictographic}\u{1F1E6}-\u{1F1FF}](?:️|‍[\p{Extended_Pictographic}\u{1F1E6}-\u{1F1FF}])*)+\s*$/u;
+
+const renderDaySummary = (text) => {
+  if (typeof text !== "string" || !text.trim()) return null;
+
+  let body = text.trim();
+  let icon = "";
+  const iconMatch = body.match(TRAILING_ICON_RE);
+  if (iconMatch) {
+    icon = iconMatch[0].trim();
+    body = body.slice(0, iconMatch.index).trim();
+  }
+
+  // Icon rendered upright (not inside `ttw-type-serif`, so no italics).
+  const iconNode = icon ? (
+    <span className="not-italic" style={{ fontStyle: "normal" }}>
+      {" "}
+      {icon}
+    </span>
+  ) : null;
+
+  const words = body ? body.split(/\s+/) : [];
+  if (words.length === 0) {
+    // Summary was icon-only — show just the upright icon.
+    return icon ? <>{icon}</> : null;
+  }
+  if (words.length === 1) {
+    return (
+      <>
+        <span className="ttw-type-serif">{words[0]}</span>
+        {iconNode}
+      </>
+    );
+  }
+  const last = words.pop();
+  return (
+    <>
+      {words.join(" ")} <span className="ttw-type-serif">{last}</span>
+      {iconNode}
+    </>
+  );
+};
+
 // ─── Recommendation SVG icon ──────────────────────────────────────────────────
 const RecommendationIcon = ({ size = 16 }) => (
   <svg
@@ -788,6 +843,17 @@ useEffect(() => {
               </span>
             )}
           </div>
+
+          {/* Mobile-only: day summary to the right of the day number + date.
+              On desktop the editorial heading in COL 2 carries this instead. */}
+          {props.day?.day_summary && (
+            <h3
+              className="ttw-type-h6 text-[#0B1220] m-0 leading-[1.1] break-words flex-1 min-w-0 self-center sm:hidden"
+              style={{ fontWeight: 500 }}
+            >
+              {renderDaySummary(props.day.day_summary)}
+            </h3>
+          )}
           {/* {props.day?.day_summary && (
             <p
               className="ttw-type-small text-[#6B7280] m-0 sm:mt-1 mt-0 leading-tight hidden sm:block"
@@ -806,6 +872,19 @@ useEffect(() => {
 
         {/* COL 2: Content */}
         <div className="flex-1 sm:pr-4 px-[0.3rem] md:px-4 sm:pt-6 md:pt-4 pb-4 sm:pb-6 min-w-0">
+
+          {/* Editorial day summary — baseline-aligned with the "01" day number.
+              The number is 36px serif, so on desktop the smaller heading is
+              nudged down to share the number's baseline. Only shown when the API
+              sends day_summary; otherwise the content reads as before. */}
+          {props.day?.day_summary && (
+            <h3
+              className="ttw-type-h4 text-[#0B1220] m-0 mb-3 sm:mt-[14px] leading-[0.9] break-words !pt-4 max-sm:hidden"
+              style={{ fontWeight: 500 }}
+            >
+              {renderDaySummary(props.day.day_summary)}
+            </h3>
+          )}
 
           {matchingIntracityBookings && matchingIntracityBookings.length > 0 && (
             <div className="flex flex-row gap-xs flex-wrap mb-3">
@@ -869,21 +948,28 @@ useEffect(() => {
               </div>
             )
           ) : props?.isLastDay ? (
-            <div className="flex items-center gap-2 md:ml-5 md:py-2">
-              <IoBagCheckOutline size={15} />
-              <span className="ttw-type-small">
-                Check out from {props?.city?.name}
-              </span>
-            </div>
-
-          ) : (
+            // day_summary (when present) is already shown as the editorial
+            // heading on desktop and beside the day/date on mobile. Only fall
+            // back to the checkout message when there's no day_summary.
+            !props?.day?.day_summary ? (
+              <div className="flex items-center gap-2 md:ml-5 md:py-2">
+                <IoBagCheckOutline size={15} />
+                <span className="ttw-type-small">
+                  Check out from {props?.city?.name}
+                </span>
+              </div>
+            ) : null
+          ) : !props?.day?.day_summary ? (
+            // day_summary (when present) already shows as the editorial heading
+            // above, so it stands on its own — only fall back to the empty-state
+            // "No activity added." line when there's no day_summary.
             <div className="flex items-center gap-2 md:ml-5 md:py-2">
               <MdOutlineDownhillSkiing size={15} className="text-[#9CA3AF]" />
               <span className="ttw-type-small text-[#6B7280]">
                 No activity added.
               </span>
             </div>
-          )}
+          ) : null}
         </div>
       </div>
 

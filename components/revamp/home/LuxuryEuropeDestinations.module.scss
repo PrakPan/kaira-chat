@@ -255,6 +255,38 @@
   svg { width: 13px; height: 13px; }
 }
 
+.seeMoreWrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 28px;
+}
+.seeMore {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: var(--ttw-ink-rail);
+  color: white;
+  border: 0;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  box-shadow: 0 8px 24px -8px rgba(11, 18, 32, 0.3);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px -8px rgba(11, 18, 32, 0.35);
+  }
+
+  svg {
+    width: 15px;
+    height: 15px;
+  }
+}
+
 .footnote {
   margin-top: 28px;
   font-size: 13px;

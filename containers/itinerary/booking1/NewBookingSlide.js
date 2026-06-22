@@ -43,6 +43,7 @@ import media from "../../../components/media";
 import SocialShareMobile from "./SocialShareMobile";
 import setItineraryStatus from "../../../store/actions/itineraryStatus";
 import {
+  axiosGetItinerary,
   axiosGetItineraryStatus,
   axiosUpdateItineraryDates,
 } from "../../../services/itinerary/daybyday/preview";
@@ -1325,6 +1326,11 @@ const Details = (props) => {
   const Itinerary = useSelector((state) => state.Itinerary);
   const Cart = useSelector((state) => state.Cart);
   const { currency } = useSelector((state) => state.currency);
+  // Source of truth for traveller details completeness. The backend's cart API
+  // accounts for pax changes (added/removed travellers) that the itinerary's
+  // `travellers` array alone can't reflect, so prefer this flag over inspecting
+  // the travellers list.
+  const travellerDetailsVerified = !!Cart?.traveler_details_verified;
   const [selectedPaymentOption, setSelectedPaymentOption] = useState("full");
 
   const [selectedOption, setSelectedOption] = useState("full");
@@ -1851,6 +1857,25 @@ const Details = (props) => {
     } catch (error) {}
   };
 
+  // Refetch the itinerary detail (which carries the `travellers` array) and
+  // push it into Redux so the proceed-to-pay gate and the verified badge
+  // reflect the freshly saved traveller details without a full reload.
+  const refreshItineraryDetails = async () => {
+    try {
+      const res = await axiosGetItinerary.get(`/${router.query.id}/`);
+      if (res?.data) {
+        dispatch(
+          setItinerary({
+            ...res.data,
+            status: res.data?.status || Itinerary?.status,
+          }),
+        );
+      }
+    } catch (err) {
+      console.error("[ERROR]: refreshItineraryDetails: ", err.message);
+    }
+  };
+
   const _fullPaymentHandler = async (id) => {
     setPaymentLoading(true);
 
@@ -1962,6 +1987,7 @@ const Details = (props) => {
       }
     } catch (error) {
       console.error("Error initiating lock payment:", error);
+
       dispatch(
         openNotification({
           text:
@@ -2048,6 +2074,20 @@ const Details = (props) => {
   };
 
   const handlePayNow = (label) => {
+    // Gate payment on traveller details. The itinerary detail API returns a
+    // `travellers` array (mirrored in Redux). When it's empty, traveller
+    // details haven't been added yet — open the drawer to collect them
+    // instead of hitting the payment API. Once filled, refreshItineraryDetails
+    // repopulates `travellers` and the user can proceed.
+    if (
+      (label === "full" || label === "lockin") &&
+      Array.isArray(Itinerary?.travellers) &&
+      Itinerary.travellers.length === 0
+    ) {
+      setTravellerDetailsOpen(true);
+      return;
+    }
+
     if (label === "_saleCreateHandler") {
       _saleCreateHandler(props.id);
     } else if (label === "lockin") {
@@ -2495,15 +2535,12 @@ const Details = (props) => {
                             <div className="text-md font-500 leading-lg">
                               {Itinerary?.customer_name || ""}
                             </div>
-                            {Array.isArray(props?.itinerary?.travellers) &&
-                              props.itinerary.travellers.some(
-                                (t) => t?.is_lead && t?.first_name,
-                              ) && (
-                                <div className="flex items-center gap-1 text-green-600 text-xs">
-                                  <FaCheckCircle />
-                                  <span>Traveller details verified</span>
-                                </div>
-                              )}
+                            {travellerDetailsVerified && (
+                              <div className="flex items-center gap-1 text-green-600 text-xs">
+                                <FaCheckCircle />
+                                <span>Traveller details verified</span>
+                              </div>
+                            )}
                           </div>
 
                           <div className="flex flex-row gap-xs text-sm font-400 leading-md flex-wrap">
@@ -2548,10 +2585,7 @@ const Details = (props) => {
                           className="text-xs text-blue underline cursor-pointer shrink-0 mt-1"
                           onClick={() => setTravellerDetailsOpen(true)}
                         >
-                          {Array.isArray(props?.itinerary?.travellers) &&
-                          props.itinerary.travellers.some(
-                            (t) => t?.is_lead && t?.first_name,
-                          )
+                          {travellerDetailsVerified
                             ? "Edit traveller details"
                             : "Add traveller details"}
                         </span>
@@ -3002,8 +3036,15 @@ const Details = (props) => {
           </div>
           <div className="px-lg py-lg">
             <AddTravellerDetails
-              itinerary={props?.itinerary}
-              onSuccess={() => setTravellerDetailsOpen(false)}
+              itinerary={Itinerary}
+              onSuccess={() => {
+                setTravellerDetailsOpen(false);
+                // Traveller details saved — refetch the itinerary detail so the
+                // `travellers` array in Redux is populated and the next
+                // proceed-to-pay call hits the payment API.
+                refreshItineraryDetails();
+                 props.getPaymentHandler?.();
+              }}
             />
           </div>
         </div>

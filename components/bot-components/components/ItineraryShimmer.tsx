@@ -1,22 +1,152 @@
 import React from "react";
 
-const ItineraryShimmer: React.FC = () => {
+interface ShimmerCity {
+  name?: string;
+  duration?: number;
+  nights?: number;
+}
+
+interface ItineraryShimmerProps {
+  /**
+   * Optional route data (from the tailored-form basic_route). When present we
+   * render the real city names + durations so the skeleton mirrors the final
+   * itinerary structure instead of showing anonymous grey bars.
+   */
+  cities?: ShimmerCity[];
+}
+
+const shimmer = "bg-gray-200 rounded animate-pulse";
+// Restaurant (peach-soft) tint — mirrors the restaurant tag fill so some
+// skeleton rows preview dining cards alongside plain activities.
+const foodShimmer = "bg-[#FCE3CC] rounded animate-pulse";
+
+// Greyed hotel icon — identical to HotelIcon in CitySection (opacity 0.3), so
+// the hotel row reads as the real accommodation line while loading.
+const HotelIconGhost = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 21 21" fill="none">
+    <g opacity="0.3">
+      <path d="M19.25 18.25V1.25C19.25 0.984784 19.1446 0.73043 18.9571 0.542893C18.7696 0.355357 18.5152 0.25 18.25 0.25H8.25C7.98478 0.25 7.73043 0.355357 7.54289 0.542893C7.35536 0.73043 7.25 0.984784 7.25 1.25V18.25H4.25V14.25H5.25C5.51522 14.25 5.76957 14.1446 5.95711 13.9571C6.14464 13.7696 6.25 13.5152 6.25 13.25V8.25C6.25 7.98478 6.14464 7.73043 5.95711 7.54289C5.76957 7.35536 5.51522 7.25 5.25 7.25H1.25C0.984784 7.25 0.73043 7.35536 0.542893 7.54289C0.355357 7.73043 0.25 7.98478 0.25 8.25V13.25C0.25 13.5152 0.355357 13.7696 0.542893 13.9571C0.73043 14.1446 0.984784 14.25 1.25 14.25H2.25V18.25H1.25C0.984784 18.25 0.73043 18.3554 0.542893 18.5429C0.355357 18.7304 0.25 18.9848 0.25 19.25C0.25 19.5152 0.355357 19.7696 0.542893 19.9571C0.73043 20.1446 0.984784 20.25 1.25 20.25H19.25C19.5152 20.25 19.7696 20.1446 19.9571 19.9571C20.1446 19.7696 20.25 19.5152 20.25 19.25C20.25 18.9848 20.1446 18.7304 19.9571 18.5429C19.7696 18.3554 19.5152 18.25 19.25 18.25ZM2.25 9.25H4.25V12.25H2.25V9.25ZM12.25 18.25V15.25C12.25 14.9848 12.3554 14.7304 12.5429 14.5429C12.7304 14.3554 12.9848 14.25 13.25 14.25C13.5152 14.25 13.7696 14.3554 13.9571 14.5429C14.1446 14.7304 14.25 14.9848 14.25 15.25V18.25H12.25ZM16.25 18.25V15.25C16.25 14.4544 15.9339 13.6913 15.3713 13.1287C14.8087 12.5661 14.0456 12.25 13.25 12.25C12.4544 12.25 11.6913 12.5661 11.1287 13.1287C10.5661 13.6913 10.25 14.4544 10.25 15.25V18.25H9.25V2.25H17.25V18.25H16.25Z" fill="black" stroke="white" strokeWidth="0.5"/>
+      <path d="M12.25 4.25H10.25V6.25H12.25V4.25Z" fill="black"/>
+      <path d="M16.25 4.25H14.25V6.25H16.25V4.25Z" fill="black"/>
+      <path d="M12.25 8.25H10.25V10.25H12.25V8.25Z" fill="black"/>
+      <path d="M16.25 8.25H14.25V10.25H16.25V8.25Z" fill="black"/>
+    </g>
+  </svg>
+);
+
+// One activity item — mirrors ActivityRow in CitySection (icon circle + name
+// line + tag pill + time line). `food` tints the icon + tag with the
+// restaurant peach.
+const ActivityItemShimmer: React.FC<{ wide?: boolean; food?: boolean }> = ({
+  wide,
+  food,
+}) => {
+  const accent = food ? foodShimmer : shimmer;
   return (
-    <div className="p-6">
-      <div className="animate-pulse">
-        <div className="h-8 bg-gray-200 rounded w-3/4 mb-4"></div>
-        <div className="h-4 bg-gray-200 rounded w-1/2 mb-8"></div>
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="mb-8">
-            <div className="h-12 bg-gray-200 rounded mb-4"></div>
-            <div className="space-y-3">
-              <div className="h-20 bg-gray-100 rounded"></div>
-              <div className="h-20 bg-gray-100 rounded"></div>
-              <div className="h-20 bg-gray-100 rounded"></div>
+    <div className="flex items-center gap-2 md:gap-3 min-w-0 md:flex-1">
+      {/* Icon circle — matches w-8 h-8 md:w-10 md:h-10 rounded-full */}
+      <div className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex-shrink-0 ${accent}`} />
+      <div className="flex flex-col items-start justify-center gap-1 min-w-0 flex-1">
+        {/* Name line — matches the h4 title */}
+        <div className="flex items-center gap-2 w-full">
+          <div className={`h-3 ${shimmer}`} style={{ width: wide ? "70%" : "55%" }} />
+        </div>
+        {/* Tag pill + time — matches the tag span + time span row */}
+        <div className="flex items-center gap-2">
+          <div className={`h-4 w-16 rounded-full ${accent}`} />
+          <div className={`h-3 w-10 ${shimmer}`} />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// One day-by-day row — mirrors DayRow in CitySection (date column + content
+// column with a list of activity items).
+const DayRowShimmer: React.FC<{ wide?: boolean; food?: boolean }> = ({
+  wide,
+  food,
+}) => {
+  return (
+    <div className="flex border-b border-[#E8E8E8]">
+      {/* Date column — matches DayRow w-20 md:w-24 px-2 md:px-4 py-3 md:py-4 */}
+      <div className="w-20 md:w-24 px-2 md:px-4 py-3 md:py-4 border-r border-[#E8E8E8] flex items-start">
+        <div className={`h-3 w-12 md:w-14 ${shimmer}`} />
+      </div>
+      {/* Content column — matches flex-1 px-2 md:px-4 py-2 md:py-3 */}
+      <div className="flex-1 px-2 md:px-4 py-2 md:py-3 min-w-0">
+        <div className="flex flex-col gap-2">
+          <ActivityItemShimmer wide={wide} food={food} />
+          <ActivityItemShimmer wide={!wide} food={!food} />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// One city card — mirrors CitySection (header bar + hotel row + day-by-day).
+const CityCardShimmer: React.FC<{ city?: ShimmerCity }> = ({ city }) => {
+  const duration = city?.duration ?? city?.nights ?? 2;
+  const dayCount = Math.min(Math.max(duration || 1, 1), 4);
+  const name = city?.name;
+
+  return (
+    <div className="border-1 rounded-t-lg flex flex-col w-full bg-[#FFF5EF]">
+      {/* City header — matches CitySection top bar */}
+      <div className="flex items-start justify-between p-3 rounded-t-lg w-full border-1 border-[#FBEAC7]">
+        <div className="space-y-1 font-inter w-full min-w-0">
+          {/* City name + duration — matches md:ttw-type-h4 font-semibold leading-0 */}
+          {name ? (
+            <div className="md:ttw-type-h4 font-semibold leading-0">
+              {name}
+              {duration ? ` - ${duration} ${duration > 1 ? "Nights" : "Night"}` : ""}
+            </div>
+          ) : (
+            <div className={`h-4 md:h-5 w-2/5 ${shimmer}`} />
+          )}
+          {/* Hotel row — matches HotelRow (icon + name) */}
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-row items-center">
+              <div className="flex gap-2 pr-[8px] items-center">
+                <HotelIconGhost />
+                <div className={`h-3 w-32 ${shimmer}`} />
+              </div>
             </div>
           </div>
-        ))}
+        </div>
       </div>
+
+      {/* Day-by-day — matches CitySection: bg-[#FBFBFB] > bg-white rounded-lg shadow-sm */}
+      <div className="bg-[#FBFBFB]">
+        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+          {Array.from({ length: dayCount }).map((_, i) => (
+            <DayRowShimmer key={i} wide={i % 2 === 0} food={i % 2 === 1} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ItineraryShimmer: React.FC<ItineraryShimmerProps> = ({ cities }) => {
+  const list =
+    Array.isArray(cities) && cities.length > 0
+      ? cities
+      : [undefined, undefined, undefined];
+
+  return (
+    // Mirrors ItineraryContent's scrollable content area (pb-4 + mb-6 title).
+    <div className="pb-4">
+      {/* Itinerary title — matches ItineraryContent h1 ttw-type-h3 */}
+      <div className="mb-6">
+        <div className={`h-6 md:h-7 w-3/4 ${shimmer}`} />
+      </div>
+
+      {list.map((city, i) => (
+        <div key={i} className="mb-1">
+          <CityCardShimmer city={city} />
+        </div>
+      ))}
     </div>
   );
 };

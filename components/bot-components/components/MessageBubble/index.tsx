@@ -104,7 +104,28 @@ const UserAvatar: React.FC = () => {
     typeof customerNameRaw === "string" && customerNameRaw.trim()
       ? customerNameRaw.trim()
       : null;
-  const viewingItinerary = !!itineraryCustomer;
+
+  // The logged-in user's own name — redux first, then the copy localStorage
+  // persists under "name". Used to detect when the open itinerary actually
+  // belongs to the viewer themselves.
+  const loggedInName = useMemo(() => {
+    const fromRedux =
+      typeof name === "string" && name.trim() ? name.trim() : null;
+    if (fromRedux) return fromRedux;
+    if (typeof window === "undefined") return null;
+    const stored = localStorage.getItem("name");
+    return stored && stored.trim() ? stored.trim() : null;
+  }, [name]);
+
+  // If the itinerary's customer_name matches the logged-in user, it's their own
+  // itinerary — show their own profile (photo/avatar) instead of a generic
+  // customer letter avatar.
+  const isOwnItinerary =
+    !!itineraryCustomer &&
+    !!loggedInName &&
+    itineraryCustomer.toLowerCase() === loggedInName.toLowerCase();
+
+  const viewingItinerary = !!itineraryCustomer && !isOwnItinerary;
 
   const [errored, setErrored] = useState(false);
 

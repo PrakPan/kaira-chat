@@ -9,11 +9,11 @@ import React from "react";
  *   - { node } → fully custom node.
  */
 const DEFAULT_ITEMS = [
-  { before: "Fine-tuned by", value: "23", after: "local humans" },
+  { value: "20+", after: "human experts to fine-tune your plan" },
   { value: "100+", after: "countries, real routes" },
-  { before: "Since", value: "2018" },
-  { value: "~2s", after: "avg reply" },
-  { value: "94%", after: "come back for second trip" },
+  { value: "94%", after: "come back for a second trip" },
+  { value: "2 secs", after: "avg reply time" },
+  { value: "4.9", after: "rated across 10,000+ trips" },
 ];
 
 const StripValue = ({ children }) => (

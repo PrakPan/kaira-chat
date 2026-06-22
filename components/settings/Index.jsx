@@ -22,6 +22,7 @@ const parseDateString = (dateString) => {
 const Settings = ({setShowSettings, isHotelsPresent, handleApply, maxAdults=false, maxRooms=false}) => {
   const dispatch = useDispatch();
   const itinerary = useSelector(state => state.Itinerary);
+  const isDomestic = itinerary?.destination_type === "Domestic";
   const isDesktop = useMediaQuery("(min-width:767px)");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -31,7 +32,9 @@ const Settings = ({setShowSettings, isHotelsPresent, handleApply, maxAdults=fals
   const [addActivityTransfers, setAddActivityTransfers] = useState(
     itinerary?.add_transfers_and_activities ?? false
   );
-  
+  const [addVisa, setAddVisa] = useState(itinerary?.visa ?? false);
+  const [addEsim, setAddEsim] = useState(itinerary?.esim ?? false);
+
   const [roomConfiguration, setRoomConfiguration] = useState(
     itinerary?.hotels_config?.room_configuration || []
   );
@@ -80,6 +83,8 @@ useEffect(() => {
     setAddHotels(itinerary?.add_hotels ?? isHotelsPresent);
     setAddFlights(itinerary?.add_flights ?? false);
     setAddActivityTransfers(itinerary?.add_transfers_and_activities ?? false);
+    setAddVisa(itinerary?.visa ?? false);
+    setAddEsim(itinerary?.esim ?? false);
     setRoomConfiguration(itinerary?.hotels_config?.room_configuration || []);
     setNumberOfAdults(itinerary?.number_of_adults || 1);
     setNumberOfChildren(itinerary?.number_of_children || 0);
@@ -163,6 +168,8 @@ const handleUpdate = () => {
     add_hotels: addHotels,
     add_flights: addFlights,
     add_transfers_and_activities: addActivityTransfers,
+    visa: isDomestic ? false : addVisa,
+    esim: isDomestic ? false : addEsim,
     room_configuration: roomConfiguration,
     // experience_filters: selectedPreferences,
   }
@@ -206,6 +213,12 @@ const handleUpdate = () => {
     },
     { id: "add-flights", label: "Flights", checked: addFlights, set: setAddFlights },
     { id: "add-hotels", label: "Hotels", checked: addHotels, set: setAddHotels },
+    ...(isDomestic
+      ? []
+      : [
+          { id: "add-visa", label: "Visa", checked: addVisa, set: setAddVisa },
+          { id: "add-esim", label: "eSIM", checked: addEsim, set: setAddEsim },
+        ]),
   ];
 
   return (
@@ -224,34 +237,54 @@ const handleUpdate = () => {
           background: "linear-gradient(90deg,#FFE600,#F2D700)",
         }}
       />
-      <div className={`flex flex-col gap-6 md:max-w-[537px] z-[9999] max-ph:px-2 pt-4 max-ph:py-2 pb-4 md:!px-4 md:!py-4`}>
-        <div>
-          <div
-            style={{
-              fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-              fontSize: isDesktop ? 28 : 24,
-              fontWeight: 500,
-              lineHeight: 1.1,
-              letterSpacing: "-0.01em",
-              color: "#0B1220",
-            }}
-          >
-            Update your{" "}
-            <em
+      <div className={`flex flex-col gap-4 md:max-w-[537px] z-[9999] px-3 py-4 md:!px-5 md:!py-5`}>
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <div
               style={{
-                fontFamily: "'Instrument Serif', 'Times New Roman', serif",
-                fontStyle: "italic",
-                fontWeight: 400,
-                letterSpacing: "-0.015em",
+                fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+                fontSize: isDesktop ? 28 : 24,
+                fontWeight: 500,
+                lineHeight: 1.1,
+                letterSpacing: "-0.01em",
+                color: "#0B1220",
               }}
             >
-              trip
-            </em>{" "}
-            preferences
+              Update your{" "}
+              <em
+                style={{
+                  fontFamily: "'Instrument Serif', 'Times New Roman', serif",
+                  fontStyle: "italic",
+                  fontWeight: 400,
+                  letterSpacing: "-0.015em",
+                }}
+              >
+                trip
+              </em>{" "}
+              preferences
+            </div>
+            <p style={{ fontSize: 13, color: "#5C5A55", marginTop: 4 }}>
+              Adjust dates, travellers and inclusions — I'll reprice it for you.
+            </p>
           </div>
-          <p style={{ fontSize: 13, color: "#5C5A55", marginTop: 4 }}>
-            Adjust dates, travellers and inclusions — I'll reprice it for you.
-          </p>
+
+          <button
+            onClick={handleCancel}
+            aria-label="Close"
+            className="flex-shrink-0 grid place-items-center transition-colors"
+            style={{
+              width: 32,
+              height: 32,
+              borderRadius: 10,
+              border: "1px solid #E6E1D2",
+              background: "#FFFFFF",
+              color: "#5C5A55",
+            }}
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
 
       <DateComponent

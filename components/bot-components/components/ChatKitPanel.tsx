@@ -2032,6 +2032,31 @@ case "shimmer_day_by_day": {
           setQuickReplies(parsed);
           break;
         }
+        case "update_pax": {
+          // Patch just the Traveller Type on the current trip. Server keys are
+          // no_of_*; forward only the values that are actually present so a
+          // partial update doesn't blank out the others.
+          const meta: {
+            number_of_adults?: number;
+            number_of_children?: number;
+            number_of_infants?: number;
+          } = {};
+          if (typeof data.no_of_adults === "number")
+            meta.number_of_adults = data.no_of_adults;
+          if (typeof data.no_of_children === "number")
+            meta.number_of_children = data.no_of_children;
+          if (typeof data.no_of_infants === "number")
+            meta.number_of_infants = data.no_of_infants;
+          onTripMetaUpdate?.(meta);
+          break;
+        }
+        case "update_travel_date": {
+          // Patch just the Date of Travelling on the current trip.
+          if (typeof data.travel_date === "string") {
+            onTripMetaUpdate?.({ travel_date: data.travel_date });
+          }
+          break;
+        }
         default:
           console.warn("[Effect] unhandled:", name);
       }
@@ -3641,6 +3666,7 @@ const handleShowLogin = useCallback(() => {
             <ModalWithBackdrop
               show={showCloneModal}
               onHide={() => setShowCloneModal(false)}
+              closeIcon={false}
               width="560px"
               borderRadius="20px"
               backdropStyle={{ zIndex: 3300 }}
@@ -3656,6 +3682,7 @@ const handleShowLogin = useCallback(() => {
             <BottomModal
               show={showCloneModal}
               onHide={() => setShowCloneModal(false)}
+              closeIcon={false}
               height="auto"
               borderRadius="20px 20px 0 0"
               isMobile

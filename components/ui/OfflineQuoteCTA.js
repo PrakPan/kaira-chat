@@ -35,10 +35,19 @@ const OfflineQuoteCTA = ({
   token,
   className,
   fullWidth = false,
+  // Optional controlled "submitted" state. When the same CTA position is
+  // reused across tabs (e.g. the taxi drawer's multicity/sightseeing/airport
+  // tabs), the parent tracks submission per tab and passes it in so a quote
+  // requested on one tab does NOT leak as "Quote Requested" onto another tab.
+  submitted: submittedProp,
+  onSubmitted,
 }) => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+  const [submittedInternal, setSubmittedInternal] = useState(false);
+  // Controlled when the parent passes `submitted`; otherwise self-managed.
+  const submitted =
+    submittedProp !== undefined ? submittedProp : submittedInternal;
   const pastDate = isDateInPast(startDate);
 
   const handleClick = async () => {
@@ -63,7 +72,8 @@ const OfflineQuoteCTA = ({
     setLoading(true);
     try {
       await requestOfflineQuote({ itinerary_id, type, payload, token });
-      setSubmitted(true);
+      setSubmittedInternal(true);
+      if (typeof onSubmitted === "function") onSubmitted();
       dispatch(
         openNotification({
           type: "success",

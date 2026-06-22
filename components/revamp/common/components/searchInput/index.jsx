@@ -48,7 +48,7 @@ const VIBES = [
 ];
 
 const CONTINENTS = [
-  { name: "Asia", emoji: "🌏", link: "/asia", meta: "23 countries" },
+  { name: "Asia", emoji: "🌏", link: "/asia" },
   { name: "Europe", emoji: "🏰", link: "/europe" },
   { name: "North America", emoji: "🗽", link: "/north_america" },
   { name: "South America", emoji: "🏔️", link: "/south_america" },
@@ -262,7 +262,7 @@ const SearchInput = (props) => {
                 ) : showEmpty ? (
                   <div className={styles.searchEmpty}>
                     Nothing matches '{q}'.{" "}
-                    <span className={styles.accent}>
+                    <span className={styles.accent} onClick={goToChat} style={{ cursor: "pointer" }}>
                       Just describe it to Kaira →
                     </span>
                   </div>
@@ -378,9 +378,9 @@ const SearchInput = (props) => {
 
             <div className={styles.searchCtaRow}>
               <div className={styles.searchCtaRowText}>
-                Don't see your trip?{" "}
-                <span className={styles.serif}>Just tell Kaira</span> — she
-                plans 100+ countries.
+                 Looking for something specific?{" "}
+                <span className={styles.serif}>Just tell Kaira</span> — she 
+                can plan any kind of trip in 100+ countries.
               </div>
               <button
                 type="button"

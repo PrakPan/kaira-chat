@@ -260,6 +260,7 @@ const Overview = (props) => {
         <BottomModal
           show={props?.showSettings == true}
           onHide={() => props?.setShowSettings(false)}
+          closeIcon={false}
           width="100%"
           height="max-content"
           paddingX="16px"

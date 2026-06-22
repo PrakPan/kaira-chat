@@ -5,6 +5,7 @@ import LeadPaxDetails from "./LeadPaxDetails";
 import OtherPassengers from "./OtherPassengers";
 import { MERCURY_HOST } from "../../../services/constants";
 import { openNotification } from "../../../store/actions/notification";
+import { updateItineraryTravellers } from "../../../store/actions/itinerary";
 
 const buildAdult = (isLead = false) => ({
   title: "Mr",
@@ -252,6 +253,9 @@ const AddTravellerDetails = ({ itinerary, onSuccess }) => {
           },
         }
       );
+      // Reflect the saved guests in the itinerary store so reopening the
+      // drawer re-hydrates from fresh state without an itinerary detail refetch.
+      dispatch(updateItineraryTravellers(guests));
       dispatch(
         openNotification({
           type: "success",

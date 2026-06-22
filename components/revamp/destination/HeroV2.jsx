@@ -68,6 +68,9 @@ const HeroV2 = ({
   const pendingActionRef = useRef(null);
   const isLoggedIn = !!reduxToken || hasLocalToken;
 
+  // Re-sync with localStorage whenever the redux token changes so that
+  // login/logout performed on this page (without a reload) is reflected
+  // immediately — otherwise a stale `true` keeps the chat input ungated.
   useEffect(() => {
     setHasLocalToken(
       !!(
@@ -76,7 +79,7 @@ const HeroV2 = ({
         localStorage.getItem("access_token")
       )
     );
-  }, []);
+  }, [reduxToken]);
 
   // Run `action` if logged in, otherwise stash it and open the login modal.
   // The stashed action resumes automatically on successful login.

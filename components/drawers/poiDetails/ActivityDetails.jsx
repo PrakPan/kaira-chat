@@ -353,6 +353,34 @@ const ActivityDetails = (props) => {
         props?.handleCloseDrawer(e);
         dispatch(setItinerary(newItinerary));
 
+        // Re-fetch the canonical itinerary after a successful delete — mirrors
+        // the POI/restaurant flow in POIDetails.js. The local splice/filter
+        // above gives instant feedback, but slab indices are renumbered by the
+        // backend after every delete, so pulling the fresh response keeps the
+        // indices used by the next delete correct.
+        try {
+          const refreshed = await axios.get(
+            `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/`,
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+              },
+            },
+          );
+          if (refreshed?.data) {
+            // Preserve the resolved status — the itinerary GET can lag and
+            // return a stale "Draft", which would hide finalized-only tabs.
+            const priorStatus = itinerary?.status;
+            const resolvedStatus =
+              priorStatus && priorStatus !== "Draft"
+                ? priorStatus
+                : refreshed.data?.status;
+            dispatch(setItinerary({ ...refreshed.data, status: resolvedStatus }));
+          }
+        } catch (refreshErr) {
+          console.log("Failed to refresh itinerary after delete:", refreshErr);
+        }
+
         dispatch(
           openNotification({
             type: "success",

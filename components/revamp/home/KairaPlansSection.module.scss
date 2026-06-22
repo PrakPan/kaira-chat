@@ -1,0 +1,61 @@
+/* "Let Kaira plan whatever's on your mind." — travel-style rail. */
+
+.railWrap {
+  position: relative;
+}
+
+/* extra vertical breathing room so the card (and its hover-lift) is never
+   clipped by Swiper's overflow:hidden. Also override the global
+   `.swiper { height: 300px }` so the 360px cards aren't cut off. */
+.railWrap :global(.swiper) {
+  height: auto;
+}
+.rail {
+  padding: 8px 4px 16px;
+}
+
+.slide {
+  height: auto;
+  display: flex;
+
+  /* CountryCardV2 root keeps its own 360px height; just let it fill width. */
+  > * {
+    width: 100%;
+  }
+}
+
+.navBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--ttw-ink-rail);
+  color: var(--ttw-yellow);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+
+  &:hover {
+    transform: translateY(-50%) scale(1.08);
+  }
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+.navPrev {
+  left: -6px;
+  @media (min-width: 1024px) {
+    left: -20px;
+  }
+}
+.navNext {
+  right: -6px;
+  @media (min-width: 1024px) {
+    right: -20px;
+  }
+}

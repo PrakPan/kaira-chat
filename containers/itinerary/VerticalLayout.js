@@ -1348,10 +1348,20 @@ useEffect(() => {
         setVisible(true);
       }
 
+      // `city` can be undefined for airport transfer deletes, which produced
+      // "undefined deleted successfully". Fall back to a Taxi Pickup/Drop label.
+      const deletedLabel =
+        city ||
+        (dataPassed?.is_airport_drop
+          ? "Taxi Drop"
+          : dataPassed?.is_airport_pickup
+          ? "Taxi Pickup"
+          : "Booking");
+
       dispatch(
         openNotification({
           type: "success",
-          text: `${city} deleted successfully`,
+          text: `${deletedLabel} deleted successfully`,
           heading: "Success!",
         })
       );
