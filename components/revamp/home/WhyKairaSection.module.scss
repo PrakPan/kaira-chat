@@ -1,0 +1,136 @@
+/* "Why travellers choose Kaira" — editorial two-column explainer. */
+
+.section {
+  padding: 80px 0;
+  background:
+    radial-gradient(ellipse 720px 320px at 0% 0%, var(--ttw-peach) 0%, transparent 58%),
+    var(--ttw-bg-2);
+
+  @media (max-width: 640px) {
+    padding: 52px 0;
+  }
+}
+
+.wrap {
+  display: grid;
+  grid-template-columns: 0.92fr 1.08fr;
+  gap: 56px;
+  /* vertically center the intro against the taller list on desktop */
+  align-items: center;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    align-items: start;
+  }
+}
+
+.intro {
+  @media (max-width: 900px) {
+    position: static;
+  }
+}
+
+.kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  background: var(--ttw-ink-rail);
+  color: var(--ttw-yellow);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.title {
+  font-size: clamp(28px, 3.6vw, 44px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.04;
+  margin: 0 0 18px 0;
+  color: var(--ttw-ink);
+}
+.title .serif {
+  font-family: "Instrument Serif", "Times New Roman", serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+}
+
+.lede {
+  font-size: 16px;
+  color: var(--ttw-ink-3);
+  line-height: 1.6;
+  margin: 0 0 18px 0;
+  max-width: 460px;
+}
+.lede .serif {
+  font-family: "Instrument Serif", "Times New Roman", serif;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--ttw-ink);
+}
+
+.tag {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ttw-ink);
+  letter-spacing: -0.01em;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+}
+
+.feature {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 18px;
+  padding: 22px 0;
+  border-top: 1px solid var(--ttw-line);
+
+  &:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+}
+
+.index {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--ttw-yellow);
+  color: var(--ttw-ink);
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+}
+
+.featTitle {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+  margin: 4px 0 8px 0;
+  color: var(--ttw-ink);
+}
+.featTitle .serif {
+  font-family: "Instrument Serif", "Times New Roman", serif;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--ttw-ink);
+}
+
+.featBody {
+  font-size: 14.5px;
+  color: var(--ttw-ink-3);
+  line-height: 1.6;
+  margin: 0;
+}

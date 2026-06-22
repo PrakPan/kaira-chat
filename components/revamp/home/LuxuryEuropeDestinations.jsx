@@ -30,8 +30,9 @@ const DEFAULT_FILTERS = [
 ];
 
 const DEFAULT_PACKAGES = [
+  /* ---------------- Honeymoon ---------------- */
   {
-    id: "bali",
+    id: "bali-honeymoon",
     image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=600&q=80&auto=format",
     tier: "Most booked",
     tierVariant: "popular",
@@ -41,13 +42,187 @@ const DEFAULT_PACKAGES = [
         Bali, the <span className="ttwSerif">slow honeymoon</span>
       </>
     ),
-    includes: ["Flights", "4-star villas", "Private transfers", "2 candle-lit dinners"],
+    includes: ["Flights", "4-star villas", "Private transfers", "Candle-lit dinner"],
     price: { amount: "₹59,000", per: "/ person" },
     category: "honeymoon",
     seed: "Bali honeymoon, 7 nights, premium",
   },
   {
-    id: "japan",
+    id: "paris-honeymoon",
+    image: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=600&q=80&auto=format",
+    tier: "Iconic",
+    route: ["Delhi", "Paris"],
+    title: (
+      <>
+        Paris, <span className="ttwSerif">just the two of you</span>
+      </>
+    ),
+    includes: ["Flights", "Boutique hotel", "Seine dinner cruise", "Louvre skip-the-line"],
+    price: { amount: "₹1,24,000", per: "/ person" },
+    category: "honeymoon",
+    seed: "Paris honeymoon, 6 nights",
+  },
+  {
+    id: "maldives-honeymoon",
+    image: "https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=600&q=80&auto=format",
+    tier: "Premium",
+    tierVariant: "premium",
+    route: ["Mumbai", "Malé"],
+    title: (
+      <>
+        Maldives, <span className="ttwSerif">over-water quiet</span>
+      </>
+    ),
+    includes: ["Flights", "Water villa", "Speedboat transfer", "Sunset cruise"],
+    price: { amount: "₹1,45,000", per: "/ person" },
+    category: "honeymoon",
+    seed: "Maldives honeymoon, 5 nights, water villa",
+  },
+
+  /* ---------------- Family ---------------- */
+  {
+    id: "bali-family",
+    image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=600&q=80&auto=format",
+    tier: "Family-friendly",
+    route: ["Bangalore", "Ubud", "Sanur"],
+    title: (
+      <>
+        Bali, <span className="ttwSerif">easy with kids</span>
+      </>
+    ),
+    includes: ["Flights", "Family villas", "Waterbom day", "Rice-field cycle"],
+    price: { amount: "₹62,000", per: "/ person" },
+    category: "family",
+    seed: "Bali family 7 nights",
+  },
+  {
+    id: "dubai-family",
+    image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=600&q=80&auto=format",
+    tier: "Family-friendly",
+    route: ["Delhi", "Dubai"],
+    title: (
+      <>
+        Dubai, <span className="ttwSerif">theme-park days</span>
+      </>
+    ),
+    includes: ["Flights", "City hotel", "Desert safari", "Aquaventure passes"],
+    price: { amount: "₹78,000", per: "/ person" },
+    category: "family",
+    seed: "Dubai family 5 nights",
+  },
+  {
+    id: "singapore-family",
+    image: "https://images.unsplash.com/photo-1525625293386-3f8f99389edd?w=600&q=80&auto=format",
+    tier: "Family-friendly",
+    route: ["Mumbai", "Singapore", "Sentosa"],
+    title: (
+      <>
+        Singapore, <span className="ttwSerif">clean and easy</span>
+      </>
+    ),
+    includes: ["Flights", "Central hotel", "Universal Studios", "Gardens by the Bay"],
+    price: { amount: "₹84,000", per: "/ person" },
+    category: "family",
+    seed: "Singapore family 5 nights",
+  },
+  {
+    id: "vietnam-family",
+    image: "https://images.unsplash.com/photo-1528127269322-539801943592?w=600&q=80&auto=format",
+    tier: "Family-friendly",
+    route: ["Bangalore", "Hanoi", "Hạ Long", "Hoi An"],
+    title: (
+      <>
+        Vietnam, <span className="ttwSerif">slow with kids</span>
+      </>
+    ),
+    includes: ["Flights", "Family rooms", "Junk-boat night", "Lantern-making class"],
+    price: { amount: "₹68,000", per: "/ person" },
+    category: "family",
+    seed: "Vietnam family 8 days, Hanoi Hoi An Halong",
+  },
+
+  /* ---------------- Adventure ---------------- */
+  {
+    id: "bali-adventure",
+    image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=600&q=80&auto=format",
+    tier: "Adventure",
+    route: ["Mumbai", "Ubud", "Nusa Penida"],
+    title: (
+      <>
+        Bali, the <span className="ttwSerif">volcano-dawn rush</span>
+      </>
+    ),
+    includes: ["Flights", "Surf-town stay", "Mt Batur sunrise trek", "Nusa Penida cliffs"],
+    price: { amount: "₹64,000", per: "/ person" },
+    category: "adventure",
+    seed: "Bali adventure 7 nights, Batur sunrise",
+  },
+  {
+    id: "grindelwald-adventure",
+    image: "https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?w=600&q=80&auto=format",
+    tier: "Adventure",
+    route: ["Delhi", "Zurich", "Grindelwald", "Interlaken"],
+    title: (
+      <>
+        Grindelwald, <span className="ttwSerif">Alps up close</span>
+      </>
+    ),
+    includes: ["Flights", "Mountain chalets", "Jungfraujoch rail", "Paragliding slot"],
+    price: { amount: "₹1,68,000", per: "/ person" },
+    category: "adventure",
+    seed: "Grindelwald Switzerland adventure, 8 days",
+  },
+
+  /* ---------------- Quick escape ---------------- */
+  {
+    id: "thailand-quick",
+    image: "https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=600&q=80&auto=format",
+    tier: "Quick escape",
+    route: ["Mumbai", "Bangkok", "Krabi", "Phi Phi"],
+    title: (
+      <>
+        Thailand, <span className="ttwSerif">long-weekend stretched</span>
+      </>
+    ),
+    includes: ["Flights", "Beachfront stays", "Phi Phi day cruise", "Street-food walk"],
+    price: { amount: "₹52,000", per: "/ person" },
+    category: "quick",
+    seed: "Thailand 6 nights, Bangkok + Phi Phi",
+  },
+  {
+    id: "srilanka-quick",
+    image: "https://images.unsplash.com/photo-1546975554-31053113e977?w=600&q=80&auto=format",
+    tier: "Quick escape",
+    route: ["Chennai", "Colombo", "Kandy", "Galle"],
+    title: (
+      <>
+        Sri Lanka, <span className="ttwSerif">short and scenic</span>
+      </>
+    ),
+    includes: ["Flights", "Boutique stays", "Hill-country train", "Galle fort walk"],
+    price: { amount: "₹46,000", per: "/ person" },
+    category: "quick",
+    seed: "Sri Lanka 5 nights, Kandy Galle",
+  },
+  {
+    id: "nepal-quick",
+    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=600&q=80&auto=format",
+    tier: "Quick escape",
+    route: ["Delhi", "Kathmandu", "Pokhara"],
+    title: (
+      <>
+        Nepal, <span className="ttwSerif">mountains in five</span>
+      </>
+    ),
+    includes: ["Flights", "Lakeside stay", "Nagarkot sunrise", "Phewa boat ride"],
+    price: { amount: "₹38,000", per: "/ person" },
+    category: "quick",
+    seed: "Nepal 5 nights, Kathmandu Pokhara",
+  },
+
+  /* ---------------- Premium ---------------- */
+  {
+    id: "japan-premium",
     image: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&q=80&auto=format",
     tier: "Premium",
     tierVariant: "premium",
@@ -63,36 +238,56 @@ const DEFAULT_PACKAGES = [
     seed: "Japan 10 days, Tokyo + Kyoto + Osaka, premium",
   },
   {
-    id: "vietnam",
-    image: "https://images.unsplash.com/photo-1528127269322-539801943592?w=600&q=80&auto=format",
-    tier: "Family-friendly",
-    route: ["Bangalore", "Hanoi", "Hạ Long", "Hoi An"],
+    id: "europe-premium",
+    image: "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=600&q=80&auto=format",
+    tier: "Premium",
+    tierVariant: "premium",
+    route: ["Mumbai", "Paris", "Lucerne", "Rome"],
     title: (
       <>
-        Vietnam, <span className="ttwSerif">slow with kids.</span>
+        Europe, the <span className="ttwSerif">grand three</span>
       </>
     ),
-    includes: ["Flights", "Family rooms", "Junk-boat night", "Lantern-making class"],
-    price: { amount: "₹68,000", per: "/ person" },
-    category: "family",
-    seed: "Vietnam family 8 days, Hanoi Hoi An Halong",
+    includes: ["Flights", "4-star hotels", "First-class rail", "City food tours"],
+    price: { amount: "₹2,10,000", per: "/ person" },
+    category: "premium",
+    seed: "Europe 12 days, Paris Switzerland Italy, premium",
   },
   {
-    id: "thailand",
-    image: "https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=600&q=80&auto=format",
-    tier: "Quick escape",
-    route: ["Mumbai", "Bangkok", "Krabi", "Phi Phi"],
+    id: "korea-premium",
+    image: "https://images.unsplash.com/photo-1538485399081-7191377e8241?w=600&q=80&auto=format",
+    tier: "Premium",
+    tierVariant: "premium",
+    route: ["Delhi", "Seoul", "Busan"],
     title: (
       <>
-        Thailand, <span className="ttwSerif">long-weekend stretched.</span>
+        Korea, <span className="ttwSerif">Seoul to sea</span>
       </>
     ),
-    includes: ["Flights", "Beachfront stays", "Phi Phi day cruise", "Street-food walk"],
-    price: { amount: "₹52,000", per: "/ person" },
-    category: "quick",
-    seed: "Thailand 6 nights, Bangkok + Phi Phi",
+    includes: ["Flights", "Design hotels", "KTX to Busan", "Hanok night"],
+    price: { amount: "₹1,52,000", per: "/ person" },
+    category: "premium",
+    seed: "South Korea 8 days, Seoul Busan, premium",
+  },
+  {
+    id: "turkey-premium",
+    image: "https://images.unsplash.com/photo-1605649487212-47bdab064df7?w=600&q=80&auto=format",
+    tier: "Premium",
+    tierVariant: "premium",
+    route: ["Mumbai", "Istanbul", "Cappadocia"],
+    title: (
+      <>
+        Turkey, <span className="ttwSerif">balloons at dawn</span>
+      </>
+    ),
+    includes: ["Flights", "Cave-suite stay", "Hot-air balloon", "Bosphorus dinner"],
+    price: { amount: "₹1,18,000", per: "/ person" },
+    category: "premium",
+    seed: "Turkey 8 days, Istanbul Cappadocia, premium",
   },
 ];
+
+const PAGE_SIZE = 4;
 
 const LuxuryEuropeDestinations = ({
   filters = DEFAULT_FILTERS,
@@ -101,11 +296,22 @@ const LuxuryEuropeDestinations = ({
 }) => {
   const router = useRouter();
   const [active, setActive] = useState("all");
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
-  const visible = useMemo(() => {
+  const filtered = useMemo(() => {
     if (active === "all") return packages;
     return packages.filter((p) => p.category === active);
   }, [packages, active]);
+
+  // Only the "All" tab paginates (4 at a time); category tabs show everything.
+  const visible =
+    active === "all" ? filtered.slice(0, visibleCount) : filtered;
+  const canSeeMore = active === "all" && visibleCount < filtered.length;
+
+  const handleFilter = (key) => {
+    setActive(key);
+    setVisibleCount(PAGE_SIZE);
+  };
 
   return (
     <section className={styles.section}>
@@ -121,10 +327,9 @@ const LuxuryEuropeDestinations = ({
               <span className="ttwSerif">fully tailored.</span>
             </h2>
             <p className="ttwLede">
-              Hand-built routes our travellers actually loved.{" "}
-              <span className="ttwSerif">Tweak anything</span> in the chat —
-              dates, duration, hotels, the lot. Start at the package, end with
-              your trip.
+              Real routes our travellers loved. Open any trip in chat — change{" "}
+              <span className="ttwSerif">dates, hotels, duration</span>,
+              anything. Start with the package, end with your perfect holiday.
             </p>
           </div>
           {/* <a href="/connected-trips" className="ttwSectionLink">
@@ -142,7 +347,7 @@ const LuxuryEuropeDestinations = ({
               key={f.key}
               type="button"
               className={`${styles.filter} ${active === f.key ? styles.filterActive : ""}`}
-              onClick={() => setActive(f.key)}
+              onClick={() => handleFilter(f.key)}
             >
               {f.label}
             </button>
@@ -167,6 +372,21 @@ const LuxuryEuropeDestinations = ({
             />
           ))}
         </div>
+
+        {canSeeMore && (
+          <div className={styles.seeMoreWrap}>
+            <button
+              type="button"
+              className={styles.seeMore}
+              onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
+            >
+              See more trips
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+          </div>
+        )}
 
         <p className={styles.footnote}>
           Prices indicative —{" "}

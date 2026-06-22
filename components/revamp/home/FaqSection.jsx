@@ -3,49 +3,59 @@ import styles from "./FaqSection.module.scss";
 
 const defaultFaqData = [
   {
-    question: "How do I get my dream trip planned with The Tarzan Way?",
+    question: "What exactly is The Tarzan Way?",
     answer:
-      "Easy – just tell us where you'd like to go and what you're confused, when you're going, and what kind of traveler you are. Whether you're into adventure, food, culture, or just chilling, we mix your vibe with our tech + travel experts to craft a trip that's 100% you.",
+      "The Tarzan Way combines the speed of AI with the expertise of real travellers. Kaira, our AI trip planner, creates personalised itineraries in seconds, while destination experts review every detail before it reaches you. You describe your trip in plain language, Kaira builds a plan across hundreds of platforms in seconds, and then a local expert — someone who has actually been to that destination — reviews and refines it before it reaches you.",
   },
   {
-    question: "What makes TTW itineraries so different (read: better)?",
+    question: "What is Kaira and how does she plan my trip?",
     answer:
-      "Our itineraries are crafted by combining AI technology with local expertise. We don't just plan trips; we create experiences tailored to your interests, budget, and travel style. Each itinerary includes insider tips, hidden gems, and authentic local experiences you won't find in typical tourist guides.",
+      "Kaira is an AI travel planner built by The Tarzan Way. Tell her your destination, dates, budget, and travel style, and she'll search flights, hotels, experiences, and routes to build a personalised holiday itinerary that's ready to book.",
   },
   {
-    question: "Will someone be there if things go wrong mid-trip?",
+    question: "Is The Tarzan Way the best AI travel planner?",
     answer:
-      "Absolutely! We provide 24/7 support during your trip. Our travel experts are just a call or message away to help with any issues, changes, or emergencies. You'll have dedicated support contact information and can reach us anytime during your journey.",
+      "We'll let the trips speak for themselves. Kaira has helped plan thousands of journeys across 100+ countries, creating complete, bookable itineraries instead of just travel suggestions.",
   },
   {
-    question: "Can you help with visa, insurance, and all that jazz?",
+    question: "How is Kaira different from ChatGPT for travel planning?",
     answer:
-      "Yes, we've got you covered! We provide comprehensive travel assistance including visa guidance, travel insurance options, vaccination requirements, and all necessary documentation. Our team will walk you through every requirement for your destination.",
+      "ChatGPT gives you ideas. Kaira helps turn those ideas into a real trip. She brings together flights, stays, experiences, and local recommendations in one personalised itinerary, all in a single conversation.",
   },
   {
-    question: "Can I change or cancel stuff later?",
+    question: "Does Kaira work for international trips?",
     answer:
-      "We understand plans change! Most bookings can be modified or cancelled, though terms depend on the specific service provider and timing. We'll always try our best to accommodate changes and will clearly explain any fees or restrictions upfront.",
+      "Yes. Kaira plans international trips across 100+ countries, whether you're travelling solo, planning a honeymoon, organising a family holiday, or looking for your next adventure.",
   },
   {
-    question: "Don't know where to go? Will you help me pick?",
+    question: "Is there a booking fee?",
     answer:
-      "That's exactly what we're here for! Our travel experts love helping indecisive travelers find their perfect destination. We'll ask about your interests, budget, preferred climate, and travel style to suggest amazing places you might never have considered.",
+      "There is no upfront fee to plan. Kaira is free to plan with. You only pay for the flights, hotels, and experiences you choose, with no hidden fees or markups.",
   },
   {
-    question: "Any hidden charges I should worry about?",
+    question: "Can I change my itinerary after Kaira builds it?",
     answer:
-      "Nope, we believe in complete transparency! All costs are clearly outlined upfront, including our service fees, accommodation costs, activities, and any additional charges. No surprises, no hidden fees – just honest pricing so you can plan your budget confidently.",
+      "Absolutely. Change your dates, swap hotels, add experiences, adjust your budget, or reroute the trip entirely. Your itinerary is flexible, and you can keep refining it until it feels right.",
   },
   {
-    question: "Do you do budget-friendly trips (like under ₹1 Lakh)?",
+    question: "How is this different from a traditional travel agent?",
     answer:
-      "Absolutely! We specialize in creating amazing experiences for every budget. Whether you have ₹30,000 or ₹3,00,000, we'll craft an incredible trip that maximizes your money. Budget-friendly doesn't mean compromising on experiences – it means being smart about them.",
+      "A traditional travel agent works on commission from hotels and airlines. Kaira searches across the open web with no preferred suppliers, so you see actual prices. There are no hidden markups. You also get a local curator — not a call-centre agent — who has personal knowledge of your destination.",
   },
   {
-    question: "Are your plans just touristy spots or something cooler?",
+    question: "Can I customise the itinerary?",
     answer:
-      "We're all about the 'something cooler' part! While we include must-see attractions, our specialty is uncovering hidden gems, local experiences, and authentic cultural encounters. Think street food tours with locals, sunset spots only residents know about, and activities that create real memories.",
+      "Everything is customizable. Start with a ready-made route or describe your trip from scratch. You can swap hotels, change dates, add or remove activities, and adjust the budget — all from inside the chat. Kaira re-prices in real time so you always know what a change will cost before you confirm it.",
+  },
+  {
+    question: "Can Kaira plan trips in Hindi or Hinglish?",
+    answer:
+      "Yes. You can write to Kaira in Hindi, Hinglish, or English and she will respond in the same language. A lot of our travellers switch between all three in the same conversation and Kaira keeps up.",
+  },
+  {
+    question: "How does the local curator actually help?",
+    answer:
+      "The curator is a person based in — or with deep experience of — your destination. They look at Kaira's plan and catch the things AI cannot: a road that floods in August, a restaurant that used to be great but isn't anymore, a quiet ghat worth waking up early for. They also handle paperwork like restricted-area permits that even experienced travellers sometimes miss.",
   },
 ];
 

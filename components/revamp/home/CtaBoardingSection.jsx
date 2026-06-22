@@ -11,7 +11,7 @@ const CtaBoardingSection = ({
   body,
   ctaLabel = "Chat with Kaira",
   ctaHref = "/chat",
-  trustLine = "Since 2018 · Based in India · Built for the world",
+  trustLine = "Planning is free. You only pay when you book.",
 }) => {
   const router = useRouter();
 
@@ -68,7 +68,8 @@ const CtaBoardingSection = ({
             marginRight: "auto",
           }}
         >
-          {body || "Start the conversation — no sign-up, no card, no commitment."}
+          {body ||
+            "No credit card. No commitment. Just tell Kaira your idea for a trip and see what comes back in a few seconds."}
         </p>
 
         <button

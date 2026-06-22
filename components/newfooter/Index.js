@@ -318,8 +318,8 @@ const NewFooter = () => {
 
         <Bottom>
           <span>
-            © {new Date().getFullYear()} thetarzanway · made in india · built
-            for the world
+            © {new Date().getFullYear()} thetarzanway · Planning trips since
+            2018, from India, for travellers everywhere.
           </span>
           <span>GST · Secure payments · ISO 27001</span>
         </Bottom>

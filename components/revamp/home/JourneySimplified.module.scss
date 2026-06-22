@@ -58,18 +58,62 @@
   }
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+.carouselWrap {
+  position: relative;
   margin-top: 32px;
 
-  @media (max-width: 1024px) {
-    grid-template-columns: 1fr;
+  /* let the hover-lift on cards breathe without clipping */
+  /* override the global `.swiper { height: 300px }` so cards size to content
+     (otherwise the chat-demo at the bottom of taller cards gets clipped). */
+  :global(.swiper) {
+    height: auto;
+    padding: 6px 4px 12px;
+  }
+}
+
+.slide {
+  height: auto;
+  display: flex;
+}
+
+.navBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--ttw-ink-rail);
+  color: var(--ttw-yellow);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+
+  &:hover {
+    transform: translateY(-50%) scale(1.08);
+  }
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+.navPrev {
+  left: -6px;
+  @media (min-width: 1024px) {
+    left: -20px;
+  }
+}
+.navNext {
+  right: -6px;
+  @media (min-width: 1024px) {
+    right: -20px;
   }
 }
 
 .step {
+  width: 100%;
   padding: 26px;
   background: var(--ttw-bg);
   border: 1px solid var(--ttw-line);

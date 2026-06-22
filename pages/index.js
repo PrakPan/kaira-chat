@@ -15,6 +15,8 @@ import FaqSection from "../components/revamp/home/FaqSection";
 import LuxuryEuropeDestinations from "../components/revamp/home/LuxuryEuropeDestinations";
 import KairaLovingSection from "../components/revamp/home/KairaLovingSection";
 import TravelerStoriesSection from "../components/revamp/home/TravelerStoriesSection";
+import KairaPlansSection from "../components/revamp/home/KairaPlansSection";
+import WhyKairaSection from "../components/revamp/home/WhyKairaSection";
 import CtaBoardingSection from "../components/revamp/home/CtaBoardingSection";
 
 import * as authaction from "../store/actions/auth";
@@ -75,21 +77,18 @@ const Home = ({ token, hotLocationSearch, checkAuthState, setHotLocationSearch }
   return (
     <>
       <Head>
-        <title>
-          AI Trip Planner & Custom Travel Itineraries | The Tarzan Way
-        </title>
+        <title>AI Trip Planner with Human Expertise | The Tarzan Way</title>
         <meta
           name="description"
-          content="The Tarzan Way is a smart AI Trip Planner designed to build custom travel itineraries in minutes. Use our AI Travel Planner to personalise trips, explore curated experiences, and manage bookings seamlessly."
+          content="Plan your trip with Kaira, an AI travel assistant backed by local human curators. Search hundreds of platforms, get a curator-reviewed itinerary, and pay only for what you book."
         ></meta>
         <meta
           property="og:title"
-          content="AI Trip Planner & Custom Travel Itineraries | The Tarzan Way"
+          content="AI Trip Planner with Human Expertise | The Tarzan Way"
         />
-        <meta property="og:title" content="Travel Company | India | The Tarzan Way" />
         <meta
           property="og:description"
-          content="Plan smarter with The Tarzan Way — an advanced AI Trip Planner and AI Travel Planner that creates personalized itineraries, flexible packages, and seamless travel experiences."
+          content="Plan your trip with Kaira, an AI travel assistant backed by local human curators. Search hundreds of platforms, get a curator-reviewed itinerary, and pay only for what you book. No markups, no hidden fees."
         />
         <meta property="og:image" content="/logoblack.svg" />
         <meta
@@ -146,11 +145,13 @@ const Home = ({ token, hotLocationSearch, checkAuthState, setHotLocationSearch }
 
         <TravelerStoriesSection />
         <LuxuryEuropeDestinations />
+        <KairaPlansSection />
         <WhereNextSection />
         <JourneySimplified />
+        <WhyKairaSection />
         {/* <PartnersSection />
         <TestimonialCarousel /> */}
-        {/* <FaqSection /> */}
+        <FaqSection />
         <CtaBoardingSection />
       </div>
 
