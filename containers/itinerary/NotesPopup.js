@@ -147,8 +147,8 @@ const NotesPopup = ({ notes, itineraryId, onClose, isLoggedIn }) => {
                     height: 7,
                     marginTop: 6,
                     borderRadius: 999,
-                    background: "#F2D700",
-                    boxShadow: "0 0 0 3px #FFFBE8",
+                    background: "#2E9E44", 
+                    boxShadow: "0 0 0 3px #E5F7E9"
                   }}
                 />
                 <span
