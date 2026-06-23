@@ -2567,6 +2567,7 @@ export default function BotApp({
     onItineraryRefresh: handleItineraryRefresh,
     botMode,
     sessionId: activeChatSessionId,
+    onSessionChange: setActiveChatSessionId,
     itineraryId,
     onBotModeChange: applyBotMode,
     onItineraryIdChange: setItineraryId,
