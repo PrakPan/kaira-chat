@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
-import { FaX } from "react-icons/fa6";
+
+const FONT_SANS = "'Inter', -apple-system, BlinkMacSystemFont, sans-serif";
+const FONT_SERIF = "'Instrument Serif', 'Times New Roman', serif";
 
 
 // Generic API Modal Component
@@ -161,64 +163,168 @@ useEffect(() => {
 
 
   return ReactDOM.createPortal(
-    <div className="fixed z-[1666] inset-0 bg-black bg-opacity-50 flex items-end md:items-center justify-center">
-      <div className="bg-white w-full max-w-lg md:mx-4 mb-0 md:mb-auto md:rounded-lg rounded-t-2xl md:rounded-b-lg relative transform transition-transform duration-300 ease-out animate-slide-up md:animate-none max-h-[90vh] md:max-h-none overflow-hidden">
-        
-        {/* Mobile handle bar */}
-        <div className="md:hidden flex justify-center py-2">
-          <div className="w-12 h-1 bg-gray-300 rounded-full"></div>
+    <div className="fixed z-[1666] inset-0 flex items-end md:items-center justify-center">
+      <div
+        className="absolute inset-0"
+        style={{
+          background: "rgba(11,18,32,0.35)",
+          backdropFilter: "blur(1px)",
+        }}
+        onClick={handleCancel}
+      />
+
+      <div
+        className="relative w-full max-w-lg md:mx-4 mb-0 md:mb-auto flex flex-col max-h-[90vh] md:max-h-none overflow-hidden rounded-t-[20px] md:rounded-[20px] transform transition-transform duration-300 ease-out animate-slide-up md:animate-none"
+        style={{
+          background: "#fafafa",
+          boxShadow: "0 12px 44px rgba(11,18,32,0.20)",
+        }}
+      >
+        {/* yellow top strip */}
+        <div
+          style={{
+            height: 6,
+            flexShrink: 0,
+            background: "linear-gradient(90deg,#FFE600,#F2D700)",
+          }}
+        />
+
+        {/* mobile drag handle */}
+        <div className="md:hidden flex justify-center pt-2 pb-1 flex-shrink-0">
+          <div
+            style={{
+              width: 44,
+              height: 4,
+              borderRadius: 999,
+              background: "#E0DCCD",
+            }}
+          />
         </div>
 
-        {/* Close button - only show when not loading booking */}
-        { (
-          <button
-            onClick={handleCancel}
-            className="absolute top-4 right-4 md:top-4 md:right-4 p-2 text-gray-400 hover:text-gray-600 cursor-pointer z-10"
-          >
-            <FaX size={16} />
-          </button>
-        )}
-
-        {/* Content */}
-        <div className="px-6 pb-6 pt-2 md:pt-6 max-h-[calc(90vh-8rem)] md:max-h-none overflow-y-auto">
-          
-          {/* Show booking loader */}
-         
-
-          {/* Show warning modal content */}
-          {showWarningModal && (
-            <>
-              {/* Header */}
-              <h2 className="text-xl font-semibold mb-1 pr-8">
-                Dates Change Warning!
-              </h2>
-
-              {/* Warning Message */}
-              <div className="text-gray-700 mb-6">
-                <div className="rounded-lg p-2">
-                  {warningMessage}
+        {/* Show warning modal content */}
+        {showWarningModal && (
+          <>
+            {/* header */}
+            <div className="flex items-start justify-between gap-3 px-5 pt-3 md:pt-5 flex-shrink-0">
+              <div>
+                <div
+                  style={{
+                    fontFamily: FONT_SANS,
+                    fontSize: 22,
+                    fontWeight: 500,
+                    lineHeight: 1.1,
+                    letterSpacing: "-0.01em",
+                    color: "#0B1220",
+                  }}
+                >
+                  Dates change{" "}
+                  <em
+                    style={{
+                      fontFamily: FONT_SERIF,
+                      fontStyle: "italic",
+                      fontWeight: 400,
+                      letterSpacing: "-0.015em",
+                    }}
+                  >
+                    warning
+                  </em>
                 </div>
+                <p
+                  style={{
+                    fontFamily: FONT_SANS,
+                    fontSize: 13,
+                    color: "#5C5A55",
+                    marginTop: 4,
+                  }}
+                >
+                  Please review this change before confirming.
+                </p>
               </div>
 
-              {/* Action Buttons */}
-              <div className="flex flex-col-reverse md:flex-row gap-3 md:gap-4 justify-end border-t-2 pt-4">
-                <button
-                  onClick={handleWarningCancel}
-                  className="w-full md:w-auto px-6 py-2 md:py-2 text-gray-600 border rounded hover:bg-gray-50 transition-colors cursor-pointer text-center"
+              <button
+                onClick={handleCancel}
+                aria-label="Close"
+                className="flex-shrink-0 grid place-items-center transition-colors"
+                style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: 10,
+                  border: "1px solid #E6E1D2",
+                  background: "#FFFFFF",
+                  color: "#5C5A55",
+                }}
+              >
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                  Cancel
-                </button>
-                <button
-                  disabled={isProcessing} 
-                  onClick={handleWarningConfirm}
-                  className="w-full md:w-auto px-6 py-2 md:py-2 bg-[#07213A] text-white rounded hover:bg-[#0a2942] transition-colors cursor-pointer text-center"
-                >
-                   {isProcessing ? "Processing..." : "Confirm"}
-                </button>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            {/* message */}
+            <div className="flex-1 overflow-y-auto px-5 pt-4 pb-2">
+              <div
+                style={{
+                  fontFamily: FONT_SANS,
+                  fontSize: 13.5,
+                  lineHeight: 1.5,
+                  color: "#2C2C2A",
+                  border: "1px solid #E6E1D2",
+                  background: "#FFFFFF",
+                  borderRadius: 12,
+                  padding: "12px 14px",
+                }}
+              >
+                {warningMessage}
               </div>
-            </>
-          )}
-        </div>
+            </div>
+
+            {/* footer */}
+            <div className="px-5 pt-2 pb-4 flex-shrink-0 flex flex-col-reverse md:flex-row gap-3 md:justify-end">
+              <button
+                onClick={handleWarningCancel}
+                className="w-full md:w-auto transition-opacity hover:opacity-90 disabled:opacity-50"
+                style={{
+                  fontFamily: FONT_SANS,
+                  fontSize: 14,
+                  fontWeight: 500,
+                  color: "#5C5A55",
+                  background: "#FFFFFF",
+                  border: "1px solid #E6E1D2",
+                  padding: "12px 20px",
+                  borderRadius: 12,
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                disabled={isProcessing}
+                onClick={handleWarningConfirm}
+                className="w-full md:w-auto transition-opacity hover:opacity-90 disabled:opacity-50"
+                style={{
+                  fontFamily: FONT_SANS,
+                  fontSize: 14,
+                  fontWeight: 500,
+                  color: "#FFFFFF",
+                  background: "#0F1B2D",
+                  padding: "12px 20px",
+                  borderRadius: 12,
+                }}
+              >
+                {isProcessing ? "Processing..." : "Confirm"}
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>,
     document.body

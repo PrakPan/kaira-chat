@@ -113,6 +113,11 @@ const Homepage = (props) => {
     });
   };
 
+  // Chat with Kaira CTA → navigate the user to the /chat page.
+  const handleChatWithKaira = () => {
+    router.push("/chat");
+  };
+
   const renderCarousel = (items, keyPrefix, onItemClick) => {
     const prevClass = `${keyPrefix}-prev`;
     const nextClass = `${keyPrefix}-next`;
@@ -346,7 +351,10 @@ const Homepage = (props) => {
             </div>
             {renderCarousel(props.experienceData.locations, "StateTopLocations")}
             <div className="flex justify-center mt-8">
-              <ChatWithKairaCta onClick={() => setShowTailoredModal(true)} />
+              <ChatWithKairaCta
+                onClick={handleChatWithKaira}
+                // onClick={() => setShowTailoredModal(true)}
+              />
             </div>
           </section>
         ) : null}
@@ -371,7 +379,8 @@ const Homepage = (props) => {
             {index % 2 ? (
               <div className="flex justify-center mt-8">
                 <ChatWithKairaCta
-                  onClick={() => handlePlanButtonClick(heading.name)}
+                  onClick={handleChatWithKaira}
+                  // onClick={() => handlePlanButtonClick(heading.name)}
                 />
               </div>
             ) : null}
@@ -526,7 +535,10 @@ const Homepage = (props) => {
             </div>
             {renderCarousel(props.locations, "OtherDestinations")}
             <div className="flex justify-center mt-8">
-              <ChatWithKairaCta onClick={() => setShowTailoredModal(true)} />
+              <ChatWithKairaCta
+                onClick={handleChatWithKaira}
+                // onClick={() => setShowTailoredModal(true)}
+              />
             </div>
           </section>
         ) : null}
@@ -554,9 +566,10 @@ const Homepage = (props) => {
             under 2 minutes.
           </p>
           <ChatWithKairaCta
-            onClick={() =>
-              handlePlanButtonClick(`Final CTA - ${destinationName}`)
-            }
+            onClick={handleChatWithKaira}
+            // onClick={() =>
+            //   handlePlanButtonClick(`Final CTA - ${destinationName}`)
+            // }
           />
           <div className={styles.finalCtaTrust}>
             No commitment · free to plan · pay only for what you pick.

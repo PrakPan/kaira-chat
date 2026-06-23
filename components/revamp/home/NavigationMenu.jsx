@@ -137,7 +137,7 @@ const NavigationMenu = (props) => {
           </button>}</>: null}
           
           {(pathname!="/new-trip")&& (!pathname?.includes("/itinerary")) && pathname=="/dashboard"&& <button className="MediumIndigoButton w-fit" onClick={()=>setShowMobilePlanner(true)}>
-                  Chat with Kaira <svg viewBox="0 0 12 12"  height="14" width="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 10L10 2M10 2H4M10 2V8"></path></svg>
+                  Plan with Kaira <svg viewBox="0 0 12 12"  height="14" width="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 10L10 2M10 2H4M10 2V8"></path></svg>
           </button>}
           
           {localStorage.getItem("access_token") ? (

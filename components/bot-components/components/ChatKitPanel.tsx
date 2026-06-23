@@ -170,6 +170,11 @@ onLoadRouteOnMap?: () => void;
 restoredThread?: any;
 onInitialPromptConsumed?: () => void;
 sessionId?: string;
+/** Fired when the chat session id changes in place (e.g. after a clone re-keys
+ *  the session to the cloned itinerary_id). Lets the parent keep
+ *  activeChatSessionId in sync with the URL so browser back/forward detects the
+ *  session change instead of treating it as the same session. */
+onSessionChange?: (sessionId: string) => void;
 isItineraryCompleting?: boolean;
 itineraryCompleted?: boolean;
 /** Fired when a Make Payment CTA is clicked inside a chat widget. */
@@ -779,6 +784,7 @@ onItineraryRefresh,
 restoredThread,
 onInitialPromptConsumed,
 sessionId: propSessionId,
+onSessionChange,
 isItineraryCompleting = false,
 itineraryCompleted = false,
 onPaymentStart,
@@ -914,15 +920,14 @@ onTripMetaUpdate,
   // user in-page and hand the new id to the SAME build pipeline the bot uses
   // (skeleton → /{id}/status/ polling → load) via onItineraryCompletionStart/Done.
   const [showCloneModal, setShowCloneModal] = useState(false);
-  const handleCloneSuccess = useCallback(
-    (newId: string) => {
-      if (!newId) return;
-      setShowCloneModal(false);
-      onItineraryCompletionStart?.("pending");
-      onItineraryCompletionDone?.(newId);
-    },
-    [onItineraryCompletionStart, onItineraryCompletionDone],
-  );
+  // Clone CTA visibility gate. The CTA is only meaningful on another user's
+  // *finalized* (P2) itinerary — it stays hidden in P1 / Draft stages. In P2 it
+  // is shown once per page load: the moment the viewer initiates a new chat turn
+  // it is suppressed for the rest of the session, so it doesn't re-appear below
+  // every subsequent message. A page refresh resets this back to false.
+  const [cloneCtaSuppressed, setCloneCtaSuppressed] = useState(false);
+  // handleCloneSuccess is defined after useChat (it depends on clearMessages /
+  // threadIdRef / sessionIdRef) — see below.
 
   // Shared helper for drawer CTAs opened from chat widgets. The chat flow
   // used to round-trip through sendWidgetAction("*.add", …); we now call the
@@ -1596,9 +1601,12 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
 
   // Quick replies stream in on the tail of the response, after the answer is
   // fully rendered but while the SSE connection is still open (so `isStreaming`
-  // is still true). Treat that window as "not streaming" for the composer so
-  // the user can keep typing and sending while the chips populate.
-  const isStreamingResponse = isStreaming && !quickReplyShimmer;
+  // is still true). Treat that whole window — the shimmer skeleton *and* the
+  // loaded chips — as "not streaming" for the composer so the user can keep
+  // typing and sending throughout the quick-reply phase, not just while the
+  // shimmer shows.
+  const inQuickReplyPhase = quickReplyShimmer || quickReplies.length > 0;
+  const isStreamingResponse = isStreaming && !inQuickReplyPhase;
 
   // Wrap sendWidgetAction so we can replay the same action after a post-login
   // retry (e.g. inject.context that triggered prompt_login while logged out).
@@ -1615,6 +1623,62 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
   // Mirror messages into a ref so analytics calls can pull user_prompts
   // without subscribing to the messages array directly.
   messagesRef.current = messages;
+
+  // ── "Create my version" (clone) success ──────────────────────────────────
+  // Defined after useChat because it depends on clearMessages (and reads
+  // threadIdRef / sessionIdRef). On success we keep the user in-page and hand
+  // the new id to the SAME build pipeline the bot uses (skeleton → /{id}/status/
+  // polling → load) via onItineraryCompletionStart/Done.
+  const handleCloneSuccess = useCallback(
+    (newId: string) => {
+      if (!newId) return;
+      setShowCloneModal(false);
+      // The clone spins up a brand-new chat for the cloned itinerary. Start a
+      // fresh thread: clearMessages() nulls threadIdRef (so the next send is a
+      // *first* message that creates a new thread, instead of appending to the
+      // source itinerary's restored thread) and resets sessionCreatedFiredRef.
+      // Without this, the post-clone message lands on the source thread and a
+      // refresh of /chat/{newId} finds no thread for the new session_id —
+      // spawning a stray "new thread" instead of restoring the clone's chat.
+      clearMessages();
+      // Re-arm the P2 "context" trigger for the clone. hasInjectedContextRef is
+      // a session-lived fire-once guard — if the overview already fired earlier
+      // this session (the user's own build, or a prior completion) it stays true
+      // and blocks the effect at the `itineraryCompleted` site below. Reset it
+      // so the cloned itinerary fires its own P2 context once finalized_status
+      // flips to SUCCESS on the new thread. (That effect detects the cleared
+      // thread and seeds a first message — see the inject.context effect — since
+      // sendWidgetAction can only append to an existing thread.)
+      hasInjectedContextRef.current = false;
+      // Re-key the session to the new itinerary_id so every subsequent request
+      // (chat sends, status polling) is scoped to the clone. sessionIdRef is
+      // mount-fixed, so set it directly; the re-render triggered by
+      // setShowCloneModal flows the new value into useChat.
+      sessionIdRef.current = newId;
+      // Keep the parent's activeChatSessionId in sync so browser back/forward
+      // correctly detects this as a *different* session. Without it the popstate
+      // guard compares against a stale id and skips the reload, leaving the URL
+      // and the rendered itinerary out of sync.
+      onSessionChange?.(newId);
+      // Reflect the cloned itinerary in the URL so a refresh/share points at the
+      // new itinerary_id (mirrors the default clone redirect to /chat/{id}).
+      const target = `/chat/${newId}`;
+      if (
+        typeof window !== "undefined" &&
+        window.location.pathname !== target
+      ) {
+        window.history.pushState({}, "", target);
+      }
+      onItineraryCompletionStart?.("pending");
+      onItineraryCompletionDone?.(newId);
+    },
+    [
+      onItineraryCompletionStart,
+      onItineraryCompletionDone,
+      onSessionChange,
+      clearMessages,
+    ],
+  );
 
   // ── Feedback (thumbs up / down) handler ──────────────────────────────────
   // Three-state toggle per assistant message:
@@ -2325,10 +2389,20 @@ useEffect(() => {
     if (itineraryCompleted && !hasInjectedContextRef.current && !isStreaming) {
       hasInjectedContextRef.current = true;
       if(isLoggedIn) {
-        sendWidgetAction("inject.context", { message: "Provide short overview of the trip" });
+        if (threadIdRef.current) {
+          // Live build: a chat thread already exists — append the overview as a
+          // hidden context action on that thread.
+          sendWidgetAction("inject.context", { message: "Provide short overview of the trip" });
+        } else {
+          // Fresh clone: clearMessages() nulled threadIdRef, and sendWidgetAction
+          // bails on a null thread_id (it can only append, never create). Seed
+          // the overview as a first message so useChat creates the clone's new
+          // thread and the P2 context fires against the right thread_id.
+          sendMessage("Hey Kaira! provide summary of my itinerary");
+        }
       }
     }
-  }, [itineraryCompleted, isStreaming, sendWidgetAction]);
+  }, [itineraryCompleted, isStreaming, sendWidgetAction, sendMessage]);
 
 useEffect(() => {
   const tokenJustArrived =
@@ -2839,6 +2913,9 @@ const handleShowLogin = useCallback(() => {
         ? URL.createObjectURL(a.file)
         : undefined,
     }));
+    // A genuine new chat turn → suppress the clone CTA for the rest of this
+    // page session (it only shows once per refresh).
+    setCloneCtaSuppressed(true);
     sendMessage(
       input.trim(),
       attachmentIds.length > 0 ? attachmentIds : undefined,
@@ -2858,7 +2935,13 @@ const handleShowLogin = useCallback(() => {
         setShowLoginModal(true);
         return;
       }
+      // A genuine new chat turn → suppress the clone CTA for the rest of this
+      // page session (it only shows once per refresh).
+      setCloneCtaSuppressed(true);
       sendMessage(reply.value ?? reply.label);
+      // Clear any half-typed message so it can't be sent on the streaming tail
+      // of the turn this quick reply just kicked off.
+      setInput("");
     },
     [isStreaming, sendMessage, isItineraryCompleting, isLoggedIn],
   );
@@ -3469,8 +3552,15 @@ const handleShowLogin = useCallback(() => {
 
             {/* Steal / clone CTA — pinned below the last message when the viewer
                 is looking at someone else's itinerary. Renders nothing for the
-                owner or in a brand-new chat. Reactive to login/logout. */}
-            {messages.length > 0 && !isStreaming && (
+                owner or in a brand-new chat. Reactive to login/logout.
+                Only shown on a finalized (P2) itinerary — hidden while the trip
+                is still in P1 or Draft — and only once per page load: once the
+                viewer starts a new chat turn it stays hidden until refresh. */}
+            {messages.length > 0 &&
+              !isStreaming &&
+              botMode === "p2" &&
+              itinerary?.status !== "Draft" &&
+              !cloneCtaSuppressed && (
               <ItineraryCloneCta
                 onRequestLogin={() => setShowLoginModal(true)}
                 onCreateVersion={() => setShowCloneModal(true)}

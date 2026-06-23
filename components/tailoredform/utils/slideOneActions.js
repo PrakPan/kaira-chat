@@ -9,6 +9,77 @@ import { getAdParams } from "../../../helper/adAttribution";
 const fadeInAnimation = keyframes`${fadeIn}`;
 
 
+// Derive the room configuration to show for an itinerary.
+// The itinerary's traveller counts (number_of_adults/children/infants) are the
+// source of truth — a saved room_configuration can be stale (e.g. the default
+// 2 adults / 1 room) even when the itinerary actually has 10 travellers.
+// Priority:
+//  1. Derive from the itinerary's pax counts when present:
+//     total travellers = adults + children + infants, rooms = ceil((adults + children) / 2),
+//     UNLESS a saved room_configuration already matches those counts (keep their split).
+//  2. Fall back to the saved room_configuration when there are no pax counts.
+//  3. Fall back to the default 2 travellers / 1 room.
+export const deriveRoomConfiguration = (itinerary) => {
+  const existing = itinerary?.hotels_config?.room_configuration;
+  const adults = itinerary?.number_of_adults || 0;
+  const children = itinerary?.number_of_children || 0;
+  const infants = itinerary?.number_of_infants || 0;
+
+  // No traveller info for this itinerary → keep their saved rooms, else default.
+  if (adults + children + infants === 0) {
+    if (existing && existing.length > 0) return existing;
+    return [{ adults: 2, children: 0, infants: 0, childAges: [] }];
+  }
+
+  // Keep the saved room split only when it already matches the itinerary's pax.
+  if (existing && existing.length > 0) {
+    let savedAdults = 0;
+    let savedChildren = 0;
+    let savedInfants = 0;
+    for (const room of existing) {
+      savedAdults += room?.adults || 0;
+      savedChildren += room?.children || 0;
+      savedInfants += room?.infants || 0;
+    }
+    if (
+      savedAdults === adults &&
+      savedChildren === children &&
+      savedInfants === infants
+    ) {
+      return existing;
+    }
+  }
+
+  const roomCount = Math.max(1, Math.ceil((adults + children) / 2));
+  const rooms = Array.from({ length: roomCount }, () => ({
+    adults: 0,
+    children: 0,
+    infants: 0,
+    childAges: [],
+  }));
+
+  // Distribute travellers round-robin across the rooms so the totals match the
+  // itinerary's pax. childAges only tracks children (Pax ignores infants).
+  let idx = 0;
+  for (let i = 0; i < adults; i++) {
+    rooms[idx % roomCount].adults += 1;
+    idx += 1;
+  }
+  idx = 0;
+  for (let i = 0; i < children; i++) {
+    rooms[idx % roomCount].children += 1;
+    rooms[idx % roomCount].childAges.push(10);
+    idx += 1;
+  }
+  idx = 0;
+  for (let i = 0; i < infants; i++) {
+    rooms[idx % roomCount].infants += 1;
+    idx += 1;
+  }
+
+  return rooms;
+};
+
 export const divideTravellers = (slideThreeData) => {
   let distribution = [];
 

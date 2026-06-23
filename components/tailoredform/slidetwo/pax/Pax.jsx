@@ -39,12 +39,18 @@ const Pax = (props) => {
     }
   }, [isRoomExpanded])
 
+  // Resync the internal room state whenever the parent's roomConfiguration
+  // changes (e.g. it loads/derives async from the itinerary after mount).
+  // Reading `rooms` here would be stale, so compute totals from the new config.
   useEffect(() => {
+    const config = props?.roomConfiguration || [];
+    setRooms(config);
+
     let totalAdults = 0;
     let totalChildren = 0;
-    for (let room of rooms) {
-      totalAdults += room.adults;
-      totalChildren += room.children;
+    for (let room of config) {
+      totalAdults += room?.adults || 0;
+      totalChildren += room?.children || 0;
     }
     setTravelers(totalAdults + totalChildren);
     setTotalAdults(totalAdults)
