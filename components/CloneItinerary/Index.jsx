@@ -8,6 +8,7 @@ import { useDispatch } from "react-redux";
 import setItinerary from "../../store/actions/itinerary";
 import { openNotification } from "../../store/actions/notification";
 import { togglePreference } from "../../store/actions/slideOneActions";
+import { deriveRoomConfiguration } from "../tailoredform/utils/slideOneActions";
 import Buttons from "../settings/Buttons";
 import DateComponent from "../settings/DateComponent";
 import { SectionLabel, InclusionChip } from "../settings/FormUI";
@@ -92,11 +93,11 @@ const CloneItinerary = ({
   const [addActivityTransfers, setAddActivityTransfers] = useState(
     itinerary?.add_transfers_and_activities ?? false
   );
-  const [addVisa, setAddVisa] = useState(itinerary?.visa ?? false);
-  const [addEsim, setAddEsim] = useState(itinerary?.esim ?? false);
+  const [addVisa, setAddVisa] = useState(itinerary?.add_visa ?? false);
+  const [addEsim, setAddEsim] = useState(itinerary?.add_esim ?? false);
 
   const [roomConfiguration, setRoomConfiguration] = useState(
-    itinerary?.hotels_config?.room_configuration || []
+    deriveRoomConfiguration(itinerary)
   );
 
   const [numberOfAdults, setNumberOfAdults] = useState(
@@ -147,9 +148,9 @@ const CloneItinerary = ({
       setAddHotels(itinerary?.add_hotels ?? isHotelsPresent);
       setAddFlights(itinerary?.add_flights ?? false);
       setAddActivityTransfers(itinerary?.add_transfers_and_activities ?? false);
-      setAddVisa(itinerary?.visa ?? false);
-      setAddEsim(itinerary?.esim ?? false);
-      setRoomConfiguration(itinerary?.hotels_config?.room_configuration || []);
+      setAddVisa(itinerary?.add_visa ?? false);
+      setAddEsim(itinerary?.add_esim ?? false);
+      setRoomConfiguration(deriveRoomConfiguration(itinerary));
       setNumberOfAdults(itinerary?.number_of_adults || 1);
       setNumberOfChildren(itinerary?.number_of_children || 0);
       setNumberOfInfants(itinerary?.number_of_infants || 0);
@@ -165,6 +166,34 @@ const CloneItinerary = ({
       }
     }
   }, [itinerary, isHotelsPresent]);
+
+  // Keep traveller counts in sync with the room configuration. Pax (used when
+  // addHotels is true) only writes back to roomConfiguration on Done — it does
+  // NOT call the numberOf* setters, so without this effect the payload sent to
+  // the clone API carries stale passenger totals (e.g. number_of_adults: 10
+  // while the rooms sum to 9). Pax rooms don't track infants, so only fold
+  // infants in when the rooms actually carry them (EnterPassenger).
+  useEffect(() => {
+    if (!roomConfiguration || roomConfiguration.length === 0) return;
+
+    let adultsTotal = 0;
+    let childrenTotal = 0;
+    let infantsTotal = 0;
+    let roomsHaveInfants = false;
+
+    for (const room of roomConfiguration) {
+      adultsTotal += room?.adults || 0;
+      childrenTotal += room?.children || 0;
+      if (room?.infants !== undefined) {
+        roomsHaveInfants = true;
+        infantsTotal += room?.infants || 0;
+      }
+    }
+
+    setNumberOfAdults(adultsTotal);
+    setNumberOfChildren(childrenTotal);
+    if (roomsHaveInfants) setNumberOfInfants(infantsTotal);
+  }, [roomConfiguration]);
 
   const handleSetSelectedPreferences = (preference) => {
     dispatch(togglePreference(preference));

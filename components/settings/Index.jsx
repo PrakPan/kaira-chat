@@ -10,6 +10,7 @@ import useMediaQuery from "../../hooks/useMedia";
 import { useDispatch } from "react-redux";
 import { openNotification } from "../../store/actions/notification";
 import { togglePreference } from "../../store/actions/slideOneActions";
+import { deriveRoomConfiguration } from "../tailoredform/utils/slideOneActions";
 
 
 const parseDateString = (dateString) => {
@@ -32,11 +33,11 @@ const Settings = ({setShowSettings, isHotelsPresent, handleApply, maxAdults=fals
   const [addActivityTransfers, setAddActivityTransfers] = useState(
     itinerary?.add_transfers_and_activities ?? false
   );
-  const [addVisa, setAddVisa] = useState(itinerary?.visa ?? false);
-  const [addEsim, setAddEsim] = useState(itinerary?.esim ?? false);
+  const [addVisa, setAddVisa] = useState(itinerary?.add_visa ?? false);
+  const [addEsim, setAddEsim] = useState(itinerary?.add_esim ?? false);
 
   const [roomConfiguration, setRoomConfiguration] = useState(
-    itinerary?.hotels_config?.room_configuration || []
+    deriveRoomConfiguration(itinerary)
   );
   
   const [numberOfAdults, setNumberOfAdults] = useState(
@@ -83,9 +84,9 @@ useEffect(() => {
     setAddHotels(itinerary?.add_hotels ?? isHotelsPresent);
     setAddFlights(itinerary?.add_flights ?? false);
     setAddActivityTransfers(itinerary?.add_transfers_and_activities ?? false);
-    setAddVisa(itinerary?.visa ?? false);
-    setAddEsim(itinerary?.esim ?? false);
-    setRoomConfiguration(itinerary?.hotels_config?.room_configuration || []);
+    setAddVisa(itinerary?.add_visa ?? false);
+    setAddEsim(itinerary?.add_esim ?? false);
+    setRoomConfiguration(deriveRoomConfiguration(itinerary));
     setNumberOfAdults(itinerary?.number_of_adults || 1);
     setNumberOfChildren(itinerary?.number_of_children || 0);
     setNumberOfInfants(itinerary?.number_of_infants || 0);
