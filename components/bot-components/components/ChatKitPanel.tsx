@@ -836,6 +836,8 @@ onTripMetaUpdate,
     // ── Auth ─────────────────────────────────────────────────────────────────
   const reduxToken = useSelector((state: any) => state.auth.token);
   const reduxUserId = useSelector((state: any) => state.auth.id);
+  const reduxEmail = useSelector((state: any) => state.auth.email);
+  const reduxUserName = useSelector((state: any) => state.auth.name);
   const itinerary = useSelector((state: any) => state.Itinerary);
   const callPaymentInfo = useSelector((state: any) => state.CallPaymentInfo);
   // Lock the composer whenever an update/edit action (Update Dates,
@@ -881,6 +883,47 @@ onTripMetaUpdate,
   const isComposerLocked = isItineraryCompleting || isItineraryPolling;
   const authToken = reduxToken ?? getAuthToken();
   const isLoggedIn = !!authToken;
+
+  // ── Itinerary ownership gate ──────────────────────────────────────────────
+  // A logged-in user who opens SOMEONE ELSE's itinerary must not be able to
+  // chat or fire quick replies. Staff (email ending in @tarzanway.com) bypass
+  // this and can chat on any itinerary. Ownership mirrors ItineraryCloneCta:
+  // match by customer id, with a customer_name fallback for bot payloads that
+  // omit `customer`.
+  //
+  // P1 / draft stage has no itinerary in Redux yet, so the owner is only known
+  // from the thread get_by_id payload (`restoredThread.user_id` /
+  // `customer_name`). We fall back to those thread-level fields. When the thread
+  // detail carries NO `user_id` (anonymous / unowned thread) there is no owner
+  // to enforce, so we never block.
+  const threadOwnerId =
+    restoredThread?.user_id != null && restoredThread.user_id !== ""
+      ? String(restoredThread.user_id)
+      : null;
+  const threadOwnerName =
+    typeof restoredThread?.customer_name === "string"
+      ? restoredThread.customer_name.trim()
+      : "";
+  const ownerId = itinerary?.customer ?? threadOwnerId;
+  const ownerName =
+    typeof itinerary?.customer_name === "string" && itinerary.customer_name.trim()
+      ? itinerary.customer_name.trim()
+      : threadOwnerName;
+  const hasOwner = ownerId != null || !!ownerName;
+  const isItineraryOwner =
+    isLoggedIn &&
+    ((ownerId != null && String(reduxUserId ?? "") === String(ownerId)) ||
+      (!!reduxUserName &&
+        !!ownerName &&
+        reduxUserName.trim().toLowerCase() === ownerName.toLowerCase()));
+  const isStaffUser =
+    !!reduxEmail && reduxEmail.toLowerCase().endsWith("@thetarzanway.com");
+
+    console.log("reduxEmail", reduxEmail);
+  // True when a logged-in, non-staff user is viewing another person's
+  // itinerary — block the composer and quick replies in that case.
+  const isForeignItinerary =
+    isLoggedIn && hasOwner && !isItineraryOwner && !isStaffUser;
 
   // Widget messages whose CTAs should render disabled. Populated when a user
   // clicks a CTA (to prevent double-submission while the server processes the
@@ -2930,6 +2973,8 @@ const handleShowLogin = useCallback(() => {
       if (isStreaming) return;
       // Block quick replies while itinerary creation is in progress
       if (isItineraryCompleting) return;
+      // Block when viewing someone else's itinerary (non-staff)
+      if (isForeignItinerary) return;
       // Gate logged-out users behind login
       if (!isLoggedIn) {
         setShowLoginModal(true);
@@ -2943,7 +2988,7 @@ const handleShowLogin = useCallback(() => {
       // of the turn this quick reply just kicked off.
       setInput("");
     },
-    [isStreaming, sendMessage, isItineraryCompleting, isLoggedIn],
+    [isStreaming, sendMessage, isItineraryCompleting, isLoggedIn, isForeignItinerary],
   );
 
   const showError = !!error && !errorDismissed;
@@ -3667,7 +3712,7 @@ const handleShowLogin = useCallback(() => {
 
       {/* ── Quick reply chips ─────────────────────────────────────────────── */}
       {/* Hidden while itinerary creation is in progress — no quick replies/CTAs allowed */}
-      {(quickReplies.length > 0 || quickReplyLoading) && !isComposerLocked && (
+      {(quickReplies.length > 0 || quickReplyLoading) && !isComposerLocked && !isForeignItinerary && (
         <div className="flex-shrink-0 px-[0.25rem] md:!px-6 pt-2 pb-1">
           <div className="mx-auto">
             <div
@@ -3713,8 +3758,12 @@ const handleShowLogin = useCallback(() => {
             onFilesSelected={handleFilesSelected}
             attachments={attachments}
             onRemoveAttachment={handleRemoveAttachment}
-            requireAuth={!isLoggedIn}
-            onAuthRequired={() => setShowLoginModal(true)}
+            requireAuth={!isLoggedIn || isForeignItinerary}
+            onAuthRequired={() => {
+              // Foreign-itinerary block: the user is already logged in, so a
+              // login modal makes no sense — silently swallow the interaction.
+              if (!isLoggedIn) setShowLoginModal(true);
+            }}
           />
         </div>
         {/* Overlay blocks all typing/interaction while itinerary creation

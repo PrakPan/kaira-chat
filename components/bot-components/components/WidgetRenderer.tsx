@@ -3527,6 +3527,349 @@ function ElementPreviewCard({
   );
 }
 
+// ─── Transfer preview card ────────────────────────────────────────────────────
+// Server emits a Card with a Title ("Flight from Lucknow to Ubud"), a bare date
+// Text and a "Book Transfer" button whose transfer.detail / transfer.view action
+// carries the segment data (mode, hub codes, city names, distance, duration) plus
+// pax counts. The generic ElementPreviewCard would mis-render the bare date as a
+// description and drop every other field — so we render a polished route card
+// straight from the payload instead, skipping anything the payload doesn't supply.
+
+const TRANSFER_MONTHS = [
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+];
+
+// "2026-08-12" → "Aug 12, 2026". Returns the raw value if it isn't an ISO date,
+// and "" for empty input (so callers can skip rendering).
+function formatTransferDate(raw: unknown): string {
+  if (!raw) return "";
+  const s = String(raw).trim();
+  const m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!m) return s;
+  const month = TRANSFER_MONTHS[parseInt(m[2], 10) - 1];
+  if (!month) return s;
+  return `${month} ${parseInt(m[3], 10)}, ${m[1]}`;
+}
+
+// 560 → "9h 20m". Returns "" when no usable duration is supplied.
+function formatDurationMin(min: unknown): string {
+  const total = Math.round(Number(min));
+  if (!total || isNaN(total)) return "";
+  const h = Math.floor(total / 60);
+  const m = total % 60;
+  if (h && m) return `${h}h ${m}m`;
+  if (h) return `${h}h`;
+  return `${m}m`;
+}
+
+// 5409 → "5,409 km". Returns "" when no usable distance is supplied.
+function formatDistanceKm(km: unknown): string {
+  const num = Number(km);
+  if (!num || isNaN(num)) return "";
+  return `${Math.round(num).toLocaleString("en-US")} km`;
+}
+
+// "10 Adults · 2 Children" — only includes the pax types the payload supplies.
+function formatPaxSummary(payload: Record<string, any>): string {
+  const adults = Number(payload.numberOfAdults ?? payload.number_of_adults ?? 0);
+  const children = Number(payload.numberOfChildren ?? payload.number_of_children ?? 0);
+  const infants = Number(payload.numberOfInfants ?? payload.number_of_infants ?? 0);
+  const parts: string[] = [];
+  if (adults > 0) parts.push(`${adults} Adult${adults > 1 ? "s" : ""}`);
+  if (children > 0) parts.push(`${children} Child${children > 1 ? "ren" : ""}`);
+  if (infants > 0) parts.push(`${infants} Infant${infants > 1 ? "s" : ""}`);
+  return parts.join(" · ");
+}
+
+// Matches a Button whose action is a transfer.detail / transfer.view and whose
+// payload actually carries route segments — only those render as the polished
+// route card; anything else falls through to the generic ElementPreviewCard.
+function findTransferButton(node: WidgetNode): WidgetNode | null {
+  if (node.type === "Button") {
+    const action = node.onClickAction as any;
+    const type = normalizeActionType(action?.type);
+    const segments = action?.payload?.segments;
+    if (
+      (type === "transfer.detail" || type === "transfer.view") &&
+      Array.isArray(segments) &&
+      segments.length > 0
+    ) {
+      return node;
+    }
+  }
+  for (const child of (node.children ?? []) as WidgetNode[]) {
+    const hit = findTransferButton(child);
+    if (hit) return hit;
+  }
+  return null;
+}
+
+// A small pill chip used for duration / distance / pax meta.
+function TransferMetaChip({
+  icon,
+  label,
+}: {
+  icon: React.ReactNode;
+  label: string;
+}) {
+  return (
+    <span
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 5,
+        padding: "4px 10px",
+        borderRadius: 9999,
+        background: "#fafaf5",
+        border: "1px solid #ececec",
+        fontSize: 12,
+        fontWeight: 500,
+        color: "#445069",
+        fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+        whiteSpace: "nowrap",
+      }}
+    >
+      {icon}
+      {label}
+    </span>
+  );
+}
+
+function TransferPreviewCard({
+  node,
+  button,
+  onAction,
+}: {
+  node: WidgetNode;
+  button: WidgetNode;
+  onAction?: WidgetRendererProps["onAction"];
+}) {
+  const action = button.onClickAction as {
+    type: string;
+    payload?: Record<string, any>;
+  };
+  const payload = action.payload ?? {};
+  const segments = (payload.segments ?? []) as Record<string, any>[];
+
+  const titleNode = findNodesByType(node, "Title")[0];
+  const title = ((titleNode?.value as string) ?? "").trim();
+
+  // Mode drives the header accent + icon. Fall back to the first segment when
+  // the card title doesn't name it.
+  const firstMode = String(segments[0]?.mode ?? "").trim();
+  const typeKey = firstMode.toLowerCase();
+  const accent = getTransportBadgeStyle(firstMode || "transfer", undefined);
+  const headerIcon = TRANSPORT_ICONS[typeKey] ?? TRANSPORT_ICONS.taxi;
+
+  const dateLabel = formatTransferDate(payload.date);
+  const paxLabel = formatPaxSummary(payload);
+  const buttonLabel = ((button.label as string) ?? "Book Transfer").trim();
+
+  // Transfer CTAs stay clickable regardless of the ambient disabled context —
+  // they only open the transfer drawer.
+  const handleClick = () => {
+    onAction?.({ type: action.type, payload });
+  };
+
+  const clockIcon = (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3 2" />
+    </svg>
+  );
+  const pinIcon = (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20 10c0 7-8 12-8 12s-8-5-8-12a8 8 0 1 1 16 0Z" />
+      <circle cx="12" cy="10" r="3" />
+    </svg>
+  );
+  const paxIcon = (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+    </svg>
+  );
+
+  const Endpoint = ({
+    name,
+    code,
+    align,
+  }: {
+    name: string;
+    code: string;
+    align: "left" | "right";
+  }) => (
+    <div style={{ minWidth: 0, textAlign: align, flexShrink: 1 }}>
+      {code && (
+        <div style={{
+          fontSize: 11, fontWeight: 600, letterSpacing: "0.06em",
+          color: accent.color, textTransform: "uppercase",
+          fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+        }}>
+          {code}
+        </div>
+      )}
+      {name && (
+        <div style={{
+          fontSize: 15, fontWeight: 500, color: "#0b1220", lineHeight: 1.25,
+          fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+          whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+        }}>
+          {name}
+        </div>
+      )}
+    </div>
+  );
+
+  return (
+    <div
+      style={{
+        background: "#ffffff",
+        border: "1px solid #ececec",
+        borderRadius: 18,
+        overflow: "hidden",
+        marginTop: 10,
+        marginBottom: 4,
+        boxSizing: "border-box",
+        width: "100%",
+        transition: "border-color 0.15s, box-shadow 0.15s",
+      }}
+      onMouseEnter={(e) => {
+        (e.currentTarget as HTMLDivElement).style.borderColor = "#0b1220";
+        (e.currentTarget as HTMLDivElement).style.boxShadow = "0 6px 20px rgba(11,18,32,0.08)";
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLDivElement).style.borderColor = "#ececec";
+        (e.currentTarget as HTMLDivElement).style.boxShadow = "none";
+      }}
+      className="w-full md:max-w-[500px]"
+    >
+      {/* Header band — tinted with the transport accent color */}
+      <div
+        className="flex items-center gap-2.5"
+        style={{ padding: "12px 16px", background: accent.background }}
+      >
+        <div style={{
+          width: 34, height: 34, borderRadius: 10,
+          background: "#ffffff",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          flexShrink: 0, color: accent.color,
+          boxShadow: "0 1px 2px rgba(11,18,32,0.08)",
+        }}>
+          {headerIcon}
+        </div>
+        <div style={{
+          flex: 1, minWidth: 0,
+          fontSize: 14, fontWeight: 600, color: accent.color,
+          fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+          whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+        }}>
+          {title || firstMode || "Transfer"}
+        </div>
+        {dateLabel && (
+          <span style={{
+            fontSize: 12, fontWeight: 500, color: accent.color, opacity: 0.85,
+            fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+            whiteSpace: "nowrap",
+          }}>
+            {dateLabel}
+          </span>
+        )}
+      </div>
+
+      {/* Body — one block per segment */}
+      <div style={{ padding: 16, display: "flex", flexDirection: "column", gap: 14 }}>
+        {segments.map((seg, i) => {
+          const segMode = String(seg.mode ?? "").trim();
+          const segKey = segMode.toLowerCase();
+          const segIcon = TRANSPORT_ICONS[segKey] ?? headerIcon;
+          const origin = String(seg.source_name ?? "").trim();
+          const dest = String(seg.destination_name ?? "").trim();
+          const originHub = String(seg.source_hub ?? "").trim();
+          const destHub = String(seg.destination_hub ?? "").trim();
+          const duration = formatDurationMin(seg.duration_min);
+          const distance = formatDistanceKm(seg.distance_km);
+          const hasRoute = origin || dest || originHub || destHub;
+
+          return (
+            <div key={seg.transfer_id ?? i}>
+              {hasRoute && (
+                <div className="flex items-center gap-2" style={{ marginBottom: (duration || distance) ? 12 : 0 }}>
+                  <Endpoint name={origin} code={originHub} align="left" />
+                  <div className="flex items-center" style={{ flex: 1, minWidth: 24 }}>
+                    <div style={{ flex: 1, borderTop: "1.5px dashed #d4d8e0", height: 0 }} />
+                    <div style={{
+                      width: 24, height: 24, borderRadius: "50%",
+                      background: accent.background, color: accent.color,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      flexShrink: 0, margin: "0 4px", transform: "scale(0.7)",
+                    }}>
+                      {segIcon}
+                    </div>
+                    <div style={{ flex: 1, borderTop: "1.5px dashed #d4d8e0", height: 0 }} />
+                  </div>
+                  <Endpoint name={dest} code={destHub} align="right" />
+                </div>
+              )}
+
+              {(duration || distance) && (
+                <div className="flex flex-wrap items-center gap-2">
+                  {duration && <TransferMetaChip icon={clockIcon} label={duration} />}
+                  {distance && <TransferMetaChip icon={pinIcon} label={distance} />}
+                </div>
+              )}
+            </div>
+          );
+        })}
+
+        {/* Footer — pax on the left, CTA on the right; the button wraps to its
+            own line (staying right-aligned) on narrow screens. */}
+        <div className="flex flex-wrap items-center gap-2" style={{ marginTop: 2 }}>
+          {paxLabel && <TransferMetaChip icon={paxIcon} label={paxLabel} />}
+
+          <button
+            onClick={handleClick}
+            style={{
+              marginLeft: "auto",
+              padding: "9px 16px",
+              borderRadius: 9999,
+              background: "#0b1220",
+              border: "1px solid #0b1220",
+              color: "#ffffff",
+              fontSize: 13,
+              fontWeight: 600,
+              fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+              cursor: "pointer",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
+              transition: "background 0.15s, color 0.15s",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.background = "#1f2937";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.background = "#0b1220";
+            }}
+          >
+            {buttonLabel}
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Payment preview card ────────────────────────────────────────────────────
 // Server emits a Card containing a "Make Payment" button with
 // onClickAction.type === "payment.start". Render it with a polished
@@ -4829,6 +5172,18 @@ function CardNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetRende
   const paymentButton = findPaymentButton(node);
   if (paymentButton) {
     return <PaymentCard node={node} button={paymentButton} onAction={onAction} />;
+  }
+
+  // Transfer route card — a transfer.detail / transfer.view button whose payload
+  // carries route segments. Checked before the generic drawer branch so the
+  // route data (hubs, distance, duration, pax) renders as a polished route card
+  // instead of the element-preview layout (which mis-reads the bare date as a
+  // description).
+  const transferButton = findTransferButton(node);
+  if (transferButton) {
+    return (
+      <TransferPreviewCard node={node} button={transferButton} onAction={onAction} />
+    );
   }
 
   // Detect the "element preview card" pattern and render with the polished

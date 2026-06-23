@@ -134,21 +134,30 @@
     }
   };
 
+  // Format a Date as an ISO-8601 string in IST (UTC+05:30)
+  const toISTString = (date) => {
+    const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
+    return new Date(date.getTime() + IST_OFFSET_MS).toISOString().replace('Z', '+05:30');
+  };
+
   // Create event object
   const createEvent = (eventName, properties = {}) => {
     const now = new Date();
+    // Hoist identity fields out of properties so they live only at the top
+    // level (like session_id) instead of being duplicated inside properties.
+    const { itinerary_id, session_id, ...restProperties } = properties;
     return {
       event: eventName,
-      occurred_at: now.toISOString(),
+      occurred_at: toISTString(now),
       source: "web",
       user_id: analyticsState.userId,
       user_ip: analyticsState.userIp || 'unknown',
-      session_id: analyticsState.sessionId,
-      itinerary_id: properties.itinerary_id || getCurrentItineraryId(),
+      session_id: session_id || analyticsState.sessionId,
+      itinerary_id: itinerary_id || getCurrentItineraryId(),
       page: location.pathname,
       device: getDeviceInfo(),
       properties: {
-        ...properties,
+        ...restProperties,
         page_url: location.href,
         referrer: document.referrer || '',
         timestamp: now.getTime(),

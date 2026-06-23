@@ -10,14 +10,19 @@ import { openNotification } from "../../store/actions/notification";
 import { togglePreference } from "../../store/actions/slideOneActions";
 import { deriveRoomConfiguration } from "../tailoredform/utils/slideOneActions";
 import Buttons from "../settings/Buttons";
-import DateComponent from "../settings/DateComponent";
 import { SectionLabel, InclusionChip } from "../settings/FormUI";
 import { Body2R_14 } from "../new-ui/Body";
-import SelectedDestination from "../tailoredform/slideone/destinations/selecteddestination/Index";
 import { useRouter } from "next/router";
 import { setCloneItineraryDrawer } from "../../store/actions/cloneItinerary";
 import axios from "axios";
 import { MERCURY_HOST } from "../../services/constants";
+import Image from "next/image";
+import { StyledFigmaBox } from "../tailoredform/utils/ui";
+import { getHumanDate } from "../../services/getHumanDate";
+import ModalWithBackdrop from "../ui/ModalWithBackdrop";
+import BottomModal from "../ui/LowerModal";
+import AirbnbCalendarSingleMonth from "../calendar/SingleCalendar";
+import { RxCross2 } from "react-icons/rx";
 
 const parseDateString = (dateString) => {
   if (!dateString) return null;
@@ -58,6 +63,7 @@ const CloneItinerary = ({
   const isDomestic = itinerary?.destination_type === "Domestic";
   const isDesktop = useMediaQuery("(min-width:767px)");
   const [isLoading, setIsLoading] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(false);
   const router = useRouter();
   const initialInputId = Date.now();
 
@@ -71,28 +77,30 @@ const CloneItinerary = ({
     cityToLocation(itinerary?.end_city || itinerary?.end_location) ||
     itineraryStartLoc;
 
+  // Start location is taken directly from the opened itinerary — there is no
+  // picker. End location is intentionally kept the same as the start.
   const [startingLocation, setStartingLocation] = useState(
     itineraryStartLoc || false
   );
-  const [showCities, setShowCities] = useState(false);
-  const [showSearchStarting, setShowSearchStarting] = useState(false);
-  const [destination, setDestination] = useState(router.query.destination);
-  // End location (optional, shown only when showEndLocation is true).
-  // const [endingLocation, setEndingLocation] = useState(itineraryEndLoc || false);
-  // const [showEndCities, setShowEndCities] = useState(false);
-  // const [showSearchEnding, setShowSearchEnding] = useState(false);
-  // const [endDestination, setEndDestination] = useState(null);
   const { id } = useSelector((state) => state.auth);
   const sourceId = sourceItineraryId || router.query.id;
 
-  // Initialize states with values from itinerary
-  const [addHotels, setAddHotels] = useState(
-    itinerary?.add_hotels ?? isHotelsPresent
-  );
-  const [addFlights, setAddFlights] = useState(itinerary?.add_flights ?? false);
-  const [addActivityTransfers, setAddActivityTransfers] = useState(
-    itinerary?.add_transfers_and_activities ?? false
-  );
+  // Duration (in days) of the source itinerary — used to derive the new end
+  // date from the picked start date so the trip length is preserved.
+  const itineraryDurationDays =
+    itinerary?.start_date && itinerary?.end_date
+      ? Math.round(
+          (parseDateString(itinerary.end_date) -
+            parseDateString(itinerary.start_date)) /
+            (1000 * 60 * 60 * 24)
+        )
+      : 0;
+
+  // Flights, hotels and activities & transfers are auto-selected on open.
+  // Visa/eSIM keep whatever the itinerary had.
+  const [addHotels, setAddHotels] = useState(true);
+  const [addFlights, setAddFlights] = useState(true);
+  const [addActivityTransfers, setAddActivityTransfers] = useState(true);
   const [addVisa, setAddVisa] = useState(itinerary?.add_visa ?? false);
   const [addEsim, setAddEsim] = useState(itinerary?.add_esim ?? false);
 
@@ -145,9 +153,14 @@ const CloneItinerary = ({
   // Update states if itinerary changes
   useEffect(() => {
     if (itinerary) {
-      setAddHotels(itinerary?.add_hotels ?? isHotelsPresent);
-      setAddFlights(itinerary?.add_flights ?? false);
-      setAddActivityTransfers(itinerary?.add_transfers_and_activities ?? false);
+      // Auto-mark flights, hotels and activities & transfers.
+      setAddHotels(true);
+      setAddFlights(true);
+      setAddActivityTransfers(true);
+      setStartingLocation(
+        cityToLocation(itinerary?.start_city || itinerary?.start_location) ||
+          false
+      );
       setAddVisa(itinerary?.add_visa ?? false);
       setAddEsim(itinerary?.add_esim ?? false);
       setRoomConfiguration(deriveRoomConfiguration(itinerary));
@@ -199,23 +212,27 @@ const CloneItinerary = ({
     dispatch(togglePreference(preference));
   };
 
-  const handleApplyDates = (dates) => {
+  // Single-date picker: user picks only the start date; the end date is
+  // derived from the source itinerary's duration so the trip length is kept.
+  const handleSelectStartDate = (dates) => {
+    const start =
+      dates.start instanceof Date
+        ? dates.start
+        : dates.start
+        ? parseDateString(dates.start)
+        : null;
+
+    if (!start) return;
+
+    const end = new Date(start);
+    end.setDate(end.getDate() + itineraryDurationDays);
+
     setDate({
-      type: dates.dateType || dates.type,
-      start_date:
-        dates.start instanceof Date
-          ? dates.start
-          : dates.start
-          ? parseDateString(dates.start)
-          : null,
-      end_date:
-        dates.end instanceof Date
-          ? dates.end
-          : dates.end
-          ? parseDateString(dates.end)
-          : null,
-      month: dates.month || "",
-      duration: dates.duration || "",
+      type: "fixed",
+      start_date: start,
+      end_date: end,
+      month: "",
+      duration: "",
     });
   };
 
@@ -335,6 +352,35 @@ const CloneItinerary = ({
     dispatch(setCloneItineraryDrawer(false));
   };
 
+  // Calendar body with a close button placed clear of the month-nav arrows.
+  const calendarContent = (
+    <div style={{ position: "relative", padding: "40px 4px 8px" }}>
+      <button
+        onClick={() => setShowCalendar(false)}
+        aria-label="Close"
+        className="grid place-items-center"
+        style={{
+          position: "absolute",
+          top: 8,
+          right: 8,
+          width: 32,
+          height: 32,
+          zIndex: 10,
+        }}
+      >
+        <RxCross2 style={{ fontSize: "1.25rem", color: "#5C5A55" }} />
+      </button>
+      <AirbnbCalendarSingleMonth
+        valueStart={date.start_date}
+        valueEnd={null}
+        onChangeDate={handleSelectStartDate}
+        setShowCalendar={setShowCalendar}
+        date={date}
+        isNotForm={true}
+      />
+    </div>
+  );
+
   const inclusions = [
     {
       id: "add-activities-transfers",
@@ -403,7 +449,7 @@ const CloneItinerary = ({
             trip
           </div>
           <p style={{ fontSize: 13, color: "#5C5A55", marginTop: 4 }}>
-            Tweak the start location, dates and travellers — I'll build your own editable copy.
+            Tweak the dates and travellers — I'll build your own editable copy.
           </p>
         </div>
 
@@ -439,45 +485,36 @@ const CloneItinerary = ({
         }}
       >
         <div className="flex flex-col gap-[6px]">
-          <SectionLabel>Start Location</SectionLabel>
-          <SelectedDestination
-            startingLocation={startingLocation}
-            setStartingLocation={setStartingLocation}
-            showSearchStarting={showSearchStarting}
-            setShowSearchStarting={setShowSearchStarting}
-            setShowCities={setShowCities}
-            selectlocation
-            destination={destination}
-            CITIES={null}
-            openCities={() => setShowCities(true)}
-            setDestination={setDestination}
-          ></SelectedDestination>
-        </div>
-
-        {/* {showEndLocation && (
-          <div className="flex flex-col gap-[6px]">
-            <SectionLabel>End Location</SectionLabel>
-            <SelectedDestination
-              startingLocation={endingLocation}
-              setStartingLocation={setEndingLocation}
-              showSearchStarting={showSearchEnding}
-              setShowSearchStarting={setShowSearchEnding}
-              setShowCities={setShowEndCities}
-              selectlocation
-              destination={endDestination}
-              CITIES={null}
-              openCities={() => setShowEndCities(true)}
-              setDestination={setEndDestination}
-            ></SelectedDestination>
+          <SectionLabel>Start Date</SectionLabel>
+          <div className="relative w-full">
+            <StyledFigmaBox
+              value={
+                date.start_date
+                  ? getHumanDate(
+                      date.start_date instanceof Date
+                        ? date.start_date
+                            .toLocaleDateString("en-CA")
+                            .split("-")
+                            .reverse()
+                            .join("/")
+                        : date.start_date.split("-").reverse().join("/")
+                    )
+                  : ""
+              }
+              placeholder="Select a start date"
+              className="cursor-pointer w-full pr-10 Body2M_14"
+              onClick={() => setShowCalendar(true)}
+              readOnly
+            />
+            <Image
+              src="/calendar.svg"
+              width={20}
+              height={20}
+              className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+              alt="calendar"
+            />
           </div>
-        )} */}
-
-        <DateComponent
-          settings={true}
-          handleApplyDates={handleApplyDates}
-          setDate={setDate}
-          date={date}
-        />
+        </div>
 
         <div>
           <SectionLabel>Pick your inclusions</SectionLabel>
@@ -549,6 +586,48 @@ const CloneItinerary = ({
           updateLabel="Clone Itinerary"
         />
       </div>
+
+      {/* single-date calendar — picks start date, end is derived from duration */}
+      {isDesktop ? (
+        <ModalWithBackdrop
+          centered
+          show={showCalendar}
+          mobileWidth="100%"
+          backdrop
+          closeIcon={false}
+          onHide={() => setShowCalendar(false)}
+          borderRadius={"12px"}
+          animation={false}
+          paddingX="0px"
+          paddingY="0px"
+          backdropStyle={{
+            backgroundColor: "rgba(0,0,0,0.4)",
+            backdropFilter: "blur(1px)",
+          }}
+        >
+          {calendarContent}
+        </ModalWithBackdrop>
+      ) : (
+        <BottomModal
+          show={showCalendar}
+          onHide={() => setShowCalendar(false)}
+          width="100%"
+          height="max-content"
+          paddingX="20px"
+          paddingY="20px"
+        >
+          <div className="flex justify-center w-full">
+            <AirbnbCalendarSingleMonth
+              valueStart={date.start_date}
+              valueEnd={null}
+              onChangeDate={handleSelectStartDate}
+              setShowCalendar={setShowCalendar}
+              date={date}
+              isNotForm={true}
+            />
+          </div>
+        </BottomModal>
+      )}
     </div>
   );
 };
