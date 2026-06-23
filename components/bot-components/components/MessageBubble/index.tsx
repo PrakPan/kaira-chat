@@ -100,10 +100,23 @@ const UserAvatar: React.FC = () => {
   const customerNameRaw = useSelector(
     (state: any) => state?.Itinerary?.customer_name,
   );
-  const itineraryCustomer =
-    typeof customerNameRaw === "string" && customerNameRaw.trim()
-      ? customerNameRaw.trim()
-      : null;
+  // In the P1/draft stage no itinerary exists in redux yet, so the customer is
+  // only known from the thread's get_by_id `customer_name` (chatState). Prefer
+  // the itinerary's customer_name when present, otherwise fall back to the
+  // thread's; if neither exists we use the current logged-in-user flow.
+  const threadCustomerRaw = useSelector(
+    (state: any) => state?.chatState?.customerName,
+  );
+  const resolvedCustomerRaw =
+    (typeof customerNameRaw === "string" && customerNameRaw.trim()
+      ? customerNameRaw
+      : null) ??
+    (typeof threadCustomerRaw === "string" && threadCustomerRaw.trim()
+      ? threadCustomerRaw
+      : null);
+  const itineraryCustomer = resolvedCustomerRaw
+    ? resolvedCustomerRaw.trim()
+    : null;
 
   // The logged-in user's own name — redux first, then the copy localStorage
   // persists under "name". Used to detect when the open itinerary actually

@@ -42,7 +42,7 @@ import ConfirmationModal from "./components/ConfirmationModal";
 import { useSelector } from "react-redux";
 import setCart from "../../store/actions/Cart";
 import { openNotification } from "../../store/actions/notification";
-import { setUnreadMessages } from "../../store/actions/chatState";
+import { setUnreadMessages, setThreadCustomerName } from "../../store/actions/chatState";
 import axios from "axios";
 import { MERCURY_HOST } from "../../services/constants";
 import SmallGallery from "../../containers/newitinerary/overview/SmallGallery";
@@ -1714,6 +1714,9 @@ export default function BotApp({
           setActiveChatSessionId(threadSessionId);
         }
         setRestoredThread(data);
+        // Thread-level customer_name (P1/draft stage has no itinerary in redux
+        // yet) feeds the chat avatar's customer-initial fallback.
+        dispatch(setThreadCustomerName(data?.customer_name ?? null));
         setActiveThreadId(threadId);
         setIsChatActive(true);
 
@@ -2249,6 +2252,7 @@ export default function BotApp({
       // Keep the initial-restore effect above from double-firing for this id.
       hasRestoredRef.current = true;
       setRestoredThread(null);
+      dispatch(setThreadCustomerName(null));
       setLocations([]);
       setCurrentRoute(null);
       setSkeletonCities([]);
@@ -2306,6 +2310,7 @@ export default function BotApp({
       }
 
       setRestoredThread(null);
+      dispatch(setThreadCustomerName(null));
       setLocations([]);
       setCurrentRoute(null);
       setSkeletonCities([]);
@@ -2392,6 +2397,7 @@ export default function BotApp({
     setShowChatBot(false);
     // Do NOT reset chatBotItineraryId here — ChatBot must not remount on new chat
     setRestoredThread(null);
+    dispatch(setThreadCustomerName(null));
     setActiveThreadId(null);
     applyBotMode("p1");
     setItineraryId("");
