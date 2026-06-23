@@ -10,6 +10,15 @@ const shimmer = keyframes`
   }
 `;
 
+const ttwShimmer = keyframes`
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+`;
+
 const wave = keyframes`
   0% {
     transform: translateX(-100%) skewX(-15deg);
@@ -30,8 +39,8 @@ const LoadingBox = styled.div`
   margin: ${(props) => props.margin};
   overflow: hidden;
   position: relative;
-  background: #f0f0f0; /* Base color */
-  
+  background: #f4f3ec; /* Kaira warm paper base */
+
   /* Create the shimmer effect */
   &::before {
     content: '';
@@ -43,10 +52,12 @@ const LoadingBox = styled.div`
     background: linear-gradient(
       90deg,
       transparent 0%,
-      rgba(255, 255, 255, 0.6) 50%,
+      rgba(255, 255, 255, 0.55) 45%,
+      rgba(247, 231, 0, 0.1) 50%,
+      rgba(255, 255, 255, 0.55) 55%,
       transparent 100%
     );
-    animation: ${shimmer} 2s ease-in-out infinite;
+    animation: ${shimmer} 1.6s ease-in-out infinite;
   }
 `;
 
@@ -61,8 +72,8 @@ const LoadingBoxWave = styled.div`
   margin: ${(props) => props.margin};
   overflow: hidden;
   position: relative;
-  background: #e8e8e8; /* Base color */
-  
+  background: #efeee7; /* Kaira warm paper base */
+
   &::before {
     content: '';
     position: absolute;
@@ -76,7 +87,7 @@ const LoadingBoxWave = styled.div`
       rgba(255, 255, 255, 0.8) 100%
     )`};
     animation: ${(props) =>
-    props.$isNotAnimate
+    props.isNotAnimate
       ? ""
       : css`${wave} 1.8s ease-in-out infinite`};
   }
@@ -94,12 +105,12 @@ const LoadingBoxGradient = styled.div`
   overflow: hidden;
   background: linear-gradient(
     90deg,
-    #f0f0f0 25%,
-    #e0e0e0 50%,
-    #f0f0f0 75%
+    #ececec 0%,
+    #f6f5f0 50%,
+    #ececec 100%
   );
   background-size: 200% 100%;
-  animation: ${shimmer} 2s ease-in-out infinite;
+  animation: ${ttwShimmer} 1.4s ease-in-out infinite;
 `;
 
 export default function SkeletonCard({

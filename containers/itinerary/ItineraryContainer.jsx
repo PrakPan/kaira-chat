@@ -78,134 +78,56 @@ export const ItineraryStatusLoader = ({ displayText, isVisible }) => {
   }
 
   return (
-    <div className="">
-      <div className="bg-[#fefad8] border border-yellow-200 rounded-lg px-4 py-3 shadow-lg w-full md:max-w-sm ">
+    <div className="pointer-events-none">
+      <div className="relative w-[320px] max-w-[88vw] bg-[#fffdf0] border border-[#f3e7a8] rounded-2xl shadow-[0_10px_30px_rgba(11,18,32,0.10)] px-4 pt-3.5 pb-4">
         <div className="flex items-center gap-3">
-          {/* Rotating Hourglass Timer Icon */}
-          <div className="flex-shrink-0">
-            <div className="w-5 h-5 animate-spin">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-full h-full"
-              >
-                {/* Hourglass outline */}
+          {/* Spinning ring with search glyph */}
+          <div className="relative flex-shrink-0 w-10 h-10">
+            <span className="absolute inset-0 rounded-full border-[3px] border-[#f7e700]/25" />
+            <span className="absolute inset-0 rounded-full border-[3px] border-transparent border-t-[#f7e700] animate-spin" />
+            <span className="absolute inset-[7px] rounded-full bg-white flex items-center justify-center">
+              <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4">
+                <circle cx="11" cy="11" r="6" stroke="#07213A" strokeWidth="2" />
                 <path
-                  d="M6 2V6.5L10.5 12L6 17.5V22H18V17.5L13.5 12L18 6.5V2H6Z"
-                  stroke="#000000"
-                  strokeWidth="1.5"
-                  fill="none"
+                  d="M20 20L16.5 16.5"
+                  stroke="#07213A"
+                  strokeWidth="2"
+                  strokeLinecap="round"
                 />
-
-                {/* Top sand */}
-                <path d="M8 4H16V6L12 10L8 6V4Z" fill="#000000">
-                  <animate
-                    attributeName="opacity"
-                    values="1;0.7;1"
-                    dur="2s"
-                    repeatCount="indefinite"
-                  />
-                </path>
-
-                {/* Bottom sand */}
-                <path
-                  d="M8 20H16V18L12 14L8 18V20Z"
-                  fill="#ffffff"
-                  className="animate-pulse"
-                >
-                  <animate
-                    attributeName="opacity"
-                    values="0.3;1;0.3"
-                    dur="2s"
-                    repeatCount="indefinite"
-                  />
-                </path>
-
-                {/* Falling sand particles */}
-                <circle r="0.5" fill="#F59E0B">
-                  <animate
-                    attributeName="cy"
-                    values="10;14"
-                    dur="1s"
-                    repeatCount="indefinite"
-                  />
-                  <animate
-                    attributeName="cx"
-                    values="12;12"
-                    dur="1s"
-                    repeatCount="indefinite"
-                  />
-                  <animate
-                    attributeName="opacity"
-                    values="1;0"
-                    dur="1s"
-                    repeatCount="indefinite"
-                  />
-                </circle>
-
-                <circle r="0.3" fill="#F59E0B">
-                  <animate
-                    attributeName="cy"
-                    values="9;13"
-                    dur="1.2s"
-                    repeatCount="indefinite"
-                    begin="0.3s"
-                  />
-                  <animate
-                    attributeName="cx"
-                    values="11.5;11.5"
-                    dur="1.2s"
-                    repeatCount="indefinite"
-                    begin="0.3s"
-                  />
-                  <animate
-                    attributeName="opacity"
-                    values="1;0"
-                    dur="1.2s"
-                    repeatCount="indefinite"
-                    begin="0.3s"
-                  />
-                </circle>
-
-                <circle r="0.4" fill="#F59E0B">
-                  <animate
-                    attributeName="cy"
-                    values="10.5;14.5"
-                    dur="1.1s"
-                    repeatCount="indefinite"
-                    begin="0.6s"
-                  />
-                  <animate
-                    attributeName="cx"
-                    values="12.5;12.5"
-                    dur="1.1s"
-                    repeatCount="indefinite"
-                    begin="0.6s"
-                  />
-                  <animate
-                    attributeName="opacity"
-                    values="1;0"
-                    dur="1.1s"
-                    repeatCount="indefinite"
-                    begin="0.6s"
-                  />
-                </circle>
               </svg>
-            </div>
+            </span>
           </div>
 
-          {/* Content */}
+          {/* Text */}
           <div className="flex-1 min-w-0">
-            <div className="text-sm font-medium text-black leading-tight">
+            <div className="text-[15px] font-semibold text-[#07213A] leading-snug truncate">
               {displayText}
             </div>
-            <div className="text-xs text-black mt-1">
-              This might take a few seconds...
+            <div className="text-xs text-[#8a93a6] mt-0.5">
+              This might take a few seconds…
             </div>
           </div>
         </div>
+
+        {/* Indeterminate progress bar */}
+        <div className="mt-3 h-1.5 w-full bg-[#f4f3ec] rounded-full overflow-hidden">
+          <div className="ttw-loader-bar h-full w-2/5 rounded-full bg-gradient-to-r from-[#f7e700] to-[#e8b800]" />
+        </div>
       </div>
+
+      <style jsx>{`
+        @keyframes ttwLoaderBar {
+          0% {
+            transform: translateX(-110%);
+          }
+          100% {
+            transform: translateX(360%);
+          }
+        }
+        .ttw-loader-bar {
+          animation: ttwLoaderBar 1.4s ease-in-out infinite;
+        }
+      `}</style>
     </div>
   );
 };

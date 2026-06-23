@@ -6,6 +6,7 @@ import Button from "../../ui/button/Index";
 import LogInModal from "../Login";
 import SectionOne from "./SectionOne";
 import LoadingLottie from "../../ui/LoadingLottie";
+import { ItineraryUpdateLoader } from "../../revamp/common/components/loader";
 import Drawer from "../../ui/Drawer";
 import { openNotification } from "../../../store/actions/notification";
 import Skeleton from "./Skeleton";
@@ -85,17 +86,14 @@ const Booking = (props) => {
           <GridContainer style={{ clear: "right" }}>
             <ContentContainer style={{ position: "relative" }}>
               {updateBookingState ? (
-                <div
-                  style={{
-                    width: "max-content",
-                    margin: "auto",
-                    height: isPageWide ? "80vh" : "40vh",
-                  }}
-                  className="center-div text-center "
-                >
-                  <LoadingLottie height="5rem" width="5rem" margin="none" />
-                  Please wait while we update your bookings
-                </div>
+                <ItineraryUpdateLoader
+                  message="Please wait while we update your transfer"
+                  subMessages={[
+                    "Confirming your transfer…",
+                    "Arranging the details…",
+                    "Updating your transfer…",
+                  ]}
+                />
               ) : null}
 
               {!noResults && !error && !updateBookingState ? (

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import ReactDOM from "react-dom";
 import styled from "styled-components";
 import media from "../../media";
 import AccommodationSearched from "./new-accommodation-searched/Index";
@@ -12,6 +13,7 @@ import LogInModal from "../Login";
 import SectionOne from "./SectionOne";
 import SectionTwo from "./SectionTwo";
 import LoadingLottie from "../../ui/LoadingLottie";
+import { ItineraryUpdateLoader } from "../../revamp/common/components/loader";
 import Drawer from "../../ui/Drawer";
 import Slide from "../../../Animation/framerAnimation/Slide";
 import { openNotification } from "../../../store/actions/notification";
@@ -113,6 +115,7 @@ const Booking = (props) => {
     totalPages: 1,
   });
   let isPageWide = media("(min-width: 768px)");
+  let isDrawerWide = media("(min-width: 984px)");
   const [moreOptionsJSX, setMoreOptionsJSX] = useState([]);
   const [isError, setIsError] = useState({
     error: false,
@@ -1045,14 +1048,27 @@ const Booking = (props) => {
               )}
             </div>
 
-            <div className="flex items-center justify-center sticky top-2/3 z-[900]">
-              {loading && (
-                <ItineraryStatusLoader
-                  displayText={"Finding best hotels for you"}
-                  isVisible={loading}
-                />
+            {loading &&
+              typeof document !== "undefined" &&
+              ReactDOM.createPortal(
+                <div
+                  style={{
+                    position: "fixed",
+                    top: 0,
+                    bottom: 0,
+                    right: 0,
+                    width: isDrawerWide ? "50vw" : "100vw",
+                    zIndex: 1300,
+                  }}
+                  className="flex items-center justify-center px-4 pointer-events-none"
+                >
+                  <ItineraryStatusLoader
+                    displayText={"Finding best hotels for you"}
+                    isVisible={loading}
+                  />
+                </div>,
+                document.body
               )}
-            </div>
 
             <div className="lg:w-[100%] w-[95%] mx-auto">
               {unauthorized ? (
@@ -1074,21 +1090,14 @@ const Booking = (props) => {
               <GridContainer style={{ clear: "right" }}>
                 <ContentContainer style={{ position: "relative" }}>
                   {updateBookingState ? (
-                    <div
-                      style={{
-                        width: "max-content",
-                        margin: "auto",
-                        height: isPageWide ? "80vh" : "40vh",
-                      }}
-                      className="center-div text-center "
-                    >
-                      <LoadingLottie
-                        height={"5rem"}
-                        width={"5rem"}
-                        margin="none"
-                      />
-                      Please wait while we update your bookings
-                    </div>
+                    <ItineraryUpdateLoader
+                      message="Please wait while we update your stay"
+                      subMessages={[
+                        "Confirming room availability…",
+                        "Locking in your best rate…",
+                        "Updating your stay…",
+                      ]}
+                    />
                   ) : null}
 
                   {!loading &&

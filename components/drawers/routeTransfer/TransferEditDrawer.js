@@ -7598,8 +7598,21 @@ const toggleTransferDetails = (priceOptionId) => {
       {(isCurrentTransferLoading() ||
         (!otherTransfer && !error && selectedResult?.transfer?.id)) && (
         <div className="flex justify-center items-center py-8">
-          <PulseLoader size={10} speedMultiplier={0.8} color="#3B82F6" />
-          <span className="ml-3 ttw-type-body text-gray-600">
+          <div className="flex space-x-1.5">
+            <div
+              className="w-2.5 h-2.5 bg-[#f7e700] rounded-full animate-bounce"
+              style={{ animationDelay: "0ms" }}
+            />
+            <div
+              className="w-2.5 h-2.5 bg-[#f7e700] rounded-full animate-bounce"
+              style={{ animationDelay: "150ms" }}
+            />
+            <div
+              className="w-2.5 h-2.5 bg-[#f7e700] rounded-full animate-bounce"
+              style={{ animationDelay: "300ms" }}
+            />
+          </div>
+          <span className="ml-3 ttw-type-body text-[#445069]">
             Loading transfer options...
           </span>
         </div>
@@ -8277,7 +8290,7 @@ const toggleTransferDetails = (priceOptionId) => {
   {/* Loading indicator for load more */}
   {loadingMore && (
     <div className="flex justify-center items-center py-4">
-      <PulseLoader size={8} speedMultiplier={0.8} color="#3B82F6" />
+      <PulseLoader size={8} speedMultiplier={0.8} color="#f7e700" />
     </div>
   )}
   </>);

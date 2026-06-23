@@ -8,6 +8,7 @@ import Button from "../../ui/button/Index";
 import LogInModal from "../Login";
 import SectionOne from "./SectionOne";
 import LoadingLottie from "../../ui/LoadingLottie";
+import { ItineraryUpdateLoader } from "../../revamp/common/components/loader";
 import TaxiSearched from "./taxi-searched/Index";
 import Drawer from "../../ui/Drawer";
 import { openNotification } from "../../../store/actions/notification";
@@ -519,17 +520,14 @@ const ComboTaxi = (props) => {
                 )}
               </div>
               {updateBookingState ? (
-                <div
-                  style={{
-                    width: "max-content",
-                    margin: "auto",
-                    height: isPageWide ? "80vh" : "40vh",
-                  }}
-                  className="center-div text-center text-[#445069]"
-                >
-                  <LoadingLottie height="5rem" width="5rem" margin="none" />
-                  Please wait while we update your bookings
-                </div>
+                <ItineraryUpdateLoader
+                  message="Please wait while we update your transfer"
+                  subMessages={[
+                    "Confirming your ride…",
+                    "Arranging pickup details…",
+                    "Updating your transfer…",
+                  ]}
+                />
               ) : null}
 
               {!noResults && !error && !updateBookingState ? (

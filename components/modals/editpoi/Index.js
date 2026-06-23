@@ -5,6 +5,7 @@ import media from "../../media";
 import LeftSideBar from "./leftsidebar/Index";
 import Poi from "./poi/Index";
 import Spinner from "../../Spinner";
+import { ItineraryUpdateLoader } from "../../revamp/common/components/loader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import CurrentlyReplacing from "./leftsidebar/CurrentlyReplacing";
@@ -249,16 +250,14 @@ const Booking = (props) => {
                     </HeightContainer>
                   ) : null}
                   {updatePoiState ? (
-                    <div
-                      style={{
-                        width: "max-content",
-                        margin: "auto",
-                        height: isPageWide ? "80vh" : "40vh",
-                      }}
-                      className="text-center  center-div"
-                    >
-                      <Spinner></Spinner>Please wait while we update your plan
-                    </div>
+                    <ItineraryUpdateLoader
+                      message="Please wait while we update your plan"
+                      subMessages={[
+                        "Confirming availability…",
+                        "Saving your activity…",
+                        "Updating your plan…",
+                      ]}
+                    />
                   ) : null}
                   {!noResults && !loading && !updatePoiState ? (
                     <OptionsContainer id="options">

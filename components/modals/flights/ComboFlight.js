@@ -14,6 +14,7 @@ import SectionOne from "./SectionOne";
 import Button from "../../ui/button/Index";
 import Flight from "./new-flight-searched/Index";
 import LoadingLottie from "../../ui/LoadingLottie";
+import { ItineraryUpdateLoader } from "../../revamp/common/components/loader";
 import Drawer from "../../ui/Drawer";
 import Skeleton from "./Skeleton";
 import { TbArrowBack } from "react-icons/tb";
@@ -1307,17 +1308,14 @@ const ComboFlight = (props) => {
   const renderFlightContent = () => {
     if (updateBookingState) {
       return (
-        <div
-          style={{
-            width: "max-content",
-            margin: "auto",
-            height: isPageWide ? "80vh" : "40vh",
-          }}
-          className="center-div "
-        >
-          <LoadingLottie height={"5rem"} width={"5rem"} margin="none" />
-          Please wait while we update your flight
-        </div>
+        <ItineraryUpdateLoader
+          message="Please wait while we update your flight"
+          subMessages={[
+            "Confirming seat availability…",
+            "Locking in your fare…",
+            "Updating your flight…",
+          ]}
+        />
       );
     }
 
