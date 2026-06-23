@@ -20,6 +20,12 @@ import ReviewPoi from "../../../components/POIDetails/Reviews";
 import { MERCURY_HOST } from "../../../services/constants";
 import Button from "../../../components/ui/button/Index";
 import { PulseLoader } from "react-spinners";
+import {
+  SectionTitle,
+  Divider,
+  IconList,
+  CollapsibleSection,
+} from "./kairaSections";
 
 export const Title = styled.p`
   /* H3 token · 22/1.15/800/-0.02em */
@@ -417,211 +423,72 @@ export default function ChangePoiDetails(props) {
             ) : null}
           </div>
 
-          <div>
-            {props.data?.general_guidelines &&
-            props.data?.general_guidelines?.length ? (
-              <div className="flex flex-col">
-                <div className="ttw-type-h3 font-semibold">
-                  <div>General guidelines</div>
-                  <div className="border-b-[1px] border-[#ececec] mt-2 mb-2"></div>
-                  {/* {!boolDetails?.generalGuidelines ? (
-                    <IoIosArrowDown
-                      className="cursor-pointer"
-                      onClick={() =>
-                        setBoolDetail((prev) => ({
-                          ...prev,
-                          generalGuidelines: true,
-                        }))
-                      }
-                    />
-                  ) : (
-                    <IoIosArrowUp
-                      className="cursor-pointer"
-                      onClick={() =>
-                        setBoolDetail((prev) => ({
-                          ...prev,
-                          generalGuidelines: false,
-                        }))
-                      }
-                    />
-                  )} */}
-                </div>
-                {boolDetails?.generalGuidelines && (
-                  <div className="ttw-type-body">
-                    <ul style={{ paddingLeft: "0.5rem" }}>
-                      {props.data.general_guidelines?.map((e, i) => (
-                        <li key={i}>- {e}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <></>
-            )}
+          {(props.data?.general_guidelines?.length ||
+            props.data?.things_to_bring?.length ||
+            props.data?.not_suitable_for?.length ||
+            props.data?.tips_tricks?.length) ? (
+            <div className="flex flex-col divide-y divide-[#ececec] border-y border-[#ececec]">
+              {props.data?.general_guidelines?.length ? (
+                <CollapsibleSection title="General guidelines">
+                  <IconList items={props.data.general_guidelines} />
+                </CollapsibleSection>
+              ) : null}
 
-            {props.data?.things_to_bring &&
-            props.data?.things_to_bring?.length ? (
-              <div className="flex flex-col">
-                <div className="ttw-type-h3 font-semibold">
-                  <div>Things to bring</div>
-                  <div className="border-b-[1px] border-[#ececec] mt-2 mb-2"></div>
-                  {/* {!boolDetails?.thingsToBring ? (
-                    <IoIosArrowDown
-                      className="cursor-pointer"
-                      onClick={() =>
-                        setBoolDetail((prev) => ({
-                          ...prev,
-                          thingsToBring: true,
-                        }))
-                      }
-                    />
-                  ) : (
-                    <IoIosArrowUp
-                      className="cursor-pointer"
-                      onClick={() =>
-                        setBoolDetail((prev) => ({
-                          ...prev,
-                          thingsToBring: flase,
-                        }))
-                      }
-                    />
-                  )} */}
-                </div>
-                {!boolDetails?.thingsToBring && (
-                  <div className="ttw-type-body">
-                    <ul style={{ paddingLeft: "0.5rem" }}>
-                      {props.data.things_to_bring?.map((e, i) => (
-                        <li key={i}>- {e}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <></>
-            )}
+              {props.data?.things_to_bring?.length ? (
+                <CollapsibleSection title="Things to bring">
+                  <IconList items={props.data.things_to_bring} />
+                </CollapsibleSection>
+              ) : null}
 
-            {props.data?.not_suitable_for &&
-            props.data?.not_suitable_for?.length ? (
-              <div className="flex flex-col">
-                <div className="ttw-type-h3 font-semibold">
-                  <div>Not suitable for</div>
-                  <div className="border-b-[1px] border-[#ececec] mt-2 mb-2"></div>
-                  {/* {!boolDetails?.notSuitableFor ? (
-                    <IoIosArrowDown
-                      className="cursor-pointer"
-                      onClick={() =>
-                        setBoolDetail((prev) => ({
-                          ...prev,
-                          notSuitableFor: true,
-                        }))
-                      }
-                    />
-                  ) : (
-                    <IoIosArrowUp
-                      className="cursor-pointer"
-                      onClick={() =>
-                        setBoolDetail((prev) => ({
-                          ...prev,
-                          notSuitableFor: false,
-                        }))
-                      }
-                    />
-                  )} */}
-                </div>
-                {boolDetails?.notSuitableFor && (
-                  <div className="ttw-type-body">
-                    <ul style={{ paddingLeft: "0.5rem" }}>
-                      {props.data.not_suitable_for?.map((e, i) => (
-                        <li key={i}>- {e}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <></>
-            )}
+              {props.data?.not_suitable_for?.length ? (
+                <CollapsibleSection title="Not suitable for">
+                  <IconList items={props.data.not_suitable_for} />
+                </CollapsibleSection>
+              ) : null}
 
-            {props.data?.tips_tricks && props.data?.tips_tricks?.length ? (
-              <div className="flex flex-col">
-                <div className="ttw-type-h3 font-semibold">
-                  <div>Tips, Tricks and Cautions</div>
-                  <div className="border-b-[1px] border-[#ececec] mt-2 mb-2"></div>
-                  {/* {!boolDetails?.tipsTricks ? (
-                    <IoIosArrowDown
-                      className="cursor-pointer"
-                      onClick={() =>
-                        setBoolDetail((prev) => ({
-                          ...prev,
-                          tipsTricks: true,
-                        }))
-                      }
-                    />
-                  ) : (
-                    <IoIosArrowUp
-                      className="cursor-pointer"
-                      onClick={() =>
-                        setBoolDetail((prev) => ({
-                          ...prev,
-                          tipsTricks: false,
-                        }))
-                      }
-                    />
-                  )} */}
-                </div>
-                {boolDetails?.tipsTricks && (
-                  <div className="ttw-type-body">
-                    <ul style={{ paddingLeft: "0.5rem" }}>
-                      {props.data.tips_tricks?.map((e, i) => (
-                        <li key={i}>- {e}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <></>
-            )}
-          </div>
+              {props.data?.tips_tricks?.length ? (
+                <CollapsibleSection title="Tips, Tricks and Cautions">
+                  <IconList items={props.data.tips_tricks} />
+                </CollapsibleSection>
+              ) : null}
+            </div>
+          ) : null}
         </div>
         {props.data?.timings && (
-          <div>
-            <Heading>Timings</Heading>
-            <Text>
-              {
-                <div>
-                  {props.data.timings?.map((e, i) => {
-                    const index = e.indexOf(":");
-                    const day = e.slice(0, index).trim();
-                    const time = e.slice(index + 1).trim();
+          <section className="flex flex-col gap-3">
+            <SectionTitle>Timings</SectionTitle>
+            <Divider />
+            <div className="flex flex-col gap-2">
+              {props.data.timings?.map((e, i) => {
+                const index = e.indexOf(":");
+                const day = e.slice(0, index).trim();
+                const time = e.slice(index + 1).trim();
 
-                    return (
-                      <div key={i} className="flex gap-[22px] mb-2">
-                        <div className="ttw-type-body font-semibold text-[#445069]">{day}</div>
-                        <div
-                          className={`ttw-type-body font-mono bg-[#f4f3ec] text-[#0b1220] px-[8px] py-[2px] rounded-[10px] ${
- time == "Closed"
- ? " bg-[rgba(184,64,52,0.1)] text-[#b84034]"
- : ""
- }`}
-                        >
-                          {time}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              }
-            </Text>
-          </div>
+                return (
+                  <div key={i} className="flex items-center gap-[22px]">
+                    <div className="w-[90px] text-[15px] font-semibold text-[#445069]">
+                      {day}
+                    </div>
+                    <div
+                      className={`font-mono text-[14px] bg-[#f4f3ec] text-[#0b1220] px-[10px] py-[3px] rounded-[10px] ${
+                        time == "Closed"
+                          ? " bg-[rgba(184,64,52,0.1)] text-[#b84034]"
+                          : ""
+                      }`}
+                    >
+                      {time}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
         )}
         {props?.data?.reviews && (
-          <div className="flex flex-col gap-[12px]">
-            <div id="reviews-poi" className="flex flex-col gap-[4px]">
-              <Heading>Reviews</Heading>
-
+          <section className="flex flex-col gap-3">
+            <div id="reviews-poi" className="flex flex-col gap-2">
+              <SectionTitle>Reviews</SectionTitle>
+              <Divider />
               <Reviews>
                 {props.data.rating ? (
                   <div
@@ -636,21 +503,15 @@ export default function ChangePoiDetails(props) {
                   {props.data?.rating ? (
                     <p className="m-0 font-mono">{props.data.rating}</p>
                   ) : null}
-
-                  {/* {props.data?.user_ratings_total ? (
-                      <u> {props.data.user_ratings_total} user reviews</u>
-                    ) : null} */}
                 </div>
               </Reviews>
             </div>
-            <div className="flex flex-wrap gap-[21px]">
+            <div className="flex flex-col w-full">
               {props?.data?.reviews?.map((item) => (
-                <div className="w-full sm:w-[289px]">
-                  <ReviewPoi review={item} />
-                </div>
+                <ReviewPoi key={item?.author_name} review={item} />
               ))}
             </div>
-          </div>
+          </section>
         )}
 
         <div className="flex gap-2">

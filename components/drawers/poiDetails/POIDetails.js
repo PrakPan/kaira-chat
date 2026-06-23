@@ -23,6 +23,11 @@ import Button from "../../ui/button/Index";
 import Drawer from "../../ui/Drawer";
 import AddPoi from "../AddPoi";
 import { getHumanDate } from "../../../services/getHumanDate";
+import {
+  SectionTitle,
+  Divider,
+  IconList,
+} from "./kairaSections";
 
 const svgIcons = {
   "delete": <svg xmlns="http://www.w3.org/2000/svg" width="15" height="14" viewBox="0 0 15 14" fill="none">
@@ -886,50 +891,53 @@ const POIDetails = (props) => {
           ) : null}
 
           {props.data?.getting_around && (
-            <div>
-              <Heading>Getting Around</Heading>
-              <Text>{props.data.getting_around}</Text>
-            </div>
+            <section className="flex flex-col gap-3">
+              <SectionTitle>Getting Around</SectionTitle>
+              <Divider />
+              <p className="text-[15px] leading-[23px] text-[#445069] m-0">
+                {props.data.getting_around}
+              </p>
+            </section>
           )}
 
           {props.data?.timings && (
-            <div>
-              <Heading>Timings</Heading>
-              <Text>
-                {
-                  <div>
-                    {props.data.timings?.map((e, i) => {
-                      const index = e.indexOf(":");
-                      const day = e.slice(0, index).trim();
-                      const time = e.slice(index + 1).trim();
+            <section className="flex flex-col gap-3">
+              <SectionTitle>Timings</SectionTitle>
+              <Divider />
+              <div className="flex flex-col gap-2">
+                {props.data.timings?.map((e, i) => {
+                  const index = e.indexOf(":");
+                  const day = e.slice(0, index).trim();
+                  const time = e.slice(index + 1).trim();
 
-                      return (
-                        <div key={i} className="flex gap-[22px] mb-2">
-                          <div className="ttw-type-body font-semibold text-[#445069]">{day}</div>
-                          <div
-                            className={`ttw-type-body font-mono bg-[#f4f3ec] text-[#0b1220] px-[8px] py-[2px] rounded-[10px] ${time == "Closed"
- ? " bg-[rgba(184,64,52,0.1)] text-[#b84034]"
- : ""
- }`}
-                          >
-                            {time}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                }
-              </Text>
-            </div>
+                  return (
+                    <div key={i} className="flex items-center gap-[22px]">
+                      <div className="w-[90px] text-[15px] font-semibold text-[#445069]">
+                        {day}
+                      </div>
+                      <div
+                        className={`font-mono text-[14px] bg-[#f4f3ec] text-[#0b1220] px-[10px] py-[3px] rounded-[10px] ${
+                          time == "Closed"
+                            ? " bg-[rgba(184,64,52,0.1)] text-[#b84034]"
+                            : ""
+                        }`}
+                      >
+                        {time}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
           )}
           {props?.data?.reviews && (
-            <div className="flex flex-col gap-[12px] ttw-type-body">
+            <section className="flex flex-col gap-3 ttw-type-body">
               <div
                 id="reviews-poi"
-                className="flex flex-col gap-[4px]"
+                className="flex flex-col gap-2"
               >
-                <div className="ttw-type-h4 font-extrabold text-[#0b1220] tracking-[-0.01em]">Reviews</div>
-
+                <SectionTitle>Reviews</SectionTitle>
+                <Divider />
                 <Reviews>
                   {props.data.rating ? (
                     <div
@@ -951,22 +959,19 @@ const POIDetails = (props) => {
                   </div>
                 </Reviews>
               </div>
-              <div className="flex flex-wrap gap-[21px]">
+              <div className="flex flex-col w-full">
                 {props?.data?.reviews?.map((item) => (
-                  <div className="w-full sm:w-[289px]">
-                    <ReviewPoi review={item} />
-                  </div>
+                  <ReviewPoi key={item?.author_name} review={item} />
                 ))}
               </div>
-            </div>
+            </section>
           )}
           {props.data?.tips && props.data?.tips.length > 0 ? (
-            <div>
-              <Heading>Tips</Heading>
-              {props?.data?.tips.map((item) => (
-                <Text>{item}</Text>
-              ))}
-            </div>
+            <section className="flex flex-col gap-3">
+              <SectionTitle>Tips</SectionTitle>
+              <Divider />
+              <IconList items={props.data.tips} />
+            </section>
           ) : (
             <></>
           )}

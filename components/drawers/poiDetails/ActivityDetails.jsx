@@ -6,6 +6,7 @@ import { MERCURY_HOST } from "../../../services/constants";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { PulseLoader } from "react-spinners";
+import { SectionTitle, Divider } from "./kairaSections";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
@@ -833,34 +834,55 @@ const ActivityDetails = (props) => {
           ) : null}
 
           {props.data?.getting_around && (
-            <div>
-              <Heading>Getting Around</Heading>
-              <Text>{props.data.getting_around}</Text>
-            </div>
+            <section className="flex flex-col gap-3">
+              <SectionTitle>Getting Around</SectionTitle>
+              <Divider />
+              <p className="text-[15px] leading-[23px] text-[#445069] m-0">
+                {props.data.getting_around}
+              </p>
+            </section>
           )}
 
           {props.data?.timings && (
-            <div>
-              <Heading>Timings</Heading>
-              <Text>
-                {
-                  <ul>
-                    {props.data.timings?.map((e, i) => (
-                      <li key={i}>{e}</li>
-                    ))}
-                  </ul>
-                }
-              </Text>
-            </div>
+            <section className="flex flex-col gap-3">
+              <SectionTitle>Timings</SectionTitle>
+              <Divider />
+              <div className="flex flex-col gap-2">
+                {props.data.timings?.map((e, i) => {
+                  const index = e.indexOf(":");
+                  const day = index >= 0 ? e.slice(0, index).trim() : e;
+                  const time = index >= 0 ? e.slice(index + 1).trim() : "";
+
+                  return (
+                    <div key={i} className="flex items-center gap-[22px]">
+                      <div className="w-[90px] text-[15px] font-semibold text-[#445069]">
+                        {day}
+                      </div>
+                      {time ? (
+                        <div
+                          className={`font-mono text-[14px] bg-[#f4f3ec] text-[#0b1220] px-[10px] py-[3px] rounded-[10px] ${
+                            time == "Closed"
+                              ? " bg-[rgba(184,64,52,0.1)] text-[#b84034]"
+                              : ""
+                          }`}
+                        >
+                          {time}
+                        </div>
+                      ) : null}
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
           )}
           {props?.data?.reviews && (
-            <div className="flex flex-col gap-[12px]">
+            <section className="flex flex-col gap-3">
               <div
                 id="reviews-poi"
-                className="flex justify-between items-center"
+                className="flex flex-col gap-2"
               >
-                <Heading>Reviews</Heading>
-
+                <SectionTitle>Reviews</SectionTitle>
+                <Divider />
                 <Reviews>
                   {props.data.rating ? (
                     <div
@@ -882,30 +904,19 @@ const ActivityDetails = (props) => {
                   </div>
                 </Reviews>
               </div>
-              {isSmallScreen ? (
-                <>
-                  {props?.data?.reviews?.map((item) => (
-                    <div className="w-full">
-                      <ReviewPoi review={item} />
-                    </div>
-                  ))}
-                </>
-              ) : (
-                <ScrollContainer>
-                  {props?.data?.reviews?.map((item) => (
-                    <div className="w-[289px]">
-                      <ReviewPoi review={item} />
-                    </div>
-                  ))}
-                </ScrollContainer>
-              )}
-            </div>
+              <div className="flex flex-col w-full">
+                {props?.data?.reviews?.map((item) => (
+                  <ReviewPoi key={item?.author_name} review={item} />
+                ))}
+              </div>
+            </section>
           )}
           {props.data?.tips && props.data?.tips.length ? (
-            <div>
-              <Heading>Tips</Heading>
-              <Text>{tips}</Text>
-            </div>
+            <section className="flex flex-col gap-3">
+              <SectionTitle>Tips</SectionTitle>
+              <Divider />
+              {tips}
+            </section>
           ) : (
             <></>
           )}
