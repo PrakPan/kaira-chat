@@ -279,9 +279,9 @@ const CloneItinerary = ({
       end_location: startingLocation?.place_id || null,
       currency: startingLocation?.currency || "INR",
       dates: {
-        type:"fixed",
+        // type:"fixed",
         start_date: formatDateForAPI(date.start_date),
-        end_date: formatDateForAPI(date.end_date),
+        // end_date: formatDateForAPI(date.end_date),
       },
       passengers: {
         number_of_adults: numberOfAdults,
