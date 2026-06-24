@@ -12,6 +12,7 @@ import { deriveRoomConfiguration } from "../tailoredform/utils/slideOneActions";
 import Buttons from "../settings/Buttons";
 import { SectionLabel, InclusionChip } from "../settings/FormUI";
 import { Body2R_14 } from "../new-ui/Body";
+import SelectedDestination from "../tailoredform/slideone/destinations/selecteddestination/Index";
 import { useRouter } from "next/router";
 import { setCloneItineraryDrawer } from "../../store/actions/cloneItinerary";
 import axios from "axios";
@@ -77,11 +78,15 @@ const CloneItinerary = ({
     cityToLocation(itinerary?.end_city || itinerary?.end_location) ||
     itineraryStartLoc;
 
-  // Start location is taken directly from the opened itinerary — there is no
-  // picker. End location is intentionally kept the same as the start.
+  // Start location defaults to the opened itinerary's location but the user can
+  // change it via the picker below. End location is intentionally kept the same
+  // as the start location.
   const [startingLocation, setStartingLocation] = useState(
     itineraryStartLoc || false
   );
+  const [showCities, setShowCities] = useState(false);
+  const [showSearchStarting, setShowSearchStarting] = useState(false);
+  const [destination, setDestination] = useState(router.query.destination);
   const { id } = useSelector((state) => state.auth);
   const sourceId = sourceItineraryId || router.query.id;
 
@@ -484,6 +489,22 @@ const CloneItinerary = ({
           gap: 16,
         }}
       >
+        <div className="flex flex-col gap-[6px]">
+          <SectionLabel>Start Location</SectionLabel>
+          <SelectedDestination
+            startingLocation={startingLocation}
+            setStartingLocation={setStartingLocation}
+            showSearchStarting={showSearchStarting}
+            setShowSearchStarting={setShowSearchStarting}
+            setShowCities={setShowCities}
+            selectlocation
+            destination={destination}
+            CITIES={null}
+            openCities={() => setShowCities(true)}
+            setDestination={setDestination}
+          ></SelectedDestination>
+        </div>
+
         <div className="flex flex-col gap-[6px]">
           <SectionLabel>Start Date</SectionLabel>
           <div className="relative w-full">

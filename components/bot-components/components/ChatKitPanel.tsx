@@ -303,15 +303,6 @@ const Spinner = ({ size = 16 }: { size?: number }) => (
   </svg>
 );
 
-const TripPlanningLoader = () => (
-  <div className="flex items-start gap-2 mb-4">
-    <div className="flex items-center gap-2">
-      <Spinner size={14} />
-      <span className="ttw-type-body text-black">Your trip is being planned</span>
-    </div>
-  </div>
-);
-
 const WelcomeState = () => (
   <div className="flex flex-col items-center justify-center h-full px-6 pb-20 select-none">
     <div
@@ -581,6 +572,11 @@ interface StatusNotesCardProps {
   /** Identifier for the most recent user message. When this changes the
    *  card resets and disappears — the user has moved on to a new turn. */
   resetKey?: string | null;
+  /** Card heading. Defaults to the edit/update copy; creation passes a
+   *  build-specific heading. */
+  title?: string;
+  /** Active-stage pill label shown while the loader is in flight. */
+  stageLabel?: string;
 }
 const StatusNotesCard: React.FC<StatusNotesCardProps> = ({
   notes,
@@ -588,6 +584,8 @@ const StatusNotesCard: React.FC<StatusNotesCardProps> = ({
   isPolling,
   cycleKey,
   resetKey,
+  title = "Kaira is working on your changes",
+  stageLabel = "Updating your itinerary",
 }) => {
   type Batch = { id: number; items: string[] };
   const [batches, setBatches] = useState<Batch[]>([]);
@@ -712,10 +710,10 @@ const StatusNotesCard: React.FC<StatusNotesCardProps> = ({
       {loaderActive && (
         <span className="sn-stage">
           <span className="sn-pulse" />
-          Updating your itinerary
+          {stageLabel}
         </span>
       )}
-      <div className="sn-title">Kaira is working on your changes</div>
+      <div className="sn-title">{title}</div>
       <ul className="sn-list">
         {batches.map((b, bi) => (
           <React.Fragment key={b.id}>
@@ -3660,7 +3658,22 @@ const handleShowLogin = useCallback(() => {
               </div>
             )}
 
-            {isItineraryCompleting && !isStreaming && <TripPlanningLoader />}
+            {/* Itinerary creation progress (tailored form → /chat/[id], or the
+                bot's own completion flow). Mirrors the edit-time status card:
+                streams the same `display_text` / `notes` from the /status/ poll
+                as a batched in-chat card instead of a bare spinner. Gated on
+                `isItineraryCompleting` (creation), which is fresh per session —
+                no stale-flag mount guard needed, so it also shows on a refresh
+                mid-build. */}
+            <StatusNotesCard
+              notes={statusNotes}
+              displayText={statusDisplayText}
+              isPolling={isItineraryCompleting}
+              cycleKey={isItineraryCompleting ? "create-cycle" : "init"}
+              resetKey={null}
+              title="Kaira is building your itinerary"
+              stageLabel="Building your itinerary"
+            />
 
             {/* Itinerary update progress (Update Dates / Route Edit / Reprice /
                 refresh_itinerary). Renders the streaming `notes` from the
@@ -3760,9 +3773,15 @@ const handleShowLogin = useCallback(() => {
             onRemoveAttachment={handleRemoveAttachment}
             requireAuth={!isLoggedIn || isForeignItinerary}
             onAuthRequired={() => {
-              // Foreign-itinerary block: the user is already logged in, so a
-              // login modal makes no sense — silently swallow the interaction.
-              if (!isLoggedIn) setShowLoginModal(true);
+              if (!isLoggedIn) {
+                setShowLoginModal(true);
+              } else if (isForeignItinerary && botMode === "p2") {
+                // Foreign-itinerary block in P2: the user is logged in but
+                // viewing someone else's (built) itinerary, so a login modal
+                // makes no sense. Prompt them to craft their own editable copy.
+                // In P1 there is no itinerary to clone yet — stay blocked.
+                setShowCloneModal(true);
+              }
             }}
           />
         </div>
