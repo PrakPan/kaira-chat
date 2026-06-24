@@ -3,7 +3,6 @@ import styled from "styled-components";
 import { useState } from "react";
 import { TbArrowBack } from "react-icons/tb";
 import SkeletonCard from "../../ui/SkeletonCard";
-import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 import { IoIosArrowDown } from "react-icons/io";
 import { MERCURY_HOST } from "../../../services/constants";
 import DrawerActionFooter from "../../revamp/common/components/DrawerActionFooter";
@@ -452,11 +451,29 @@ const POIDetails = (props) => {
 
   var stars = [];
   for (let i = 0; i < Math.floor(props.data.rating); i++) {
-    stars.push(<FaStar />);
+    stars.push(<span style={{ color: "#FFD201" }}>★</span>);
   }
 
   if (Math.floor(props.data.rating) < props.data.rating)
-    stars.push(<FaStarHalfAlt />);
+    stars.push(
+      <span
+        style={{ position: "relative", display: "inline-block", color: "#e5e7eb" }}
+      >
+        ★
+        <span
+          style={{
+            position: "absolute",
+            left: 0,
+            top: 0,
+            width: "50%",
+            overflow: "hidden",
+            color: "#FFD201",
+          }}
+        >
+          ★
+        </span>
+      </span>
+    );
 
   return (
     <>
@@ -941,8 +958,8 @@ const POIDetails = (props) => {
                 <Reviews>
                   {props.data.rating ? (
                     <div
-                      style={{ color: "#f7e700" }}
-                      className="flex flex-row gap-1"
+                      style={{ color: "#FFD201" }}
+                      className="flex flex-row gap-1 items-center"
                     >
                       {stars}
                     </div>

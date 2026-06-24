@@ -3597,7 +3597,7 @@ const BottomCTABar = React.memo(
       const hasNotes = notes && notes.length > 0;
       if (!hasNotes && !loaderDisplayText) return null;
       return (
-        <div className="z-20 fixed w-full md:w-[48%] max-ph:bottom-0 md:bottom-[4.2rem] flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3">
+        <div className="z-20 fixed inset-y-0 left-0 w-full md:w-[48%] flex items-center justify-center px-4 pointer-events-none">
           <ItineraryStatusLoader
             displayText={loaderDisplayText}
             isVisible={true}

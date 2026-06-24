@@ -33,7 +33,7 @@ import FilterChips from "./filtersmobile/FilterChips";
 import { IconButton } from "@mui/material";
 import CheckboxFormComponent from "../../FormComponents/CheckboxFormComponent";
 import BotLoginModal from "../../bot-components/components/BotLoginModal";
-import OfflineQuoteCTA from "../../ui/OfflineQuoteCTA";
+import OfflineQuoteEmptyState from "../../ui/OfflineQuoteEmptyState";
 
 const FloatingView = styled.div`
   position: sticky;
@@ -1065,6 +1065,7 @@ const Booking = (props) => {
                   <ItineraryStatusLoader
                     displayText={"Finding best hotels for you"}
                     isVisible={loading}
+                    iconVariant="search"
                   />
                 </div>,
                 document.body
@@ -1103,30 +1104,28 @@ const Booking = (props) => {
                   {!loading &&
                   isFetchingError.error &&
                   moreOptionsJSX?.length == 0 ? (
-                    <div className="flex flex-col items-center justify-center h-[80vh] gap-3">
-                      <div className="flex flex-row items-center justify-center text-center px-lg">
-                        {isFetchingError.errorMsg}
-                      </div>
-                      <OfflineQuoteCTA
-                        itinerary_id={router?.query?.id || props?.itinerary_id}
-                        type="hotels"
-                        startDate={getDate(currentBooking?.check_in)}
-                        onEditDates={() => {
-                          if (typeof handleClose === "function") {
-                            handleClose();
-                          } else if (
-                            typeof props?.setHideBookingModal === "function"
-                          ) {
-                            props.setHideBookingModal();
-                          }
-                        }}
-                        payload={{
-                          accommodation_id: selectedHotelId || null,
-                          check_in: getDate(currentBooking?.check_in),
-                          check_out: getDate(currentBooking?.check_out),
-                        }}
-                      />
-                    </div>
+                    <OfflineQuoteEmptyState
+                      message={isFetchingError.errorMsg}
+                      title="No stays available right now"
+                      minHeight="80vh"
+                      itinerary_id={router?.query?.id || props?.itinerary_id}
+                      type="hotels"
+                      startDate={getDate(currentBooking?.check_in)}
+                      onEditDates={() => {
+                        if (typeof handleClose === "function") {
+                          handleClose();
+                        } else if (
+                          typeof props?.setHideBookingModal === "function"
+                        ) {
+                          props.setHideBookingModal();
+                        }
+                      }}
+                      payload={{
+                        accommodation_id: selectedHotelId || null,
+                        check_in: getDate(currentBooking?.check_in),
+                        check_out: getDate(currentBooking?.check_out),
+                      }}
+                    />
                   ) : !noResults && !updateBookingState ? (
                     <OptionsContainer id="options">
                       <div className="mb-3">

@@ -1,9 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import GoogleImageLoader from "../drawers/poiDetails/GoogleImageLoader";
 
 const ReviewPoi = ({ review }) => {
   const [viewMore, setViewMore] = useState(false);
+  const [isClamped, setIsClamped] = useState(false);
+  const textRef = useRef(null);
   const text = review?.text || "";
+
+  useEffect(() => {
+    const el = textRef.current;
+    if (el) setIsClamped(el.scrollHeight > el.clientHeight + 1);
+  }, [text]);
   return (
     <div className="flex gap-[12px] w-full py-[16px] border-b border-[#e5e7eb] last:border-b-0">
       <div className="shrink-0 w-[40px] h-[40px] rounded-full overflow-hidden">
@@ -23,31 +30,16 @@ const ReviewPoi = ({ review }) => {
           <span className="text-[12px]">{review?.rating}</span>
         </div>
         <div className="ttw-type-body text-[#475467]">
-          {viewMore ? (
-            <>
-              {text}{" "}
-              <span
-                className="font-semibold cursor-pointer text-[#0b1220]"
-                onClick={() => setViewMore(false)}
-              >
-                See less
-              </span>
-            </>
-          ) : (
-            <>
-              {text.slice(0, 150)}
-              {text.length > 150 && (
-                <>
-                  {"… "}
-                  <span
-                    className="font-semibold cursor-pointer text-[#0b1220]"
-                    onClick={() => setViewMore(true)}
-                  >
-                    View more
-                  </span>
-                </>
-              )}
-            </>
+          <div ref={textRef} className={viewMore ? "" : "line-clamp-4"}>
+            {text}
+          </div>
+          {(isClamped || viewMore) && (
+            <span
+              className="font-semibold cursor-pointer text-[#0b1220]"
+              onClick={() => setViewMore((v) => !v)}
+            >
+              {viewMore ? "See less" : "View more"}
+            </span>
           )}
         </div>
       </div>

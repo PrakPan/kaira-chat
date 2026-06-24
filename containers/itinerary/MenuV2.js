@@ -1937,6 +1937,7 @@ props.fromChat ? (
           <ItineraryStatusLoader
             displayText={props?.displayText}
             isVisible={props?.shouldShowLoader()}
+            centered
           />
         ) : (
           <div className="flex flex-row justify-between items-center ">

@@ -105,37 +105,62 @@ const OfflineQuoteCTA = ({
     ? "Quote Requested"
     : "Request Offline Quote";
 
+  // Active (yellow) kaira state vs. the muted "Quote Requested" resting state.
+  const isResting = submitted && !pastDate;
+
+  const leadingIcon = isResting ? (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+      <path d="M20 6L9 17l-5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  ) : pastDate ? (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4.5" width="18" height="16" rx="2.5" stroke="currentColor" strokeWidth="1.7" />
+      <path d="M3 9h18M8 3v3M16 3v3" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+    </svg>
+  ) : (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="5" width="18" height="14" rx="2.5" stroke="currentColor" strokeWidth="1.7" />
+      <path d="M4 7l8 6 8-6" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+
   return (
     <button
       type="button"
       onClick={handleClick}
-      disabled={loading || (submitted && !pastDate)}
-      className={className}
+      disabled={loading || isResting}
+      className={`${isResting ? "" : "ttw-btn-offline-quote"} ${className || ""}`.trim()}
       style={{
         display: "inline-flex",
         alignItems: "center",
         justifyContent: "center",
         gap: 8,
-        padding: "10px 20px",
-        borderRadius: "2rem",
-        border: "1px solid #111",
-        background: submitted && !pastDate ? "#e5e7eb" : "#111",
-        color: submitted && !pastDate ? "#374151" : "#fff",
-        fontFamily: "'Inter', sans-serif",
+        padding: "11px 22px",
+        borderRadius: "9999px",
+        fontFamily: "var(--font-family-montserrat, 'Montserrat', sans-serif)",
         fontSize: 14,
         fontWeight: 600,
-        cursor:
-          loading || (submitted && !pastDate) ? "not-allowed" : "pointer",
-        transition: "background 0.15s ease, color 0.15s ease",
-        minWidth: 160,
+        cursor: loading || isResting ? "not-allowed" : "pointer",
+        transition: "background 0.15s ease, color 0.15s ease, border-color 0.15s ease",
+        minWidth: 180,
         width: fullWidth ? "100%" : undefined,
         opacity: loading ? 0.85 : 1,
+        ...(isResting
+          ? {
+              border: "1px solid #d8dbe2",
+              background: "#eef1f5",
+              color: "#445069",
+            }
+          : {}),
       }}
     >
       {loading ? (
-        <PulseLoader size={6} color="#fff" speedMultiplier={0.6} />
+        <PulseLoader size={6} color="#07213A" speedMultiplier={0.6} />
       ) : (
-        label
+        <>
+          {leadingIcon}
+          {label}
+        </>
       )}
     </button>
   );

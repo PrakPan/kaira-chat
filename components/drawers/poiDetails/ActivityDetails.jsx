@@ -16,7 +16,7 @@ import ReviewPoi from "../../POIDetails/Reviews";
 import useMediaQuery from "../../media";
 import { openNotification } from "../../../store/actions/notification";
 import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
-import { FaStar, FaStarHalfAlt, FaClock } from "react-icons/fa";
+import { FaClock } from "react-icons/fa";
 import { FaPerson } from "react-icons/fa6";
 import { IoIosArrowDown, IoIosArrowUp, IoMdClose } from "react-icons/io";
 import { IoFastFood, IoTicket, IoCheckmarkCircle, IoCloseCircle } from "react-icons/io5";
@@ -436,11 +436,29 @@ const ActivityDetails = (props) => {
 
   var stars = [];
   for (let i = 0; i < Math.floor(props.data.rating); i++) {
-    stars.push(<FaStar />);
+    stars.push(<span style={{ color: "#FFD201" }}>★</span>);
   }
 
   if (Math.floor(props.data.rating) < props.data.rating)
-    stars.push(<FaStarHalfAlt />);
+    stars.push(
+      <span
+        style={{ position: "relative", display: "inline-block", color: "#e5e7eb" }}
+      >
+        ★
+        <span
+          style={{
+            position: "absolute",
+            left: 0,
+            top: 0,
+            width: "50%",
+            overflow: "hidden",
+            color: "#FFD201",
+          }}
+        >
+          ★
+        </span>
+      </span>
+    );
 
   return (
     <>
@@ -886,8 +904,8 @@ const ActivityDetails = (props) => {
                 <Reviews>
                   {props.data.rating ? (
                     <div
-                      style={{ color: "#f7e700" }}
-                      className="flex flex-row gap-1"
+                      style={{ color: "#FFD201" }}
+                      className="flex flex-row gap-1 items-center"
                     >
                       {stars}
                     </div>

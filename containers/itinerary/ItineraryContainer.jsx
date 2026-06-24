@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
+import ReactDOM from "react-dom";
 import { useRouter } from "next/router";
 import { connect, useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
@@ -72,29 +73,50 @@ const Container = styled.div`
   }
 `;
 
-export const ItineraryStatusLoader = ({ displayText, isVisible }) => {
+export const ItineraryStatusLoader = ({
+  displayText,
+  isVisible,
+  iconVariant = "update",
+  centered = false,
+}) => {
   if (!isVisible || !displayText) {
     return null;
   }
 
-  return (
+  const card = (
     <div className="pointer-events-none">
       <div className="relative w-[320px] max-w-[88vw] bg-[#fffdf0] border border-[#f3e7a8] rounded-2xl shadow-[0_10px_30px_rgba(11,18,32,0.10)] px-4 pt-3.5 pb-4">
         <div className="flex items-center gap-3">
-          {/* Spinning ring with search glyph */}
+          {/* Spinning ring with context glyph */}
           <div className="relative flex-shrink-0 w-10 h-10">
             <span className="absolute inset-0 rounded-full border-[3px] border-[#f7e700]/25" />
             <span className="absolute inset-0 rounded-full border-[3px] border-transparent border-t-[#f7e700] animate-spin" />
-            <span className="absolute inset-[7px] rounded-full bg-white flex items-center justify-center">
-              <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4">
-                <circle cx="11" cy="11" r="6" stroke="#07213A" strokeWidth="2" />
-                <path
-                  d="M20 20L16.5 16.5"
-                  stroke="#07213A"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                />
-              </svg>
+            <span
+              className={`absolute inset-[7px] rounded-full bg-white flex items-center justify-center ${
+                iconVariant === "search" ? "" : "animate-spin"
+              }`}
+            >
+              {iconVariant === "search" ? (
+                <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4">
+                  <circle cx="11" cy="11" r="6" stroke="#07213A" strokeWidth="2" />
+                  <path
+                    d="M20 20L16.5 16.5"
+                    stroke="#07213A"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              ) : (
+                <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4">
+                  <path
+                    d="M7 3h10M7 21h10M8 3v3.2a4 4 0 001.5 3.1L12 11l2.5-1.7A4 4 0 0016 6.2V3M8 21v-3.2a4 4 0 011.5-3.1L12 13l2.5 1.7a4 4 0 011.5 3.1V21"
+                    stroke="#07213A"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              )}
             </span>
           </div>
 
@@ -130,6 +152,31 @@ export const ItineraryStatusLoader = ({ displayText, isVisible }) => {
       `}</style>
     </div>
   );
+
+  if (centered && typeof document !== "undefined") {
+    const target = document.getElementById("modal-portal") || document.body;
+    if (target) {
+      return ReactDOM.createPortal(
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 1400,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "1rem",
+            pointerEvents: "none",
+          }}
+        >
+          {card}
+        </div>,
+        target
+      );
+    }
+  }
+
+  return card;
 };
 
 const ItineraryContainer = (props) => {

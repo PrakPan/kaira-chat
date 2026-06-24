@@ -24,7 +24,7 @@ import SetRefetchAirportTransfers from "../../../store/actions/refetchAirportTra
 import ComboFlight from "./ComboFlight";
 import BackArrow from "../../ui/BackArrow";
 import { useRouter } from "next/router";
-import OfflineQuoteCTA from "../../ui/OfflineQuoteCTA";
+import OfflineQuoteEmptyState from "../../ui/OfflineQuoteEmptyState";
 
 const GridContainer = styled.div`
 min-height: 65vh;
@@ -477,27 +477,27 @@ const Booking = (props) => {
                 ) : null}
 
                 {isFetchingError.error ? (
-                  <div className="flex flex-col items-center justify-center h-[80vh] text-center gap-3 px-4">
-                    <div>{isFetchingError.errorMsg}</div>
-                    <OfflineQuoteCTA
-                      itinerary_id={itinerary_id}
-                      type="flight"
-                      token={props.token}
-                      startDate={props?.selectedBooking?.check_in}
-                      onEditDates={() => {
-                        if (typeof props?.setHideFlightModal === "function") {
-                          props.setHideFlightModal();
-                        }
-                      }}
-                      payload={{
-                        source: props?.selectedBooking?.origin_iata,
-                        destination: props?.selectedBooking?.destination_iata,
-                        departure_date: (props?.selectedBooking?.check_in || "")
-                          .split(" ")[0]
-                          .split("T")[0],
-                      }}
-                    />
-                  </div>
+                  <OfflineQuoteEmptyState
+                    message={isFetchingError.errorMsg}
+                    title="No flights available right now"
+                    minHeight="80vh"
+                    itinerary_id={itinerary_id}
+                    type="flight"
+                    token={props.token}
+                    startDate={props?.selectedBooking?.check_in}
+                    onEditDates={() => {
+                      if (typeof props?.setHideFlightModal === "function") {
+                        props.setHideFlightModal();
+                      }
+                    }}
+                    payload={{
+                      source: props?.selectedBooking?.origin_iata,
+                      destination: props?.selectedBooking?.destination_iata,
+                      departure_date: (props?.selectedBooking?.check_in || "")
+                        .split(" ")[0]
+                        .split("T")[0],
+                    }}
+                  />
                 ) : !noResults && !updateLoadingState && !unauthorized ? (
                   <OptionsContainer id="options">
                     <div style={{ clear: "right" }}>
