@@ -22,6 +22,7 @@ interface Thread {
   created_at: string;
   session_id?: string;
   filter_session_id?: string;
+  customer_name?: string;
 }
 
 // ── Relative time formatter (used in chat history drawer) ───────────────────
@@ -81,7 +82,7 @@ interface SidebarProps {
   onNewChat?: () => void;
   onToggle?: () => void;
   isCollapsed?: boolean;
-  onThreadSelect?: (threadId: string, sessionId?: string) => void;
+  onThreadSelect?: (threadId: string, sessionId?: string, customerName?: string) => void;
   activeThreadId?: string | null;
   /** True when itinerary is fully created (P2), false/undefined = P1 */
   isComplete?: boolean;
@@ -145,7 +146,7 @@ const ChatHistoryDrawer: React.FC<{
   onClose: () => void;
   threads: Thread[];
   activeThreadId?: string | null;
-  onThreadSelect?: (id: string, sessionId?: string) => void;
+  onThreadSelect?: (id: string, sessionId?: string, customerName?: string) => void;
   loading: boolean;
   hasMore?: boolean;
   loadingMore?: boolean;
@@ -246,6 +247,7 @@ const ChatHistoryDrawer: React.FC<{
                       onThreadSelect?.(
                         thread.id,
                         thread.session_id ?? thread.filter_session_id,
+                        thread.customer_name,
                       );
                       onClose();
                     }}

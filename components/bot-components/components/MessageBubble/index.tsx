@@ -31,22 +31,6 @@ function useUserAvatarSrc(): string | null {
   return USER_IMAGE_CDN + candidate;
 }
 
-const UserFallbackIcon: React.FC = () => (
-  <svg
-    width="14"
-    height="14"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <circle cx="12" cy="8" r="4" />
-    <path d="M20 21a8 8 0 1 0-16 0" />
-  </svg>
-);
-
 // Shared responsive rules for the message bubble. On phones the avatar
 // (Kaira on the left, user on the right) eats horizontal room in the flex
 // row — we lift it out of flow and re-pin it as a small floating badge
@@ -92,7 +76,6 @@ const MessageBubbleResponsiveStyles: React.FC = () => (
 
 const UserAvatar: React.FC = () => {
   const avatarSrc = useUserAvatarSrc();
-  const token = useSelector((state: any) => state?.auth?.token);
   const name = useSelector((state: any) => state?.auth?.name);
   // When an existing itinerary is open, the chat belongs to that itinerary's
   // customer — show their initial, not the viewer's avatar. A brand-new chat
@@ -143,9 +126,12 @@ const UserAvatar: React.FC = () => {
   const [errored, setErrored] = useState(false);
 
   // Viewing an itinerary → always the customer's letter avatar (we don't have
-  // their photo). New chat → the logged-in user's avatar (photo if available).
+  // their photo). Otherwise the chat belongs to whoever is viewing: show their
+  // profile photo when available, else their letter avatar. When neither a
+  // customer nor a viewer name is known, getUserInitial falls back to "U" — so
+  // we always render a letter rather than an anonymous silhouette.
   const showImage = !viewingItinerary && !!avatarSrc && !errored;
-  const showLetter = !showImage && (viewingItinerary || !!token);
+  const showLetter = !showImage;
   const letterName = viewingItinerary ? itineraryCustomer : name;
 
   const [color, setColor] = useState<string | null>(null);
@@ -187,10 +173,8 @@ const UserAvatar: React.FC = () => {
           onError={() => setErrored(true)}
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
         />
-      ) : showLetter ? (
-        getUserInitial(letterName)
       ) : (
-        <UserFallbackIcon />
+        getUserInitial(letterName)
       )}
     </div>
   );
