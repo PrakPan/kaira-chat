@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import styled from "styled-components";
 import ImageLoader from "../../../ImageLoader";
+import DrawerActionFooter from "../../../revamp/common/components/DrawerActionFooter";
 import Image from "../../../ImageLoader";
 import NextImage from "next/image";
 import { getHumanTime } from "../../../../services/getHumanTime";
@@ -546,7 +547,7 @@ const HotelBookingDetails = (props) => {
                 )}
               </div>
 
-              <div className="overflow-y-auto" ref={scrollableTabRef}  style={{ 'height': `calc( 100vh - 195px` }}>
+              <div className="overflow-y-auto pb-[104px]" ref={scrollableTabRef}  style={{ 'height': `calc( 100vh - 195px` }}>
 
                 {/* Gallery Start  */}
                 {isDesktop ? (
@@ -1429,37 +1430,53 @@ const HotelBookingDetails = (props) => {
                                 .join(", ")}
                             </div>
                           </div>
-                          <div className="flex justify-between">
-                            <div
-                              style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "0.75rem",
-                                justifyContent: "left",
-                                marginTop: "0.5rem",
-                              }}
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "0.75rem",
+                              justifyContent: "left",
+                              marginTop: "0.5rem",
+                            }}
+                          >
+                            {svgIcons.maps}
+                            <a
+                              href={`https://www.google.com/maps/search/?api=1&query=${data?.hotel_details?.coordinates?.latitude
+                                },${data?.hotel_details?.coordinates?.longitude
+                                }+(${data?.hotel_details?.name?.split(" ").join("+")})`}
+                              target="_blank"
+                              className="tex-sm-md text-[#0b1220]"
                             >
-                              {svgIcons.maps}
-                              <a
-                                href={`https://www.google.com/maps/search/?api=1&query=${data?.hotel_details?.coordinates?.latitude
-                                  },${data?.hotel_details?.coordinates?.longitude
-                                  }+(${data?.hotel_details?.name?.split(" ").join("+")})`}
-                                target="_blank"
-                                className="tex-sm-md text-[#0b1220]"
-                              >
-                                View on Google Maps
-                              </a>
-                            </div>
-
-                            <button onClick={handleDelete} className="ttw-btn-fill-error"> {svgIcons.delete} Remove From Itinerary</button>
+                              View on Google Maps
+                            </a>
                           </div>
+
+                          <DrawerActionFooter zIndex={1300}>
+                            <button onClick={handleDelete} className="ttw-btn-remove-pill">
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                <path d="M3 6h18" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                                <path d="M8 6V4.5A1.5 1.5 0 019.5 3h5A1.5 1.5 0 0116 4.5V6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                                <path d="M18.5 6l-.7 12.1a2 2 0 01-2 1.9H8.2a2 2 0 01-2-1.9L5.5 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                                <path d="M10 10.5v5M14 10.5v5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                              </svg>
+                              Remove From Itinerary
+                            </button>
+                          </DrawerActionFooter>
 
 
                         </div>
                       ) : (
-                        <div className="flex justify-end">
-                          <button onClick={handleDelete} className="ttw-btn-fill-error"> {svgIcons.delete} Remove From Itinerary</button>
-                        </div>
+                        <DrawerActionFooter zIndex={1300}>
+                          <button onClick={handleDelete} className="ttw-btn-remove-pill">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                              <path d="M3 6h18" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                              <path d="M8 6V4.5A1.5 1.5 0 019.5 3h5A1.5 1.5 0 0116 4.5V6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                              <path d="M18.5 6l-.7 12.1a2 2 0 01-2 1.9H8.2a2 2 0 01-2-1.9L5.5 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                              <path d="M10 10.5v5M14 10.5v5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                            </svg>
+                            Remove From Itinerary
+                          </button>
+                        </DrawerActionFooter>
                       )}
                     </div>
                   </div>

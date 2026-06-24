@@ -450,34 +450,25 @@ const VehicleDetailModal = ({
         )} */}
         {/* Delete Booking Button (Fixed) */}
         {handleDelete && type != "combo" && (
-          <div className="p-4 bg-[#fafaf5]">
+          <div className="p-4 bg-[#fafaf5] sticky bottom-0 z-10 border-t border-[#ececec]">
             <button
-              className="w-full bg-red-500 text-white py-2 rounded-lg flex items-center justify-center"
+              className="ttw-btn-remove-pill"
               onClick={() => handleDelete(booking || data)}
               disabled={loading}
             >
-              <div style={{ position: "relative" }}>
-                <div
-                  className="flex gap-1 items-center text-white"
-                  style={loading ? { visibility: "hidden" } : {}}
-                >
-                  <Image src="/delete.svg" width={"20"} height={"20"} />{" "}
-                  <div>Delete Booking </div>
-                </div>
-                {loading && (
-                  <PulseLoader
-                    style={{
-                      position: "absolute",
-                      top: "55%",
-                      left: "50%",
-                      transform: "translate(-50% , -50%)",
-                    }}
-                    size={12}
-                    speedMultiplier={0.6}
-                    color="#ffffff"
-                  />
-                )}
-              </div>
+              {loading ? (
+                <PulseLoader size={10} speedMultiplier={0.6} color="#ef4444" />
+              ) : (
+                <>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M3 6h18" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                    <path d="M8 6V4.5A1.5 1.5 0 019.5 3h5A1.5 1.5 0 0116 4.5V6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                    <path d="M18.5 6l-.7 12.1a2 2 0 01-2 1.9H8.2a2 2 0 01-2-1.9L5.5 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M10 10.5v5M14 10.5v5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                  </svg>
+                  Delete Booking
+                </>
+              )}
             </button>
           </div>
         )}

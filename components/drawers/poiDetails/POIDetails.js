@@ -6,6 +6,7 @@ import SkeletonCard from "../../ui/SkeletonCard";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 import { IoIosArrowDown } from "react-icons/io";
 import { MERCURY_HOST } from "../../../services/constants";
+import DrawerActionFooter from "../../revamp/common/components/DrawerActionFooter";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { PulseLoader } from "react-spinners";
@@ -460,7 +461,7 @@ const POIDetails = (props) => {
   return (
     <>
       {props?.data ? (
-        <Container className="px-lg max-ph:px-sm gap-xl" itineraryDrawer={props.itineraryDrawer}>
+        <Container className="px-lg max-ph:px-sm gap-xl pb-[104px]" itineraryDrawer={props.itineraryDrawer}>
           {props?.updating && (
             <div className="fixed top-[65%] left-[50%] -translate-x-[50%] z-50 flex flex-row items-center gap-2">
               Updating
@@ -1042,51 +1043,44 @@ const POIDetails = (props) => {
               </div>
               <div className="text-[#445069]">{props?.data?.address}</div>
             </div>
-            <div className="flex justify-between ttw-type-body">
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.75rem",
-                  justifyContent: "left",
-                }}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.75rem",
+                justifyContent: "left",
+              }}
+            >
+              <a
+                href={`https://www.google.com/maps/place/?q=place_id:${props?.data?.gmaps_place_id}`}
+                target="_blank"
+                style={{ color: "#0b1220", fontSize: "14px", textDecoration: "underline" }}
               >
-                <a
-                  href={`https://www.google.com/maps/place/?q=place_id:${props?.data?.gmaps_place_id}`}
-                  target="_blank"
-                  style={{ color: "#0b1220", fontSize: "14px", textDecoration: "underline" }}
-                >
-                  View on Google Maps
-                </a>
-              </div>
+                View on Google Maps
+              </a>
+            </div>
+
+            <DrawerActionFooter zIndex={(props?.itineraryDrawer ? 1503 : 1501) + 1}>
 
               {!(props?.removeDelete == true) && props?.version != "v1" && !isDraft && (
                 <button
-                  className="ttw-btn-fill-error"
+                  className="ttw-btn-remove-pill"
                   onClick={handleDelete}
+                  disabled={loading}
                 >
-                  <div style={{ position: "relative" }}>
-                    <div
-                      className="flex gap-1 items-center"
-                      style={loading ? { visibility: "hidden" } : {}}
-                    >
-                      {svgIcons.delete}
+                  {loading ? (
+                    <PulseLoader size={10} speedMultiplier={0.6} color="#ef4444" />
+                  ) : (
+                    <>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M3 6h18" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                        <path d="M8 6V4.5A1.5 1.5 0 019.5 3h5A1.5 1.5 0 0116 4.5V6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                        <path d="M18.5 6l-.7 12.1a2 2 0 01-2 1.9H8.2a2 2 0 01-2-1.9L5.5 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M10 10.5v5M14 10.5v5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                      </svg>
                       Remove from Itinerary
-                    </div>
-                    {loading && (
-                      <PulseLoader
-                        style={{
-                          position: "absolute",
-                          top: "55%",
-                          left: "50%",
-                          transform: "translate(-50% , -50%)",
-                        }}
-                        size={12}
-                        speedMultiplier={0.6}
-                        color="#ffffff"
-                      />
-                    )}
-                  </div>
+                    </>
+                  )}
                 </button>
               )}
 
@@ -1095,7 +1089,7 @@ const POIDetails = (props) => {
                   POI/restaurant into the itinerary. */}
               {props?.showAddToItinerary && props?.onAddToItinerary && (
                 <button
-                  className="ttw-btn-fill-yellow"
+                  className="ttw-btn-fill-yellow !w-full !justify-center !rounded-full"
                   onClick={() => {
                     if (!token) {
                       props?.setShowLoginModal?.(true);
@@ -1114,7 +1108,7 @@ const POIDetails = (props) => {
                   Add to Itinerary
                 </button>
               )}
-            </div>
+            </DrawerActionFooter>
           </div>
 
           <Drawer

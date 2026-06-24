@@ -280,14 +280,26 @@ export default function VisaDetailDrawer({ show, visa, onHide, onBooked, onAdded
 
         {/* Sticky CTA — show when detail loaded (traceId present) or fall back to visa.id */}
         {!loading && !error && (traceId || displayVisa?.id) && (
-          <div className="border-t border-[#ececec] px-6 py-4 bg-[#fafaf5]">
+          <div className="sticky bottom-0 z-10 border-t border-[#ececec] px-6 py-4 bg-[#fafaf5]">
             {showManageActions ? (
               <button
-                className="w-full bg-[#ef4444] text-white font-500 ttw-type-body py-3 rounded-xl flex items-center justify-center gap-2 disabled:opacity-60"
+                className="ttw-btn-remove-pill"
                 onClick={handleRemove}
                 disabled={removing}
               >
-                {removing ? <PulseLoader size={8} color="#ffffff" /> : "Remove from Itinerary"}
+                {removing ? (
+                  <PulseLoader size={8} color="#ef4444" />
+                ) : (
+                  <>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                      <path d="M3 6h18" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                      <path d="M8 6V4.5A1.5 1.5 0 019.5 3h5A1.5 1.5 0 0116 4.5V6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                      <path d="M18.5 6l-.7 12.1a2 2 0 01-2 1.9H8.2a2 2 0 01-2-1.9L5.5 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M10 10.5v5M14 10.5v5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                    </svg>
+                    Remove from Itinerary
+                  </>
+                )}
               </button>
             ) : (
               <button

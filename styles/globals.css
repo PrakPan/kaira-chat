@@ -418,6 +418,34 @@ a.termsnavunderlinelink {
     gap: theme('spacing.xs');
 }
 
+.ttw-btn-remove-pill {
+    width: 100%;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: theme('spacing.xs');
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: var(--font-family-montserrat);
+    border-radius: 9999px;
+    border: 1.5px solid theme('colors.text.error');
+    background-color: var(--color-pure-white);
+    color: theme('colors.text.error');
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.ttw-btn-remove-pill:hover {
+    background-color: theme('colors.text.error');
+    color: theme('colors.text.white');
+}
+
+.ttw-btn-remove-pill:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
 .border-color-light-grey {
     border-color: var(--border-color-white-gray);
 }

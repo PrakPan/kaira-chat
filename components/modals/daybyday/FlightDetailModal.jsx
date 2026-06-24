@@ -6,6 +6,7 @@ import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { updateTransferBookings } from "../../../store/actions/transferBookingsStore";
 import { PulseLoader } from "react-spinners";
+import DrawerActionFooter from "../../revamp/common/components/DrawerActionFooter";
 import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
 import { toast, ToastContainer } from "react-toastify";
 import { useRouter } from "next/router";
@@ -142,7 +143,11 @@ const FlightDetailModal = ({
   }
 
   return (
-    <div className="relative flex flex-col gap-4 rounded-md px-3 py-2">
+    <div
+      className={`relative flex flex-col gap-4 rounded-md px-3 py-2 ${
+        !isEmbedded ? "pb-[104px]" : ""
+      }`}
+    >
       {!isEmbedded && (
         <div className="flex flex-col gap-2">
           <Heading>
@@ -316,38 +321,27 @@ const FlightDetailModal = ({
       )}
 
       {!isEmbedded && (
-        <div className="p-4 bg-[#fafaf5]">
+        <DrawerActionFooter zIndex={1502}>
           <button
-            className="w-100 ttw-btn-fill-error justify-center "
+            className="ttw-btn-remove-pill"
             onClick={handleDelete}
             disabled={loading}
           >
-            <div style={{ position: "relative" }}>
-              <div style={loading ? { visibility: "hidden" } : {}}>
-                <div className="flex gap-1 items-center">
-                  <div>
-                    {svgIcons.delete}
-                    {/* <Image src="/delete.svg" width={"20"} height={"20"} /> */}
-                  </div>{" "}
-                  <div>Delete Booking</div>
-                </div>
-              </div>
-              {loading && (
-                <PulseLoader
-                  style={{
-                    position: "absolute",
-                    top: "55%",
-                    left: "50%",
-                    transform: "translate(-50% , -50%)",
-                  }}
-                  size={12}
-                  speedMultiplier={0.6}
-                  color="#ffffff"
-                />
-              )}
-            </div>
+            {loading ? (
+              <PulseLoader size={10} speedMultiplier={0.6} color="#ef4444" />
+            ) : (
+              <>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M3 6h18" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                  <path d="M8 6V4.5A1.5 1.5 0 019.5 3h5A1.5 1.5 0 0116 4.5V6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                  <path d="M18.5 6l-.7 12.1a2 2 0 01-2 1.9H8.2a2 2 0 01-2-1.9L5.5 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M10 10.5v5M14 10.5v5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                </svg>
+                Delete Booking
+              </>
+            )}
           </button>
-        </div>
+        </DrawerActionFooter>
       )}
 
       <ToastContainer />
