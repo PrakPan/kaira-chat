@@ -17,6 +17,7 @@ import LoadingLottie from "../../ui/LoadingLottie";
 import { ItineraryUpdateLoader } from "../../revamp/common/components/loader";
 import Drawer from "../../ui/Drawer";
 import Skeleton from "./Skeleton";
+import SearchLoaderOverlay from "../../ui/SearchLoaderOverlay";
 import { TbArrowBack } from "react-icons/tb";
 import { openNotification } from "../../../store/actions/notification";
 import { FaExchangeAlt, FaFilter } from "react-icons/fa";
@@ -1458,6 +1459,11 @@ const ComboFlight = (props) => {
     return (
       <div className="w-full">
         <ToastContainer />
+        <SearchLoaderOverlay
+          isVisible={loading && !flights.length}
+          displayText="Finding best transfers for you"
+          zIndex={1505}
+        />
         <div className="text-xl font-600 leading-2xl mb-md">
           {" "}
           {props.heading}

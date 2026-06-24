@@ -4,8 +4,8 @@ import styled from "styled-components";
 import media from "../../media";
 import LeftSideBar from "./leftsidebar/Index";
 import Poi from "./poi/Index";
-import Spinner from "../../Spinner";
 import { ItineraryUpdateLoader } from "../../revamp/common/components/loader";
+import { ItineraryStatusLoader } from "../../../containers/itinerary/ItineraryContainer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import CurrentlyReplacing from "./leftsidebar/CurrentlyReplacing";
@@ -240,13 +240,12 @@ const Booking = (props) => {
                 <ContentContainer style={{ position: "relative" }}>
                   {loading ? (
                     <HeightContainer className="center-div">
-                      <div
-                        className="center-div"
-                        style={{ width: "max-content", margin: "auto" }}
-                      >
-                        <Spinner></Spinner>Fetching activity recommendations for
-                        you
-                      </div>
+                      <ItineraryStatusLoader
+                        displayText="Finding best activities for you"
+                        isVisible={loading}
+                        iconVariant="search"
+                        centered
+                      />
                     </HeightContainer>
                   ) : null}
                   {updatePoiState ? (

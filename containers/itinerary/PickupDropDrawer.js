@@ -6,12 +6,12 @@ import {
   FiUsers,
   FiNavigation,
   FiCheckCircle,
-  FiAlertCircle,
   FiPlane,
   FiTruck,
   FiChevronDown,
 } from "react-icons/fi";
 import Drawer from "../../components/ui/Drawer";
+import SearchLoaderOverlay from "../../components/ui/SearchLoaderOverlay";
 import { FaCar } from "react-icons/fa";
 import BackArrow from "../../components/ui/BackArrow";
 import Generalbutton from "../../components/ui/button/Generallinkbutton";
@@ -25,7 +25,7 @@ import axiossearchinstance, {
 } from "../../services/search/searchsuggest";
 import axiosTaxiSearch from "../../services/bookings/TaxiSearch";
 import Skeleton from "../../components/modals/taxis/Skeleton";
-import OfflineQuoteCTA from "../../components/ui/OfflineQuoteCTA";
+import OfflineQuoteEmptyState from "../../components/ui/OfflineQuoteEmptyState";
 import { useRouter } from "next/router";
 
 const PickupDropDrawer = ({
@@ -1470,38 +1470,30 @@ const getTitle = () => {
             </div>
           </div>
 
-          {/* Error Message */}
+          {/* Error / no-results state */}
           {searchError && (
-            <div className="bg-red-50 border border-red-200 rounded-md p-3 mb-4">
-              <div className="flex items-center space-x-2">
-                <FiAlertCircle className="text-red-500" size={16} />
-                <span className="text-red-700 text-sm">{searchError}</span>
-              </div>
-              <div className="mt-3 flex justify-center">
-                <OfflineQuoteCTA
-                  itinerary_id={router?.query?.id}
-                  type="taxi"
-                  startDate={formData.transferDate}
-                  onEditDates={() => {
-                    if (typeof onClose === "function") onClose();
-                  }}
-                  payload={{
-                    taxi_type: "airport",
-                    source:
-                      formData.sourceAddress ||
-                      hotelName ||
-                      originCityName,
-                    destination:
-                      formData.destinationAddress ||
-                      destinationHotelName ||
-                      destinationCityName,
-                    start_date: formData.transferDate,
-                    airport_type:
-                      transferType === "drop" ? "drop" : "pickup",
-                  }}
-                />
-              </div>
-            </div>
+            <OfflineQuoteEmptyState
+              message={searchError}
+              title="No transfers available right now"
+              minHeight="50vh"
+              itinerary_id={router?.query?.id}
+              type="taxi"
+              startDate={formData.transferDate}
+              onEditDates={() => {
+                if (typeof onClose === "function") onClose();
+              }}
+              payload={{
+                taxi_type: "airport",
+                source:
+                  formData.sourceAddress || hotelName || originCityName,
+                destination:
+                  formData.destinationAddress ||
+                  destinationHotelName ||
+                  destinationCityName,
+                start_date: formData.transferDate,
+                airport_type: transferType === "drop" ? "drop" : "pickup",
+              }}
+            />
           )}
 
           {/* Transfer Results */}
@@ -1538,6 +1530,11 @@ const getTitle = () => {
           )}
         </div>
       </div>
+      <SearchLoaderOverlay
+        isVisible={isOpen && isLoadingQuotes && !transferQuotes?.length}
+        displayText="Finding best transfers for you"
+        zIndex={1505}
+      />
     </Drawer>
   );
 };

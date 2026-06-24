@@ -11,6 +11,7 @@ import LoadingLottie from "../../ui/LoadingLottie";
 import { ItineraryUpdateLoader } from "../../revamp/common/components/loader";
 import TaxiSearched from "./taxi-searched/Index";
 import Drawer from "../../ui/Drawer";
+import SearchLoaderOverlay from "../../ui/SearchLoaderOverlay";
 import { openNotification } from "../../../store/actions/notification";
 import Skeleton from "./Skeleton";
 import TransferEditDrawer from "../../drawers/routeTransfer/TransferEditDrawer";
@@ -393,6 +394,11 @@ const Booking = (props) => {
           oCityData={props?.oCityData}
           dCityData={props?.dCityData}
         />}
+        <SearchLoaderOverlay
+          isVisible={props.showTaxiModal && loading && !optionsJSX.length}
+          displayText="Finding best transfers for you"
+          zIndex={1505}
+        />
       </Drawer>
     );
   else

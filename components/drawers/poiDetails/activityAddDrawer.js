@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import styled from "styled-components";
 import { activtySearch } from "../../../services/poi/reccommendedactivities";
 import axiosaddActivityinstance from "../../../services/poi/addActivities";
+import SearchLoaderOverlay from "../../ui/SearchLoaderOverlay";
 import { BiErrorCircle } from "react-icons/bi";
 import PoiListSkeleton from "../../../containers/newitinerary/itineraryelements/PoiListSkeleton";
 import { getDate } from "../../../helper/DateUtils";
@@ -1094,6 +1095,16 @@ const ClickHandler = (child) => {
           />
         </FloatingView>
       )} */}
+      <SearchLoaderOverlay
+        isVisible={
+          props.showDrawer &&
+          !(elementType === "Activity" ? loaded : !loadingPoi)
+        }
+        displayText={`Finding best ${
+          elementType === "POI" ? "places" : "activities"
+        } for you`}
+        zIndex={1505}
+      />
     </Drawer>
   );
 };

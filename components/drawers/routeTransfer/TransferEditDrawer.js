@@ -6,6 +6,7 @@ import styled from "styled-components";
 import { IoIosArrowUp, IoIosArrowDown, IoMdClose } from "react-icons/io";
 import { RiArrowRightSLine } from "react-icons/ri";
 import Drawer from "../../ui/Drawer";
+import SearchLoaderOverlay from "../../ui/SearchLoaderOverlay";
 import axiosRoundTripEditInstance from "../../../services/itinerary/brief/roudTripEdit";
 import { routeDetails } from "../../../services/itinerary/brief/transferEdit";
 import axiosRoundTripInstance, {
@@ -2381,6 +2382,17 @@ const TransferEditDrawer = (props) => {
           />
         </FloatingView>
       )} */}
+      <SearchLoaderOverlay
+        isVisible={
+          showDrawer &&
+          ((loadingTransfers &&
+            transferType === TRANSFER_TYPES.ONEWAYTRIP.name) ||
+            (loadingMulticityTransfers &&
+              transferType === TRANSFER_TYPES.MULTICITYROUNDTRIP.name))
+        }
+        displayText="Finding best transfers for you"
+        zIndex={1505}
+      />
     </Drawer>
   );
 };
@@ -7595,28 +7607,14 @@ const toggleTransferDetails = (priceOptionId) => {
       </div>
 
       {/* Loading indicator for dynamic transfer loading */}
-      {(isCurrentTransferLoading() ||
-        (!otherTransfer && !error && selectedResult?.transfer?.id)) && (
-        <div className="flex justify-center items-center py-8">
-          <div className="flex space-x-1.5">
-            <div
-              className="w-2.5 h-2.5 bg-[#f7e700] rounded-full animate-bounce"
-              style={{ animationDelay: "0ms" }}
-            />
-            <div
-              className="w-2.5 h-2.5 bg-[#f7e700] rounded-full animate-bounce"
-              style={{ animationDelay: "150ms" }}
-            />
-            <div
-              className="w-2.5 h-2.5 bg-[#f7e700] rounded-full animate-bounce"
-              style={{ animationDelay: "300ms" }}
-            />
-          </div>
-          <span className="ml-3 ttw-type-body text-[#445069]">
-            Loading transfer options...
-          </span>
-        </div>
-      )}
+      <SearchLoaderOverlay
+        isVisible={
+          isCurrentTransferLoading() ||
+          (!otherTransfer && !error && selectedResult?.transfer?.id)
+        }
+        displayText="Finding best transfers for you"
+        zIndex={1505}
+      />
 
       {/* Error message display */}
       {error && !isCurrentTransferLoading() && (

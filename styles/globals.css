@@ -431,6 +431,20 @@ a.termsnavunderlinelink {
     gap: theme('spacing.xs');
 }
 
+/* Indeterminate progress bar for the bottom-bar itinerary steps loader */
+@keyframes ttwStepsLoaderBar {
+    0% {
+        transform: translateX(-110%);
+    }
+    100% {
+        transform: translateX(360%);
+    }
+}
+
+.ttw-steps-loader-bar {
+    animation: ttwStepsLoaderBar 1.4s ease-in-out infinite;
+}
+
 .ttw-btn-remove-pill {
     width: 100%;
     white-space: nowrap;
@@ -443,14 +457,14 @@ a.termsnavunderlinelink {
     font-weight: 500;
     font-family: var(--font-family-montserrat);
     border-radius: 9999px;
-    border: 1.5px solid theme('colors.text.error');
+    border: 1.5px solid #CD2026;
     background-color: var(--color-pure-white);
-    color: theme('colors.text.error');
+    color: #CD2026;
     transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .ttw-btn-remove-pill:hover {
-    background-color: theme('colors.text.error');
+    background-color: #CD2026;
     color: theme('colors.text.white');
 }
 

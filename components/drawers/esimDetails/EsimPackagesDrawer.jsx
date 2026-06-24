@@ -8,6 +8,7 @@ import { getIndianPrice } from "../../../services/getIndianPrice";
 import { currencySymbols } from "../../../data/currencySymbols";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 import EsimDetailDrawer from "./EsimDetailDrawer";
+import SearchLoaderOverlay from "../../ui/SearchLoaderOverlay";
 
 const EsimCard = ({ pkg, onSelect, currency }) => {
   const currCode = currency?.currency || "INR";
@@ -236,6 +237,12 @@ export default function EsimPackagesDrawer({ show, onHide, onBooked, onAdded, on
           )}
         </div>
       </Drawer>
+
+      <SearchLoaderOverlay
+        isVisible={show && loading}
+        displayText="Finding best eSIM plans for you"
+        zIndex={zIndex + 5}
+      />
 
       {showDetail && selectedPackage && (
         <EsimDetailDrawer

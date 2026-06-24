@@ -13,6 +13,7 @@ import TaxiSearched from "./taxi-searched/Index";
 import Drawer from "../../ui/Drawer";
 import { openNotification } from "../../../store/actions/notification";
 import Skeleton from "./Skeleton";
+import SearchLoaderOverlay from "../../ui/SearchLoaderOverlay";
 import TransferEditDrawer from "../../drawers/routeTransfer/TransferEditDrawer";
 import { fetchTransferMode } from "../../../services/bookings/FetchTaxiRecommendations";
 import dayjs from "dayjs";
@@ -481,6 +482,11 @@ const ComboTaxi = (props) => {
   if (props.token)
     return (
       <>
+        <SearchLoaderOverlay
+          isVisible={loading && !quotes.length}
+          displayText="Finding best transfers for you"
+          zIndex={1505}
+        />
         <div>
           <GridContainer style={{ clear: "right" }}>
             <ContentContainer style={{ position: "relative" }}>

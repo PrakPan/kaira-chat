@@ -13,6 +13,7 @@ import LoadingLottie from "../../ui/LoadingLottie";
 import { ItineraryUpdateLoader } from "../../revamp/common/components/loader";
 import Drawer from "../../ui/Drawer";
 import Skeleton from "./Skeleton";
+import SearchLoaderOverlay from "../../ui/SearchLoaderOverlay";
 import { TbArrowBack } from "react-icons/tb";
 import { openNotification } from "../../../store/actions/notification";
 import { FaFilter } from "react-icons/fa";
@@ -651,6 +652,11 @@ const Booking = (props) => {
             />
           </div>
         )}
+        <SearchLoaderOverlay
+          isVisible={props.showFlightModal && loading && !optionsJSX.length}
+          displayText="Finding best flights for you"
+          zIndex={1505}
+        />
       </Drawer>
     );
 

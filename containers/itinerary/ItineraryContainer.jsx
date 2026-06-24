@@ -85,7 +85,7 @@ export const ItineraryStatusLoader = ({
 
   const card = (
     <div className="pointer-events-none">
-      <div className="relative w-[320px] max-w-[88vw] bg-[#fffdf0] border border-[#f3e7a8] rounded-2xl shadow-[0_10px_30px_rgba(11,18,32,0.10)] px-4 pt-3.5 pb-4">
+      <div className="relative w-max min-w-[280px] max-w-[88vw] bg-[#fffdf0] border border-[#f3e7a8] rounded-2xl shadow-[0_10px_30px_rgba(11,18,32,0.10)] px-4 pt-3.5 pb-4">
         <div className="flex items-center gap-3">
           {/* Spinning ring with context glyph */}
           <div className="relative flex-shrink-0 w-10 h-10">
@@ -122,7 +122,7 @@ export const ItineraryStatusLoader = ({
 
           {/* Text */}
           <div className="flex-1 min-w-0">
-            <div className="text-[15px] font-semibold text-[#07213A] leading-snug truncate">
+            <div className="text-[15px] font-semibold text-[#07213A] leading-snug">
               {displayText}
             </div>
             <div className="text-xs text-[#8a93a6] mt-0.5">

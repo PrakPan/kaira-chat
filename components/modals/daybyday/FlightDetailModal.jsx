@@ -328,7 +328,7 @@ const FlightDetailModal = ({
             disabled={loading}
           >
             {loading ? (
-              <PulseLoader size={10} speedMultiplier={0.6} color="#ef4444" />
+              <PulseLoader size={10} speedMultiplier={0.6} color="#CD2026" />
             ) : (
               <>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">

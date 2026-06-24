@@ -8,6 +8,7 @@ import { getIndianPrice } from "../../../services/getIndianPrice";
 import { currencySymbols } from "../../../data/currencySymbols";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 import VisaDetailDrawer from "./VisaDetailDrawer";
+import SearchLoaderOverlay from "../../ui/SearchLoaderOverlay";
 
 const BADGE_LABELS = {
   single_entry: "Single Entry",
@@ -309,6 +310,12 @@ export default function VisaSearchDrawer({ show, onHide, onBooked, onAdded, onRe
           )}
         </div>
       </Drawer>
+
+      <SearchLoaderOverlay
+        isVisible={show && loading}
+        displayText="Finding best visa options for you"
+        zIndex={zIndex + 5}
+      />
 
       {showDetail && selectedVisa && (
         <VisaDetailDrawer

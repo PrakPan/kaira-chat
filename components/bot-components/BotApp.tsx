@@ -18,7 +18,6 @@ import TrustIndicators from "./components/TrustIndicators";
 import { useUserLocation } from "./hooks/useUserLocation";
 import { useMapBounds } from "./hooks/useMapBounds";
 import { getPlatform } from "./hooks/useChat";
-import { ItineraryStatusLoader } from "../../containers/itinerary/ItineraryContainer";
 import ItineraryContainer from "../../containers/itinerary/ItineraryContainer";
 import type {
   Location,
@@ -3533,6 +3532,137 @@ interface BottomCTABarProps {
   notes?: any[];
 }
 
+/**
+ * ItineraryStepsLoader
+ * Stepped progress card shown in the bottom CTA bar space (where the cart
+ * details normally sit) while the itinerary is being updated and pricing is
+ * still pending. Mirrors the chat-side StatusNotesCard: accumulates step
+ * lines from the `notes` array + rolling `displayText`, marks every prior
+ * step as done (green check) and the latest as active (spinner). Full text
+ * wraps — never truncated.
+ *
+ * State resets automatically per update cycle: BottomCTABar unmounts this
+ * (and renders the cart row) once pricing returns SUCCESS, so it remounts
+ * fresh on the next update.
+ */
+const ItineraryStepsLoader = ({
+  notes,
+  displayText,
+}: {
+  notes?: any[];
+  displayText: string | null;
+}) => {
+  const [steps, setSteps] = React.useState<string[]>([]);
+  const seenRef = React.useRef<Set<string>>(new Set());
+
+  // Append fresh, de-duplicated lines coming from the notes snapshot.
+  React.useEffect(() => {
+    const arr = Array.isArray(notes) ? notes : [];
+    const items = arr
+      .map((n) =>
+        typeof n === "string"
+          ? n
+          : (n?.text ?? n?.message ?? n?.note ?? n?.title ?? ""),
+      )
+      .map((s) => (typeof s === "string" ? s.trim() : ""))
+      .filter(Boolean);
+    const fresh = items.filter((it) => !seenRef.current.has(it));
+    if (fresh.length === 0) return;
+    fresh.forEach((it) => seenRef.current.add(it));
+    setSteps((prev) => [...prev, ...fresh]);
+  }, [notes]);
+
+  // Fold the rolling display_text value in as its own step line.
+  React.useEffect(() => {
+    const txt = typeof displayText === "string" ? displayText.trim() : "";
+    if (!txt || seenRef.current.has(txt)) return;
+    seenRef.current.add(txt);
+    setSteps((prev) => [...prev, txt]);
+  }, [displayText]);
+
+  if (steps.length === 0) return null;
+
+  const lastIdx = steps.length - 1;
+
+  return (
+    <div className="z-20 fixed w-full md:w-[48%] max-ph:bottom-0 md:bottom-[4.2rem] flex-shrink-0 bg-[#fffaf5] border-t border-slate-100 shadow-[0_-4px_16px_rgba(11,18,32,0.06)] px-4 pt-3.5 pb-4">
+      <div>
+        <div className="flex items-center gap-3">
+          {/* Spinning ring with hourglass glyph — same chrome as the original loader */}
+          <div className="relative flex-shrink-0 w-10 h-10">
+            <span className="absolute inset-0 rounded-full border-[3px] border-[#f7e700]/25" />
+            <span className="absolute inset-0 rounded-full border-[3px] border-transparent border-t-[#f7e700] animate-spin" />
+            <span className="absolute inset-[7px] rounded-full bg-white flex items-center justify-center animate-spin">
+              <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4">
+                <path
+                  d="M7 3h10M7 21h10M8 3v3.2a4 4 0 001.5 3.1L12 11l2.5-1.7A4 4 0 0016 6.2V3M8 21v-3.2a4 4 0 011.5-3.1L12 13l2.5 1.7a4 4 0 011.5 3.1V21"
+                  stroke="#07213A"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </span>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-[15px] font-semibold text-[#07213A] leading-snug">
+              Updating your itinerary
+            </div>
+            <div className="text-xs text-[#8a93a6] mt-0.5">
+              This might take a few seconds…
+            </div>
+          </div>
+        </div>
+
+        {/* Step lines — each completed step gets a check, the latest stays active */}
+        <ul
+          className="mt-3 flex flex-col gap-1.5 max-h-[32vh] overflow-y-auto"
+          style={{ scrollbarWidth: "none" }}
+        >
+          {steps.map((step, i) => {
+            const active = i === lastIdx;
+            return (
+              <li key={`${i}-${step}`} className="flex items-start gap-2.5">
+                <span className="flex-shrink-0 mt-[2px] w-[16px] h-[16px] flex items-center justify-center">
+                  {active ? (
+                    <span className="w-[14px] h-[14px] rounded-full border-2 border-[#f7e700]/40 border-t-[#e8b800] animate-spin inline-block" />
+                  ) : (
+                    <span className="w-[16px] h-[16px] rounded-full bg-[#07213A] flex items-center justify-center">
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="#f7e700"
+                        strokeWidth="3.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="w-[9px] h-[9px]"
+                      >
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    </span>
+                  )}
+                </span>
+                <span
+                  className={`text-[13px] leading-snug ${
+                    active ? "text-[#07213A] font-medium" : "text-[#8a93a6]"
+                  }`}
+                >
+                  {step}
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+
+        {/* Indeterminate progress bar — same as the original loader */}
+        <div className="mt-3 h-1.5 w-full bg-[#f4f3ec] rounded-full overflow-hidden">
+          <div className="ttw-steps-loader-bar h-full w-2/5 rounded-full bg-gradient-to-r from-[#f7e700] to-[#e8b800]" />
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const BottomCTABar = React.memo(
   ({
     viewMode,
@@ -3593,16 +3723,14 @@ const BottomCTABar = React.memo(
     }
 
     if (!hasFreshPricing) {
-      // Only show the pricing loader when notes array has data (status API returned notes)
+      // Only show the pricing loader when there's something to show (status
+      // API returned notes, or a rolling display_text is set).
       const hasNotes = notes && notes.length > 0;
       if (!hasNotes && !loaderDisplayText) return null;
+      // Stepped progress card rendered in the bottom bar space (same place
+      // the cart row sits), replacing the old centered overlay.
       return (
-        <div className="z-20 fixed inset-y-0 left-0 w-full md:w-[48%] flex items-center justify-center px-4 pointer-events-none">
-          <ItineraryStatusLoader
-            displayText={loaderDisplayText}
-            isVisible={true}
-          />
-        </div>
+        <ItineraryStepsLoader notes={notes} displayText={loaderDisplayText} />
       );
     }
 
@@ -3614,7 +3742,7 @@ const BottomCTABar = React.memo(
     const currencySymbol = currencySymbols[currency?.currency] || "₹";
 
     return (
-      <div className="z-20 fixed w-full md:w-[48%] max-ph:bottom-0 md:bottom-[3.2rem] flex-shrink-0 bg-[#fffaf5] border-t border-slate-100 px-4 py-2 flex items-center justify-between">
+      <div className="z-20 fixed w-full md:w-[48%] max-ph:bottom-0 md:bottom-[4.2rem] flex-shrink-0 bg-[#fffaf5] border-t border-slate-100 px-4 py-2 flex items-center justify-between">
         <div className="flex flex-col">
           {cost !== null ? (
             <>

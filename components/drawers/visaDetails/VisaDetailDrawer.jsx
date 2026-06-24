@@ -288,7 +288,7 @@ export default function VisaDetailDrawer({ show, visa, onHide, onBooked, onAdded
                 disabled={removing}
               >
                 {removing ? (
-                  <PulseLoader size={8} color="#ef4444" />
+                  <PulseLoader size={8} color="#CD2026" />
                 ) : (
                   <>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none">

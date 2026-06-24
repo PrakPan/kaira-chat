@@ -1,4 +1,4 @@
-import styled, { keyframes } from "styled-components";
+import styled from "styled-components";
 import SkeletonCard from "../../ui/SkeletonCard";
 
 // Responsive skeleton for the AccommodationDetailDrawer. Mirrors the real
@@ -130,20 +130,6 @@ const RoomBody = styled.div`
   min-width: 0;
 `;
 
-const pulse = keyframes`
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 1; }
-`;
-
-const PulseDot = styled.div`
-  width: 8px;
-  height: 8px;
-  border-radius: 999px;
-  background: #d1d5db;
-  animation: ${pulse} 1.4s ease-in-out infinite;
-  animation-delay: ${(props) => props.delay || "0s"};
-`;
-
 const SrOnly = styled.span`
   position: absolute;
   width: 1px;
@@ -154,14 +140,6 @@ const SrOnly = styled.span`
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
-`;
-
-const LiveRegion = styled.div`
-  display: flex;
-  gap: 0.4rem;
-  align-items: center;
-  color: #6b7280;
-  font-size: 12px;
 `;
 
 const HotelDetailsSkeleton = () => {
@@ -255,13 +233,6 @@ const HotelDetailsSkeleton = () => {
           </RoomCard>
         ))}
       </Section>
-
-      <LiveRegion aria-hidden="true">
-        <PulseDot />
-        <PulseDot delay="0.2s" />
-        <PulseDot delay="0.4s" />
-        <span>Loading hotel details…</span>
-      </LiveRegion>
     </Container>
   );
 };
