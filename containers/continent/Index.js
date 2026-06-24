@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import ChatWithUs from "../../components/containers/ChatWithUs/ChatWithUs";
 import Continentcarousel from "../../components/continentcarousel/continentcarousel";
 import PathNavigation from "../travelplanner/PathNavigation";
@@ -60,6 +61,13 @@ const Index = (props) => {
   const [desktopBannerLoading, setDesktopBannerLoading] = useState(false);
 
   const [activeDrawer, setActiveDrawer] = useState(null);
+
+  const router = useRouter();
+
+  // Chat with Kaira CTA → navigate the user to the /chat page.
+  const handleChatWithKaira = () => {
+    router.push("/chat");
+  };
 
   const handleOpenDrawer = (data, type) => {
     setActiveDrawer({ data, type });
@@ -418,11 +426,12 @@ const Index = (props) => {
             </div>
             <div className="flex justify-center mt-8">
               <ChatWithKairaCta
-                onClick={() =>
-                  handlePlanButtonClick(
-                    `Top countries to visit in ${props?.data?.destination}`
-                  )
-                }
+                onClick={handleChatWithKaira}
+                // onClick={() =>
+                //   handlePlanButtonClick(
+                //     `Top countries to visit in ${props?.data?.destination}`
+                //   )
+                // }
               />
             </div>
           </section>
@@ -671,9 +680,10 @@ const Index = (props) => {
             under 2 minutes.
           </p>
           <ChatWithKairaCta
-            onClick={() =>
-              handlePlanButtonClick(`Final CTA - ${destinationLabel}`)
-            }
+            onClick={handleChatWithKaira}
+            // onClick={() =>
+            //   handlePlanButtonClick(`Final CTA - ${destinationLabel}`)
+            // }
           />
           <div className={styles.finalCtaTrust}>
             No commitment · free to plan · pay only for what you pick.

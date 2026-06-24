@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import Button from "../../components/ui/button/Index";
 import ChatWithUs from "../../components/containers/ChatWithUs/ChatWithUs";
 import Continentcarousel from "../../components/continentcarousel/continentcarousel";
@@ -45,6 +46,13 @@ const Index = (props) => {
   const [desktopBannerLoading, setDesktopBannerLoading] = useState(false);
   const [showTailoredModal, setShowTailoredModal] = useState(false);
   const [activeDrawer, setActiveDrawer] = useState(null);
+
+  const router = useRouter();
+
+  // Chat with Kaira CTA → navigate the user to the /chat page.
+  const handleChatWithKaira = () => {
+    router.push("/chat");
+  };
 
   const handleOpenDrawer = (data, type) => {
     setActiveDrawer({ data, type });
@@ -321,9 +329,10 @@ const Index = (props) => {
                 + Create a trip now!
               </Button> */}
               <ChatWithKairaCta
-                onClick={() =>
-                  handlePlanButtonClick(`Popular cities in ${destinationName}`)
-                }
+                onClick={handleChatWithKaira}
+                // onClick={() =>
+                //   handlePlanButtonClick(`Popular cities in ${destinationName}`)
+                // }
               />
             </div>
           </section>
@@ -449,7 +458,10 @@ const Index = (props) => {
               >
                 + Create a trip now!
               </Button> */}
-              <ChatWithKairaCta onClick={() => setShowTailoredModal(true)} />
+              <ChatWithKairaCta
+                onClick={handleChatWithKaira}
+                // onClick={() => setShowTailoredModal(true)}
+              />
             </div>
           </section>
         ) : null}
@@ -492,11 +504,12 @@ const Index = (props) => {
                 + Create a trip now!
               </Button> */}
               <ChatWithKairaCta
-                onClick={() =>
-                  handlePlanButtonClick(
-                    `Trending destinations across ${destinationName}`
-                  )
-                }
+                onClick={handleChatWithKaira}
+                // onClick={() =>
+                //   handlePlanButtonClick(
+                //     `Trending destinations across ${destinationName}`
+                //   )
+                // }
               />
             </div>
           </section>
@@ -552,11 +565,12 @@ const Index = (props) => {
                 + Create a trip now!
               </Button> */}
               <ChatWithKairaCta
-                onClick={() =>
-                  handlePlanButtonClick(
-                    `Other destinations to explore in ${props.data.continent}`
-                  )
-                }
+                onClick={handleChatWithKaira}
+                // onClick={() =>
+                //   handlePlanButtonClick(
+                //     `Other destinations to explore in ${props.data.continent}`
+                //   )
+                // }
               />
             </div>
           </section>
@@ -580,9 +594,10 @@ const Index = (props) => {
             under 2 minutes.
           </p>
           <ChatWithKairaCta
-            onClick={() =>
-              handlePlanButtonClick(`Final CTA - ${destinationName}`)
-            }
+            onClick={handleChatWithKaira}
+            // onClick={() =>
+            //   handlePlanButtonClick(`Final CTA - ${destinationName}`)
+            // }
           />
           <div className={styles.finalCtaTrust}>
             No commitment · free to plan · pay only for what you pick.

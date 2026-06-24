@@ -518,8 +518,17 @@ function extractUnitLabel(texts: string[]): string {
  */
 function isTransportListView(children: WidgetNode[]): boolean {
   return children.some((item) => {
+    // A transfer.view / transfer.detail action is a definitive transport
+    // signal — flights carry no "km" distance, so the text pattern below
+    // alone would miss them.
+    const actionType = findClickActionType(item);
+    if (actionType === "transfer.view" || actionType === "transfer.detail") return true;
     const texts = extractAllTexts(item);
-    return texts.some((t) => /\d+\s*km\s*[•·]/.test(t));
+    // "NNN km • Xh Ym" distance string, or a standalone duration like "9h 35m".
+    return (
+      texts.some((t) => /\d+\s*km\s*[•·]/.test(t)) ||
+      texts.some((t) => /^\s*\d+h(\s*\d+m)?\s*$/.test(t))
+    );
   });
 }
 
@@ -539,7 +548,13 @@ function TransportCard({
   const metaText  = texts.find((t) => /\d+\s*km\s*[•·]/.test(t)) ?? "";
   const metaParts = metaText.split(/\s*[•·]\s*/);
   const distance  = metaParts[0]?.trim() ?? "";
-  const duration  = metaParts[1]?.trim() ?? "";
+  // Duration is usually fused with distance ("501 km • 9h 35m"), but flights
+  // send it as a standalone caption ("9h 35m") with no distance — fall back to
+  // that so the Time column isn't left blank.
+  const duration  =
+    metaParts[1]?.trim() ||
+    texts.find((t) => /^\s*\d+h(\s*\d+m)?\s*$/.test(t))?.trim() ||
+    "";
 
   // "Flight • Apr 24, 2026"
   const typeAndDate = texts.find((t) => /[•·]/.test(t) && !/km/.test(t)) ?? "";
@@ -549,23 +564,64 @@ function TransportCard({
 
   const typeKey = typeRaw.toLowerCase();
   const icon    = TRANSPORT_ICONS[typeKey] ?? TRANSPORT_ICONS.taxi;
+  const accent  = getTransportBadgeStyle(typeRaw, undefined);
 
   const clickAction = node.onClickAction as
     | { type: string; payload?: Record<string, unknown> }
     | undefined;
 
+  // Route "Allahabad → Ngurah Rai" → origin / destination. Plus airport / hub
+  // codes (IXD → DPS) carried on the click payload's first segment.
+  const routeText = texts.find(
+    (t) => /→|->|—|–/.test(t) && !/[•·]/.test(t) && !/\d+\s*h\b/.test(t),
+  ) ?? "";
+  const routeParts  = routeText.split(/\s*(?:→|->|—|–)\s*/);
+  const origin      = routeParts[0]?.trim() ?? "";
+  const destination = routeParts[1]?.trim() ?? "";
+
+  const seg        = ((clickAction?.payload as any)?.segments?.[0] ?? {}) as Record<string, string>;
+  const originHub  = (seg.origin_hub ?? "").trim();
+  const destHub    = (seg.destination_hub ?? "").trim();
+
+  // Badges other than the transport-type label (which we already surface as the
+  // header pill) — keeps "cheaper / fastest / popular" style tags, drops the
+  // redundant "Flight" badge.
+  const extraBadges = badges.filter((b) => {
+    const label = ((b.label ?? b.value ?? "") as string).trim().toLowerCase();
+    return label && label !== typeKey;
+  });
+
   const handleClick = () => {
     if (clickAction) onAction?.(clickAction);
   };
+
+  const EndpointCol = ({ city, code, align }: { city: string; code: string; align: "left" | "right" }) => (
+    <div style={{ minWidth: 0, textAlign: align, flexShrink: 1 }}>
+      <div style={{
+        fontSize: 11, fontWeight: 600, letterSpacing: "0.06em",
+        color: accent.color, fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+        textTransform: "uppercase",
+      }}>
+        {code || (align === "left" ? "FROM" : "TO")}
+      </div>
+      <div style={{
+        fontSize: 15, fontWeight: 500, color: "#0b1220", lineHeight: 1.25,
+        fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+        whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+      }}>
+        {city || "—"}
+      </div>
+    </div>
+  );
 
   return (
     <div
       onClick={handleClick}
       style={{
         background: "#ffffff",
-        border: "0.5px solid #e5e7eb",
-        borderRadius: 16,
-        padding: "16px 18px",
+        border: "1px solid #ececec",
+        borderRadius: 18,
+        overflow: "hidden",
         cursor: clickAction ? "pointer" : "default",
         transition: "border-color 0.15s, box-shadow 0.15s, transform 0.15s",
         boxSizing: "border-box",
@@ -573,99 +629,125 @@ function TransportCard({
       }}
       onMouseEnter={(e) => {
         (e.currentTarget as HTMLDivElement).style.borderColor = "#0b1220";
-        (e.currentTarget as HTMLDivElement).style.boxShadow = "0 2px 8px rgba(0,0,0,0.06)";
-        (e.currentTarget as HTMLDivElement).style.transform = "translateX(3px)";
+        (e.currentTarget as HTMLDivElement).style.boxShadow = "0 6px 20px rgba(11,18,32,0.08)";
+        (e.currentTarget as HTMLDivElement).style.transform = "translateY(-2px)";
       }}
       onMouseLeave={(e) => {
         (e.currentTarget as HTMLDivElement).style.borderColor = "#ececec";
         (e.currentTarget as HTMLDivElement).style.boxShadow = "none";
-        (e.currentTarget as HTMLDivElement).style.transform = "translateX(0)";
+        (e.currentTarget as HTMLDivElement).style.transform = "translateY(0)";
       }}
       className="w-full md:max-w-[500px]"
     >
-      {/* Header: icon + name + badges (badges wrap to a new line on narrow screens) */}
-      <div className="flex flex-wrap items-center gap-3 mb-[14px]">
-        {/* Icon circle */}
+      {/* Header band — tinted with the transport accent color */}
+      <div
+        className="flex items-center gap-2.5"
+        style={{ padding: "12px 16px", background: accent.background }}
+      >
         <div style={{
-          width: 44, height: 44, borderRadius: "50%",
-          background: "#fafaf5",
+          width: 34, height: 34, borderRadius: 10,
+          background: "#ffffff",
           display: "flex", alignItems: "center", justifyContent: "center",
-          flexShrink: 0, color: "#1a2436",
-          border: "1px solid #f0f0f0",
+          flexShrink: 0, color: accent.color,
+          boxShadow: "0 1px 2px rgba(11,18,32,0.08)",
         }}>
           {icon}
         </div>
-
-        {/* Name + subtitle */}
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{
-            fontSize: 18, fontWeight: 600,
-            color: "#0b1220", fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-            lineHeight: 1.2, marginBottom: 2,
-          }}>
-            {typeRaw || "Transfer"}
-          </div>
-          <div style={{
-            fontSize: 13, color: "#8a93a6",
+        <div style={{
+          flex: 1, minWidth: 0,
+          fontSize: 14, fontWeight: 600, color: accent.color,
+          fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+          whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+        }}>
+          {typeRaw || "Transfer"}
+        </div>
+        {date && (
+          <span style={{
+            fontSize: 12, fontWeight: 500, color: accent.color, opacity: 0.85,
             fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+            whiteSpace: "nowrap",
           }}>
-            Non Stop
+            {date}
+          </span>
+        )}
+      </div>
+
+      {/* Body */}
+      <div style={{ padding: "16px" }}>
+        {/* Route: origin —✈— destination */}
+        <div className="flex items-center gap-2" style={{ marginBottom: 14 }}>
+          <EndpointCol city={origin} code={originHub} align="left" />
+
+          {/* Dashed connector with a centered marker */}
+          <div className="flex items-center" style={{ flex: 1, minWidth: 24 }}>
+            <div style={{ flex: 1, borderTop: "1.5px dashed #d4d8e0", height: 0 }} />
+            <div style={{
+              width: 24, height: 24, borderRadius: "50%",
+              background: accent.background, color: accent.color,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              flexShrink: 0, margin: "0 4px", transform: "scale(0.7)",
+            }}>
+              {icon}
+            </div>
+            <div style={{ flex: 1, borderTop: "1.5px dashed #d4d8e0", height: 0 }} />
           </div>
+
+          <EndpointCol city={destination} code={destHub} align="right" />
         </div>
 
-        {/* Badges */}
-        <div className="flex gap-[6px] flex-wrap justify-start sm:justify-end basis-full sm:basis-auto">
-          {badges.map((b, i) => {
+        {/* Meta chips: Time / Distance + any extra badges */}
+        <div className="flex flex-wrap items-center gap-2">
+          {duration && (
+            <span style={{
+              display: "inline-flex", alignItems: "center", gap: 5,
+              padding: "4px 10px", borderRadius: 9999,
+              background: "#fafaf5", border: "1px solid #ececec",
+              fontSize: 12, fontWeight: 500, color: "#445069",
+              fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+            }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M12 7v5l3 2" />
+              </svg>
+              {duration}
+            </span>
+          )}
+          {distance && (
+            <span style={{
+              display: "inline-flex", alignItems: "center", gap: 5,
+              padding: "4px 10px", borderRadius: 9999,
+              background: "#fafaf5", border: "1px solid #ececec",
+              fontSize: 12, fontWeight: 500, color: "#445069",
+              fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+            }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 10c0 7-8 12-8 12s-8-5-8-12a8 8 0 1 1 16 0Z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+              {distance}
+            </span>
+          )}
+          {extraBadges.map((b, i) => {
             const label = (b.label ?? b.value ?? "") as string;
             const color = b.color as string | undefined;
             const style = getTransportBadgeStyle(label, color);
             return (
               <span key={i} style={{
                 ...style,
-                padding: "2px 10px",
+                padding: "4px 10px",
                 borderRadius: 9999,
-                fontSize: 13,
+                fontSize: 12,
                 fontWeight: 500,
                 fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
                 whiteSpace: "nowrap",
-                border: `1px solid ${color || "#e0e0e0"}`,
               }}>
                 {label}
               </span>
             );
           })}
         </div>
-      </div>
-
-      {/* Divider */}
-      <hr style={{ border: "none", borderTop: "1px solid grey", margin: "0 0 14px" }} />
-
-      {/* Meta grid: Distance / Time / Date */}
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(3, 1fr)",
-        gap: 8,
-      }}>
-        {[
-          { label: "Distance", value: distance },
-          { label: "Time",     value: duration },
-          { label: "Date",     value: date },
-        ].map(({ label, value }) => (
-          <div key={label}>
-            <div style={{
-              fontSize: 13, color: "#0b1220",
-              fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif", marginBottom: 2,
-            }}>
-              {label}
-            </div>
-            <div style={{
-              fontSize: 13, color: "#8a93a6",
-              fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-            }}>
-              {value || "—"}
-            </div>
-          </div>
-        ))}
       </div>
     </div>
   );

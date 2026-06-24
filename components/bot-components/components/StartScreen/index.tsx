@@ -231,7 +231,7 @@ const StartScreen: React.FC<StartScreenProps> = ({
       cards: defaultAllTrips,
     },
     {
-      heading: "Trending This April",
+      heading: "Trending This Month",
       icon: "🔥",
       cards: defaultTrendingTrips,
     },

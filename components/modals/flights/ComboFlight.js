@@ -35,13 +35,15 @@ import axios from "axios";
 import { PulseLoader } from "react-spinners";
 import Generalbutton from "../../ui/button/Generallinkbutton";
 import { FiCheckCircle, FiMapPin, FiNavigation } from "react-icons/fi";
-import { FaX } from "react-icons/fa6";
 import ReactDOM from "react-dom";
 import { useGenericAPIModal } from "../warning/Index";
 import { PiAirplaneLanding, PiAirplaneTakeoff } from "react-icons/pi";
 import FlightFilters from "./new-flight-searched/FlightFilters";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 import OfflineQuoteEmptyState from "../../ui/OfflineQuoteEmptyState";
+
+const FONT_SANS = "'Inter', -apple-system, BlinkMacSystemFont, sans-serif";
+const FONT_SERIF = "'Instrument Serif', 'Times New Roman', serif";
 
 // const GridContainer = styled.div`
 // min-height: 65vh;
@@ -1466,46 +1468,165 @@ const ComboFlight = (props) => {
 
         {showWarningModal &&
           ReactDOM.createPortal(
-            <div className="fixed z-[1666] inset-0 bg-black bg-opacity-50 flex items-end md:items-center justify-center">
-              <div className="bg-white w-full max-w-lg md:mx-4 mb-0 md:mb-auto md:rounded-lg rounded-t-2xl md:rounded-b-lg relative transform transition-transform duration-300 ease-out animate-slide-up md:animate-none max-h-[90vh] md:max-h-none overflow-hidden">
-                <div className="md:hidden flex justify-center py-2">
-                  <div className="w-12 h-1 bg-[#ececec] rounded-full"></div>
+            <div className="fixed z-[1666] inset-0 flex items-end md:items-center justify-center">
+              <div
+                className="absolute inset-0"
+                style={{
+                  background: "rgba(11,18,32,0.35)",
+                  backdropFilter: "blur(1px)",
+                }}
+                onClick={isProcessingBooking ? undefined : handleWarningCancel}
+              />
+
+              <div
+                className="relative w-full max-w-lg md:mx-4 mb-0 md:mb-auto flex flex-col max-h-[90vh] md:max-h-none overflow-hidden rounded-t-[20px] md:rounded-[20px] transform transition-transform duration-300 ease-out animate-slide-up md:animate-none"
+                style={{
+                  background: "#fafafa",
+                  boxShadow: "0 12px 44px rgba(11,18,32,0.20)",
+                }}
+              >
+                {/* yellow top strip */}
+                <div
+                  style={{
+                    height: 6,
+                    flexShrink: 0,
+                    background: "linear-gradient(90deg,#FFE600,#F2D700)",
+                  }}
+                />
+
+                {/* mobile drag handle */}
+                <div className="md:hidden flex justify-center pt-2 pb-1 flex-shrink-0">
+                  <div
+                    style={{
+                      width: 44,
+                      height: 4,
+                      borderRadius: 999,
+                      background: "#E0DCCD",
+                    }}
+                  />
                 </div>
 
-                {!isProcessingBooking && (
-                  <button
-                    onClick={handleWarningCancel}
-                    className="ttw-btn-close absolute top-4 right-4 md:top-4 md:right-4 p-2 cursor-pointer z-10"
-                  >
-                    <FaX size={16} />
-                  </button>
-                )}
-
-                <div className="px-6 pb-6 pt-2 md:pt-6 max-h-[calc(90vh-8rem)] md:max-h-none overflow-y-auto">
-                  <h2 className="ttw-type-h3 font-600 text-[#0b1220] mb-1 pr-8">
-                    Dates Change Warning!
-                  </h2>
-
-                  <div className="ttw-type-body text-[#445069] mb-6">
-                    <div className="rounded-lg p-2">{warningMessage}</div>
+                {/* header */}
+                <div className="flex items-start justify-between gap-3 px-5 pt-3 md:pt-5 flex-shrink-0">
+                  <div>
+                    <div
+                      style={{
+                        fontFamily: FONT_SANS,
+                        fontSize: 22,
+                        fontWeight: 500,
+                        lineHeight: 1.1,
+                        letterSpacing: "-0.01em",
+                        color: "#0B1220",
+                      }}
+                    >
+                      Dates change{" "}
+                      <em
+                        style={{
+                          fontFamily: FONT_SERIF,
+                          fontStyle: "italic",
+                          fontWeight: 400,
+                          letterSpacing: "-0.015em",
+                        }}
+                      >
+                        warning
+                      </em>
+                    </div>
+                    <p
+                      style={{
+                        fontFamily: FONT_SANS,
+                        fontSize: 13,
+                        color: "#5C5A55",
+                        marginTop: 4,
+                      }}
+                    >
+                      Please review this change before confirming.
+                    </p>
                   </div>
 
-                  <div className="flex flex-col-reverse md:flex-row gap-3 md:gap-4 justify-end border-t-2 pt-4">
+                  {!isProcessingBooking && (
                     <button
                       onClick={handleWarningCancel}
-                      disabled={isProcessingBooking}
-                      className="ttw-btn-secondary ttw-type-body w-full md:w-auto px-6 py-2 md:py-2 transition-colors cursor-pointer text-center disabled:opacity-50"
+                      aria-label="Close"
+                      className="flex-shrink-0 grid place-items-center transition-colors"
+                      style={{
+                        width: 32,
+                        height: 32,
+                        borderRadius: 10,
+                        border: "1px solid #E6E1D2",
+                        background: "#FFFFFF",
+                        color: "#5C5A55",
+                      }}
                     >
-                      Cancel
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
                     </button>
-                    <button
-                      disabled={isProcessingBooking}
-                      onClick={handleWarningConfirm}
-                      className="ttw-type-body w-full md:w-auto px-6 py-2 md:py-2 bg-[#f7e700] text-black rounded hover:bg-[#e6d600] transition-colors cursor-pointer text-center disabled:opacity-50"
-                    >
-                      {isProcessingBooking ? "Processing..." : "Confirm"}
-                    </button>
+                  )}
+                </div>
+
+                {/* message */}
+                <div className="flex-1 overflow-y-auto px-5 pt-4 pb-2">
+                  <div
+                    style={{
+                      fontFamily: FONT_SANS,
+                      fontSize: 13.5,
+                      lineHeight: 1.5,
+                      color: "#2C2C2A",
+                      border: "1px solid #E6E1D2",
+                      background: "#FFFFFF",
+                      borderRadius: 12,
+                      padding: "12px 14px",
+                    }}
+                  >
+                    {warningMessage}
                   </div>
+                </div>
+
+                {/* footer */}
+                <div className="px-5 pt-2 pb-4 flex-shrink-0 flex flex-col-reverse md:flex-row gap-3 md:justify-end">
+                  <button
+                    onClick={handleWarningCancel}
+                    disabled={isProcessingBooking}
+                    className="w-full md:w-auto transition-opacity hover:opacity-90 disabled:opacity-50"
+                    style={{
+                      fontFamily: FONT_SANS,
+                      fontSize: 14,
+                      fontWeight: 500,
+                      color: "#5C5A55",
+                      background: "#FFFFFF",
+                      border: "1px solid #E6E1D2",
+                      padding: "12px 20px",
+                      borderRadius: 12,
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    disabled={isProcessingBooking}
+                    onClick={handleWarningConfirm}
+                    className="w-full md:w-auto transition-opacity hover:opacity-90 disabled:opacity-50"
+                    style={{
+                      fontFamily: FONT_SANS,
+                      fontSize: 14,
+                      fontWeight: 500,
+                      color: "#FFFFFF",
+                      background: "#0F1B2D",
+                      padding: "12px 20px",
+                      borderRadius: 12,
+                    }}
+                  >
+                    {isProcessingBooking ? "Processing..." : "Confirm"}
+                  </button>
                 </div>
               </div>
             </div>,

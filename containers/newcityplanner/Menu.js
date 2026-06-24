@@ -120,6 +120,10 @@ const Menu = (props) => {
   const handleCloseDrawer = () => {
     setActiveDrawer(null);
   };
+  // Chat with Kaira CTA → navigate the user to the /chat page.
+  const handleChatWithKaira = () => {
+    router.push("/chat");
+  };
   const handlePlanButtonClick = () => {
     // openTailoredModal(router, props.data.id, props.data.name, props.type);
     // router.push({
@@ -278,7 +282,10 @@ const Menu = (props) => {
           </div>
 
           <div className="flex items-center justify-center mt-4">
-            <ChatWithKairaCta onClick={() => setShowTailoredModal(true)} />
+            <ChatWithKairaCta
+              onClick={handleChatWithKaira}
+              // onClick={() => setShowTailoredModal(true)}
+            />
           </div>
         </MenuItem>
       ) : null}
@@ -360,7 +367,10 @@ const Menu = (props) => {
           </div>
 
           <div className="flex items-center justify-center mt-4">
-            <ChatWithKairaCta onClick={() => setShowTailoredModal(true)} />
+            <ChatWithKairaCta
+              onClick={handleChatWithKaira}
+              // onClick={() => setShowTailoredModal(true)}
+            />
           </div>
         </MenuItem>
       )}
@@ -454,7 +464,10 @@ const Menu = (props) => {
         </div>
 
         <div className="flex items-center justify-center mt-4">
-          <ChatWithKairaCta onClick={() => setShowTailoredModal(true)} />
+          <ChatWithKairaCta
+            onClick={handleChatWithKaira}
+            // onClick={() => setShowTailoredModal(true)}
+          />
         </div>
       </MenuItem>
 

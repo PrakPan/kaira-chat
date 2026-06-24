@@ -5,6 +5,8 @@ const initialState = {
   sessionId: null,
   shouldResetSession: false,
   resetTimestamp: null,
+  // Customer the active thread belongs to (threads.get_by_id `customer_name`).
+  customerName: null,
 };
 
 const chatStateReducer = (state = initialState, action) => {
@@ -22,6 +24,13 @@ const chatStateReducer = (state = initialState, action) => {
         resetTimestamp: Date.now(),
         sessionId: null,
         hasUnreadMessages: false,
+        customerName: null,
+      };
+
+    case actionTypes.SET_THREAD_CUSTOMER_NAME:
+      return {
+        ...state,
+        customerName: action.payload,
       };
 
     case actionTypes.SET_CHAT_SESSION_ID:

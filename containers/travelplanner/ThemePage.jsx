@@ -1378,8 +1378,10 @@ export const PlanYourTripButton = (props) => {
   const router = useRouter();
 
   const handlePlanButton = () => {
+    // Chat with Kaira CTA → navigate the user to the /chat page.
+    router.push("/chat");
     // if (isPageWide) {
-      setShowTailoredModal(true);
+    //   setShowTailoredModal(true);
     // } else {
     //   openTailoredModal(router, props.page_id, props.destination);
     // }
@@ -1426,12 +1428,14 @@ export const PlanYourTripLadakhButton = (props) => {
   const router = useRouter();
 
   const handlePlanButton = () => {
+    // Chat with Kaira CTA → navigate the user to the /chat page.
+    router.push("/chat");
     // openTailoredModal(router, props.page_id, props.destination, props.type);
     // router.push({
     //   pathname: "/new-trip",
     //   query: { ...router.query, source: props?.slug || 'home' }
     // });
-    setShowTailoredModal(true);
+    // setShowTailoredModal(true);
 
     logEvent({
       action: "Plan_Itinerary",
