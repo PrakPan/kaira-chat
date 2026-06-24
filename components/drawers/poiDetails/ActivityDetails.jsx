@@ -883,7 +883,6 @@ const ActivityDetails = (props) => {
                 className="flex flex-col gap-2"
               >
                 <SectionTitle>Reviews</SectionTitle>
-                <Divider />
                 <Reviews>
                   {props.data.rating ? (
                     <div
@@ -904,6 +903,7 @@ const ActivityDetails = (props) => {
                     ) : null} */}
                   </div>
                 </Reviews>
+                <Divider />
               </div>
               <div className="flex flex-col w-full">
                 {props?.data?.reviews?.map((item) => (
