@@ -2525,9 +2525,22 @@ useEffect(() => {
           }
         }
 
+        // Per-message sender identity (threads.get_by_id now returns these on
+        // each user_message). Carried onto the Message so the avatar can prefer
+        // the message's own customer_name on reload, and so a staff viewer's own
+        // messages resolve to their photo. See UserAvatar in MessageBubble.
+        const senderUserId =
+          item.user_id != null && item.user_id !== "" ? item.user_id : undefined;
+        const messageCustomerName =
+          typeof item.customer_name === "string" && item.customer_name.trim()
+            ? item.customer_name.trim()
+            : undefined;
+
         if (text || attachmentObjs.length > 0) out.push({
           id: item.id, role: "user", content: text,
           timestamp: new Date(item.created_at),
+          ...(senderUserId != null ? { senderUserId } : {}),
+          ...(messageCustomerName ? { customerName: messageCustomerName } : {}),
           ...(attachmentObjs.length > 0 ? { attachments: attachmentObjs } : {}),
         });
       } else if (item.type === "assistant_message") {

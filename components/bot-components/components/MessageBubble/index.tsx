@@ -74,9 +74,18 @@ const MessageBubbleResponsiveStyles: React.FC = () => (
   `}</style>
 );
 
-const UserAvatar: React.FC = () => {
+const UserAvatar: React.FC<{
+  /** Per-message `customer_name` from threads.get_by_id. When present it wins
+   *  over the redux/chatState fallback below (page reload / thread switch). */
+  customerName?: string | null;
+  /** Per-message `user_id` (author). When it matches the logged-in viewer the
+   *  message is theirs — show the viewer's own avatar even on someone else's
+   *  itinerary (e.g. staff replying on a customer's trip). */
+  senderUserId?: string | number | null;
+}> = ({ customerName: messageCustomerNameProp, senderUserId }) => {
   const avatarSrc = useUserAvatarSrc();
   const name = useSelector((state: any) => state?.auth?.name);
+  const loggedInUserId = useSelector((state: any) => state?.auth?.id);
   // When an existing itinerary is open, the chat belongs to that itinerary's
   // customer — show their initial, not the viewer's avatar. A brand-new chat
   // has no itinerary customer_name, so we fall back to the logged-in user.
@@ -90,16 +99,6 @@ const UserAvatar: React.FC = () => {
   const threadCustomerRaw = useSelector(
     (state: any) => state?.chatState?.customerName,
   );
-  const resolvedCustomerRaw =
-    (typeof customerNameRaw === "string" && customerNameRaw.trim()
-      ? customerNameRaw
-      : null) ??
-    (typeof threadCustomerRaw === "string" && threadCustomerRaw.trim()
-      ? threadCustomerRaw
-      : null);
-  const itineraryCustomer = resolvedCustomerRaw
-    ? resolvedCustomerRaw.trim()
-    : null;
 
   // The logged-in user's own name — redux first, then the copy localStorage
   // persists under "name". Used to detect when the open itinerary actually
@@ -113,15 +112,56 @@ const UserAvatar: React.FC = () => {
     return stored && stored.trim() ? stored.trim() : null;
   }, [name]);
 
-  // If the itinerary's customer_name matches the logged-in user, it's their own
-  // itinerary — show their own profile (photo/avatar) instead of a generic
-  // customer letter avatar.
-  const isOwnItinerary =
-    !!itineraryCustomer &&
-    !!loggedInName &&
-    itineraryCustomer.toLowerCase() === loggedInName.toLowerCase();
+  // Per-message identity carried by the reloaded thread (and tagged onto live
+  // messages). These take priority over the redux/chatState fallback.
+  const messageCustomerName =
+    typeof messageCustomerNameProp === "string" && messageCustomerNameProp.trim()
+      ? messageCustomerNameProp.trim()
+      : null;
+  const senderIsViewer =
+    senderUserId != null &&
+    String(senderUserId).trim() !== "" &&
+    loggedInUserId != null &&
+    String(senderUserId) === String(loggedInUserId);
 
-  const viewingItinerary = !!itineraryCustomer && !isOwnItinerary;
+  let viewingItinerary: boolean;
+  let letterName: string | null;
+
+  if (senderIsViewer) {
+    // The viewer authored this message (incl. staff on a customer's itinerary)
+    // → their own avatar/photo, never the customer letter.
+    viewingItinerary = false;
+    letterName = name;
+  } else if (messageCustomerName) {
+    // Reloaded message carries its sender's customer_name but no (matching)
+    // user_id. If that name is the logged-in viewer's own, treat it as theirs
+    // → own photo/initial; otherwise show the sender's letter avatar.
+    const isOwnName =
+      !!loggedInName &&
+      messageCustomerName.toLowerCase() === loggedInName.toLowerCase();
+    viewingItinerary = !isOwnName;
+    letterName = isOwnName ? name : messageCustomerName;
+  } else {
+    // No per-message info → existing redux/chatState fallback.
+    const resolvedCustomerRaw =
+      (typeof customerNameRaw === "string" && customerNameRaw.trim()
+        ? customerNameRaw
+        : null) ??
+      (typeof threadCustomerRaw === "string" && threadCustomerRaw.trim()
+        ? threadCustomerRaw
+        : null);
+    const itineraryCustomer = resolvedCustomerRaw
+      ? resolvedCustomerRaw.trim()
+      : null;
+    // If the itinerary's customer_name matches the logged-in user, it's their
+    // own itinerary — show their own profile instead of a customer letter.
+    const isOwnItinerary =
+      !!itineraryCustomer &&
+      !!loggedInName &&
+      itineraryCustomer.toLowerCase() === loggedInName.toLowerCase();
+    viewingItinerary = !!itineraryCustomer && !isOwnItinerary;
+    letterName = viewingItinerary ? itineraryCustomer : name;
+  }
 
   const [errored, setErrored] = useState(false);
 
@@ -132,7 +172,6 @@ const UserAvatar: React.FC = () => {
   // we always render a letter rather than an anonymous silhouette.
   const showImage = !viewingItinerary && !!avatarSrc && !errored;
   const showLetter = !showImage;
-  const letterName = viewingItinerary ? itineraryCustomer : name;
 
   const [color, setColor] = useState<string | null>(null);
   useEffect(() => {
@@ -1707,7 +1746,10 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           animation: "msgIn 0.3s ease-out",
         }}
       >
-        <UserAvatar />
+        <UserAvatar
+          customerName={message.customerName}
+          senderUserId={message.senderUserId}
+        />
         <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6, minWidth: 0 }}>
           {hasAttachments && (
             <div
