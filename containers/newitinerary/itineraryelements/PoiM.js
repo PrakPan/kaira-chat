@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import ImageLoader from "../../../components/ImageLoader";
 import Button from "../../../components/ui/button/Index";
 import {
@@ -44,7 +45,7 @@ const Floating = styled.div`
   position: fixed;
 
   bottom: 10px;
-  background: #01202b;
+  background: #07213A;
   border-radius: 50%;
   width: 50px;
   height: 50px;
@@ -91,7 +92,7 @@ const RatingContainer = styled.div`
   span {
     font-size: 0.75rem;
     font-weight: 300;
-    color: #727272;
+    color: #445069;
   }
 `;
 
@@ -436,7 +437,7 @@ const ItineraryPoiElementM = (props) => {
 
     return (
       <div
-        style={{ color: "#ffa500", marginBottom: "-0.2rem" }}
+        style={{ color: "#f7e700", marginBottom: "-0.2rem" }}
         className="flex flex-row"
       >
         {stars}
@@ -509,7 +510,7 @@ const ItineraryPoiElementM = (props) => {
         </div>
         <div>
           <div className=" " style={{ lineHeight: "1" }}>
-            <span className="inline text-[1.2rem]">
+            <span className="inline ttw-type-h3 text-[#0b1220]">
               <span
                 onClick={() => handleEditActivity(props?.heading, false)}
                 className="inline cursor-pointer"
@@ -522,9 +523,9 @@ const ItineraryPoiElementM = (props) => {
                   e.stopPropagation();
                   handleEditActivity(props?.heading, true);
                 }}
-                className="inline-block cursor-pointer min-w-max ttw-type-h4 w-4 h-4 pl-2 transition-transform duration-300 ase-in-out group-hover:text-blue-500 group-hover:scale-110 active:scale-90"
+                className="inline-block cursor-pointer min-w-max ttw-type-h4 w-4 h-4 pl-2 transition-transform duration-300 ase-in-out text-[#445069] group-hover:scale-110 active:scale-90"
               >
-                <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
+                <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-[#0b1220]" />
               </div>
             </span>
           </div>
@@ -545,23 +546,23 @@ const ItineraryPoiElementM = (props) => {
               </span>
             </RatingContainer>
           )}
-          <div className="flex flex-row">
-            <div className="font-normal border-2 lg:ttw-type-body ttw-type-body border-[#9F9F9F] rounded-md px-1 py-[2px] mt-2 block bg-white text-[#9F9F9F]">
+          <div className="flex flex-wrap gap-1 mt-2">
+            <span className="ttw-type-small bg-[#eef2fb] text-[#1a2436] px-2 py-0.5 rounded-full">
               {props.activity_data &&
                 props.activity_data.activity &&
                 props.activity_data.activity.id
                 ? "ACTIVITY"
                 : "Self Exploration"}
-            </div>
+            </span>
           </div>
 
           {props.poi ? <div></div> : null}
         </div>
       </GridContainer>
       <div className={`pt-2 ttw-type-body line-clamp-3`}>{props.text}</div>
-      <MoreIcon onClick={() => setShow(true)}>
-        <span>More</span>
-        <MdNavigateNext style={{ fontSize: "1.3rem", marginTop: "0.1rem" }} />
+      <MoreIcon onClick={() => setShow(true)} className="cursor-pointer">
+        <span className="ttw-type-small font-500 text-[#0b1220] underline">More</span>
+        <MdNavigateNext style={{ fontSize: "1.3rem", marginTop: "0.1rem" }} className="text-[#0b1220]" />
       </MoreIcon>
       {showLoginModal && (
         <div>
@@ -586,24 +587,26 @@ const ItineraryPoiElementM = (props) => {
         show={showDrawer}
         anchor={"right"}
         backdrop
+        width="50%"
+        mobileWidth="100%"
+        bgColor="#fafaf5"
         style={{ zIndex: 1501 }}
         className=""
         onHide={() => setShowDrawer(false)}
       >
-        <div className=" sticky px-2 top-0 bg-white z-[900] flex flex-col gap-3 my-4 justify-start items-start mx-auto w-[95%]">
+        <div className="sticky px-6 max-ph:px-4 top-0 bg-[#fafaf5] z-[900] flex flex-col gap-3 py-4 pb-2 justify-start items-start w-full">
           <div className="flex flex-row gap-3 my-0 justify-start items-center">
-            <IoMdClose
+            <Image
+              src="/backarrow.svg"
+              className="cursor-pointer"
+              width={22}
+              height={2}
               onClick={(e) => {
                 e.stopPropagation();
                 setShowDrawer(false);
               }}
-              className="hover-pointer"
-              style={{
-                fontSize: "1.75rem",
-                textAlign: "right",
-              }}
-            ></IoMdClose>
-            <div className="line-clamp-1 ttw-type-h2 font-normal ">
+            />
+            <div className="line-clamp-1 ttw-type-h2 font-semibold text-[#0b1220]">
               Replacing {props.heading}
             </div>
           </div>
@@ -611,7 +614,7 @@ const ItineraryPoiElementM = (props) => {
             <IoMdSearch
               id={"icon"}
               onClick={searchHandler}
-              className="absolute cursor-pointer left-4 ttw-type-h2"
+              className="absolute cursor-pointer left-4 ttw-type-h2 text-[#445069]"
             />
 
             <input
@@ -620,7 +623,7 @@ const ItineraryPoiElementM = (props) => {
               onChange={searchHandler}
               placeholder={`Search ${elementType === "POI" ? "attractions" : "activities"
                 }`}
-              className="w-full flex items-center ttw-type-body border-2 border-gray-300 rounded-lg px-5 py-2 focus:outline-none focus:border-[#F7E700]"
+              className="w-full flex items-center ttw-type-body border border-[#ececec] rounded-lg px-5 py-2 focus:outline-none focus:border-[#f7e700]"
             ></input>
           </div>
 
@@ -633,7 +636,7 @@ const ItineraryPoiElementM = (props) => {
               setFilterState={setFilterState} />
           )}
 
-          <div>
+          <div className="ttw-type-body text-[#445069]">
             Showing {optionsJSX.length}
             {elementType === "POI" ? " attractions" : " activities"}
             {totalResults ? ` out of ${totalResults}` : null}
@@ -656,78 +659,52 @@ const ItineraryPoiElementM = (props) => {
           optionsJSX.length ? (
             <div
               onScroll={handleScroll}
-              className="flex flex-col items-center mb-3 h-[100vh] overflow-y-scroll"
+              className="flex flex-col items-center mb-3 h-[100vh] overflow-y-scroll px-6 max-ph:px-4 pb-24 w-full"
             >
               {optionsJSX}{" "}
 
               {selectSearch !== "" ? (
-                <Button
-                  boxShadow
-                  onclickparam={null}
-                  onclick={handleClearSearch}
-                  margin="0.25rem auto"
-                  borderWidth="1px"
-                  borderRadius="2rem"
-                  padding="0.25rem 1rem"
+                <button
+                  onClick={handleClearSearch}
+                  className="w-full mt-4 py-3 rounded-xl border border-[#ececec] ttw-type-small font-500 text-[#0b1220] hover:bg-[#f4f3ec] transition-colors disabled:opacity-50"
                 >
                   Show All
-                </Button>
+                </button>
               ) : null}
             </div>
           ) : (
-            <div className="flex flex-col items-center gap-3">
+            <div className="flex flex-col items-center gap-3 px-6 max-ph:px-4">
               <EmptyMsg className="flex flex-row items-start px-1">
-                <BiErrorCircle className="" />
-                <span className="">
+                <BiErrorCircle className="text-[#445069]" />
+                <span className="ttw-type-body text-[#445069]">
                   Oops, it looks like there are no{" "}
                   {elementType === "POI" ? "places to visit" : "things to do"}{" "}
                   available.
                 </span>
               </EmptyMsg>
               {debouncedSearch !== "" ? (
-                <Button
-                  boxShadow
-                  onclickparam={null}
-                  onclick={handleClearSearch}
-                  margin="0.25rem auto"
-                  borderWidth="1px"
-                  borderRadius="2rem"
-                  padding="0.25rem 1rem"
+                <button
+                  onClick={handleClearSearch}
+                  className="w-full mt-4 py-3 rounded-xl border border-[#ececec] ttw-type-small font-500 text-[#0b1220] hover:bg-[#f4f3ec] transition-colors disabled:opacity-50"
                 >
                   Show All
-                </Button>
+                </button>
               ) : (
-                <GetInTouchContainer>
-                  <Button
-                    color="#111"
-                    fontWeight="500"
-                    fontSize="1rem"
-                    borderWidth="2px"
-                    width="100%"
-                    borderRadius="8px"
-                    bgColor="#f8e000"
-                    padding="12px"
-                    onclick={props._GetInTouch}
+                <GetInTouchContainer className="w-full">
+                  <button
+                    onClick={props._GetInTouch}
+                    className="w-full bg-[#f7e700] text-black font-500 ttw-type-body py-3 rounded-xl flex items-center justify-center gap-2 disabled:opacity-60"
                   >
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        gap: "0.5rem",
-                        alignItems: "center",
-                      }}
-                    >
-                      <ImageLoader
-                        dimensions={{ height: 50, width: 50 }}
-                        dimensionsMobile={{ height: 50, width: 50 }}
-                        height={"20px"}
-                        width={"20px"}
-                        leftalign
-                        url={"media/icons/login/customer-service-black.png"}
-                      />{" "}
-                      <span>Get in touch!</span>
-                    </div>
-                  </Button>
+                    <ImageLoader
+                      dimensions={{ height: 50, width: 50 }}
+                      dimensionsMobile={{ height: 50, width: 50 }}
+                      height={"20px"}
+                      width={"20px"}
+                      leftalign
+                      url={"media/icons/login/customer-service-black.png"}
+                    />{" "}
+                    <span>Get in touch!</span>
+                  </button>
                 </GetInTouchContainer>
               )}
             </div>
@@ -741,27 +718,29 @@ const ItineraryPoiElementM = (props) => {
         show={showFilter}
         anchor={"right"}
         backdrop
+        width="50%"
+        mobileWidth="100%"
+        bgColor="#fafaf5"
         style={{ zIndex: 1503 }}
         className=""
         onHide={() => setshowFilter(false)}
       >
-        <div className="w-[100vw] px-2 h-[95vh] flex flex-col gap-3 my-4 justify-between items-start mx-auto ">
-          <div className="w-[100%]">
+        <div className="w-full px-6 max-ph:px-4 h-[95vh] flex flex-col gap-3 py-4 justify-between items-start">
+          <div className="w-full">
             <div className="flex flex-row gap-3 my-0 justify-start items-center">
-              <IoMdClose
+              <Image
+                src="/backarrow.svg"
+                className="cursor-pointer"
+                width={22}
+                height={2}
                 onClick={() => setshowFilter(false)}
-                className="hover-pointer"
-                style={{
-                  fontSize: "1.75rem",
-                  textAlign: "right",
-                }}
-              ></IoMdClose>
-              <div className="ttw-type-h2 font-normal line-clamp-1">Filters</div>
+              />
+              <div className="ttw-type-h2 font-semibold text-[#0b1220] line-clamp-1">Filters</div>
             </div>
 
-            <div className="flex w-[100%] flex-row justify-between mt-0">
-              <div className="flex w-[100%] flex-col justify-start items-baseline">
-                <div className="mb-2 ttw-type-body mt-3">
+            <div className="flex w-full flex-row justify-between mt-0">
+              <div className="flex w-full flex-col justify-start items-baseline">
+                <div className="mb-2 ttw-type-body font-600 text-[#0b1220] mt-3">
                   Experience Types
                 </div>
                 <GridResponsive>
@@ -771,10 +750,10 @@ const ItineraryPoiElementM = (props) => {
                         if (SelectedExprience !== i) SetSelectedExprience(i);
                         else SetSelectedExprience(-1);
                       }}
-                      className={`flex font-normal min-w-fit ttw-type-body cursor-pointer justify-center items-center hover:bg-gray-100 active:bg-[#111] active:border-0 ${SelectedExprience == i
- ? "text-white border-0 bg-black "
- : "border-2 bg-white text-black"
- } active:text-white border-[#D0D5DD] rounded-lg px-2 py-1`}
+                      className={`flex font-500 min-w-fit ttw-type-small cursor-pointer justify-center items-center transition-colors rounded-lg px-2 py-1 ${SelectedExprience == i
+ ? "bg-[#f7e700] border border-[#f7e700] text-black"
+ : "border border-[#ececec] bg-white text-[#0b1220] hover:bg-[#f4f3ec]"
+ }`}
                       key={i}
                     >
                       {currentfilter.display}
@@ -786,21 +765,20 @@ const ItineraryPoiElementM = (props) => {
           </div>
 
           <div className="w-full flex gap-3 flex-row justify-between mt-0">
-            <ButtonYellow
-              primary={false}
-              className="w-1/2 "
+            <button
               onClick={() => setshowFilter(false)}
+              className="w-1/2 py-3 rounded-xl border border-[#ececec] ttw-type-body font-500 text-[#0b1220] hover:bg-[#f4f3ec] transition-colors"
             >
-              <div className="text-[#01202B] ">Cancel</div>
-            </ButtonYellow>
-            <ButtonYellow
-              className="w-1/2"
+              Cancel
+            </button>
+            <button
               onClick={() => {
                 setshowFilter(false);
               }}
+              className="w-1/2 bg-[#f7e700] text-black font-500 ttw-type-body py-3 rounded-xl flex items-center justify-center gap-2 disabled:opacity-60"
             >
-              <div className="text-[#01202B] ">Apply</div>
-            </ButtonYellow>
+              Apply
+            </button>
           </div>
         </div>
 

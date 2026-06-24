@@ -18,40 +18,20 @@ import TransferEditDrawer from "../../drawers/routeTransfer/TransferEditDrawer";
 import { fetchTransferMode } from "../../../services/bookings/FetchTaxiRecommendations";
 import OfflineQuoteEmptyState from "../../ui/OfflineQuoteEmptyState";
 import { useRouter } from "next/router";
-
-const GridContainer = styled.div`
-@media screen and (min-width: 768px) {
-    display: grid;
-    grid-template-columns: 1fr;
-
-    @media screen and (min-width: 768px) {
-
-    }
-`;
+import { PulseLoader } from "react-spinners";
 
 const OptionsContainer = styled.div`
-  min-height: 40vh;
-  overflow-x: hidden;
-  width: 97%;
   position: relative;
-  margin: auto;
-
-  @media screen and (min-width: 768px) {
-    min-height: 80vh;
-    width: 90%;
-  }
 `;
 
 const ContentContainer = styled.div`
-  min-height: 65vh;
-  @media screen and (min-width: 768px) {
-    min-height: max-content;
-  }
+  position: relative;
 `;
 
 const Booking = (props) => {
   const router = useRouter();
   let isPageWide = media("(min-width: 768px)");
+  const drawerZIndex = props?.zIndex ?? 1501;
   const [optionsJSX, setOptionsJSX] = useState([]);
   const [moreOptionsJSX, setMoreOptionsJSX] = useState([]);
   const [error, setError] = useState(false);
@@ -241,8 +221,8 @@ const Booking = (props) => {
         anchor={"right"}
         backdrop
         bgColor="#fafaf5"
-        style={{ zIndex: 1501 }}
-        className=""
+        style={{ zIndex: drawerZIndex }}
+        className="!overflow-y-hidden"
         show={props.showTaxiModal}
         onHide={props.setHideTaxiModal}
         mobileWidth={"100%"}
@@ -258,8 +238,8 @@ const Booking = (props) => {
           setIsMercury={setIsMercury}
         ></SectionOne>
 
-        <div>
-          <GridContainer style={{ clear: "right" }}>
+        <div className="overflow-y-scroll h-screen px-6 max-ph:px-4">
+          <div style={{ clear: "right" }}>
             <ContentContainer style={{ position: "relative" }}>
               {updateBookingState ? (
                 <ItineraryUpdateLoader
@@ -284,41 +264,33 @@ const Booking = (props) => {
                   </div>
 
                   {updateLoadingState ? (
-                    <div className="center-div" style={{}}>
-                      <LoadingLottie
-                        height="5rem"
-                        width="5rem"
-                        margin="1rem auto"
-                      />
+                    <div className="flex items-center justify-center py-6">
+                      <PulseLoader size={8} color="#0b1220" />
                     </div>
                   ) : null}
 
                   {viewMoreStatus && !optionsJSX.length ? (
-                    <Button
-                      boxShadow
-                      onclickparam={null}
-                      onclick={_loadAccommodationsHandler}
-                      margin="0.25rem auto"
-                      borderWidth="1px"
-                      borderRadius="2rem"
-                      padding="0.25rem 1rem"
+                    <button
+                      type="button"
+                      onClick={_loadAccommodationsHandler}
+                      className="w-full mt-4 py-3 rounded-xl border border-[#ececec] ttw-type-small font-500 text-[#0b1220] hover:bg-[#f4f3ec] transition-colors disabled:opacity-50"
                     >
                       View More
-                    </Button>
+                    </button>
                   ) : null}
                 </OptionsContainer>
               ) : null}
 
               {noResults ? (
-                <OptionsContainer className=" center-div text-center text-[#445069]">
+                <OptionsContainer className="center-div text-center ttw-type-body text-[#445069]">
                   Oops, we couldn't find what you were searching but we are
-                  already adding new and approved accommodations to our database
+                  already adding new and approved transfers to our database
                   everyday!
                 </OptionsContainer>
               ) : null}
 
               {error ? (
-                <OptionsContainer className=" center-div text-center text-[#445069]">
+                <OptionsContainer>
                   <OfflineQuoteEmptyState
                     message="We couldn't load transfers for these details right now. Request an offline quote and our team will sort it out for you."
                     title="No transfers available right now"
@@ -349,7 +321,7 @@ const Booking = (props) => {
                 </OptionsContainer>
               ) : null}
             </ContentContainer>
-          </GridContainer>
+          </div>
         </div>
 
         {props?.mercury ? <TransferEditDrawer
@@ -397,7 +369,7 @@ const Booking = (props) => {
         <SearchLoaderOverlay
           isVisible={props.showTaxiModal && loading && !optionsJSX.length}
           displayText="Finding best transfers for you"
-          zIndex={1505}
+          zIndex={drawerZIndex + 5}
         />
       </Drawer>
     );

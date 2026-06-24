@@ -1,10 +1,8 @@
 import React from "react";
-import styled from "styled-components";
+import Image from "next/image";
 import FiltersMobile from "./filtersmobile/Index";
 import Drawer from "../../ui/Drawer";
 import { useState } from "react";
-import { IoMdClose } from "react-icons/io";
-import ButtonYellow from "../../ButtonYellow";
 import CheckboxFormComponent from "../../FormComponents/CheckboxFormComponent";
 import PriceRange from "./filtersmobile/PriceRange";
 import Facilities from "./filtersmobile/Facilities";
@@ -12,12 +10,6 @@ import PropertyType from "./filtersmobile/PropertyType";
 import Tags from "./filtersmobile/Tags";
 import UserRatings from "./filtersmobile/UserRatings";
 import StarCategory from "./filtersmobile/StarCategory";
-
-const Container = styled.div`
-  margin: 0;
-  @media screen and (min-width: 768px) {
-  }
-`;
 
 const Section = (props) => {
  const [selectedStarCategory, setSelectedStarCategory] = useState(null);
@@ -68,7 +60,7 @@ const Section = (props) => {
   }
 
   return (
-    <Container className="">
+    <div>
       <FiltersMobile
         loading={props.loading}
         showFilter={props.showFilter}
@@ -100,24 +92,28 @@ const Section = (props) => {
         show={props.showFilter}
         anchor={"right"}
         backdrop
+        width="50%"
+        mobileWidth="100%"
         bgColor="#fafaf5"
-        style={{ zIndex: 1508 }}
-        className=""
+        style={{ zIndex: props.zIndex ?? 1700 }}
+        className="!overflow-y-hidden"
         onHide={() => props.setshowFilter(false)}
       >
-        <div className="w-[100vw] px-2 h-[98vh] flex flex-col gap-3 justify-between items-start mx-auto ">
-          <div className="flex lg:flex-row lg:gap-0 gap-3 flex-col justify-between w-[95%] mx-auto mt-4">
-            <div className="flex flex-row gap-3 my-0 justify-start items-center">
-              <IoMdClose
-                onClick={() => props.setshowFilter(false)}
-                className="hover-pointer"
-                style={{
-                  fontSize: "1.75rem",
-                  textAlign: "right",
-                }}
-              ></IoMdClose>
-              <div className="text-2xl font-normal line-clamp-1 text-[#0b1220]">Filters</div>
-            </div>
+        <div className="h-screen flex flex-col overflow-hidden">
+          <div className="py-4 bg-[#fafaf5] z-[900] flex flex-col gap-3 pb-2 sticky top-0 px-6 max-ph:px-4">
+            <Image
+              src="/backarrow.svg"
+              className="cursor-pointer"
+              width={22}
+              height={2}
+              alt="back"
+              onClick={() => props.setshowFilter(false)}
+            />
+            <div className="ttw-type-h2 font-semibold line-clamp-1 text-[#0b1220]">Filters</div>
+          </div>
+          <div className="overflow-y-scroll flex-1 px-6 max-ph:px-4 pb-24 flex flex-col gap-3">
+            <div className="flex flex-col gap-3 w-full">
+
 
             <StarCategory
               starCategory={props.FILTERS.star_category}
@@ -131,15 +127,15 @@ const Section = (props) => {
               setSelectedUserStar={setSelectedUserStar}
             />
 
-            <div className="flex flex-row gap-5 ">
+            <div className="flex flex-row gap-5 max-ph:flex-col max-ph:gap-2">
               <button onClick={() => setRefundable(prev => !prev)} className="flex flex-row items-center gap-1 cursor-pointer">
                 <CheckboxFormComponent checked={refundable} />
-                Refundable
+                <span className="ttw-type-body text-[#0b1220]">Refundable</span>
               </button>
 
               <button onClick={() => setFreeBreakfast(prev => !prev)} className="flex flex-row items-center gap-1 cursor-pointer">
                 <CheckboxFormComponent checked={freeBreakfast} />
-                Free Breakfast
+                <span className="ttw-type-body text-[#0b1220]">Free Breakfast</span>
               </button>
             </div>
 
@@ -168,26 +164,26 @@ const Section = (props) => {
                 selectedTags={selectedTags}
                 setSelectedTags={setSelectedTags} />
             ) : null}
+            </div>
           </div>
 
-          <div className="w-full flex gap-3 flex-row justify-between mt-0">
-            <ButtonYellow
-              primary={false}
-              className="w-1/2 "
+          <div className="sticky bottom-0 z-10 border-t border-[#ececec] px-6 max-ph:px-4 py-4 bg-[#fafaf5] w-full flex gap-3 flex-row justify-between">
+            <button
+              className="ttw-btn-secondary w-1/2 whitespace-nowrap ttw-type-body"
               onClick={() => props.setshowFilter(false)}
             >
-              <div className="text-[#0b1220] ">Cancel</div>
-            </ButtonYellow>
-            <ButtonYellow
-              className="w-1/2"
+              Cancel
+            </button>
+            <button
+              className="w-1/2 bg-[#f7e700] text-black font-500 ttw-type-body py-3 rounded-xl flex items-center justify-center gap-2 disabled:opacity-60"
               onClick={handleApply}
             >
-              <div className="text-[#0b1220] ">Apply</div>
-            </ButtonYellow>
+              Apply
+            </button>
           </div>
         </div>
       </Drawer>
-    </Container>
+    </div>
   );
 };
 

@@ -10,42 +10,9 @@ import { MERCURY_HOST } from "../../../services/constants";
 import axios from "axios";
 import setItinerary from "../../../store/actions/itinerary";
 import PoiDetailsSkeleton from "./PoiDetailsSkelton";
-import { TbArrowBack } from "react-icons/tb";
-import useMediaQuery from "../../media";
-import styled from "styled-components";
-import BackArrow from "../../ui/BackArrow";
-
-const FloatingView = styled.div`
-  position: sticky;
-  bottom: 100px;
-  left: 100%;
-  background: black;
-  color: white;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 16px;
-  z-index: 51;
-  cursor: pointer;
-`;
-
-const OptionsContainer = styled.div`
-  min-height: 40vh;
-  overflow-x: hidden;
-  position: relative;
-
-  @media screen and (min-width: 768px) {
-    min-height: 80vh;
-    width: 95%;
-    margin: auto;
-  }
-`;
+import Image from "next/image";
 
 const NewPoiDetailsDrawer = (props) => {
-  const isDesktop = useMediaQuery("(min-width:767px)");
   const router = useRouter();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -165,7 +132,7 @@ const NewPoiDetailsDrawer = (props) => {
       mobileWidth={"100%"}
       bgColor="#fafaf5"
       style={{ zIndex: props.itineraryDrawer ? 1503 : 1501 }}
-      className=" overflow-y-hidden"
+      className="!overflow-y-hidden"
       onHide={props.handleCloseDrawer}
     >
       <ToastContainer />
@@ -194,24 +161,29 @@ const NewPoiDetailsDrawer = (props) => {
           )}
         </>
       ) : (
-        <div className="h-[100vh] px-4 bg-[#fafaf5]">
-          <div className="z-1 flex flex-row items-center gap-2 pt-4 bg-[#fafaf5]">
-            <BackArrow handleClick={(e) => props.handleCloseDrawer(e)} />
+        <div className="overflow-y-scroll h-screen px-6 max-ph:px-4 bg-[#fafaf5]">
+          <div className="py-4 bg-[#fafaf5] z-[900] flex flex-col gap-3 pb-2 sticky top-0">
+            <Image
+              src="/backarrow.svg"
+              className="cursor-pointer"
+              width={22}
+              height={2}
+              onClick={(e) => props.handleCloseDrawer(e)}
+            />
           </div>
-          <OptionsContainer className="px-2 center-div space-y-5">
-            {error}
-          </OptionsContainer>
+          <div className="flex flex-col items-center justify-center mt-16 gap-3">
+            <div className="ttw-type-small text-[#445069] text-center">
+              {error}
+            </div>
+            <button
+              className="bg-[#f7e700] border border-black text-black px-4 py-2 rounded-lg ttw-type-body-strong"
+              onClick={() => fetchData()}
+            >
+              Retry
+            </button>
+          </div>
         </div>
       )}
-      {/* {!isDesktop && (
-        <FloatingView>
-          <TbArrowBack
-            style={{ height: "28px", width: "28px" }}
-            cursor={"pointer"}
-            onClick={(e) => props.handleCloseDrawer(e)}
-          />
-        </FloatingView>
-      )} */}
     </Drawer>
   );
 };

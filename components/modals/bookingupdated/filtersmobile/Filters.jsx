@@ -44,29 +44,29 @@ export default function Filters(props) {
       show={props.showFilter}
       anchor={"right"}
       backdrop
+      width="50%"
+      mobileWidth="100%"
       bgColor="#fafaf5"
-      style={{ zIndex: 1508 }}
-      className=""
+      style={{ zIndex: props.zIndex ?? 1508 }}
+      className="!overflow-y-hidden"
       onHide={() => props.setshowFilter(false)}
     >
-      <div className="w-[80vw] md:w-[27vw] h-[100vh] flex flex-col">
-        {/* Header - Fixed at top */}
-        <div className="px-lg pt-md pb-sm border-b border-[#ececec]">
-          <div className="mb-md">
-            <Image 
-              src="/backarrow.svg" 
-              className="cursor-pointer" 
-              width={22} 
-              height={22} 
-              onClick={() => props.setshowFilter(false)} 
-            />
-          </div>
-          
+      <div className="h-screen flex flex-col overflow-hidden">
+        {/* Header - sticky at top */}
+        <div className="px-6 max-ph:px-4 py-4 bg-[#fafaf5] z-[900] sticky top-0 flex flex-col gap-3 pb-2 border-b border-[#ececec]">
+          <Image
+            src="/backarrow.svg"
+            className="cursor-pointer"
+            width={22}
+            height={2}
+            onClick={() => props.setshowFilter(false)}
+          />
+
           <div className="flex w-full flex-row justify-between items-center">
-            <div className="text-xl font-600 leading-2xl text-[#0b1220]">Filters</div>
+            <div className="ttw-type-h2 font-semibold text-[#0b1220]">Filters</div>
             {props?.isFilterChangesApplied && (
-              <button 
-                className="font-md font-500 leading-lg-md underline text-text-error" 
+              <button
+                className="ttw-type-small font-500 underline text-[#CD2026]"
                 onClick={removeAllFilter}
               >
                 Clear
@@ -76,11 +76,11 @@ export default function Filters(props) {
         </div>
 
         {/* Scrollable content area */}
-        <div className="flex-1 overflow-y-auto px-lg py-lg scrollbar-hide">
-          <div className="flex flex-col gap-xl">
+        <div className="flex-1 overflow-y-scroll px-6 max-ph:px-4 py-6 pb-24 scrollbar-hide">
+          <div className="flex flex-col gap-6">
             <PriceRange budget={budget} setBudget={setBudget} setFilters={props?.setFilters} />
 
-            <hr className="m-zero" />
+            <hr className="border-t border-[#ececec] m-0" />
 
             <StarCategory
               starCategory={props.FILTERS.star_category}
@@ -88,7 +88,7 @@ export default function Filters(props) {
               setSelectedStarCategory={setSelectedStarCategory}
             />
 
-            {/* <hr className="m-zero" /> */}
+            {/* <hr className="border-t border-[#ececec] m-0" /> */}
             
             {/* <UserRatings
               userRatings={props.FILTERS?.user_ratings}
@@ -99,7 +99,7 @@ export default function Filters(props) {
 
             {props.FILTERS?.type.length ? (
               <>
-                <hr className="m-zero" />
+                <hr className="border-t border-[#ececec] m-0" />
                 <PropertyType
                   types={props.FILTERS?.type}
                   selectedTypes={selectedTypes}
@@ -110,7 +110,7 @@ export default function Filters(props) {
 
             {props.FILTERS?.facilities.length ? (
               <>
-                <hr className="m-zero" />
+                <hr className="border-t border-[#ececec] m-0" />
                 <Facilities
                   facilities={props.FILTERS?.facilities}
                   selectedFacilities={selectedFacilities}
@@ -121,7 +121,7 @@ export default function Filters(props) {
 
             {props.FILTERS?.tags.length ? (
               <>
-                <hr className="m-zero" />
+                <hr className="border-t border-[#ececec] m-0" />
                 <Tags
                   tags={props.FILTERS?.tags}
                   selectedTags={selectedTags}
@@ -130,7 +130,7 @@ export default function Filters(props) {
               </>
             ) : null}
 
-            <hr className="m-zero" />
+            <hr className="border-t border-[#ececec] m-0" />
             
             {/* Add padding at bottom to prevent content from being hidden behind buttons */}
             <div className="h-4"></div>
@@ -138,12 +138,18 @@ export default function Filters(props) {
         </div>
 
         {/* Sticky footer buttons */}
-        <div className="border-t border-[#ececec] bg-[#fafaf5] px-lg py-md">
-          <div className="flex gap-3 justify-end">
-            <button className="ttw-btn-secondary-flat" onClick={() => props.setshowFilter(false)}>
+        <div className="sticky bottom-0 z-10 border-t border-[#ececec] bg-[#fafaf5] px-6 max-ph:px-4 py-4">
+          <div className="flex gap-3 items-center">
+            <button
+              className="ttw-btn-secondary whitespace-nowrap ttw-type-body"
+              onClick={() => props.setshowFilter(false)}
+            >
               Cancel
             </button>
-            <button className="ttw-btn-secondary-fill" onClick={handleApply}>
+            <button
+              className="w-full bg-[#f7e700] text-black font-500 ttw-type-body py-3 rounded-xl flex items-center justify-center gap-2 disabled:opacity-60"
+              onClick={handleApply}
+            >
               Apply
             </button>
           </div>

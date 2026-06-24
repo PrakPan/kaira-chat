@@ -1,49 +1,15 @@
 import React, {  useState } from "react";
-import styled from "styled-components";
-import media from "../../media";
+import { PulseLoader } from "react-spinners";
 import { connect } from "react-redux";
-import Button from "../../ui/button/Index";
 import LogInModal from "../Login";
 import SectionOne from "./SectionOne";
-import LoadingLottie from "../../ui/LoadingLottie";
 import { ItineraryUpdateLoader } from "../../revamp/common/components/loader";
 import Drawer from "../../ui/Drawer";
 import { openNotification } from "../../../store/actions/notification";
 import Skeleton from "./Skeleton";
 import TransferEditDrawer from "../../drawers/routeTransfer/TransferEditDrawer";
 
-const GridContainer = styled.div`
-@media screen and (min-width: 768px) {
-    display: grid;
-    grid-template-columns: 1fr;
-
-    @media screen and (min-width: 768px) {
-
-    }
-`;
-
-const OptionsContainer = styled.div`
-  min-height: 40vh;
-  overflow-x: hidden;
-  width: 97%;
-  position: relative;
-  margin: auto;
-
-  @media screen and (min-width: 768px) {
-    min-height: 80vh;
-    width: 90%;
-  }
-`;
-
-const ContentContainer = styled.div`
-  min-height: 65vh;
-  @media screen and (min-width: 768px) {
-    min-height: max-content;
-  }
-`;
-
 const Booking = (props) => {
-  let isPageWide = media("(min-width: 768px)");
   const [optionsJSX, setOptionsJSX] = useState([]);
   const [moreOptionsJSX, setMoreOptionsJSX] = useState([]);
   const [error, setError] = useState(false);
@@ -66,88 +32,87 @@ const Booking = (props) => {
         backdrop
         bgColor="#fafaf5"
         style={{ zIndex: 1501 }}
-        className=""
+        className="!overflow-y-hidden"
         show={props.showTaxiModal}
         onHide={props.setHideTaxiModal}
         mobileWidth={"100%"}
         width="50%"
       >
-        <SectionOne
-          selectedBooking={props.selectedBooking}
-          setHideTaxiModal={props.setHideTaxiModal}
-          handleTransferEdit={handleTransferEdit}
-          oCityData={props?.oCityData}
-          dCityData={props?.dCityData}
-          mercury={props?.mercury}
-          setIsMercury={setIsMercury}
-        ></SectionOne>
+        <div className="h-screen flex flex-col overflow-hidden">
+          <SectionOne
+            selectedBooking={props.selectedBooking}
+            setHideTaxiModal={props.setHideTaxiModal}
+            handleTransferEdit={handleTransferEdit}
+            oCityData={props?.oCityData}
+            dCityData={props?.dCityData}
+            mercury={props?.mercury}
+            setIsMercury={setIsMercury}
+          ></SectionOne>
 
-        <div>
-          <GridContainer style={{ clear: "right" }}>
-            <ContentContainer style={{ position: "relative" }}>
-              {updateBookingState ? (
-                <ItineraryUpdateLoader
-                  message="Please wait while we update your transfer"
-                  subMessages={[
-                    "Confirming your transfer…",
-                    "Arranging the details…",
-                    "Updating your transfer…",
-                  ]}
-                />
+          <div className="overflow-y-scroll flex-1 px-6 max-ph:px-4 pb-24 relative">
+          {updateBookingState ? (
+            <ItineraryUpdateLoader
+              message="Please wait while we update your transfer"
+              subMessages={[
+                "Confirming your transfer…",
+                "Arranging the details…",
+                "Updating your transfer…",
+              ]}
+            />
+          ) : null}
+
+          {!noResults && !error && !updateBookingState ? (
+            <div id="options" className="relative flex flex-col gap-2">
+              <div>
+                {optionsJSX.length
+                  ? optionsJSX
+                  : moreOptionsJSX.length
+                  ? moreOptionsJSX
+                  : null}
+                {loading && !optionsJSX.length ? <Skeleton /> : null}
+              </div>
+
+              {updateLoadingState ? (
+                <div className="flex items-center justify-center py-6">
+                  <PulseLoader size={8} color="#0b1220" />
+                </div>
               ) : null}
 
-              {!noResults && !error && !updateBookingState ? (
-                <OptionsContainer id="options">
-                  <div style={{ clear: "right" }}>
-                    {optionsJSX.length
-                      ? optionsJSX
-                      : moreOptionsJSX.length
-                      ? moreOptionsJSX
-                      : null}
-                    {loading && !optionsJSX.length ? <Skeleton /> : null}
-                  </div>
-
-                  {updateLoadingState ? (
-                    <div className="center-div" style={{}}>
-                      <LoadingLottie
-                        height="5rem"
-                        width="5rem"
-                        margin="1rem auto"
-                      />
-                    </div>
-                  ) : null}
-
-                  {viewMoreStatus && !optionsJSX.length ? (
-                    <Button
-                      boxShadow
-                      onclickparam={null}
-                      onclick={_loadAccommodationsHandler}
-                      margin="0.25rem auto"
-                      borderWidth="1px"
-                      borderRadius="2rem"
-                      padding="0.25rem 1rem"
-                    >
-                      View More
-                    </Button>
-                  ) : null}
-                </OptionsContainer>
+              {viewMoreStatus && !optionsJSX.length ? (
+                <button
+                  onClick={_loadAccommodationsHandler}
+                  className="w-full mt-4 py-3 rounded-xl border border-[#ececec] ttw-type-small font-500 text-[#0b1220] hover:bg-[#f4f3ec] transition-colors disabled:opacity-50"
+                >
+                  View More
+                </button>
               ) : null}
+            </div>
+          ) : null}
 
-              {noResults ? (
-                <OptionsContainer className=" center-div text-center">
-                  Oops, we couldn't find what you were searching but we are
-                  already adding new and approved accommodations to our database
-                  everyday!
-                </OptionsContainer>
-              ) : null}
+          {noResults ? (
+            <div className="flex items-center justify-center text-center py-10">
+              <p className="ttw-type-body text-[#445069]">
+                Oops, we couldn't find what you were searching but we are
+                already adding new and approved transfers to our database
+                everyday!
+              </p>
+            </div>
+          ) : null}
 
-              {error ? (
-                <OptionsContainer className=" center-div text-center">
-                  Oops, There seems to be a problem, please try again later!
-                </OptionsContainer>
-              ) : null}
-            </ContentContainer>
-          </GridContainer>
+          {error ? (
+            <div className="flex flex-col items-center justify-center text-center gap-4 py-10">
+              <p className="ttw-type-body text-[#445069]">
+                Oops, There seems to be a problem, please try again later!
+              </p>
+              <button
+                onClick={() => setError(false)}
+                className="bg-[#f7e700] border border-black text-black px-4 py-2 rounded-lg ttw-type-body-strong"
+              >
+                Retry
+              </button>
+            </div>
+          ) : null}
+          </div>
         </div>
 
         {props?.mercury ? <TransferEditDrawer

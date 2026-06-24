@@ -29,7 +29,7 @@ const BackContainer = styled.div`
   gap: 0.5rem;
   position: sticky;
   z-index: 1;
-  background: white;
+  background: #fafaf5;
   top: 0;
   padding-block: 0.75rem;
 
@@ -49,15 +49,18 @@ const Container = styled.div`
 `;
 
 const Name = styled.h2`
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 600;
+  line-height: 1.3;
+  color: #0b1220;
 `;
 
 const DetailsContainer = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: space-between;
   @media screen and (min-width: 768px) {
+    flex-direction: row;
   }
 `;
 
@@ -119,21 +122,31 @@ const Child = styled.div`
 
 const Heading = styled.div`
   font-weight: 600;
-  font-size: 20px;
+  font-size: 17px;
+  line-height: 1.4;
+  color: #0b1220;
   margin-block: 1rem 1rem;
 `;
 
 const Address = styled.div`
   font-weight: 400;
-  font-size: 14px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #445069;
 `;
 
 const CheckInText = styled.div`
   font-weight: 500;
-  font-size: 14px;
+  font-size: 13px;
+  color: #0b1220;
   display: flex;
   gap: 5rem;
   margin-block: 1rem;
+
+  @media screen and (max-width: 768px) {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
 `;
 
 const FlexBox = styled.div`
@@ -201,17 +214,19 @@ const OverviewParam = (props) => {
       bgColor="#fafaf5"
       className=""
       onHide={props.onHide}
-      width={"50vw"}
-      mobileWidth={"100vw"}
+      width={"50%"}
+      mobileWidth={"100%"}
     >
-    <Container>
+    <Container className="overflow-y-scroll h-screen px-6 max-ph:px-4">
       <BackContainer className=" ">
         <BackArrow handleClick={props.onHide} />
       </BackContainer>
       <FlexBox>
         <div>
-          <Name>{props.data.name}</Name>
-          <Address>
+          <Name className="ttw-type-h3 font-600 text-[#0b1220]">
+            {props.data.name}
+          </Name>
+          <Address className="ttw-type-small text-[#445069]">
             {props.data?.addr1 ? props.data.addr1 + ", " : ""}{" "}
             {props.data?.addr2 ? props.data.addr2 + ", " : ""}{" "}
             {props.data?.city ? props.data.city : ""}
@@ -220,18 +235,13 @@ const OverviewParam = (props) => {
         {props.payment && props.token ? (
           props.payment?.is_registration_needed ? null : props.payment
               ?.paid_user || !props.payment?.user_allowed_to_pay ? null : (
-            <Button
-              padding="7px 25px"
-              borderRadius="7px"
-              bgColor="#ffffff"
-              color="#0b1220"
-              borderStyle="solid"
-              borderWidth="1px"
-              borderColor="#ececec"
-              onclick={() => props.BookingButtonFun()}
+            <button
+              type="button"
+              className="ttw-btn-secondary whitespace-nowrap ttw-type-body"
+              onClick={() => props.BookingButtonFun()}
             >
               Change
-            </Button>
+            </button>
           )
         ) : (
           <></>
@@ -248,7 +258,7 @@ const OverviewParam = (props) => {
             {" . "}
           </div>
           {props.data?.num_reviews && (
-            <div className="text-sm text-[#445069] font-[400] underline">
+            <div className="ttw-type-small font-400 text-[#445069] underline">
               {props.data?.num_reviews}{" "}
               {props.data?.agoda_accommodation
                 ? "user reviews"
@@ -262,7 +272,7 @@ const OverviewParam = (props) => {
         <div className="flex flex-col gap-1">
           {props?.currentBooking.user_rating && (
             <div className="gap-1 flex flex-row  items-center">
-              <div className="flex flex-row text-[#ffa500]">
+              <div className="flex flex-row text-[#f7e700]">
                 {starRating(props?.currentBooking.user_rating)}
               </div>
               <div>
@@ -270,7 +280,7 @@ const OverviewParam = (props) => {
                 {" . "}
               </div>
               {props?.currentBooking?.number_of_reviews && (
-                <div className="text-sm text-[#445069] font-medium underline">
+                <div className="ttw-type-small font-600 text-[#445069] underline">
                   {props?.currentBooking?.number_of_reviews}{" "}
                   {props?.currentBooking?.source === "Agoda"
                     ? "user reviews"
@@ -305,7 +315,7 @@ const OverviewParam = (props) => {
                   />
 
                   {images[0]?.caption ? (
-                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white ttw-type-small py-1 px-2 rounded-lg">
                       {images[0]?.caption}
                     </div>
                   ) : null}
@@ -341,7 +351,7 @@ const OverviewParam = (props) => {
                   />
 
                   {images[1]?.caption ? (
-                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white ttw-type-small py-1 px-2 rounded-lg">
                       {images[1]?.caption}
                     </div>
                   ) : null}
@@ -377,7 +387,7 @@ const OverviewParam = (props) => {
                   />
 
                   {images[2]?.caption ? (
-                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white ttw-type-small py-1 px-2 rounded-lg">
                       {images[2]?.caption}
                     </div>
                   ) : null}
@@ -413,7 +423,7 @@ const OverviewParam = (props) => {
                   />
 
                   {images[3]?.caption ? (
-                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white ttw-type-small py-1 px-2 rounded-lg">
                       {images[3]?.caption}
                     </div>
                   ) : null}
@@ -450,7 +460,7 @@ const OverviewParam = (props) => {
                   />
 
                   {images[0]?.caption ? (
-                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white ttw-type-small py-1 px-2 rounded-lg">
                       {images[0]?.caption}
                     </div>
                   ) : null}
@@ -486,7 +496,7 @@ const OverviewParam = (props) => {
                   />
 
                   {images[1]?.caption ? (
-                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white ttw-type-small py-1 px-2 rounded-lg">
                       {images[1]?.caption}
                     </div>
                   ) : null}
@@ -522,7 +532,7 @@ const OverviewParam = (props) => {
                   />
 
                   {images[2]?.caption ? (
-                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white ttw-type-small py-1 px-2 rounded-lg">
                       {images[2]?.caption}
                     </div>
                   ) : null}
@@ -560,7 +570,7 @@ const OverviewParam = (props) => {
                   />
 
                   {images[0]?.caption ? (
-                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white ttw-type-small py-1 px-2 rounded-lg">
                       {images[0]?.caption}
                     </div>
                   ) : null}
@@ -596,7 +606,7 @@ const OverviewParam = (props) => {
                   />
 
                   {images[1]?.caption ? (
-                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white ttw-type-small py-1 px-2 rounded-lg">
                       {images[1]?.caption}
                     </div>
                   ) : null}
@@ -634,7 +644,7 @@ const OverviewParam = (props) => {
                 />
 
                 {images[0]?.caption ? (
-                  <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                  <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white ttw-type-small py-1 px-2 rounded-lg">
                     {images[0]?.caption}
                   </div>
                 ) : null}
@@ -692,7 +702,7 @@ const OverviewParam = (props) => {
                     />
 
                     {images[0]?.caption ? (
-                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">
+                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white ttw-type-small py-1 px-2 rounded-lg">
                         {images[0]?.caption}
                       </div>
                     ) : null}
@@ -728,7 +738,7 @@ const OverviewParam = (props) => {
                     />
 
                     {images[1]?.caption ? (
-                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">
+                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white ttw-type-small py-1 px-2 rounded-lg">
                         {images[1]?.caption}
                       </div>
                     ) : null}
@@ -764,7 +774,7 @@ const OverviewParam = (props) => {
                     />
 
                     {images[2]?.caption ? (
-                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">
+                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white ttw-type-small py-1 px-2 rounded-lg">
                         {images[2]?.caption}
                       </div>
                     ) : null}
@@ -802,7 +812,7 @@ const OverviewParam = (props) => {
                     />
 
                     {images[0]?.caption ? (
-                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">
+                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white ttw-type-small py-1 px-2 rounded-lg">
                         {images[0]?.caption}
                       </div>
                     ) : null}
@@ -838,7 +848,7 @@ const OverviewParam = (props) => {
                     />
 
                     {images[1]?.caption ? (
-                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">
+                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white ttw-type-small py-1 px-2 rounded-lg">
                         {images[1]?.caption}
                       </div>
                     ) : null}
@@ -876,7 +886,7 @@ const OverviewParam = (props) => {
                     />
 
                     {images[0]?.caption ? (
-                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">
+                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white ttw-type-small py-1 px-2 rounded-lg">
                         {images[0]?.caption}
                       </div>
                     ) : null}
@@ -938,9 +948,9 @@ const OverviewParam = (props) => {
 
       {props.data?.check_in?.instructions?.length ? (
         <div className="flex flex-col gap-1">
-          <div className="text-lg font-bold">About</div>
+          <div className="ttw-type-body font-600 text-[#0b1220]">About</div>
           <div
-            className="text-[14px] ml-[-30px]"
+            className="ttw-type-small text-[#445069]"
             dangerouslySetInnerHTML={{
               __html: props.data?.check_in?.instructions[0],
             }}
@@ -950,7 +960,9 @@ const OverviewParam = (props) => {
 
       {props.data?.description && (
         <>
-          <Heading>About</Heading>
+          <div className="ttw-type-body font-600 text-[#0b1220] my-4">
+            About
+          </div>
           <MoreText>
             <DescriptionText
               dangerouslySetInnerHTML={{ __html: props.data.description }}
@@ -981,7 +993,7 @@ const OverviewParam = (props) => {
       {props.data?.google_maps_link ? (
         <div>
           <Heading style={{ marginBlock: "1.5rem 1.25rem" }}>Location</Heading>
-          <Address style={{ fontSize: "14px" }}>
+          <Address>
             {props.data?.addr1 ? props.data.addr1 + ", " : ""}{" "}
             {props.data?.addr2 ? props.data.addr2 + ", " : ""}{" "}
             {props.data?.city ? props.data.city : ""}
@@ -1010,7 +1022,7 @@ const OverviewParam = (props) => {
             <a
               href={props.data?.google_maps_link}
               target="_blank"
-              style={{ color: "#0b1220", fontSize: "14px" }}
+              className="ttw-type-small text-[#0b1220]"
             >
               View on Google Map
             </a>
@@ -1019,7 +1031,7 @@ const OverviewParam = (props) => {
       ) : props.data?.latitude && props.data?.longitude ? (
         <div>
           <Heading style={{ marginBlock: "1.5rem 1.25rem" }}>Location</Heading>
-          <Address style={{ fontSize: "14px" }}>
+          <Address>
             {props.data?.addr1 ? props.data.addr1 + ", " : ""}{" "}
             {props.data?.addr2 ? props.data.addr2 + ", " : ""}{" "}
             {props.data?.city ? props.data.city : ""}
@@ -1052,7 +1064,7 @@ const OverviewParam = (props) => {
                 ?.split(" ")
                 .join("+")})`}
               target="_blank"
-              style={{ color: "#0b1220", fontSize: "14px" }}
+              className="ttw-type-small text-[#0b1220]"
             >
               View on Google Map
             </a>

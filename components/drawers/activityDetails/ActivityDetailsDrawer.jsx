@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import { connect, useDispatch, useSelector } from "react-redux";
 import Drawer from "../../ui/Drawer";
@@ -11,44 +12,9 @@ import { getDate } from "../../../helper/DateUtils";
 import { openNotification } from "../../../store/actions/notification";
 import ActivityDetailsSkeleton from "./ActivityDetailsSkeleton";
 import setItinerary from "../../../store/actions/itinerary";
-import { duration } from "@mui/material";
 import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
-import { TbArrowBack } from "react-icons/tb";
-import styled from "styled-components";
-import media from "../../media";
-import BackArrow from "../../ui/BackArrow";
-
-const FloatingView = styled.div`
-  position: sticky;
-  bottom: 100px;
-  left: 100%;
-  background: black;
-  color: white;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 16px;
-  z-index: 51;
-  cursor: pointer;
-`;
-
-const OptionsContainer = styled.div`
-  min-height: 40vh;
-  overflow-x: hidden;
-  position: relative;
-
-  @media screen and (min-width: 768px) {
-    min-height: 80vh;
-    width: 95%;
-    margin: auto;
-  }
-`;
 
 const ActivityDetailsDrawer = (props) => {
-  let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
   const [data, setData] = useState(null);
   const [traceId, setTraceId] = useState(null);
@@ -303,7 +269,7 @@ const ActivityDetailsDrawer = (props) => {
       mobileWidth={"100%"}
       bgColor="#fafaf5"
       style={{ zIndex: props.itineraryDrawer ? 1503 : 1501 }}
-      className="font-lexend overflow-y-hidden pb-[40px]"
+      className="!overflow-y-hidden pb-[40px]"
       onHide={props.handleCloseDrawer}
     >
       {error == null ? (
@@ -337,13 +303,29 @@ const ActivityDetailsDrawer = (props) => {
           )}
         </>
       ) : (
-        <div className="h-[100vh] px-4">
-          <div className="z-1 flex flex-row items-center gap-2 pt-4 bg-white">
-            <BackArrow handleClick={(e) => props.handleCloseDrawer(e)} />
+        <div className="overflow-y-scroll h-screen px-6 max-ph:px-4">
+          <div className="py-4 bg-[#fafaf5] z-[900] flex flex-col gap-3 pb-2 sticky top-0">
+            <Image
+              src="/backarrow.svg"
+              className="cursor-pointer"
+              width={22}
+              height={2}
+              alt="Back"
+              onClick={(e) => props.handleCloseDrawer(e)}
+            />
           </div>
-          <OptionsContainer className="px-2 center-div space-y-5">
-            {error}
-          </OptionsContainer>
+          <div className="flex flex-col items-center justify-center gap-4 min-h-[60vh] text-center">
+            <p className="ttw-type-body text-[#445069]">{error}</p>
+            <button
+              onClick={() => {
+                setError(null);
+                fetchData();
+              }}
+              className="bg-[#f7e700] border border-black text-black px-4 py-2 rounded-lg ttw-type-body-strong"
+            >
+              Retry
+            </button>
+          </div>
         </div>
       )}
     </Drawer>

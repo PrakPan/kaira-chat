@@ -22,19 +22,13 @@ export const Heading = styled.div`
   }
 `;
 
-export const Text = styled.div`
-  font-size: 1.5rem;
-  line-height: 2rem;
-`;
+export const Text = styled.div``;
 
 const Container = styled.div`
   margin-bottom: 10px;
 `;
 
 const FlexBox = styled.div`
-  width: 95%;
-  margin-inline: auto;
-
   @media screen and (min-width: 768px) {
     display: grid;
     gap: 2%;
@@ -63,14 +57,10 @@ const P = styled.div`
 `;
 
 const TextContainer = styled.div`
-  font-size: 0.875rem;
-  font-weight: 400;
-  margin: 0.5rem auto;
-  width: 95%;
+  margin: 0.5rem 0;
 `;
 
 const Item = styled.div`
-  font-size: 14px;
   cursor: pointer;
   padding: 3px 0;
   text-align: center;
@@ -179,7 +169,7 @@ const Section = (props) => {
     <div className="flex flex-col gap-3">
       <FlexBox>
         <div>
-          <P>
+          <P className="ttw-type-small text-[#0b1220]">
             Departure from{" "}
             {props.selectedBooking?.city ||
               props?.mercuryTransfer?.source?.city_name}
@@ -199,7 +189,7 @@ const Section = (props) => {
           </ItemContainer>
         </div>
         <div>
-          <P>
+          <P className="ttw-type-small text-[#0b1220]">
             Arrival at{" "}
             {props.selectedBooking?.destination_city ||
               props?.mercuryTransfer?.destination?.city_name}
@@ -299,15 +289,17 @@ const Section = (props) => {
             onClick={props.setHideFlightModal}
             style={{ fontSize: "2rem" }}
           ></IoMdClose>
-          <Text>{props.text}</Text>
+          <Text className="ttw-type-h2 font-semibold text-[#0b1220]">
+            {props.text}
+          </Text>
         </div>
 
-        <div className="group text-blue md:ml-2 flex flex-row items-center cursor-pointer hover:translate-x-1 transition-all">
+        <div className="group ttw-type-small font-500 text-[#0b1220] md:ml-2 flex flex-row items-center cursor-pointer hover:translate-x-1 transition-all">
           <button
             onClick={(e) => {
               props.handleTransferEdit(e);
             }}
-            className="focus:outline-none"
+            className="focus:outline-none underline"
           >
             See more ways to travel?
           </button>
@@ -318,7 +310,7 @@ const Section = (props) => {
 
       {isPageWide ? FiltersSection : <></>}
 
-      <TextContainer>
+      <TextContainer className="ttw-type-body text-[#0b1220]">
         Showing {props.flightCount} {props.text} {isPageWide ? "|" : <br />}{" "}
         Sort by:{" "}
         <div
@@ -377,27 +369,31 @@ const Section = (props) => {
           anchor={"right"}
           backdrop
           bgColor="#fafaf5"
-          style={{ zIndex: 1502 }}
+          style={{ zIndex: props.zIndex ?? 1502 }}
           className=""
           show={props.showFilter}
           onHide={() => props.setShowFilter(false)}
           mobileWidth={"100%"}
           width={"50%"}
         >
-          <Container>
-            <Heading className="">
-              <IoMdClose
-                className="hover-pointer"
-                onClick={() => props.setShowFilter(false)}
-                style={{ fontSize: "2rem" }}
-              ></IoMdClose>
-              <Text>Filter</Text>
-            </Heading>
-            {FiltersSection}
+          <div className="h-screen flex flex-col overflow-hidden">
+            <div className="overflow-y-scroll flex-1 px-6 max-ph:px-4 pb-24">
+              <div className="py-4 bg-[#fafaf5] z-[900] flex flex-row items-center gap-2 sticky top-0">
+                <IoMdClose
+                  className="hover-pointer cursor-pointer"
+                  onClick={() => props.setShowFilter(false)}
+                  style={{ fontSize: "2rem" }}
+                ></IoMdClose>
+                <Text className="ttw-type-h2 font-semibold text-[#0b1220]">
+                  Filter
+                </Text>
+              </div>
+              {FiltersSection}
+            </div>
 
-            <ButtonContainer>
-              <Button
-                onclick={() => {
+            <div className="sticky bottom-0 z-10 border-t border-[#ececec] px-6 max-ph:px-4 py-4 bg-[#fafaf5] flex flex-row gap-3">
+              <button
+                onClick={() => {
                   props.setFiltersState({
                     order: "asc",
                     non_stop_flights: false,
@@ -407,27 +403,22 @@ const Section = (props) => {
                   });
                   props.setShowFilter(false);
                 }}
-                padding="0.7rem 3rem"
-                borderRadius="0.5rem"
-                fontWeight="600"
+                className="flex-1 py-3 rounded-xl border border-[#ececec] ttw-type-body font-500 text-[#0b1220] hover:bg-[#f4f3ec] transition-colors"
               >
                 Cancel
-              </Button>
+              </button>
 
-              <Button
-                onclick={() => {
+              <button
+                onClick={() => {
                   props._FetchFlightsHandler();
                   props.setShowFilter(false);
                 }}
-                bgColor={"#F7E700"}
-                padding="0.7rem 3rem"
-                borderRadius="0.5rem"
-                fontWeight="600"
+                className="flex-1 bg-[#f7e700] text-black font-500 ttw-type-body py-3 rounded-xl flex items-center justify-center gap-2"
               >
                 Apply
-              </Button>
-            </ButtonContainer>
-          </Container>
+              </button>
+            </div>
+          </div>
           {/* {!isPageWide && (
             <FloatingView>
               <TbArrowBack
@@ -521,10 +512,10 @@ const Pax = ({ setShowPax, pax, setPax, classType, setClassType }) => {
     <div onClick={handleClose} className="fixed inset-0 z-50">
       <div
         ref={ref}
-        className="absolute top-[270px] md:top-[240px] left-2 right-2 md:right-5 md:left-auto bg-[#fafaf5] shadow-2xl drop-shadow-3xl p-3 rounded-lg space-y-5 text-sm text-[#0b1220]"
+        className="absolute top-[270px] md:top-[240px] left-2 right-2 md:right-5 md:left-auto bg-[#fafaf5] shadow-2xl drop-shadow-3xl p-3 rounded-lg space-y-5 ttw-type-small text-[#0b1220]"
       >
         <div className="flex flex-col gap-1">
-          <div>Adults (12y +)</div>
+          <div className="ttw-type-small text-[#0b1220]">Adults (12y +)</div>
           <div className="flex flex-row items-center gap-2">
             <FaMinus
               onClick={() => handleMinus("adult")}
@@ -540,7 +531,9 @@ const Pax = ({ setShowPax, pax, setPax, classType, setClassType }) => {
 
         <div className="flex flex-row gap-5">
           <div className="flex flex-col gap-1">
-            <div>Children (2y - 12y)</div>
+            <div className="ttw-type-small text-[#0b1220]">
+              Children (2y - 12y)
+            </div>
             <div className="flex flex-row items-center gap-2">
               <FaMinus
                 onClick={() => handleMinus("children")}
@@ -555,7 +548,9 @@ const Pax = ({ setShowPax, pax, setPax, classType, setClassType }) => {
           </div>
 
           <div className="flex flex-col gap-1">
-            <div>Infants (below 2y)</div>
+            <div className="ttw-type-small text-[#0b1220]">
+              Infants (below 2y)
+            </div>
             <div className="flex flex-row items-center gap-2">
               <FaMinus
                 onClick={() => handleMinus("infants")}
@@ -571,7 +566,7 @@ const Pax = ({ setShowPax, pax, setPax, classType, setClassType }) => {
         </div>
 
         <div className="flex flex-col gap-1">
-          <div>Choose Travel Class</div>
+          <div className="ttw-type-small text-[#0b1220]">Choose Travel Class</div>
           <div className="w-fit flex flex-col md:flex-row border-2 border-[#ececec] rounded-lg">
             <div
               onClick={() => setCabinClass({ key: "All", value: 1 })}
@@ -579,7 +574,7 @@ const Pax = ({ setShowPax, pax, setPax, classType, setClassType }) => {
                 backgroundColor: cabinClass.value === 1 ? "#0b1220" : "",
                 color: cabinClass.value === 1 ? "#fafaf5" : "",
               }}
-              className="px-3 py-2 rounded-lg cursor-pointer hover:bg-[#f4f3ec]"
+              className="px-3 py-2 rounded-lg cursor-pointer hover:bg-[#f4f3ec] ttw-type-small"
             >
               All
             </div>
@@ -589,7 +584,7 @@ const Pax = ({ setShowPax, pax, setPax, classType, setClassType }) => {
                 backgroundColor: cabinClass.value === 2 ? "#0b1220" : "",
                 color: cabinClass.value === 2 ? "#fafaf5" : "",
               }}
-              className="px-3 py-2 rounded-lg cursor-pointer hover:bg-[#f4f3ec]"
+              className="px-3 py-2 rounded-lg cursor-pointer hover:bg-[#f4f3ec] ttw-type-small"
             >
               Economy
             </div>
@@ -602,7 +597,7 @@ const Pax = ({ setShowPax, pax, setPax, classType, setClassType }) => {
                 backgroundColor: cabinClass.value === 3 ? "#0b1220" : "",
                 color: cabinClass.value === 3 ? "#fafaf5" : "",
               }}
-              className="px-3 py-2 rounded-lg cursor-pointer hover:bg-[#f4f3ec]"
+              className="px-3 py-2 rounded-lg cursor-pointer hover:bg-[#f4f3ec] ttw-type-small"
             >
               Premium Economy
             </div>
@@ -613,7 +608,7 @@ const Pax = ({ setShowPax, pax, setPax, classType, setClassType }) => {
                 backgroundColor: cabinClass.value === 4 ? "#0b1220" : "",
                 color: cabinClass.value === 4 ? "#fafaf5" : "",
               }}
-              className="px-3 py-2 rounded-lg cursor-pointer hover:bg-[#f4f3ec]"
+              className="px-3 py-2 rounded-lg cursor-pointer hover:bg-[#f4f3ec] ttw-type-small"
             >
               Business
             </div>
@@ -626,7 +621,7 @@ const Pax = ({ setShowPax, pax, setPax, classType, setClassType }) => {
                 backgroundColor: cabinClass.value === 5 ? "#0b1220" : "",
                 color: cabinClass.value === 5 ? "#fafaf5" : "",
               }}
-              className="px-3 py-2 rounded-lg cursor-pointer hover:bg-[#f4f3ec]"
+              className="px-3 py-2 rounded-lg cursor-pointer hover:bg-[#f4f3ec] ttw-type-small"
             >
               Premium Business
             </div>
@@ -637,7 +632,7 @@ const Pax = ({ setShowPax, pax, setPax, classType, setClassType }) => {
                 backgroundColor: cabinClass.value === 6 ? "#0b1220" : "",
                 color: cabinClass.value === 6 ? "#fafaf5" : "",
               }}
-              className="px-3 py-2 rounded-lg cursor-pointer hover:bg-[#f4f3ec]"
+              className="px-3 py-2 rounded-lg cursor-pointer hover:bg-[#f4f3ec] ttw-type-small"
             >
               First Class
             </div>
@@ -647,7 +642,7 @@ const Pax = ({ setShowPax, pax, setPax, classType, setClassType }) => {
         <div className="border-t-2 border-t-[#ececec] pt-2">
           <button
             onClick={handleDone}
-            className="bg-[#F8E000] py-2 px-4 rounded-lg border-2 transition-all border-black hover:bg-black hover:text-white"
+            className="bg-[#f7e700] py-2 px-4 rounded-lg border border-black ttw-type-body-strong text-black transition-all hover:bg-black hover:text-white"
           >
             Done
           </button>
@@ -666,7 +661,7 @@ const TimeIcon = ({ time, isSelected }) => {
           className="flex flex-col items-center"
         >
           <BsFillSunriseFill className="text-lg md:text-2xl" />
-          <div className="text-xs md:text-sm">Before 6 AM</div>
+          <div className="ttw-type-small">Before 6 AM</div>
         </div>
       );
     case "Afternoon":
@@ -676,7 +671,7 @@ const TimeIcon = ({ time, isSelected }) => {
           className="flex flex-col items-center"
         >
           <IoMdSunny className="text-lg md:text-2xl" />
-          <div className="text-xs md:text-sm">6 AM - 12 PM</div>
+          <div className="ttw-type-small">6 AM - 12 PM</div>
         </div>
       );
     case "Evening":
@@ -686,7 +681,7 @@ const TimeIcon = ({ time, isSelected }) => {
           className="flex flex-col items-center"
         >
           <BsSunsetFill className="text-lg md:text-2xl" />
-          <div className="text-xs md:text-sm">12 PM - 6 PM</div>
+          <div className="ttw-type-small">12 PM - 6 PM</div>
         </div>
       );
     case "Night":
@@ -696,7 +691,7 @@ const TimeIcon = ({ time, isSelected }) => {
           className="flex flex-col items-center"
         >
           <MdNightsStay className="text-lg md:text-2xl" />
-          <div className="text-xs md:text-sm">After 6 PM</div>
+          <div className="ttw-type-small">After 6 PM</div>
         </div>
       );
     default:

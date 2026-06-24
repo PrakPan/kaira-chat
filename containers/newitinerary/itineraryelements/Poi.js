@@ -40,7 +40,7 @@ const Container = styled.div`
   font-size: 12px;
   line-height: 22px;
   padding: 0px 0px 0px 0px;
-  color: #01202b;
+  color: #0b1220;
 `;
 
 export const TInfoContainer = styled.div`
@@ -68,11 +68,6 @@ const MoreIcon = styled.div`
   right: 0;
   background: white;
   padding-left: 10px;
-  span {
-    font-weight: 600;
-    cursor: pointer;
-    font-size: 0.875rem;
-  }
 `;
 
 const EmptyMsg = styled.div`
@@ -92,7 +87,7 @@ const RatingContainer = styled.div`
   span {
     font-size: 0.85rem;
     font-weight: 300;
-    color: #727272;
+    color: #445069;
   }
 `;
 
@@ -336,8 +331,8 @@ const ItineraryPoiElement = (props) => {
       element.scrollIntoView({ block: "center" });
       element.style.borderWidth = "1px";
       element.style.borderRadius = "10px";
-      element.style.borderColor = "#f8e000";
-      element.style.boxShadow = "0 0 10px #f8e000";
+      element.style.borderColor = "#f7e700";
+      element.style.boxShadow = "0 0 10px #f7e700";
       timeoutId = setTimeout(() => {
         element.style.borderColor = "";
         element.style.borderWidth = "";
@@ -531,19 +526,19 @@ const ItineraryPoiElement = (props) => {
                 </div>
                 <div
                  // onClick={() => handleEditActivity(props?.heading, true)}
-                  className="cursor-pointer min-w-max ttw-type-h4 w-4 h-4 pl-3 transition-transform duration-300 ase-in-out group-hover:text-blue-500 group-hover:scale-110 active:scale-90"
+                  className="cursor-pointer min-w-max ttw-type-h4 w-4 h-4 pl-3 transition-transform duration-300 ase-in-out group-hover:scale-110 active:scale-90"
                 >
                   {/* <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" /> */}
                 </div>
               </div>
               <div className="flex flex-row gap-2">
-                <div className="font-normal border-2 border-[#9F9F9F] rounded-md px-2 py-[1px] mt-1 block bg-white text-[#9F9F9F]">
+                <span className="ttw-type-small bg-[#eef2fb] text-[#1a2436] px-2 py-0.5 rounded-full mt-1">
                   {props?.activity_data &&
                     props?.activity_data?.activity &&
                     props?.activity_data?.activity?.id
                     ? "ACTIVITY"
                     : "Self Exploration"}
-                </div>
+                </span>
                 {props?.poi?.rating ? (
                   <RatingContainer>
                     <div>{_getStars(props?.poi?.rating)}</div>
@@ -573,9 +568,10 @@ const ItineraryPoiElement = (props) => {
               {props.text}
             </div>
             <MoreIcon onClick={() => setShow(true)}>
-              <span>...More</span>
+              <span className="ttw-type-small font-500 text-[#0b1220] underline cursor-pointer">...More</span>
               <MdNavigateNext
                 style={{ fontSize: "1.3rem", marginTop: "0.1rem" }}
+                className="text-[#0b1220]"
               />
             </MoreIcon>
           </TextContainer>
@@ -604,33 +600,34 @@ const ItineraryPoiElement = (props) => {
         show={showDrawer}
         anchor={"right"}
         backdrop
-        style={{ zIndex: 1501 }}
+        bgColor="#fafaf5"
+        style={{ zIndex: props.zIndex || 1501 }}
         className=""
         onHide={() => setShowDrawer(false)}
-        mobileWidth={"100vw"}
-        width="50vw"
+        mobileWidth={"100%"}
+        width="50%"
       >
-        <div className="sticky px-2 top-0 bg-white z-[900] flex flex-col gap-3 py-4 pb-1 justify-start items-start mx-auto w-[98%]">
-          <div className="flex flex-row gap-3 my-0 justify-between items-center w-full">
+        <div className="sticky px-6 max-ph:px-4 top-0 bg-[#fafaf5] z-[900] flex flex-col gap-3 py-4 pb-1 justify-start items-start w-full">
+          <div className="flex flex-row max-ph:flex-col gap-3 my-0 justify-between items-center max-ph:items-start w-full">
             <div className="flex flex-row gap-3 items-center">
               <IoMdClose
                 onClick={() => setShowDrawer(false)}
-                className="hover-pointer"
+                className="hover-pointer text-[#0b1220]"
                 style={{
                   fontSize: "1.75rem",
                   textAlign: "right",
                 }}
               ></IoMdClose>
-              <div className="line-clamp-1 ttw-type-h2 font-normal ">
+              <div className="line-clamp-1 ttw-type-h2 font-semibold text-[#0b1220]">
                 Replacing {props.heading}
               </div>
             </div>
 
-            <div className="md:w-[50%] flex flex-row items-center relative">
+            <div className="md:w-[50%] max-ph:w-full flex flex-row items-center relative">
               <IoMdSearch
                 id={"icon"}
                 onClick={searchHandler}
-                className="absolute cursor-pointer left-4 ttw-type-h2"
+                className="absolute cursor-pointer left-4 ttw-type-h2 text-[#445069]"
               />
 
               <input
@@ -639,7 +636,7 @@ const ItineraryPoiElement = (props) => {
                 onChange={searchHandler}
                 placeholder={`Search ${elementType === "POI" ? "attractions" : "activities"
                   }`}
-                className="w-full flex items-center ttw-type-body border-2 border-gray-300 rounded-lg px-5 py-2 focus:outline-none focus:border-[#F7E700]"
+                className="w-full flex items-center ttw-type-body text-[#0b1220] border border-[#ececec] rounded-xl px-5 py-2 focus:outline-none focus:border-[#f7e700]"
               ></input>
             </div>
           </div>
@@ -647,7 +644,7 @@ const ItineraryPoiElement = (props) => {
           {elementType === "POI" ? (
             <div className="flex flex-row justify-between mt-0">
               <div className="flex flex-col justify-start items-baseline">
-                <div className="mb-2 ttw-type-body">Experience Types</div>
+                <div className="mb-2 ttw-type-small text-[#445069]">Experience Types</div>
                 <FiltersContainer>
                   {EXPERIENCE_FILTERS_BOX.map((currentfilter, i) => (
                     <button
@@ -655,10 +652,10 @@ const ItineraryPoiElement = (props) => {
                         if (SelectedExprience !== i) SetSelectedExprience(i);
                         else SetSelectedExprience(-1);
                       }}
-                      className={`flex font-normal ttw-type-body cursor-pointer justify-center items-center hover:bg-gray-100 active:bg-[#111] active:border-0 ${SelectedExprience == i
- ? "text-white border-0 bg-black "
- : "border-2 bg-white text-black"
- } active:text-white border-[#D0D5DD] rounded-lg px-2 py-1`}
+                      className={`flex ttw-type-small cursor-pointer justify-center items-center transition-colors rounded-full px-2 py-0.5 ${SelectedExprience == i
+ ? "bg-black text-white border border-black"
+ : "bg-[#f4f3ec] text-[#445069] border border-[#ececec] hover:bg-[#eef2fb]"
+ }`}
                       key={i}
                     >
                       {currentfilter.display}
@@ -677,7 +674,7 @@ const ItineraryPoiElement = (props) => {
           )}
 
           <div className="flex flex-row items-center justify-between w-full">
-            <div>
+            <div className="ttw-type-small text-[#445069]">
               Showing {optionsJSX.length}
               {elementType === "POI" ? " attractions" : " activities"}
               {totalResults ? ` out of ${totalResults}` : null}
@@ -689,7 +686,7 @@ const ItineraryPoiElement = (props) => {
             {elementType !== "POI" && (
               <button
                 onClick={() => setShowDynamicfilters(true)}
-                className="ml-2 border-2 border-black w-fit px-2 py-1 rounded-full hover:bg-black hover:text-white transition-all">
+                className="ttw-btn-secondary whitespace-nowrap ttw-type-body ml-2">
                 More filters
               </button>
             )}
@@ -710,28 +707,23 @@ const ItineraryPoiElement = (props) => {
           optionsJSX.length ? (
             <div
               onScroll={handleScroll}
-              className="flex flex-col items-center mb-3 h-[100vh] overflow-y-scroll"
+              className="flex flex-col items-center mb-3 h-[100vh] overflow-y-scroll px-6 max-ph:px-4 pb-24"
             >
               {optionsJSX.map((option, index) => option)}
 
               {selectSearch !== "" ? (
-                <Button
-                  boxShadow
-                  onclickparam={null}
-                  onclick={handleClearSearch}
-                  margin="0.25rem auto"
-                  borderWidth="1px"
-                  borderRadius="2rem"
-                  padding="0.25rem 1rem"
+                <button
+                  onClick={() => handleClearSearch()}
+                  className="w-fit mt-4 py-2 px-4 rounded-xl border border-[#ececec] ttw-type-small font-500 text-[#0b1220] hover:bg-[#f4f3ec] transition-colors"
                 >
                   Show All
-                </Button>
+                </button>
               ) : null}
             </div>
           ) : (
             <div className="flex flex-col items-center gap-3">
-              <EmptyMsg className="flex flex-row items-start px-1">
-                <BiErrorCircle className="" />
+              <EmptyMsg className="flex flex-row items-start px-1 ttw-type-small text-[#445069]">
+                <BiErrorCircle className="text-[#445069]" />
                 <span className="">
                   Oops, it looks like there are no{" "}
                   {elementType === "POI" ? "places to visit" : "things to do"}{" "}
@@ -739,49 +731,28 @@ const ItineraryPoiElement = (props) => {
                 </span>
               </EmptyMsg>
               {debouncedSearch !== "" ? (
-                <Button
-                  boxShadow
-                  onclickparam={null}
-                  onclick={handleClearSearch}
-                  margin="0.25rem auto"
-                  borderWidth="1px"
-                  borderRadius="2rem"
-                  padding="0.25rem 1rem"
+                <button
+                  onClick={() => handleClearSearch()}
+                  className="w-fit mt-4 py-2 px-4 rounded-xl border border-[#ececec] ttw-type-small font-500 text-[#0b1220] hover:bg-[#f4f3ec] transition-colors"
                 >
                   Show All
-                </Button>
+                </button>
               ) : (
                 <GetInTouchContainer>
-                  <Button
-                    color="#111"
-                    fontWeight="500"
-                    fontSize="1rem"
-                    borderWidth="2px"
-                    width="100%"
-                    borderRadius="8px"
-                    bgColor="#f8e000"
-                    padding="12px"
-                    onclick={props._GetInTouch}
+                  <button
+                    onClick={() => props._GetInTouch()}
+                    className="w-full bg-[#f7e700] text-black font-500 ttw-type-body py-3 rounded-xl flex items-center justify-center gap-2"
                   >
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        gap: "0.5rem",
-                        alignItems: "center",
-                      }}
-                    >
-                      <ImageLoader
-                        dimensions={{ height: 50, width: 50 }}
-                        dimensionsMobile={{ height: 50, width: 50 }}
-                        height={"20px"}
-                        width={"20px"}
-                        leftalign
-                        url={"media/icons/login/customer-service-black.png"}
-                      />{" "}
-                      <span>Get in touch!</span>
-                    </div>
-                  </Button>
+                    <ImageLoader
+                      dimensions={{ height: 50, width: 50 }}
+                      dimensionsMobile={{ height: 50, width: 50 }}
+                      height={"20px"}
+                      width={"20px"}
+                      leftalign
+                      url={"media/icons/login/customer-service-black.png"}
+                    />{" "}
+                    <span>Get in touch!</span>
+                  </button>
                 </GetInTouchContainer>
               )}
             </div>

@@ -1,35 +1,15 @@
 import React from "react";
+import Image from "next/image";
 import CityDetails from "./CityDetails";
 import Drawer from "../../ui/Drawer";
-import { TbArrowBack } from "react-icons/tb";
 import axioscitydatainstance, { cityDetail } from "../../../services/poi/city";
 import { useEffect } from "react";
 import { useState } from "react";
 import CityDetailsSkeleton from "./CityDetailsSkeleton";
-import styled from "styled-components";
-import media from "../../../components/media.js";
 import { useRouter } from "next/router.js";
 import { useSearchParams } from "next/navigation.js";
 
-const FloatingView = styled.div`
-  position: sticky;
-  bottom: 60px;
-  left: 100%;
-  background: black;
-  color: white;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 16px;
-  z-index: 901;
-  cursor: pointer;
-`;
-
 const CityDetailsDrawer = (props) => {
-  let isPageWide = media("(min-width: 768px)");
   const [data, setData] = useState(null);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -65,9 +45,11 @@ const CityDetailsDrawer = (props) => {
       show={true}
       anchor={"right"}
       backdrop
+      width="50%"
+      mobileWidth="100%"
       bgColor="#fafaf5"
       style={{ zIndex: 1501 }}
-      className=""
+      className="!overflow-y-hidden"
       onHide={() => {
         router.push(
           {
@@ -78,24 +60,28 @@ const CityDetailsDrawer = (props) => {
         );
       }}
     >
-      <div>
-        <TbArrowBack
-          onClick={() =>
-            router.push(
-              {
-                pathname: window.location.pathname,
-              },
-              undefined,
-              { scroll: false, shallow: true }
-            )
-          }
-          className="hover-pointer"
-          style={{
-            margin: "0.5rem",
-            fontSize: "1.75rem",
-            textAlign: "right",
-          }}
-        ></TbArrowBack>
+      <div className="overflow-y-scroll h-screen px-6 max-ph:px-4">
+        <div className="py-4 bg-[#fafaf5] z-[900] flex flex-col gap-3 pb-2 sticky top-0">
+          <Image
+            src="/backarrow.svg"
+            alt="Back"
+            width={22}
+            height={2}
+            className="cursor-pointer"
+            onClick={() =>
+              router.push(
+                {
+                  pathname: window.location.pathname,
+                },
+                undefined,
+                { scroll: false, shallow: true }
+              )
+            }
+          />
+          <div className="ttw-type-h2 font-semibold text-[#0b1220]">
+            City Details
+          </div>
+        </div>
         {data ? (
           <CityDetails
             elevation={
@@ -118,23 +104,6 @@ const CityDetailsDrawer = (props) => {
         ) : (
           <CityDetailsSkeleton></CityDetailsSkeleton>
         )}
-        {/* {!isPageWide && (
-          <FloatingView>
-            <TbArrowBack
-              style={{ height: "28px", width: "28px" }}
-              cursor={"pointer"}
-              onClick={() => {
-                router.push(
-                  {
-                    pathname: window.location.pathname,
-                  },
-                  undefined,
-                  { scroll: false }
-                );
-              }}
-            />
-          </FloatingView>
-        )} */}
       </div>
     </Drawer>
   );

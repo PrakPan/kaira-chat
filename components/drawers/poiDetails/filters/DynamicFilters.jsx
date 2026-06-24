@@ -45,14 +45,14 @@ export default function DyamicFilters(props) {
       {props?.showFilter && (
         <>
           {props?.elementType === "Activity" ? (
-            <div className="sm:w-[452px] flex flex-col gap-3 justify-between items-start mx-auto">
-              <div className="flex flex-col gap-3 justify-between w-[95%] mx-auto mt-4">
+            <div className="w-full sm:w-[452px] flex flex-col gap-3 justify-between items-start mx-auto">
+              <div className="flex flex-col gap-3 justify-between w-full px-6 max-ph:px-4 mt-4">
                 <div className="border-b border-b-[#ececec] flex justify-between items-center">
-                  <div className="ttw-type-h3 font-normal line-clamp-1 font-semibold text-[#0b1220]">
+                  <div className="ttw-type-h3 line-clamp-1 font-semibold text-[#0b1220]">
                     Filters
                   </div>
                   <div
-                    className="!text-[#0b1220] cursor-pointer underline"
+                    className="ttw-type-small font-500 text-[#0b1220] cursor-pointer underline"
                     onClick={() => {
                       setSelectedRating([]);
                       setRecommended(false);
@@ -103,28 +103,31 @@ export default function DyamicFilters(props) {
                 />
               </div>
 
-              <div className="w-full flex gap-3 flex-row justify-between mt-0">
-                <ButtonYellow
-                  primary={false}
-                  className="w-1/2 "
+              <div className="w-full px-6 max-ph:px-4 flex gap-3 flex-row justify-between mt-0">
+                <button
+                  className="ttw-btn-secondary w-1/2 whitespace-nowrap ttw-type-body"
                   onClick={() => props.setshowFilter(false)}
                 >
-                  <div className="text-[#0b1220] ">Cancel</div>
-                </ButtonYellow>
-                <ButtonYellow className="w-1/2 " onClick={handleApply}>
-                  <div id="apply-button">Apply</div>
-                </ButtonYellow>
+                  Cancel
+                </button>
+                <button
+                  id="apply-button"
+                  className="w-1/2 bg-[#f7e700] text-black font-500 ttw-type-body py-3 rounded-xl flex items-center justify-center gap-2 disabled:opacity-60"
+                  onClick={handleApply}
+                >
+                  Apply
+                </button>
               </div>
             </div>
           ) : (
-            <div className="sm:w-[452px] flex flex-col gap-3 justify-between items-start mx-auto">
-              <div className="flex flex-col gap-3 justify-between w-[95%] mx-auto mt-4">
+            <div className="w-full sm:w-[452px] flex flex-col gap-3 justify-between items-start mx-auto">
+              <div className="flex flex-col gap-3 justify-between w-full px-6 max-ph:px-4 mt-4">
                 <div className="border-b border-b-[#ececec] flex justify-between items-center">
-                  <div className="ttw-type-h3 font-normal line-clamp-1 font-semibold text-[#0b1220]">
+                  <div className="ttw-type-h3 line-clamp-1 font-semibold text-[#0b1220]">
                     Filters
                   </div>
                   <div
-                    className="!text-[#0b1220] cursor-pointer underline"
+                    className="ttw-type-small font-500 text-[#0b1220] cursor-pointer underline"
                     onClick={() => {
                       setSelectedRating([]);
                       setRecommended(false);
@@ -145,17 +148,20 @@ export default function DyamicFilters(props) {
                 />
               </div>
 
-              <div className="w-full flex gap-3 flex-row justify-between mt-0">
-                <ButtonYellow
-                  primary={false}
-                  className="w-1/2 "
+              <div className="w-full px-6 max-ph:px-4 flex gap-3 flex-row justify-between mt-0">
+                <button
+                  className="ttw-btn-secondary w-1/2 whitespace-nowrap ttw-type-body"
                   onClick={() => props.setshowFilter(false)}
                 >
-                  <div className="text-[#0b1220] ">Cancel</div>
-                </ButtonYellow>
-                <ButtonYellow className="w-1/2 " onClick={handleApply}>
-                  <div id="apply-button">Apply</div>
-                </ButtonYellow>
+                  Cancel
+                </button>
+                <button
+                  id="apply-button"
+                  className="w-1/2 bg-[#f7e700] text-black font-500 ttw-type-body py-3 rounded-xl flex items-center justify-center gap-2 disabled:opacity-60"
+                  onClick={handleApply}
+                >
+                  Apply
+                </button>
               </div>
             </div>
           )}

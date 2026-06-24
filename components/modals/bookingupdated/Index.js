@@ -35,29 +35,11 @@ import CheckboxFormComponent from "../../FormComponents/CheckboxFormComponent";
 import BotLoginModal from "../../bot-components/components/BotLoginModal";
 import OfflineQuoteEmptyState from "../../ui/OfflineQuoteEmptyState";
 
-const FloatingView = styled.div`
-  position: sticky;
-  bottom: 60px;
-  left: 100%;
-  background: black;
-  color: white;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 16px;
-  z-index: 251;
-  cursor: pointer;
-`;
-
 const GridContainer = styled.div`
-@media screen and (min-width: 768px) {
-
+  @media screen and (min-width: 768px) {
     display: grid;
     grid-template-columns: 1fr;
-
+  }
 `;
 
 const OptionsContainer = styled.div`
@@ -67,8 +49,6 @@ const OptionsContainer = styled.div`
 
   @media screen and (min-width: 768px) {
     min-height: 80vh;
-    width: 95%;
-    margin: auto;
   }
 `;
 
@@ -100,6 +80,8 @@ const SortItem = styled.div`
   text-align: center;
   padding: 0.2rem 0.5rem;
   border-radius: 1.5rem;
+  font-size: 13px;
+  line-height: 1.4;
   font-weight: 500;
   cursor: pointer;
   :hover {
@@ -851,8 +833,8 @@ const Booking = (props) => {
           style={{ zIndex: 1251 }}
           className=" "
           onHide={handleClose}
-          width={"50vw"}
-          mobileWidth={"100vw"}
+          width={"50%"}
+          mobileWidth={"100%"}
         >
           <>
             <div className="absolute right-[10px] top-[20px] z-[9999]">
@@ -870,14 +852,14 @@ const Booking = (props) => {
                   duration={1.3}
                   ydistance={25}
                 >
-                  <div className="text-white   px-2 py-1 border-2 border-red bg-red-500 rounded-lg  text-center font-normal text-sm ">
+                  <div className="text-white px-2 py-1 border-2 border-[#CD2026] bg-[#CD2026] rounded-lg text-center ttw-type-small">
                     {isError.errorMsg}
                   </div>
                 </Slide>
               )}
             </div>
 
-            <div className="lg:w-[50vw] w-[100vw] py-2 top-0 bg-[#fafaf5] z-[900] px-xl">
+            <div className="lg:w-[50vw] w-[100vw] py-4 top-0 bg-[#fafaf5] z-[900] px-6 max-ph:px-4">
               <SectionOne
                 booking_city={
                   currentBooking?.city_name || props?.selectedBooking?.city_name
@@ -910,7 +892,7 @@ const Booking = (props) => {
                 <Travelers filters={filters} setFilters={setFilters} />
               </div>
 
-              <div className="flex flex-row gap-5 py-3">
+              <div className="flex flex-row flex-wrap gap-5 py-3">
                 <button
                   onClick={() => {
                     setRefundable((prev) => !prev);
@@ -920,7 +902,7 @@ const Booking = (props) => {
                       applyFilter: !prev.applyFilter,
                     }));
                   }}
-                  className="flex flex-row items-center gap-1 cursor-pointer"
+                  className="flex flex-row items-center gap-1 cursor-pointer ttw-type-small text-[#0b1220]"
                 >
                   <CheckboxFormComponent checked={refundable} />
                   Refundable
@@ -935,7 +917,7 @@ const Booking = (props) => {
                       applyFilter: !prev.applyFilter,
                     }));
                   }}
-                  className="flex flex-row items-center gap-1 cursor-pointer"
+                  className="flex flex-row items-center gap-1 cursor-pointer ttw-type-small text-[#0b1220]"
                 >
                   <CheckboxFormComponent checked={freeBreakfast} />
                   Free Breakfast
@@ -944,7 +926,7 @@ const Booking = (props) => {
 
               {totalCount ? (
                 <div className="flex flex-row items-center justify-between mt-lg">
-                  <div className="font-400 text-sm-md leading-xl text-[#445069]">
+                  <div className="ttw-type-body text-[#445069]">
                     Showing {totalCount ? `${totalCount} ` : null}
                     stays in{" "}
                     {currentBooking?.city_name ||
@@ -952,7 +934,7 @@ const Booking = (props) => {
                   </div>
 
                   <div>
-                    <div className="text-sm font-normal w-[95%] md:w-fit relative">
+                    <div className="ttw-type-small w-[95%] md:w-fit relative">
                       <div
                         className="ttw-sort-button whitespace-nowrap relative cursor-pointer"
                         onClick={() => {
@@ -963,7 +945,7 @@ const Booking = (props) => {
                           className="inline mr-xs"
                           src="/assets/stays/sort-icon.svg"
                         />
-                        <b className="inline max-ph:hidden">{SelectedSort}</b>
+                        <span className="inline max-ph:hidden font-600">{SelectedSort}</span>
                         {SelectedSort != "Sort" && (
                           <IconButton
                             onClick={(e) => {
@@ -1071,18 +1053,9 @@ const Booking = (props) => {
                 document.body
               )}
 
-            <div className="lg:w-[100%] w-[95%] mx-auto">
+            <div className="w-full px-6 max-ph:px-4">
               {unauthorized ? (
-                <p
-                  style={{
-                    borderRadius: "5px",
-                    padding: "0.25rem",
-                    backgroundColor: "rgba(255,0,0,0.1)",
-                    color: "red",
-                    margin: "1rem",
-                  }}
-                  className="text-center "
-                >
+                <p className="text-center m-4 px-2 py-1 rounded-md bg-[#fff1ee] text-[#445069] ttw-type-small border border-[#CD2026]">
                   You're not authorized to take this action, please contact your
                   experience captain.
                 </p>
@@ -1143,17 +1116,12 @@ const Booking = (props) => {
                           paginationStatus.totalPages && (
                           <div className="mt-3">
                             {/* {viewMoreStatus ? ( */}
-                            <Button
-                              boxShadow
-                              onclickparam={null}
-                              onclick={fetchHotels}
-                              margin="0.25rem auto"
-                              borderWidth="1px"
-                              borderRadius="2rem"
-                              padding="0.25rem 1rem"
+                            <button
+                              onClick={fetchHotels}
+                              className="w-full mt-4 py-3 rounded-xl border border-[#ececec] ttw-type-small font-500 text-[#0b1220] hover:bg-[#f4f3ec] transition-colors disabled:opacity-50"
                             >
                               View More
-                            </Button>
+                            </button>
                             {/* // ) : selectSearch !== "" ? (
                               //   <Button
                               //     boxShadow
@@ -1175,57 +1143,36 @@ const Booking = (props) => {
 
                   {!loading && noResults ? (
                     <OptionsContainer className="px-2 center-div space-y-5">
-                      <div className=" center-div text-center">
+                      <div className="center-div text-center ttw-type-body text-[#445069]">
                         Oops, we couldn't find what you were searching but we
                         are already adding new and approved accommodations to
                         our database everyday!
                       </div>
                       {debouncedSearch !== "" ? (
-                        <Button
-                          boxShadow
-                          onclickparam={null}
-                          onclick={handleClearSearch}
-                          margin="0.25rem auto"
-                          borderWidth="1px"
-                          borderRadius="2rem"
-                          padding="0.25rem 1rem"
+                        <button
+                          onClick={handleClearSearch}
+                          className="w-full mt-4 py-3 rounded-xl border border-[#ececec] ttw-type-small font-500 text-[#0b1220] hover:bg-[#f4f3ec] transition-colors disabled:opacity-50"
                         >
                           Show All
-                        </Button>
+                        </button>
                       ) : (
                         <GetInTouchContainer>
-                          <Button
-                            color="#111"
-                            fontWeight="500"
-                            fontSize="1rem"
-                            borderWidth="2px"
-                            width="100%"
-                            borderRadius="8px"
-                            bgColor="#f8e000"
-                            padding="12px"
-                            onclick={props._GetInTouch}
+                          <button
+                            onClick={props._GetInTouch}
+                            className="w-full bg-[#f7e700] text-black font-500 ttw-type-body py-3 rounded-xl flex items-center justify-center gap-2 disabled:opacity-60"
                           >
-                            <div
-                              style={{
-                                display: "flex",
-                                justifyContent: "center",
-                                gap: "0.5rem",
-                                alignItems: "center",
-                              }}
-                            >
-                              <ImageLoader
-                                dimensions={{ height: 50, width: 50 }}
-                                dimensionsMobile={{ height: 50, width: 50 }}
-                                height={"20px"}
-                                width={"20px"}
-                                leftalign
-                                url={
-                                  "media/icons/login/customer-service-black.png"
-                                }
-                              />{" "}
-                              <span>Get in touch!</span>
-                            </div>
-                          </Button>
+                            <ImageLoader
+                              dimensions={{ height: 50, width: 50 }}
+                              dimensionsMobile={{ height: 50, width: 50 }}
+                              height={"20px"}
+                              width={"20px"}
+                              leftalign
+                              url={
+                                "media/icons/login/customer-service-black.png"
+                              }
+                            />{" "}
+                            <span>Get in touch!</span>
+                          </button>
                         </GetInTouchContainer>
                       )}
                     </OptionsContainer>

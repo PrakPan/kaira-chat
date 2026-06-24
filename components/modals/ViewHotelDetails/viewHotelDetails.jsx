@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { connect, useDispatch, useSelector } from "react-redux";
-import styled from "styled-components";
 import { IoMdClose } from "react-icons/io";
 import { TbArrowBack } from "react-icons/tb";
 import media from "../../media";
@@ -18,76 +17,6 @@ import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
 import SetRefetchAirportTransfers from "../../../store/actions/refetchAirportTransfers";
 import BackArrow from "../../ui/BackArrow";
 import Image from "next/image";
-
-const Container = styled.div`
-  padding: 0 0.75rem 0.75rem 0.75rem;
-  @media screen and (min-width: 768px) {
-    padding: 0 1.25rem 1.25rem 1.25rem;
-  }
-`;
-
-const BackContainer = styled.div`
-  margin: 0;
-  display: flex;
-  gap: 0.5rem;
-  position: sticky;
-  z-index: 1;
-  background: white;
-  top: 0;
-  padding-block: 0.75rem;
-
-  @media screen and (min-width: 768px) {
-    padding-block: 1rem;
-  }
-`;
-
-const FloatingView = styled.div`
-  position: sticky;
-  bottom: 60px;
-  left: 100%;
-  background: black;
-  color: white;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 16px;
-  z-index: 900;
-  cursor: pointer;
-`;
-
-
-const BackText = styled.div`
-  font-size: 1.5rem;
-  line-height: 2rem;
-`;
-
-const FloatingVContaineriew = styled.div`
-  position: sticky;
-  bottom: 10px;
-  background: #f7e700;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  left: 90%;
-  z-index: 2;
-  cursor: pointer;
-`;
-
-const ErrorContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  width: 90%;
-  margin: auto;
-  text-align: center;
-`;
 
 const ViewHotelDetails = (props) => {
 
@@ -118,16 +47,6 @@ const ViewHotelDetails = (props) => {
       fetchDetails();
     }
   }, [props.id, props.show, props.provider]);
-
-  useEffect(() => {
-    if (props.show) {
-      document.documentElement.style.overflow = "hidden";
-    }
-
-    return () => {
-      document.documentElement.style.overflow = "auto";
-    };
-  }, [props.show]);
 
   const fetchDetails = () => {
     setLoading(true);
@@ -299,17 +218,18 @@ const ViewHotelDetails = (props) => {
       show={props.show}
       anchor={"right"}
       backdrop
-      className=""
+      className="!overflow-y-hidden"
       bgColor="#fafaf5"
       onHide={props.onHide}
-      style={{ zIndex: 1252 }}
-      width={"50vw"}
-      mobileWidth={"100vw"}
+      style={{ zIndex: props.zIndex ?? 1252 }}
+      width={"50%"}
+      mobileWidth={"100%"}
     >
       {!loading ? (
-        <Container>
-          <div className="my-xl">
+        <div className="overflow-y-scroll h-screen px-6 max-ph:px-4">
+          <div className="py-4 bg-[#fafaf5] z-[900] flex flex-col gap-3 pb-2 sticky top-0">
             <Image src="/backarrow.svg" className="cursor-pointer" width={22} height={2} onClick={(e) => props.onHide(e)} />
+            <div className="ttw-type-h2 font-semibold text-[#0b1220]">Hotel Details</div>
           </div>
           {!error ? (
             <div>
@@ -358,23 +278,22 @@ const ViewHotelDetails = (props) => {
               )}
             </div>
           ) : (
-            <ErrorContainer>
-              Oops! There seems to be a problem, please try again later!
-            </ErrorContainer>
+            <div className="flex flex-col items-center justify-center mt-16 gap-3">
+              <div className="text-[#445069] text-center ttw-type-body">
+                Oops! There seems to be a problem, please try again later!
+              </div>
+              <button
+                className="bg-[#f7e700] border border-black text-black px-4 py-2 rounded-lg ttw-type-body-strong"
+                onClick={fetchDetails}
+              >
+                Retry
+              </button>
+            </div>
           )}
-        </Container>
+        </div>
       ) : (
         <Skeleton onHide={props.onHide} />
       )}
-      {/* {!isPageWide && (
-        <FloatingView>
-          <TbArrowBack
-            style={{ height: "28px", width: "28px" }}
-            cursor={"pointer"}
-            onClick={props.onHide}
-          />
-        </FloatingView>
-      )} */}
     </Drawer>
   );
 };

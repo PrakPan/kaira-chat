@@ -11,7 +11,6 @@ import ReactDOM from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import NextImage from "next/image";
-import styled from "styled-components";
 
 import Drawer from "../../ui/Drawer";
 import Skeleton from "../ViewHotelDetails/Skeleton";
@@ -23,24 +22,6 @@ import { openNotification } from "../../../store/actions/notification";
 import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
 import SetRefetchAirportTransfers from "../../../store/actions/refetchAirportTransfers";
 import { updateSingleStayCityAndCheckInWise } from "../../../store/actions/StayBookings";
-import { set } from "date-fns";
-
-const Container = styled.div`
-  padding: 0 0.75rem 0.75rem 0.75rem;
-  @media screen and (min-width: 768px) {
-    padding: 0 1.25rem 1.25rem 1.25rem;
-  }
-`;
-
-const ErrorContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 70vh;
-  width: 90%;
-  margin: auto;
-  text-align: center;
-`;
 
 const toIsoDate = (v) => {
   if (!v) return "";
@@ -259,17 +240,17 @@ const AccommodationDetailDrawer = ({
         anchor="right"
         backdrop
         bgColor="#fafaf5"
-        className="font-lexend"
+        className="!overflow-y-hidden"
         onHide={onHide}
         style={{ zIndex: 1252 }}
-        width="50vw"
-        mobileWidth="100vw"
+        width="50%"
+        mobileWidth="100%"
       >
         {loading ? (
           <Skeleton onHide={onHide} />
         ) : (
-          <Container>
-            <div className="my-xl">
+          <div className="overflow-y-scroll h-screen px-6 max-ph:px-4 pb-24">
+            <div className="py-4 bg-[#fafaf5] z-[900] flex flex-col gap-3 pb-2 sticky top-0">
               <NextImage
                 src="/backarrow.svg"
                 className="cursor-pointer"
@@ -280,9 +261,17 @@ const AccommodationDetailDrawer = ({
             </div>
 
             {error ? (
-              <ErrorContainer>
-                {errorMsg || "Oops! There seems to be a problem, please try again later!"}
-              </ErrorContainer>
+              <div className="flex flex-col items-center justify-center gap-4 text-center h-[70vh] w-[90%] mx-auto">
+                <div className="ttw-type-body text-[#445069]">
+                  {errorMsg || "Oops! There seems to be a problem, please try again later!"}
+                </div>
+                <button
+                  onClick={fetchDetails}
+                  className="bg-[#f7e700] border border-black text-black px-4 py-2 rounded-lg ttw-type-body-strong"
+                >
+                  Try Again
+                </button>
+              </div>
             ) : data && data.id ? (
               <HotelBookingDetails
                 _setImagesHandler={handleSetImages}
@@ -294,42 +283,7 @@ const AccommodationDetailDrawer = ({
                 id={accommodationId}
               />
             ) : null}
-
-          {/* {data && data.id && (onAddHotel || onChangeHotel) && (
-            <div
-              className="fixed bottom-0 left-0 right-0 md:absolute flex items-center justify-between gap-3 border-t-2 bg-white px-[20px] py-[12px] shadow-md"
-              style={{ zIndex: 50 }}
-            >
-              <div className="flex flex-col">
-                {check_in && check_out && (
-                  <span className="text-[12px] text-text-spacegrey">
-                    {check_in} → {check_out}
-                  </span>
-                )}
-              </div>
-              <div className="flex items-center gap-2">
-                {onChangeHotel && bookingId && (
-                  <button
-                    onClick={onChangeHotel}
-                    disabled={updating}
-                    className="px-4 py-2 rounded-lg border border-gray-300 text-[14px] font-medium text-gray-800 hover:bg-gray-50"
-                  >
-                    Change Hotel
-                  </button>
-                )}
-                {onAddHotel && !bookingId && (
-                  <button
-                    onClick={onAddHotel}
-                    disabled={updating}
-                    className="ttw-btn-fill-yellow"
-                  >
-                    Add to Itinerary
-                  </button>
-                )}
-              </div>
-            </div>
-          )} */}
-          </Container>
+          </div>
         )}
       </Drawer>
 

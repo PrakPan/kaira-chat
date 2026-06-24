@@ -28,7 +28,6 @@ import Drawer from "../../ui/Drawer";
 import BackArrow from "../../ui/BackArrow";
 import { TbArrowBack } from "react-icons/tb";
 import { useRouter } from "next/router";
-import { ro } from "date-fns/locale";
 
 const FloatingView = styled.div`
   position: sticky;
@@ -264,8 +263,8 @@ const ActivityAddDrawer = (props) => {
       element.scrollIntoView({ block: "center" });
       element.style.borderWidth = "1px";
       element.style.borderRadius = "10px";
-      element.style.borderColor = "#f8e000";
-      element.style.boxShadow = "0 0 10px #f8e000";
+      element.style.borderColor = "#f7e700";
+      element.style.boxShadow = "0 0 10px #f7e700";
 
       timeoutId = setTimeout(() => {
         element.style.borderWidth = "";
@@ -697,10 +696,9 @@ const ClickHandler = (child) => {
       {
         <>
           <div
-            className={`overflow-y-scroll px-lg max-ph:px-sm`}
-            style={{ height: `${height}px` }}
+            className={`overflow-y-scroll h-screen px-6 max-ph:px-4`}
           >
-            <div className="py-4 bg-[#fafaf5] z-[900] flex flex-col gap-3 pb-1 justify-start items-start mx-auto">
+            <div className="py-4 bg-[#fafaf5] z-[900] flex flex-col gap-3 pb-2 justify-start items-start sticky top-0">
               <div>
                 <Image
                   src="/backarrow.svg"
@@ -739,11 +737,11 @@ const ClickHandler = (child) => {
                     placeholder={`Search ${
                       elementType === "POI" ? "attractions" : "activities"
                     }`}
-                    className="w-full flex items-center ttw-type-body bg-[#f4f3ec] text-[#0b1220] border-2 border-[#ececec] rounded-lg px-5 py-2 focus:outline-none focus:border-[#F7E700] h-[44px]"
+                    className="w-full flex items-center ttw-type-body bg-[#f4f3ec] text-[#0b1220] border border-[#ececec] rounded-lg px-5 py-2 focus:outline-none focus:border-[#f7e700] h-[44px]"
                   ></input>
                 </div>
                 <select
-                  className="px-[16px] py-[12px] rounded-[8px] bg-[#f4f3ec] border-1 border-[#ececec] text-[#0b1220] h-[44px] ttw-type-body font-medium flex items-center justify-between max-sm:hidden"
+                  className="px-[16px] py-[12px] rounded-[8px] bg-[#f4f3ec] border border-[#ececec] text-[#0b1220] h-[44px] ttw-type-body font-500 flex items-center justify-between max-sm:hidden"
                   onChange={(e) => setStartDate(e.target.value)}
                   value={startDate}
                 >
@@ -794,7 +792,7 @@ const ClickHandler = (child) => {
                     />
                     <button>Filters</button>
                     {changed && (
-                      <div className="absolute -right-1 -top-1 h-[20px] w-[20px] rounded-full bg-red-500"></div>
+                      <div className="absolute -right-1 -top-1 h-[20px] w-[20px] rounded-full bg-[#CD2026]"></div>
                     )}
                   </div>
 
@@ -835,7 +833,7 @@ const ClickHandler = (child) => {
 
                 <button
                   onClick={handleNearby}
-                  className="flex flex-row items-center gap-1 cursor-pointer"
+                  className="flex flex-row items-center gap-1 cursor-pointer ttw-type-small text-[#0b1220]"
                 >
                   <CheckboxFormComponent checked={nearby} />
                   Nearby Activities
@@ -864,13 +862,13 @@ const ClickHandler = (child) => {
                       color="white"
                     />
                     {changed && (
-                      <div className="absolute -right-1 -top-1 h-[20px] w-[20px] rounded-full !bg-red-500"></div>
+                      <div className="absolute -right-1 -top-1 h-[20px] w-[20px] rounded-full !bg-[#CD2026]"></div>
                     )}
                   </div>
                 </div>
               </div>
 
-              <div className="flex flex-row items-center justify-between w-full mb-[20px] text-[#445069]">
+              <div className="flex flex-row items-center justify-between w-full mb-4 ttw-type-body text-[#445069]">
                 <div>
                   Showing{" "}
                   {(elementType === "Activity" ? loaded : !loadingPoi)
@@ -900,7 +898,7 @@ const ClickHandler = (child) => {
                 <div className="max-sm:hidden">
                   <button
                     onClick={handleNearby}
-                    className="flex flex-row items-center gap-1 cursor-pointer"
+                    className="flex flex-row items-center gap-1 cursor-pointer ttw-type-small text-[#0b1220]"
                   >
                     <CheckboxFormComponent checked={nearby} />
                     Nearby Activities
@@ -924,30 +922,25 @@ const ClickHandler = (child) => {
                 options.length ? (
                   <div
                     // onScroll={handleScroll}
-                    className="z-[99] flex flex-col items-center mb-3 h-[calc(100vh-360px)]"
+                    className="z-[99] flex flex-col items-center mb-3 pb-24"
                   >
                     {options}
                     <div className="w-[100%]">
                       {showSkeleton && <PoiListSkeleton />}
                     </div>
                     {nextUrl !== null ? (
-                      <Button
-                        boxShadow
-                        onclickparam={null}
-                        onclick={handleViewMore}
-                        margin="0.25rem auto"
-                        borderWidth="1px"
-                        borderRadius="2rem"
-                        padding="0.25rem 1rem"
+                      <button
+                        onClick={handleViewMore}
+                        className="w-full mt-4 py-3 rounded-xl border border-[#ececec] ttw-type-small font-500 text-[#0b1220] hover:bg-[#f4f3ec] transition-colors disabled:opacity-50"
                       >
                         View more
-                      </Button>
+                      </button>
                     ) : null}
                   </div>
                 ) : (
                   <div className="flex flex-col items-center gap-3">
                     <EmptyMsg className="flex flex-col items-start px-1 gap-2">
-                      <div className="flex flex-row items-center gap-1 px-1">
+                      <div className="flex flex-row items-center gap-1 px-1 ttw-type-small text-[#445069]">
                       <BiErrorCircle className="" />
                       <span className="">
                         {error ||
@@ -958,15 +951,15 @@ const ClickHandler = (child) => {
                             : "things to do"
                         }
                         available.`}
-                        
+
                       </span>
                       </div>
                       {error == "Start date cannot be in the past" ? (
                           <>
                             {" "}
-                            
+
                             <button
-                              className="bg-[#f7e700] border border-[#0b1220] text-[#0b1220] px-4 py-2 rounded-md"
+                              className="bg-[#f7e700] border border-black text-black px-4 py-2 rounded-lg ttw-type-body-strong"
                               onClick={() => {
                                 if (props?.setShowSettings) {
                                   handleCloseDrawer();
@@ -980,51 +973,30 @@ const ClickHandler = (child) => {
                         ) : null}
                     </EmptyMsg>
                     {debouncedSearch !== "" ? (
-                      <Button
-                        boxShadow
-                        onclickparam={null}
-                        onclick={handleClearSearch}
-                        margin="0.25rem auto"
-                        borderWidth="1px"
-                        borderRadius="2rem"
-                        padding="0.25rem 1rem"
+                      <button
+                        onClick={handleClearSearch}
+                        className="w-full mt-4 py-3 rounded-xl border border-[#ececec] ttw-type-small font-500 text-[#0b1220] hover:bg-[#f4f3ec] transition-colors disabled:opacity-50"
                       >
                         Show All
-                      </Button>
+                      </button>
                     ) : (
-                      <GetInTouchContainer className="">
-                        <Button
-                          color="#111"
-                          fontWeight="500"
-                          fontSize="1rem"
-                          borderWidth="2px"
-                          width="100%"
-                          borderRadius="8px"
-                          bgColor="#f8e000"
-                          padding="12px"
-                          onclick={props._GetInTouch}
+                      <GetInTouchContainer className="w-full">
+                        <button
+                          onClick={props._GetInTouch}
+                          className="w-full bg-[#f7e700] text-black font-500 ttw-type-body py-3 rounded-xl flex items-center justify-center gap-2 disabled:opacity-60"
                         >
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "center",
-                              gap: "0.5rem",
-                              alignItems: "center",
-                            }}
-                          >
-                            <ImageLoader
-                              dimensions={{ height: 50, width: 50 }}
-                              dimensionsMobile={{ height: 50, width: 50 }}
-                              height={"20px"}
-                              width={"20px"}
-                              leftalign
-                              url={
-                                "media/icons/login/customer-service-black.png"
-                              }
-                            />{" "}
-                            <span className="">Get in touch!</span>
-                          </div>
-                        </Button>
+                          <ImageLoader
+                            dimensions={{ height: 50, width: 50 }}
+                            dimensionsMobile={{ height: 50, width: 50 }}
+                            height={"20px"}
+                            width={"20px"}
+                            leftalign
+                            url={
+                              "media/icons/login/customer-service-black.png"
+                            }
+                          />{" "}
+                          <span className="">Get in touch!</span>
+                        </button>
                       </GetInTouchContainer>
                     )}
                   </div>
@@ -1039,7 +1011,7 @@ const ClickHandler = (child) => {
               className="fixed bottom-0 w-full bg-[#fafaf5] shadow-2xl drop-shadow-3xl p-[16px] rounded-lg space-y-5 ttw-type-body z-[1091]"
               ref={calendarRef}
             >
-              <div className="font-medium ttw-type-body text-[#0b1220]">Select Days</div>
+              <div className="font-600 ttw-type-body text-[#0b1220]">Select Days</div>
               {[...Array(Math.max(0, resolvedCityDuration) + 1)].map((_, i) => {
                 const cityStartRaw = props?.start_date || props?.date || null;
                 const baseDateStr = props?.mercuryItinerary
@@ -1065,10 +1037,10 @@ const ClickHandler = (child) => {
                 return (
                   <div
                     key={i}
-                    className="cursor-pointer"
+                    className="cursor-pointer ttw-type-small text-[#0b1220]"
                     onClick={() => setStartDate(dateString)}
                   >
-                    <span className="font-bold ttw-type-body">
+                    <span className="font-600 ttw-type-body">
                       {displayDate + " | "}
                     </span>
                     <span>Day {i + 1}</span>

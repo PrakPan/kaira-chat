@@ -28,33 +28,19 @@ import { useRouter } from "next/router";
 import OfflineQuoteEmptyState from "../../ui/OfflineQuoteEmptyState";
 
 const GridContainer = styled.div`
-min-height: 65vh;
-max-height: 40vh;
+  min-height: 65vh;
 
-@media screen and (min-width: 768px) {
+  @media screen and (min-width: 768px) {
     min-height: 90vh;
     overflow-y: scroll;
-`;
-
-const FloatingView = styled.div`
-  position: sticky;
-  bottom: 10px;
-  background: black;
-  color: white;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  left: 90%;
-  z-index: 2;
-  cursor: pointer;
+  }
 `;
 
 const Floating = styled.div`
   position: sticky;
   bottom: 65px;
+  margin-left: auto;
+  margin-right: 8px;
   background: #0b1220;
   border-radius: 50%;
   width: 50px;
@@ -62,7 +48,6 @@ const Floating = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  left: 85%;
   z-index: 2;
   cursor: pointer;
 `;
@@ -421,7 +406,7 @@ const Booking = (props) => {
         anchor={"right"}
         backdrop
         bgColor="#fafaf5"
-        style={{ zIndex: 1501 }}
+        style={{ zIndex: props.zIndex ?? 1700 }}
         className=""
         show={props.showFlightModal}
         onHide={props.setHideFlightModal}
@@ -454,7 +439,7 @@ const Booking = (props) => {
               <ContentContainer style={{ position: "relative" }}>
                 {updateLoadingState && !updateBookingState ? (
                   <div
-                    className="center-div"
+                    className="center-div ttw-type-body text-[#445069]"
                     style={{ width: "max-content", margin: "auto" }}
                   >
                     <LoadingLottie
@@ -509,14 +494,7 @@ const Booking = (props) => {
                       {loading && !optionsJSX.length ? <Skeleton /> : null}
 
                       {!loading && !optionsJSX.length ? (
-                        <div
-                          style={{
-                            textAlign: "center",
-                            margin: "auto",
-                            height: isPageWide ? "80vh" : "70vh",
-                          }}
-                          className="center-div"
-                        >
+                        <div className="flex items-center justify-center text-center min-h-[70vh] md:min-h-[80vh] ttw-type-body text-[#445069] px-6 max-ph:px-4">
                           Oops, it looks like there are no alternate flights
                           available.
                         </div>
@@ -529,36 +507,24 @@ const Booking = (props) => {
                     !updateBookingState &&
                     !loading &&
                     optionsJSX.length ? (
-                      <Button
-                        boxShadow
-                        onclickparam={null}
-                        onclick={_loadAccommodationsHandler}
-                        margin="0.25rem auto"
-                        borderWidth="1px"
-                        borderRadius="2rem"
-                        padding="0.25rem 1rem"
+                      <button
+                        onClick={_loadAccommodationsHandler}
+                        className="w-full mt-4 py-3 rounded-xl border border-[#ececec] ttw-type-small font-500 text-[#0b1220] hover:bg-[#f4f3ec] transition-colors disabled:opacity-50"
                       >
                         View More
-                      </Button>
+                      </button>
                     ) : null}
                   </OptionsContainer>
                 ) : null}
 
                 {unauthorized ? (
-                  <div
-                    style={{
-                      width: "100%",
-                      margin: "auto",
-                      height: isPageWide ? "80vh" : "40vh",
-                    }}
-                    className="center-div text-center"
-                  >
+                  <div className="flex items-center justify-center text-center w-full min-h-[40vh] md:min-h-[80vh] ttw-type-body text-[#445069] px-6 max-ph:px-4">
                     Oops, this action is not allowed on another user's itinerary
                   </div>
                 ) : null}
 
                 {noResults && !unauthorized ? (
-                  <p className=" text-center">
+                  <p className="text-center ttw-type-body text-[#445069]">
                     Oops, we couldn't find what you were searching!
                   </p>
                 ) : null}
@@ -574,13 +540,6 @@ const Booking = (props) => {
                       }}
                     />
                   </Floating>
-                  {/* <FloatingView>
-                    <TbArrowBack
-                      style={{ height: "28px", width: "28px" }}
-                      cursor={"pointer"}
-                      onClick={props.setHideFlightModal}
-                    />
-                  </FloatingView> */}
                 </>
               )}
             </GridContainer>
@@ -604,7 +563,7 @@ const Booking = (props) => {
             />
           </>
         ) : (
-          <div className="p-3">
+          <div className="px-6 max-ph:px-4 py-4">
             <BackArrow
               handleClick={() => {
                 props.setHideFlightModal(false);
@@ -612,7 +571,7 @@ const Booking = (props) => {
                 // setIsRouteSelected(false);
               }}
             />
-            <div className="text-lg md:text-xl lg:text-xl font-semibold mt-1 text-[#0b1220]">
+            <div className="ttw-type-h2 font-semibold mt-1 text-[#0b1220]">
               Changing {props.selectedBooking?.name}
             </div>
             <ComboFlight
@@ -655,7 +614,7 @@ const Booking = (props) => {
         <SearchLoaderOverlay
           isVisible={props.showFlightModal && loading && !optionsJSX.length}
           displayText="Finding best flights for you"
-          zIndex={1505}
+          zIndex={(props.zIndex ?? 1700) + 5}
         />
       </Drawer>
     );

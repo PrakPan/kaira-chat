@@ -491,7 +491,7 @@ const ComboTaxi = (props) => {
           <GridContainer style={{ clear: "right" }}>
             <ContentContainer style={{ position: "relative" }}>
 
-              <div className="text-xl font-600 leading-2xl mb-md text-[#0b1220]"> {props.heading}</div>
+              <div className="ttw-type-h2 font-semibold mb-md text-[#0b1220]"> {props.heading}</div>
 
               <div className="">
                 {(selectedDate || props?.comboStartDate) && (
@@ -585,7 +585,7 @@ const ComboTaxi = (props) => {
               ) : null}
 
               {noResults ? (
-                <OptionsContainer className=" center-div text-center text-[#445069]">
+                <OptionsContainer className=" center-div text-center ttw-type-small md:ttw-type-body text-[#445069]">
                   Oops, we couldn't find what you were searching but we are
                   already adding new and approved accommodations to our database
                   everyday!

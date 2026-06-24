@@ -196,29 +196,31 @@ const handleApply = () => {
     show={props.showFilter}
     anchor={"right"}
     backdrop
+    width="50%"
+    mobileWidth="100%"
     bgColor="#fafaf5"
-    style={{ zIndex: 1508 }}
-    className=""
+    style={{ zIndex: props.zIndex ?? 1508 }}
+    className="!overflow-y-hidden"
     onHide={() => props.setShowFilter(false)}
   >
-    <div className="w-[80vw] md:w-[27vw] h-[100vh] flex flex-col">
+    <div className="h-[100vh] flex flex-col">
       {/* Header - Fixed at top */}
-      <div className="px-lg pt-md pb-sm border-b border-border-subtle">
-        <div className="mb-md">
-          <Image 
-            src="/backarrow.svg" 
-            className="cursor-pointer" 
-            width={22} 
-            height={22} 
-            onClick={() => props.setShowFilter(false)} 
+      <div className="px-6 max-ph:px-4 py-4 bg-[#fafaf5] z-[900] sticky top-0">
+        <div className="mb-4">
+          <Image
+            src="/backarrow.svg"
+            className="cursor-pointer"
+            width={22}
+            height={2}
+            onClick={() => props.setShowFilter(false)}
           />
         </div>
-        
+
         <div className="flex w-full flex-row justify-between items-center">
-          <div className="text-xl font-600 leading-2xl text-[#0b1220]">Filters</div>
+          <div className="ttw-type-h2 font-semibold text-[#0b1220]">Filters</div>
           {props?.isFilterChangesApplied && (
-            <button 
-              className="font-md font-500 leading-lg-md underline text-text-error" 
+            <button
+              className="ttw-type-small font-500 underline text-[#0b1220]"
               onClick={removeAllFilter}
             >
               Clear
@@ -228,17 +230,17 @@ const handleApply = () => {
       </div>
 
       {/* Scrollable content area */}
-      <div className="flex-1 overflow-y-auto px-lg py-lg scrollbar-hide">
-        <div className="flex flex-col gap-xl">
+      <div className="flex-1 overflow-y-auto px-6 max-ph:px-4 py-4 scrollbar-hide">
+        <div className="flex flex-col gap-6">
           <hr className="m-zero" />
 
           {/* Trip Type */}
           <div>
-            <h3 className="text-base font-500 mb-sm text-[#0b1220]">Trip Type</h3>
-            <label className="flex items-center mb-sm cursor-pointer">
-              <div 
-                className={`w-5 h-5 rounded border-2 flex items-center justify-center mr-sm ${
-                  tripType === 'one_way' ? 'bg-[#0b1220] border-[#0b1220]' : 'border-border-default'
+            <h3 className="ttw-type-body font-600 mb-2 text-[#0b1220]">Trip Type</h3>
+            <label className="flex items-center mb-2 cursor-pointer">
+              <div
+                className={`w-5 h-5 rounded border-2 flex items-center justify-center mr-2 ${
+                  tripType === 'one_way' ? 'bg-[#0b1220] border-[#0b1220]' : 'border-[#ececec]'
                 }`}
                 onClick={() => setTripType('one_way')}
               >
@@ -248,7 +250,7 @@ const handleApply = () => {
                   </svg>
                 )}
               </div>
-              <span className="text-base font-400">One Way</span>
+              <span className="ttw-type-small md:ttw-type-body text-[#0b1220]">One Way</span>
             </label>
           </div>
 
@@ -256,15 +258,15 @@ const handleApply = () => {
 
           {/* Stops */}
           <div>
-            <h3 className="text-base font-500 mb-sm text-[#0b1220]">Stops</h3>
+            <h3 className="ttw-type-body font-600 mb-2 text-[#0b1220]">Stops</h3>
             {[
               { value: 'non_stop', label: 'Non-Stop' },
               { value: 'multiple_stops', label: '1+ Stops' },
             ].map((stop) => (
-              <label key={stop.value} className="flex items-center mb-sm cursor-pointer">
-                <div 
-                  className={`w-5 h-5 rounded border-2 flex items-center justify-center mr-sm ${
-                    stops.includes(stop.value) ? 'bg-[#0b1220] border-[#0b1220]' : 'border-border-default'
+              <label key={stop.value} className="flex items-center mb-2 cursor-pointer">
+                <div
+                  className={`w-5 h-5 rounded border-2 flex items-center justify-center mr-2 ${
+                    stops.includes(stop.value) ? 'bg-[#0b1220] border-[#0b1220]' : 'border-[#ececec]'
                   }`}
                   onClick={() => handleStopsChange(stop.value)}
                 >
@@ -274,7 +276,7 @@ const handleApply = () => {
                     </svg>
                   )}
                 </div>
-                <span className="text-base font-400">{stop.label}</span>
+                <span className="ttw-type-small md:ttw-type-body text-[#0b1220]">{stop.label}</span>
               </label>
             ))}
           </div>
@@ -283,9 +285,9 @@ const handleApply = () => {
 
           {/* Departure Time */}
           <div className="time-dropdown-container relative">
-            <h3 className="text-base font-500 mb-sm text-[#0b1220]">Departure Time</h3>
+            <h3 className="ttw-type-body font-600 mb-2 text-[#0b1220]">Departure Time</h3>
             <div
-              className="flex items-center gap-2 p-2 border border-border-default rounded-lg cursor-pointer bg-[#f4f3ec] hover:bg-[#ececec]"
+              className="flex items-center gap-2 p-2 border border-[#ececec] rounded-lg cursor-pointer bg-[#f4f3ec] hover:bg-[#ececec]"
               onClick={() => setShowTimeDropdown(!showTimeDropdown)}
             >
               <button>
@@ -304,7 +306,7 @@ const handleApply = () => {
                   />
                 </svg>
               </button>
-              <span className="text-sm font-500 text-[#0b1220]">
+              <span className="ttw-type-small font-500 text-[#0b1220]">
                 {selectedTime || "Select Time"}
               </span>
             </div>
@@ -312,13 +314,13 @@ const handleApply = () => {
             {showTimeDropdown && (
               <div className="absolute z-[15] w-full mt-1 bg-white border border-[#ececec] rounded-lg shadow-lg max-h-60 overflow-y-auto scrollbar-hide">
                 <div className="sticky top-0 bg-[#f4f3ec] p-2 border-b border-[#ececec]">
-                  <span className="font-500 text-sm text-[#0b1220]">Select Time</span>
+                  <span className="ttw-type-small font-500 text-[#0b1220]">Select Time</span>
                 </div>
                 <div className="p-1">
                   {timeSlots.map((slot, index) => (
                     <div
                       key={index}
-                      className={`p-2 hover:bg-[#f4f3ec] cursor-pointer text-sm rounded-md ${
+                      className={`p-2 hover:bg-[#f4f3ec] cursor-pointer ttw-type-small text-[#0b1220] rounded-md ${
                         selectedTime === slot.display ? "bg-[#ececec]" : ""
                       }`}
                       onClick={() => handleTimeSelection(slot)}
@@ -336,12 +338,12 @@ const handleApply = () => {
           {/* Airlines */}
           {!props?.loading && allAirlines.length > 0 ? (
             <div>
-              <h3 className="text-base font-500 mb-sm text-[#0b1220]">Airlines</h3>
+              <h3 className="ttw-type-body font-600 mb-2 text-[#0b1220]">Airlines</h3>
               {visibleAirlines.map((airline) => (
-                <label key={airline.code} className="flex items-center mb-sm cursor-pointer">
-                  <div 
-                    className={`w-5 h-5 rounded border-2 flex items-center justify-center mr-sm ${
-                      airlines.includes(airline.code) ? 'bg-[#0b1220] border-[#0b1220]' : 'border-border-default'
+                <label key={airline.code} className="flex items-center mb-2 cursor-pointer">
+                  <div
+                    className={`w-5 h-5 rounded border-2 flex items-center justify-center mr-2 ${
+                      airlines.includes(airline.code) ? 'bg-[#0b1220] border-[#0b1220]' : 'border-[#ececec]'
                     }`}
                     onClick={() => handleAirlineChange(airline.code)}
                   >
@@ -351,13 +353,13 @@ const handleApply = () => {
                       </svg>
                     )}
                   </div>
-                  <span className="text-base font-400">{airline.name} ({airline.code})</span>
+                  <span className="ttw-type-small md:ttw-type-body text-[#0b1220]">{airline.name} ({airline.code})</span>
                 </label>
               ))}
               {!showAllAirlines && allAirlines.length > 7 && (
-                <button 
+                <button
                   onClick={() => setShowAllAirlines(true)}
-                  className="text-primary-default text-sm font-500 mt-xs"
+                  className="ttw-type-small font-500 text-[#0b1220] underline mt-1"
                 >
                   +{allAirlines.length - 7} more
                 </button>
@@ -369,15 +371,15 @@ const handleApply = () => {
 
           {/* Fare Type */}
           <div>
-            <h3 className="text-base font-500 mb-sm text-[#0b1220]">Fare Type</h3>
+            <h3 className="ttw-type-body font-600 mb-2 text-[#0b1220]">Fare Type</h3>
             {[
               { value: 'refundable', label: 'Refundable' },
               { value: 'non_refundable', label: 'Non Refundable' }
             ].map((fare) => (
-              <label key={fare.value} className="flex items-center mb-sm cursor-pointer">
-                <div 
-                  className={`w-5 h-5 rounded border-2 flex items-center justify-center mr-sm ${
-                    fareType === fare.value ? 'bg-[#0b1220] border-[#0b1220]' : 'border-border-default'
+              <label key={fare.value} className="flex items-center mb-2 cursor-pointer">
+                <div
+                  className={`w-5 h-5 rounded border-2 flex items-center justify-center mr-2 ${
+                    fareType === fare.value ? 'bg-[#0b1220] border-[#0b1220]' : 'border-[#ececec]'
                   }`}
                   onClick={() => handleFareTypeChange(fare.value)}
                 >
@@ -387,7 +389,7 @@ const handleApply = () => {
                     </svg>
                   )}
                 </div>
-                <span className="text-base font-400">{fare.label}</span>
+                <span className="ttw-type-small md:ttw-type-body text-[#0b1220]">{fare.label}</span>
               </label>
             ))}
           </div>
@@ -400,12 +402,15 @@ const handleApply = () => {
       </div>
 
       {/* Sticky footer buttons */}
-      <div className="border-t border-border-subtle bg-[#fafaf5] px-lg py-md">
-        <div className="flex gap-3 justify-end">
-          <button className="ttw-btn-secondary-flat" onClick={() => props.setShowFilter(false)}>
+      <div className="sticky bottom-0 z-10 border-t border-[#ececec] bg-[#fafaf5] px-6 max-ph:px-4 py-4">
+        <div className="flex gap-3 max-ph:flex-col">
+          <button className="ttw-btn-secondary whitespace-nowrap ttw-type-body" onClick={() => props.setShowFilter(false)}>
             Cancel
           </button>
-          <button className="ttw-btn-secondary-fill" onClick={handleApply}>
+          <button
+            className="w-full bg-[#f7e700] text-black font-500 ttw-type-body py-3 rounded-xl flex items-center justify-center gap-2 disabled:opacity-60"
+            onClick={handleApply}
+          >
             Apply
           </button>
         </div>

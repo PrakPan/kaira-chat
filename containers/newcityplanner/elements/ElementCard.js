@@ -1,5 +1,6 @@
 import { useState } from "react";
 import styled from "styled-components";
+import Image from "next/image";
 import ImageLoader from "../../../components/ImageLoader";
 import Drawer from "../../../components/ui/Drawer";
 
@@ -9,52 +10,10 @@ import { imgUrlEndPoint } from "../../../components/theme/ThemeConstants";
 import { PlanYourTripButton } from "../../travelplanner/ThemePage";
 import { DestinationCard } from "../../../components/revamp/common/components/card";
 
-const Text = styled.p`
-  font-size: 14px;
-`;
-
-const Heading = styled.p`
-  font-size: 18px;
-  font-weight: 800;
-`;
-
-const Container = styled.div`
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding: 1rem;
-  width: 100vw;
-  @media screen and (min-width: 768px) {
-    width: 500px;
-  }
-`;
-
 const ImageContainer = styled.div`
   position: relative;
   flex-shrink: 0;
   overflow: hidden;
-`;
-
-
-const BackContainer = styled.div`
-  margin: 0;
-  display: flex;
-  gap: 0.5rem;
-  position: sticky;
-  z-index: 1;
-  background: white;
-  top: 0;
-  padding-block: 0.75rem;
-
-  @media screen and (min-width: 768px) {
-    padding-block: 1rem;
-  }
-`;
-
-const BackText = styled.div`
-  font-size: 1.5rem;
-  line-height: 2rem;
 `;
 
 export default function ElementCard(props) {
@@ -90,21 +49,24 @@ export default function ElementCard(props) {
         show={props.isOpen}
         anchor="right"
         backdrop
-        width={500}
-        style={{ zIndex: 1501 }}
-        className=""
+        width="50%"
+        mobileWidth="100%"
+        bgColor="#fafaf5"
+        style={{ zIndex: props.zIndex || 1700 }}
+        className="!overflow-y-hidden"
         onHide={handleCloseDrawer}
       >
-        <Container>
-          <BackContainer>
-            <div
+        <div className="overflow-y-scroll h-screen px-6 max-ph:px-4 flex flex-col gap-4">
+          <div className="py-4 bg-[#fafaf5] z-[900] flex items-center gap-2 sticky top-0">
+            <Image
+              src="/backarrow.svg"
+              className="cursor-pointer"
+              width={22}
+              height={2}
+              alt="Back"
               onClick={handleCloseDrawer}
-              className="cursor-pointer flex items-center gap-2"
-            >
-              <BackText>←</BackText>
-              <span className="text-lg font-semibold">Back</span>
-            </div>
-          </BackContainer>
+            />
+          </div>
 
 
           {shouldShowImageSection && (
@@ -112,7 +74,7 @@ export default function ElementCard(props) {
               <div style={{ height: "200px", overflow: "hidden" }}>
                 <div style={{ display: imageLoaded ? "block" : "none", height: "200px", overflow: "hidden" }}>
                   <ImageLoader
-                    borderRadius="8px"
+                    borderRadius="12px"
                     widthMobile="100%"
                     width="100%"
                     height="200px"
@@ -147,7 +109,7 @@ export default function ElementCard(props) {
                       width: "100%",
                       height: "200px",
                       overflow: "hidden",
-                      borderRadius: "8px",
+                      borderRadius: "12px",
                     }}
                   >
                     <SkeletonCard />
@@ -158,13 +120,16 @@ export default function ElementCard(props) {
           )}
 
           <div>
-            <Heading>{props?.data?.name}</Heading>
+            <p className="ttw-type-h3 font-600 text-[#0b1220]">
+              {props?.data?.name}
+            </p>
           </div>
 
           {props.data?.description && (
-            <div>
-              <Heading>About</Heading>
-              <Text
+            <div className="flex flex-col gap-2 mb-4">
+              <p className="ttw-type-body font-600 text-[#0b1220]">About</p>
+              <div
+                className="ttw-type-body text-[#0b1220]"
                 dangerouslySetInnerHTML={{ __html: props.data.description }}
               />
             </div>
@@ -172,13 +137,13 @@ export default function ElementCard(props) {
 
           {props.data?.text && (
             <div>
-              <Text style={{ fontStyle: "italic", color: "#666" }}>
+              <p className="ttw-type-body italic text-[#445069]">
                 {props.data.text}
-              </Text>
+              </p>
             </div>
           )}
-          <PlanYourTripButton className="bg-[#F7E700]" />
-        </Container>
+          <PlanYourTripButton className="w-full bg-[#f7e700] text-black font-500 ttw-type-body py-3 rounded-xl flex items-center justify-center gap-2" />
+        </div>
       </Drawer>
     </>
   );

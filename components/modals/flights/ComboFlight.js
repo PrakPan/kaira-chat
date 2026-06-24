@@ -1360,7 +1360,7 @@ const ComboFlight = (props) => {
 
     if (noResults) {
       return (
-        <p className=" text-center h-[80vh] flex items-center justify-center">
+        <p className="ttw-type-body text-[#445069] text-center h-[80vh] flex items-center justify-center">
           Oops, we couldn't find what you were searching!
         </p>
       );
@@ -1374,7 +1374,7 @@ const ComboFlight = (props) => {
             margin: "auto",
             height: isPageWide ? "80vh" : "40vh",
           }}
-          className="center-div text-center"
+          className="center-div text-center ttw-type-body text-[#445069]"
         >
           Oops, this action is not allowed on another user's itinerary
         </div>
@@ -1437,18 +1437,13 @@ const ComboFlight = (props) => {
             </Button>
           )} */}
           {!updateBookingState && flights.length > 0 && nextUrl && (
-            <Button
-              boxShadow
-              onclickparam={null}
-              onclick={handleViewMore}
-              margin="0.25rem auto"
-              borderWidth="1px"
-              borderRadius="2rem"
-              padding="0.25rem 1rem"
+            <button
+              onClick={handleViewMore}
               disabled={moreLoadingState}
+              className="w-full mt-4 py-3 rounded-xl border border-[#ececec] ttw-type-small font-500 text-[#0b1220] hover:bg-[#f4f3ec] transition-colors disabled:opacity-50"
             >
               View More
-            </Button>
+            </button>
           )}
         </div>
       </OptionsContainer>
@@ -1464,7 +1459,7 @@ const ComboFlight = (props) => {
           displayText="Finding best transfers for you"
           zIndex={1505}
         />
-        <div className="text-xl font-600 leading-2xl mb-md">
+        <div className="ttw-type-h2 font-semibold text-[#0b1220] mb-md">
           {" "}
           {props.heading}
         </div>
@@ -1474,24 +1469,24 @@ const ComboFlight = (props) => {
             <div className="fixed z-[1666] inset-0 bg-black bg-opacity-50 flex items-end md:items-center justify-center">
               <div className="bg-white w-full max-w-lg md:mx-4 mb-0 md:mb-auto md:rounded-lg rounded-t-2xl md:rounded-b-lg relative transform transition-transform duration-300 ease-out animate-slide-up md:animate-none max-h-[90vh] md:max-h-none overflow-hidden">
                 <div className="md:hidden flex justify-center py-2">
-                  <div className="w-12 h-1 bg-gray-300 rounded-full"></div>
+                  <div className="w-12 h-1 bg-[#ececec] rounded-full"></div>
                 </div>
 
                 {!isProcessingBooking && (
                   <button
                     onClick={handleWarningCancel}
-                    className="absolute top-4 right-4 md:top-4 md:right-4 p-2 text-gray-400 hover:text-gray-600 cursor-pointer z-10"
+                    className="ttw-btn-close absolute top-4 right-4 md:top-4 md:right-4 p-2 cursor-pointer z-10"
                   >
                     <FaX size={16} />
                   </button>
                 )}
 
                 <div className="px-6 pb-6 pt-2 md:pt-6 max-h-[calc(90vh-8rem)] md:max-h-none overflow-y-auto">
-                  <h2 className="text-xl font-semibold mb-1 pr-8">
+                  <h2 className="ttw-type-h3 font-600 text-[#0b1220] mb-1 pr-8">
                     Dates Change Warning!
                   </h2>
 
-                  <div className="text-gray-700 mb-6">
+                  <div className="ttw-type-body text-[#445069] mb-6">
                     <div className="rounded-lg p-2">{warningMessage}</div>
                   </div>
 
@@ -1499,14 +1494,14 @@ const ComboFlight = (props) => {
                     <button
                       onClick={handleWarningCancel}
                       disabled={isProcessingBooking}
-                      className="w-full md:w-auto px-6 py-2 md:py-2 text-gray-600 border rounded hover:bg-gray-50 transition-colors cursor-pointer text-center disabled:opacity-50"
+                      className="ttw-btn-secondary ttw-type-body w-full md:w-auto px-6 py-2 md:py-2 transition-colors cursor-pointer text-center disabled:opacity-50"
                     >
                       Cancel
                     </button>
                     <button
                       disabled={isProcessingBooking}
                       onClick={handleWarningConfirm}
-                      className="w-full md:w-auto px-6 py-2 md:py-2 bg-[#07213A] text-white rounded hover:bg-[#0a2942] transition-colors cursor-pointer text-center disabled:opacity-50"
+                      className="ttw-type-body w-full md:w-auto px-6 py-2 md:py-2 bg-[#f7e700] text-black rounded hover:bg-[#e6d600] transition-colors cursor-pointer text-center disabled:opacity-50"
                     >
                       {isProcessingBooking ? "Processing..." : "Confirm"}
                     </button>
@@ -1572,7 +1567,7 @@ const ComboFlight = (props) => {
           setIsTimeOnlyChange={setIsTimeOnlyChange}
         />
         {flightCount ? (
-          <div className="text-[14px] text-gray-400 px-2 py-3">
+          <div className="ttw-type-body text-[#445069] px-2 py-3">
             Showing {flightCount} flights
           </div>
         ) : null}
@@ -1581,7 +1576,7 @@ const ComboFlight = (props) => {
           <ContentContainer style={{ position: "relative" }}>
             {updateLoadingState && !updateBookingState ? (
               <div
-                className="center-div"
+                className="center-div ttw-type-body text-[#445069]"
                 style={{ width: "max-content", margin: "auto" }}
               >
                 <LoadingLottie height={"5rem"} width={"5rem"} margin="none" />
@@ -1721,25 +1716,25 @@ const SearchSection = ({
                 setShowSourceSuggestions(true);
               }}
               placeholder="Select source airport"
-              className={`w-full pl-10 pr-4 py-[0.6rem] bg-[#F9F9F9] rounded-lg border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-[#212529] font-normal ${
-                sourceError ? "ring-2 ring-red-500" : ""
+              className={`w-full pl-10 pr-4 py-[0.6rem] bg-[#f4f3ec] rounded-lg border border-[#ececec] focus:outline-none focus:ring-2 focus:ring-[#f7e700] ttw-type-small text-[#0b1220] ${
+                sourceError ? "ring-2 ring-[#FA3530]" : ""
               }`}
             />
           </div>
           {sourceError && (
-            <div className="absolute top-full left-0 text-red-500 text-xs mt-1 whitespace-nowrap z-30">
+            <div className="absolute top-full left-0 ttw-type-small text-[#445069] mt-1 whitespace-nowrap z-30">
               {sourceError}
             </div>
           )}
           {showSourceSuggestions && sourceSuggestions.length > 0 && (
-            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+            <div className="absolute z-50 w-full mt-1 bg-white border border-[#ececec] rounded-lg shadow-lg max-h-48 overflow-y-auto">
               {sourceSuggestions.map((suggestion) => (
                 <div
                   key={suggestion.id}
                   onClick={() => handleSourceSelect(suggestion)}
-                  className="px-4 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                  className="px-4 py-2 hover:bg-[#f4f3ec] cursor-pointer border-b border-[#ececec] last:border-b-0"
                 >
-                  <div className="text-sm text-gray-900">{suggestion.name}</div>
+                  <div className="ttw-type-small text-[#0b1220]">{suggestion.name}</div>
                 </div>
               ))}
             </div>
@@ -1750,9 +1745,9 @@ const SearchSection = ({
         <div className="flex-shrink-0">
           <button
             onClick={handleLocationChange}
-            className="w-9 h-9 flex items-center justify-center bg-[#F7E700] rounded-lg hover:bg-[#e6d600] transition-colors"
+            className="w-9 h-9 flex items-center justify-center bg-[#f7e700] rounded-lg hover:bg-[#e6d600] transition-colors"
           >
-            <FaExchangeAlt className="text-gray-700" size={15} />
+            <FaExchangeAlt className="text-[#445069]" size={15} />
           </button>
         </div>
 
@@ -1774,25 +1769,25 @@ const SearchSection = ({
                 setShowDestinationSuggestions(true);
               }}
               placeholder="Select destination airport"
-              className={`w-full pl-10 pr-4 py-[0.6rem] bg-[#F9F9F9] rounded-lg border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-[#212529] font-normal ${
-                destinationError ? "ring-2 ring-red-500" : ""
+              className={`w-full pl-10 pr-4 py-[0.6rem] bg-[#f4f3ec] rounded-lg border border-[#ececec] focus:outline-none focus:ring-2 focus:ring-[#f7e700] ttw-type-small text-[#0b1220] ${
+                destinationError ? "ring-2 ring-[#FA3530]" : ""
               }`}
             />
           </div>
           {destinationError && (
-            <div className="absolute top-full left-0 text-red-500 text-xs mt-1 whitespace-nowrap z-30">
+            <div className="absolute top-full left-0 ttw-type-small text-[#445069] mt-1 whitespace-nowrap z-30">
               {destinationError}
             </div>
           )}
           {showDestinationSuggestions && destinationSuggestions.length > 0 && (
-            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+            <div className="absolute z-50 w-full mt-1 bg-white border border-[#ececec] rounded-lg shadow-lg max-h-48 overflow-y-auto">
               {destinationSuggestions.map((suggestion) => (
                 <div
                   key={suggestion.id}
                   onClick={() => handleDestinationSelect(suggestion)}
-                  className="px-4 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                  className="px-4 py-2 hover:bg-[#f4f3ec] cursor-pointer border-b border-[#ececec] last:border-b-0"
                 >
-                  <div className="text-sm text-gray-900">{suggestion.name}</div>
+                  <div className="ttw-type-small text-[#0b1220]">{suggestion.name}</div>
                 </div>
               ))}
             </div>
@@ -1822,25 +1817,25 @@ const SearchSection = ({
                 setShowSourceSuggestions(true);
               }}
               placeholder="Source"
-              className={`w-full pl-9 pr-3 py-2.5 bg-[#F9F9F9] rounded-lg border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-[#212529] font-normal truncate ${
-                sourceError ? "ring-2 ring-red-500" : ""
+              className={`w-full pl-9 pr-3 py-2.5 bg-[#f4f3ec] rounded-lg border border-[#ececec] focus:outline-none focus:ring-2 focus:ring-[#f7e700] ttw-type-small text-[#0b1220] truncate ${
+                sourceError ? "ring-2 ring-[#FA3530]" : ""
               }`}
             />
           </div>
           {sourceError && (
-            <div className="absolute top-full left-0 text-red-500 text-xs mt-1 whitespace-nowrap z-30 max-w-[150px] truncate">
+            <div className="absolute top-full left-0 ttw-type-small text-[#445069] mt-1 whitespace-nowrap z-30 max-w-[150px] truncate">
               {sourceError}
             </div>
           )}
           {showSourceSuggestions && sourceSuggestions.length > 0 && (
-            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+            <div className="absolute z-50 w-full mt-1 bg-white border border-[#ececec] rounded-lg shadow-lg max-h-48 overflow-y-auto">
               {sourceSuggestions.map((suggestion) => (
                 <div
                   key={suggestion.id}
                   onClick={() => handleSourceSelect(suggestion)}
-                  className="px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                  className="px-3 py-2 hover:bg-[#f4f3ec] cursor-pointer border-b border-[#ececec] last:border-b-0"
                 >
-                  <div className="text-xs text-gray-900">{suggestion.name}</div>
+                  <div className="ttw-type-small text-[#0b1220]">{suggestion.name}</div>
                 </div>
               ))}
             </div>
@@ -1851,9 +1846,9 @@ const SearchSection = ({
         <div className="flex-shrink-0">
           <button
             onClick={handleLocationChange}
-            className="w-7 h-8 py-2 flex items-center justify-center bg-[#F7E700] rounded-md hover:bg-[#e6d600] transition-colors"
+            className="w-7 h-8 py-2 flex items-center justify-center bg-[#f7e700] rounded-md hover:bg-[#e6d600] transition-colors"
           >
-            <FaExchangeAlt className="text-gray-700" size={14} />
+            <FaExchangeAlt className="text-[#445069]" size={14} />
           </button>
         </div>
 
@@ -1875,25 +1870,25 @@ const SearchSection = ({
                 setShowDestinationSuggestions(true);
               }}
               placeholder="Destination"
-              className={`w-full pl-9 pr-3 py-2.5 bg-[#F9F9F9] rounded-lg border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-[#212529] font-normal truncate ${
-                destinationError ? "ring-2 ring-red-500" : ""
+              className={`w-full pl-9 pr-3 py-2.5 bg-[#f4f3ec] rounded-lg border border-[#ececec] focus:outline-none focus:ring-2 focus:ring-[#f7e700] ttw-type-small text-[#0b1220] truncate ${
+                destinationError ? "ring-2 ring-[#FA3530]" : ""
               }`}
             />
           </div>
           {destinationError && (
-            <div className="absolute top-full left-0 text-red-500 text-xs mt-1 whitespace-nowrap z-30 max-w-[150px] truncate">
+            <div className="absolute top-full left-0 ttw-type-small text-[#445069] mt-1 whitespace-nowrap z-30 max-w-[150px] truncate">
               {destinationError}
             </div>
           )}
           {showDestinationSuggestions && destinationSuggestions.length > 0 && (
-            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+            <div className="absolute z-50 w-full mt-1 bg-white border border-[#ececec] rounded-lg shadow-lg max-h-48 overflow-y-auto">
               {destinationSuggestions.map((suggestion) => (
                 <div
                   key={suggestion.id}
                   onClick={() => handleDestinationSelect(suggestion)}
-                  className="px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                  className="px-3 py-2 hover:bg-[#f4f3ec] cursor-pointer border-b border-[#ececec] last:border-b-0"
                 >
-                  <div className="text-xs text-gray-900">{suggestion.name}</div>
+                  <div className="ttw-type-small text-[#0b1220]">{suggestion.name}</div>
                 </div>
               ))}
             </div>

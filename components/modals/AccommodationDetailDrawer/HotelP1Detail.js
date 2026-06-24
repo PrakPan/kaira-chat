@@ -23,7 +23,7 @@ const svgIcons = {
     <svg width="23" height="24" viewBox="0 0 23 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <g clipPath="url(#clip_maps)">
         <rect y="0.800781" width="22.4" height="22.4" rx="4" fillOpacity="0.09" />
-        <path d="M13.2 18L9.20001 16.6L6.10001 17.8C5.87779 17.8889 5.67223 17.8639 5.48335 17.725C5.29446 17.5861 5.20001 17.4 5.20001 17.1667V7.83333C5.20001 7.68889 5.24168 7.56111 5.32501 7.45C5.40835 7.33889 5.52223 7.25556 5.66668 7.2L9.20001 6L13.2 7.4L16.3 6.2C16.5222 6.11111 16.7278 6.13611 16.9167 6.275C17.1056 6.41389 17.2 6.6 17.2 6.83333V16.1667C17.2 16.3111 17.1583 16.4389 17.075 16.55C16.9917 16.6611 16.8778 16.7444 16.7333 16.8L13.2 18ZM12.5333 16.3667V8.56667L9.86668 7.63333V15.4333L12.5333 16.3667ZM13.8667 16.3667L15.8667 15.7V7.8L13.8667 8.56667V16.3667ZM6.53335 16.2L8.53335 15.4333V7.63333L6.53335 8.3V16.2Z" fill="#3A85FC" />
+        <path d="M13.2 18L9.20001 16.6L6.10001 17.8C5.87779 17.8889 5.67223 17.8639 5.48335 17.725C5.29446 17.5861 5.20001 17.4 5.20001 17.1667V7.83333C5.20001 7.68889 5.24168 7.56111 5.32501 7.45C5.40835 7.33889 5.52223 7.25556 5.66668 7.2L9.20001 6L13.2 7.4L16.3 6.2C16.5222 6.11111 16.7278 6.13611 16.9167 6.275C17.1056 6.41389 17.2 6.6 17.2 6.83333V16.1667C17.2 16.3111 17.1583 16.4389 17.075 16.55C16.9917 16.6611 16.8778 16.7444 16.7333 16.8L13.2 18ZM12.5333 16.3667V8.56667L9.86668 7.63333V15.4333L12.5333 16.3667ZM13.8667 16.3667L15.8667 15.7V7.8L13.8667 8.56667V16.3667ZM6.53335 16.2L8.53335 15.4333V7.63333L6.53335 8.3V16.2Z" fill="#0b1220" />
       </g>
       <defs>
         <clipPath id="clip_maps">
@@ -38,9 +38,9 @@ const svgIcons = {
 
 const Container = styled.div`
   font-size: 14px;
-  padding: 0 0.75rem 0.75rem 0.75rem;
+  padding: 0 1rem 0.75rem 1rem;
   @media screen and (min-width: 768px) {
-    padding: 0 1.25rem 1.25rem 1.25rem;
+    padding: 0 1.5rem 1.5rem 1.5rem;
   }
 `;
 
@@ -148,7 +148,7 @@ const ImgSlot = memo(({
         noLazy
       />
       {caption && (
-        <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br text-sm font-500 leading-lg px-md py-xs top-md left-md">
+        <div className="bg-black/55 text-white backdrop-blur absolute rounded-67br ttw-type-small font-500 px-md py-xs top-md left-md">
           {caption}
         </div>
       )}
@@ -312,10 +312,10 @@ const HotelP1Detail = ({
 
   const viewAllOverlay = images.length > 0 && ImagesLoaded[0] ? (
     <div
-      className="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-trans-black_70"
+      className="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-black/55"
       onClick={() => _setImagesHandler?.(data?.images || [])}
     >
-      <span className="font-600 text-sm-md border-solid border-b-sm border-text-white text-white cursor-pointer">
+      <span className="ttw-type-small font-600 border-solid border-b border-white text-white cursor-pointer">
         Show all photos
       </span>
     </div>
@@ -340,14 +340,14 @@ const HotelP1Detail = ({
       anchor="right"
       backdrop
       bgColor="#fafaf5"
-      className="font-lexend"
+      className="!overflow-y-hidden"
       onHide={onHide}
       width="50%"
       mobileWidth="100%"
     >
       <Container>
         {/* Back arrow */}
-        <div className="my-[1rem]">
+        <div className="py-4 bg-[#fafaf5] z-[900] sticky top-0">
           <NextImage
             src="/backarrow.svg"
             className="cursor-pointer"
@@ -364,20 +364,20 @@ const HotelP1Detail = ({
           <div>
             {/* Star category badge */}
             {data.name ? (
-              <span className=" text-sm md:text-xl font-semibold text-[#0b1220]">
+              <span className="ttw-type-h3 md:ttw-type-h2 font-semibold text-[#0b1220]">
                 {data?.name}
               </span>
             ) : null}
 
             {/* Location + rating row */}
             <div className="flex gap-sm mt-sm flex-wrap">
-              <div className="flex gap-xs text-sm-md text-[#445069] font-[400] items-center">
+              <div className="flex gap-xs ttw-type-small md:ttw-type-body text-[#445069] font-[400] items-center">
                 {svgIcons.location}
                 <span>{[data.city_name, data.state_name, data.country_name].filter(Boolean).join(", ")}</span>
               </div>
 
               {data.rating_ext && (
-                <div className="gap-1 flex flex-row items-center text-sm-md text-[#445069] font-[400] pl-sm border-l-sm border-solid border-[#ececec]">
+                <div className="gap-1 flex flex-row items-center ttw-type-small md:ttw-type-body text-[#445069] font-[400] pl-sm border-l border-solid border-[#ececec]">
                   <div className="flex flex-row text-[#f7e700]">
                     {starRating(data.rating_ext)}
                   </div>
@@ -391,7 +391,7 @@ const HotelP1Detail = ({
 
             {/* Scrollable content */}
             <div
-              className="overflow-y-auto"
+              className="overflow-y-auto pb-24"
               ref={scrollableTabRef}
               style={{ height: "calc(100vh - 195px)" }}
             >
@@ -469,7 +469,7 @@ const HotelP1Detail = ({
 
               {/* ── Tabs ── */}
               <div className="flex flex-col">
-                <div className="sticky top-0 z-10 bg-[#fafaf5] border-b-sm border-solid border-[#ececec]">
+                <div className="sticky top-0 z-10 bg-[#fafaf5] border-b border-solid border-[#ececec]">
                   <ScrollableMenuTabs
                     classStyle="w-100"
                     items={tabs}
@@ -484,7 +484,7 @@ const HotelP1Detail = ({
                     {data.description && (
                       <div className="flex flex-col gap-1 mt-lg">
                         <div
-                          className="text-sm-xl font-400 leading-xl gl-dynamic-render-elements text-[#445069]"
+                          className="ttw-type-body gl-dynamic-render-elements text-[#445069]"
                           dangerouslySetInnerHTML={{ __html: data.description }}
                         />
                       </div>
@@ -492,25 +492,25 @@ const HotelP1Detail = ({
 
                     {/* Accommodation type + price range */}
                     {(data.accommodation_type || data.price_lower_range_ext) && (
-                      <div className="flex gap-4 mt-lg flex-wrap">
+                      <div className="grid grid-cols-3 max-ph:grid-cols-1 gap-4 mt-lg">
                         {data.accommodation_type && (
                           <div>
-                            <div className="text-sm-xl font-600 leading-xl mb-xxs-md text-[#0b1220]">Type</div>
-                            <div className="text-sm-md font-400 leading-xl text-[#445069]">{data.accommodation_type}</div>
+                            <div className="ttw-type-body font-600 mb-xxs-md text-[#0b1220]">Type</div>
+                            <div className="ttw-type-small text-[#445069]">{data.accommodation_type}</div>
                           </div>
                         )}
                         {data.price_lower_range_ext && (
                           <div>
-                            <div className="text-sm-xl font-600 leading-xl mb-xxs-md text-[#0b1220]">Starting from</div>
-                            <div className="text-sm-md font-400 leading-xl text-[#445069]">
+                            <div className="ttw-type-body font-600 mb-xxs-md text-[#0b1220]">Starting from</div>
+                            <div className="ttw-type-small text-[#445069]">
                               {data.currency} {Math.round(data.price_lower_range_ext).toLocaleString()}
                             </div>
                           </div>
                         )}
                         {data.distance_from_city_centre && (
                           <div>
-                            <div className="text-sm-xl font-600 leading-xl mb-xxs-md text-[#0b1220]">Distance from centre</div>
-                            <div className="text-sm-md font-400 leading-xl text-[#445069]">{data.distance_from_city_centre} km</div>
+                            <div className="ttw-type-body font-600 mb-xxs-md text-[#0b1220]">Distance from centre</div>
+                            <div className="ttw-type-small text-[#445069]">{data.distance_from_city_centre} km</div>
                           </div>
                         )}
                       </div>
@@ -522,17 +522,17 @@ const HotelP1Detail = ({
                   {/* ── Section 3: Amenities ── */}
                   {data.hotel_facilities?.length > 0 && (
                     <div id="section-3">
-                      <div className="text-md-lg font-600 leading-xl mb-lg text-[#0b1220]">Hotel Amenities</div>
-                      <ul className="grid grid-cols-3 gap-y-2 gap-x-4 !pl-md">
+                      <div className="ttw-type-h4 mb-lg text-[#0b1220]">Hotel Amenities</div>
+                      <ul className="grid grid-cols-3 max-ph:grid-cols-1 gap-y-2 gap-x-4 !pl-md">
                         {activeFacilities.map((item, i) => (
-                          <li key={i} className="text-sm-md font-400 leading-xl list-disc text-[#445069]">
+                          <li key={i} className="ttw-type-small list-disc text-[#445069]">
                             {item}
                           </li>
                         ))}
                       </ul>
                       {!viewMoreFacilities && data.hotel_facilities.length > 6 && (
                         <div
-                          className="text-sm underline font-500 leading-lg cursor-pointer mt-2 text-[#0b1220]"
+                          className="ttw-type-small font-500 underline cursor-pointer mt-2 text-[#0b1220]"
                           onClick={() => calculateVisibleFacilities(data.hotel_facilities, true)}
                         >
                           + {data.hotel_facilities.length - activeFacilities.length} more
@@ -540,7 +540,7 @@ const HotelP1Detail = ({
                       )}
                       {viewMoreFacilities && (
                         <div
-                          className="text-sm underline font-500 leading-lg cursor-pointer mt-2 text-[#0b1220]"
+                          className="ttw-type-small font-500 underline cursor-pointer mt-2 text-[#0b1220]"
                           onClick={() => calculateVisibleFacilities(data.hotel_facilities, false)}
                         >
                           Show Less
@@ -553,10 +553,10 @@ const HotelP1Detail = ({
                   {/* ── Section 2: Location ── */}
                  {/* ── Section 2: Location ── */}
                   <div id="section-2" className="mb-lg">
-                    <div className="text-md-lg font-600 leading-xl mb-lg text-[#0b1220]">Location</div>
+                    <div className="ttw-type-h4 mb-lg text-[#0b1220]">Location</div>
                     <div className="flex gap-2 mb-sm">
                       {svgIcons.location}
-                      <div className="text-sm-md text-[#445069] font-[400]">
+                      <div className="ttw-type-small text-[#445069]">
                         {[data.addr1, data.addr2, data.city_name, data.state_name, data.country_name]
                           .filter(Boolean)
                           .join(", ")}
@@ -573,7 +573,7 @@ const HotelP1Detail = ({
                           }
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-sm-md text-[#0b1220]"
+                          className="ttw-type-small font-500 text-[#0b1220] underline"
                         >
                           View on Google Maps
                         </a>
@@ -592,17 +592,17 @@ const HotelP1Detail = ({
             to the chat orchestrator; they do not book directly. */}
         {data && (onAddHotel || onChangeHotel) && (
           <div
-            className="fixed bottom-0 left-0 right-0 md:absolute flex items-center justify-between gap-3 border-t-2 bg-[#fafaf5] px-[20px] py-[12px] shadow-md"
+            className="fixed bottom-0 left-0 right-0 md:absolute flex items-center justify-between gap-3 border-t border-[#ececec] bg-[#fafaf5] px-6 py-4"
             style={{ zIndex: 50 }}
           >
             <div className="flex flex-col">
               {check_in && check_out && (
-                <span className="text-[12px] text-[#445069]">
+                <span className="ttw-type-small text-[#445069]">
                   {check_in} → {check_out}
                 </span>
               )}
               {data.price_lower_range_ext && (
-                <span className="text-[14px] font-semibold text-[#0b1220]">
+                <span className="ttw-type-body font-700 font-mono text-[#0b1220]">
                   From {data.currency} {Math.round(data.price_lower_range_ext).toLocaleString()}
                 </span>
               )}

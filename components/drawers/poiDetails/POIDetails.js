@@ -40,10 +40,10 @@ const svgIcons = {
 }
 
 export const Title = styled.p`
-  /* H3 token · 22/1.15/800/-0.02em */
+  /* H3 token · 22/1.15/600 */
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 22px;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: -0.02em;
   line-height: 1.15;
   color: #0b1220;
@@ -55,13 +55,13 @@ export const Reviews = styled.div`
   gap: 0.2rem;
   p,
   u {
-    /* Caption · 12/1.4/600/0.04em */
+    /* body-strong · 12/600 */
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 12px;
     font-weight: 600;
     letter-spacing: 0.04em;
     line-height: 1.4;
-    color: #8a93a6;
+    color: #445069;
   }
   u {
     margin-inline: 0.2rem;
@@ -78,10 +78,10 @@ export const Text = styled.p`
 `;
 
 export const Heading = styled.p`
-  /* H4 token · 17/1.2/700/-0.015em */
+  /* H4 token · 17/1.2/600 */
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 17px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: -0.01em;
   line-height: 1.2;
   color: #0b1220;
@@ -123,6 +123,12 @@ const GridImage = styled.div`
   grid-column-gap: 6px;
   grid-row-gap: 6px;
   height: 19rem;
+
+  @media screen and (max-width: 768px) {
+    height: 14rem;
+    grid-column-gap: 4px;
+    grid-row-gap: 4px;
+  }
 `;
 
 const Child = styled.div`
@@ -428,15 +434,15 @@ const POIDetails = (props) => {
   }
 
   var tags = (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap gap-1">
       {props.data.tags?.map((e, i) => (
-        <div
+        <span
           key={i}
-          className={`rounded-full px-3 py-1.5 text-[12px] font-medium text-[#1a2436]`}
+          className="ttw-type-small text-[#1a2436] px-2 py-0.5 rounded-full capitalize"
           style={{ backgroundColor: colors[i % colors.length] }}
         >
           {e}
-        </div>
+        </span>
       ))}
     </div>
   );
@@ -478,38 +484,32 @@ const POIDetails = (props) => {
   return (
     <>
       {props?.data ? (
-        <Container className="px-lg max-ph:px-sm gap-xl pb-[104px]" itineraryDrawer={props.itineraryDrawer}>
+        <Container className="px-6 max-ph:px-4 gap-xl pb-[104px]" itineraryDrawer={props.itineraryDrawer}>
           {props?.updating && (
-            <div className="fixed top-[65%] left-[50%] -translate-x-[50%] z-50 flex flex-row items-center gap-2">
+            <div className="fixed top-[65%] left-[50%] -translate-x-[50%] z-50 flex flex-row items-center gap-2 ttw-type-body text-[#0b1220]">
               Updating
               <div className="w-5 h-5 border-2 rounded-full border-t-black animate-spin"></div>
             </div>
           )}
-          <div className="mt-[1rem]">
+          <div className="py-4 max-ph:py-3 bg-[#fafaf5] z-[900] sticky top-0 flex flex-col gap-3 pb-2">
             <Image src="/backarrow.svg" className="cursor-pointer" width={22} height={2} onClick={(e) => props.handleCloseDrawer(e)} />
           </div>
-          <div className="flex justify-between">
-            <Title>{props.data.name}</Title>
+          <div className="flex justify-between items-start gap-3">
+            <div className="ttw-type-h2 font-semibold text-[#0b1220]">{props.data.name}</div>
             {!(props?.removeChange === true) && !isDraft && !(props?.type === "restaurant") && (
-              <Button
-                padding="7px 25px"
-                borderRadius="7px"
-                bgColor="#ffffff"
-                color="#0b1220"
-                borderStyle="solid"
-                borderWidth="1px"
-                borderColor="#ececec"
-                onclick={() => {
+              <button
+                type="button"
+                className="ttw-btn-secondary whitespace-nowrap ttw-type-body"
+                onClick={() => {
                   if (!token) {
                     props?.setShowLoginModal(true);
                     return;
                   }
                   setShowDrawer(true);
                 }}
-                className="ttw-type-body"
               >
                 Change
-              </Button>
+              </button>
             )}
           </div>
 
@@ -824,10 +824,10 @@ const POIDetails = (props) => {
                     onClick={() => setShowCalender((prev) => !prev)}
                   >
                     <div className="flex items-center gap-2">
-                      <span className="font-medium ttw-type-body">
+                      <span className="ttw-type-body font-600">
                         {getHumanDate(startDate) + " | "}
                       </span>
-                      <span>Day {selectedDayNumber}</span>
+                      <span className="ttw-type-body">Day {selectedDayNumber}</span>
                     </div>
                     <IoIosArrowDown
                       className={`transition-transform ml-2 ${
@@ -839,7 +839,7 @@ const POIDetails = (props) => {
                   {showCalender && (props?.removeDelete == true) &&  (
                     <div
                       ref={calendarDesktopRef}
-                      className="absolute top-full left-0 mt-1 w-[260px] bg-white border border-gray-200 shadow-lg rounded-lg p-4 flex flex-col gap-3 ttw-type-body z-[1091] max-h-[300px] overflow-y-auto"
+                      className="absolute top-full left-0 mt-1 w-[260px] bg-white border border-[#ececec] shadow-lg rounded-lg p-4 flex flex-col gap-3 ttw-type-body z-[1091] max-h-[300px] overflow-y-auto"
                     >
                       <DayListContent />
                     </div>
@@ -847,7 +847,7 @@ const POIDetails = (props) => {
                 </div>
               </div>
 
-              <div className="inline-flex w-fit sm:w-fit bg-[#f4f3ec] rounded-lg p-1 gap-1">
+              <div className="inline-flex w-full max-ph:w-full md:w-fit bg-[#f4f3ec] rounded-lg p-1 gap-1">
                 {TIME_PERIODS.map((period) => {
                   const isSelected = selectedTimeOfDay === period;
                   return (
@@ -864,10 +864,10 @@ const POIDetails = (props) => {
                           });
                         }
                       }}
-                      className={`flex-1 sm:flex-none px-4 py-2 rounded-md text-[14px] font-medium transition-colors mb-3 ${
+                      className={`flex-1 md:flex-none px-4 py-2 rounded-md ttw-type-small md:ttw-type-body font-500 transition-colors mb-3 ${
                         isSelected
                           ? "bg-[#0b1220] text-[#fafaf5]"
-                          : "bg-transparent text-[#8a93a6] hover:text-[#0b1220]"
+                          : "bg-transparent text-[#445069] hover:text-[#0b1220]"
                       }`}
                     >
                       {period}
@@ -893,18 +893,24 @@ const POIDetails = (props) => {
           </div>
 
           {props.data?.cost ? (
-            <div className="flex flex-row">
-              Cost: <span className="font-semibold px-1">₹</span>
-              {props.data.cost}
-              {" /- "}
-              {"Per person"}
+            <div className="flex flex-row items-baseline gap-1">
+              <span className="ttw-type-small text-[#445069]">Cost:</span>
+              <span className="ttw-type-body font-700 font-mono text-[#0b1220]">
+                ₹{props.data.cost}
+              </span>
+              <span className="ttw-type-small font-400 font-sans text-[#445069]">
+                /- Per person
+              </span>
             </div>
           ) : props.data?.pricing?.total_price ? (
-            <div className="flex flex-row">
-              Cost: <span className="font-semibold px-1">₹</span>
-              {props.data.pricing.total_price}
-              {" /- "}
-              {"Per person"}
+            <div className="flex flex-row items-baseline gap-1">
+              <span className="ttw-type-small text-[#445069]">Cost:</span>
+              <span className="ttw-type-body font-700 font-mono text-[#0b1220]">
+                ₹{props.data.pricing.total_price}
+              </span>
+              <span className="ttw-type-small font-400 font-sans text-[#445069]">
+                /- Per person
+              </span>
             </div>
           ) : null}
 
@@ -912,7 +918,7 @@ const POIDetails = (props) => {
             <section className="flex flex-col gap-3">
               <SectionTitle>Getting Around</SectionTitle>
               <Divider />
-              <p className="text-[15px] leading-[23px] text-[#445069] m-0">
+              <p className="ttw-type-body text-[#445069] m-0">
                 {props.data.getting_around}
               </p>
             </section>
@@ -930,13 +936,13 @@ const POIDetails = (props) => {
 
                   return (
                     <div key={i} className="flex items-center gap-[22px]">
-                      <div className="w-[90px] text-[15px] font-semibold text-[#445069]">
+                      <div className="w-[90px] ttw-type-body font-semibold text-[#445069]">
                         {day}
                       </div>
                       <div
-                        className={`font-mono text-[14px] bg-[#f4f3ec] text-[#0b1220] px-[10px] py-[3px] rounded-[10px] ${
+                        className={`font-mono ttw-type-small bg-[#f4f3ec] text-[#0b1220] px-[10px] py-[3px] rounded-[10px] ${
                           time == "Closed"
-                            ? " bg-[rgba(184,64,52,0.1)] text-[#b84034]"
+                            ? " bg-[#fff1ee] text-[#CD2026]"
                             : ""
                         }`}
                       >
@@ -1071,7 +1077,7 @@ const POIDetails = (props) => {
               <a
                 href={`https://www.google.com/maps/place/?q=place_id:${props?.data?.gmaps_place_id}`}
                 target="_blank"
-                style={{ color: "#0b1220", fontSize: "14px", textDecoration: "underline" }}
+                className="ttw-type-small font-500 text-[#0b1220] underline"
               >
                 View on Google Maps
               </a>

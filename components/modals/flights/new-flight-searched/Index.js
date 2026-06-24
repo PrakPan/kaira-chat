@@ -23,7 +23,7 @@ const Container = styled.div`
     props.isSelected &&
     "background : #fffde7 ; border : 1px solid #f7e700!important"};
   margin-bottom: 0.75rem;
-  border-radius: 8px;
+  border-radius: 1rem;
   border: 1px solid #ececec;
   transition: all 0.2s ease;
 
@@ -85,15 +85,15 @@ const Flight = (props) => {
             />
           </div>
           <div className="flex flex-col gap-1">
-            <div className="text-sm md:text-md font-semibold flex items-center gap-2 flex-wrap text-[#0b1220]">
+            <div className="ttw-type-body font-600 flex items-center gap-2 flex-wrap text-[#0b1220]">
               {props.data?.segments?.[0]?.airline?.name}
               {props.data?.is_refundable && (
-                <span className="bg-[#1f8a5a] text-white  px-2.5 py-0.5 rounded text-[12px] font-medium">
+                <span className="ttw-type-small bg-[#e7f5ee] text-[#1a2436] px-2 py-0.5 rounded-full">
                   Refundable
                 </span>
               )}
             </div>
-            <div className="text-xs md:text-sm text-[#445069]">
+            <div className="ttw-type-small text-[#445069]">
               {props.data?.segments?.[0]?.airline?.code}-
               {props.data?.segments?.[0]?.airline?.flight_number}
             </div>
@@ -101,12 +101,12 @@ const Flight = (props) => {
         </div>
         {isPageWide && (
           <div className="text-right">
-            <div className="text-md md:text-md font-mono font-bold text-[#0b1220]">
+            <div className="ttw-type-body font-700 font-mono text-[#0b1220]">
               {props.data?.final_fare
                 ? `${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}${getIndianPrice(props.data?.final_fare)}`
                 : null}
             </div>
-            <div className="text-xs text-[#8a93a6]">for {(props?.pax?.adults || 0) + (props?.pax?.children || 0) + (props?.pax?.infants || 0)} person</div>
+            <div className="ttw-type-small text-[#445069]">for {(props?.pax?.adults || 0) + (props?.pax?.children || 0) + (props?.pax?.infants || 0)} person</div>
           </div>
         )}
       </div>
@@ -133,7 +133,7 @@ const Flight = (props) => {
         {isPageWide && (
           <div className="flex ">
             <div
-              className="text-blue underline text-sm font-medium cursor-pointer flex items-end"
+              className="ttw-type-small font-500 text-[#0b1220] underline cursor-pointer flex items-end"
               onClick={handleView}
             >
               {viewMore ? "Hide Details" : "View Details"}
@@ -151,15 +151,15 @@ const Flight = (props) => {
       {!isPageWide && (
         <div className="flex justify-between items-center pt-2 border-t border-[#ececec]">
           <div className="text-left">
-            <div className="text-md font-mono font-bold text-[#0b1220]">
+            <div className="ttw-type-body font-700 font-mono text-[#0b1220]">
               {props.data?.final_fare
                 ? `${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}${getIndianPrice(props.data?.final_fare)}`
                 : null}
             </div>
-            <div className="text-sm text-[#445069]">for {totalPax} person</div>
+            <div className="ttw-type-small text-[#445069]">for {totalPax} person</div>
           </div>
           <div
-            className="text-blue-600 text-sm font-medium cursor-pointer flex items-center gap-1"
+            className="ttw-type-small font-500 text-[#0b1220] underline cursor-pointer flex items-center gap-1"
             onClick={handleView}
           >
             View Details
@@ -224,20 +224,20 @@ const Flight = (props) => {
         backdrop
         bgColor="#fafaf5"
         style={{ zIndex: 1501 }}
-        className=" pb-0 md:pb-[100px]"
-        width={"50vw"}
-        mobileWidth={"100vw"}
+        className="!overflow-y-hidden"
+        width={"50%"}
+        mobileWidth={"100%"}
         onHide={() => {
           setShowFareDrawer(false);
         }}
       >
-        <div className="p-4">
+        <div className="overflow-y-scroll h-screen px-6 max-ph:px-4">
           <BackArrow
             handleClick={() => {
               setShowFareDrawer(false);
             }}
           />
-          <div className="text-xl py-2 font-semibold text-[#0b1220]">
+          <div className="ttw-type-h2 font-semibold py-2 text-[#0b1220]">
             Flight from{" "}
             {selectedFareData?.segments?.[0]?.origin?.city_name ||
               props.data?.segments[0]?.origin?.city_name}{" "}
@@ -248,7 +248,7 @@ const Flight = (props) => {
               props.data?.segments[props.data?.segments?.length - 1]
                 ?.destination?.city_name}
           </div>
-          <div className="p-4 border rounded-lg border-[#ececec] mt-1">
+          <div className="p-4 border rounded-2xl bg-white border-[#ececec] mt-1">
             <div className="flex flex-row gap-2 justify-between md:items-start items-center mt-2">
               <div className="flex flex-row items-center gap-3">
                 <div
@@ -265,17 +265,17 @@ const Flight = (props) => {
                   />
                 </div>
                 <div className="flex flex-col gap-1">
-                  <div className="text-sm md:text-md font-semibold flex items-center gap-2 flex-wrap text-[#0b1220]">
+                  <div className="ttw-type-body font-600 flex items-center gap-2 flex-wrap text-[#0b1220]">
                     {selectedFareData?.segments?.[0]?.airline?.name ||
                       props.data?.segments?.[0]?.airline?.name}
                     {(selectedFareData?.is_refundable ||
                       props.data?.is_refundable) && (
-                      <span className="bg-[#1f8a5a] text-white  px-2.5 py-0.5 rounded text-[12px] font-medium">
+                      <span className="ttw-type-small bg-[#e7f5ee] text-[#1a2436] px-2 py-0.5 rounded-full">
                         Refundable
                       </span>
                     )}
                   </div>
-                  <div className="text-xs md:text-sm text-[#445069]">
+                  <div className="ttw-type-small text-[#445069]">
                     {selectedFareData?.segments?.[0]?.airline?.code ||
                       props.data?.segments?.[0]?.airline?.code}
                     -
@@ -286,14 +286,14 @@ const Flight = (props) => {
               </div>
               {isPageWide && (
                 <div className="text-right">
-                  <div className="text-md md:text-md font-mono font-bold text-[#0b1220]">
+                  <div className="ttw-type-body font-700 font-mono text-[#0b1220]">
                     {selectedFareData?.final_fare || props.data?.final_fare
                       ? `${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}${getIndianPrice(
                           selectedFareData?.final_fare || props.data?.final_fare
                         )}`
                       : null}
                   </div>
-                  <div className="text-xs text-[#8a93a6]">for {totalPax} person</div>
+                  <div className="ttw-type-small text-[#445069]">for {totalPax} person</div>
                 </div>
               )}
             </div>
@@ -446,17 +446,17 @@ const FareOptionsTable = ({
   return (
     <>
       {/* Desktop View - Table Layout */}
-      <div className="max-ph:hidden md:block bg-white rounded-lg overflow-hidden mt-2">
+      <div className="max-ph:hidden md:block bg-white rounded-2xl overflow-hidden mt-2">
         {/* Header - Updated grid to include Check-In Bag column */}
         <div className="grid grid-cols-[1fr_1fr_1fr_1fr_1.5fr_auto] gap-4 px-2 py-1 border-b border-[#ececec]">
-          <div className="text-[14px] font-normal text-[#8a93a6]">Cabin Bag</div>
-          <div className="text-[14px] font-normal text-[#8a93a6]">Check-In Bag</div>
-          <div className="text-[14px] font-normal text-[#8a93a6]">Class</div>
-          <div className="text-[14px] font-normal text-[#8a93a6]">Refundable</div>
-          <div className="text-[14px] font-normal text-[#8a93a6] text-left">
+          <div className="ttw-type-small text-[#445069]">Cabin Bag</div>
+          <div className="ttw-type-small text-[#445069]">Check-In Bag</div>
+          <div className="ttw-type-small text-[#445069]">Class</div>
+          <div className="ttw-type-small text-[#445069]">Refundable</div>
+          <div className="ttw-type-small text-[#445069] text-left">
             For {totalPax} {totalPax === 1 ? "person" : "persons"}
           </div>
-          <div className="w-16 text-[14px] font-normal text-[#8a93a6] text-left">
+          <div className="w-16 ttw-type-small text-[#445069] text-left">
             Fare Rule
           </div>
         </div>
@@ -468,20 +468,20 @@ const FareOptionsTable = ({
               key={result.result_index || index}
               className="grid grid-cols-[1fr_1fr_1fr_1fr_1.5fr_auto] gap-4 px-2 py-2 hover:bg-[#f4f3ec] transition-colors items-start"
             >
-              <div className="text-base text-[#1a2436]">
+              <div className="ttw-type-small text-[#1a2436]">
                 {result.segments?.[0]?.cabin_baggage_allowance || "7 Kg"}
               </div>
-              <div className="text-base text-[#1a2436]">
+              <div className="ttw-type-small text-[#1a2436]">
                 {result.segments?.[0]?.baggage_allowance || "N/A"}
               </div>
-              <div className="text-base text-[#1a2436]">
+              <div className="ttw-type-small text-[#1a2436]">
                 {result.segments?.[0]?.cabin_class?.replace(" Class", "") ||
                   "Economy"}
               </div>
-              <div className="text-base text-[#1a2436]">
+              <div className="ttw-type-small text-[#1a2436]">
                 {result.is_refundable ? "Yes" : "No"}
               </div>
-              <div className="text-base font-normal font-mono text-[#0b1220] text-left">
+              <div className="ttw-type-body font-700 font-mono text-[#0b1220] text-left">
                 {`${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}`}{getIndianPrice(result.final_fare)}
               </div>
               <div className="flex items-start justify-start gap-1">
@@ -504,14 +504,14 @@ const FareOptionsTable = ({
                   >
                     <path
                       d="M5.25 12.75H10.5V11.25H5.25V12.75ZM5.25 9.75H12.75V8.25H5.25V9.75ZM5.25 6.75H12.75V5.25H5.25V6.75ZM3.75 15.75C3.3375 15.75 2.98438 15.6031 2.69063 15.3094C2.39687 15.0156 2.25 14.6625 2.25 14.25V3.75C2.25 3.3375 2.39687 2.98438 2.69063 2.69063C2.98438 2.39687 3.3375 2.25 3.75 2.25H14.25C14.6625 2.25 15.0156 2.39687 15.3094 2.69063C15.6031 2.98438 15.75 3.3375 15.75 3.75V14.25C15.75 14.6625 15.6031 15.0156 15.3094 15.3094C15.0156 15.6031 14.6625 15.75 14.25 15.75H3.75ZM3.75 14.25H14.25V3.75H3.75V14.25Z"
-                      fill="#2AB0FC"
+                      fill="#1a2436"
                     />
                   </svg>
                 </button>
-                <p className="text-[#8a93a6] justify-center items-center">|</p>
+                <p className="text-[#445069] justify-center items-center">|</p>
                 <input
                   type="checkbox"
-                  className="w-4 h-4 cursor-pointer accent-blue-600 items-center justify-center mt-[3px]"
+                  className="w-4 h-4 cursor-pointer accent-[#0b1220] items-center justify-center mt-[3px]"
                   checked={isSelected(result)}
                   onChange={() => handleFareSelect(result)}
                 />
@@ -526,11 +526,11 @@ const FareOptionsTable = ({
         {otherResults.map((result, index) => (
           <div
             key={result.result_index || index}
-            className="bg-white rounded-lg border border-[#ececec] overflow-hidden"
+            className="bg-white rounded-2xl border border-[#ececec] overflow-hidden"
           >
             {/* Card Header */}
             <div className="bg-[#f4f3ec] px-4 py-2.5 flex items-center justify-between border-b border-[#ececec]">
-              <h3 className="text-base font-medium text-[#0b1220]">Details</h3>
+              <h3 className="ttw-type-body font-600 text-[#0b1220]">Details</h3>
               <div className="flex items-center gap-2">
                 <button
                   className="p-1"
@@ -551,13 +551,13 @@ const FareOptionsTable = ({
                   >
                     <path
                       d="M5.25 12.75H10.5V11.25H5.25V12.75ZM5.25 9.75H12.75V8.25H5.25V9.75ZM5.25 6.75H12.75V5.25H5.25V6.75ZM3.75 15.75C3.3375 15.75 2.98438 15.6031 2.69063 15.3094C2.39687 15.0156 2.25 14.6625 2.25 14.25V3.75C2.25 3.3375 2.39687 2.98438 2.69063 2.69063C2.98438 2.39687 3.3375 2.25 3.75 2.25H14.25C14.6625 2.25 15.0156 2.39687 15.3094 2.69063C15.6031 2.98438 15.75 3.3375 15.75 3.75V14.25C15.75 14.6625 15.6031 15.0156 15.3094 15.3094C15.0156 15.6031 14.6625 15.75 14.25 15.75H3.75ZM3.75 14.25H14.25V3.75H3.75V14.25Z"
-                      fill="#2AB0FC"
+                      fill="#1a2436"
                     />
                   </svg>
                 </button>
                 <input
                   type="checkbox"
-                  className="w-5 h-5 cursor-pointer accent-blue-600"
+                  className="w-5 h-5 cursor-pointer accent-[#0b1220]"
                   checked={isSelected(result)}
                   onChange={() => handleFareSelect(result)}
                 />
@@ -567,37 +567,37 @@ const FareOptionsTable = ({
             {/* Card Content - Added Check-In Bag row */}
             <div className="px-4 py-3 space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-[#8a93a6] text-sm">Cabin Bag</span>
-                <span className="text-[#1a2436] text-base font-medium">
+                <span className="ttw-type-small text-[#445069]">Cabin Bag</span>
+                <span className="ttw-type-body font-600 text-[#1a2436]">
                   {result.segments?.[0]?.cabin_baggage_allowance || "7 kg"}
                 </span>
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-[#8a93a6] text-sm">Check-In Bag</span>
-                <span className="text-[#1a2436] text-md font-medium">
+                <span className="ttw-type-small text-[#445069]">Check-In Bag</span>
+                <span className="ttw-type-body font-600 text-[#1a2436]">
                   {result.segments?.[0]?.baggage_allowance || "N/A"}
                 </span>
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-[#8a93a6] text-sm">Class</span>
-                <span className="text-[#1a2436] text-md font-medium">
+                <span className="ttw-type-small text-[#445069]">Class</span>
+                <span className="ttw-type-body font-600 text-[#1a2436]">
                   {result.segments?.[0]?.cabin_class?.replace(" Class", "") ||
                     "Economy"}
                 </span>
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-[#8a93a6] text-sm">Refundable</span>
-                <span className="text-[#1a2436] text-md font-medium">
+                <span className="ttw-type-small text-[#445069]">Refundable</span>
+                <span className="ttw-type-body font-600 text-[#1a2436]">
                   {result.is_refundable ? "Yes" : "No"}
                 </span>
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-[#8a93a6] text-sm">For {totalPax} person</span>
-                <span className="text-[#0b1220] text-md font-mono font-semibold">
+                <span className="ttw-type-small text-[#445069]">For {totalPax} person</span>
+                <span className="ttw-type-body font-700 font-mono text-[#0b1220]">
                   {`${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}`}{getIndianPrice(result.final_fare)}
                 </span>
               </div>

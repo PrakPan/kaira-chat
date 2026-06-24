@@ -28,22 +28,6 @@ const OptionsContainer = styled.div`
   }
 `;
 
-const FloatingView = styled.div`
-  position: sticky;
-  bottom: 60px;
-  left: 100%;
-  background: black;
-  color: white;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 16px;
-  z-index: 901;
-  cursor: pointer;
-`;
 const POIDetailsDrawer = (props) => {
   const isDesktop = useMediaQuery("(min-width:768px)");
   const [data, setData] = useState(props?.data || []);
@@ -294,8 +278,17 @@ const POIDetailsDrawer = (props) => {
           </>
         ) : (
           <div className="h-[100vh]">
-            <OptionsContainer className="px-2 center-div space-y-5">
-              {error}
+            <OptionsContainer className="px-6 max-ph:px-4 center-div flex flex-col items-center justify-center gap-4 text-center">
+              <p className="ttw-type-body text-[#445069]">{error}</p>
+              <button
+                onClick={() => {
+                  setError(null);
+                  fetchData();
+                }}
+                className="bg-[#f7e700] border border-black text-black px-4 py-2 rounded-lg ttw-type-body-strong"
+              >
+                Retry
+              </button>
             </OptionsContainer>
           </div>
         )
@@ -308,15 +301,6 @@ const POIDetailsDrawer = (props) => {
           )}
         </>
       )}
-      {/* {!isDesktop && (
-        <FloatingView>
-          <TbArrowBack
-            style={{ height: "28px", width: "28px" }}
-            cursor={"pointer"}
-            onClick={(e) => props.handleCloseDrawer(e)}
-          />
-        </FloatingView>
-      )} */}
     </Drawer>
   );
 };

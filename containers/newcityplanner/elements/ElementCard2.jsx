@@ -1,59 +1,11 @@
 import { useState } from "react";
-import styled from "styled-components";
+import Image from "next/image";
 import ImageLoader from "../../../components/ImageLoader";
 import Drawer from "../../../components/ui/Drawer";
 
-import H8 from "../../../components/heading/H8";
 import SkeletonCard from "../../../components/ui/SkeletonCard";
 import { imgUrlEndPoint } from "../../../components/theme/ThemeConstants";
 import { PlanYourTripButton } from "../../travelplanner/ThemePage";
-
-const Text = styled.p`
-  font-size: 14px;
-`;
-
-const Heading = styled.p`
-  font-size: 18px;
-  font-weight: 800;
-`;
-
-const Container = styled.div`
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding: 1rem;
-  width: 100vw;
-  @media screen and (min-width: 768px) {
-    width: 500px;
-  }
-`;
-
-const ImageContainer = styled.div`
-  position: relative;
-  flex-shrink: 0;
-  overflow: hidden;
-`;
-
-const BackContainer = styled.div`
-  margin: 0;
-  display: flex;
-  gap: 0.5rem;
-  position: sticky;
-  z-index: 1;
-  background: white;
-  top: 0;
-  padding-block: 0.75rem;
-
-  @media screen and (min-width: 768px) {
-    padding-block: 1rem;
-  }
-`;
-
-const BackText = styled.div`
-  font-size: 1.5rem;
-  line-height: 2rem;
-`;
 
 export default function ElementCard2(props) {
   const [hover, setHover] = useState(false);
@@ -80,7 +32,7 @@ export default function ElementCard2(props) {
         className="group relative cursor-pointer p-3 gap-3 flex flex-col mx-1 w-full "
       >
         <div
-          className={`absolute transition w-fit flex place-self-center bottom-[60%] z-50 bg-gray-800 text-white px-3 py-2 rounded-md drop-shadow-2xl text-sm ${
+          className={`absolute transition w-fit flex place-self-center bottom-[60%] z-50 bg-[#0b1220] text-white px-3 py-2 rounded-md drop-shadow-2xl ttw-type-small ${
             hover ? "opacity-100" : "opacity-0"
           }`}
         >
@@ -100,28 +52,27 @@ export default function ElementCard2(props) {
             className="w-full"
           />
           {props?.data?.tag && (
-            <div className="absolute z-[30] top-2 right-2 bg-[#E0F2FF]  text-black px-3 py-1 rounded-[20px] text-[14px]">
+            <span className="absolute z-[30] top-2 right-2 ttw-type-small bg-[#eef2fb] text-[#1a2436] px-2 py-0.5 rounded-full">
               {props?.data?.tag}
-            </div>
+            </span>
           )}
         </div>
 
         <div className="flex flex-col gap-2 w-full h-[40%]">
           <div>
-            <H8
+            <p
+              className="ttw-type-body font-600 text-[#0b1220]"
               style={{
                 overflow: "hidden",
                 textOverflow: "ellipsis",
                 whiteSpace: "nowrap",
-                fontSize: "16px",
-                fontWeight: "700",
               }}
             >
               {props?.data?.name}
-            </H8>
+            </p>
           </div>
 
-          <div className="text-[13px] font-[400] text-gray-600 line-clamp-2" 
+          <div className="ttw-type-small text-[#445069] line-clamp-2"
                 dangerouslySetInnerHTML={{ __html: props.data.description }}
                 >
           </div>
@@ -132,24 +83,27 @@ export default function ElementCard2(props) {
         show={props.isOpen}
         anchor="right"
         backdrop
-        width={500}
+        width="50%"
+        mobileWidth="100%"
+        bgColor="#fafaf5"
         style={{ zIndex: 1501 }}
-        className=""
+        className="!overflow-y-hidden"
         onHide={handleCloseDrawer}
       >
-        <Container>
-          <BackContainer>
-            <div
+        <div className="overflow-y-scroll h-screen px-6 max-ph:px-4">
+          <div className="py-4 bg-[#fafaf5] z-[900] flex flex-col gap-3 pb-2 sticky top-0">
+            <Image
+              src="/backarrow.svg"
+              alt="back"
+              className="cursor-pointer"
+              width={22}
+              height={2}
               onClick={handleCloseDrawer}
-              className="cursor-pointer flex items-center gap-2"
-            >
-              <BackText>←</BackText>
-              <span className="text-lg font-semibold">Back</span>
-            </div>
-          </BackContainer>
+            />
+          </div>
 
           {shouldShowImageSection && (
-            <ImageContainer style={{ height: "200px", maxHeight: "200px" }}>
+            <div className="relative flex-shrink-0 overflow-hidden rounded-xl" style={{ height: "200px", maxHeight: "200px" }}>
               <div style={{ height: "200px", overflow: "hidden" }}>
                 <div
                   style={{
@@ -159,7 +113,7 @@ export default function ElementCard2(props) {
                   }}
                 >
                   <ImageLoader
-                    borderRadius="8px"
+                    borderRadius="12px"
                     widthMobile="100%"
                     width="100%"
                     height="200px"
@@ -194,38 +148,39 @@ export default function ElementCard2(props) {
                       width: "100%",
                       height: "200px",
                       overflow: "hidden",
-                      borderRadius: "8px",
+                      borderRadius: "12px",
                     }}
                   >
                     <SkeletonCard />
                   </div>
                 </div>
               </div>
-            </ImageContainer>
+            </div>
           )}
 
-          <div>
-            <Heading>{props?.data?.name}</Heading>
+          <div className="mt-4">
+            <p className="ttw-type-h3 font-600 text-[#0b1220]">{props?.data?.name}</p>
           </div>
 
           {props.data?.description && (
-            <div>
-              <Heading>About</Heading>
-              <Text
+            <div className="mt-4">
+              <p className="ttw-type-body font-600 text-[#0b1220]">About</p>
+              <p
+                className="ttw-type-body text-[#445069]"
                 dangerouslySetInnerHTML={{ __html: props.data.description }}
               />
             </div>
           )}
 
           {props.data?.text && (
-            <div>
-              <Text style={{ fontStyle: "italic", color: "#666" }}>
+            <div className="mt-4">
+              <p className="ttw-type-body text-[#445069]" style={{ fontStyle: "italic" }}>
                 {props.data.text}
-              </Text>
+              </p>
             </div>
           )}
-          <PlanYourTripButton className="bg-[#F7E700]" />
-        </Container>
+          <PlanYourTripButton className="w-full bg-[#f7e700] text-black font-500 ttw-type-body py-3 rounded-xl flex items-center justify-center gap-2 mt-4 mb-6" />
+        </div>
       </Drawer>
     </>
   );

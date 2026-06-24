@@ -1145,8 +1145,8 @@ const TransferEditDrawer = (props) => {
       bgColor="#fafaf5"
       style={{ zIndex: 1501 }}
       className=" pb-0 md:pb-[100px]"
-      width={"50vw"}
-      mobileWidth={"100vw"}
+      width={"50%"}
+      mobileWidth={"100%"}
       onHide={() => {
         if (showDrawer) actualClose();
         setCurrentStep(0);
@@ -1248,7 +1248,7 @@ const TransferEditDrawer = (props) => {
                       key={tab.id}
                       className={`flex items-center gap-xs cursor-pointer ttw-type-body px-md py-xs rounded-md-lg border-sm border-solid ${
  isActive
- ? "border-[#f8e000] bg-[#fffde7] font-600"
+ ? "border-[#f7e700] bg-[#fffde7] font-600"
  : "border-[#ececec] font-500"
  }`}
                     >
@@ -1268,7 +1268,7 @@ const TransferEditDrawer = (props) => {
                         aria-hidden="true"
                         className={`w-4 h-4 rounded-full border-sm border-solid ${
  isActive
- ? "bg-[#f8e000] border-[#f8e000]"
+ ? "bg-[#f7e700] border-[#f7e700]"
  : "border-[#ececec]"
  }`}
                       />
@@ -1381,7 +1381,7 @@ const TransferEditDrawer = (props) => {
               <div className="ttw-type-body-strong leading-xl text-[#0b1220] mb-xxs">
                 No options available
               </div>
-              <p className="text-sm font-400 leading-md text-[#445069]">
+              <p className="ttw-type-small font-400 leading-md text-[#445069]">
                 {(() => {
                   const currentTab = multicityTab || "multicity";
                   const err = tabErrors[currentTab] || transfersError;
@@ -1488,7 +1488,7 @@ const TransferEditDrawer = (props) => {
                           }}
                         >
                           <div>
-                            <div className="bg-tag-grass text-white rounded-md-lg ttw-type-body-strong font-[12px] leading-lg px-md py-xs inline">
+                            <div className="bg-[#e7f5ee] text-[#1f8a5a] rounded-full ttw-type-small font-600 leading-lg px-md py-xs inline">
                               <span> RECOMMENDED </span>
                             </div>
 
@@ -2259,15 +2259,15 @@ const TransferEditDrawer = (props) => {
 
  ${
  isDisabled
- ? "bg-[#f8e000] text-gray-500 cursor-not-allowed"
- : "bg-[#f8e000] text-black border-1 border-black hover:bg-yellow-400 active:transform active:scale-95 cursor-pointer"
+ ? "bg-[#f7e700] text-black opacity-60 cursor-not-allowed"
+ : "bg-[#f7e700] text-black border-1 border-black active:transform active:scale-95 cursor-pointer"
  }
  `}
                     disabled={isDisabled}
                   >
                     {updatingTransfer ? (
-                      <div className="flex items-end gap-2">
-                        <div className="w-5 h-5 border-2 border-gray-600 border-t-transparent rounded-full animate-spin"></div>
+                      <div className="flex items-center gap-2">
+                        <PulseLoader size={8} speedMultiplier={0.6} color="#000" />
                         <span>Updating...</span>
                       </div>
                     ) : isSightseeingUpdate ? (
@@ -2582,7 +2582,7 @@ const RouteContainer = (props) => {
         {selectedResult &&
           selectedResult.trace_id &&
           selectedResult.transferIndex === transferIndex && (
-            <div className="ttw-type-body text-green-900 pb-1">
+            <div className="ttw-type-body text-[#1f8a5a] pb-1">
               {selectedResult.mode} Selected
             </div>
           )}
@@ -3980,7 +3980,7 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
               {!isProcessingBooking && (
                 <button
                   onClick={handleWarningCancel}
-                  className="absolute top-4 right-4 md:top-4 md:right-4 p-2 text-gray-400 hover:text-gray-600 cursor-pointer z-10"
+                  className="absolute top-4 right-4 md:top-4 md:right-4 p-2 text-[#445069] hover:text-[#0b1220] cursor-pointer z-10"
                 >
                   <FaX size={16} />
                 </button>
@@ -3999,14 +3999,14 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
                   <button
                     onClick={handleWarningCancel}
                     disabled={isProcessingBooking}
-                    className="w-full md:w-auto px-6 py-2 md:py-2 text-gray-600 border rounded hover:bg-gray-50 transition-colors cursor-pointer text-center disabled:opacity-50"
+                    className="w-full md:w-auto px-6 py-2 md:py-2 ttw-type-body text-[#445069] border border-[#ececec] rounded-xl hover:bg-[#f4f3ec] transition-colors cursor-pointer text-center disabled:opacity-50"
                   >
                     Cancel
                   </button>
                   <button
                     disabled={isProcessingBooking}
                     onClick={handleWarningConfirm}
-                    className="w-full md:w-auto px-6 py-2 md:py-2 bg-[#0b1220] text-white rounded hover:bg-[#1a2436] transition-colors cursor-pointer text-center disabled:opacity-50"
+                    className="w-full md:w-auto px-6 py-2 md:py-2 ttw-type-body bg-[#0b1220] text-white rounded-xl hover:bg-[#1a2436] transition-colors cursor-pointer text-center disabled:opacity-50"
                   >
                     {isProcessingBooking ? "Processing..." : "Confirm"}
                   </button>
@@ -4299,8 +4299,8 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
                         {/* Show loading indicator when fetching new data */}
                         {isLoading && (
                           <div className="flex justify-center items-center p-4">
-                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-                            <span className="ml-2 ttw-type-body text-gray-600">
+                            <PulseLoader size={8} speedMultiplier={0.6} color="#000" />
+                            <span className="ml-2 ttw-type-body text-[#445069]">
                               Loading updated options...
                             </span>
                           </div>
@@ -4308,7 +4308,7 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
 
                         {transferErrors[transferKey] && (
                           <div className="p-4 flex flex-col items-center justify-center gap-3 text-center">
-                            <span className="text-sm font-normal">
+                            <span className="ttw-type-small font-400 text-[#445069]">
                               {transferErrors[transferKey]}
                             </span>
                             <OfflineQuoteCTA
@@ -4558,7 +4558,7 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
                                   {/* Station info column */}
                                   <div className="flex-1 min-w-0">
                                     <span
-                                      className="ttw-type-body-strong text-gray-900 block truncate"
+                                      className="ttw-type-body-strong text-[#0b1220] block truncate"
                                       title={
                                         seg
                                           .departure_station
@@ -4571,7 +4571,7 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
                                           ?.name
                                       }
                                     </span>
-                                    <div className="flex items-center gap-2 mt-1 ttw-type-small text-gray-600">
+                                    <div className="flex items-center gap-2 mt-1 ttw-type-small text-[#445069]">
                                       {seg.operator?.name && (
                                         <span>{seg.operator.name}</span>
                                       )}
@@ -4630,7 +4630,7 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
                                     {/* Station info column */}
                                     <div className="flex-1 min-w-0">
                                       <span
-                                        className="ttw-type-body-strong text-gray-900 block truncate"
+                                        className="ttw-type-body-strong text-[#0b1220] block truncate"
                                         title={
                                           seg
                                             .arrival_station
@@ -4987,7 +4987,7 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
                         className={`flex flex-col md:flex-row justify-between bg-white p-3 md:p-4 border-b rounded-md
  ${
  selectedModeIds[currentStep - 1] === option.id
- ? "border border-yellow-400 bg-yellow-50"
+ ? "border border-[#f7e700] bg-[#fffde7]"
  : "border"
  }
  `}
@@ -5000,7 +5000,7 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
                             <div className="font-semibold ttw-type-body md:ttw-type-body">
                               {option.text}
                             </div>
-                            <div className="ttw-type-small md:ttw-type-body text-gray-600">
+                            <div className="ttw-type-small md:ttw-type-body text-[#445069]">
                               {option.duration} minutes | {option.distance} kms
                             </div>
                             <div className="ttw-type-small md:ttw-type-body">
@@ -5028,7 +5028,7 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
                           >
                             {selectedModeIds[currentStep - 1] === option.id ? (
                               <div className="flex items-center gap-1">
-                                <ImCheckboxChecked className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
+                                <ImCheckboxChecked className="h-4 w-4 md:h-5 md:w-5 text-[#0b1220]" />
                                 <span className="ttw-type-body">Selected</span>
                               </div>
                             ) : (
@@ -5045,12 +5045,12 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
                 })}
 
                 {/* Navigation buttons - Fixed to bottom */}
-                <div className="sticky bottom-0 left-0 right-0 w-full bg-[#fafaf5] border-t z-[13]">
+                <div className="sticky bottom-0 left-0 right-0 w-full bg-[#fafaf5] border-t border-[#ececec] z-[13]">
                   <div className="flex flex-row md:flex-row gap-2 md:gap-0 justify-between items-stretch md:items-center py-3 px-4 md:px-0 max-w-full">
                     {currentStep > 1 ? (
                       <button
                         onClick={() => handleBackButton()}
-                        className="bg-gray-200 text-black px-4 md:px-6 py-2 rounded-md font-medium ttw-type-body md:ttw-type-body"
+                        className="border border-[#ececec] bg-white text-[#0b1220] px-4 md:px-6 py-2 rounded-xl font-500 ttw-type-body hover:bg-[#f4f3ec] transition-colors"
                       >
                         Back
                       </button>
@@ -5354,7 +5354,7 @@ const RoundTripSuggestion = ({
   return (
     <div
       className={`w-full flex flex-row gap-2 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm border-x-2 border-t-2 border-b-4 ${
- selectedTripType === "roundtrip" ? "border-blue-300 bg-blue-50" : ""
+ selectedTripType === "roundtrip" ? "border-[#f7e700] bg-[#fffde7]" : ""
  }`}
     >
       {isDesktop && (
@@ -5417,7 +5417,7 @@ const RoundTripSuggestion = ({
           <div className="flex flex-row items-center gap-2">
             <div className="ttw-type-body font-semibold">Available Cabs</div>
             {selectError && (
-              <div className="bg-red-500 ttw-type-small md:ttw-type-body lg:ttw-type-body text-white py-1 px-2 rounded-lg text-center animate-popOut">
+              <div className="bg-[#CD2026] ttw-type-small md:ttw-type-body lg:ttw-type-body text-white py-1 px-2 rounded-lg text-center animate-popOut">
                 Please choose one cab
               </div>
             )}
@@ -5455,7 +5455,7 @@ const RoundTripSuggestion = ({
                         {price.transfer_details?.model_name ||
                           price.transfer_details?.type}
                         :{" "}
-                        <span className="text-black font-bold">
+                        <span className="font-700 text-[#0b1220]">
                           {currency?.currency
                             ? currencySymbols?.[currency?.currency]
                             : "₹"}
@@ -5561,7 +5561,7 @@ const MultiCityTripSuggestion = ({
   return (
     <div
       className={`w-full flex flex-row gap-2 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm border-x-2 border-t-2 border-b-4 ${
- selectedTripType === "multicity" ? "border-blue-300 bg-blue-50" : ""
+ selectedTripType === "multicity" ? "border-[#f7e700] bg-[#fffde7]" : ""
  }`}
     >
       {isDesktop && (
@@ -5627,7 +5627,7 @@ const MultiCityTripSuggestion = ({
           <div className="flex flex-row items-center gap-2">
             <div className="ttw-type-body font-semibold">Available Cabs</div>
             {selectError && (
-              <div className="bg-red-500 ttw-type-small md:ttw-type-body lg:ttw-type-body text-white py-1 px-2 rounded-lg text-center animate-popOut">
+              <div className="bg-[#CD2026] ttw-type-small md:ttw-type-body lg:ttw-type-body text-white py-1 px-2 rounded-lg text-center animate-popOut">
                 Please choose one cab
               </div>
             )}
@@ -5664,7 +5664,7 @@ const MultiCityTripSuggestion = ({
                     {price?.taxi_category?.model_name ||
                       price?.taxi_category?.type}
                     :{" "}
-                    <span className="text-black font-bold">
+                    <span className="font-700 text-[#0b1220]">
                       {currency?.currency
                         ? currencySymbols?.[currency?.currency]
                         : "₹"}
@@ -5775,7 +5775,7 @@ const BookedSightseeingCard = ({ booking, onClick }) => {
           <div className="flex flex-col gap-1 flex-1 min-w-0">
             <div className="flex flex-row items-start justify-between gap-2">
               <div className="ttw-type-body font-medium">{displayName}</div>
-              <span className="shrink-0 ttw-type-small font-600 px-2 py-[2px] rounded-full bg-[#1f8a5a] text-white whitespace-nowrap">
+              <span className="shrink-0 ttw-type-small font-600 px-2 py-[2px] rounded-full bg-[#e7f5ee] text-[#1f8a5a] whitespace-nowrap">
                 Added to Itinerary
               </span>
             </div>
@@ -5798,7 +5798,7 @@ const BookedSightseeingCard = ({ booking, onClick }) => {
             {total != null && Number.isFinite(Number(total)) ? (
               <>
                 :{" "}
-                <span className="text-black font-bold">
+                <span className="font-700 text-[#0b1220]">
                   {symbol}
                   {getIndianPrice(Math.floor(total))}
                 </span>
@@ -5919,7 +5919,7 @@ const BookedAirportCard = ({ booking, isPickup, onViewDetail, onChange }) => {
               {total != null && Number.isFinite(Number(total)) ? (
                 <>
                   :{" "}
-                  <span className="text-black font-bold">
+                  <span className="font-700 text-[#0b1220]">
                     {symbol}
                     {getIndianPrice(Math.floor(total))}
                   </span>
@@ -5948,7 +5948,7 @@ const BookedAirportCard = ({ booking, isPickup, onViewDetail, onChange }) => {
           </div>
 
           <div className="flex flex-col items-end gap-2 shrink-0">
-            <span className="ttw-type-small font-600 px-2 py-[2px] rounded-full bg-[#1f8a5a] text-white whitespace-nowrap">
+            <span className="ttw-type-small font-600 px-2 py-[2px] rounded-full bg-[#e7f5ee] text-[#1f8a5a] whitespace-nowrap">
               Added to Itinerary
             </span>
             <div className="flex flex-row items-center gap-2">
@@ -5965,7 +5965,7 @@ const BookedAirportCard = ({ booking, isPickup, onViewDetail, onChange }) => {
                 <button
                   type="button"
                   onClick={onChange}
-                  className="px-3 py-1.5 rounded-lg font-semibold ttw-type-small bg-[#f8e000] text-black border-1 border-black hover:bg-yellow-400 whitespace-nowrap"
+                  className="px-3 py-1.5 rounded-lg font-semibold ttw-type-small bg-[#f7e700] text-black border-1 border-black hover:bg-[#f4f3ec] whitespace-nowrap"
                 >
                   Change
                 </button>
@@ -6041,7 +6041,7 @@ const AirportPickupDropCard = ({ suggestion, isPickup, onSearch }) => {
 
           <button
             onClick={onSearch}
-            className="px-4 py-2 rounded-lg font-semibold ttw-type-body bg-[#f8e000] text-black border-1 border-black hover:bg-yellow-400 active:transform active:scale-95 cursor-pointer transition-all duration-200 ease-in-out"
+            className="px-4 py-2 rounded-lg font-semibold ttw-type-body bg-[#f7e700] text-black border-1 border-black hover:bg-[#f4f3ec] active:transform active:scale-95 cursor-pointer transition-all duration-200 ease-in-out"
           >
             Search Taxis
           </button>
@@ -6120,7 +6120,7 @@ const TransferItem = ({ transfer, transferIndex }) => {
   return (
     <div className="flex flex-col items-start gap-2">
       <div className="ttw-type-h4 leading-3">{transfer.text}</div>
-      <div className="ttw-type-body text-gray-400">
+      <div className="ttw-type-body text-[#445069]">
         {transfer?.duration && `${getHours()} | `}
         {transfer?.distance && `${transfer.distance} Kms`}
       </div>
@@ -7547,7 +7547,7 @@ const toggleTransferDetails = (priceOptionId) => {
               {!isProcessingBooking && (
                 <button
                   onClick={handleWarningCancel}
-                  className="absolute top-4 right-4 md:top-4 md:right-4 p-2 text-gray-400 hover:text-gray-600 cursor-pointer z-10"
+                  className="absolute top-4 right-4 md:top-4 md:right-4 p-2 text-[#445069] hover:text-[#0b1220] cursor-pointer z-10"
                 >
                   <FaX size={16} />
                 </button>
@@ -7566,14 +7566,14 @@ const toggleTransferDetails = (priceOptionId) => {
                   <button
                     onClick={handleWarningCancel}
                     disabled={isProcessingBooking}
-                    className="w-full md:w-auto px-6 py-2 md:py-2 text-gray-600 border rounded hover:bg-gray-50 transition-colors cursor-pointer text-center disabled:opacity-50"
+                    className="w-full md:w-auto px-6 py-2 md:py-2 ttw-type-body text-[#445069] border border-[#ececec] rounded-xl hover:bg-[#f4f3ec] transition-colors cursor-pointer text-center disabled:opacity-50"
                   >
                     Cancel
                   </button>
                   <button
                     disabled={isProcessingBooking}
                     onClick={handleWarningConfirm}
-                    className="w-full md:w-auto px-6 py-2 md:py-2 bg-[#0b1220] text-white rounded hover:bg-[#1a2436] transition-colors cursor-pointer text-center disabled:opacity-50"
+                    className="w-full md:w-auto px-6 py-2 md:py-2 ttw-type-body bg-[#0b1220] text-white rounded-xl hover:bg-[#1a2436] transition-colors cursor-pointer text-center disabled:opacity-50"
                   >
                     {isProcessingBooking ? "Processing..." : "Confirm"}
                   </button>
@@ -7620,15 +7620,15 @@ const toggleTransferDetails = (priceOptionId) => {
       {error && !isCurrentTransferLoading() && (
         <div className="flex justify-center items-center py-8">
           <div className="text-center">
-            <div className="text-red-500 ttw-type-h4 mb-2">⚠️</div>
-            <div className="text-red-600 font-medium mb-1">
+            <div className="text-[#CD2026] ttw-type-h4 mb-2">⚠️</div>
+            <div className="ttw-type-body font-600 text-[#0b1220] mb-1">
               Error Loading Transfers
             </div>
-            <div className="text-gray-600 text-sm mb-3">{error}</div>
+            <div className="ttw-type-small text-[#445069] mb-3">{error}</div>
             <div className="flex flex-col items-center gap-3">
               <button
                 onClick={retryLoadTransfers}
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 text-sm disabled:opacity-50"
+                className="bg-[#f7e700] border border-black text-black px-4 py-2 rounded-lg ttw-type-body-strong disabled:opacity-50"
                 disabled={isBookingInProgress}
               >
                 Retry
@@ -7684,13 +7684,13 @@ const toggleTransferDetails = (priceOptionId) => {
         Array.isArray(selfPrices) &&
         selfPrices.length > 0 && (
           <div className="w-full flex justify-center px-4 pb-8">
-            <div className="w-full max-w-[560px] rounded-3xl border border-amber-300 bg-amber-50 p-5">
+            <div className="w-full max-w-[560px] rounded-3xl border border-[#f7e700] bg-[#fffde7] p-5">
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-sm font-600 text-amber-700">
+                <span className="ttw-type-body font-600 text-[#0b1220]">
                   ⚠️ Unverified prices
                 </span>
               </div>
-              <p className="text-sm font-400 leading-relaxed text-[#445069] mb-4">
+              <p className="ttw-type-small font-400 leading-relaxed text-[#445069] mb-4">
                 These prices were entered manually and haven&apos;t been verified
                 yet, so they aren&apos;t shown to travellers. Adding any price to
                 the itinerary will mark these prices verified and make this route
@@ -7711,12 +7711,12 @@ const toggleTransferDetails = (priceOptionId) => {
                       className="flex flex-col gap-2"
                     >
                       {data?.text && (
-                        <div className="text-sm font-600 text-[#0b1220]">
+                        <div className="ttw-type-body font-600 text-[#0b1220]">
                           {data.text}
                         </div>
                       )}
                       {entryPrices.length === 0 ? (
-                        <div className="text-xs font-400 text-[#445069]">
+                        <div className="ttw-type-small font-400 text-[#445069]">
                           No price options returned.
                         </div>
                       ) : (
@@ -7760,13 +7760,13 @@ const toggleTransferDetails = (priceOptionId) => {
                               <div className="flex flex-col gap-1">
                                 <div className="flex items-center gap-2 flex-wrap">
                                   {priceOption?.class && (
-                                    <span className="text-xs font-500 bg-[#f4f3ec] px-2 py-[2px] rounded-md text-[#445069]">
+                                    <span className="ttw-type-small bg-[#f4f3ec] text-[#445069] border border-[#ececec] px-2 py-0.5 rounded-full">
                                       {priceOption.class}
                                     </span>
                                   )}
                                   {isEditing ? (
                                     <div className="flex items-center gap-1">
-                                      <span className="text-lg font-700 text-[#0b1220]">
+                                      <span className="ttw-type-body font-700 font-mono text-[#0b1220]">
                                         {currencySymbol}
                                       </span>
                                       <input
@@ -7787,15 +7787,15 @@ const toggleTransferDetails = (priceOptionId) => {
                                           if (e.key === "Enter")
                                             setEditingPriceId(null);
                                         }}
-                                        className="w-24 text-lg font-700 text-[#0b1220] outline-none border-b border-amber-400 bg-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                        className="w-24 ttw-type-body font-700 font-mono text-[#0b1220] outline-none border-b border-[#f7e700] bg-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                       />
-                                      <span className="text-xs font-400 text-[#445069]">
+                                      <span className="ttw-type-small font-400 font-sans text-[#445069]">
                                         per person
                                       </span>
                                       <button
                                         type="button"
                                         onClick={() => setEditingPriceId(null)}
-                                        className="text-green-600 p-1"
+                                        className="text-[#1f8a5a] p-1"
                                         title="Done"
                                       >
                                         <svg
@@ -7815,10 +7815,10 @@ const toggleTransferDetails = (priceOptionId) => {
                                     </div>
                                   ) : (
                                     <div className="flex items-center gap-1">
-                                      <span className="text-lg font-700 text-[#0b1220]">
+                                      <span className="ttw-type-body font-700 font-mono text-[#0b1220]">
                                         {currencySymbol} {perPersonValue}
                                       </span>
-                                      <span className="text-xs font-400 text-[#445069]">
+                                      <span className="ttw-type-small font-400 font-sans text-[#445069]">
                                         per person
                                       </span>
                                       <button
@@ -7827,7 +7827,7 @@ const toggleTransferDetails = (priceOptionId) => {
                                         onClick={() =>
                                           setEditingPriceId(priceOptionId)
                                         }
-                                        className="text-[#445069] hover:text-amber-600 p-1 disabled:opacity-40 disabled:cursor-not-allowed"
+                                        className="text-[#445069] hover:text-[#0b1220] p-1 disabled:opacity-40 disabled:cursor-not-allowed"
                                         title="Edit price"
                                       >
                                         <svg
@@ -7847,7 +7847,7 @@ const toggleTransferDetails = (priceOptionId) => {
                                     </div>
                                   )}
                                 </div>
-                                <span className="text-xs font-400 text-[#445069]">
+                                <span className="ttw-type-small font-400 text-[#445069]">
                                   {totalForTravellers != null
                                     ? `${currencySymbol} ${formatPriceWithComma(
                                         Math.round(totalForTravellers),
@@ -7958,7 +7958,7 @@ const toggleTransferDetails = (priceOptionId) => {
         <div
           key={priceOptionId}
           className={`flex flex-col rounded-3xl border-sm border-solid border-[#ececec] p-md hover:bg-[#fffde7] relative mt-md
- ${isOptionSelected ? "border-blue-500 bg-blue-50" : ""}
+ ${isOptionSelected ? "border-[#f7e700] bg-[#fffde7]" : ""}
  ${isBookingInProgress && !isOptionLoading ? "opacity-50" : ""}`}
         >
           <div className="flex justify-between max-ph:flex-col">
@@ -8098,12 +8098,12 @@ const toggleTransferDetails = (priceOptionId) => {
                             {/* Station info column */}
                             <div className="flex-1 min-w-0">
                               <span
-                                className="ttw-type-body-strong text-gray-900 block truncate"
+                                className="ttw-type-body-strong text-[#0b1220] block truncate"
                                 title={seg.departure_station?.name}
                               >
                                 {seg.departure_station?.name}
                               </span>
-                              <div className="flex items-center gap-2 mt-1 ttw-type-small text-gray-600">
+                              <div className="flex items-center gap-2 mt-1 ttw-type-small text-[#445069]">
                                 {seg.operator?.name && (
                                   <span>{seg.operator.name}</span>
                                 )}
@@ -8157,7 +8157,7 @@ const toggleTransferDetails = (priceOptionId) => {
                               {/* Station info column */}
                               <div className="flex-1 min-w-0">
                                 <span
-                                  className="ttw-type-body-strong text-gray-900 block truncate"
+                                  className="ttw-type-body-strong text-[#0b1220] block truncate"
                                   title={seg.arrival_station?.name}
                                 >
                                   {seg.arrival_station?.name}
@@ -8318,7 +8318,7 @@ const toggleTransferDetails = (priceOptionId) => {
               <div
                 key={`${otherTransfer.id}-price-${priceIndex}`}
                 className={`flex flex-col rounded-3xl border-sm border-solid border-[#ececec] p-md hover:bg-[#fffde7] relative mt-md
- ${isOptionSelected ? "border-blue-500 bg-blue-50" : ""}
+ ${isOptionSelected ? "border-[#f7e700] bg-[#fffde7]" : ""}
  ${isBookingInProgress && !isOptionLoading ? "opacity-50" : ""}`}
               >
                 <div className="flex justify-between max-ph:flex-col">
