@@ -6,7 +6,7 @@ import StartScreen from "../StartScreen";
 import BotLoginModal from "../BotLoginModal";
 import type { ThemeConfig } from "../../types/themeConfig";
 
-const CHATKIT_API_URL = "https://chat.tarzanway.com/chatkit";
+const CHATKIT_API_URL = "https://dev.chat.tarzanway.com/chatkit";
 
 // Right-pane design ported from chat-empty-v4 reference. Scoped under `.cws-root`
 // so the generic class names (.chip, .trust-line, etc.) can't leak globally.
