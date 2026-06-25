@@ -206,6 +206,30 @@ const SearchInput = (props) => {
     router.push("/chat");
   };
 
+  const renderResultCard = (r) => (
+    <button
+      type="button"
+      key={r.resource_id || r.path}
+      className={styles.popularItem}
+      onClick={() => navigateTo(r.path)}
+    >
+      <div
+        className={styles.popularItemImg}
+        style={
+          r.image
+            ? { backgroundImage: `url('${normalizeImage(r.image)}')` }
+            : undefined
+        }
+      />
+      <div className={styles.popularItemInfo}>
+        <div className={styles.popularItemName}>{r.name}</div>
+        <div className={styles.popularItemMeta}>
+          {r.parent || getParent(r.path)}
+        </div>
+      </div>
+    </button>
+  );
+
   const q = (query || "").trim();
   const showResultsSection = Boolean(q);
   const showEmpty =
@@ -267,34 +291,10 @@ const SearchInput = (props) => {
                     </span>
                   </div>
                 ) : (
-                  <div className={styles.searchPopular}>
-                    {(results || []).map((r) => (
-                      <button
-                        type="button"
-                        key={r.resource_id || r.path}
-                        className={styles.popularItem}
-                        onClick={() => navigateTo(r.path)}
-                      >
-                        <div
-                          className={styles.popularItemImg}
-                          style={
-                            r.image
-                              ? {
-                                  backgroundImage: `url('${normalizeImage(
-                                    r.image
-                                  )}')`,
-                                }
-                              : undefined
-                          }
-                        />
-                        <div className={styles.popularItemInfo}>
-                          <div className={styles.popularItemName}>{r.name}</div>
-                          <div className={styles.popularItemMeta}>
-                            {r.parent || getParent(r.path)}
-                          </div>
-                        </div>
-                      </button>
-                    ))}
+                  <div
+                    className={`${styles.searchPopular} ${styles.searchResultsList}`}
+                  >
+                    {(results || []).map((r) => renderResultCard(r))}
                   </div>
                 )}
               </div>

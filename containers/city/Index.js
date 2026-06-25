@@ -9,6 +9,7 @@ import DestinationStatsStrip from "../../components/revamp/destination/Destinati
 import WhenToGoSection from "../../components/revamp/destination/WhenToGoSection.jsx";
 import PlanningSection from "../../components/revamp/destination/PlanningSection.jsx";
 import ChatWithKairaCta from "../../components/revamp/destination/ChatWithKairaCta.jsx";
+import DesktopBanner from "../../components/containers/Banner.js";
 import { imgUrlEndPoint } from "../../components/theme/ThemeConstants";
 import TailoredFormMobileModal from "../../components/modals/TailoredFomrMobile";
 import styles from "../../styles/pages/revamp/destination.module.scss";
@@ -219,6 +220,12 @@ const Experience = (props) => {
           </div>
         </div>
       </section>
+
+      <DesktopBanner
+        onclick={handleChatWithKaira}
+        text={`Craft a personalized itinerary to ${cityDisplayName} now!`}
+        destinationName={cityDisplayName}
+      />
 
       <TailoredFormMobileModal
         destinationType={"city-planner"}

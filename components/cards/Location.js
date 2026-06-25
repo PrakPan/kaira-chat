@@ -28,15 +28,27 @@ const LocationCard = (props) => {
         }}
       />
 
-      {props.location.best_time ? (
-        imageLoading ? (
+      {(() => {
+        const bestTime =
+          props.location.best_time && typeof props.location.best_time === "object"
+            ? props.location.best_time.months
+            : props.location.best_time;
+        const bestTimeReason =
+          props.location.best_time && typeof props.location.best_time === "object"
+            ? props.location.best_time.reason
+            : undefined;
+        if (!bestTime) return null;
+        return imageLoading ? (
           <div className="w-[40%] h-6 absolute top-4 left-4 rounded-full  bg-gray-300 animate-pulse"></div>
         ) : (
-          <div className="w-fit absolute top-4 left-4 rounded-full text-xs text-center font-normal text-white bg-[#01202B] px-[10px] py-1">
-            Best time : {props.location.best_time}
+          <div
+            title={bestTimeReason || undefined}
+            className="w-fit absolute top-4 left-4 rounded-full text-xs text-center font-normal text-white bg-[#01202B] px-[10px] py-1"
+          >
+            Best time : {bestTime}
           </div>
-        )
-      ) : null}
+        );
+      })()}
 
       <div
         className={`w-full flex flex-col px-3 gap-2 rounded-[10px] absolute bottom-0 pb-4 translate-y-[60px] transition-all ${
