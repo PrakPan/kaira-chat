@@ -67,6 +67,17 @@ const TaxiDetailModal = ({
   } = data;
 
   const [showTaxi, setShowTaxi] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  const onDeleteClick = async () => {
+    if (deleting) return;
+    try {
+      setDeleting(true);
+      await handleDelete(booking || data);
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   const formatDateTime = (dateString) => {
     if (!dateString) return "";
@@ -379,10 +390,10 @@ const TaxiDetailModal = ({
           <div className="p-4 bg-[#fafaf5] sticky bottom-0 z-10 border-t border-[#ececec]">
             <button
               className="ttw-btn-remove-pill"
-              onClick={() => handleDelete(booking || data)}
-              disabled={loading}
+              onClick={onDeleteClick}
+              disabled={loading || deleting}
             >
-              {loading ? (
+              {deleting ? (
                 <PulseLoader size={10} speedMultiplier={0.6} color="#CD2026" />
               ) : (
                 <>

@@ -512,7 +512,7 @@ a.termsnavunderlinelink {
     transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.ttw-btn-remove-pill:hover {
+.ttw-btn-remove-pill:hover:not(:disabled) {
     background-color: #CD2026;
     color: theme('colors.text.white');
 }

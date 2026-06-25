@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import TransfersIcon from "../../../helper/TransfersIcon";
 import Pin from "../../../containers/newitinerary/breif/route/Pin";
 import { PulseLoader } from "react-spinners";
@@ -39,7 +39,17 @@ const VehicleDetailModal = ({
 }) => {
   if (!data) return null;
 
-  // const [loading, setLoading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  const onDeleteClick = async () => {
+    if (deleting) return;
+    try {
+      setDeleting(true);
+      await handleDelete(booking || data);
+    } finally {
+      setDeleting(false);
+    }
+  };
   // const transfer = useSelector((state) => state.Itinerary);
   let isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
   const {
@@ -453,10 +463,10 @@ const VehicleDetailModal = ({
           <div className="p-4 bg-[#fafaf5] sticky bottom-0 z-10 border-t border-[#ececec]">
             <button
               className="ttw-btn-remove-pill"
-              onClick={() => handleDelete(booking || data)}
-              disabled={loading}
+              onClick={onDeleteClick}
+              disabled={loading || deleting}
             >
-              {loading ? (
+              {deleting ? (
                 <PulseLoader size={10} speedMultiplier={0.6} color="#CD2026" />
               ) : (
                 <>

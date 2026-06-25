@@ -77,7 +77,18 @@ const TransferDrawer = ({
 
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [expandedIndexes, setExpandedIndexes] = useState([]);
+
+  const onDeleteClick = async (val) => {
+    if (deleting) return;
+    try {
+      setDeleting(true);
+      await handleDelete(val);
+    } finally {
+      setDeleting(false);
+    }
+  };
   const isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
   const isCombo = data?.children && data?.children.length > 0;
   const [isDrawerOpen, setIsDrawerOpen] = useState(show);
@@ -932,10 +943,10 @@ const TransferDrawer = ({
             <div className="sticky bottom-0 z-10 border-t border-[#ececec] px-6 max-ph:px-4 py-4 bg-[#fafaf5]">
               <button
                 className="ttw-btn-remove-pill"
-                onClick={() => handleDelete(data)}
-                disabled={loading}
+                onClick={() => onDeleteClick(data)}
+                disabled={deleting}
               >
-                {loading ? (
+                {deleting ? (
                   <PulseLoader size={10} speedMultiplier={0.6} color="#CD2026" />
                 ) : (
                   <>
@@ -956,10 +967,10 @@ const TransferDrawer = ({
             <div className="sticky bottom-0 z-10 border-t border-[#ececec] px-6 max-ph:px-4 py-4 bg-[#fafaf5]">
               <button
                 className="ttw-btn-remove-pill"
-                onClick={() => handleDelete(data)}
-                disabled={loading}
+                onClick={() => onDeleteClick(data)}
+                disabled={deleting}
               >
-                {loading ? (
+                {deleting ? (
                   <PulseLoader size={10} speedMultiplier={0.6} color="#CD2026" />
                 ) : (
                   <>
