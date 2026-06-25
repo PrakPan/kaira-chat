@@ -34,6 +34,8 @@ const TravelVibeSection = (props) => {
       title: "Honeymoon Trip Planner",
       description: "ROMANTIC ESCAPES",
       image: `${imgUrlEndPoint}media/page/173815280124938845634460449219.jpg`,
+      fallbackImage:
+        "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=80",
       tags: ["TTW Exclusive"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
@@ -44,6 +46,8 @@ const TravelVibeSection = (props) => {
       title: "Road Trips 2025",
       description: "DRIVE DIARIES",
       image: `${imgUrlEndPoint}media/page/174860004456110548973083496094.jpg`,
+      fallbackImage:
+        "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=900&q=80",
       tags: ["Trending"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
@@ -54,6 +58,8 @@ const TravelVibeSection = (props) => {
       title: "Perfect Proposals",
       description: "SAY YES SPOTS",
       image: `${imgUrlEndPoint}media/page/174120792530050110816955566406.png`,
+      fallbackImage:
+        "https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=900&q=80",
       tags: ["TTW Exclusive"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
@@ -64,6 +70,8 @@ const TravelVibeSection = (props) => {
       title: "Japan In Autumn",
       description: "GOLDEN GATEWAYS",
       image: `${imgUrlEndPoint}media/page/176061499439999198913574218750.jpg`,
+      fallbackImage:
+        "https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?auto=format&fit=crop&w=900&q=80",
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
       link: "theme/japan-cherry-blossom",
@@ -73,6 +81,8 @@ const TravelVibeSection = (props) => {
       title: "Europe Under 1 Lakh",
       description: "BIG TRIPS, SMALL BUDGET",
       image: `${imgUrlEndPoint}media/website/compressedImage (7).jpeg`,
+      fallbackImage:
+        "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&w=900&q=80",
       tags: [],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
@@ -113,6 +123,7 @@ const TravelVibeSection = (props) => {
               title={travelVibes[0].title}
               description={travelVibes[0].description}
               image={travelVibes[0].image}
+              fallbackImage={travelVibes[0].fallbackImage}
               tags={travelVibes[0].tags}
               gradientOverlay={travelVibes[0].gradientOverlay}
               height="376px"
@@ -126,6 +137,7 @@ const TravelVibeSection = (props) => {
               title={travelVibes[1].title}
               description={travelVibes[1].description}
               image={travelVibes[1].image}
+              fallbackImage={travelVibes[1].fallbackImage}
               tags={travelVibes[1].tags}
               gradientOverlay={travelVibes[1].gradientOverlay}
               height="376px"
@@ -140,6 +152,7 @@ const TravelVibeSection = (props) => {
               title={travelVibes[2].title}
               description={travelVibes[2].description}
               image={travelVibes[2].image}
+              fallbackImage={travelVibes[2].fallbackImage}
               tags={travelVibes[2].tags}
               gradientOverlay={travelVibes[2].gradientOverlay}
               height="376px"
@@ -153,6 +166,7 @@ const TravelVibeSection = (props) => {
               title={travelVibes[3].title}
               description={travelVibes[3].description}
               image={travelVibes[3].image}
+              fallbackImage={travelVibes[3].fallbackImage}
               tags={travelVibes[3].tags}
               gradientOverlay={travelVibes[3].gradientOverlay}
               height="376px"
@@ -166,6 +180,7 @@ const TravelVibeSection = (props) => {
               title={travelVibes[4].title}
               description={travelVibes[4].description}
               image={travelVibes[4].image}
+              fallbackImage={travelVibes[4].fallbackImage}
               tags={travelVibes[4].tags}
               gradientOverlay={travelVibes[4].gradientOverlay}
               height="376px"
