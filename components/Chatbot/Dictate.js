@@ -52,6 +52,13 @@ const Dictate = forwardRef((props, ref) => {
 
 
     const startListening = async () => {
+        // Auth/ownership gate — mirror MessageInputBox's textarea/attach/send.
+        // A blocked user (logged-out, or viewing someone else's itinerary) must
+        // not be able to dictate either; surface the same prompt instead.
+        if (props?.requireAuth) {
+            props.onAuthRequired?.();
+            return;
+        }
         if(props?.disabled){
             return;
         }

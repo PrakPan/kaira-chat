@@ -36,7 +36,7 @@ const DEFAULT_PACKAGES = [
     image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=600&q=80&auto=format",
     tier: "Most booked",
     tierVariant: "popular",
-    route: ["Mumbai", "Ubud", "Seminyak", "Nusa Penida"],
+    route: ["Mumbai", "Ubud", "Nusa Penida", "Seminyak"],
     title: (
       <>
         Bali, the <span className="ttwSerif">slow honeymoon</span>
@@ -64,7 +64,7 @@ const DEFAULT_PACKAGES = [
   },
   {
     id: "maldives-honeymoon",
-    image: "https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=600&q=80&auto=format",
+    image: "https://images.unsplash.com/photo-1573843981267-be1999ff37cd?w=600&q=80&auto=format",
     tier: "Premium",
     tierVariant: "premium",
     route: ["Mumbai", "Malé"],
@@ -82,9 +82,9 @@ const DEFAULT_PACKAGES = [
   /* ---------------- Family ---------------- */
   {
     id: "bali-family",
-    image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=600&q=80&auto=format",
+    image: "https://images.unsplash.com/photo-1518002171953-a080ee817e1f?w=600&q=80&auto=format",
     tier: "Family-friendly",
-    route: ["Bangalore", "Ubud", "Sanur"],
+    route: ["Bangalore", "Ubud", "Gili T", "Kuta"],
     title: (
       <>
         Bali, <span className="ttwSerif">easy with kids</span>
@@ -127,7 +127,7 @@ const DEFAULT_PACKAGES = [
   },
   {
     id: "vietnam-family",
-    image: "https://images.unsplash.com/photo-1528127269322-539801943592?w=600&q=80&auto=format",
+    image: "https://images.unsplash.com/photo-1528181304800-259b08848526?w=600&q=80&auto=format",
     tier: "Family-friendly",
     route: ["Bangalore", "Hanoi", "Hạ Long", "Hoi An"],
     title: (
@@ -144,7 +144,7 @@ const DEFAULT_PACKAGES = [
   /* ---------------- Adventure ---------------- */
   {
     id: "bali-adventure",
-    image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=600&q=80&auto=format",
+    image: "https://images.unsplash.com/photo-1604999565976-8913ad2ddb7c?w=600&q=80&auto=format",
     tier: "Adventure",
     route: ["Mumbai", "Ubud", "Nusa Penida"],
     title: (
@@ -161,7 +161,7 @@ const DEFAULT_PACKAGES = [
     id: "grindelwald-adventure",
     image: "https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?w=600&q=80&auto=format",
     tier: "Adventure",
-    route: ["Delhi", "Zurich", "Grindelwald", "Interlaken"],
+    route: ["Delhi", "Interlaken", "Grindelwald", "Lucerne", "Zurich"],
     title: (
       <>
         Grindelwald, <span className="ttwSerif">Alps up close</span>
@@ -176,9 +176,9 @@ const DEFAULT_PACKAGES = [
   /* ---------------- Quick escape ---------------- */
   {
     id: "thailand-quick",
-    image: "https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=600&q=80&auto=format",
+    image: "https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?w=600&q=80&auto=format",
     tier: "Quick escape",
-    route: ["Mumbai", "Bangkok", "Krabi", "Phi Phi"],
+    route: ["Mumbai", "Phuket", "Phi Phi", "Krabi"],
     title: (
       <>
         Thailand, <span className="ttwSerif">long-weekend stretched</span>
@@ -274,7 +274,7 @@ const DEFAULT_PACKAGES = [
     image: "https://images.unsplash.com/photo-1605649487212-47bdab064df7?w=600&q=80&auto=format",
     tier: "Premium",
     tierVariant: "premium",
-    route: ["Mumbai", "Istanbul", "Cappadocia"],
+    route: ["Mumbai", "Istanbul", "Cappadocia", "Antalya"],
     title: (
       <>
         Turkey, <span className="ttwSerif">balloons at dawn</span>
@@ -298,8 +298,19 @@ const LuxuryEuropeDestinations = ({
   const [active, setActive] = useState("all");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
+  // In the "All" view, show each destination only once (cards share an id
+  // prefix per destination, e.g. "bali-honeymoon"/"bali-family" -> "bali"),
+  // so Bali/etc. don't repeat. Category tabs are already unique per destination.
   const filtered = useMemo(() => {
-    if (active === "all") return packages;
+    if (active === "all") {
+      const seen = new Set();
+      return packages.filter((p) => {
+        const key = (p.id || "").split("-")[0];
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+    }
     return packages.filter((p) => p.category === active);
   }, [packages, active]);
 
@@ -323,11 +334,10 @@ const LuxuryEuropeDestinations = ({
               Connected trips
             </span>
             <h2>
-              Ready-made trips,{" "}
-              <span className="ttwSerif">fully tailored.</span>
+              Kaira-Planned Trips. Yours to <span className="ttwSerif">Personalize.</span>
             </h2>
             <p className="ttwLede">
-              Real routes our travellers loved. Open any trip in chat — change{" "}
+              Real routes our travellers loved. Open any trip in chat, change{" "}
               <span className="ttwSerif">dates, hotels, duration</span>,
               anything. Start with the package, end with your perfect holiday.
             </p>
@@ -389,7 +399,7 @@ const LuxuryEuropeDestinations = ({
         )}
 
         <p className={styles.footnote}>
-          Prices indicative —{" "}
+          Prices indicative.{" "}
           <span className="ttwSerif">Kaira re-prices live</span> based on your
           dates, travellers, and starting location...{" "}
           {/* <a href="/connected-trips">See how packages work →</a> */}

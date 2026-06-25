@@ -5,7 +5,7 @@ const defaultFaqData = [
   {
     question: "What exactly is The Tarzan Way?",
     answer:
-      "The Tarzan Way combines the speed of AI with the expertise of real travellers. Kaira, our AI trip planner, creates personalised itineraries in seconds, while destination experts review every detail before it reaches you. You describe your trip in plain language, Kaira builds a plan across hundreds of platforms in seconds, and then a local expert — someone who has actually been to that destination — reviews and refines it before it reaches you.",
+      "The Tarzan Way combines the speed of AI with the expertise of real travellers. Kaira, our AI trip planner, creates personalised itineraries in seconds, while destination experts review every detail before it reaches you. You describe your trip in plain language, Kaira builds a plan across hundreds of platforms in seconds, and then a local expert, someone who has actually been to that destination, reviews and refines it before it reaches you.",
   },
   {
     question: "What is Kaira and how does she plan my trip?",
@@ -40,12 +40,12 @@ const defaultFaqData = [
   {
     question: "How is this different from a traditional travel agent?",
     answer:
-      "A traditional travel agent works on commission from hotels and airlines. Kaira searches across the open web with no preferred suppliers, so you see actual prices. There are no hidden markups. You also get a local curator — not a call-centre agent — who has personal knowledge of your destination.",
+      "A traditional travel agent works on commission from hotels and airlines. Kaira searches across the open web with no preferred suppliers, so you see actual prices. There are no hidden markups. You also get a local curator, not a call-centre agent, who has personal knowledge of your destination.",
   },
   {
     question: "Can I customise the itinerary?",
     answer:
-      "Everything is customizable. Start with a ready-made route or describe your trip from scratch. You can swap hotels, change dates, add or remove activities, and adjust the budget — all from inside the chat. Kaira re-prices in real time so you always know what a change will cost before you confirm it.",
+      "Everything is customizable. Start with a ready-made route or describe your trip from scratch. You can swap hotels, change dates, add or remove activities, and adjust the budget, all from inside the chat. Kaira re-prices in real time so you always know what a change will cost before you confirm it.",
   },
   {
     question: "Can Kaira plan trips in Hindi or Hinglish?",
@@ -55,7 +55,7 @@ const defaultFaqData = [
   {
     question: "How does the local curator actually help?",
     answer:
-      "The curator is a person based in — or with deep experience of — your destination. They look at Kaira's plan and catch the things AI cannot: a road that floods in August, a restaurant that used to be great but isn't anymore, a quiet ghat worth waking up early for. They also handle paperwork like restricted-area permits that even experienced travellers sometimes miss.",
+      "The curator is a person based in, or with deep experience of, your destination. They look at Kaira's plan and catch the things AI cannot: a road that floods in August, a restaurant that used to be great but isn't anymore, a quiet ghat worth waking up early for. They also handle paperwork like restricted-area permits that even experienced travellers sometimes miss.",
   },
 ];
 
@@ -101,7 +101,7 @@ const FaqSection = ({ Faqs, heading, lede }) => {
           <p className={styles.faqLede}>
             {lede || (
               <>
-                The honest answers —{" "}
+                The honest answers,{" "}
                 <span className={styles.serif}>no marketing fluff.</span>
               </>
             )}

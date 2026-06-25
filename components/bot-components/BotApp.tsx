@@ -1714,8 +1714,12 @@ export default function BotApp({
         }
         setRestoredThread(data);
         // Thread-level customer_name (P1/draft stage has no itinerary in redux
-        // yet) feeds the chat avatar's customer-initial fallback.
-        dispatch(setThreadCustomerName(data?.customer_name ?? null));
+        // yet) feeds the chat avatar's customer-initial fallback. Only overwrite
+        // when get_by_id actually carries a name — otherwise keep whatever was
+        // seeded from the thread-list row in handleThreadSelect.
+        if (typeof data?.customer_name === "string" && data.customer_name.trim()) {
+          dispatch(setThreadCustomerName(data.customer_name.trim()));
+        }
         setActiveThreadId(threadId);
         setIsChatActive(true);
 
@@ -2115,6 +2119,12 @@ export default function BotApp({
         const listData = await listRes.json();
         const threads = listData.data ?? [];
         if (threads.length > 0) {
+          // Seed the chat avatar's customer from the list row before loadThread
+          // (get_by_id may omit customer_name); loadThread re-confirms it.
+          const rowName = threads[0]?.customer_name;
+          if (typeof rowName === "string" && rowName.trim()) {
+            dispatch(setThreadCustomerName(rowName.trim()));
+          }
           await loadThread(threads[0].id, undefined, stage);
         } else if (stage === "P2" && allDone) {
           // P2 trip confirmed but no chat thread yet — seed a summary prompt
@@ -2290,7 +2300,11 @@ export default function BotApp({
   }, [restoreLatestThread, dispatch]);
 
   const handleThreadSelect = useCallback(
-    async (threadId: string, knownSessionId?: string) => {
+    async (
+      threadId: string,
+      knownSessionId?: string,
+      knownCustomerName?: string,
+    ) => {
       // Reset load guard so the new thread can load
       isLoadingThreadRef.current = false;
       clearStaleChatSessions();
@@ -2309,7 +2323,17 @@ export default function BotApp({
       }
 
       setRestoredThread(null);
-      dispatch(setThreadCustomerName(null));
+      // Seed the customer from the thread-list row immediately so the chat
+      // avatar shows the customer's initial (not the viewer's) right away —
+      // in P1/draft there's no itinerary in redux and threads.get_by_id may
+      // not carry customer_name. loadThread re-confirms it below.
+      dispatch(
+        setThreadCustomerName(
+          typeof knownCustomerName === "string" && knownCustomerName.trim()
+            ? knownCustomerName.trim()
+            : null,
+        ),
+      );
       setLocations([]);
       setCurrentRoute(null);
       setSkeletonCities([]);
@@ -3862,7 +3886,7 @@ export const MobileHeaderMenu = React.memo(
     onLoginSuccess,
   }: {
     onNewChat: () => void;
-    onThreadSelect: (id: string, sessionId?: string) => void;
+    onThreadSelect: (id: string, sessionId?: string, customerName?: string) => void;
     activeThreadId: string | null;
     isComplete?: boolean;
     onLoginSuccess?: () => void | Promise<void>;
@@ -4064,6 +4088,7 @@ export const MobileHeaderMenu = React.memo(
                             onThreadSelect(
                               t.id,
                               t.session_id ?? t.filter_session_id,
+                              t.customer_name,
                             );
                             setHistoryOpen(false);
                           }}
@@ -4234,7 +4259,7 @@ const MobileHeader = React.memo(
     onLoginSuccess,
   }: {
     onNewChat: () => void;
-    onThreadSelect: (id: string, sessionId?: string) => void;
+    onThreadSelect: (id: string, sessionId?: string, customerName?: string) => void;
     activeThreadId: string | null;
     isComplete?: boolean;
     onLoginSuccess?: () => void | Promise<void>;
@@ -4273,7 +4298,7 @@ interface MobileLayoutProps {
   mobilePanel: MobilePanel;
   setMobilePanel: (p: MobilePanel) => void;
   onNewChat: () => void;
-  onThreadSelect: (id: string, sessionId?: string) => void;
+  onThreadSelect: (id: string, sessionId?: string, customerName?: string) => void;
   activeThreadId: string | null;
   onRegisterTabSwitch: (fn: ((tab: string) => void) | null) => void;
   mapContent: React.ReactNode;

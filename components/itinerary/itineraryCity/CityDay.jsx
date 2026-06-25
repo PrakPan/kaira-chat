@@ -670,6 +670,8 @@ useEffect(() => {
     const renderTags =
       resolvedType === "activity"
         ? [...(guideTag ? [guideTag] : []), "tickets_held"]
+        : resolvedType === "poi"
+        ? ["on_your_own", ...dataTags].slice(0, 2)
         : dataTags;
 
     const statusBadge = status ? (

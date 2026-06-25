@@ -626,6 +626,8 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
           stopDictation={stopDictation}
           onTranscriptChange={handleTranscriptChange}
           disabled={disabled || isStreaming}
+          requireAuth={requireAuth}
+          onAuthRequired={onAuthRequired}
         />
 
         {/* Right: send/stop pill */}
