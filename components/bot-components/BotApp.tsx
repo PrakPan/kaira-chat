@@ -1688,7 +1688,7 @@ export default function BotApp({
       // pre-emptive/post-status setViewMode("itinerary") below.
       isRestoringRef.current = true;
       try {
-        const res = await fetch("https://dev.chat.tarzanway.com/chatkit", {
+        const res = await fetch("https://chat.tarzanway.com/chatkit", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -2106,7 +2106,7 @@ export default function BotApp({
 
       // ── Step 3: chatkit threads.list → loadThread (threads.get_by_id) ────
       try {
-        const listRes = await fetch("https://dev.chat.tarzanway.com/chatkit", {
+        const listRes = await fetch("https://chat.tarzanway.com/chatkit", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -3861,7 +3861,7 @@ BottomCTABar.displayName = "BottomCTABar";
 // ── MobileLayout — full-screen views with top tab bar + mobile header ─────────
 type MobileTab = "chat" | "map" | "routes" | "itinerary" | "bookings";
 
-const CHATKIT_API_URL_MOBILE = "https://dev.chat.tarzanway.com/chatkit";
+const CHATKIT_API_URL_MOBILE = "https://chat.tarzanway.com/chatkit";
 
 function getAuthToken(): string | null {
   return (
