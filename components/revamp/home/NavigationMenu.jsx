@@ -123,10 +123,11 @@ const NavigationMenu = (props) => {
     <>
     <div className="w-100 bg-text-white"> 
       <nav className={styles.navigationMenu + " " + props.className + " max-ph:!p-md max-ph:shadow-soft"} role="navigation">
-        <div className="hover-pointer" onClick={() => router.push("/")}>
-          <Image src={TTW} alt="TTW Logo" priority  />
+        <div className={"hover-pointer " + styles.logo} onClick={() => router.push("/")}>
+          <Image src={TTW} alt="TTW Logo" priority className={styles.logoFull} />
+          <img src="/logoblack.svg" alt="TTW" className={styles.logoMark} />
         </div>
-        {isMidScreen &&pathname!="/new-trip"&& <SearchInput />}
+        {pathname!="/new-trip"&& <SearchInput />}
         {/* Desktop Menu */}
         <ul className={styles.menuList} role="menubar">
           <li className="mr-4"></li>
@@ -162,10 +163,7 @@ const NavigationMenu = (props) => {
 
         {/* Hamburger Menu Button */}
         <div className="flex gap-2 md:hidden">
-        {props.token&&(pathname!="/dashboard"&&pathname!="/new-trip")&&<button className="MediumIndigoButton mt-2 max-sm:text-[12px] " onClick={()=>router.push("/dashboard")}>
-                  My Trips
-        </button>}
-          <MobileMenu 
+          <MobileMenu
           id={props.id}
           _openAllNotificationsHandler={_openAllNotificationsHandler}
           hidecta={false}

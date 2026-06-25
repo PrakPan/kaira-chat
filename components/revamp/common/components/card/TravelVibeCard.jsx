@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
@@ -7,6 +7,7 @@ const TravelVibeCard = ({
   title,
   description,
   image,
+  fallbackImage,
   tags = [],
   gradientOverlay = "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
   height = "320px",
@@ -14,6 +15,13 @@ const TravelVibeCard = ({
   className = "",
   ...props
 }) => {
+  const [imgSrc, setImgSrc] = useState(image);
+
+  // Reset to the primary image whenever it changes (e.g. on re-render with new data).
+  useEffect(() => {
+    setImgSrc(image);
+  }, [image]);
+
   return (
     <div
       className={`relative group cursor-pointer rounded-lg sm:rounded-2xl overflow-hidden transform transition-all duration-300 sm:hover:-translate-y-2 sm:hover:shadow-2xl w-full ${className}`}
@@ -24,13 +32,18 @@ const TravelVibeCard = ({
       {/* Background Image with Next.js Image */}
       <div className="absolute inset-0">
         <Image
-          src={image}
+          src={imgSrc}
           alt={title}
           fill
           className="object-cover"
           sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
           loading="lazy"
-          fetchPriority="low"
+          fetchpriority="low"
+          onError={() => {
+            if (fallbackImage && imgSrc !== fallbackImage) {
+              setImgSrc(fallbackImage);
+            }
+          }}
         />
         {/* Gradient Overlay */}
         <div
