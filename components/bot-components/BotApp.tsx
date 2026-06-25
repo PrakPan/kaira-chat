@@ -3567,41 +3567,21 @@ interface BottomCTABarProps {
  * ItineraryStepsLoader
  * Stepped progress card shown in the bottom CTA bar space (where the cart
  * details normally sit) while the itinerary is being updated and pricing is
- * still pending. Mirrors the chat-side StatusNotesCard: accumulates step
- * lines from the `notes` array + rolling `displayText`, marks every prior
- * step as done (green check) and the latest as active (spinner). Full text
- * wraps — never truncated.
+ * still pending. Accumulates step lines from the rolling `displayText`,
+ * marks every prior step as done (green check) and the latest as active
+ * (spinner). Full text wraps — never truncated.
  *
  * State resets automatically per update cycle: BottomCTABar unmounts this
  * (and renders the cart row) once pricing returns SUCCESS, so it remounts
  * fresh on the next update.
  */
 const ItineraryStepsLoader = ({
-  notes,
   displayText,
 }: {
-  notes?: any[];
   displayText: string | null;
 }) => {
   const [steps, setSteps] = React.useState<string[]>([]);
   const seenRef = React.useRef<Set<string>>(new Set());
-
-  // Append fresh, de-duplicated lines coming from the notes snapshot.
-  React.useEffect(() => {
-    const arr = Array.isArray(notes) ? notes : [];
-    const items = arr
-      .map((n) =>
-        typeof n === "string"
-          ? n
-          : (n?.text ?? n?.message ?? n?.note ?? n?.title ?? ""),
-      )
-      .map((s) => (typeof s === "string" ? s.trim() : ""))
-      .filter(Boolean);
-    const fresh = items.filter((it) => !seenRef.current.has(it));
-    if (fresh.length === 0) return;
-    fresh.forEach((it) => seenRef.current.add(it));
-    setSteps((prev) => [...prev, ...fresh]);
-  }, [notes]);
 
   // Fold the rolling display_text value in as its own step line.
   React.useEffect(() => {
@@ -3616,13 +3596,13 @@ const ItineraryStepsLoader = ({
   const lastIdx = steps.length - 1;
 
   return (
-    <div className="z-20 fixed w-full md:w-[48%] max-ph:bottom-0 md:bottom-[4.2rem] flex-shrink-0 bg-[#fffaf5] border-t border-slate-100 shadow-[0_-4px_16px_rgba(11,18,32,0.06)] px-4 pt-3.5 pb-4">
+    <div className="z-20 fixed w-full md:w-[48%] max-ph:bottom-0 md:bottom-[4.2rem] flex-shrink-0 bg-[#F7E700] border-t border-slate-100 shadow-[0_-4px_16px_rgba(11,18,32,0.06)] px-4 pt-3.5 pb-4">
       <div>
         <div className="flex items-center gap-3">
           {/* Spinning ring with hourglass glyph — same chrome as the original loader */}
           <div className="relative flex-shrink-0 w-10 h-10">
-            <span className="absolute inset-0 rounded-full border-[3px] border-[#f7e700]/25" />
-            <span className="absolute inset-0 rounded-full border-[3px] border-transparent border-t-[#f7e700] animate-spin" />
+            <span className="absolute inset-0 rounded-full border-[3px] border-[#07213A]/20" />
+            <span className="absolute inset-0 rounded-full border-[3px] border-transparent border-t-[#07213A] animate-spin" />
             <span className="absolute inset-[7px] rounded-full bg-white flex items-center justify-center animate-spin">
               <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4">
                 <path
@@ -3639,7 +3619,7 @@ const ItineraryStepsLoader = ({
             <div className="text-[15px] font-semibold text-[#07213A] leading-snug">
               Updating your itinerary
             </div>
-            <div className="text-xs text-[#8a93a6] mt-0.5">
+            <div className="text-xs text-[#07213A]/60 mt-0.5">
               This might take a few seconds…
             </div>
           </div>
@@ -3656,7 +3636,10 @@ const ItineraryStepsLoader = ({
               <li key={`${i}-${step}`} className="flex items-start gap-2.5">
                 <span className="flex-shrink-0 mt-[2px] w-[16px] h-[16px] flex items-center justify-center">
                   {active ? (
-                    <span className="w-[14px] h-[14px] rounded-full border-2 border-[#f7e700]/40 border-t-[#e8b800] animate-spin inline-block" />
+                    <span className="ttw-steps-bubble" aria-hidden="true">
+                      <span className="ttw-steps-bubble-ring" />
+                      <span className="ttw-steps-bubble-dot" />
+                    </span>
                   ) : (
                     <span className="w-[16px] h-[16px] rounded-full bg-[#07213A] flex items-center justify-center">
                       <svg
@@ -3675,7 +3658,7 @@ const ItineraryStepsLoader = ({
                 </span>
                 <span
                   className={`text-[13px] leading-snug ${
-                    active ? "text-[#07213A] font-medium" : "text-[#8a93a6]"
+                    active ? "text-[#07213A] font-medium" : "text-[#07213A]/60"
                   }`}
                 >
                   {step}
@@ -3754,15 +3737,12 @@ const BottomCTABar = React.memo(
     }
 
     if (!hasFreshPricing) {
-      // Only show the pricing loader when there's something to show (status
-      // API returned notes, or a rolling display_text is set).
-      const hasNotes = notes && notes.length > 0;
-      if (!hasNotes && !loaderDisplayText) return null;
+      // Only show the pricing loader when there's a rolling display_text to
+      // surface as a step. Notes are intentionally not rendered as steps.
+      if (!loaderDisplayText) return null;
       // Stepped progress card rendered in the bottom bar space (same place
       // the cart row sits), replacing the old centered overlay.
-      return (
-        <ItineraryStepsLoader notes={notes} displayText={loaderDisplayText} />
-      );
+      return <ItineraryStepsLoader displayText={loaderDisplayText} />;
     }
 
     const perPerson = cart?.pay_only_for_one || cart?.show_per_person_cost;
