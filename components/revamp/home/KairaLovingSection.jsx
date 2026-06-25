@@ -3,14 +3,14 @@ import { KairaAvatar } from "./HeroSection";
 import styles from "./KairaLovingSection.module.scss";
 
 /*
- * "This month, I'm loving…" — a small editorial slot for Kaira's monthly
+ * "This week, I'm loving…" — a small editorial slot for Kaira's weekly
  * picks. Both the quote and picks are props so the same component can be
  * reused for any time-bound editorial slot (monthly, seasonal, themed).
  */
 
 const DEFAULT_QUOTE = (
   <>
-    &ldquo;Shoulder season is real.{" "}
+    &ldquo;Shoulder season is real —{" "}
     <span className={styles.quoteHl}>April in Japan</span> before the Golden
     Week rush, or{" "}
     <span className={styles.quoteHl}>Vietnam&apos;s dry-season tail</span>.
@@ -21,7 +21,7 @@ const DEFAULT_QUOTE = (
 
 const DEFAULT_PICKS = [
   {
-    tag: "Kaira's pick · this month",
+    tag: "Kaira's pick · Apr 24 week",
     title: (
       <>
         Japan, the <span className="ttwSerif">shoulder-season</span> way
@@ -33,7 +33,7 @@ const DEFAULT_PICKS = [
     seed: "Japan shoulder season, 9 days",
   },
   {
-    tag: "Kaira's pick · this month",
+    tag: "Kaira's pick · Apr 24 week",
     title: (
       <>
         Vietnam, the <span className="ttwSerif">dry-tail</span> run
@@ -41,7 +41,7 @@ const DEFAULT_PICKS = [
     ),
     blurb:
       "Hoi An before peak heat, a sleeper train north, pho and coffee the way Anh makes them. 8 days, ₹68K per person.",
-    img: "https://images.unsplash.com/photo-1555921015-5532091f6026?w=400&q=80&auto=format",
+    img: "https://images.unsplash.com/photo-1528127269322-539801943592?w=400&q=80&auto=format",
     seed: "Vietnam dry tail end, 8 days",
   },
 ];
@@ -63,7 +63,7 @@ const KairaLovingSection = ({
           <h2 className={styles.headerTitle}>
             {title || (
               <>
-                This month, <span className="ttwSerif">I&apos;m loving…</span>
+                This week, <span className="ttwSerif">I&apos;m loving…</span>
               </>
             )}
           </h2>

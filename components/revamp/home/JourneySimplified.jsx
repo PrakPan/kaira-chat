@@ -45,7 +45,7 @@ const DEFAULT_STEPS = [
         <span className={styles.serif}>on your mind.</span>
       </>
     ),
-    body: "Budget, dates, must-haves. Write like you'd text a friend. Hindi, Hinglish, English, all fine.",
+    body: "Budget, dates, must-haves. Write like you'd text a friend — Hindi, Hinglish, English, all fine.",
     extra: (
       <ChatDemo
         you={{ label: "You", text: "Vietnam, 6 days, Hoi An + cruise, ₹1.4L couple" }}
@@ -59,7 +59,7 @@ const DEFAULT_STEPS = [
         A travel expert <span className={styles.serif}>fine-tunes</span> it.
       </>
     ),
-    body: "An on-ground curator adjusts what Kaira can't feel: monsoon timing, overrated spots, the quiet ghat at 6am.",
+    body: "An on-ground curator adjusts what Kaira can't feel — monsoon timing, overrated spots, the quiet ghat at 6am.",
     extra: (
       <CuratorCard
         name="Nimmi · On-ground curator"

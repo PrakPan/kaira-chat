@@ -6,7 +6,7 @@ import { connect } from "react-redux";
 import NavigationMenu from "../components/revamp/home/NavigationMenu";
 import HeroSection from "../components/revamp/home/HeroSection";
 import JourneySimplified from "../components/revamp/home/JourneySimplified";
-import GoogleReviewsSection from "../components/revamp/home/GoogleReviewsSection";
+import WhereNextSection from "../components/revamp/home/WhereNextSection";
 import WhatMakesUsSection from "../components/revamp/home/WhatMakesUsSection";
 import NewFooter from "../components/newfooter/Index";
 import MyTripsSection from "../components/revamp/destination/mytrips";
@@ -139,16 +139,15 @@ const Home = ({ token, hotLocationSearch, checkAuthState, setHotLocationSearch }
         <NavigationMenu message={"Welcome to The Tarzan Way!"} />
         <HeroSection slug={"home"} />
         <TrustFactors />
-        {token && <MyTripsSection className="max-w-7xl" />}
-        <JourneySimplified />
-        <GoogleReviewsSection />
         <KairaLovingSection />
 
-      
+        {token && <MyTripsSection className="max-w-7xl" />}
 
         <TravelerStoriesSection />
         <LuxuryEuropeDestinations />
         <KairaPlansSection />
+        <WhereNextSection />
+        <JourneySimplified />
         <WhyKairaSection />
         {/* <PartnersSection />
         <TestimonialCarousel /> */}
