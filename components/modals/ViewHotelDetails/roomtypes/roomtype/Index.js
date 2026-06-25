@@ -70,8 +70,10 @@ const RoomType = (props) => {
 
   const roomsByRate = getRoomsByRate();
 
+  const roomCount = roomsByRate.reduce((total, { rooms }) => total + (rooms?.length || 0), 0);
+
   return (
-    <div className={`flex flex-col gap-3 rounded-lg cursor-pointer ${props.isSelected ? 'border-2 border-[#f7e700]' : ''}`}>
+    <div className={`flex flex-col gap-3 rounded-3xl border-sm border-solid p-md bg-[#fefdf2] ${props.isSelected ? 'border-2 border-[#f7e700]' : 'border-[#f3eeb8]'}`}>
 
       {roomsByRate.map(({ rate, rateIndex, rooms }) => (
         <div key={rateIndex} className="flex flex-col gap-2">
@@ -89,18 +91,19 @@ const RoomType = (props) => {
 
           {rooms.map((room, roomIndex) => {
             const isCurrentRoomOpen = isRoomOpen(rateIndex, roomIndex);
+            const isLastRoom = rateIndex === roomsByRate.length - 1 && roomIndex === rooms.length - 1;
 
             return (
               <div
                 key={`${rateIndex}-${roomIndex}`}
-                className="flex flex-col gap-3 rounded-3xl border-sm border-solid border-[#ececec] p-md hover:bg-[#faf9f4] cursor-pointer "
+                className={`flex flex-col gap-3 ${isLastRoom ? '' : 'border-b border-solid border-[#ececec] pb-md'}`}
               >
                 <div className="relative flex lg:flex-row w-full flex-col gap-4">
                   {room?.images?.length > 0 && (
-                    <div className="relative w-[70%] max-ph:w-full h-[12rem] ">
-               
+                    <div className="relative w-[40%] max-ph:w-full h-[12rem] ">
+
                       <ImageCarousel images={room?.images} />
-        
+
                     </div>
                   )}
 
@@ -154,48 +157,24 @@ const RoomType = (props) => {
 
                     </ul>
 
-                    <div className="flex flex-row md:flex-row gap-1 items-center w-full font-bold">
-                      <div className="font-mono text-[#0b1220] text-lg font-700 leading-2xl-md">
-                        {`${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}` + getIndianPrice(Math.round(props.price)) + "/-"}
-                      </div>
-                      <div className="text-[#445069] text-sm-md font-400 leading-lg mt-xxs">for {pax} people</div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="flex flex-col justify-between h-100 max-ph:flex-row">
-                      <div className="text-[#0b1220] whitespace-nowrap">
-                        {isCurrentRoomOpen ? (
-                          <div
-                            className="w-fit flex flex-row items-center gap-1  p-1 rounded-lg cursor-pointer"
-                            onClick={() => toggleRoomDetails(rateIndex, roomIndex)}
-                          >
-                            <div>Hide details</div>
-                            <IoIosArrowUp className="text-xl" />
-                          </div>
-                        ) : (
-                          <div
-                            className="w-fit flex flex-row items-center gap-1 p-1 rounded-lg cursor-pointer"
-                            onClick={() => toggleRoomDetails(rateIndex, roomIndex)}
-                          >
-                            <div>See details</div>
-                            <IoIosArrowDown className="text-xl" />
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="flex flex-col gap-1 items-end">
-                        <button
-                          className="ttw-btn-fill-yellow"
-                          onClick={() => props.handleUpdateBooking(props.index)}
+                    <div className="text-[#0b1220] whitespace-nowrap mt-2">
+                      {isCurrentRoomOpen ? (
+                        <div
+                          className="w-fit flex flex-row items-center gap-1 rounded-lg cursor-pointer"
+                          onClick={() => toggleRoomDetails(rateIndex, roomIndex)}
                         >
-                          Add to Itinerary
-                        </button>
-
-                        <div className="text-[#445069] text-sm font-400 leading-lg mt-xxs">
-                          on {props.checkInDate} ({props.city})
+                          <div>Hide details</div>
+                          <IoIosArrowUp className="text-xl" />
                         </div>
-                      </div>
+                      ) : (
+                        <div
+                          className="w-fit flex flex-row items-center gap-1 rounded-lg cursor-pointer"
+                          onClick={() => toggleRoomDetails(rateIndex, roomIndex)}
+                        >
+                          <div>See details</div>
+                          <IoIosArrowDown className="text-xl" />
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -272,6 +251,32 @@ const RoomType = (props) => {
           })}
         </div>
       ))}
+
+      <hr className="border-[#ececec]" />
+
+      <div className="flex flex-row items-center justify-between gap-x-3">
+        <div className="flex flex-col gap-0 font-bold">
+          <div className="font-mono text-[#0b1220] text-md-lg font-700 leading-2xl-md whitespace-nowrap">
+            {`${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}` + getIndianPrice(Math.round(props.price)) + "/-"}
+          </div>
+          <div className="text-[#445069] text-sm-md font-400 leading-lg whitespace-nowrap">
+            for {pax} people{roomCount > 1 ? ` · ${roomCount} rooms` : ''}
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-1 items-end shrink-0">
+          <button
+            className="ttw-btn-fill-yellow whitespace-nowrap"
+            onClick={() => props.handleUpdateBooking(props.index)}
+          >
+            Add to Itinerary
+          </button>
+
+          <div className="text-[#445069] text-sm font-400 leading-lg whitespace-nowrap">
+            on {props.checkInDate} ({props.city})
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
