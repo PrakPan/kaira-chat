@@ -34,6 +34,17 @@ export interface Message {
   progressSteps?: ProgressStep[];
   thinkingTasks?: ThinkingTask[];
   attachments?: MessageAttachment[];
+  /** Per-message sender identity from the thread-detail API (threads.get_by_id).
+   *  `senderUserId` is the `user_id` that authored the message; `customerName`
+   *  is the `customer_name` the API attaches to it. On reload these take
+   *  priority when choosing the avatar: a message authored by the logged-in
+   *  viewer (senderUserId === auth.id) shows the viewer's own avatar — this is
+   *  how a staff member chatting on a customer's itinerary keeps their own
+   *  photo — otherwise we fall back to the customer's letter avatar. Live
+   *  (optimistic) user messages set senderUserId to the viewer's id for the
+   *  same reason. */
+  senderUserId?: string | number;
+  customerName?: string;
   /** When true, this assistant message represents a failed send (network or
    *  server error). Rendered with an inline error treatment in MessageBubble.
    *  Variant lets us tailor the icon/copy for offline vs. generic failures. */
@@ -734,6 +745,10 @@ export function useChat({
           role: "user",
           content: trimmed,
           timestamp: new Date(),
+          // The viewer authored this live message — tag it with their id so the
+          // avatar resolves to their own photo (e.g. staff replying on a
+          // customer's itinerary) rather than the customer's letter.
+          ...(userIdRef.current != null ? { senderUserId: userIdRef.current } : {}),
           ...(attachments && attachments.length > 0 ? { attachments } : {}),
         },
         {
