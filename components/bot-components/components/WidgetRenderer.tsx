@@ -397,6 +397,67 @@ function AddToItineraryButton({
   );
 }
 
+// Shared "View" CTA — opens the card's detail drawer. Styled identically to the
+// HotelCard's "Check Availability" button (yellow fill, black border + text) so
+// every list card surfaces a consistent open-detail affordance. The surrounding
+// card already opens the same drawer when clicked anywhere; this button is the
+// explicit handle. Stops propagation so the action only fires once.
+function ViewDetailButton({
+  label = "View Details",
+  onClick,
+}: {
+  label?: string;
+  onClick: (e: React.MouseEvent) => void;
+}) {
+  // const baseBg = "#f7e700";
+  const baseBg = "#07213a";
+  // const hoverBg = "#ffef3a";
+  const hoverBg = "";
+  return (
+    <button
+      type="button"
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick(e);
+      }}
+      // onMouseEnter={(e) => {
+      //   (e.currentTarget as HTMLButtonElement).style.background = hoverBg;
+      // }}
+      // onMouseLeave={(e) => {
+      //   (e.currentTarget as HTMLButtonElement).style.background = baseBg;
+      // }}
+      style={{
+        padding: "9px 16px",
+        // Oval pill shape, as it was previously. (Boxy variant: borderRadius: 10)
+        borderRadius: 9999,
+        border: "1px solid #000000",
+        background: baseBg,
+        // color: "#000000",
+        color: "#ffffff",
+        fontFamily: "'Inter', sans-serif",
+        fontSize: 13,
+        fontWeight: 600,
+        cursor: "pointer",
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 6,
+        transition: "background 0.15s ease",
+        boxSizing: "border-box",
+        whiteSpace: "nowrap",
+        lineHeight: "18px",
+      }}
+    >
+      {label}
+       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+    </button>
+  );
+}
+
 // Shared price-tag icon shown before a price value.
 function PriceLabel() {
   return (
@@ -637,7 +698,7 @@ function TransportCard({
         (e.currentTarget as HTMLDivElement).style.boxShadow = "none";
         (e.currentTarget as HTMLDivElement).style.transform = "translateY(0)";
       }}
-      className="w-full md:max-w-[500px]"
+      className="w-full"
     >
       {/* Header band — tinted with the transport accent color */}
       <div
@@ -695,58 +756,78 @@ function TransportCard({
           <EndpointCol city={destination} code={destHub} align="right" />
         </div>
 
-        {/* Meta chips: Time / Distance + any extra badges */}
-        <div className="flex flex-wrap items-center gap-2">
-          {duration && (
-            <span style={{
-              display: "inline-flex", alignItems: "center", gap: 5,
-              padding: "4px 10px", borderRadius: 9999,
-              background: "#fafaf5", border: "1px solid #ececec",
-              fontSize: 12, fontWeight: 500, color: "#445069",
-              fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-            }}>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="9" />
-                <path d="M12 7v5l3 2" />
-              </svg>
-              {duration}
-            </span>
-          )}
-          {distance && (
-            <span style={{
-              display: "inline-flex", alignItems: "center", gap: 5,
-              padding: "4px 10px", borderRadius: 9999,
-              background: "#fafaf5", border: "1px solid #ececec",
-              fontSize: 12, fontWeight: 500, color: "#445069",
-              fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-            }}>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20 10c0 7-8 12-8 12s-8-5-8-12a8 8 0 1 1 16 0Z" />
-                <circle cx="12" cy="10" r="3" />
-              </svg>
-              {distance}
-            </span>
-          )}
-          {extraBadges.map((b, i) => {
-            const label = (b.label ?? b.value ?? "") as string;
-            const color = b.color as string | undefined;
-            const style = getTransportBadgeStyle(label, color);
-            return (
-              <span key={i} style={{
-                ...style,
-                padding: "4px 10px",
-                borderRadius: 9999,
-                fontSize: 12,
-                fontWeight: 500,
+        {/* Footer — meta tags (time / distance / badges) on the left, View CTA
+            on the right; mirrors the other cards' footer layout. The View CTA
+            opens the same detail drawer the card opens when clicked anywhere. */}
+        <div
+          style={{
+            marginTop: 14,
+            paddingTop: 12,
+            borderTop: "0.5px solid #ececec",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 10,
+            flexWrap: "wrap",
+            rowGap: 10,
+          }}
+        >
+          <div className="flex flex-wrap items-center gap-2" style={{ minWidth: 0 }}>
+            {duration && (
+              <span style={{
+                display: "inline-flex", alignItems: "center", gap: 5,
+                padding: "4px 10px", borderRadius: 9999,
+                background: "#fafaf5", border: "1px solid #ececec",
+                fontSize: 12, fontWeight: 500, color: "#445069",
                 fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-                whiteSpace: "nowrap",
               }}>
-                {label}
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M12 7v5l3 2" />
+                </svg>
+                {duration}
               </span>
-            );
-          })}
+            )}
+            {distance && (
+              <span style={{
+                display: "inline-flex", alignItems: "center", gap: 5,
+                padding: "4px 10px", borderRadius: 9999,
+                background: "#fafaf5", border: "1px solid #ececec",
+                fontSize: 12, fontWeight: 500, color: "#445069",
+                fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+              }}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 10c0 7-8 12-8 12s-8-5-8-12a8 8 0 1 1 16 0Z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+                {distance}
+              </span>
+            )}
+            {extraBadges.map((b, i) => {
+              const label = (b.label ?? b.value ?? "") as string;
+              const color = b.color as string | undefined;
+              const style = getTransportBadgeStyle(label, color);
+              return (
+                <span key={i} style={{
+                  ...style,
+                  padding: "4px 10px",
+                  borderRadius: 9999,
+                  fontSize: 12,
+                  fontWeight: 500,
+                  fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+                  whiteSpace: "nowrap",
+                }}>
+                  {label}
+                </span>
+              );
+            })}
+          </div>
+
+          {clickAction && (
+            <ViewDetailButton onClick={() => onAction?.(clickAction)} />
+          )}
         </div>
       </div>
     </div>
@@ -873,39 +954,38 @@ function ActivityCard({ node, onAction }: { node: WidgetNode; onAction?: WidgetR
       {/* Body: left column (title + rating + tags + divider + desc + price) + image */}
       <div className="flex flex-col-reverse sm:flex-row gap-3 items-stretch">
         <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 8 }}>
-          {/* Title + rating on the same line */}
-          {(title || rating > 0) && (
-            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+          {/* Title + tags share one inline-flow block so tags continue the
+              name's line and wrap naturally beside it — mirrors the HotelCard
+              heading layout. */}
+          {(title || categoryTags.length > 0) && (
+            <div
+              style={{
+                fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+                lineHeight: 1.5,
+                wordBreak: "break-word",
+              }}
+            >
               {title && (
-                <div
+                <span
                   style={{
                     fontSize: 16,
                     fontWeight: 600,
                     color: "var(--color-text-primary)",
-                    lineHeight: 1.3,
-                    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-                    flex: 1,
-                    minWidth: 0,
+                    marginRight: categoryTags.length > 0 ? 8 : 0,
+                    verticalAlign: "middle",
                   }}
                 >
                   {title}
-                </div>
+                </span>
               )}
-              {/* {rating > 0 && (
-                <div style={{ display: "flex", alignItems: "center", gap: 4, flexShrink: 0 }}>
-                  <StarFilledIcon size={13} />
-                  <span
-                    style={{
-                      fontSize: 12,
-                      color: "var(--color-text-secondary)",
-                      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-                      fontWeight: 500,
-                    }}
-                  >
-                    {rating.toFixed(2)}
-                  </span>
-                </div>
-              )} */}
+              {categoryTags.map((c, i) => (
+                <span
+                  key={i}
+                  style={{ display: "inline-block", verticalAlign: "middle", marginRight: 6 }}
+                >
+                  <ColorfulTag label={c} index={i} offset={hashLabel(title)} />
+                </span>
+              ))}
             </div>
           )}
 
@@ -922,17 +1002,8 @@ function ActivityCard({ node, onAction }: { node: WidgetNode; onAction?: WidgetR
             </div>
           )}
 
-          {/* Colorful category tags — each distinct */}
-          {categoryTags.length > 0 && (
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-              {categoryTags.map((c, i) => (
-                <ColorfulTag key={i} label={c} index={i} offset={hashLabel(title)} />
-              ))}
-            </div>
-          )}
-
           {/* Divider */}
-          {(title || categoryTags.length > 0) && (description || priceFormatted) && (
+          {(title || categoryTags.length > 0) && description && (
             <div style={{ height: "0.5px", background: "#ececec" }} />
           )}
 
@@ -978,22 +1049,6 @@ function ActivityCard({ node, onAction }: { node: WidgetNode; onAction?: WidgetR
             </div>
           )}
 
-          {/* Price */}
-          {priceFormatted && (
-            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-              <PriceLabel />
-              <div style={{ display: "flex", alignItems: "baseline", gap: 4 }}>
-                <span style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}>
-                  {priceFormatted}
-                </span>
-                {unitLabel && (
-                  <span style={{ fontSize: 12, color: "var(--color-text-secondary)", fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}>
-                    / {unitLabel.toLowerCase()}
-                  </span>
-                )}
-              </div>
-            </div>
-          )}
         </div>
 
         {imgSrc && (
@@ -1002,6 +1057,61 @@ function ActivityCard({ node, onAction }: { node: WidgetNode; onAction?: WidgetR
           </div>
         )}
       </div>
+
+      {/* Footer — price on the left, View CTA on the right; mirrors the
+          HotelCard footer layout. Opens the same detail drawer the card
+          already opens when clicked anywhere. */}
+      {(priceFormatted || clickAction) && (
+        <div
+          style={{
+            marginTop: 14,
+            paddingTop: 12,
+            borderTop: "0.5px solid #e5e5e5",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 10,
+            flexWrap: "wrap",
+            rowGap: 10,
+          }}
+        >
+          {priceFormatted ? (
+            <div style={{ display: "flex", flexDirection: "row", gap: 2, minWidth: 0 }}>
+              <PriceLabel />
+              <div style={{ display: "flex", alignItems: "baseline", gap: 4, flexWrap: "wrap" }}>
+                <span
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 700,
+                    color: "var(--color-text-primary)",
+                    fontFamily: "'Inter', sans-serif",
+                    lineHeight: 1.2,
+                  }}
+                >
+                  {priceFormatted}
+                </span>
+                {unitLabel && (
+                  <span
+                    style={{
+                      fontSize: 12,
+                      color: "var(--color-text-secondary)",
+                      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+                    }}
+                  >
+                    / {unitLabel.toLowerCase()}
+                  </span>
+                )}
+              </div>
+            </div>
+          ) : (
+            <span />
+          )}
+
+          {clickAction && (
+            <ViewDetailButton onClick={() => onAction?.(clickAction)} />
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -1324,6 +1434,23 @@ function PoiCard({
           </div>
         )}
       </div>
+
+      {/* Footer — explicit View CTA (matches the HotelCard "Check Availability"
+          button). Opens the same detail drawer the card already opens on click. */}
+      {clickAction && (
+        <div
+          style={{
+            marginTop: 14,
+            paddingTop: 12,
+            borderTop: "0.5px solid #e5e5e5",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-end",
+          }}
+        >
+          <ViewDetailButton onClick={() => onAction?.(clickAction)} />
+        </div>
+      )}
     </div>
   );
 }
@@ -1595,6 +1722,23 @@ function RestaurantCard({
           </div>
         )}
       </div>
+
+      {/* Footer — explicit View CTA (matches the HotelCard "Check Availability"
+          button). Opens the same detail drawer the card already opens on click. */}
+      {clickAction && (
+        <div
+          style={{
+            marginTop: 14,
+            paddingTop: 12,
+            borderTop: "0.5px solid #e5e5e5",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-end",
+          }}
+        >
+          <ViewDetailButton onClick={() => onAction?.(clickAction)} />
+        </div>
+      )}
     </div>
   );
 }
@@ -3747,7 +3891,7 @@ function TransferPreviewCard({
         (e.currentTarget as HTMLDivElement).style.borderColor = "#ececec";
         (e.currentTarget as HTMLDivElement).style.boxShadow = "none";
       }}
-      className="w-full md:max-w-[500px]"
+      className="w-full"
     >
       {/* Header band — tinted with the transport accent color */}
       <div
