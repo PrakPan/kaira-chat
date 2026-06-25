@@ -1,3 +1,4 @@
+import ImageWithSkeleton from "../destination/ImageWithSkeleton";
 import styles from "./LuxuryEuropeDestinations.module.scss";
 
 /*
@@ -59,17 +60,14 @@ const PackageCard = ({
         if (interactive && e.key === "Enter") onClick(e);
       }}
     >
-      <div
-        className={styles.img}
-        style={image ? { backgroundImage: `url('${image}')` } : undefined}
-      >
+      <ImageWithSkeleton src={image} asBackground className={styles.img}>
         {tier ? (
           <span className={tierClassName(tierVariant)}>
             {tierVariant === "popular" ? "★ " : ""}
             {tier}
           </span>
         ) : null}
-      </div>
+      </ImageWithSkeleton>
 
       <div className={styles.body}>
         {Array.isArray(route) && route.length > 0 ? (

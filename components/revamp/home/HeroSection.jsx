@@ -31,12 +31,12 @@ export const KairaAvatar = ({ size = "lg", minimal = false }) => {
 const POLAROIDS = [
   {
     cls: "p1",
-    img: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=300&q=80&auto=format",
+    img: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=300&q=80&auto=format",
     caption: "Kyoto, 2am ramen",
   },
   {
     cls: "p2",
-    img: "https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=300&q=80&auto=format",
+    img: "https://images.unsplash.com/photo-1586500036706-41963de24d8b?w=300&q=80&auto=format",
     caption: "Malé, day 2",
   },
   {

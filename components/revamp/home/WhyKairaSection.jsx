@@ -13,7 +13,7 @@ const DEFAULT_FEATURES = [
         She doesn&apos;t suggest it. <span className={styles.serif}>She decides.</span>
       </>
     ),
-    body: "No list of links to sort through. No tabs to open. Kaira builds your complete personalised itinerary end to end — and if something doesn't feel right, you change it in chat and she rebuilds instantly.",
+    body: "No list of links to sort through. No tabs to open. Kaira builds your complete personalised itinerary end to end, and if something doesn't feel right, you change it in chat and she rebuilds instantly.",
   },
   {
     title: (
@@ -37,7 +37,7 @@ const DEFAULT_FEATURES = [
         2 minutes from first message to <span className={styles.serif}>full itinerary.</span>
       </>
     ),
-    body: "Faster than most travel sites even load their search results. You tell Kaira what you want, she comes back with a complete trip plan. Not a starting point — a finished one.",
+    body: "Faster than most travel sites even load their search results. You tell Kaira what you want, she comes back with a complete trip plan. Not a starting point, a finished one.",
   },
   {
     title: (
@@ -67,7 +67,7 @@ const WhyKairaSection = ({ features = DEFAULT_FEATURES }) => {
               <span className={styles.serif}>Kaira gives you a trip.</span> Tell
               her your destination, dates, budget, and travel style and she
               builds your complete itinerary in under 2 minutes. Flights,
-              hotels, experiences, transfers — all in one place, ready to book.
+              hotels, experiences, transfers, all in one place, ready to book.
             </p>
             <p className={styles.tag}>Here&apos;s what&apos;s different.</p>
           </div>
