@@ -102,6 +102,35 @@ const NewPoiDetailsDrawer = (props) => {
       });
       newItinerary.cities = itineraryCities;
       dispatch(setItinerary(newItinerary));
+
+      // Re-fetch the canonical itinerary after a successful add — mirrors the
+      // POI/activity delete flow. The local push above gives instant feedback,
+      // but the backend decides the slab element's final placement/indices, so
+      // pulling the fresh response keeps the day-by-day view from showing stale
+      // data and keeps slab indices correct for the next mutation.
+      try {
+        const refreshed = await axios.get(
+          `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            },
+          }
+        );
+        if (refreshed?.data) {
+          // Preserve the resolved status — the itinerary GET can lag and
+          // return a stale "Draft", which would hide finalized-only tabs.
+          const priorStatus = itinerary?.status;
+          const resolvedStatus =
+            priorStatus && priorStatus !== "Draft"
+              ? priorStatus
+              : refreshed.data?.status;
+          dispatch(setItinerary({ ...refreshed.data, status: resolvedStatus }));
+        }
+      } catch (refreshErr) {
+        console.log("Failed to refresh itinerary after add:", refreshErr);
+      }
+
       props.openNotification({
         type: "success",
         text: `Added ${res?.data?.heading} Successfully`,
