@@ -1,5 +1,6 @@
 import { useRouter } from "next/router";
 import { KairaAvatar } from "./HeroSection";
+import ImageWithSkeleton from "../destination/ImageWithSkeleton";
 import styles from "./KairaLovingSection.module.scss";
 
 /*
@@ -88,9 +89,10 @@ const KairaLovingSection = ({
               //     router.push(`/chat?seed=${encodeURIComponent(p.seed || "")}`);
               // }}
             >
-              <div
+              <ImageWithSkeleton
+                src={p.img}
+                asBackground
                 className={styles.pickImg}
-                style={{ backgroundImage: `url('${p.img}')` }}
               />
               <div className={styles.pickBody}>
                 <div className={styles.pickTag}>{p.tag}</div>

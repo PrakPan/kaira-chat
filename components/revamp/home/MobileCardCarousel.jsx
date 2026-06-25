@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper";
 import "swiper/css";
@@ -15,16 +15,19 @@ import styles from "./MobileCardCarousel.module.scss";
  *
  *   items — [{ key, node }]   (node is the already-built card element)
  *
- * Nav arrows are bound per-instance via refs so multiple rails can live on the
- * same page without colliding on a shared selector.
+ * Nav arrows are bound per-instance via callback refs held in state: once the
+ * buttons mount, the state update re-renders and Swiper (v9) re-binds its
+ * navigation to the real elements. This avoids the stale-ref problem of
+ * onBeforeInit and the selector collisions of shared class names when several
+ * rails live on the same page.
  */
 const MobileCardCarousel = ({
   items = [],
   slidesPerView = 1.12,
   spaceBetween = 16,
 }) => {
-  const prevRef = useRef(null);
-  const nextRef = useRef(null);
+  const [prevEl, setPrevEl] = useState(null);
+  const [nextEl, setNextEl] = useState(null);
 
   return (
     <div className={styles.railWrap}>
@@ -33,12 +36,7 @@ const MobileCardCarousel = ({
         modules={[Navigation]}
         slidesPerView={slidesPerView}
         spaceBetween={spaceBetween}
-        navigation={{ prevEl: prevRef.current, nextEl: nextRef.current }}
-        onBeforeInit={(swiper) => {
-          // refs aren't set on first render; wire them before Swiper inits.
-          swiper.params.navigation.prevEl = prevRef.current;
-          swiper.params.navigation.nextEl = nextRef.current;
-        }}
+        navigation={{ prevEl, nextEl }}
       >
         {items.map((it) => (
           <SwiperSlide key={it.key} className={styles.slide}>
@@ -48,14 +46,16 @@ const MobileCardCarousel = ({
       </Swiper>
 
       <div
-        ref={prevRef}
+        ref={setPrevEl}
+        role="button"
         aria-label="Previous"
         className={`${styles.navBtn} ${styles.navPrev}`}
       >
         <FontAwesomeIcon icon={faChevronLeft} />
       </div>
       <div
-        ref={nextRef}
+        ref={setNextEl}
+        role="button"
         aria-label="Next"
         className={`${styles.navBtn} ${styles.navNext}`}
       >
