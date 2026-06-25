@@ -1,9 +1,19 @@
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper";
+import "swiper/css";
+import "swiper/css/navigation";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
+
+import styles from "./GoogleReviewsSection.module.scss";
+
 /*
  * "Loved on Google" — real 5-star Google reviews from Kaira's travellers.
  *
+ * Reviews render in a swipeable rail (mirrors the other homepage carousels).
  * Each card links to the traveller's actual Google review. The `quote`
- * lines below are short stand-ins written from each trip; swap them for
- * the verbatim Google text whenever you want (the links are the source).
+ * lines are short excerpts/paraphrases pulled from each traveller's
+ * real Google review — the links go to the full, verbatim text.
  */
 
 const REVIEWS = [
@@ -12,7 +22,7 @@ const REVIEWS = [
     trip: "Japan",
     avatarVariant: "pink",
     quote:
-      "Solo in Japan and never once felt lost. Kaira's plan flowed, and the little local picks made the whole trip.",
+      "Our honeymoon to Japan was truly the best decision — every detail, from hotels to transport to guided tours, was handled seamlessly so we could just relax and enjoy. Japan in November was magical.",
     link: "https://share.google/6lo8sROhZYtNycepM",
   },
   {
@@ -20,7 +30,7 @@ const REVIEWS = [
     trip: "Maldives",
     avatarVariant: "blue",
     quote:
-      "The Maldives stay was exactly what we wanted, and the price was honest. No surprise markups at the end.",
+      "Our fully customized Maldives trip turned out far better than expected — smooth transfers, the perfect resort, and zero stress throughout. Pricing was also very reasonable for the service.",
     link: "https://share.google/cTpInuX3E6Zr9z8cl",
   },
   {
@@ -28,7 +38,7 @@ const REVIEWS = [
     trip: "Europe",
     avatarVariant: "green",
     quote:
-      "Multi-country Europe trip sorted in a single chat. Flights, trains and hotels all lined up perfectly.",
+      "Amazing experience with their agility and trip planning — supported us throughout two weeks across 4 countries and 7 cities. A fab team that blends AI with real travel expertise.",
     link: "https://share.google/iy1b48ykCI0d7O8dU",
   },
   {
@@ -36,7 +46,7 @@ const REVIEWS = [
     trip: "India",
     avatarVariant: "coral",
     quote:
-      "Quick domestic getaway planned end to end. Easy to tweak, and everything was bookable in one place.",
+      "A fully customized trip across Manali, Hyderabad and Dehradun — nothing short of amazing. Well-planned, smooth, and personalized to my preferences from start to finish, 10/10.",
     link: "https://share.google/oiJoDyOzuRbz4e6nK",
   },
   {
@@ -44,23 +54,23 @@ const REVIEWS = [
     trip: "Europe",
     avatarVariant: "pink",
     quote:
-      "Genuinely the easiest holiday I've ever booked. Real prices, real routes, and a human who actually replied.",
+      "One of the best travel experiences — meticulously planned and executed to perfection. Hotels, internal transfers and airport transfers all handled, with support available even late at night.",
     link: "https://share.google/z3sDM17ebOShAqw6Q",
   },
   {
     name: "Minal Dhoble",
-    trip: "Thailand",
+    trip: "Vietnam",
     avatarVariant: "blue",
     quote:
-      "Thailand was a breeze. Beaches, transfers and stays all handled, and they changed plans for us mid-trip.",
+      "A wonderful trip to Vietnam — the team was responsive and attentive from start to finish. Hanoi, Da Nang and Hoi An were covered with seamless transfers and accommodations.",
     link: "https://share.google/S4YD4Tme2g8wbeiDc",
   },
   {
-    name: "Pranav Kananur",
+    name: "Pranav Konanur",
     trip: "Dubai",
     avatarVariant: "green",
     quote:
-      "Dubai itinerary was spot on. Fast replies, clear pricing, and zero of the usual travel-agent back and forth.",
+      "A great trip to Dubai and Abu Dhabi! The Marina cruise and desert safari were wonderful, and the team made sure the whole trip was completely hassle-free.",
     link: "https://share.google/S5zCGrbutDoKMhjjg",
   },
   {
@@ -68,7 +78,7 @@ const REVIEWS = [
     trip: "Greece",
     avatarVariant: "coral",
     quote:
-      "Greece felt tailor-made. Santorini sunsets, the right islands, and a plan that just worked from day one.",
+      "A last-minute solo trip to Greece, curated in under 12 hours — flights, stays, transfers and experiences all matched to my preferences. Athens, Mykonos and Santorini, perfectly balanced.",
     link: "https://share.google/FwRwaWXW3a6NHTdvk",
   },
 ];
@@ -112,7 +122,7 @@ const GoogleReviewsSection = ({ reviews = REVIEWS }) => {
             <span className="ttwKicker" style={{ marginBottom: 14 }}>
               <GoogleGlyph /> Loved on Google
             </span>
-            <h2 style={{ fontWeight: 500 }}>
+            <h2>
               Real reviews from{" "}
               <span className="ttwSerif">real travellers.</span>
             </h2>
@@ -123,96 +133,118 @@ const GoogleReviewsSection = ({ reviews = REVIEWS }) => {
           </div>
         </div>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(290px, 1fr))",
-            gap: 20,
-          }}
-        >
-          {reviews.map((r) => {
-            const c = AVATAR_COLORS[r.avatarVariant] || AVATAR_COLORS.blue;
-            return (
-              <a
-                key={r.name + r.trip}
-                href={r.link}
-                target="_blank"
-                rel="noreferrer"
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 14,
-                  background: "var(--ttw-bg)",
-                  border: "1px solid var(--ttw-line)",
-                  borderRadius: 18,
-                  padding: "22px 22px 20px",
-                  textDecoration: "none",
-                  color: "var(--ttw-ink)",
-                  boxShadow: "0 6px 20px -14px rgba(11,18,32,0.25)",
-                  transition: "transform 0.15s ease, box-shadow 0.15s ease",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <Stars />
-                  <GoogleGlyph />
-                </div>
-
-                <p
-                  style={{
-                    margin: 0,
-                    fontSize: 15,
-                    lineHeight: 1.55,
-                    color: "var(--ttw-ink-2)",
-                  }}
-                >
-                  &ldquo;{r.quote}&rdquo;
-                </p>
-
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 12,
-                    marginTop: "auto",
-                    paddingTop: 6,
-                  }}
-                >
+        <div className={styles.railWrap}>
+          <Swiper
+            className={styles.rail}
+            modules={[Navigation]}
+            spaceBetween={20}
+            slidesPerView={1.15}
+            navigation={{
+              nextEl: ".google-reviews-next",
+              prevEl: ".google-reviews-prev",
+            }}
+            breakpoints={{
+              640: { slidesPerView: 2, spaceBetween: 20 },
+              1024: { slidesPerView: 3, spaceBetween: 20 },
+            }}
+          >
+            {reviews.map((r) => {
+              const c = AVATAR_COLORS[r.avatarVariant] || AVATAR_COLORS.blue;
+              return (
+                <SwiperSlide key={r.name + r.trip} className={styles.slide}>
                   <div
+                    // href={r.link}
+                    // target="_blank"
+                    // rel="noreferrer"
                     style={{
-                      width: 38,
-                      height: 38,
-                      borderRadius: "50%",
-                      background: c.bg,
-                      color: c.ink,
-                      display: "grid",
-                      placeItems: "center",
-                      fontWeight: 700,
-                      fontSize: 15,
-                      flexShrink: 0,
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 14,
+                      height: "100%",
+                      background: "var(--ttw-bg)",
+                      border: "1px solid var(--ttw-line)",
+                      borderRadius: 18,
+                      padding: "22px 22px 20px",
+                      textDecoration: "none",
+                      color: "var(--ttw-ink)",
+                      boxShadow: "0 6px 20px -14px rgba(11,18,32,0.25)",
+                      transition: "transform 0.15s ease, box-shadow 0.15s ease",
                     }}
                   >
-                    {r.name.charAt(0)}
-                  </div>
-                  <div style={{ lineHeight: 1.3 }}>
-                    <div style={{ fontWeight: 600, fontSize: 14.5 }}>
-                      {r.name}
-                    </div>
                     <div
-                      style={{ fontSize: 12.5, color: "var(--ttw-ink-4)" }}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                      }}
                     >
-                      {r.trip} · Google review
+                      <Stars />
+                      <GoogleGlyph />
+                    </div>
+
+                    <p
+                      style={{
+                        margin: 0,
+                        fontSize: 15,
+                        lineHeight: 1.55,
+                        color: "var(--ttw-ink-2)",
+                      }}
+                    >
+                      &ldquo;{r.quote}&rdquo;
+                    </p>
+
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 12,
+                        marginTop: "auto",
+                        paddingTop: 6,
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: 38,
+                          height: 38,
+                          borderRadius: "50%",
+                          background: c.bg,
+                          color: c.ink,
+                          display: "grid",
+                          placeItems: "center",
+                          fontWeight: 700,
+                          fontSize: 15,
+                          flexShrink: 0,
+                        }}
+                      >
+                        {r.name.charAt(0)}
+                      </div>
+                      <div style={{ lineHeight: 1.3 }}>
+                        <div style={{ fontWeight: 600, fontSize: 14.5 }}>
+                          {r.name}
+                        </div>
+                        <div style={{ fontSize: 12.5, color: "var(--ttw-ink-4)" }}>
+                          {r.trip} · Google review
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </a>
-            );
-          })}
+                </SwiperSlide>
+              );
+            })}
+          </Swiper>
+
+          <div
+            aria-label="Previous reviews"
+            className={`google-reviews-prev ${styles.navBtn} ${styles.navPrev}`}
+          >
+            <FontAwesomeIcon icon={faChevronLeft} />
+          </div>
+          <div
+            aria-label="Next reviews"
+            className={`google-reviews-next ${styles.navBtn} ${styles.navNext}`}
+          >
+            <FontAwesomeIcon icon={faChevronRight} />
+          </div>
         </div>
       </div>
     </section>

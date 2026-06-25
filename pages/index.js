@@ -139,12 +139,13 @@ const Home = ({ token, hotLocationSearch, checkAuthState, setHotLocationSearch }
         <NavigationMenu message={"Welcome to The Tarzan Way!"} />
         <HeroSection slug={"home"} />
         <TrustFactors />
-        <JourneySimplified />
-        <GoogleReviewsSection />
         <KairaLovingSection />
-
         {token && <MyTripsSection className="max-w-7xl" />}
 
+        <JourneySimplified />
+        <GoogleReviewsSection />
+       
+       
         <TravelerStoriesSection />
         <LuxuryEuropeDestinations />
         <KairaPlansSection />

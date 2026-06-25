@@ -32,7 +32,7 @@ const TRAVEL_STYLES = [
     one_liner_description:
       "Slow mornings and quiet villas, planned around just the two of you.",
     image:
-      "https://images.unsplash.com/photo-1518621736915-f3b1c41bfd00?w=800&q=80&auto=format",
+      "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/Honeymoon package.jpg",
     link: chat("Honeymoon package"),
   },
   {
@@ -42,7 +42,7 @@ const TRAVEL_STYLES = [
     one_liner_description:
       "Easy routes, kid-friendly stays and plenty for everyone to do.",
     image:
-      "https://images.unsplash.com/photo-1602002418082-a4443e081dd1?w=800&q=80&auto=format",
+      "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/Familt trip abroad.jpg",
     link: chat("Family trip abroad"),
   },
   {
@@ -52,7 +52,7 @@ const TRAVEL_STYLES = [
     one_liner_description:
       "Safe, social and well-paced. Routes built for travelling on your own.",
     image:
-      "https://images.unsplash.com/photo-1527631746610-bca00a040d60?w=800&q=80&auto=format",
+      "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/solo travel.jpg",
     link: chat("Solo travel itinerary"),
   },
   {
@@ -62,7 +62,7 @@ const TRAVEL_STYLES = [
     one_liner_description:
       "Treks, climbs and big-view days for travellers who like it active.",
     image:
-      "https://images.unsplash.com/photo-1551632811-561732d1e306?w=800&q=80&auto=format",
+      "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/adventure activity.jpg",
     link: chat("Adventure trip"),
   },
   {
@@ -72,7 +72,7 @@ const TRAVEL_STYLES = [
     one_liner_description:
       "Overwater dreams without the overwater price. Local islands, smart timing.",
     image:
-      "https://images.unsplash.com/photo-1540202404-a2f29016b523?w=800&q=80&auto=format",
+      "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/maldiv on budget.jpg",
     link: chat("Maldives on a budget"),
   },
   {
@@ -82,7 +82,7 @@ const TRAVEL_STYLES = [
     one_liner_description:
       "Your first stamp abroad without breaking the bank. Real prices, no markups.",
     image:
-      "https://images.unsplash.com/photo-1488085061387-422e29b40080?w=800&q=80&auto=format",
+      "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/budgetinternational.jpg",
     link: chat("Budget international trip"),
   },
   {
@@ -92,7 +92,7 @@ const TRAVEL_STYLES = [
     one_liner_description:
       "Design hotels, private transfers and the good tables, sorted end to end.",
     image:
-      "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&q=80&auto=format",
+      "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/luxury travel.jpg",
     link: chat("Luxury holiday"),
   },
   {
@@ -102,7 +102,7 @@ const TRAVEL_STYLES = [
     one_liner_description:
       "Time it right for sakura. Kyoto, Tokyo and the quiet spots in between.",
     image:
-      "https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=800&q=80&auto=format",
+      "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/Japan in cherry blossom season .jpg",
     link: chat("Japan in cherry blossom season"),
   },
   {
@@ -112,7 +112,7 @@ const TRAVEL_STYLES = [
     one_liner_description:
       "Ubud greens to Seminyak sunsets, shaped into one slow honeymoon.",
     image:
-      "https://images.unsplash.com/photo-1537953773345-d172ccf13cf1?w=800&q=80&auto=format",
+      "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/Bali for honeymoon.jpg",
     link: chat("Bali honeymoon"),
   },
   {
@@ -122,7 +122,7 @@ const TRAVEL_STYLES = [
     one_liner_description:
       "Lantern towns, junk-boat nights and food the whole family will love.",
     image:
-      "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=800&q=80&auto=format",
+      "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/Vietnam with kids   .jpg",
     link: chat("Vietnam family trip with kids"),
   },
   {
@@ -132,7 +132,7 @@ const TRAVEL_STYLES = [
     one_liner_description:
       "Three days, two flights, one beach. A reset that fits a long weekend.",
     image:
-      "https://images.unsplash.com/photo-1525258946800-98cfd641d0de?w=800&q=80&auto=format",
+      "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/Thiland.jpg",
     link: chat("Thailand long weekend"),
   },
   {
@@ -142,7 +142,7 @@ const TRAVEL_STYLES = [
     one_liner_description:
       "Long days, lake towns and the classic run, timed for peak season.",
     image:
-      "https://images.unsplash.com/photo-1503917988258-f87a78e3c995?w=800&q=80&auto=format",
+      "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/Europe in summer.jpg",
     link: chat("Europe in summer"),
   },
   {
@@ -152,7 +152,7 @@ const TRAVEL_STYLES = [
     one_liner_description:
       "Forts, dunes and cool desert evenings. The best season to go.",
     image:
-      "https://images.unsplash.com/photo-1599661046289-e31897846e41?w=800&q=80&auto=format",
+      "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/Rajasthan in winter.jpg",
     link: chat("Rajasthan in winter"),
   },
   {
@@ -162,7 +162,7 @@ const TRAVEL_STYLES = [
     one_liner_description:
       "Houseboats, slow canals and green that goes on for days.",
     image:
-      "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?w=800&q=80&auto=format",
+      "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/Kerala backwaters.jpg",
     link: urls.travel_planner.KERALA,
   },
   {
@@ -172,7 +172,7 @@ const TRAVEL_STYLES = [
     one_liner_description:
       "High passes open, skies clear. The window to ride the Himalayas.",
     image:
-      "https://images.unsplash.com/photo-1581793745862-99fde7fa73d2?w=800&q=80&auto=format",
+      "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/Ladakh in july.jpg",
     link: urls.travel_planner.LADAKH,
   },
   {
@@ -182,7 +182,7 @@ const TRAVEL_STYLES = [
     one_liner_description:
       "Monasteries, mountain air and permits handled. Quietly unforgettable.",
     image:
-      "https://images.unsplash.com/photo-1553856622-d1b352e9a211?w=800&q=80&auto=format",
+      "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/Bhutan from delhi.jpg",
     link: chat("Bhutan trip from Delhi"),
   },
 ];

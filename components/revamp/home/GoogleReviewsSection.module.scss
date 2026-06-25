@@ -1,0 +1,63 @@
+/* "Loved on Google" — review carousel rail (mirrors KairaPlansSection rail). */
+
+.railWrap {
+  position: relative;
+}
+
+/* override the global `.swiper { height: 300px }` so cards aren't clipped */
+.railWrap :global(.swiper) {
+  height: auto;
+}
+.rail {
+  padding: 8px 4px 16px;
+}
+
+.slide {
+  height: auto;
+  display: flex;
+
+  > * {
+    width: 100%;
+  }
+}
+
+.navBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--ttw-ink-rail);
+  color: var(--ttw-yellow);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+
+  &:hover {
+    transform: translateY(-50%) scale(1.08);
+  }
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.navBtn:global(.swiper-button-disabled) {
+  opacity: 0.35;
+  pointer-events: none;
+}
+.navPrev {
+  left: -6px;
+  @media (min-width: 1024px) {
+    left: -20px;
+  }
+}
+.navNext {
+  right: -6px;
+  @media (min-width: 1024px) {
+    right: -20px;
+  }
+}

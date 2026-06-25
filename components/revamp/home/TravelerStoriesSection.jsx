@@ -1,5 +1,7 @@
 import { useRouter } from "next/router";
 import StoryCard from "./StoryCard";
+import MobileCardCarousel from "./MobileCardCarousel";
+import useMediaQuery from "../../../hooks/useMedia";
 import styles from "./TravelerStoriesSection.module.scss";
 
 /*
@@ -14,7 +16,7 @@ import styles from "./TravelerStoriesSection.module.scss";
 const DEFAULT_STORIES = [
   {
     id: 1,
-    image: "https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=600&q=80&auto=format",
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/HoiAn.png",
     badge: "Vietnam · 5 nights",
     moment: (
       <>
@@ -28,7 +30,7 @@ const DEFAULT_STORIES = [
   },
   {
     id: 2,
-    image: "https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=600&q=80&auto=format",
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/maldives.jpg",
     badge: "Maldives · 4 nights",
     moment: (
       <>
@@ -42,7 +44,7 @@ const DEFAULT_STORIES = [
   },
   {
     id: 3,
-    image: "https://images.unsplash.com/photo-1503640538573-148065ba4904?w=600&q=80&auto=format",
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/japan.jpg",
     badge: "Japan · 9 nights",
     moment: (
       <>
@@ -56,7 +58,7 @@ const DEFAULT_STORIES = [
   },
   {
     id: 4,
-    image: "https://images.unsplash.com/photo-1512100356356-de1b84283e18?w=600&q=80&auto=format",
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/baligateway.jpg",
     badge: "Bali · 7 nights",
     moment: (
       <>
@@ -100,6 +102,22 @@ const DEFAULT_STORIES = [
 
 const TravelerStoriesSection = ({ stories = DEFAULT_STORIES, total = 2140 }) => {
   const router = useRouter();
+  const isMobile = useMediaQuery("(max-width: 640px)");
+
+  const renderCard = (s) => (
+    <StoryCard
+      key={s.id}
+      image={s.image}
+      badge={s.badge}
+      moment={s.moment}
+      detail={s.detail}
+      author={s.author}
+      rating={s.rating}
+      onClick={() =>
+        router.push(`/chat?seed=${encodeURIComponent(s.seed || s.badge || "")}`)
+      }
+    />
+  );
 
   return (
     <section className={styles.section}>
@@ -124,22 +142,13 @@ const TravelerStoriesSection = ({ stories = DEFAULT_STORIES, total = 2140 }) => 
           </a> */}
         </div>
 
-        <div className={styles.grid}>
-          {stories.map((s) => (
-            <StoryCard
-              key={s.id}
-              image={s.image}
-              badge={s.badge}
-              moment={s.moment}
-              detail={s.detail}
-              author={s.author}
-              rating={s.rating}
-              onClick={() =>
-                router.push(`/chat?seed=${encodeURIComponent(s.seed || s.badge || "")}`)
-              }
-            />
-          ))}
-        </div>
+        {isMobile ? (
+          <MobileCardCarousel
+            items={stories.map((s) => ({ key: s.id, node: renderCard(s) }))}
+          />
+        ) : (
+          <div className={styles.grid}>{stories.map(renderCard)}</div>
+        )}
       </div>
     </section>
   );

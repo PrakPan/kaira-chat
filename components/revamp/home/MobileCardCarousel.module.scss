@@ -1,0 +1,63 @@
+/* Mobile-only swipeable rail shared by the homepage card sections. */
+
+.railWrap {
+  position: relative;
+}
+
+/* override the global `.swiper { height: 300px }` so cards aren't clipped */
+.railWrap :global(.swiper) {
+  height: auto;
+  /* let the peeking next card stay visible past the container edge */
+  overflow: visible;
+}
+
+.rail {
+  padding: 4px 2px 14px;
+}
+
+.slide {
+  height: auto;
+  display: flex;
+
+  > * {
+    width: 100%;
+  }
+}
+
+.navBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--ttw-ink-rail);
+  color: var(--ttw-yellow);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: 0 6px 18px -8px rgba(11, 18, 32, 0.5);
+  transition: transform 0.15s ease;
+
+  &:hover {
+    transform: translateY(-50%) scale(1.08);
+  }
+  svg {
+    width: 13px;
+    height: 13px;
+  }
+}
+
+/* Swiper hides the active-end button with this class; respect it. */
+.navBtn:global(.swiper-button-disabled) {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.navPrev {
+  left: 2px;
+}
+.navNext {
+  right: 2px;
+}

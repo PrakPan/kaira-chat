@@ -31,6 +31,7 @@ const DEFAULT_PICKS = [
       "Kyoto's last petals, Kanazawa in the quiet, a ryokan night near Hakone. 9 days, around ₹1.6L per person.",
     img: "https://images.unsplash.com/photo-1522383225653-ed111181a951?w=400&q=80&auto=format",
     seed: "Japan shoulder season, 9 days",
+    itinerary_id: "c6377b28-8132-4027-a1c0-9ba584dcf0d8"
   },
   {
     tag: "Kaira's pick · this month",
@@ -43,6 +44,7 @@ const DEFAULT_PICKS = [
       "Hoi An before peak heat, a sleeper train north, pho and coffee the way Anh makes them. 8 days, ₹68K per person.",
     img: "https://images.unsplash.com/photo-1555921015-5532091f6026?w=400&q=80&auto=format",
     seed: "Vietnam dry tail end, 8 days",
+     itinerary_id: "5d8f479d-ef11-4c42-bc0c-0a3ee207183e"
   },
 ];
 
@@ -79,12 +81,12 @@ const KairaLovingSection = ({
               role="button"
               tabIndex={0}
               onClick={() =>
-                router.push(`/chat?seed=${encodeURIComponent(p.seed || "")}`)
+                router.push(`/chat/${p.itinerary_id}`)
               }
-              onKeyDown={(e) => {
-                if (e.key === "Enter")
-                  router.push(`/chat?seed=${encodeURIComponent(p.seed || "")}`);
-              }}
+              // onKeyDown={(e) => {
+              //   if (e.key === "Enter")
+              //     router.push(`/chat?seed=${encodeURIComponent(p.seed || "")}`);
+              // }}
             >
               <div
                 className={styles.pickImg}

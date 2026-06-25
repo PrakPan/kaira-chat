@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import PackageCard from "./PackageCard";
+import MobileCardCarousel from "./MobileCardCarousel";
+import useMediaQuery from "../../../hooks/useMedia";
 import styles from "./LuxuryEuropeDestinations.module.scss";
 
 /*
@@ -33,7 +35,7 @@ const DEFAULT_PACKAGES = [
   /* ---------------- Honeymoon ---------------- */
   {
     id: "bali-honeymoon",
-    image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=600&q=80&auto=format",
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/bali1.png",
     tier: "Most booked",
     tierVariant: "popular",
     route: ["Mumbai", "Ubud", "Nusa Penida", "Seminyak"],
@@ -49,7 +51,7 @@ const DEFAULT_PACKAGES = [
   },
   {
     id: "paris-honeymoon",
-    image: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=600&q=80&auto=format",
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/paris1.jpg",
     tier: "Iconic",
     route: ["Delhi", "Paris"],
     title: (
@@ -64,7 +66,7 @@ const DEFAULT_PACKAGES = [
   },
   {
     id: "maldives-honeymoon",
-    image: "https://images.unsplash.com/photo-1573843981267-be1999ff37cd?w=600&q=80&auto=format",
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/maldives1.png",
     tier: "Premium",
     tierVariant: "premium",
     route: ["Mumbai", "Malé"],
@@ -82,7 +84,7 @@ const DEFAULT_PACKAGES = [
   /* ---------------- Family ---------------- */
   {
     id: "bali-family",
-    image: "https://images.unsplash.com/photo-1518002171953-a080ee817e1f?w=600&q=80&auto=format",
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/bali2.jpg",
     tier: "Family-friendly",
     route: ["Bangalore", "Ubud", "Gili T", "Kuta"],
     title: (
@@ -97,7 +99,7 @@ const DEFAULT_PACKAGES = [
   },
   {
     id: "dubai-family",
-    image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=600&q=80&auto=format",
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/dubai2.jpg",
     tier: "Family-friendly",
     route: ["Delhi", "Dubai"],
     title: (
@@ -112,7 +114,7 @@ const DEFAULT_PACKAGES = [
   },
   {
     id: "singapore-family",
-    image: "https://images.unsplash.com/photo-1525625293386-3f8f99389edd?w=600&q=80&auto=format",
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/singapore2.jpg",
     tier: "Family-friendly",
     route: ["Mumbai", "Singapore", "Sentosa"],
     title: (
@@ -127,7 +129,7 @@ const DEFAULT_PACKAGES = [
   },
   {
     id: "vietnam-family",
-    image: "https://images.unsplash.com/photo-1528181304800-259b08848526?w=600&q=80&auto=format",
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/vietnam2.jpg",
     tier: "Family-friendly",
     route: ["Bangalore", "Hanoi", "Hạ Long", "Hoi An"],
     title: (
@@ -144,7 +146,7 @@ const DEFAULT_PACKAGES = [
   /* ---------------- Adventure ---------------- */
   {
     id: "bali-adventure",
-    image: "https://images.unsplash.com/photo-1604999565976-8913ad2ddb7c?w=600&q=80&auto=format",
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/bali3.png",
     tier: "Adventure",
     route: ["Mumbai", "Ubud", "Nusa Penida"],
     title: (
@@ -159,7 +161,7 @@ const DEFAULT_PACKAGES = [
   },
   {
     id: "grindelwald-adventure",
-    image: "https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?w=600&q=80&auto=format",
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/europe3.png",
     tier: "Adventure",
     route: ["Delhi", "Interlaken", "Grindelwald", "Lucerne", "Zurich"],
     title: (
@@ -176,7 +178,7 @@ const DEFAULT_PACKAGES = [
   /* ---------------- Quick escape ---------------- */
   {
     id: "thailand-quick",
-    image: "https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?w=600&q=80&auto=format",
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/thailand4.jpg",
     tier: "Quick escape",
     route: ["Mumbai", "Phuket", "Phi Phi", "Krabi"],
     title: (
@@ -191,7 +193,7 @@ const DEFAULT_PACKAGES = [
   },
   {
     id: "srilanka-quick",
-    image: "https://images.unsplash.com/photo-1546975554-31053113e977?w=600&q=80&auto=format",
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/srilanka4.jpg",
     tier: "Quick escape",
     route: ["Chennai", "Colombo", "Kandy", "Galle"],
     title: (
@@ -206,7 +208,7 @@ const DEFAULT_PACKAGES = [
   },
   {
     id: "nepal-quick",
-    image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=600&q=80&auto=format",
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/nepal4(1).jpg",
     tier: "Quick escape",
     route: ["Delhi", "Kathmandu", "Pokhara"],
     title: (
@@ -223,7 +225,7 @@ const DEFAULT_PACKAGES = [
   /* ---------------- Premium ---------------- */
   {
     id: "japan-premium",
-    image: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&q=80&auto=format",
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/japan5.png",
     tier: "Premium",
     tierVariant: "premium",
     route: ["Delhi", "Tokyo", "Hakone", "Kyoto", "Osaka"],
@@ -239,7 +241,7 @@ const DEFAULT_PACKAGES = [
   },
   {
     id: "europe-premium",
-    image: "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=600&q=80&auto=format",
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/europe5.jpg",
     tier: "Premium",
     tierVariant: "premium",
     route: ["Mumbai", "Paris", "Lucerne", "Rome"],
@@ -255,7 +257,7 @@ const DEFAULT_PACKAGES = [
   },
   {
     id: "korea-premium",
-    image: "https://images.unsplash.com/photo-1538485399081-7191377e8241?w=600&q=80&auto=format",
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/korea5.jpg",
     tier: "Premium",
     tierVariant: "premium",
     route: ["Delhi", "Seoul", "Busan"],
@@ -271,7 +273,7 @@ const DEFAULT_PACKAGES = [
   },
   {
     id: "turkey-premium",
-    image: "https://images.unsplash.com/photo-1605649487212-47bdab064df7?w=600&q=80&auto=format",
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/turkey5.jpg",
     tier: "Premium",
     tierVariant: "premium",
     route: ["Mumbai", "Istanbul", "Cappadocia", "Antalya"],
@@ -295,6 +297,7 @@ const LuxuryEuropeDestinations = ({
   total = 84,
 }) => {
   const router = useRouter();
+  const isMobile = useMediaQuery("(max-width: 640px)");
   const [active, setActive] = useState("all");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
@@ -315,14 +318,35 @@ const LuxuryEuropeDestinations = ({
   }, [packages, active]);
 
   // Only the "All" tab paginates (4 at a time); category tabs show everything.
-  const visible =
-    active === "all" ? filtered.slice(0, visibleCount) : filtered;
-  const canSeeMore = active === "all" && visibleCount < filtered.length;
+  // On mobile the cards become a swipeable rail, so show the full set there
+  // (no "see more" pagination).
+  const visible = isMobile
+    ? filtered
+    : active === "all"
+    ? filtered.slice(0, visibleCount)
+    : filtered;
+  const canSeeMore =
+    !isMobile && active === "all" && visibleCount < filtered.length;
 
   const handleFilter = (key) => {
     setActive(key);
     setVisibleCount(PAGE_SIZE);
   };
+
+  const renderPackage = (p) => (
+    <PackageCard
+      key={p.id}
+      image={p.image}
+      tier={p.tier}
+      tierVariant={p.tierVariant}
+      route={p.route}
+      title={p.title}
+      includes={p.includes}
+      price={p.price}
+      ctaLabel="Tailor in chat"
+      onClick={() => router.push(`/chat?seed=${encodeURIComponent(p.seed || "")}`)}
+    />
+  );
 
   return (
     <section className={styles.section}>
@@ -336,7 +360,7 @@ const LuxuryEuropeDestinations = ({
             <h2>
               Kaira-Planned Trips. Yours to <span className="ttwSerif">Personalize.</span>
             </h2>
-            <p className="ttwLede">
+            <p className="">
               Real routes our travellers loved. Open any trip in chat, change{" "}
               <span className="ttwSerif">dates, hotels, duration</span>,
               anything. Start with the package, end with your perfect holiday.
@@ -364,24 +388,13 @@ const LuxuryEuropeDestinations = ({
           ))}
         </div>
 
-        <div className={styles.grid}>
-          {visible.map((p) => (
-            <PackageCard
-              key={p.id}
-              image={p.image}
-              tier={p.tier}
-              tierVariant={p.tierVariant}
-              route={p.route}
-              title={p.title}
-              includes={p.includes}
-              price={p.price}
-              ctaLabel="Tailor in chat"
-              onClick={() =>
-                router.push(`/chat?seed=${encodeURIComponent(p.seed || "")}`)
-              }
-            />
-          ))}
-        </div>
+        {isMobile ? (
+          <MobileCardCarousel
+            items={visible.map((p) => ({ key: p.id, node: renderPackage(p) }))}
+          />
+        ) : (
+          <div className={styles.grid}>{visible.map(renderPackage)}</div>
+        )}
 
         {canSeeMore && (
           <div className={styles.seeMoreWrap}>
