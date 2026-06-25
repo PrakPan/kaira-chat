@@ -50,7 +50,7 @@ const NewsletterBanner = styled.div`
 
     span {
       font-family: "Instrument Serif", serif;
-      font-style: normal;
+      font-style: italic;
       font-weight: 400;
     }
   }
@@ -130,7 +130,7 @@ const Brand = styled.div`
     display: grid;
     place-items: center;
     font-family: "Instrument Serif", serif;
-    font-style: normal;
+    font-style: italic;
     font-size: 20px;
     transform: rotate(-6deg);
   }
@@ -259,7 +259,7 @@ const NewFooter = () => {
               </div>
             </div>
             <p className="blurb">
-              Trips planned in conversation, not forms. Powered by Kaira, our
+              Trips planned in conversation, not forms. Powered by Kaira — our
               AI travel agent. Fine-tuned by humans who&apos;ve been there.
             </p>
             <div className="contact">

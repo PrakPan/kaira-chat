@@ -14,7 +14,7 @@ import styles from "./TravelerStoriesSection.module.scss";
 const DEFAULT_STORIES = [
   {
     id: 1,
-    image: "https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=600&q=80&auto=format",
+    image: "https://images.unsplash.com/photo-1528127269322-539801943592?w=600&q=80&auto=format",
     badge: "Vietnam · 5 nights",
     moment: (
       <>
@@ -42,7 +42,7 @@ const DEFAULT_STORIES = [
   },
   {
     id: 3,
-    image: "https://images.unsplash.com/photo-1503640538573-148065ba4904?w=600&q=80&auto=format",
+    image: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=600&q=80&auto=format",
     badge: "Japan · 9 nights",
     moment: (
       <>

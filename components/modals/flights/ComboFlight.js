@@ -1461,7 +1461,7 @@ const ComboFlight = (props) => {
           displayText="Finding best transfers for you"
           zIndex={1505}
         />
-        <div className="ttw-type-h2 font-semibold text-[#0b1220] mb-md">
+        <div className="ttw-type-h2 font-semibold text-[#0b1220] !mb-md !text-[24px] max-sm:!text-[18px]">
           {" "}
           {props.heading}
         </div>
