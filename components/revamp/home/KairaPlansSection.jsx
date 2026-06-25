@@ -20,59 +20,171 @@ import styles from "./KairaPlansSection.module.scss";
  * a theme landing page or opens the "personalise" modal.
  */
 
+// Each card opens Kaira pre-briefed (or a real theme page where one exists),
+// so it doubles as an SEO link to a destination/intent.
+const chat = (seed) => `/chat?seed=${encodeURIComponent(seed)}`;
+
 const TRAVEL_STYLES = [
- 
- 
   {
-    id: "summer-holidays",
-    tag: "Seasonal",
-    name: "Summer Holidays",
+    id: "honeymoon-packages",
+    tag: "Honeymoon",
+    name: "Honeymoon packages",
     one_liner_description:
-      "Beat the heat — the best places to be when the city gets too hot.",
+      "Slow mornings and quiet villas, planned around just the two of you.",
     image:
-      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80&auto=format",
-    link: urls.travel_planner.SUMMER,
+      "https://images.unsplash.com/photo-1518621736915-f3b1c41bfd00?w=800&q=80&auto=format",
+    link: chat("Honeymoon package"),
   },
   {
-    id: "road-trips",
-    tag: "Self-drive",
-    name: "Road Trips",
+    id: "family-abroad",
+    tag: "Family",
+    name: "Family trips abroad",
     one_liner_description:
-      "Open roads and real routes — itineraries built for the drive.",
+      "Easy routes, kid-friendly stays and plenty for everyone to do.",
     image:
-      "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=800&q=80&auto=format",
-    link: urls.travel_planner.ROADTRIPS,
+      "https://images.unsplash.com/photo-1602002418082-a4443e081dd1?w=800&q=80&auto=format",
+    link: chat("Family trip abroad"),
   },
   {
-    id: "europe-1l",
+    id: "solo-itineraries",
+    tag: "Solo",
+    name: "Solo travel itineraries",
+    one_liner_description:
+      "Safe, social and well-paced. Routes built for travelling on your own.",
+    image:
+      "https://images.unsplash.com/photo-1527631746610-bca00a040d60?w=800&q=80&auto=format",
+    link: chat("Solo travel itinerary"),
+  },
+  {
+    id: "adventure-trips",
+    tag: "Adventure",
+    name: "Adventure trips",
+    one_liner_description:
+      "Treks, climbs and big-view days for travellers who like it active.",
+    image:
+      "https://images.unsplash.com/photo-1551632811-561732d1e306?w=800&q=80&auto=format",
+    link: chat("Adventure trip"),
+  },
+  {
+    id: "maldives-budget",
+    tag: "Beach",
+    name: "Maldives on a budget",
+    one_liner_description:
+      "Overwater dreams without the overwater price. Local islands, smart timing.",
+    image:
+      "https://images.unsplash.com/photo-1540202404-a2f29016b523?w=800&q=80&auto=format",
+    link: chat("Maldives on a budget"),
+  },
+  {
+    id: "budget-international",
     tag: "Budget",
-    name: "Europe under 1 Lakh",
+    name: "Budget international travel",
     one_liner_description:
-      "Yes, really — a Europe trip that fits under a lakh per person.",
+      "Your first stamp abroad without breaking the bank. Real prices, no markups.",
     image:
-      "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=800&q=80&auto=format",
-    link: urls.travel_planner.EUROPE_1_LAKH,
+      "https://images.unsplash.com/photo-1488085061387-422e29b40080?w=800&q=80&auto=format",
+    link: chat("Budget international trip"),
   },
-   {
-    id: "la-tomatina",
-    tag: "Festival",
-    name: "La Tomatina",
+  {
+    id: "luxury-travel",
+    tag: "Premium",
+    name: "Luxury travel",
     one_liner_description:
-      "Spain's wildest tomato fight — plan the whole Spain run around it.",
+      "Design hotels, private transfers and the good tables, sorted end to end.",
     image:
-      "https://images.unsplash.com/photo-1509840841025-9088ba78a826?w=800&q=80&auto=format",
-    link: urls.travel_planner.LATOMATINA,
+      "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&q=80&auto=format",
+    link: chat("Luxury holiday"),
   },
-  //  {
-  //   id: "personalise",
-  //   tag: "Made for you",
-  //   name: "Personalise",
-  //   one_liner_description:
-  //     "Tell Kaira exactly what you want and she shapes a whole trip around it.",
-  //   image:
-  //     "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800&q=80&auto=format",
-  //   action: "personalise",
-  // }
+  {
+    id: "japan-cherry",
+    tag: "Seasonal",
+    name: "Japan in cherry blossom season",
+    one_liner_description:
+      "Time it right for sakura. Kyoto, Tokyo and the quiet spots in between.",
+    image:
+      "https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=800&q=80&auto=format",
+    link: chat("Japan in cherry blossom season"),
+  },
+  {
+    id: "bali-honeymoons",
+    tag: "Honeymoon",
+    name: "Bali for honeymoons",
+    one_liner_description:
+      "Ubud greens to Seminyak sunsets, shaped into one slow honeymoon.",
+    image:
+      "https://images.unsplash.com/photo-1537953773345-d172ccf13cf1?w=800&q=80&auto=format",
+    link: chat("Bali honeymoon"),
+  },
+  {
+    id: "vietnam-kids",
+    tag: "Family",
+    name: "Vietnam with kids",
+    one_liner_description:
+      "Lantern towns, junk-boat nights and food the whole family will love.",
+    image:
+      "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=800&q=80&auto=format",
+    link: chat("Vietnam family trip with kids"),
+  },
+  {
+    id: "thailand-weekend",
+    tag: "Quick escape",
+    name: "Thailand long weekends",
+    one_liner_description:
+      "Three days, two flights, one beach. A reset that fits a long weekend.",
+    image:
+      "https://images.unsplash.com/photo-1525258946800-98cfd641d0de?w=800&q=80&auto=format",
+    link: chat("Thailand long weekend"),
+  },
+  {
+    id: "europe-summer",
+    tag: "Seasonal",
+    name: "Europe in summer",
+    one_liner_description:
+      "Long days, lake towns and the classic run, timed for peak season.",
+    image:
+      "https://images.unsplash.com/photo-1503917988258-f87a78e3c995?w=800&q=80&auto=format",
+    link: chat("Europe in summer"),
+  },
+  {
+    id: "rajasthan-winter",
+    tag: "India",
+    name: "Rajasthan in winter",
+    one_liner_description:
+      "Forts, dunes and cool desert evenings. The best season to go.",
+    image:
+      "https://images.unsplash.com/photo-1599661046289-e31897846e41?w=800&q=80&auto=format",
+    link: chat("Rajasthan in winter"),
+  },
+  {
+    id: "kerala-backwaters",
+    tag: "India",
+    name: "Kerala backwaters",
+    one_liner_description:
+      "Houseboats, slow canals and green that goes on for days.",
+    image:
+      "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?w=800&q=80&auto=format",
+    link: urls.travel_planner.KERALA,
+  },
+  {
+    id: "ladakh-july",
+    tag: "India",
+    name: "Ladakh in July",
+    one_liner_description:
+      "High passes open, skies clear. The window to ride the Himalayas.",
+    image:
+      "https://images.unsplash.com/photo-1581793745862-99fde7fa73d2?w=800&q=80&auto=format",
+    link: urls.travel_planner.LADAKH,
+  },
+  {
+    id: "bhutan-delhi",
+    tag: "Offbeat",
+    name: "Bhutan from Delhi",
+    one_liner_description:
+      "Monasteries, mountain air and permits handled. Quietly unforgettable.",
+    image:
+      "https://images.unsplash.com/photo-1553856622-d1b352e9a211?w=800&q=80&auto=format",
+    link: chat("Bhutan trip from Delhi"),
+  },
 ];
 
 const KairaPlansSection = ({ items = TRAVEL_STYLES }) => {
@@ -117,7 +229,7 @@ const KairaPlansSection = ({ items = TRAVEL_STYLES }) => {
           >
             A honeymoon in Santorini, a family trip to Japan, a solo run through
             Southeast Asia, or a long workation in Bali? Kaira has planned it
-            before — and knows{" "}
+            before, and knows{" "}
             <span className="ttwSerif" style={{ color: "var(--ttw-ink)" }}>
               what actually works.
             </span>
