@@ -15,6 +15,7 @@ import ActivityCardV2 from "../../components/revamp/destination/ActivityCardV2.j
 import DestinationStatsStrip from "../../components/revamp/destination/DestinationStatsStrip.jsx";
 import WhenToGoSection from "../../components/revamp/destination/WhenToGoSection.jsx";
 import PlanningSection from "../../components/revamp/destination/PlanningSection.jsx";
+import VisaSection from "../../components/revamp/destination/VisaSection.jsx";
 import { imgUrlEndPoint } from "../../components/theme/ThemeConstants.js";
 const MapBox = dynamic(() => import("../../components/Map.js"), {
   ssr: false,
@@ -582,6 +583,8 @@ const Index = (props) => {
         destinationInfo={props.data?.destination_info}
         destinationName={destinationName}
       />
+
+      <VisaSection visas={props.data?.visa} destinationName={destinationName} />
 
       {/* FINAL CTA */}
       <section className={styles.finalCta}>
