@@ -38,6 +38,10 @@ import { setCurrency } from "../../../store/actions/currencyActions";
 import setItineraryStatus from "../../../store/actions/itineraryStatus";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 import BotLoginModal from "./BotLoginModal";
+import { updateIntakeForm } from "../../../store/actions/intakeForm";
+import IntakeFormCard from "./IntakeForm";
+import OtpCard from "./IntakeForm/OtpCard";
+import { parseFormFields } from "./IntakeForm/intakePrompt";
 
 const CHATKIT_API_URL = "https://dev.chat.tarzanway.com/chatkit";
 const PAGINATION_SCROLL_THRESHOLD = 80;
@@ -213,6 +217,9 @@ onTripMetaUpdate?: (meta: {
   number_of_infants?: number;
   travel_date?: string;
 }) => void;
+/** Fired when the backend `form_fields` effect arrives on the first prompt.
+ *  Lets BotApp flip the left panel to the intake hero image panel. */
+onIntakeFormStart?: () => void;
 }
 
 export interface TravellerStoryIntro {
@@ -794,6 +801,7 @@ onLoginSuccess,
 loginMandatory,
 onViewItinerary,
 onTripMetaUpdate,
+onIntakeFormStart,
 }: ChatKitPanelProps) {
   // ── State ────────────────────────────────────────────────────────────────
   const [input, setInput] = useState("");
@@ -812,6 +820,9 @@ onTripMetaUpdate,
   // otherwise-finished stream.
   const quickReplyShimmerRef = useRef(false);
   quickReplyShimmerRef.current = quickReplyShimmer;
+  // Guards the in-chat intake form so the `form_fields` effect injects the card
+  // only once per session even if the effect re-emits across stream chunks.
+  const intakeFormInjectedRef = useRef(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [pendingMessage, setPendingMessage] = useState<string | null>(null);
@@ -1640,6 +1651,28 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
     loginMandatory,
   });
 
+    console.log("Messages",messages);
+
+  // ⚠️ TEMP DEBUG — force-show the IntakeForm card without the server `form_fields`
+  // effect. Mirrors the injection in the form_fields handler. REMOVE before merge.
+  // useEffect(() => {
+  //   if (intakeFormInjectedRef.current) return;
+  //   intakeFormInjectedRef.current = true;
+  //   dispatch(updateIntakeForm({ active: true, completed: false, step: 0 }));
+  //   setMessages((prev) => [
+  //     ...prev,
+  //     {
+  //       id: `intake-form-${sessionIdRef.current}`,
+  //       role: "assistant",
+  //       content: "",
+  //       timestamp: new Date(),
+  //       type: "intake_form",
+  //     },
+  //   ]);
+  //   onIntakeFormStart?.();
+    
+  // }, []);
+
   // Quick replies stream in on the tail of the response, after the answer is
   // fully rendered but while the SSE connection is still open (so `isStreaming`
   // is still true). Treat that whole window — the shimmer skeleton *and* the
@@ -1910,6 +1943,34 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
           if (data.data) onRouteReceived(data as { data: Location[] });
           break;
         }
+        case "form_fields": {
+          // Backend prefill for the multi-step intake form. Seed the Redux
+          // slice, inject the form card into the thread once, and let BotApp
+          // flip the left panel to the intake hero image.
+          dispatch(
+            updateIntakeForm({
+              active: true,
+              completed: false,
+              step: 0,
+              ...parseFormFields(data as any),
+            }),
+          );
+          if (!intakeFormInjectedRef.current) {
+            intakeFormInjectedRef.current = true;
+            setMessages((prev) => [
+              ...prev,
+              {
+                id: `intake-form-${sessionIdRef.current}`,
+                role: "assistant",
+                content: "",
+                timestamp: new Date(),
+                type: "intake_form",
+              },
+            ]);
+            onIntakeFormStart?.();
+          }
+          break;
+        }
         case "display_itinerary": {
           emitEndpointsFromEffect(name, data);
           // Pass the full effect payload (not just `.itinerary`) so pax +
@@ -2166,7 +2227,7 @@ case "shimmer_day_by_day": {
           console.warn("[Effect] unhandled:", name);
       }
     },
-    [onLocationReceived, onNewQuery, onClearMap, onRouteReceived, onItineraryReceived, onTripMetaUpdate, input, indexTransfersForLookup, emitEndpointsFromEffect, dispatch, callPaymentInfo],
+    [onLocationReceived, onNewQuery, onClearMap, onRouteReceived, onItineraryReceived, onTripMetaUpdate, input, indexTransfersForLookup, emitEndpointsFromEffect, dispatch, callPaymentInfo, setMessages, onIntakeFormStart],
   );
 
   // Wire handleEffect into the ref so the stable onEffect wrapper picks it up
@@ -2204,6 +2265,48 @@ const sendMessage = useCallback(
   },
   [rawSendMessage],
 );
+
+// ── Intake form completion ───────────────────────────────────────────────────
+// Holds the composed message while we wait for an inline OTP verify (logged-out
+// users) before sending it to Kaira.
+const pendingIntakeMessageRef = useRef<string | null>(null);
+
+const handleIntakeComplete = useCallback(
+  (composed: string) => {
+    const loggedIn =
+      !!reduxToken ||
+      (typeof window !== "undefined" &&
+        !!localStorage.getItem("access_token"));
+    if (loggedIn) {
+      sendMessage(composed);
+      return;
+    }
+    // Not logged in → inject the inline OTP card and send after verify.
+    pendingIntakeMessageRef.current = composed;
+    setMessages((prev) =>
+      prev.some((m) => m.type === "intake_otp")
+        ? prev
+        : [
+            ...prev,
+            {
+              id: `intake-otp-${sessionIdRef.current}`,
+              role: "assistant",
+              content: "",
+              timestamp: new Date(),
+              type: "intake_otp",
+            },
+          ],
+    );
+  },
+  [reduxToken, sendMessage, setMessages],
+);
+
+const handleIntakeOtpVerified = useCallback(() => {
+  const composed = pendingIntakeMessageRef.current;
+  pendingIntakeMessageRef.current = null;
+  setMessages((prev) => prev.filter((m) => m.type !== "intake_otp"));
+  if (composed) sendMessage(composed);
+}, [sendMessage, setMessages]);
 
   // ── Side-effects ──────────────────────────────────────────────────────────
   useEffect(() => {
@@ -3163,7 +3266,23 @@ const handleShowLogin = useCallback(() => {
                 }}
               />
             )}
+         
             {messages.map((msg, idx) => {
+              // ── Custom in-thread cards (intake form + inline OTP) ──────────
+              if (msg.type === "intake_form") {
+                return (
+                  <IntakeFormCard
+                    key={msg.id}
+                    onComplete={handleIntakeComplete}
+                  />
+                );
+              }
+              if (msg.type === "intake_otp") {
+                return (
+                  <OtpCard key={msg.id} onVerified={handleIntakeOtpVerified} />
+                );
+              }
+
               // For network-failed assistant bubbles, hand MessageBubble a
               // retry callback that re-sends the immediately preceding user
               // message (content + attachments) — useChat strips the failed

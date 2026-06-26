@@ -11,6 +11,7 @@ import ViewToggle from "./components/ViewToggle";
 import Sidebar from "./components/Sidebar";
 import { getUserAvatarColor, getUserInitial } from "./utils/avatarColor";
 import StartScreen, { type TravellerStory } from "./components/StartScreen";
+import IntakeLeftPanel from "./components/IntakeLeftPanel";
 import type { ThemeConfig } from "./types/themeConfig";
 import ChatWelcomeScreen from "./components/ChatWelcomeScreen";
 import ItineraryShimmer from "./components/ItineraryShimmer";
@@ -30,6 +31,7 @@ import type {
 import { useDispatch } from "react-redux";
 import setItineraryIdAction from "../../store/actions/itineraryId";
 import setItineraryStatus from "../../store/actions/itineraryStatus";
+import { resetIntakeForm } from "../../store/actions/intakeForm";
 import setItineraryDaybyDay from "../../store/actions/itineraryDaybyDay";
 import setItinerary from "../../store/actions/itinerary";
 import setBreif from "../../store/actions/breif";
@@ -269,6 +271,9 @@ export default function BotApp({
   // while we restore the thread data. It will be properly set by the restore flow.
   const [hasBotResponded, setHasBotResponded] = useState(!!sessionId);
   const [isLeftPanelRevealing, setIsLeftPanelRevealing] = useState(false);
+  // True once the backend `form_fields` effect has started the in-chat intake
+  // flow — flips the left panel to the destination hero image.
+  const [intakeActive, setIntakeActive] = useState(false);
 
   const [leftPanelMode, setLeftPanelMode] = useState<LeftPanelMode>("default");
   const [completingItineraryId, setCompletingItineraryId] = useState<
@@ -1153,6 +1158,9 @@ export default function BotApp({
   );
 
   const revealLeftPanel = useCallback(() => {
+    // Real trip content is arriving — retire the intake hero so the map /
+    // itinerary panels underneath become visible.
+    setIntakeActive(false);
     if (!hasBotResponded) {
       setIsLeftPanelRevealing(true);
       requestAnimationFrame(() => {
@@ -2413,6 +2421,8 @@ export default function BotApp({
     setIsChatActive(false);
     setMobilePanel("chat");
     setLeftPanelMode("default");
+    setIntakeActive(false);
+    dispatch(resetIntakeForm());
     setCompletingItineraryId(null);
     setLoaderDisplayText(null);
     setActiveItineraryId(null);
@@ -2513,13 +2523,10 @@ export default function BotApp({
   }, [router.isReady]);
 
   const handlePromptSelect = (prompt: string, attachmentIds?: string[]) => {
-    // Gate the start-screen / theme prompt cards behind login.
-    if (!isLoggedIn) {
-      pendingPromptActionRef.current = () =>
-        executePromptSelect(prompt, attachmentIds);
-      setShowPromptLoginPrompt(true);
-      return;
-    }
+    // The first prompt is allowed through without an upfront login modal so the
+    // in-chat intake form can render immediately; authentication is collected
+    // later via the inline OTP card when the user submits the form (or via the
+    // backend `prompt_login` effect if it gates a specific action).
     executePromptSelect(prompt, attachmentIds);
   };
 
@@ -2617,6 +2624,7 @@ export default function BotApp({
     onLoginSuccess: attachUserToItinerary,
     loginMandatory: router.query.login === "false" ? false : undefined,
     onViewItinerary: () => mobileTabSwitchRef.current?.("itinerary"),
+    onIntakeFormStart: () => setIntakeActive(true),
     initialFiles,
     initialInputText,
   };
@@ -3105,6 +3113,17 @@ Start Location: ${details.startLocation}`;
               onTravellerStorySelect={handleTravellerStorySelect}
               themeConfig={themeConfig}
             />
+          </div>
+
+          {/* INTAKE HERO — shown over StartScreen/map while the in-chat intake
+              form is active; its image swaps with the chosen destination. */}
+          <div
+            className={`absolute inset-0 z-20 transition-opacity duration-500 ease-in-out ${
+ intakeActive ? "pointer-events-auto" : "pointer-events-none"
+ }`}
+            style={{ opacity: intakeActive ? 1 : 0 }}
+          >
+            {intakeActive && <IntakeLeftPanel />}
           </div>
 
           <style>{`#chatContainer::-webkit-scrollbar { display: none; }`}</style>
