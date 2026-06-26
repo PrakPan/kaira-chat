@@ -676,6 +676,193 @@
   font-size: 14px;
 }
 
+/* ============ VISA ============ */
+.visaBlock {
+  background: linear-gradient(
+      180deg,
+      var(--ttw-bg-2) 0%,
+      var(--ttw-bg) 100%
+    );
+}
+.visaNoWrap {
+  white-space: nowrap;
+}
+.visaGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+.visaCard {
+  display: flex;
+  flex-direction: column;
+  background: var(--ttw-bg);
+  border: 1px solid var(--ttw-line);
+  border-radius: 18px;
+  padding: 22px 20px;
+  transition: all 0.2s;
+}
+.visaCard:hover {
+  border-color: var(--ttw-ink-3);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 34px rgba(15, 26, 46, 0.08);
+}
+.visaCardExpress {
+  border-color: var(--ttw-coral-deep);
+  background: linear-gradient(180deg, var(--ttw-peach) 0%, var(--ttw-bg) 55%);
+}
+.visaCardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.visaCat {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ttw-ink-3);
+  background: var(--ttw-line-soft);
+  padding: 5px 10px;
+  border-radius: 8px;
+}
+.visaProc {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ttw-ink-3);
+  background: var(--ttw-bg-2);
+  border: 1px solid var(--ttw-line);
+  padding: 5px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.visaProcExpress {
+  color: white;
+  background: var(--ttw-coral-deep);
+  border-color: var(--ttw-coral-deep);
+}
+.visaTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+.visaTags span {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ttw-ink-3);
+  background: var(--ttw-lavender);
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+.visaStay {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 14px 0;
+  border-top: 1px solid var(--ttw-line);
+}
+.visaStayLabel {
+  font-size: 12px;
+  color: var(--ttw-ink-4);
+}
+.visaStayValue {
+  font-size: 24px;
+  color: var(--ttw-ink);
+  line-height: 1.1;
+}
+.visaFees {
+  padding: 12px 0;
+  border-top: 1px solid var(--ttw-line);
+}
+.visaFeeRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: var(--ttw-ink-3);
+  padding: 4px 0;
+}
+.visaFeeRow b {
+  color: var(--ttw-ink);
+  font-weight: 700;
+}
+.visaTotal {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 14px 0;
+  margin-top: auto;
+  border-top: 2px solid var(--ttw-ink);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ttw-ink);
+}
+.visaTotalAmount {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.visaTotal b {
+  font-size: 22px;
+  color: var(--ttw-ink);
+}
+.visaPer {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ttw-ink-4);
+}
+.visaChecklist {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 11px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ttw-ink);
+  background: var(--ttw-yellow);
+  border: 1px solid var(--ttw-yellow);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.visaChecklist:hover {
+  background: var(--ttw-ink-rail);
+  color: var(--ttw-yellow);
+  border-color: var(--ttw-ink-rail);
+}
+.visaChecklist svg {
+  width: 16px;
+  height: 16px;
+}
+.visaChecklistEmpty {
+  margin-top: 14px;
+  padding: 11px 16px;
+  border-radius: 12px;
+  font-size: 12px;
+  text-align: center;
+  color: var(--ttw-ink-4);
+  background: var(--ttw-line-soft);
+  border: 1px dashed var(--ttw-line);
+}
+.visaFootnote {
+  margin-top: 22px;
+  font-size: 12px;
+  color: var(--ttw-ink-4);
+  line-height: 1.5;
+}
+
 /* FAQ */
 .faqBlock {
   background: var(--ttw-bg);
