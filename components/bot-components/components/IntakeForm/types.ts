@@ -23,7 +23,15 @@ export interface IntakeFormState {
   active: boolean;
   step: number;
   completed: boolean;
+  /** Per-step completion flags driven by the backend `show_intake_form`
+   *  effect's `is_completed` markers — indexes match the step order
+   *  [destination, when, who, notes]. */
+  stepsCompleted: boolean[];
+  /** Primary destination — mirrors `destinations[0]`; drives the left hero
+   *  image and the BotApp panel gate. */
   destination: Destination | null;
+  /** Full multi-select list (the intake effect can send several places). */
+  destinations: Destination[];
   query: string;
   when_mode: WhenMode;
   startDate: string | null; // ISO

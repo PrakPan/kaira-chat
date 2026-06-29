@@ -26,7 +26,7 @@ export interface Message {
   content: string;
   timestamp: Date;
   isStreaming?: boolean;
-  type?: "text" | "widget" | "intake_form" | "intake_otp";
+  type?: "text" | "widget" | "intake_form" | "intake_otp" | "login_card";
   widgetItem?: {
     id: string;
     widget: Record<string, unknown>;
@@ -717,7 +717,7 @@ export function useChat({
       content: string,
       attachmentIds?: string[],
       attachments?: MessageAttachment[],
-      opts?: { interrupt?: boolean },
+      opts?: { interrupt?: boolean; formSubmitted?: boolean },
     ) => {
       const trimmed = content.trim();
       if (!trimmed && (!attachmentIds || attachmentIds.length === 0)) return;
@@ -786,6 +786,12 @@ export function useChat({
       const body = threadIdRef.current
         ? buildSubsequentMessageBody(trimmed, { threadId: threadIdRef.current, ...commonOpts })
         : buildFirstMessageBody(trimmed, { ...commonOpts, loginMandatory: loginMandatoryRef.current });
+
+      // Flag intake-form submissions so the backend knows this message came
+      // from the structured form rather than free-text chat.
+      if (opts?.formSubmitted) {
+        (body as Record<string, unknown>).form_submitted = true;
+      }
 
       console.log("[useChat] →", JSON.stringify(body, null, 2));
 

@@ -5,6 +5,17 @@ import { resolveImage } from "./constants";
 
 export function isoToDate(iso: string | null): Date | null {
   if (!iso) return null;
+  // Parse date-only ISO (YYYY-MM-DD) as LOCAL midnight to stay consistent with
+  // dateToIso, which serialises local dates. `new Date("YYYY-MM-DD")` parses as
+  // UTC and drifts a day in non-UTC timezones (e.g. IST) — that mismatch made
+  // the calendar's start/end/in-range equality checks fail, so picked dates
+  // never highlighted.
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso.trim());
+  if (m) {
+    const d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+    d.setHours(0, 0, 0, 0);
+    return isNaN(d.getTime()) ? null : d;
+  }
   const d = new Date(iso);
   return isNaN(d.getTime()) ? null : d;
 }
@@ -36,8 +47,12 @@ export function nightsBetween(startIso: string | null, endIso: string | null): n
 
 export function validateStep(state: IntakeFormState, step: number): boolean {
   switch (step) {
-    case 0:
+    case 0: {
+      // Valid as long as at least one destination is selected. (Removing every
+      // tag / clearing the input empties the list and re-disables Continue.)
+      if ((state.destinations?.length ?? 0) > 0) return true;
       return !!state.destination && (state.destination.name?.length ?? 0) >= 2;
+    }
     case 1:
       if (state.when_mode === "dates") {
         return !!(state.startDate && state.endDate);
@@ -82,15 +97,62 @@ export function whenSummary(state: IntakeFormState): string {
 
 // ── Compose the message we send to Kaira on "Done" ────────────────────────────
 
-export function composeIntakeMessage(state: IntakeFormState): string {
-  const dest = state.destination?.name ?? "";
-  const who = state.who ? paxLabel(state) : "just me";
-  const parts = [dest, whenSummary(state), who].filter(Boolean);
-  let msg = parts.join(" · ");
-  if (state.notes && state.notes.trim()) {
-    msg += `\n\nNotes: ${state.notes.trim()}`;
+// Friendly, labelled traveller summary (e.g. "Friends — 2 adults, 1 child").
+function travellersLabel(state: IntakeFormState): string {
+  const who = state.who || "Just me";
+  if (who === "Just me") return "Just me";
+  if (who === "Couple") return "Couple (2 adults)";
+  const parts: string[] = [];
+  if (state.adults)
+    parts.push(`${state.adults} ${state.adults === 1 ? "adult" : "adults"}`);
+  if (state.children)
+    parts.push(`${state.children} ${state.children === 1 ? "child" : "children"}`);
+  if (state.infants)
+    parts.push(`${state.infants} ${state.infants === 1 ? "infant" : "infants"}`);
+  return parts.length ? `${who} — ${parts.join(", ")}` : who;
+}
+
+// Readable "when" line for the composed message.
+function whenLine(state: IntakeFormState): string {
+  if (state.when_mode === "dates" && state.startDate && state.endDate) {
+    const n = nightsBetween(state.startDate, state.endDate);
+    const nights = n ? ` (${n} ${n === 1 ? "night" : "nights"})` : "";
+    return `${formatShort(state.startDate)} – ${formatShort(state.endDate)}${nights}`;
   }
-  return msg;
+  if (state.when_mode === "flexible") {
+    const month =
+      state.flexMonth && state.flexMonth !== "Flexible"
+        ? `${state.flexMonth} · `
+        : "Flexible · ";
+    return `${month}${state.flexNights} ${state.flexNights === 1 ? "night" : "nights"}`;
+  }
+  return "Surprise me — suggest the best time";
+}
+
+export function composeIntakeMessage(state: IntakeFormState): string {
+  // A labelled, line-per-field summary — easy for the traveller to read back
+  // and unambiguous for the bot to parse.
+  const lines: string[] = [];
+  const names = (
+    state.destinations?.length
+      ? state.destinations.map((d) => d.name)
+      : state.destination?.name
+        ? [state.destination.name]
+        : []
+  )
+    .map((n) => n?.trim())
+    .filter(Boolean);
+  if (names.length) {
+    lines.push(
+      `• Destination${names.length > 1 ? "s" : ""}: ${names.join(", ")}`,
+    );
+  }
+  lines.push(`• When: ${whenLine(state)}`);
+  lines.push(`• Travellers: ${travellersLabel(state)}`);
+  if (state.notes && state.notes.trim()) {
+    lines.push(`• Preferences: ${state.notes.trim()}`);
+  }
+  return `Here are my trip details:\n${lines.join("\n")}`;
 }
 
 // ── Parse the backend `form_fields` effect into a partial state ────────────────
@@ -114,6 +176,7 @@ export function parseFormFields(
       headline: payload.destination.headline,
       place_tag: payload.destination.place_tag,
     };
+    out.destinations = [out.destination];
     out.query = payload.destination.name;
   }
 
@@ -145,4 +208,77 @@ export function parseFormFields(
   if (typeof payload.notes === "string") out.notes = payload.notes;
 
   return out;
+}
+
+// ── Parse the backend `show_intake_form` effect ───────────────────────────────
+// Shape (every section optional, each carries an `is_completed` marker):
+//   { prefill: {
+//       destination:  { is_completed, value },
+//       timing:       { is_completed, when_mode, start_date, end_date, flex_month, nights },
+//       group:        { is_completed, who, adults, children, infants },
+//       preferences:  { is_completed, notes },
+//   } }
+// Returns the prefilled fields plus `stepsCompleted` (step order:
+// [destination, when, who, notes]) and the `step` to open on — the first
+// incomplete step, or the last step when everything is already filled.
+export function parseShowIntakeForm(
+  payload: any,
+): Partial<IntakeFormState> & { step: number; stepsCompleted: boolean[] } {
+  const p = (payload && payload.prefill) || payload || {};
+  const out: Partial<IntakeFormState> = {};
+
+  const dest = p.destination;
+  if (dest) {
+    // The effect may send a single `value` (string) or `values` (array).
+    const raw: unknown[] = Array.isArray(dest.values)
+      ? dest.values
+      : typeof dest.value === "string"
+        ? [dest.value]
+        : [];
+    const names = raw
+      .map((v) => String(v ?? "").trim())
+      .filter(Boolean);
+    if (names.length) {
+      const list = names.map((name) => ({ name, image: null }));
+      out.destinations = list;
+      out.destination = list[0];
+      // Mirror into `query` so the prefilled destinations show in the input box.
+      out.query = names.join(", ");
+    }
+  }
+
+  const t = p.timing;
+  if (t) {
+    if (t.when_mode === "dates" || t.when_mode === "flexible" || t.when_mode === "surprise") {
+      out.when_mode = t.when_mode;
+    }
+    out.startDate = t.start_date ?? null;
+    out.endDate = t.end_date ?? null;
+    out.flexMonth = t.flex_month ?? null;
+    if (typeof t.nights === "number") out.flexNights = t.nights;
+  }
+
+  const g = p.group;
+  if (g) {
+    if (typeof g.who === "string") out.who = g.who;
+    if (typeof g.adults === "number") out.adults = g.adults;
+    if (typeof g.children === "number") out.children = g.children;
+    if (typeof g.infants === "number") out.infants = g.infants;
+  }
+
+  const pref = p.preferences;
+  if (pref && typeof pref.notes === "string") out.notes = pref.notes;
+
+  const stepsCompleted = [
+    !!p.destination?.is_completed,
+    !!p.timing?.is_completed,
+    !!p.group?.is_completed,
+    !!p.preferences?.is_completed,
+  ];
+
+  const firstIncomplete = stepsCompleted.findIndex((c) => !c);
+  const step =
+    firstIncomplete === -1 ? stepsCompleted.length - 1 : firstIncomplete;
+
+  return { ...out, step, stepsCompleted };
 }

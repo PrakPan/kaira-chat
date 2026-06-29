@@ -6,8 +6,13 @@ export const initialIntakeFormState = {
   active: false,
   step: 0,
   completed: false,
+  // Per-step completion flags from the backend `show_intake_form` effect.
+  // Indexes match step order: [destination, when, who, notes].
+  stepsCompleted: [false, false, false, false],
   // Selected destination — drives the in-chat form AND the left image panel.
   destination: null, // { name, image, country, resource_id, latitude, longitude }
+  // Full multi-select list; `destination` mirrors destinations[0].
+  destinations: [],
   query: "",
   when_mode: "flexible", // "dates" | "flexible" | "surprise"
   startDate: null, // ISO string

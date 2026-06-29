@@ -4,6 +4,10 @@ import type { Destination } from "../types";
 
 interface DestinationSearchProps {
   query: string;
+  /** True only while the user is actively searching (query differs from a
+   *  committed selection). When false, the input may still show a picked
+   *  destination name, but we neither fire the suggest API nor show results. */
+  searchActive?: boolean;
   onQueryChange: (q: string) => void;
   onPick: (d: Destination) => void;
   onClear: () => void;
@@ -12,12 +16,15 @@ interface DestinationSearchProps {
 /** Search input + live suggest-API results list for step 1. */
 const DestinationSearch: React.FC<DestinationSearchProps> = ({
   query,
+  searchActive = query.trim().length >= 2,
   onQueryChange,
   onPick,
   onClear,
 }) => {
-  const { results, loading } = useDestinationSearch(query);
-  const showResults = query.trim().length >= 2;
+  // Only feed the hook a live term while searching — a committed selection
+  // passes "" so no request fires.
+  const { results, loading } = useDestinationSearch(searchActive ? query : "");
+  const showResults = searchActive;
 
   return (
     <div>

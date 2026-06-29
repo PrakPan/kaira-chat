@@ -274,6 +274,12 @@ export default function BotApp({
   // True once the backend `form_fields` effect has started the in-chat intake
   // flow — flips the left panel to the destination hero image.
   const [intakeActive, setIntakeActive] = useState(false);
+  // The destination chosen inside the in-chat intake form. The left hero panel
+  // only takes over once a place is picked; until then we keep the StartScreen
+  // (inspiration) visible instead of a default hero image.
+  const intakeDestination = useSelector(
+    (s: any) => s.IntakeForm?.destination,
+  );
 
   const [leftPanelMode, setLeftPanelMode] = useState<LeftPanelMode>("default");
   const [completingItineraryId, setCompletingItineraryId] = useState<
@@ -3102,10 +3108,17 @@ Start Location: ${details.startLocation}`;
         >
           <div
             className={`absolute inset-0 z-10 overflow-y-auto transition-opacity duration-500 ease-in-out pointer-events-${
- showStartScreen && leftPanelMode === "default" ? "auto" : "none"
+ (showStartScreen || (intakeActive && !intakeDestination)) &&
+ leftPanelMode === "default"
+ ? "auto"
+ : "none"
  }`}
             style={{
-              opacity: showStartScreen && leftPanelMode === "default" ? 1 : 0,
+              opacity:
+                (showStartScreen || (intakeActive && !intakeDestination)) &&
+                leftPanelMode === "default"
+                  ? 1
+                  : 0,
             }}
           >
             <StartScreen
@@ -3115,15 +3128,19 @@ Start Location: ${details.startLocation}`;
             />
           </div>
 
-          {/* INTAKE HERO — shown over StartScreen/map while the in-chat intake
-              form is active; its image swaps with the chosen destination. */}
+          {/* INTAKE HERO — shown over StartScreen/map only once a destination
+              is chosen; its image swaps with the chosen destination. Before a
+              pick we keep the StartScreen above. inset-0 keeps the hero within
+              the left pane so the bottom TrustIndicators bar stays visible. */}
           <div
-            className={`absolute inset-0 z-20 transition-opacity duration-500 ease-in-out h-[92.5vh] ${
- intakeActive ? "pointer-events-auto" : "pointer-events-none"
+            className={`absolute inset-0 z-20 transition-opacity duration-500 ease-in-out ${
+ intakeActive && intakeDestination
+ ? "pointer-events-auto"
+ : "pointer-events-none"
  }`}
-            style={{ opacity: intakeActive ? 1 : 0 }}
+            style={{ opacity: intakeActive && intakeDestination ? 1 : 0 }}
           >
-            {intakeActive && <IntakeLeftPanel />}
+            {intakeActive && intakeDestination && <IntakeLeftPanel />}
           </div>
 
           <style>{`#chatContainer::-webkit-scrollbar { display: none; }`}</style>

@@ -4,18 +4,29 @@ import ReCAPTCHA from "react-google-recaptcha";
 import { RECAPTCHA_SITE_KEY } from "../../../../services/constants";
 import * as authaction from "../../../../store/actions/auth";
 import * as otpaction from "../../../../store/actions/getOtp";
+import { getCountryCodes } from "../../../../store/actions/countryCodes";
+import CountryCodeDropdown from "../../../userauth/CountryDropdown";
 
 interface OtpCardProps {
   /** Fired once after a successful verify (token present in auth state). */
   onVerified: () => void;
+  /** Optional copy overrides so the same card can serve the intake-save flow
+   *  and a mid-chat `prompt_login` sign-in. */
+  heading?: string;
+  submitLabel?: string;
 }
 
 /**
  * Inline phone + WhatsApp-OTP card injected into the chat after the intake form
  * completes for logged-out users. Reuses the app's real OTP backend via the
- * `getotp` and `auth` thunks plus an invisible reCAPTCHA (mirrors BotLoginModal).
+ * `getotp` and `auth` thunks plus an invisible reCAPTCHA, and the shared
+ * `CountryCodeDropdown` so non-India numbers work too (mirrors BotLoginModal).
  */
-const OtpCard: React.FC<OtpCardProps> = ({ onVerified }) => {
+const OtpCard: React.FC<OtpCardProps> = ({
+  onVerified,
+  heading = "Save our work",
+  submitLabel = "Send OTP & start",
+}) => {
   const dispatch = useDispatch();
   const recaptchaRef = useRef<any>(null);
   const verifiedFiredRef = useRef(false);
@@ -25,13 +36,35 @@ const OtpCard: React.FC<OtpCardProps> = ({ onVerified }) => {
   const otpFail = useSelector((s: any) => s.auth?.otpFail);
   const newUser = useSelector((s: any) => s.auth?.newUser);
   const token = useSelector((s: any) => s.auth?.token);
+  const CountryCodes = useSelector((s: any) => s.CountryCodes);
 
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [name, setName] = useState("");
+  const [extension, setExtension] = useState("India");
+  const [openCountryCodeOption, setOpenCountryCodeOption] = useState(false);
 
-  // Full +91-prefixed mobile used for both initiate + complete.
-  const fullMobile = `+91${phone}`;
+  // Pull the dial-code list once, the same way BotLoginModal does.
+  useEffect(() => {
+    dispatch(getCountryCodes() as any);
+  }, [dispatch]);
+
+  // Selected-country derived values. Fall back to India / +91 until the list
+  // loads so the card is usable immediately.
+  const dialCode = CountryCodes?.[extension]?.label ?? "+91";
+  const flagImg = CountryCodes?.[extension]?.img;
+  const countryValue = CountryCodes?.[extension]?.value ?? null;
+
+  // The input only ever holds the local digits; the dial code is prepended for
+  // the backend. India stays a strict 10 digits, everywhere else is a looser
+  // 6–15 (matches BotLoginModal's India-only length check).
+  const digits = phone.replace(/\D/g, "");
+  const maxDigits = extension === "India" ? 10 : 15;
+  const phoneValid =
+    extension === "India" ? digits.length === 10 : digits.length >= 6;
+
+  // Full dial-code-prefixed mobile used for both initiate + complete.
+  const fullMobile = `${dialCode}${phone}`;
 
   // When auth.token appears, the verify succeeded — notify the parent once.
   useEffect(() => {
@@ -40,6 +73,12 @@ const OtpCard: React.FC<OtpCardProps> = ({ onVerified }) => {
       onVerified();
     }
   }, [token, onVerified]);
+
+  // Switching country only changes the prefix — the input keeps just the local
+  // digits, so there's nothing to re-parse.
+  const handleExtensionChangeOption = (country: string) => {
+    setExtension(country);
+  };
 
   const onRecaptchaChange = (value: string | null) => {
     if (!value) return;
@@ -50,7 +89,7 @@ const OtpCard: React.FC<OtpCardProps> = ({ onVerified }) => {
   };
 
   const sendOtp = () => {
-    if (phone.replace(/\D/g, "").length !== 10) return;
+    if (!phoneValid) return;
     dispatch(authaction.authStartLoading() as any);
     if (recaptchaRef.current) {
       recaptchaRef.current.reset();
@@ -66,7 +105,7 @@ const OtpCard: React.FC<OtpCardProps> = ({ onVerified }) => {
         newUser ? name || null : null,
         null,
         true,
-        null,
+        newUser ? countryValue : null,
         undefined,
         undefined,
       ) as any,
@@ -81,7 +120,7 @@ const OtpCard: React.FC<OtpCardProps> = ({ onVerified }) => {
 
   return (
     <div
-      className="rounded-[16px] p-4 ml-10 max-ph:ml-0 mt-1"
+      className="rounded-[16px] p-4 ml-10 max-ph:ml-0 max-ph:-mx-1 mt-1"
       style={{
         background: "#fff",
         border: "1px solid #ececec",
@@ -90,30 +129,95 @@ const OtpCard: React.FC<OtpCardProps> = ({ onVerified }) => {
       }}
     >
       <div className="text-[11px] font-extrabold text-[#445069] uppercase tracking-wide mb-[10px]">
-        Save our work
+        {heading}
       </div>
 
       {!otpSent ? (
         <>
-          <div
-            className="flex rounded-[12px] overflow-hidden"
-            style={{ background: "#fafaf5", border: "1.5px solid #ececec" }}
-          >
+          {/* Relative anchor so the country dropdown opens directly below the
+              row instead of as a fixed/centered overlay. */}
+          <div className="relative">
             <div
-              className="px-[14px] py-[11px] text-[14.5px] font-bold flex items-center gap-[6px]"
-              style={{ borderRight: "1px solid #ececec" }}
+              className="flex rounded-[12px] overflow-hidden"
+              style={{ background: "#fafaf5", border: "1.5px solid #ececec" }}
             >
-              <span>🇮🇳</span> +91
+              <button
+                type="button"
+                onClick={() => setOpenCountryCodeOption(true)}
+                className="px-[12px] py-[11px] text-[14.5px] font-bold flex items-center gap-[6px] shrink-0"
+                style={{ borderRight: "1px solid #ececec" }}
+              >
+                {flagImg ? (
+                  <img
+                    src={flagImg}
+                    alt=""
+                    className="w-[20px] h-[14px] object-cover rounded-[2px]"
+                  />
+                ) : (
+                  <span>🇮🇳</span>
+                )}
+                <span>{dialCode}</span>
+                <svg
+                  width="11"
+                  height="11"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#8a93a6"
+                  strokeWidth="2.5"
+                >
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </button>
+              <input
+                type="tel"
+                inputMode="numeric"
+                value={phone}
+                onChange={(e) =>
+                  setPhone(e.target.value.replace(/\D/g, "").slice(0, maxDigits))
+                }
+                placeholder="98XXX XXXXX"
+                className="flex-1 min-w-0 border-0 outline-none px-[14px] py-[11px] text-[15px] bg-transparent font-semibold tabular-nums"
+              />
             </div>
-            <input
-              type="tel"
-              inputMode="numeric"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
-              placeholder="98XXX XXXXX"
-              className="flex-1 border-0 outline-none px-[14px] py-[11px] text-[15px] bg-transparent font-semibold tabular-nums"
-            />
+
+            {/* Override the shared dropdown's fixed/centered positioning so it
+                anchors absolutely just below the field. */}
+            <style>{`
+              .ttwIntakeCountryDropdown [data-country-dropdown="true"] {
+                position: absolute !important;
+                top: 100% !important;
+                left: 0 !important;
+                right: auto !important;
+                bottom: auto !important;
+                transform: none !important;
+                width: min(320px, 90vw) !important;
+                height: auto !important;
+                max-height: 300px !important;
+                margin-top: 6px !important;
+              }
+            `}</style>
+
+            {openCountryCodeOption && (
+              <div
+                className="ttwIntakeCountryDropdown"
+                style={{
+                  position: "absolute",
+                  top: "100%",
+                  left: 0,
+                  marginTop: 4,
+                  zIndex: 1000,
+                }}
+              >
+                <CountryCodeDropdown
+                  onClose={() => setOpenCountryCodeOption(false)}
+                  CountryCodes={CountryCodes}
+                  handleExtensionChangeOption={handleExtensionChangeOption}
+                  setOpenCountryCodeOption={setOpenCountryCodeOption}
+                />
+              </div>
+            )}
           </div>
+
           <div
             className="flex items-start gap-[6px] mt-[10px] px-3 py-2 rounded-[9px] text-[11px] font-medium"
             style={{ background: "#e0f2e9", color: "#1f8a5a" }}
@@ -126,14 +230,14 @@ const OtpCard: React.FC<OtpCardProps> = ({ onVerified }) => {
           <button
             type="button"
             onClick={sendOtp}
-            disabled={phone.length !== 10 || loading}
+            disabled={!phoneValid || loading}
             className="w-full mt-[10px] py-[11px] rounded-[11px] text-[13.5px] font-bold text-white inline-flex items-center justify-center gap-[7px] transition-all"
             style={{
-              background: phone.length !== 10 || loading ? "#b8becc" : "#0f1a2e",
-              cursor: phone.length !== 10 || loading ? "not-allowed" : "pointer",
+              background: !phoneValid || loading ? "#b8becc" : "#0f1a2e",
+              cursor: !phoneValid || loading ? "not-allowed" : "pointer",
             }}
           >
-            {loading ? "Sending…" : "Send OTP & start"}
+            {loading ? "Sending…" : submitLabel}
           </button>
         </>
       ) : (
@@ -171,7 +275,7 @@ const OtpCard: React.FC<OtpCardProps> = ({ onVerified }) => {
             </div>
           )}
           <div className="text-[11.5px] text-[#8a93a6] text-center mt-[10px]">
-            Sent to <b className="text-[#445069]">+91 {phone}</b>
+            Sent to <b className="text-[#445069]">{dialCode} {phone}</b>
             {loading ? " · verifying…" : ""}
           </div>
         </>

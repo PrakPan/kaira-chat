@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import type { Destination } from "../types";
 
 interface DestinationCardProps {
@@ -28,6 +28,9 @@ const DestinationCard: React.FC<DestinationCardProps> = ({
       ? BADGE_STYLES[destination.badge_type]
       : BADGE_STYLES.default;
 
+  // Start "loaded" when there's no image so the shimmer doesn't run forever.
+  const [imgLoaded, setImgLoaded] = useState(!destination.image);
+
   return (
   <button
     type="button"
@@ -43,14 +46,28 @@ const DestinationCard: React.FC<DestinationCardProps> = ({
         backgroundColor: "#ffede0",
       }}
     >
+      {!imgLoaded && (
+        <div className="ttw-dcard-skel absolute inset-0" aria-hidden="true" />
+      )}
       {destination.image && (
         <img
           src={destination.image}
           alt={destination.name}
           loading="lazy"
+          onLoad={() => setImgLoaded(true)}
+          onError={() => setImgLoaded(true)}
           className="w-full h-full object-cover"
+          style={{ opacity: imgLoaded ? 1 : 0, transition: "opacity .3s ease" }}
         />
       )}
+      <style>{`
+        @keyframes ttwDcardShimmer { 0% { background-position: -300px 0; } 100% { background-position: 300px 0; } }
+        .ttw-dcard-skel {
+          background: linear-gradient(90deg, #ece9e1 0%, #f6f4ee 50%, #ece9e1 100%);
+          background-size: 600px 100%;
+          animation: ttwDcardShimmer 1.3s linear infinite;
+        }
+      `}</style>
       <div
         className="absolute inset-0"
         style={{

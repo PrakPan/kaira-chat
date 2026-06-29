@@ -24,6 +24,9 @@ const Calendar: React.FC<CalendarProps> = ({ startDate, endDate, onChange }) => 
     const base = start ?? today;
     return { y: base.getFullYear(), m: base.getMonth() };
   });
+  // Date currently under the cursor — used to preview the range (start → hover)
+  // before the user commits an end date.
+  const [hoverDate, setHoverDate] = useState<Date | null>(null);
 
   const prevDisabled =
     view.y === today.getFullYear() && view.m <= today.getMonth();
@@ -70,10 +73,22 @@ const Calendar: React.FC<CalendarProps> = ({ startDate, endDate, onChange }) => 
     const dt = new Date(view.y, view.m, d);
     dt.setHours(0, 0, 0, 0);
     const disabled = dt < today;
+    const isToday = dt.getTime() === today.getTime();
     const isStart = !!start && dt.getTime() === start.getTime();
     const isEnd = !!end && dt.getTime() === end.getTime();
     const inRange = !!start && !!end && dt > start && dt < end;
     const selected = isStart || isEnd;
+
+    // Range preview — only while a start is set, no end yet, and the cursor is
+    // on a later date. Wash everything from start up to (and including) the
+    // hovered cell in the in-range yellow; the hovered cell caps the pill.
+    const previewActive =
+      !!start && !end && !!hoverDate && hoverDate > start;
+    const inPreview =
+      previewActive && dt > start! && dt <= hoverDate!;
+    const isPreviewEnd =
+      previewActive && !selected && dt.getTime() === hoverDate!.getTime();
+    const washed = inRange || inPreview;
 
     cells.push(
       <button
@@ -81,22 +96,37 @@ const Calendar: React.FC<CalendarProps> = ({ startDate, endDate, onChange }) => 
         key={d}
         disabled={disabled}
         onClick={() => pickDay(d)}
-        className="aspect-square text-[11.5px] font-semibold tabular-nums transition-colors"
+        onMouseEnter={() => !disabled && setHoverDate(dt)}
+        className="aspect-square text-[11.5px] tabular-nums transition-colors"
         style={{
           border: 0,
-          background: selected ? "#0f1a2e" : inRange ? "#fffde7" : "transparent",
-          color: selected ? "#fff" : disabled ? "#b8becc" : "#1a2436",
+          background: selected ? "#0f1a2e" : washed ? "#fffde7" : "transparent",
+          color: selected
+            ? "#fff"
+            : disabled
+              ? "#b8becc"
+              : isToday
+                ? "#e0703f"
+                : "#1a2436",
+          fontWeight: isToday && !selected ? 800 : 600,
           textDecoration: disabled ? "line-through" : "none",
           cursor: disabled ? "default" : "pointer",
+          // start/end fill connects with the in-range wash into one pill; a
+          // lone start (no end yet) stays a full circle — unless a preview is
+          // active, when it caps the left edge of the previewed range.
           borderRadius: selected
             ? isStart && isEnd
               ? "50%"
               : isStart
-                ? "50% 0 0 50%"
+                ? end || previewActive
+                  ? "50% 0 0 50%"
+                  : "50%"
                 : "0 50% 50% 0"
-            : inRange
-              ? 0
-              : "50%",
+            : isPreviewEnd
+              ? "0 50% 50% 0"
+              : washed
+                ? 0
+                : "50%",
         }}
       >
         {d}
@@ -154,7 +184,12 @@ const Calendar: React.FC<CalendarProps> = ({ startDate, endDate, onChange }) => 
           </span>
         ))}
       </div>
-      <div className="grid grid-cols-7 gap-px">{cells}</div>
+      <div
+        className="grid grid-cols-7 gap-px"
+        onMouseLeave={() => setHoverDate(null)}
+      >
+        {cells}
+      </div>
 
       <div
         className="mt-[9px] pt-[9px] flex items-center text-[12px] font-bold text-[#0b1220]"

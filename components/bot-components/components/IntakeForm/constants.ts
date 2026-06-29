@@ -33,7 +33,7 @@ export const MONTHS = [
 export const DEFAULT_FEATURED: Destination[] = [
   {
     name: "Vietnam",
-    image: "https://images.unsplash.com/photo-1528127269322-539801943592?w=600&q=80",
+    image: "https://images.unsplash.com/photo-1528127269322-539801943592?w=1600&q=80&auto=format&fit=crop",
     headline: "Lantern towns and limestone bays.",
     place_tag: "Land of the ascending dragon",
     tags: "loved by solo",
@@ -41,7 +41,7 @@ export const DEFAULT_FEATURED: Destination[] = [
   },
   {
     name: "Bali",
-    image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=600&q=80",
+    image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=1600&q=80&auto=format&fit=crop",
     headline: "Temples, rice fields and slow mornings.",
     place_tag: "Island of the gods",
     tags: "honeymoon fav",
@@ -49,7 +49,7 @@ export const DEFAULT_FEATURED: Destination[] = [
   },
   {
     name: "Thailand",
-    image: "https://images.unsplash.com/photo-1528181304800-259b08848526?w=600&q=80",
+    image: "https://images.unsplash.com/photo-1528181304800-259b08848526?w=1600&q=80&auto=format&fit=crop",
     headline: "Street food, beaches and golden temples.",
     place_tag: "Land of smiles",
     tags: "most booked",
@@ -57,7 +57,7 @@ export const DEFAULT_FEATURED: Destination[] = [
   },
   {
     name: "Japan",
-    image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=600&q=80",
+    image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=1600&q=80&auto=format&fit=crop",
     headline: "Neon nights and quiet shrines.",
     place_tag: "Land of the rising sun",
     tags: "trending",
@@ -65,28 +65,28 @@ export const DEFAULT_FEATURED: Destination[] = [
   },
   {
     name: "Maldives",
-    image: "https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=600&q=80",
+    image: "https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=1600&q=80&auto=format&fit=crop",
     headline: "Overwater villas and turquoise water.",
     place_tag: "Sun, sand and sea",
     tags: "pure luxury",
   },
   {
     name: "Dubai",
-    image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=600&q=80",
+    image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=1600&q=80&auto=format&fit=crop",
     headline: "Skylines, souks and desert dunes.",
     place_tag: "City of gold",
     tags: "family fav",
   },
   {
     name: "Singapore",
-    image: "https://images.unsplash.com/photo-1525625293386-3f8f99389edd?w=600&q=80",
+    image: "https://images.unsplash.com/photo-1525625293386-3f8f99389edd?w=1600&q=80&auto=format&fit=crop",
     headline: "Gardens, hawker food and skyline views.",
     place_tag: "The lion city",
     tags: "quick escape",
   },
   {
     name: "Europe",
-    image: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=600&q=80",
+    image: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=1600&q=80&auto=format&fit=crop",
     headline: "Many countries, one unforgettable trip.",
     place_tag: "Old world charm",
     tags: "bucket list",
@@ -96,7 +96,7 @@ export const DEFAULT_FEATURED: Destination[] = [
 // Default hero shown by the left panel before any destination is chosen.
 export const DEFAULT_HERO = {
   image:
-    "https://images.unsplash.com/photo-1528127269322-539801943592?w=1100&q=80",
+    "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=2000&q=80&auto=format&fit=crop",
   headline: "Like asking a friend who's been everywhere.",
   place_tag: "Pick a place to begin",
 };

@@ -41,7 +41,7 @@ import BotLoginModal from "./BotLoginModal";
 import { updateIntakeForm } from "../../../store/actions/intakeForm";
 import IntakeFormCard from "./IntakeForm";
 import OtpCard from "./IntakeForm/OtpCard";
-import { parseFormFields } from "./IntakeForm/intakePrompt";
+import { parseFormFields, parseShowIntakeForm } from "./IntakeForm/intakePrompt";
 
 const CHATKIT_API_URL = "https://dev.chat.tarzanway.com/chatkit";
 const PAGINATION_SCROLL_THRESHOLD = 80;
@@ -889,7 +889,11 @@ onIntakeFormStart,
     }
     prevPollingRef.current = isItineraryPolling;
   }, [isItineraryPolling]);
-  const isComposerLocked = isItineraryCompleting || isItineraryPolling;
+  // While the in-chat intake form is active (show_intake_form / form_fields),
+  // lock the composer + quick replies so the user answers via the form card.
+  const intakeFormActive = useSelector((s: any) => !!s.IntakeForm?.active);
+  const isComposerLocked =
+    isItineraryCompleting || isItineraryPolling || intakeFormActive;
   const authToken = reduxToken ?? getAuthToken();
   const isLoggedIn = !!authToken;
 
@@ -1655,23 +1659,23 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
 
   // ⚠️ TEMP DEBUG — force-show the IntakeForm card without the server `form_fields`
   // effect. Mirrors the injection in the form_fields handler. REMOVE before merge.
-  useEffect(() => {
-    if (intakeFormInjectedRef.current) return;
-    intakeFormInjectedRef.current = true;
-    dispatch(updateIntakeForm({ active: true, completed: false, step: 0 }));
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: `intake-form-${sessionIdRef.current}`,
-        role: "assistant",
-        content: "",
-        timestamp: new Date(),
-        type: "intake_form",
-      },
-    ]);
-    onIntakeFormStart?.();
+  // useEffect(() => {
+  //   if (intakeFormInjectedRef.current) return;
+  //   intakeFormInjectedRef.current = true;
+  //   dispatch(updateIntakeForm({ active: true, completed: false, step: 0 }));
+  //   setMessages((prev) => [
+  //     ...prev,
+  //     {
+  //       id: `intake-form-${sessionIdRef.current}`,
+  //       role: "assistant",
+  //       content: "",
+  //       timestamp: new Date(),
+  //       type: "intake_form",
+  //     },
+  //   ]);
+  //   onIntakeFormStart?.();
     
-  }, []);
+  // }, []);
 
   // Quick replies stream in on the tail of the response, after the answer is
   // fully rendered but while the SSE connection is still open (so `isStreaming`
@@ -1971,6 +1975,33 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
           }
           break;
         }
+        case "show_intake_form": {
+          // Backend prefill with per-section `is_completed` markers. Seed the
+          // slice (prefilled fields + stepsCompleted + first-incomplete step),
+          // inject the form card once, and flip the left panel to intake.
+          dispatch(
+            updateIntakeForm({
+              active: true,
+              completed: false,
+              ...parseShowIntakeForm(data as any),
+            }),
+          );
+          if (!intakeFormInjectedRef.current) {
+            intakeFormInjectedRef.current = true;
+            setMessages((prev) => [
+              ...prev,
+              {
+                id: `intake-form-${sessionIdRef.current}`,
+                role: "assistant",
+                content: "",
+                timestamp: new Date(),
+                type: "intake_form",
+              },
+            ]);
+            onIntakeFormStart?.();
+          }
+          break;
+        }
         case "display_itinerary": {
           emitEndpointsFromEffect(name, data);
           // Pass the full effect payload (not just `.itinerary`) so pax +
@@ -2035,13 +2066,29 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
           break;
         }
 case "prompt_login": {
+  // Mid-chat login: remember what to replay, then drop an inline login card
+  // into the thread (instead of the modal). The token-watch effect re-fires
+  // `pendingPostLoginAction` automatically once auth succeeds.
   pendingPostLoginAction.current =
     lastSentActionRef.current ??
     (lastSentMessageRef.current
       ? { kind: "message", text: lastSentMessageRef.current }
       : null);
   loginFlowArmedRef.current = true;
-  setShowLoginModal(true);
+  setMessages((prev) =>
+    prev.some((m) => m.type === "login_card")
+      ? prev
+      : [
+          ...prev,
+          {
+            id: `login-card-${sessionIdRef.current}-${Date.now()}`,
+            role: "assistant",
+            content: "",
+            timestamp: new Date(),
+            type: "login_card",
+          },
+        ],
+  );
   break;
 }
         case "display_pois_on_map":
@@ -2235,7 +2282,12 @@ case "shimmer_day_by_day": {
 
   // ── Wrap sendMessage to clear quick replies ───────────────────────────────
 const sendMessage = useCallback(
-  (text: string, attachmentIds?: string[], attachmentMeta?: MessageAttachment[]) => {
+  (
+    text: string,
+    attachmentIds?: string[],
+    attachmentMeta?: MessageAttachment[],
+    opts?: { formSubmitted?: boolean },
+  ) => {
     setQuickReplies([]);
     setQuickReplyShimmer(false);
     lastSentMessageRef.current = text;
@@ -2261,6 +2313,7 @@ const sendMessage = useCallback(
     // in-flight guard.
     rawSendMessage(text, attachmentIds, attachmentMeta, {
       interrupt: quickReplyShimmerRef.current,
+      formSubmitted: opts?.formSubmitted,
     });
   },
   [rawSendMessage],
@@ -2278,7 +2331,7 @@ const handleIntakeComplete = useCallback(
       (typeof window !== "undefined" &&
         !!localStorage.getItem("access_token"));
     if (loggedIn) {
-      sendMessage(composed);
+      sendMessage(composed, undefined, undefined, { formSubmitted: true });
       return;
     }
     // Not logged in → inject the inline OTP card and send after verify.
@@ -2305,8 +2358,15 @@ const handleIntakeOtpVerified = useCallback(() => {
   const composed = pendingIntakeMessageRef.current;
   pendingIntakeMessageRef.current = null;
   setMessages((prev) => prev.filter((m) => m.type !== "intake_otp"));
-  if (composed) sendMessage(composed);
+  if (composed) sendMessage(composed, undefined, undefined, { formSubmitted: true });
 }, [sendMessage, setMessages]);
+
+// Inline `prompt_login` card verified — just retire the card. The token-watch
+// effect re-fires `pendingPostLoginAction` (the message/widget action that
+// triggered the login) once the auth token lands, mirroring BotLoginModal.
+const handleLoginCardVerified = useCallback(() => {
+  setMessages((prev) => prev.filter((m) => m.type !== "login_card"));
+}, [setMessages]);
 
   // ── Side-effects ──────────────────────────────────────────────────────────
   useEffect(() => {
@@ -3282,6 +3342,16 @@ const handleShowLogin = useCallback(() => {
                   <OtpCard key={msg.id} onVerified={handleIntakeOtpVerified} />
                 );
               }
+              if (msg.type === "login_card") {
+                return (
+                  <OtpCard
+                    key={msg.id}
+                    onVerified={handleLoginCardVerified}
+                    heading="Sign in to continue"
+                    submitLabel="Send OTP"
+                  />
+                );
+              }
 
               // For network-failed assistant bubbles, hand MessageBubble a
               // retry callback that re-sends the immediately preceding user
@@ -3897,6 +3967,8 @@ const handleShowLogin = useCallback(() => {
                 ? "Planning your trip…"
                 : isItineraryPolling
                 ? "Updating your itinerary…"
+                : intakeFormActive
+                ? "Complete the form above to continue…"
                 : "Ask me anything"
             }
             showAttach={!isComposerLocked}

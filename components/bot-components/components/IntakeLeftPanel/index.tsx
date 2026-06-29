@@ -1,7 +1,23 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import type { IntakeFormState } from "../IntakeForm/types";
-import { DEFAULT_HERO } from "../IntakeForm/constants";
+import { DEFAULT_FEATURED, DEFAULT_HERO } from "../IntakeForm/constants";
+
+// Look up a high-quality featured image by destination name — prefilled /
+// searched destinations arrive without an image, so we match them to one of the
+// curated Unsplash tiles when possible.
+const FEATURED_IMAGE_BY_NAME = new Map(
+  DEFAULT_FEATURED.filter((d) => d.image).map(
+    (d) => [d.name.toLowerCase(), d.image as string] as const,
+  ),
+);
+
+// Bump the Unsplash width param up to a hero-sized render.
+function toHeroRes(url: string, width = 2000): string {
+  if (!url) return url;
+  if (/[?&]w=\d+/.test(url)) return url.replace(/([?&])w=\d+/, `$1w=${width}`);
+  return `${url}${url.includes("?") ? "&" : "?"}w=${width}&q=80&auto=format&fit=crop`;
+}
 
 /**
  * Left hero panel shown during the intake flow. The background image, headline
@@ -13,7 +29,16 @@ const IntakeLeftPanel: React.FC = () => {
     (s: any) => (s.IntakeForm as IntakeFormState)?.destination,
   );
 
-  const image = destination?.image || DEFAULT_HERO.image;
+  const baseImage =
+    destination?.image ||
+    (destination?.name &&
+      FEATURED_IMAGE_BY_NAME.get(destination.name.toLowerCase())) ||
+    DEFAULT_HERO.image;
+  const image = toHeroRes(baseImage, 2000);
+  // Track the hero image load so we can shimmer until it's ready. Reset on
+  // every image change (keyed <img> remounts, but this state lives here).
+  const [imgLoaded, setImgLoaded] = useState(false);
+  useEffect(() => setImgLoaded(false), [image]);
   const headline =
     destination?.headline ||
     (destination ? `${destination.name}, your way.` : DEFAULT_HERO.headline);
@@ -23,13 +48,23 @@ const IntakeLeftPanel: React.FC = () => {
 
   return (
     <div className="relative h-full w-full overflow-hidden" style={{ background: "#0f1a2e" }}>
+      {/* Skeleton shimmer until the hero image loads */}
+      {!imgLoaded && (
+        <div className="ttw-hero-skel absolute inset-0" aria-hidden="true" />
+      )}
       {/* Background image (keyed so it cross-fades on change) */}
       <img
         key={image}
         src={image}
         alt={destination?.name || "Destination"}
+        onLoad={() => setImgLoaded(true)}
+        onError={() => setImgLoaded(true)}
         className="absolute inset-0 w-full h-full object-cover"
-        style={{ animation: "ttwHeroFade .7s ease" }}
+        style={{
+          animation: "ttwHeroFade .7s ease",
+          opacity: imgLoaded ? 1 : 0,
+          transition: "opacity .4s ease",
+        }}
       />
       <div
         className="absolute inset-0"
@@ -40,6 +75,12 @@ const IntakeLeftPanel: React.FC = () => {
       />
 
       <style>{`
+        @keyframes ttwHeroShimmer { 0% { background-position: -600px 0; } 100% { background-position: 600px 0; } }
+        .ttw-hero-skel {
+          background: linear-gradient(90deg, #16243d 0%, #25324d 50%, #16243d 100%);
+          background-size: 1200px 100%;
+          animation: ttwHeroShimmer 1.4s linear infinite;
+        }
         @keyframes ttwHeroFade { from { opacity: 0; transform: scale(1.06); } to { opacity: 1; transform: scale(1); } }
       `}</style>
 
@@ -49,9 +90,9 @@ const IntakeLeftPanel: React.FC = () => {
         <div className="flex items-center gap-[10px]">
           <div
             className="w-[34px] h-[34px] grid place-items-center rounded-[10px] font-serif italic text-[19px]"
-            style={{ background: "#f7e700", color: "#0f1a2e", transform: "rotate(-6deg)" }}
+            // style={{ background: "#f7e700", color: "#0f1a2e", transform: "rotate(-6deg)" }}
           >
-            t
+           <img src="https://d31aoa0ehgvjdi.cloudfront.net/media/website/logoyellow.png" alt="The Tarzan Way" width={36} height={36} />
           </div>
           <div className="flex flex-col leading-none text-white">
             <span className="text-[15px] font-bold tracking-tight">thetarzanway</span>
@@ -85,7 +126,7 @@ const IntakeLeftPanel: React.FC = () => {
             style={{ borderTop: "1px solid rgba(255,255,255,0.18)" }}
           >
             <span className="text-white text-[12px] font-semibold flex items-center gap-[6px]">
-              <span style={{ color: "#ffc400" }}>★</span> <b>4.6</b>/5 Google
+              <span style={{ color: "#ffc400" }}>★</span> <b>4.9</b>/5 Google
             </span>
             <span className="w-px h-[18px]" style={{ background: "rgba(255,255,255,0.2)" }} />
             <span className="text-white text-[12px] font-semibold">

@@ -32,7 +32,14 @@ const IntakeFormCard: React.FC<IntakeFormCardProps> = ({ onComplete }) => {
 
   const step = state?.step ?? 0;
   const isLast = step === TOTAL_STEPS - 1;
-  const canAdvance = state ? validateStep(state, step) : false;
+  const stepsCompleted = state?.stepsCompleted ?? [];
+  const currentStepCompleted = !!stepsCompleted[step];
+  // A backend-prefilled step that's already marked complete can always be
+  // advanced — even if its loose client validation wouldn't pass (e.g. a
+  // "dates" timing that arrived without explicit start/end).
+  const canAdvance = state
+    ? currentStepCompleted || validateStep(state, step)
+    : false;
 
   // The horizontal track holds all four steps side-by-side and slides between
   // them; the viewport height animates to the active step so the card grows and
@@ -76,14 +83,17 @@ const IntakeFormCard: React.FC<IntakeFormCardProps> = ({ onComplete }) => {
   if (state.completed) {
     return (
       <div
-        className="rounded-[16px] p-4 ml-10 w-[calc(100%-40px)] max-ph:ml-0 max-ph:w-full"
+        className="rounded-[16px] p-4 mb-3 ml-10 w-[calc(100%-40px)] max-ph:ml-0 max-ph:-mx-1 max-ph:w-auto max-ph:rounded-none"
         style={{ background: "#fff", border: "1px solid #ececec", maxWidth: 480 }}
       >
         <div className="text-[11px] font-extrabold text-[#1f8a5a] uppercase tracking-wide mb-2">
           ✓ Trip details locked
         </div>
         <div className="text-[13.5px] font-semibold text-[#0b1220] leading-relaxed">
-          {state.destination?.name} · {whenSummary(state)} ·{" "}
+          {(state.destinations?.length
+            ? state.destinations.map((d) => d.name).join(", ")
+            : state.destination?.name) || "—"}{" "}
+          · {whenSummary(state)} ·{" "}
           {state.who ? paxLabel(state) : "just me"}
         </div>
       </div>
@@ -91,13 +101,39 @@ const IntakeFormCard: React.FC<IntakeFormCardProps> = ({ onComplete }) => {
   }
 
   return (
-    <div
-      className="ml-10 w-[calc(100%-40px)] max-ph:ml-0 max-ph:w-full rounded-[20px] overflow-hidden bg-white"
-      style={{
-        maxWidth: 480,
-        border: "1px solid #ececec",
-      }}
-    >
+    <>
+      {/* Kaira intro line above the form — avatar on the left, mirrors the
+          assistant chat bubble. */}
+      <div className="flex items-end gap-[9px] mb-3 max-w-[92%] max-ph:max-w-full">
+        <div
+          className="w-[26px] h-[26px] rounded-full overflow-hidden shrink-0"
+          style={{ background: "#ffede0" }}
+        >
+          <img
+            src="/KairaInsta.png"
+            alt="Kaira"
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              (e.currentTarget as HTMLImageElement).style.opacity = "0.4";
+            }}
+          />
+        </div>
+        <div
+          className="px-[13px] py-[10px] rounded-[14px] rounded-bl-[5px] text-[14px] leading-[1.5] text-[#0b1220]"
+          style={{ background: "#fafaf5", border: "1px solid #f4f3ec" }}
+        >
+          Hi, I&apos;m <b className="font-bold">Kaira</b> 🌴 Let&apos;s plan your trip
+          — <span className="italic">just a few quick taps</span> 👇
+        </div>
+      </div>
+
+      <div
+        className="ml-10 w-[calc(100%-40px)] max-ph:ml-0 max-ph:-mx-1 max-ph:w-auto rounded-[20px] max-ph:rounded-none overflow-hidden bg-white"
+        style={{
+          maxWidth: 480,
+          border: "1px solid #ececec",
+        }}
+      >
       {/* Header */}
       <div
         className="px-5 py-[14px] flex items-center gap-3"
@@ -106,7 +142,27 @@ const IntakeFormCard: React.FC<IntakeFormCardProps> = ({ onComplete }) => {
           borderBottom: "1px solid #f4f3ec",
         }}
       >
-        <StepProgress step={step} total={TOTAL_STEPS} />
+        <StepProgress
+          step={step}
+          total={TOTAL_STEPS}
+          completedSteps={stepsCompleted}
+        />
+        {currentStepCompleted && (
+          <span
+            className="inline-flex items-center gap-[4px] pl-[6px] pr-[9px] py-[3px] rounded-full text-[10px] font-extrabold uppercase tracking-wide shrink-0"
+            style={{ background: "#e0f2e9", color: "#1f8a5a" }}
+          >
+            <span
+              className="w-[13px] h-[13px] rounded-full grid place-items-center shrink-0"
+              style={{ background: "#1f8a5a" }}
+            >
+              <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </span>
+            Done
+          </span>
+        )}
       </div>
 
       {/* Sliding viewport — height animates to the active step */}
@@ -133,7 +189,7 @@ const IntakeFormCard: React.FC<IntakeFormCardProps> = ({ onComplete }) => {
               ref={(el) => {
                 stepRefs.current[i] = el;
               }}
-              className="min-w-full px-5 py-[18px] self-start"
+              className="min-w-full px-2 py-[18px] self-start"
             >
               {node}
             </div>
@@ -142,7 +198,7 @@ const IntakeFormCard: React.FC<IntakeFormCardProps> = ({ onComplete }) => {
       </div>
 
       {/* Footer */}
-      <div className="px-5 pb-[18px] flex gap-[10px]">
+      <div className="px-3 pb-[18px] flex gap-[10px]">
         {step > 0 && (
           <button
             type="button"
@@ -157,7 +213,7 @@ const IntakeFormCard: React.FC<IntakeFormCardProps> = ({ onComplete }) => {
           type="button"
           onClick={goNext}
           disabled={!canAdvance}
-          className="flex-1 px-4 py-[11px] rounded-[11px] text-[13.5px] font-bold text-white inline-flex items-center justify-center gap-[7px] transition-all"
+          className="flex-1 px-3 py-[11px] rounded-[11px] text-[13.5px] font-bold text-white inline-flex items-center justify-center gap-[7px] transition-all"
           style={{
             background: canAdvance ? "#0f1a2e" : "#b8becc",
             cursor: canAdvance ? "pointer" : "not-allowed",
@@ -171,7 +227,8 @@ const IntakeFormCard: React.FC<IntakeFormCardProps> = ({ onComplete }) => {
           </svg>
         </button>
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 
