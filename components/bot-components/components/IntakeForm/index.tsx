@@ -104,7 +104,7 @@ const IntakeFormCard: React.FC<IntakeFormCardProps> = ({ onComplete }) => {
     <>
       {/* Kaira intro line above the form — avatar on the left, mirrors the
           assistant chat bubble. */}
-      <div className="flex items-end gap-[9px] mb-3 max-w-[92%] max-ph:max-w-full">
+      {/* <div className="flex items-end gap-[9px] mb-3 max-w-[92%] max-ph:max-w-full">
         <div
           className="w-[26px] h-[26px] rounded-full overflow-hidden shrink-0"
           style={{ background: "#ffede0" }}
@@ -125,7 +125,7 @@ const IntakeFormCard: React.FC<IntakeFormCardProps> = ({ onComplete }) => {
           Hi, I&apos;m <b className="font-bold">Kaira</b> 🌴 Let&apos;s plan your trip
           — <span className="italic">just a few quick taps</span> 👇
         </div>
-      </div>
+      </div> */}
 
       <div
         className="ml-10 w-[calc(100%-40px)] max-ph:ml-0 max-ph:-mx-1 max-ph:w-auto rounded-[20px] max-ph:rounded-none overflow-hidden bg-white"

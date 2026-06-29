@@ -1459,6 +1459,10 @@ onIntakeFormStart,
   const hasUpdatedUrl = useRef(false);
   const postLoginFiredRef = useRef(false);
   const loginFlowArmedRef = useRef(false);
+  // Always-current mirror of `isLoggedIn` so handleEffect can read fresh auth
+  // state without depending on its (memoized) closure — used to ignore a stale
+  // `prompt_login` that arrives after the user has already signed in.
+  const isLoggedInRef = useRef(false);
   type PendingAction =
     | { kind: "message"; text: string }
     | { kind: "widget"; type: string; payload: Record<string, unknown> };
@@ -1701,6 +1705,8 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
   // Mirror messages into a ref so analytics calls can pull user_prompts
   // without subscribing to the messages array directly.
   messagesRef.current = messages;
+  // Keep the fresh-auth mirror current for handleEffect's prompt_login guard.
+  isLoggedInRef.current = isLoggedIn;
 
   // ── "Create my version" (clone) success ──────────────────────────────────
   // Defined after useChat because it depends on clearMessages (and reads
@@ -2075,20 +2081,32 @@ case "prompt_login": {
       ? { kind: "message", text: lastSentMessageRef.current }
       : null);
   loginFlowArmedRef.current = true;
-  setMessages((prev) =>
-    prev.some((m) => m.type === "login_card")
-      ? prev
-      : [
-          ...prev,
-          {
-            id: `login-card-${sessionIdRef.current}-${Date.now()}`,
-            role: "assistant",
-            content: "",
-            timestamp: new Date(),
-            type: "login_card",
-          },
-        ],
-  );
+  // Optional lead-in line from the bot — rendered as a normal Kaira bubble
+  // above the login card. Omitted entirely when the effect carries no message.
+  const loginMessage =
+    typeof data.message === "string" ? data.message.trim() : "";
+  setMessages((prev) => {
+    if (prev.some((m) => m.type === "login_card")) return prev;
+    const base = Date.now();
+    const additions: typeof prev = [];
+    if (loginMessage) {
+      additions.push({
+        id: `login-msg-${sessionIdRef.current}-${base}`,
+        role: "assistant",
+        content: loginMessage,
+        timestamp: new Date(),
+        type: "text",
+      });
+    }
+    additions.push({
+      id: `login-card-${sessionIdRef.current}-${base}`,
+      role: "assistant",
+      content: "",
+      timestamp: new Date(),
+      type: "login_card",
+    });
+    return [...prev, ...additions];
+  });
   break;
 }
         case "display_pois_on_map":

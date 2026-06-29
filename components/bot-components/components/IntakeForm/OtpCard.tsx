@@ -5,6 +5,7 @@ import { RECAPTCHA_SITE_KEY } from "../../../../services/constants";
 import * as authaction from "../../../../store/actions/auth";
 import * as otpaction from "../../../../store/actions/getOtp";
 import { getCountryCodes } from "../../../../store/actions/countryCodes";
+import { useAnalytics } from "../../../../hooks/useAnalytics";
 import CountryCodeDropdown from "../../../userauth/CountryDropdown";
 
 interface OtpCardProps {
@@ -28,12 +29,23 @@ const OtpCard: React.FC<OtpCardProps> = ({
   submitLabel = "Send OTP & start",
 }) => {
   const dispatch = useDispatch();
+  const { trackUserLogin } = useAnalytics();
   const recaptchaRef = useRef<any>(null);
   const verifiedFiredRef = useRef(false);
+  // The last 4-digit code we've already submitted for verification. Guards the
+  // auto-submit so a re-fired input event (mobile OTP autofill, IME, a stray
+  // keystroke while the request is in flight) can't post the same OTP twice —
+  // the second call consumes the now-used code and returns a spurious
+  // "code didn't match" *after* the first call already logged the user in.
+  const submittedCodeRef = useRef<string | null>(null);
 
   const otpSent = useSelector((s: any) => s.auth?.otpSent);
   const loading = useSelector((s: any) => s.auth?.loading);
   const otpFail = useSelector((s: any) => s.auth?.otpFail);
+  const mobileFail = useSelector((s: any) => s.auth?.mobileFail);
+  const mobilefailmessage = useSelector((s: any) => s.auth?.mobilefailmessage);
+  const emailFail = useSelector((s: any) => s.auth?.emailFail);
+  const emailfailmessage = useSelector((s: any) => s.auth?.emailfailmessage);
   const newUser = useSelector((s: any) => s.auth?.newUser);
   const token = useSelector((s: any) => s.auth?.token);
   const CountryCodes = useSelector((s: any) => s.CountryCodes);
@@ -44,10 +56,21 @@ const OtpCard: React.FC<OtpCardProps> = ({
   const [extension, setExtension] = useState("India");
   const [openCountryCodeOption, setOpenCountryCodeOption] = useState(false);
 
-  // Pull the dial-code list once, the same way BotLoginModal does.
+  // Pull the dial-code list once, the same way BotLoginModal does. Also reset
+  // any stale login state so a freshly-mounted card always starts at the
+  // phone-entry step. Without this, a new chat opened while a previous,
+  // abandoned login left `otpSent: true` in redux would drop the user straight
+  // onto the OTP screen with no valid code to enter.
   useEffect(() => {
+    dispatch(authaction.authResetLogin() as any);
     dispatch(getCountryCodes() as any);
   }, [dispatch]);
+
+  // A failed verify re-enables a fresh submit of the same digits (e.g. after a
+  // network blip) by clearing the dedup guard.
+  useEffect(() => {
+    if (otpFail) submittedCodeRef.current = null;
+  }, [otpFail]);
 
   // Selected-country derived values. Fall back to India / +91 until the list
   // loads so the card is usable immediately.
@@ -107,7 +130,7 @@ const OtpCard: React.FC<OtpCardProps> = ({
         true,
         newUser ? countryValue : null,
         undefined,
-        undefined,
+        trackUserLogin,
       ) as any,
     );
   };
@@ -115,7 +138,21 @@ const OtpCard: React.FC<OtpCardProps> = ({
   const onOtpChange = (raw: string) => {
     const code = raw.replace(/\D/g, "").slice(0, 4);
     setOtp(code);
-    if (code.length === 4) setTimeout(() => verify(code), 200);
+    // Auto-submit once — but only once per distinct code, so a duplicate input
+    // event can't fire a second verify against the already-consumed OTP.
+    if (code.length === 4 && submittedCodeRef.current !== code) {
+      submittedCodeRef.current = code;
+      setTimeout(() => verify(code), 200);
+    }
+  };
+
+  // Go back to the phone-entry step. `phone` lives in local state so it's kept
+  // and editable; resetting redux's `otpSent` flips the card back to the first
+  // screen. Clear the entered code + dedup guard so re-verification is clean.
+  const handleChangeNumber = () => {
+    setOtp("");
+    submittedCodeRef.current = null;
+    dispatch(authaction.authResetLogin() as any);
   };
 
   return (
@@ -172,9 +209,12 @@ const OtpCard: React.FC<OtpCardProps> = ({
                 type="tel"
                 inputMode="numeric"
                 value={phone}
-                onChange={(e) =>
-                  setPhone(e.target.value.replace(/\D/g, "").slice(0, maxDigits))
-                }
+                onChange={(e) => {
+                  setPhone(e.target.value.replace(/\D/g, "").slice(0, maxDigits));
+                  // Clear a prior "couldn't send" error as soon as the user
+                  // starts correcting the number (once, only if one is shown).
+                  if (mobileFail) dispatch(authaction.authResetLogin() as any);
+                }}
                 placeholder="98XXX XXXXX"
                 className="flex-1 min-w-0 border-0 outline-none px-[14px] py-[11px] text-[15px] bg-transparent font-semibold tabular-nums"
               />
@@ -239,6 +279,14 @@ const OtpCard: React.FC<OtpCardProps> = ({
           >
             {loading ? "Sending…" : submitLabel}
           </button>
+          {/* Initiate (OTP send) failure — invalid number, rate limit, network,
+              or any non-success from /initiate/. Hidden while a retry is in
+              flight so a stale message doesn't linger over "Sending…". */}
+          {mobileFail && !loading && (
+            <div className="text-[11.5px] text-[#e85a4f] mt-2 font-semibold text-center">
+              {mobilefailmessage || "Couldn't send the code. Please try again."}
+            </div>
+          )}
         </>
       ) : (
         <>
@@ -261,22 +309,37 @@ const OtpCard: React.FC<OtpCardProps> = ({
             autoFocus
             value={otp}
             onChange={(e) => onOtpChange(e.target.value)}
+            disabled={loading}
             placeholder="• • • •"
             maxLength={4}
             className="w-full rounded-[11px] px-[14px] py-[12px] text-[19px] font-extrabold text-center tracking-[0.5em] outline-none tabular-nums"
             style={{
-              background: otpFail ? "#ffe5ea" : "#fafaf5",
-              border: `1.5px solid ${otpFail ? "#e85a4f" : "#ececec"}`,
+              background: (otpFail || emailFail) && !token ? "#ffe5ea" : "#fafaf5",
+              border: `1.5px solid ${(otpFail || emailFail) && !token ? "#e85a4f" : "#ececec"}`,
             }}
           />
-          {otpFail && (
+          {/* Verify failures. `!token` guards the success transition so a
+              just-cleared error can't flash while the card unmounts. emailFail
+              covers the new-user edge case where the email is rejected. */}
+          {(otpFail || emailFail) && !token && (
             <div className="text-[11.5px] text-[#e85a4f] mt-2 font-semibold">
-              That code didn't match. Try again.
+              {emailFail
+                ? emailfailmessage || "That email didn't work. Try another."
+                : "That code didn't match. Try again."}
             </div>
           )}
           <div className="text-[11.5px] text-[#8a93a6] text-center mt-[10px]">
             Sent to <b className="text-[#445069]">{dialCode} {phone}</b>
             {loading ? " · verifying…" : ""}
+            {" · "}
+            <button
+              type="button"
+              onClick={handleChangeNumber}
+              className="font-bold text-[#445069] underline"
+              style={{ cursor: "pointer" }}
+            >
+              Change
+            </button>
           </div>
         </>
       )}
