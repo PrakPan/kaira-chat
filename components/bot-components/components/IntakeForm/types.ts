@@ -14,6 +14,9 @@ export interface Destination {
   headline?: string;
   place_tag?: string;
   tags?: string;
+  /** Visual style of the featured-tile badge: pink "love", yellow "hot", or
+   *  plain white when omitted. Mirrors the `btype` field in the design mock. */
+  badge_type?: "love" | "hot" | "";
 }
 
 export interface IntakeFormState {

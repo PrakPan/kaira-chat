@@ -1655,23 +1655,23 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
 
   // ⚠️ TEMP DEBUG — force-show the IntakeForm card without the server `form_fields`
   // effect. Mirrors the injection in the form_fields handler. REMOVE before merge.
-  // useEffect(() => {
-  //   if (intakeFormInjectedRef.current) return;
-  //   intakeFormInjectedRef.current = true;
-  //   dispatch(updateIntakeForm({ active: true, completed: false, step: 0 }));
-  //   setMessages((prev) => [
-  //     ...prev,
-  //     {
-  //       id: `intake-form-${sessionIdRef.current}`,
-  //       role: "assistant",
-  //       content: "",
-  //       timestamp: new Date(),
-  //       type: "intake_form",
-  //     },
-  //   ]);
-  //   onIntakeFormStart?.();
+  useEffect(() => {
+    if (intakeFormInjectedRef.current) return;
+    intakeFormInjectedRef.current = true;
+    dispatch(updateIntakeForm({ active: true, completed: false, step: 0 }));
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: `intake-form-${sessionIdRef.current}`,
+        role: "assistant",
+        content: "",
+        timestamp: new Date(),
+        type: "intake_form",
+      },
+    ]);
+    onIntakeFormStart?.();
     
-  // }, []);
+  }, []);
 
   // Quick replies stream in on the tail of the response, after the answer is
   // fully rendered but while the SSE connection is still open (so `isStreaming`

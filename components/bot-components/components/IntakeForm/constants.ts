@@ -37,6 +37,7 @@ export const DEFAULT_FEATURED: Destination[] = [
     headline: "Lantern towns and limestone bays.",
     place_tag: "Land of the ascending dragon",
     tags: "loved by solo",
+    badge_type: "love",
   },
   {
     name: "Bali",
@@ -44,6 +45,7 @@ export const DEFAULT_FEATURED: Destination[] = [
     headline: "Temples, rice fields and slow mornings.",
     place_tag: "Island of the gods",
     tags: "honeymoon fav",
+    badge_type: "love",
   },
   {
     name: "Thailand",
@@ -51,6 +53,7 @@ export const DEFAULT_FEATURED: Destination[] = [
     headline: "Street food, beaches and golden temples.",
     place_tag: "Land of smiles",
     tags: "most booked",
+    badge_type: "hot",
   },
   {
     name: "Japan",
@@ -58,6 +61,7 @@ export const DEFAULT_FEATURED: Destination[] = [
     headline: "Neon nights and quiet shrines.",
     place_tag: "Land of the rising sun",
     tags: "trending",
+    badge_type: "hot",
   },
   {
     name: "Maldives",

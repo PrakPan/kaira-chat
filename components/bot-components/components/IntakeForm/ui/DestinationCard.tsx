@@ -7,12 +7,28 @@ interface DestinationCardProps {
   onSelect: (d: Destination) => void;
 }
 
+// Badge palette mirrors `.sc-dcard-tag` variants in the design mock.
+const BADGE_STYLES: Record<
+  "love" | "hot" | "default",
+  { background: string; color: string }
+> = {
+  love: { background: "#ffe0ea", color: "#c73862" },
+  hot: { background: "#f7e700", color: "#0b1220" },
+  default: { background: "rgba(255,255,255,.94)", color: "#1a2436" },
+};
+
 /** Featured destination tile shown in the step-1 grid. */
 const DestinationCard: React.FC<DestinationCardProps> = ({
   destination,
   active,
   onSelect,
-}) => (
+}) => {
+  const badge =
+    destination.badge_type === "love" || destination.badge_type === "hot"
+      ? BADGE_STYLES[destination.badge_type]
+      : BADGE_STYLES.default;
+
+  return (
   <button
     type="button"
     onClick={() => onSelect(destination)}
@@ -44,9 +60,15 @@ const DestinationCard: React.FC<DestinationCardProps> = ({
       />
       {destination.tags && (
         <span
-          className="absolute top-[6px] left-[6px] z-[3] px-[7px] py-[3px] rounded-full text-[8px] font-extrabold uppercase tracking-wide"
-          style={{ background: "rgba(255,255,255,.94)", color: "#1a2436" }}
+          className="absolute top-[6px] left-[6px] z-[3] px-[7px] py-[3px] rounded-full text-[8px] font-extrabold uppercase whitespace-nowrap"
+          style={{
+            background: badge.background,
+            color: badge.color,
+            letterSpacing: ".02em",
+            boxShadow: "0 2px 6px rgba(0,0,0,.18)",
+          }}
         >
+          {destination.badge_type === "love" ? "♥ " : ""}
           {destination.tags}
         </span>
       )}
@@ -63,8 +85,9 @@ const DestinationCard: React.FC<DestinationCardProps> = ({
       <span className="absolute bottom-[7px] left-0 right-0 z-[2] text-center text-white text-[11px] font-bold">
         {destination.name}
       </span>
-    </div>
-  </button>
-);
+      </div>
+    </button>
+  );
+};
 
 export default DestinationCard;

@@ -3118,7 +3118,7 @@ Start Location: ${details.startLocation}`;
           {/* INTAKE HERO — shown over StartScreen/map while the in-chat intake
               form is active; its image swaps with the chosen destination. */}
           <div
-            className={`absolute inset-0 z-20 transition-opacity duration-500 ease-in-out ${
+            className={`absolute inset-0 z-20 transition-opacity duration-500 ease-in-out h-[92.5vh] ${
  intakeActive ? "pointer-events-auto" : "pointer-events-none"
  }`}
             style={{ opacity: intakeActive ? 1 : 0 }}

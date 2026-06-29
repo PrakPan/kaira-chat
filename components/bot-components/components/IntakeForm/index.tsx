@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useLayoutEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updateIntakeForm } from "../../../../store/actions/intakeForm";
 import type { IntakeFormState } from "./types";
@@ -34,6 +34,26 @@ const IntakeFormCard: React.FC<IntakeFormCardProps> = ({ onComplete }) => {
   const isLast = step === TOTAL_STEPS - 1;
   const canAdvance = state ? validateStep(state, step) : false;
 
+  // The horizontal track holds all four steps side-by-side and slides between
+  // them; the viewport height animates to the active step so the card grows and
+  // shrinks smoothly instead of swapping content. We observe the active step so
+  // height also follows in-step changes (search results, pax counters, etc.).
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const stepRefs = useRef<Array<HTMLDivElement | null>>([]);
+
+  useLayoutEffect(() => {
+    const viewport = viewportRef.current;
+    const active = stepRefs.current[step];
+    if (!viewport || !active) return;
+    const apply = () => {
+      viewport.style.height = `${active.scrollHeight}px`;
+    };
+    apply();
+    const ro = new ResizeObserver(apply);
+    ro.observe(active);
+    return () => ro.disconnect();
+  }, [step, state]);
+
   const goBack = () => {
     if (step > 0) update({ step: step - 1 });
   };
@@ -56,7 +76,7 @@ const IntakeFormCard: React.FC<IntakeFormCardProps> = ({ onComplete }) => {
   if (state.completed) {
     return (
       <div
-        className="rounded-[16px] p-4 ml-10 max-ph:ml-0"
+        className="rounded-[16px] p-4 ml-10 w-[calc(100%-40px)] max-ph:ml-0 max-ph:w-full"
         style={{ background: "#fff", border: "1px solid #ececec", maxWidth: 480 }}
       >
         <div className="text-[11px] font-extrabold text-[#1f8a5a] uppercase tracking-wide mb-2">
@@ -72,12 +92,10 @@ const IntakeFormCard: React.FC<IntakeFormCardProps> = ({ onComplete }) => {
 
   return (
     <div
-      className="ml-10 max-ph:ml-0 rounded-[20px] overflow-hidden bg-white"
+      className="ml-10 w-[calc(100%-40px)] max-ph:ml-0 max-ph:w-full rounded-[20px] overflow-hidden bg-white"
       style={{
-        width: "calc(100% - 40px)",
         maxWidth: 480,
         border: "1px solid #ececec",
-        boxShadow: "0 18px 40px -18px rgba(11,18,32,0.16)",
       }}
     >
       {/* Header */}
@@ -91,12 +109,36 @@ const IntakeFormCard: React.FC<IntakeFormCardProps> = ({ onComplete }) => {
         <StepProgress step={step} total={TOTAL_STEPS} />
       </div>
 
-      {/* Active step */}
-      <div className="px-5 py-[18px]">
-        {step === 0 && <DestinationStep state={state} update={update} />}
-        {step === 1 && <WhenStep state={state} update={update} />}
-        {step === 2 && <WhoStep state={state} update={update} />}
-        {step === 3 && <NotesStep state={state} update={update} />}
+      {/* Sliding viewport — height animates to the active step */}
+      <div
+        ref={viewportRef}
+        className="relative overflow-hidden"
+        style={{ transition: "height .42s cubic-bezier(.2,.7,.3,1)" }}
+      >
+        <div
+          className="flex items-start"
+          style={{
+            transform: `translateX(-${step * 100}%)`,
+            transition: "transform .4s cubic-bezier(.2,.7,.3,1)",
+          }}
+        >
+          {[
+            <DestinationStep key="d" state={state} update={update} />,
+            <WhenStep key="w" state={state} update={update} />,
+            <WhoStep key="who" state={state} update={update} />,
+            <NotesStep key="n" state={state} update={update} />,
+          ].map((node, i) => (
+            <div
+              key={i}
+              ref={(el) => {
+                stepRefs.current[i] = el;
+              }}
+              className="min-w-full px-5 py-[18px] self-start"
+            >
+              {node}
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Footer */}
