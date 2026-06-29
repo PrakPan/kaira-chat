@@ -1,12 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
-import { useSelector } from "react-redux";
 import styles from "./HeadingContent.module.scss";
 import {
   setPendingFiles,
   setPendingSeed,
 } from "../../../services/heroChatHandoff";
-import BotLoginModal from "../../bot-components/components/BotLoginModal";
 
 const SEED_PROMPTS = [
   { emoji: "🇯🇵", label: "10 days Japan" },
@@ -37,38 +35,6 @@ const HeadingContent = ({ title, subtitle }) => {
   const [isListening, setIsListening] = useState(false);
   const [micSupported, setMicSupported] = useState(true);
 
-  // ── Login gate ──────────────────────────────────────────────────────────
-  const reduxToken = useSelector((state) => state.auth?.token);
-  const [hasLocalToken, setHasLocalToken] = useState(false);
-  const [showLogin, setShowLogin] = useState(false);
-  const pendingActionRef = useRef(null);
-  const isLoggedIn = !!reduxToken || hasLocalToken;
-
-  // Re-sync with localStorage whenever the redux token changes so that
-  // login/logout performed on this page (without a reload) is reflected
-  // immediately — otherwise a stale `true` keeps the chat input ungated.
-  useEffect(() => {
-    setHasLocalToken(
-      !!(
-        localStorage.getItem("token") ||
-        localStorage.getItem("authToken") ||
-        localStorage.getItem("access_token")
-      )
-    );
-  }, [reduxToken]);
-
-  // Run `action` if logged in, otherwise stash it and open the login modal.
-  // The stashed action resumes automatically on successful login.
-  const requireAuth = (action) => {
-    if (!isLoggedIn) {
-      pendingActionRef.current = action || null;
-      setShowLogin(true);
-      return false;
-    }
-    if (action) action();
-    return true;
-  };
-
   useEffect(() => {
     setMicSupported(!!getSpeechRecognition());
   }, []);
@@ -94,15 +60,12 @@ const HeadingContent = ({ title, subtitle }) => {
   const handleSubmit = (e) => {
     e?.preventDefault?.();
     const seed = (value || "").trim();
-    if (!seed && attachments.length === 0) {
-      if (!isLoggedIn) setShowLogin(true);
-      return;
-    }
-    requireAuth(() => goToChat(seed, attachments));
+    if (!seed && attachments.length === 0) return;
+    goToChat(seed, attachments);
   };
 
   const handlePromptClick = (label) => {
-    requireAuth(() => goToChat(label));
+    goToChat(label);
   };
 
   const autoGrow = (el) => {
@@ -194,12 +157,6 @@ const HeadingContent = ({ title, subtitle }) => {
           rows={1}
           placeholder="Try: 10 days Japan, cherry blossoms, under ₹2L per person"
           value={value}
-          onFocus={(e) => {
-            if (!isLoggedIn) {
-              e.currentTarget.blur();
-              setShowLogin(true);
-            }
-          }}
           onChange={(e) => {
             setValue(e.target.value);
             autoGrow(e.target);
@@ -246,7 +203,7 @@ const HeadingContent = ({ title, subtitle }) => {
             className={styles.iconBtn}
             title="Attach a document"
             aria-label="Attach a document"
-            onClick={() => requireAuth(() => fileInputRef.current?.click())}
+            onClick={() => fileInputRef.current?.click()}
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
@@ -258,7 +215,7 @@ const HeadingContent = ({ title, subtitle }) => {
             title={micSupported ? (isListening ? "Stop dictating" : "Dictate") : "Voice input not supported in this browser"}
             aria-label="Dictate"
             disabled={!micSupported}
-            onClick={() => requireAuth(startMic)}
+            onClick={startMic}
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="9" y="2" width="6" height="12" rx="3" />
@@ -286,20 +243,6 @@ const HeadingContent = ({ title, subtitle }) => {
           </button>
         ))}
       </div>
-
-      {/* Login gate — shown when a logged-out user interacts with the home
-          hero input or taps a suggested prompt. */}
-      <BotLoginModal
-        show={showLogin}
-        onhide={() => setShowLogin(false)}
-        zIndex={"3300"}
-        onSuccess={() => {
-          setShowLogin(false);
-          const action = pendingActionRef.current;
-          pendingActionRef.current = null;
-          if (action) action();
-        }}
-      />
     </div>
   );
 };
