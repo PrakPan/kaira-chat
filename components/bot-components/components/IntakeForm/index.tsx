@@ -83,7 +83,7 @@ const IntakeFormCard: React.FC<IntakeFormCardProps> = ({ onComplete }) => {
   if (state.completed) {
     return (
       <div
-        className="rounded-[16px] p-4 mb-3 ml-10 w-[calc(100%-40px)] max-ph:ml-0 max-ph:-mx-1 max-ph:w-auto max-ph:rounded-none"
+        className="rounded-[16px] h-[11vh] p-3 mb-3 ml-10 w-[calc(100%-40px)] max-ph:ml-0 max-ph:-mx-1 max-ph:w-auto max-ph:rounded-none"
         style={{ background: "#fff", border: "1px solid #ececec", maxWidth: 480 }}
       >
         <div className="text-[11px] font-extrabold text-[#1f8a5a] uppercase tracking-wide mb-2">

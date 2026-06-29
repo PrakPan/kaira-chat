@@ -210,6 +210,30 @@ export function parseFormFields(
   return out;
 }
 
+// ── Streamed intake-form widget ───────────────────────────────────────────────
+// The backend no longer emits a `show_intake_form` client effect. Instead it
+// streams a widget item (`thread.item.done`) whose `id` encodes the prefill as
+// `intake-form:{...json...}` — the JSON is exactly the prefill shape that
+// `parseShowIntakeForm` consumes. These helpers detect such widgets and pull
+// the prefill object out of the id.
+
+export const INTAKE_FORM_WIDGET_PREFIX = "intake-form:";
+
+export function isIntakeFormWidgetId(id: unknown): id is string {
+  return typeof id === "string" && id.startsWith(INTAKE_FORM_WIDGET_PREFIX);
+}
+
+export function parseIntakeFormWidgetId(id: unknown): any | null {
+  if (!isIntakeFormWidgetId(id)) return null;
+  const raw = id.slice(INTAKE_FORM_WIDGET_PREFIX.length).trim();
+  if (!raw) return {};
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
 // ── Parse the backend `show_intake_form` effect ───────────────────────────────
 // Shape (every section optional, each carries an `is_completed` marker):
 //   { prefill: {

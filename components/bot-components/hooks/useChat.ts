@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from "react";
 import { getAdParams } from "../../../helper/adAttribution";
+import { isIntakeFormWidgetId } from "../components/IntakeForm/intakePrompt";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -78,7 +79,7 @@ interface UseChatOptions {
   itineraryId?: string;
   onEffect?: (effect: ClientEffect) => void;
   onFirstToken?: () => void;
-  onWidget?: (item: unknown) => void;
+  onWidget?: (item: { id: string; widget: Record<string, unknown> }) => void;
   authToken?: string;
   /** User ID from Redux state.auth.id — sent as user_id in every request */
   userId?: string | number;
@@ -641,6 +642,14 @@ export function useChat({
           },
           onEffect: (effect) => onEffect?.(effect),
           onWidget: (item) => {
+            // Intake-form widgets encode their prefill in the widget's own id
+            // (item.widget.id = "intake-form:{...}"; item.id is the message id)
+            // and must render as the interactive IntakeForm card, not the raw
+            // widget placeholder. Hand them to the host (ChatKitPanel) instead.
+            if (isIntakeFormWidgetId(item.widget?.id)) {
+              onWidget?.(item);
+              return;
+            }
             setMessages((prev) => [
               ...prev,
               {
@@ -837,6 +846,14 @@ export function useChat({
             },
             onEffect: (effect) => onEffect?.(effect),
             onWidget: (item) => {
+              // Intake-form widgets encode their prefill in the widget's own id
+              // (item.widget.id = "intake-form:{...}"; item.id is the message
+              // id) and must render as the interactive IntakeForm card, not the
+              // raw widget placeholder. Hand them to the host (ChatKitPanel).
+              if (isIntakeFormWidgetId(item.widget?.id)) {
+                onWidget?.(item);
+                return;
+              }
               setMessages((prev) => [
                 ...prev,
                 {
