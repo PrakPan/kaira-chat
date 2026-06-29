@@ -360,6 +360,35 @@ const Index = (props) => {
         ]}
       />
 
+      {/* REAL TRIPS, REAL TRAVELLERS */}
+      {userItineraries?.length ? (
+        <div className={styles.container}>
+          <section className={`${styles.block} ${styles.itinerariesBlock}`}>
+            <div className={styles.sectionHead}>
+              <div className={styles.sectionHeadLeft}>
+                <div className={styles.itinPill}>
+                  ★ Real trips, real travellers
+                </div>
+                <h2>
+                  Real {destinationLabel} trips our{" "}
+                  <span className={styles.serif}>travellers loved.</span>
+                </h2>
+                <p className={styles.lede}>
+                  Every itinerary below has been done.{" "}
+                  <span className={styles.serif}>Tweak anything</span> in chat —
+                  dates, hotels, duration.
+                </p>
+              </div>
+            </div>
+            <div className={styles.itinGrid}>
+              {userItineraries.slice(0, 4).map((it, i) => (
+                <ItineraryCardV2 key={it.id || i} itinerary={it} />
+              ))}
+            </div>
+          </section>
+        </div>
+      ) : null}
+
       <WhenToGoSection
         seasonalInfo={props.data?.seasonal_info}
         destinationName={destinationLabel}
@@ -456,6 +485,9 @@ const Index = (props) => {
         {/* COMPONENTS FROM API */}
         {props?.data?.components?.length > 0 &&
           props?.data?.components?.map((component, idx) => {
+            // "itinerary-1" now renders as the "Real trips" section directly
+            // below the Destination Strip — skip it here to avoid duplication.
+            if (component.carousel === "itinerary-1") return null;
             const carouselType = String(component.carousel || "").toLowerCase();
             const isActivity = carouselType.includes("activity");
             const isPoi = carouselType.includes("poi");

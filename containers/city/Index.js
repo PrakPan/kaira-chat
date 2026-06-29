@@ -9,6 +9,7 @@ import DestinationStatsStrip from "../../components/revamp/destination/Destinati
 import WhenToGoSection from "../../components/revamp/destination/WhenToGoSection.jsx";
 import PlanningSection from "../../components/revamp/destination/PlanningSection.jsx";
 import ChatWithKairaCta from "../../components/revamp/destination/ChatWithKairaCta.jsx";
+import ItineraryCardV2 from "../../components/revamp/destination/ItineraryCardV2.jsx";
 import DesktopBanner from "../../components/containers/Banner.js";
 import { imgUrlEndPoint } from "../../components/theme/ThemeConstants";
 import TailoredFormMobileModal from "../../components/modals/TailoredFomrMobile";
@@ -183,6 +184,35 @@ const Experience = (props) => {
           },
         ]}
       />
+
+      {/* REAL TRIPS, REAL TRAVELLERS */}
+      {props.cityData?.itineraries?.length ? (
+        <div className={styles.container}>
+          <section className={`${styles.block} ${styles.itinerariesBlock}`}>
+            <div className={styles.sectionHead}>
+              <div className={styles.sectionHeadLeft}>
+                <div className={styles.itinPill}>
+                  ★ Real trips, real travellers
+                </div>
+                <h2>
+                  Real {cityDisplayName} trips our{" "}
+                  <span className={styles.serif}>travellers loved.</span>
+                </h2>
+                <p className={styles.lede}>
+                  Every itinerary below has been done.{" "}
+                  <span className={styles.serif}>Tweak anything</span> in chat —
+                  dates, hotels, duration.
+                </p>
+              </div>
+            </div>
+            <div className={styles.itinGrid}>
+              {props.cityData.itineraries.slice(0, 4).map((it, i) => (
+                <ItineraryCardV2 key={it.id || i} itinerary={it} />
+              ))}
+            </div>
+          </section>
+        </div>
+      ) : null}
 
       <WhenToGoSection
         seasonalInfo={props.cityData?.seasonal_info}
