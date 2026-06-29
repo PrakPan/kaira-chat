@@ -220,6 +220,10 @@ onTripMetaUpdate?: (meta: {
 /** Fired when the backend `form_fields` effect arrives on the first prompt.
  *  Lets BotApp flip the left panel to the intake hero image panel. */
 onIntakeFormStart?: () => void;
+/** When true, inject an empty in-chat intake form on mount (no backend
+ *  `form_fields` effect needed). Set when the user lands on /chat from a
+ *  "Plan with Kaira" CTA (`?intake=1`). */
+startEmptyIntake?: boolean;
 }
 
 export interface TravellerStoryIntro {
@@ -802,6 +806,7 @@ loginMandatory,
 onViewItinerary,
 onTripMetaUpdate,
 onIntakeFormStart,
+startEmptyIntake = false,
 }: ChatKitPanelProps) {
   // ── State ────────────────────────────────────────────────────────────────
   const [input, setInput] = useState("");
@@ -1680,25 +1685,36 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
 
     console.log("Messages",messages);
 
-  // ⚠️ TEMP DEBUG — force-show the IntakeForm card without the server `form_fields`
-  // effect. Mirrors the injection in the form_fields handler. REMOVE before merge.
-  // useEffect(() => {
-  //   if (intakeFormInjectedRef.current) return;
-  //   intakeFormInjectedRef.current = true;
-  //   dispatch(updateIntakeForm({ active: true, completed: false, step: 0 }));
-  //   setMessages((prev) => [
-  //     ...prev,
-  //     {
-  //       id: `intake-form-${sessionIdRef.current}`,
-  //       role: "assistant",
-  //       content: "",
-  //       timestamp: new Date(),
-  //       type: "intake_form",
-  //     },
-  //   ]);
-  //   onIntakeFormStart?.();
-    
-  // }, []);
+  // ── Empty intake form on /chat?intake=1 (Plan with Kaira CTAs) ─────────────
+  // When the user lands here from a "Plan with Kaira" CTA we inject a fresh,
+  // empty intake form (plus Kaira's greeting) without waiting for the backend
+  // `form_fields` effect. Mirrors the injection in the form_fields handler.
+  useEffect(() => {
+    if (!startEmptyIntake) return;
+    if (intakeFormInjectedRef.current) return;
+    intakeFormInjectedRef.current = true;
+    dispatch(updateIntakeForm({ active: true, completed: false, step: 0 }));
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: `intake-greeting-${sessionIdRef.current}`,
+        role: "assistant",
+        content:
+          "Hi, I'm Kaira, your travel friend. Let's build something good — a few quick taps and I'll get to work.",
+        timestamp: new Date(),
+      },
+      {
+        id: `intake-form-${sessionIdRef.current}`,
+        role: "assistant",
+        content: "",
+        timestamp: new Date(),
+        type: "intake_form",
+      },
+    ]);
+    onIntakeFormStart?.();
+    // Run once on mount when the flag is set.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [startEmptyIntake]);
 
   // Quick replies stream in on the tail of the response, after the answer is
   // fully rendered but while the SSE connection is still open (so `isStreaming`

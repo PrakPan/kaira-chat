@@ -328,3 +328,36 @@
   border-radius: 50%;
   background: var(--ttw-green);
 }
+
+.kairaCta {
+  margin-top: 22px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 28px;
+  border-radius: 999px;
+  background: var(--ttw-ink);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 12px 28px -8px rgba(11, 18, 32, 0.4);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  z-index: 4;
+
+  svg {
+    width: 18px;
+    height: 18px;
+    transition: transform 0.2s ease;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 34px -8px rgba(11, 18, 32, 0.45);
+
+    svg {
+      transform: translateX(3px);
+    }
+  }
+}
