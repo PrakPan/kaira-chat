@@ -2391,46 +2391,16 @@ const sendMessage = useCallback(
 );
 
 // ── Intake form completion ───────────────────────────────────────────────────
-// Holds the composed message while we wait for an inline OTP verify (logged-out
-// users) before sending it to Kaira.
-const pendingIntakeMessageRef = useRef<string | null>(null);
-
+// Always send the composed message straight to Kaira. If the user isn't logged
+// in and the action needs auth, the backend emits `prompt_login`, which injects
+// the inline sign-in card (login_card) and replays the message after verify —
+// so we never inject an OTP card from the client here.
 const handleIntakeComplete = useCallback(
   (composed: string) => {
-    const loggedIn =
-      !!reduxToken ||
-      (typeof window !== "undefined" &&
-        !!localStorage.getItem("access_token"));
-    if (loggedIn) {
-      sendMessage(composed, undefined, undefined, { formSubmitted: true });
-      return;
-    }
-    // Not logged in → inject the inline OTP card and send after verify.
-    pendingIntakeMessageRef.current = composed;
-    setMessages((prev) =>
-      prev.some((m) => m.type === "intake_otp")
-        ? prev
-        : [
-            ...prev,
-            {
-              id: `intake-otp-${sessionIdRef.current}`,
-              role: "assistant",
-              content: "",
-              timestamp: new Date(),
-              type: "intake_otp",
-            },
-          ],
-    );
+    sendMessage(composed, undefined, undefined, { formSubmitted: true });
   },
-  [reduxToken, sendMessage, setMessages],
+  [sendMessage],
 );
-
-const handleIntakeOtpVerified = useCallback(() => {
-  const composed = pendingIntakeMessageRef.current;
-  pendingIntakeMessageRef.current = null;
-  setMessages((prev) => prev.filter((m) => m.type !== "intake_otp"));
-  if (composed) sendMessage(composed, undefined, undefined, { formSubmitted: true });
-}, [sendMessage, setMessages]);
 
 // Inline `prompt_login` card verified — just retire the card. The token-watch
 // effect re-fires `pendingPostLoginAction` (the message/widget action that
@@ -3456,11 +3426,6 @@ const handleShowLogin = useCallback(() => {
                     key={msg.id}
                     onComplete={handleIntakeComplete}
                   />
-                );
-              }
-              if (msg.type === "intake_otp") {
-                return (
-                  <OtpCard key={msg.id} onVerified={handleIntakeOtpVerified} />
                 );
               }
               if (msg.type === "login_card") {
