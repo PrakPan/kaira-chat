@@ -90,11 +90,11 @@ const DEFAULT_STORIES = [
     badge: "Rajasthan · 5 nights",
     moment: (
       <>
-        Priya caught a <span className="ttwSerif">permit</span> three agents missed.
+        Priya caught a <span className="ttwSerif">booking gap</span> three agents missed.
       </>
     ),
     detail:
-      "Trip three with Kaira. She flagged the restricted-area permit paperwork 48 hours before it would've gone wrong in Leh.",
+      "Trip three with Kaira. She caught a double-booked Jaipur heritage-haveli room 48 hours before it would've gone wrong.",
     author: { initial: "P", name: "Priya", location: "Delhi · trip 3", avatarVariant: "pink" },
     rating: 5.0,
   },
