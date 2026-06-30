@@ -586,7 +586,7 @@ export default function ActivityDetails(props) {
           <div className="flex flex-col gap-5">
             <div className="flex flex-col gap-1.5">
               <h1 className="text-[24px] font-bold leading-[29px] tracking-[-0.02em] text-[#0b1220]">
-                {props.data?.display_name || props.data.name}
+                {props.data?.display_name || props.data?.name}
               </h1>
               {props.data?.one_liner_description && (
                 <p className="font-serif text-[18px] italic leading-[24px] text-[#445069]">

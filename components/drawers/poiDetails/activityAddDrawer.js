@@ -81,6 +81,7 @@ const ActivityAddDrawer = (props) => {
   const isDesktop = useMediaQuery("(min-width:767px)");
   const [selectedExprience, setSelectedExprience] = useState(-1);
   const [nextUrl, setNextUrl] = useState(null);
+  const [linktivityCursor, setLinktivityCursor] = useState(null);
   const [elementType, setElementType] = useState("Activity");
   const [options, setOptions] = useState([]);
   const [totalResults, setTotalResults] = useState(null);
@@ -424,6 +425,7 @@ const ActivityAddDrawer = (props) => {
               if (showMore) setOptions((prev) => [...prev, ...options]);
               else setOptions(options);
               setNextUrl(res?.data?.next);
+              setLinktivityCursor(res?.data?.linktivity_next_cursor ?? null);
 
               if (res.data.next) {
                 setShowMoreResults(true);
@@ -553,6 +555,7 @@ const ActivityAddDrawer = (props) => {
                 : null,
           },
           sort_by: {},
+          linktivity_cursor: linktivityCursor,
         };
         const res = await axios.post(nextUrl, requestData);
         for (var i = 0; i < res.data.data.activities.length; i++) {
@@ -581,6 +584,7 @@ const ActivityAddDrawer = (props) => {
         }
         setOptions((prev) => [...prev, ...options]);
         setNextUrl(res?.data?.next);
+        setLinktivityCursor(res?.data?.linktivity_next_cursor ?? null);
         if (res.data.next) {
           setShowMoreResults(true);
         } else {

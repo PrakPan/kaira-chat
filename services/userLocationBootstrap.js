@@ -79,7 +79,7 @@ export async function bootstrapUserLocation(onResolved) {
     const ip = ipRes?.data?.ip;
     if (!ip) throw new Error("No IP");
     const locRes = await axios.get(
-      `https://mercury.tarzanway.com/api/v1/geos/search/user_location/?ip=${ip}`
+      `https://dev.mercury.tarzanway.com/api/v1/geos/search/user_location/?ip=${ip}`
     );
     if (locRes?.data) apply(locRes.data, true);
     else apply(DELHI_LOCATION, true);

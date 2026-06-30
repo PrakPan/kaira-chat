@@ -344,7 +344,11 @@ export const auth = (
             email_last_verified_on:
               responseData.data.user?.email_last_verified_on,
           };
-          trackUserLogin(userdata.id);
+          // Guard: some callers (e.g. the inline OtpCard) may not wire an
+          // analytics tracker. A bare call would throw here on a successful
+          // response, get swallowed by the .catch below, and surface as a
+          // bogus "OTP didn't match" — never dispatching authSuccess.
+          if (typeof trackUserLogin === "function") trackUserLogin(userdata.id);
           //Store user details in local storage
           localStorage.setItem("name", userdata.name);
           localStorage.setItem("country", userdata.country);
@@ -381,7 +385,7 @@ export const auth = (
         }
       })
       .catch((err) => {
-        if (err.response.data?.errors && err.response.data?.errors[0].email) {
+        if (err.response?.data?.errors && err.response.data?.errors[0].email) {
           logEvent({
             action: "number-login-email_fail",
             params: {

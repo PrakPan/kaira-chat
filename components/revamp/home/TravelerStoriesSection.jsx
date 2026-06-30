@@ -84,7 +84,7 @@ const DEFAULT_STORIES = [
     author: { initial: "R", name: "Rohan", location: "Bangalore", avatarVariant: "blue" },
     rating: 4.9,
   },
-  {
+ {
     id: 6,
     image: "https://images.unsplash.com/photo-1477587458883-47145ed94245?w=600&q=80&auto=format",
     badge: "Rajasthan · 5 nights",

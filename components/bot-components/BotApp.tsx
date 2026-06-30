@@ -11,6 +11,7 @@ import ViewToggle from "./components/ViewToggle";
 import Sidebar from "./components/Sidebar";
 import { getUserAvatarColor, getUserInitial } from "./utils/avatarColor";
 import StartScreen, { type TravellerStory } from "./components/StartScreen";
+import IntakeLeftPanel from "./components/IntakeLeftPanel";
 import type { ThemeConfig } from "./types/themeConfig";
 import ChatWelcomeScreen from "./components/ChatWelcomeScreen";
 import ItineraryShimmer from "./components/ItineraryShimmer";
@@ -30,6 +31,7 @@ import type {
 import { useDispatch } from "react-redux";
 import setItineraryIdAction from "../../store/actions/itineraryId";
 import setItineraryStatus from "../../store/actions/itineraryStatus";
+import { resetIntakeForm } from "../../store/actions/intakeForm";
 import setItineraryDaybyDay from "../../store/actions/itineraryDaybyDay";
 import setItinerary from "../../store/actions/itinerary";
 import setBreif from "../../store/actions/breif";
@@ -269,6 +271,19 @@ export default function BotApp({
   // while we restore the thread data. It will be properly set by the restore flow.
   const [hasBotResponded, setHasBotResponded] = useState(!!sessionId);
   const [isLeftPanelRevealing, setIsLeftPanelRevealing] = useState(false);
+  // True once the backend `form_fields` effect has started the in-chat intake
+  // flow — flips the left panel to the destination hero image.
+  const [intakeActive, setIntakeActive] = useState(false);
+  // True when the user lands from a "Plan with Kaira" CTA (`?intake=1`): show
+  // the default hero banner on the left and inject an empty intake form on the
+  // right, without waiting for a backend message.
+  const [startEmptyIntake, setStartEmptyIntake] = useState(false);
+  // The destination chosen inside the in-chat intake form. The left hero panel
+  // only takes over once a place is picked; until then we keep the StartScreen
+  // (inspiration) visible instead of a default hero image.
+  const intakeDestination = useSelector(
+    (s: any) => s.IntakeForm?.destination,
+  );
 
   const [leftPanelMode, setLeftPanelMode] = useState<LeftPanelMode>("default");
   const [completingItineraryId, setCompletingItineraryId] = useState<
@@ -1153,6 +1168,9 @@ export default function BotApp({
   );
 
   const revealLeftPanel = useCallback(() => {
+    // Real trip content is arriving — retire the intake hero so the map /
+    // itinerary panels underneath become visible.
+    setIntakeActive(false);
     if (!hasBotResponded) {
       setIsLeftPanelRevealing(true);
       requestAnimationFrame(() => {
@@ -2413,6 +2431,8 @@ export default function BotApp({
     setIsChatActive(false);
     setMobilePanel("chat");
     setLeftPanelMode("default");
+    setIntakeActive(false);
+    dispatch(resetIntakeForm());
     setCompletingItineraryId(null);
     setLoaderDisplayText(null);
     setActiveItineraryId(null);
@@ -2512,14 +2532,44 @@ export default function BotApp({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.isReady]);
 
-  const handlePromptSelect = (prompt: string, attachmentIds?: string[]) => {
-    // Gate the start-screen / theme prompt cards behind login.
-    if (!isLoggedIn) {
-      pendingPromptActionRef.current = () =>
-        executePromptSelect(prompt, attachmentIds);
-      setShowPromptLoginPrompt(true);
-      return;
+  // ── "Plan with Kaira" CTA landing (`?intake=1`) ───────────────────────────
+  // All Plan-with-Kaira CTAs route here via openTailoredModal. Start a fresh,
+  // empty in-chat intake form: reveal the chat panel, show the default hero
+  // banner on the left (IntakeLeftPanel with no destination), and flag
+  // ChatKitPanel to inject the empty form. The query param is dropped after
+  // consumption so a refresh doesn't re-trigger it.
+  const hasConsumedIntakeFlagRef = useRef(false);
+  useEffect(() => {
+    if (hasConsumedIntakeFlagRef.current) return;
+    if (!router.isReady) return;
+    const flag = router.query.intake;
+    const wantsIntake = Array.isArray(flag) ? flag[0] : flag;
+    if (!wantsIntake) return;
+    hasConsumedIntakeFlagRef.current = true;
+
+    dispatch(resetIntakeForm());
+    setStartEmptyIntake(true);
+    setIntakeActive(true);
+    setShowStartScreen(false);
+    setIsChatActive(true);
+
+    if (typeof window !== "undefined") {
+      try {
+        const url = new URL(window.location.href);
+        url.searchParams.delete("intake");
+        window.history.replaceState({}, "", url.toString());
+      } catch {
+        /* noop */
+      }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router.isReady]);
+
+  const handlePromptSelect = (prompt: string, attachmentIds?: string[]) => {
+    // The first prompt is allowed through without an upfront login modal so the
+    // in-chat intake form can render immediately; authentication is collected
+    // later via the inline OTP card when the user submits the form (or via the
+    // backend `prompt_login` effect if it gates a specific action).
     executePromptSelect(prompt, attachmentIds);
   };
 
@@ -2617,6 +2667,7 @@ export default function BotApp({
     onLoginSuccess: attachUserToItinerary,
     loginMandatory: router.query.login === "false" ? false : undefined,
     onViewItinerary: () => mobileTabSwitchRef.current?.("itinerary"),
+    onIntakeFormStart: () => setIntakeActive(true),
     initialFiles,
     initialInputText,
   };
@@ -3094,10 +3145,19 @@ Start Location: ${details.startLocation}`;
         >
           <div
             className={`absolute inset-0 z-10 overflow-y-auto transition-opacity duration-500 ease-in-out pointer-events-${
- showStartScreen && leftPanelMode === "default" ? "auto" : "none"
+ (showStartScreen ||
+   (intakeActive && !intakeDestination && !startEmptyIntake)) &&
+ leftPanelMode === "default"
+ ? "auto"
+ : "none"
  }`}
             style={{
-              opacity: showStartScreen && leftPanelMode === "default" ? 1 : 0,
+              opacity:
+                (showStartScreen ||
+                  (intakeActive && !intakeDestination && !startEmptyIntake)) &&
+                leftPanelMode === "default"
+                  ? 1
+                  : 0,
             }}
           >
             <StartScreen
@@ -3105,6 +3165,26 @@ Start Location: ${details.startLocation}`;
               onTravellerStorySelect={handleTravellerStorySelect}
               themeConfig={themeConfig}
             />
+          </div>
+
+          {/* INTAKE HERO — shown over StartScreen/map only once a destination
+              is chosen; its image swaps with the chosen destination. Before a
+              pick we keep the StartScreen above. inset-0 keeps the hero within
+              the left pane so the bottom TrustIndicators bar stays visible. */}
+          <div
+            className={`absolute inset-0 z-20 transition-opacity duration-500 ease-in-out ${
+ intakeActive && (intakeDestination || startEmptyIntake)
+ ? "pointer-events-auto"
+ : "pointer-events-none"
+ }`}
+            style={{
+              opacity:
+                intakeActive && (intakeDestination || startEmptyIntake) ? 1 : 0,
+            }}
+          >
+            {intakeActive && (intakeDestination || startEmptyIntake) && (
+              <IntakeLeftPanel />
+            )}
           </div>
 
           <style>{`#chatContainer::-webkit-scrollbar { display: none; }`}</style>
@@ -3183,6 +3263,7 @@ Start Location: ${details.startLocation}`;
                 initialPromptRequiresLogin={initialPromptRequiresLogin}
                 onInitialPromptConsumed={handleInitialPromptConsumed}
                 onSendReady={handleSendMessageReady}
+                startEmptyIntake={startEmptyIntake}
               />
             )}
           </div>
@@ -3265,6 +3346,7 @@ Start Location: ${details.startLocation}`;
                     initialPromptRequiresLogin={initialPromptRequiresLogin}
                     onInitialPromptConsumed={handleInitialPromptConsumed}
                     onSendReady={handleSendMessageReady}
+                    startEmptyIntake={startEmptyIntake}
                     isPanelVisible={mobilePanel === "chat"}
                     mobileMenu={
                       <MobileHeaderMenu

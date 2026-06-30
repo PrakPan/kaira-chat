@@ -26,11 +26,12 @@ export default function NewActivityBooking(props) {
   const isDesktop = useMediaQuery("(min-width: 583px)");
   const currency = useSelector(state=>state.currency);
 
-  // Ventrata prices are per-unit/lead-in rates, so the displayed amount is a
-  // "starting from" figure rather than a fixed total. Prefix the price label
-  // for activities sourced from Ventrata.
-  const isVentrata =
-    String(props?.data?.source || "").toLowerCase() === "ventrata";
+  // Ventrata and Linktivity prices are per-unit/lead-in rates, so the displayed
+  // amount is a "starting from" figure rather than a fixed total. Prefix the
+  // price label for activities sourced from these suppliers.
+  const isVentrata = ["ventrata", "linktivity"].includes(
+    String(props?.data?.source || "").toLowerCase(),
+  );
 
   useEffect(() => {
     if (props?.data && props.data?.rating) {
@@ -240,9 +241,9 @@ export default function NewActivityBooking(props) {
             </div>
             <div className="flex flex-row items-center justify-between">
               {props.data?.pricing?.total_price ? (
-                <div className="flex flex-col gap-1">
+                <div className="flex flex-col gap-0">
                   {isVentrata && (
-                    <div className="text-text-spacegrey text-sm-md font-400 leading-lg">
+                    <div className="text-text-spacegrey text-sm-md font-400 leading-tight">
                       Starting from
                     </div>
                   )}
@@ -497,11 +498,11 @@ export default function NewActivityBooking(props) {
           )}
         </div> */}
 
-          <div className="flex flex-row items-center justify-between py-1">
+          <div className="flex flex-row items-center justify-between py-2">
             {props.data?.pricing?.total_price ? (
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-0">
                 {isVentrata && (
-                  <div className="text-text-spacegrey text-[14px] font-400 leading-lg">
+                  <div className="text-text-spacegrey text-[14px] font-400 leading-tight">
                     Starting from
                   </div>
                 )}

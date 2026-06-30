@@ -137,7 +137,7 @@ const NavigationMenu = (props) => {
                   My Trips
           </button>}</>: null}
           
-          {(pathname!="/new-trip")&& (!pathname?.includes("/itinerary")) && pathname=="/dashboard"&& <button className="MediumIndigoButton w-fit" onClick={()=>setShowMobilePlanner(true)}>
+          {(pathname!="/new-trip")&& (!pathname?.includes("/itinerary")) && pathname=="/dashboard"&& <button className="MediumIndigoButton w-fit" onClick={()=>router.push("/chat?intake=1")}>
                   Plan with Kaira <svg viewBox="0 0 12 12"  height="14" width="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 10L10 2M10 2H4M10 2V8"></path></svg>
           </button>}
           
@@ -266,14 +266,17 @@ const NavigationMenu = (props) => {
       </div>}
       </div>
 
-      <TailoredFormMobileModal
+      {/* Plan with Kaira now opens /chat?intake=1 (empty in-chat intake form)
+          instead of the tailored-form modal. Old modal kept commented for
+          fallback. */}
+      {/* <TailoredFormMobileModal
         destinationType={"city-planner"}
         onHide={() => {
           setShowMobilePlanner(false);
           // closeTailoredModal(router);
         }}
         show={showMoiblePlanner}
-      />
+      /> */}
 
     </>
   );
