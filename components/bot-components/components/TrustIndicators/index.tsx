@@ -2,7 +2,7 @@ import React from "react";
 
 const TrustIndicators: React.FC = () => {
   return (
-    <div className="absolute bottom-0 left-0 right-0 border-t border-gray-100 py-4 px-8 z-10 bg-[#f9f9f9]">
+    <div className="w-full border-t border-gray-100 py-4 px-8 z-10 bg-[#f9f9f9]">
       <div className="flex items-center justify-center gap-8 ttw-type-body text-gray-600">
         <div className="flex items-center gap-2">
           {/* <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

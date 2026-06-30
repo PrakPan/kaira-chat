@@ -1,3 +1,4 @@
+import ImageWithSkeleton from "../destination/ImageWithSkeleton";
 import styles from "./TravelerStoriesSection.module.scss";
 
 /*
@@ -51,12 +52,9 @@ const StoryCard = ({
         if (interactive && e.key === "Enter") onClick(e);
       }}
     >
-      <div
-        className={styles.img}
-        style={image ? { backgroundImage: `url('${image}')` } : undefined}
-      >
+      <ImageWithSkeleton src={image} asBackground className={styles.img}>
         {badge ? <span className={styles.badge}>{badge}</span> : null}
-      </div>
+      </ImageWithSkeleton>
       <div className={styles.body}>
         {moment ? <div className={styles.moment}>{moment}</div> : null}
         {detail ? <div className={styles.detail}>{detail}</div> : null}

@@ -38,6 +38,10 @@ import { setCurrency } from "../../../store/actions/currencyActions";
 import setItineraryStatus from "../../../store/actions/itineraryStatus";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 import BotLoginModal from "./BotLoginModal";
+import { updateIntakeForm } from "../../../store/actions/intakeForm";
+import IntakeFormCard from "./IntakeForm";
+import OtpCard from "./IntakeForm/OtpCard";
+import { parseFormFields, parseShowIntakeForm, parseIntakeFormWidgetId, isIntakeFormWidgetId } from "./IntakeForm/intakePrompt";
 
 const CHATKIT_API_URL = "https://dev.chat.tarzanway.com/chatkit";
 const PAGINATION_SCROLL_THRESHOLD = 80;
@@ -213,6 +217,13 @@ onTripMetaUpdate?: (meta: {
   number_of_infants?: number;
   travel_date?: string;
 }) => void;
+/** Fired when the backend `form_fields` effect arrives on the first prompt.
+ *  Lets BotApp flip the left panel to the intake hero image panel. */
+onIntakeFormStart?: () => void;
+/** When true, inject an empty in-chat intake form on mount (no backend
+ *  `form_fields` effect needed). Set when the user lands on /chat from a
+ *  "Plan with Kaira" CTA (`?intake=1`). */
+startEmptyIntake?: boolean;
 }
 
 export interface TravellerStoryIntro {
@@ -247,7 +258,7 @@ function useUserLocationData() {
         const ipRes = await fetch("https://api.ipify.org?format=json");
         const { ip } = await ipRes.json();
         const locRes = await fetch(
-          `https://mercury.tarzanway.com/api/v1/geos/search/user_location/?ip=${ip}`,
+          `https://dev.mercury.tarzanway.com/api/v1/geos/search/user_location/?ip=${ip}`,
         );
         const data: UserLocationData = await locRes.json();
         localStorage.setItem("userLocationData", JSON.stringify(data));
@@ -794,6 +805,8 @@ onLoginSuccess,
 loginMandatory,
 onViewItinerary,
 onTripMetaUpdate,
+onIntakeFormStart,
+startEmptyIntake = false,
 }: ChatKitPanelProps) {
   // ── State ────────────────────────────────────────────────────────────────
   const [input, setInput] = useState("");
@@ -812,6 +825,9 @@ onTripMetaUpdate,
   // otherwise-finished stream.
   const quickReplyShimmerRef = useRef(false);
   quickReplyShimmerRef.current = quickReplyShimmer;
+  // Guards the in-chat intake form so the `form_fields` effect injects the card
+  // only once per session even if the effect re-emits across stream chunks.
+  const intakeFormInjectedRef = useRef(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [pendingMessage, setPendingMessage] = useState<string | null>(null);
@@ -878,7 +894,11 @@ onTripMetaUpdate,
     }
     prevPollingRef.current = isItineraryPolling;
   }, [isItineraryPolling]);
-  const isComposerLocked = isItineraryCompleting || isItineraryPolling;
+  // While the in-chat intake form is active (show_intake_form / form_fields),
+  // lock the composer + quick replies so the user answers via the form card.
+  const intakeFormActive = useSelector((s: any) => !!s.IntakeForm?.active);
+  const isComposerLocked =
+    isItineraryCompleting || isItineraryPolling || intakeFormActive;
   const authToken = reduxToken ?? getAuthToken();
   const isLoggedIn = !!authToken;
 
@@ -1426,6 +1446,11 @@ onTripMetaUpdate,
   const beforeCursorRef = useRef<string | null>(null);
   const isFetchingMoreRef = useRef(false);
   const appliedRestoredThreadRef = useRef<unknown>(null);
+  // Mirrors the thread-detail `form_filled` flag for the current restore. When
+  // the form was already submitted (true) we skip rendering the intake card on
+  // reload; when false we restore it (with prefill) so the user can still fill
+  // it. Read by parseThreadItems (incl. pagination) so the gate is consistent.
+  const restoredFormFilledRef = useRef(false);
 
   // Tracks whether the user is pinned to the bottom of the message list. The
   // auto-scroll effect only fires when this is true, so the transcript won't
@@ -1444,6 +1469,10 @@ onTripMetaUpdate,
   const hasUpdatedUrl = useRef(false);
   const postLoginFiredRef = useRef(false);
   const loginFlowArmedRef = useRef(false);
+  // Always-current mirror of `isLoggedIn` so handleEffect can read fresh auth
+  // state without depending on its (memoized) closure — used to ignore a stale
+  // `prompt_login` that arrives after the user has already signed in.
+  const isLoggedInRef = useRef(false);
   type PendingAction =
     | { kind: "message"; text: string }
     | { kind: "widget"; type: string; payload: Record<string, unknown> };
@@ -1622,6 +1651,19 @@ const handleSessionCreated = useCallback((ourSessionId: string) => {
     [], // empty deps: this wrapper never changes; handleEffectRef.current does
   );
 
+  // Stable onWidget wrapper — same hook-order rationale as stableOnEffect.
+  // useChat routes intake-form widgets (id `intake-form:{...}`) here so we can
+  // seed the Redux slice and inject the interactive IntakeForm card.
+  const handleIntakeWidgetRef = useRef<
+    ((item: { id: string; widget: Record<string, unknown> }) => void) | null
+  >(null);
+  const stableOnWidget = useCallback(
+    (item: { id: string; widget: Record<string, unknown> }) => {
+      handleIntakeWidgetRef.current?.(item);
+    },
+    [],
+  );
+
 const { messages, isStreaming, error, sendMessage: rawSendMessage,
   sendWidgetAction: rawSendWidgetAction, clearMessages, cancelStream, setMessages, threadIdRef } = useChat({
     apiUrl,
@@ -1632,6 +1674,7 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
     botMode,
     itineraryId: localItineraryId,
     onEffect: stableOnEffect,
+    onWidget: stableOnWidget,
     authToken: authToken ?? undefined,
     userId: reduxUserId ?? undefined,
     // The stable frontend UUID — never changes for the lifetime of this component
@@ -1639,6 +1682,39 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
     onSessionCreated: handleSessionCreated,
     loginMandatory,
   });
+
+    console.log("Messages",messages);
+
+  // ── Empty intake form on /chat?intake=1 (Plan with Kaira CTAs) ─────────────
+  // When the user lands here from a "Plan with Kaira" CTA we inject a fresh,
+  // empty intake form (plus Kaira's greeting) without waiting for the backend
+  // `form_fields` effect. Mirrors the injection in the form_fields handler.
+  useEffect(() => {
+    if (!startEmptyIntake) return;
+    if (intakeFormInjectedRef.current) return;
+    intakeFormInjectedRef.current = true;
+    dispatch(updateIntakeForm({ active: true, completed: false, step: 0 }));
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: `intake-greeting-${sessionIdRef.current}`,
+        role: "assistant",
+        content:
+          "Hi, I'm Kaira, your travel friend. Let's build something good — a few quick taps and I'll get to work.",
+        timestamp: new Date(),
+      },
+      {
+        id: `intake-form-${sessionIdRef.current}`,
+        role: "assistant",
+        content: "",
+        timestamp: new Date(),
+        type: "intake_form",
+      },
+    ]);
+    onIntakeFormStart?.();
+    // Run once on mount when the flag is set.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [startEmptyIntake]);
 
   // Quick replies stream in on the tail of the response, after the answer is
   // fully rendered but while the SSE connection is still open (so `isStreaming`
@@ -1664,6 +1740,8 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
   // Mirror messages into a ref so analytics calls can pull user_prompts
   // without subscribing to the messages array directly.
   messagesRef.current = messages;
+  // Keep the fresh-auth mirror current for handleEffect's prompt_login guard.
+  isLoggedInRef.current = isLoggedIn;
 
   // ── "Create my version" (clone) success ──────────────────────────────────
   // Defined after useChat because it depends on clearMessages (and reads
@@ -1910,6 +1988,37 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
           if (data.data) onRouteReceived(data as { data: Location[] });
           break;
         }
+        case "form_fields": {
+          // Backend prefill for the multi-step intake form. Seed the Redux
+          // slice, inject the form card into the thread once, and let BotApp
+          // flip the left panel to the intake hero image.
+          dispatch(
+            updateIntakeForm({
+              active: true,
+              completed: false,
+              step: 0,
+              ...parseFormFields(data as any),
+            }),
+          );
+          if (!intakeFormInjectedRef.current) {
+            intakeFormInjectedRef.current = true;
+            setMessages((prev) => [
+              ...prev,
+              {
+                id: `intake-form-${sessionIdRef.current}`,
+                role: "assistant",
+                content: "",
+                timestamp: new Date(),
+                type: "intake_form",
+              },
+            ]);
+            onIntakeFormStart?.();
+          }
+          break;
+        }
+        // NOTE: `show_intake_form` is no longer a client effect — the backend
+        // now streams the intake form as a widget (`intake-form:{...}`),
+        // handled by handleIntakeFormWidget via useChat's onWidget.
         case "display_itinerary": {
           emitEndpointsFromEffect(name, data);
           // Pass the full effect payload (not just `.itinerary`) so pax +
@@ -1974,13 +2083,41 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
           break;
         }
 case "prompt_login": {
+  // Mid-chat login: remember what to replay, then drop an inline login card
+  // into the thread (instead of the modal). The token-watch effect re-fires
+  // `pendingPostLoginAction` automatically once auth succeeds.
   pendingPostLoginAction.current =
     lastSentActionRef.current ??
     (lastSentMessageRef.current
       ? { kind: "message", text: lastSentMessageRef.current }
       : null);
   loginFlowArmedRef.current = true;
-  setShowLoginModal(true);
+  // Optional lead-in line from the bot — rendered as a normal Kaira bubble
+  // above the login card. Omitted entirely when the effect carries no message.
+  const loginMessage =
+    typeof data.message === "string" ? data.message.trim() : "";
+  setMessages((prev) => {
+    if (prev.some((m) => m.type === "login_card")) return prev;
+    const base = Date.now();
+    const additions: typeof prev = [];
+    if (loginMessage) {
+      additions.push({
+        id: `login-msg-${sessionIdRef.current}-${base}`,
+        role: "assistant",
+        content: loginMessage,
+        timestamp: new Date(),
+        type: "text",
+      });
+    }
+    additions.push({
+      id: `login-card-${sessionIdRef.current}-${base}`,
+      role: "assistant",
+      content: "",
+      timestamp: new Date(),
+      type: "login_card",
+    });
+    return [...prev, ...additions];
+  });
   break;
 }
         case "display_pois_on_map":
@@ -2166,15 +2303,62 @@ case "shimmer_day_by_day": {
           console.warn("[Effect] unhandled:", name);
       }
     },
-    [onLocationReceived, onNewQuery, onClearMap, onRouteReceived, onItineraryReceived, onTripMetaUpdate, input, indexTransfersForLookup, emitEndpointsFromEffect, dispatch, callPaymentInfo],
+    [onLocationReceived, onNewQuery, onClearMap, onRouteReceived, onItineraryReceived, onTripMetaUpdate, input, indexTransfersForLookup, emitEndpointsFromEffect, dispatch, callPaymentInfo, setMessages, onIntakeFormStart],
   );
 
   // Wire handleEffect into the ref so the stable onEffect wrapper picks it up
   handleEffectRef.current = handleEffect;
 
+  // ── Streamed intake-form widget ───────────────────────────────────────────
+  // Replaces the old `show_intake_form` client effect. The backend now streams
+  // the form as a widget item whose id encodes the prefill JSON
+  // (`intake-form:{...}`). Parse it, seed the Redux slice with prefilled fields
+  // + per-section completion markers, inject the interactive form card once,
+  // and flip the left panel to the intake hero image.
+  const handleIntakeFormWidget = useCallback(
+    (item: { id: string; widget: Record<string, unknown> }) => {
+      // The prefill is encoded in the widget's own id ("intake-form:{...}"),
+      // not the outer message id.
+      const prefill = parseIntakeFormWidgetId(item.widget?.id);
+      if (!prefill) return;
+      dispatch(
+        updateIntakeForm({
+          active: true,
+          completed: false,
+          ...parseShowIntakeForm(prefill),
+        }),
+      );
+      if (!intakeFormInjectedRef.current) {
+        intakeFormInjectedRef.current = true;
+        setMessages((prev) =>
+          prev.some((m) => m.type === "intake_form")
+            ? prev
+            : [
+                ...prev,
+                {
+                  id: `intake-form-${sessionIdRef.current}`,
+                  role: "assistant",
+                  content: "",
+                  timestamp: new Date(),
+                  type: "intake_form",
+                },
+              ],
+        );
+        onIntakeFormStart?.();
+      }
+    },
+    [dispatch, setMessages, onIntakeFormStart],
+  );
+  handleIntakeWidgetRef.current = handleIntakeFormWidget;
+
   // ── Wrap sendMessage to clear quick replies ───────────────────────────────
 const sendMessage = useCallback(
-  (text: string, attachmentIds?: string[], attachmentMeta?: MessageAttachment[]) => {
+  (
+    text: string,
+    attachmentIds?: string[],
+    attachmentMeta?: MessageAttachment[],
+    opts?: { formSubmitted?: boolean },
+  ) => {
     setQuickReplies([]);
     setQuickReplyShimmer(false);
     lastSentMessageRef.current = text;
@@ -2200,10 +2384,60 @@ const sendMessage = useCallback(
     // in-flight guard.
     rawSendMessage(text, attachmentIds, attachmentMeta, {
       interrupt: quickReplyShimmerRef.current,
+      formSubmitted: opts?.formSubmitted,
     });
   },
   [rawSendMessage],
 );
+
+// ── Intake form completion ───────────────────────────────────────────────────
+// Holds the composed message while we wait for an inline OTP verify (logged-out
+// users) before sending it to Kaira.
+const pendingIntakeMessageRef = useRef<string | null>(null);
+
+const handleIntakeComplete = useCallback(
+  (composed: string) => {
+    const loggedIn =
+      !!reduxToken ||
+      (typeof window !== "undefined" &&
+        !!localStorage.getItem("access_token"));
+    if (loggedIn) {
+      sendMessage(composed, undefined, undefined, { formSubmitted: true });
+      return;
+    }
+    // Not logged in → inject the inline OTP card and send after verify.
+    pendingIntakeMessageRef.current = composed;
+    setMessages((prev) =>
+      prev.some((m) => m.type === "intake_otp")
+        ? prev
+        : [
+            ...prev,
+            {
+              id: `intake-otp-${sessionIdRef.current}`,
+              role: "assistant",
+              content: "",
+              timestamp: new Date(),
+              type: "intake_otp",
+            },
+          ],
+    );
+  },
+  [reduxToken, sendMessage, setMessages],
+);
+
+const handleIntakeOtpVerified = useCallback(() => {
+  const composed = pendingIntakeMessageRef.current;
+  pendingIntakeMessageRef.current = null;
+  setMessages((prev) => prev.filter((m) => m.type !== "intake_otp"));
+  if (composed) sendMessage(composed, undefined, undefined, { formSubmitted: true });
+}, [sendMessage, setMessages]);
+
+// Inline `prompt_login` card verified — just retire the card. The token-watch
+// effect re-fires `pendingPostLoginAction` (the message/widget action that
+// triggered the login) once the auth token lands, mirroring BotLoginModal.
+const handleLoginCardVerified = useCallback(() => {
+  setMessages((prev) => prev.filter((m) => m.type !== "login_card"));
+}, [setMessages]);
 
   // ── Side-effects ──────────────────────────────────────────────────────────
   useEffect(() => {
@@ -2550,12 +2784,27 @@ useEffect(() => {
           timestamp: new Date(item.created_at), isStreaming: false,
         });
       } else if (item.type === "widget") {
-        indexEdgesFromWidget(item.widget);
-        out.push({
-          id: item.id, role: "assistant", content: "",
-          timestamp: new Date(item.created_at),
-          type: "widget", widgetItem: { id: item.id, widget: item.widget },
-        });
+        // Intake-form widgets restore as the interactive IntakeForm card, not
+        // the raw widget placeholder — but only when the form hasn't been
+        // submitted yet (`form_filled === false`). Once filled, the card is
+        // dropped from the transcript entirely. Redux seeding is handled in the
+        // restore effect below.
+        if (isIntakeFormWidgetId(item.widget?.id)) {
+          if (!restoredFormFilledRef.current) {
+            out.push({
+              id: item.id, role: "assistant", content: "",
+              timestamp: new Date(item.created_at),
+              type: "intake_form",
+            });
+          }
+        } else {
+          indexEdgesFromWidget(item.widget);
+          out.push({
+            id: item.id, role: "assistant", content: "",
+            timestamp: new Date(item.created_at),
+            type: "widget", widgetItem: { id: item.id, widget: item.widget },
+          });
+        }
       }
     }
     return out;
@@ -2574,10 +2823,45 @@ useEffect(() => {
   if (isStreaming) return;
   appliedRestoredThreadRef.current = restoredThread;
 
+  // Set before parseThreadItems runs — it (and pagination) reads this to decide
+  // whether the intake-form card is restored into the transcript.
+  restoredFormFilledRef.current = restoredThread.form_filled === true;
+
   const restored = parseThreadItems(restoredThread.items?.data ?? []);
 
     const itineraryEffects: any[] = restoredThread.itinerary_effects ?? [];
     const mapEffects: any[] = restoredThread.map_effects ?? [];
+
+  // ── Restore the in-chat intake form ───────────────────────────────────────
+  // When the thread carries an intake-form widget that hasn't been submitted
+  // (`form_filled === false`), parseThreadItems restores the card and we re-seed
+  // the Redux slice from the widget's encoded prefill so it shows the prefilled
+  // values. When `form_filled === true` the user already submitted, so we drop
+  // the card entirely and deactivate the slice (clearing any stale active state
+  // carried over from a prior thread, which would otherwise lock the composer).
+  const intakeWidgetItem = (restoredThread.items?.data ?? []).find(
+    (it: any) => it?.type === "widget" && isIntakeFormWidgetId(it?.widget?.id),
+  );
+  if (intakeWidgetItem) {
+    if (!restoredFormFilledRef.current) {
+      const prefill = parseIntakeFormWidgetId(intakeWidgetItem.widget?.id);
+      if (prefill) {
+        dispatch(
+          updateIntakeForm({
+            active: true,
+            completed: false,
+            ...parseShowIntakeForm(prefill),
+          }),
+        );
+        // Already injected from history — block the live widget/effect path
+        // from adding a second card in this session.
+        intakeFormInjectedRef.current = true;
+        onIntakeFormStart?.();
+      }
+    } else {
+      dispatch(updateIntakeForm({ active: false, completed: false }));
+    }
+  }
 
   for (const effect of itineraryEffects) {
     if (effect.name === "itinerary_entities" && effect.data?.entities) {
@@ -2712,7 +2996,7 @@ useEffect(() => {
   if (qrEffect?.data?.quick_replies) {
     setQuickReplies(qrEffect.data.quick_replies.map((r: string) => ({ label: r })));
   }
-}, [restoredThread, isStreaming, parseThreadItems, onRouteReceived, onLocationReceived, onItineraryReceived, indexTransfersForLookup, emitEndpointsFromEffect]);
+}, [restoredThread, isStreaming, parseThreadItems, onRouteReceived, onLocationReceived, onItineraryReceived, indexTransfersForLookup, emitEndpointsFromEffect, dispatch, onIntakeFormStart]);
 
   // ── Pagination: fetch older messages ──────────────────────────────────────
   const fetchOlderMessages = useCallback(async () => {
@@ -3163,7 +3447,33 @@ const handleShowLogin = useCallback(() => {
                 }}
               />
             )}
+         
             {messages.map((msg, idx) => {
+              // ── Custom in-thread cards (intake form + inline OTP) ──────────
+              if (msg.type === "intake_form") {
+                return (
+                  <IntakeFormCard
+                    key={msg.id}
+                    onComplete={handleIntakeComplete}
+                  />
+                );
+              }
+              if (msg.type === "intake_otp") {
+                return (
+                  <OtpCard key={msg.id} onVerified={handleIntakeOtpVerified} />
+                );
+              }
+              if (msg.type === "login_card") {
+                return (
+                  <OtpCard
+                    key={msg.id}
+                    onVerified={handleLoginCardVerified}
+                    heading="Sign in to continue"
+                    submitLabel="Send OTP"
+                  />
+                );
+              }
+
               // For network-failed assistant bubbles, hand MessageBubble a
               // retry callback that re-sends the immediately preceding user
               // message (content + attachments) — useChat strips the failed
@@ -3778,6 +4088,8 @@ const handleShowLogin = useCallback(() => {
                 ? "Planning your trip…"
                 : isItineraryPolling
                 ? "Updating your itinerary…"
+                : intakeFormActive
+                ? "Complete the form above to continue…"
                 : "Ask me anything"
             }
             showAttach={!isComposerLocked}

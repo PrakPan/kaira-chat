@@ -123,10 +123,11 @@ const NavigationMenu = (props) => {
     <>
     <div className="w-100 bg-text-white"> 
       <nav className={styles.navigationMenu + " " + props.className + " max-ph:!p-md max-ph:shadow-soft"} role="navigation">
-        <div className="hover-pointer" onClick={() => router.push("/")}>
-          <Image src={TTW} alt="TTW Logo" priority  />
+        <div className={"hover-pointer " + styles.logo} onClick={() => router.push("/")}>
+          <Image src={TTW} alt="TTW Logo" priority className={styles.logoFull} />
+          <img src="/logoblack.svg" alt="TTW" className={styles.logoMark} />
         </div>
-        {isMidScreen &&pathname!="/new-trip"&& <SearchInput />}
+        {pathname!="/new-trip"&& <SearchInput />}
         {/* Desktop Menu */}
         <ul className={styles.menuList} role="menubar">
           <li className="mr-4"></li>
@@ -136,7 +137,7 @@ const NavigationMenu = (props) => {
                   My Trips
           </button>}</>: null}
           
-          {(pathname!="/new-trip")&& (!pathname?.includes("/itinerary")) && pathname=="/dashboard"&& <button className="MediumIndigoButton w-fit" onClick={()=>setShowMobilePlanner(true)}>
+          {(pathname!="/new-trip")&& (!pathname?.includes("/itinerary")) && pathname=="/dashboard"&& <button className="MediumIndigoButton w-fit" onClick={()=>router.push("/chat?intake=1")}>
                   Plan with Kaira <svg viewBox="0 0 12 12"  height="14" width="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 10L10 2M10 2H4M10 2V8"></path></svg>
           </button>}
           
@@ -162,10 +163,7 @@ const NavigationMenu = (props) => {
 
         {/* Hamburger Menu Button */}
         <div className="flex gap-2 md:hidden">
-        {props.token&&(pathname!="/dashboard"&&pathname!="/new-trip")&&<button className="MediumIndigoButton mt-2 max-sm:text-[12px] " onClick={()=>router.push("/dashboard")}>
-                  My Trips
-        </button>}
-          <MobileMenu 
+          <MobileMenu
           id={props.id}
           _openAllNotificationsHandler={_openAllNotificationsHandler}
           hidecta={false}
@@ -268,14 +266,17 @@ const NavigationMenu = (props) => {
       </div>}
       </div>
 
-      <TailoredFormMobileModal
+      {/* Plan with Kaira now opens /chat?intake=1 (empty in-chat intake form)
+          instead of the tailored-form modal. Old modal kept commented for
+          fallback. */}
+      {/* <TailoredFormMobileModal
         destinationType={"city-planner"}
         onHide={() => {
           setShowMobilePlanner(false);
           // closeTailoredModal(router);
         }}
         show={showMoiblePlanner}
-      />
+      /> */}
 
     </>
   );

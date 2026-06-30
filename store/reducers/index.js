@@ -34,6 +34,7 @@ import cloneItinerary from './cloneItinerary'
 import chatStateReducer from "./chatState";
 import galleryImages from "./galleryImages";
 import AncillaryBookings from "./ancillaryBookings";
+import IntakeForm from "./IntakeForm";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -70,7 +71,8 @@ const rootReducer = combineReducers({
   cloneItinerary,
   chatState: chatStateReducer,
   galleryImages,
-  AncillaryBookings
+  AncillaryBookings,
+  IntakeForm
 });
 
 export default rootReducer;

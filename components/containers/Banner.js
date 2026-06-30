@@ -17,6 +17,51 @@ const Container = styled.div`
   }
 `;
 
+/* Compact mobile-only floating bar — same dark pill, less text and a
+   smaller responsive CTA so it never overflows on narrow screens. */
+const MobileContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 998;
+  ${(props) => (props.newYear ? "bottom: 12px" : "bottom: 0")};
+  padding: 0 12px calc(12px + env(safe-area-inset-bottom));
+  pointer-events: none;
+
+  @media screen and (min-width: 768px) {
+    display: none;
+  }
+`;
+
+const MobileBar = styled.div`
+  pointer-events: auto;
+  background-color: rgba(0, 0, 0, 0.82);
+  color: white;
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 7px 7px 7px 16px;
+  border-radius: 999px;
+  box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.45);
+`;
+
+const MobileText = styled.p`
+  font-family: "Inter", -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-size: 0.9rem;
+  line-height: 1.2;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+`;
+
 const GridContainer = styled.div`
   background-color: rgba(0, 0, 0, 0.7);
   color: white;
@@ -78,8 +123,36 @@ const Banner = (props) => {
     ));
   };
 
+  // Condensed copy for the mobile bar — just the destination, no long sentence.
+  const renderMobileText = () => {
+    const { destinationName } = props;
+    if (destinationName)
+      return (
+        <>
+          Plan your trip to <Serif>{destinationName}</Serif>
+        </>
+      );
+    return "Plan your trip";
+  };
+
   if (showBanner)
     return (
+      <>
+      <MobileContainer newYear={props.newYear}>
+        <MobileBar>
+          <MobileText>{renderMobileText()}</MobileText>
+          <ChatWithKairaCta
+            onClick={props.onclick}
+            label="Plan with Kaira"
+            style={{
+              padding: "9px 14px",
+              fontSize: "12.5px",
+              flexShrink: 0,
+              whiteSpace: "nowrap",
+            }}
+          />
+        </MobileBar>
+      </MobileContainer>
       <Container className="flex place-self-end" newYear={props.newYear}>
         <GridContainer>
           <div className="center-div">
@@ -122,6 +195,7 @@ const Banner = (props) => {
             </div>
         </GridContainer>
       </Container>
+      </>
     );
   else return null;
 };

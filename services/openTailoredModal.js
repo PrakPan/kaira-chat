@@ -54,42 +54,50 @@
 //   router.push(cleanPath, undefined, { scroll: false, shallow: true });
 // }
 export default function openTailoredModal(router, page_id, destination, type) {
-  if (page_id && destination && type) {
-    router.replace(
-      {
-        query: {
-          ...router.query,
-          "tailored-travel": true,
-          page_id: page_id,
-          destination: destination,
-          type: type,
-        },
-      },
-      undefined,
-      { scroll: false, shallow: true }
-    );
-  } else if (page_id && destination) {
-    router.replace(
-      {
-        query: {
-          ...router.query,
-          "tailored-travel": true,
-          page_id: page_id,
-          destination: destination,
-        },
-      },
-      undefined,
-      { scroll: false, shallow: true }
-    );
-  } else {
-    router.replace(
-      {
-        query: { ...router.query, "tailored-travel": true },
-      },
-      undefined,
-      { scroll: false, shallow: true }
-    );
-  }
+  // ── New behaviour: open the Chat-with-Kaira page with an empty intake form ──
+  // All "Plan with Kaira" CTAs now route to /chat and start the in-chat intake
+  // form fresh (no prefilled data). BotApp reads `?intake=1` to show the default
+  // hero banner on the left and inject the empty IntakeForm on the right.
+  router.push("/chat?intake=1");
+
+  // ── Old behaviour: open the tailored-form modal via the `tailored-travel`
+  //    query flag. Kept (commented) in case we need to fall back. ─────────────
+  // if (page_id && destination && type) {
+  //   router.replace(
+  //     {
+  //       query: {
+  //         ...router.query,
+  //         "tailored-travel": true,
+  //         page_id: page_id,
+  //         destination: destination,
+  //         type: type,
+  //       },
+  //     },
+  //     undefined,
+  //     { scroll: false, shallow: true }
+  //   );
+  // } else if (page_id && destination) {
+  //   router.replace(
+  //     {
+  //       query: {
+  //         ...router.query,
+  //         "tailored-travel": true,
+  //         page_id: page_id,
+  //         destination: destination,
+  //       },
+  //     },
+  //     undefined,
+  //     { scroll: false, shallow: true }
+  //   );
+  // } else {
+  //   router.replace(
+  //     {
+  //       query: { ...router.query, "tailored-travel": true },
+  //     },
+  //     undefined,
+  //     { scroll: false, shallow: true }
+  //   );
+  // }
 }
 
 export function closeTailoredModal(router) {

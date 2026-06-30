@@ -28,6 +28,38 @@
   }
 }
 
+/* Brand logo. Desktop shows the full wordmark lockup; tablet & smaller
+   swap to the standalone signpost mark (logoblack.svg) at a fixed width
+   so it never shrinks. */
+.logo {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* Full wordmark lockup — desktop only */
+.logoFull {
+  height: 30px !important;
+  width: auto !important;
+  max-width: none !important;
+}
+
+/* Signpost-only mark — tablet & smaller */
+.logoMark {
+  display: none;
+  width: 30px;
+  height: auto;
+}
+
+@media (max-width: 1024px) {
+  .logoFull {
+    display: none !important;
+  }
+  .logoMark {
+    display: block;
+  }
+}
+
 .menuList {
   all: unset;
   display: flex;

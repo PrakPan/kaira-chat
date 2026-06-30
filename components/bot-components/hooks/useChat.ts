@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from "react";
 import { getAdParams } from "../../../helper/adAttribution";
+import { isIntakeFormWidgetId } from "../components/IntakeForm/intakePrompt";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -26,7 +27,7 @@ export interface Message {
   content: string;
   timestamp: Date;
   isStreaming?: boolean;
-  type?: "text" | "widget";
+  type?: "text" | "widget" | "intake_form" | "intake_otp" | "login_card";
   widgetItem?: {
     id: string;
     widget: Record<string, unknown>;
@@ -78,7 +79,7 @@ interface UseChatOptions {
   itineraryId?: string;
   onEffect?: (effect: ClientEffect) => void;
   onFirstToken?: () => void;
-  onWidget?: (item: unknown) => void;
+  onWidget?: (item: { id: string; widget: Record<string, unknown> }) => void;
   authToken?: string;
   /** User ID from Redux state.auth.id — sent as user_id in every request */
   userId?: string | number;
@@ -641,6 +642,14 @@ export function useChat({
           },
           onEffect: (effect) => onEffect?.(effect),
           onWidget: (item) => {
+            // Intake-form widgets encode their prefill in the widget's own id
+            // (item.widget.id = "intake-form:{...}"; item.id is the message id)
+            // and must render as the interactive IntakeForm card, not the raw
+            // widget placeholder. Hand them to the host (ChatKitPanel) instead.
+            if (isIntakeFormWidgetId(item.widget?.id)) {
+              onWidget?.(item);
+              return;
+            }
             setMessages((prev) => [
               ...prev,
               {
@@ -717,7 +726,7 @@ export function useChat({
       content: string,
       attachmentIds?: string[],
       attachments?: MessageAttachment[],
-      opts?: { interrupt?: boolean },
+      opts?: { interrupt?: boolean; formSubmitted?: boolean },
     ) => {
       const trimmed = content.trim();
       if (!trimmed && (!attachmentIds || attachmentIds.length === 0)) return;
@@ -787,6 +796,12 @@ export function useChat({
         ? buildSubsequentMessageBody(trimmed, { threadId: threadIdRef.current, ...commonOpts })
         : buildFirstMessageBody(trimmed, { ...commonOpts, loginMandatory: loginMandatoryRef.current });
 
+      // Flag intake-form submissions so the backend knows this message came
+      // from the structured form rather than free-text chat.
+      if (opts?.formSubmitted) {
+        (body as Record<string, unknown>).form_submitted = true;
+      }
+
       console.log("[useChat] →", JSON.stringify(body, null, 2));
 
       try {
@@ -831,6 +846,14 @@ export function useChat({
             },
             onEffect: (effect) => onEffect?.(effect),
             onWidget: (item) => {
+              // Intake-form widgets encode their prefill in the widget's own id
+              // (item.widget.id = "intake-form:{...}"; item.id is the message
+              // id) and must render as the interactive IntakeForm card, not the
+              // raw widget placeholder. Hand them to the host (ChatKitPanel).
+              if (isIntakeFormWidgetId(item.widget?.id)) {
+                onWidget?.(item);
+                return;
+              }
               setMessages((prev) => [
                 ...prev,
                 {
