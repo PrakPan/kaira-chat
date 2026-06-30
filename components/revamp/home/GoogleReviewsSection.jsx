@@ -112,6 +112,7 @@ const GoogleReviewsSection = ({ reviews = REVIEWS }) => {
     <section
       style={{
         padding: "72px 0",
+        paddingBottom: "20px",
         background:
           "radial-gradient(ellipse 700px 320px at 5% 0%, var(--ttw-lavender) 0%, transparent 60%), var(--ttw-bg)",
       }}
