@@ -2450,12 +2450,32 @@ const THINKING_PHRASES = [
   "Getting my bearings",
   "Consulting the map",
   "Checking the compass",
+  "Packing your bags",
+  "Chasing the sunset",
+  "Finding hidden gems",
+  "Dreaming up detours",
+  "Sniffing out local spots",
+  "Dodging tourist traps",
+  "Tracing scenic routes",
+  "Counting the miles",
+  "Picking the perfect stay",
+  "Catching the next flight",
+  "Following the coastline",
+  "Hunting for street food",
+  "Marking the must-sees",
+  "Stamping the passport",
+  "Lining up adventures",
+  "Reading the local vibe",
+  "Curating your itinerary",
+  "Scanning the horizon",
 ];
 
 // Advances once per ThinkingDots mount. Each new reply ("next chat") shows the
 // NEXT phrase, while any single thinking session keeps ONE fixed phrase for its
 // whole lifetime — no rotating through the list mid-wait.
-let thinkingPhraseCursor = 0;
+// Seed at a random offset so we don't always open on the first phrase; the
+// sequential advance from there keeps consecutive replies from repeating.
+let thinkingPhraseCursor = Math.floor(Math.random() * THINKING_PHRASES.length);
 
 export const ThinkingDots: React.FC = () => {
   const [seconds, setSeconds] = useState(0);

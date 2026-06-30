@@ -1,6 +1,7 @@
 import Head from "next/head";
 import dynamic from "next/dynamic";
 import { useEffect } from "react";
+import { useRouter } from "next/router";
 import { connect } from "react-redux";
 
 import NavigationMenu from "../components/revamp/home/NavigationMenu";
@@ -18,6 +19,7 @@ import TravelerStoriesSection from "../components/revamp/home/TravelerStoriesSec
 import KairaPlansSection from "../components/revamp/home/KairaPlansSection";
 import WhyKairaSection from "../components/revamp/home/WhyKairaSection";
 import CtaBoardingSection from "../components/revamp/home/CtaBoardingSection";
+import Banner from "../components/containers/Banner";
 
 import * as authaction from "../store/actions/auth";
 import setHotLocationSearch from "../store/actions/hotLocationSearch";
@@ -63,6 +65,8 @@ const PartnersSection = dynamic(() => import("../components/theme/PartnersSectio
 /* ---------------- Page ---------------- */
 
 const Home = ({ token, hotLocationSearch, checkAuthState, setHotLocationSearch }) => {
+  const router = useRouter();
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       requestIdleCallback(() => {
@@ -154,6 +158,11 @@ const Home = ({ token, hotLocationSearch, checkAuthState, setHotLocationSearch }
         <TestimonialCarousel /> */}
         <FaqSection />
         <CtaBoardingSection />
+
+        <Banner
+          onclick={() => router.push("/chat?intake=1")}
+          text="Craft your personalized itinerary now!"
+        />
       </div>
 
       <NewFooter page="Homepage" />

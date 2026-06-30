@@ -128,7 +128,7 @@ const IntakeFormCard: React.FC<IntakeFormCardProps> = ({ onComplete }) => {
       </div> */}
 
       <div
-        className="ml-10 w-[calc(100%-40px)] max-ph:ml-0 max-ph:-mx-1 max-ph:w-auto rounded-[20px] max-ph:rounded-none overflow-hidden bg-white"
+        className="ml-10 w-[calc(100%-40px)] max-ph:ml-0 max-ph:-mx-1 max-ph:w-auto rounded-[20px] max-ph:rounded-none bg-white"
         style={{
           maxWidth: 480,
           border: "1px solid #ececec",
@@ -136,7 +136,7 @@ const IntakeFormCard: React.FC<IntakeFormCardProps> = ({ onComplete }) => {
       >
       {/* Header */}
       <div
-        className="px-5 py-[14px] flex items-center gap-3"
+        className="px-5 py-[14px] flex items-center gap-3 rounded-t-[20px] max-ph:rounded-t-none"
         style={{
           background: "linear-gradient(135deg,#fffde7 0%,#fff 100%)",
           borderBottom: "1px solid #f4f3ec",
@@ -197,8 +197,10 @@ const IntakeFormCard: React.FC<IntakeFormCardProps> = ({ onComplete }) => {
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="px-3 pb-[18px] flex gap-[10px]">
+      {/* Footer — on mobile it sticks to the bottom of the chat scroll viewport
+          so the Back / Continue actions stay visible in the first view without
+          having to scroll the form down. */}
+      <div className="px-3 pt-2 pb-[18px] flex gap-[10px] max-ph:sticky max-ph:bottom-[-33px] max-ph:z-10 max-ph:bg-white max-ph:border-t max-ph:border-[#f0f0f0] max-ph:pb-[calc(18px_+_env(safe-area-inset-bottom))]">
         {step > 0 && (
           <button
             type="button"
