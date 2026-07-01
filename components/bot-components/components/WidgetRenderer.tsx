@@ -2693,8 +2693,6 @@ function ButtonNode({
     return null;
   }
 
-  console.log("ButtonNode", { node, onClickAction });
-
   // ── notebook-pencil edit ──
   if (iconStart === "notebook-pencil") {
     return (
@@ -2735,6 +2733,14 @@ function ButtonNode({
   if (color === "danger" && variant === "outline") {
     return <></>;
   }
+
+  console.log({
+  type: onClickAction?.type,
+  isDesktop,
+  condition:
+    (onClickAction?.type === "route.lock" ||
+      onClickAction?.type === "itinerary.lock") && isDesktop,
+});
 
   // ── Primary solid ──
   if (color === "primary") {
@@ -2782,6 +2788,7 @@ function ButtonNode({
         fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
         cursor: "pointer",
         outline: "none",
+        marginLeft: onClickAction?.type == "itinerary.lock" ? "1.5rem" : 0,
         ...disabledStyle,
       }}
     >

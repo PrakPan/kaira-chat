@@ -11,6 +11,11 @@ import {
 
 const USER_IMAGE_CDN = "https://d31aoa0ehgvjdi.cloudfront.net/";
 
+// Fallback avatar for a logged-out user's own messages. Instead of the generic
+// "U" initial we show a neutral profile-user glyph.
+const LOGGED_OUT_AVATAR =
+  "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/navigation/profile-user.png";
+
 function useUserAvatarSrc(): string | null {
   const reduxImage = useSelector((state: any) => state?.auth?.image);
   const token = useSelector((state: any) => state?.auth?.token);
@@ -82,10 +87,15 @@ const UserAvatar: React.FC<{
    *  message is theirs — show the viewer's own avatar even on someone else's
    *  itinerary (e.g. staff replying on a customer's trip). */
   senderUserId?: string | number | null;
-}> = ({ customerName: messageCustomerNameProp, senderUserId }) => {
+  /** True only when a logged-out user started this chat themselves (no existing
+   *  chat/itinerary is open). Gates the profile-user fallback glyph so restored
+   *  threads keep their per-message letter avatars. */
+  loggedOutInitiated?: boolean;
+}> = ({ customerName: messageCustomerNameProp, senderUserId, loggedOutInitiated }) => {
   const avatarSrc = useUserAvatarSrc();
   const name = useSelector((state: any) => state?.auth?.name);
   const loggedInUserId = useSelector((state: any) => state?.auth?.id);
+  const token = useSelector((state: any) => state?.auth?.token);
   // When an existing itinerary is open, the chat belongs to that itinerary's
   // customer — show their initial, not the viewer's avatar. A brand-new chat
   // has no itinerary customer_name, so we fall back to the logged-in user.
@@ -171,7 +181,12 @@ const UserAvatar: React.FC<{
   // customer nor a viewer name is known, getUserInitial falls back to "U" — so
   // we always render a letter rather than an anonymous silhouette.
   const showImage = !viewingItinerary && !!avatarSrc && !errored;
-  const showLetter = !showImage;
+  // Logged-out user who started this chat themselves → show the neutral profile
+  // glyph instead of the "U" initial. When an existing chat/itinerary is open
+  // (loggedOutInitiated=false) we keep the per-message letter avatars as before.
+  const showLoggedOutAvatar =
+    !viewingItinerary && !avatarSrc && !token && !errored && !!loggedOutInitiated;
+  const showLetter = !showImage && !showLoggedOutAvatar;
 
   const [color, setColor] = useState<string | null>(null);
   useEffect(() => {
@@ -196,7 +211,7 @@ const UserAvatar: React.FC<{
         borderRadius: "50%",
         flexShrink: 0,
         overflow: "hidden",
-        background: color || "#0f1a2e",
+        background: showLoggedOutAvatar ? "#eef1f6" : color || "#0f1a2e",
         color: color ? "#fff" : "#f7e700",
         display: "grid",
         placeItems: "center",
@@ -208,6 +223,13 @@ const UserAvatar: React.FC<{
       {showImage ? (
         <img
           src={avatarSrc!}
+          alt="You"
+          onError={() => setErrored(true)}
+          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+        />
+      ) : showLoggedOutAvatar ? (
+        <img
+          src={LOGGED_OUT_AVATAR}
           alt="You"
           onError={() => setErrored(true)}
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
@@ -448,6 +470,10 @@ interface MessageBubbleProps {
   /** Re-send the previous user message. Provided only for network-error
    *  assistant bubbles so we can render a retry CTA in place of feedback. */
   onRetry?: () => void;
+  /** True only when a logged-out user started this chat themselves (no existing
+   *  chat/itinerary is open). Lets the user avatar show the profile-user glyph
+   *  instead of the "U" initial for their own messages. */
+  loggedOutInitiated?: boolean;
 }
 
 // ─── Feedback icons (thumbs up / thumbs down) ─────────────────────────────────
@@ -1631,6 +1657,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   feedbackLoading = false,
   onFeedback,
   onRetry,
+  loggedOutInitiated = false,
 }) => {
   const rendered = useMemo(
     () => renderContent(message.content, entities ?? {}),
@@ -1749,6 +1776,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
         <UserAvatar
           customerName={message.customerName}
           senderUserId={message.senderUserId}
+          loggedOutInitiated={loggedOutInitiated}
         />
         <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6, minWidth: 0 }}>
           {hasAttachments && (

@@ -1685,6 +1685,13 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
 
     console.log("Messages",messages);
 
+  // Logged-out user viewing an existing thread (restored via threads.get_by_id)
+  // sees the inline sign-in card as the last message. In that state the
+  // composer is blocked and clicking it must NOT open the BotLoginModal popup —
+  // the user signs in through the inline card instead.
+  const loginBlocked =
+    !isLoggedIn && messages.some((m) => m.type === "login_card");
+
   // ── Empty intake form on /chat?intake=1 (Plan with Kaira CTAs) ─────────────
   // When the user lands here from a "Plan with Kaira" CTA we inject a fresh,
   // empty intake form (plus Kaira's greeting) without waiting for the backend
@@ -2936,7 +2943,27 @@ useEffect(() => {
   if (restoredHasDisplayItinerary) setHasDisplayItinerary(true);
 
   if (restored.length > 0) {
-    setMessages(restored);
+    // Logged-out viewers opening an existing P1 thread (via threads.get_by_id)
+    // can't post. Surface the inline sign-in card as the last message and let
+    // the composer block below key off the presence of this login_card. In P2
+    // (completed itinerary) we don't inject the card — the composer falls back
+    // to the standard login/clone gating instead.
+    const isP2Restore =
+      botModeRef.current === "p2" || threadIsCompleted;
+    const restoredWithLogin =
+      isLoggedInRef.current || isP2Restore
+      ? restored
+      : [
+          ...restored,
+          {
+            id: `login-card-${restoredThread.id ?? "restore"}-${Date.now()}`,
+            role: "assistant" as const,
+            content: "",
+            timestamp: new Date(),
+            type: "login_card" as const,
+          },
+        ];
+    setMessages(restoredWithLogin);
     // Land at the bottom of the restored transcript. Widgets and images lay
     // out asynchronously, so the scrollable height keeps growing for a beat
     // after setMessages — a single rAF snap leaves the user mid-thread.
@@ -3527,6 +3554,10 @@ const handleShowLogin = useCallback(() => {
                 feedbackLoading={feedbackLoadingIds.has(msg.id)}
                 onFeedback={hideFeedback ? undefined : handleFeedback}
                 onRetry={onRetry}
+                // Show the profile-user avatar only for a logged-out user's own
+                // fresh chat. When an existing chat/itinerary is open (restored
+                // via thread detail) keep the per-message letter avatars.
+                loggedOutInitiated={!isLoggedIn && !restoredThread}
                 onWidgetAction={(action) => {
                   // Freeze this widget's CTAs the moment the user clicks one,
                   // regardless of which drawer or server call it triggers. The
@@ -4044,7 +4075,7 @@ const handleShowLogin = useCallback(() => {
 
       {/* ── Quick reply chips ─────────────────────────────────────────────── */}
       {/* Hidden while itinerary creation is in progress — no quick replies/CTAs allowed */}
-      {(quickReplies.length > 0 || quickReplyLoading) && !isComposerLocked && !isForeignItinerary && (
+      {(quickReplies.length > 0 || quickReplyLoading) && !isComposerLocked && !isForeignItinerary && !loginBlocked && (
         <div className="flex-shrink-0 px-[0.25rem] md:!px-6 pt-2 pb-1">
           <div className="mx-auto">
             <div
@@ -4078,9 +4109,15 @@ const handleShowLogin = useCallback(() => {
             onSubmit={handleSubmit}
             onStop={cancelStream}
             isStreaming={isStreamingResponse}
-            disabled={isComposerLocked}
+            disabled={isComposerLocked || loginBlocked}
             placeholder={
-              isItineraryCompleting
+              loginBlocked
+                ? "Login to continue"
+                : isForeignItinerary
+                ? botMode === "p2"
+                  ? "Clone this itinerary to start chatting"
+                  : "Start a new chat to send messages"
+                : isItineraryCompleting
                 ? "Planning your trip…"
                 : isItineraryPolling
                 ? "Updating your itinerary…"
@@ -4088,11 +4125,13 @@ const handleShowLogin = useCallback(() => {
                 ? "Complete the form above to continue…"
                 : "Ask me anything"
             }
-            showAttach={!isComposerLocked}
+            showAttach={!isComposerLocked && !loginBlocked}
             onFilesSelected={handleFilesSelected}
             attachments={attachments}
             onRemoveAttachment={handleRemoveAttachment}
-            requireAuth={!isLoggedIn || isForeignItinerary}
+            // In the logged-out thread-detail flow the inline sign-in card is
+            // shown, so the composer is just blocked — no BotLoginModal popup.
+            requireAuth={loginBlocked ? false : !isLoggedIn || isForeignItinerary}
             onAuthRequired={() => {
               if (!isLoggedIn) {
                 setShowLoginModal(true);
