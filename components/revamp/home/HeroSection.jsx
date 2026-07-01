@@ -34,21 +34,25 @@ const POLAROIDS = [
     cls: "p1",
     img: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=300&q=80&auto=format",
     caption: "Kyoto, 2am ramen",
+    url:"/asia/japan/kyoto"
   },
   {
     cls: "p2",
     img: "https://images.unsplash.com/photo-1586500036706-41963de24d8b?w=300&q=80&auto=format",
     caption: "Malé, day 2",
+    url:"/asia/maldives/kaafu_atoll/male"
   },
   {
     cls: "p3",
     img: "https://images.unsplash.com/photo-1528127269322-539801943592?w=300&q=80&auto=format",
     caption: "Hoi An at 6am",
+    url:"/asia/vietnam"
   },
   {
     cls: "p4",
     img: "https://images.unsplash.com/photo-1533105079780-92b9be482077?w=300&q=80&auto=format",
     caption: "Santorini, sunset",
+    url:"/europe/greece"
   },
 ];
 
@@ -61,7 +65,7 @@ const HeroSection = ({ title, subtitle }) => {
 
           <div className={styles.kairaWrap}>
             {POLAROIDS.map((p) => (
-              <div key={p.cls} className={`${styles.polaroid} ${styles[p.cls]}`}>
+              <div key={p.cls} className={`${styles.polaroid} ${styles[p.cls]}`} onClick={() => window.location.href = p.url}>
                 <div
                   className={styles.polaroidImg}
                   style={{ backgroundImage: `url('${p.img}')` }}
