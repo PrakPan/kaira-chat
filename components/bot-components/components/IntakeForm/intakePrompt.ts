@@ -57,7 +57,12 @@ export function validateStep(state: IntakeFormState, step: number): boolean {
       if (state.when_mode === "dates") {
         return !!(state.startDate && state.endDate);
       }
-      return true; // flexible / surprise always valid
+      if (state.when_mode === "flexible") {
+        // A rough month is mandatory in flexible mode; the legacy "Flexible"
+        // sentinel no longer counts as a chosen month.
+        return !!state.flexMonth && state.flexMonth !== "Flexible";
+      }
+      return true; // surprise always valid
     case 2:
       return !!state.who;
     case 3:

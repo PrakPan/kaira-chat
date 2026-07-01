@@ -32,6 +32,9 @@ function upcomingMonths(count = 7): string[] {
 /** Step 2 — when are you going (dates / flexible / surprise). */
 const WhenStep: React.FC<StepProps> = ({ state, update }) => {
   const months = upcomingMonths();
+  // Flexible mode requires a real month (the legacy "Flexible" sentinel no
+  // longer counts) before the step can be advanced.
+  const hasFlexMonth = !!state.flexMonth && state.flexMonth !== "Flexible";
 
   return (
     <div>
@@ -73,7 +76,7 @@ const WhenStep: React.FC<StepProps> = ({ state, update }) => {
       {state.when_mode === "flexible" && (
         <div>
           <div className="text-[10.5px] font-extrabold uppercase tracking-wide text-[#8a93a6] mb-2">
-            Rough month
+            Rough month <span className="text-[#e0703f]">*</span>
           </div>
           <div className="flex flex-wrap gap-[6px]">
             {months.map((m) => (
@@ -84,13 +87,12 @@ const WhenStep: React.FC<StepProps> = ({ state, update }) => {
                 onClick={() => update({ flexMonth: m })}
               />
             ))}
-            <Chip
-              label="Flexible"
-              dashed
-              active={state.flexMonth === "Flexible"}
-              onClick={() => update({ flexMonth: "Flexible" })}
-            />
           </div>
+          {!hasFlexMonth && (
+            <div className="text-[11px] font-semibold text-[#e0703f] mt-2">
+              Pick a month to continue.
+            </div>
+          )}
           <div
             className="flex items-center gap-[10px] rounded-[10px] px-[13px] py-2 mt-[14px]"
             style={{ background: "#fafaf5" }}

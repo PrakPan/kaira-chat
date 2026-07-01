@@ -1988,14 +1988,43 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
           if (data.data) onRouteReceived(data as { data: Location[] });
           break;
         }
+        case "intake_form_shimmer": {
+          // Server is about to compute the intake-form prefill — show a skeleton
+          // loader in the card's place until `form_fields` (or the intake-form
+          // widget) lands. Inject the card once so the skeleton has somewhere to
+          // render; the loading flag flips it to the shimmer view.
+          const loading = data.loading !== false; // default true
+          dispatch(updateIntakeForm({ active: true, completed: false, loading }));
+          if (loading && !intakeFormInjectedRef.current) {
+            intakeFormInjectedRef.current = true;
+            setMessages((prev) =>
+              prev.some((m) => m.type === "intake_form")
+                ? prev
+                : [
+                    ...prev,
+                    {
+                      id: `intake-form-${sessionIdRef.current}`,
+                      role: "assistant",
+                      content: "",
+                      timestamp: new Date(),
+                      type: "intake_form",
+                    },
+                  ],
+            );
+            onIntakeFormStart?.();
+          }
+          break;
+        }
         case "form_fields": {
           // Backend prefill for the multi-step intake form. Seed the Redux
           // slice, inject the form card into the thread once, and let BotApp
-          // flip the left panel to the intake hero image.
+          // flip the left panel to the intake hero image. Clears any pending
+          // shimmer set by `intake_form_shimmer`.
           dispatch(
             updateIntakeForm({
               active: true,
               completed: false,
+              loading: false,
               step: 0,
               ...parseFormFields(data as any),
             }),
@@ -2325,6 +2354,7 @@ case "shimmer_day_by_day": {
         updateIntakeForm({
           active: true,
           completed: false,
+          loading: false,
           ...parseShowIntakeForm(prefill),
         }),
       );
@@ -2820,6 +2850,7 @@ useEffect(() => {
           updateIntakeForm({
             active: true,
             completed: false,
+            loading: false,
             ...parseShowIntakeForm(prefill),
           }),
         );

@@ -9,9 +9,12 @@ interface StepProps {
   update: (partial: Partial<IntakeFormState>) => void;
 }
 
-/** Step 1 — multi-select destinations: tap featured tiles, search the suggest
- *  API, or arrive prefilled from the intake effect. Selections show both in the
- *  input box (comma-joined) and as removable tags below it. */
+/** Step 1 — destinations. Featured/default tiles are SINGLE-select: tapping one
+ *  replaces the whole selection with just that place. Searching the suggest API
+ *  lets the user build a MULTI-select list. A prefill may arrive with several
+ *  default tiles selected, but the first manual tile tap collapses back to
+ *  single-select. Selections show in the input box (comma-joined) and as
+ *  removable tags below it. */
 const DestinationStep: React.FC<StepProps> = ({ state, update }) => {
   const featured = state.featured?.length ? state.featured : DEFAULT_FEATURED;
   const destinations = state.destinations ?? [];
@@ -35,17 +38,15 @@ const DestinationStep: React.FC<StepProps> = ({ state, update }) => {
     setList([...destinations, d]);
   };
 
-  // Featured tile toggles in/out of the selection.
+  // Featured/default tiles are single-select: tapping one replaces the whole
+  // selection with just that place (collapsing any prefilled multi-select or
+  // search picks). Tapping the sole selected tile toggles it back off. Only
+  // search picks (addDestination) build a multi-select list.
   const toggleFeatured = (d: Destination) => {
-    if (selectedSet.has(d.name.toLowerCase())) {
-      setList(
-        destinations.filter(
-          (x) => x.name.toLowerCase() !== d.name.toLowerCase(),
-        ),
-      );
-    } else {
-      setList([...destinations, d]);
-    }
+    const isOnlySelected =
+      destinations.length === 1 &&
+      destinations[0].name.toLowerCase() === d.name.toLowerCase();
+    setList(isOnlySelected ? [] : [d]);
   };
 
   const removeTag = (name: string) =>
@@ -68,7 +69,7 @@ const DestinationStep: React.FC<StepProps> = ({ state, update }) => {
         Where to next?
       </div>
       <div className="text-[12px] text-[#8a93a6] mb-[14px]">
-        Tap a place, or search any city or country. Add as many as you like.
+        Tap a place to pick one, or search any city or country to add several.
       </div>
 
       <DestinationSearch
