@@ -1461,6 +1461,11 @@ startEmptyIntake = false,
   // laying out asynchronously, so a single smooth scroll lands mid-thread —
   // we re-snap on a few ticks until the content has settled.
   const initialScrollPendingRef = useRef(false);
+  // True on the /chat?intake=1 landing between injecting the greeting + empty
+  // intake form and the first stream. Suppresses the initial auto-scroll so the
+  // view stays at Kaira's greeting instead of snapping to the bottom of the
+  // form. Cleared as soon as a stream begins (user submitted / sent a message).
+  const suppressIntakeAutoScrollRef = useRef(false);
 
   // ── Refs ─────────────────────────────────────────────────────────────────
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -1700,6 +1705,9 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
     if (!startEmptyIntake) return;
     if (intakeFormInjectedRef.current) return;
     intakeFormInjectedRef.current = true;
+    // Don't auto-scroll to the bottom of the freshly-injected form — keep
+    // Kaira's greeting in view on the /chat?intake=1 landing.
+    suppressIntakeAutoScrollRef.current = true;
     dispatch(updateIntakeForm({ active: true, completed: false, step: 0 }));
     setMessages((prev) => [
       ...prev,
@@ -2496,6 +2504,13 @@ const handleLoginCardVerified = useCallback(() => {
   useEffect(() => {
     // Don't auto-scroll to bottom when older messages are being prepended
     if (isFetchingMoreRef.current) return;
+    // /chat?intake=1 landing: keep the view on Kaira's greeting rather than
+    // snapping to the bottom of the injected intake form. Once a stream starts
+    // (the user submitted the form / sent a message) resume normal auto-scroll.
+    if (suppressIntakeAutoScrollRef.current) {
+      if (!isStreaming) return;
+      suppressIntakeAutoScrollRef.current = false;
+    }
     // Respect the user's scroll position: if they've scrolled up to read
     // earlier messages, don't yank the view back down while streaming.
     if (!isAtBottomRef.current) return;
