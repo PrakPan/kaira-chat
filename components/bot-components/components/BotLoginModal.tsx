@@ -116,6 +116,11 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
   const [keyboardInset, setKeyboardInset] = useState(0);
   const [viewportHeight, setViewportHeight] = useState<number | null>(null);
 
+  // Drag-to-close for the mobile bottom sheet
+  const [dragY, setDragY] = useState(0);
+  const [dragging, setDragging] = useState(false);
+  const dragStartY = useRef<number | null>(null);
+
   // Mount recaptcha script (used by LogInModal pattern)
   useEffect(() => {
     if (props.getCountryCodes) props.getCountryCodes();
@@ -1356,6 +1361,32 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
     if (!props.hideloginclose) props.onhide();
   };
 
+  // ── Bottom-sheet drag-to-close (mobile) ──
+  const onSheetTouchStart = (e: React.TouchEvent) => {
+    if (props.hideloginclose) return;
+    dragStartY.current = e.touches[0].clientY;
+    setDragging(true);
+  };
+
+  const onSheetTouchMove = (e: React.TouchEvent) => {
+    if (dragStartY.current === null) return;
+    const delta = e.touches[0].clientY - dragStartY.current;
+    // Only track downward drags
+    setDragY(delta > 0 ? delta : 0);
+  };
+
+  const onSheetTouchEnd = () => {
+    setDragging(false);
+    dragStartY.current = null;
+    // Close if dragged far/fast enough, otherwise snap back
+    if (dragY > 120) {
+      setDragY(0);
+      if (!props.hideloginclose) props.onhide();
+    } else {
+      setDragY(0);
+    }
+  };
+
   if (typeof document === "undefined") return null;
   if (!layoutReady) return null;
 
@@ -1478,16 +1509,25 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
             overflowY: "auto",
             zIndex: z as number,
             boxShadow: "0 -16px 40px rgba(0,0,0,0.18)",
-            transition: "bottom 0.2s ease-out",
+            transform: dragY ? `translateY(${dragY}px)` : undefined,
+            transition: dragging
+              ? "none"
+              : "bottom 0.2s ease-out, transform 0.25s ease-out",
           }}
         >
           {yellowStrip}
           <div
+            onTouchStart={onSheetTouchStart}
+            onTouchMove={onSheetTouchMove}
+            onTouchEnd={onSheetTouchEnd}
             style={{
               display: "flex",
               justifyContent: "center",
-              padding: "8px 0 4px",
+              alignItems: "center",
+              padding: "12px 0 10px",
               flexShrink: 0,
+              cursor: "grab",
+              touchAction: "none",
             }}
           >
             <div
