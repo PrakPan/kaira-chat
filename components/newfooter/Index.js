@@ -93,6 +93,11 @@ const NewsletterForm = styled.form`
     transition: transform 0.15s ease;
 
     &:hover { transform: translateY(-1px); }
+    @media screen and (max-width: 351px) {
+    font-size: 12px;
+     padding: 12px 8px;
+
+  }
   }
 
   @media screen and (max-width: 768px) {
