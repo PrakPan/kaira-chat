@@ -4327,7 +4327,7 @@ const MobileHeader = React.memo(
     onLoginSuccess?: () => void | Promise<void>;
   }) => (
     <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 bg-white border-b border-gray-100 z-10">
-      <div className="flex items-center gap-2" >
+      <div className="flex items-center gap-2"  onClick={() => window.location.href = "/"}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/logoblack.svg" height={22} width={22} alt="logo" />
         <span className="font-semibold text-gray-800 ttw-type-body" >
