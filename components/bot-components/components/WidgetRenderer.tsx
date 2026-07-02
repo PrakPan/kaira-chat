@@ -2788,7 +2788,7 @@ function ButtonNode({
         fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
         cursor: "pointer",
         outline: "none",
-        marginLeft: onClickAction?.type == "itinerary.lock" ? "1.5rem" : 0,
+        marginLeft: onClickAction?.type == "itinerary.lock" && isDesktop ? "1.5rem" : 0,
         ...disabledStyle,
       }}
     >

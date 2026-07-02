@@ -56,8 +56,8 @@ const SectionCta = ({ label, heading, accent, ctaLabel, href = "/chat?intake=1",
             alignItems: "center",
             gap: "12px",
             padding: "10px 10px 10px 22px",
-            background: "var(--ttw-bg, #ffffff)",
-            color: "var(--ttw-ink, #0b1220)",
+            background: "#0b1220",
+            color: "#ffffff",
             border: "1px solid var(--ttw-line, #ececec)",
             borderRadius: "999px",
             fontFamily: "inherit",
@@ -95,6 +95,7 @@ const SectionCta = ({ label, heading, accent, ctaLabel, href = "/chat?intake=1",
             </svg>
           </span>
         </button>
+        <p className="text-[#8b93a6] text-[12px] mt-2">Planning is free. You only pay when you book.</p>
       </div>
     </section>
   );

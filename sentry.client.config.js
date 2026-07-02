@@ -1,38 +1,38 @@
-// import * as Sentry from "@sentry/nextjs";
-// import { SENTRY_DSN, SENTRY_ENV, SENTRY_RELEASE } from "./services/constants";
+import * as Sentry from "@sentry/nextjs";
+import { SENTRY_DSN, SENTRY_ENV, SENTRY_RELEASE } from "./services/constants";
 
-// Sentry.init({
+Sentry.init({
   
-//   dsn: SENTRY_DSN,
-//   // debug: true,
-//   release: "thetarzanway-frontend@" + SENTRY_RELEASE,
-//   environment: SENTRY_ENV,
+  dsn: SENTRY_DSN,
+  // debug: true,
+  release: "thetarzanway-frontend@" + SENTRY_RELEASE,
+  environment: SENTRY_ENV,
 
-//   // Replay may only be enabled for the client-side
-//   integrations: [
-//     // Sentry.browserTracingIntegration(),
-//     // Sentry.replayIntegration(),
-//   ],
+  // Replay may only be enabled for the client-side
+  integrations: [
+    // Sentry.browserTracingIntegration(),
+    // Sentry.replayIntegration(),
+  ],
 
-//   // Set tracesSampleRate to 1.0 to capture 100%
-//   // of transactions for tracing.
-//   // We recommend adjusting this value in production
-//   // tracesSampleRate: 1.0,
-//   debug: false,
+  // Set tracesSampleRate to 1.0 to capture 100%
+  // of transactions for tracing.
+  // We recommend adjusting this value in production
+  // tracesSampleRate: 1.0,
+  debug: false,
 
-//   // No performance tracing
-//   tracesSampleRate: 0,
+  // No performance tracing
+  tracesSampleRate: 0,
 
-//   //  No session replay
+  //  No session replay
 
-//   environment: process.env.SENTRY_ENV,
-//   // Capture Replay for 10% of all sessions,
-//   // plus for 100% of sessions with an error
-//   // replaysSessionSampleRate: 0.1,
-//   // replaysOnErrorSampleRate: 1.0,
+  environment: process.env.SENTRY_ENV,
+  // Capture Replay for 10% of all sessions,
+  // plus for 100% of sessions with an error
+  // replaysSessionSampleRate: 0.1,
+  // replaysOnErrorSampleRate: 1.0,
 
 
-//   // Note: if you want to override the automatic release value, do not set a
-//   // `release` value here - use the environment variable `SENTRY_RELEASE`, so
-//   // that it will also get attached to your source maps
-// });
+  // Note: if you want to override the automatic release value, do not set a
+  // `release` value here - use the environment variable `SENTRY_RELEASE`, so
+  // that it will also get attached to your source maps
+});
