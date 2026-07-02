@@ -33,7 +33,7 @@ import axioscountrydetailsinstance from "../services/pages/country";
 import axioslocationsinstance from "../services/search/search";
 import { MERCURY_HOST } from "../services/constants";
 import * as PagesToIdMapping from "../data/PagesToIdMapping.json";
-import HomeSectionCta from "../components/revamp/home/homeSectionCta";
+import HomeSectionCta from "../components/revamp/home/HomeSectionCta";
 
 // Polyfill for requestIdleCallback (Safari compatibility)
 if (typeof window !== "undefined" && !window.requestIdleCallback) {
