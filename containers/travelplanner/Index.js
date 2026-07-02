@@ -315,6 +315,35 @@ const Homepage = (props) => {
         ]}
       />
 
+      {/* REAL TRIPS, REAL TRAVELLERS */}
+      {userItineraries?.length ? (
+        <div className={styles.container}>
+          <section className={`${styles.block} ${styles.itinerariesBlock}`}>
+            <div className={styles.sectionHead}>
+              <div className={styles.sectionHeadLeft}>
+                <div className={styles.itinPill}>
+                  ★ Real trips, real travellers
+                </div>
+                <h2>
+                  Real {destinationName} trips our{" "}
+                  <span className={styles.serif}>travellers loved.</span>
+                </h2>
+                <p className={styles.lede}>
+                  Every itinerary below has been done.{" "}
+                  <span className={styles.serif}>Tweak anything</span> in chat —
+                  dates, hotels, duration.
+                </p>
+              </div>
+            </div>
+            <div className={styles.itinGrid}>
+              {userItineraries.slice(0, 4).map((it, i) => (
+                <ItineraryCardV2 key={it.id || i} itinerary={it} />
+              ))}
+            </div>
+          </section>
+        </div>
+      ) : null}
+
       <WhenToGoSection
         seasonalInfo={props.experienceData?.seasonal_info}
         destinationName={destinationName}
@@ -386,33 +415,6 @@ const Homepage = (props) => {
             ) : null}
           </section>
         ))}
-
-        {/* USER TRIPS */}
-         {userItineraries?.length ? (
-          <section className={`${styles.block} ${styles.itinerariesBlock}`} style={{width: "100%"}}>
-            <div className={styles.sectionHead}>
-              <div className={styles.sectionHeadLeft}>
-                <div className={styles.itinPill}>
-                  ★ Real trips, real travellers
-                </div>
-                <h2>
-                  Real {destinationName} trips our{" "}
-                  <span className={styles.serif}>travellers loved.</span>
-                </h2>
-                <p className={styles.lede}>
-                  Every itinerary below has been done.{" "}
-                  <span className={styles.serif}>Tweak anything</span> in chat
-                  — dates, hotels, duration.
-                </p>
-              </div>
-            </div>
-            <div className={styles.itinGrid}>
-              {userItineraries.slice(0, 4).map((it, i) => (
-                <ItineraryCardV2 key={it.id || i} itinerary={it} />
-              ))}
-            </div>
-          </section>
-        ) : null}
 
         {/* OVERVIEW */}
         <section className={`${styles.block} ${styles.editorialBlock}`}>

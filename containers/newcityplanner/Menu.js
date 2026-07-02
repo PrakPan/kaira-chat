@@ -23,7 +23,6 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import DestinationCard from "../../components/revamp/common/components/card/DestinationCard";
-import ItineraryCardV2 from "../../components/revamp/destination/ItineraryCardV2";
 import OverviewEditorial from "../../components/revamp/destination/OverviewEditorial";
 import ChatWithKairaCta from "../../components/revamp/destination/ChatWithKairaCta";
 import styles from "../../styles/pages/revamp/destination.module.scss";
@@ -170,30 +169,6 @@ const Menu = (props) => {
         }
       ></DesktopBanner>
       <PathNavigation path={props.data?.path} />
-
-      {!!props.data.itineraries.length && (
-        <MenuItem id="Itinerary" className={styles.block}>
-          <div className={styles.sectionHead}>
-            <div className={styles.sectionHeadLeft}>
-              <h2>
-                Real{" "}
-                <span className={styles.serif}>{props.data.name}</span> trips
-                our <span className={styles.serif}>travellers loved.</span>
-              </h2>
-              <p className={styles.lede}>
-                Hand-picked itineraries built from real{" "}
-                <span className={styles.serif}>traveller stories.</span> Tweak
-                anything once you start chatting.
-              </p>
-            </div>
-          </div>
-          <div className={styles.itinGrid}>
-            {props.data.itineraries.slice(0, 4).map((itinerary) => (
-              <ItineraryCardV2 key={itinerary.id} itinerary={itinerary} />
-            ))}
-          </div>
-        </MenuItem>
-      )}
 
       {props.data.short_description && !props.thingsToDoPage && (
         <MenuItem id="Brief" className={styles.block}>

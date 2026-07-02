@@ -26,7 +26,7 @@ interface OtpCardProps {
 const OtpCard: React.FC<OtpCardProps> = ({
   onVerified,
   heading = "Save our work",
-  submitLabel = "Send OTP & start",
+  submitLabel = "Send OTP & Start",
 }) => {
   const dispatch = useDispatch();
   const { trackUserLogin } = useAnalytics();
