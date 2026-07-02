@@ -3,6 +3,7 @@
 import Link from "next/link";
 import HeadingContent from "./HeadingContent";
 import styles from "./HeroSection.module.scss";
+import HomeHeadingContent from "./HomeHeadingContent";
 
 /* Reusable Kaira avatar (used in hero, "loving" header, final CTA). */
 export const KairaAvatar = ({ size = "lg", minimal = false }) => {
@@ -56,12 +57,13 @@ const POLAROIDS = [
   },
 ];
 
-const HeroSection = ({ title, subtitle }) => {
+const HeroSection = ({ title, subtitle, slug }) => {
   return (
     <section className={styles.heroSection}>
       <div className="ttwContainer">
         <div className={styles.heroGrid}>
-          <HeadingContent title={title} subtitle={subtitle} />
+
+         { slug == "home" ? <HomeHeadingContent title={title} subtitle={subtitle}  /> : <HeadingContent title={title} subtitle={subtitle}  />}
 
           <div className={styles.kairaWrap}>
             {POLAROIDS.map((p) => (
@@ -83,12 +85,14 @@ const HeroSection = ({ title, subtitle }) => {
               </div>
             </div>
 
-            <Link href="/chat?intake=1" className={styles.kairaCta}>
-              Start planning
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5 12h14M13 6l6 6-6 6" />
-              </svg>
-            </Link>
+            {slug != "home" && (
+              <Link href="/chat?intake=1" className={styles.kairaCta}>
+                Start planning
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </Link>
+            )}
           </div>
         </div>
       </div>
