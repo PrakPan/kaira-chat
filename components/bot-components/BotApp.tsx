@@ -3834,20 +3834,45 @@ const BottomCTABar = React.memo(
     const cost = Number.isFinite(rawCost) ? Math.round(rawCost) : null;
     const currencySymbol = currencySymbols[currency?.currency] || "₹";
 
+    const couponBadge = (
+      <span className="flex items-center gap-1 text-[#16A34A] font-mono text-[10px] md:text-[11px] font-semibold uppercase tracking-[0.06em] whitespace-nowrap">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="shrink-0"
+        >
+          <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />
+          <path d="M13 5v2" />
+          <path d="M13 11v2" />
+          <path d="M13 17v2" />
+        </svg>
+        Coupon discounts available
+      </span>
+    );
+
     return (
-      <div className="z-20 fixed w-full md:w-[48%] max-ph:bottom-0 md:bottom-[4.2rem] flex-shrink-0 bg-[#fffaf5] border-t border-slate-100 px-4 py-2 flex items-center justify-between">
+      <div className="z-20 fixed w-full md:w-[48%] max-ph:bottom-0 md:bottom-[4.2rem] flex-shrink-0 bg-[#fffaf5] border-t border-slate-100 px-4 py-2 flex flex-col gap-1">
+        <div className="flex items-center justify-between">
         <div className="flex flex-col">
           {cost !== null ? (
             <>
-              <span className="text-black  ttw-type-small !text-[12px]">
+              <span className="font-mono text-[10px] md:text-[11px] font-semibold uppercase tracking-[0.06em] text-[#8A9099]">
                 {perPerson
                   ? "Per Person"
                   : cart?.is_estimated_price && cost > 0
                     ? "Estimated Price"
                     : "Total Cost"}
               </span>
-              <span className=" ttw-type-body !font-semibold">
-                {currencySymbol} {cost.toLocaleString("en-IN")}/-
+              <span className="font-mono text-[16px] md:text-[21px] font-bold leading-tight text-[#111827] whitespace-nowrap">
+                {currencySymbol}
+                {cost.toLocaleString("en-IN")}/-
               </span>
             </>
           ) : cart?.error ? (
@@ -3868,7 +3893,7 @@ const BottomCTABar = React.memo(
             </span>
           )}
         </div>
-        <div className="flex gap-3 items-center">
+        <div className="flex gap-2 md:gap-3 items-center shrink-0">
           <div
             style={popupStyle}
             className="z-50 absolute -top-11 ttw-type-body text-center flex flex-col gap-2 bg-white"
@@ -3896,24 +3921,27 @@ const BottomCTABar = React.memo(
           {cart?.error ? (
             <button
               onClick={onGetInTouch}
-              className="flex items-center gap-2 h-[44px] px-4 rounded-[8px] bg-[#F7E700] text-[16px] font-inter font-semibold"
+              className="flex items-center gap-2 h-[42px] md:h-[44px] px-4 rounded-full bg-[#F7E700] text-[14px] md:text-[15px] font-inter font-bold text-black whitespace-nowrap shrink-0"
             >
               Get in touch!
             </button>
           ) : (
             <button
               onClick={onViewCart}
-              className="flex items-center gap-2 h-[44px] px-4 rounded-[8px] bg-[#F7E700] text-[16px] font-inter font-semibold"
+              className="flex items-center gap-2 h-[42px] md:h-[44px] px-4 rounded-full bg-[#F7E700] text-[14px] md:text-[15px] font-inter font-bold text-black whitespace-nowrap shrink-0"
             >
               View Cart
               {countCartItems > 0 && (
-                <span className="bg-[#07213A] text-white text-[11px] font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                <span className="bg-[#111827] text-white text-[12px] font-bold rounded-full min-w-[24px] h-[22px] px-1.5 flex items-center justify-center">
                   {countCartItems}
                 </span>
               )}
             </button>
           )}
         </div>
+        </div>
+        {/* Coupon hint: own line below the price/CTA row on all breakpoints */}
+        {cost !== null && couponBadge}
       </div>
     );
   },
