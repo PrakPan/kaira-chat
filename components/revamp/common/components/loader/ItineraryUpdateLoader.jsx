@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { TTW } from "../../../assets";
 import media from "../../../../media";
 
 /**
@@ -48,16 +47,16 @@ const ItineraryUpdateLoader = ({
         fullScreen ? "fixed inset-0 z-50 bg-[#fafaf5]" : "w-full mx-auto"
       }`}
     >
-      {/* Pulsing TTW logo */}
+      {/* Pulsing Kaira logo */}
       <div className="relative">
         <div className="w-20 h-20 bg-[#f7e700] rounded-full absolute -inset-2 animate-ping opacity-25" />
-        <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm">
+        <div className="w-16 h-16 bg-white rounded-full overflow-hidden flex items-center justify-center shadow-sm">
           <Image
-            src={TTW}
-            alt="The Tarzan Way"
-            width={36}
-            height={36}
-            className="object-contain"
+            src="/KairaInsta.png"
+            alt="Kaira"
+            width={64}
+            height={64}
+            className="w-full h-full object-cover"
             priority
           />
         </div>
