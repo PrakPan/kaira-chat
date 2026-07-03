@@ -621,7 +621,39 @@ const CouponSection = ({
   onViewCoupons,
   isRemoving = false,
   payment,
+  token,
 }) => {
+  const ItineraryId = useSelector((state) => state.ItineraryId);
+  const { currency } = useSelector((state) => state.currency);
+  const [availableCount, setAvailableCount] = useState(0);
+
+  useEffect(() => {
+    let isMounted = true;
+    const getCouponCount = async () => {
+      try {
+        const response = await fetchCoupons.get(
+          `/?itinerary_id=${ItineraryId}&currency=${currency || "INR"}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
+        if (isMounted) {
+          setAvailableCount(response?.data?.length || 0);
+        }
+      } catch (error) {
+        console.error("Error fetching coupon count:", error);
+      }
+    };
+
+    if (ItineraryId && token) {
+      getCouponCount();
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  }, [ItineraryId, currency, token]);
+
   // Pulse loader component
   const PulseLoader = () => (
     <div className="flex items-center justify-center">
@@ -693,13 +725,21 @@ const CouponSection = ({
                   Apply coupon
                 </span>
               </div>
-              <button
-                onClick={onViewCoupons}
-                className="border-sm border-primary-indigo text-primary-indigo text-xs font-500 leading-md rounded-md-lg px-md"
-              >
-                {" "}
-                Apply
-              </button>
+              <div className="flex flex-col items-end gap-1">
+                <button
+                  onClick={onViewCoupons}
+                  className="border-sm border-primary-indigo text-primary-indigo text-xs font-500 leading-md rounded-md-lg px-md"
+                >
+                  {" "}
+                  Apply
+                </button>
+                {availableCount > 0 && (
+                  <span className="text-xs font-400 leading-md text-green-600">
+                    {availableCount}{" "}
+                    {availableCount === 1 ? "coupon" : "coupons"} available
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 
@@ -2654,6 +2694,7 @@ const Details = (props) => {
                           onViewCoupons={() => setShowCouponModal(true)}
                           isRemoving={isRemovingCoupon}
                           payment={couponUsageData}
+                          token={props?.token}
                         />
                       )}
 
