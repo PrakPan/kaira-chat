@@ -1461,6 +1461,11 @@ startEmptyIntake = false,
   // laying out asynchronously, so a single smooth scroll lands mid-thread —
   // we re-snap on a few ticks until the content has settled.
   const initialScrollPendingRef = useRef(false);
+  // True on the /chat?intake=1 landing between injecting the greeting + empty
+  // intake form and the first stream. Suppresses the initial auto-scroll so the
+  // view stays at Kaira's greeting instead of snapping to the bottom of the
+  // form. Cleared as soon as a stream begins (user submitted / sent a message).
+  const suppressIntakeAutoScrollRef = useRef(false);
 
   // ── Refs ─────────────────────────────────────────────────────────────────
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -1483,6 +1488,11 @@ useEffect(() => { inputRef.current = input; }, [input]);
 const prevAuthTokenRef = useRef<string | null>(null);
 const lastSentMessageRef = useRef<string>("");
 const lastSentActionRef = useRef<PendingAction | null>(null);
+// Fresh mirror of "the just-logged-in user may resume THIS chat" — true when
+// it's their own/anonymous chat OR they're staff (i.e. NOT a foreign
+// itinerary). Read inside the post-login effect so we resume silently via the
+// `resume_after_login` action instead of re-injecting the previous prompt.
+const canResumeAfterLoginRef = useRef(false);
 
   /**
    * Frontend-generated UUID for this chat session.
@@ -1685,6 +1695,13 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
 
     console.log("Messages",messages);
 
+  // Logged-out user viewing an existing thread (restored via threads.get_by_id)
+  // sees the inline sign-in card as the last message. In that state the
+  // composer is blocked and clicking it must NOT open the BotLoginModal popup —
+  // the user signs in through the inline card instead.
+  const loginBlocked =
+    !isLoggedIn && messages.some((m) => m.type === "login_card");
+
   // ── Empty intake form on /chat?intake=1 (Plan with Kaira CTAs) ─────────────
   // When the user lands here from a "Plan with Kaira" CTA we inject a fresh,
   // empty intake form (plus Kaira's greeting) without waiting for the backend
@@ -1693,6 +1710,9 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
     if (!startEmptyIntake) return;
     if (intakeFormInjectedRef.current) return;
     intakeFormInjectedRef.current = true;
+    // Don't auto-scroll to the bottom of the freshly-injected form — keep
+    // Kaira's greeting in view on the /chat?intake=1 landing.
+    suppressIntakeAutoScrollRef.current = true;
     dispatch(updateIntakeForm({ active: true, completed: false, step: 0 }));
     setMessages((prev) => [
       ...prev,
@@ -1742,6 +1762,9 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
   messagesRef.current = messages;
   // Keep the fresh-auth mirror current for handleEffect's prompt_login guard.
   isLoggedInRef.current = isLoggedIn;
+  // Mirror the ownership gate so the post-login effect can decide whether to
+  // resume this chat silently (own/anonymous chat or staff) vs. re-inject.
+  canResumeAfterLoginRef.current = !isForeignItinerary;
 
   // ── "Create my version" (clone) success ──────────────────────────────────
   // Defined after useChat because it depends on clearMessages (and reads
@@ -1988,14 +2011,43 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
           if (data.data) onRouteReceived(data as { data: Location[] });
           break;
         }
+        case "intake_form_shimmer": {
+          // Server is about to compute the intake-form prefill — show a skeleton
+          // loader in the card's place until `form_fields` (or the intake-form
+          // widget) lands. Inject the card once so the skeleton has somewhere to
+          // render; the loading flag flips it to the shimmer view.
+          const loading = data.loading !== false; // default true
+          dispatch(updateIntakeForm({ active: true, completed: false, loading }));
+          if (loading && !intakeFormInjectedRef.current) {
+            intakeFormInjectedRef.current = true;
+            setMessages((prev) =>
+              prev.some((m) => m.type === "intake_form")
+                ? prev
+                : [
+                    ...prev,
+                    {
+                      id: `intake-form-${sessionIdRef.current}`,
+                      role: "assistant",
+                      content: "",
+                      timestamp: new Date(),
+                      type: "intake_form",
+                    },
+                  ],
+            );
+            onIntakeFormStart?.();
+          }
+          break;
+        }
         case "form_fields": {
           // Backend prefill for the multi-step intake form. Seed the Redux
           // slice, inject the form card into the thread once, and let BotApp
-          // flip the left panel to the intake hero image.
+          // flip the left panel to the intake hero image. Clears any pending
+          // shimmer set by `intake_form_shimmer`.
           dispatch(
             updateIntakeForm({
               active: true,
               completed: false,
+              loading: false,
               step: 0,
               ...parseFormFields(data as any),
             }),
@@ -2325,6 +2377,7 @@ case "shimmer_day_by_day": {
         updateIntakeForm({
           active: true,
           completed: false,
+          loading: false,
           ...parseShowIntakeForm(prefill),
         }),
       );
@@ -2391,46 +2444,16 @@ const sendMessage = useCallback(
 );
 
 // ── Intake form completion ───────────────────────────────────────────────────
-// Holds the composed message while we wait for an inline OTP verify (logged-out
-// users) before sending it to Kaira.
-const pendingIntakeMessageRef = useRef<string | null>(null);
-
+// Always send the composed message straight to Kaira. If the user isn't logged
+// in and the action needs auth, the backend emits `prompt_login`, which injects
+// the inline sign-in card (login_card) and replays the message after verify —
+// so we never inject an OTP card from the client here.
 const handleIntakeComplete = useCallback(
   (composed: string) => {
-    const loggedIn =
-      !!reduxToken ||
-      (typeof window !== "undefined" &&
-        !!localStorage.getItem("access_token"));
-    if (loggedIn) {
-      sendMessage(composed, undefined, undefined, { formSubmitted: true });
-      return;
-    }
-    // Not logged in → inject the inline OTP card and send after verify.
-    pendingIntakeMessageRef.current = composed;
-    setMessages((prev) =>
-      prev.some((m) => m.type === "intake_otp")
-        ? prev
-        : [
-            ...prev,
-            {
-              id: `intake-otp-${sessionIdRef.current}`,
-              role: "assistant",
-              content: "",
-              timestamp: new Date(),
-              type: "intake_otp",
-            },
-          ],
-    );
+    sendMessage(composed, undefined, undefined, { formSubmitted: true });
   },
-  [reduxToken, sendMessage, setMessages],
+  [sendMessage],
 );
-
-const handleIntakeOtpVerified = useCallback(() => {
-  const composed = pendingIntakeMessageRef.current;
-  pendingIntakeMessageRef.current = null;
-  setMessages((prev) => prev.filter((m) => m.type !== "intake_otp"));
-  if (composed) sendMessage(composed, undefined, undefined, { formSubmitted: true });
-}, [sendMessage, setMessages]);
 
 // Inline `prompt_login` card verified — just retire the card. The token-watch
 // effect re-fires `pendingPostLoginAction` (the message/widget action that
@@ -2489,6 +2512,13 @@ const handleLoginCardVerified = useCallback(() => {
   useEffect(() => {
     // Don't auto-scroll to bottom when older messages are being prepended
     if (isFetchingMoreRef.current) return;
+    // /chat?intake=1 landing: keep the view on Kaira's greeting rather than
+    // snapping to the bottom of the injected intake form. Once a stream starts
+    // (the user submitted the form / sent a message) resume normal auto-scroll.
+    if (suppressIntakeAutoScrollRef.current) {
+      if (!isStreaming) return;
+      suppressIntakeAutoScrollRef.current = false;
+    }
     // Respect the user's scroll position: if they've scrolled up to read
     // earlier messages, don't yank the view back down while streaming.
     if (!isAtBottomRef.current) return;
@@ -2698,8 +2728,21 @@ useEffect(() => {
   setPostLoginLoading(false);
   setInput("");
 
-  // One tick defer — lets useChat re-render with new authToken before sending
+  // One tick defer — lets useChat re-render with new authToken (and Redux user
+  // info) before sending.
   setTimeout(() => {
+    // Preferred path: resume the conversation silently. Rather than re-sending
+    // the user's previous prompt (which shows a duplicate user bubble), fire a
+    // `resume_after_login` custom action with an empty payload — the backend
+    // picks the thread back up on its own. Requires an existing thread (the
+    // action can only append, never create); gated to the current user's own /
+    // anonymous chat or a staff user. On a foreign itinerary, or before any
+    // thread exists (e.g. a login-gated initial prompt that must still create
+    // the thread), we fall back to the legacy replay so nothing regresses.
+    if (canResumeAfterLoginRef.current && threadIdRef.current) {
+      sendWidgetAction("resume_after_login", {});
+      return;
+    }
     if (action.kind === "widget") {
       sendWidgetAction(action.type, action.payload);
     } else {
@@ -2850,6 +2893,7 @@ useEffect(() => {
           updateIntakeForm({
             active: true,
             completed: false,
+            loading: false,
             ...parseShowIntakeForm(prefill),
           }),
         );
@@ -2935,7 +2979,27 @@ useEffect(() => {
   if (restoredHasDisplayItinerary) setHasDisplayItinerary(true);
 
   if (restored.length > 0) {
-    setMessages(restored);
+    // Logged-out viewers opening an existing P1 thread (via threads.get_by_id)
+    // can't post. Surface the inline sign-in card as the last message and let
+    // the composer block below key off the presence of this login_card. In P2
+    // (completed itinerary) we don't inject the card — the composer falls back
+    // to the standard login/clone gating instead.
+    const isP2Restore =
+      botModeRef.current === "p2" || threadIsCompleted;
+    const restoredWithLogin =
+      isLoggedInRef.current || isP2Restore
+      ? restored
+      : [
+          ...restored,
+          {
+            id: `login-card-${restoredThread.id ?? "restore"}-${Date.now()}`,
+            role: "assistant" as const,
+            content: "",
+            timestamp: new Date(),
+            type: "login_card" as const,
+          },
+        ];
+    setMessages(restoredWithLogin);
     // Land at the bottom of the restored transcript. Widgets and images lay
     // out asynchronously, so the scrollable height keeps growing for a beat
     // after setMessages — a single rAF snap leaves the user mid-thread.
@@ -3458,11 +3522,6 @@ const handleShowLogin = useCallback(() => {
                   />
                 );
               }
-              if (msg.type === "intake_otp") {
-                return (
-                  <OtpCard key={msg.id} onVerified={handleIntakeOtpVerified} />
-                );
-              }
               if (msg.type === "login_card") {
                 return (
                   <OtpCard
@@ -3531,6 +3590,10 @@ const handleShowLogin = useCallback(() => {
                 feedbackLoading={feedbackLoadingIds.has(msg.id)}
                 onFeedback={hideFeedback ? undefined : handleFeedback}
                 onRetry={onRetry}
+                // Show the profile-user avatar only for a logged-out user's own
+                // fresh chat. When an existing chat/itinerary is open (restored
+                // via thread detail) keep the per-message letter avatars.
+                loggedOutInitiated={!isLoggedIn && !restoredThread}
                 onWidgetAction={(action) => {
                   // Freeze this widget's CTAs the moment the user clicks one,
                   // regardless of which drawer or server call it triggers. The
@@ -4048,7 +4111,7 @@ const handleShowLogin = useCallback(() => {
 
       {/* ── Quick reply chips ─────────────────────────────────────────────── */}
       {/* Hidden while itinerary creation is in progress — no quick replies/CTAs allowed */}
-      {(quickReplies.length > 0 || quickReplyLoading) && !isComposerLocked && !isForeignItinerary && (
+      {(quickReplies.length > 0 || quickReplyLoading) && !isComposerLocked && !isForeignItinerary && !loginBlocked && (
         <div className="flex-shrink-0 px-[0.25rem] md:!px-6 pt-2 pb-1">
           <div className="mx-auto">
             <div
@@ -4082,9 +4145,15 @@ const handleShowLogin = useCallback(() => {
             onSubmit={handleSubmit}
             onStop={cancelStream}
             isStreaming={isStreamingResponse}
-            disabled={isComposerLocked}
+            disabled={isComposerLocked || loginBlocked}
             placeholder={
-              isItineraryCompleting
+              loginBlocked
+                ? "Login to continue"
+                : isForeignItinerary
+                ? botMode === "p2"
+                  ? "Clone this itinerary to start chatting"
+                  : "Start a new chat to send messages"
+                : isItineraryCompleting
                 ? "Planning your trip…"
                 : isItineraryPolling
                 ? "Updating your itinerary…"
@@ -4092,11 +4161,13 @@ const handleShowLogin = useCallback(() => {
                 ? "Complete the form above to continue…"
                 : "Ask me anything"
             }
-            showAttach={!isComposerLocked}
+            showAttach={!isComposerLocked && !loginBlocked}
             onFilesSelected={handleFilesSelected}
             attachments={attachments}
             onRemoveAttachment={handleRemoveAttachment}
-            requireAuth={!isLoggedIn || isForeignItinerary}
+            // In the logged-out thread-detail flow the inline sign-in card is
+            // shown, so the composer is just blocked — no BotLoginModal popup.
+            requireAuth={loginBlocked ? false : !isLoggedIn || isForeignItinerary}
             onAuthRequired={() => {
               if (!isLoggedIn) {
                 setShowLoginModal(true);

@@ -27,7 +27,7 @@ export interface Message {
   content: string;
   timestamp: Date;
   isStreaming?: boolean;
-  type?: "text" | "widget" | "intake_form" | "intake_otp" | "login_card";
+  type?: "text" | "widget" | "intake_form" | "login_card";
   widgetItem?: {
     id: string;
     widget: Record<string, unknown>;

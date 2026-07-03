@@ -33,6 +33,7 @@ import axioscountrydetailsinstance from "../services/pages/country";
 import axioslocationsinstance from "../services/search/search";
 import { MERCURY_HOST } from "../services/constants";
 import * as PagesToIdMapping from "../data/PagesToIdMapping.json";
+import HomeSectionCta from "../components/revamp/home/HomeSectionCta";
 
 // Polyfill for requestIdleCallback (Safari compatibility)
 if (typeof window !== "undefined" && !window.requestIdleCallback) {
@@ -142,13 +143,13 @@ const Home = ({ token, hotLocationSearch, checkAuthState, setHotLocationSearch }
 
       <div className={styles.ttwRevamp}>
         <NavigationMenu message={"Welcome to The Tarzan Way!"} />
-        <HeroSection  />
+        <HeroSection slug={"home"} />
         <TrustFactors />
         <KairaLovingSection />
         {token && <MyTripsSection className="max-w-7xl" />}
 
         <JourneySimplified />
-        <SectionCta
+        <HomeSectionCta
           // label="End of · How it works"
           // heading="How it"
           // accent="works."
@@ -156,25 +157,25 @@ const Home = ({ token, hotLocationSearch, checkAuthState, setHotLocationSearch }
         />
 
         <GoogleReviewsSection />
-        <SectionCta
+        <HomeSectionCta
           // label="End of · Real reviews"
           // heading="Real reviews from"
           // accent="real travellers."
-          ctaLabel="Plan a trip like these"
+          ctaLabel="Start planning"
         />
 
         <TravelerStoriesSection />
-        <SectionCta
+        <HomeSectionCta
           // label="End of · Real trips. Real moments"
           // heading="Real trips. Real"
           // accent="moments."
-          ctaLabel="Get my own moment"
+          ctaLabel="Start planning"
         />
 
         <LuxuryEuropeDestinations />
         <KairaPlansSection />
         <WhyKairaSection />
-        <SectionCta
+        <HomeSectionCta
           // label="End of · Why Kaira"
           // heading="Why travellers choose"
           // accent="Kaira."
@@ -184,11 +185,11 @@ const Home = ({ token, hotLocationSearch, checkAuthState, setHotLocationSearch }
         {/* <PartnersSection />
         <TestimonialCarousel /> */}
         <FaqSection />
-        <SectionCta
+        <HomeSectionCta
           // label="End of · Questions, answered"
           // heading="Questions,"
           // accent="answered."
-          ctaLabel="Still deciding? Chat with Kaira"
+          ctaLabel="Start planning"
         />
         <CtaBoardingSection />
 

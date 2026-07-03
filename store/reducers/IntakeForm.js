@@ -6,6 +6,9 @@ export const initialIntakeFormState = {
   active: false,
   step: 0,
   completed: false,
+  // True while the backend `intake_form_shimmer` effect is in flight — the card
+  // renders a skeleton loader until the prefill (form_fields / widget) lands.
+  loading: false,
   // Per-step completion flags from the backend `show_intake_form` effect.
   // Indexes match step order: [destination, when, who, notes].
   stepsCompleted: [false, false, false, false],

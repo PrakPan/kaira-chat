@@ -5,6 +5,7 @@ import type { IntakeFormState } from "./types";
 import { TOTAL_STEPS } from "./constants";
 import { composeIntakeMessage, validateStep, whenSummary, paxLabel } from "./intakePrompt";
 import StepProgress from "./ui/StepProgress";
+import IntakeFormSkeleton from "./ui/IntakeFormSkeleton";
 import DestinationStep from "./steps/DestinationStep";
 import WhenStep from "./steps/WhenStep";
 import WhoStep from "./steps/WhoStep";
@@ -36,9 +37,16 @@ const IntakeFormCard: React.FC<IntakeFormCardProps> = ({ onComplete }) => {
   const currentStepCompleted = !!stepsCompleted[step];
   // A backend-prefilled step that's already marked complete can always be
   // advanced — even if its loose client validation wouldn't pass (e.g. a
-  // "dates" timing that arrived without explicit start/end).
+  // "dates" timing that arrived without explicit start/end). Exception: the
+  // "when" step in flexible mode always requires a rough month, even from a
+  // prefill that marked timing complete — so the completion bypass doesn't
+  // apply there.
+  const flexMonthMissing =
+    step === 1 &&
+    state?.when_mode === "flexible" &&
+    (!state?.flexMonth || state.flexMonth === "Flexible");
   const canAdvance = state
-    ? currentStepCompleted || validateStep(state, step)
+    ? !flexMonthMissing && (currentStepCompleted || validateStep(state, step))
     : false;
 
   // The horizontal track holds all four steps side-by-side and slides between
@@ -78,6 +86,11 @@ const IntakeFormCard: React.FC<IntakeFormCardProps> = ({ onComplete }) => {
   };
 
   if (!state) return null;
+
+  // ── Loading: backend `intake_form_shimmer` in flight → skeleton loader ───────
+  if (state.loading) {
+    return <IntakeFormSkeleton />;
+  }
 
   // ── Completed: show a compact, non-interactive summary ──────────────────────
   if (state.completed) {

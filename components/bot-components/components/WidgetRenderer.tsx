@@ -2645,6 +2645,8 @@ function ButtonNode({
     color = "default", pill, onClickAction, submit,
   } = node;
 
+  const isDesktop = useMediaQuery("(min-width:767px)");
+
   // "View Details" / activity / POI / restaurant / hotel / transfer / payment
   // CTAs stay clickable even after the widget is marked disabled. Only flow-
   // gating CTAs (route.lock, itinerary.lock, generic actions) get frozen.
@@ -2732,6 +2734,14 @@ function ButtonNode({
     return <></>;
   }
 
+  console.log({
+  type: onClickAction?.type,
+  isDesktop,
+  condition:
+    (onClickAction?.type === "route.lock" ||
+      onClickAction?.type === "itinerary.lock") && isDesktop,
+});
+
   // ── Primary solid ──
   if (color === "primary") {
     return (
@@ -2751,6 +2761,7 @@ function ButtonNode({
           fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
           cursor: "pointer",
           outline: "none",
+          marginLeft: onClickAction?.type == "route.lock" && isDesktop ? "1.5rem" : 0,
           ...disabledStyle,
         }}
       >
@@ -2777,6 +2788,7 @@ function ButtonNode({
         fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
         cursor: "pointer",
         outline: "none",
+        marginLeft: onClickAction?.type == "itinerary.lock" && isDesktop ? "1.5rem" : 0,
         ...disabledStyle,
       }}
     >

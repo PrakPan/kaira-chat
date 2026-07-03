@@ -40,6 +40,7 @@ import DesktopBanner from "../../components/containers/Banner.js";
 import { convertDbNameToCapitalFirst } from "../../helper/convertDbnameToCapitalFirst.js";
 import TailoredFormMobileModal from "../../components/modals/TailoredFomrMobile.js";
 import styles from "../../styles/pages/revamp/destination.module.scss";
+import SectionCta from "../../components/revamp/home/SectionCta.jsx";
 
 const Index = (props) => {
   const [userItineraries, setUserItineraries] = useState([]);
@@ -280,6 +281,12 @@ const Index = (props) => {
               ))}
             </div>
           </section>
+          <SectionCta
+          // label="End of · How it works"
+          // heading="How it"
+          // accent="works."
+          ctaLabel="Start planning"
+        />
         </div>
       ) : null}
 
@@ -290,6 +297,12 @@ const Index = (props) => {
           handlePlanButtonClick(`When to go - ${destinationName}`)
         }
       />
+      <SectionCta
+          // label="End of · How it works"
+          // heading="How it"
+          // accent="works."
+          ctaLabel="Start planning"
+        />
 
       <div className={styles.container}>
         <DesktopBanner
@@ -526,6 +539,12 @@ const Index = (props) => {
               : props.data?.locations
           }
           destinationName={destinationName}
+        />
+        <SectionCta
+          // label="End of · How it works"
+          // heading="How it"
+          // accent="works."
+          ctaLabel="Start planning"
         />
 
         {/* OTHER COUNTRIES IN CONTINENT */}
