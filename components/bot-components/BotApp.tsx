@@ -3921,14 +3921,14 @@ const BottomCTABar = React.memo(
           {cart?.error ? (
             <button
               onClick={onGetInTouch}
-              className="flex items-center gap-2 h-[42px] md:h-[44px] px-4 rounded-full bg-[#F7E700] text-[14px] md:text-[15px] font-inter font-bold text-black whitespace-nowrap shrink-0"
+              className="flex items-center gap-2 h-[42px] md:h-[44px] px-4 rounded-[8px] bg-[#F7E700] text-[14px] md:text-[15px] font-inter font-bold text-black whitespace-nowrap shrink-0"
             >
               Get in touch!
             </button>
           ) : (
             <button
               onClick={onViewCart}
-              className="flex items-center gap-2 h-[42px] md:h-[44px] px-4 rounded-full bg-[#F7E700] text-[14px] md:text-[15px] font-inter font-bold text-black whitespace-nowrap shrink-0"
+              className="flex items-center gap-2 h-[42px] md:h-[44px] px-4 rounded-[8px] bg-[#F7E700] text-[14px] md:text-[15px] font-inter font-bold text-black whitespace-nowrap shrink-0"
             >
               View Cart
               {countCartItems > 0 && (
@@ -3940,8 +3940,10 @@ const BottomCTABar = React.memo(
           )}
         </div>
         </div>
-        {/* Coupon hint: own line below the price/CTA row on all breakpoints */}
-        {cost !== null && couponBadge}
+        {/* Coupon hint: own line below the CTA, aligned to the right end */}
+        {cost !== null && (
+          <div className="flex justify-end">{couponBadge}</div>
+        )}
       </div>
     );
   },
