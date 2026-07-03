@@ -23,7 +23,7 @@ import styles from "./MobileCardCarousel.module.scss";
  */
 const MobileCardCarousel = ({
   items = [],
-  slidesPerView = 1.12,
+  slidesPerView = 1,
   spaceBetween = 16,
 }) => {
   const [prevEl, setPrevEl] = useState(null);

@@ -228,7 +228,7 @@ const JourneySimplified = ({ steps, itinerary, cities = [], destinationName }) =
           <Swiper
             modules={[Navigation]}
             spaceBetween={20}
-            slidesPerView={1.1}
+            slidesPerView={1}
             navigation={{
               nextEl: ".journey-next",
               prevEl: ".journey-prev",
