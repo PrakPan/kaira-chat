@@ -1488,6 +1488,11 @@ useEffect(() => { inputRef.current = input; }, [input]);
 const prevAuthTokenRef = useRef<string | null>(null);
 const lastSentMessageRef = useRef<string>("");
 const lastSentActionRef = useRef<PendingAction | null>(null);
+// Fresh mirror of "the just-logged-in user may resume THIS chat" — true when
+// it's their own/anonymous chat OR they're staff (i.e. NOT a foreign
+// itinerary). Read inside the post-login effect so we resume silently via the
+// `resume_after_login` action instead of re-injecting the previous prompt.
+const canResumeAfterLoginRef = useRef(false);
 
   /**
    * Frontend-generated UUID for this chat session.
@@ -1757,6 +1762,9 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
   messagesRef.current = messages;
   // Keep the fresh-auth mirror current for handleEffect's prompt_login guard.
   isLoggedInRef.current = isLoggedIn;
+  // Mirror the ownership gate so the post-login effect can decide whether to
+  // resume this chat silently (own/anonymous chat or staff) vs. re-inject.
+  canResumeAfterLoginRef.current = !isForeignItinerary;
 
   // ── "Create my version" (clone) success ──────────────────────────────────
   // Defined after useChat because it depends on clearMessages (and reads
@@ -2720,8 +2728,21 @@ useEffect(() => {
   setPostLoginLoading(false);
   setInput("");
 
-  // One tick defer — lets useChat re-render with new authToken before sending
+  // One tick defer — lets useChat re-render with new authToken (and Redux user
+  // info) before sending.
   setTimeout(() => {
+    // Preferred path: resume the conversation silently. Rather than re-sending
+    // the user's previous prompt (which shows a duplicate user bubble), fire a
+    // `resume_after_login` custom action with an empty payload — the backend
+    // picks the thread back up on its own. Requires an existing thread (the
+    // action can only append, never create); gated to the current user's own /
+    // anonymous chat or a staff user. On a foreign itinerary, or before any
+    // thread exists (e.g. a login-gated initial prompt that must still create
+    // the thread), we fall back to the legacy replay so nothing regresses.
+    if (canResumeAfterLoginRef.current && threadIdRef.current) {
+      sendWidgetAction("resume_after_login", {});
+      return;
+    }
     if (action.kind === "widget") {
       sendWidgetAction(action.type, action.payload);
     } else {
