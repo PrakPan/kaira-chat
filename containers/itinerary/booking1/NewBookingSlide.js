@@ -201,24 +201,21 @@ const CouponModal = ({
       anchor={"right"}
       backdrop
       width={"30%"}
-      mobileWidth={"100%"}
-      bgColor="#fafaf5"
+      mobileWidth={"50%"}
       style={{ zIndex: 1601 }}
       onHide={() => onHide()}
     >
-      <div className="flex justify-between items-center px-6 max-ph:px-4 py-4 border-b border-[#ececec] bg-[#fafaf5] flex-shrink-0">
-        <h2 className="ttw-type-h2 font-semibold text-[#0b1220]">
-          Apply Coupons
-        </h2>
+      <div className="flex justify-between items-center p-4 border-b bg-white flex-shrink-0">
+        <h2 className="text-lg font-semibold">Apply Coupons</h2>
         <button onClick={onHide} className="">
           <IoMdClose />
         </button>
       </div>
 
       {/* Content */}
-      <div className="px-6 max-ph:px-4 py-4 overflow-y-auto flex-1">
+      <div className="p-4 overflow-y-auto flex-1">
         <div>
-          <h3 className="ttw-type-h4 text-[#0b1220] mb-4">Available Coupons</h3>
+          <h3 className="font-semibold text-base mb-4">Available Coupons</h3>
 
           <div className="space-y-4">
             {loading ? (
@@ -232,14 +229,14 @@ const CouponModal = ({
               availableCoupons.map((coupon, index) => (
                 <div
                   key={index}
-                  className="rounded-2xl border border-[#ececec] bg-white p-4 hover:bg-[#f4f3ec] transition-colors"
+                  className="border-b-1 border-gray-200 p-2 hover:border-blue-300 transition-colors"
                 >
                   <div className="flex justify-between items-start gap-3 ">
                     <div className="flex-1">
-                      <div className="ttw-type-small inline-block border border-dashed border-[#0b1220] py-0.5 px-3 mb-2 rounded-lg text-[#0b1220]">
+                      <div className="text-base inline-block border-sm border-dashed border-pureBlack py-xxs px-lg mb-md">
                         {coupon.code}
                       </div>
-                      <div className="ttw-type-body font-600 text-[#0b1220] mb-2">
+                      <div className="text-md  font-500 leading-lg mb-2">
                         {coupon.title}
                       </div>
                     </div>
@@ -253,15 +250,15 @@ const CouponModal = ({
                           payment.coupon_usage.id === coupon.id) ||
                         payment?.is_applicable
                       }
-                      className={`px-3 py-1 rounded-lg ttw-type-body-strong transition-colors whitespace-nowrap min-w-[60px] h-8 flex items-center justify-center ${
+                      className={`px-3 py-1 rounded font-medium text-sm transition-colors whitespace-nowrap min-w-[60px] h-8 flex items-center justify-center ${
                         appliedCoupon === coupon.code ||
                         appliedCoupon === coupon.id ||
                         (payment?.coupon_usage &&
                           payment.coupon_usage.id === coupon.id)
-                          ? "bg-[#e7f5ee] text-[#1f8a5a] cursor-not-allowed"
+                          ? "bg-green-100 text-green-700 cursor-not-allowed"
                           : applyingCouponId === coupon.id
-                            ? "bg-[#f7e700] opacity-60 text-black cursor-not-allowed"
-                            : "bg-[#f7e700] text-black hover:opacity-90"
+                            ? "bg-blue-400  cursor-not-allowed"
+                            : "bg-blue-500  hover:bg-blue-600"
                       }`}
                     >
                       {applyingCouponId === coupon.id ? (
@@ -278,15 +275,15 @@ const CouponModal = ({
                   </div>
                   {coupon?.is_applicable ? (
                     <div>
-                      <div className="ttw-type-small text-[#445069] mb-2">
+                      <div className="text-gray-600 text-sm mb-2">
                         {coupon.description}
                       </div>
-                      <div className="ttw-type-small text-[#445069]">
+                      <div className="text-gray-500 text-xs">
                         Expires on: {coupon.expiry}
                       </div>
                     </div>
                   ) : (
-                    <div className="ttw-type-small text-[#445069] mb-2">
+                    <div className="text-gray-600 text-sm mb-2">
                       {coupon?.applicability_error}
                     </div>
                   )}
@@ -370,7 +367,7 @@ const LivePriceTimer = ({ priceValidUntil, lockInAmount = 2000 }) => {
 
   if (!isItineraryInFuture()) {
     return (
-      <div className="bg-[#CD2026] text-white px-3 py-1 mt-2 rounded-full ttw-type-small mb-3 inline-block">
+      <div className="bg-red-500 text-white px-3 py-1 mt-2 rounded-full text-xs font-medium mb-3 inline-block">
         Itinerary dates have expired. Please update the dates to view updated
         prices.
       </div>
@@ -387,7 +384,7 @@ const LivePriceTimer = ({ priceValidUntil, lockInAmount = 2000 }) => {
 
   if (!targetTime || timeLeft <= 0) {
     return (
-      <div className="bg-[#CD2026] text-white px-3 py-1 mt-2 rounded-full ttw-type-small mb-3 inline-block">
+      <div className="bg-red-500 text-white px-3 py-1 mt-2 rounded-full text-xs font-medium mb-3 inline-block">
         Prices Expired! Click on reprice itinerary to check updated itinerary
         cost
       </div>
@@ -408,29 +405,29 @@ const LivePriceTimer = ({ priceValidUntil, lockInAmount = 2000 }) => {
   return (
     <div
       className={`${
-        Cart?.paid_user ? "bg-[#98F0AB33]" : "bg-[#fffde7]"
-      } border border-[#f7e700] p-sm rounded-sm ttw-type-small w-100`}
+        Cart?.paid_user ? "bg-[#98F0AB33]" : "bg-[#ffffe7]"
+      } border-sm border-primary-yellow p-sm rounded-sm text-xs font-medium w-100`}
     >
       <div className="flex items-center gap-2xl justify-evenly">
         <div className="flex flex-col items-center">
-          <span className="ttw-type-h4 text-[#0b1220]">{hours}</span>
-          <span className="ttw-type-small text-[#445069]">Hours</span>
+          <span className="text-md-lg font-600 leading-xl">{hours}</span>
+          <span className="text-xs tex-spacegrey font-400">Hours</span>
         </div>
 
-        <span className="ttw-type-h4 text-[#0b1220]">:</span>
+        <span className="text-md-lg font-600 leading-xl">:</span>
 
         <div className="flex flex-col items-center">
-          <span className="ttw-type-h4 text-[#0b1220]">{minutes}</span>
-          <span className="ttw-type-small text-[#445069]">Mins</span>
+          <span className="text-md-lg font-600 leading-xl">{minutes}</span>
+          <span className="text-xs tex-spacegrey font-400">Mins</span>
         </div>
 
-        <span className="ttw-type-h4 text-[#0b1220]">:</span>
+        <span className="text-md-lg font-600 leading-xl">:</span>
 
         <div className="flex flex-col items-center">
-          <span className="ttw-type-h4 text-[#0b1220]">
+          <span className="text-md-lg font-600 leading-xl">
             {remainingSeconds}
           </span>
-          <span className="ttw-type-small text-[#445069]">Secs</span>
+          <span className="text-xs tex-spacegrey font-400">Secs</span>
         </div>
       </div>
     </div>
@@ -462,10 +459,10 @@ const PaymentCreated = ({ onClickButton, loading }) => {
         </div>
         <div className="flex justify-between max-ph:flex-col">
           <div>
-            <h2 className="ttw-type-h4 text-[#0b1220]">
+            <h2 className="text-lg font-600 leading-xl">
               Your last payment was cancelled.
             </h2>
-            <p className="ttw-type-body text-[#445069] mb-zero max-ph:mb-md">
+            <p className="text-md font-400 leading-xl text-text-spacegrey mb-zero max-ph:mb-md">
               Oops! Something went wrong. Tap “Retry” to give it another shot.
             </p>
           </div>
@@ -509,10 +506,10 @@ const PaymentFailed = ({ onClickButton, loading }) => {
         </div>
         <div className="flex justify-between max-ph:flex-col">
           <div>
-            <h2 className="ttw-type-h4 text-[#0b1220]">
+            <h2 className="text-lg font-600 leading-xl">
               Your last payment was failed.
             </h2>
-            <p className="ttw-type-body text-[#445069] mb-zero max-ph:mb-md">
+            <p className="text-md font-400 leading-xl text-text-spacegrey mb-zero max-ph:mb-md">
               Oops! Something went wrong. Tap “Retry” to give it another shot.
             </p>
           </div>
@@ -572,10 +569,10 @@ const PaymentSuccess = ({ amount, onDownloadInvoice, loading }) => {
         </div>
         <div className="flex justify-between max-ph:flex-col">
           <div>
-            <h2 className="ttw-type-h4 text-[#0b1220]">
+            <h2 className="text-lg font-600 leading-xl">
               All set—your payment was successful.
             </h2>
-            <p className="ttw-type-body text-[#445069] mb-zero max-ph:mb-md">
+            <p className="text-md font-400 leading-xl text-text-spacegrey mb-zero max-ph:mb-md">
               Your full payment of{" "}
               {currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}
               {amount?.toLocaleString("en-IN")} has been received. No pending
@@ -658,43 +655,48 @@ const CouponSection = ({
       {/* <h3 className="font-medium text-base mb-3">Coupons</h3> */}
 
       {hasCouponApplied ? (
-        <div className="bg-[#e7f5ee] border border-[#ececec] rounded-xl p-4">
+        <div className="bg-green-50 border border-green-200 rounded-lg p-3">
           {/* Show message from payment if available */}
 
           {couponData.usage_description && (
-            <div className="ttw-type-small font-600 text-[#1f8a5a] mb-2">
+            <div className=" text-green-600 mb-2 font-medium">
               {couponData.usage_description}
             </div>
           )}
 
           <div className="flex justify-between items-center">
             <div>
-              <div className="ttw-type-small font-600 text-[#1f8a5a]">
+              <div className="text-sm font-medium text-green-600">
                 {couponData?.message}
               </div>
               {/* <div className="text-sm text-green-600">saved ₹{couponData.savings}</div> */}
             </div>
             <button
-              className={`ttw-btn-remove-pill min-w-[60px] h-8 flex items-center justify-center ${
-                isRemoving ? "cursor-not-allowed" : ""
+              className={`text-sm font-medium transition-colors min-w-[60px] h-8 flex items-center justify-center rounded px-2 ${
+                isRemoving
+                  ? "text-red-400 cursor-not-allowed"
+                  : "text-red-500 hover:text-red-600"
               }`}
               onClick={() => onRemoveCoupon(couponData?.code || appliedCoupon)}
               disabled={isRemoving}
             >
-              {isRemoving ? <PulseLoader color="#CD2026" /> : "Remove"}
+              {isRemoving ? <PulseLoader color="white" /> : "Remove"}
             </button>
           </div>
         </div>
       ) : (
         <div>
-          <div className="w-full py-md border-y border-[#ececec] text-left flex items-center justify-between">
+          <div className="w-full py-md border-y-sm text-left flex items-center justify-between">
             <div className="flex items-center w-full justify-between">
               <div className="flex items-center gap-2">
-                <span className="ttw-type-body font-600 text-[#0b1220]">
+                <span className="text-sm font-400 leading-lg">
                   Apply coupon
                 </span>
               </div>
-              <button onClick={onViewCoupons} className="ttw-btn-secondary">
+              <button
+                onClick={onViewCoupons}
+                className="border-sm border-primary-indigo text-primary-indigo text-xs font-500 leading-md rounded-md-lg px-md"
+              >
                 {" "}
                 Apply
               </button>
@@ -752,10 +754,10 @@ const PriceDetails = ({
   return (
     <div className="mb-4">
       <h3
-        className={`inline-block pb-xxs mb-md ${
+        className={`leading-md inline-block pb-xxs mb-md ${
           numericTotalPayable === 0
-            ? "ttw-type-body font-600 text-[#0b1220]"
-            : "ttw-type-small border-b border-[#f7e700] text-[#0b1220]"
+            ? "text-md font-500"
+            : "text-sm border-b-sm border-primary-yellow font-400"
         }`}
       >
         {" "}
@@ -763,9 +765,9 @@ const PriceDetails = ({
       </h3>
 
       <div className="space-y-2">
-        <div className="flex justify-between ttw-type-small text-[#445069] mb-sm">
+        <div className="flex justify-between text-sm font-400 leading-md mb-sm">
           <span> Total Itinerary Cost </span>
-          <span className="font-mono text-[#0b1220]">
+          <span>
             {currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}
             {typeof itineraryCost === "string"
               ? itineraryCost
@@ -783,19 +785,19 @@ const PriceDetails = ({
         } */}
 
        
-          {Cart?.taxation_policy == "TCS" && <div className="flex justify-between ttw-type-small text-[#445069] mb-sm">
+          {Cart?.taxation_policy == "TCS" && <div className="flex justify-between text-sm font-400 leading-md mb-sm">
             <span>GST</span>
-            <span className="font-mono text-[#0b1220]">
+            <span>
               {currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}
               {Cart?.gst?.toLocaleString("en-IN")}
             </span>
           </div>}
-
+      
 
         {Cart?.taxation_policy == "TCS" && (
-          <div className="flex justify-between ttw-type-small text-[#445069] mb-sm">
+          <div className="flex justify-between text-sm font-400 leading-md mb-sm">
             <span>TCS</span>
-            <span className="font-mono text-[#0b1220]">
+            <span>
               {currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}
               {Cart?.tcs?.toLocaleString("en-IN")}
             </span>
@@ -803,9 +805,9 @@ const PriceDetails = ({
         )}
 
         {couponDiscount >= 0 || couponDiscount < 0 ? (
-          <div className="flex justify-between text-[#1f8a5a] ttw-type-small mb-sm">
+          <div className="flex justify-between text-green-600 text-sm font-400 leading-md mb-sm">
             <span>Coupon Discount</span>
-            <span className="font-mono">
+            <span>
               {couponDiscount
                 ? currencySymbols?.[currency]
                   ? "-" +
@@ -817,10 +819,10 @@ const PriceDetails = ({
           </div>
         ) : null}
 
-        <div className="border-t border-[#ececec] pt-2 mt-2">
-          <div className="flex justify-between ttw-type-body font-700 text-[#0b1220]">
+        <div className="border-t-sm border-text-disabled pt-2 mt-2">
+          <div className="flex justify-between font-semibold text-md font-500 leading-xl">
             <span>Total Amount</span>
-            <span className="font-mono">
+            <span>
               {" "}
               {currencySymbols?.[currency]
                 ? currencySymbols?.[currency]
@@ -843,12 +845,15 @@ const PaymentButton = ({
 }) => {
   return (
     <button
-      className="w-full bg-[#f7e700] text-black font-500 ttw-type-body py-3 rounded-xl flex items-center justify-center gap-2 disabled:opacity-60"
+      className="ttw-btn-secondary-fill w-full !bg-[#f8e000] !text-black border-black"
       onClick={onClick}
       disabled={isLoading}
     >
       {isLoading ? (
-        <PulseLoader size={8} color="#000" />
+        <div className="flex items-center justify-center">
+          {/* <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-text-white mr-2"></div> */}
+          Processing...
+        </div>
       ) : paymentType === "lockin" ? (
         `Proceed to Pay`
       ) : (
@@ -1002,11 +1007,11 @@ const ItineraryInclusions = ({
         return (
           <div
             key={category}
-            className="mb-3 rounded-2xl overflow-hidden border border-[#ececec] bg-white"
+            className="mb-3 rounded-lg overflow-hidden shadow-[0_4px_34px_1px_rgba(195,195,195,0.25)]"
           >
             {/* Category Header */}
             <div
-              className={`flex items-center justify-between p-3 bg-white cursor-pointer transition-colors ${
+              className={`flex items-center justify-between p-3 bg-gray-50 cursor-pointer bg-text-white transition-colors ${
                 !expandedCategories[category] ? "border-l-xl" : ""
               } `}
               style={{ borderColor: colors[index] }}
@@ -1020,8 +1025,8 @@ const ItineraryInclusions = ({
                   }  ml-[-16px] pl-md`}
                   style={{ borderColor: colors[index] }}
                 >
-                  <div className="ttw-type-body font-600 text-[#0b1220]">{category}</div>
-                  <div className="ttw-type-small text-[#445069]">
+                  <div className="text-sm-md leading-xl font-400">{category}</div>
+                  <div className="text-sm font-400 leading-md text-text-spacegrey">
                     {selectedCount} of {bookings.length} selected
                   </div>
                 </div>
@@ -1030,7 +1035,7 @@ const ItineraryInclusions = ({
               {categoryTotal > 0 && (
                 <>
                   {!arePricesHidden && (
-                    <div className="ttw-type-body font-700 font-mono text-[#0b1220] border-r border-[#ececec] pr-md mr-sm">
+                    <div className="text-sm-md leading-xl font-500 border-r-sm border-text-disabled pr-md mr-sm">
                       {currencySymbols?.[currency]
                         ? currencySymbols?.[currency]
                         : "₹"}{" "}
@@ -1049,7 +1054,7 @@ const ItineraryInclusions = ({
 
             {/* Category Items */}
             {expandedCategories[category] && (
-              <div className="divide-y divide-[#ececec]">
+              <div className="divide-y divide-gray-100">
                 {bookings.map((booking) => {
                   // For roundtrip (combo) flights, get children from TransferBookings
                   const isRoundTripFlight =
@@ -1063,18 +1068,18 @@ const ItineraryInclusions = ({
                   return (
                     <div key={booking.id}>
                       <div
-                        className={`p-3 flex items-start gap-3 hover:bg-[#f4f3ec] transition-colors ${
+                        className={`p-3 flex items-start gap-3 hover:bg-gray-50 transition-colors ${
                           !selectedInclusions[booking.id] ? "" : ""
                         }`}
                       >
                         {/* Booking Details */}
                         <div className="flex-1 min-w-0">
-                          <div className="ttw-type-body font-600 text-[#0b1220] mb-sm">
+                          <div className="text-sm-md font-400 leading-xl mb-sm">
                             {booking.detail.name}
-                            {booking?.detail?.booking_type === "Visa" ? <span className="ml-2 ttw-type-small bg-[#eef2fb] text-[#1a2436] px-2 py-0.5 rounded-full">Visa</span> : booking?.detail?.booking_type === "eSIM" ? <span className="ml-2 ttw-type-small bg-[#e7f5ee] text-[#1a2436] px-2 py-0.5 rounded-full">eSim</span> : null}
+                            {booking?.detail?.booking_type === "Visa" ? <span className="ml-2 px-1.5 py-0.5 text-xs font-medium bg-purple-100  text-purple-800 rounded">Visa</span> : booking?.detail?.booking_type === "eSIM" ? <span className="ml-2 px-1.5 py-0.5 text-xs font-medium bg-green-100  text-green-800 rounded ">eSim</span> : null}
                           </div>
                           {booking.status === "Paid" && (
-                            <div className="inline-block bg-[#e7f5ee] text-[#1f8a5a] ttw-type-small font-600 px-2 py-0.5 rounded-full mb-1">
+                            <div className="inline-block bg-green-100 text-green-700 text-xs font-semibold px-2 py-0.5 rounded mb-1">
                               PAID
                             </div>
                           )}
@@ -1082,7 +1087,7 @@ const ItineraryInclusions = ({
                           <div className="flex flex-wrap items-center gap-2">
                             <div className="flex items-center gap-1">
                               {/* <BsCalendar2 className="flex-shrink-0" /> */}
-                              {!isRoundTripFlight && <span className="ttw-type-small text-[#445069]">
+                              {!isRoundTripFlight && <span className="text-sm font-400 leading-md text-text-spacegrey">
                                 {formatDate(booking.detail.check_in)}{" "}
                                 {category == "Stays"
                                   ? "- " + formatDate(booking.detail.check_out)
@@ -1092,8 +1097,8 @@ const ItineraryInclusions = ({
 
                             {booking.detail.duration && (
                               <>
-                                <div className="border-r border-[#445069] h-[12px]"></div>
-                                <span className="ttw-type-small text-[#445069]">
+                                <div className="border-r-sm border-text-spacegrey h-[12px]"></div>
+                                <span className="text-sm font-400 leading-md text-text-spacegrey">
                                   {booking.detail.duration}N
                                 </span>
                               </>
@@ -1101,11 +1106,11 @@ const ItineraryInclusions = ({
 
                             {booking.detail.pax && (
                               <>
-                                <div className="border-r border-[#445069] h-[12px]"></div>
+                                <div className="border-r-sm border-text-spacegrey h-[12px]"></div>
                                 <div className="flex items-center gap-1 ">
                                   {/* <span>•</span> */}
                                   {/* <BsPeopleFill className="flex-shrink-0" /> */}
-                                  <span className="ttw-type-small text-[#445069]">
+                                  <span className="text-sm font-400 leading-md text-text-spacegrey">
                                     {booking.detail.pax.number_of_adults +
                                       (booking.detail?.pax?.number_of_children ||
                                         0) +
@@ -1193,7 +1198,7 @@ const ItineraryInclusions = ({
 
                         {/* Price - Desktop only */}
                         {!arePricesHidden && booking.booking_cost > 0 && (
-                          <div className="hidden md:block ttw-type-body font-700 font-mono text-[#0b1220] whitespace-nowrap">
+                          <div className="hidden md:block font-semibold text-sm whitespace-nowrap">
                             {currencySymbols?.[currency]
                               ? currencySymbols?.[currency]
                               : "₹"}
@@ -1230,23 +1235,23 @@ const ItineraryInclusions = ({
                           return (
                             <div
                               key={childFlight?.id || childIndex}
-                              className="pl-8 pr-3 py-2 flex items-start gap-2 bg-[#f4f3ec] border-t border-[#ececec]"
+                              className="pl-8 pr-3 py-2 flex items-start gap-2 bg-gray-50/50 border-t border-gray-50"
                             >
-
+                          
                               <div className="flex-1 min-w-0">
-                                <div className="ttw-type-small font-600 text-[#0b1220]">
+                                <div className="text-sm font-400 leading-md text-black">
                                   {childFlight?.name || childName}
                                 </div>
                                 <div className="flex flex-wrap items-center gap-2 mt-0.5">
                                   {childFlight?.check_in && (
-                                    <span className="ttw-type-small text-[#445069]">
+                                    <span className="text-xs font-400 leading-md text-text-spacegrey">
                                       {formatDate(childFlight.check_in)}
                                     </span>
                                   )}
                                   {childFlight?.duration && (
                                     <>
-                                      <div className="border-r border-[#445069] h-[10px]"></div>
-                                      <span className="ttw-type-small text-[#445069]">
+                                      <div className="border-r-sm border-text-spacegrey h-[10px]"></div>
+                                      <span className="text-xs font-400 leading-md text-text-spacegrey">
                                         {childFlight.duration}
                                       </span>
                                     </>
@@ -1265,7 +1270,7 @@ const ItineraryInclusions = ({
         );
       })}
 
-      <div className="ttw-type-small text-[#445069] mt-2 px-1">
+      <div className="text-xs text-gray-500 mt-2 px-1">
         Note: Unselect items you don't want to include in your booking
       </div>
     </div>
@@ -2280,9 +2285,10 @@ const Details = (props) => {
           backdrop
           width={"100%"}
           mobileWidth={"100%"}
-          bgColor="#fafaf5"
           style={{ zIndex: 1600 }}
-          className={`${showCouponModal ? "overflow-hidden" : ""}`}
+          className={`!bg-primary-cornsilk ${
+            showCouponModal ? "overflow-hidden" : ""
+          }`}
           onHide={() => handleCloseDrawer()}
         >
           <NavigationMenu />
@@ -2290,7 +2296,7 @@ const Details = (props) => {
             <div className="row">
               <div className="col-12 col-sm-12 col-lg-12 col-md-12 mb-sm">
                 <div className="flex items-center w-100 justify-between">
-                  <div className="ttw-type-body text-[#0b1220] flex items-center gap-1 cursor-pointer"  onClick={() => handleCloseDrawer()}>
+                  <div className="font-400 leading-xl-md flex items-center gap-1 cursor-pointer"  onClick={() => handleCloseDrawer()}>
                     <MdArrowBackIosNew/> Back to Itinerary
                   </div>
                   <div>
@@ -2368,10 +2374,10 @@ const Details = (props) => {
                           </div>
                           <div className="flex justify-between max-ph:flex-col">
                             <div>
-                              <h2 className="ttw-type-h4 text-[#0b1220]">
+                              <h2 className="text-lg font-500 leading-xl">
                                 Update Itinerary Dates
                               </h2>
-                              <p className="ttw-type-body text-[#445069] mb-zero max-ph:mb-md">
+                              <p className="text-md font-400 leading-xl text-text-spacegrey mb-zero max-ph:mb-md">
                                 Your itinerary dates are in the past. Please
                                 update the dates to view current pricing and
                                 continue with booking.
@@ -2405,10 +2411,10 @@ const Details = (props) => {
                             </div>
                             <div className="flex justify-between max-ph:flex-col">
                               <div>
-                                <h2 className="ttw-type-h4 text-[#0b1220]">
+                                <h2 className="text-lg font-500 leading-xl">
                                   Itinerary Prices Expired.
                                 </h2>
-                                <p className="ttw-type-body text-[#445069] mb-zero max-ph:mb-md">
+                                <p className="text-md font-400 leading-xl text-text-spacegrey mb-zero max-ph:mb-md">
                                   Your itinerary prices have expired. Click on
                                   reprice itinerary to get the latest prices.
                                 </p>
@@ -2487,10 +2493,10 @@ const Details = (props) => {
                           </div>
                           <div className="flex justify-between max-ph:flex-col">
                             <div>
-                              <h2 className="ttw-type-h4 text-[#0b1220]">
+                              <h2 className="text-lg font-500 leading-xl">
                                 Itinerary Prices Expired.
                               </h2>
-                              <p className="ttw-type-body text-[#445069] mb-zero max-ph:mb-md">
+                              <p className="text-md font-400 leading-xl text-text-spacegrey mb-zero max-ph:mb-md">
                                 Your itinerary prices have expired. Click on
                                 reprice itinerary to get the latest prices.
                               </p>
@@ -2526,18 +2532,18 @@ const Details = (props) => {
                       <div className="flex justify-between items-start gap-2">
                         <div className="flex-1">
                           <div className="flex flex-wrap items-center gap-sm mb-xs">
-                            <div className="ttw-type-body font-600 text-[#0b1220]">
+                            <div className="text-sm-md font-400 leading-lg">
                               {Itinerary?.customer_name || ""}
                             </div>
                             {travellerDetailsVerified && (
-                              <div className="flex items-center gap-1 text-[#1f8a5a] ttw-type-small">
+                              <div className="flex items-center gap-1 text-green-600 text-xs">
                                 <FaCheckCircle />
                                 <span>Traveller details verified</span>
                               </div>
                             )}
                           </div>
 
-                          <div className="flex flex-row gap-xs ttw-type-small text-[#445069] flex-wrap">
+                          <div className="flex flex-row gap-xs text-sm font-400 leading-md flex-wrap">
                             <div>
                               Dates:{" "}
                               {convertDFormat(
@@ -2576,7 +2582,7 @@ const Details = (props) => {
                           </div>
                         </div>
                         <span
-                          className="ttw-type-small font-500 text-[#0b1220] underline cursor-pointer shrink-0 mt-1"
+                          className="text-xs text-blue underline cursor-pointer shrink-0 mt-1"
                           onClick={() => setTravellerDetailsOpen(true)}
                         >
                           {travellerDetailsVerified
@@ -2674,10 +2680,10 @@ const Details = (props) => {
 
                     {/* Payment Status Message */}
                     {hasFullPaymentCompleted && (
-                      <div className="ttw-type-small text-[#445069] mt-2 mb-4">
+                      <div className="text-sm mt-2 mb-4">
                         <span>
                           <LuClock4
-                            color="#1f8a5a"
+                            color="green"
                             className="inline align-middle mr-1 font-semibold"
                           />
                           {`You have paid ${currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}${Math.round(
@@ -2736,12 +2742,12 @@ const Details = (props) => {
                           </Button>
                         </GetInTouchContainer>
 
-                        <div className="text-center ttw-type-small text-[#445069] mt-3 p-2 bg-[#f4f3ec] rounded-xl">
+                        <div className="text-center text-sm text-amber-600 mt-3 p-2 bg-amber-50 rounded">
                           Please select at least one inclusion to proceed
                         </div>
                       </>
                     ) : (
-                      <div className="fixed bottom-0 left-0 right-0 bg-[#fafaf5] border-t border-[#ececec] px-4 max-ph:px-4 pt-2 pb-4 z-[100] md:static md:bg-transparent md:border-t-0 md:px-0 md:pt-0 md:pb-0 md:z-auto">
+                      <div className="fixed bottom-0 left-0 right-0 bg-white px-4 pt-2 pb-4 z-[100] shadow-[0_-2px_12px_rgba(0,0,0,0.08)] md:static md:bg-transparent md:px-0 md:pt-0 md:pb-0 md:z-auto md:shadow-none">
                         <PaymentButton
                           amount={calculateFilteredTotal()}
                           isLoading={paymentLoading}
@@ -2759,11 +2765,11 @@ const Details = (props) => {
                         <div>
                           <div className="flex gap-2 items-center">
                             <img src={"/info.svg"} />
-                            <div className="ttw-type-body font-600 text-[#0b1220]">
+                            <div className="text-sm-md font-400 leading-xl">
                               Need help with your trip?
                             </div>
                           </div>
-                          <div className="ttw-type-small text-[#445069] mb-2">
+                          <div className="text-sm-md font-400 leading-xl text-text-spacegrey mb-2">
                             Connect with a travel expert on WhatsApp
                           </div>
 
@@ -2817,65 +2823,65 @@ const Details = (props) => {
                       const hasVisa = visaCount > 0;
                       return (
                         <div className="mt-md mb-md">
-                          <hr className="text-[#ececec] mb-md" />
-                          <div className="ttw-type-body font-600 mb-sm text-[#0b1220]">
+                          <hr className="text-text-placeholder mb-md" />
+                          <div className="text-sm font-400 leading-xl mb-sm text-[#01202B]">
                             Enhance Your Trip
                           </div>
                           <div className="flex flex-col gap-2">
                             <button
-                              className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-[#ececec] bg-white hover:bg-[#f4f3ec] transition-colors"
+                              className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-[#E5E5E5] bg-white hover:bg-[#FAFAFA] transition-colors"
                               onClick={() => {
                                 trackVisaCardClicked?.(props?.id);
                                 setShowVisaDrawer(true);
                               }}
                             >
                               <div className="flex items-center gap-3">
-                                <div className="w-[36px] h-[36px] rounded-full bg-[#eef2fb] flex items-center justify-center flex-shrink-0">
+                                <div className="w-[36px] h-[36px] rounded-full bg-[#F5F0FF] flex items-center justify-center flex-shrink-0">
                                   <span className="text-[18px]">🛂</span>
                                 </div>
                                 <div className="text-left">
-                                  <div className="ttw-type-small font-600 text-[#0b1220] flex items-center gap-1">
+                                  <div className="text-[13px] font-600 text-[#01202B] flex items-center gap-1">
                                     {hasVisa ? `${visaCount} Visa added` : "Add Visa"}
                                     {hasVisa && (
-                                      <span className="inline-flex items-center justify-center w-[14px] h-[14px] rounded-full bg-[#1f8a5a] text-white text-[9px] font-700">
+                                      <span className="inline-flex items-center justify-center w-[14px] h-[14px] rounded-full bg-[#22C55E] text-white text-[9px] font-700">
                                         ✓
                                       </span>
                                     )}
                                   </div>
-                                  <div className="ttw-type-small text-[#445069]">
+                                  <div className="text-[11px] text-[#6E757A]">
                                     Hassle-free visa assistance
                                   </div>
                                 </div>
                               </div>
-                              <span className="text-[#445069] text-lg">›</span>
+                              <span className="text-[#979393] text-lg">›</span>
                             </button>
 
                             <button
-                              className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-[#ececec] bg-white hover:bg-[#f4f3ec] transition-colors"
+                              className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-[#E5E5E5] bg-white hover:bg-[#FAFAFA] transition-colors"
                               onClick={() => {
                                 trackEsimCardClicked?.(props?.id);
                                 setShowEsimDrawer(true);
                               }}
                             >
                               <div className="flex items-center gap-3">
-                                <div className="w-[36px] h-[36px] rounded-full bg-[#e7f5ee] flex items-center justify-center flex-shrink-0">
+                                <div className="w-[36px] h-[36px] rounded-full bg-[#DDF4C5] flex items-center justify-center flex-shrink-0">
                                   <span className="text-[18px]">📶</span>
                                 </div>
                                 <div className="text-left">
-                                  <div className="ttw-type-small font-600 text-[#0b1220] flex items-center gap-1">
+                                  <div className="text-[13px] font-600 text-[#01202B] flex items-center gap-1">
                                     {hasEsim ? `${esimCount} eSIM added` : "Add eSIM"}
                                     {hasEsim && (
-                                      <span className="inline-flex items-center justify-center w-[14px] h-[14px] rounded-full bg-[#1f8a5a] text-white text-[9px] font-700">
+                                      <span className="inline-flex items-center justify-center w-[14px] h-[14px] rounded-full bg-[#22C55E] text-white text-[9px] font-700">
                                         ✓
                                       </span>
                                     )}
                                   </div>
-                                  <div className="ttw-type-small text-[#445069]">
+                                  <div className="text-[11px] text-[#6E757A]">
                                     Stay connected abroad
                                   </div>
                                 </div>
                               </div>
-                              <span className="text-[#445069] text-lg">›</span>
+                              <span className="text-[#979393] text-lg">›</span>
                             </button>
                           </div>
                         </div>
@@ -2883,8 +2889,8 @@ const Details = (props) => {
                     })()}
 
                     {/* Trip Conditions */}
-                    <div className="bg-[#f4f3ec] rounded-xl p-4 mt-xl">
-                      <div className="ttw-type-body font-600 text-[#0b1220] mb-sm">
+                    <div className="bg-primary-lightPurple p-sm mt-xl">
+                      <div className="text-sm font-400 leading-xl mb-sm">
                         Your Trip Will have
                       </div>
                       <div>
@@ -2895,13 +2901,13 @@ const Details = (props) => {
                               alt="icon"
                               width={20}
                               height={20}
-                              className="rounded-circle w-[25px] h-[25px] flex p-[5px] bg-white"
+                              className="rounded-circle w-[25px] h-[25px] flex p-[5px] bg-text-white"
                             />
                             <div>
-                              <div className="ttw-type-small font-600 text-[#0b1220] mb-xxs">
+                              <div className="text-sm font-400 leading-sm-md mb-xxs">
                                 {item.title}
                               </div>
-                              <div className="ttw-type-small text-[#445069]">
+                              <div className="text-sm font-400 leading-sm-md text-text-spacegrey">
                                 {item.subheading}
                               </div>
                             </div>
@@ -2911,13 +2917,13 @@ const Details = (props) => {
                     </div>
 
                     {/* Terms & Conditions */}
-                    <div className="flex flex-row justify-center items-center mt-2">
+                    <div className="flex flex-row justify-center items-center text-[#01202B] mt-2">
                       <Link
                         href="/terms-conditions"
                         target="_blank"
                         onClick={handleTermsConditions}
                       >
-                        <div className="ttw-type-small text-[#0b1220] underline">Terms & Conditions</div>
+                        <div className="text-sm">Terms & Conditions</div>
                       </Link>
                     </div>
                   </div>
@@ -2997,7 +3003,7 @@ const Details = (props) => {
           }}
           style={{ fontSize: "2rem" }}
         ></IoMdClose>
-        <div className="p-[40px] max-ph:px-4 max-ph:py-6">
+        <div className="p-[40px]">
           <PassengerDetails />
         </div>
       </Drawer>
