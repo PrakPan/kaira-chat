@@ -692,7 +692,7 @@ const ClickHandler = (child) => {
       backdrop
       width={"50%"}
       mobileWidth={"100%"}
-      bgColor="#fafaf5"
+      bgColor="#ffffff"
       style={{ zIndex: 1501 }}
       className={` !overflow-y-hidden`}
       onHide={handleCloseDrawer}
@@ -702,28 +702,31 @@ const ClickHandler = (child) => {
           <div
             className={`overflow-y-scroll h-screen px-6 max-ph:px-4`}
           >
-            <div className="py-4 bg-[#fafaf5] z-[900] flex flex-col gap-3 pb-2 justify-start items-start sticky top-0">
-              <div>
+            <div className="py-4 bg-white z-[900] flex flex-col gap-3 pb-2 justify-start items-start sticky top-0">
+              <div className="flex flex-row flex-wrap items-center gap-3 w-full">
                 <Image
                   src="/backarrow.svg"
-                  className="cursor-pointer"
+                  className="cursor-pointer shrink-0"
                   width={22}
                   height={2}
                   onClick={(e) => handleCloseDrawer(e)}
                 />
-              </div>
-              <div className="flex max-sm:flex-col max-sm:!items-start justify-between w-full items-center">
-                <div className=" line-clamp-1 ttw-type-h2 font-semibold text-[#0b1220]">
+                <div
+                  className=" flex-1 min-w-0 line-clamp-1 ttw-type-h3 text-[#0b1220]"
+                  style={{ fontWeight: 500 }}
+                >
                   Add {elementType == "POI" ? "Places to visit" : elementType}{" "}
-                  in {props.cityName}
+                  in <span className="ttw-type-serif">{props.cityName}</span>
                 </div>
                 {elementType == "Activity" && (
-                  <Pax
-                    setShowPax={setShowPax}
-                    pax={pax}
-                    setPax={setPax}
-                    showPax={showPax}
-                  />
+                  <div className="ml-auto shrink-0 max-sm:basis-full max-sm:ml-0">
+                    <Pax
+                      setShowPax={setShowPax}
+                      pax={pax}
+                      setPax={setPax}
+                      showPax={showPax}
+                    />
+                  </div>
                 )}
               </div>
               <div className="grid w-full gap-2 sm:grid-cols-[3fr_2fr_1fr]">

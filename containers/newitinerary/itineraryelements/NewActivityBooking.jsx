@@ -106,9 +106,9 @@ export default function NewActivityBooking(props) {
               ></ImageLoader>
 
               {/* Tour Type and Guide badges positioned on image */}
-              <div className="absolute bottom-3 left-3 flex gap-2">
+              <div className="absolute bottom-3 left-3 right-3 flex justify-between gap-2">
                 {props?.data?.guide === "Self Guided" && (
-                  <div className="flex items-center gap-1 bg-[#f7e700] text-black px-[0.7rem] py-2 rounded-2xl ttw-type-small">
+                  <div className="flex items-center gap-1 bg-[#f7e700] text-black px-2 py-1 rounded-full text-[11px] font-500 whitespace-nowrap">
                     <Image
                       src="/selfGuided.svg"
                       alt="self-guided"
@@ -119,7 +119,7 @@ export default function NewActivityBooking(props) {
                   </div>
                 )}
                 {props?.data?.guide === "Guided" && (
-                  <div className="flex items-center gap-1 bg-[#f7e700] text-black px-[0.7rem] py-2 rounded-2xl ttw-type-small">
+                  <div className="flex items-center gap-1 bg-[#f7e700] text-black px-2 py-1 rounded-full text-[11px] font-500 whitespace-nowrap">
                     <Image
                       src="/guided.svg"
                       alt="guided"
@@ -130,7 +130,7 @@ export default function NewActivityBooking(props) {
                   </div>
                 )}
                 {props?.data?.guide === "Semi Guided" && (
-                  <div className="flex items-center gap-1 bg-[#f7e700] text-black px-[0.7rem] py-2 rounded-2xl ttw-type-small ">
+                  <div className="flex items-center gap-1 bg-[#f7e700] text-black px-2 py-1 rounded-full text-[11px] font-500 whitespace-nowrap ">
                     <Image
                       src="/semiGuided.svg"
                       alt="semi-guided"
@@ -142,7 +142,7 @@ export default function NewActivityBooking(props) {
                 )}
 
                 {props?.data?.tour_type === "Private Tour" && (
-                  <div className="flex items-center gap-1 bg-[#f7e700] text-black px-[0.7rem] py-2 rounded-2xl ttw-type-small ">
+                  <div className="flex items-center gap-1 bg-[#f7e700] text-black px-2 py-1 rounded-full text-[11px] font-500 whitespace-nowrap ">
                     <Image
                       src="/privateTour.svg"
                       alt="private-tour"
@@ -153,7 +153,7 @@ export default function NewActivityBooking(props) {
                   </div>
                 )}
                 {props?.data?.tour_type === "Shared Tour" && (
-                  <div className="flex items-center gap-1 bg-[#f7e700] text-black px-[0.7rem] py-2 rounded-2xl ttw-type-small ">
+                  <div className="flex items-center gap-1 bg-[#f7e700] text-black px-2 py-1 rounded-full text-[11px] font-500 whitespace-nowrap ">
                     <Image
                       src="/sharedTour.svg"
                       alt="shared-tour"
@@ -181,7 +181,7 @@ export default function NewActivityBooking(props) {
             <div className="flex flex-col gap-3 text-[#0b1220] w-full h-fit justify-start">
               <div className="flex flex-col justify-between">
                 <div className="flex flex-row justify-between">
-                  <div className="ttw-type-h4 leading-xl-sm font-600 mb-0 max-ph:mt-sm">
+                  <div className="ttw-type-h5 text-[#0B1220] leading-[1.15] break-words font-600 mb-0 max-ph:mt-sm">
                     {(props?.data?.display_name || props.data?.name) ? (props?.data?.display_name || props.data.name) : null}
                   </div>
                 </div>
@@ -232,7 +232,7 @@ export default function NewActivityBooking(props) {
 
               {/* One-Liner Description — own line, below the tags */}
               {props?.data?.one_liner_description && (
-                <div className="ttw-type-body text-[#445069] line-clamp-3">
+                <div className="ttw-type-small text-[#4A566E] line-clamp-3">
                   {props.data.one_liner_description}
                 </div>
               )}
@@ -318,9 +318,9 @@ export default function NewActivityBooking(props) {
                 }}
               ></ImageLoader>
 
-              <div className="absolute bottom-3 left-3 flex gap-2">
+              <div className="absolute bottom-3 left-3 right-3 flex justify-between gap-2">
                 {props?.data?.guide === "Self Guided" && (
-                  <div className="flex items-center gap-1 bg-[#f7e700] text-black px-[0.7rem] py-2 rounded-2xl ttw-type-small">
+                  <div className="flex items-center gap-1 bg-[#f7e700] text-black px-2 py-1 rounded-full text-[11px] font-500 whitespace-nowrap">
                     <Image
                       src="/selfGuided.svg"
                       alt="self-guided"
@@ -331,7 +331,7 @@ export default function NewActivityBooking(props) {
                   </div>
                 )}
                 {props?.data?.guide === "Guided" && (
-                  <div className="flex items-center gap-1 bg-[#f7e700] text-black px-[0.7rem] py-2 rounded-2xl ttw-type-small">
+                  <div className="flex items-center gap-1 bg-[#f7e700] text-black px-2 py-1 rounded-full text-[11px] font-500 whitespace-nowrap">
                     <Image
                       src="/guided.svg"
                       alt="guided"
@@ -342,7 +342,7 @@ export default function NewActivityBooking(props) {
                   </div>
                 )}
                 {props?.data?.guide === "Semi Guided" && (
-                  <div className="flex items-center gap-1 bg-[#f7e700] text-black px-[0.7rem] py-2 rounded-2xl ttw-type-small ">
+                  <div className="flex items-center gap-1 bg-[#f7e700] text-black px-2 py-1 rounded-full text-[11px] font-500 whitespace-nowrap ">
                     <Image
                       src="/semiGuided.svg"
                       alt="semi-guided"
@@ -354,7 +354,7 @@ export default function NewActivityBooking(props) {
                 )}
 
                 {props?.data?.tour_type === "Private Tour" && (
-                  <div className="flex items-center gap-1 bg-[#f7e700] text-black px-[0.7rem] py-2 rounded-2xl ttw-type-small ">
+                  <div className="flex items-center gap-1 bg-[#f7e700] text-black px-2 py-1 rounded-full text-[11px] font-500 whitespace-nowrap ">
                     <Image
                       src="/privateTour.svg"
                       alt="private-tour"
@@ -365,7 +365,7 @@ export default function NewActivityBooking(props) {
                   </div>
                 )}
                 {props?.data?.tour_type === "Shared Tour" && (
-                  <div className="flex items-center gap-1 bg-[#f7e700] text-black px-[0.7rem] py-2 rounded-2xl ttw-type-small ">
+                  <div className="flex items-center gap-1 bg-[#f7e700] text-black px-2 py-1 rounded-full text-[11px] font-500 whitespace-nowrap ">
                     <Image
                       src="/sharedTour.svg"
                       alt="shared-tour"
@@ -391,7 +391,7 @@ export default function NewActivityBooking(props) {
             </div>
           </div>
 
-          <div className="ttw-type-h4 leading-xl-sm font-600 mb-0 max-ph:mt-sm">
+          <div className="ttw-type-h5 text-[#0B1220] leading-[1.15] break-words font-600 mb-0 max-ph:mt-sm">
             {props.data?.name || props?.display_name ? props.data.name : null}
           </div>
 
@@ -437,7 +437,7 @@ export default function NewActivityBooking(props) {
 
           {
             props?.data?.one_liner_description &&
-            <div className=" ttw-type-body text-[#445069] line-clamp-3 ttw-type-body py-2">
+            <div className=" ttw-type-small text-[#4A566E] line-clamp-3 py-2">
               {props.data.one_liner_description}
             </div>
           }
