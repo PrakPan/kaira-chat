@@ -24,7 +24,7 @@ async function fetchSuggestImage(
   name: string,
   signal: AbortSignal,
 ): Promise<string | null> {
-  const base = MERCURY_HOST || "https://mercury.tarzanway.com";
+  const base = MERCURY_HOST || "https://dev.mercury.tarzanway.com";
   const res = await fetch(
     `${base}/api/v1/geos/search/suggest/?q=${encodeURIComponent(name)}`,
     { signal, headers: { Accept: "application/json" } },
