@@ -41,6 +41,7 @@ import ChatWithKairaCta from "../../components/revamp/destination/ChatWithKairaC
 import DestinationStatsStrip from "../../components/revamp/destination/DestinationStatsStrip.jsx";
 import WhenToGoSection from "../../components/revamp/destination/WhenToGoSection.jsx";
 import PlanningSection from "../../components/revamp/destination/PlanningSection.jsx";
+import SectionCta from "../../components/revamp/home/SectionCta.jsx";
 const MapBox = dynamic(() => import("../../components/Map.js"), {
   ssr: false,
 });
@@ -341,6 +342,13 @@ const Homepage = (props) => {
               ))}
             </div>
           </section>
+
+          <SectionCta
+          // label="End of · How it works"
+          // heading="How it"
+          // accent="works."
+          ctaLabel="Start planning"
+        />
         </div>
       ) : null}
 
@@ -460,6 +468,12 @@ const Homepage = (props) => {
           itinerary={TTWItineraries?.[0] || headings?.[0]?.itineraries?.[0]}
           cities={props.experienceData?.locations}
           destinationName={destinationName}
+        />
+        <SectionCta
+          // label="End of · How it works"
+          // heading="How it"
+          // accent="works."
+          ctaLabel="Start planning"
         />
 
         {/* COMMUNITY TOP PICKS */}

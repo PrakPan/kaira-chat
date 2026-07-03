@@ -241,7 +241,7 @@ const KairaPlansSection = ({ items = TRAVEL_STYLES }) => {
             className={styles.rail}
             modules={[Navigation]}
             spaceBetween={18}
-            slidesPerView={1.15}
+            slidesPerView={1}
             navigation={{
               nextEl: ".kaira-plans-next",
               prevEl: ".kaira-plans-prev",

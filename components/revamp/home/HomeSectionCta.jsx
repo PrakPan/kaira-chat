@@ -7,7 +7,7 @@ import { useRouter } from "next/router";
  * All instances route to the intake chat by default.
  */
 
-const SectionCta = ({ label, heading, accent, ctaLabel, href = "/chat?intake=1", marginTop="0px" }) => {
+const HomeSectionCta = ({ label, heading, accent, ctaLabel, href = "/chat?intake=1", marginTop="0px" }) => {
   const router = useRouter();
 
   return (
@@ -95,10 +95,11 @@ const SectionCta = ({ label, heading, accent, ctaLabel, href = "/chat?intake=1",
             </svg>
           </span>
         </button>
+
         <p className="text-[#8b93a6] text-[12px] mt-2">Planning is free. You only pay when you book.</p>
       </div>
     </section>
   );
 };
 
-export default SectionCta;
+export default HomeSectionCta;

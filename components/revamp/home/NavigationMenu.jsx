@@ -142,7 +142,8 @@ const NavigationMenu = (props) => {
           </button>}
           
           {localStorage.getItem("access_token") ? (
-            <ProfileDropDown 
+            <ProfileDropDown
+            pill
             name={props.name}
             image={props.image}
             onLogout={props.onLogout}

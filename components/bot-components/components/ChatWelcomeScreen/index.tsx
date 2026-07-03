@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import StartScreen from "../StartScreen";
 import type { ThemeConfig } from "../../types/themeConfig";
 
-const CHATKIT_API_URL = "https://dev.chat.tarzanway.com/chatkit";
+const CHATKIT_API_URL = "https://chat.tarzanway.com/chatkit";
 
 // Right-pane design ported from chat-empty-v4 reference. Scoped under `.cws-root`
 // so the generic class names (.chip, .trust-line, etc.) can't leak globally.
@@ -450,7 +450,7 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
            ChatKitPanel's top bar so the welcome screen has parity with the
            rest of the chat tab now that MobileHeader is hidden there. ── */}
       <div className="md:hidden flex-shrink-0 flex items-center justify-between gap-2 px-4 py-3 bg-white border-b border-gray-100">
-        <div className="flex items-center gap-2 min-w-0">
+        <div className="flex items-center gap-2 min-w-0" onClick={()=> window.location.href = "/"} style={{ cursor: "pointer" }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/logoblack.svg" height={22} width={22} alt="logo" />
           <span className="font-semibold text-gray-800 ttw-type-body">thetarzanway</span>

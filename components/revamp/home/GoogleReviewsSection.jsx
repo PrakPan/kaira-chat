@@ -139,7 +139,7 @@ const GoogleReviewsSection = ({ reviews = REVIEWS }) => {
             className={styles.rail}
             modules={[Navigation]}
             spaceBetween={20}
-            slidesPerView={1.15}
+            slidesPerView={1}
             navigation={{
               nextEl: ".google-reviews-next",
               prevEl: ".google-reviews-prev",

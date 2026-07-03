@@ -53,8 +53,13 @@ const OtpCard: React.FC<OtpCardProps> = ({
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [extension, setExtension] = useState("India");
   const [openCountryCodeOption, setOpenCountryCodeOption] = useState(false);
+  // New users get a dedicated name + email screen after the OTP is entered
+  // (mirrors BotLoginModal's details step) instead of an inline name field.
+  const [userDetailsRequired, setUserDetailsRequired] = useState(false);
+  const [userNameError, setUserNameError] = useState(false);
 
   // Pull the dial-code list once, the same way BotLoginModal does. Also reset
   // any stale login state so a freshly-mounted card always starts at the
@@ -126,7 +131,7 @@ const OtpCard: React.FC<OtpCardProps> = ({
         fullMobile,
         code,
         newUser ? name || null : null,
-        null,
+        newUser ? email || null : null,
         true,
         newUser ? countryValue : null,
         undefined,
@@ -138,12 +143,37 @@ const OtpCard: React.FC<OtpCardProps> = ({
   const onOtpChange = (raw: string) => {
     const code = raw.replace(/\D/g, "").slice(0, 4);
     setOtp(code);
-    // Auto-submit once — but only once per distinct code, so a duplicate input
-    // event can't fire a second verify against the already-consumed OTP.
+    // Once the 4 digits are in, existing users verify immediately; new users
+    // are routed to the name + email screen first (same code is submitted from
+    // there). Guard so a duplicate input event can't advance/verify twice.
     if (code.length === 4 && submittedCodeRef.current !== code) {
       submittedCodeRef.current = code;
-      setTimeout(() => verify(code), 200);
+      if (newUser) {
+        setUserDetailsRequired(true);
+      } else {
+        setTimeout(() => verify(code), 200);
+      }
     }
+  };
+
+  // New-user details screen submit. Name is required (same as BotLoginModal);
+  // the email is validated server-side and surfaced via `emailFail`. Verifies
+  // the OTP + details together in a single `/complete/` call.
+  const submitDetails = () => {
+    if (!name.trim()) {
+      setUserNameError(true);
+      return;
+    }
+    verify(otp);
+  };
+
+  // Back from the details screen to the OTP field (e.g. the code was wrong).
+  // Clears the entered code + dedup guard so re-verification is clean.
+  const handleBackToOtp = () => {
+    setUserDetailsRequired(false);
+    setOtp("");
+    submittedCodeRef.current = null;
+    dispatch(authaction.authResetOtpFail() as any);
   };
 
   // Go back to the phone-entry step. `phone` lives in local state so it's kept
@@ -288,18 +318,92 @@ const OtpCard: React.FC<OtpCardProps> = ({
             </div>
           )}
         </>
+      ) : userDetailsRequired ? (
+        <>
+          <div className="text-[11px] font-extrabold text-[#445069] uppercase tracking-wide mb-[8px]">
+            Just a few details
+          </div>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => {
+              setName(e.target.value);
+              if (userNameError) setUserNameError(false);
+            }}
+            placeholder="Your name"
+            className="w-full rounded-[11px] px-[14px] py-[11px] text-[14px] outline-none"
+            style={{
+              background: "#fafaf5",
+              border: `1.5px solid ${userNameError ? "#e85a4f" : "#ececec"}`,
+            }}
+          />
+          {userNameError && (
+            <div className="text-[11.5px] text-[#e85a4f] mt-[6px] font-semibold">
+              Please enter a valid name
+            </div>
+          )}
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              // Clear a prior "that email didn't work" error as the user edits.
+              if (emailFail) dispatch(authaction.authResetEmail() as any);
+            }}
+            placeholder="Your email"
+            className="w-full mt-[10px] rounded-[11px] px-[14px] py-[11px] text-[14px] outline-none"
+            style={{
+              background: "#fafaf5",
+              border: `1.5px solid ${emailFail && !token ? "#e85a4f" : "#ececec"}`,
+            }}
+          />
+          {emailFail && !token && (
+            <div className="text-[11.5px] text-[#e85a4f] mt-2 font-semibold">
+              {emailfailmessage || "That email didn't work. Try another."}
+            </div>
+          )}
+          {/* A wrong OTP fails the combined verify with otpFail (not emailFail);
+              send the user back to re-enter the code. */}
+          {otpFail && !token && (
+            <div className="text-[11.5px] text-[#e85a4f] mt-2 font-semibold">
+              That code didn&apos;t match.{" "}
+              <button
+                type="button"
+                onClick={handleBackToOtp}
+                className="underline font-bold"
+                style={{ cursor: "pointer" }}
+              >
+                Re-enter code
+              </button>
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={submitDetails}
+            disabled={loading}
+            className="w-full mt-[10px] py-[11px] rounded-[11px] text-[13.5px] font-bold text-white inline-flex items-center justify-center gap-[7px] transition-all"
+            style={{
+              background: loading ? "#b8becc" : "#0f1a2e",
+              cursor: loading ? "not-allowed" : "pointer",
+            }}
+          >
+            {loading ? "Verifying…" : "Continue"}
+          </button>
+          <div className="text-[11.5px] text-[#8a93a6] text-center mt-[10px]">
+            Sent to <b className="text-[#445069]">{dialCode} {phone}</b>
+            {" · "}
+            <button
+              type="button"
+              onClick={handleChangeNumber}
+              className="font-bold text-[#445069] underline"
+              style={{ cursor: "pointer" }}
+            >
+              Change
+            </button>
+          </div>
+        </>
       ) : (
         <>
-          {newUser && (
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Your name"
-              className="w-full mb-[10px] rounded-[11px] px-[14px] py-[11px] text-[14px] outline-none"
-              style={{ background: "#fafaf5", border: "1.5px solid #ececec" }}
-            />
-          )}
           <div className="text-[11px] font-extrabold text-[#445069] uppercase tracking-wide mb-[8px]">
             Enter the 4-digit code
           </div>
@@ -314,18 +418,16 @@ const OtpCard: React.FC<OtpCardProps> = ({
             maxLength={4}
             className="w-full rounded-[11px] px-[14px] py-[12px] text-[19px] font-extrabold text-center tracking-[0.5em] outline-none tabular-nums"
             style={{
-              background: (otpFail || emailFail) && !token ? "#ffe5ea" : "#fafaf5",
-              border: `1.5px solid ${(otpFail || emailFail) && !token ? "#e85a4f" : "#ececec"}`,
+              background: otpFail && !token ? "#ffe5ea" : "#fafaf5",
+              border: `1.5px solid ${otpFail && !token ? "#e85a4f" : "#ececec"}`,
             }}
           />
-          {/* Verify failures. `!token` guards the success transition so a
-              just-cleared error can't flash while the card unmounts. emailFail
-              covers the new-user edge case where the email is rejected. */}
-          {(otpFail || emailFail) && !token && (
+          {/* Verify failure (existing users). `!token` guards the success
+              transition so a just-cleared error can't flash while the card
+              unmounts. New users see OTP/email errors on the details screen. */}
+          {otpFail && !token && (
             <div className="text-[11.5px] text-[#e85a4f] mt-2 font-semibold">
-              {emailFail
-                ? emailfailmessage || "That email didn't work. Try another."
-                : "That code didn't match. Try again."}
+              That code didn&apos;t match. Try again.
             </div>
           )}
           <div className="text-[11.5px] text-[#8a93a6] text-center mt-[10px]">

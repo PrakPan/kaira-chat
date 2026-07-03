@@ -23,6 +23,10 @@ export interface IntakeFormState {
   active: boolean;
   step: number;
   completed: boolean;
+  /** True while the backend `intake_form_shimmer` effect is in flight — the
+   *  card shows a skeleton loader instead of the interactive steps until the
+   *  prefill (`form_fields` / intake-form widget) arrives. */
+  loading: boolean;
   /** Per-step completion flags driven by the backend `show_intake_form`
    *  effect's `is_completed` markers — indexes match the step order
    *  [destination, when, who, notes]. */

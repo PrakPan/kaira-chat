@@ -40,6 +40,7 @@ import PartnersSection from "../../components/theme/PartnersSection.jsx";
 import TestimonialCarousel from "../../components/theme/TestimonialCarousel.jsx";
 import DesktopBanner from "../../components/containers/Banner.js";
 import styles from "../../styles/pages/revamp/destination.module.scss";
+import SectionCta from "../../components/revamp/home/SectionCta.jsx";
 
 const carouselBreakpoints = {
   640: { slidesPerView: 1.5, spaceBetween: 16 },
@@ -386,6 +387,12 @@ const Index = (props) => {
               ))}
             </div>
           </section>
+          <SectionCta
+          // label="End of · How it works"
+          // heading="How it"
+          // accent="works."
+          ctaLabel="Start planning"
+        />
         </div>
       ) : null}
 
@@ -554,6 +561,12 @@ const Index = (props) => {
                         <CountryCardV2 item={item} hot={i === 0} />
                       )
                     )}
+                    <SectionCta
+          // label="End of · How it works"
+          // heading="How it"
+          // accent="works."
+          ctaLabel="Start planning"
+        />
                   </>
                 ) : component.carousel === "destination-2" ? (
                   <>
@@ -572,6 +585,12 @@ const Index = (props) => {
                       `Destination3-${idx}`,
                       (item, i) => <CountryCardV2 item={item} hot={i === 0} />
                     )}
+                    <SectionCta
+          // label="End of · How it works"
+          // heading="How it"
+          // accent="works."
+          ctaLabel="Start planning"
+        />
                   </>
                 ) : component.carousel === "destination-4" ? (
                   <div className="space-y-4">
@@ -580,6 +599,12 @@ const Index = (props) => {
                       `Destination4-${idx}`,
                       (item, i) => <CountryCardV2 item={item} hot={i === 0} />
                     )}
+                    <SectionCta
+          // label="End of · How it works"
+          // heading="How it"
+          // accent="works."
+          ctaLabel="Start planning"
+        />
                   </div>
                 ) : component.carousel === "destination-5" ? (
                   <Poi
@@ -624,6 +649,12 @@ const Index = (props) => {
                       4,
                       "auto"
                     )}
+                    <SectionCta
+          // label="End of · How it works"
+          // heading="How it"
+          // accent="works."
+          ctaLabel="Start planning"
+        />
                   </>
                 ) : component.carousel === "itinerary-1" ? (
                   <>
@@ -681,6 +712,12 @@ const Index = (props) => {
                       4,
                       "auto"
                     )}
+                    <SectionCta
+          // label="End of · How it works"
+          // heading="How it"
+          // accent="works."
+          ctaLabel="Start planning"
+        />
                   </>
                 ) : null}
               </section>
@@ -691,6 +728,12 @@ const Index = (props) => {
           itinerary={userItineraries?.[0]}
           cities={props.locations}
           destinationName={destinationLabel}
+        />
+        <SectionCta
+          // label="End of · How it works"
+          // heading="How it"
+          // accent="works."
+          ctaLabel="Start planning"
         />
 
 

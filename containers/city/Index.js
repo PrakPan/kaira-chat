@@ -14,6 +14,7 @@ import DesktopBanner from "../../components/containers/Banner.js";
 import { imgUrlEndPoint } from "../../components/theme/ThemeConstants";
 import TailoredFormMobileModal from "../../components/modals/TailoredFomrMobile";
 import styles from "../../styles/pages/revamp/destination.module.scss";
+import SectionCta from "../../components/revamp/home/SectionCta.jsx";
 
 const Experience = (props) => {
   const [galleryOpen, setGalleryOpen] = useState(false);
@@ -211,6 +212,13 @@ const Experience = (props) => {
               ))}
             </div>
           </section>
+
+          <SectionCta
+          // label="End of · How it works"
+          // heading="How it"
+          // accent="works."
+          ctaLabel="Start planning"
+        />
         </div>
       ) : null}
 

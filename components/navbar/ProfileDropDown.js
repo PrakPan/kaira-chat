@@ -175,6 +175,18 @@ const ProfileContainer = styled.div`
   }
 `;
 
+/* Desktop-only rounded "pill" wrapper for the nav profile trigger.
+   Turns dark on hover with the name flipping to white. */
+const PillTrigger = styled.div`
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem 0.25rem 0.25rem;
+  border: 1px solid #ececec;
+  border-radius: 999px;
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.15s ease;
+`;
+
 const CircularImageWrapper = styled.div`
   width: 2rem;
   height: 2rem;
@@ -506,7 +518,13 @@ const ProfileDropDown = (props) => {
         ) : null}
       </div> */}
 
-      <div className="w-full flex flex-row items-center gap-1">
+      {(() => {
+        const TriggerTag = props.pill ? PillTrigger : "div";
+        return (
+      <TriggerTag
+        className="w-full flex flex-row items-center gap-1"
+        onClick={props.pill ? () => setToggleMenu(!toggleMenu) : undefined}
+      >
         <CircularImageWrapper onClick={() => setToggleMenu(!toggleMenu)}>
           {showColorAvatar ? (
             <div
@@ -554,7 +572,9 @@ const ProfileDropDown = (props) => {
             style={{ color: props.headerColor === "black" ? "white" : "black" }}
           />
         ) : null}
-      </div>
+      </TriggerTag>
+        );
+      })()}
 
       <DropdownContainer show={toggleMenu}>
         <ListContainer>
