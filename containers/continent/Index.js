@@ -119,6 +119,7 @@ const Index = (props) => {
   const toPolaroid = (loc) => ({
     image: normalizeImage(loc?.image),
     caption: loc?.display_name || loc?.name || loc?.title,
+    path: loc?.path,
   });
 
   // Polaroid priority on a continent page: countries first, then hot
@@ -139,11 +140,11 @@ const Index = (props) => {
   const componentsList = props?.data?.components || [];
   const heroActivities = componentsList
     .flatMap((c) => c?.activities || [])
-    .map((a) => ({ image: normalizeImage(a?.image) }))
+    .map((a) => ({ image: normalizeImage(a?.image), data: a }))
     .filter((p) => p.image);
   const heroPois = componentsList
     .flatMap((c) => c?.pois || [])
-    .map((p) => ({ image: normalizeImage(p?.image) }))
+    .map((p) => ({ image: normalizeImage(p?.image), data: p }))
     .filter((p) => p.image);
 
   const renderCardCarousel = (
@@ -288,6 +289,7 @@ const Index = (props) => {
         fallbackSources={[{ items: heroCityFallback }]}
         activities={heroActivities}
         pois={heroPois}
+        onOpenDrawer={handleOpenDrawer}
         setShowTailoredModal={setShowTailoredModal}
         meta={
           <>

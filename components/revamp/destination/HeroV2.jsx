@@ -48,6 +48,7 @@ const HeroV2 = ({
   pois = [],
   setShowTailoredModal,
   inputPlaceholder,
+  onOpenDrawer,
 }) => {
   const router = useRouter();
   const textareaRef = useRef(null);
@@ -165,12 +166,17 @@ const HeroV2 = ({
     const base = allSame ? [] : [...valid];
     const seen = new Set(base.map((p) => p.image));
 
-    const pushFrom = (items, label) => {
+    const pushFrom = (items, label, drawerType) => {
       for (const it of items || []) {
         if (base.length >= 4) return;
         const img = it && it.image;
         if (!img || seen.has(img)) continue;
-        base.push({ image: img, caption: it.caption || label });
+        const entry = { image: img, caption: it.caption || label };
+        // Places carry a `path` and navigate; activities / POIs carry the raw
+        // item so the page can open its details drawer.
+        if (it.path) entry.path = it.path;
+        if (drawerType && it.data) entry.drawer = { type: drawerType, data: it.data };
+        base.push(entry);
         seen.add(img);
       }
     };
@@ -181,13 +187,25 @@ const HeroV2 = ({
     (fallbackSources || []).forEach((src) =>
       pushFrom(src?.items, src?.caption)
     );
-    pushFrom(activities, "Activity");
-    pushFrom(pois, "POI");
+    pushFrom(activities, "Activity", "activity");
+    pushFrom(pois, "POI", "poi");
 
     if (base.length === 0) return FALLBACK_POLAROIDS.slice(0, 4);
     return base.slice(0, 4);
   })();
   const polClassNames = [styles.pol1, styles.pol2, styles.pol3, styles.pol4];
+
+  // Each polaroid can either navigate to a destination page (`path`) or open a
+  // POI / activity details drawer (`drawer`). Generic fallback imagery has
+  // neither and stays non-interactive.
+  const handlePolaroidClick = (p) => {
+    if (!p) return;
+    if (p.drawer && onOpenDrawer) {
+      onOpenDrawer(p.drawer.data, p.drawer.type);
+    } else if (p.path) {
+      router.push("/" + p.path);
+    }
+  };
 
   return (
     <section className={styles.heroV2}>
@@ -350,20 +368,37 @@ const HeroV2 = ({
           </div>
 
           <div className={styles.heroV2Collage}>
-            {polaroidImages.map((p, i) => (
-              <div
-                key={i}
-                className={`${styles.polaroid} ${polClassNames[i] || ""}`}
-              >
+            {polaroidImages.map((p, i) => {
+              const clickable = !!(p.drawer || p.path);
+              return (
                 <div
-                  className={styles.polaroidImg}
-                  style={{ backgroundImage: `url('${p.image}')` }}
-                />
-                {p.caption && (
-                  <div className={styles.polaroidCaption}>{p.caption}</div>
-                )}
-              </div>
-            ))}
+                  key={i}
+                  className={`${styles.polaroid} ${polClassNames[i] || ""}`}
+                  role={clickable ? "button" : undefined}
+                  tabIndex={clickable ? 0 : undefined}
+                  onClick={clickable ? () => handlePolaroidClick(p) : undefined}
+                  onKeyDown={
+                    clickable
+                      ? (e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            handlePolaroidClick(p);
+                          }
+                        }
+                      : undefined
+                  }
+                  style={clickable ? { cursor: "pointer" } : undefined}
+                >
+                  <div
+                    className={styles.polaroidImg}
+                    style={{ backgroundImage: `url('${p.image}')` }}
+                  />
+                  {p.caption && (
+                    <div className={styles.polaroidCaption}>{p.caption}</div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

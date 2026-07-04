@@ -223,6 +223,7 @@ export default function ThemePage(props) {
                   : `${imgUrlEndPoint}${loc.image}`
                 : "",
               caption: loc.display_name || loc.name || loc.title,
+              path: loc.path,
             }))
             .filter((p) => p.image);
           if (fromLocations.length) return fromLocations;
@@ -243,10 +244,11 @@ export default function ThemePage(props) {
             img ? (img.startsWith("http") ? img : `${imgUrlEndPoint}${img}`) : "";
           const direct = (props.experienceData?.activities || []).map((a) => ({
             image: normalize(a?.image),
+            data: a,
           }));
           const fromComponents = (props.experienceData?.components || [])
             .flatMap((c) => c?.activities || [])
-            .map((a) => ({ image: normalize(a?.image) }));
+            .map((a) => ({ image: normalize(a?.image), data: a }));
           return [...direct, ...fromComponents].filter((p) => p.image);
         })()}
         pois={(() => {
@@ -254,12 +256,14 @@ export default function ThemePage(props) {
             img ? (img.startsWith("http") ? img : `${imgUrlEndPoint}${img}`) : "";
           const direct = (props.experienceData?.pois || []).map((p) => ({
             image: normalize(p?.image),
+            data: p,
           }));
           const fromComponents = (props.experienceData?.components || [])
             .flatMap((c) => c?.pois || [])
-            .map((p) => ({ image: normalize(p?.image) }));
+            .map((p) => ({ image: normalize(p?.image), data: p }));
           return [...direct, ...fromComponents].filter((p) => p.image);
         })()}
+        onOpenDrawer={handleOpenDrawer}
         setShowTailoredModal={setShowTailoredModal}
         meta={
           <>
