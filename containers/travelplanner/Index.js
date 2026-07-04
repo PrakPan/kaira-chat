@@ -42,6 +42,7 @@ import DestinationStatsStrip from "../../components/revamp/destination/Destinati
 import WhenToGoSection from "../../components/revamp/destination/WhenToGoSection.jsx";
 import PlanningSection from "../../components/revamp/destination/PlanningSection.jsx";
 import SectionCta from "../../components/revamp/home/SectionCta.jsx";
+import POIDetailsDrawer from "../../components/drawers/poiDetails/POIDetailsDrawer.js";
 const MapBox = dynamic(() => import("../../components/Map.js"), {
   ssr: false,
 });
@@ -61,6 +62,14 @@ const Homepage = (props) => {
   const [overviewHeading, setOverviewHeading] = useState(null);
   const [headings, setHeadings] = useState([]);
   const [showTailoredModal, setShowTailoredModal] = useState(false);
+  const [activeDrawer, setActiveDrawer] = useState(null);
+
+  const handleOpenDrawer = (data, type) => {
+    setActiveDrawer({ data, type });
+  };
+  const handleCloseDrawer = () => {
+    setActiveDrawer(null);
+  };
 
   useEffect(() => {
     if (props.experienceData?.headings) {
@@ -232,6 +241,7 @@ const Homepage = (props) => {
                 : `${imgUrlEndPoint}${loc.image}`
               : "",
             caption: loc.display_name || loc.name || loc.title,
+            path: loc.path,
           }))
           .filter((p) => p.image)}
         activities={(props.experienceData?.activities || [])
@@ -241,6 +251,7 @@ const Homepage = (props) => {
                 ? a.image
                 : `${imgUrlEndPoint}${a.image}`
               : "",
+            data: a,
           }))
           .filter((p) => p.image)}
         pois={(props.experienceData?.pois || [])
@@ -250,8 +261,10 @@ const Homepage = (props) => {
                 ? p.image
                 : `${imgUrlEndPoint}${p.image}`
               : "",
+            data: p,
           }))
           .filter((p) => p.image)}
+        onOpenDrawer={handleOpenDrawer}
         setShowTailoredModal={setShowTailoredModal}
       />
 
@@ -607,6 +620,32 @@ const Homepage = (props) => {
         show={showTailoredModal}
         eventDates={props.eventDates}
       />
+
+      {activeDrawer?.type === "poi" && (
+        <POIDetailsDrawer
+          show={true}
+          iconId={activeDrawer.data.id}
+          handleCloseDrawer={handleCloseDrawer}
+          name={activeDrawer.data.name}
+          id={activeDrawer.data.id}
+          activityData={{
+            type: "poi",
+            id: activeDrawer.data.id,
+          }}
+          removeDelete={true}
+          removeChange={true}
+        />
+      )}
+
+      {activeDrawer?.type === "activity" && (
+        <POIDetailsDrawer
+          show={true}
+          ActivityiconId={activeDrawer.data.id}
+          handleCloseDrawer={handleCloseDrawer}
+          name={activeDrawer.data.name}
+          removeDelete={true}
+        />
+      )}
     </div>
   );
 };

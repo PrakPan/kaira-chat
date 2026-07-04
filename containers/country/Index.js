@@ -112,6 +112,7 @@ const Index = (props) => {
   const toPolaroid = (loc) => ({
     image: normalizeImage(loc?.image),
     caption: loc?.display_name || loc?.name || loc?.title,
+    path: loc?.path,
   });
 
   // Polaroid priority on a country page: states, then hot locations, then any
@@ -134,10 +135,10 @@ const Index = (props) => {
     .filter(Boolean);
 
   const heroActivities = (props.data?.activities || [])
-    .map((a) => ({ image: normalizeImage(a?.image) }))
+    .map((a) => ({ image: normalizeImage(a?.image), data: a }))
     .filter((p) => p.image);
   const heroPois = (props.data?.pois || [])
-    .map((p) => ({ image: normalizeImage(p?.image) }))
+    .map((p) => ({ image: normalizeImage(p?.image), data: p }))
     .filter((p) => p.image);
 
   return (
@@ -173,6 +174,7 @@ const Index = (props) => {
         fallbackSources={[{ items: cityImages }]}
         activities={heroActivities}
         pois={heroPois}
+        onOpenDrawer={handleOpenDrawer}
         setShowTailoredModal={setShowTailoredModal}
         meta={
           <>

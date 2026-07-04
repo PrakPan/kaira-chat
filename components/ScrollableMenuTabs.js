@@ -65,7 +65,7 @@ const ScrollableMenuTabs = ({
   scrollContainerRef,
   handleActiveTab
 }) => {
-  const [activeItem, setActiveItem] = useState(items[1].id);
+  const [activeItem, setActiveItem] = useState(items[1]?.id);
   const startDate = useSelector((state) => state.itineraryStartDate.startDate);
   const { ref, isSticky } = useSticky(90);
   const isInView = useFieldOfView("Stays-Head");

@@ -1482,6 +1482,11 @@ startEmptyIntake = false,
     | { kind: "message"; text: string }
     | { kind: "widget"; type: string; payload: Record<string, unknown> };
   const pendingPostLoginAction = useRef<PendingAction | null>(null);
+  // Set when a logged-out viewer opens an existing thread and we inject the
+  // inline login card during restore (no user prompt/action to replay). On
+  // login success the post-login effect resumes the thread via
+  // `resume_after_login` instead of re-injecting anything.
+  const pendingRestoreResumeRef = useRef(false);
   const hasInjectedContextRef = useRef(false);
   const inputRef = useRef(input);
 useEffect(() => { inputRef.current = input; }, [input]);
@@ -2718,10 +2723,14 @@ useEffect(() => {
   if (postLoginFiredRef.current) return;
 
   const action = pendingPostLoginAction.current;
-  if (!action) return;
+  const restoreResume = pendingRestoreResumeRef.current;
+  // Nothing to do unless we captured a prompt/action to replay OR a logged-out
+  // restore armed a silent resume (the injected login card case).
+  if (!action && !restoreResume) return;
 
   postLoginFiredRef.current = true;
   pendingPostLoginAction.current = null;
+  pendingRestoreResumeRef.current = false;
 
   setShowLoginModal(false);
   setShowLoginPrompt(false);
@@ -2743,6 +2752,9 @@ useEffect(() => {
       sendWidgetAction("resume_after_login", {});
       return;
     }
+    // Legacy replay only applies when we captured a prompt/action (the restore
+    // login-card path has none — a foreign viewer simply gets nothing replayed).
+    if (!action) return;
     if (action.kind === "widget") {
       sendWidgetAction(action.type, action.payload);
     } else {
@@ -2986,10 +2998,9 @@ useEffect(() => {
     // to the standard login/clone gating instead.
     const isP2Restore =
       botModeRef.current === "p2" || threadIsCompleted;
-    const restoredWithLogin =
-      isLoggedInRef.current || isP2Restore
-      ? restored
-      : [
+    const showRestoreLoginCard = !(isLoggedInRef.current || isP2Restore);
+    const restoredWithLogin = showRestoreLoginCard
+      ? [
           ...restored,
           {
             id: `login-card-${restoredThread.id ?? "restore"}-${Date.now()}`,
@@ -2998,7 +3009,12 @@ useEffect(() => {
             timestamp: new Date(),
             type: "login_card" as const,
           },
-        ];
+        ]
+      : restored;
+    // Arm the post-login resume: this card carries no prompt/action to replay,
+    // so on login success we resume the restored thread via `resume_after_login`
+    // (gated to the current user's own chat or staff by the effect).
+    if (showRestoreLoginCard) pendingRestoreResumeRef.current = true;
     setMessages(restoredWithLogin);
     // Land at the bottom of the restored transcript. Widgets and images lay
     // out asynchronously, so the scrollable height keeps growing for a beat
@@ -3590,10 +3606,6 @@ const handleShowLogin = useCallback(() => {
                 feedbackLoading={feedbackLoadingIds.has(msg.id)}
                 onFeedback={hideFeedback ? undefined : handleFeedback}
                 onRetry={onRetry}
-                // Show the profile-user avatar only for a logged-out user's own
-                // fresh chat. When an existing chat/itinerary is open (restored
-                // via thread detail) keep the per-message letter avatars.
-                loggedOutInitiated={!isLoggedIn && !restoredThread}
                 onWidgetAction={(action) => {
                   // Freeze this widget's CTAs the moment the user clicks one,
                   // regardless of which drawer or server call it triggers. The
