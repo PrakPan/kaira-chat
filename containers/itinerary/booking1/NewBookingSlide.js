@@ -2853,13 +2853,12 @@ const Details = (props) => {
                     {(() => {
                       const ancillaryBookings =
                         Cart?.summary?.Ancillaries?.bookings || [];
-                      const esimCount = ancillaryBookings.filter((b) =>
-                        (b?.name || "").toLowerCase().includes("esim"),
+                      const esimCount = ancillaryBookings.filter(
+                        (b) => b?.booking_type === "eSIM",
                       ).length;
-                      const visaCount = ancillaryBookings.filter((b) => {
-                        const n = (b?.name || "").toLowerCase();
-                        return !n.includes("esim") && n.includes("visa");
-                      }).length;
+                      const visaCount = ancillaryBookings.filter(
+                        (b) => b?.booking_type === "Visa",
+                      ).length;
                       const hasEsim = esimCount > 0;
                       const hasVisa = visaCount > 0;
                       return (
