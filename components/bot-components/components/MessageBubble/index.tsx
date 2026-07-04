@@ -11,10 +11,11 @@ import {
 
 const USER_IMAGE_CDN = "https://d31aoa0ehgvjdi.cloudfront.net/";
 
-// Fallback avatar for a logged-out user's own messages. Instead of the generic
-// "U" initial we show a neutral profile-user glyph.
-const LOGGED_OUT_AVATAR =
-  "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/navigation/profile-user.png";
+// Default avatar shown whenever a message has no `customer_name` (empty/null),
+// e.g. a logged-out user's own chat. Same neutral profile-user glyph the
+// NavigationMenu/ProfileDropDown fall back to.
+const DEFAULT_PROFILE_IMG =
+  USER_IMAGE_CDN + "media/icons/navigation/profile-user.png";
 
 function useUserAvatarSrc(): string | null {
   const reduxImage = useSelector((state: any) => state?.auth?.image);
@@ -80,126 +81,58 @@ const MessageBubbleResponsiveStyles: React.FC = () => (
 );
 
 const UserAvatar: React.FC<{
-  /** Per-message `customer_name` from threads.get_by_id. When present it wins
-   *  over the redux/chatState fallback below (page reload / thread switch). */
+  /** Per-message `customer_name` from threads.get_by_id. This is the single
+   *  source of truth for the avatar: a non-empty name → colored letter avatar;
+   *  empty/null → the default profile image. */
   customerName?: string | null;
   /** Per-message `user_id` (author). When it matches the logged-in viewer the
-   *  message is theirs — show the viewer's own avatar even on someone else's
-   *  itinerary (e.g. staff replying on a customer's trip). */
+   *  message is theirs (whether just sent or restored from the detail API): we
+   *  prioritise the viewer's saved avatar, falling back to their letter avatar
+   *  if the image fails to load. */
   senderUserId?: string | number | null;
-  /** True only when a logged-out user started this chat themselves (no existing
-   *  chat/itinerary is open). Gates the profile-user fallback glyph so restored
-   *  threads keep their per-message letter avatars. */
-  loggedOutInitiated?: boolean;
-}> = ({ customerName: messageCustomerNameProp, senderUserId, loggedOutInitiated }) => {
+}> = ({ customerName, senderUserId }) => {
   const avatarSrc = useUserAvatarSrc();
   const name = useSelector((state: any) => state?.auth?.name);
   const loggedInUserId = useSelector((state: any) => state?.auth?.id);
-  const token = useSelector((state: any) => state?.auth?.token);
-  // When an existing itinerary is open, the chat belongs to that itinerary's
-  // customer — show their initial, not the viewer's avatar. A brand-new chat
-  // has no itinerary customer_name, so we fall back to the logged-in user.
-  const customerNameRaw = useSelector(
-    (state: any) => state?.Itinerary?.customer_name,
-  );
-  // In the P1/draft stage no itinerary exists in redux yet, so the customer is
-  // only known from the thread's get_by_id `customer_name` (chatState). Prefer
-  // the itinerary's customer_name when present, otherwise fall back to the
-  // thread's; if neither exists we use the current logged-in-user flow.
-  const threadCustomerRaw = useSelector(
-    (state: any) => state?.chatState?.customerName,
-  );
 
-  // The logged-in user's own name — redux first, then the copy localStorage
-  // persists under "name". Used to detect when the open itinerary actually
-  // belongs to the viewer themselves.
-  const loggedInName = useMemo(() => {
-    const fromRedux =
-      typeof name === "string" && name.trim() ? name.trim() : null;
-    if (fromRedux) return fromRedux;
-    if (typeof window === "undefined") return null;
-    const stored = localStorage.getItem("name");
-    return stored && stored.trim() ? stored.trim() : null;
-  }, [name]);
-
-  // Per-message identity carried by the reloaded thread (and tagged onto live
-  // messages). These take priority over the redux/chatState fallback.
-  const messageCustomerName =
-    typeof messageCustomerNameProp === "string" && messageCustomerNameProp.trim()
-      ? messageCustomerNameProp.trim()
+  // The name attached to this specific message by the detail API.
+  const messageName =
+    typeof customerName === "string" && customerName.trim()
+      ? customerName.trim()
       : null;
+
+  // The viewer authored this message (matched by user_id) — either the live
+  // optimistic message or one restored from the detail API. Their own saved
+  // avatar wins; if it fails to load we fall back to the letter avatar.
   const senderIsViewer =
     senderUserId != null &&
     String(senderUserId).trim() !== "" &&
     loggedInUserId != null &&
     String(senderUserId) === String(loggedInUserId);
 
-  let viewingItinerary: boolean;
-  let letterName: string | null;
-
-  if (senderIsViewer) {
-    // The viewer authored this message (incl. staff on a customer's itinerary)
-    // → their own avatar/photo, never the customer letter.
-    viewingItinerary = false;
-    letterName = name;
-  } else if (messageCustomerName) {
-    // Reloaded message carries its sender's customer_name but no (matching)
-    // user_id. If that name is the logged-in viewer's own, treat it as theirs
-    // → own photo/initial; otherwise show the sender's letter avatar.
-    const isOwnName =
-      !!loggedInName &&
-      messageCustomerName.toLowerCase() === loggedInName.toLowerCase();
-    viewingItinerary = !isOwnName;
-    letterName = isOwnName ? name : messageCustomerName;
-  } else {
-    // No per-message info → existing redux/chatState fallback.
-    const resolvedCustomerRaw =
-      (typeof customerNameRaw === "string" && customerNameRaw.trim()
-        ? customerNameRaw
-        : null) ??
-      (typeof threadCustomerRaw === "string" && threadCustomerRaw.trim()
-        ? threadCustomerRaw
-        : null);
-    const itineraryCustomer = resolvedCustomerRaw
-      ? resolvedCustomerRaw.trim()
-      : null;
-    // If the itinerary's customer_name matches the logged-in user, it's their
-    // own itinerary — show their own profile instead of a customer letter.
-    const isOwnItinerary =
-      !!itineraryCustomer &&
-      !!loggedInName &&
-      itineraryCustomer.toLowerCase() === loggedInName.toLowerCase();
-    viewingItinerary = !!itineraryCustomer && !isOwnItinerary;
-    letterName = viewingItinerary ? itineraryCustomer : name;
-  }
-
   const [errored, setErrored] = useState(false);
 
-  // Viewing an itinerary → always the customer's letter avatar (we don't have
-  // their photo). Otherwise the chat belongs to whoever is viewing: show their
-  // profile photo when available, else their letter avatar. When neither a
-  // customer nor a viewer name is known, getUserInitial falls back to "U" — so
-  // we always render a letter rather than an anonymous silhouette.
-  const showImage = !viewingItinerary && !!avatarSrc && !errored;
-  // Logged-out user who started this chat themselves → show the neutral profile
-  // glyph instead of the "U" initial. When an existing chat/itinerary is open
-  // (loggedOutInitiated=false) we keep the per-message letter avatars as before.
-  const showLoggedOutAvatar =
-    !viewingItinerary && !avatarSrc && !token && !errored && !!loggedOutInitiated;
-  const showLetter = !showImage && !showLoggedOutAvatar;
+  // The letter avatar name: the message's own customer_name, or (for the
+  // viewer's own message) the viewer's name. Anything else → default image.
+  const letterName = messageName ?? (senderIsViewer ? name : null);
+  // The viewer's saved avatar takes precedence for their own messages; on load
+  // error we drop through to the letter avatar below.
+  const showImage = senderIsViewer && !!avatarSrc && !errored;
+  const showDefaultImage = !showImage && !letterName;
+  const showLetter = !showImage && !showDefaultImage;
 
   const [color, setColor] = useState<string | null>(null);
   useEffect(() => {
     if (!showLetter) {
       setColor(null);
-    } else if (viewingItinerary) {
-      // Other person's color is derived from their name (never persisted, so it
-      // doesn't clobber the logged-in user's own stored color).
-      setColor(getAvatarColorForName(letterName));
-    } else {
+    } else if (senderIsViewer) {
+      // The viewer's own persisted color, so it stays stable across send/reload.
       setColor(getUserAvatarColor(letterName));
+    } else {
+      // Another person's color — derived from their name, never persisted.
+      setColor(getAvatarColorForName(letterName));
     }
-  }, [showLetter, viewingItinerary, letterName]);
+  }, [showLetter, senderIsViewer, letterName]);
 
   return (
     <div
@@ -211,7 +144,7 @@ const UserAvatar: React.FC<{
         borderRadius: "50%",
         flexShrink: 0,
         overflow: "hidden",
-        background: showLoggedOutAvatar ? "#eef1f6" : color || "#0f1a2e",
+        background: showDefaultImage ? "#eef1f6" : color || "#0f1a2e",
         color: color ? "#fff" : "#f7e700",
         display: "grid",
         placeItems: "center",
@@ -227,11 +160,10 @@ const UserAvatar: React.FC<{
           onError={() => setErrored(true)}
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
         />
-      ) : showLoggedOutAvatar ? (
+      ) : showDefaultImage ? (
         <img
-          src={LOGGED_OUT_AVATAR}
+          src={DEFAULT_PROFILE_IMG}
           alt="You"
-          onError={() => setErrored(true)}
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
         />
       ) : (
@@ -470,10 +402,6 @@ interface MessageBubbleProps {
   /** Re-send the previous user message. Provided only for network-error
    *  assistant bubbles so we can render a retry CTA in place of feedback. */
   onRetry?: () => void;
-  /** True only when a logged-out user started this chat themselves (no existing
-   *  chat/itinerary is open). Lets the user avatar show the profile-user glyph
-   *  instead of the "U" initial for their own messages. */
-  loggedOutInitiated?: boolean;
 }
 
 // ─── Feedback icons (thumbs up / thumbs down) ─────────────────────────────────
@@ -1657,7 +1585,6 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   feedbackLoading = false,
   onFeedback,
   onRetry,
-  loggedOutInitiated = false,
 }) => {
   const rendered = useMemo(
     () => renderContent(message.content, entities ?? {}),
@@ -1776,7 +1703,6 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
         <UserAvatar
           customerName={message.customerName}
           senderUserId={message.senderUserId}
-          loggedOutInitiated={loggedOutInitiated}
         />
         <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6, minWidth: 0 }}>
           {hasAttachments && (

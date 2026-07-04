@@ -3569,10 +3569,6 @@ const handleShowLogin = useCallback(() => {
                 feedbackLoading={feedbackLoadingIds.has(msg.id)}
                 onFeedback={hideFeedback ? undefined : handleFeedback}
                 onRetry={onRetry}
-                // Show the profile-user avatar only for a logged-out user's own
-                // fresh chat. When an existing chat/itinerary is open (restored
-                // via thread detail) keep the per-message letter avatars.
-                loggedOutInitiated={!isLoggedIn && !restoredThread}
                 onWidgetAction={(action) => {
                   // Freeze this widget's CTAs the moment the user clicks one,
                   // regardless of which drawer or server call it triggers. The

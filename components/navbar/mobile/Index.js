@@ -13,8 +13,41 @@ import usePageLoaded from "../../custom hooks/usePageLoaded";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faUser } from "@fortawesome/free-solid-svg-icons";
 import styles from "../../revamp/home/NavigationMenu.module.scss";
-import Button from "../../revamp/common/components/button";
 import { useAnalytics } from "../../../hooks/useAnalytics";
+
+const imgUrlEndPoint = "https://d31aoa0ehgvjdi.cloudfront.net/";
+// Same default avatar NavigationMenu/ProfileDropDown fall back to. Shown when
+// the user is logged out instead of the "T"/initials placeholder.
+const defaultProfileImg = imgUrlEndPoint + "media/icons/navigation/profile-user.png";
+
+/* Circular avatar wrapper. ImageLoader wraps react-lazyload, which drops its
+   inline borderRadius, so we clip to a circle from this outer box we fully
+   control (mirrors CircularImageWrapper in ProfileDropDown). */
+const CircularAvatar = styled.div`
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+
+  & > * {
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    border-radius: 50% !important;
+  }
+`;
 
 const DropdownContainer = styled.div`
   position: absolute;
@@ -205,24 +238,18 @@ const Mobile = (props) => {
             <div onClick={() => setToggleMenu(!toggleMenu)} className="flex items-center justify-center cursor-pointer" 
       style={{ maxWidth: '48px', maxHeight: '48px', minWidth: '48px', minHeight: '48px'}} >
 
-      {!props.token?<Button
-            className={`${styles.hamburger} ${styles.hamburgerCircle}`}
-            variant="filled"
-            aria-label="Open menu"
-          >
-            <FontAwesomeIcon icon={faUser} className="w-4 h-4" />
-          </Button>:<ImageLoader
-          borderRadius="50%"
+      <CircularAvatar>
+        <ImageLoader
           url={
-            props.image !== "null" && props.image !== null
+            props.token && props.image && props.image !== "null" && props.image !== null
               ? props.image
-              : "media/icons/navigation/profile-user.png"
+              : defaultProfileImg
           }
           noPlaceholder={true}
           width="48px"
           height="48px"
         />
-          }
+      </CircularAvatar>
           </div>
   {/* <ImageLoader
           borderRadius="50%"

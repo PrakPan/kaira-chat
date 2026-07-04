@@ -15,16 +15,25 @@ import { imgUrlEndPoint } from "../../components/theme/ThemeConstants";
 import TailoredFormMobileModal from "../../components/modals/TailoredFomrMobile";
 import styles from "../../styles/pages/revamp/destination.module.scss";
 import SectionCta from "../../components/revamp/home/SectionCta.jsx";
+import POIDetailsDrawer from "../../components/drawers/poiDetails/POIDetailsDrawer.js";
 
 const Experience = (props) => {
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [galleryimages, setGalleryImages] = useState([]);
   const [showTailoredModal, setShowTailoredModal] = useState(false);
+  const [activeDrawer, setActiveDrawer] = useState(null);
   const router = useRouter();
 
   // Chat with Kaira CTA → navigate the user to the /chat page.
   const handleChatWithKaira = () => {
     router.push("/chat");
+  };
+
+  const handleOpenDrawer = (data, type) => {
+    setActiveDrawer({ data, type });
+  };
+  const handleCloseDrawer = () => {
+    setActiveDrawer(null);
   };
 
   const closeGalleryHandler = () => {
@@ -60,18 +69,20 @@ const Experience = (props) => {
         ? loc.image
         : `${imgUrlEndPoint}${loc.image}`,
       caption: loc.name ? convertDbNameToCapitalFirst(loc.name) : cityDisplayName,
+      path: loc.path,
     }));
 
   const activityPolaroids = [
-    ...(props.cityData?.activities || []),
-    ...(props.cityData?.pois || []),
+    ...(props.cityData?.activities || []).map((item) => ({ item, type: "activity" })),
+    ...(props.cityData?.pois || []).map((item) => ({ item, type: "poi" })),
   ]
-    .filter((item) => item?.image)
-    .map((item) => ({
+    .filter(({ item }) => item?.image)
+    .map(({ item, type }) => ({
       image: item.image.startsWith("http")
         ? item.image
         : `${imgUrlEndPoint}${item.image}`,
       caption: item.title || item.name || cityDisplayName,
+      drawer: { type, data: item },
     }));
 
   const polaroids = [
@@ -110,6 +121,7 @@ const Experience = (props) => {
                 ? a.image
                 : `${imgUrlEndPoint}${a.image}`
               : "",
+            data: a,
           }))
           .filter((p) => p.image)}
         pois={(props.cityData?.pois || [])
@@ -119,8 +131,10 @@ const Experience = (props) => {
                 ? p.image
                 : `${imgUrlEndPoint}${p.image}`
               : "",
+            data: p,
           }))
           .filter((p) => p.image)}
+        onOpenDrawer={handleOpenDrawer}
         prompts={
           props.cityData?.model_prompts?.length
             ? props.cityData.model_prompts
@@ -277,6 +291,32 @@ const Experience = (props) => {
         show={showTailoredModal}
         eventDates={props.eventDates}
       />
+
+      {activeDrawer?.type === "poi" && (
+        <POIDetailsDrawer
+          show={true}
+          iconId={activeDrawer.data.id}
+          handleCloseDrawer={handleCloseDrawer}
+          name={activeDrawer.data.name}
+          id={activeDrawer.data.id}
+          activityData={{
+            type: "poi",
+            id: activeDrawer.data.id,
+          }}
+          removeDelete={true}
+          removeChange={true}
+        />
+      )}
+
+      {activeDrawer?.type === "activity" && (
+        <POIDetailsDrawer
+          show={true}
+          ActivityiconId={activeDrawer.data.id}
+          handleCloseDrawer={handleCloseDrawer}
+          name={activeDrawer.data.name}
+          removeDelete={true}
+        />
+      )}
     </div>
   );
 };
