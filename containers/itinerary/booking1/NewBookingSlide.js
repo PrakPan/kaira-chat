@@ -193,7 +193,88 @@ const CouponModal = ({
     </div>
   );
 
+  const renderCouponCard = (coupon, index) => {
+    const isApplied =
+      appliedCoupon === coupon.code ||
+      appliedCoupon === coupon.id ||
+      (payment?.coupon_usage && payment.coupon_usage.id === coupon.id);
+    const isApplying = applyingCouponId === coupon.id;
+    const isUnavailable = !coupon.is_applicable;
+    const isDisabled =
+      isApplied || isApplying || isUnavailable || payment?.is_applicable;
+
+    return (
+      <div
+        key={coupon.id ?? index}
+        className={`border-b border-gray-200 p-2 transition-colors ${
+          isUnavailable ? "" : "hover:border-primary-indigo"
+        }`}
+      >
+        <div className="flex justify-between items-start gap-3 ">
+          <div className="flex-1">
+            <div
+              className={`text-base inline-block border-sm border-dashed py-xxs px-lg mb-md ${
+                isUnavailable
+                  ? "border-gray-400 text-gray-600"
+                  : "border-pureBlack"
+              }`}
+            >
+              {coupon.code}
+            </div>
+            <div
+              className={`text-md font-500 leading-lg mb-2 ${
+                isUnavailable ? "text-gray-600" : "text-green-600"
+              }`}
+            >
+              {coupon.title}
+            </div>
+          </div>
+          <button
+            onClick={() => handleApplyCoupon(coupon)}
+            disabled={isDisabled}
+            className={`px-3 py-1 rounded font-medium text-sm transition-colors whitespace-nowrap min-w-[60px] h-8 flex items-center justify-center ${
+              isApplied
+                ? "bg-green-100 text-green-700 cursor-not-allowed"
+                : isUnavailable
+                  ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                  : isApplying
+                    ? "bg-primary-indigo text-white opacity-70 cursor-not-allowed"
+                    : "bg-primary-indigo text-white hover:opacity-90"
+            }`}
+          >
+            {isApplying ? <PulseLoader /> : isApplied ? "Applied" : "Apply"}
+          </button>
+        </div>
+        {isUnavailable ? (
+          <div className="text-secondary-red text-sm mb-2">
+            {coupon?.applicability_error}
+          </div>
+        ) : (
+          <div>
+            <div className="text-gray-600 text-sm mb-2">
+              {coupon.description}
+            </div>
+            <div className="text-gray-500 text-xs">
+              Expires on: {coupon.expiry}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   if (!show) return null;
+
+  // API returns coupons with the highest discount first; keep that order
+  // within each group while splitting applicable vs unavailable coupons.
+  const sortByDiscountDesc = (a, b) =>
+    (Number(b.discount) || 0) - (Number(a.discount) || 0);
+  const applicableCoupons = availableCoupons
+    .filter((coupon) => coupon.is_applicable)
+    .sort(sortByDiscountDesc);
+  const unavailableCoupons = availableCoupons
+    .filter((coupon) => !coupon.is_applicable)
+    .sort(sortByDiscountDesc);
 
   return ReactDOM.createPortal(
     <Drawer
@@ -214,86 +295,48 @@ const CouponModal = ({
 
       {/* Content */}
       <div className="p-4 overflow-y-auto flex-1">
-        <div>
-          <h3 className="font-semibold text-base mb-4">Available Coupons</h3>
-
-          <div className="space-y-4">
-            {loading ? (
-              // Show skeleton loaders while loading
-              <>
-                <CouponSkeleton />
-                <CouponSkeleton />
-                <CouponSkeleton />
-              </>
-            ) : availableCoupons?.length > 0 ? (
-              availableCoupons.map((coupon, index) => (
-                <div
-                  key={index}
-                  className="border-b-1 border-gray-200 p-2 hover:border-blue-300 transition-colors"
-                >
-                  <div className="flex justify-between items-start gap-3 ">
-                    <div className="flex-1">
-                      <div className="text-base inline-block border-sm border-dashed border-pureBlack py-xxs px-lg mb-md">
-                        {coupon.code}
-                      </div>
-                      <div className="text-md  font-500 leading-lg mb-2">
-                        {coupon.title}
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => handleApplyCoupon(coupon)}
-                      disabled={
-                        appliedCoupon === coupon.code ||
-                        appliedCoupon === coupon.id ||
-                        applyingCouponId === coupon.id ||
-                        (payment?.coupon_usage &&
-                          payment.coupon_usage.id === coupon.id) ||
-                        payment?.is_applicable
-                      }
-                      className={`px-3 py-1 rounded font-medium text-sm transition-colors whitespace-nowrap min-w-[60px] h-8 flex items-center justify-center ${
-                        appliedCoupon === coupon.code ||
-                        appliedCoupon === coupon.id ||
-                        (payment?.coupon_usage &&
-                          payment.coupon_usage.id === coupon.id)
-                          ? "bg-green-100 text-green-700 cursor-not-allowed"
-                          : applyingCouponId === coupon.id
-                            ? "bg-blue-400  cursor-not-allowed"
-                            : "bg-blue-500  hover:bg-blue-600"
-                      }`}
-                    >
-                      {applyingCouponId === coupon.id ? (
-                        <PulseLoader />
-                      ) : appliedCoupon === coupon.code ||
-                        appliedCoupon === coupon.id ||
-                        (payment?.coupon_usage &&
-                          payment.coupon_usage.id === coupon.id) ? (
-                        "Applied"
-                      ) : (
-                        "Apply"
-                      )}
-                    </button>
+        {loading ? (
+          <div>
+            <h3 className="font-semibold text-base mb-4">Available Coupons</h3>
+            <div className="space-y-4">
+              <CouponSkeleton />
+              <CouponSkeleton />
+              <CouponSkeleton />
+            </div>
+          </div>
+        ) : availableCoupons?.length > 0 ? (
+          <>
+            <div>
+              <h3 className="font-semibold text-base mb-4">Available Coupons</h3>
+              <div className="space-y-4">
+                {applicableCoupons.length > 0 ? (
+                  applicableCoupons.map((coupon, index) =>
+                    renderCouponCard(coupon, index),
+                  )
+                ) : (
+                  <div className="text-gray-500 text-sm">
+                    No available coupons at the moment.
                   </div>
-                  {coupon?.is_applicable ? (
-                    <div>
-                      <div className="text-gray-600 text-sm mb-2">
-                        {coupon.description}
-                      </div>
-                      <div className="text-gray-500 text-xs">
-                        Expires on: {coupon.expiry}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="text-gray-600 text-sm mb-2">
-                      {coupon?.applicability_error}
-                    </div>
+                )}
+              </div>
+            </div>
+
+            {unavailableCoupons.length > 0 && (
+              <div className="mt-6">
+                <h3 className="font-semibold text-base mb-4 text-gray-700">
+                  Unavailable Coupons
+                </h3>
+                <div className="space-y-4">
+                  {unavailableCoupons.map((coupon, index) =>
+                    renderCouponCard(coupon, index),
                   )}
                 </div>
-              ))
-            ) : (
-              "No coupons available at the moment."
+              </div>
             )}
-          </div>
-        </div>
+          </>
+        ) : (
+          "No coupons available at the moment."
+        )}
       </div>
     </Drawer>,
     document.body,
@@ -626,6 +669,7 @@ const CouponSection = ({
   const ItineraryId = useSelector((state) => state.ItineraryId);
   const { currency } = useSelector((state) => state.currency);
   const [availableCount, setAvailableCount] = useState(0);
+  const [maxDiscount, setMaxDiscount] = useState(0);
 
   useEffect(() => {
     let isMounted = true;
@@ -638,7 +682,16 @@ const CouponSection = ({
           },
         );
         if (isMounted) {
-          setAvailableCount(response?.data?.length || 0);
+          const applicableCoupons = Array.isArray(response?.data)
+            ? response.data.filter((coupon) => coupon?.is_applicable)
+            : [];
+          setAvailableCount(applicableCoupons.length);
+          setMaxDiscount(
+            applicableCoupons.reduce(
+              (max, coupon) => Math.max(max, Number(coupon?.discount_value) || 0),
+              0,
+            ),
+          );
         }
       } catch (error) {
         console.error("Error fetching coupon count:", error);
@@ -733,10 +786,13 @@ const CouponSection = ({
                   {" "}
                   Apply
                 </button>
-                {availableCount > 0 && (
+                {availableCount > 0 && maxDiscount > 0 && (
                   <span className="text-xs font-400 leading-md text-green-600">
-                    {availableCount}{" "}
-                    {availableCount === 1 ? "coupon" : "coupons"} available
+                    Apply discounts up to{" "}
+                    {currencySymbols?.[currency]
+                      ? currencySymbols?.[currency]
+                      : "₹"}
+                    {maxDiscount.toLocaleString("en-IN")}
                   </span>
                 )}
               </div>
