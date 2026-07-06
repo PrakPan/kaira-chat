@@ -1460,48 +1460,48 @@ startEmptyIntake = false,
   // `transferEdgeMapRef` (populated by display_transfers effects) the way the
   // pre-URL handler did, and clear it when the param goes away (the drawer's
   // own actualClose strips `drawer` from the URL on close).
-  useEffect(() => {
-    const q = router.query;
-    if (q.drawer !== "editTransfer") {
-      setTransferDrawer((prev) => (prev.show ? { show: false } : prev));
-      return;
-    }
-    const edgeId = (q.initialEdgeId as string) || undefined;
-    const indexed = edgeId ? transferEdgeMapRef.current[edgeId] : undefined;
-    const bookingId = (q.bookingId as string) || undefined;
-    const oItineraryCity = (q.oItineraryCity as string) || undefined;
-    const dItineraryCity = (q.dItineraryCity as string) || undefined;
-    const doj = (q.doj as string) || undefined;
-    const initialMode = (q.initialMode as string) || indexed?.mode || undefined;
+  // useEffect(() => {
+  //   const q = router.query;
+  //   if (q.drawer !== "editTransfer") {
+  //     setTransferDrawer((prev) => (prev.show ? { show: false } : prev));
+  //     return;
+  //   }
+  //   const edgeId = (q.initialEdgeId as string) || undefined;
+  //   const indexed = edgeId ? transferEdgeMapRef.current[edgeId] : undefined;
+  //   const bookingId = (q.bookingId as string) || undefined;
+  //   const oItineraryCity = (q.oItineraryCity as string) || undefined;
+  //   const dItineraryCity = (q.dItineraryCity as string) || undefined;
+  //   const doj = (q.doj as string) || undefined;
+  //   const initialMode = (q.initialMode as string) || indexed?.mode || undefined;
 
-    setTransferDrawer({
-      show: true,
-      routeId: bookingId,
-      check_in: doj,
-      booking_type: "oneway",
-      initialMode,
-      initialEdgeId: edgeId,
-      isMercury: true,
-      origin: indexed?.from_city_id,
-      destination: indexed?.to_city_id,
-      originCityId: indexed?.from_city_id,
-      destinationCityId: indexed?.to_city_id,
-      origin_itinerary_city_id:
-        oItineraryCity ?? indexed?.from_itinerary_city_id,
-      destination_itinerary_city_id:
-        dItineraryCity ?? indexed?.to_itinerary_city_id,
-      city: indexed?.from_city,
-      dcity: indexed?.to_city,
-    });
-  }, [
-    router.query.drawer,
-    router.query.bookingId,
-    router.query.oItineraryCity,
-    router.query.dItineraryCity,
-    router.query.doj,
-    router.query.initialMode,
-    router.query.initialEdgeId,
-  ]);
+  //   setTransferDrawer({
+  //     show: true,
+  //     routeId: bookingId,
+  //     check_in: doj,
+  //     booking_type: "oneway",
+  //     initialMode,
+  //     initialEdgeId: edgeId,
+  //     isMercury: true,
+  //     origin: indexed?.from_city_id,
+  //     destination: indexed?.to_city_id,
+  //     originCityId: indexed?.from_city_id,
+  //     destinationCityId: indexed?.to_city_id,
+  //     origin_itinerary_city_id:
+  //       oItineraryCity ?? indexed?.from_itinerary_city_id,
+  //     destination_itinerary_city_id:
+  //       dItineraryCity ?? indexed?.to_itinerary_city_id,
+  //     city: indexed?.from_city,
+  //     dcity: indexed?.to_city,
+  //   });
+  // }, [
+  //   router.query.drawer,
+  //   router.query.bookingId,
+  //   router.query.oItineraryCity,
+  //   router.query.dItineraryCity,
+  //   router.query.doj,
+  //   router.query.initialMode,
+  //   router.query.initialEdgeId,
+  // ]);
 
   // Visa / eSIM ancillary drawers — opened by visa.open / esim.open widget
   // actions. Both drawers self-fetch their own catalogue data so we only
