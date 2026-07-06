@@ -27,6 +27,7 @@
     scrollThresholds: new Set(),
     isInitialized: false,
     pendingFlush: false,
+    lastPageUrl: null,
     stats: {
       eventsSent: 0,
       eventsRetried: 0,
@@ -145,7 +146,7 @@
     const now = new Date();
     // Hoist identity fields out of properties so they live only at the top
     // level (like session_id) instead of being duplicated inside properties.
-    const { itinerary_id, session_id, ...restProperties } = properties;
+    const { itinerary_id, session_id, referrer, ...restProperties } = properties;
     return {
       event: eventName,
       occurred_at: toISTString(now),
@@ -159,7 +160,10 @@
       properties: {
         ...restProperties,
         page_url: location.href,
-        referrer: document.referrer || '',
+        // Prefer an explicitly-provided referrer (e.g. the previous SPA route);
+        // document.referrer only reflects the full page load and is stale for
+        // client-side navigations.
+        referrer: referrer != null ? referrer : (document.referrer || ''),
         timestamp: now.getTime(),
         anonymous_id: analyticsState.anonymousId
       }
@@ -392,10 +396,17 @@
 
   const trackPageView = (page, title, itineraryId = null) => {
     analyticsState.scrollThresholds.clear();
-    return track('page_view', {
+    // For SPA navigations document.referrer stays stuck on the original full
+    // page load, so use the previous route we tracked as the referrer. Falls
+    // back to document.referrer for the first page view of the document.
+    const referrer = analyticsState.lastPageUrl || document.referrer || '';
+    const result = track('page_view', {
       page_title: title,
-      itinerary_id: itineraryId
+      itinerary_id: itineraryId,
+      referrer
     });
+    analyticsState.lastPageUrl = location.href;
+    return result;
   };
 
   const trackItineraryPageView = (itineraryId, isFirstVisit = false) => {
