@@ -283,7 +283,7 @@ const usePaymentGateway = (props) => {
       const verifyPayload = paymentGatewayService.prepareVerifyPayload(response, gateway);
 
       const res = await axios.post(
-        `https://mercury.tarzanway.com/payment/verify/`,
+        `https://dev.mercury.tarzanway.com/payment/verify/`,
         verifyPayload,
         { headers: { Authorization: `Bearer ${props?.token}` } }
       );
