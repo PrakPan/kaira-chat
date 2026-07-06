@@ -43,9 +43,15 @@ import IntakeFormCard from "./IntakeForm";
 import OtpCard from "./IntakeForm/OtpCard";
 import { parseFormFields, parseShowIntakeForm, parseIntakeFormWidgetId, isIntakeFormWidgetId } from "./IntakeForm/intakePrompt";
 
-const CHATKIT_API_URL = "https://dev.chat.tarzanway.com/chatkit";
+const CHATKIT_API_URL = "https://chat.tarzanway.com/chatkit";
 const PAGINATION_SCROLL_THRESHOLD = 80;
-const CHATKIT = "https://dev.chat.tarzanway.com"
+const CHATKIT = "https://chat.tarzanway.com"
+
+// Fallback lead-in copy shown above the sign-in card when a restored thread
+// carries no `prompt_login` effect to source the message from. Mirrors the
+// server's standard save-our-work `prompt_login` message.
+const DEFAULT_PROMPT_LOGIN_MESSAGE =
+  "Quick login so I can save our work as we go. You won't lose a thing, and your ₹5,000 credit locks in. 👇";
 
 export interface AttachmentFile {
   /** Temporary local ID (before server responds) or server-assigned ID */
@@ -258,7 +264,7 @@ function useUserLocationData() {
         const ipRes = await fetch("https://api.ipify.org?format=json");
         const { ip } = await ipRes.json();
         const locRes = await fetch(
-          `https://dev.mercury.tarzanway.com/api/v1/geos/search/user_location/?ip=${ip}`,
+          `https://mercury.tarzanway.com/api/v1/geos/search/user_location/?ip=${ip}`,
         );
         const data: UserLocationData = await locRes.json();
         localStorage.setItem("userLocationData", JSON.stringify(data));
@@ -1234,6 +1240,15 @@ startEmptyIntake = false,
     isMercury?: boolean;
   }>({ show: false });
 
+  // Selected-transfer working copy the TransferEditDrawer mutates as the user
+  // picks a suggestion (edge/iata/mode). Required prop — the drawer calls
+  // setSelectedBooking() on select, so omitting it crashes on the first click.
+  // Mirrors the state /itinerary threads down into TransferEditDrawer.
+  const [selectedBooking, setSelectedBooking] = useState<any>({
+    id: null,
+    name: null,
+  });
+
   // Lookup map built from display_transfers effects so transfer.select
   // widget actions (which carry only an edge id) can be expanded into the
   // full context TransferEditDrawer needs to skip its mode-selection step.
@@ -1433,6 +1448,60 @@ startEmptyIntake = false,
       router.events.off("routeChangeComplete", syncFromUrl);
     };
   }, [router, sightseeingDrawer.show]);
+
+  // Transfer edit drawer: URL-driven open/close (the reader for the transfer
+  // card CTA). The transfer.* / open_transfer_drawer handler only pushes
+  // `?drawer=editTransfer&bookingId=&oItineraryCity=&dItineraryCity=&doj=
+  // &initialMode=&initialEdgeId=` so the open drawer is deep-linkable and
+  // survives refresh/share — mirroring the /itinerary transfer URL. Without
+  // this effect nothing sets `transferDrawer.show`, so the URL updates in the
+  // address bar but the drawer never opens. We hydrate the drawer's full
+  // context from the query params, reconstructing city/mode metadata from
+  // `transferEdgeMapRef` (populated by display_transfers effects) the way the
+  // pre-URL handler did, and clear it when the param goes away (the drawer's
+  // own actualClose strips `drawer` from the URL on close).
+  useEffect(() => {
+    const q = router.query;
+    if (q.drawer !== "editTransfer") {
+      setTransferDrawer((prev) => (prev.show ? { show: false } : prev));
+      return;
+    }
+    const edgeId = (q.initialEdgeId as string) || undefined;
+    const indexed = edgeId ? transferEdgeMapRef.current[edgeId] : undefined;
+    const bookingId = (q.bookingId as string) || undefined;
+    const oItineraryCity = (q.oItineraryCity as string) || undefined;
+    const dItineraryCity = (q.dItineraryCity as string) || undefined;
+    const doj = (q.doj as string) || undefined;
+    const initialMode = (q.initialMode as string) || indexed?.mode || undefined;
+
+    setTransferDrawer({
+      show: true,
+      routeId: bookingId,
+      check_in: doj,
+      booking_type: "oneway",
+      initialMode,
+      initialEdgeId: edgeId,
+      isMercury: true,
+      origin: indexed?.from_city_id,
+      destination: indexed?.to_city_id,
+      originCityId: indexed?.from_city_id,
+      destinationCityId: indexed?.to_city_id,
+      origin_itinerary_city_id:
+        oItineraryCity ?? indexed?.from_itinerary_city_id,
+      destination_itinerary_city_id:
+        dItineraryCity ?? indexed?.to_itinerary_city_id,
+      city: indexed?.from_city,
+      dcity: indexed?.to_city,
+    });
+  }, [
+    router.query.drawer,
+    router.query.bookingId,
+    router.query.oItineraryCity,
+    router.query.dItineraryCity,
+    router.query.doj,
+    router.query.initialMode,
+    router.query.initialEdgeId,
+  ]);
 
   // Visa / eSIM ancillary drawers — opened by visa.open / esim.open widget
   // actions. Both drawers self-fetch their own catalogue data so we only
@@ -1654,7 +1723,7 @@ const handleSessionCreated = useCallback((ourSessionId: string) => {
   // ── useChat ───────────────────────────────────────────────────────────────
   const apiUrl =
     botMode === "p2"
-      ? "https://dev.chat.tarzanway.com/chatkit/p2"
+      ? "https://chat.tarzanway.com/chatkit/p2"
       : CHATKIT_API_URL;
 
   // Stable onEffect wrapper — must be a named useCallback, never inline inside
@@ -2999,11 +3068,30 @@ useEffect(() => {
     const isP2Restore =
       botModeRef.current === "p2" || threadIsCompleted;
     const showRestoreLoginCard = !(isLoggedInRef.current || isP2Restore);
+    // Lead-in line rendered as a normal Kaira bubble above the restored login
+    // card. Source it from the thread's first `prompt_login` effect (there can
+    // be several across the thread — the first is the one that armed sign-in);
+    // fall back to the standard save-our-work copy when none is present.
+    const firstPromptLogin = itineraryEffects.find(
+      (e: any) => e?.name === "prompt_login",
+    );
+    const restoreLoginMessage =
+      (typeof firstPromptLogin?.data?.message === "string" &&
+        firstPromptLogin.data.message.trim()) ||
+      DEFAULT_PROMPT_LOGIN_MESSAGE;
+    const restoreBase = Date.now();
     const restoredWithLogin = showRestoreLoginCard
       ? [
           ...restored,
           {
-            id: `login-card-${restoredThread.id ?? "restore"}-${Date.now()}`,
+            id: `login-msg-${restoredThread.id ?? "restore"}-${restoreBase}`,
+            role: "assistant" as const,
+            content: restoreLoginMessage,
+            timestamp: new Date(),
+            type: "text" as const,
+          },
+          {
+            id: `login-card-${restoredThread.id ?? "restore"}-${restoreBase}`,
             role: "assistant" as const,
             content: "",
             timestamp: new Date(),
@@ -4409,6 +4497,8 @@ const handleShowLogin = useCallback(() => {
           }
           city={transferDrawer.city}
           dcity={transferDrawer.dcity}
+          selectedBooking={selectedBooking}
+          setSelectedBooking={setSelectedBooking}
           getPaymentHandler={getPaymentInfo}
           handleClose={() => setTransferDrawer({ show: false })}
         />

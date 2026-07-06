@@ -14,7 +14,7 @@ import {
   clearUserAvatarColor,
 } from "../../utils/avatarColor";
 
-const CHATKIT_API_URL = "https://dev.chat.tarzanway.com/chatkit";
+const CHATKIT_API_URL = "https://chat.tarzanway.com/chatkit";
 
 interface Thread {
   id: string;
