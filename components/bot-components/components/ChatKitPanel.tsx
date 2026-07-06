@@ -47,6 +47,12 @@ const CHATKIT_API_URL = "https://chat.tarzanway.com/chatkit";
 const PAGINATION_SCROLL_THRESHOLD = 80;
 const CHATKIT = "https://chat.tarzanway.com"
 
+// Fallback lead-in copy shown above the sign-in card when a restored thread
+// carries no `prompt_login` effect to source the message from. Mirrors the
+// server's standard save-our-work `prompt_login` message.
+const DEFAULT_PROMPT_LOGIN_MESSAGE =
+  "Quick login so I can save our work as we go. You won't lose a thing, and your ₹5,000 credit locks in. 👇";
+
 export interface AttachmentFile {
   /** Temporary local ID (before server responds) or server-assigned ID */
   id: string;
@@ -2999,11 +3005,30 @@ useEffect(() => {
     const isP2Restore =
       botModeRef.current === "p2" || threadIsCompleted;
     const showRestoreLoginCard = !(isLoggedInRef.current || isP2Restore);
+    // Lead-in line rendered as a normal Kaira bubble above the restored login
+    // card. Source it from the thread's first `prompt_login` effect (there can
+    // be several across the thread — the first is the one that armed sign-in);
+    // fall back to the standard save-our-work copy when none is present.
+    const firstPromptLogin = itineraryEffects.find(
+      (e: any) => e?.name === "prompt_login",
+    );
+    const restoreLoginMessage =
+      (typeof firstPromptLogin?.data?.message === "string" &&
+        firstPromptLogin.data.message.trim()) ||
+      DEFAULT_PROMPT_LOGIN_MESSAGE;
+    const restoreBase = Date.now();
     const restoredWithLogin = showRestoreLoginCard
       ? [
           ...restored,
           {
-            id: `login-card-${restoredThread.id ?? "restore"}-${Date.now()}`,
+            id: `login-msg-${restoredThread.id ?? "restore"}-${restoreBase}`,
+            role: "assistant" as const,
+            content: restoreLoginMessage,
+            timestamp: new Date(),
+            type: "text" as const,
+          },
+          {
+            id: `login-card-${restoredThread.id ?? "restore"}-${restoreBase}`,
             role: "assistant" as const,
             content: "",
             timestamp: new Date(),
