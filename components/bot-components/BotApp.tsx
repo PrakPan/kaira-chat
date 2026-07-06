@@ -3171,7 +3171,7 @@ Start Location: ${details.startLocation}`;
               is chosen; its image swaps with the chosen destination. Before a
               pick we keep the StartScreen above. inset-0 keeps the hero within
               the left pane so the bottom TrustIndicators bar stays visible. */}
-          <div
+         {botMode != "p2" ? <div
             className={`absolute inset-0 z-20 transition-opacity duration-500 ease-in-out ${
  intakeActive && (intakeDestination || startEmptyIntake)
  ? "pointer-events-auto"
@@ -3182,10 +3182,10 @@ Start Location: ${details.startLocation}`;
                 intakeActive && (intakeDestination || startEmptyIntake) ? 1 : 0,
             }}
           >
-            {intakeActive && (intakeDestination || startEmptyIntake) && (
+            {intakeActive && (intakeDestination || startEmptyIntake) && botMode != "p2" &&(
               <IntakeLeftPanel />
             )}
-          </div>
+          </div> : null}
 
           <style>{`#chatContainer::-webkit-scrollbar { display: none; }`}</style>
           <div
