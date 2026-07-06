@@ -4,6 +4,11 @@
 
 const STORAGE_KEY = "ttw_ad_attribution";
 
+// First page the user landed on this session (home `/`, a destination page, a
+// theme page, ...). Captured first-touch and persisted so it survives the
+// navigation to /chat and reaches the backend on chat/itinerary creation.
+const LANDING_PAGE_KEY = "ttw_landing_page";
+
 // Whitelist of params treated as ad attribution. Intentionally NOT "all query
 // params" — re-appending everything would leak internal UI state (slideIndex,
 // drawer, tailored-travel, ...) across the app.
@@ -65,6 +70,32 @@ export function getAdParams() {
   } catch (e) {
     return {};
   }
+}
+
+// Return the first landing page path persisted for this session ("" if none / SSR).
+export function getLandingPage() {
+  if (typeof window === "undefined") return "";
+  try {
+    return sessionStorage.getItem(LANDING_PAGE_KEY) || "";
+  } catch (e) {
+    return "";
+  }
+}
+
+// Capture the first page the user landed on this session (first-touch: only the
+// very first navigation is stored; later navigations leave it untouched).
+// Returns the currently stored landing page.
+export function captureLandingPage() {
+  if (typeof window === "undefined") return "";
+  const existing = getLandingPage();
+  if (existing) return existing;
+  const path = window.location.pathname;
+  try {
+    sessionStorage.setItem(LANDING_PAGE_KEY, path);
+  } catch (e) {
+    // ignore storage write failures (private mode, quota, etc.)
+  }
+  return path;
 }
 
 // Capture ad params from the current URL into sessionStorage.

@@ -21,7 +21,7 @@ import { changeUserLocation } from "../store/actions/userLocation";
 import { usePathname } from "next/navigation";
 import BotApp from "../components/bot-components/BotApp";
 import JupyterAnalytics from "../components/JupyterAnalytics";
-import { captureAdParams } from "../helper/adAttribution";
+import { captureAdParams, captureLandingPage } from "../helper/adAttribution";
 
 // Polyfill for requestIdleCallback (Safari compatibility)
 if (typeof window !== "undefined" && !window.requestIdleCallback) {
@@ -126,6 +126,10 @@ function MyApp({ Component, pageProps }) {
   // back onto the URL so they stay visible as the user navigates.
   useEffect(() => {
     if (!router.isReady) return;
+
+    // First-touch: remember the very first page the user landed on so it can be
+    // sent as `landing_page` when a chat is later initiated from /chat.
+    captureLandingPage();
 
     const persistAdParams = () => {
       const stored = captureAdParams();

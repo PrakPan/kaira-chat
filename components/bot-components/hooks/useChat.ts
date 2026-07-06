@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from "react";
-import { getAdParams } from "../../../helper/adAttribution";
+import { getAdParams, getLandingPage } from "../../../helper/adAttribution";
 import { isIntakeFormWidgetId } from "../components/IntakeForm/intakePrompt";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -172,9 +172,13 @@ export function buildSourceFields(): Record<string, unknown> {
   const stored = getAdParams();
   const merged: Record<string, unknown> = { ...stored, ...queryObj };
   const path = window.location.pathname + window.location.search;
+  // First page the user landed on this session (home, destination, theme, ...);
+  // falls back to the current path if capture missed (e.g. direct /chat entry).
+  const landing_page = getLandingPage() || window.location.pathname;
 
   return {
     path,
+    landing_page,
     platform,
     ...merged,
     source: merged.source || path || merged.utm_source,
