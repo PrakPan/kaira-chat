@@ -2514,12 +2514,17 @@ const RouteContainer = (props) => {
 
     const currentTransfer = transfer[currentStep - 1];
 
+    // In the chat/mercury flow oCityData isn't passed, so fall back to the
+    // widget's own leg date (check_in, sourced from the transfer card's
+    // transfer_date/date) before the itinerary-wide start_date. Otherwise the
+    // departure date/time defaults to the trip start (or Invalid Date when
+    // start_date is empty) instead of the date shown on the transfer card.
     const baseStartDate =
       oCityData?.start_date && oCityData?.duration != null
         ? addDaysToDate(oCityData.start_date, oCityData.duration)
         : oCityData?.id
-          ? oCityData?.start_date || start_date
-          : start_date;
+          ? oCityData?.start_date || check_in || start_date
+          : check_in || start_date;
 
     let calculatedStartTime;
 
@@ -3599,12 +3604,15 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
         }
       });
 
+      // Chat/mercury flow has no oCityData — use the widget's leg date
+      // (check_in) before the itinerary-wide start_date so the update payload
+      // carries the date shown on the transfer card.
       const baseStartDate =
         oCityData?.start_date && oCityData?.duration != null
           ? addDaysToDate(oCityData.start_date, oCityData.duration)
           : oCityData?.id
-            ? oCityData?.start_date || start_date
-            : start_date;
+            ? oCityData?.start_date || check_in || start_date
+            : check_in || start_date;
 
       const requestBody = {
         destination_itinerary_city: destination_itinerary_city_id,
@@ -3815,12 +3823,17 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
 
     const currentTransfer = transfer[currentStep - 1];
 
+    // In the chat/mercury flow oCityData isn't passed, so fall back to the
+    // widget's own leg date (check_in, sourced from the transfer card's
+    // transfer_date/date) before the itinerary-wide start_date. Otherwise the
+    // departure date/time defaults to the trip start (or Invalid Date when
+    // start_date is empty) instead of the date shown on the transfer card.
     const baseStartDate =
       oCityData?.start_date && oCityData?.duration != null
         ? addDaysToDate(oCityData.start_date, oCityData.duration)
         : oCityData?.id
-          ? oCityData?.start_date || start_date
-          : start_date;
+          ? oCityData?.start_date || check_in || start_date
+          : check_in || start_date;
 
     let calculatedStartTime;
 
