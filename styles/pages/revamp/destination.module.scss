@@ -1062,7 +1062,7 @@
   outline: 0;
   resize: none;
   font-family: inherit;
-  font-size: 15px;
+  font-size: 16px; // 16px min prevents iOS Safari auto-zoom on focus
   color: var(--ttw-ink);
   min-height: 28px;
   line-height: 1.5;

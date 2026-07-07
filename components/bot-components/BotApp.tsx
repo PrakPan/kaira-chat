@@ -2432,6 +2432,11 @@ export default function BotApp({
     setMobilePanel("chat");
     setLeftPanelMode("default");
     setIntakeActive(false);
+    // Reset startEmptyIntake too: chatKey bumps below remount ChatKitPanel,
+    // and a lingering startEmptyIntake=true would re-run its intake-injection
+    // effect (onIntakeFormStart → setIntakeActive(true)) and pop the
+    // IntakeLeftPanel hero back up on the fresh chat.
+    setStartEmptyIntake(false);
     dispatch(resetIntakeForm());
     setCompletingItineraryId(null);
     setLoaderDisplayText(null);
