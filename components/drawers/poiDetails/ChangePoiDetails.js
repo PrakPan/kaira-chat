@@ -400,7 +400,7 @@ export default function ChangePoiDetails(props) {
             {props.data?.prices?.total_price ? (
               <div className="flex flex-col gap-1">
                 <div className="flex flex-row gap-2 items-center ttw-type-body text-[#445069]">
-                  <span className="font-bold font-mono ttw-type-h4 md:ttw-type-h2 text-[#0b1220]">
+                  <span className="font-bold font-sans ttw-type-h4 md:ttw-type-h2 text-[#0b1220]">
                     ₹{getIndianPrice(Math.round(props.data.prices.total_price))}
                   </span>
                   {`for ${props.data.prices?.total_pax} people`}
@@ -665,7 +665,7 @@ const Amenity = ({ index, amenity, handleAmenityChange, travelers }) => {
       </div>
 
       <div className="flex items-center justify-between">
-        <div className="font-semibold font-mono ttw-type-h2 text-[#0b1220]">
+        <div className="font-semibold font-sans ttw-type-h2 text-[#0b1220]">
           ₹{getIndianPrice(amenity.price)}{" "}
           <span className="ttw-type-body font-normal font-sans text-[#8a93a6]">per person*</span>
         </div>

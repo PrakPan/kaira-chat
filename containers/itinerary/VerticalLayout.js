@@ -1016,7 +1016,7 @@ const CityItem = ({
   const { trackTransferBookingAdd, trackTransferBookingChange, trackTransferBookingDelete } = useAnalytics();
   const { id } = useSelector((state) => state.auth);
 
-  const { drawer, bookingId, oItineraryCity, dItineraryCity, drawerType,  doj, initialMode, initialEdgeId} =
+  const { drawer, bookingId, oItineraryCity, dItineraryCity, drawerType,  doj, initialMode, initialEdgeId, drawerSource} =
     router?.query;
 
   // Use Redux ItineraryId as the canonical ID (works on /chat/[sessionId] pages too)
@@ -2204,14 +2204,14 @@ useEffect(() => {
 
 
 
-      {((drawer == "editTransfer" &&
+      {((drawer == "editTransfer" && drawerSource !== "chat" &&
         (oItineraryCity == oCityData?.id || oItineraryCity == oCityData?.gmaps_place_id) &&
         (dItineraryCity == dCityData?.id || dItineraryCity == dCityData?.gmaps_place_id)) || drawerType == "multicity") && (
           <TransferEditDrawer
             mercury
             addOrEdit={"transferAdd"}
             showDrawer={
-              drawer == "editTransfer" &&
+              drawer == "editTransfer" && drawerSource !== "chat" &&
               (oItineraryCity == oCityData?.id || oItineraryCity == oCityData?.gmaps_place_id) &&
               (dItineraryCity == dCityData?.id || dItineraryCity == dCityData?.gmaps_place_id)
             }

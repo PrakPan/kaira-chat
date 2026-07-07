@@ -131,8 +131,13 @@ const reducer = (state = initialState, action) => {
         otpFail: false,
       };
     case actionTypes.AUTH_LOGOUT:
+      // Reset to a clean logged-out state. We intentionally do NOT spread
+      // `...state` here: user-detail fields (id, name, image, …) are added
+      // dynamically via AUTH_SETUSERDETAILS and aren't part of initialState, so
+      // spreading the old state would let them survive logout — leaving the app
+      // "half logged in" (e.g. still sending user_id and showing the user's
+      // letter avatar in chat).
       return {
-        ...state,
         ...initialState,
         checkAuthCompleted: true,
         showLogin: false,

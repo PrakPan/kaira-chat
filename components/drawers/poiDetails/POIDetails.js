@@ -895,7 +895,7 @@ const POIDetails = (props) => {
           {props.data?.cost ? (
             <div className="flex flex-row items-baseline gap-1">
               <span className="ttw-type-small text-[#445069]">Cost:</span>
-              <span className="ttw-type-body font-700 font-mono text-[#0b1220]">
+              <span className="ttw-type-body font-700 font-sans text-[#0b1220]">
                 ₹{props.data.cost}
               </span>
               <span className="ttw-type-small font-400 font-sans text-[#445069]">
@@ -905,7 +905,7 @@ const POIDetails = (props) => {
           ) : props.data?.pricing?.total_price ? (
             <div className="flex flex-row items-baseline gap-1">
               <span className="ttw-type-small text-[#445069]">Cost:</span>
-              <span className="ttw-type-body font-700 font-mono text-[#0b1220]">
+              <span className="ttw-type-body font-700 font-sans text-[#0b1220]">
                 ₹{props.data.pricing.total_price}
               </span>
               <span className="ttw-type-small font-400 font-sans text-[#445069]">

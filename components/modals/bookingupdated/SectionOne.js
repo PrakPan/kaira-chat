@@ -33,22 +33,22 @@ const Section = (props) => {
 
   return (
     <div>
-      <div className="my-[1rem]">
-        <div> <Image src="/backarrow.svg" className="cursor-pointer" width={22} height={2} onClick={() => {
+      <div className="flex flex-row items-center gap-3 my-[1rem]">
+        <Image src="/backarrow.svg" className="cursor-pointer" width={22} height={2} onClick={() => {
           try {
             props?.handleClose();
           } catch (error) {
             console.log("unable to close:", error);
           }
-        }} /> </div>
+        }} />
+        <p className="mb-zero ttw-type-h3 text-[#0b1220]" style={{ fontWeight: 500 }}>
+          {props?.clickType == "Add" ? "Add" : "Changing"} Stays in{" "}
+          <span className="ttw-type-serif">
+            {props?.booking_city ? props?.booking_city : "City"}
+          </span>
+        </p>
       </div>
       <div className="flex flex-column gap-xl">
-        <div className="flex flex-row">
-          <p className="text-xl mb-zero font-600 leading-2xl">
-            {props?.clickType == "Add" ? "Add" : "Changing"} Stays in{" "}
-            {props?.booking_city ? props?.booking_city : "City"}
-          </p>
-        </div>
         <div className="flex flex-row items-center gap-xs">
           <div className="flex flex  flex-1  flex-row items-center relative">
             <span className="absolute left-xs" onClick={searchHandler}>{svgIcons.search}</span>

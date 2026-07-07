@@ -829,7 +829,7 @@ const Booking = (props) => {
           show={props?.showBookingModal}
           anchor={"right"}
           backdrop
-          bgColor="#fafaf5"
+          bgColor="#ffffff"
           style={{ zIndex: 1251 }}
           className=" "
           onHide={handleClose}
@@ -859,7 +859,7 @@ const Booking = (props) => {
               )}
             </div>
 
-            <div className="lg:w-[50vw] w-[100vw] py-4 top-0 bg-[#fafaf5] z-[900] px-6 max-ph:px-4">
+            <div className="lg:w-[50vw] w-[100vw] py-4 top-0 bg-white z-[900] px-6 max-ph:px-4">
               <SectionOne
                 booking_city={
                   currentBooking?.city_name || props?.selectedBooking?.city_name

@@ -248,7 +248,7 @@ export default function NewActivityBooking(props) {
                     </div>
                   )}
                   <div className="flex flex-col md:flex-row gap-2 items-baseline">
-                  <div className="text-text-charcolblack text-lg font-700 leading-2xl-md max-ph:mb-sm font-mono">
+                  <div className="text-text-charcolblack text-lg font-700 leading-2xl-md max-ph:mb-sm font-sans">
                     <span>
                       {currency?.currency ? currencySymbols?.[currency?.currency] : `₹`}
                     </span>
@@ -507,7 +507,7 @@ export default function NewActivityBooking(props) {
                   </div>
                 )}
                 <div className="flex gap-1">
-                  <div className="text-text-charcolblack text-lg font-700 leading-2xl-md max-ph:mb-sm font-mono">
+                  <div className="text-text-charcolblack text-lg font-700 leading-2xl-md max-ph:mb-sm font-sans">
                     <span>{currency?.currency ? currencySymbols?.[currency?.currency] : `₹`}</span>
                     {getIndianPrice(Math.round(props.data.pricing.total_price))}
                   </div>

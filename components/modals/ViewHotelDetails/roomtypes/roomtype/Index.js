@@ -256,7 +256,7 @@ const RoomType = (props) => {
 
       <div className="flex flex-row items-center justify-between gap-x-3">
         <div className="flex flex-col gap-0 font-bold">
-          <div className="font-mono text-[#0b1220] text-md-lg font-700 leading-2xl-md whitespace-nowrap">
+          <div className="font-sans text-[#0b1220] text-md-lg font-700 leading-2xl-md whitespace-nowrap">
             {`${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}` + getIndianPrice(Math.round(props.price)) + "/-"}
           </div>
           <div className="text-[#445069] text-sm-md font-400 leading-lg whitespace-nowrap">

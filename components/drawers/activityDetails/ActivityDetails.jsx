@@ -988,7 +988,7 @@ export default function ActivityDetails(props) {
                             ) : null}
                           </div>
                         </div>
-                        <div className="text-right font-mono text-[18px] font-semibold text-[#0b1220]">
+                        <div className="text-right font-sans text-[18px] font-semibold text-[#0b1220]">
                           {`${
                             currency?.currency
                               ? currencySymbols?.[currency?.currency]
@@ -1039,7 +1039,7 @@ export default function ActivityDetails(props) {
           <div className="flex items-center justify-between gap-4">
             <div className="flex min-w-0 flex-col">
               {selectedPackage?.total_price ? (
-                <span className="font-mono text-[24px] font-semibold leading-none text-[#0b1220]">
+                <span className="font-sans text-[24px] font-semibold leading-none text-[#0b1220]">
                   {`${
                     currency?.currency
                       ? currencySymbols?.[currency?.currency]
@@ -1150,7 +1150,7 @@ export const Amenity = ({ index, amenity, handleAmenityChange, travelers }) => {
         </div>
       ) : (
         <div className="mt-3 flex items-end justify-between">
-          <div className="font-mono font-semibold text-[20px] text-[#0b1220]">
+          <div className="font-sans font-semibold text-[20px] text-[#0b1220]">
             {`${
               currency?.currency ? currencySymbols?.[currency?.currency] : "₹"
             }`}

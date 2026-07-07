@@ -1145,7 +1145,7 @@ const TransferEditDrawer = (props) => {
       show={showDrawer}
       anchor={"right"}
       backdrop
-      bgColor="#fafaf5"
+      bgColor="#ffffff"
       style={{ zIndex: 1501 }}
       className=" pb-0 md:pb-[100px]"
       width={"50%"}
@@ -1168,7 +1168,7 @@ const TransferEditDrawer = (props) => {
       }}
     >
       <div
-        className={`relative px-xl bg-[#fafaf5] z-[900] flex flex-col gap-xl pt-4 ${
+        className={`relative px-xl bg-white z-[900] flex flex-col gap-xl pt-4 ${
  transfers[selectedTransferIndex]?.transfers?.length > 1
  ? "md:pb-0"
  : "md:pb-[30px]"
@@ -2514,12 +2514,17 @@ const RouteContainer = (props) => {
 
     const currentTransfer = transfer[currentStep - 1];
 
+    // In the chat/mercury flow oCityData isn't passed, so fall back to the
+    // widget's own leg date (check_in, sourced from the transfer card's
+    // transfer_date/date) before the itinerary-wide start_date. Otherwise the
+    // departure date/time defaults to the trip start (or Invalid Date when
+    // start_date is empty) instead of the date shown on the transfer card.
     const baseStartDate =
       oCityData?.start_date && oCityData?.duration != null
         ? addDaysToDate(oCityData.start_date, oCityData.duration)
         : oCityData?.id
-          ? oCityData?.start_date || start_date
-          : start_date;
+          ? oCityData?.start_date || check_in || start_date
+          : check_in || start_date;
 
     let calculatedStartTime;
 
@@ -3599,12 +3604,15 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
         }
       });
 
+      // Chat/mercury flow has no oCityData — use the widget's leg date
+      // (check_in) before the itinerary-wide start_date so the update payload
+      // carries the date shown on the transfer card.
       const baseStartDate =
         oCityData?.start_date && oCityData?.duration != null
           ? addDaysToDate(oCityData.start_date, oCityData.duration)
           : oCityData?.id
-            ? oCityData?.start_date || start_date
-            : start_date;
+            ? oCityData?.start_date || check_in || start_date
+            : check_in || start_date;
 
       const requestBody = {
         destination_itinerary_city: destination_itinerary_city_id,
@@ -3815,12 +3823,17 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
 
     const currentTransfer = transfer[currentStep - 1];
 
+    // In the chat/mercury flow oCityData isn't passed, so fall back to the
+    // widget's own leg date (check_in, sourced from the transfer card's
+    // transfer_date/date) before the itinerary-wide start_date. Otherwise the
+    // departure date/time defaults to the trip start (or Invalid Date when
+    // start_date is empty) instead of the date shown on the transfer card.
     const baseStartDate =
       oCityData?.start_date && oCityData?.duration != null
         ? addDaysToDate(oCityData.start_date, oCityData.duration)
         : oCityData?.id
-          ? oCityData?.start_date || start_date
-          : start_date;
+          ? oCityData?.start_date || check_in || start_date
+          : check_in || start_date;
 
     let calculatedStartTime;
 
@@ -3971,7 +3984,7 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
   }, [showTimeDropdown]); // Remove showDateDropdown from dependency array
 
   return (
-    <div className="w-full bg-[#fafaf5]">
+    <div className="w-full bg-white">
       {
        showWarningModal &&
         ReactDOM.createPortal(
@@ -8008,7 +8021,7 @@ const toggleTransferDetails = (priceOptionId) => {
                                   )}
                                   {isEditing ? (
                                     <div className="flex items-center gap-1">
-                                      <span className="ttw-type-body font-700 font-mono text-[#0b1220]">
+                                      <span className="ttw-type-body font-700 font-sans text-[#0b1220]">
                                         {currencySymbol}
                                       </span>
                                       <input
@@ -8029,7 +8042,7 @@ const toggleTransferDetails = (priceOptionId) => {
                                           if (e.key === "Enter")
                                             setEditingPriceId(null);
                                         }}
-                                        className="w-24 ttw-type-body font-700 font-mono text-[#0b1220] outline-none border-b border-[#f7e700] bg-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                        className="w-24 ttw-type-body font-700 font-sans text-[#0b1220] outline-none border-b border-[#f7e700] bg-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                       />
                                       <span className="ttw-type-small font-400 font-sans text-[#445069]">
                                         per person
@@ -8057,7 +8070,7 @@ const toggleTransferDetails = (priceOptionId) => {
                                     </div>
                                   ) : (
                                     <div className="flex items-center gap-1">
-                                      <span className="ttw-type-body font-700 font-mono text-[#0b1220]">
+                                      <span className="ttw-type-body font-700 font-sans text-[#0b1220]">
                                         {currencySymbol} {perPersonValue}
                                       </span>
                                       <span className="ttw-type-small font-400 font-sans text-[#445069]">
