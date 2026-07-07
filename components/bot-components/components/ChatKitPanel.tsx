@@ -47,6 +47,12 @@ const CHATKIT_API_URL = "https://dev.chat.tarzanway.com/chatkit";
 const PAGINATION_SCROLL_THRESHOLD = 80;
 const CHATKIT = "https://dev.chat.tarzanway.com"
 
+// Fallback lead-in copy shown above the sign-in card when a restored thread
+// carries no `prompt_login` effect to source the message from. Mirrors the
+// server's standard save-our-work `prompt_login` message.
+const DEFAULT_PROMPT_LOGIN_MESSAGE =
+  "Quick login so I can save our work as we go. You won't lose a thing, and your ₹5,000 credit locks in. 👇";
+
 export interface AttachmentFile {
   /** Temporary local ID (before server responds) or server-assigned ID */
   id: string;
@@ -1234,6 +1240,15 @@ startEmptyIntake = false,
     isMercury?: boolean;
   }>({ show: false });
 
+  // Selected-transfer working copy the TransferEditDrawer mutates as the user
+  // picks a suggestion (edge/iata/mode). Required prop — the drawer calls
+  // setSelectedBooking() on select, so omitting it crashes on the first click.
+  // Mirrors the state /itinerary threads down into TransferEditDrawer.
+  const [selectedBooking, setSelectedBooking] = useState<any>({
+    id: null,
+    name: null,
+  });
+
   // Lookup map built from display_transfers effects so transfer.select
   // widget actions (which carry only an edge id) can be expanded into the
   // full context TransferEditDrawer needs to skip its mode-selection step.
@@ -1433,6 +1448,77 @@ startEmptyIntake = false,
       router.events.off("routeChangeComplete", syncFromUrl);
     };
   }, [router, sightseeingDrawer.show]);
+
+  // Transfer edit drawer: URL-driven open/close (the reader for the transfer
+  // card CTA). The transfer.* / open_transfer_drawer handler only pushes
+  // `?drawer=editTransfer&bookingId=&oItineraryCity=&dItineraryCity=&doj=
+  // &initialMode=&initialEdgeId=` so the open drawer is deep-linkable and
+  // survives refresh/share — mirroring the /itinerary transfer URL. Without
+  // this effect nothing sets `transferDrawer.show`, so the URL updates in the
+  // address bar but the drawer never opens. We hydrate the drawer's full
+  // context from the query params, reconstructing city/mode metadata from
+  // `transferEdgeMapRef` (populated by display_transfers effects) the way the
+  // pre-URL handler did, and clear it when the param goes away (the drawer's
+  // own actualClose strips `drawer` from the URL on close).
+  useEffect(() => {
+    const q = router.query;
+    // Only react to chat-originated opens (drawerSource === "chat"). The
+    // /itinerary VerticalLayout opens its OWN TransferEditDrawer on
+    // `drawer=editTransfer` (e.g. its "Add Transfer" CTA) without this marker;
+    // reacting to those would stack a second, duplicate drawer.
+    if (q.drawer !== "editTransfer" || q.drawerSource !== "chat") {
+      setTransferDrawer((prev) => (prev.show ? { show: false } : prev));
+      return;
+    }
+    const edgeId = (q.initialEdgeId as string) || undefined;
+    const indexed = edgeId ? transferEdgeMapRef.current[edgeId] : undefined;
+    const bookingId = (q.bookingId as string) || undefined;
+    const oItineraryCity = (q.oItineraryCity as string) || undefined;
+    const dItineraryCity = (q.dItineraryCity as string) || undefined;
+    // Hydrate the search context from the URL first (survives refresh / deep-
+    // link / share), falling back to the in-memory transferEdgeMapRef only to
+    // fill gaps for same-session clicks. Without the URL fallbacks the date and
+    // origin/destination stay blank whenever the ref is empty.
+    const doj = (q.doj as string) || indexed?.check_in || undefined;
+    const oCityId = (q.oCityId as string) || indexed?.from_city_id || undefined;
+    const dCityId = (q.dCityId as string) || indexed?.to_city_id || undefined;
+    const oCity = (q.oCity as string) || indexed?.from_city || undefined;
+    const dCity = (q.dCity as string) || indexed?.to_city || undefined;
+    const initialMode = (q.initialMode as string) || indexed?.mode || undefined;
+
+    setTransferDrawer({
+      show: true,
+      routeId: bookingId,
+      check_in: doj,
+      booking_type: "oneway",
+      initialMode,
+      initialEdgeId: edgeId,
+      isMercury: true,
+      origin: oCityId,
+      destination: dCityId,
+      originCityId: oCityId,
+      destinationCityId: dCityId,
+      origin_itinerary_city_id:
+        oItineraryCity ?? indexed?.from_itinerary_city_id,
+      destination_itinerary_city_id:
+        dItineraryCity ?? indexed?.to_itinerary_city_id,
+      city: oCity,
+      dcity: dCity,
+    });
+  }, [
+    router.query.drawer,
+    router.query.drawerSource,
+    router.query.bookingId,
+    router.query.oItineraryCity,
+    router.query.dItineraryCity,
+    router.query.doj,
+    router.query.oCityId,
+    router.query.dCityId,
+    router.query.oCity,
+    router.query.dCity,
+    router.query.initialMode,
+    router.query.initialEdgeId,
+  ]);
 
   // Visa / eSIM ancillary drawers — opened by visa.open / esim.open widget
   // actions. Both drawers self-fetch their own catalogue data so we only
@@ -2999,11 +3085,30 @@ useEffect(() => {
     const isP2Restore =
       botModeRef.current === "p2" || threadIsCompleted;
     const showRestoreLoginCard = !(isLoggedInRef.current || isP2Restore);
+    // Lead-in line rendered as a normal Kaira bubble above the restored login
+    // card. Source it from the thread's first `prompt_login` effect (there can
+    // be several across the thread — the first is the one that armed sign-in);
+    // fall back to the standard save-our-work copy when none is present.
+    const firstPromptLogin = itineraryEffects.find(
+      (e: any) => e?.name === "prompt_login",
+    );
+    const restoreLoginMessage =
+      (typeof firstPromptLogin?.data?.message === "string" &&
+        firstPromptLogin.data.message.trim()) ||
+      DEFAULT_PROMPT_LOGIN_MESSAGE;
+    const restoreBase = Date.now();
     const restoredWithLogin = showRestoreLoginCard
       ? [
           ...restored,
           {
-            id: `login-card-${restoredThread.id ?? "restore"}-${Date.now()}`,
+            id: `login-msg-${restoredThread.id ?? "restore"}-${restoreBase}`,
+            role: "assistant" as const,
+            content: restoreLoginMessage,
+            timestamp: new Date(),
+            type: "text" as const,
+          },
+          {
+            id: `login-card-${restoredThread.id ?? "restore"}-${restoreBase}`,
             role: "assistant" as const,
             content: "",
             timestamp: new Date(),
@@ -3834,6 +3939,32 @@ const handleShowLogin = useCallback(() => {
                         payload.check_in ??
                         payload.transfer_date ??
                         indexed?.check_in) as string | undefined;
+                    // The search inside the drawer (mercury fetchTransferMode)
+                    // keys off origin/destination db-city ids and shows the
+                    // city names + date. Push these into the URL too so the
+                    // reader effect can rebuild the full context on refresh /
+                    // deep-link / share (when transferEdgeMapRef is empty) and
+                    // for legacy transfer.select payloads (indexed = { mode }
+                    // only). Without them the drawer opens but the search runs
+                    // with undefined cities and a blank date.
+                    const oCityId =
+                      (payload.originCityId ??
+                        payload.origin_city_id ??
+                        firstSegment?.origin_city_id ??
+                        indexed?.from_city_id) as string | undefined;
+                    const dCityId =
+                      (payload.destinationCityId ??
+                        payload.destination_city_id ??
+                        firstSegment?.destination_city_id ??
+                        indexed?.to_city_id) as string | undefined;
+                    const oCity =
+                      (payload.from_city ??
+                        payload.origin_city ??
+                        indexed?.from_city) as string | undefined;
+                    const dCity =
+                      (payload.to_city ??
+                        payload.destination_city ??
+                        indexed?.to_city) as string | undefined;
 
                     router.push(
                       {
@@ -3842,11 +3973,22 @@ const handleShowLogin = useCallback(() => {
                           ...router.query,
                           id: sessionIdRef.current,
                           drawer: "editTransfer",
+                          // Marks this open as chat-originated so only the
+                          // ChatKitPanel reader effect reacts. The /itinerary
+                          // VerticalLayout renders its own TransferEditDrawer on
+                          // `drawer=editTransfer` too, so without this marker its
+                          // "Add Transfer" CTA and this effect would both fire
+                          // and stack two drawers.
+                          drawerSource: "chat",
                           drawerType: "",
                           bookingId: bookingId ?? "",
                           oItineraryCity: oItineraryCity ?? "",
                           dItineraryCity: dItineraryCity ?? "",
                           doj: doj ?? "",
+                          oCityId: oCityId ?? "",
+                          dCityId: dCityId ?? "",
+                          oCity: oCity ?? "",
+                          dCity: dCity ?? "",
                           initialMode: initialMode ?? indexed?.mode ?? "",
                           initialEdgeId: edgeId ?? "",
                         },
@@ -4409,6 +4551,8 @@ const handleShowLogin = useCallback(() => {
           }
           city={transferDrawer.city}
           dcity={transferDrawer.dcity}
+          selectedBooking={selectedBooking}
+          setSelectedBooking={setSelectedBooking}
           getPaymentHandler={getPaymentInfo}
           handleClose={() => setTransferDrawer({ show: false })}
         />

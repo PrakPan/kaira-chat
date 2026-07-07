@@ -186,15 +186,30 @@ const OtpCard: React.FC<OtpCardProps> = ({
   };
 
   return (
-    <div
-      className="rounded-[16px] p-4 ml-10 max-ph:ml-0 max-ph:-mx-1 mt-1"
-      style={{
-        background: "#fff",
-        border: "1px solid #ececec",
-        maxWidth: 420,
-        boxShadow: "0 14px 30px -14px rgba(11,18,32,.14)",
-      }}
-    >
+    <div className="flex gap-[10px] mt-1 max-ph:gap-0 max-ph:-mx-1">
+      {/* Kaira avatar in the left gutter — same gradient ring + image as her
+          chat replies, so the sign-in card reads as part of the conversation.
+          Hidden on phones (like other bot avatars) to give the card full width. */}
+      <div
+        aria-hidden
+        className="w-[30px] h-[30px] rounded-full overflow-hidden shrink-0 max-ph:hidden"
+        style={{ background: "linear-gradient(180deg, #a8d2f5, #7ab8e8)" }}
+      >
+        <img
+          src="/KairaInsta.png"
+          alt="Kaira"
+          className="w-full h-full object-cover"
+        />
+      </div>
+      <div
+        className="rounded-[16px] p-4 min-w-0 flex-1"
+        style={{
+          background: "#fff",
+          border: "1px solid #ececec",
+          maxWidth: 420,
+          boxShadow: "0 14px 30px -14px rgba(11,18,32,.14)",
+        }}
+      >
       <div className="text-[11px] font-extrabold text-[#445069] uppercase tracking-wide mb-[10px]">
         {heading}
       </div>
@@ -453,6 +468,7 @@ const OtpCard: React.FC<OtpCardProps> = ({
         onChange={onRecaptchaChange}
         badge="bottomleft"
       />
+      </div>
     </div>
   );
 };
