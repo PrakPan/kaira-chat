@@ -2983,26 +2983,32 @@ useEffect(() => {
   const intakeWidgetItem = (restoredThread.items?.data ?? []).find(
     (it: any) => it?.type === "widget" && isIntakeFormWidgetId(it?.widget?.id),
   );
-  if (intakeWidgetItem) {
-    if (!restoredFormFilledRef.current) {
-      const prefill = parseIntakeFormWidgetId(intakeWidgetItem.widget?.id);
-      if (prefill) {
-        dispatch(
-          updateIntakeForm({
-            active: true,
-            completed: false,
-            loading: false,
-            ...parseShowIntakeForm(prefill),
-          }),
-        );
-        // Already injected from history — block the live widget/effect path
-        // from adding a second card in this session.
-        intakeFormInjectedRef.current = true;
-        onIntakeFormStart?.();
-      }
-    } else {
-      dispatch(updateIntakeForm({ active: false, completed: false }));
+  if (intakeWidgetItem && !restoredFormFilledRef.current) {
+    const prefill = parseIntakeFormWidgetId(intakeWidgetItem.widget?.id);
+    if (prefill) {
+      dispatch(
+        updateIntakeForm({
+          active: true,
+          completed: false,
+          loading: false,
+          ...parseShowIntakeForm(prefill),
+        }),
+      );
+      // Already injected from history — block the live widget/effect path
+      // from adding a second card in this session.
+      intakeFormInjectedRef.current = true;
+      onIntakeFormStart?.();
     }
+  } else {
+    // No unfilled intake form to show for this thread — either it carries no
+    // intake widget at all, or the form was already submitted
+    // (`form_filled === true`). Deactivate the slice so any stale `active`
+    // state carried over from a previously-restored thread is cleared. The
+    // reducer only merges (never resets on thread change), so without this a
+    // prior thread's `active: true` would keep the composer locked — and a
+    // prior `active: false` would leave a genuinely unfilled thread unlocked —
+    // after switching threads. (Case 2 fix.)
+    dispatch(updateIntakeForm({ active: false, completed: false }));
   }
 
   for (const effect of itineraryEffects) {
