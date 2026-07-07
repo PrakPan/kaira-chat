@@ -275,7 +275,7 @@ export default function NewHotelBooking({
               ) : booking?.price ? (
                 <div>
                   <div className="flex flex-row md:flex-row gap-1 items-center w-full font-bold">
-                    <div className="font-mono text-[#0b1220] text-lg font-700 leading-2xl-md">
+                    <div className="font-sans text-[#0b1220] text-lg font-700 leading-2xl-md">
                       <>{currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}{getIndianPrice(Math.ceil(booking.price))}</>
                     </div>
                     <div className="text-[#445069] text-sm-md font-400 leading-lg mt-xxs">

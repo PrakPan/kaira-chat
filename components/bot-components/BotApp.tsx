@@ -3870,7 +3870,7 @@ const BottomCTABar = React.memo(
                     ? "Estimated Price"
                     : "Total Cost"}
               </span>
-              <span className="font-mono text-[16px] md:text-[21px] font-bold leading-tight text-[#111827] whitespace-nowrap">
+              <span className="font-sans text-[16px] md:text-[21px] font-bold leading-tight text-[#111827] whitespace-nowrap">
                 {currencySymbol}
                 {cost.toLocaleString("en-IN")}/-
               </span>

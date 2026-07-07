@@ -602,7 +602,7 @@ const HotelP1Detail = ({
                 </span>
               )}
               {data.price_lower_range_ext && (
-                <span className="ttw-type-body font-700 font-mono text-[#0b1220]">
+                <span className="ttw-type-body font-700 font-sans text-[#0b1220]">
                   From {data.currency} {Math.round(data.price_lower_range_ext).toLocaleString()}
                 </span>
               )}

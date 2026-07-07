@@ -262,7 +262,7 @@ export default function NewPoiBooking(props) {
             <div className="flex flex-row items-center justify-between">
               {props.data?.pricing?.total_price ? (
                 <div className="flex flex-col md:flex-row gap-1">
-                  <div className="ttw-type-h2 font-bold font-mono">
+                  <div className="ttw-type-h2 font-bold font-sans">
                     <span>
                       {currency?.currency ? currencySymbols?.[currency?.currency] : `₹`}
                     </span>
@@ -412,7 +412,7 @@ export default function NewPoiBooking(props) {
           <div className="flex flex-row items-center justify-between">
             {props.data?.pricing?.total_price ? (
               <div className="flex gap-1">
-                <div className="ttw-type-h2 font-bold font-mono">
+                <div className="ttw-type-h2 font-bold font-sans">
                   <span>{currency?.currency ? currencySymbols?.[currency?.currency] : `₹`}</span>
                   {getIndianPrice(Math.round(props.data.pricing.total_price))}
                 </div>
