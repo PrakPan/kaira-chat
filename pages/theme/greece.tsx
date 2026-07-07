@@ -12,15 +12,13 @@
 import Head from "next/head";
 import { connect } from "react-redux";
 import { useEffect } from "react";
-import axios from "axios";
 import Layout from "../../components/Layout";
 import CountryPage from "../../containers/country/Index";
 import GetInspiredSection from "../../components/theme/GetInspiredSection";
-import axioscountrydetailsinstance, { instanceProdDetail } from "../../services/pages/country";
-import axiospagelistinstance, { instanceProd } from "../../services/pages/list";
+import { instanceProdDetail } from "../../services/pages/country";
+import { instanceProd } from "../../services/pages/list";
 import axioslocationsinstance from "../../services/search/search";
 import setHotLocationSearch from "../../store/actions/hotLocationSearch";
-import { MERCURY_HOST } from "../../services/constants";
 import { useAnalytics } from "../../hooks/useAnalytics";
 import type { ThemeConfig } from "../../components/bot-components/types/themeConfig";
 import greeceTravellerStories from "../../data/greeceTravellerStories";
@@ -356,10 +354,9 @@ export async function getStaticProps() {
   const Type = "Country";
 
   try {
-    //mercury api
-    const res = await axios.get(
-      `${MERCURY_HOST}/api/v1/geos/country/${GREECE_ID}`
-    );
+    // Production mercury: the dev host returns a null `seasonal_info` for this
+    // id (so "When to go" wouldn't render), while prod has the populated data.
+    const res = await instanceProdDetail.get(GREECE_ID);
     data = res.data.data.country;
 
     if (!data) {
