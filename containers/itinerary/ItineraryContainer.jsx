@@ -66,7 +66,7 @@ const Container = styled.div`
   @media screen and (min-width: 768px) {
     width: ${props => props.fromChat ? '100%' : '95%'};
     margin: ${props => props.fromChat ? '0' : '-0.2vh auto 0 1rem'};
-    padding: ${props => props.fromChat ? '0 0 80px 0' : '0'};
+    padding: ${props => props.fromChat ? '0 22px 80px 22px' : '0'};
   }
   @media screen and (max-width: 639px) {
     overflow-x: hidden;

@@ -510,6 +510,9 @@ export default function BotApp({
   const [showShare, setShowShare] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showSettingsLoginPrompt, setShowSettingsLoginPrompt] = useState(false);
+  // Mobile: the compact trip strip collapses the traveller/date/social meta
+  // behind a chevron. Desktop always shows the full header.
+  const [tripMetaOpen, setTripMetaOpen] = useState(false);
   const [showApiLoginPrompt, setShowApiLoginPrompt] = useState(false);
   // Login gate for the start-screen / welcome surfaces (prompt cards, theme
   // prompts, traveller stories). Holds the action to replay after login.
@@ -2779,6 +2782,27 @@ Start Location: ${details.startLocation}`;
     />
   ) : null;
 
+  // Compact mobile header sub-line ("dates · pax") shown under the title in the
+  // collapsed trip strip (mirrors the design's .trip-row .t-sub).
+  const _tripDates =
+    itineraryRedux?.start_date && itineraryRedux?.end_date
+      ? `${new Date(itineraryRedux.start_date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })} – ${new Date(itineraryRedux.end_date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}`
+      : itineraryRedux?.travel_date || "";
+  const _tripPax = [
+    itineraryRedux?.number_of_adults
+      ? `${itineraryRedux.number_of_adults} adult${itineraryRedux.number_of_adults > 1 ? "s" : ""}`
+      : "",
+    itineraryRedux?.number_of_children > 0
+      ? `${itineraryRedux.number_of_children} child${itineraryRedux.number_of_children > 1 ? "ren" : ""}`
+      : "",
+    itineraryRedux?.number_of_infants > 0
+      ? `${itineraryRedux.number_of_infants} infant${itineraryRedux.number_of_infants > 1 ? "s" : ""}`
+      : "",
+  ]
+    .filter(Boolean)
+    .join(", ");
+  const tripCompactSub = [_tripDates, _tripPax].filter(Boolean).join(" · ");
+
   // ── Shared itinerary panel content (header strip + container + CTA) ──────
   // On mobile, MobileLayout's activeTab already gates visibility (the panel
   // sits inside an absolute-positioned container that toggles opacity per
@@ -2802,17 +2826,159 @@ Start Location: ${details.startLocation}`;
         overflow: isMobile ? "visible" : "hidden",
       }}
     >
-      {/* Header strip */}
-      <div className="bg-white flex flex-col px-3 py-3 border-b border-slate-100">
-        <div className="flex justify-between items-start">
-          <p className="font-inter font-semibold text-lg leading-tight">
-            {itineraryReduxName || currentItineraryRef?.current?.name || ""}
-          </p>
+      {/* Header strip — full-width bar on desktop, compact rounded card on mobile
+          (design's .trip strip). */}
+      <div className="bg-white flex flex-col px-3 md:px-[22px] py-3 border-b border-slate-100 max-ph:border max-ph:border-[#ECECEC] max-ph:rounded-[14px] max-ph:mx-4 max-ph:mt-3 max-ph:px-[12px] max-ph:py-[10px]">
+        <div className="flex justify-between items-start gap-3 max-ph:gap-2 max-ph:relative">
+          <div className="flex flex-col flex-1 min-w-0">
+            {/* Compact title + sub are max-width-capped on mobile so they
+                truncate before the absolutely-positioned icons. (Padding can't
+                reserve truncation space — text overflows into it — so a
+                max-width is used.) The expanded detail below is full width. */}
+            <p className="font-inter font-bold md:font-extrabold text-[13px] md:text-[24px] leading-[1.2] md:leading-[1.15] tracking-[-0.2px] md:tracking-[-0.5px] m-0 max-ph:truncate max-ph:max-w-[60%]">
+              {itineraryReduxName || currentItineraryRef?.current?.name || ""}
+            </p>
+            {/* Mobile-only compact sub: dates · pax (design .trip-row .t-sub) */}
+            {tripCompactSub && (
+              <div className="md:hidden text-[11px] text-[#6B7280] mt-[2px] truncate max-ph:max-w-[60%]">
+                {tripCompactSub}
+              </div>
+            )}
 
-          <div className="flex gap-3 items-center">
+        {(itineraryRedux?.group_type ||
+          itineraryRedux?.number_of_adults ||
+          itineraryRedux?.travel_date ||
+          (itineraryRedux?.start_date && itineraryRedux?.end_date)) && (
+          <div className={`flex flex-col gap-1.5 mt-[11px] max-ph:mt-[10px] ${tripMetaOpen ? "" : "max-ph:hidden"}`}>
+            {/* Mobile expanded: full (untruncated) itinerary name — design's
+                .trip-detail .ttl. Hidden on desktop (already shown at 24px). */}
+            <p className="md:hidden font-inter font-extrabold text-[18px] leading-[1.2] tracking-[-0.4px] m-0 mb-[3px] text-[#171A1F]">
+              {itineraryReduxName || currentItineraryRef?.current?.name || ""}
+            </p>
+            {/* Outer row — column on mobile (so the gallery slides below the
+                meta), single row on desktop (gallery sits to the right of
+                traveller/date, matching the original design). */}
+            <div className="flex items-start gap-2 md:gap-[22px] max-ph:gap-[13px] max-ph:flex-col max-ph:items-stretch md:items-center">
+              <div className="flex items-center gap-[22px] flex-wrap max-ph:items-start max-ph:gap-[18px]">
+                {(itineraryRedux?.group_type ||
+                  itineraryRedux?.number_of_adults) && (
+                  <div className="flex items-center gap-2 max-ph:flex-col max-ph:items-start max-ph:gap-[3px]">
+                    <span className="text-[10px] font-inter font-bold uppercase tracking-[0.6px] text-[#9aa0a8] whitespace-nowrap">
+                      Travellers
+                    </span>
+                    <span className="text-[13px] font-inter text-[#3b4149]">
+                      {itineraryRedux.group_type
+                        ? `${itineraryRedux.group_type}${
+                            itineraryRedux.number_of_adults
+                              ? ` · ${itineraryRedux.number_of_adults} adult${itineraryRedux.number_of_adults > 1 ? "s" : ""}`
+                              : ""
+                          }`
+                        : itineraryRedux.number_of_adults
+                          ? `${itineraryRedux.number_of_adults} adult${itineraryRedux.number_of_adults > 1 ? "s" : ""}`
+                          : ""}
+                      {itineraryRedux.number_of_children > 0
+                        ? `, ${itineraryRedux.number_of_children} child${itineraryRedux.number_of_children > 1 ? "ren" : ""}`
+                        : ""}
+                      {itineraryRedux.number_of_infants > 0
+                        ? `, ${itineraryRedux.number_of_infants} infant${itineraryRedux.number_of_infants > 1 ? "s" : ""}`
+                        : ""}
+                    </span>
+                    {isDraft && (
+                      <button
+                        type="button"
+                        aria-label="Change traveller count"
+                        className="flex items-center justify-center hover:opacity-70"
+                        onClick={() =>
+                          handleItineraryContainerSendMessage(
+                            "change traveller count",
+                          )
+                        }
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="14"
+                          height="14"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                        >
+                          <path
+                            d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                            fill="#ACACAC"
+                          />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                )}
+                {(itineraryRedux?.travel_date ||
+                  (itineraryRedux?.start_date &&
+                    itineraryRedux?.end_date)) && (
+                  <div className="flex items-center gap-2 max-ph:flex-col max-ph:items-start max-ph:gap-[3px]">
+                    <span className="text-[10px] font-inter font-bold uppercase tracking-[0.6px] text-[#9aa0a8] whitespace-nowrap">
+                      Dates
+                    </span>
+                    <span className="text-[13px] font-inter text-[#3b4149] whitespace-nowrap">
+                      {itineraryRedux.start_date && itineraryRedux.end_date
+                        ? `${new Date(
+                            itineraryRedux.start_date,
+                          ).toLocaleDateString("en-GB", {
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric",
+                          })} – ${new Date(
+                            itineraryRedux.end_date,
+                          ).toLocaleDateString("en-GB", {
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric",
+                          })}`
+                        : itineraryRedux.travel_date}
+                    </span>
+                    {isDraft && (
+                      <button
+                        type="button"
+                        aria-label="Change travelling date"
+                        className="flex items-center justify-center hover:opacity-70"
+                        onClick={() =>
+                          handleItineraryContainerSendMessage(
+                            "change my travelling date",
+                          )
+                        }
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="14"
+                          height="14"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                        >
+                          <path
+                            d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                            fill="#ACACAC"
+                          />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+              {itineraryRedux?.images?.length > 0 && (
+                <SmallGallery
+                  compact
+                  maxShow={Math.min(3, galleryImages.images.length)}
+                  images={galleryImages.images}
+                  closeLabel="Back to Itinerary"
+                />
+              )}
+            </div>
+          </div>
+        )}
+          </div>
+
+          <div className="flex gap-3 max-ph:gap-[6px] items-center shrink-0 max-ph:absolute max-ph:top-0 max-ph:right-0">
             {!isDraft && (
               <button
-                className="flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200"
+                className="flex items-center justify-center w-9 h-9 max-ph:w-[28px] max-ph:h-[28px] rounded-full bg-gray-100 hover:bg-gray-200"
                 onClick={() => {
                   if (!authToken) {
                     setShowSettingsLoginPrompt(true);
@@ -2834,6 +3000,7 @@ Start Location: ${details.startLocation}`;
                   height={22}
                   width={22}
                   alt="Settings"
+                  className="max-ph:w-[18px] max-ph:h-[18px]"
                 />
               </button>
             )}
@@ -2845,176 +3012,39 @@ Start Location: ${details.startLocation}`;
               />
             )}
             <button
-              className="flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200"
+              className="flex items-center justify-center w-9 h-9 max-ph:w-[28px] max-ph:h-[28px] rounded-full bg-gray-100 hover:bg-gray-200"
               onClick={() => setShowShare(true)}
             >
-              <Image src="/share.svg" height={22} width={22} alt="Share" />
+              <Image src="/share.svg" height={22} width={22} alt="Share" className="max-ph:w-[18px] max-ph:h-[18px]" />
             </button>
+            {/* Mobile: toggle the collapsed trip meta (design .trip chevron) */}
+            {tripCompactSub && (
+              <button
+                type="button"
+                aria-label="Toggle trip details"
+                aria-expanded={tripMetaOpen}
+                onClick={() => setTripMetaOpen((v) => !v)}
+                className="md:hidden flex items-center justify-center w-9 h-9 max-ph:w-[28px] max-ph:h-[28px] rounded-full bg-gray-100 hover:bg-gray-200"
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  className={`transition-transform max-ph:w-4 max-ph:h-4 ${tripMetaOpen ? "rotate-180" : ""}`}
+                >
+                  <path
+                    d="m6 9 6 6 6-6"
+                    stroke="#2a2f36"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+            )}
           </div>
         </div>
-
-        {(itineraryRedux?.group_type ||
-          itineraryRedux?.number_of_adults ||
-          itineraryRedux?.travel_date ||
-          (itineraryRedux?.start_date && itineraryRedux?.end_date)) && (
-          <div className="flex flex-col gap-1.5 mt-1.5">
-            {/* Outer row — column on mobile (so the gallery slides below the
-                meta), single row on desktop (gallery sits to the right of
-                traveller/date, matching the original design). */}
-            <div className="flex items-start gap-2 max-ph:flex-col max-ph:items-stretch md:items-center">
-              <div className="flex items-center gap-4 flex-wrap">
-                {(itineraryRedux?.group_type ||
-                  itineraryRedux?.number_of_adults) && (
-                  <div className="flex flex-col">
-                    <span className="text-[10px] font-inter uppercase tracking-wide">
-                      Traveller Type
-                    </span>
-                    <div className="flex items-center gap-1.5 mt-0.5">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="12"
-                        viewBox="0 0 16 12"
-                        fill="none"
-                      >
-                        <path
-                          d="M11.1133 6.75342C12.0266 7.37342 12.6666 8.21342 12.6666 9.33342V11.3334H15.3333V9.33342C15.3333 7.88008 12.9533 7.02008 11.1133 6.75342Z"
-                          fill="#ACACAC"
-                        />
-                        <path
-                          d="M9.99995 6.00008C11.4733 6.00008 12.6666 4.80675 12.6666 3.33341C12.6666 1.86008 11.4733 0.666748 9.99995 0.666748C9.68661 0.666748 9.39328 0.733415 9.11328 0.826748C9.66661 1.51341 9.99995 2.38675 9.99995 3.33341C9.99995 4.28008 9.66661 5.15341 9.11328 5.84008C9.39328 5.93341 9.68661 6.00008 9.99995 6.00008Z"
-                          fill="#ACACAC"
-                        />
-                        <path
-                          d="M6.00065 6.00008C7.47398 6.00008 8.66732 4.80675 8.66732 3.33341C8.66732 1.86008 7.47398 0.666748 6.00065 0.666748C4.52732 0.666748 3.33398 1.86008 3.33398 3.33341C3.33398 4.80675 4.52732 6.00008 6.00065 6.00008ZM6.00065 2.00008C6.73398 2.00008 7.33398 2.60008 7.33398 3.33341C7.33398 4.06675 6.73398 4.66675 6.00065 4.66675C5.26732 4.66675 4.66732 4.06675 4.66732 3.33341C4.66732 2.60008 5.26732 2.00008 6.00065 2.00008Z"
-                          fill="#ACACAC"
-                        />
-                        <path
-                          d="M6.00033 6.66675C4.22033 6.66675 0.666992 7.56008 0.666992 9.33341V11.3334H11.3337V9.33341C11.3337 7.56008 7.78032 6.66675 6.00033 6.66675ZM10.0003 10.0001H2.00033V9.34008C2.13366 8.86008 4.20033 8.00008 6.00033 8.00008C7.80032 8.00008 9.86699 8.86008 10.0003 9.33341V10.0001Z"
-                          fill="#ACACAC"
-                        />
-                      </svg>
-                      <span className="text-[12px] font-inter font-medium">
-                        {itineraryRedux.group_type
-                          ? `${itineraryRedux.group_type}${
-                              itineraryRedux.number_of_adults
-                                ? ` (${itineraryRedux.number_of_adults} Adult${itineraryRedux.number_of_adults > 1 ? "s" : ""})`
-                                : ""
-                            }`
-                          : itineraryRedux.number_of_adults
-                            ? `${itineraryRedux.number_of_adults} Adult${itineraryRedux.number_of_adults > 1 ? "s" : ""}`
-                            : ""}
-                        {itineraryRedux.number_of_children > 0
-                          ? `, ${itineraryRedux.number_of_children} Child${itineraryRedux.number_of_children > 1 ? "ren" : ""}`
-                          : ""}
-                        {itineraryRedux.number_of_infants > 0
-                          ? `, ${itineraryRedux.number_of_infants} Infant${itineraryRedux.number_of_infants > 1 ? "s" : ""}`
-                          : ""}
-                      </span>
-                      {isDraft && (
-                        <button
-                          type="button"
-                          aria-label="Change traveller count"
-                          className="flex items-center justify-center hover:opacity-70"
-                          onClick={() =>
-                            handleItineraryContainerSendMessage(
-                              "change traveller count",
-                            )
-                          }
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="14"
-                            height="14"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                          >
-                            <path
-                              d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
-                              fill="#ACACAC"
-                            />
-                          </svg>
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                )}
-                {(itineraryRedux?.travel_date ||
-                  (itineraryRedux?.start_date &&
-                    itineraryRedux?.end_date)) && (
-                  <div className="flex flex-col">
-                    <span className="text-[10px] font-inter uppercase tracking-wide">
-                      Date of Travelling
-                    </span>
-                    <div className="flex items-center gap-1.5 mt-0.5">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        viewBox="0 0 16 16"
-                        fill="none"
-                      >
-                        <path
-                          d="M3.33333 14.6666C2.96667 14.6666 2.65267 14.5361 2.39133 14.2753C2.13044 14.0139 2 13.6999 2 13.3333V3.99992C2 3.63325 2.13044 3.31947 2.39133 3.05859C2.65267 2.79725 2.96667 2.66659 3.33333 2.66659H4V1.33325H5.33333V2.66659H10.6667V1.33325H12V2.66659H12.6667C13.0333 2.66659 13.3473 2.79725 13.6087 3.05859C13.8696 3.31947 14 3.63325 14 3.99992V13.3333C14 13.6999 13.8696 14.0139 13.6087 14.2753C13.3473 14.5361 13.0333 14.6666 12.6667 14.6666H3.33333ZM3.33333 13.3333H12.6667V6.66659H3.33333V13.3333ZM3.33333 5.33325H12.6667V3.99992H3.33333V5.33325ZM3.33333 5.33325V3.99992V5.33325Z"
-                          fill="#ACACAC"
-                        />
-                      </svg>
-                      <span className="text-[12px] font-inter font-medium">
-                        {itineraryRedux.start_date && itineraryRedux.end_date
-                          ? `${new Date(
-                              itineraryRedux.start_date,
-                            ).toLocaleDateString("en-GB", {
-                              day: "numeric",
-                              month: "short",
-                              year: "numeric",
-                            })} – ${new Date(
-                              itineraryRedux.end_date,
-                            ).toLocaleDateString("en-GB", {
-                              day: "numeric",
-                              month: "short",
-                              year: "numeric",
-                            })}`
-                          : itineraryRedux.travel_date}
-                      </span>
-                      {isDraft && (
-                        <button
-                          type="button"
-                          aria-label="Change travelling date"
-                          className="flex items-center justify-center hover:opacity-70"
-                          onClick={() =>
-                            handleItineraryContainerSendMessage(
-                              "change my travelling date",
-                            )
-                          }
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="14"
-                            height="14"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                          >
-                            <path
-                              d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
-                              fill="#ACACAC"
-                            />
-                          </svg>
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-              {itineraryRedux?.images?.length > 0 && (
-                <SmallGallery
-                  maxShow={Math.min(3, galleryImages.images.length)}
-                  images={galleryImages.images}
-                  closeLabel="Back to Itinerary"
-                />
-              )}
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Body */}

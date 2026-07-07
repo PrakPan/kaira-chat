@@ -2,6 +2,7 @@ import { useEffect, useState, useRef, Fragment } from "react";
 import { connect, useSelector } from "react-redux";
 
 import ItineraryCity from "../../components/itinerary/itineraryCity";
+import ItineraryLegend from "../../components/itinerary/itineraryCity/ItineraryLegend";
 import CityItem from "./VerticalLayout";
 import media from "../../components/media";
 import BookingModal from "../../components/modals/bookingupdated/Index";
@@ -36,6 +37,12 @@ const getCityColor = (index) => {
   availableColors = availableColors.filter(c => c !== color);
   return color;
 };
+
+// Pure, stateless per-city color. Unlike getCityColor above it does NOT mutate
+// the module-level availableColors/usedColors pools, so calling it for the chat
+// stop-card dot can't desync the existing transfer-pin color sequence.
+const cityColorByIndex = (i) =>
+  CITY_COLOR_CODES[(Number.isInteger(i) && i >= 0 ? i : 0) % CITY_COLOR_CODES.length];
 
 const DaybyDay = ({
   transferBookings,
@@ -233,7 +240,7 @@ const DaybyDay = ({
 
     return (
       <div
-        className={`flex flex-col gap-3 mt-4xl max-ph:mt-lg ${!isPageWide ? "" : "max-w-[51vw]"}`}
+        className={`flex flex-col gap-3 mt-4xl max-ph:mt-lg ${!isPageWide || props?.fromChat ? "" : "max-w-[51vw]"}`}
         aria-busy="true"
         aria-live="polite"
         aria-label="Loading itinerary"
@@ -273,11 +280,12 @@ const DaybyDay = ({
   return (
     <>
       <div
-        className={`flex flex-col gap-3 mt-4xl max-ph:mt-lg ${!isPageWide ? "" : "max-w-[51vw]"
+        className={`flex flex-col gap-3 ${props?.fromChat ? "mt-3 max-ph:mt-0" : "mt-4xl max-ph:mt-lg"} ${!isPageWide || props?.fromChat ? "" : "max-w-[51vw]"
           }`}
       >
 
         <div className="flex flex-col">
+          {props?.fromChat && <ItineraryLegend />}
           <CityItem
             setShowLoginModal={setShowLoginModal}
             key="start-city-label"
@@ -437,6 +445,8 @@ const DaybyDay = ({
               <div key={city.id}>    
                 <ItineraryCity
                   mercuryItinerary={props?.mercuryItinerary}
+                  fromChat={props?.fromChat}
+                  dotColour={cityColorByIndex(index)}
                   key={`itinerary-city-${city.id}`}
                   nextCity={ itineraryDaybyDay?.cities?.[index + 1]}
                   city={city}

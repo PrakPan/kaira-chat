@@ -88,6 +88,7 @@ const P1TransferLoader = () => (
 );
 
 const TaxiPickupDropItem = ({
+  fromChat,
   handlePickupDropDrawer,
   handleAddCityTaxiAirport,
   originCityName,
@@ -321,7 +322,7 @@ const TaxiPickupDropItem = ({
     <div key={-4} className="group relative" ref={dropdownRef}>
       <div className="flex items-center gap-2">
         <span
-          className={`text-blue font-[500] text-[14px] ${
+          className={`${fromChat ? "text-[#1f6feb] font-[600] text-[13px] max-ph:text-[12.5px] py-[9px] max-ph:py-[8px] px-[2px]" : "text-blue font-[500] text-[14px]"} ${
             displayText ? "hover:underline cursor-pointer" : ""
           }`}
           style={TRANSFER_LINK_FONT}
@@ -347,6 +348,7 @@ const TaxiPickupDropItem = ({
 };
 
 const AirportBookingItem = ({
+  fromChat,
   booking,
   handleIntracityBookings,
   upPresent,
@@ -903,7 +905,7 @@ const AirportBookingItem = ({
     <div key={-3} className="group relative" ref={dropdownRef}>
       <div className="flex items-center gap-2">
         <span
-          className={`text-blue font-[500] text-[14px] ${displayText ? "hover:underline cursor-pointer" : ""
+          className={`${fromChat ? "text-[#1f6feb] font-[600] text-[13px] max-ph:text-[12.5px] py-[9px] max-ph:py-[8px] px-[2px]" : "text-blue font-[500] text-[14px]"} ${displayText ? "hover:underline cursor-pointer" : ""
             }`}
           style={TRANSFER_LINK_FONT}
           onClick={handleClick}
@@ -933,7 +935,7 @@ const AirportBookingItem = ({
       <div key={-3} className="group relative" ref={dropdownRef}>
         <div className="flex items-center gap-2">
           <span
-            className={`${isDesktop ? "Body1M_16" : "Body2M_14"} text-blue hover:underline cursor-pointer`}
+            className={`${fromChat ? "text-[#1f6feb] font-[600] text-[13px] max-ph:text-[12.5px] py-[9px] max-ph:py-[8px] px-[2px]" : `${isDesktop ? "Body1M_16" : "Body2M_14"} text-blue`} hover:underline cursor-pointer`}
             style={TRANSFER_LINK_FONT}
             onClick={handleClick}
           >
@@ -1552,10 +1554,186 @@ useEffect(() => {
   return `${lower}-${upper} hours`;
 };
 
+  // ── Chat-only transfer/flight presentation helpers ──────────────────────
+  const isFlightLeg = !!booking_type?.toLowerCase?.().includes("flight");
+
+  const formatFlightDate = (d) => {
+    if (!d) return "";
+    const dt = new Date(d);
+    if (isNaN(dt.getTime())) return "";
+    return dt.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+  };
+
+  const transferModeLabel = (() => {
+    const t = booking_type?.toLowerCase() || "";
+    if (t.includes("flight")) return "Flight";
+    if (t.includes("train")) return "Train";
+    if (t.includes("ferry") || t.includes("boat")) return "Ferry";
+    if (t.includes("bus")) return "Bus";
+    if (
+      t.includes("taxi") ||
+      t.includes("car") ||
+      t.includes("cab") ||
+      t.includes("sedan")
+    )
+      return "Private taxi";
+    return t ? t.charAt(0).toUpperCase() + t.slice(1) : "Transfer";
+  })();
+
+  // Approx transfer duration. The value may arrive as a top-level numeric
+  // `duration` (minutes) or inside transfer_details.duration ({ text: "3 hours
+  // 30 mins", value: seconds }) — the shape the detail view reads. Flights show
+  // an exact "approx 3h 30m"; other transfers an hour range "approx 4-5 hrs".
+  // Resolve a transfer/leg duration (minutes) from whichever field a booking
+  // carries: top-level numeric, flight segments (elapsed or summed), or the
+  // road-transfer transfer_details.duration ({ text, value: seconds }).
+  const resolveDurationMins = (b, topLevel) => {
+    const top = Number(topLevel);
+    if (top > 0) return top;
+    const segs = b?.transfer_details?.items?.[0]?.segments;
+    if (Array.isArray(segs) && segs.length) {
+      const dep = segs[0]?.origin?.departure_time;
+      const arr = segs[segs.length - 1]?.destination?.arrival_time;
+      const depMs = dep ? new Date(dep).getTime() : NaN;
+      const arrMs = arr ? new Date(arr).getTime() : NaN;
+      if (!isNaN(depMs) && !isNaN(arrMs) && arrMs > depMs) {
+        return Math.round((arrMs - depMs) / 60000);
+      }
+      const sum = segs.reduce((s, seg) => s + (Number(seg?.duration) || 0), 0);
+      if (sum > 0) return sum;
+    }
+    const dd = b?.transfer_details?.duration;
+    const text = typeof dd === "string" ? dd : dd?.text || "";
+    if (text) {
+      const h = (text.match(/(\d+)\s*h/i) || [])[1];
+      const m = (text.match(/(\d+)\s*m/i) || [])[1];
+      const mins = parseInt(h || 0, 10) * 60 + parseInt(m || 0, 10);
+      if (mins > 0) return mins;
+    }
+    const secs = Number(dd?.value);
+    if (secs > 0) return Math.round(secs / 60);
+    return 0;
+  };
+
+  const _durationDetails = booking?.transfer_details?.duration;
+  const _durationText =
+    typeof _durationDetails === "string"
+      ? _durationDetails
+      : _durationDetails?.text || "";
+  const effectiveDuration = resolveDurationMins(
+    booking,
+    duration || booking?.duration,
+  );
+
+  const approxDurationLabel = (mins) => {
+    const m = Number(mins) || 0;
+    if (m <= 0) return "";
+    const h = Math.floor(m / 60);
+    const min = Math.round(m % 60);
+    if (h > 0 && min > 0) return `approx ${h}h ${min}m`;
+    if (h > 0) return `approx ${h}h`;
+    return `approx ${min}m`;
+  };
+
+  const approxRangeLabel = (mins) => {
+    const m = Number(mins) || 0;
+    if (m <= 0) return "";
+    const lower = Math.floor(m / 60);
+    const upper = Math.ceil(m / 60);
+    return lower === upper
+      ? `approx ${lower} hr${lower > 1 ? "s" : ""}`
+      : `approx ${lower}-${upper} hrs`;
+  };
+
+  // Final labels — fall back to the raw duration text when it can't be parsed
+  // into minutes, so a duration is still shown whenever the booking has one.
+  const flightDurationLabel =
+    approxDurationLabel(effectiveDuration) ||
+    (_durationText ? `approx ${_durationText}` : "");
+  const transferDurationLabel =
+    approxRangeLabel(effectiveDuration) ||
+    (_durationText ? `approx ${_durationText}` : "");
+
+  // Combo (multi-leg) transfer — e.g. "Train to Kyoto, Flight to Chūbu
+  // Centrair". Render one row per leg, each with its own approx time.
+  const comboChildren =
+    Array.isArray(booking?.children) && booking.children.length > 1
+      ? booking.children
+      : null;
+  const comboHasFlight = comboChildren?.some((c) =>
+    (c?.booking_type || "").toLowerCase().includes("flight"),
+  );
+  const legModeLabel = (bt) => {
+    const t = (bt || "").toLowerCase();
+    if (t.includes("flight")) return "Flight";
+    if (t.includes("train")) return "Train";
+    if (t.includes("ferry") || t.includes("boat")) return "Ferry";
+    if (t.includes("bus")) return "Bus";
+    if (
+      t.includes("taxi") ||
+      t.includes("car") ||
+      t.includes("cab") ||
+      t.includes("sedan")
+    )
+      return "Taxi";
+    return bt || "Transfer";
+  };
+  // Leg cities live in different places by mode: road legs at
+  // transfer_details.trips[*].origin/destination.{city|name|address}; flight
+  // legs at transfer_details.items[0].segments[*].origin/destination.city_name.
+  const legSrcName = (leg) => {
+    const td = leg?.transfer_details;
+    const o = td?.trips?.[0]?.origin;
+    const seg = td?.items?.[0]?.segments?.[0]?.origin;
+    return (
+      o?.city ||
+      o?.name ||
+      o?.address ||
+      seg?.city_name ||
+      seg?.city_code ||
+      leg?.source_address?.name ||
+      td?.source?.name ||
+      ""
+    );
+  };
+  const legDestName = (leg) => {
+    const td = leg?.transfer_details;
+    const trips = td?.trips;
+    const d =
+      (Array.isArray(trips) && trips[trips.length - 1]?.destination) ||
+      trips?.[0]?.destination;
+    const segs = td?.items?.[0]?.segments;
+    const seg = Array.isArray(segs) ? segs[segs.length - 1]?.destination : null;
+    return (
+      d?.city ||
+      d?.name ||
+      d?.address ||
+      seg?.city_name ||
+      seg?.city_code ||
+      leg?.destination_address?.name ||
+      td?.destination?.name ||
+      ""
+    );
+  };
+  const legDurationLabel = (leg) => {
+    const mins = resolveDurationMins(leg, leg?.duration);
+    return (leg?.booking_type || "").toLowerCase().includes("flight")
+      ? approxDurationLabel(mins)
+      : approxRangeLabel(mins);
+  };
+  const legDepartsDate = (leg) =>
+    formatFlightDate(
+      leg?.transfer_details?.items?.[0]?.segments?.[0]?.origin
+        ?.departure_time || leg?.departure_time,
+    );
+
 
   return (
-    <Container className={`${isLast && "mb-[60px]"}`}>
-    {!(Itinerary.status == "Draft") ?  <PinWrapper>
+    <Container
+      className={`${isLast ? (fromChat ? "mb-4" : "mb-[60px]") : ""}`}
+      style={fromChat ? { display: "block", width: "100%" } : undefined}
+    >
+    {!fromChat && (!(Itinerary.status == "Draft") ?  <PinWrapper>
   {upPresent &&  <VerticalLine height={"50px"} gradient="top" />}
   {upPresent && downPresent ? (
     <div className="flex items-center justify-center">
@@ -1590,12 +1768,12 @@ useEffect(() => {
       <Pin length={length} pinColour={"black"} inner={true} />
     </>
   )}
-</PinWrapper>}
+</PinWrapper>)}
      
 
       <div
-        className={`flex flex-col gap-2 ${!downPresent && upPresent && "mt-[41px]z"
-          } ${!upPresent && downPresent && "mb-[41px]"}`}
+        className={`flex flex-col gap-2 ${fromChat ? "w-full" : ""} ${!fromChat && !downPresent && upPresent && "mt-[41px]z"
+          } ${!fromChat && !upPresent && downPresent && "mb-[41px]"}`}
         style={
           // P1 (Draft) start/end city label rows: pin sits at one end of a
           // taller PinWrapper (pin + line). align-self pulls the city name
@@ -1612,22 +1790,43 @@ useEffect(() => {
             }`}
         >
           {!(upPresent && downPresent) && (
-            <div className={`${isDesktop ? "Body1M_16" : "Body2M_14"}`}>
+            <div
+              className={`${isDesktop ? "Body1M_16" : "Body2M_14"} ${
+                fromChat ? "flex items-center gap-3 max-ph:gap-[11px] py-[7px] max-ph:py-[6px] px-[2px]" : ""
+              }`}
+            >
+              {/* Chat: solid endpoint dot (replaces the removed pin rail) */}
+              {fromChat && (isFirstCity || isLast) && (
+                <span className="inline-block w-3.5 h-3.5 max-ph:w-[13px] max-ph:h-[13px] rounded-full bg-[#171A1F] shrink-0" />
+              )}
               {/* P1 fallback: when the draft itinerary hasn't surfaced a
                   start-city name yet, use the user's IP-derived city so the
                   label isn't blank under the start pin. */}
-              {city ||
+              {fromChat ? (
+                <span className="font-[800] text-[17px] max-ph:text-[15.5px] tracking-[-0.3px] leading-tight text-[#171A1F]">
+                  {city ||
+                    (Itinerary?.status === "Draft" && isFirstCity
+                      ? userLocationFallback
+                      : null)}
+                </span>
+              ) : (
+                city ||
                 (Itinerary?.status === "Draft" && isFirstCity
                   ? userLocationFallback
-                  : null)}
-
-
+                  : null)
+              )}
+              {/* Chat: trip start/end tag on the endpoint nodes */}
+              {fromChat && (isFirstCity || isLast) && (
+                <span className="text-[10px] font-[700] tracking-[0.7px] text-[#9aa0a8] uppercase whitespace-nowrap">
+                  {isFirstCity ? "Start" : "End"}
+                </span>
+              )}
             </div>
           )}
 
           {transfers_status === "PENDING" && !(Itinerary.status == "Draft")  ? (
   upPresent && downPresent ? (
-    <TransferSkeleton />
+    <TransferSkeleton fromChat={fromChat} />
   ) : (
     ""
   )
@@ -1650,6 +1849,130 @@ useEffect(() => {
       {(booking_id || city) && !visible ? (
         <>
           {/* EXISTING BOOKING DISPLAY - Icon and City Name */}
+          {fromChat ? (
+            comboChildren ? (
+              /* Chat: combo (multi-leg) card — one row per booking, each with
+                 its own approx time. Mirrors the old "Train to Kyoto, Flight
+                 to Chūbu Centrair" combo but split into scannable rows. */
+              <div
+                onClick={() => handleEdit(true, booking)}
+                className={`flex items-stretch w-full rounded-[12px] border-[1px] cursor-pointer my-[10px] overflow-hidden ${
+                  comboHasFlight
+                    ? "bg-[#EEF4FE] border-[#DBE7FB]"
+                    : "bg-[#F6F5F1] border-[#ECECEC]"
+                }`}
+              >
+                <div className="flex-1 min-w-0 flex flex-col">
+                  {comboChildren.map((leg, i) => {
+                    // Fall back to the trip's overall origin/destination for the
+                    // first/last leg when the leg itself doesn't carry a city.
+                    const src =
+                      legSrcName(leg) || (i === 0 ? origin_city_name : "");
+                    const dest =
+                      legDestName(leg) ||
+                      (i === comboChildren.length - 1
+                        ? destination_city_name
+                        : "");
+                    const modeLabel = legModeLabel(leg?.booking_type);
+                    const dur = legDurationLabel(leg);
+                    const isFlight = (leg?.booking_type || "")
+                      .toLowerCase()
+                      .includes("flight");
+                    const departs = isFlight ? legDepartsDate(leg) : "";
+                    return (
+                      <div
+                        key={leg?.id || i}
+                        className={`flex items-center gap-[13px] max-ph:gap-[11px] px-[15px] max-ph:px-[12px] py-[11px] max-ph:py-[9px] ${
+                          i > 0
+                            ? comboHasFlight
+                              ? "border-t border-[#DBE7FB]"
+                              : "border-t border-[#ECECEC]"
+                            : ""
+                        }`}
+                      >
+                        <span className="flex items-center shrink-0 text-[#8a9099]">
+                          {correctIcon(leg?.booking_type)}
+                        </span>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-[13px] max-ph:text-[12.5px] font-[700] text-[#1c2c44] truncate">
+                            {src && dest
+                              ? `${src} → ${dest}`
+                              : `${modeLabel}${dest ? ` to ${dest}` : ""}`}
+                          </div>
+                          <div className="text-[12px] max-ph:text-[11px] text-[#7b8aa3] mt-0.5">
+                            {modeLabel}
+                            {departs ? ` · departs ${departs}` : ""}
+                            {dur ? ` · ${dur}` : ""}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="flex items-center px-[15px] shrink-0">
+                  <span className="text-[12.5px] max-ph:text-[11.5px] font-[600] text-[#1f6feb] whitespace-nowrap">
+                    View ›
+                  </span>
+                </div>
+              </div>
+            ) : isFlightLeg ? (
+              /* Chat: dedicated flight card */
+              <div
+                onClick={() => handleEdit(transfer_type === "combo", booking)}
+                className="flex items-center gap-[13px] max-ph:gap-[11px] w-full px-[15px] max-ph:px-[12px] py-[13px] max-ph:py-[11px] rounded-[12px] max-ph:rounded-[11px] bg-[#EEF4FE] border-[1px] border-[#DBE7FB] cursor-pointer my-[10px] max-ph:my-[9px]"
+              >
+                <MdOutlineFlightTakeoff size={20} color="#1f6feb" />
+                <div className="flex-1 min-w-0">
+                  <div className="text-[13.5px] max-ph:text-[12.5px] font-[700] text-[#1c2c44]">
+                    {origin_city_name} → {destination_city_name}
+                  </div>
+                  <div className="text-[12px] max-ph:text-[11px] text-[#7b8aa3] mt-0.5">
+                    Flight
+                    {formatFlightDate(date_of_journey)
+                      ? ` · departs ${formatFlightDate(date_of_journey)}`
+                      : ""}
+                    {flightDurationLabel ? ` · ${flightDurationLabel}` : ""}
+                  </div>
+                </div>
+                <span className="text-[12.5px] max-ph:text-[11.5px] font-[600] text-[#1f6feb] whitespace-nowrap">
+                  View ›
+                </span>
+              </div>
+            ) : (
+              /* Chat: transfer chip */
+              <div
+                onClick={() => handleEdit(transfer_type === "combo", booking)}
+                className="flex items-center gap-[12px] max-ph:gap-[10px] w-full px-[15px] max-ph:px-[12px] py-[11px] max-ph:py-[9px] rounded-[12px] max-ph:rounded-[11px] bg-[#F6F5F1] border-[1px] border-[#ECECEC] cursor-pointer"
+              >
+                <span className="flex items-center shrink-0 text-[#8a9099]">
+                  {booking?.children
+                    ? booking?.children?.map((book, i) => {
+                        const mode = extractMode(book?.booking_type);
+                        return (
+                          <React.Fragment key={i}>
+                            {correctIcon(mode)}
+                            {i < booking?.children?.length - 1 && (
+                              <span>
+                                <RiArrowDropRightLine size={18} color={"#a5a5a5"} />
+                              </span>
+                            )}
+                          </React.Fragment>
+                        );
+                      })
+                    : correctIcon(booking_type)}
+                </span>
+                <div className="flex-1 min-w-0">
+                  <div className="text-[13px] max-ph:text-[12px] font-[600] text-[#2c2f34] truncate">
+                    {origin_city_name} → {destination_city_name}
+                  </div>
+                  <div className="text-[12px] max-ph:text-[11px] text-[#8a9099] mt-0.5">
+                    {transferModeLabel}
+                    {transferDurationLabel ? ` · ${transferDurationLabel}` : ""}
+                  </div>
+                </div>
+              </div>
+            )
+          ) : (
           <div className="flex gap-1">
             <div className="mt-[4px] flex items-start">
               {booking?.children
@@ -1709,6 +2032,7 @@ useEffect(() => {
 )}
             </div>
           </div>
+          )}
 
           {/* AIRPORT/STATION PICKUP DROP - Show only for flight/train/ferry/bus */}
           {/* While the airport transfers are being repriced (transfers or
@@ -1723,6 +2047,7 @@ useEffect(() => {
       {(booking_id || currentAirportBookings.length > 0) ? (
         /* If main booking exists OR there are pickup/drop bookings, show AirportBookingItem */
         <AirportBookingItem
+          fromChat={fromChat}
           key={`airport-${booking_id || "no-main"}`}
           booking={currentAirportBookings}
           handleIntracityBookings={handleIntracityBookings}
@@ -1750,6 +2075,7 @@ useEffect(() => {
       ) : !(Itinerary.status == "Draft") ? (
         /* If NO main booking and NO pickup/drop bookings, show TaxiPickupDropItem */
         <TaxiPickupDropItem
+          fromChat={fromChat}
           key={`taxi-no-booking`}
           handlePickupDropDrawer={handlePickupDropDrawer}
           handleAddCityTaxiAirport={handleAddCityTaxiAirport}
@@ -1809,6 +2135,7 @@ useEffect(() => {
             )}
           {!isDraftMode && transfers_status != "PENDING" && pricing_status != "PENDING" && (
             <TaxiPickupDropItem
+              fromChat={fromChat}
               key={`taxi-no-booking`}
               handlePickupDropDrawer={handlePickupDropDrawer}
               handleAddCityTaxiAirport={handleAddCityTaxiAirport}
