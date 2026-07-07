@@ -148,9 +148,19 @@ const HeroV2 = ({
     }
   };
 
-  const handlePromptClick = (text) => {
+  const handlePromptClick = (p) => {
+    // Prompts may be plain strings (the label doubles as the seed) or objects
+    // carrying a short display `label` plus a full self-contained `prompt`.
+    // Objects send the full prompt as-is; strings keep the legacy
+    // "<label>, <destination>" seed so existing country/city pages are
+    // unaffected.
+    const isObj = p && typeof p === "object";
     const seed = (
-      destinationLabel ? `${text}, ${destinationLabel}` : text
+      isObj
+        ? p.prompt || p.label || ""
+        : destinationLabel
+        ? `${p}, ${destinationLabel}`
+        : p
     ).trim();
     goToChat(seed);
   };
@@ -359,7 +369,7 @@ const HeroV2 = ({
                     className={styles.heroV2Prompt}
                     onClick={() => handlePromptClick(p)}
                   >
-                    {p}
+                    {typeof p === "string" ? p : p.label}
                   </button>
                 ))}
               </div>
