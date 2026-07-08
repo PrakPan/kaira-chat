@@ -1610,7 +1610,7 @@ useEffect(() => {
   // Approx transfer duration. The value may arrive as a top-level numeric
   // `duration` (minutes) or inside transfer_details.duration ({ text: "3 hours
   // 30 mins", value: seconds }) — the shape the detail view reads. Flights show
-  // an exact "approx 3h 30m"; other transfers an hour range "approx 4-5 hrs".
+  // Flights and other transfers alike show an exact "approx 3h 30m".
   // Resolve a transfer/leg duration (minutes) from whichever field a booking
   // carries: top-level numeric, flight segments (elapsed or summed), or the
   // road-transfer transfer_details.duration ({ text, value: seconds }).
@@ -1661,23 +1661,12 @@ useEffect(() => {
     return `approx ${min}m`;
   };
 
-  const approxRangeLabel = (mins) => {
-    const m = Number(mins) || 0;
-    if (m <= 0) return "";
-    const lower = Math.floor(m / 60);
-    const upper = Math.ceil(m / 60);
-    return lower === upper
-      ? `approx ${lower} hr${lower > 1 ? "s" : ""}`
-      : `approx ${lower}-${upper} hrs`;
-  };
-
-  // Final labels — fall back to the raw duration text when it can't be parsed
+  // Final label — falls back to the raw duration text when it can't be parsed
   // into minutes, so a duration is still shown whenever the booking has one.
-  const flightDurationLabel =
+  // Flights and transfers share one h/m format: a 20-minute ferry reads
+  // "approx 20m", not a whole hour rounded up from it.
+  const durationLabel =
     approxDurationLabel(effectiveDuration) ||
-    (_durationText ? `approx ${_durationText}` : "");
-  const transferDurationLabel =
-    approxRangeLabel(effectiveDuration) ||
     (_durationText ? `approx ${_durationText}` : "");
 
   // Combo (multi-leg) transfer — e.g. "Train to Kyoto, Flight to Chūbu
@@ -1741,16 +1730,23 @@ useEffect(() => {
       ""
     );
   };
-  const legDurationLabel = (leg) => {
-    const mins = resolveDurationMins(leg, leg?.duration);
-    return (leg?.booking_type || "").toLowerCase().includes("flight")
-      ? approxDurationLabel(mins)
-      : approxRangeLabel(mins);
-  };
+  // Same resolution order as the single-transfer card: read a duration off the
+  // booking, and when it carries none (the usual case for ferry/bus legs) derive
+  // it from the leg's check-in → check-out pair.
+  const legDurationLabel = (leg) =>
+    approxDurationLabel(
+      resolveDurationMins(leg, leg?.duration) ||
+        durationFromCheckInOut(leg?.check_in, leg?.check_out),
+    );
+  // Flight legs carry a real segment departure_time; road/rail/ferry legs only
+  // have date_of_journey or a check-in datetime, so fall through to those.
   const legDepartsDate = (leg) =>
     formatFlightDate(
       leg?.transfer_details?.items?.[0]?.segments?.[0]?.origin
-        ?.departure_time || leg?.departure_time,
+        ?.departure_time ||
+        leg?.departure_time ||
+        leg?.date_of_journey ||
+        leg?.check_in,
     );
 
   // Chat transfer "Change" — mirrors the booking-details Change button
@@ -1949,10 +1945,12 @@ useEffect(() => {
                         : "");
                     const modeLabel = legModeLabel(leg?.booking_type);
                     const dur = legDurationLabel(leg);
-                    const isFlight = (leg?.booking_type || "")
-                      .toLowerCase()
-                      .includes("flight");
-                    const departs = isFlight ? legDepartsDate(leg) : "";
+                    // Every leg shows its departure date, not just flights. Only
+                    // the first leg may borrow the trip's departure date — later
+                    // legs could fall on a different day, so leave them blank
+                    // rather than assert a date we don't have.
+                    const departs =
+                      legDepartsDate(leg) || (i === 0 ? departLabel : "");
                     return (
                       <div
                         key={leg?.id || i}
@@ -1997,7 +1995,7 @@ useEffect(() => {
                   <div className="text-[12px] max-ph:text-[11px] text-[#7b8aa3] mt-0.5">
                     Flight
                     {departLabel ? ` · departs ${departLabel}` : ""}
-                    {flightDurationLabel ? ` · ${flightDurationLabel}` : ""}
+                    {durationLabel ? ` · ${durationLabel}` : ""}
                   </div>
                 </div>
                 {transferChipActions}
@@ -2032,7 +2030,7 @@ useEffect(() => {
                   <div className="text-[12px] max-ph:text-[11px] text-[#7b8aa3] mt-0.5">
                     {transferModeLabel}
                     {departLabel ? ` · departs ${departLabel}` : ""}
-                    {transferDurationLabel ? ` · ${transferDurationLabel}` : ""}
+                    {durationLabel ? ` · ${durationLabel}` : ""}
                   </div>
                 </div>
                 {transferChipActions}
