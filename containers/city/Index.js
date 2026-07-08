@@ -232,6 +232,7 @@ const Experience = (props) => {
           // heading="How it"
           // accent="works."
           ctaLabel="Start planning"
+          destination={cityDisplayName}
         />
         </div>
       ) : null}

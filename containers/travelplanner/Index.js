@@ -361,6 +361,7 @@ const Homepage = (props) => {
           // heading="How it"
           // accent="works."
           ctaLabel="Start planning"
+          destination={destinationName}
         />
         </div>
       ) : null}
@@ -487,6 +488,7 @@ const Homepage = (props) => {
           // heading="How it"
           // accent="works."
           ctaLabel="Start planning"
+          destination={destinationName}
         />
 
         {/* COMMUNITY TOP PICKS */}

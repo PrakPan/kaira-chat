@@ -146,6 +146,8 @@ const Index = (props) => {
     <div className={styles.destinationPage}>
       <HeroV2
         destinationLabel={destinationName}
+        slug={props?.slug}
+        themeConfig={props?.themeConfig}
         kicker={
           userItineraries?.length
             ? `${userItineraries.length}+ ${destinationName} trips planned by Kaira`
@@ -289,6 +291,7 @@ const Index = (props) => {
           // heading="How it"
           // accent="works."
           ctaLabel="Start planning"
+          destination={destinationName}
         />
         </div>
       ) : null}
@@ -305,6 +308,7 @@ const Index = (props) => {
           // heading="How it"
           // accent="works."
           ctaLabel="Start planning"
+          destination={destinationName}
         />
 
       <div className={styles.container}>
@@ -375,12 +379,13 @@ const Index = (props) => {
               >
                 + Create a trip now!
               </Button> */}
-              <ChatWithKairaCta
-                onClick={handleChatWithKaira}
-                // onClick={() =>
-                //   handlePlanButtonClick(`Popular cities in ${destinationName}`)
-                // }
-              />
+              <SectionCta
+          // label="End of · How it works"
+          // heading="How it"
+          // accent="works."
+          ctaLabel="Start planning"
+          destination={destinationName}
+        />
             </div>
           </section>
         ) : null}
@@ -478,10 +483,13 @@ const Index = (props) => {
               >
                 + Create a trip now!
               </Button> */}
-              <ChatWithKairaCta
-                onClick={handleChatWithKaira}
-                // onClick={() => setShowTailoredModal(true)}
-              />
+             <SectionCta
+          // label="End of · How it works"
+          // heading="How it"
+          // accent="works."
+          ctaLabel="Start planning"
+          destination={destinationName}
+        />
             </div>
           </section>
         ) : null}
@@ -523,14 +531,13 @@ const Index = (props) => {
               >
                 + Create a trip now!
               </Button> */}
-              <ChatWithKairaCta
-                onClick={handleChatWithKaira}
-                // onClick={() =>
-                //   handlePlanButtonClick(
-                //     `Trending destinations across ${destinationName}`
-                //   )
-                // }
-              />
+             <SectionCta
+          // label="End of · How it works"
+          // heading="How it"
+          // accent="works."
+          ctaLabel="Start planning"
+          destination={destinationName}
+        />
             </div>
           </section>
         ) : null}
@@ -549,6 +556,7 @@ const Index = (props) => {
           // heading="How it"
           // accent="works."
           ctaLabel="Start planning"
+          destination={destinationName}
         />
 
         {/* OTHER COUNTRIES IN CONTINENT */}
@@ -590,14 +598,13 @@ const Index = (props) => {
               >
                 + Create a trip now!
               </Button> */}
-              <ChatWithKairaCta
-                onClick={handleChatWithKaira}
-                // onClick={() =>
-                //   handlePlanButtonClick(
-                //     `Other destinations to explore in ${props.data.continent}`
-                //   )
-                // }
-              />
+             <SectionCta
+          // label="End of · How it works"
+          // heading="How it"
+          // accent="works."
+          ctaLabel="Start planning"
+          destination={destinationName}
+        />
             </div>
           </section>
         ) : null}
@@ -627,7 +634,7 @@ const Index = (props) => {
             // onClick={() =>
             //   handlePlanButtonClick(`Final CTA - ${destinationName}`)
             // }
-          />
+        />
           <div className={styles.finalCtaTrust}>
             No commitment · free to plan · pay only for what you pick.
           </div>
