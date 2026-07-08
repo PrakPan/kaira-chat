@@ -149,7 +149,13 @@
   padding: 22px 24px;
   display: flex;
   flex-direction: column;
+  // allow the flex/grid child to shrink so long content wraps instead of
+  // forcing the card to overflow on narrow screens
+  min-width: 0;
 
+  @media (max-width: 640px) {
+    padding: 18px 18px;
+  }
   @media (max-width: 340px) {
     padding: 16px 14px;
   }
@@ -243,18 +249,34 @@
   align-items: flex-end;
   justify-content: space-between;
   gap: 8px;
+  // wrap the CTA below the price if they can't sit side by side, so nothing
+  // gets pushed off-card on small screens
+  flex-wrap: wrap;
 
-  @media (max-width: 340px) {
-    padding-top: 10px;
-    justify-content: flex-start;
-    gap: 120px;
-  }
+ @media (max-width: 400px) {
+  padding-top: 10px;
+  gap: 60px;
+  justify-content: flex-start;
+}
+
+@media (min-width: 401px) and (max-width: 430px) {
+  padding-top: 10px;
+  gap: 100px;
+  justify-content: flex-start;
+}
+
+@media (min-width: 431px) and (max-width: 600px) {
+  padding-top: 10px;
+  gap: 140px;
+  justify-content: flex-start;
+}
 }
 
 .price {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  min-width: 0;
 }
 .priceFrom {
   font-size: 10.5px;
@@ -273,9 +295,10 @@
   font-weight: 800;
   color: var(--ttw-ink);
   letter-spacing: -0.015em;
+  white-space: nowrap;
 
   @media (max-width: 340px) {
-    font-size: 12px;
+    font-size: 16px;
   }
 }
 .pricePer {

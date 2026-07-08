@@ -41,6 +41,7 @@ import { convertDbNameToCapitalFirst } from "../../helper/convertDbnameToCapital
 import TailoredFormMobileModal from "../../components/modals/TailoredFomrMobile.js";
 import styles from "../../styles/pages/revamp/destination.module.scss";
 import SectionCta from "../../components/revamp/home/SectionCta.jsx";
+import MobileCardCarousel from "../../components/revamp/destination/MobileCardCarousel.jsx";
 
 const Index = (props) => {
   const [userItineraries, setUserItineraries] = useState([]);
@@ -277,11 +278,11 @@ const Index = (props) => {
                 </p>
               </div>
             </div>
-            <div className={styles.itinGrid}>
+            <MobileCardCarousel gridClass={styles.itinGrid}>
               {userItineraries.slice(0, 4).map((it, i) => (
                 <ItineraryCardV2 key={it.id || i} itinerary={it} />
               ))}
-            </div>
+            </MobileCardCarousel>
           </section>
           <SectionCta
           // label="End of · How it works"
@@ -309,6 +310,7 @@ const Index = (props) => {
       <div className={styles.container}>
         <DesktopBanner
           loading={desktopBannerLoading}
+          hideMobile={props.hideMobileBanner}
           onclick={() => setShowTailoredModal(true)}
           text={`Craft a personalized itinerary${
             props.data?.slug
@@ -349,7 +351,7 @@ const Index = (props) => {
                 <FontAwesomeIcon icon={faArrowRight} />
               </span> */}
             </div>
-            <div className={styles.countriesGrid}>
+            <MobileCardCarousel gridClass={styles.countriesGrid}>
               {hotLocations.slice(0, 6).map((loc, idx) => (
                 <CountryCardV2
                   key={loc.id || idx}
@@ -357,7 +359,7 @@ const Index = (props) => {
                   hot={idx === 0}
                 />
               ))}
-            </div>
+            </MobileCardCarousel>
             <div className="flex justify-center mt-8">
               {/* <Button
                 onclick={() =>
@@ -421,7 +423,7 @@ const Index = (props) => {
               <Swiper
                 modules={[Navigation]}
                 spaceBetween={16}
-                slidesPerView={1.1}
+                slidesPerView={1}
                 navigation={{
                   nextEl: ".Experiences-next",
                   prevEl: ".Experiences-prev",
@@ -499,11 +501,11 @@ const Index = (props) => {
                 </p>
               </div>
             </div>
-            <div className={styles.countriesGrid}>
+            <MobileCardCarousel gridClass={styles.countriesGrid}>
               {props.data.states.slice(0, 6).map((s, idx) => (
                 <CountryCardV2 key={s.id || idx} item={s} hot={idx === 0} />
               ))}
-            </div>
+            </MobileCardCarousel>
             <div className="flex justify-center mt-8">
               {/* <Button
                 onclick={() =>
@@ -566,11 +568,11 @@ const Index = (props) => {
                 </p>
               </div>
             </div>
-            <div className={styles.countriesGrid}>
+            <MobileCardCarousel gridClass={styles.countriesGrid}>
               {props.locations.slice(0, 6).map((loc, idx) => (
                 <CountryCardV2 key={loc.id || idx} item={loc} hot={idx === 0} />
               ))}
-            </div>
+            </MobileCardCarousel>
             <div className="flex justify-center mt-8">
               {/* <Button
                 onclick={() =>
@@ -621,6 +623,7 @@ const Index = (props) => {
           </p>
           <ChatWithKairaCta
             onClick={handleChatWithKaira}
+            showHelper={false}
             // onClick={() =>
             //   handlePlanButtonClick(`Final CTA - ${destinationName}`)
             // }
