@@ -4658,18 +4658,96 @@ const MobileLayout = React.memo(
       color: "#0B1220",
     };
 
+    // ── Hide-on-scroll for the mobile header ──────────────────────────────
+    // NOTE: window/document never scrolls on this page — <main> is
+    // `h-dvh overflow-hidden`, so a window scroll listener would never fire.
+    // The real scroller is the itinerary/routes/bookings pane below.
+    //
+    // The header is a flex child in normal flow, so we collapse it with a
+    // negative margin-top rather than translateY (which would leave a gap).
+    // The MobileLayout root is already `overflow-hidden`, so it does the
+    // clipping — deliberately NOT an overflow-hidden wrapper here, which
+    // would clip the header's avatar dropdown.
+    const SCROLL_JITTER_PX = 6; // ignore sub-pixel / momentum noise
+    const ALWAYS_SHOW_ABOVE_PX = 48; // near the top, always reveal
+
+    const scrollPaneRef = React.useRef<HTMLDivElement | null>(null);
+    const headerRef = React.useRef<HTMLDivElement | null>(null);
+    const lastScrollRef = React.useRef(0);
+    const [headerHeight, setHeaderHeight] = React.useState(0);
+    const [hideHeader, setHideHeader] = React.useState(false);
+
+    const headerVisible = activeTab !== "chat";
+
+    // Measure the header so the collapse distance matches its real height
+    // (padding + border + the 36px icon buttons ≈ 61px, but don't hard-code it).
+    React.useEffect(() => {
+      const el = headerRef.current;
+      if (!el) return;
+      const measure = () => setHeaderHeight(el.offsetHeight);
+      measure();
+      const ro = new ResizeObserver(measure);
+      ro.observe(el);
+      return () => ro.disconnect();
+    }, [headerVisible]);
+
+    React.useEffect(() => {
+      const el = scrollPaneRef.current;
+      if (!el) return;
+      lastScrollRef.current = el.scrollTop;
+
+      const onScroll = () => {
+        const y = el.scrollTop;
+        const delta = y - lastScrollRef.current;
+
+        // iOS rubber-banding drives scrollTop negative / past the end; treating
+        // that as a direction change makes the header flicker at the extremes.
+        if (Math.abs(delta) < SCROLL_JITTER_PX) return;
+        lastScrollRef.current = y;
+
+        // Never hide if there isn't enough runway to scroll it back into view.
+        const scrollable = el.scrollHeight - el.clientHeight;
+        if (scrollable < headerHeight * 2) {
+          setHideHeader(false);
+          return;
+        }
+
+        setHideHeader(y > ALWAYS_SHOW_ABOVE_PX && delta > 0);
+      };
+
+      el.addEventListener("scroll", onScroll, { passive: true });
+      return () => el.removeEventListener("scroll", onScroll);
+    }, [hasItineraryActivity, headerHeight]);
+
+    // Switching tabs shouldn't strand the header off-screen.
+    React.useEffect(() => {
+      setHideHeader(false);
+      lastScrollRef.current = scrollPaneRef.current?.scrollTop ?? 0;
+    }, [activeTab]);
+
     return (
       <div className="flex flex-col h-full overflow-hidden relative">
         {/* ── Mobile header — hidden on chat tab; ChatKitPanel renders its
            own top bar with the menu on the right of "Chat with Kaira". ── */}
-        {activeTab !== "chat" && (
-          <MobileHeader
-            onNewChat={onNewChat}
-            onThreadSelect={onThreadSelect}
-            activeThreadId={activeThreadId}
-            isComplete={isComplete}
-            onLoginSuccess={onLoginSuccess}
-          />
+        {headerVisible && (
+          <div
+            ref={headerRef}
+            className="flex-shrink-0 transition-[margin-top,opacity] duration-200 ease-out"
+            style={{
+              marginTop: hideHeader ? -headerHeight : 0,
+              opacity: hideHeader ? 0 : 1,
+              pointerEvents: hideHeader ? "none" : "auto",
+            }}
+            aria-hidden={hideHeader}
+          >
+            <MobileHeader
+              onNewChat={onNewChat}
+              onThreadSelect={onThreadSelect}
+              activeThreadId={activeThreadId}
+              isComplete={isComplete}
+              onLoginSuccess={onLoginSuccess}
+            />
+          </div>
         )}
 
         {/* ── Top tab bar — only when itinerary is active ── */}
@@ -4744,6 +4822,7 @@ const MobileLayout = React.memo(
           {/* ITINERARY / ROUTES / BOOKINGS view */}
           {hasItineraryActivity && (
             <div
+              ref={scrollPaneRef}
               className="absolute inset-0 overflow-y-auto bg-white"
               style={{
                 opacity: ["itinerary", "routes", "bookings"].includes(activeTab)

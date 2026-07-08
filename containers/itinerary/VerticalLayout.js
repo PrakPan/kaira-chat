@@ -1610,7 +1610,7 @@ useEffect(() => {
   // Approx transfer duration. The value may arrive as a top-level numeric
   // `duration` (minutes) or inside transfer_details.duration ({ text: "3 hours
   // 30 mins", value: seconds }) — the shape the detail view reads. Flights show
-  // Flights and other transfers alike show an exact "approx 3h 30m".
+  // Flights and other transfers alike show an exact "Approx 3h 30m".
   // Resolve a transfer/leg duration (minutes) from whichever field a booking
   // carries: top-level numeric, flight segments (elapsed or summed), or the
   // road-transfer transfer_details.duration ({ text, value: seconds }).
@@ -1656,18 +1656,18 @@ useEffect(() => {
     if (m <= 0) return "";
     const h = Math.floor(m / 60);
     const min = Math.round(m % 60);
-    if (h > 0 && min > 0) return `approx ${h}h ${min}m`;
-    if (h > 0) return `approx ${h}h`;
-    return `approx ${min}m`;
+    if (h > 0 && min > 0) return `Approx ${h}h ${min}m`;
+    if (h > 0) return `Approx ${h}h`;
+    return `Approx ${min}m`;
   };
 
   // Final label — falls back to the raw duration text when it can't be parsed
   // into minutes, so a duration is still shown whenever the booking has one.
   // Flights and transfers share one h/m format: a 20-minute ferry reads
-  // "approx 20m", not a whole hour rounded up from it.
+  // "Approx 20m", not a whole hour rounded up from it.
   const durationLabel =
     approxDurationLabel(effectiveDuration) ||
-    (_durationText ? `approx ${_durationText}` : "");
+    (_durationText ? `Approx ${_durationText}` : "");
 
   // Combo (multi-leg) transfer — e.g. "Train to Kyoto, Flight to Chūbu
   // Centrair". Render one row per leg, each with its own approx time.
@@ -1969,7 +1969,7 @@ useEffect(() => {
                           </div>
                           <div className="text-[12px] max-ph:text-[11px] text-[#7b8aa3] mt-0.5">
                             {modeLabel}
-                            {departs ? ` · departs ${departs}` : ""}
+                            {departs ? ` · Departs ${departs}` : ""}
                             {dur ? ` · ${dur}` : ""}
                           </div>
                         </div>
@@ -1994,7 +1994,7 @@ useEffect(() => {
                   </div>
                   <div className="text-[12px] max-ph:text-[11px] text-[#7b8aa3] mt-0.5">
                     Flight
-                    {departLabel ? ` · departs ${departLabel}` : ""}
+                    {departLabel ? ` · Departs ${departLabel}` : ""}
                     {durationLabel ? ` · ${durationLabel}` : ""}
                   </div>
                 </div>
@@ -2029,7 +2029,7 @@ useEffect(() => {
                   </div>
                   <div className="text-[12px] max-ph:text-[11px] text-[#7b8aa3] mt-0.5">
                     {transferModeLabel}
-                    {departLabel ? ` · departs ${departLabel}` : ""}
+                    {departLabel ? ` · Departs ${departLabel}` : ""}
                     {durationLabel ? ` · ${durationLabel}` : ""}
                   </div>
                 </div>
