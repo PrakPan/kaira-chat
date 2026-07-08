@@ -394,6 +394,7 @@ const Index = (props) => {
           // heading="How it"
           // accent="works."
           ctaLabel="Start planning"
+          destination={destinationLabel}
         />
         </div>
       ) : null}
@@ -463,14 +464,13 @@ const Index = (props) => {
               ))}
             </div>
             <div className="flex justify-center mt-8">
-              <ChatWithKairaCta
-                onClick={handleChatWithKaira}
-                // onClick={() =>
-                //   handlePlanButtonClick(
-                //     `Top countries to visit in ${props?.data?.destination}`
-                //   )
-                // }
-              />
+              <SectionCta
+          // label="End of · How it works"
+          // heading="How it"
+          // accent="works."
+          ctaLabel="Start planning"
+          destination={destinationLabel}
+        />
             </div>
           </section>
         ) : null}
@@ -568,6 +568,7 @@ const Index = (props) => {
           // heading="How it"
           // accent="works."
           ctaLabel="Start planning"
+          destination={destinationLabel}
         />
                   </>
                 ) : component.carousel === "destination-2" ? (
@@ -592,6 +593,7 @@ const Index = (props) => {
           // heading="How it"
           // accent="works."
           ctaLabel="Start planning"
+          destination={destinationLabel}
         />
                   </>
                 ) : component.carousel === "destination-4" ? (
@@ -606,6 +608,7 @@ const Index = (props) => {
           // heading="How it"
           // accent="works."
           ctaLabel="Start planning"
+          destination={destinationLabel}
         />
                   </div>
                 ) : component.carousel === "destination-5" ? (
@@ -656,6 +659,7 @@ const Index = (props) => {
           // heading="How it"
           // accent="works."
           ctaLabel="Start planning"
+          destination={destinationLabel}
         />
                   </>
                 ) : component.carousel === "itinerary-1" ? (
@@ -719,6 +723,7 @@ const Index = (props) => {
           // heading="How it"
           // accent="works."
           ctaLabel="Start planning"
+          destination={destinationLabel}
         />
                   </>
                 ) : null}
@@ -736,6 +741,7 @@ const Index = (props) => {
           // heading="How it"
           // accent="works."
           ctaLabel="Start planning"
+          destination={destinationLabel}
         />
 
 

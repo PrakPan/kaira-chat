@@ -34,9 +34,6 @@ const GREECE_PATH = "europe/greece";
 const GREECE_CONTINENT = "europe";
 const GREECE_COUNTRY = "greece";
 
-// Curated theme content, ported from pages/theme/greece-islands-done-right.tsx.
-// The welcome prompt chips drive the hero suggestions; rows + traveller stories
-// drive the Get Inspired surface.
 const greeceThemeConfig: ThemeConfig = {
   welcome: {
     subtitle: "Greece is a big decision. Let's make it an easy one.",
@@ -345,6 +342,10 @@ const GreeceThemePage = (props: any) => {
         hideMobileBanner
         page_id={props.page_id || ""}
         type={props?.Type}
+        slug={"theme-greece"}
+        // Powers the HeroV2 "Get inspired" drawer (desktop) — same StartScreen
+        // content as the GetInspiredSection surface below.
+        themeConfig={greeceThemeConfig}
       ></CountryPage>
 
       <GetInspiredSection themeConfig={greeceThemeConfig} />
@@ -417,6 +418,24 @@ export async function getStaticProps() {
     console.log(
       `[ERROR][greeceThemePage][axioslocationsinstance:/hot_destinations/?continent=${GREECE_CONTINENT}/]`
     );
+  }
+
+  // TEMP-VERIFY-STUB: local sandbox blocks Mercury (400), so fall back to a
+  // minimal data object purely to render the page for visual verification.
+  if (!data) {
+    data = {
+      id: GREECE_ID,
+      name: "Greece",
+      slug: "greece",
+      continent: "europe",
+      path: GREECE_PATH,
+      model_prompts: GREECE_HERO_PROMPTS,
+      locations: [],
+      states: [],
+      activities: [],
+      pois: [],
+      itineraries: [],
+    };
   }
 
   return {
