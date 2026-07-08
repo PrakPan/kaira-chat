@@ -366,7 +366,7 @@ export async function getStaticProps() {
     // Production mercury: the dev host returns a null `seasonal_info` for this
     // id (so "When to go" wouldn't render), while prod has the populated data.
     const res = await axios.get(
-      `${MERCURY_HOST}/api/v1/geos/country/${GREECE_ID}`
+      `https://mercury.tarzanway.com/api/v1/geos/country/${GREECE_ID}`
     );
     data = res.data.data.country;
 
