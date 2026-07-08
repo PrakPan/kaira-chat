@@ -45,59 +45,48 @@ const ViewToggle: React.FC<ViewToggleProps> = ({
     return null;
   }
 
-  // Shared button style helper
-  const activeStyle: React.CSSProperties = {
-    borderRadius: "12px",
-    background: "#0F1A2E",
-    boxShadow: "0 2px 8px rgba(11,18,32,0.18)",
-  };
-  const inactiveStyle: React.CSSProperties = { borderRadius: "12px" };
+  // Design tabs: on desktop a compact pill group (inline-flex, natural-width
+  // tabs, navy active); on mobile the full-width strip is kept.
+  const activeStyle: React.CSSProperties = { background: "#122A43" };
 
-const tabBtn = (
-  label: string,
-  mode: string,
-  onClick: () => void,
-  icon: React.ReactNode,
-) => (
-  <button
-    onClick={onClick}
-    className={`flex-1 px-3 py-1.5  transition-all duration-200 flex items-center justify-center gap-2 ${
- viewMode === mode ? "text-white" : "text-[#000]"
- }`}
-    style={viewMode === mode ? activeStyle : inactiveStyle}
-  >
-    {icon}
-    {label}
-  </button>
-);
+  const tabClass = (mode: string) =>
+    `transition-all duration-200 flex items-center justify-center gap-2 md:gap-[7px] flex-1 md:flex-none px-3 py-1.5 md:px-[26px] md:py-[9px] rounded-[12px] md:rounded-[10px] text-[13px] md:text-[13.5px] font-semibold whitespace-nowrap ${
+      viewMode === mode ? "text-white" : "text-[#3b4149]"
+    }`;
+
+  const tabBtn = (
+    label: string,
+    mode: string,
+    onClick: () => void,
+    icon: React.ReactNode,
+  ) => (
+    <button
+      onClick={onClick}
+      className={tabClass(mode)}
+      style={viewMode === mode ? activeStyle : undefined}
+    >
+      {icon}
+      {label}
+    </button>
+  );
 
   return (
-    <div className="px-4 py-2 flex-shrink-0 ttw-type-body md:ttw-type-body">
-      <div
-        className="flex gap-1 p-[3px]"
-        style={{
-          borderRadius: "12px",
-          border: "1px solid #ECECEC",
-          background: "#fff"
-          // "#F4F1E6",
-        }}
-      >
+    <div className="px-4 py-2 flex-shrink-0">
+      <div className="flex md:inline-flex gap-1 md:gap-2 p-[3px] md:p-1 rounded-[12px] md:rounded-[14px] border border-[#ECECEC] bg-white">
         {/* Map — always visible when the strip is shown */}
         <button
           onClick={() => setViewMode("map")}
-          className={`flex-1 px-3 py-1.5 ttw-type-body-strong transition-all duration-200 flex items-center justify-center gap-2 ${
- viewMode === "map" ? "text-white" : "text-[#000]"
- }`}
-          style={viewMode === "map" ? activeStyle : inactiveStyle}
+          className={tabClass("map")}
+          style={viewMode === "map" ? activeStyle : undefined}
         >
-          <FiMap size={14} />
+          <FiMap size={16} />
           Map
         </button>
 
       {/* Routes */}
 {isComplete &&
   tabBtn("Route", "routes", () => setViewMode("routes"),
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="6" cy="6" r="2.5" />
       <circle cx="18" cy="18" r="2.5" />
       <path d="M9 6h7a2 2 0 0 1 2 2v7" />
@@ -105,12 +94,12 @@ const tabBtn = (
   )}
 
 {/* Itinerary */}
-{tabBtn("Itinerary", "itinerary", () => setViewMode("itinerary"), <FiCalendar size={14} />)}
+{tabBtn("Itinerary", "itinerary", () => setViewMode("itinerary"), <FiCalendar size={16} />)}
 
 {/* Bookings */}
 {isComplete &&
   tabBtn("Bookings", "bookings", () => setViewMode("bookings"),
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M19 14l-5-5-9 9" />
       <path d="M5 21h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2z" />
     </svg>

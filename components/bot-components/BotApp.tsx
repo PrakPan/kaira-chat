@@ -513,6 +513,30 @@ export default function BotApp({
   // Mobile: the compact trip strip collapses the traveller/date/social meta
   // behind a chevron. Desktop always shows the full header.
   const [tripMetaOpen, setTripMetaOpen] = useState(false);
+  // The expanded-header DATES value overflows the tight two-column meta on some
+  // phones. Measure the full-year width against the space left after the
+  // Travellers column and only fall back to a 2-digit year when it won't fit.
+  const [datesShort, setDatesShort] = useState(false);
+  const metaGroupRef = useRef<HTMLDivElement | null>(null);
+  const travellersColRef = useRef<HTMLDivElement | null>(null);
+  const datesMeasureRef = useRef<HTMLSpanElement | null>(null);
+  useEffect(() => {
+    const compute = () => {
+      const group = metaGroupRef.current;
+      const measure = datesMeasureRef.current;
+      if (!group || !measure || measure.offsetWidth === 0) return;
+      const travW = travellersColRef.current?.offsetWidth || 0;
+      const available = group.clientWidth - travW - 12; // 12px = column gap
+      setDatesShort(measure.offsetWidth > available - 2);
+    };
+    compute();
+    const raf = requestAnimationFrame(compute);
+    window.addEventListener("resize", compute);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", compute);
+    };
+  }, [itineraryRedux?.start_date, itineraryRedux?.end_date, tripMetaOpen]);
   const [showApiLoginPrompt, setShowApiLoginPrompt] = useState(false);
   // Login gate for the start-screen / welcome surfaces (prompt cards, theme
   // prompts, traveller stories). Holds the action to replay after login.
@@ -2788,6 +2812,12 @@ Start Location: ${details.startLocation}`;
     itineraryRedux?.start_date && itineraryRedux?.end_date
       ? `${new Date(itineraryRedux.start_date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })} – ${new Date(itineraryRedux.end_date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}`
       : itineraryRedux?.travel_date || "";
+  // Same dates with a 2-digit year — used on mobile where the two-column meta
+  // is too tight for the full "2026" and the dates would otherwise overflow.
+  const _tripDatesShort =
+    itineraryRedux?.start_date && itineraryRedux?.end_date
+      ? `${new Date(itineraryRedux.start_date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "2-digit" })} – ${new Date(itineraryRedux.end_date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "2-digit" })}`
+      : itineraryRedux?.travel_date || "";
   const _tripPax = [
     itineraryRedux?.number_of_adults
       ? `${itineraryRedux.number_of_adults} adult${itineraryRedux.number_of_adults > 1 ? "s" : ""}`
@@ -2828,19 +2858,19 @@ Start Location: ${details.startLocation}`;
     >
       {/* Header strip — full-width bar on desktop, compact rounded card on mobile
           (design's .trip strip). */}
-      <div className="bg-white flex flex-col px-3 md:px-[22px] py-3 border-b border-slate-100 max-ph:border max-ph:border-[#ECECEC] max-ph:rounded-[14px] max-ph:mx-4 max-ph:mt-3 max-ph:px-[12px] max-ph:py-[10px]">
+      <div className="bg-white flex flex-col px-3 md:px-[22px] py-3 border-b border-slate-100 max-ph:border max-ph:border-[#ECECEC] max-ph:rounded-[14px] max-ph:mx-3 max-ph:mt-[10px] max-ph:px-[12px] max-ph:py-[10px]">
         <div className="flex justify-between items-start gap-3 max-ph:gap-2 max-ph:relative">
           <div className="flex flex-col flex-1 min-w-0">
             {/* Compact title + sub are max-width-capped on mobile so they
                 truncate before the absolutely-positioned icons. (Padding can't
                 reserve truncation space — text overflows into it — so a
                 max-width is used.) The expanded detail below is full width. */}
-            <p className="font-inter font-bold md:font-extrabold text-[13px] md:text-[24px] leading-[1.2] md:leading-[1.15] tracking-[-0.2px] md:tracking-[-0.5px] m-0 max-ph:truncate max-ph:max-w-[60%]">
+            <p className={`font-inter font-bold md:font-extrabold text-[13.5px] md:text-[24px] leading-[1.2] md:leading-[1.15] tracking-[-0.2px] md:tracking-[-0.5px] m-0 max-ph:truncate max-ph:max-w-[85%] ${tripMetaOpen ? "max-ph:hidden" : ""}`}>
               {itineraryReduxName || currentItineraryRef?.current?.name || ""}
             </p>
             {/* Mobile-only compact sub: dates · pax (design .trip-row .t-sub) */}
             {tripCompactSub && (
-              <div className="md:hidden text-[11px] text-[#6B7280] mt-[2px] truncate max-ph:max-w-[60%]">
+              <div className={`md:hidden text-[11.5px] text-[#6B7280] mt-[1px] truncate max-ph:max-w-[85%] ${tripMetaOpen ? "max-ph:hidden" : ""}`}>
                 {tripCompactSub}
               </div>
             )}
@@ -2852,21 +2882,21 @@ Start Location: ${details.startLocation}`;
           <div className={`flex flex-col gap-1.5 mt-[11px] max-ph:mt-[10px] ${tripMetaOpen ? "" : "max-ph:hidden"}`}>
             {/* Mobile expanded: full (untruncated) itinerary name — design's
                 .trip-detail .ttl. Hidden on desktop (already shown at 24px). */}
-            <p className="md:hidden font-inter font-extrabold text-[18px] leading-[1.2] tracking-[-0.4px] m-0 mb-[3px] text-[#171A1F]">
+            <p className="md:hidden font-inter font-extrabold text-[18px] leading-[1.2] tracking-[-0.4px] m-0 mb-[3px] text-[#171A1F] max-ph:max-w-[85%]">
               {itineraryReduxName || currentItineraryRef?.current?.name || ""}
             </p>
             {/* Outer row — column on mobile (so the gallery slides below the
                 meta), single row on desktop (gallery sits to the right of
                 traveller/date, matching the original design). */}
             <div className="flex items-start gap-2 md:gap-[22px] max-ph:gap-[13px] max-ph:flex-col max-ph:items-stretch md:items-center">
-              <div className="flex items-center gap-[22px] flex-wrap max-ph:items-start max-ph:gap-[18px]">
+              <div ref={metaGroupRef} className="flex items-center gap-[22px] flex-nowrap md:flex-wrap max-ph:items-start max-ph:gap-[12px]">
                 {(itineraryRedux?.group_type ||
                   itineraryRedux?.number_of_adults) && (
-                  <div className="flex items-center gap-2 max-ph:flex-col max-ph:items-start max-ph:gap-[3px]">
+                  <div ref={travellersColRef} className="flex items-center gap-2 max-ph:flex-col max-ph:items-start max-ph:gap-[3px]">
                     <span className="text-[10px] font-inter font-bold uppercase tracking-[0.6px] text-[#9aa0a8] whitespace-nowrap">
                       Travellers
                     </span>
-                    <span className="text-[13px] font-inter text-[#3b4149]">
+                    <span className="text-[13px] max-ph:text-[12px] font-inter text-[#3b4149] whitespace-nowrap">
                       {itineraryRedux.group_type
                         ? `${itineraryRedux.group_type}${
                             itineraryRedux.number_of_adults
@@ -2913,26 +2943,31 @@ Start Location: ${details.startLocation}`;
                 {(itineraryRedux?.travel_date ||
                   (itineraryRedux?.start_date &&
                     itineraryRedux?.end_date)) && (
-                  <div className="flex items-center gap-2 max-ph:flex-col max-ph:items-start max-ph:gap-[3px]">
+                  <div className="flex items-center gap-2 shrink-0 max-ph:flex-col max-ph:items-start max-ph:gap-[3px]">
                     <span className="text-[10px] font-inter font-bold uppercase tracking-[0.6px] text-[#9aa0a8] whitespace-nowrap">
                       Dates
                     </span>
-                    <span className="text-[13px] font-inter text-[#3b4149] whitespace-nowrap">
-                      {itineraryRedux.start_date && itineraryRedux.end_date
-                        ? `${new Date(
-                            itineraryRedux.start_date,
-                          ).toLocaleDateString("en-GB", {
-                            day: "numeric",
-                            month: "short",
-                            year: "numeric",
-                          })} – ${new Date(
-                            itineraryRedux.end_date,
-                          ).toLocaleDateString("en-GB", {
-                            day: "numeric",
-                            month: "short",
-                            year: "numeric",
-                          })}`
-                        : itineraryRedux.travel_date}
+                    <span className="text-[13px] max-ph:text-[12px] font-inter text-[#3b4149] whitespace-nowrap">
+                      {itineraryRedux.start_date && itineraryRedux.end_date ? (
+                        <>
+                          {/* Mobile: full year when it fits, else the measured
+                              2-digit fallback. Desktop always full. */}
+                          <span className="md:hidden">
+                            {datesShort ? _tripDatesShort : _tripDates}
+                          </span>
+                          <span className="max-ph:hidden">{_tripDates}</span>
+                          {/* Hidden full-year probe used to measure overflow. */}
+                          <span
+                            ref={datesMeasureRef}
+                            aria-hidden
+                            className="md:hidden absolute invisible pointer-events-none whitespace-nowrap"
+                          >
+                            {_tripDates}
+                          </span>
+                        </>
+                      ) : (
+                        itineraryRedux.travel_date
+                      )}
                     </span>
                     {isDraft && (
                       <button
@@ -2962,7 +2997,7 @@ Start Location: ${details.startLocation}`;
                   </div>
                 )}
               </div>
-              {itineraryRedux?.images?.length > 0 && (
+              {!isMobile && itineraryRedux?.images?.length > 0 && (
                 <SmallGallery
                   compact
                   maxShow={Math.min(3, galleryImages.images.length)}
@@ -2971,6 +3006,52 @@ Start Location: ${details.startLocation}`;
                 />
               )}
             </div>
+
+            {/* Mobile: images (left) + settings/share (right) on one row at the
+                bottom of the expanded detail. Hidden on desktop, where the
+                gallery sits in the meta row and the icons top-right. */}
+            <div className="md:hidden flex items-center mt-[13px]">
+              {isMobile && itineraryRedux?.images?.length > 0 && (
+                <SmallGallery
+                  compact
+                  maxShow={Math.min(3, galleryImages.images.length)}
+                  images={galleryImages.images}
+                  closeLabel="Back to Itinerary"
+                />
+              )}
+              <div className="flex items-center gap-[8px] ml-auto">
+                {!isDraft && (
+                  <button
+                    aria-label="Settings"
+                    className="flex items-center justify-center w-[34px] h-[34px] rounded-full bg-gray-100 hover:bg-gray-200"
+                    onClick={() => {
+                      if (!authToken) {
+                        setShowSettingsLoginPrompt(true);
+                        return;
+                      }
+                      axios
+                        .get(
+                          `${MERCURY_HOST}/api/v1/itinerary/${activeItineraryId}/bookings/hotels/?fields=no_of_hotels`,
+                        )
+                        .then((res) =>
+                          setIsHotelsPresent(res.data.no_of_hotels > 0),
+                        )
+                        .catch(() => setIsHotelsPresent(false))
+                        .finally(() => setShowSettings(true));
+                    }}
+                  >
+                    <Image src="/settings.svg" height={18} width={18} alt="Settings" />
+                  </button>
+                )}
+                <button
+                  aria-label="Share"
+                  className="flex items-center justify-center w-[34px] h-[34px] rounded-full bg-gray-100 hover:bg-gray-200"
+                  onClick={() => setShowShare(true)}
+                >
+                  <Image src="/share.svg" height={18} width={18} alt="Share" />
+                </button>
+              </div>
+            </div>
           </div>
         )}
           </div>
@@ -2978,7 +3059,7 @@ Start Location: ${details.startLocation}`;
           <div className="flex gap-3 max-ph:gap-[6px] items-center shrink-0 max-ph:absolute max-ph:top-0 max-ph:right-0">
             {!isDraft && (
               <button
-                className="flex items-center justify-center w-9 h-9 max-ph:w-[28px] max-ph:h-[28px] rounded-full bg-gray-100 hover:bg-gray-200"
+                className="max-ph:hidden flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200"
                 onClick={() => {
                   if (!authToken) {
                     setShowSettingsLoginPrompt(true);
@@ -3000,7 +3081,6 @@ Start Location: ${details.startLocation}`;
                   height={22}
                   width={22}
                   alt="Settings"
-                  className="max-ph:w-[18px] max-ph:h-[18px]"
                 />
               </button>
             )}
@@ -3012,10 +3092,10 @@ Start Location: ${details.startLocation}`;
               />
             )}
             <button
-              className="flex items-center justify-center w-9 h-9 max-ph:w-[28px] max-ph:h-[28px] rounded-full bg-gray-100 hover:bg-gray-200"
+              className="max-ph:hidden flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200"
               onClick={() => setShowShare(true)}
             >
-              <Image src="/share.svg" height={22} width={22} alt="Share" className="max-ph:w-[18px] max-ph:h-[18px]" />
+              <Image src="/share.svg" height={22} width={22} alt="Share" />
             </button>
             {/* Mobile: toggle the collapsed trip meta (design .trip chevron) */}
             {tripCompactSub && (
@@ -3024,7 +3104,7 @@ Start Location: ${details.startLocation}`;
                 aria-label="Toggle trip details"
                 aria-expanded={tripMetaOpen}
                 onClick={() => setTripMetaOpen((v) => !v)}
-                className="md:hidden flex items-center justify-center w-9 h-9 max-ph:w-[28px] max-ph:h-[28px] rounded-full bg-gray-100 hover:bg-gray-200"
+                className="md:hidden flex items-center justify-center w-9 h-9 max-ph:w-[28px] max-ph:h-[28px] shrink-0"
               >
                 <svg
                   width="18"
@@ -3035,7 +3115,7 @@ Start Location: ${details.startLocation}`;
                 >
                   <path
                     d="m6 9 6 6 6-6"
-                    stroke="#2a2f36"
+                    stroke="#8a9099"
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"

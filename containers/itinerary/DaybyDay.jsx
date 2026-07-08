@@ -284,7 +284,7 @@ const DaybyDay = ({
           }`}
       >
 
-        <div className="flex flex-col">
+        <div className={`flex flex-col ${props?.fromChat ? "gap-2" : ""}`}>
           {props?.fromChat && <ItineraryLegend />}
           <CityItem
             setShowLoginModal={setShowLoginModal}
@@ -442,7 +442,7 @@ const DaybyDay = ({
 
 
             return (
-              <div key={city.id}>    
+              <div key={city.id} className={props?.fromChat ? "flex flex-col gap-2" : ""}>
                 <ItineraryCity
                   mercuryItinerary={props?.mercuryItinerary}
                   fromChat={props?.fromChat}

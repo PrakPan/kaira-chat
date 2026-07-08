@@ -120,7 +120,7 @@ const ItineraryLegend = () => {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="mb-4 max-ph:mb-1 max-ph:-mt-5">
+    <div className="max-ph:-mt-5">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}

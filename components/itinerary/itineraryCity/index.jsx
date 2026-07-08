@@ -602,7 +602,7 @@ const ItineraryCity = (props) => {
       ref={(el) => (props.cityRefs.current[props.city.id] = el)}
       className={
         props?.fromChat
-          ? "flex flex-col gap-3 w-full"
+          ? "flex flex-col gap-2 w-full"
           : "rounded-lg flex flex-col w-full bg-white border-[0.5px] border-[#e5e5e5]"
       }
     >
@@ -617,7 +617,7 @@ const ItineraryCity = (props) => {
             : "contents"
         }
       >
-      <div className={`w-full font-inter ${props?.fromChat ? "px-[17px] max-ph:px-[14px] py-[15px] max-ph:py-[13px]" : "px-4 pt-4 pb-3 border-b border-[#EBEBEB]"}`}>
+      <div className={`w-full font-inter ${props?.fromChat ? "px-[0.3rem] md:px-4 py-[10px] md:py-[15px]" : "px-4 pt-4 pb-3 border-b border-[#EBEBEB]"}`}>
         {/*
           Row 1
           LEFT : City name (bold, truncated)
@@ -709,20 +709,44 @@ const ItineraryCity = (props) => {
             </div>
           ) : null}
           {props?.fromChat && (
-            <button
-              type="button"
-              onClick={() => setEditMode((v) => !v)}
-              aria-expanded={editMode}
-              className="flex items-center gap-1.5 max-ph:gap-[5px] shrink-0 bg-[#F4F3EF] border-[1px] border-[#ECECEC] rounded-full px-[13px] max-ph:px-[11px] py-[7px] max-ph:py-[6px] text-[12.5px] max-ph:text-[10px] font-semibold text-[#3b4149]"
-            >
-              <EditIcon />
-              Edit
-              {editMode ? (
-                <RiArrowDropUpLine size={16} />
-              ) : (
-                <RiArrowDropDownLine size={16} />
+            <>
+              {/* Mobile: Edit toggle reveals the per-stop actions row below. */}
+              <button
+                type="button"
+                onClick={() => setEditMode((v) => !v)}
+                aria-expanded={editMode}
+                className="flex md:hidden items-center gap-1.5 max-ph:gap-[5px] shrink-0 bg-[#F4F3EF] border-[1px] border-[#ECECEC] rounded-full px-[13px] max-ph:px-[11px] py-[7px] max-ph:py-[6px] text-[10px] font-semibold text-[#3b4149]"
+              >
+                <EditIcon />
+                Edit
+                {editMode ? (
+                  <RiArrowDropUpLine size={16} />
+                ) : (
+                  <RiArrowDropDownLine size={16} />
+                )}
+              </button>
+
+              {/* Desktop: Add activity + Add taxi live in the header row where
+                  the Edit toggle was (no toggle on desktop). */}
+              {!isDraftStatus && (
+                <div className="flex max-ph:hidden items-center gap-[9px] shrink-0">
+                  <button
+                    onClick={openActivityDrawer}
+                    className="flex items-center justify-center gap-1 px-3.5 py-2 rounded-full border-[1px] border-[#E3E2DD] bg-white text-[12.5px] font-semibold text-[#2c2f34] whitespace-nowrap"
+                  >
+                    <PlusCircleIcon id={`act_ic_top_${props?.city?.id}`} />
+                    Add activity
+                  </button>
+                  <button
+                    onClick={openTaxiDrawer}
+                    className="flex items-center justify-center gap-1 px-3.5 py-2 rounded-full border-[1px] border-[#E3E2DD] bg-white text-[12.5px] font-semibold text-[#2c2f34] whitespace-nowrap"
+                  >
+                    <PlusCircleIcon id={`taxi_ic_top_${props?.city?.id}`} />
+                    Add taxi
+                  </button>
+                </div>
               )}
-            </button>
+            </>
           )}
         </div>
 
@@ -731,7 +755,7 @@ const ItineraryCity = (props) => {
           LEFT : Hotel name (truncated) • X Days, Y Night • rating ★
           RIGHT: ✏ Change Hotel — aligned to the same row as hotel info
         */}
-        <div className={`flex items-center justify-between gap-3 ${props?.fromChat ? "mt-[10px] max-ph:mt-[9px]" : "mt-1"} min-w-0`}>
+        <div className={`flex items-center justify-between gap-3 ${props?.fromChat ? "mt-[4px] max-ph:mt-[5px]" : "mt-1"} min-w-0 ${props?.fromChat && !hotelExists && hotels_status !== "PENDING" ? "max-ph:hidden" : ""}`}>
           {/* Left side */}
           <div className="flex items-center min-w-0 flex-1 overflow-hidden">
             {hotels_status === "PENDING" ? (
@@ -756,13 +780,13 @@ const ItineraryCity = (props) => {
                 />
               </div>
             ) : hotelExists ? (
-              <div className="flex flex-col gap-1 min-w-0 w-full">
+              <div className={`flex flex-col gap-1 min-w-0 ${props?.fromChat ? "w-auto max-ph:w-full" : "w-full"}`}>
                 {multiHotelStays.map((hotel) => {
                   const isDraftStage = itineraryDaybyDay.status === "Draft";
                   return (
                   <div
                     key={hotel.id}
-                    className={`flex items-center ${props?.fromChat ? "gap-[9px] max-ph:gap-[8px] max-ph:text-[13px]" : "gap-1"} text-[14px] text-[#111827] min-w-0 flex-wrap`}
+                    className={`flex items-center ${props?.fromChat ? "gap-[9px] max-ph:gap-[8px] max-ph:text-[13px] flex-nowrap" : "gap-1 flex-wrap"} text-[14px] text-[#111827] min-w-0`}
                   >
                     {/* Chat: hotel icon before the stay name */}
                     {props?.fromChat && <HotelIcon />}
@@ -771,7 +795,7 @@ const ItineraryCity = (props) => {
                       className={`${
                         isDraftStage
                           ? "underline cursor-pointer break-words"
-                          : "underline cursor-pointer truncate shrink min-w-0 max-w-[130px] md:max-w-none md:overflow-visible md:whitespace-normal md:break-words"
+                          : `underline cursor-pointer truncate shrink min-w-0 ${props?.fromChat ? "" : "max-w-[130px]"} md:max-w-none md:overflow-visible md:whitespace-normal md:break-words`
                       } ${props?.fromChat ? "text-[#1f6feb] font-semibold" : ""}`}
                       onClick={() => {
                         trackHotelCardClicked?.(
@@ -794,7 +818,7 @@ const ItineraryCity = (props) => {
                         {!props?.fromChat && (
                           <span className="text-[#6B7280] shrink-0">•</span>
                         )}
-                        <span className={`${props?.fromChat ? "font-[700] text-[13px] text-[#E9A400]" : "font-[500]"} shrink-0`}>
+                        <span className={`${props?.fromChat ? "font-[700] text-[13px] text-[#111827]" : "font-[500]"} shrink-0`}>
                           {hotel.rating || hotel.star_category}{" "}
                         </span>
                         <StarIcon />
@@ -807,7 +831,11 @@ const ItineraryCity = (props) => {
             ) : (
               !(itineraryDaybyDay.status == "Draft") && (
                 <button
-                  className="text-blue cursor-pointer text-[14px] font-medium hover:underline whitespace-nowrap"
+                  className={
+                    props?.fromChat
+                      ? "flex max-ph:hidden items-center gap-[5px] shrink-0 px-3.5 py-2 rounded-full border-[1px] border-[#E3E2DD] bg-white font-semibold text-[#2c2f34] whitespace-nowrap text-[12.5px]"
+                      : "text-blue cursor-pointer text-[14px] font-medium hover:underline whitespace-nowrap"
+                  }
                   onClick={(e) => {
                     trackHotelCardClicked?.(
                       currentItineraryId,
@@ -817,9 +845,28 @@ const ItineraryCity = (props) => {
                     handleStay(e, "Add", props.city.city.name, "Add", null);
                   }}
                 >
-                  + Add Stay in {props?.city?.city?.name}
+                  {props?.fromChat ? (
+                    <>
+                      <PlusCircleIcon id={`add_stay_${props?.city?.id}`} />
+                      Add Stay in {props?.city?.city?.name}
+                    </>
+                  ) : (
+                    <>+ Add Stay in {props?.city?.city?.name}</>
+                  )}
                 </button>
               )
+            )}
+
+            {/* Desktop (chat): Change hotel sits inline right after the hotel
+                name (no Edit toggle). */}
+            {props?.fromChat && hotelExists && (
+              <button
+                onClick={changeHotelFromChat}
+                className="flex max-ph:hidden items-center gap-[5px] shrink-0 ml-[10px] px-3.5 py-2 rounded-full border-[1px] border-[#E3E2DD] bg-white font-semibold text-[#2c2f34] whitespace-nowrap text-[12.5px]"
+              >
+                <EditIcon />
+                Change hotel
+              </button>
             )}
           </div>
 
@@ -908,51 +955,65 @@ const ItineraryCity = (props) => {
             </div>
           )}
 
-          {/* Chat: per-stop actions revealed by the "Edit" toggle.
-              Change hotel/transfer sits at the left end; Add activity + Add
-              taxi are grouped at the right end (justify-between). */}
-          {props?.fromChat && editMode && (
-            <div className="flex flex-wrap max-ph:flex-nowrap items-center justify-between gap-[9px] max-ph:gap-[6px] mt-3 max-ph:mt-2">
-              {/* Left end: Change hotel / Change transfer */}
-              <div className="flex items-center gap-[9px] max-ph:gap-[6px]">
-                {hotelExists && (
-                  <button
-                    onClick={changeHotelFromChat}
-                    className="flex items-center gap-[5px] shrink-0 px-3.5 max-ph:px-[7px] py-2 max-ph:py-[5px] rounded-full border-[1px] border-[#E3E2DD] bg-white font-semibold text-[#2c2f34] whitespace-nowrap text-[12.5px] max-ph:text-[10px]"
-                  >
-                    <EditIcon />
-                    Change hotel
-                  </button>
-                )}
-                {isDraftStatus && hasIntracityTransfer && (
-                  <button
-                    onClick={changeTransferFromChat}
-                    className="flex items-center gap-[5px] shrink-0 px-3.5 max-ph:px-[7px] py-2 max-ph:py-[5px] rounded-full border-[1px] border-[#E3E2DD] bg-white font-semibold text-[#2c2f34] whitespace-nowrap text-[12.5px] max-ph:text-[10px]"
-                  >
-                    <EditIcon />
-                    Change transfer
-                  </button>
-                )}
-              </div>
-
-              {/* Right end: Add activity + Add taxi */}
-              {!isDraftStatus && (
-                <div className="flex items-center gap-[9px] max-ph:gap-[6px]">
-                  <button
-                    onClick={openActivityDrawer}
-                    className="flex items-center justify-center gap-1 px-3.5 max-ph:px-[7px] py-2 max-ph:py-[5px] rounded-full border-[1px] border-[#E3E2DD] bg-white text-[12.5px] max-ph:text-[10px] font-semibold text-[#2c2f34] whitespace-nowrap"
-                  >
-                    <PlusCircleIcon id={`act_ic_edit_${props?.city?.id}`} />
-                    Add activity
-                  </button>
-                  <button
-                    onClick={openTaxiDrawer}
-                    className="flex items-center justify-center gap-1 px-3.5 max-ph:px-[7px] py-2 max-ph:py-[5px] rounded-full border-[1px] border-[#E3E2DD] bg-white text-[12.5px] max-ph:text-[10px] font-semibold text-[#2c2f34] whitespace-nowrap"
-                  >
-                    <PlusCircleIcon id={`taxi_ic_edit_${props?.city?.id}`} />
-                    Add taxi
-                  </button>
-                </div>
+          {/* Chat (mobile): single actions row. Add Stay (no hotel) stays
+              always visible; Change hotel / Add activity / Add taxi are revealed
+              by the "Edit" toggle. All buttons share one flex-nowrap row and the
+              same compact size. */}
+          {props?.fromChat && ((!hotelExists && !isDraftStatus) || editMode) && (
+            <div className="flex md:hidden flex-nowrap items-center justify-between gap-[6px] mt-2">
+              {/* All action buttons are direct children so they distribute
+                  evenly across the row (justify-between). */}
+              {!hotelExists && !isDraftStatus && (
+                <button
+                  onClick={(e) => {
+                    trackHotelCardClicked?.(
+                      currentItineraryId,
+                      "",
+                      "city_header_add_stay",
+                    );
+                    handleStay(e, "Add", props.city.city.name, "Add", null);
+                  }}
+                  className="flex items-center justify-center gap-1 shrink-0 px-[9px] py-[5px] rounded-full border-[1px] border-[#E3E2DD] bg-white text-[10px] font-semibold text-[#2c2f34] whitespace-nowrap"
+                >
+                  <PlusCircleIcon id={`add_stay_edit_${props?.city?.id}`} />
+                  Add Stay
+                </button>
+              )}
+              {hotelExists && editMode && (
+                <button
+                  onClick={changeHotelFromChat}
+                  className="flex items-center justify-center gap-1 shrink-0 px-[9px] py-[5px] rounded-full border-[1px] border-[#E3E2DD] bg-white font-semibold text-[#2c2f34] whitespace-nowrap text-[10px]"
+                >
+                  <EditIcon />
+                  Change hotel
+                </button>
+              )}
+              {isDraftStatus && hasIntracityTransfer && editMode && (
+                <button
+                  onClick={changeTransferFromChat}
+                  className="flex items-center justify-center gap-1 shrink-0 px-[9px] py-[5px] rounded-full border-[1px] border-[#E3E2DD] bg-white font-semibold text-[#2c2f34] whitespace-nowrap text-[10px]"
+                >
+                  <EditIcon />
+                  Change transfer
+                </button>
+              )}
+              {editMode && !isDraftStatus && (
+                <button
+                  onClick={openActivityDrawer}
+                  className="flex items-center justify-center gap-1 shrink-0 px-[9px] py-[5px] rounded-full border-[1px] border-[#E3E2DD] bg-white text-[10px] font-semibold text-[#2c2f34] whitespace-nowrap"
+                >
+                  <PlusCircleIcon id={`act_ic_edit_${props?.city?.id}`} />
+                  Add activity
+                </button>
+              )}
+              {editMode && !isDraftStatus && (
+                <button
+                  onClick={openTaxiDrawer}
+                  className="flex items-center justify-center gap-1 shrink-0 px-[9px] py-[5px] rounded-full border-[1px] border-[#E3E2DD] bg-white text-[10px] font-semibold text-[#2c2f34] whitespace-nowrap"
+                >
+                  <PlusCircleIcon id={`taxi_ic_edit_${props?.city?.id}`} />
+                  Add taxi
+                </button>
               )}
             </div>
           )}

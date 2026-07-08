@@ -204,12 +204,15 @@ const TaxiPickupDropItem = ({
       // For first city: show only pickup option
       // For last city: show only drop option
       // For middle cities: show both options
+      // Pickup happens at the destination, drop at the origin; the mid-trip
+      // combined case spans both cities.
       if (firstCity) {
-        return "+ Add Taxi Pickup";
+        return `+ Add Taxi Pickup${destinationCityName ? ` in ${destinationCityName}` : ""}`;
       } else if (lastCity) {
-        return "+ Add Taxi Drop";
+        return `+ Add Taxi Drop${originCityName ? ` in ${originCityName}` : ""}`;
       } else {
-        return "+ Add Taxi Pickup/Drop";
+        const cities = [originCityName, destinationCityName].filter(Boolean).join(" & ");
+        return `+ Add Taxi Pickup/Drop${cities ? ` in ${cities}` : ""}`;
       }
     }
 
@@ -322,7 +325,7 @@ const TaxiPickupDropItem = ({
     <div key={-4} className="group relative" ref={dropdownRef}>
       <div className="flex items-center gap-2">
         <span
-          className={`${fromChat ? "text-[#1f6feb] font-[600] text-[13px] max-ph:text-[12.5px] py-[9px] max-ph:py-[8px] px-[2px]" : "text-blue font-[500] text-[14px]"} ${
+          className={`${fromChat ? "text-[#1f6feb] font-[600] text-[13px] max-ph:text-[12.5px] py-[5px] max-ph:py-[5px] px-[2px]" : "text-blue font-[500] text-[14px]"} ${
             displayText ? "hover:underline cursor-pointer" : ""
           }`}
           style={TRANSFER_LINK_FONT}
@@ -505,6 +508,18 @@ const AirportBookingItem = ({
   return `+ Add ${isPickup ? "Pickup" : "Drop"} in ${cityName}`;
 };
 
+  // "+ Add Pickup/Drop" CTA label, with the relevant city appended. Pickup
+  // happens at the destination, drop at the origin; the mid-trip combined case
+  // spans both cities.
+  const addPickupDropText = () => {
+    if (firstCity)
+      return `+ Add Pickup${destinationCityName ? ` in ${destinationCityName}` : ""}`;
+    if (lastCity)
+      return `+ Add Drop${originCityName ? ` in ${originCityName}` : ""}`;
+    const cities = [originCityName, destinationCityName].filter(Boolean).join(" & ");
+    return `+ Add Pickup and Drop${cities ? ` in ${cities}` : ""}`;
+  };
+
   const getDisplayText = () => {
     const currentPickupBookings = booking.filter(
       (book) => book?.is_airport_pickup
@@ -526,7 +541,7 @@ const AirportBookingItem = ({
     ) {
       return (
         <div className="flex items-center text-sm gap-1">
-          <span>{`+ Add ${firstCity ? "Pickup" : lastCity ? "Drop" :"Pickup and Drop"}`}</span>
+          <span>{addPickupDropText()}</span>
         </div>
       );
     }
@@ -905,7 +920,7 @@ const AirportBookingItem = ({
     <div key={-3} className="group relative" ref={dropdownRef}>
       <div className="flex items-center gap-2">
         <span
-          className={`${fromChat ? "text-[#1f6feb] font-[600] text-[13px] max-ph:text-[12.5px] py-[9px] max-ph:py-[8px] px-[2px]" : "text-blue font-[500] text-[14px]"} ${displayText ? "hover:underline cursor-pointer" : ""
+          className={`${fromChat ? "text-[#1f6feb] font-[600] text-[13px] max-ph:text-[12.5px] py-[5px] max-ph:py-[5px] px-[2px]" : "text-blue font-[500] text-[14px]"} ${displayText ? "hover:underline cursor-pointer" : ""
             }`}
           style={TRANSFER_LINK_FONT}
           onClick={handleClick}
@@ -935,11 +950,11 @@ const AirportBookingItem = ({
       <div key={-3} className="group relative" ref={dropdownRef}>
         <div className="flex items-center gap-2">
           <span
-            className={`${fromChat ? "text-[#1f6feb] font-[600] text-[13px] max-ph:text-[12.5px] py-[9px] max-ph:py-[8px] px-[2px]" : `${isDesktop ? "Body1M_16" : "Body2M_14"} text-blue`} hover:underline cursor-pointer`}
+            className={`${fromChat ? "text-[#1f6feb] font-[600] text-[13px] max-ph:text-[12.5px] py-[5px] max-ph:py-[5px] px-[2px]" : `${isDesktop ? "Body1M_16" : "Body2M_14"} text-blue`} hover:underline cursor-pointer`}
             style={TRANSFER_LINK_FONT}
             onClick={handleClick}
           >
-            + Add Pickup and Drop
+            {addPickupDropText()}
           </span>
         </div>
       </div>
@@ -1037,31 +1052,21 @@ const CityItem = ({
     handlePickupDropDrawer("drop")
   };
 
-  const correctIcon = (TransportMode) => {
+  const correctIcon = (TransportMode, color = "#a5a5a5") => {
     switch (TransportMode?.toLowerCase()) {
       case "flight":
         return (
-          <MdOutlineFlightTakeoff
-            className="text-2xl text-[#a5a5a5]"
-            size={18}
-            color={"#a5a5a5"}
-          />
+          <MdOutlineFlightTakeoff className="text-2xl" size={18} color={color} />
         );
       case "taxi":
       case "car":
-        return <IoCar className="text-2xl" size={16} color={"#a5a5a5"} />;
+        return <IoCar className="text-2xl" size={16} color={color} />;
       case "train":
-        return <IoMdTrain className="text-2xl" size={16} color={"#a5a5a5"} />;
+        return <IoMdTrain className="text-2xl" size={16} color={color} />;
       case "ferry":
-        return <IoMdBoat className="text-2xl" size={16} color={"#a5a5a5"} />;
+        return <IoMdBoat className="text-2xl" size={16} color={color} />;
       case "bus":
-        return (
-          <FaBus
-            className="text-2xl text-[#a5a5a5]"
-            size={16}
-            color={"#a5a5a5"}
-          />
-        );
+        return <FaBus className="text-2xl" size={16} color={color} />;
       default:
         return null;
     }
@@ -1564,6 +1569,28 @@ useEffect(() => {
     return dt.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
   };
 
+  // Departure date shown on every transfer chip. Read from the check-in date:
+  // date_of_journey is only passed on the start/end transfers, so fall back to
+  // the destination city's check-in (start_date) — the day you leave the origin
+  // — then to the raw check-in/out props.
+  const departDate =
+    date_of_journey ||
+    dCityData?.start_date ||
+    check_out ||
+    check_in ||
+    oCityData?.end_date;
+  const departLabel = formatFlightDate(departDate);
+
+  // Duration (minutes) computed from a check-in → check-out datetime pair, used
+  // as a fallback when the booking itself carries no duration.
+  const durationFromCheckInOut = (ci, co) => {
+    if (!ci || !co) return 0;
+    const a = new Date(ci).getTime();
+    const b = new Date(co).getTime();
+    if (isNaN(a) || isNaN(b) || b <= a) return 0;
+    return Math.round((b - a) / 60000);
+  };
+
   const transferModeLabel = (() => {
     const t = booking_type?.toLowerCase() || "";
     if (t.includes("flight")) return "Flight";
@@ -1620,10 +1647,9 @@ useEffect(() => {
     typeof _durationDetails === "string"
       ? _durationDetails
       : _durationDetails?.text || "";
-  const effectiveDuration = resolveDurationMins(
-    booking,
-    duration || booking?.duration,
-  );
+  const effectiveDuration =
+    resolveDurationMins(booking, duration || booking?.duration) ||
+    durationFromCheckInOut(booking?.check_in, booking?.check_out);
 
   const approxDurationLabel = (mins) => {
     const m = Number(mins) || 0;
@@ -1727,10 +1753,62 @@ useEffect(() => {
         ?.departure_time || leg?.departure_time,
     );
 
+  // Chat transfer "Change" — mirrors the booking-details Change button
+  // (TransferDrawer.handleEditRoute): opens the regular editTransfer search
+  // drawer for this leg's booking so the user can swap the transfer. Combos use
+  // the same drawer as any other transfer (not the multicity taxi drawer).
+  const handleChangeTransfer = (e) => {
+    e?.stopPropagation?.();
+    if (!localStorage.getItem("access_token")) {
+      setShowLoginModal(true);
+      return;
+    }
+    trackTransferBookingChange(
+      router.query.id,
+      bookingIdToDelete,
+      oCityData?.name || oCityData?.city_name,
+      dCityData?.name || dCityData?.city_name,
+    );
+    router.push(
+      {
+        pathname: window.location.pathname,
+        query: {
+          ...(currentItineraryId ? { id: currentItineraryId } : {}),
+          drawer: "editTransfer",
+          drawerType: null,
+          bookingId: booking?.id,
+          oItineraryCity: oCityData?.id || oCityData?.gmaps_place_id,
+          dItineraryCity: dCityData?.id || dCityData?.gmaps_place_id,
+          doj: booking?.check_in || departDate,
+        },
+      },
+      undefined,
+      { scroll: false, shallow: true },
+    );
+  };
+
+  // Right-side action group on every chat transfer chip: [Change] [View ›].
+  // Change opens the change drawer; View opens the booking-details drawer (the
+  // chip's own onClick). On mobile only Change shows — View is hidden.
+  const transferChipActions = (
+    <div className="flex items-center gap-[14px] max-ph:gap-0 shrink-0">
+      <button
+        type="button"
+        onClick={handleChangeTransfer}
+        className="text-[12.5px] max-ph:text-[11.5px] font-[600] text-[#1f6feb] whitespace-nowrap hover:underline"
+      >
+        Change
+      </button>
+      <span className="text-[12.5px] max-ph:text-[11.5px] font-[600] text-[#1f6feb] whitespace-nowrap max-ph:hidden">
+        View ›
+      </span>
+    </div>
+  );
+
 
   return (
     <Container
-      className={`${isLast ? (fromChat ? "mb-4" : "mb-[60px]") : ""}`}
+      className={`${fromChat ? "" : (isLast ? "mb-[60px]" : "")}`}
       style={fromChat ? { display: "block", width: "100%" } : undefined}
     >
     {!fromChat && (!(Itinerary.status == "Draft") ?  <PinWrapper>
@@ -1792,7 +1870,7 @@ useEffect(() => {
           {!(upPresent && downPresent) && (
             <div
               className={`${isDesktop ? "Body1M_16" : "Body2M_14"} ${
-                fromChat ? "flex items-center gap-3 max-ph:gap-[11px] py-[7px] max-ph:py-[6px] px-[2px]" : ""
+                fromChat ? "flex items-center gap-3 max-ph:gap-[11px] py-[4px] max-ph:py-[3px] px-[2px]" : ""
               }`}
             >
               {/* Chat: solid endpoint dot (replaces the removed pin rail) */}
@@ -1840,9 +1918,9 @@ useEffect(() => {
         ["flight", "train", "ferry", "bus"].includes(
           booking_type?.toLowerCase()
         )
-          ? "mt-2"
+          ? "mt-0"
           : (booking_id || city) && !visible
-          ? "mt-2"
+          ? "mt-0"
           : "mt-0"
       }`}
     >
@@ -1856,11 +1934,7 @@ useEffect(() => {
                  to Chūbu Centrair" combo but split into scannable rows. */
               <div
                 onClick={() => handleEdit(true, booking)}
-                className={`flex items-stretch w-full rounded-[12px] border-[1px] cursor-pointer my-[10px] overflow-hidden ${
-                  comboHasFlight
-                    ? "bg-[#EEF4FE] border-[#DBE7FB]"
-                    : "bg-[#F6F5F1] border-[#ECECEC]"
-                }`}
+                className="flex items-stretch w-full rounded-[12px] border-[1px] cursor-pointer overflow-hidden bg-[#EEF4FE] border-[#DBE7FB]"
               >
                 <div className="flex-1 min-w-0 flex flex-col">
                   {comboChildren.map((leg, i) => {
@@ -1883,15 +1957,11 @@ useEffect(() => {
                       <div
                         key={leg?.id || i}
                         className={`flex items-center gap-[13px] max-ph:gap-[11px] px-[15px] max-ph:px-[12px] py-[11px] max-ph:py-[9px] ${
-                          i > 0
-                            ? comboHasFlight
-                              ? "border-t border-[#DBE7FB]"
-                              : "border-t border-[#ECECEC]"
-                            : ""
+                          i > 0 ? "border-t border-[#DBE7FB]" : ""
                         }`}
                       >
-                        <span className="flex items-center shrink-0 text-[#8a9099]">
-                          {correctIcon(leg?.booking_type)}
+                        <span className="flex items-center shrink-0 text-[#1f6feb]">
+                          {correctIcon(leg?.booking_type, "#1f6feb")}
                         </span>
                         <div className="flex-1 min-w-0">
                           <div className="text-[13px] max-ph:text-[12.5px] font-[700] text-[#1c2c44] truncate">
@@ -1910,16 +1980,14 @@ useEffect(() => {
                   })}
                 </div>
                 <div className="flex items-center px-[15px] shrink-0">
-                  <span className="text-[12.5px] max-ph:text-[11.5px] font-[600] text-[#1f6feb] whitespace-nowrap">
-                    View ›
-                  </span>
+                  {transferChipActions}
                 </div>
               </div>
             ) : isFlightLeg ? (
               /* Chat: dedicated flight card */
               <div
                 onClick={() => handleEdit(transfer_type === "combo", booking)}
-                className="flex items-center gap-[13px] max-ph:gap-[11px] w-full px-[15px] max-ph:px-[12px] py-[13px] max-ph:py-[11px] rounded-[12px] max-ph:rounded-[11px] bg-[#EEF4FE] border-[1px] border-[#DBE7FB] cursor-pointer my-[10px] max-ph:my-[9px]"
+                className="flex items-center gap-[13px] max-ph:gap-[11px] w-full px-[15px] max-ph:px-[12px] py-[13px] max-ph:py-[11px] rounded-[12px] max-ph:rounded-[11px] bg-[#EEF4FE] border-[1px] border-[#DBE7FB] cursor-pointer"
               >
                 <MdOutlineFlightTakeoff size={20} color="#1f6feb" />
                 <div className="flex-1 min-w-0">
@@ -1928,48 +1996,46 @@ useEffect(() => {
                   </div>
                   <div className="text-[12px] max-ph:text-[11px] text-[#7b8aa3] mt-0.5">
                     Flight
-                    {formatFlightDate(date_of_journey)
-                      ? ` · departs ${formatFlightDate(date_of_journey)}`
-                      : ""}
+                    {departLabel ? ` · departs ${departLabel}` : ""}
                     {flightDurationLabel ? ` · ${flightDurationLabel}` : ""}
                   </div>
                 </div>
-                <span className="text-[12.5px] max-ph:text-[11.5px] font-[600] text-[#1f6feb] whitespace-nowrap">
-                  View ›
-                </span>
+                {transferChipActions}
               </div>
             ) : (
               /* Chat: transfer chip */
               <div
                 onClick={() => handleEdit(transfer_type === "combo", booking)}
-                className="flex items-center gap-[12px] max-ph:gap-[10px] w-full px-[15px] max-ph:px-[12px] py-[11px] max-ph:py-[9px] rounded-[12px] max-ph:rounded-[11px] bg-[#F6F5F1] border-[1px] border-[#ECECEC] cursor-pointer"
+                className="flex items-center gap-[12px] max-ph:gap-[10px] w-full px-[15px] max-ph:px-[12px] py-[11px] max-ph:py-[9px] rounded-[12px] max-ph:rounded-[11px] bg-[#EEF4FE] border-[1px] border-[#DBE7FB] cursor-pointer"
               >
-                <span className="flex items-center shrink-0 text-[#8a9099]">
+                <span className="flex items-center shrink-0 text-[#1f6feb]">
                   {booking?.children
                     ? booking?.children?.map((book, i) => {
                         const mode = extractMode(book?.booking_type);
                         return (
                           <React.Fragment key={i}>
-                            {correctIcon(mode)}
+                            {correctIcon(mode, "#1f6feb")}
                             {i < booking?.children?.length - 1 && (
                               <span>
-                                <RiArrowDropRightLine size={18} color={"#a5a5a5"} />
+                                <RiArrowDropRightLine size={18} color={"#1f6feb"} />
                               </span>
                             )}
                           </React.Fragment>
                         );
                       })
-                    : correctIcon(booking_type)}
+                    : correctIcon(booking_type, "#1f6feb")}
                 </span>
                 <div className="flex-1 min-w-0">
-                  <div className="text-[13px] max-ph:text-[12px] font-[600] text-[#2c2f34] truncate">
+                  <div className="text-[13px] max-ph:text-[12px] font-[600] text-[#1c2c44] truncate">
                     {origin_city_name} → {destination_city_name}
                   </div>
-                  <div className="text-[12px] max-ph:text-[11px] text-[#8a9099] mt-0.5">
+                  <div className="text-[12px] max-ph:text-[11px] text-[#7b8aa3] mt-0.5">
                     {transferModeLabel}
+                    {departLabel ? ` · departs ${departLabel}` : ""}
                     {transferDurationLabel ? ` · ${transferDurationLabel}` : ""}
                   </div>
                 </div>
+                {transferChipActions}
               </div>
             )
           ) : (
@@ -2041,8 +2107,18 @@ useEffect(() => {
             <PickupDropLoader />
           )}
          {transfers_status != "PENDING" &&
-  pricing_status != "PENDING" && (
-    <div className="flex flex-col gap-1">
+  pricing_status != "PENDING" &&
+  // Only render the pickup/drop section when it has something to show —
+  // flight/train/ferry/bus support station transfers, or there are existing
+  // airport bookings. For a plain taxi (no support, no bookings) this section
+  // renders nothing, so skipping it avoids an empty row + its gap padding the
+  // bottom of the transfer box unevenly.
+  (["flight", "train", "ferry", "bus"].includes(booking_type?.toLowerCase()) ||
+    currentAirportBookings.length > 0) && (
+    <div className={`flex flex-col gap-1 ${fromChat && lastCity ? "order-first" : ""}`}>
+      {/* On the final leg the drop happens before you depart, so the drop CTA
+          sits above the transfer chip (between the last city box and the
+          transfer) rather than below it. */}
       {/* CHANGED: Conditional rendering based on booking existence */}
       {(booking_id || currentAirportBookings.length > 0) ? (
         /* If main booking exists OR there are pickup/drop bookings, show AirportBookingItem */
