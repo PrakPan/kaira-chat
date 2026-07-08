@@ -75,7 +75,7 @@ export default class MyDocument extends Document {
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 
           {/* Third-party SDKs deferred so they don't block initial render */}
-          <script defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB-AJwAHLnOSTh25KkTQdxyTFB7-v0uMaw"></script>
+          <script defer src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`}></script>
           <script defer src="https://cdn.platform.openai.com/deployments/chatkit/chatkit.js"></script>
 
 

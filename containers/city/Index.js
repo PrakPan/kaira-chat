@@ -265,6 +265,7 @@ const Experience = (props) => {
           </p>
           <ChatWithKairaCta
             onClick={handleChatWithKaira}
+            showHelper={false}
             // onClick={() => setShowTailoredModal(true)}
           />
           <div className={styles.finalCtaTrust}>

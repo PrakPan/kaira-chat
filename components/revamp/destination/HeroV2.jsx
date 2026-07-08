@@ -352,16 +352,22 @@ const HeroV2 = ({
             </form>
             {prompts.length > 0 && (
               <div className={styles.heroV2Prompts}>
-                {prompts.map((p, i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    className={styles.heroV2Prompt}
-                    onClick={() => handlePromptClick(p)}
-                  >
-                    {p}
-                  </button>
-                ))}
+                {prompts.map((p, i) => {
+                  // Prompts can be plain strings, or { label, prompt } objects
+                  // where the short label is shown but the full prompt is sent.
+                  const label = typeof p === "string" ? p : p?.label;
+                  const text = typeof p === "string" ? p : p?.prompt;
+                  return (
+                    <button
+                      key={i}
+                      type="button"
+                      className={styles.heroV2Prompt}
+                      onClick={() => handlePromptClick(text)}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
               </div>
             )}
             {meta && <div className={styles.heroV2Meta}>{meta}</div>}

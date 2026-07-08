@@ -1,12 +1,42 @@
-// pages/theme/greece-islands-done-right.tsx
+// pages/theme/greece.tsx
+//
+// Greece theme page. Renders the same content as the Greece country page
+// (`/[continent]/[country]` -> europe/greece, id
+// "2b285f39-41e7-4100-99b7-1d20782e7437") with three theme-specific tweaks:
+//   1. The hero suggestion chips use the curated greece-islands-done-right
+//      prompts — short label shown, full prompt sent to chat.
+//   2. The "Other destinations in <continent>" section is hidden.
+//   3. A "Get Inspired" surface (mobile pinned bar + desktop inline section)
+//      exposes the same themed cards / traveller stories.
 
-import { useEffect } from "react";
+import Head from "next/head";
 import { connect } from "react-redux";
-import BotApp from "../../components/bot-components/BotApp";
-import * as authaction from "../../store/actions/auth";
+import { useEffect } from "react";
+import Layout from "../../components/Layout";
+import CountryPage from "../../containers/country/Index";
+import GetInspiredSection from "../../components/theme/GetInspiredSection";
+import axioslocationsinstance from "../../services/search/search";
+import setHotLocationSearch from "../../store/actions/hotLocationSearch";
+import { useAnalytics } from "../../hooks/useAnalytics";
 import type { ThemeConfig } from "../../components/bot-components/types/themeConfig";
 import greeceTravellerStories from "../../data/greeceTravellerStories";
+import { MERCURY_HOST } from "../../services/constants";
+import axios from "axios";
+import axiospagelistinstance from "../../services/pages/list";
+import axioscountrydetailsinstance, {
+  getCountryPaths,
+} from "../../services/pages/country";
 
+
+// Hardcoded to the Greece country page.
+const GREECE_ID = "2b285f39-41e7-4100-99b7-1d20782e7437";
+const GREECE_PATH = "europe/greece";
+const GREECE_CONTINENT = "europe";
+const GREECE_COUNTRY = "greece";
+
+// Curated theme content, ported from pages/theme/greece-islands-done-right.tsx.
+// The welcome prompt chips drive the hero suggestions; rows + traveller stories
+// drive the Get Inspired surface.
 const greeceThemeConfig: ThemeConfig = {
   welcome: {
     subtitle: "Greece is a big decision. Let's make it an easy one.",
@@ -19,7 +49,7 @@ const greeceThemeConfig: ThemeConfig = {
       },
       {
         icon: "💶",
-        label: "I have Rs 1.8 lakh — what does Greece actually get me?",
+        label: "I have Rs 1.8 lakh — what Greece actually get me?",
         prompt:
           "Plan an 8-day Greece trip for ₹1.8 lakh per person, including flights from India. Show what's realistically possible, which islands offer the best value, and create a complete itinerary with stays, transport, and daily experiences.",
       },
@@ -246,20 +276,166 @@ const greeceThemeConfig: ThemeConfig = {
   travellerStories: greeceTravellerStories,
 };
 
-const GreeceIslandsDoneRightThemePage = ({
-  checkAuthState,
-}: {
-  checkAuthState: () => void;
-}) => {
-  useEffect(() => {
-    checkAuthState();
-  }, []);
+// Hero suggestion chips: show the short label, send the full prompt to chat.
+const GREECE_HERO_PROMPTS = (greeceThemeConfig.welcome?.promptChips ?? []).map(
+  (chip) => ({ label: chip.label, prompt: chip.prompt })
+);
 
-  return <BotApp themeConfig={greeceThemeConfig} />;
+const GreeceThemePage = (props: any) => {
+  const { trackPageView } = useAnalytics();
+
+  useEffect(() => {
+    props.setHotLocationSearch(props.hotLocationSearch);
+    trackPageView(props.Type, `${props?.Data?.name} Page`);
+  }, [props?.hotLocationSearch]);
+
+  return (
+    <Layout
+      destination={props?.Data?.name}
+      id={props?.Data?.id}
+      page={"Country Page"}
+    >
+      <Head>
+        <title>
+          {props?.Data?.name} | AI Trip Planner & Custom Travel Itineraries | The Tarzan Way
+        </title>
+        <meta
+          name="description"
+          content={`Discover ${props?.Data?.name} with The Tarzan Way's AI Trip Planner. Book your flights, accommodations, and transfers all in one go and discover must-visit destinations for an extraordinary journey.`}
+        ></meta>
+        <meta
+          property="og:title"
+          content={
+            props?.Data?.name + " | AI Trip Planner & Custom Travel Itineraries | The Tarzan Way"
+          }
+        />
+        <meta
+          property="og:description"
+          content={`Discover ${props?.Data?.name} with The Tarzan Way's AI Trip Planner. Book your flights, accommodations, and transfers all in one go and discover must-visit destinations for an extraordinary journey.`}
+        />
+        <meta property="og:image" content="/logoblack.svg" />
+        <meta
+          property="keywords"
+          content={`${props?.Data?.name} trip planner, ai trip planner, trip planner, itinerary, travel plan, ai itinerary, ai plan, craft a trip, travel in ${props?.Data?.name}, ${props?.Data?.name} tour package, experience ${props?.Data?.name} culture, ${props?.Data?.name} holiday package, local travel experience, customized trip planner, customized holiday packages, customized packages in computer, honeymoon travel packages, personalized travel package, best places in ${props?.Data?.name}, places to visit in ${props?.Data?.name}, best activities in ${props?.Data?.name}, things to do in ${props?.Data?.name}, package for ${props?.Data?.name}, top places in ${props?.Data?.name}, wanderlog, inspirock, tripit, hotels, flights, activities, transfers, solo travel, family travel,`}
+        ></meta>
+
+        <link
+          rel="canonical"
+          href={`https://thetarzanway.com/theme/greece`}
+        ></link>
+        <script
+          type="module"
+          crossOrigin=""
+          src="/vendor/panorama-slider.js"
+        ></script>
+        <link
+          rel="stylesheet"
+          crossOrigin=""
+          href="/vendor/panorama-slider.css"
+        ></link>
+      </Head>
+
+      <CountryPage
+        continetCarousel={props?.continetCarousel}
+        data={props?.Data}
+        // Empty locations hides the "Other destinations in <continent>" section.
+        locations={[]}
+        // Hide the Banner's mobile bar here — the "Get Inspired" pinned bar
+        // already occupies the bottom of the viewport on mobile.
+        hideMobileBanner
+        page_id={props.page_id || ""}
+        type={props?.Type}
+      ></CountryPage>
+
+      <GetInspiredSection themeConfig={greeceThemeConfig} />
+
+      {/* Spacer so the mobile pinned "Get Inspired" bar never covers content. */}
+      <div className="md:hidden" style={{ height: 56 }} aria-hidden />
+    </Layout>
+  );
 };
 
-const mapDispatchToProps = (dispatch: any) => ({
-  checkAuthState: () => dispatch(authaction.checkAuthState()),
-});
+export async function getStaticProps() {
+  let data: any = null;
+  const continetCarousel: any[] = [];
+  let hotLocationSearch: any[] = [];
+  const Type = "Country";
 
-export default connect(null, mapDispatchToProps)(GreeceIslandsDoneRightThemePage);
+  try {
+    // Production mercury: the dev host returns a null `seasonal_info` for this
+    // id (so "When to go" wouldn't render), while prod has the populated data.
+    const res = await axios.get(
+      `${MERCURY_HOST}/api/v1/geos/country/${GREECE_ID}`
+    );
+    data = res.data.data.country;
+
+    if (!data) {
+      return {
+        notFound: true,
+      };
+    }
+
+    // Override the hero prompts with the curated greece-islands prompts
+    // (label shown, full prompt sent to chat).
+    data = { ...data, model_prompts: GREECE_HERO_PROMPTS };
+
+    //mercury api
+   const continentData = await axiospagelistinstance.get(
+      "/?page_type=Continent&fields=id,page_type,slug,overview_image,tagline,path"
+    );
+    for (let i = 0; i < continentData.data.data.pages.length; i++) {
+      let continentSlug = continentData.data.data.pages[i].slug;
+
+     const countrydetailsResponse = await axioscountrydetailsinstance.get(
+        `?limit=111&offset=0&continent=${continentSlug}`
+      );
+
+
+      let hot_data = countrydetailsResponse.data.data.countries.filter(
+        (d: any) => d.is_hot_location
+      );
+      hot_data = hot_data.slice(0, 6);
+
+      continetCarousel.push({
+        ...continentData.data.data.pages[i],
+        hot_destinations: hot_data,
+      });
+    }
+  } catch (err: any) {
+    console.error("[ERROR][greeceThemePage:getStaticProps]: ", err.message);
+  }
+
+  try {
+    //dev api
+    const response = await axioslocationsinstance.get(
+      `hot_destinations/?country=${GREECE_COUNTRY}/`
+    );
+    if (response.data?.length) {
+      hotLocationSearch = response.data;
+    }
+  } catch (err) {
+    console.log(
+      `[ERROR][greeceThemePage][axioslocationsinstance:/hot_destinations/?continent=${GREECE_CONTINENT}/]`
+    );
+  }
+
+  return {
+    props: {
+      Data: data,
+      continetCarousel,
+      path: GREECE_PATH,
+      hotLocationSearch,
+      page_id: GREECE_ID,
+      Type,
+    },
+  };
+}
+
+const mapDispatchToProps = (dispatch: any) => {
+  return {
+    setHotLocationSearch: (payload: any) =>
+      dispatch(setHotLocationSearch(payload)),
+  };
+};
+
+export default connect(null, mapDispatchToProps)(GreeceThemePage);

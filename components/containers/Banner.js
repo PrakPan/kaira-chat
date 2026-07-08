@@ -138,21 +138,24 @@ const Banner = (props) => {
   if (showBanner)
     return (
       <>
-      <MobileContainer newYear={props.newYear}>
-        <MobileBar>
-          <MobileText>{renderMobileText()}</MobileText>
-          <ChatWithKairaCta
-            onClick={props.onclick}
-            label="Plan with Kaira"
-            style={{
-              padding: "9px 14px",
-              fontSize: "12.5px",
-              flexShrink: 0,
-              whiteSpace: "nowrap",
-            }}
-          />
-        </MobileBar>
-      </MobileContainer>
+      {!props.hideMobile && (
+        <MobileContainer newYear={props.newYear}>
+          <MobileBar>
+            <MobileText>{renderMobileText()}</MobileText>
+            <ChatWithKairaCta
+              onClick={props.onclick}
+              label="Plan with Kaira"
+              showHelper={false}
+              style={{
+                padding: "9px 14px",
+                fontSize: "12.5px",
+                flexShrink: 0,
+                whiteSpace: "nowrap",
+              }}
+            />
+          </MobileBar>
+        </MobileContainer>
+      )}
       <Container className="flex place-self-end" newYear={props.newYear}>
         <GridContainer>
           <div className="center-div">
@@ -191,6 +194,7 @@ const Banner = (props) => {
               <ChatWithKairaCta
                 onClick={props.onclick}
                 label="Plan with Kaira"
+                showHelper={false}
               />
             </div>
         </GridContainer>

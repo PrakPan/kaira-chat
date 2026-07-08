@@ -758,6 +758,7 @@ const Index = (props) => {
           </p>
           <ChatWithKairaCta
             onClick={handleChatWithKaira}
+            showHelper={false}
             // onClick={() =>
             //   handlePlanButtonClick(`Final CTA - ${destinationLabel}`)
             // }
