@@ -887,7 +887,10 @@ const handleRouteTabClick = (label) => {
       onClick={(e) => handleOutsideClick(e)}
       className={
         props.fromChat
-          ? "flex flex-col items-center w-full h-full overflow-y-auto"
+          ? // No h-full/overflow-y-auto: BotApp's pane is already the scroll
+            // container. A nested one here is pinned to the pane's height, so
+            // it scrolls even when the route fits.
+            "flex flex-col items-center w-full"
           : "inset-0 flex flex-col items-center bg-white"
       }
     >
@@ -957,7 +960,7 @@ const handleRouteTabClick = (label) => {
                 </div>
               )}
             </div>
-            <div className="w-full h-fit hide-scrollbar overflow-y-auto py-5">
+            <div className="w-full h-fit hide-scrollbar overflow-y-auto pb-5">
               {editDestination && !itineraryLoading ? (
                 <div className="w-full relative flex flex-row justify-center gap-5 px-3">
                   <EditDestinations
@@ -977,7 +980,7 @@ const handleRouteTabClick = (label) => {
           </>
         )}
         {isDesktop && (
-          <div className="w-full h-fit hide-scrollbar overflow-y-auto py-5">
+          <div className="w-full h-fit hide-scrollbar overflow-y-auto pb-5">
             {editDestination && !itineraryLoading ? (
               <div className="w-full flex flex-row gap-5">
                 <EditDestinations
@@ -1261,18 +1264,21 @@ export const EditDestinations = (props) => {
   }
 
   return (
-    <div className="w-full flex flex-col items-center justify-center pb-[150px] gap-3">
-      <div className="w-full flex flex-row justify-between">
-        <div className="ttw-type-h3 pb-3 text-black">Route</div>
-
-        <div>
-          <button
-            onClick={handleAddDestination}
-            className="text-blue cursor-pointer underline ttw-type-body"
-          >
-            + Add Destination
-          </button>
+    // No bottom reserve: the Update Route bar is sticky and sits in flow, so it
+    // no longer overlays the last city.
+    <div className="w-full flex flex-col items-center justify-center gap-3 pb-6">
+      <div className="w-full flex flex-row items-center justify-between">
+        <div className="font-inter font-bold text-[22px] max-ph:text-[19px] leading-none tracking-[-0.3px] text-[#0B1220]">
+          Route
         </div>
+
+        <button
+          onClick={handleAddDestination}
+          className="flex items-center gap-[5px] text-[14px] max-ph:text-[13px] font-inter font-semibold text-[#1D6FE0] cursor-pointer"
+        >
+          <span className="text-[16px] leading-none">+</span>
+          Add destination
+        </button>
       </div>
 
       {props.destinations.length ? (
@@ -1561,17 +1567,23 @@ export const Destination = (props) => {
           ) : (
             <CustomMapPin color={cityData?.color || pinColour} />
           )}
-          <div className="flex flex-row items-center justify-center gap-2">
-            <div className="ttw-type-body lg:ttw-type-body cursor-pointer font-medium">
+          {/* Name stacked over its night count, per the route design. */}
+          <div className="flex flex-col justify-center gap-[1px]">
+            <div className="font-inter font-semibold text-[15px] leading-[1.3] text-[#0B1220] cursor-pointer">
               {cityData.city_name || cityData.name || cityData.text}
             </div>
-            {!(startingCity || endingCity) && cityData?.nights >= 0 && (
-              <div className="ttw-type-body text-gray-500">
-                <span className="ttw-type-body text-gray-500">I</span> &nbsp;
-                {`${cityData.nights} ${
-                  cityData.nights > 1 ? "Nights" : "Night"
-                }`}
+            {startingCity || endingCity ? (
+              <div className="font-inter text-[13px] leading-[1.3] text-[#6B7280]">
+                {startingCity ? "Start" : "End"}
               </div>
+            ) : (
+              cityData?.nights >= 0 && (
+                <div className="font-inter text-[13px] leading-[1.3] text-[#6B7280]">
+                  {`${cityData.nights} ${
+                    cityData.nights === 1 ? "night" : "nights"
+                  }`}
+                </div>
+              )
             )}
           </div>
         </div>
@@ -2887,13 +2899,24 @@ export const ActionPanel = (props) => {
 >
   {editDestination ? "Cancel" : "Back"}
 </button> */}
-     {destinationChanges ? <div className="z-20 fixed w-[98%] md:w-[47.5%] max-ph:bottom-0 bottom-[4.2rem] flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3 flex items-end justify-end">
+     {/* fixed, and with no pb reserve on the content above. The bar overlays the
+         pane so it contributes no layout height — a sticky/in-flow bar adds its
+         own ~75px and a pb reserve adds 150px, and either is enough to scroll a
+         route that otherwise fits. Trade-off: at max scroll on a long route the
+         last city sits under the bar. */}
+     {/* max-ph:bottom-[88px] clears BottomCTABar: on mobile BotApp renders it
+         with viewMode forced to "itinerary", so the View Cart bar is pinned at
+         bottom-0 on this tab too and would cover an Update Route bar sitting
+         there. 88px matches the scroll pane's pb-[88px] reserve for it. */}
+     {destinationChanges ? <div className="z-30 fixed max-ph:left-0 max-ph:right-0 max-ph:w-auto w-[98%] md:w-[47.5%] max-ph:bottom-[88px] bottom-[4.2rem] flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3 flex items-end justify-end max-ph:justify-stretch">
   <button
     type="button"
     onClick={handleSaveButton}
     disabled={!destinationChanges}
     style={{
-      maxWidth: isDesktop ? "200px" : "50%",
+      // Full width on mobile: a half-width button hugs the right edge, where
+      // the floating Kaira bubble sits on top of it.
+      maxWidth: isDesktop ? "200px" : "100%",
       width: "100%",
       height: "50px",
       padding: "0.5rem 2rem",

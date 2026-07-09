@@ -180,7 +180,7 @@ const Details = (props) => {
   }, []);
 
   return (
-    <div id="brief" className="mb-2xl mt-lg max-ph:mt-xl max-ph:mb-xl">
+    <div id="brief" className="mb-zero mt-md max-ph:mt-sm max-ph:mb-zero">
 
       {/* {router.query.drawer === "handleEditRoute" && ( */}
         <RouteEditSection

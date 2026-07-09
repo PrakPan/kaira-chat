@@ -70,6 +70,69 @@ import {
 type MobilePanel = "map" | "chat" | "itinerary";
 type LeftPanelMode = "default" | "itinerary-loading" | "itinerary-ready";
 
+// Social proof under the route strip on the expanded mobile card. The count is
+// static — no booking count is exposed on the itinerary payload or any Mercury
+// endpoint today. Swap for a real field when one exists.
+const ROUTE_SOCIAL_PROOF_COUNT = "50+";
+
+// The noun follows the trip's group_type ("Family" → "families"), so the line
+// reads as social proof from people like the traveller. Irregular plurals are
+// listed; anything else takes a trailing "s".
+const GROUP_TYPE_PLURALS: Record<string, string> = {
+  family: "families",
+  couple: "couples",
+  solo: "solo travellers",
+  friends: "friends",
+  group: "groups",
+};
+
+const groupTypePlural = (groupType?: string | null): string => {
+  const key = groupType?.trim().toLowerCase();
+  if (!key) return "travellers";
+  return GROUP_TYPE_PLURALS[key] ?? `${key}s`;
+};
+
+// Returns a fragment, not a row: the mobile card shares its flex row with the
+// settings/share icons, while desktop gives it a row of its own.
+const KairaSocialProof = ({ groupType }: { groupType?: string | null }) => (
+  <>
+    <span className="shrink-0 w-[30px] h-[30px] rounded-full overflow-hidden bg-gradient-to-b from-[#a8d2f5] to-[#7ab8e8]">
+      <img
+        src="/KairaInsta.png"
+        alt="Kaira"
+        className="w-full h-full object-cover"
+      />
+    </span>
+    <span className="min-w-0 truncate text-[13px] max-ph:text-[12px] font-inter text-[#4b5159]">
+      <span className="font-semibold text-[#0B1220]">
+        {ROUTE_SOCIAL_PROOF_COUNT} {groupTypePlural(groupType)}
+      </span>{" "}
+      chose this route
+    </span>
+  </>
+);
+
+// Hairline long arrow separating route stops in the header card. Matches the
+// carousel cards' `.arrow` (a 1px rule with a small chevron head).
+const RouteArrow = () => (
+  <svg
+    width="22"
+    height="8"
+    viewBox="0 0 22 8"
+    fill="none"
+    aria-hidden
+    className="shrink-0"
+  >
+    <path
+      d="M0 4h20M17 1l3.2 3-3.2 3"
+      stroke="#c3c7cc"
+      strokeWidth="1"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
 function transformDraftToItinerary(draft: any) {
   const routes = draft?.routes ?? [];
   const cities = routes.map((route: any) => {
@@ -2791,6 +2854,35 @@ Start Location: ${details.startLocation}`;
     return "Itinerary";
   }, [viewMode]);
 
+  // Route strip shown at the foot of the header card: each stay city with its
+  // night count. start_city / end_city are deliberately excluded — they are
+  // departure/return points, not stays, and carry no nights.
+  const routeStops = useMemo(() => {
+    const stops: { key: string; name: string; nights: number }[] = [];
+    (itineraryRedux?.cities || []).forEach((c: any, i: number) => {
+      const name = c?.city?.name;
+      if (name) {
+        stops.push({
+          key: `${c?.id ?? name}-${i}`,
+          name,
+          nights: c?.duration ?? 0,
+        });
+      }
+    });
+    return stops;
+  }, [itineraryRedux?.cities]);
+
+  // ViewToggle only exposes the Route tab once the itinerary is complete, so in
+  // Draft the route edit goes through chat — same as the traveller/date pencils.
+  const handleChangeRoute = useCallback(() => {
+    if (isDraft) {
+      handleItineraryContainerSendMessage("change my route");
+      return;
+    }
+    if (isMobile) mobileTabSwitchRef.current?.("routes");
+    else setViewMode("routes");
+  }, [isDraft, isMobile, handleItineraryContainerSendMessage]);
+
   // null for skeleton/draft so ItineraryContainer skips polling
   const itineraryContainerId = useMemo(() => {
     if (activeItineraryId === "skeleton" || activeItineraryId === "draft")
@@ -2883,7 +2975,7 @@ Start Location: ${details.startLocation}`;
           through them while scrolling underneath. No padding-bottom: the legend
           chip below hangs up into this box with `-mt-5` and would be covered. */}
       <div className="max-ph:sticky max-ph:top-0 max-ph:z-30 max-ph:bg-white">
-      <div className="bg-white flex flex-col px-3 md:px-[22px] py-3 border-b border-slate-100 max-ph:border max-ph:border-[#ECECEC] max-ph:rounded-[14px] max-ph:mx-3 max-ph:mt-[10px] max-ph:px-[12px] max-ph:py-[10px]">
+      <div className="bg-white flex flex-col px-3 md:px-[22px] py-3 border-b border-slate-100 max-ph:border max-ph:border-[#ECECEC] max-ph:rounded-[14px] max-ph:mx-3 max-ph:mt-[10px] max-ph:px-[12px] max-ph:pt-[7px] max-ph:pb-[10px]">
         <div className="flex justify-between items-start gap-3 max-ph:gap-2 max-ph:relative">
           <div className="flex flex-col flex-1 min-w-0">
             {/* Compact title + sub are max-width-capped on mobile so they
@@ -3032,18 +3124,19 @@ Start Location: ${details.startLocation}`;
               )}
             </div>
 
-            {/* Mobile: images (left) + settings/share (right) on one row at the
-                bottom of the expanded detail. Hidden on desktop, where the
-                gallery sits in the meta row and the icons top-right. */}
-            <div className="md:hidden flex items-center mt-[13px]">
-              {isMobile && itineraryRedux?.images?.length > 0 && (
-                <SmallGallery
-                  compact
-                  maxShow={Math.min(3, galleryImages.images.length)}
-                  images={galleryImages.images}
-                  closeLabel="Back to Itinerary"
-                />
-              )}
+            {/* Desktop: social proof gets its own row between the meta line and
+                the route strip. On mobile it shares a row with the icons below. */}
+            <div className="max-ph:hidden flex items-center gap-[9px] mt-[2px]">
+              <KairaSocialProof groupType={itineraryRedux?.group_type} />
+            </div>
+
+            {/* Mobile: Kaira social proof (left) + settings/share (right) on one
+                row at the bottom of the expanded detail. Hidden on desktop,
+                where the icons sit top-right. The trip-image gallery is
+                deliberately not shown here — the social proof earns the space
+                better on a narrow card. */}
+            <div className="md:hidden flex items-center gap-[9px] mt-[9px]">
+              <KairaSocialProof groupType={itineraryRedux?.group_type} />
               <div className="flex items-center gap-[8px] ml-auto">
                 {!isDraft && (
                   <button
@@ -3077,6 +3170,61 @@ Start Location: ${details.startLocation}`;
                 </button>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Route strip — sits outside the collapsible meta block so it stays
+            visible in the collapsed mobile card. The button trails the stops
+            rather than right-aligning, so the stop list is sized to its content
+            (no flex-1) and only scrolls once it runs out of room.
+            Typography (Instrument Serif italic + hairline arrow) mirrors the
+            route line on the itinerary carousel cards — see PackageCard.jsx. */}
+        {routeStops.length > 0 && (
+          <div className="flex items-center gap-[14px] max-ph:gap-[10px] mt-[11px] max-ph:mt-[9px]">
+            <div
+              className="flex items-center gap-[10px] max-ph:gap-[8px] min-w-0 overflow-x-auto"
+              style={{ scrollbarWidth: "none" }}
+            >
+              {routeStops.map((stop, i) => (
+                <React.Fragment key={stop.key}>
+                  {i > 0 && <RouteArrow />}
+                  {/* Instrument Serif has only a 400 weight (no wght axis on
+                      the _document.js font link), so contrast comes from the
+                      near-black ink + size rather than font-weight — a faux
+                      bold would smear this italic at these sizes. */}
+                  <span className="font-serif italic text-[17px] max-ph:text-[15px] leading-[1.25] text-[#171A1F] whitespace-nowrap">
+                    {stop.name}
+                    {stop.nights > 0 && <> ({stop.nights}N)</>}
+                  </span>
+                </React.Fragment>
+              ))}
+            </div>
+            {/* Navy pill matches the active ViewToggle tab — this button jumps
+                to that same Route tab, so it reads as the tab's twin. */}
+            <button
+              type="button"
+              aria-label="Change route"
+              onClick={handleChangeRoute}
+              className="shrink-0 flex items-center gap-[6px] max-ph:gap-[5px] text-[12px] max-ph:text-[11px] font-inter font-semibold text-white bg-[#122A43] hover:bg-[#1c3b5c] active:bg-[#0d1f31] transition-colors rounded-full pl-[10px] pr-[13px] max-ph:pl-[8px] max-ph:pr-[11px] py-[6px] max-ph:py-[5px] whitespace-nowrap"
+            >
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="6" cy="19" r="3" />
+                <circle cx="18" cy="5" r="3" />
+                <path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15" />
+              </svg>
+              {/* "Route" is dropped on mobile, where the pill competes with the
+                  stop list for the card's width. */}
+              Change<span className="max-ph:hidden"> Route</span>
+            </button>
           </div>
         )}
           </div>
@@ -4638,7 +4786,10 @@ const MobileLayout = React.memo(
       prevHasActivityRef.current = hasItineraryActivity;
     }, [hasItineraryActivity, activeTab, setViewMode]);
 
-    // Top tab bar — Chat + Map + Itinerary + Route + Bookings when itinerary is active
+    // Top tab bar — Chat + Map + Itinerary + Bookings when itinerary is active.
+    // "routes" is intentionally absent: it stays a valid MobileTab and
+    // handleTabClick("routes") still switches to it, but the only way in is the
+    // "Change Route" button on the itinerary header card.
    const tabs: {
   key: MobileTab;
   label: string;
@@ -4646,18 +4797,6 @@ const MobileLayout = React.memo(
   icon: React.ReactNode;
 }[] = [
   { key: "map", label: "Map", show: hasItineraryActivity, icon: <FiMap size={14} /> },
-  {
-    key: "routes",
-    label: "Route",
-    show: isComplete,
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="6" cy="6" r="2.5" />
-        <circle cx="18" cy="18" r="2.5" />
-        <path d="M9 6h7a2 2 0 0 1 2 2v7" />
-      </svg>
-    ),
-  },
   { key: "itinerary", label: "Itinerary", show: hasItineraryActivity, icon: <FiCalendar size={14} /> },
   {
     key: "bookings",
@@ -4787,7 +4926,12 @@ const MobileLayout = React.memo(
 
         {/* ── Top tab bar — only when itinerary is active ── */}
         {hasItineraryActivity && visibleTabs.length > 0 && (
-          <div className="flex-shrink-0 bg-white border-b border-gray-100 flex items-center gap-2">
+          // 8px, not the trip card's 12px (`max-ph:mx-3`): the pill box's 10px
+          // radius and light border make an equal gutter read as a deeper inset
+          // than the card's 14px radius. Tuned by eye to line up with it.
+          // Padding sits on this wrapper, not the pill box, so the bottom border
+          // still spans the full width.
+          <div className="flex-shrink-0 bg-white border-b border-gray-100 flex items-center gap-2 px-2">
             <div
               className="flex flex-1 gap-1 p-[3px]"
               style={{
@@ -4858,9 +5002,13 @@ const MobileLayout = React.memo(
           {hasItineraryActivity && (
             <div
               ref={scrollPaneRef}
-              // BottomCTABar is `fixed bottom-0` on mobile, so it takes no flow
-              // space and would otherwise cover the last card at max scroll.
-              className="absolute inset-0 overflow-y-auto bg-white pb-[88px]"
+              // BottomCTABar is `fixed bottom-0` on mobile (and renders on every
+              // tab here — BotApp passes it viewMode="itinerary"), so it takes
+              // no flow space and would cover the last card at max scroll.
+              // End the pane above it rather than padding the pane by its
+              // height: padding is scrollable, so it forced a scrollbar even
+              // when the content fit. Shrinking the pane cannot.
+              className="absolute inset-x-0 top-0 bottom-[88px] overflow-y-auto bg-white"
               style={{
                 opacity: ["itinerary", "routes", "bookings"].includes(activeTab)
                   ? 1

@@ -6,11 +6,14 @@ import { FiMap, FiNavigation, FiCalendar, FiBookmark } from "react-icons/fi";
 /**
  * Tab visibility rules:
  *
- *  State                              | Map | Itinerary | Routes | Bookings
- *  -----------------------------------|-----|-----------|--------|----------
- *  No itinerary activity              | ✓   | ✗         | ✗      | ✗
- *  Bot started building (shimmer/draft| ✓   | ✓         | ✗      | ✗
- *  Itinerary complete (not Draft)     | ✓   | ✓         | ✓      | ✓
+ *  State                              | Map | Itinerary | Bookings
+ *  -----------------------------------|-----|-----------|----------
+ *  No itinerary activity              | ✓   | ✗         | ✗
+ *  Bot started building (shimmer/draft| ✓   | ✓         | ✗
+ *  Itinerary complete (not Draft)     | ✓   | ✓         | ✓
+ *
+ * The `routes` view has no tab — it is reached only from the "Change Route"
+ * button on the itinerary header card (see BotApp's routeStops strip).
  *
  * hasItineraryActivity — passed from BotApp, true when shimmer/draft/real itinerary exists.
  * "Complete" = itinerary exists AND status is NOT "Draft" AND NOT nullish.
@@ -83,15 +86,9 @@ const ViewToggle: React.FC<ViewToggleProps> = ({
           Map
         </button>
 
-      {/* Routes */}
-{isComplete &&
-  tabBtn("Route", "routes", () => setViewMode("routes"),
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="6" cy="6" r="2.5" />
-      <circle cx="18" cy="18" r="2.5" />
-      <path d="M9 6h7a2 2 0 0 1 2 2v7" />
-    </svg>
-  )}
+      {/* No Route tab: the itinerary header card's "Change Route" button is the
+          single entry point into the `routes` view. The view itself still
+          exists and setViewMode("routes") still reaches it. */}
 
 {/* Itinerary */}
 {tabBtn("Itinerary", "itinerary", () => setViewMode("itinerary"), <FiCalendar size={16} />)}
