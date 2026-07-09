@@ -513,6 +513,25 @@ export default function BotApp({
   // Mobile: the compact trip strip collapses the traveller/date/social meta
   // behind a chevron. Desktop always shows the full header.
   const [tripMetaOpen, setTripMetaOpen] = useState(false);
+  // Expanding the card grows it by ~120px, and that layout shift (plus any
+  // momentum still settling from the fling that got the user here) fires a
+  // downward scroll event, which would collapse the card again immediately.
+  const suppressMetaCollapseUntilRef = React.useRef(0);
+
+  // Stable identities so they don't defeat MobileLayout's React.memo.
+  const handleItineraryScrolled = useCallback(() => {
+    if (Date.now() < suppressMetaCollapseUntilRef.current) return;
+    setTripMetaOpen(false);
+  }, []);
+
+  const handleTripMetaToggle = useCallback(() => {
+    setTripMetaOpen((open) => {
+      if (open) return false;
+      // Opening: the card expands in place, wherever the pane is scrolled to.
+      suppressMetaCollapseUntilRef.current = Date.now() + 700;
+      return true;
+    });
+  }, []);
   // The expanded-header DATES value overflows the tight two-column meta on some
   // phones. Measure the full-year width against the space left after the
   // Travellers column and only fall back to a 2-digit year when it won't fit.
@@ -2857,7 +2876,13 @@ Start Location: ${details.startLocation}`;
       }}
     >
       {/* Header strip — full-width bar on desktop, compact rounded card on mobile
-          (design's .trip strip). */}
+          (design's .trip strip).
+          On mobile the card sticks to the top of the itinerary scroll pane. The
+          sticky element is this wrapper (not the card) so its white background
+          fills the card's mx/mt gutters — otherwise the timeline would show
+          through them while scrolling underneath. No padding-bottom: the legend
+          chip below hangs up into this box with `-mt-5` and would be covered. */}
+      <div className="max-ph:sticky max-ph:top-0 max-ph:z-30 max-ph:bg-white">
       <div className="bg-white flex flex-col px-3 md:px-[22px] py-3 border-b border-slate-100 max-ph:border max-ph:border-[#ECECEC] max-ph:rounded-[14px] max-ph:mx-3 max-ph:mt-[10px] max-ph:px-[12px] max-ph:py-[10px]">
         <div className="flex justify-between items-start gap-3 max-ph:gap-2 max-ph:relative">
           <div className="flex flex-col flex-1 min-w-0">
@@ -3103,7 +3128,7 @@ Start Location: ${details.startLocation}`;
                 type="button"
                 aria-label="Toggle trip details"
                 aria-expanded={tripMetaOpen}
-                onClick={() => setTripMetaOpen((v) => !v)}
+                onClick={handleTripMetaToggle}
                 className="md:hidden flex items-center justify-center w-9 h-9 max-ph:w-[28px] max-ph:h-[28px] shrink-0"
               >
                 <svg
@@ -3125,6 +3150,7 @@ Start Location: ${details.startLocation}`;
             )}
           </div>
         </div>
+      </div>
       </div>
 
       {/* Body */}
@@ -3399,6 +3425,7 @@ Start Location: ${details.startLocation}`;
           onThreadSelect={handleThreadSelect}
           activeThreadId={activeThreadId}
           onRegisterTabSwitch={handleRegisterMobileTabSwitch}
+          onItineraryScrolled={handleItineraryScrolled}
           mapContent={
             <MapView
               mapState={mapState}
@@ -4469,10 +4496,7 @@ const MobileHeader = React.memo(
     <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 bg-white border-b border-gray-100 z-10">
       <div className="flex items-center gap-2"  onClick={() => window.location.href = "/"}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/logoblack.svg" height={22} width={22} alt="logo" />
-        <span className="font-semibold text-gray-800 ttw-type-body" >
-          thetarzanway
-        </span>
+        <img src="/logo/ttw-lockup.svg" height={24} alt="The Tarzan Way" style={{ height: 24, width: "auto" }} />
       </div>
       <MobileHeaderMenu
         onNewChat={onNewChat}
@@ -4511,6 +4535,8 @@ interface MobileLayoutProps {
   bottomCTABarProps?: BottomCTABarProps;
   onSettingsClick?: () => void;
   onLoginSuccess?: () => void | Promise<void>;
+  /** Collapse the expanded trip-details card when the itinerary pane scrolls. */
+  onItineraryScrolled?: () => void;
 }
 
 const MobileLayout = React.memo(
@@ -4539,6 +4565,7 @@ const MobileLayout = React.memo(
     bottomCTABarProps,
     onSettingsClick,
     onLoginSuccess,
+    onItineraryScrolled,
   }: MobileLayoutProps) => {
     // On a sessionId refresh, BotApp seeds `mobilePanel` to "itinerary" (same
     // signal desktop uses for its viewMode default). Honour it here so an
@@ -4679,6 +4706,10 @@ const MobileLayout = React.memo(
 
     const headerVisible = activeTab !== "chat";
 
+    // Held in a ref so the scroll listener below never re-registers on it.
+    const onItineraryScrolledRef = React.useRef(onItineraryScrolled);
+    onItineraryScrolledRef.current = onItineraryScrolled;
+
     // Measure the header so the collapse distance matches its real height
     // (padding + border + the 36px icon buttons ≈ 61px, but don't hard-code it).
     React.useEffect(() => {
@@ -4704,6 +4735,10 @@ const MobileLayout = React.memo(
         // that as a direction change makes the header flicker at the extremes.
         if (Math.abs(delta) < SCROLL_JITTER_PX) return;
         lastScrollRef.current = y;
+
+        // Scrolling down away from the top collapses the expanded trip-details
+        // card, so what sticks to the top of the pane is always the compact row.
+        if (y > ALWAYS_SHOW_ABOVE_PX && delta > 0) onItineraryScrolledRef.current?.();
 
         // Never hide if there isn't enough runway to scroll it back into view.
         const scrollable = el.scrollHeight - el.clientHeight;
@@ -4823,7 +4858,9 @@ const MobileLayout = React.memo(
           {hasItineraryActivity && (
             <div
               ref={scrollPaneRef}
-              className="absolute inset-0 overflow-y-auto bg-white"
+              // BottomCTABar is `fixed bottom-0` on mobile, so it takes no flow
+              // space and would otherwise cover the last card at max scroll.
+              className="absolute inset-0 overflow-y-auto bg-white pb-[88px]"
               style={{
                 opacity: ["itinerary", "routes", "bookings"].includes(activeTab)
                   ? 1

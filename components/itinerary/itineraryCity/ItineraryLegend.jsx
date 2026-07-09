@@ -108,6 +108,24 @@ const LEGEND_ITEMS = [
   },
 ];
 
+const ShieldIcon = () => (
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+    <path
+      d="M12 3l7 3v5.5c0 4.3-2.9 8.2-7 9.5-4.1-1.3-7-5.2-7-9.5V6l7-3z"
+      stroke="currentColor"
+      strokeWidth="1.9"
+      strokeLinejoin="round"
+    />
+    <path
+      d="m9 12 2 2 4-4"
+      stroke="currentColor"
+      strokeWidth="1.9"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
 const InfoIcon = () => (
   <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
     <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.8" />
@@ -121,15 +139,22 @@ const ItineraryLegend = () => {
 
   return (
     <div className="max-ph:-mt-5">
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        aria-expanded={open}
-        className="inline-flex items-center gap-[7px] max-ph:gap-[6px] text-[12.5px] max-ph:text-[11.5px] font-inter font-semibold text-[#4b5159] bg-[#f4f3ef] border-[1px] border-[#ECECEC] rounded-full px-[13px] max-ph:px-[11px] py-[7px] max-ph:py-[6px]"
-      >
-        <InfoIcon />
-        What the labels mean
-      </button>
+      <div className="flex items-center flex-wrap gap-[8px] max-ph:gap-[6px]">
+        <span className="inline-flex items-center gap-[6px] max-ph:gap-[5px] text-[12.5px] max-ph:text-[11.5px] font-inter font-semibold text-[#0B1220] bg-[#F7E700] border-[1px] border-[#E4D500] rounded-full px-[13px] max-ph:px-[11px] py-[7px] max-ph:py-[6px] whitespace-nowrap">
+          <ShieldIcon />
+          Kaira Protected
+        </span>
+
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          aria-expanded={open}
+          className="inline-flex items-center gap-[7px] max-ph:gap-[6px] text-[12.5px] max-ph:text-[11.5px] font-inter font-semibold text-[#4b5159] bg-[#f4f3ef] border-[1px] border-[#ECECEC] rounded-full px-[13px] max-ph:px-[11px] py-[7px] max-ph:py-[6px] whitespace-nowrap"
+        >
+          <InfoIcon />
+          What the labels mean
+        </button>
+      </div>
 
       {open && (
         <div className="mt-[14px] rounded-[12px] bg-white border-[1px] border-[#ECECEC] px-[15px] max-ph:px-[13px] py-3 max-ph:py-[11px] flex flex-col gap-2.5">
