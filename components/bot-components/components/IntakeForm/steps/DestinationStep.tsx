@@ -116,7 +116,7 @@ const DestinationStep: React.FC<StepProps> = ({ state, update }) => {
       )}
 
       {!isSearching && (
-        <div className="grid grid-cols-4 gap-[9px] max-ph:grid-cols-2">
+        <div className="grid grid-cols-4 gap-[9px] max-ph:grid-cols-2 max-ph:max-h-[min(46dvh,360px)] max-ph:overflow-y-auto max-ph:pr-[2px]">
           {featured.map((d) => (
             <DestinationCard
               key={d.name}

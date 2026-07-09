@@ -13,7 +13,7 @@
 // Selecting any card or story hands the prompt off to the /chat route, mirroring
 // how HeroV2 seeds the chat.
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import { setPendingSeed } from "../../services/heroChatHandoff";
 import StartScreen from "../bot-components/components/StartScreen";
@@ -30,15 +30,72 @@ const GetInspiredSection: React.FC<GetInspiredSectionProps> = ({
   const router = useRouter();
   const [showInspiration, setShowInspiration] = useState(false);
 
-  // Lock body scroll while the mobile bottom sheet is open.
+  // ── Draggable bottom-sheet state (mobile) ──
+  // The sheet element is 92% of the viewport tall. We move it vertically with a
+  // `translateY` offset so it rests showing 75% of the screen, can be dragged up
+  // to (near) full-screen, and dragged down past a threshold to dismiss —
+  // mirroring an Instagram-style comment sheet.
+  const [winH, setWinH] = useState(0);
+  const [sheetH, setSheetH] = useState(0);
+  const [translateY, setTranslateY] = useState(0);
+  const [dragging, setDragging] = useState(false);
+  const dragStart = useRef({ y: 0, t: 0 });
+
+  // Snap offsets (px from the sheet's fully-expanded position).
+  const expandedT = 0;
+  const defaultT = sheetH ? sheetH - Math.round(winH * 0.75) : 0;
+
+  // Initialise measurements + entry animation, and lock body scroll while open.
   useEffect(() => {
     if (!showInspiration) return;
+    const H = window.innerHeight;
+    const sh = Math.round(H * 0.92);
+    setWinH(H);
+    setSheetH(sh);
+    setTranslateY(sh); // start off-screen, then slide up to the default snap
+    const raf = requestAnimationFrame(() =>
+      setTranslateY(sh - Math.round(H * 0.75))
+    );
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
+      cancelAnimationFrame(raf);
       document.body.style.overflow = prev;
     };
   }, [showInspiration]);
+
+  const closeSheet = () => {
+    setTranslateY(sheetH || winH || 1000); // animate down, then unmount
+    setDragging(false);
+    setTimeout(() => setShowInspiration(false), 280);
+  };
+
+  const onDragStart = (e: React.TouchEvent) => {
+    dragStart.current = { y: e.touches[0].clientY, t: translateY };
+    setDragging(true);
+  };
+
+  const onDragMove = (e: React.TouchEvent) => {
+    if (!dragging) return;
+    const next = dragStart.current.t + (e.touches[0].clientY - dragStart.current.y);
+    setTranslateY(Math.max(0, next)); // can't drag above fully-expanded
+  };
+
+  const onDragEnd = () => {
+    if (!dragging) return;
+    setDragging(false);
+    // Dragged far enough below the default rest position → dismiss.
+    if (translateY > defaultT + winH * 0.18) {
+      closeSheet();
+      return;
+    }
+    // Otherwise snap to the nearer of expanded / default.
+    const snap =
+      Math.abs(translateY - expandedT) <= Math.abs(translateY - defaultT)
+        ? expandedT
+        : defaultT;
+    setTranslateY(snap);
+  };
 
   const goToChat = (seed: string) => {
     const s = (seed || "").trim();
@@ -111,7 +168,7 @@ const GetInspiredSection: React.FC<GetInspiredSectionProps> = ({
         onClick={() => setShowInspiration(true)}
         className="gi-inspire-bar"
       >
-        <span>Get Inspired</span>
+        <span>Discover Trip ideas for Greece</span>
         <span aria-hidden>→</span>
       </button>
 
@@ -120,7 +177,7 @@ const GetInspiredSection: React.FC<GetInspiredSectionProps> = ({
         <div className="gi-inspire-sheet md:hidden fixed inset-0" style={{ zIndex: 1600 }}>
           {/* Backdrop */}
           <div
-            onClick={() => setShowInspiration(false)}
+            onClick={closeSheet}
             className="absolute inset-0"
             style={{
               background: "rgba(0,0,0,0.5)",
@@ -132,23 +189,30 @@ const GetInspiredSection: React.FC<GetInspiredSectionProps> = ({
           <div
             className="absolute left-0 right-0 bottom-0 bg-white flex flex-col"
             style={{
-              height: "65vh",
+              height: sheetH,
+              transform: `translateY(${translateY}px)`,
+              transition: dragging ? "none" : "transform 0.3s ease-out",
               borderTopLeftRadius: 20,
               borderTopRightRadius: 20,
-              animation: "giSlideUp 0.3s ease-out forwards",
               boxShadow: "0 -8px 24px rgba(0,0,0,0.12)",
+              willChange: "transform",
             }}
+            onTouchMove={onDragMove}
+            onTouchEnd={onDragEnd}
             role="dialog"
             aria-modal="true"
             aria-label="Inspiration"
           >
             <style>{`
               @keyframes giFadeIn { from { opacity: 0; } to { opacity: 1; } }
-              @keyframes giSlideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
             `}</style>
 
-            {/* Drag handle */}
-            <div className="flex justify-center pt-2 pb-1 flex-shrink-0">
+            {/* Drag handle — grab here to slide the sheet up/down. */}
+            <div
+              className="flex justify-center pt-3 pb-2 flex-shrink-0"
+              style={{ touchAction: "none", cursor: "grab" }}
+              onTouchStart={onDragStart}
+            >
               <div
                 style={{
                   width: 40,
