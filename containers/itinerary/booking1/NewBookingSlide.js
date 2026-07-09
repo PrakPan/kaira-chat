@@ -201,8 +201,8 @@ const CouponModal = ({
       anchor={"right"}
       backdrop
       width={"30%"}
-      mobileWidth={"50%"}
-      style={{ zIndex: 1601 }}
+      mobileWidth={"100%"}
+      style={{ zIndex: 1700 }}
       onHide={() => onHide()}
     >
       <div className="flex justify-between items-center p-4 border-b bg-white flex-shrink-0">
@@ -2281,6 +2281,16 @@ const Details = (props) => {
     !Cart?.price_valid_until ||
     new Date(Cart.price_valid_until.replace(" ", "T")).getTime() <= Date.now();
 
+  // The two states that surface the "Reprice Itinerary" CTA. On mobile these
+  // move out of the top of the cart and into a fixed bottom bar.
+  const showRepriceExpired =
+    (!isItineraryInFuture() && areAnyInclusionsPaid()) ||
+    (hasPlanExpired && isItineraryInFuture() && pricing_status == "SUCCESS");
+
+  // Any expired/past state — used to suppress the expired price banners at the
+  // top of the cart on phones (kept on desktop).
+  const hideMobileTopExpired = !isItineraryInFuture() || hasPlanExpired;
+
   const tripCondition = [
     {
       icon: "/assets/trip-condition/trip-condition-1.svg",
@@ -2314,6 +2324,18 @@ const Details = (props) => {
     }
   }, [Cart]);
 
+  // Any overlay opened on top of the payment drawer. The mobile fixed bottom
+  // CTA is portaled to <body>, so it would otherwise sit above these drawers
+  // and overlap their own action buttons — hide it whenever one is open.
+  const anyOverlayOpen =
+    showCouponModal ||
+    travellerDetailsOpen ||
+    showVisaDrawer ||
+    showEsimDrawer ||
+    showSetPassenger ||
+    showRegistration ||
+    showVerification;
+
   return (
     <>
       {/* Payment Drawer - shows full pricing + detailed payment when proceeding */}
@@ -2332,7 +2354,7 @@ const Details = (props) => {
           onHide={() => handleCloseDrawer()}
         >
           <NavigationMenu />
-          <div className="container mt-xl">
+          <div className="container mt-xl pb-[120px] md:pb-0">
             <div className="row">
               <div className="col-12 col-sm-12 col-lg-12 col-md-12 mb-sm">
                 <div className="flex items-center w-100 justify-between">
@@ -2350,9 +2372,12 @@ const Details = (props) => {
               </div>
             </div>
 
-            {/* Mobile-only: LivePriceTimer right below back button */}
+            {/* Mobile-only: LivePriceTimer right below back button. Hidden on
+                phones when prices/dates have expired — the expired state moves
+                to a fixed bottom bar instead. */}
             {!(pricing_status === "PENDING" || props?.loadpricing) &&
-              !(final_status == "Paid" || final_status == "Released") && (
+              !(final_status == "Paid" || final_status == "Released") &&
+              !hideMobileTopExpired && (
               <div className="block md:hidden mb-2 -mx-[12px]">
                 <LivePriceTimer priceValidUntil={Cart?.price_valid_until} />
               </div>
@@ -2362,7 +2387,7 @@ const Details = (props) => {
             <div className="row py-md bg-text-white">
               {/* Left column - Scrollable content */}
               <div
-                className="col-md-8 border-r-sm border-text-disabled overflow-y-auto max-h-[calc(100vh-210px)] pb-[80px] md:pb-0 pr-md"
+                className="col-md-8 border-r-sm border-text-disabled md:overflow-y-auto md:max-h-[calc(100vh-210px)] pb-4 md:pb-0 pr-md"
                 style={{
                   scrollbarWidth: "none",
                   msOverflowStyle: "none",
@@ -2442,6 +2467,9 @@ const Details = (props) => {
                       </div>
                     </div>
                   ) : !isItineraryInFuture() && areAnyInclusionsPaid() ? (
+                    // Expired banner shows at the top on desktop only. On phones
+                    // it moves to a fixed bottom bar (portaled below).
+                    isPageWide ? (
                     <GetInTouchContainer>
                       <div>
                         <div className="bg-white rounded-lg">
@@ -2521,10 +2549,13 @@ const Details = (props) => {
                         </div>
                       </Button> */}
                     </GetInTouchContainer>
+                    ) : null
                   ) : hasPlanExpired &&
                     isItineraryInFuture() &&
                     pricing_status == "SUCCESS" ? (
-                    // Refresh prices section
+                    // Refresh prices section — desktop only; phones use the
+                    // fixed bottom bar (portaled below).
+                    isPageWide ? (
                     <div>
                       <div className="bg-white rounded-lg">
                         <div className="mb-2">
@@ -2567,6 +2598,7 @@ const Details = (props) => {
                         <hr />
                       </div>
                     </div>
+                    ) : null
                   ) : (
                     <div>
                       <div className="flex justify-between items-start gap-2">
@@ -2656,7 +2688,7 @@ const Details = (props) => {
               </div>
 
               {/* Right column - Fixed/Sticky pricing section */}
-              <div className="col-md-4 pb-[70px] md:pb-0">
+              <div className="col-md-4">
                 <div
                   className="md:sticky md:top-4 md:max-h-[calc(100vh-120px)] md:overflow-y-auto"
                   style={{
@@ -2787,16 +2819,16 @@ const Details = (props) => {
                           Please select at least one inclusion to proceed
                         </div>
                       </>
-                    ) : (
-                      <div className="fixed bottom-0 left-0 right-0 bg-white px-4 pt-2 pb-4 z-[100] shadow-[0_-2px_12px_rgba(0,0,0,0.08)] md:static md:bg-transparent md:px-0 md:pt-0 md:pb-0 md:z-auto md:shadow-none">
-                        <PaymentButton
-                          amount={calculateFilteredTotal()}
-                          isLoading={paymentLoading}
-                          paymentType={"full"}
-                          onClick={() => handlePayNow("full")}
-                        />
-                      </div>
-                    )}
+                    ) : isPageWide ? (
+                      // Desktop: static button in the pricing column. Phones get
+                      // a fixed bottom bar (portaled below).
+                      <PaymentButton
+                        amount={calculateFilteredTotal()}
+                        isLoading={paymentLoading}
+                        paymentType={"full"}
+                        onClick={() => handlePayNow("full")}
+                      />
+                    ) : null}
 
                     {/* WhatsApp Button */}
                     {/* Help Section */}
@@ -2973,6 +3005,66 @@ const Details = (props) => {
             </div>
           </div>
 
+          {/* Mobile-only fixed bottom action bar. Portaled to <body> so its
+              `position: fixed` resolves against the viewport — the Drawer's
+              slide animation leaves a `transform` on its container, which would
+              otherwise trap a fixed child inside the scrolling drawer. */}
+          {!isPageWide &&
+            !anyOverlayOpen &&
+            typeof document !== "undefined" &&
+            (() => {
+              const showPayBar =
+                !showRepriceExpired &&
+                !(
+                  hasPlanExpired &&
+                  isItineraryInFuture() &&
+                  pricing_status == "SUCCESS"
+                ) &&
+                calculateFilteredTotal() !== 0;
+
+              if (!showRepriceExpired && !showPayBar) return null;
+
+              return ReactDOM.createPortal(
+                <div
+                  className="fixed bottom-0 left-0 right-0 bg-white px-4 pt-3 pb-4 shadow-[0_-2px_12px_rgba(0,0,0,0.08)]"
+                  style={{ zIndex: 1650 }}
+                >
+                  {showRepriceExpired ? (
+                    <>
+                      <div className="flex items-center gap-2 mb-2 text-red-600">
+                        <TbClockExclamation size={18} className="flex-shrink-0" />
+                        <span className="text-sm font-500 leading-md">
+                          Itinerary prices have expired.
+                        </span>
+                      </div>
+                      <button
+                        className="ttw-btn-secondary-fill w-full !bg-[#07213A] !text-white"
+                        onClick={handleRepriceBookings}
+                        disabled={repriceLoading}
+                      >
+                        {repriceLoading ? (
+                          <div className="flex items-center justify-center">
+                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                            Repricing...
+                          </div>
+                        ) : (
+                          "Reprice Itinerary"
+                        )}
+                      </button>
+                    </>
+                  ) : (
+                    <PaymentButton
+                      amount={calculateFilteredTotal()}
+                      isLoading={paymentLoading}
+                      paymentType={"full"}
+                      onClick={() => handlePayNow("full")}
+                    />
+                  )}
+                </div>,
+                document.body,
+              );
+            })()}
+
           {/* Coupon Modal */}
           <CouponModal
             show={showCouponModal}
@@ -3033,7 +3125,7 @@ const Details = (props) => {
         backdrop
         width={"100%"}
         mobileWidth={"100%"}
-        style={{ zIndex: 1601 }}
+        style={{ zIndex: 1700 }}
         className="font-lexend"
         onHide={() => setShowSetPassenger(false)}
       >
@@ -3055,7 +3147,7 @@ const Details = (props) => {
         backdrop
         width={"720px"}
         mobileWidth={"100%"}
-        style={{ zIndex: 1601 }}
+        style={{ zIndex: 1700 }}
         className="font-lexend"
         onHide={() => setTravellerDetailsOpen(false)}
       >
