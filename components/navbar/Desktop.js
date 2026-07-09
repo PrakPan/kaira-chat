@@ -54,6 +54,16 @@ const TTWLogoContainer = styled(CenterNav)`
   }
 `;
 
+/* Local asset, so a plain <img> rather than ImageLoader (which base64-encodes
+   its url into a CloudFront image-handler request). The full brand lockup —
+   the wordmark is part of the artwork, so no separate CompanyName text. */
+const NavLockup = styled.img`
+  height: 40px;
+  width: auto;
+  margin: 0.5rem 0.5rem 0.5rem 2rem;
+  cursor: pointer;
+`;
+
 const Header = styled.div`
   position: ${(props) => (props.staticnav ? "static" : "fixed")} !important;
   z-index: 1003;
@@ -64,18 +74,6 @@ const Header = styled.div`
   box-shadow: 0px 1px 1px 0px rgb(0 0 0 / 14%);
   @media screen and (min-width: 768px) {
   }
-`;
-
-const CompanyName = styled.p`
-position: absolute;
-    left: 30px;
-    top: 40px;
-    font-size : 14px;
-}
-  &:hover{
-    cursor: pointer;
-  };
-  margin-left: 0.5rem;
 `;
 
 const TopContainer = styled.div`
@@ -156,6 +154,12 @@ const Navbar = (props) => {
     });
   };
 
+  // Dark header gets the on-dark lockup (navy tile + hairline, cream wordmark).
+  const lockupSrc =
+    props.headerColor === "black"
+      ? "/logo/ttw-lockup-light.svg"
+      : "/logo/ttw-lockup.svg";
+
   return (
     <div>
       <Header staticnav={props.staticnav} changeHeight={Height}>
@@ -171,87 +175,21 @@ const Navbar = (props) => {
           <CenterNav staticnav={props.staticnav} hidecta={props.hidecta}>
             <TTWLogoContainer>
               {props.hidehomecta ? (
-                <ImageLoader
-                  hoverpointer
-                  leftalign
-                  width="55px"
-                  widthmobile="55px"
-                  margin="0.5rem 0.5rem 0.5rem 2rem"
-                  url={"media/website/Christmas-Logo-06.png"}
-                  noPlaceholder={true}
-                ></ImageLoader>
-              ) : props.headerColor === "black" ? (
+                <NavLockup src={lockupSrc} alt="The Tarzan Way" />
+              ) : (
                 <Link
                   style={{ textDecoration: "none" }}
                   href={!props.PW ? urls.HOMEPAGE : "/corporates/physicswallah"}
                 >
-                  <ImageLoader
-                    hoverpointer
-                    onclick={
+                  <NavLockup
+                    src={lockupSrc}
+                    alt="The Tarzan Way"
+                    onClick={
                       !props.PW ? _handleHomepageRedirect : _handlePWRedirect
                     }
-                    width="55px"
-                    widthmobile="55px"
-                    leftalign
-                    url={"media/website/logowhite.svg"}
-                    margin="0.5rem 0.5rem 0.5rem 2rem"
-                    noPlaceholder={true}
-                  ></ImageLoader>
-                </Link>
-              ) : (
-                <Link href={urls.HOMEPAGE}>
-                  <ImageLoader
-                    hoverpointer
-                    onclick={
-                      !props.PW ? _handleHomepageRedirect : _handlePWRedirect
-                    }
-                    leftalign
-                    width="55px"
-                    widthmobile="55px"
-                    margin="0.5rem 0.5rem 0.5rem 2rem"
-                    url={"media/website/Christmas-Logo-06.png"}
-                    noPlaceholder={true}
-                  ></ImageLoader>
+                  />
                 </Link>
               )}
-
-              <div>
-                {props.hidehomecta ? (
-                  <CompanyName
-                    style={{
-                      color: props.headerColor === "black" ? "white" : "black",
-                      margin: "0 0rem 0 0.25rem",
-                      fontSize: "2.25vh",
-                      fontWeight: "700",
-                      lineHeight: 1,
-                      display: !props.PW ? "inline" : "block",
-                      letterSpacing: "0",
-                    }}
-                  >
-                    {"thetarzanway"}
-                  </CompanyName>
-                ) : (
-                  <Link
-                    href={
-                      !props.PW ? urls.HOMEPAGE : "/corporates/physicswallah"
-                    }
-                  >
-                    <CompanyName
-                      style={{
-                        color:
-                          props.headerColor === "black" ? "white" : "black",
-                        margin: "0 0 0 0.25rem",
-                        fontWeight: "600",
-                        lineHeight: 1,
-                        display: "inline",
-                        letterSpacing: "0",
-                      }}
-                    >
-                      thetarzanway
-                    </CompanyName>
-                  </Link>
-                )}
-              </div>
             </TTWLogoContainer>
 
             {props.itinerary || (!props.hidecta && !props.staticnav) ? (

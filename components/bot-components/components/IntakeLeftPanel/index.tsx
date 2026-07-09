@@ -257,19 +257,11 @@ const IntakeLeftPanel: React.FC = () => {
       {/* Content */}
       <div className="absolute inset-0 z-[3] flex flex-col p-[30px_34px]">
         {/* Logo */}
-        <div className="flex items-center gap-[10px]">
-          <div
-            className="w-[34px] h-[34px] grid place-items-center rounded-[10px] font-serif italic text-[19px]"
-            // style={{ background: "#f7e700", color: "#0f1a2e", transform: "rotate(-6deg)" }}
-          >
-           <img src="https://d31aoa0ehgvjdi.cloudfront.net/media/website/logoyellow.png" alt="The Tarzan Way" width={36} height={36} />
-          </div>
-          <div className="flex flex-col leading-none text-white">
-            <span className="text-[15px] font-bold tracking-tight">thetarzanway</span>
-            <span className="text-[10.5px] mt-[2px]" style={{ color: "rgba(255,255,255,0.7)" }}>
-              plan with Kaira
-            </span>
-          </div>
+        <div className="flex flex-col gap-[8px]">
+          <img src="/logo/ttw-lockup-light.svg" alt="The Tarzan Way" style={{ height: 34, width: "auto" }} />
+          <span className="text-[10.5px] leading-none" style={{ color: "rgba(255,255,255,0.7)" }}>
+            plan with Kaira
+          </span>
         </div>
 
         {/* Bottom */}
