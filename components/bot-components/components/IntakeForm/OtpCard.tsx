@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
 import ReCAPTCHA from "react-google-recaptcha";
 import { RECAPTCHA_SITE_KEY } from "../../../../services/constants";
@@ -56,6 +57,15 @@ const OtpCard: React.FC<OtpCardProps> = ({
   const [email, setEmail] = useState("");
   const [extension, setExtension] = useState("India");
   const [openCountryCodeOption, setOpenCountryCodeOption] = useState(false);
+  // The phone-field row we anchor the country dropdown to. The dropdown is
+  // portaled to <body> so the chat's `overflow` scroll area can't clip it, so
+  // we measure the row and position the (fixed) dropdown right below it — same
+  // look as an inline anchored menu, but immune to the clipping.
+  const fieldRowRef = useRef<HTMLDivElement>(null);
+  const [dropdownPos, setDropdownPos] = useState<{
+    top: number;
+    left: number;
+  } | null>(null);
   // New users get a dedicated name + email screen after the OTP is entered
   // (mirrors BotLoginModal's details step) instead of an inline name field.
   const [userDetailsRequired, setUserDetailsRequired] = useState(false);
@@ -101,6 +111,26 @@ const OtpCard: React.FC<OtpCardProps> = ({
       onVerified();
     }
   }, [token, onVerified]);
+
+  // Keep the portaled dropdown pinned just below the field. Recompute on open
+  // and on any scroll/resize (capture=true catches the inner chat scroller too)
+  // so it tracks the field instead of floating away.
+  useLayoutEffect(() => {
+    if (!openCountryCodeOption) return;
+    const update = () => {
+      const el = fieldRowRef.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      setDropdownPos({ top: r.bottom + 6, left: r.left });
+    };
+    update();
+    window.addEventListener("scroll", update, true);
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", update, true);
+      window.removeEventListener("resize", update);
+    };
+  }, [openCountryCodeOption]);
 
   // Switching country only changes the prefix — the input keeps just the local
   // digits, so there's nothing to re-parse.
@@ -216,10 +246,9 @@ const OtpCard: React.FC<OtpCardProps> = ({
 
       {!otpSent ? (
         <>
-          {/* Relative anchor so the country dropdown opens directly below the
-              row instead of as a fixed/centered overlay. */}
           <div className="relative">
             <div
+              ref={fieldRowRef}
               className="flex rounded-[12px] overflow-hidden"
               style={{ background: "#fafaf5", border: "1.5px solid #ececec" }}
             >
@@ -265,42 +294,47 @@ const OtpCard: React.FC<OtpCardProps> = ({
               />
             </div>
 
-            {/* Override the shared dropdown's fixed/centered positioning so it
-                anchors absolutely just below the field. */}
+            {/* Force the shared dropdown to anchor just below the field (its
+                default is a fixed/centered overlay). Because it's portaled to
+                <body>, `fixed` here is viewport-relative — the wrapper supplies
+                the measured top/left — so the chat's scroll area can't clip it. */}
             <style>{`
               .ttwIntakeCountryDropdown [data-country-dropdown="true"] {
-                position: absolute !important;
-                top: 100% !important;
-                left: 0 !important;
+                position: relative !important;
+                top: auto !important;
+                left: auto !important;
                 right: auto !important;
                 bottom: auto !important;
                 transform: none !important;
                 width: min(320px, 90vw) !important;
                 height: auto !important;
                 max-height: 300px !important;
-                margin-top: 6px !important;
+                margin-top: 0 !important;
               }
             `}</style>
 
-            {openCountryCodeOption && (
-              <div
-                className="ttwIntakeCountryDropdown"
-                style={{
-                  position: "absolute",
-                  top: "100%",
-                  left: 0,
-                  marginTop: 4,
-                  zIndex: 1000,
-                }}
-              >
-                <CountryCodeDropdown
-                  onClose={() => setOpenCountryCodeOption(false)}
-                  CountryCodes={CountryCodes}
-                  handleExtensionChangeOption={handleExtensionChangeOption}
-                  setOpenCountryCodeOption={setOpenCountryCodeOption}
-                />
-              </div>
-            )}
+            {openCountryCodeOption &&
+              dropdownPos &&
+              typeof document !== "undefined" &&
+              createPortal(
+                <div
+                  className="ttwIntakeCountryDropdown"
+                  style={{
+                    position: "fixed",
+                    top: dropdownPos.top,
+                    left: dropdownPos.left,
+                    zIndex: 2000,
+                  }}
+                >
+                  <CountryCodeDropdown
+                    onClose={() => setOpenCountryCodeOption(false)}
+                    CountryCodes={CountryCodes}
+                    handleExtensionChangeOption={handleExtensionChangeOption}
+                    setOpenCountryCodeOption={setOpenCountryCodeOption}
+                  />
+                </div>,
+                document.body,
+              )}
           </div>
 
           <div

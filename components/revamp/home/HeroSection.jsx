@@ -63,7 +63,7 @@ const HeroSection = ({ title, subtitle, slug }) => {
       <div className="ttwContainer">
         <div className={styles.heroGrid}>
 
-         { slug == "home" ? <HomeHeadingContent title={title} subtitle={subtitle}  /> : <HeadingContent title={title} subtitle={subtitle}  />}
+         { ((slug == "home")  || (slug == "homepage")) ? <HomeHeadingContent title={title} subtitle={subtitle}  /> : <HeadingContent title={title} subtitle={subtitle}  />}
 
           <div className={styles.kairaWrap}>
             {POLAROIDS.map((p) => (

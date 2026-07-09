@@ -903,6 +903,12 @@ startEmptyIntake = false,
   // While the in-chat intake form is active (show_intake_form / form_fields),
   // lock the composer + quick replies so the user answers via the form card.
   const intakeFormActive = useSelector((s: any) => !!s.IntakeForm?.active);
+  // A destination already seeded into the intake slice (e.g. the hero "Start
+  // planning" CTA's `?destination=` param) — used to open the empty intake form
+  // straight on the "When" step instead of the already-answered destination step.
+  const intakePrefillDestinationName = useSelector(
+    (s: any) => s.IntakeForm?.destination?.name || "",
+  );
   const isComposerLocked =
     isItineraryCompleting || isItineraryPolling || intakeFormActive;
   const authToken = reduxToken ?? getAuthToken();
@@ -1804,7 +1810,12 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
     // Don't auto-scroll to the bottom of the freshly-injected form — keep
     // Kaira's greeting in view on the /chat?intake=1 landing.
     suppressIntakeAutoScrollRef.current = true;
-    dispatch(updateIntakeForm({ active: true, completed: false, step: 0 }));
+    // When the destination is already prefilled (from the hero CTA's
+    // `?destination=`), skip the answered destination step and land on "When".
+    const startStep = intakePrefillDestinationName ? 1 : 0;
+    dispatch(
+      updateIntakeForm({ active: true, completed: false, step: startStep }),
+    );
     setMessages((prev) => [
       ...prev,
       {
@@ -4299,10 +4310,12 @@ const handleShowLogin = useCallback(() => {
       {/* ── Composer ─────────────────────────────────────────────────────── */}
       {/* While the in-chat intake form is open on phone, drop the disabled
           composer entirely — the form's own sticky Continue button is the only
-          bottom action. Desktop keeps the (disabled) composer visible. */}
+          bottom action. Same for the inline sign-in card (login_card / OtpCard):
+          on phones the composer is only blocked, so hide it and let the card be
+          the sole bottom action. Desktop keeps the (disabled) composer visible. */}
       <div
         className={`kp-composer-wrap flex-shrink-0 relative${
-          intakeFormActive ? " max-ph:hidden" : ""
+          intakeFormActive || loginBlocked ? " max-ph:hidden" : ""
         }`}
       >
         <div className="mx-auto">

@@ -128,7 +128,7 @@ const GoogleReviewsSection = ({ reviews = REVIEWS }) => {
               <span className="ttwSerif">real travellers.</span>
             </h2>
             <p className="ttwLede">
-              Rated <strong>4.8</strong> across 10,000+ trips. Here&apos;s what
+              Rated <strong>4.9</strong> across 10,000+ trips. Here&apos;s what
               Kaira&apos;s travellers say on Google.
             </p>
           </div>
@@ -153,10 +153,10 @@ const GoogleReviewsSection = ({ reviews = REVIEWS }) => {
               const c = AVATAR_COLORS[r.avatarVariant] || AVATAR_COLORS.blue;
               return (
                 <SwiperSlide key={r.name + r.trip} className={styles.slide}>
-                  <div
-                    // href={r.link}
-                    // target="_blank"
-                    // rel="noreferrer"
+                  <a
+                    href={r.link}
+                    target="_blank"
+                    rel="noreferrer"
                     style={{
                       display: "flex",
                       flexDirection: "column",
@@ -228,7 +228,7 @@ const GoogleReviewsSection = ({ reviews = REVIEWS }) => {
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </a>
                 </SwiperSlide>
               );
             })}

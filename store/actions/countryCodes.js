@@ -1,41 +1,20 @@
-import axios from "axios";
 import * as actionTypes from "./actionsTypes";
+import countryCodes from "../data/countryCodes";
 
 export const setCountryCodes = (data) => ({
   type: actionTypes.SET_COUNTRY_CODES,
   payload: data,
 });
 
+// Load the full dial-code list. This used to fetch from restcountries.com, but
+// that API is now deprecated and only ever returned an error payload — leaving
+// the store on its 3 seeded defaults. The complete list is bundled locally, so
+// this just ensures it's in the store (idempotent; no network dependency).
 export const getCountryCodes = () => {
   return (dispatch, getState) => {
-    const URL = "https://restcountries.com/v3.1/all/?fields=name,flags,idd";
-
-    if (Object.keys(getState().CountryCodes) > 3) return;
-
-    axios
-      .get(URL)
-      .then((response) => {
-        let data = response.data;
-        data.sort((a, b) => a.name.common.localeCompare(b.name.common));
-        let countries = {};
-        for (let country of data) {
-          if (country?.idd?.root) {
-            const code =
-              country.idd?.suffixes && country.idd.suffixes.length === 1
-                ? country.idd.root + country.idd.suffixes[0]
-                : country.idd.root;
-            countries[country.name.common] = {
-              value: country.name.common,
-              label: code.length <= 4 ? code : country.idd.root,
-              img: country.flags.svg,
-            };
-          }
-        }
-
-        dispatch(setCountryCodes(countries));
-      })
-      .catch((err) => {
-        console.log("[ERROR][getCountryCodes]: ", err.message);
-      });
+    if (Object.keys(getState().CountryCodes || {}).length >= Object.keys(countryCodes).length) {
+      return;
+    }
+    dispatch(setCountryCodes(countryCodes));
   };
 };
