@@ -60,7 +60,10 @@ const DestinationSearch: React.FC<DestinationSearchProps> = ({
       {showResults && (
         <div
           className="flex flex-col gap-[5px] overflow-y-auto pr-[2px]"
-          style={{ maxHeight: 236 }}
+          // Cap the results list so it never pushes the sticky footer into the
+          // fixed search bar on short phones. `dvh` shrinks with the on-screen
+          // keyboard, so the list stays scrollable between the two.
+          style={{ maxHeight: "min(236px, 38dvh)" }}
         >
           {loading && results.length === 0 && (
             <div className="p-3 text-center text-[12.5px] text-[#8a93a6] italic">

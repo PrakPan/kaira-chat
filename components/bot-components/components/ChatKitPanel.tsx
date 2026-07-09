@@ -4297,7 +4297,14 @@ const handleShowLogin = useCallback(() => {
       )}
 
       {/* ── Composer ─────────────────────────────────────────────────────── */}
-      <div className="kp-composer-wrap flex-shrink-0 relative">
+      {/* While the in-chat intake form is open on phone, drop the disabled
+          composer entirely — the form's own sticky Continue button is the only
+          bottom action. Desktop keeps the (disabled) composer visible. */}
+      <div
+        className={`kp-composer-wrap flex-shrink-0 relative${
+          intakeFormActive ? " max-ph:hidden" : ""
+        }`}
+      >
         <div className="mx-auto">
           <MessageInputBox
             value={input}
