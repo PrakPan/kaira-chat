@@ -237,7 +237,7 @@ const HomeHeadingContent = ({ title, subtitle }) => {
             </svg>
           </button>
         </div>
-      </form>
+      </form> */}
 
       <div className={styles.prompts}>
         {SEED_PROMPTS.map((p) => (
@@ -251,7 +251,7 @@ const HomeHeadingContent = ({ title, subtitle }) => {
             <span>{p.label}</span>
           </button>
         ))}
-      </div> */}
+      </div>
     </div>
   );
 };

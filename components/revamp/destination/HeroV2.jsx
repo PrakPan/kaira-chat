@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/router";
 import {
   setPendingFiles,
@@ -8,6 +8,8 @@ import { truncateAtSentence } from "../../../helper/truncateAtSentence";
 import styles from "../../../styles/pages/revamp/destination.module.scss";
 import Link from "next/link";
 import GetInspiredDrawer from "../../theme/GetInspiredDrawer";
+import { KairaAvatar } from "../home/HeroSection";
+import heroStyles from "../home/HeroSection.module.scss";
 
 const FALLBACK_POLAROIDS = [
   {
@@ -32,11 +34,6 @@ const FALLBACK_POLAROIDS = [
   },
 ];
 
-const getSpeechRecognition = () => {
-  if (typeof window === "undefined") return null;
-  return window.SpeechRecognition || window.webkitSpeechRecognition || null;
-};
-
 const HeroV2 = ({
   destinationLabel,
   kicker,
@@ -48,41 +45,17 @@ const HeroV2 = ({
   fallbackSources = [],
   activities = [],
   pois = [],
-  setShowTailoredModal,
-  inputPlaceholder,
   onOpenDrawer,
   slug,
   themeConfig,
 }) => {
   const router = useRouter();
-  const textareaRef = useRef(null);
-  const fileInputRef = useRef(null);
-  const recognitionRef = useRef(null);
 
-  const [value, setValue] = useState("");
-  const [attachments, setAttachments] = useState([]);
-  const [isListening, setIsListening] = useState(false);
-  const [micSupported, setMicSupported] = useState(true);
-
-  useEffect(() => {
-    setMicSupported(!!getSpeechRecognition());
-  }, []);
-
-  useEffect(() => {
-    return () => {
-      try {
-        recognitionRef.current?.stop?.();
-      } catch {
-        /* noop */
-      }
-    };
-  }, []);
-
-  const autoGrow = (el) => {
-    if (!el) return;
-    el.style.height = "auto";
-    el.style.height = Math.min(el.scrollHeight, 140) + "px";
-  };
+  // On non-themed destination pages the "Explore ideas" CTA (below Start
+  // planning) toggles the prompt chips open/closed. Greece keeps its own
+  // slide-in inspiration drawer instead.
+  const isThemePage = slug === "theme-greece";
+  const [showPrompts, setShowPrompts] = useState(false);
 
   const goToChat = (seed, files) => {
     if (files && files.length) setPendingFiles(files);
@@ -207,7 +180,14 @@ const HeroV2 = ({
     if (base.length === 0) return FALLBACK_POLAROIDS.slice(0, 4);
     return base.slice(0, 4);
   })();
-  const polClassNames = [styles.pol1, styles.pol2, styles.pol3, styles.pol4];
+  // Reuse the homepage hero's polaroid positions/sizing so the destination
+  // hero collage matches the home page exactly.
+  const polClassNames = [
+    heroStyles.p1,
+    heroStyles.p2,
+    heroStyles.p3,
+    heroStyles.p4,
+  ];
 
   // Each polaroid can either navigate to a destination page (`path`) or open a
   // POI / activity details drawer (`drawer`). Generic fallback imagery has
@@ -248,153 +228,57 @@ const HeroV2 = ({
                   : description}
               </p>
             )}
-           {slug != "theme-greece" ? <form className={styles.heroV2Input} onSubmit={handleSubmit}>
-              <textarea
-                ref={textareaRef}
-                value={value}
-                onChange={(e) => {
-                  setValue(e.target.value);
-                  autoGrow(e.target);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    handleSubmit(e);
-                  }
-                }}
-                placeholder={
-                  inputPlaceholder ||
-                  `Try: 10 days ${destinationLabel || "trip"}, your vibe, your budget`
-                }
-                rows={1}
-              />
-
-              {attachments.length > 0 && (
-                <div className={styles.heroV2AttachRow}>
-                  {attachments.map((file, idx) => (
-                    <span
-                      key={`${file.name}-${idx}`}
-                      className={styles.heroV2AttachChip}
-                    >
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
-                      </svg>
-                      <span>{file.name}</span>
-                      <button
-                        type="button"
-                        aria-label={`Remove ${file.name}`}
-                        className={styles.heroV2AttachRemove}
-                        onClick={() => removeAttachment(idx)}
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
-                </div>
-              )}
-
-              <div className={styles.heroV2InputFoot}>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  multiple
-                  hidden
-                  onChange={handleFilePick}
+            <div className="relative z-[4] mb-3 flex flex-col items-start gap-3">
+              <Link
+                href={intakeHref}
+                className="group flex relative z-[4] max-ph:hidden  items-center gap-[10px] rounded-full bg-[var(--ttw-ink)] px-7 py-3.5 text-base font-semibold text-white no-underline shadow-[0_12px_28px_-8px_rgba(11,18,32,0.4)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_16px_34px_-8px_rgba(11,18,32,0.45)]"
+              >
+                Start planning
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="size-[18px] transition-transform duration-200 group-hover:translate-x-[3px]"
+                >
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </Link>
+              {isThemePage ? (
+                <GetInspiredDrawer
+                  themeConfig={themeConfig}
+                  label="Discover trip ideas for Greece"
                 />
-                <button
-                  type="button"
-                  className={styles.heroV2IconBtn}
-                  title="Attach a document"
-                  aria-label="Attach a document"
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
+              ) : (
+                prompts.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setShowPrompts((v) => !v)}
+                    aria-expanded={showPrompts}
+                    className="inline-flex items-center gap-2 rounded-xl border border-[#E7D4F7] bg-[#F7ECFF] px-3 py-1 text-[13px] font-semibold text-[#922ADC] no-underline transition-all duration-200 hover:-translate-y-0.5 hover:border-[#922ADC]"
                   >
-                    <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
-                  </svg>
-                </button>
-                <button
-                  type="button"
-                  className={`${styles.heroV2IconBtn} ${
-                    isListening ? styles.heroV2IconBtnActive : ""
-                  }`}
-                  title={
-                    micSupported
-                      ? isListening
-                        ? "Stop dictating"
-                        : "Dictate"
-                      : "Voice input not supported in this browser"
-                  }
-                  aria-label="Dictate"
-                  disabled={!micSupported}
-                  onClick={startMic}
-                >
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <rect x="9" y="2" width="6" height="12" rx="3" />
-                    <path d="M19 10a7 7 0 0 1-14 0M12 19v3" />
-                  </svg>
-                </button>
-                <button
-                  type="submit"
-                  className={styles.heroV2Send}
-                  aria-label="Send to Kaira"
-                >
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z" />
-                  </svg>
-                </button>
-              </div>
-            </form> : <div className="relative z-[4] mt-[22px] mb-3 flex flex-col items-start gap-3">
-  <Link
-  href={intakeHref}
-  className="group relative z-[4] mt-[22px] inline-flex items-center gap-[10px] rounded-full bg-[var(--ttw-ink)] px-7 py-3.5 text-base font-semibold text-white no-underline shadow-[0_12px_28px_-8px_rgba(11,18,32,0.4)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_16px_34px_-8px_rgba(11,18,32,0.45)]"
->
-  Start planning
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className="size-[18px] transition-transform duration-200 group-hover:translate-x-[3px]"
-  >
-    <path d="M5 12h14M13 6l6 6-6 6" />
-  </svg>
-</Link>
-  <GetInspiredDrawer
-    themeConfig={themeConfig}
-    label="Discover trip ideas for Greece"
-  />
-</div>}
-            {prompts.length > 0 && (
+                    <span aria-hidden>✦</span>
+                    <span>Discover trip ideas for {destinationLabel || "you"}</span>
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className={`size-[18px] transition-transform duration-200 ${
+                        showPrompts ? "rotate-180" : ""
+                      }`}
+                    >
+                      <path d="m6 9 6 6 6-6" />
+                    </svg>
+                  </button>
+                )
+              )}
+            </div>
+            {prompts.length > 0 && (isThemePage || showPrompts) && (
               <div className={styles.heroV2Prompts}>
                 {prompts.map((p, i) => {
                   // Prompts can be plain strings, or { label, prompt } objects
@@ -417,13 +301,13 @@ const HeroV2 = ({
             {meta && <div className={styles.heroV2Meta}>{meta}</div>}
           </div>
 
-          <div className={styles.heroV2Collage}>
+          <div className={heroStyles.kairaWrap}>
             {polaroidImages.map((p, i) => {
               const clickable = !!(p.drawer || p.path);
               return (
                 <div
                   key={i}
-                  className={`${styles.polaroid} ${polClassNames[i] || ""}`}
+                  className={`${heroStyles.polaroid} ${polClassNames[i] || ""}`}
                   role={clickable ? "button" : undefined}
                   tabIndex={clickable ? 0 : undefined}
                   onClick={clickable ? () => handlePolaroidClick(p) : undefined}
@@ -440,15 +324,38 @@ const HeroV2 = ({
                   style={clickable ? { cursor: "pointer" } : undefined}
                 >
                   <div
-                    className={styles.polaroidImg}
+                    className={heroStyles.polaroidImg}
                     style={{ backgroundImage: `url('${p.image}')` }}
                   />
                   {p.caption && (
-                    <div className={styles.polaroidCaption}>{p.caption}</div>
+                    <div className={heroStyles.polaroidCaption}>{p.caption}</div>
                   )}
                 </div>
               );
             })}
+
+            <KairaAvatar size="lg" />
+
+            <div className={heroStyles.kairaName}>
+              <div className={heroStyles.hi}>Hi, I&apos;m Kaira.</div>
+              <div className={heroStyles.sub}>
+                <span className={heroStyles.dot}></span> online · ~2s reply
+              </div>
+            </div>
+
+            <Link href={intakeHref} className={heroStyles.kairaCta}>
+              Start planning
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
+            </Link>
           </div>
         </div>
       </div>

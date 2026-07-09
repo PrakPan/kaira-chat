@@ -142,7 +142,7 @@ const Home = ({ token, hotLocationSearch, checkAuthState, setHotLocationSearch }
 
       <div className={styles.ttwRevamp}>
         <NavigationMenu message={"Welcome to The Tarzan Way!"} />
-        <HeroSection  />
+        <HeroSection  slug="homepage"/>
         <TrustFactors />
         <KairaLovingSection />
         {token && <MyTripsSection className="max-w-7xl" />}
