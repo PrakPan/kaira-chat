@@ -412,7 +412,7 @@ const ChatPanelStyles = () => (
       50% { opacity: 0.5; transform: scale(0.7); }
     }
     .kp-composer-wrap {
-  padding: 12px 20px 18px;
+  padding: 12px 20px;
   border-top: 1px solid #ececec;
   background: #fff;
 }
@@ -3511,7 +3511,7 @@ const handleShowLogin = useCallback(() => {
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div
-      className={`kp-root flex flex-col h-full min-h-0 bg-white max-h-[100dvh] md:max-h-[93.5vh] border-[0.5px] border-l-[#e5e5e5] overflow-x-hidden`}
+      className={`kp-root flex flex-col h-full min-h-0 bg-white max-h-[100dvh] border-[0.5px] border-l-[#e5e5e5] overflow-x-hidden`}
       style={{
         fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
         WebkitFontSmoothing: "antialiased",

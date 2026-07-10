@@ -600,6 +600,44 @@ export default function BotApp({
     [],
   );
 
+  // The bottom CTA bar is `fixed` (a transformed ancestor would trap it, and
+  // #chatContainer would scroll it away if it were absolute), so it can't
+  // inherit the left panel's box. Measure the panel and hand the bar its exact
+  // left/width — that's what makes its right edge meet the chat divider even as
+  // the sidebar collapses and the panel animates to a new width.
+  const leftPanelRef = useRef<HTMLDivElement | null>(null);
+  const [leftPanelBox, setLeftPanelBox] = useState<{
+    left: number;
+    width: number;
+  } | null>(null);
+  useEffect(() => {
+    if (isMobile) {
+      setLeftPanelBox(null);
+      return undefined;
+    }
+    const el = leftPanelRef.current;
+    if (!el) return undefined;
+    const measure = () => {
+      const { left, width } = el.getBoundingClientRect();
+      setLeftPanelBox({ left, width });
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    window.addEventListener("resize", measure);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, [isMobile]);
+  const ctaBarStyle = React.useMemo<React.CSSProperties | undefined>(
+    () =>
+      isMobile || !leftPanelBox
+        ? undefined
+        : { left: leftPanelBox.left, width: leftPanelBox.width, right: "auto" },
+    [isMobile, leftPanelBox],
+  );
+
   // Desktop scroller for the itinerary body. On mobile the pane that actually
   // scrolls lives in MobileLayout, which reports through onItineraryScrolled.
   const desktopItineraryScrollRef = useRef<HTMLDivElement | null>(null);
@@ -3386,6 +3424,7 @@ Start Location: ${details.startLocation}`;
               </div>
             </div>
             <BottomCTABar
+              barStyle={ctaBarStyle}
               // Force itinerary on mobile: the panel itself is rendered
               // inside MobileLayout's itinerary tab, so the CTA bar should
               // never be gated by viewMode (which can lag on "map" after a
@@ -3489,6 +3528,7 @@ Start Location: ${details.startLocation}`;
 
         {/* LEFT PANEL */}
         <div
+          ref={leftPanelRef}
           className="flex flex-col overflow-hidden transition-all duration-500 ease-in-out relative bg-white"
           style={{ width: "50%", minWidth: 0 }}
         >
@@ -3987,6 +4027,11 @@ interface BottomCTABarProps {
   onGetInTouch?: () => void;
   onRetryCart?: () => void;
   notes?: any[];
+  // Desktop only: the measured left/width of the itinerary panel, so the fixed
+  // bar spans it exactly and its right edge meets the chat divider. A
+  // percentage can't express this — the panel is 50% of what's left after the
+  // (collapsible) sidebar. Undefined on mobile, where `w-full` is correct.
+  barStyle?: React.CSSProperties;
 }
 
 /**
@@ -4003,8 +4048,10 @@ interface BottomCTABarProps {
  */
 const ItineraryStepsLoader = ({
   displayText,
+  barStyle,
 }: {
   displayText: string | null;
+  barStyle?: React.CSSProperties;
 }) => {
   const [steps, setSteps] = React.useState<string[]>([]);
   const seenRef = React.useRef<Set<string>>(new Set());
@@ -4022,7 +4069,7 @@ const ItineraryStepsLoader = ({
   const lastIdx = steps.length - 1;
 
   return (
-    <div data-bottom-cta-bar className="z-20 fixed w-full md:w-[48%] bottom-0 flex-shrink-0 bg-[#F7E700] border-t border-slate-100 shadow-[0_-4px_16px_rgba(11,18,32,0.06)] px-4 pt-3.5 pb-4">
+    <div data-bottom-cta-bar style={barStyle} className="z-20 fixed w-full md:w-[48%] bottom-0 flex-shrink-0 bg-[#F7E700] border-t border-slate-100 shadow-[0_-4px_16px_rgba(11,18,32,0.06)] px-4 pt-3.5 pb-4">
       <div>
         <div className="flex items-center gap-3">
           {/* Spinning ring with hourglass glyph — same chrome as the original loader */}
@@ -4122,6 +4169,7 @@ const BottomCTABar = React.memo(
     onGetInTouch,
     onRetryCart,
     notes,
+    barStyle,
   }: BottomCTABarProps) => {
     if (
       !["itinerary", "bookings"].includes(viewMode) ||
@@ -4131,7 +4179,7 @@ const BottomCTABar = React.memo(
 
     if (isDraft) {
       return (
-        <div data-bottom-cta-bar className="z-20 fixed w-full md:w-[47.5%] bottom-0 flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3 flex items-center justify-center">
+        <div data-bottom-cta-bar style={barStyle} className="z-20 fixed w-full md:w-[47.5%] bottom-0 flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3 flex items-center justify-center">
           <button
             onClick={onConfirm}
             className="flex items-center justify-center h-[40px] px-5 gap-2 rounded-[8px] bg-[#F7E700] ttw-type-body font-inter !font-bold"
@@ -4148,7 +4196,7 @@ const BottomCTABar = React.memo(
 
     if (isPricingFailedWithEmptyNotes) {
       return (
-        <div data-bottom-cta-bar className="z-20 fixed w-full md:w-[48%] bottom-0 flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3 flex items-center justify-between">
+        <div data-bottom-cta-bar style={barStyle} className="z-20 fixed w-full md:w-[48%] bottom-0 flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3 flex items-center justify-between">
           <p className="text-red-600 ttw-type-body">
             Get in touch to finalize the pricing!
           </p>
@@ -4168,7 +4216,12 @@ const BottomCTABar = React.memo(
       if (!loaderDisplayText) return null;
       // Stepped progress card rendered in the bottom bar space (same place
       // the cart row sits), replacing the old centered overlay.
-      return <ItineraryStepsLoader displayText={loaderDisplayText} />;
+      return (
+        <ItineraryStepsLoader
+          displayText={loaderDisplayText}
+          barStyle={barStyle}
+        />
+      );
     }
 
     const perPerson = cart?.pay_only_for_one || cart?.show_per_person_cost;
@@ -4202,7 +4255,7 @@ const BottomCTABar = React.memo(
     );
 
     return (
-      <div data-bottom-cta-bar className="z-20 fixed w-full md:w-[48%] bottom-0 flex-shrink-0 bg-[#fffaf5] border-t border-slate-100 px-4 py-2 flex flex-col gap-1">
+      <div data-bottom-cta-bar style={barStyle} className="z-20 fixed w-full md:w-[48%] bottom-0 flex-shrink-0 bg-[#fffaf5] border-t border-slate-100 px-4 py-2 flex flex-col gap-1">
         <div className="flex items-center justify-between">
         <div className="flex flex-col">
           {cost !== null ? (
