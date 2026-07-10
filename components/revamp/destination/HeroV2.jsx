@@ -6,6 +6,8 @@ import {
 } from "../../../services/heroChatHandoff";
 import { truncateAtSentence } from "../../../helper/truncateAtSentence";
 import styles from "../../../styles/pages/revamp/destination.module.scss";
+import Link from "next/link";
+import GetInspiredDrawer from "../../theme/GetInspiredDrawer";
 
 const FALLBACK_POLAROIDS = [
   {
@@ -49,6 +51,8 @@ const HeroV2 = ({
   setShowTailoredModal,
   inputPlaceholder,
   onOpenDrawer,
+  slug,
+  themeConfig,
 }) => {
   const router = useRouter();
   const textareaRef = useRef(null);
@@ -148,9 +152,19 @@ const HeroV2 = ({
     }
   };
 
-  const handlePromptClick = (text) => {
+  const handlePromptClick = (p) => {
+    // Prompts may be plain strings (the label doubles as the seed) or objects
+    // carrying a short display `label` plus a full self-contained `prompt`.
+    // Objects send the full prompt as-is; strings keep the legacy
+    // "<label>, <destination>" seed so existing country/city pages are
+    // unaffected.
+    const isObj = p && typeof p === "object";
     const seed = (
-      destinationLabel ? `${text}, ${destinationLabel}` : text
+      isObj
+        ? p.prompt || p.label || ""
+        : destinationLabel
+        ? `${p}, ${destinationLabel}`
+        : p
     ).trim();
     goToChat(seed);
   };
@@ -207,6 +221,14 @@ const HeroV2 = ({
     }
   };
 
+  // "Start planning" opens the in-chat intake form (`?intake=1`) and seeds its
+  // destination step with this page's place, so the form lands pre-filled. On
+  // the Greece theme page `destinationLabel` is "Greece"; on destination pages
+  // it's that page's name.
+  const intakeHref = destinationLabel
+    ? `/chat?intake=1&destination=${encodeURIComponent(destinationLabel)}`
+    : "/chat?intake=1";
+
   return (
     <section className={styles.heroV2}>
       <div className={styles.container}>
@@ -226,7 +248,7 @@ const HeroV2 = ({
                   : description}
               </p>
             )}
-            <form className={styles.heroV2Input} onSubmit={handleSubmit}>
+           {slug != "theme-greece" ? <form className={styles.heroV2Input} onSubmit={handleSubmit}>
               <textarea
                 ref={textareaRef}
                 value={value}
@@ -349,19 +371,47 @@ const HeroV2 = ({
                   </svg>
                 </button>
               </div>
-            </form>
+            </form> : <div className="relative z-[4] mt-[22px] mb-3 flex flex-col items-start gap-3">
+  <Link
+  href={intakeHref}
+  className="group relative z-[4] mt-[22px] inline-flex items-center gap-[10px] rounded-full bg-[var(--ttw-ink)] px-7 py-3.5 text-base font-semibold text-white no-underline shadow-[0_12px_28px_-8px_rgba(11,18,32,0.4)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_16px_34px_-8px_rgba(11,18,32,0.45)]"
+>
+  Start planning
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="size-[18px] transition-transform duration-200 group-hover:translate-x-[3px]"
+  >
+    <path d="M5 12h14M13 6l6 6-6 6" />
+  </svg>
+</Link>
+  <GetInspiredDrawer
+    themeConfig={themeConfig}
+    label="Discover trip ideas for Greece"
+  />
+</div>}
             {prompts.length > 0 && (
               <div className={styles.heroV2Prompts}>
-                {prompts.map((p, i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    className={styles.heroV2Prompt}
-                    onClick={() => handlePromptClick(p)}
-                  >
-                    {p}
-                  </button>
-                ))}
+                {prompts.map((p, i) => {
+                  // Prompts can be plain strings, or { label, prompt } objects
+                  // where the short label is shown but the full prompt is sent.
+                  const label = typeof p === "string" ? p : p?.label;
+                  const text = typeof p === "string" ? p : p?.prompt;
+                  return (
+                    <button
+                      key={i}
+                      type="button"
+                      className={styles.heroV2Prompt}
+                      onClick={() => handlePromptClick(text)}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
               </div>
             )}
             {meta && <div className={styles.heroV2Meta}>{meta}</div>}

@@ -15,18 +15,13 @@ import { useEffect } from "react";
 import Layout from "../../components/Layout";
 import CountryPage from "../../containers/country/Index";
 import GetInspiredSection from "../../components/theme/GetInspiredSection";
+import { instanceProdDetail } from "../../services/pages/country";
+import { instanceProd } from "../../services/pages/list";
 import axioslocationsinstance from "../../services/search/search";
 import setHotLocationSearch from "../../store/actions/hotLocationSearch";
 import { useAnalytics } from "../../hooks/useAnalytics";
 import type { ThemeConfig } from "../../components/bot-components/types/themeConfig";
 import greeceTravellerStories from "../../data/greeceTravellerStories";
-import { MERCURY_HOST } from "../../services/constants";
-import axios from "axios";
-import axiospagelistinstance from "../../services/pages/list";
-import axioscountrydetailsinstance, {
-  getCountryPaths,
-} from "../../services/pages/country";
-
 
 // Hardcoded to the Greece country page.
 const GREECE_ID = "2b285f39-41e7-4100-99b7-1d20782e7437";
@@ -34,6 +29,9 @@ const GREECE_PATH = "europe/greece";
 const GREECE_CONTINENT = "europe";
 const GREECE_COUNTRY = "greece";
 
+// Curated theme content, ported from pages/theme/greece-islands-done-right.tsx.
+// The welcome prompt chips drive the hero suggestions; rows + traveller stories
+// drive the Get Inspired surface.
 const greeceThemeConfig: ThemeConfig = {
   welcome: {
     subtitle: "Greece is a big decision. Let's make it an easy one.",
@@ -46,7 +44,7 @@ const greeceThemeConfig: ThemeConfig = {
       },
       {
         icon: "💶",
-        label: "I have Rs 1.8 lakh — what Greece actually get me?",
+        label: "I have Rs 1.8 lakh — what does Greece actually get me?",
         prompt:
           "Plan an 8-day Greece trip for ₹1.8 lakh per person, including flights from India. Show what's realistically possible, which islands offer the best value, and create a complete itinerary with stays, transport, and daily experiences.",
       },
@@ -337,15 +335,8 @@ const GreeceThemePage = (props: any) => {
         data={props?.Data}
         // Empty locations hides the "Other destinations in <continent>" section.
         locations={[]}
-        // Hide the Banner's mobile bar here — the "Get Inspired" pinned bar
-        // already occupies the bottom of the viewport on mobile.
-        hideMobileBanner
         page_id={props.page_id || ""}
         type={props?.Type}
-        slug={"theme-greece"}
-        // Powers the HeroV2 "Get inspired" drawer (desktop) — same StartScreen
-        // content as the GetInspiredSection surface below.
-        themeConfig={greeceThemeConfig}
       ></CountryPage>
 
       <GetInspiredSection themeConfig={greeceThemeConfig} />
@@ -365,9 +356,7 @@ export async function getStaticProps() {
   try {
     // Production mercury: the dev host returns a null `seasonal_info` for this
     // id (so "When to go" wouldn't render), while prod has the populated data.
-    const res = await axios.get(
-      `https://mercury.tarzanway.com/api/v1/geos/country/${GREECE_ID}`
-    );
+    const res = await instanceProdDetail.get(GREECE_ID);
     data = res.data.data.country;
 
     if (!data) {
@@ -381,16 +370,15 @@ export async function getStaticProps() {
     data = { ...data, model_prompts: GREECE_HERO_PROMPTS };
 
     //mercury api
-   const continentData = await axiospagelistinstance.get(
+    const continentData = await instanceProd.get(
       "/?page_type=Continent&fields=id,page_type,slug,overview_image,tagline,path"
     );
     for (let i = 0; i < continentData.data.data.pages.length; i++) {
       let continentSlug = continentData.data.data.pages[i].slug;
 
-     const countrydetailsResponse = await axioscountrydetailsinstance.get(
+      const countrydetailsResponse = await instanceProdDetail.get(
         `?limit=111&offset=0&continent=${continentSlug}`
       );
-
 
       let hot_data = countrydetailsResponse.data.data.countries.filter(
         (d: any) => d.is_hot_location
@@ -418,24 +406,6 @@ export async function getStaticProps() {
     console.log(
       `[ERROR][greeceThemePage][axioslocationsinstance:/hot_destinations/?continent=${GREECE_CONTINENT}/]`
     );
-  }
-
-  // TEMP-VERIFY-STUB: local sandbox blocks Mercury (400), so fall back to a
-  // minimal data object purely to render the page for visual verification.
-  if (!data) {
-    data = {
-      id: GREECE_ID,
-      name: "Greece",
-      slug: "greece",
-      continent: "europe",
-      path: GREECE_PATH,
-      model_prompts: GREECE_HERO_PROMPTS,
-      locations: [],
-      states: [],
-      activities: [],
-      pois: [],
-      itineraries: [],
-    };
   }
 
   return {

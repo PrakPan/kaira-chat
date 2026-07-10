@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "../../../styles/pages/revamp/destination.module.scss";
+import MobileCardCarousel from "./MobileCardCarousel.jsx";
 
 const renderStars = (count) => {
   const n = Math.max(0, Math.min(5, Number(count) || 0));
@@ -54,7 +55,7 @@ const WhenToGoSection = ({ seasonalInfo, destinationName, onSeeMore }) => {
             </span>
           )} */}
         </div>
-        <div className={styles.seasonsGrid}>
+        <MobileCardCarousel gridClass={styles.seasonsGrid}>
           {seasons.map((season, i) => {
             const tag = (season?.tag || "").toString();
             const isPeak = /peak/i.test(tag);
@@ -104,7 +105,7 @@ const WhenToGoSection = ({ seasonalInfo, destinationName, onSeeMore }) => {
               </div>
             );
           })}
-        </div>
+        </MobileCardCarousel>
       </div>
     </section>
   );

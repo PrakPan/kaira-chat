@@ -210,6 +210,29 @@ const CWS_STYLES = `
 @media (min-width: 768px) { .cws-inspire-cta { display: none !important; } }
 `;
 
+// Hero hooks — one is picked at random on each page load. Keep the first
+// entry as the SSR default to avoid a hydration mismatch; the client swaps in
+// a random pick (which may be any entry, including this one) after mount.
+const HERO_HOOKS: string[] = [
+  "We don't just chat — we sell holidays.",
+  "We don't just chat, we book!",
+  "Plan it. Book it. Pack it.",
+  "Dream it. Plan it. Book it.",
+  "Not a tool. Your travel buddy.",
+  "AI plans it. You just pack.",
+  "Your trip, sorted in one chat.",
+  "Not a planner. A closer.",
+  "Tap, plan, book — done.",
+  "We chat. We plan. We book.",
+  "You imagine it. We plan and book it.",
+  "Your travel buddy, from idea to booking.",
+  "Plan it with AI. Travel Specialists will add the vibe.",
+  "Plan it with AI. Our experts will add the vibe.",
+  "Sketch the trip. Experts will complete it.",
+  "You draft it. We'll complete it.",
+  "Give us the outline. We'll plan and book the trip.",
+];
+
 function getAuthToken(): string | null {
   return (
     localStorage.getItem("token") ??
@@ -234,6 +257,12 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
   const [inputValue, setInputValue] = useState("");
   const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
   const [showInspiration, setShowInspiration] = useState(false);
+  // Start with the SSR-stable default, then shuffle in a random hook on mount.
+  const [heroHook, setHeroHook] = useState(HERO_HOOKS[0]);
+
+  useEffect(() => {
+    setHeroHook(HERO_HOOKS[Math.floor(Math.random() * HERO_HOOKS.length)]);
+  }, []);
 
   // Lock body scroll while the bottom sheet is open
   useEffect(() => {
@@ -485,8 +514,16 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
           </span>
 
           <h1>
-            We don&apos;t just chat — <span className="cws-serif">we sell</span>{" "}
-            <span className="cws-hl">holidays.</span>
+            {(() => {
+              const words = heroHook.split(" ");
+              const last = words.pop();
+              return (
+                <>
+                  {words.length > 0 && <>{words.join(" ")} </>}
+                  <span className="cws-hl">{last}</span>
+                </>
+              );
+            })()}
           </h1>
           <p>{subtitle} <b>10,000+ trips delivered.</b></p>
         </div>

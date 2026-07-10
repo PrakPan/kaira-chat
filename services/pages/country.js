@@ -5,6 +5,9 @@ const instance = axios.create({
   baseURL: MERCURY_HOST + "/api/v1/geos/country/",
 });
 
+export const instanceProdDetail = axios.create({
+  baseURL: "https://mercury.tarzanway.com" + "/api/v1/geos/country/",
+});
 export const getCountryPaths=axios.create({
   baseURL:MERCURY_HOST+"/api/v1/geos/search/all/"
 })

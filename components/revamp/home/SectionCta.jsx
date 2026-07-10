@@ -7,8 +7,14 @@ import { useRouter } from "next/router";
  * All instances route to the intake chat by default.
  */
 
-const SectionCta = ({ label, heading, accent, ctaLabel, href = "/chat?intake=1", marginTop="0px" }) => {
+const SectionCta = ({ label, heading, accent, ctaLabel, href = "/chat?intake=1", destination, marginTop="0px" }) => {
   const router = useRouter();
+
+  // When a destination name is supplied (continent / country / state / city
+  // pages), seed the intake form's destination step so /chat lands pre-filled.
+  const finalHref = destination
+    ? `${href}${href.includes("?") ? "&" : "?"}destination=${encodeURIComponent(destination)}`
+    : href;
 
   return (
     <section style={{ padding: "8px 0 0" }}>
@@ -50,7 +56,7 @@ const SectionCta = ({ label, heading, accent, ctaLabel, href = "/chat?intake=1",
 
         <button
           type="button"
-          onClick={() => router.push(href)}
+          onClick={() => router.push(finalHref)}
           style={{
             display: "inline-flex",
             alignItems: "center",

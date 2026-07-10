@@ -31,7 +31,7 @@ import type {
 import { useDispatch } from "react-redux";
 import setItineraryIdAction from "../../store/actions/itineraryId";
 import setItineraryStatus from "../../store/actions/itineraryStatus";
-import { resetIntakeForm } from "../../store/actions/intakeForm";
+import { resetIntakeForm, updateIntakeForm } from "../../store/actions/intakeForm";
 import setItineraryDaybyDay from "../../store/actions/itineraryDaybyDay";
 import setItinerary from "../../store/actions/itinerary";
 import setBreif from "../../store/actions/breif";
@@ -2570,6 +2570,11 @@ export default function BotApp({
     setMobilePanel("chat");
     setLeftPanelMode("default");
     setIntakeActive(false);
+    // Reset startEmptyIntake too: chatKey bumps below remount ChatKitPanel,
+    // and a lingering startEmptyIntake=true would re-run its intake-injection
+    // effect (onIntakeFormStart → setIntakeActive(true)) and pop the
+    // IntakeLeftPanel hero back up on the fresh chat.
+    setStartEmptyIntake(false);
     dispatch(resetIntakeForm());
     setCompletingItineraryId(null);
     setLoaderDisplayText(null);
@@ -2686,6 +2691,26 @@ export default function BotApp({
     hasConsumedIntakeFlagRef.current = true;
 
     dispatch(resetIntakeForm());
+
+    // Optional `?destination=<name>` from the hero "Start planning" CTA seeds
+    // the intake form's destination step so it lands pre-filled (e.g. "Greece"
+    // from the theme page, or the destination page's own place).
+    const destParam = router.query.destination;
+    const destName = (
+      Array.isArray(destParam) ? destParam[0] : destParam || ""
+    ).trim();
+    if (destName) {
+      const dest = { name: destName };
+      dispatch(
+        updateIntakeForm({
+          destination: dest,
+          destinations: [dest],
+          query: destName,
+          stepsCompleted: [true, false, false, false],
+        }),
+      );
+    }
+
     setStartEmptyIntake(true);
     setIntakeActive(true);
     setShowStartScreen(false);
@@ -2695,6 +2720,7 @@ export default function BotApp({
       try {
         const url = new URL(window.location.href);
         url.searchParams.delete("intake");
+        url.searchParams.delete("destination");
         window.history.replaceState({}, "", url.toString());
       } catch {
         /* noop */

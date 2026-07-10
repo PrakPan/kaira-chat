@@ -1,33 +1,80 @@
 import React from "react";
-import styles from "../../../styles/pages/revamp/destination.module.scss";
 
 // Single source of truth for the primary planning CTA used across every
-// destination page (continent / country / state / city / theme). Keeps the
-// label and the inline chevron identical everywhere.
+// destination page (continent / country / state / city / theme). Renders the
+// dark "Start planning" pill with a circular arrow, matching the section-ending
+// SectionCta, plus a reassurance line below the button.
+//
+// Compact contexts (e.g. the promo Banner bar) pass `showHelper={false}` to
+// drop the helper line and keep the button inline.
 const ChatWithKairaCta = ({
-  label = "Chat with Kaira",
+  label = "Start planning",
   onClick,
   className = "",
   style,
-}) => (
-  <button
-    type="button"
-    className={`${styles.btnPrimary} ${className}`.trim()}
-    onClick={onClick}
-    style={style}
-  >
-    {label}
-    <svg
-      viewBox="0 0 12 12"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+  showHelper = true,
+  helperText = "Planning is free. You only pay when you book.",
+}) => {
+  const button = (
+    <button
+      type="button"
+      className={className.trim()}
+      onClick={onClick}
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: "12px",
+        padding: "10px 10px 10px 22px",
+        background: "#0b1220",
+        color: "#ffffff",
+        border: "1px solid var(--ttw-line, #ececec)",
+        borderRadius: "999px",
+        fontFamily: "inherit",
+        fontSize: "15px",
+        fontWeight: 600,
+        cursor: "pointer",
+        transition: "all 0.15s",
+        ...style,
+      }}
     >
-      <path d="M2 10L10 2M10 2H4M10 2V8" />
-    </svg>
-  </button>
-);
+      {label}
+      <span
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width: "28px",
+          height: "28px",
+          borderRadius: "50%",
+          background: "var(--ttw-ink-rail, #0f1a2e)",
+          color: "#fff",
+        }}
+      >
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <line x1="5" y1="12" x2="19" y2="12" />
+          <polyline points="12 5 19 12 12 19" />
+        </svg>
+      </span>
+    </button>
+  );
+
+  if (!showHelper || !helperText) return button;
+
+  return (
+    <span className="inline-flex flex-col items-center gap-2">
+      {button}
+      <p className="text-[#8b93a6] text-[12px] mt-2">{helperText}</p>
+    </span>
+  );
+};
 
 export default ChatWithKairaCta;

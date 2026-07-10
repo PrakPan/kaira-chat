@@ -361,6 +361,7 @@ const Homepage = (props) => {
           // heading="How it"
           // accent="works."
           ctaLabel="Start planning"
+          destination={destinationName}
         />
         </div>
       ) : null}
@@ -487,6 +488,7 @@ const Homepage = (props) => {
           // heading="How it"
           // accent="works."
           ctaLabel="Start planning"
+          destination={destinationName}
         />
 
         {/* COMMUNITY TOP PICKS */}
@@ -535,7 +537,7 @@ const Homepage = (props) => {
           }
         />
 
-        <div className="hidden-desktop">
+        {/* <div className="hidden-desktop">
           <MobileBanner
             handleClick={() =>
               openTailoredModal(
@@ -546,7 +548,7 @@ const Homepage = (props) => {
             }
             city={destinationName}
           />
-        </div>
+        </div> */}
 
         {/* OTHER DESTINATIONS */}
         {props.locations && props.locations.length ? (
@@ -596,6 +598,7 @@ const Homepage = (props) => {
           </p>
           <ChatWithKairaCta
             onClick={handleChatWithKaira}
+            showHelper={false}
             // onClick={() =>
             //   handlePlanButtonClick(`Final CTA - ${destinationName}`)
             // }
