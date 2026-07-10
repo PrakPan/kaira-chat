@@ -15,11 +15,11 @@ import IntakeLeftPanel from "./components/IntakeLeftPanel";
 import type { ThemeConfig } from "./types/themeConfig";
 import ChatWelcomeScreen from "./components/ChatWelcomeScreen";
 import ItineraryShimmer from "./components/ItineraryShimmer";
-import TrustIndicators from "./components/TrustIndicators";
 import { useUserLocation } from "./hooks/useUserLocation";
 import { useMapBounds } from "./hooks/useMapBounds";
 import { getPlatform } from "./hooks/useChat";
 import ItineraryContainer from "../../containers/itinerary/ItineraryContainer";
+import ItineraryLegend from "../itinerary/itineraryCity/ItineraryLegend";
 import type {
   Location,
   ItineraryData,
@@ -581,11 +581,40 @@ export default function BotApp({
   // downward scroll event, which would collapse the card again immediately.
   const suppressMetaCollapseUntilRef = React.useRef(0);
 
+  // Once the itinerary pane is scrolled off the top, the trip card sheds
+  // everything but its three identifying lines — name, travellers/dates, route.
+  // Same on desktop (where the card is a pinned header strip) and mobile (where
+  // it is `sticky top-0` inside the pane).
+  const [headerCondensed, setHeaderCondensed] = useState(false);
+
   // Stable identities so they don't defeat MobileLayout's React.memo.
-  const handleItineraryScrolled = useCallback(() => {
-    if (Date.now() < suppressMetaCollapseUntilRef.current) return;
-    setTripMetaOpen(false);
-  }, []);
+  // `scrolledAway` drives the condensed card; the meta block only collapses on
+  // a *downward* scroll, so scrolling back up doesn't fight a chevron tap.
+  const handleItineraryScrolled = useCallback(
+    (scrolledAway: boolean, isDown: boolean) => {
+      setHeaderCondensed(scrolledAway);
+      if (!isDown) return;
+      if (Date.now() < suppressMetaCollapseUntilRef.current) return;
+      setTripMetaOpen(false);
+    },
+    [],
+  );
+
+  // Desktop scroller for the itinerary body. On mobile the pane that actually
+  // scrolls lives in MobileLayout, which reports through onItineraryScrolled.
+  const desktopItineraryScrollRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (isMobile) return undefined;
+    const el = desktopItineraryScrollRef.current;
+    if (!el) return undefined;
+
+    const CONDENSE_BELOW_PX = 8; // anything past a hairline counts as scrolled
+    const onScroll = () => setHeaderCondensed(el.scrollTop > CONDENSE_BELOW_PX);
+    onScroll(); // a re-mounted pane can already be scrolled
+
+    el.addEventListener("scroll", onScroll, { passive: true });
+    return () => el.removeEventListener("scroll", onScroll);
+  }, [isMobile, activeItineraryId, viewMode]);
 
   const handleTripMetaToggle = useCallback(() => {
     setTripMetaOpen((open) => {
@@ -2972,8 +3001,7 @@ Start Location: ${details.startLocation}`;
           On mobile the card sticks to the top of the itinerary scroll pane. The
           sticky element is this wrapper (not the card) so its white background
           fills the card's mx/mt gutters — otherwise the timeline would show
-          through them while scrolling underneath. No padding-bottom: the legend
-          chip below hangs up into this box with `-mt-5` and would be covered. */}
+          through them while scrolling underneath. */}
       <div className="max-ph:sticky max-ph:top-0 max-ph:z-30 max-ph:bg-white">
       <div className="bg-white flex flex-col px-3 md:px-[22px] py-3 border-b border-slate-100 max-ph:border max-ph:border-[#ECECEC] max-ph:rounded-[14px] max-ph:mx-3 max-ph:mt-[10px] max-ph:px-[12px] max-ph:pt-[7px] max-ph:pb-[10px]">
         <div className="flex justify-between items-start gap-3 max-ph:gap-2 max-ph:relative">
@@ -3125,10 +3153,14 @@ Start Location: ${details.startLocation}`;
             </div>
 
             {/* Desktop: social proof gets its own row between the meta line and
-                the route strip. On mobile it shares a row with the icons below. */}
-            <div className="max-ph:hidden flex items-center gap-[9px] mt-[2px]">
-              <KairaSocialProof groupType={itineraryRedux?.group_type} />
-            </div>
+                the route strip. On mobile it shares a row with the icons below.
+                Dropped once scrolled — the condensed card keeps only name,
+                travellers/dates and route. */}
+            {!headerCondensed && (
+              <div className="max-ph:hidden flex items-center gap-[9px] mt-[2px]">
+                <KairaSocialProof groupType={itineraryRedux?.group_type} />
+              </div>
+            )}
 
             {/* Mobile: Kaira social proof (left) + settings/share (right) on one
                 row at the bottom of the expanded detail. Hidden on desktop,
@@ -3227,6 +3259,12 @@ Start Location: ${details.startLocation}`;
             </button>
           </div>
         )}
+
+        {/* Kaira Protected / label legend — outside the collapsible meta block
+            so it rides along with the route strip in the collapsed mobile card.
+            Its panel is a dropdown, so opening it can't grow this sticky card.
+            Hidden once scrolled, leaving the card's three identifying lines. */}
+        {!headerCondensed && <ItineraryLegend />}
           </div>
 
           <div className="flex gap-3 max-ph:gap-[6px] items-center shrink-0 max-ph:absolute max-ph:top-0 max-ph:right-0">
@@ -3306,6 +3344,7 @@ Start Location: ${details.startLocation}`;
         {activeItineraryId ? (
           <div className="flex flex-col h-full overflow-hidden">
             <div
+              ref={desktopItineraryScrollRef}
               className="flex-1 overflow-y-auto"
               style={{ scrollbarWidth: "none" }}
             >
@@ -3454,7 +3493,7 @@ Start Location: ${details.startLocation}`;
           {/* INTAKE HERO — shown over StartScreen/map only once a destination
               is chosen; its image swaps with the chosen destination. Before a
               pick we keep the StartScreen above. inset-0 keeps the hero within
-              the left pane so the bottom TrustIndicators bar stays visible. */}
+              the left pane. */}
          {botMode != "p2" ? <div
             className={`absolute inset-0 z-20 transition-opacity duration-500 ease-in-out ${
  intakeActive && (intakeDestination || startEmptyIntake)
@@ -3738,12 +3777,6 @@ Start Location: ${details.startLocation}`;
         />
       </div>
 
-      {isChatActive && (
-        <div className="max-ph:hidden flex-shrink-0 w-full">
-          <TrustIndicators />
-        </div>
-      )}
-
       <ConfirmationModal
         show={showConfirmModal}
         onHide={() => setShowConfirmModal(false)}
@@ -3963,7 +3996,7 @@ const ItineraryStepsLoader = ({
   const lastIdx = steps.length - 1;
 
   return (
-    <div className="z-20 fixed w-full md:w-[48%] max-ph:bottom-0 md:bottom-[4.2rem] flex-shrink-0 bg-[#F7E700] border-t border-slate-100 shadow-[0_-4px_16px_rgba(11,18,32,0.06)] px-4 pt-3.5 pb-4">
+    <div data-bottom-cta-bar className="z-20 fixed w-full md:w-[48%] bottom-0 flex-shrink-0 bg-[#F7E700] border-t border-slate-100 shadow-[0_-4px_16px_rgba(11,18,32,0.06)] px-4 pt-3.5 pb-4">
       <div>
         <div className="flex items-center gap-3">
           {/* Spinning ring with hourglass glyph — same chrome as the original loader */}
@@ -4072,7 +4105,7 @@ const BottomCTABar = React.memo(
 
     if (isDraft) {
       return (
-        <div className="z-20 fixed w-full md:w-[47.5%] max-ph:bottom-0 md:!bottom-[4.2rem] flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3 flex items-center justify-center">
+        <div data-bottom-cta-bar className="z-20 fixed w-full md:w-[47.5%] bottom-0 flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3 flex items-center justify-center">
           <button
             onClick={onConfirm}
             className="flex items-center justify-center h-[40px] px-5 gap-2 rounded-[8px] bg-[#F7E700] ttw-type-body font-inter !font-bold"
@@ -4089,7 +4122,7 @@ const BottomCTABar = React.memo(
 
     if (isPricingFailedWithEmptyNotes) {
       return (
-        <div className="z-20 fixed w-full md:w-[48%] max-ph:bottom-0 md:bottom-[4.2rem] flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3 flex items-center justify-between">
+        <div data-bottom-cta-bar className="z-20 fixed w-full md:w-[48%] bottom-0 flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3 flex items-center justify-between">
           <p className="text-red-600 ttw-type-body">
             Get in touch to finalize the pricing!
           </p>
@@ -4143,7 +4176,7 @@ const BottomCTABar = React.memo(
     );
 
     return (
-      <div className="z-20 fixed w-full md:w-[48%] max-ph:bottom-0 md:bottom-[4.2rem] flex-shrink-0 bg-[#fffaf5] border-t border-slate-100 px-4 py-2 flex flex-col gap-1">
+      <div data-bottom-cta-bar className="z-20 fixed w-full md:w-[48%] bottom-0 flex-shrink-0 bg-[#fffaf5] border-t border-slate-100 px-4 py-2 flex flex-col gap-1">
         <div className="flex items-center justify-between">
         <div className="flex flex-col">
           {cost !== null ? (
@@ -4684,7 +4717,7 @@ interface MobileLayoutProps {
   onSettingsClick?: () => void;
   onLoginSuccess?: () => void | Promise<void>;
   /** Collapse the expanded trip-details card when the itinerary pane scrolls. */
-  onItineraryScrolled?: () => void;
+  onItineraryScrolled?: (scrolledAway: boolean, isDown: boolean) => void;
 }
 
 const MobileLayout = React.memo(
@@ -4824,7 +4857,10 @@ const MobileLayout = React.memo(
       color: "#0B1220",
     };
 
-    // ── Hide-on-scroll for the mobile header ──────────────────────────────
+    // ── Mobile header: visible only at the top of the pane ────────────────
+    // Any scroll away from the top hides it, in either direction; it comes
+    // back only once the pane is scrolled back to the top.
+    //
     // NOTE: window/document never scrolls on this page — <main> is
     // `h-dvh overflow-hidden`, so a window scroll listener would never fire.
     // The real scroller is the itinerary/routes/bookings pane below.
@@ -4835,7 +4871,7 @@ const MobileLayout = React.memo(
     // clipping — deliberately NOT an overflow-hidden wrapper here, which
     // would clip the header's avatar dropdown.
     const SCROLL_JITTER_PX = 6; // ignore sub-pixel / momentum noise
-    const ALWAYS_SHOW_ABOVE_PX = 48; // near the top, always reveal
+    const SHOW_ABOVE_PX = 48; // the header only exists this close to the top
 
     const scrollPaneRef = React.useRef<HTMLDivElement | null>(null);
     const headerRef = React.useRef<HTMLDivElement | null>(null);
@@ -4872,12 +4908,15 @@ const MobileLayout = React.memo(
 
         // iOS rubber-banding drives scrollTop negative / past the end; treating
         // that as a direction change makes the header flicker at the extremes.
-        if (Math.abs(delta) < SCROLL_JITTER_PX) return;
+        // Inside the reveal band the jitter guard is skipped, otherwise a slow
+        // drift to rest a few px below the top could leave the header hidden.
+        if (Math.abs(delta) < SCROLL_JITTER_PX && y > SHOW_ABOVE_PX) return;
         lastScrollRef.current = y;
 
-        // Scrolling down away from the top collapses the expanded trip-details
-        // card, so what sticks to the top of the pane is always the compact row.
-        if (y > ALWAYS_SHOW_ABOVE_PX && delta > 0) onItineraryScrolledRef.current?.();
+        // Away from the top the trip-details card condenses to its three
+        // identifying lines; a downward scroll additionally collapses the
+        // expanded meta block, so what sticks to the top is the compact row.
+        onItineraryScrolledRef.current?.(y > SHOW_ABOVE_PX, delta > 0);
 
         // Never hide if there isn't enough runway to scroll it back into view.
         const scrollable = el.scrollHeight - el.clientHeight;
@@ -4886,7 +4925,9 @@ const MobileLayout = React.memo(
           return;
         }
 
-        setHideHeader(y > ALWAYS_SHOW_ABOVE_PX && delta > 0);
+        // Direction-agnostic: the header is only shown at the very top of the
+        // pane, so scrolling up mid-list does not bring it back.
+        setHideHeader(y > SHOW_ABOVE_PX);
       };
 
       el.addEventListener("scroll", onScroll, { passive: true });
@@ -4898,6 +4939,26 @@ const MobileLayout = React.memo(
       setHideHeader(false);
       lastScrollRef.current = scrollPaneRef.current?.scrollTop ?? 0;
     }, [activeTab]);
+
+    // The scroll pane ends where the fixed CTA bar begins. Measure the bar
+    // rather than assume a height — it swaps between a one-line confirm button,
+    // the steps loader and the two-line cart row, each a different height, and
+    // a stale guess leaves a dead white strip between the pane and the bar.
+    const [ctaBarHeight, setCtaBarHeight] = React.useState(0);
+    React.useEffect(() => {
+      const el = document.querySelector("[data-bottom-cta-bar]");
+      if (!el) {
+        setCtaBarHeight(0);
+        return undefined;
+      }
+      const measure = () => setCtaBarHeight(el.getBoundingClientRect().height);
+      measure();
+      const ro = new ResizeObserver(measure);
+      ro.observe(el);
+      return () => ro.disconnect();
+      // bottomCTABarProps carries cart/pricingStatus, so it changes whenever the
+      // bar swaps variants and this re-queries the (newly mounted) element.
+    }, [bottomCTABarProps, hasItineraryActivity, activeTab]);
 
     return (
       <div className="flex flex-col h-full overflow-hidden relative">
@@ -5008,8 +5069,9 @@ const MobileLayout = React.memo(
               // End the pane above it rather than padding the pane by its
               // height: padding is scrollable, so it forced a scrollbar even
               // when the content fit. Shrinking the pane cannot.
-              className="absolute inset-x-0 top-0 bottom-[88px] overflow-y-auto bg-white"
+              className="absolute inset-x-0 top-0 overflow-y-auto bg-white"
               style={{
+                bottom: ctaBarHeight,
                 opacity: ["itinerary", "routes", "bookings"].includes(activeTab)
                   ? 1
                   : 0,

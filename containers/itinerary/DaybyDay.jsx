@@ -2,7 +2,6 @@ import { useEffect, useState, useRef, Fragment } from "react";
 import { connect, useSelector } from "react-redux";
 
 import ItineraryCity from "../../components/itinerary/itineraryCity";
-import ItineraryLegend from "../../components/itinerary/itineraryCity/ItineraryLegend";
 import CityItem from "./VerticalLayout";
 import media from "../../components/media";
 import BookingModal from "../../components/modals/bookingupdated/Index";
@@ -285,7 +284,6 @@ const DaybyDay = ({
       >
 
         <div className={`flex flex-col ${props?.fromChat ? "gap-2" : ""}`}>
-          {props?.fromChat && <ItineraryLegend />}
           <CityItem
             setShowLoginModal={setShowLoginModal}
             key="start-city-label"

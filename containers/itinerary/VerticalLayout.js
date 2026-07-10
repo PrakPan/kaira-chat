@@ -2179,7 +2179,44 @@ useEffect(() => {
         <>
           {/* NO BOOKING - Show both CTAs */}
           {/* First CTA: Add Transfer */}
-          { !(Itinerary.status == "Draft")  ? 
+          { !(Itinerary.status == "Draft")  ?
+          fromChat ? (
+            /* Chat: the missing transfer is a gap in the route, not an optional
+               extra — so it takes the same card shape as a booked transfer, in
+               amber rather than blue, with the CTA as the card's right action
+               (mirrors `transferChipActions`). */
+            <div className="flex items-center gap-[12px] max-ph:gap-[10px] w-full px-[15px] max-ph:px-[12px] py-[11px] max-ph:py-[9px] rounded-[12px] max-ph:rounded-[11px] bg-[#FFF7E6] border-[1px] border-[#F5DFA6]">
+              <span className="flex items-center shrink-0 text-[#B67B10]">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M12 4.5 2.8 20h18.4L12 4.5z"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M12 10v4"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                  />
+                  <circle cx="12" cy="17" r="1" fill="currentColor" />
+                </svg>
+              </span>
+              <div className="flex-1 min-w-0">
+                <div className="text-[13px] max-ph:text-[12px] font-[600] text-[#5c4405]">
+                  No transfer from {origin_city_name} to {destination_city_name}
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={handleAddTransfer}
+                className="shrink-0 text-[12.5px] max-ph:text-[11.5px] font-[600] text-[#B67B10] whitespace-nowrap hover:underline"
+              >
+                Add Transfer
+              </button>
+            </div>
+          ) :
           isPageWide ? (
             <button
               onClick={handleAddTransfer}

@@ -1,9 +1,13 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 /*
- * Collapsible "What the labels mean" legend shown at the top of the chat-page
- * Itinerary timeline (gated by `fromChat` in DaybyDay). It explains the status
- * badges rendered inside the day cards.
+ * "Kaira Protected" / "What the labels mean" chips, rendered inside the trip
+ * details card (BotApp's itinerary header strip) below the route line. Either
+ * chip opens the same panel explaining the status badges on the day cards.
+ *
+ * The card is `sticky top-0` inside the mobile scroll pane, so the panel is an
+ * absolutely-positioned dropdown rather than an in-flow block: expanding it
+ * must not grow the sticky card and push the timeline down.
  *
  * The chip geometry (CHIP_BASE / CHIP_TEXT_STYLE) and the three swatch colors
  * are copied verbatim from CityDay.jsx's TAG_STYLE_BY_KEY so the legend matches
@@ -108,42 +112,6 @@ const LEGEND_ITEMS = [
   },
 ];
 
-// useLayoutEffect warns when React renders this on the server; the effect only
-// touches the DOM, so falling back to useEffect there is a no-op either way.
-const useIsomorphicLayoutEffect =
-  typeof window !== "undefined" ? useLayoutEffect : useEffect;
-
-/*
- * The itinerary sits in its own overflow container on the chat page but scrolls
- * the window on the standalone P2 page. Returns the scrolling ancestor, or null
- * when that is the window/viewport.
- */
-const findScroller = (node) => {
-  let el = node?.parentElement;
-  while (el) {
-    const { overflowY } = window.getComputedStyle(el);
-    const scrolls = overflowY === "auto" || overflowY === "scroll";
-    if (scrolls && el.scrollHeight > el.clientHeight) return el;
-    el = el.parentElement;
-  }
-  return null;
-};
-
-/*
- * Height of the trip details card, which is `sticky top-0` inside the mobile
- * scroll pane and would otherwise cover whatever we scroll to the top. Zero on
- * desktop, where the card sits outside the scroll pane and nothing is sticky.
- */
-const stickyHeaderHeight = (scroller) => {
-  const root = scroller || document;
-  const candidate = root.querySelector(
-    '[class~="max-ph:sticky"], [class~="sticky"]',
-  );
-  if (!candidate) return 0;
-  if (window.getComputedStyle(candidate).position !== "sticky") return 0;
-  return candidate.getBoundingClientRect().height;
-};
-
 const ShieldIcon = () => (
   <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
     <path
@@ -170,82 +138,89 @@ const InfoIcon = () => (
   </svg>
 );
 
+// The panel closes itself once this long passes with no pointer, scroll or key
+// activity anywhere inside it — reading it counts as activity, so a still
+// cursor parked over the text is the only thing that lets it lapse.
+const IDLE_CLOSE_MS = 5000;
+
 const ItineraryLegend = () => {
   const [open, setOpen] = useState(false);
   const rootRef = useRef(null);
-  // Set when the observer (not a user click) closed the panel, so only that
-  // path re-anchors the scroll. A click should leave the page where it is.
-  const anchorNextRef = useRef(false);
+  // "Inside" for dismissal means the chips or the panel — not the root, which
+  // spans the full card width and would swallow clicks on the empty space
+  // beside the chips.
+  const chipsRef = useRef(null);
+  const panelRef = useRef(null);
+  const idleTimerRef = useRef(null);
 
-  // Collapse the panel once the user has scrolled past it — specifically, once
-  // the element following it comes into view. Collapsing on any downward scroll
-  // hides the tag list before it can be read, since the panel is taller than the
-  // viewport on mobile.
+  // Restarted by every activity handler below; fires only after a quiet spell.
+  const bumpIdleTimer = () => {
+    if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+    idleTimerRef.current = setTimeout(() => setOpen(false), IDLE_CLOSE_MS);
+  };
+
+  // Arm the timer when the panel opens, and stop it when it closes or unmounts.
+  useEffect(() => {
+    if (!open) {
+      if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+      return undefined;
+    }
+    bumpIdleTimer();
+    return () => {
+      if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+    };
+  }, [open]);
+
+  // Dismiss the dropdown on an outside tap or Escape. `pointerdown` (not click)
+  // so a tap that starts outside closes it before the tapped control fires.
   useEffect(() => {
     if (!open) return undefined;
 
-    const next = rootRef.current?.nextElementSibling;
-    if (!next) return undefined;
+    const onPointerDown = (e) => {
+      const inside =
+        chipsRef.current?.contains(e.target) ||
+        panelRef.current?.contains(e.target);
+      if (!inside) setOpen(false);
+    };
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") setOpen(false);
+    };
 
-    const scroller = findScroller(rootRef.current);
-
-    // Arm only after `next` has been out of view at least once. A panel shorter
-    // than the viewport leaves `next` already visible at open time, and firing
-    // then would collapse the panel the instant it was opened.
-    let armed = false;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting) {
-          armed = true;
-        } else if (armed) {
-          anchorNextRef.current = true;
-          setOpen(false);
-        }
-      },
-      {
-        root: scroller || null,
-        // Clip the intersection rect to the pane's top half, so `next` only
-        // counts as visible once it has risen past the vertical centre. This
-        // also clears the fixed BottomCTABar, which floats over the pane's
-        // lower strip — an element down there is scrolled-into-view but hidden
-        // behind the cart bar, and would collapse the panel too early.
-        rootMargin: "0px 0px -50% 0px",
-        threshold: 0,
-      },
-    );
-
-    observer.observe(next);
-    return () => observer.disconnect();
+    // Capture phase: a click landing on a control that stops propagation (the
+    // day cards and drawers below do) would never reach a bubbling listener.
+    document.addEventListener("pointerdown", onPointerDown, true);
+    document.addEventListener("keydown", onKeyDown, true);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown, true);
+      document.removeEventListener("keydown", onKeyDown, true);
+    };
   }, [open]);
 
-  // Collapsing removes the panel's height from above the viewport, so the
-  // content below jumps up and the start-city marker overshoots off-screen.
-  // Pull it back to the top of the pane, clear of the sticky trip card.
-  // Runs before paint so the correction lands in the same frame as the collapse.
-  useIsomorphicLayoutEffect(() => {
-    if (open || !anchorNextRef.current) return;
-    anchorNextRef.current = false;
+  const toggle = () => setOpen((v) => !v);
 
-    const next = rootRef.current?.nextElementSibling;
-    if (!next) return;
-
-    const scroller = findScroller(rootRef.current);
-    const previousMargin = next.style.scrollMarginTop;
-    next.style.scrollMarginTop = `${stickyHeaderHeight(scroller)}px`;
-    // "auto", not "smooth": a smooth scroll would fight the momentum of the
-    // flick that triggered the collapse.
-    next.scrollIntoView({ block: "start", behavior: "auto" });
-    next.style.scrollMarginTop = previousMargin;
-  }, [open]);
-
-  const toggle = () => {
-    anchorNextRef.current = false;
-    setOpen((v) => !v);
+  // Hover-to-open, but only where hovering is real. A touch tap synthesises a
+  // mouseenter before its click, which would open then immediately toggle shut.
+  const onMouseEnter = () => {
+    if (window.matchMedia?.("(hover: hover)").matches) setOpen(true);
   };
 
   return (
-    <div ref={rootRef} className="max-ph:-mt-5">
-      <div className="flex items-center flex-wrap gap-[8px] max-ph:gap-[6px]">
+    <div
+      ref={rootRef}
+      className="relative mt-[11px] max-ph:mt-[9px]"
+      onPointerMove={open ? bumpIdleTimer : undefined}
+      onPointerDown={open ? bumpIdleTimer : undefined}
+      onWheel={open ? bumpIdleTimer : undefined}
+      onTouchMove={open ? bumpIdleTimer : undefined}
+      onKeyDown={open ? bumpIdleTimer : undefined}
+    >
+      {/* `w-fit`: the row is the hover target, so it must hug the two chips —
+          a full-width row would open the panel from the empty space beside them. */}
+      <div
+        ref={chipsRef}
+        onMouseEnter={onMouseEnter}
+        className="w-fit flex items-center flex-wrap gap-[8px] max-ph:gap-[6px]"
+      >
         <button
           type="button"
           onClick={toggle}
@@ -268,7 +243,15 @@ const ItineraryLegend = () => {
       </div>
 
       {open && (
-        <div className="mt-[14px] rounded-[12px] bg-white border-[1px] border-[#ECECEC] px-[15px] max-ph:px-[13px] py-3 max-ph:py-[11px] flex flex-col gap-2.5">
+        // Taller than the viewport on mobile, so it scrolls within itself
+        // rather than overflowing the card it hangs off. `no-scrollbar` keeps
+        // that scroll invisible — the list is short enough to be obviously
+        // scrollable from its clipped last row.
+        <div
+          ref={panelRef}
+          onScroll={bumpIdleTimer}
+          className="no-scrollbar absolute left-0 right-0 top-full mt-[10px] z-40 max-h-[60vh] overflow-y-auto overscroll-contain rounded-[12px] bg-white border-[1px] border-[#ECECEC] shadow-[0_10px_30px_rgba(11,18,32,0.14)] px-[15px] max-ph:px-[13px] py-3 max-ph:py-[11px] flex flex-col gap-2.5"
+        >
           {/* Sits above the chip list — it explains the Kaira Protected badge,
               which is a trip-level guarantee, not one of the day-card labels. */}
           <div className="flex items-start gap-[10px] max-ph:gap-[9px] pb-[11px] border-b border-[#ECECEC]">
