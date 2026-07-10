@@ -272,7 +272,10 @@ const HeroV2 = ({
               </div>
             </div>
 
-            <Link href={intakeHref} className={heroStyles.kairaCta}>
+            <Link
+              href={intakeHref}
+              className={`${heroStyles.kairaCta} !hidden max-ph:!flex`}
+            >
               Start planning
               <svg
                 viewBox="0 0 24 24"
