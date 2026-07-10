@@ -2205,15 +2205,18 @@ useEffect(() => {
               </span>
               <div className="flex-1 min-w-0">
                 <div className="text-[13px] max-ph:text-[12px] font-[600] text-[#5c4405]">
-                  No transfer from {origin_city_name} to {destination_city_name}
+                  No transfer added from {origin_city_name} to{" "}
+                  {destination_city_name}
                 </div>
               </div>
+              {/* One text node, not a flex row: a flex container underlines
+                  each child separately, leaving a gap in the rule. */}
               <button
                 type="button"
                 onClick={handleAddTransfer}
-                className="shrink-0 text-[12.5px] max-ph:text-[11.5px] font-[600] text-[#B67B10] whitespace-nowrap hover:underline"
+                className="shrink-0 text-[12.5px] max-ph:text-[11.5px] font-[600] text-[#1f6feb] whitespace-nowrap hover:underline"
               >
-                Add Transfer
+                + Add Transfer
               </button>
             </div>
           ) :
