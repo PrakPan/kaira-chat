@@ -57,6 +57,11 @@ const OtpCard: React.FC<OtpCardProps> = ({
   const [email, setEmail] = useState("");
   const [extension, setExtension] = useState("India");
   const [openCountryCodeOption, setOpenCountryCodeOption] = useState(false);
+  // Resend cooldown — starts at 30s each time an OTP is sent (mirrors
+  // BotLoginModal). `otpResent` is toggled on every resend to re-arm the timer
+  // effect even though `otpSent` stays true across resends.
+  const [counter, setCounter] = useState(30);
+  const [otpResent, setOtpResent] = useState(false);
   // The phone-field row we anchor the country dropdown to. The dropdown is
   // portaled to <body> so the chat's `overflow` scroll area can't clip it, so
   // we measure the row and position the (fixed) dropdown right below it — same
@@ -86,6 +91,27 @@ const OtpCard: React.FC<OtpCardProps> = ({
   useEffect(() => {
     if (otpFail) submittedCodeRef.current = null;
   }, [otpFail]);
+
+  // Resend cooldown: (re)start the 30s countdown whenever an OTP is sent or
+  // resent. Re-armed by `otpResent` since `otpSent` alone doesn't change on a
+  // resend. (Mirrors BotLoginModal's resend timer.)
+  useEffect(() => {
+    if (!otpSent) return;
+    setCounter(30);
+    const timer = setInterval(() => {
+      setCounter((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [otpSent, otpResent]);
+
+  const minutes = String(Math.floor(counter / 60)).padStart(2, "0");
+  const seconds = String(counter % 60).padStart(2, "0");
 
   // Selected-country derived values. Fall back to India / +91 until the list
   // loads so the card is usable immediately.
@@ -148,6 +174,23 @@ const OtpCard: React.FC<OtpCardProps> = ({
 
   const sendOtp = () => {
     if (!phoneValid) return;
+    dispatch(authaction.authStartLoading() as any);
+    if (recaptchaRef.current) {
+      recaptchaRef.current.reset();
+      recaptchaRef.current.execute();
+    }
+  };
+
+  // Resend the code once the cooldown has elapsed. Reuses the same reCAPTCHA →
+  // getotp path as the initial send (`onRecaptchaChange` re-dispatches getotp
+  // for the same number). Clears the entered code + dedup guard so the fresh
+  // code verifies cleanly, and re-arms the countdown. (Mirrors BotLoginModal.)
+  const resendOtp = () => {
+    if (loading || counter > 0) return;
+    setOtp("");
+    submittedCodeRef.current = null;
+    setOtpResent((p) => !p);
+    dispatch(authaction.authResetOtpFail() as any);
     dispatch(authaction.authStartLoading() as any);
     if (recaptchaRef.current) {
       recaptchaRef.current.reset();
@@ -491,6 +534,32 @@ const OtpCard: React.FC<OtpCardProps> = ({
             >
               Change
             </button>
+          </div>
+          <div className="text-[11.5px] text-[#8a93a6] text-center mt-[6px]">
+            {counter > 0 ? (
+              <>
+                Didn&apos;t get it?{" "}
+                <b className="text-[#445069]">
+                  Resend in {minutes}:{seconds}
+                </b>
+              </>
+            ) : (
+              <>
+                Didn&apos;t get it?{" "}
+                <button
+                  type="button"
+                  onClick={resendOtp}
+                  disabled={loading}
+                  className="font-bold underline"
+                  style={{
+                    cursor: loading ? "not-allowed" : "pointer",
+                    color: loading ? "#b8becc" : "#3A85FC",
+                  }}
+                >
+                  {loading ? "Sending…" : "Resend OTP"}
+                </button>
+              </>
+            )}
           </div>
         </>
       )}

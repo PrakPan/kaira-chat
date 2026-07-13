@@ -257,7 +257,7 @@ const HeroV2 = ({
                     type="button"
                     onClick={() => setShowPrompts((v) => !v)}
                     aria-expanded={showPrompts}
-                    className="inline-flex items-center gap-2 rounded-xl border border-[#E7D4F7] bg-[#F7ECFF] px-3 py-1 text-[13px] font-semibold text-[#922ADC] no-underline transition-all duration-200 hover:-translate-y-0.5 hover:border-[#922ADC]"
+                    className="inline-flex items-center gap-2 rounded-xl border border-[#E7D4F7] bg-[#F7ECFF] px-3 py-1 text-[13px] font-semibold text-[#922ADC] no-underline transition-all duration-200 hover:-translate-y-0.5 hover:border-[#922ADC] shadow-none"
                   >
                     <span aria-hidden>✦</span>
                     <span>Discover trip ideas for {destinationLabel || "you"}</span>
