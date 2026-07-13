@@ -182,7 +182,8 @@ const Index = (props) => {
         meta={
           <>
             <span>
-              <span className="star">★</span> <b>4.9</b> Google · 1,200+ reviews
+              <span className="star">★</span> <b>4.9</b> 
+              {/* Google · 1,200+ reviews */}
             </span>
             {/* <span>·</span> */}
             {/* <span>
