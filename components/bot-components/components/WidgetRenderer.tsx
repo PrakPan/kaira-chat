@@ -2688,6 +2688,64 @@ function ButtonNode({
     ? { opacity: 0.55, cursor: "not-allowed" as const, filter: "grayscale(0.15)" }
     : {};
 
+  // ── Paired itinerary CTAs — "View full itinerary" + "Confirm Itinerary
+  // and Get Final Price!" arrive as two separate button-only widgets.
+  // MessageBubble flows consecutive button-only widgets inline, so these two
+  // sit side by side on one line. Render them as a matched pair — the confirm
+  // is the primary (yellow fill), view is the secondary (outline) — as
+  // compact pills that stay tappable and wrap cleanly on mobile. ──
+  if (actionType === "itinerary.view" || actionType === "itinerary.lock") {
+    const isPrimary = actionType === "itinerary.lock";
+    // Backend labels are long ("Confirm Itinerary and Get Final Price!") and
+    // overflow when the two CTAs share a line. Show a concise label so the
+    // pair stays compact; the action is unchanged.
+    const ctaLabel = isPrimary ? "Confirm & Get Price" : "View itinerary";
+    return (
+      <button
+        onClick={handleClick}
+        disabled={disabled}
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 7,
+          marginLeft: ctaLabel === "View itinerary"  && isDesktop? "2rem" : "10px",
+          padding: "11px 18px",
+          borderRadius: 9999,
+          border: isPrimary ? "1.5px solid #f7e700" : "1.5px solid #07213a",
+          background: isPrimary ? "#f7e700" : "#ffffff",
+          color: isPrimary ? "#111827" : "#07213a",
+          fontSize: 13.5,
+          fontWeight: 600,
+          fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+          lineHeight: 1.15,
+          cursor: "pointer",
+          outline: "none",
+          whiteSpace: "nowrap",
+          boxSizing: "border-box",
+          boxShadow: isPrimary ? "0 2px 8px rgba(247,231,0,0.35)" : "none",
+          transition: "transform 0.12s ease, box-shadow 0.15s ease",
+          ...disabledStyle,
+        }}
+        onMouseEnter={(e) => {
+          (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-1px)";
+        }}
+        onMouseLeave={(e) => {
+          (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)";
+        }}
+      >
+        {ctaLabel}
+        {isPrimary && (
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12" />
+            <polyline points="12 5 19 12 12 19" />
+          </svg>
+        )}
+      </button>
+    );
+  }
+
   // ── ··· reorder handle — hidden, space reclaimed ──
   if (iconStart === "dots-horizontal") {
     return null;
@@ -5355,6 +5413,33 @@ function CardNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetRende
   const padding = customPadding
     ? customPadding * 4
     : size === "sm" ? 12 : size === "lg" ? 20 : 16;
+
+  // Pure CTA cards (a Card whose only children are Buttons — "View full
+  // itinerary", "Confirm Itinerary…", "Confirm This Route", …) shouldn't be
+  // wrapped in a full-width, padded block: that stretches the card to the
+  // chat width and inflates the spacing between buttons. Render them tight —
+  // shrink-to-fit around the button(s) — so MessageBubble can flow two
+  // consecutive CTA cards onto a single line, and multiple buttons inside one
+  // card sit in a neat wrapping row.
+  const onlyButtons =
+    children.length > 0 && children.every((c) => c?.type === "Button");
+  if (onlyButtons) {
+    return (
+      <div
+        style={{
+          display: "inline-flex",
+          flexWrap: "wrap",
+          alignItems: "center",
+          gap: 10,
+          boxSizing: "border-box",
+        }}
+      >
+        {children.map((child, i) => (
+          <NodeRenderer key={i} node={child} onAction={onAction} />
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div style={{
