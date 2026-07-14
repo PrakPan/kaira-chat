@@ -826,11 +826,16 @@ startEmptyIntake = false,
   // in place of the real ones until `load_quick_replies` lands.
   const [quickReplyShimmer, setQuickReplyShimmer] = useState(false);
   const [quickReplyLoading, setQuickReplyLoading] = useState(false);
-  // Mirror the shimmer flag in a ref so the stable sendMessage wrapper can tell,
-  // at call time, whether a send needs to interrupt the quick-reply tail of an
-  // otherwise-finished stream.
-  const quickReplyShimmerRef = useRef(false);
-  quickReplyShimmerRef.current = quickReplyShimmer;
+  // Mirror the full quick-reply phase — the shimmer skeleton *and* the loaded
+  // chips — in a ref so the stable sendMessage wrapper can tell, at call time,
+  // whether a send needs to interrupt the quick-reply tail of an otherwise-
+  // finished stream. The answer text is already rendered throughout this window
+  // (only the quick replies keep the SSE open), so a new send must abort that
+  // tail rather than be dropped by the hook's in-flight guard. Covering the
+  // loaded-chips case too fixes sends that were silently dropped when the user
+  // typed a fresh query after the chips had already arrived.
+  const inQuickReplyPhaseRef = useRef(false);
+  inQuickReplyPhaseRef.current = quickReplyShimmer || quickReplies.length > 0;
   // Guards the in-chat intake form so the `form_fields` effect injects the card
   // only once per session even if the effect re-emits across stream chunks.
   const intakeFormInjectedRef = useRef(false);
@@ -1849,9 +1854,22 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
 
   // Wrap sendWidgetAction so we can replay the same action after a post-login
   // retry (e.g. inject.context that triggered prompt_login while logged out).
+  //
+  // A server-bound widget CTA (e.g. "Confirm & Get Price") starts a fresh
+  // streamed response just like a text send, so it must clear the previous
+  // turn's quick replies up front — same as sendMessage. Otherwise the
+  // lingering chips keep `inQuickReplyPhase` true, which keeps
+  // `isStreamingResponse` false and leaves the composer unlocked ("Ask me
+  // anything" + Send) while the widget action is actively streaming, letting
+  // the user fire a message into an in-flight turn. Clearing them here means
+  // the composer correctly shows "Kaira is working…" + Stop for the whole
+  // widget-triggered stream, and only unlocks again once the new turn's own
+  // quick-reply tail arrives.
   const sendWidgetAction = useCallback(
     (type: string, payload: Record<string, unknown>) => {
       lastSentActionRef.current = { kind: "widget", type, payload };
+      setQuickReplies([]);
+      setQuickReplyShimmer(false);
       return rawSendWidgetAction(type, payload);
     },
     [rawSendWidgetAction],
@@ -2534,11 +2552,13 @@ const sendMessage = useCallback(
         [text].filter(Boolean),
       );
     }
-    // If only quick replies are still loading, the answer is already done —
-    // interrupt that tail so the new message isn't dropped by the hook's
-    // in-flight guard.
+    // If we're anywhere in the quick-reply tail — shimmer loading OR chips
+    // already shown — the answer itself is done and only the quick replies keep
+    // the SSE open. Interrupt that tail so the new message aborts it and starts
+    // fresh instead of being dropped by the hook's `isStreaming && !interrupt`
+    // guard (which previously swallowed sends made after the chips had loaded).
     rawSendMessage(text, attachmentIds, attachmentMeta, {
-      interrupt: quickReplyShimmerRef.current,
+      interrupt: inQuickReplyPhaseRef.current,
       formSubmitted: opts?.formSubmitted,
     });
   },
