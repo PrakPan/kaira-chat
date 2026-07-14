@@ -6,6 +6,7 @@ import { RECAPTCHA_SITE_KEY } from "../../../../services/constants";
 import * as authaction from "../../../../store/actions/auth";
 import * as otpaction from "../../../../store/actions/getOtp";
 import { getCountryCodes } from "../../../../store/actions/countryCodes";
+import { countryKeyFromLocation } from "../../../../services/userLocationBootstrap";
 import { useAnalytics } from "../../../../hooks/useAnalytics";
 import CountryCodeDropdown from "../../../userauth/CountryDropdown";
 
@@ -50,12 +51,17 @@ const OtpCard: React.FC<OtpCardProps> = ({
   const newUser = useSelector((s: any) => s.auth?.newUser);
   const token = useSelector((s: any) => s.auth?.token);
   const CountryCodes = useSelector((s: any) => s.CountryCodes);
+  // Visitor's IP-resolved location (bootstrapped once in _app). Used to preselect
+  // the country code so international users don't have to change it from India.
+  const userLocation = useSelector((s: any) => s.UserLocation?.location);
 
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [extension, setExtension] = useState("India");
+  // Once the user picks a country themselves, stop auto-overriding it from IP.
+  const countryTouchedRef = useRef(false);
   const [openCountryCodeOption, setOpenCountryCodeOption] = useState(false);
   // Resend cooldown — starts at 30s each time an OTP is sent (mirrors
   // BotLoginModal). `otpResent` is toggled on every resend to re-arm the timer
@@ -85,6 +91,16 @@ const OtpCard: React.FC<OtpCardProps> = ({
     dispatch(authaction.authResetLogin() as any);
     dispatch(getCountryCodes() as any);
   }, [dispatch]);
+
+  // Preselect the country code from the visitor's IP location (resolved into
+  // redux by _app's bootstrap). Only applies until the user picks a country
+  // themselves, and only when the location maps to a known dial code — otherwise
+  // the default India stays.
+  useEffect(() => {
+    if (countryTouchedRef.current) return;
+    const key = countryKeyFromLocation(userLocation, CountryCodes);
+    if (key) setExtension(key);
+  }, [userLocation, CountryCodes]);
 
   // A failed verify re-enables a fresh submit of the same digits (e.g. after a
   // network blip) by clearing the dedup guard.
@@ -161,6 +177,7 @@ const OtpCard: React.FC<OtpCardProps> = ({
   // Switching country only changes the prefix — the input keeps just the local
   // digits, so there's nothing to re-parse.
   const handleExtensionChangeOption = (country: string) => {
+    countryTouchedRef.current = true;
     setExtension(country);
   };
 

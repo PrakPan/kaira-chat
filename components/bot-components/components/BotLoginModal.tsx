@@ -18,6 +18,7 @@ import { RxCross2 } from "react-icons/rx";
 import * as authaction from "../../../store/actions/auth";
 import * as otpaction from "../../../store/actions/getOtp";
 import { getCountryCodes } from "../../../store/actions/countryCodes";
+import { countryKeyFromLocation } from "../../../services/userLocationBootstrap";
 import { RECAPTCHA_SITE_KEY } from "../../../services/constants";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 import useMediaQuery from "../../media";
@@ -37,6 +38,7 @@ type BotLoginModalProps = {
 
   // Redux state
   CountryCodes?: any;
+  userLocation?: any;
   token?: string | null;
   phone?: string | null;
   name?: string | null;
@@ -107,6 +109,8 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
   const [otp, setOtp] = useState("");
   const [whatsapp, setWhatsapp] = useState(true);
   const [extension, setExtension] = useState("India");
+  // Once the user picks a country themselves, stop auto-overriding it from IP.
+  const countryTouchedRef = useRef(false);
   const [openCountryCodeOption, setOpenCountryCodeOption] = useState(false);
   const [otpResent, setOtpResent] = useState(false);
   const [counter, setCounter] = useState(30);
@@ -217,6 +221,18 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
     }
   }, [props.show]);
 
+  // Preselect the country code from the visitor's IP location (resolved into
+  // redux by _app's bootstrap) while the modal is open. Only applies until the
+  // user picks a country themselves, and only when the location maps to a known
+  // dial code — otherwise the default India stays. Safe to set `extension`
+  // directly (not via handleExtensionChangeOption) since that only mutates the
+  // phone string, which is still empty on the phone-entry step.
+  useEffect(() => {
+    if (!props.show || countryTouchedRef.current) return;
+    const key = countryKeyFromLocation(props.userLocation, props.CountryCodes);
+    if (key) setExtension(key);
+  }, [props.show, props.userLocation, props.CountryCodes]);
+
   // Auto submit OTP when user enters all 6 digits
   useEffect(() => {
     if (otp.length === 4) {
@@ -227,26 +243,18 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
   const minutes = String(Math.floor(counter / 60)).padStart(2, "0");
   const seconds = String(counter % 60).padStart(2, "0");
 
-  const separateCountryCode = (phoneNumber: string) => {
-    const pattern = /^(\+\d{1,3})(\d{10})$/;
-    const match = phoneNumber.match(pattern);
-    if (match) return { countryCode: match[1], number: match[2] };
-    return null;
-  };
+  // The input only ever holds the local digits; the dial code is prepended only
+  // when building the number we send to the backend (mirrors OtpCard). Falls
+  // back to +91 until the list is available.
+  const dialCode =
+    (props.CountryCodes && props.CountryCodes[extension]?.label) || "+91";
+  const fullMobile = `${dialCode}${phone.trim()}`;
 
+  // Switching country only changes the prefix — the input keeps just the local
+  // digits, so there's nothing to re-parse into it.
   const handleExtensionChangeOption = (country: string) => {
+    countryTouchedRef.current = true;
     setExtension(country);
-    if (!props.CountryCodes || !props.CountryCodes[country]) return;
-    if (phone.length <= 10) {
-      setPhone(props.CountryCodes[country].label + phone);
-      return;
-    }
-    const mobile = separateCountryCode(phone);
-    if (mobile) {
-      setPhone(props.CountryCodes[country].label + mobile.number);
-    } else {
-      setPhone(props.CountryCodes[country].label);
-    }
   };
 
   const handleMobileBlur = () => {
@@ -287,7 +295,7 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
         return;
       }
       props.onAuth(
-        phone,
+        fullMobile,
         otp,
         userDetails.userName,
         userDetails.email,
@@ -298,7 +306,7 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
       );
     } else if (props.otpSent && !props.name) {
       props.onAuth(
-        phone,
+        fullMobile,
         otp,
         userDetails.userName,
         null,
@@ -309,7 +317,7 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
       );
     } else if (props.otpSent && !props.email) {
       props.onAuth(
-        phone,
+        fullMobile,
         otp,
         null,
         userDetails.email,
@@ -320,7 +328,7 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
       );
     } else {
       props.onAuth(
-        phone,
+        fullMobile,
         otp,
         null,
         null,
@@ -333,23 +341,13 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
   };
 
   const otpHandler = (token: string) => {
-    const phoneNumber = phone.trim();
-    let mobile = phoneNumber;
-    if (phoneNumber.length <= 10) {
-      mobile = props.CountryCodes
-        ? props.CountryCodes[extension].label + phoneNumber
-        : `+91${phoneNumber}`;
-      setPhone(mobile);
-    } else {
-      setPhone(phoneNumber);
-    }
-    const data = { token, mobile, whatsapp };
+    const data = { token, mobile: fullMobile, whatsapp };
     props.onOtp && props.onOtp(data);
     if (recaptchaRef.current) recaptchaRef.current.reset();
   };
 
   const resetOtpHandler = (token: string) => {
-    const data = { token, mobile: phone, whatsapp };
+    const data = { token, mobile: fullMobile, whatsapp };
     props.onOtp && props.onOtp(data);
     setOtpResent((p) => !p);
     setCounter(30);
@@ -407,7 +405,7 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
   const _updatePhoneHandler = () => {
     props.onUpdate &&
       props.onUpdate(
-        { phone, whatsapp_opt_in: whatsapp },
+        { phone: fullMobile, whatsapp_opt_in: whatsapp },
         trackUserAccountUpdate,
       );
   };
@@ -890,7 +888,7 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
         <span>
           OTP sent to{" "}
           <strong style={{ color: COLORS.navy }}>
-            {phone}
+            {fullMobile}
           </strong>
         </span>
         <span
@@ -1564,6 +1562,7 @@ const mapStateToProps = (state: any) => ({
   email: state.auth.email,
   emailfailmessage: state.auth.emailfailmessage,
   CountryCodes: state.CountryCodes,
+  userLocation: state.UserLocation?.location,
 });
 
 const mapDispatchToProps = (dispatch: any) => ({

@@ -831,7 +831,12 @@ useEffect(() => {
 
   return (
     <>
-     <div className="flex sm:flex-row flex-col border-b border-[#ECECEC] last:border-b-0 w-full justify-center">
+     <div
+        // Day 1 (global index 0) is the scroll/flash target for the "View
+        // itinerary" CTA — see BotApp's handleViewItinerary.
+        id={props.index === 0 ? "bot-itinerary-day-1" : undefined}
+        data-day-index={props.index}
+        className="flex sm:flex-row flex-col border-b border-[#ECECEC] last:border-b-0 w-full justify-center">
 
         {/* COL 1: Day number + date — matches HTML .day-num-block */}
         <div className="sm:w-fit w-full shrink-0 pl-4 pr-2 sm:pr-0 sm:pt-6 pt-4 sm:pb-6 pb-2 flex sm:flex-col flex-row sm:items-start items-baseline gap-3 sm:min-w-[64px]">

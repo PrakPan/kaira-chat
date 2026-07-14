@@ -4159,6 +4159,15 @@ const handleShowLogin = useCallback(() => {
                     return;
                   }
 
+                  // ── View itinerary ────────────────────────────────────
+                  // "View itinerary" widget CTA reveals the itinerary panel
+                  // and scrolls/flashes Day 1 (mobile also switches to the
+                  // itinerary tab). Handled locally — no server round-trip.
+                  if (action.type === "itinerary.view") {
+                    onViewItinerary?.();
+                    return;
+                  }
+
                   sendWidgetAction(action.type, payload);
                 }}
               />

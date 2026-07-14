@@ -973,3 +973,16 @@ a.termsnavunderlinelink {
     rgba(255, 255, 255, 0) 65%
   );
 }
+/* "View itinerary" CTA → Day 1 flash highlight.
+   Applied transiently (~2.5s) by BotApp's handleViewItinerary after it scrolls
+   the itinerary panel to Day 1, so the user sees where their itinerary begins. */
+@keyframes ttw-day-flash {
+  0%   { background-color: rgba(255, 244, 232, 0);    box-shadow: 0 0 0 0 rgba(255, 244, 232, 0); }
+  15%  { background-color: rgba(255, 244, 232, 0.95); box-shadow: 0 0 0 3px rgba(255, 244, 232, 0.95); }
+  100% { background-color: rgba(255, 244, 232, 0);    box-shadow: 0 0 0 0 rgba(255, 244, 232, 0); }
+}
+.ttw-day-flash {
+  animation: ttw-day-flash 3s ease-out both;
+  border-radius: 12px;
+  scroll-margin-top: 16px;
+}
