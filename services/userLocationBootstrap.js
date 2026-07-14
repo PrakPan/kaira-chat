@@ -23,6 +23,66 @@ export const DELHI_LOCATION = {
   long: 77.209,
 };
 
+// A few country names the geo API returns (Google-geocoding style) diverge from
+// the dial-code list's keys (mledoze `name.common`). Map the known cases so they
+// still resolve. Keyed by lowercased geo name → exact CountryCodes key.
+const COUNTRY_NAME_ALIASES = {
+  "turkey": "Türkiye",
+  "côte d'ivoire": "Ivory Coast",
+  "cote d'ivoire": "Ivory Coast",
+  "myanmar (burma)": "Myanmar",
+  "burma": "Myanmar",
+  "swaziland": "Eswatini",
+  "cabo verde": "Cape Verde",
+  "east timor": "Timor-Leste",
+  "palestinian territories": "Palestine",
+  "vatican city": "Vatican City",
+  "holy see": "Vatican City",
+  "united states of america": "United States",
+  "the bahamas": "Bahamas",
+  "the gambia": "Gambia",
+  "czech republic": "Czechia",
+  "south korea": "South Korea",
+  "north korea": "North Korea",
+};
+
+// Map a resolved user-location object (from redux `UserLocation.location`, e.g.
+// { country: "United Arab Emirates", currency: "AED", ... }) to a key in the
+// CountryCodes map ({ [countryName]: { value, label, img } }). Tries, in order:
+// exact country-name match, case-insensitive match, a small alias table for
+// Google↔list naming divergences, and finally an ISO2 code (if the location
+// carries one) via the flag URL. Returns null when nothing matches so callers
+// can keep their default (India).
+export function countryKeyFromLocation(loc, CountryCodes) {
+  if (!loc || !CountryCodes) return null;
+
+  const country = String(loc.country || "").trim();
+  if (country) {
+    // 1) Exact match against the dial-code list's keys.
+    if (CountryCodes[country]) return country;
+    // 2) Case-insensitive match.
+    const lower = country.toLowerCase();
+    for (const name of Object.keys(CountryCodes)) {
+      if (name.toLowerCase() === lower) return name;
+    }
+    // 3) Known alias (Google name → list name), verified to still exist.
+    const alias = COUNTRY_NAME_ALIASES[lower];
+    if (alias && CountryCodes[alias]) return alias;
+  }
+
+  // 4) ISO2 code (e.g. "US"), if present, → the lowercase code baked into the
+  //    flag URL. This geo API doesn't return one, but other callers might.
+  const cc = String(loc.country_code || "").toLowerCase();
+  if (cc) {
+    for (const name of Object.keys(CountryCodes)) {
+      const img = CountryCodes[name] && CountryCodes[name].img;
+      if (img && img.includes(`flagcdn.com/${cc}.svg`)) return name;
+    }
+  }
+
+  return null;
+}
+
 let inFlight = false;
 
 export async function bootstrapUserLocation(onResolved) {

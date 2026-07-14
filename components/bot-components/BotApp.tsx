@@ -2659,6 +2659,33 @@ export default function BotApp({
     return Array.from(byKey.values());
   }, [locations, endpointPins, botMode]);
 
+  // "View itinerary" widget CTA → reveal the itinerary panel (desktop swaps
+  // viewMode, mobile switches the bottom tab), then scroll to Day 1 and flash
+  // it so the user sees where their itinerary begins. The panel may need a tick
+  // to mount after the view switch, so we retry finding Day 1 briefly. Removing
+  // + re-adding the class (with a forced reflow) restarts the flash on repeat
+  // clicks.
+  const handleViewItinerary = React.useCallback(() => {
+    if (isMobile) mobileTabSwitchRef.current?.("itinerary");
+    else setViewMode("itinerary");
+
+    let attempts = 0;
+    const flashDay1 = () => {
+      const el = document.getElementById("bot-itinerary-day-1");
+      if (!el) {
+        if (attempts++ < 25) window.setTimeout(flashDay1, 120);
+        return;
+      }
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+      el.classList.remove("ttw-day-flash");
+      // Force reflow so the animation replays when Day 1 is already on screen.
+      void el.offsetWidth;
+      el.classList.add("ttw-day-flash");
+      window.setTimeout(() => el.classList.remove("ttw-day-flash"), 3100);
+    };
+    window.setTimeout(flashDay1, 120);
+  }, [isMobile]);
+
   const sharedChatKitProps = {
     onLocationReceived: handleLocationReceived,
     onNewQuery: handleNewQuery,
@@ -2692,7 +2719,7 @@ export default function BotApp({
     onTravellerStoryDismiss: () => setActiveTravellerStory(null),
     onLoginSuccess: attachUserToItinerary,
     loginMandatory: router.query.login === "false" ? false : undefined,
-    onViewItinerary: () => mobileTabSwitchRef.current?.("itinerary"),
+    onViewItinerary: handleViewItinerary,
     onIntakeFormStart: () => setIntakeActive(true),
     initialFiles,
     initialInputText,
