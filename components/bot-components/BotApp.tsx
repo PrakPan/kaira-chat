@@ -4146,7 +4146,7 @@ const ItineraryStepsLoader = ({
   const lastIdx = steps.length - 1;
 
   return (
-    <div data-bottom-cta-bar style={barStyle} className="z-20 fixed w-full md:w-[48%] bottom-0 flex-shrink-0 bg-[#F7E700] border-t border-slate-100 shadow-[0_-4px_16px_rgba(11,18,32,0.06)] px-4 pt-3.5 pb-4">
+    <div data-bottom-cta-bar style={barStyle} className="z-20 fixed w-full md:w-[48%] bottom-0 flex-shrink-0 bg-[#fffaf5] border-t border-slate-100 shadow-[0_-4px_16px_rgba(11,18,32,0.06)] px-4 pt-3.5 pb-4">
       <div>
         <div className="flex items-center gap-3">
           {/* Spinning ring with hourglass glyph — same chrome as the original loader */}
@@ -4220,7 +4220,7 @@ const ItineraryStepsLoader = ({
 
         {/* Indeterminate progress bar — same as the original loader */}
         <div className="mt-3 h-1.5 w-full bg-[#f4f3ec] rounded-full overflow-hidden">
-          <div className="ttw-steps-loader-bar h-full w-2/5 rounded-full bg-gradient-to-r from-[#f7e700] to-[#e8b800]" />
+          <div className="ttw-steps-loader-bar h-full w-2/5 rounded-full bg-[#f7e700]" />
         </div>
       </div>
     </div>

@@ -973,7 +973,12 @@ const ActivityDetails = (props) => {
             ) : null}
 
             {props?.removeDelete == false && !isDraft && (
-              <DrawerActionFooter zIndex={(props?.itineraryDrawer ? 1503 : 1501) + 1}>
+              <DrawerActionFooter
+                zIndex={
+                  (props?.drawerZIndex ??
+                    (props?.itineraryDrawer ? 1503 : 1501)) + 1
+                }
+              >
                 <button
                   className="ttw-btn-remove-pill"
                   onClick={handleDelete}

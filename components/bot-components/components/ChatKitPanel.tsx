@@ -421,167 +421,94 @@ const ChatPanelStyles = () => (
     padding: 8px 12px 10px;
   }
 }
-    /* ── Status notes card (mirrors .wait-card from the left panel) ── */
+    /* ── Itinerary progress card (chat) ─────────────────────────────────── */
     .sn-card {
-      background: #fff;
-      border: 1px solid #ececec;
-      border-radius: 22px;
-      padding: 22px 22px 20px;
       margin: 8px 0 14px;
-      position: relative;
-      overflow: hidden;
       animation: snIn 0.4s cubic-bezier(0.2,0.7,0.3,1);
+    }
+    /* The scroll container only carries 4px of side padding on mobile, and the
+       card — unlike a message bubble — has no avatar gutter to inset it, so it
+       would otherwise sit flush against the edge. */
+    @media (max-width: 768px) {
+      .sn-card { margin: 8px 8px 14px; }
     }
     @keyframes snIn {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    /* Border-scan animation only runs while tasks are still in flight. Once
-       polling ends the parent drops the .is-active modifier, killing the
-       sweep so a settled card looks calm. */
-    .sn-card.is-active::before {
-      content: '';
-      position: absolute;
-      top: 0; left: -100%;
-      width: 100%; height: 3px;
-      background: linear-gradient(90deg, transparent, #f7e700, transparent);
-      animation: snScan 2.4s ease-in-out infinite;
-    }
-    @keyframes snScan { 0% { left: -100%; } 100% { left: 100%; } }
-    .sn-stage {
-      display: inline-flex; align-items: center; gap: 7px;
-      padding: 5px 11px;
-      background: #0b1220; color: #f7e700;
-      border-radius: 999px;
-      font-size: 11px; font-weight: 700; letter-spacing: 0.04em;
-      margin-bottom: 14px;
-    }
-    .sn-stage .sn-pulse {
-      width: 6px; height: 6px; background: #f7e700; border-radius: 50%;
-      animation: kpStageDot 1.4s ease-in-out infinite;
-    }
     .sn-title {
-      font-size: 18px; font-weight: 800; color: #0b1220;
-      letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 14px;
+      font-size: 17px; font-weight: 700; color: #0f1a2e;
+      letter-spacing: -0.01em; line-height: 1.2; margin: 0 0 14px;
     }
-    .sn-list { list-style: none; display: flex; flex-direction: column; gap: 8px; padding: 0; margin: 0; }
-    .sn-item {
-      display: grid; grid-template-columns: 22px 1fr; gap: 10px;
-      align-items: flex-start;
-      padding: 10px 12px;
-      background: #fafaf5;
-      border: 1px solid #ececec;
-      border-radius: 12px;
-      font-size: 13px; line-height: 1.45;
-      color: #1a2436;
-      animation: snItemIn 0.35s ease-out;
-      transition: background 0.25s, border-color 0.25s, color 0.25s;
+    .sn-title em {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-style: italic; font-weight: 400; letter-spacing: 0.01em;
     }
-    /* Active (latest batch while polling) — peach surface, pulsing dot. */
-    .sn-item.sn-item-active {
-      background: #fff4e8;
-      border-color: #ffd4b8;
-      color: #0b1220;
+    .sn-steps { list-style: none; display: flex; flex-direction: column; gap: 10px; padding: 0; margin: 0; }
+    .sn-row {
+      display: flex; align-items: center; gap: 13px;
+      padding: 15px 18px;
+      background: #FBF8EF;
+      border: 1px solid rgba(15,26,46,0.07);
+      border-radius: 16px 5px 16px 5px;
+      opacity: 0; transform: translateY(6px);
+      animation: snRowIn 0.5s cubic-bezier(0.3,0.7,0.3,1) forwards;
     }
-    /* Done (any earlier batch, or every batch once polling ends) — muted. */
-    .sn-item.sn-item-done {
-      background: #fff;
-      color: #445069;
-    }
-    @keyframes snItemIn {
-      from { opacity: 0; transform: translateX(-6px); }
-      to { opacity: 1; transform: translateX(0); }
-    }
-    .sn-item-dot {
-      width: 18px; height: 18px;
-      border-radius: 50%;
-      background: #1f8a5a; color: #fff;
+    @keyframes snRowIn { to { opacity: 1; transform: translateY(0); } }
+    .sn-ic {
+      flex: none; width: 22px; height: 22px; border-radius: 50%;
       display: grid; place-items: center;
-      flex-shrink: 0; margin-top: 1px;
     }
-    .sn-item-dot svg { width: 10px; height: 10px; }
-    /* Active dot — coral pulse instead of green check. */
-    .sn-item.sn-item-active .sn-item-dot {
-      background: transparent;
-      border: 2px solid #e85a4f;
+    .sn-ic-done { background: #0f1a2e; color: #f7e700; }
+    .sn-ic-done svg { display: block; width: 12px; height: 12px; }
+    /* Live step — ink ring with a yellow halo breathing outwards. */
+    .sn-ic-live {
+      box-shadow: inset 0 0 0 2px #0f1a2e, 0 0 0 0 rgba(247,231,0,0.85);
+      animation: snLivePulse 1.6s ease-in-out infinite;
     }
-    .sn-item.sn-item-active .sn-item-dot::after {
+    .sn-ic-live::after {
       content: '';
-      width: 6px; height: 6px;
-      background: #e85a4f;
-      border-radius: 50%;
-      animation: snPulse 1.2s ease-in-out infinite;
+      width: 7px; height: 7px; border-radius: 50%; background: #0f1a2e;
     }
-    @keyframes snPulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.45; transform: scale(0.6); }
+    @keyframes snLivePulse {
+      0%,100% { box-shadow: inset 0 0 0 2px #0f1a2e, 0 0 0 0 rgba(247,231,0,0.8); }
+      50% { box-shadow: inset 0 0 0 2px #0f1a2e, 0 0 0 7px rgba(247,231,0,0); }
     }
-    /* Pure mid-line divider between batches — no text. */
-    .sn-divider {
-      list-style: none;
-      height: 1px;
-      margin: 6px 4px;
-      background: linear-gradient(90deg, transparent, #ececec 18%, #ececec 82%, transparent);
+    .sn-txt { font-size: 14.5px; font-weight: 600; line-height: 1.3; color: #0f1a2e; }
+    .sn-row-done .sn-txt { color: rgba(15,26,46,0.55); }
+    /* Placeholder row — polling started but no step line has arrived yet. */
+    .sn-skel {
+      height: 10px; width: 60%; border-radius: 999px;
+      background: linear-gradient(90deg, rgba(15,26,46,0.08), rgba(15,26,46,0.16), rgba(15,26,46,0.08));
+      background-size: 200% 100%;
+      animation: snSkel 1.3s ease-in-out infinite;
     }
-    /* Standalone loader row — sits at the bottom of the active batch (or
-       on its own before the first batch arrives). No text per spec. */
-    .sn-loader-row {
-      display: flex; align-items: center; justify-content: center;
-      padding: 8px 12px;
+    @keyframes snSkel {
+      from { background-position: 200% 0; }
+      to { background-position: -200% 0; }
     }
-    .sn-spinner {
-      width: 16px; height: 16px;
-      border: 2px solid #ffd4b8;
-      border-top-color: #e85a4f;
-      border-radius: 50%;
-      animation: snSpin 0.9s linear infinite;
-      flex-shrink: 0;
+    @media (prefers-reduced-motion: reduce) {
+      .sn-row { animation: none; opacity: 1; transform: none; }
+      .sn-ic-live { animation: none; }
     }
-    @keyframes snSpin { to { transform: rotate(360deg); } }
-    /* Done footer — replaces the loader once notes returns empty. */
-    .sn-done-row {
-      display: flex; align-items: center; gap: 9px;
-      margin-top: 4px;
-      padding: 10px 12px;
-      background: #e0f2e9;
-      border: 1px solid #b6dec7;
-      border-radius: 12px;
-      font-size: 13px; font-weight: 700; color: #1f8a5a;
-      animation: snItemIn 0.3s ease-out;
-    }
-    .sn-done-icon {
-      width: 18px; height: 18px;
-      border-radius: 50%;
-      background: #1f8a5a; color: #fff;
-      display: grid; place-items: center;
-      flex-shrink: 0;
-    }
-    .sn-done-icon svg { width: 10px; height: 10px; }
   `}</style>
 );
 
 /**
  * StatusNotesCard
- * Renders the progress signals coming from the /status/ poll inside the chat,
- * styled like the left "wait-card" from the reference HTML.
+ * Renders the progress signals coming from the /status/ poll inside the chat
+ * as a stepped list: every step the server has already moved past shows an
+ * ink check, the newest one pulses, and the list stays pinned once the build
+ * settles.
  *
- * Sources merged:
- *   - `notes`: array of step lines (server batches several at once).
- *   - `displayText`: rolling status string (the same value the BottomCTA
- *     loader shows). Often the only thing that updates poll-to-poll.
- *
- * Behaviour:
- *   - A "batch" is a snapshot of `notes` containing N lines; consecutive
- *     batches get a horizontal "next update" divider between them.
- *   - `displayText` updates flow into the *current* batch (or a fresh
- *     leading batch if none exists yet) as additional step lines, so each
- *     new poll value appears immediately rather than being silently
- *     swallowed.
- *   - The loader stays visible until `notes` arrives empty (server signal
- *     that no more steps are coming) or `isPolling` flips off. Collected
- *     batches remain pinned after that so the user keeps the timeline.
+ * Steps come from `displayText` only — the rolling status string ("Crafting
+ * your day by day itinerary", …). The `notes` array is *not* rendered: its
+ * lines are server bookkeeping, and the BottomCTA loader in BotApp leaves them
+ * out for the same reason. It is still consumed as a signal — an empty `notes`
+ * snapshot means the server has no further steps coming, so the pulse stops.
  */
 interface StatusNotesCardProps {
+  /** Completion signal only — never rendered. See the note above. */
   notes: any[] | undefined;
   displayText?: string | null | undefined;
   isPolling: boolean;
@@ -589,11 +516,11 @@ interface StatusNotesCardProps {
   /** Identifier for the most recent user message. When this changes the
    *  card resets and disappears — the user has moved on to a new turn. */
   resetKey?: string | null;
-  /** Card heading. Defaults to the edit/update copy; creation passes a
-   *  build-specific heading. */
+  /** Card heading, split so the trailing word renders in the serif italic
+   *  accent the rest of the bot UI uses. Defaults to the edit/update copy;
+   *  creation passes build-specific copy. */
   title?: string;
-  /** Active-stage pill label shown while the loader is in flight. */
-  stageLabel?: string;
+  titleAccent?: string;
 }
 const StatusNotesCard: React.FC<StatusNotesCardProps> = ({
   notes,
@@ -601,37 +528,30 @@ const StatusNotesCard: React.FC<StatusNotesCardProps> = ({
   isPolling,
   cycleKey,
   resetKey,
-  title = "Kaira is working on your changes",
-  stageLabel = "Updating your itinerary",
+  title = "Kaira is working on your",
+  titleAccent = "changes",
 }) => {
-  type Batch = { id: number; items: string[] };
-  const [batches, setBatches] = useState<Batch[]>([]);
+  const [steps, setSteps] = useState<string[]>([]);
   const [loaderActive, setLoaderActive] = useState<boolean>(true);
   // Set when the user kicks off a new turn — suppresses the card until the
   // next polling cycle (or fresh data) revives it.
   const [dismissed, setDismissed] = useState<boolean>(false);
   const prevNotesKeyRef = useRef<string>("");
-  const prevDisplayRef = useRef<string>("");
-  // Tracks every line we've ever shown this cycle (notes + display_text),
-  // keyed by the line text. Prevents duplicates when notes already contains
-  // the same text that arrived via display_text on a prior poll.
+  // Every line shown this cycle, so a display_text value that repeats across
+  // polls doesn't add a duplicate row.
   const seenLinesRef = useRef<Set<string>>(new Set());
-  const batchIdRef = useRef(0);
   const cycleRef = useRef<string>(cycleKey);
-
 
   // New polling cycle → reset everything (and revive the card if it was
   // dismissed by a prior user turn).
   useEffect(() => {
     if (cycleRef.current === cycleKey) return;
     cycleRef.current = cycleKey;
-    setBatches([]);
+    setSteps([]);
     setLoaderActive(true);
     setDismissed(false);
     prevNotesKeyRef.current = "";
-    prevDisplayRef.current = "";
     seenLinesRef.current = new Set();
-    batchIdRef.current = 0;
   }, [cycleKey]);
 
   // New user message → dismiss the card. The user has moved on, so any
@@ -641,67 +561,38 @@ const StatusNotesCard: React.FC<StatusNotesCardProps> = ({
   useEffect(() => {
     if (prevResetKeyRef.current === resetKey) return;
     prevResetKeyRef.current = resetKey;
-    setBatches([]);
+    setSteps([]);
     setLoaderActive(false);
     setDismissed(true);
     prevNotesKeyRef.current = "";
-    prevDisplayRef.current = "";
     seenLinesRef.current = new Set();
-    batchIdRef.current = 0;
   }, [resetKey]);
 
-  // Track new note snapshots (server may push 1+ lines at once).
+  // An empty `notes` snapshot is the server saying "no more steps" — stop the
+  // pulse and freeze the list. The lines themselves are never rendered.
   useEffect(() => {
-    const arr = Array.isArray(notes) ? notes : [];
-    const items = arr
-      .map((n) =>
-        typeof n === "string"
-          ? n
-          : (n?.text ?? n?.message ?? n?.note ?? n?.title ?? JSON.stringify(n)),
-      )
-      .map((s) => (typeof s === "string" ? s.trim() : ""))
-      .filter(Boolean);
-    const key = items.join("||");
+    const count = Array.isArray(notes) ? notes.length : 0;
+    const key = String(count);
     if (key === prevNotesKeyRef.current) return;
     prevNotesKeyRef.current = key;
-    if (items.length === 0) {
-      // Empty notes from server — stop loader, freeze the card.
+    if (count === 0) {
       setLoaderActive(false);
       return;
     }
-    const fresh = items.filter((it) => !seenLinesRef.current.has(it));
-    if (fresh.length === 0) return;
-    fresh.forEach((it) => seenLinesRef.current.add(it));
-    batchIdRef.current += 1;
-    setBatches((prev) => [...prev, { id: batchIdRef.current, items: fresh }]);
     setLoaderActive(true);
   }, [notes]);
 
-  // Track display_text updates. Each new non-empty value is appended to the
-  // current batch (or seeds the first batch). Same de-dup as notes so we
-  // don't echo a line that's already in the list.
+  // Each new display_text value becomes the next step row; the one before it
+  // flips to done.
   useEffect(() => {
     const txt = typeof displayText === "string" ? displayText.trim() : "";
-    if (!txt) return;
-    if (txt === prevDisplayRef.current) return;
-    prevDisplayRef.current = txt;
-    if (seenLinesRef.current.has(txt)) return;
+    if (!txt || seenLinesRef.current.has(txt)) return;
     seenLinesRef.current.add(txt);
-    setBatches((prev) => {
-      if (prev.length === 0) {
-        batchIdRef.current += 1;
-        return [{ id: batchIdRef.current, items: [txt] }];
-      }
-      // Append into the most recent batch.
-      const next = prev.slice();
-      const last = next[next.length - 1];
-      next[next.length - 1] = { ...last, items: [...last.items, txt] };
-      return next;
-    });
+    setSteps((prev) => [...prev, txt]);
     setLoaderActive(true);
   }, [displayText]);
 
-  // Polling ended without an empty-notes signal → still hide loader.
+  // Polling ended without an empty-notes signal → still stop the pulse.
   useEffect(() => {
     if (!isPolling) setLoaderActive(false);
   }, [isPolling]);
@@ -713,61 +604,49 @@ const StatusNotesCard: React.FC<StatusNotesCardProps> = ({
   // `is_polling` flag is still set from a prior session.
   if (cycleKey === "init") return null;
   if (dismissed) return null;
-  if (batches.length === 0 && !isPolling) return null;
+  if (steps.length === 0 && !isPolling) return null;
 
-  // An item is "active" when it lives in the latest batch AND polling is
-  // still in flight. The moment the next batch arrives (or polling ends)
-  // it flips to "done" — coral pulsing dot becomes a green check.
-  const latestBatchIdx = batches.length - 1;
-  const isActiveBatch = (idx: number) => loaderActive && idx === latestBatchIdx;
-  const showDoneFooter = !loaderActive && batches.length > 0;
+  // The newest step is the live one while the build is still running; once it
+  // settles every row reads as done.
+  const lastIdx = steps.length - 1;
 
   return (
-    <div className={`sn-card${loaderActive ? " is-active" : ""}`}>
-      {loaderActive && (
-        <span className="sn-stage">
-          <span className="sn-pulse" />
-          {stageLabel}
-        </span>
-      )}
-      <div className="sn-title">{title}</div>
-      <ul className="sn-list">
-        {batches.map((b, bi) => (
-          <React.Fragment key={b.id}>
-            {bi > 0 && <li className="sn-divider" aria-hidden="true" />}
-            {b.items.map((it, ii) => {
-              const active = isActiveBatch(bi);
-              return (
-                <li
-                  className={`sn-item ${active ? "sn-item-active" : "sn-item-done"}`}
-                  key={`${b.id}-${ii}`}
-                >
-                  <span className="sn-item-dot">
-                    {active ? null : (
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
-                    )}
-                  </span>
-                  <span>{it}</span>
-                </li>
-              );
-            })}
-          </React.Fragment>
-        ))}
-        {loaderActive && (
-          <li className="sn-loader-row" aria-label="Loading next step">
-            <span className="sn-spinner" />
-          </li>
-        )}
-        {showDoneFooter && (
-          <li className="sn-done-row" role="status">
-            <span className="sn-done-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-            </span>
-            <span>Done</span>
+    <div className="sn-card">
+      <p className="sn-title">
+        {title} <em>{titleAccent}</em>
+      </p>
+      <ul className="sn-steps">
+        {steps.map((step, i) => {
+          const live = loaderActive && i === lastIdx;
+          return (
+            <li
+              className={`sn-row${live ? "" : " sn-row-done"}`}
+              key={`${i}-${step}`}
+              style={{ animationDelay: `${Math.min(i, 4) * 0.1}s` }}
+            >
+              <span className={`sn-ic ${live ? "sn-ic-live" : "sn-ic-done"}`}>
+                {live ? null : (
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      d="M5 12.5l4 4 10-10"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                )}
+              </span>
+              <span className="sn-txt">{step}</span>
+            </li>
+          );
+        })}
+        {/* First poll hasn't produced a step line yet — hold the row shape. */}
+        {steps.length === 0 && loaderActive && (
+          <li className="sn-row" aria-label="Loading next step">
+            <span className="sn-ic sn-ic-live" />
+            <span className="sn-skel" />
           </li>
         )}
       </ul>
@@ -867,11 +746,11 @@ startEmptyIntake = false,
     (state: any) => !!state.ItineraryStatus?.is_polling,
   );
   // Streamed progress signals from the /status/ poll. Two parallel fields:
-  //   - `notes`: a list of step lines (sometimes empty).
+  //   - `notes`: server bookkeeping lines. Not rendered anywhere — an empty
+  //     snapshot is only read as "no more steps coming".
   //   - `display_text`: a single rolling status string ("Crafting day by day…").
-  // The BottomCTA loader only consumes `display_text`, which is why the chat
-  // card looked empty before — most polls only update display_text, not notes.
-  // StatusNotesCard merges both into a single progressive list.
+  //     This is what StatusNotesCard turns into step rows, same as the
+  //     BottomCTA loader in BotApp.
   const statusNotes = useSelector(
     (state: any) => state.ItineraryStatus?.notes as any[] | undefined,
   );
@@ -4206,8 +4085,8 @@ const handleShowLogin = useCallback(() => {
 
             {/* Itinerary creation progress (tailored form → /chat/[id], or the
                 bot's own completion flow). Mirrors the edit-time status card:
-                streams the same `display_text` / `notes` from the /status/ poll
-                as a batched in-chat card instead of a bare spinner. Gated on
+                streams the same `display_text` from the /status/ poll as a
+                stepped in-chat card instead of a bare spinner. Gated on
                 `isItineraryCompleting` (creation), which is fresh per session —
                 no stale-flag mount guard needed, so it also shows on a refresh
                 mid-build. */}
@@ -4217,13 +4096,13 @@ const handleShowLogin = useCallback(() => {
               isPolling={isItineraryCompleting}
               cycleKey={isItineraryCompleting ? "create-cycle" : "init"}
               resetKey={null}
-              title="Kaira is building your itinerary"
-              stageLabel="Building your itinerary"
+              title="Kaira is building your"
+              titleAccent="itinerary"
             />
 
             {/* Itinerary update progress (Update Dates / Route Edit / Reprice /
-                refresh_itinerary). Renders the streaming `notes` from the
-                /status/ poll as a batched in-chat card. */}
+                refresh_itinerary). Same stepped card, fed by the streaming
+                `display_text` from the /status/ poll. */}
             <StatusNotesCard
               notes={statusNotes}
               displayText={statusDisplayText}

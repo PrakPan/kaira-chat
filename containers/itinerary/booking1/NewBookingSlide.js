@@ -72,6 +72,9 @@ import { currencySymbols } from "../../../data/currencySymbols";
 import { resetChatSession } from "../../../store/actions/chatState";
 import VisaSearchDrawer from "../../../components/drawers/visaDetails/VisaSearchDrawer";
 import EsimPackagesDrawer from "../../../components/drawers/esimDetails/EsimPackagesDrawer";
+import CartBookingDetail, {
+  getBookingDetailType,
+} from "./CartBookingDetail";
 import {
   addAncillaryBooking,
   removeAncillaryBooking,
@@ -969,6 +972,7 @@ const ItineraryInclusions = ({
   Cart,
   selectedInclusions,
   onToggleInclusion,
+  onOpenDetails,
   arePricesHidden,
   updatingInclusions = {},
   defaultExpanded = false,
@@ -1160,6 +1164,7 @@ const ItineraryInclusions = ({
                     ? getChildrenFlights(booking.id)
                     : [];
 
+                  const hasDetails = !!getBookingDetailType(booking);
 
                   return (
                     <div key={booking.id}>
@@ -1171,7 +1176,18 @@ const ItineraryInclusions = ({
                         {/* Booking Details */}
                         <div className="flex-1 min-w-0">
                           <div className="text-sm-md font-400 leading-xl mb-sm">
-                            {booking.detail.name}
+                            <span
+                              className={
+                                hasDetails ? "cursor-pointer hover:underline" : ""
+                              }
+                              onClick={
+                                hasDetails
+                                  ? () => onOpenDetails?.(booking)
+                                  : undefined
+                              }
+                            >
+                              {booking.detail.name}
+                            </span>
                             {booking?.detail?.booking_type === "Visa" ? <span className="ml-2 px-1.5 py-0.5 text-xs font-medium bg-purple-100  text-purple-800 rounded">Visa</span> : booking?.detail?.booking_type === "eSIM" ? <span className="ml-2 px-1.5 py-0.5 text-xs font-medium bg-green-100  text-green-800 rounded ">eSim</span> : null}
                           </div>
                           {booking.status === "Paid" && (
@@ -1416,6 +1432,8 @@ const Details = (props) => {
   }, [travellerDetailsOpen]);
   const [showVisaDrawer, setShowVisaDrawer] = useState(false);
   const [showEsimDrawer, setShowEsimDrawer] = useState(false);
+  // The cart row whose detail drawer is open, if any.
+  const [detailBooking, setDetailBooking] = useState(null);
   const [getInTouchLoading, setGetInTouchLoading] = useState(false);
   const { itinerary_status, transfers_status, pricing_status, final_status } =
     useSelector((state) => state.ItineraryStatus);
@@ -2776,6 +2794,7 @@ const Details = (props) => {
                       Cart={Cart}
                       selectedInclusions={selectedInclusions}
                       onToggleInclusion={handleToggleInclusion}
+                      onOpenDetails={setDetailBooking}
                       arePricesHidden={Cart?.are_prices_hidden}
                       updatingInclusions={updatingInclusions}
                       defaultExpanded={
@@ -3315,6 +3334,24 @@ const Details = (props) => {
           if (bookingId) dispatch(removeAncillaryBooking(bookingId));
         }}
       />
+
+      {/* Detail drawer for the cart row whose name was clicked. Keyed so each
+          booking gets a fresh mount — the underlying drawers fetch once. */}
+      {detailBooking && (
+        <CartBookingDetail
+          key={detailBooking.id}
+          booking={detailBooking}
+          onClose={() => {
+            setDetailBooking(null);
+            // A drawer can delete or swap the booking it is showing, and the
+            // ones that do close themselves afterwards. Re-pull the cart on the
+            // way out so the line items and total can't go stale.
+            props?.getPaymentHandler?.();
+          }}
+          setShowLoginModal={props?.setShowLoginModal}
+          getPaymentHandler={props?.getPaymentHandler}
+        />
+      )}
     </>
   );
 };

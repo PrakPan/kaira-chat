@@ -254,6 +254,9 @@ const HotelBookingDetails = (props) => {
   const dispatch = useDispatch();
   const [runTimeShowPopup, setRunTimeShowPopup] = useState(props?.showDetails);
   const { drawer, booking_id, idx, city_id } = router.query;
+  // The action footer portals out of the drawer, so it needs to be told the
+  // host drawer's layer — otherwise it renders behind whatever opened it.
+  const footerZIndex = props?.drawerZIndex ? props.drawerZIndex + 1 : 1300;
   const [activeTab, setActiveTab] = useState("About");
   const scrollableTabRef = useRef(null);
   const drawerRef = useRef(null);
@@ -342,7 +345,9 @@ const HotelBookingDetails = (props) => {
         });
       setLoadingDetails(false);
     };
-    if (props?.id == booking_id && booking_id) {
+    // `standalone` callers (e.g. the cart) own the open state and hand the
+    // booking id in directly, so they don't have to put it in the URL first.
+    if (props?.id && (props?.standalone || props?.id == booking_id)) {
       fetchDetails();
     }
   }, []);
@@ -422,6 +427,13 @@ const HotelBookingDetails = (props) => {
 
   const handleCloseDrawer = () => {
     const { id, drawer } = router.query;
+    // Callers that own the drawer's open state (e.g. the cart) close it
+    // themselves — the route push below would drop them out of their own view.
+    if (props?.onClose) {
+      setRunTimeShowPopup(false);
+      props.onClose();
+      return;
+    }
     if (!drawer || !props?.showDetails) return;
     router.push(
       {
@@ -483,6 +495,9 @@ const HotelBookingDetails = (props) => {
         onHide={handleCloseDrawer}
         width={"50%"}
         mobileWidth={"100%"}
+        // Must go through `style` — Drawer forwards only `style` to the panel;
+        // its `zIndex` prop moves the backdrop alone.
+        style={props?.drawerZIndex ? { zIndex: props.drawerZIndex } : undefined}
       >
         <Container className="px-6 max-ph:px-4 pb-3">
           <div className="py-4 bg-[#fafaf5] z-[900] flex flex-col gap-3 pb-2 sticky top-0">
@@ -1445,47 +1460,30 @@ const HotelBookingDetails = (props) => {
                               View on Google Maps
                             </a>
                           </div>
-
-                          <DrawerActionFooter zIndex={1300}>
-                            <button onClick={handleDelete} className="ttw-btn-remove-pill" disabled={loading}>
-                              {loading ? (
-                                <PulseLoader size={10} speedMultiplier={0.6} color="#CD2026" />
-                              ) : (
-                                <>
-                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                    <path d="M3 6h18" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                                    <path d="M8 6V4.5A1.5 1.5 0 019.5 3h5A1.5 1.5 0 0116 4.5V6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                                    <path d="M18.5 6l-.7 12.1a2 2 0 01-2 1.9H8.2a2 2 0 01-2-1.9L5.5 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                                    <path d="M10 10.5v5M14 10.5v5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                                  </svg>
-                                  Remove From Itinerary
-                                </>
-                              )}
-                            </button>
-                          </DrawerActionFooter>
-
-
                         </div>
-                      ) : (
-                        <DrawerActionFooter zIndex={1300}>
-                          <button onClick={handleDelete} className="ttw-btn-remove-pill" disabled={loading}>
-                            {loading ? (
-                              <PulseLoader size={10} speedMultiplier={0.6} color="#CD2026" />
-                            ) : (
-                              <>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                  <path d="M3 6h18" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                                  <path d="M8 6V4.5A1.5 1.5 0 019.5 3h5A1.5 1.5 0 0116 4.5V6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                                  <path d="M18.5 6l-.7 12.1a2 2 0 01-2 1.9H8.2a2 2 0 01-2-1.9L5.5 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                                  <path d="M10 10.5v5M14 10.5v5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                                </svg>
-                                Remove From Itinerary
-                              </>
-                            )}
-                          </button>
-                        </DrawerActionFooter>
-                      )}
+                      ) : null}
                     </div>
+
+                    {/* Remove sits outside the Location branches above: a hotel
+                        that has a google_maps_link took the first branch and so
+                        never rendered a delete button at all. */}
+                    <DrawerActionFooter zIndex={footerZIndex}>
+                      <button onClick={handleDelete} className="ttw-btn-remove-pill" disabled={loading}>
+                        {loading ? (
+                          <PulseLoader size={10} speedMultiplier={0.6} color="#CD2026" />
+                        ) : (
+                          <>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                              <path d="M3 6h18" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                              <path d="M8 6V4.5A1.5 1.5 0 019.5 3h5A1.5 1.5 0 0116 4.5V6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                              <path d="M18.5 6l-.7 12.1a2 2 0 01-2 1.9H8.2a2 2 0 01-2-1.9L5.5 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                              <path d="M10 10.5v5M14 10.5v5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                            </svg>
+                            Remove From Itinerary
+                          </>
+                        )}
+                      </button>
+                    </DrawerActionFooter>
                   </div>
                 </div>
               </div>
