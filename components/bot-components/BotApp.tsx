@@ -7,7 +7,6 @@ import React, {
 } from "react";
 import { ChatKitPanel } from "./components/ChatKitPanel";
 import MapView from "./components/MapView";
-import ViewToggle from "./components/ViewToggle";
 import Sidebar from "./components/Sidebar";
 import { getUserAvatarColor, getUserInitial } from "./utils/avatarColor";
 import StartScreen, { type TravellerStory } from "./components/StartScreen";
@@ -60,7 +59,7 @@ import { createPortal } from "react-dom";
 import { currencySymbols } from "../../data/currencySymbols";
 import { useAnalytics } from "../../hooks/useAnalytics";
 import Login from "../modals/Login";
-import { FiMap, FiNavigation, FiCalendar, FiBookmark } from "react-icons/fi";
+import { FiCalendar } from "react-icons/fi";
 import { tr } from "date-fns/locale";
 import {
   takePendingFiles,
@@ -131,6 +130,43 @@ const RouteArrow = () => (
       strokeLinejoin="round"
     />
   </svg>
+);
+
+// The Map / Bookings / Route views have no tab strip to return through, so each
+// carries this. `floating` is the map's variant — the map fills its pane edge to
+// edge, so the pill is overlaid on the canvas rather than sitting above it.
+const BackToItinerary = ({
+  onClick,
+  floating = false,
+}: {
+  onClick: () => void;
+  floating?: boolean;
+}) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className={
+      floating
+        ? "absolute z-10 top-3 left-3 flex items-center gap-[6px] rounded-full bg-white/95 backdrop-blur-sm border border-[#E3E6EA] shadow-[0_2px_10px_rgba(11,18,32,0.12)] pl-[9px] pr-[13px] py-[7px] text-[12.5px] font-inter font-semibold text-[#122A43] hover:bg-white"
+        : "flex items-center gap-[6px] text-[12.5px] font-inter font-semibold text-[#6E757A] hover:text-[#122A43] transition-colors"
+    }
+  >
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M19 12H5" />
+      <path d="m12 19-7-7 7-7" />
+    </svg>
+    Back to itinerary
+  </button>
 );
 
 function transformDraftToItinerary(draft: any) {
@@ -545,12 +581,12 @@ export default function BotApp({
   );
   const statusNotes = useSelector((state: any) => state.ItineraryStatus?.notes);
 
-  // ── Single source of truth for "itinerary is complete" (drives the
-  // Route/Bookings tabs in ViewToggle + MobileLayout) ──────────────────────
+  // ── Single source of truth for "itinerary is complete" (gates the Bookings
+  // CTA on the cart bar) ───────────────────────────────────────────────────
   // Previously each call site recomputed this from `state.Itinerary.status`,
   // which is set LATE — only after ItineraryContainer finishes polling and
   // fetches the canonical itinerary. On first arrival at P2 that field is
-  // still "Draft"/undefined, so Route + Bookings tabs (and the gallery-backed
+  // still "Draft"/undefined, so Route + Bookings entry points (and the gallery-backed
   // views) were missing until a manual refresh. The ItineraryStatus slice's
   // `finalized_status`/`itinerary_status` are set EARLY (synchronously from
   // the status endpoint in restoreItineraryDirectly), so prefer those and
@@ -964,10 +1000,12 @@ export default function BotApp({
     [dispatch, setChatBotIdOnce, fromTailored],
   );
 
-  const countCartItems = useMemo(() => {
+  const countCartItems = useMemo<number>(() => {
     if (!cart?.summary) return 0;
-    return Object.values(cart.summary).reduce(
-      (sum: number, item: any) => sum + (item.count ?? 0),
+    // `Object.values` on an untyped slice yields unknown[], so reduce's result
+    // widens to unknown without the explicit type argument.
+    return Object.values(cart.summary).reduce<number>(
+      (sum, item: any) => sum + (item?.count ?? 0),
       0,
     );
   }, [cart?.summary]);
@@ -1310,8 +1348,8 @@ export default function BotApp({
         // visible through the refresh instead of flickering to blank.
         start_city: current?.start_city ?? null,
         end_city: current?.end_city ?? null,
-        // Preserve the current top-level status (e.g. "Finalized") so that
-        // ViewToggle's Routes/Bookings tabs don't briefly disappear during a
+        // Preserve the current top-level status (e.g. "Finalized") so that the
+        // Bookings CTA doesn't briefly disappear during a
         // mid-P2 refresh. Prefer Redux (which reflects the status endpoint's
         // authoritative value) over currentItineraryRef, which is fed from
         // bot draft events that always carry status:"Draft".
@@ -2965,8 +3003,14 @@ Start Location: ${details.startLocation}`;
     return stops;
   }, [itineraryRedux?.cities]);
 
-  // ViewToggle only exposes the Route tab once the itinerary is complete, so in
-  // Draft the route edit goes through chat — same as the traveller/date pencils.
+  // ── View switching — there is no tab strip ───────────────────────────────
+  // Map / Bookings / Route are each reached from a CTA on the surface that owns
+  // them (the header card's route strip, the cart bar's booking count) and each
+  // view carries its own way back to the itinerary. Mobile has to go through
+  // MobileLayout's activeTab as well as viewMode, hence the mobileTabSwitchRef.
+
+  // In Draft the route isn't editable through the Route view yet, so the edit
+  // goes through chat — same as the traveller/date pencils.
   const handleChangeRoute = useCallback(() => {
     if (isDraft) {
       handleItineraryContainerSendMessage("change my route");
@@ -2975,6 +3019,47 @@ Start Location: ${details.startLocation}`;
     if (isMobile) mobileTabSwitchRef.current?.("routes");
     else setViewMode("routes");
   }, [isDraft, isMobile, handleItineraryContainerSendMessage]);
+
+  // True once the itinerary has cities the map can actually plot — the fallback
+  // route (and with it the numbered pins, the dashed polyline and the day-by-day
+  // decks) is built from these, so it's what makes clearing the POI pins safe.
+  const hasMappableItinerary = useMemo(
+    () =>
+      (itineraryRedux?.cities ?? []).some((c: any) => {
+        const city = c?.city ?? c;
+        return city?.latitude != null && city?.longitude != null;
+      }),
+    [itineraryRedux?.cities],
+  );
+
+  const handleViewMap = useCallback(() => {
+    // "View route on map" promises the trip, so drop any POI pins left behind by
+    // an earlier focus_on_map / display_pois_on_map — including the replay of one
+    // on reload. Those pins suppress the map's Redux fallback route entirely
+    // (Map.tsx builds it only when `locations` is empty), which is what leaves
+    // the map showing bare category markers with no route and no city cards.
+    // Guarded on an itinerary we can actually plot, so we never clear the map
+    // with nothing to fall back to. Skipped entirely when a live focus_route is
+    // on screen: that route already draws its pins and decks, and its cities are
+    // *merged into* `locations` (handleRouteReceived), so clearing them there
+    // would strip the markers off the polyline.
+    const hasLiveRoute = !!currentRoute?.length;
+    if (activeItineraryId && hasMappableItinerary && !hasLiveRoute) {
+      setLocations([]);
+    }
+    if (isMobile) mobileTabSwitchRef.current?.("map");
+    else setViewMode("map");
+  }, [isMobile, activeItineraryId, hasMappableItinerary, currentRoute]);
+
+  const handleViewBookings = useCallback(() => {
+    if (isMobile) mobileTabSwitchRef.current?.("bookings");
+    else setViewMode("bookings");
+  }, [isMobile]);
+
+  const handleBackToItinerary = useCallback(() => {
+    if (isMobile) mobileTabSwitchRef.current?.("itinerary");
+    else setViewMode("itinerary");
+  }, [isMobile]);
 
   // null for skeleton/draft so ItineraryContainer skips polling
   const itineraryContainerId = useMemo(() => {
@@ -3006,6 +3091,7 @@ Start Location: ${details.startLocation}`;
       }
       refetchCounter={itineraryRefetchCounter}
       onSendMessage={handleItineraryContainerSendMessage}
+      onViewMap={handleViewMap}
       activeTab={activeTab}
     />
   ) : null;
@@ -3043,7 +3129,72 @@ Start Location: ${details.startLocation}`;
   // tab). Adding a `display:none` here based on viewMode caused a blank
   // itinerary tab on P2 refresh: activeTab landed on "itinerary" but
   // viewMode was still "map" because of timing in the chatkit restore flow.
-  // Desktop keeps the gate so the ViewToggle can swap map ↔ itinerary.
+  // Everything the cart bar needs except `barStyle` / `viewMode`, which vary by
+  // where it is mounted. Hoisted because the bar now appears in three places —
+  // the desktop itinerary panel, the desktop map view, and MobileLayout — and
+  // they must stay in lockstep.
+  const ctaBarProps = {
+    activeItineraryId,
+    showItineraryShimmer,
+    isDraft,
+    cart,
+    pricingStatus,
+    loaderDisplayText: statusDisplayText || loaderDisplayText,
+    currency,
+    countCartItems,
+    isHovered,
+    setIsHovered,
+    popupStyle,
+    onConfirm: () => {
+      trackChatItineraryConfirmed?.(activeItineraryId || "", "P1", []);
+      chatSendMessageRef.current?.("Yes, I confirm the Itinerary");
+      if (isMobile) mobileTabSwitchRef.current?.("chat");
+    },
+    onViewCart: () => {
+      if (!authToken) {
+        setShowApiLoginPrompt(true);
+        return;
+      }
+      trackChatCartViewed?.(activeItineraryId || "", "P2", []);
+      openPaymentDrawer();
+    },
+    onViewBookings: itineraryIsComplete ? handleViewBookings : undefined,
+    notes: statusNotes,
+    onGetInTouch: () => {
+      if (!activeItineraryId) return;
+      const token = localStorage.getItem("access_token");
+      axios
+        .get(
+          `${MERCURY_HOST}/api/v1/itinerary/${activeItineraryId}/get_in_touch/`,
+          { headers: { Authorization: `Bearer ${token}` } },
+        )
+        .then(() =>
+          dispatch(
+            openNotification({
+              type: "success",
+              heading: "Request received",
+              text: "Our team will get in touch with you shortly!",
+            }),
+          ),
+        )
+        .catch(() =>
+          dispatch(
+            openNotification({
+              type: "error",
+              heading: "Something went wrong",
+              text: "Please try again.",
+            }),
+          ),
+        );
+    },
+    onRetryCart: () => {
+      if (!activeItineraryId) return;
+      dispatch(setCart({}));
+      fetchPaymentData(activeItineraryId);
+    },
+  };
+
+  // Desktop keeps the gate so viewMode can swap map ↔ itinerary.
   const itineraryPanel = (
     <div
       style={{
@@ -3067,7 +3218,23 @@ Start Location: ${details.startLocation}`;
           fills the card's mx/mt gutters — otherwise the timeline would show
           through them while scrolling underneath. */}
       <div className="max-ph:sticky max-ph:top-0 max-ph:z-30 max-ph:bg-white">
-      <div className="bg-white flex flex-col px-3 md:px-[22px] py-3 border-b border-slate-100 max-ph:border max-ph:border-[#ECECEC] max-ph:rounded-[14px] max-ph:mx-3 max-ph:mt-[10px] max-ph:px-[12px] max-ph:pt-[7px] max-ph:pb-[10px]">
+      {/* Arbitrary px values, not px-3/py-3: bootstrap's `.px-3`/`.py-3` are
+          `1rem !important` and land after Tailwind, so they silently overrode
+          every padding this card asked for (`md:px-[22px]`, `max-ph:px-[12px]`,
+          `max-ph:pt-[7px]`, `max-ph:pb-[10px]`) — every width really rendered at
+          bootstrap's 16px. Desktop is pinned to that same 16px (changing it
+          isn't what was asked); mobile gets an even 10px box, matching the cart
+          bar's gutter. One element serves both the expanded and collapsed card
+          — `tripMetaOpen` only hides inner content — so this covers both. */}
+      <div className="bg-white flex flex-col p-[16px] border-b border-slate-100 max-ph:border max-ph:border-[#ECECEC] max-ph:rounded-[14px] max-ph:mx-3 max-ph:mt-[10px] max-ph:p-[10px]">
+        {/* Route and Bookings render inside this same panel (MenuV2 swaps its
+            body on activeTab), so the way out of them belongs here, above the
+            trip name. The Map view has its own overlaid pill instead. */}
+        {(viewMode === "routes" || viewMode === "bookings") && (
+          <div className="flex items-center mb-[7px]">
+            <BackToItinerary onClick={handleBackToItinerary} />
+          </div>
+        )}
         <div className="flex justify-between items-start gap-3 max-ph:gap-2 max-ph:relative">
           <div className="flex flex-col flex-1 min-w-0">
             {/* Compact title + sub are max-width-capped on mobile so they
@@ -3088,7 +3255,11 @@ Start Location: ${details.startLocation}`;
           itineraryRedux?.number_of_adults ||
           itineraryRedux?.travel_date ||
           (itineraryRedux?.start_date && itineraryRedux?.end_date)) && (
-          <div className={`flex flex-col gap-1.5 mt-[11px] max-ph:mt-[10px] ${tripMetaOpen ? "" : "max-ph:hidden"}`}>
+          // max-ph:mt-0 when expanded: the compact title this margin was
+          // separating us from is itself hidden in expanded mode, so the margin
+          // would just stack on the card's 10px top padding and make the top gap
+          // read as double the bottom one.
+          <div className={`flex flex-col gap-1.5 mt-[11px] ${tripMetaOpen ? "max-ph:mt-0" : "max-ph:hidden"}`}>
             {/* Mobile expanded: full (untruncated) itinerary name — design's
                 .trip-detail .ttl. Hidden on desktop (already shown at 24px). */}
             <p className="md:hidden font-inter font-extrabold text-[18px] leading-[1.2] tracking-[-0.4px] m-0 mb-[3px] text-[#171A1F] max-ph:max-w-[85%]">
@@ -3295,8 +3466,10 @@ Start Location: ${details.startLocation}`;
                 </React.Fragment>
               ))}
             </div>
-            {/* Navy pill matches the active ViewToggle tab — this button jumps
-                to that same Route tab, so it reads as the tab's twin. */}
+            {/* Editing the route hangs off the route strip, because it acts on
+                the same data the strip shows. Seeing it on the map does not —
+                that CTA now sits at the head of the day-by-day, above the
+                starting city, where the journey it plots actually begins. */}
             <button
               type="button"
               aria-label="Change route"
@@ -3424,75 +3597,13 @@ Start Location: ${details.startLocation}`;
               </div>
             </div>
             <BottomCTABar
+              {...ctaBarProps}
               barStyle={ctaBarStyle}
               // Force itinerary on mobile: the panel itself is rendered
               // inside MobileLayout's itinerary tab, so the CTA bar should
               // never be gated by viewMode (which can lag on "map" after a
               // chatkit-restore on refresh).
               viewMode={isMobile ? "itinerary" : viewMode}
-              activeItineraryId={activeItineraryId}
-              showItineraryShimmer={showItineraryShimmer}
-              isDraft={isDraft}
-              cart={cart}
-              pricingStatus={pricingStatus}
-              loaderDisplayText={statusDisplayText || loaderDisplayText}
-              currency={currency}
-              countCartItems={countCartItems}
-              isHovered={isHovered}
-              setIsHovered={setIsHovered}
-              popupStyle={popupStyle}
-              onConfirm={() => {
-                trackChatItineraryConfirmed?.(
-                  activeItineraryId || "",
-                  "P1",
-                  [],
-                );
-                chatSendMessageRef.current?.("Yes, I confirm the Itinerary");
-                if (isMobile) mobileTabSwitchRef.current?.("chat");
-              }}
-              onViewCart={() => {
-                if(!authToken) {
-                setShowApiLoginPrompt(true);
-                return;
-              }
-                trackChatCartViewed?.(activeItineraryId || "", "P2", []);
-                openPaymentDrawer();
-              }}
-              notes={statusNotes}
-              onGetInTouch={() => {
-                if (!activeItineraryId) return;
-                const token = localStorage.getItem("access_token");
-                axios
-                  .get(
-                    `${MERCURY_HOST}/api/v1/itinerary/${activeItineraryId}/get_in_touch/`,
-                    {
-                      headers: { Authorization: `Bearer ${token}` },
-                    },
-                  )
-                  .then(() =>
-                    dispatch(
-                      openNotification({
-                        type: "success",
-                        heading: "Request received",
-                        text: "Our team will get in touch with you shortly!",
-                      }),
-                    ),
-                  )
-                  .catch(() =>
-                    dispatch(
-                      openNotification({
-                        type: "error",
-                        heading: "Something went wrong",
-                        text: "Please try again.",
-                      }),
-                    ),
-                  );
-              }}
-              onRetryCart={() => {
-                if (!activeItineraryId) return;
-                dispatch(setCart({}));
-                fetchPaymentData(activeItineraryId);
-              }}
             />
           </div>
         ) : null}
@@ -3588,30 +3699,50 @@ Start Location: ${details.startLocation}`;
               msOverflowStyle: "none",
             }}
           >
-            <ViewToggle
-              viewMode={viewMode}
-              setViewMode={setViewMode}
-              hasItineraryActivity={!!activeItineraryId}
-              isComplete={itineraryIsComplete}
-            />
-
-            {/* MAP tab */}
+            {/* MAP view — reached from the header card's Map pill. The back pill
+                is the only way out, so it only appears once there is an
+                itinerary to go back to (before that, the map is the default
+                view and nothing sits behind it). */}
             <div
+              className="relative"
               style={{
                 display: viewMode === "map" ? "flex" : "none",
                 flex: 1,
                 minHeight: 0,
               }}
             >
-              <MapView
-                mapState={mapState}
-                locations={mapLocations}
-                userLocation={userLocation}
-                currentRoute={currentRoute}
-                isLoadingLocation={isLoadingLocation}
-                mapRef={mapRef}
-                isRoutePreparing={isRoutePreparing}
-              />
+              {!!activeItineraryId && (
+                <BackToItinerary floating onClick={handleBackToItinerary} />
+              )}
+              {/* Only the layout in use mounts a map. Both layout trees are
+                  rendered (the other is merely CSS-hidden), and a MapView builds
+                  its own google.maps.Map and claims `mapRef` — so mounting both
+                  on a phone left two maps fighting over the ref, with the hidden
+                  0x0 one able to win it. */}
+              {!isMobile && (
+                <MapView
+                  mapState={mapState}
+                  locations={mapLocations}
+                  userLocation={userLocation}
+                  currentRoute={currentRoute}
+                  isLoadingLocation={isLoadingLocation}
+                  mapRef={mapRef}
+                  isRoutePreparing={isRoutePreparing}
+                  isVisible={viewMode === "map"}
+                />
+              )}
+              {/* The cart bar lives inside itineraryPanel, which is display:none
+                  on the map — so the map lost it. Mobile already carries its own
+                  copy on the map tab; this is the desktop equivalent. Pinned to
+                  "itinerary" for the same reason mobile's is: the bar's own
+                  viewMode gates its CTAs, and "map" is not one of them. */}
+              {!isMobile && !!activeItineraryId && (
+                <BottomCTABar
+                  {...ctaBarProps}
+                  barStyle={ctaBarStyle}
+                  viewMode="itinerary"
+                />
+              )}
             </div>
 
             {/* ITINERARY / BOOKINGS / ROUTES — desktop only renders when !isMobile */}
@@ -3680,15 +3811,22 @@ Start Location: ${details.startLocation}`;
           onRegisterTabSwitch={handleRegisterMobileTabSwitch}
           onItineraryScrolled={handleItineraryScrolled}
           mapContent={
-            <MapView
-              mapState={mapState}
-              locations={mapLocations}
-              userLocation={userLocation}
-              currentRoute={currentRoute}
-              isLoadingLocation={isLoadingLocation}
-              mapRef={mapRef}
-              isRoutePreparing={isRoutePreparing}
-            />
+            // Mounted only on mobile — see the desktop MapView above.
+            isMobile ? (
+              <MapView
+                mapState={mapState}
+                locations={mapLocations}
+                userLocation={userLocation}
+                currentRoute={currentRoute}
+                isLoadingLocation={isLoadingLocation}
+                mapRef={mapRef}
+                isRoutePreparing={isRoutePreparing}
+                // Mobile visibility follows the tab, not viewMode: handleTabClick
+                // sets viewMode to "map" for the chat tab as well, so viewMode
+                // alone can't tell whether the map pane is on screen.
+                isVisible={mobilePanel === "map"}
+              />
+            ) : null
           }
           chatContent={
             // Always use ChatKitPanel — render both welcome + ChatKitPanel; CSS hides/shows
@@ -3759,72 +3897,7 @@ Start Location: ${details.startLocation}`;
           itineraryContent={isMobile ? itineraryPanel : null}
           mobileEffectPopup={mobileEffectPopup}
           onDismissMobileEffectPopup={() => setMobileEffectPopup(null)}
-          bottomCTABarProps={{
-            viewMode,
-            activeItineraryId,
-            showItineraryShimmer,
-            isDraft,
-            cart,
-            pricingStatus,
-            loaderDisplayText: statusDisplayText || loaderDisplayText,
-            currency,
-            countCartItems,
-            isHovered,
-            setIsHovered,
-            popupStyle,
-            onConfirm: () => {
-              trackChatItineraryConfirmed?.(
-                activeItineraryId || "",
-                "P1",
-                [],
-              );
-              chatSendMessageRef.current?.("Yes, I confirm the Itinerary");
-              if (isMobile) mobileTabSwitchRef.current?.("chat");
-            },
-            onViewCart: () => {
-              if(!authToken) {
-                setShowApiLoginPrompt(true);
-                return;
-              }
-              trackChatCartViewed?.(activeItineraryId || "", "P2", []);
-              openPaymentDrawer();
-            },
-            notes: statusNotes,
-            onGetInTouch: () => {
-              if (!activeItineraryId) return;
-              const token = localStorage.getItem("access_token");
-              axios
-                .get(
-                  `${MERCURY_HOST}/api/v1/itinerary/${activeItineraryId}/get_in_touch/`,
-                  {
-                    headers: { Authorization: `Bearer ${token}` },
-                  },
-                )
-                .then(() =>
-                  dispatch(
-                    openNotification({
-                      type: "success",
-                      heading: "Request received",
-                      text: "Our team will get in touch with you shortly!",
-                    }),
-                  ),
-                )
-                .catch(() =>
-                  dispatch(
-                    openNotification({
-                      type: "error",
-                      heading: "Something went wrong",
-                      text: "Please try again.",
-                    }),
-                  ),
-                );
-            },
-            onRetryCart: () => {
-              if (!activeItineraryId) return;
-              dispatch(setCart({}));
-              fetchPaymentData(activeItineraryId);
-            },
-          }}
+          bottomCTABarProps={{ ...ctaBarProps, viewMode }}
           onSettingsClick={() => {
             if (!authToken) {
               setShowSettingsLoginPrompt(true);
@@ -4026,6 +4099,10 @@ interface BottomCTABarProps {
   onViewCart: () => void;
   onGetInTouch?: () => void;
   onRetryCart?: () => void;
+  // The Bookings view's only entry point. Left undefined until the itinerary is
+  // complete — that is the same gate the Bookings tab used to carry — and the
+  // chip is then hidden entirely, so an incomplete itinerary shows no dead CTA.
+  onViewBookings?: () => void;
   notes?: any[];
   // Desktop only: the measured left/width of the itinerary panel, so the fixed
   // bar spans it exactly and its right edge meets the chat divider. A
@@ -4168,6 +4245,7 @@ const BottomCTABar = React.memo(
     onViewCart,
     onGetInTouch,
     onRetryCart,
+    onViewBookings,
     notes,
     barStyle,
   }: BottomCTABarProps) => {
@@ -4254,8 +4332,45 @@ const BottomCTABar = React.memo(
       </span>
     );
 
+    // The price is what it is because of these bookings, so the count doubles as
+    // the door into the Bookings view — it sits directly under the total it
+    // explains. Hidden while the Bookings view is already open.
+    const bookingsChip =
+      onViewBookings && countCartItems > 0 && viewMode !== "bookings" ? (
+        <button
+          type="button"
+          onClick={onViewBookings}
+          className="flex items-center text-[11px] md:text-[12px] text-[#6E757A] hover:text-[#122A43] transition-colors whitespace-nowrap"
+        >
+          {/* No flex `gap` here — it would space the chevron off the count as
+              widely as it spaces the words. The label carries its own space. */}
+          Inclusive of&nbsp;
+          <span className="font-semibold text-[#122A43] underline underline-offset-2">
+            {countCartItems} booking{countCartItems > 1 ? "s" : ""}
+          </span>
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden
+            className="-ml-[1px]"
+          >
+            <path d="m9 18 6-6-6-6" />
+          </svg>
+        </button>
+      ) : null;
+
+    // px-[24px], not px-4: bootstrap.min.css is imported after Tailwind and its
+    // `.px-4` is `1.5rem !important`, so a Tailwind `px-*` override at the same
+    // specificity silently loses. Arbitrary values don't collide. 24px is what
+    // the bar has always rendered at — keep desktop as-is.
     return (
-      <div data-bottom-cta-bar style={barStyle} className="z-20 fixed w-full md:w-[48%] bottom-0 flex-shrink-0 bg-[#fffaf5] border-t border-slate-100 px-4 py-2 flex flex-col gap-1">
+      <div data-bottom-cta-bar style={barStyle} className="z-20 fixed w-full md:w-[48%] bottom-0 flex-shrink-0 bg-[#fffaf5] border-t border-slate-100 px-[24px] max-ph:px-[10px] py-2 flex flex-col gap-1">
         <div className="flex items-center justify-between">
         <div className="flex flex-col">
           {cost !== null ? (
@@ -4267,6 +4382,8 @@ const BottomCTABar = React.memo(
                     ? "Estimated Price"
                     : "Total Cost"}
               </span>
+              {/* The bookings count sits in the foot line below, on every
+                  breakpoint — see the foot line at the bottom of the bar. */}
               <span className="font-sans text-[16px] md:text-[21px] font-bold leading-tight text-[#111827] whitespace-nowrap">
                 {currencySymbol}
                 {cost.toLocaleString("en-IN")}/-
@@ -4337,9 +4454,15 @@ const BottomCTABar = React.memo(
           )}
         </div>
         </div>
-        {/* Coupon hint: own line below the CTA, aligned to the right end */}
-        {cost !== null && (
-          <div className="flex justify-end">{couponBadge}</div>
+        {/* Foot line: the bookings count under the price it explains, and the
+            coupon hint under the CTA it applies to. justify-end (not
+            justify-between) so the coupon badge stays put when there is no
+            bookings chip to push it right. */}
+        {(cost !== null || bookingsChip) && (
+          <div className="flex items-center justify-end gap-3">
+            {bookingsChip && <span className="mr-auto">{bookingsChip}</span>}
+            {cost !== null && couponBadge}
+          </div>
         )}
       </div>
     );
@@ -4841,9 +4964,15 @@ const MobileLayout = React.memo(
     const dispatchLayout = useDispatch();
     const [showChatBanner, setShowChatBanner] = React.useState(true);
 
-    // Sync mobilePanel (legacy) so BotApp state stays consistent
+    // Sync mobilePanel (legacy) so BotApp state stays consistent. The map tab
+    // reports itself as "map" rather than collapsing into "itinerary": it is the
+    // only signal BotApp has for whether the mobile map pane is actually on
+    // screen. viewMode can't answer that — handleTabClick sets it to "map" for
+    // the CHAT tab too.
     React.useEffect(() => {
-      setMobilePanel(activeTab === "chat" ? "chat" : "itinerary");
+      setMobilePanel(
+        activeTab === "chat" ? "chat" : activeTab === "map" ? "map" : "itinerary",
+      );
     }, [activeTab, setMobilePanel]);
 
     // Clear unread flag when user switches to chat tab
@@ -4880,7 +5009,8 @@ const MobileLayout = React.memo(
 
     // When itinerary activity starts on mobile, keep the user on the chat tab
     // rather than yanking them into the itinerary view. The "View Itinerary"
-    // pill above the composer and the top tab bar let them switch manually.
+    // pill above the composer and the bar below the header let them switch
+    // manually.
     const prevHasActivityRef = React.useRef(hasItineraryActivity);
     React.useEffect(() => {
       // Activity dropped (e.g. switched from a P2 thread to a P1 thread that
@@ -4898,43 +5028,15 @@ const MobileLayout = React.memo(
       prevHasActivityRef.current = hasItineraryActivity;
     }, [hasItineraryActivity, activeTab, setViewMode]);
 
-    // Top tab bar — Chat + Map + Itinerary + Bookings when itinerary is active.
-    // "routes" is intentionally absent: it stays a valid MobileTab and
-    // handleTabClick("routes") still switches to it, but the only way in is the
-    // "Change Route" button on the itinerary header card.
-   const tabs: {
-  key: MobileTab;
-  label: string;
-  show: boolean;
-  icon: React.ReactNode;
-}[] = [
-  { key: "map", label: "Map", show: hasItineraryActivity, icon: <FiMap size={14} /> },
-  { key: "itinerary", label: "Itinerary", show: hasItineraryActivity, icon: <FiCalendar size={14} /> },
-  {
-    key: "bookings",
-    label: "Bookings",
-    show: isComplete,
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M19 14l-5-5-9 9" />
-        <path d="M5 21h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2z" />
-      </svg>
-    ),
-  },
-];
-    const visibleTabs = tabs.filter((t) => t.show);
-
-    const activeTabStyle: React.CSSProperties = {
-      background: "#07213A",
-      color: "#fff",
-      borderRadius: "10px",
-      border: "1px solid #FFFACD",
-      boxShadow: "0 2px 8px rgba(195,195,195,0.35)",
-    };
-    const inactiveTabStyle: React.CSSProperties = {
-      borderRadius: "10px",
-      color: "#0B1220",
-    };
+    // There is no tab strip. Map / Bookings / Route are each reached from a CTA
+    // on the itinerary (the header card's Map + Change Route pills, the cart
+    // bar's booking count) and each carries its own way back — see
+    // BackToItinerary. Every MobileTab is still a valid target and
+    // handleTabClick still switches to all of them; only the strip is gone.
+    //
+    // The chat tab is the exception: nothing on it belongs to the itinerary, so
+    // it keeps one persistent entry point back into the trip. (The
+    // mobileEffectPopup pill also does this, but only once and only for 10s.)
 
     // ── Mobile header: visible only at the top of the pane ────────────────
     // Any scroll away from the top hides it, in either direction; it comes
@@ -5064,48 +5166,29 @@ const MobileLayout = React.memo(
           </div>
         )}
 
-        {/* ── Top tab bar — only when itinerary is active ── */}
-        {hasItineraryActivity && visibleTabs.length > 0 && (
-          // 8px, not the trip card's 12px (`max-ph:mx-3`): the pill box's 10px
-          // radius and light border make an equal gutter read as a deeper inset
-          // than the card's 14px radius. Tuned by eye to line up with it.
-          // Padding sits on this wrapper, not the pill box, so the bottom border
-          // still spans the full width.
-          <div className="flex-shrink-0 bg-white border-b border-gray-100 flex items-center gap-2 px-2">
-            <div
-              className="flex flex-1 gap-1 p-[3px]"
-              style={{
-                borderRadius: "10px",
-                border: "1px solid #E5E5E5",
-                background: "#fff",
-              }}
+        {/* ── Chat tab: the one persistent way back into the trip ── */}
+        {hasItineraryActivity && activeTab === "chat" && (
+          <button
+            type="button"
+            onClick={() => handleTabClick("itinerary")}
+            className="flex-shrink-0 bg-white border-b border-gray-100 flex items-center justify-center gap-2 px-3 py-[9px] text-[12.5px] font-inter font-semibold text-[#122A43] active:bg-[#F4F6F8]"
+          >
+            <FiCalendar size={14} />
+            View Itinerary
+            <svg
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
             >
-              {visibleTabs.map((tab) => (
-  <button
-    key={tab.key}
-    onClick={() => handleTabClick(tab.key)}
-    className="flex-1 px-2 py-2 text-[12px] font-semibold transition-all duration-200 whitespace-nowrap flex items-center justify-center gap-1.5"
-    style={activeTab === tab.key ? activeTabStyle : inactiveTabStyle}
-  >
-    {tab.icon}
-    {tab.label}
-  </button>
-))}
-            </div>
-            {/* Settings icon — only when itinerary is fully created */}
-            {/* {isComplete && onSettingsClick && (
-            <button
-              onClick={onSettingsClick}
-              className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
-              aria-label="Settings"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#07213A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="3"/>
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-              </svg>
-            </button>
-          )} */}
-          </div>
+              <path d="m9 18 6-6-6-6" />
+            </svg>
+          </button>
         )}
 
         {/* ── Content area — full remaining height ── */}
@@ -5131,7 +5214,15 @@ const MobileLayout = React.memo(
               zIndex: activeTab === "map" ? 2 : 1,
             }}
           >
-            <div className="flex-1 min-h-0 flex flex-col">{mapContent}</div>
+            <div className="relative flex-1 min-h-0 flex flex-col">
+              {hasItineraryActivity && (
+                <BackToItinerary
+                  floating
+                  onClick={() => handleTabClick("itinerary")}
+                />
+              )}
+              {mapContent}
+            </div>
             {/* View Cart bar on map tab */}
             {bottomCTABarProps && hasItineraryActivity && (
               <BottomCTABar {...bottomCTABarProps} viewMode="itinerary" />

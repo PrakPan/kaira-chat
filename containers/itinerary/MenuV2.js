@@ -713,6 +713,7 @@ Start Location: ${details.startLocation}`;
         ? props?.itineraryDaybyDay && (
             <DaybyDay
               fromChat={props?.fromChat}
+              onViewMap={props?.onViewMap}
               mercuryItinerary={props?.mercuryItinerary}
               activityBookings={props?.activityBookings}
               setActivityBookings={props?.setActivityBookings}
@@ -962,6 +963,7 @@ Start Location: ${details.startLocation}`;
             props?.itineraryDaybyDay && (
               <DaybyDay
                 fromChat={props?.fromChat}
+                onViewMap={props?.onViewMap}
                 mercuryItinerary={props?.mercuryItinerary}
                 activityBookings={props?.activityBookings}
                 setActivityBookings={props?.setActivityBookings}
@@ -1221,6 +1223,7 @@ props.fromChat ? (
         ? props?.itineraryDaybyDay && (
             <DaybyDay
               fromChat={props?.fromChat}
+              onViewMap={props?.onViewMap}
               mercuryItinerary={props?.mercuryItinerary}
               activityBookings={props?.activityBookings}
               setActivityBookings={props?.setActivityBookings}
@@ -1515,6 +1518,7 @@ props.fromChat ? (
                   ? props?.itinerary && (
                       <DaybyDay
                         fromChat={props?.fromChat}
+                        onViewMap={props?.onViewMap}
                         mercuryItinerary={props?.mercuryItinerary}
                         activityBookings={props?.activityBookings}
                         setActivityBookings={props?.setActivityBookings}

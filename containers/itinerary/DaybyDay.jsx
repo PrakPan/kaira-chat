@@ -283,6 +283,55 @@ const DaybyDay = ({
           }`}
       >
 
+        {/* Entry into the map, at the head of the journey it plots. Chat-only:
+            the map view lives in BotApp, so the standalone itinerary page passes
+            no onViewMap and this never renders. Styling mirrors the destination
+            pages' "Discover trip ideas" pill (GetInspiredDrawer's trigger), with
+            two deliberate departures: it stays visible on mobile (that trigger is
+            desktop-only), and its padding is set in arbitrary values rather than
+            `px-3` — bootstrap.min.css loads after Tailwind and its `.px-3` is
+            `1rem !important`, which silently inflates the pill. */}
+        {props?.fromChat && props?.onViewMap && (
+          <button
+            type="button"
+            onClick={props.onViewMap}
+            // `border-[1px] border-solid`, NOT `border`: bootstrap.min.css loads
+            // after Tailwind and its `.border` is the whole shorthand with
+            // `!important` (`border: <width> <style> var(--bs-border-color)`), so
+            // it overrides the colour and the pill renders bootstrap grey. Same
+            // collision as `.px-3`. Arbitrary values don't collide.
+            className="group self-start inline-flex items-center gap-[7px] rounded-[10px] border-[1px] border-solid border-[#922ADC] bg-[#F7ECFF] px-[11px] py-[5px] text-[13px] max-ph:text-[12px] font-semibold text-[#922ADC] transition-all duration-200 hover:-translate-y-0.5"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+              className="w-[15px] h-[15px] shrink-0"
+            >
+              <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
+              <line x1="9" y1="3" x2="9" y2="18" />
+              <line x1="15" y1="6" x2="15" y2="21" />
+            </svg>
+            <span>See your journey on map</span>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+              className="w-[16px] h-[16px] shrink-0 transition-transform duration-200 group-hover:translate-x-[3px]"
+            >
+              <path d="M5 12h14M13 6l6 6-6 6" />
+            </svg>
+          </button>
+        )}
+
         <div className={`flex flex-col ${props?.fromChat ? "gap-2" : ""}`}>
           <CityItem
             setShowLoginModal={setShowLoginModal}

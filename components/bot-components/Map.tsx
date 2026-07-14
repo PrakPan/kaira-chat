@@ -7,7 +7,31 @@ import React, {
   useCallback,
   useMemo,
 } from "react";
+import { createPortal } from "react-dom";
 import { useSelector } from "react-redux";
+import CityElementCard from "./components/CityElementCard";
+import CityOverviewCard from "./components/CityOverviewCard";
+import {
+  buildCityCards,
+  type CityCard,
+  type CityCardElement,
+} from "./utils/cityDayElements";
+import { geocodePlace, type LatLng } from "./utils/geocodePlaces";
+import {
+  chooseDeckPlacements,
+  deckOffset,
+  dotAnchor,
+  markerRect,
+  pinRect,
+  tailStyle,
+  CITY_PIN_ANCHOR,
+  COST_COVER_ELEMENT,
+  COST_COVER_PIN,
+  type AnchorGeom,
+  type DeckBox,
+  type DeckPlacement,
+  type Obstacle,
+} from "./utils/deckPlacement";
 
 interface Location {
   id: string;
@@ -36,7 +60,97 @@ interface MapProps {
   locations: Location[];
   userLocation: UserLocation | null;
   currentRoute: Location[] | null;
+  /** True while the map pane is the one on screen — see MapViewProps.isVisible. */
+  isVisible?: boolean;
 }
+
+/**
+ * A city's day-by-day deck once it has been bound to a route stop: anchored to
+ * that stop's coordinates, and tagged with its index so a marker can find its
+ * own deck without re-matching on position.
+ */
+type DeckCard = Omit<CityCard, "lat" | "lng"> & {
+  lat: number;
+  lng: number;
+  stopIndex: number;
+};
+
+/**
+ * A deck opens on the city itself; paging into its elements is what the Explore
+ * call to action does. So the index a deck is "at" is either this — the city
+ * overview — or the position of one of its elements.
+ */
+const CITY_VIEW = -1;
+
+/** Elements only get their own marker once the API has given them coordinates. */
+const hasCoords = (
+  el?: CityCardElement,
+): el is CityCardElement & { lat: number; lng: number } =>
+  !!el && el.lat != null && el.lng != null;
+
+/** Category markers are circles centred on their point. The element whose card
+ * is open wears the larger one, so it is obvious which of a cluster of pins the
+ * card in front of you belongs to. */
+const ELEMENT_MARKER_SIZE = 36;
+const ACTIVE_ELEMENT_MARKER_SIZE = 48;
+
+/**
+ * Which marker a deck's card hangs off right now: the element being shown, or
+ * the city itself — which is also the fallback for an element the API sent
+ * without coordinates and which we could not geocode, since it has no marker of
+ * its own.
+ */
+const deckAnchorEl = (
+  card: DeckCard,
+  index: number,
+): (CityCardElement & { lat: number; lng: number }) | null => {
+  const el = index >= 0 ? card.elements[index] : undefined;
+  return hasCoords(el) ? el : null;
+};
+
+const deckAnchor = (card: DeckCard, index: number): google.maps.LatLngLiteral => {
+  const el = deckAnchorEl(card, index);
+  return el ? { lat: el.lat, lng: el.lng } : { lat: card.lat, lng: card.lng };
+};
+
+/** The shape of that marker — a card is offset from the marker, not the point. */
+const deckAnchorGeom = (card: DeckCard, index: number): AnchorGeom =>
+  deckAnchorEl(card, index)
+    ? dotAnchor(ACTIVE_ELEMENT_MARKER_SIZE)
+    : CITY_PIN_ANCHOR;
+
+/** Zoom the map settles at when a city's elements are opened up. */
+const EXPLORE_ZOOM = 13;
+
+/**
+ * Stacking order for overlapping decks. Earlier stops sit on top of later ones —
+ * the route reads first-to-last, so city 2's card should cover city 3's, not the
+ * other way round (DOM order alone would do the opposite, since the decks are
+ * appended in route order). A deck the user has clicked beats them all: on a
+ * tight route that is the only way to reach a card that is fully covered.
+ */
+const DECK_FOCUS_Z = 1000;
+const deckZIndex = (index: number, total: number, focused: boolean): number =>
+  focused ? DECK_FOCUS_Z : Math.max(1, total - index);
+
+/** The little triangle joining a card to its pin. */
+const DeckTail = ({ placement }: { placement: DeckPlacement }) => (
+  <div
+    style={{
+      width: 0,
+      height: 0,
+      filter: "drop-shadow(0 2px 2px rgba(11,18,32,0.10))",
+      ...(tailStyle(placement) as React.CSSProperties),
+    }}
+  />
+);
+
+/** Placement used until the first measured pass lands — card above its pin. */
+const DEFAULT_PLACEMENT: DeckPlacement = {
+  side: "top",
+  ...deckOffset("top", "center", 244, 258),
+  tail: 122,
+};
 
 // Snazzy Maps WY Style
 const mapStyles = [
@@ -191,8 +305,8 @@ function getEndpointPin(kind: "start" | "end"): google.maps.Icon {
   };
 }
 
-// Generic category marker (non-route stops)
-function getMarkerIcon(type: string): google.maps.Icon {
+// Generic category marker (non-route stops, and every day-by-day element)
+function getMarkerIcon(type: string, active = false): google.maps.Icon {
   const configs: Record<string, { bg: string; svg: string }> = {
     restaurant: {
       bg: "#2AB0FC",
@@ -215,15 +329,25 @@ function getMarkerIcon(type: string): google.maps.Icon {
   const { bg, svg } = configs[type] ?? configs.poi;
   const viewBox = type === "activity" ? "0 0 22 22" : "0 0 20 20";
 
+  // The element whose card is open wears a bigger disc inside a white collar, so
+  // that in a cluster of pins it is unmistakably the one the card is pointing at.
+  // Drawn in the same 36-unit space and scaled up, so the glyph keeps its
+  // proportions instead of rattling around inside a larger circle.
+  const size = active ? ACTIVE_ELEMENT_MARKER_SIZE : ELEMENT_MARKER_SIZE;
+  const collar = active
+    ? `<circle cx="18" cy="18" r="17.5" fill="#fff" filter="url(#sh)"/>
+       <circle cx="18" cy="18" r="15" fill="${bg}"/>`
+    : `<circle cx="18" cy="18" r="16" fill="${bg}" filter="url(#sh)"/>`;
+
   return {
     url:
       "data:image/svg+xml;charset=UTF-8," +
       encodeURIComponent(`
         <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36">
           <filter id="sh" x="-40%" y="-40%" width="180%" height="180%">
-            <feDropShadow dx="0" dy="4" stdDeviation="3" flood-color="rgba(124,121,121,0.25)"/>
+            <feDropShadow dx="0" dy="4" stdDeviation="3" flood-color="rgba(124,121,121,${active ? 0.4 : 0.25})"/>
           </filter>
-          <circle cx="18" cy="18" r="16" fill="${bg}" filter="url(#sh)"/>
+          ${collar}
           <g transform="translate(8, 8)">
             <svg width="20" height="20" viewBox="${viewBox}" fill="none" xmlns="http://www.w3.org/2000/svg">
               ${svg}
@@ -231,8 +355,8 @@ function getMarkerIcon(type: string): google.maps.Icon {
           </g>
         </svg>
       `),
-    scaledSize: new google.maps.Size(36, 36),
-    anchor: new google.maps.Point(18, 18),
+    scaledSize: new google.maps.Size(size, size),
+    anchor: new google.maps.Point(size / 2, size / 2),
   };
 }
 
@@ -342,7 +466,7 @@ function buildPopupHTML({
 }
 
 const MyMap = forwardRef<google.maps.Map | null, MapProps>(
-  ({ state, locations, userLocation, currentRoute }, ref) => {
+  ({ state, locations, userLocation, currentRoute, isVisible = true }, ref) => {
     const mapRef = useRef<HTMLDivElement>(null);
     const mapInstance = useRef<google.maps.Map | null>(null);
     const markersRef = useRef<google.maps.Marker[]>([]);
@@ -416,6 +540,492 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
 
     const effectiveRoute = fallbackRoute ?? currentRoute;
     const effectiveLocations = fallbackRoute ?? locations;
+
+    // ── Day-by-day cards on the city markers ────────────────────────────────
+    // Every route stop carries a deck of that city's activities / POIs, drawn
+    // from the canonical itinerary. A deck is only shown for a stop that is on
+    // the map right now, so a POI-only `focus_on_map` (which clears the route)
+    // doesn't drag stale cards along.
+    //
+    // Stops are matched to itinerary cities by NAME first, then by proximity.
+    // Neither alone is enough: a draft itinerary (BotApp's
+    // transformDraftToItinerary) carries no city coordinates at all, so
+    // proximity has nothing to work with there; and a bot `focus_route` carries
+    // its own coordinates for a city, agreeing with Mercury's only to within a
+    // few hundred metres, so an exact coordinate match would miss. The
+    // proximity tolerance is city-scale — far below the gap between two stops.
+    //
+    // Each deck records the index of the stop that owns it, so marker clicks can
+    // bind to a deck exactly instead of re-deriving it from coordinates (which
+    // is ambiguous when a route visits the same city twice).
+    const cityCards = useMemo<DeckCard[]>(() => {
+      if (!effectiveRoute || effectiveRoute.length === 0) return [];
+      const decks = buildCityCards(itineraryRedux);
+      if (decks.length === 0) return [];
+
+      const CITY_MATCH_DEG = 0.05; // ~5.5km
+      const norm = (s?: string | null) => (s ?? "").trim().toLowerCase();
+      const claimed = new Set<string>();
+      const matched: DeckCard[] = [];
+
+      effectiveRoute.forEach((stop, stopIndex) => {
+        let best: CityCard | undefined;
+
+        // 1. Name match — the only signal a coordinate-less draft city has.
+        for (const deck of decks) {
+          if (claimed.has(deck.id)) continue;
+          if (norm(deck.cityName) && norm(deck.cityName) === norm(stop.name)) {
+            best = deck;
+            break;
+          }
+        }
+
+        // 2. Nearest unclaimed city within city-scale tolerance.
+        if (!best) {
+          let bestDist = Infinity;
+          for (const deck of decks) {
+            if (claimed.has(deck.id)) continue;
+            if (deck.lat == null || deck.lng == null) continue;
+            const dLat = Math.abs(deck.lat - stop.lat);
+            const dLng = Math.abs(deck.lng - stop.lng);
+            if (dLat > CITY_MATCH_DEG || dLng > CITY_MATCH_DEG) continue;
+            if (dLat + dLng < bestDist) {
+              bestDist = dLat + dLng;
+              best = deck;
+            }
+          }
+        }
+
+        if (!best) return;
+        claimed.add(best.id);
+        // Anchor the deck to the marker's own coordinates, not the itinerary
+        // city's, so the card sits on the pin rather than beside it.
+        matched.push({ ...best, lat: stop.lat, lng: stop.lng, stopIndex });
+      });
+      return matched;
+    }, [itineraryRedux, effectiveRoute]);
+
+    // ── Element coordinates ─────────────────────────────────────────────────
+    // The itinerary names its day-by-day elements but ships no coordinates for
+    // them, so every element would otherwise be a card with no pin. Look the
+    // missing ones up by name against their own city (see utils/geocodePlaces —
+    // cached, throttled, and biased to the city so we don't pin a namesake on the
+    // other side of the world), then fold the results back into the decks.
+    const [geocoded, setGeocoded] = useState<Record<string, LatLng>>({});
+    // Which lookups have been started, so a re-render doesn't re-run them. A miss
+    // stays in here without ever landing in `geocoded` — that element simply has
+    // no marker.
+    const attemptedRef = useRef<Set<string>>(new Set());
+
+    const elementKey = (cardId: string, el: CityCardElement) =>
+      `${cardId}::${el.key}`;
+
+    useEffect(() => {
+      if (!mapReady) return undefined;
+      let cancelled = false;
+
+      const pending: { key: string; query: string; near: LatLng }[] = [];
+      cityCards.forEach((card) => {
+        card.elements.forEach((el) => {
+          if (el.lat != null && el.lng != null) return;
+          const key = elementKey(card.id, el);
+          if (attemptedRef.current.has(key)) return;
+          const query = [el.name, card.cityName].filter(Boolean).join(", ");
+          if (!query) return;
+          attemptedRef.current.add(key);
+          pending.push({ key, query, near: { lat: card.lat, lng: card.lng } });
+        });
+      });
+      if (pending.length === 0) return undefined;
+
+      // Markers land one by one as the queue drains, rather than the map sitting
+      // empty until the last element resolves.
+      pending.forEach(({ key, query, near }) => {
+        geocodePlace(query, near).then((coords) => {
+          if (cancelled || !coords) return;
+          setGeocoded((prev) =>
+            prev[key] ? prev : { ...prev, [key]: coords },
+          );
+        });
+      });
+
+      return () => {
+        cancelled = true;
+      };
+    }, [cityCards, mapReady]);
+
+    // The decks as the map draws them: the itinerary's own coordinates where it
+    // has any, the geocoded ones where it doesn't.
+    const deckCards = useMemo<DeckCard[]>(() => {
+      if (Object.keys(geocoded).length === 0) return cityCards;
+      return cityCards.map((card) => ({
+        ...card,
+        elements: card.elements.map((el) => {
+          if (el.lat != null && el.lng != null) return el;
+          const found = geocoded[elementKey(card.id, el)];
+          return found ? { ...el, lat: found.lat, lng: found.lng } : el;
+        }),
+      }));
+    }, [cityCards, geocoded]);
+
+    // What each city's deck is showing — CITY_VIEW (the default, so an unvisited
+    // deck opens on its city) or the index of one of its elements — and which
+    // decks the user has dismissed. Keyed by city id; pruned whenever the deck
+    // set changes so a rebuilt itinerary doesn't inherit a stale index.
+    const [cardIndex, setCardIndex] = useState<Record<string, number>>({});
+    const [dismissedCards, setDismissedCards] = useState<Record<string, boolean>>({});
+    // Decks overlap on tight routes — the last one touched is raised above the rest.
+    const [focusedCardId, setFocusedCardId] = useState<string | null>(null);
+    // DOM nodes owned by the OverlayViews; the cards are portalled into them.
+    const [overlayNodes, setOverlayNodes] = useState<
+      { id: string; node: HTMLDivElement }[]
+    >([]);
+
+    useEffect(() => {
+      const ids = new Set(cityCards.map((c) => c.id));
+      const prune = <T,>(prev: Record<string, T>): Record<string, T> => {
+        const keys = Object.keys(prev);
+        if (keys.every((k) => ids.has(k))) return prev;
+        const next: Record<string, T> = {};
+        keys.forEach((k) => {
+          if (ids.has(k)) next[k] = prev[k];
+        });
+        return next;
+      };
+      // A city that survives an itinerary edit can still lose elements, which
+      // would leave its index pointing past the end of a shorter deck. Drop
+      // those back to the city overview rather than to some other element the
+      // user never paged to.
+      const lengths = new Map(cityCards.map((c) => [c.id, c.elements.length]));
+      setCardIndex((prev) => {
+        const pruned = prune(prev);
+        let changed = pruned !== prev;
+        const next: Record<string, number> = { ...pruned };
+        Object.keys(next).forEach((k) => {
+          if (next[k] > (lengths.get(k) ?? 0) - 1) {
+            next[k] = CITY_VIEW;
+            changed = true;
+          }
+        });
+        return changed ? next : prev;
+      });
+      setDismissedCards(prune);
+      setFocusedCardId((prev) => (prev && ids.has(prev) ? prev : null));
+    }, [cityCards]);
+
+    // Leaving the map and coming back is a fresh look at it, so the decks
+    // return to their default state — every deck open, showing its city card —
+    // rather than preserving whatever the user dismissed or paged to last time.
+    const wasVisibleRef = useRef(isVisible);
+    useEffect(() => {
+      const reEntered = isVisible && !wasVisibleRef.current;
+      wasVisibleRef.current = isVisible;
+      if (!reEntered) return;
+      setDismissedCards((prev) => (Object.keys(prev).length ? {} : prev));
+      setCardIndex((prev) => (Object.keys(prev).length ? {} : prev));
+      setFocusedCardId(null);
+    }, [isVisible]);
+
+    // Which side of its pin each deck sits on, chosen by the placement pass.
+    const [deckPlacements, setDeckPlacements] = useState<
+      Record<string, DeckPlacement>
+    >({});
+    // A no-op overlay kept on the map purely to borrow its projection, so the
+    // placement pass can work in pixel space.
+    const projectionRef = useRef<google.maps.OverlayView | null>(null);
+    useEffect(() => {
+      if (!mapReady || !mapInstance.current || projectionRef.current) return undefined;
+      class ProjectionProbe extends google.maps.OverlayView {
+        onAdd() {}
+        draw() {}
+        onRemove() {}
+      }
+      const probe = new ProjectionProbe();
+      probe.setMap(mapInstance.current);
+      projectionRef.current = probe;
+      return () => {
+        probe.setMap(null);
+        projectionRef.current = null;
+      };
+    }, [mapReady]);
+
+    // The live overlays, so paging a deck can move its card from the city's pin
+    // onto the element's own pin without tearing the overlay down and back up.
+    const overlaysRef = useRef<
+      Record<string, { setPosition: (p: google.maps.LatLngLiteral) => void }>
+    >({});
+
+    // One OverlayView per deck, anchored to whichever pin its card belongs on.
+    // OverlayView (rather than InfoWindow) because every deck stays open at once,
+    // the cards are interactive React, and InfoWindow's chrome + auto-pan fight
+    // both.
+    useEffect(() => {
+      if (!mapReady || !mapInstance.current || cityCards.length === 0) {
+        setOverlayNodes((prev) => (prev.length === 0 ? prev : []));
+        return undefined;
+      }
+
+      class CardOverlay extends google.maps.OverlayView {
+        constructor(
+          private position: google.maps.LatLngLiteral,
+          private readonly container: HTMLDivElement,
+        ) {
+          super();
+        }
+        setPosition(next: google.maps.LatLngLiteral) {
+          if (
+            next.lat === this.position.lat &&
+            next.lng === this.position.lng
+          )
+            return;
+          this.position = next;
+          this.draw();
+        }
+        onAdd() {
+          this.getPanes()?.floatPane.appendChild(this.container);
+        }
+        draw() {
+          const point = this.getProjection()?.fromLatLngToDivPixel(
+            new google.maps.LatLng(this.position.lat, this.position.lng),
+          );
+          if (!point) return;
+          this.container.style.left = `${point.x}px`;
+          this.container.style.top = `${point.y}px`;
+        }
+        onRemove() {
+          this.container.remove();
+        }
+      }
+
+      const created = cityCards.map((card, index) => {
+        const node = document.createElement("div");
+        node.style.position = "absolute";
+        // Above the pin until the placement pass says otherwise.
+        node.style.transform = `translate(${DEFAULT_PLACEMENT.dx}px, ${DEFAULT_PLACEMENT.dy}px)`;
+        // The transform makes this node a stacking context, so a z-index on a
+        // portalled child can only order things *within* the card. Ordering one
+        // deck against an overlapping neighbour has to happen out here, on the
+        // containers themselves — see deckZIndex.
+        node.style.zIndex = String(deckZIndex(index, cityCards.length, false));
+        // Keep drags, clicks and scrolls inside the card from reaching the map.
+        google.maps.OverlayView.preventMapHitsAndGesturesFrom(node);
+        const overlay = new CardOverlay({ lat: card.lat, lng: card.lng }, node);
+        overlay.setMap(mapInstance.current!);
+        return { id: card.id, node, overlay };
+      });
+
+      overlaysRef.current = Object.fromEntries(
+        created.map(({ id, overlay }) => [id, overlay]),
+      );
+      setOverlayNodes(created.map(({ id, node }) => ({ id, node })));
+
+      return () => {
+        created.forEach(({ overlay }) => overlay.setMap(null));
+        overlaysRef.current = {};
+        setOverlayNodes([]);
+      };
+    }, [cityCards, mapReady]);
+
+    // Follow the deck onto the pin of whatever it is showing — including the
+    // moment an element's geocode lands and its card can move off the city pin
+    // onto its own.
+    useEffect(() => {
+      deckCards.forEach((card) => {
+        overlaysRef.current[card.id]?.setPosition(
+          deckAnchor(card, cardIndex[card.id] ?? CITY_VIEW),
+        );
+      });
+    }, [deckCards, cardIndex, overlayNodes]);
+
+    // ── Placement pass ──────────────────────────────────────────────────────
+    // Measure the pins and the rendered cards in pixel space, then let
+    // chooseDeckPlacements pick a spot for each deck (see utils/deckPlacement).
+    const relayoutDecks = useCallback(() => {
+      const projection = projectionRef.current?.getProjection();
+      const container = mapRef.current;
+      if (!projection || !container || overlayNodes.length === 0) return;
+
+      const vw = container.clientWidth;
+      const vh = container.clientHeight;
+      if (!vw || !vh) return; // hidden pane — nothing meaningful to measure
+
+      const toPixel = (lat: number, lng: number) =>
+        projection.fromLatLngToContainerPixel(new google.maps.LatLng(lat, lng));
+
+      // Every marker on the map right now — these are what the cards work around.
+      // City pins hang from their tip and are close to untouchable; element
+      // markers are circles centred on their point (see getMarkerIcon) and are a
+      // softer constraint, since a city that packs a dozen of them into a few
+      // hundred metres leaves nowhere that clears them all.
+      const obstacles: Obstacle[] = [];
+      (effectiveLocations ?? []).forEach((loc) => {
+        const p = toPixel(loc.lat, loc.lng);
+        if (p) obstacles.push({ rect: pinRect(p.x, p.y), cost: COST_COVER_PIN });
+      });
+      deckCards.forEach((card) => {
+        const shown = cardIndex[card.id] ?? CITY_VIEW;
+        card.elements.forEach((el, i) => {
+          if (!hasCoords(el)) return;
+          const p = toPixel(el.lat, el.lng);
+          if (!p) return;
+          const active = i === shown;
+          const size = active
+            ? ACTIVE_ELEMENT_MARKER_SIZE
+            : ELEMENT_MARKER_SIZE;
+          obstacles.push({
+            rect: markerRect(p.x, p.y, dotAnchor(size)),
+            // The element being read about is the one marker on the map the user
+            // is certainly looking for, so its own card must not sit on it.
+            cost: active ? COST_COVER_PIN : COST_COVER_ELEMENT,
+          });
+        });
+      });
+
+      const nodeById = new Map(overlayNodes.map((o) => [o.id, o.node]));
+      const boxes: DeckBox[] = [];
+      deckCards.forEach((card) => {
+        if (dismissedCards[card.id]) return; // a closed deck reserves no space
+        const node = nodeById.get(card.id);
+        const shown = cardIndex[card.id] ?? CITY_VIEW;
+        const anchor = deckAnchor(card, shown);
+        const p = toPixel(anchor.lat, anchor.lng);
+        if (!node || !p) return;
+        boxes.push({
+          id: card.id,
+          x: p.x,
+          y: p.y,
+          w: node.offsetWidth || 244,
+          h: node.offsetHeight || 250,
+          anchor: deckAnchorGeom(card, shown),
+        });
+      });
+
+      const next = chooseDeckPlacements(boxes, obstacles, vw, vh);
+
+      // Written straight to the DOM as well as to state: the transform has to
+      // land in the same frame as the measurement it came from, while the state
+      // is what turns the tail to face the pin.
+      boxes.forEach(({ id }) => {
+        const node = nodeById.get(id);
+        const p = next[id];
+        if (node && p) {
+          node.style.transform = `translate(${p.dx}px, ${p.dy}px)`;
+        }
+      });
+
+      setDeckPlacements((prev) => {
+        const keys = Object.keys(next);
+        const same =
+          keys.length === Object.keys(prev).length &&
+          keys.every(
+            (k) =>
+              prev[k] &&
+              prev[k].side === next[k].side &&
+              prev[k].tail === next[k].tail,
+          );
+        return same ? prev : next;
+      });
+    }, [overlayNodes, deckCards, cardIndex, dismissedCards, effectiveLocations]);
+
+    // Re-place after the cards have rendered (relayoutDecks is keyed on
+    // `cardIndex`, and both the card on show and the pin it hangs off change with
+    // it), and whenever the map settles — a zoom changes how far apart the pins
+    // are on screen, which changes what collides with what.
+    //
+    // Deliberately NOT keyed on `deckPlacements`: the pass writes the transform
+    // to the DOM itself, so it does not need a re-render to take effect, and
+    // feeding its own output back in would let two placements trade forever.
+    useEffect(() => {
+      if (!mapReady || !mapInstance.current) return undefined;
+      const raf = requestAnimationFrame(relayoutDecks);
+      const listener = mapInstance.current.addListener("idle", relayoutDecks);
+      return () => {
+        cancelAnimationFrame(raf);
+        listener.remove();
+      };
+    }, [relayoutDecks, mapReady]);
+
+    // Decks overlap wherever two cities sit close together on screen. Clicking a
+    // pin (or the card itself) lifts that deck above its neighbours — the only
+    // way to reach a card that is fully covered.
+    useEffect(() => {
+      const order = new Map(cityCards.map((c, i) => [c.id, i]));
+      overlayNodes.forEach(({ id, node }) => {
+        const index = order.get(id);
+        if (index === undefined) return;
+        node.style.zIndex = String(
+          deckZIndex(index, cityCards.length, focusedCardId === id),
+        );
+      });
+    }, [overlayNodes, focusedCardId, cityCards]);
+
+    // Decks need room around the pins, or the placement pass has to choose
+    // between covering a marker and running off the edge of the pane. A card is
+    // ~258px tall and 244px wide and can now sit on any side of its pin, so the
+    // bounds get headroom on every side — capped as a fraction of the pane so a
+    // small map isn't zoomed out to nothing to make room.
+    const fitPadding = useCallback((): google.maps.Padding => {
+      const base = { top: 80, right: 60, bottom: 80, left: 60 };
+      if (cityCards.length === 0) return base;
+      const el = mapRef.current;
+      const height = el?.clientHeight ?? 0;
+      const width = el?.clientWidth ?? 0;
+      const side =
+        width > 0 ? Math.min(160, Math.max(60, Math.round(width / 6))) : 60;
+      return {
+        top: height > 0 ? Math.min(300, Math.max(80, Math.round(height / 3))) : 300,
+        bottom:
+          height > 0 ? Math.min(180, Math.max(80, Math.round(height / 5))) : 80,
+        left: side,
+        right: side,
+      };
+    }, [cityCards.length]);
+
+    // Open one of a deck's elements: its card re-anchors to that element's own
+    // marker (see the overlay effect), so the map follows it there — otherwise
+    // paging through a city's day-by-day would walk the card off screen. Zooming
+    // in is reserved for the step *into* a city, so the pager doesn't keep
+    // wrenching the map once the user is already inside it.
+    const openElement = useCallback(
+      (card: DeckCard, target: number, zoomIn = false) => {
+        const index = Math.min(
+          Math.max(0, target),
+          Math.max(0, card.elements.length - 1),
+        );
+        setCardIndex((prev) =>
+          prev[card.id] === index ? prev : { ...prev, [card.id]: index },
+        );
+        setDismissedCards((prev) =>
+          prev[card.id] ? { ...prev, [card.id]: false } : prev,
+        );
+        setFocusedCardId(card.id);
+
+        const map = mapInstance.current;
+        const el = card.elements[index];
+        if (!map || !hasCoords(el)) return;
+        if (zoomIn && (map.getZoom() ?? 0) < EXPLORE_ZOOM) {
+          map.setZoom(EXPLORE_ZOOM);
+        }
+        map.panTo({ lat: el.lat, lng: el.lng });
+      },
+      [],
+    );
+
+    // Back out of a city's elements to the city card, which is pinned to the
+    // city's own marker — so pan back to it, or the card would re-appear on a pin
+    // the user has since left behind.
+    const showCityCard = useCallback((card: DeckCard) => {
+      setCardIndex((prev) =>
+        (prev[card.id] ?? CITY_VIEW) === CITY_VIEW
+          ? prev
+          : { ...prev, [card.id]: CITY_VIEW },
+      );
+      setDismissedCards((prev) =>
+        prev[card.id] ? { ...prev, [card.id]: false } : prev,
+      );
+      setFocusedCardId(card.id);
+      mapInstance.current?.panTo({ lat: card.lat, lng: card.lng });
+    }, []);
 
     // Expose the map instance to parent via ref
     useImperativeHandle(ref, () => mapInstance.current!, [mapReady]);
@@ -500,12 +1110,7 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
           effectiveRoute!.forEach((loc) =>
             bounds.extend({ lat: loc.lat, lng: loc.lng }),
           );
-          mapInstance.current.fitBounds(bounds, {
-            top: 80,
-            right: 60,
-            bottom: 80,
-            left: 60,
-          });
+          mapInstance.current.fitBounds(bounds, fitPadding());
           clampZoomAfterFit(mapInstance.current);
         }
       } else if (hasLocations) {
@@ -513,15 +1118,10 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
         effectiveLocations!.forEach((loc) =>
           bounds.extend({ lat: loc.lat, lng: loc.lng }),
         );
-        mapInstance.current.fitBounds(bounds, {
-          top: 80,
-          right: 60,
-          bottom: 80,
-          left: 60,
-        });
+        mapInstance.current.fitBounds(bounds, fitPadding());
         clampZoomAfterFit(mapInstance.current);
       }
-    }, [effectiveRoute, effectiveLocations, clampZoomAfterFit]);
+    }, [effectiveRoute, effectiveLocations, clampZoomAfterFit, fitPadding]);
 
     // Once the map tiles have loaded, re-fit to any existing route/location
     // data. Handles the page-reload race where data arrives before the map
@@ -549,11 +1149,13 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
       const observer = new ResizeObserver(() => {
         const w = el.clientWidth;
         const h = el.clientHeight;
+        // Container size only — distinct from the `isVisible` prop, which also
+        // covers mobile's opacity toggle (where the container keeps its size).
         const wasHidden = lastW === 0 || lastH === 0;
-        const isVisible = w > 0 && h > 0;
+        const hasSize = w > 0 && h > 0;
         lastW = w;
         lastH = h;
-        if (wasHidden && isVisible && mapInstance.current) {
+        if (wasHidden && hasSize && mapInstance.current) {
           // Small timer so the browser has settled before we measure inside fitBounds
           setTimeout(() => {
             if (!mapInstance.current) return;
@@ -709,14 +1311,9 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
       effectiveRoute.forEach((loc) =>
         bounds.extend({ lat: loc.lat, lng: loc.lng }),
       );
-      mapInstance.current.fitBounds(bounds, {
-        top: 80,
-        right: 60,
-        bottom: 80,
-        left: 60,
-      });
+      mapInstance.current.fitBounds(bounds, fitPadding());
       clampZoomAfterFit(mapInstance.current);
-    }, [effectiveRoute, clampZoomAfterFit, mapReady]);
+    }, [effectiveRoute, clampZoomAfterFit, mapReady, fitPadding]);
 
     // Place / update location markers
     useEffect(() => {
@@ -775,6 +1372,24 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
           icon: markerIcon,
           zIndex: endpointKind ? 400 : isRouteStop ? 200 + routeIndex : 100,
         });
+
+        // A route stop that carries a day-by-day deck answers its own marker
+        // click: the deck is already on screen, so re-open it if the user
+        // dismissed it and raise it above any overlapping neighbour, rather
+        // than stacking an InfoWindow on top of it. Matched on the stop's index
+        // — matching on coordinates would be ambiguous for a route that visits
+        // the same city twice, where both stops sit on the same point.
+        const deck = isRouteStop
+          ? cityCards.find((c) => c.stopIndex === routeIndex)
+          : undefined;
+        if (deck) {
+          marker.addListener("click", () => {
+            infoWindowRef.current?.close();
+            showCityCard(deck);
+          });
+          markersRef.current.push(marker);
+          return;
+        }
 
         // Info window on click — unified compact card design (Figma)
         marker.addListener("click", () => {
@@ -841,12 +1456,7 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
         effectiveLocations.forEach((loc) =>
           bounds.extend(new window.google.maps.LatLng(loc.lat, loc.lng)),
         );
-        mapInstance.current.fitBounds(bounds, {
-          top: 80,
-          right: 60,
-          bottom: 80,
-          left: 60,
-        });
+        mapInstance.current.fitBounds(bounds, fitPadding());
         clampZoomAfterFit(mapInstance.current);
       } else if (userLocation) {
         mapInstance.current.setCenter({
@@ -857,9 +1467,144 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
         // falling back to a sensible country-level zoom instead of world-level.
         mapInstance.current.setZoom(state.zoom ?? 6);
       }
-    }, [effectiveLocations, userLocation, effectiveRoute, mapInstance, clampZoomAfterFit, state.zoom, mapReady]);
+    }, [effectiveLocations, userLocation, effectiveRoute, mapInstance, clampZoomAfterFit, state.zoom, mapReady, cityCards, showCityCard]);
 
-    return <div ref={mapRef} style={{ width: "100%", height: "100%" }} />;
+    // A marker for every day-by-day element the itinerary places inside a city,
+    // wearing the same category icon its card's chip does. Clicking one opens
+    // that element's card.
+    //
+    // Kept as a keyed diff rather than a wipe-and-rebuild: the geocodes trickle
+    // in one element at a time, and tearing every marker off the map on each one
+    // would leave the whole set flickering while a city resolves.
+    const elementMarkersRef = useRef<Record<string, google.maps.Marker>>({});
+    // Marker click handlers outlive the render that made them — read the decks
+    // through a ref so a click always acts on the element's current coordinates.
+    const deckCardsRef = useRef<DeckCard[]>(deckCards);
+    useEffect(() => {
+      deckCardsRef.current = deckCards;
+    }, [deckCards]);
+
+    useEffect(() => {
+      if (!mapReady || !mapInstance.current) return;
+
+      const live = elementMarkersRef.current;
+      const wanted = new Set<string>();
+
+      deckCards.forEach((card) => {
+        const shown = cardIndex[card.id] ?? CITY_VIEW;
+        card.elements.forEach((el, index) => {
+          if (!hasCoords(el)) return;
+          const key = elementKey(card.id, el);
+          wanted.add(key);
+
+          // The open element's marker is the enlarged one, and rides above its
+          // neighbours — in a cluster that is what ties the card to its pin.
+          const active = index === shown && !dismissedCards[card.id];
+          const icon = getMarkerIcon(el.type, active);
+          // Under the city pins, which are the route the elements hang off.
+          const zIndex = active ? 300 : 100;
+
+          const existing = live[key];
+          if (existing) {
+            existing.setPosition({ lat: el.lat, lng: el.lng });
+            existing.setIcon(icon);
+            existing.setZIndex(zIndex);
+            return;
+          }
+
+          const marker = new google.maps.Marker({
+            position: { lat: el.lat, lng: el.lng },
+            map: mapInstance.current!,
+            title: el.name,
+            icon,
+            zIndex,
+          });
+          marker.addListener("click", () => {
+            infoWindowRef.current?.close();
+            const fresh =
+              deckCardsRef.current.find((c) => c.id === card.id) ?? card;
+            openElement(fresh, index);
+          });
+          live[key] = marker;
+        });
+      });
+
+      Object.keys(live).forEach((key) => {
+        if (wanted.has(key)) return;
+        live[key].setMap(null);
+        delete live[key];
+      });
+    }, [deckCards, cardIndex, dismissedCards, mapReady, openElement]);
+
+    // The diff above only prunes markers it can still see; unmounting takes the
+    // rest off the map.
+    useEffect(
+      () => () => {
+        Object.values(elementMarkersRef.current).forEach((marker) =>
+          marker.setMap(null),
+        );
+        elementMarkersRef.current = {};
+      },
+      [],
+    );
+
+    return (
+      <>
+        {/* Paging a deck swaps one card for the next on a marker a few pixels
+            from the last one, which on its own reads as nothing happening. The
+            card lifts in, so the change is felt. */}
+        <style>{`@keyframes ttwDeckCardIn {
+          from { opacity: 0; transform: scale(0.94); }
+          to { opacity: 1; transform: none; }
+        }`}</style>
+        <div ref={mapRef} style={{ width: "100%", height: "100%" }} />
+        {overlayNodes.map(({ id, node }) => {
+          const card = deckCards.find((c) => c.id === id);
+          if (!card || dismissedCards[id]) return null;
+          const index = Math.min(
+            cardIndex[id] ?? CITY_VIEW,
+            card.elements.length - 1,
+          );
+          const placement = deckPlacements[id] ?? DEFAULT_PLACEMENT;
+          return createPortal(
+            // The tail is absolutely positioned against the card, so a card slid
+            // along its pin's edge still points back at its own marker. Keyed on
+            // what it is showing, so stepping to the next element remounts it and
+            // replays the animation.
+            <div
+              key={`${id}:${index}`}
+              style={{
+                position: "relative",
+                animation: "ttwDeckCardIn 170ms ease-out",
+              }}
+            >
+              {index === CITY_VIEW ? (
+                <CityOverviewCard
+                  card={card}
+                  onExplore={() => openElement(card, 0, true)}
+                  onClose={() =>
+                    setDismissedCards((prev) => ({ ...prev, [id]: true }))
+                  }
+                  onFocus={() => setFocusedCardId(id)}
+                />
+              ) : (
+                <CityElementCard
+                  card={card}
+                  index={index}
+                  onPrev={() => openElement(card, index - 1)}
+                  onNext={() => openElement(card, index + 1)}
+                  onBack={() => showCityCard(card)}
+                  onFocus={() => setFocusedCardId(id)}
+                />
+              )}
+              <DeckTail placement={placement} />
+            </div>,
+            node,
+            id,
+          );
+        })}
+      </>
+    );
   },
 );
 
