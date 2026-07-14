@@ -42,6 +42,16 @@ export const newUser = () => {
   };
 };
 
+// Extract the human-readable message from an /initiate/ error payload of the
+// shape `{ success: false, errors: [{ detail: ["…"] }] }` (or `username`).
+// Returns null when nothing usable is found so callers can fall back.
+const extractOtpError = (data) => {
+  const firstError = data?.errors?.[0];
+  if (!firstError) return null;
+  if (typeof firstError === "string") return firstError;
+  return firstError.username?.[0] || firstError.detail?.[0] || null;
+};
+
 export const getotp = (data) => {
   const authData = {
     "g-recaptcha-response": data.token,
@@ -84,58 +94,31 @@ export const getotp = (data) => {
           if (response.data.data?.user?.email)
             dispatch(setUserDetails({ email: response.data.data?.user?.email }));
         } else {
-          const errorMsg = "Failed to send OTP";
+          // 200 OK but `success: false` (e.g. rate limit / validation). Surface
+          // the server's actual message from `errors[0].detail`/`username`
+          // instead of a generic string.
+          const errorMsg =
+            extractOtpError(response.data) || "Failed to send OTP";
           dispatch(authMobileFail(errorMsg));
-
-          setTimeout(() => {
-            // dispatch(openNotification({
-            //   type: "error",
-            //   text: "Failed to send OTP. Please try again.",
-            //   heading: "Error!",
-            // }));
-          }, 100);
         }
       })
       .catch((err) => {
-        dispatch(authStopLoading()); 
-        
-        let errorMessage = "Something went wrong, Please try again";
-        
-        if (err?.response?.status === 400) {
-          if (err.response.data?.errors) {
-            // Handle array of errors
-            const firstError = err.response.data.errors[0];
-            errorMessage = 
-              firstError?.username?.[0] || 
-              firstError?.detail?.[0] || 
-              errorMessage;
-          } else if (err.response.data?.errors?.[0]?.username?.[0]) {
-            errorMessage = err.response.data.errors[0].username[0];
-          }
-          
-          Sentry.captureException(
-            new Error(
-              `[LogIn Error]: ${err.response?.config?.url} : ${err.response?.config?.data} : ${errorMessage}`
-            )
-          );
-        } else {
-          errorMessage = "OTP could not be sent";
-          Sentry.captureException(
-            new Error(
-              `[LogIn Error]: ${err?.response?.config?.url} : ${err?.response?.config?.data}`
-            )
-          );
-        }
+        dispatch(authStopLoading());
+
+        // Pull the server's message from `errors[0].detail`/`username` for ANY
+        // failing status (400, 429 rate limit, etc.) — not just 400 — so the
+        // real reason ("Please try again after 45 seconds…") reaches the user.
+        const errorMessage =
+          extractOtpError(err?.response?.data) ||
+          (err?.response ? "OTP could not be sent" : "Something went wrong, Please try again");
+
+        Sentry.captureException(
+          new Error(
+            `[LogIn Error]: ${err?.response?.config?.url} : ${err?.response?.config?.data} : ${errorMessage}`
+          )
+        );
 
         dispatch(authMobileFail(errorMessage));
-        
-        setTimeout(() => {
-          // dispatch(openNotification({
-          //   type: "error",
-          //   text: errorMessage,
-          //   heading: "Error!",
-          // }));
-        }, 100);
       });
   };
 };
