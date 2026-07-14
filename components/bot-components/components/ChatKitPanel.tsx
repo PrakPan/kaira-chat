@@ -3566,6 +3566,20 @@ const handleShowLogin = useCallback(() => {
               // Route") suppress their own feedback in MessageBubble, so
               // skip past them when locating the eligible tail — otherwise
               // the whole turn ends up with no feedback at all.
+              // Consecutive button-only widgets (e.g. "View full itinerary" +
+              // "Confirm Itinerary…") should share one line rather than stack.
+              // Flag this bubble when it has a button-only widget neighbour so
+              // MessageBubble renders it inline-flow.
+              const isBtnOnlyWidgetMsg = (m: (typeof messages)[number] | undefined) =>
+                !!m &&
+                m.type === "widget" &&
+                !!m.widgetItem &&
+                isButtonOnlyWidget(m.widgetItem.widget);
+              const inlineGroup =
+                isBtnOnlyWidgetMsg(msg) &&
+                (isBtnOnlyWidgetMsg(messages[idx - 1]) ||
+                  isBtnOnlyWidgetMsg(messages[idx + 1]));
+
               let hideFeedback = false;
               if (msg.role === "assistant") {
                 for (let j = idx + 1; j < messages.length; j++) {
@@ -3596,6 +3610,7 @@ const handleShowLogin = useCallback(() => {
                 feedbackLoading={feedbackLoadingIds.has(msg.id)}
                 onFeedback={hideFeedback ? undefined : handleFeedback}
                 onRetry={onRetry}
+                inlineGroup={inlineGroup}
                 onWidgetAction={(action) => {
                   // Freeze this widget's CTAs the moment the user clicks one,
                   // regardless of which drawer or server call it triggers. The

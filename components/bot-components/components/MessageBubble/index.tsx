@@ -402,6 +402,11 @@ interface MessageBubbleProps {
   /** Re-send the previous user message. Provided only for network-error
    *  assistant bubbles so we can render a retry CTA in place of feedback. */
   onRetry?: () => void;
+  /** True when this button-only widget has an adjacent button-only widget
+   *  sibling in the message run. The bare CTA then renders inline-flow so
+   *  consecutive CTAs (e.g. "View full itinerary" + "Confirm Itinerary…")
+   *  sit side by side on one line and wrap on mobile, instead of stacking. */
+  inlineGroup?: boolean;
 }
 
 // ─── Feedback icons (thumbs up / thumbs down) ─────────────────────────────────
@@ -1585,6 +1590,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   feedbackLoading = false,
   onFeedback,
   onRetry,
+  inlineGroup = false,
 }) => {
   const rendered = useMemo(
     () => renderContent(message.content, entities ?? {}),
@@ -1600,7 +1606,17 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
     // conversation visual shouldn't anchor them to her.
     if (buttonOnly) {
       return (
-        <div>
+        <div
+          style={
+            inlineGroup
+              ? {
+                  display: "inline-flex",
+                  verticalAlign: "top",
+                  margin: "8px 10px 8px 0",
+                }
+              : { margin: "8px 0" }
+          }
+        >
           <WidgetRenderer
             widget={message.widgetItem.widget}
             onAction={onWidgetAction}
