@@ -160,7 +160,7 @@ const HeroV2 = ({
             <div className="relative z-[4] mb-3 flex flex-col items-start gap-3">
               <Link
                 href={intakeHref}
-                className="group flex relative z-[4] max-ph:hidden  items-center gap-[10px] rounded-full bg-[var(--ttw-ink)] px-7 py-3.5 text-base font-semibold text-white no-underline shadow-[0_12px_28px_-8px_rgba(11,18,32,0.4)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_16px_34px_-8px_rgba(11,18,32,0.45)]"
+                className="group flex relative z-[4]  items-center gap-[10px] rounded-full bg-[var(--ttw-ink)] px-7 py-3.5 text-base font-semibold text-white no-underline shadow-[0_12px_28px_-8px_rgba(11,18,32,0.4)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_16px_34px_-8px_rgba(11,18,32,0.45)]"
               >
                 Start planning
                 <svg
@@ -274,7 +274,7 @@ const HeroV2 = ({
 
             <Link
               href={intakeHref}
-              className={`${heroStyles.kairaCta} !hidden max-ph:!flex`}
+              className={`${heroStyles.kairaCta} !hidden`}
             >
               Start planning
               <svg

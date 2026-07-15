@@ -51,7 +51,7 @@ const CHATKIT = "https://chat.tarzanway.com"
 // carries no `prompt_login` effect to source the message from. Mirrors the
 // server's standard save-our-work `prompt_login` message.
 const DEFAULT_PROMPT_LOGIN_MESSAGE =
-  "Quick login so I can save our work as we go. You won't lose a thing, and your ₹5,000 credit locks in. 👇";
+  "Sign in to continue so I can save our work as we go. You won't lose a thing, and your ₹5,000 credit locks in. 👇";
 
 export interface AttachmentFile {
   /** Temporary local ID (before server responds) or server-assigned ID */

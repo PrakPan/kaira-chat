@@ -157,7 +157,7 @@ const CountryCodeDropdown = ({
           placeholder="Search"
         ></input>
       </div>
-      <div className="border-b-2">{topOptions}</div>
+      {!search && <div className="border-b-2">{topOptions}</div>}
       {options}
     </div>
   );
