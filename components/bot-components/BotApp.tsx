@@ -92,8 +92,16 @@ const groupTypePlural = (groupType?: string | null): string => {
 };
 
 // Returns a fragment, not a row: the mobile card shares its flex row with the
-// settings/share icons, while desktop gives it a row of its own.
-const KairaSocialProof = ({ groupType }: { groupType?: string | null }) => (
+// settings/share icons, while desktop gives it a row of its own. `wrap` lets the
+// caller drop the single-line ellipsis so the line wraps to its full text — used
+// on the narrow mobile card, where truncating would clip "…have chosen".
+const KairaSocialProof = ({
+  groupType,
+  wrap = false,
+}: {
+  groupType?: string | null;
+  wrap?: boolean;
+}) => (
   <>
     <span className="shrink-0 w-[30px] h-[30px] rounded-full overflow-hidden bg-gradient-to-b from-[#a8d2f5] to-[#7ab8e8]">
       <img
@@ -102,11 +110,15 @@ const KairaSocialProof = ({ groupType }: { groupType?: string | null }) => (
         className="w-full h-full object-cover"
       />
     </span>
-    <span className="min-w-0 truncate text-[13px] max-ph:text-[12px] font-inter text-[#4b5159]">
+    <span
+      className={`min-w-0 ${
+        wrap ? "" : "truncate"
+      } text-[13px] max-ph:text-[12px] font-inter text-[#4b5159]`}
+    >
       <span className="font-semibold text-[#0B1220]">
         {ROUTE_SOCIAL_PROOF_COUNT} {groupTypePlural(groupType)}
       </span>{" "}
-      chose this route
+      have chosen this route
     </span>
   </>
 );
@@ -133,23 +145,13 @@ const RouteArrow = () => (
 );
 
 // The Map / Bookings / Route views have no tab strip to return through, so each
-// carries this. `floating` is the map's variant — the map fills its pane edge to
-// edge, so the pill is overlaid on the canvas rather than sitting above it.
-const BackToItinerary = ({
-  onClick,
-  floating = false,
-}: {
-  onClick: () => void;
-  floating?: boolean;
-}) => (
+// carries this. It's a rounded pill; positioning is left to BackToItineraryBar,
+// which pins it centered, just above the cart bar, on every one of those views.
+const BackToItinerary = ({ onClick }: { onClick: () => void }) => (
   <button
     type="button"
     onClick={onClick}
-    className={
-      floating
-        ? "absolute z-10 top-3 left-3 flex items-center gap-[6px] rounded-full bg-white/95 backdrop-blur-sm border border-[#E3E6EA] shadow-[0_2px_10px_rgba(11,18,32,0.12)] pl-[9px] pr-[13px] py-[7px] text-[12.5px] font-inter font-semibold text-[#122A43] hover:bg-white"
-        : "flex items-center gap-[6px] text-[12.5px] font-inter font-semibold text-[#6E757A] hover:text-[#122A43] transition-colors"
-    }
+    className="pointer-events-auto flex items-center gap-[6px] rounded-full bg-white/95 backdrop-blur-sm border border-[#E3E6EA] shadow-[0_2px_10px_rgba(11,18,32,0.12)] pl-[11px] pr-[15px] py-[8px] text-[12.5px] font-inter font-semibold text-[#122A43] hover:bg-white"
   >
     <svg
       width="14"
@@ -167,6 +169,32 @@ const BackToItinerary = ({
     </svg>
     Back to itinerary
   </button>
+);
+
+// Pins the pill `fixed`, horizontally centered, a hair above the cart bar.
+// `barStyle` (the panel-aligned left/width the cart bar itself uses) keeps it
+// inside the left pane on desktop; without it — on mobile — it spans the screen
+// and centers there. `bottom` is the measured cart-bar height plus a small gap.
+const BackToItineraryBar = ({
+  onClick,
+  bottom,
+  barStyle,
+}: {
+  onClick: () => void;
+  bottom: number;
+  barStyle?: React.CSSProperties;
+}) => (
+  <div
+    className="fixed z-30 flex justify-center pointer-events-none"
+    style={{
+      left: barStyle?.left ?? 0,
+      width: barStyle?.width,
+      right: barStyle ? "auto" : 0,
+      bottom,
+    }}
+  >
+    <BackToItinerary onClick={onClick} />
+  </div>
 );
 
 function transformDraftToItinerary(draft: any) {
@@ -3061,6 +3089,57 @@ Start Location: ${details.startLocation}`;
     else setViewMode("itinerary");
   }, [isMobile]);
 
+  // How tall the stack of fixed bottom bars is, so the "Back to itinerary" pill
+  // can sit just above the topmost of them and never cover an actionable
+  // control. Two kinds of bars live down there: the cart bar (always) and the
+  // Route view's "Update Route" bar (only while the route has unsaved edits).
+  // Both are `fixed` but at different `bottom` offsets, so height alone isn't
+  // enough — measure each bar's top edge as a distance up from the viewport
+  // bottom and take the largest. Several copies of the cart bar exist at once
+  // (desktop map vs panel; on mobile the map tab's is only opacity:0, not
+  // unmounted) and some are display:none'd to a 0 rect — those are skipped.
+  const [bottomStackHeight, setBottomStackHeight] = useState(0);
+  useEffect(() => {
+    const SELECTOR = "[data-bottom-cta-bar],[data-route-action-bar]";
+    const measure = () => {
+      const vh = window.innerHeight;
+      let top = 0;
+      document.querySelectorAll(SELECTOR).forEach((el) => {
+        const rect = (el as HTMLElement).getBoundingClientRect();
+        if (rect.height === 0) return; // hidden / display:none copy
+        const fromBottom = vh - rect.top;
+        if (fromBottom > top) top = fromBottom;
+      });
+      setBottomStackHeight(top);
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    document.querySelectorAll(SELECTOR).forEach((el) => ro.observe(el));
+    window.addEventListener("resize", measure);
+    // The Update Route bar mounts/unmounts from deep inside RouteEditSection on
+    // an edit — a state change BotApp can't see — so it fires this event and we
+    // re-measure (and re-query, picking up the freshly-mounted bar).
+    window.addEventListener("route-action-bar-change", measure);
+    // Price / status resolves asynchronously and re-flows the cart bar to two
+    // lines; a late re-measure catches that even when no dep below has changed.
+    const t = setTimeout(measure, 400);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", measure);
+      window.removeEventListener("route-action-bar-change", measure);
+      clearTimeout(t);
+    };
+  }, [
+    viewMode,
+    isMobile,
+    cart,
+    pricingStatus,
+    loaderDisplayText,
+    activeItineraryId,
+    countCartItems,
+    isDraft,
+  ]);
+
   // null for skeleton/draft so ItineraryContainer skips polling
   const itineraryContainerId = useMemo(() => {
     if (activeItineraryId === "skeleton" || activeItineraryId === "draft")
@@ -3226,30 +3305,56 @@ Start Location: ${details.startLocation}`;
           isn't what was asked); mobile gets an even 10px box, matching the cart
           bar's gutter. One element serves both the expanded and collapsed card
           — `tripMetaOpen` only hides inner content — so this covers both. */}
-      <div className="bg-white flex flex-col p-[16px] border-b border-slate-100 max-ph:border max-ph:border-[#ECECEC] max-ph:rounded-[14px] max-ph:mx-3 max-ph:mt-[10px] max-ph:p-[10px]">
+      <div
+        // Mobile: tapping anywhere on the card (not just the chevron) toggles
+        // the collapsible trip meta. Interactive children — the settings/share/
+        // change buttons, the legend chips, the chevron itself — are all
+        // `<button>`s, so a tap that lands inside one is left to that control
+        // and doesn't also toggle the card (closest() guard). Desktop no-ops:
+        // it has no compact/expanded split, so `isMobile`/`tripCompactSub` bail.
+        onClick={(e) => {
+          if (!isMobile || !tripCompactSub) return;
+          if (
+            (e.target as HTMLElement).closest(
+              "button, a, input, label, select, textarea",
+            )
+          )
+            return;
+          handleTripMetaToggle();
+        }}
+        className="bg-white flex flex-col p-[16px] border-b border-slate-100 max-ph:border max-ph:border-[#ECECEC] max-ph:rounded-[14px] max-ph:mx-3 max-ph:mt-[10px] max-ph:p-[10px]"
+      >
         {/* Route and Bookings render inside this same panel (MenuV2 swaps its
-            body on activeTab), so the way out of them belongs here, above the
-            trip name. The Map view has its own overlaid pill instead. */}
-        {(viewMode === "routes" || viewMode === "bookings") && (
-          <div className="flex items-center mb-[7px]">
-            <BackToItinerary onClick={handleBackToItinerary} />
-          </div>
-        )}
+            body on activeTab). The way out of them — like the Map view's — is a
+            single centered pill pinned just above the cart bar (BackToItineraryBar
+            below), so it's not duplicated in this header. */}
         <div className="flex justify-between items-start gap-3 max-ph:gap-2 max-ph:relative">
           <div className="flex flex-col flex-1 min-w-0">
             {/* Compact title + sub are max-width-capped on mobile so they
                 truncate before the absolutely-positioned icons. (Padding can't
                 reserve truncation space — text overflows into it — so a
                 max-width is used.) The expanded detail below is full width. */}
-            <p className={`font-inter font-bold md:font-extrabold text-[13.5px] md:text-[24px] leading-[1.2] md:leading-[1.15] tracking-[-0.2px] md:tracking-[-0.5px] m-0 max-ph:truncate max-ph:max-w-[85%] ${tripMetaOpen ? "max-ph:hidden" : ""}`}>
-              {itineraryReduxName || currentItineraryRef?.current?.name || ""}
-            </p>
-            {/* Mobile-only compact sub: dates · pax (design .trip-row .t-sub) */}
-            {tripCompactSub && (
-              <div className={`md:hidden text-[11.5px] text-[#6B7280] mt-[1px] truncate max-ph:max-w-[85%] ${tripMetaOpen ? "max-ph:hidden" : ""}`}>
-                {tripCompactSub}
+            {/* Compact title + sub. On mobile they collapse away when the card
+                is expanded (the expanded detail below carries the full name);
+                the grid-rows 1fr↔0fr trick animates that as a smooth height +
+                opacity fade instead of the old `max-ph:hidden` snap. Desktop
+                stays open (base 1fr — only `max-ph:` collapses), since the 24px
+                title here is the header itself. */}
+            <div
+              className={`grid transition-[grid-template-rows,opacity] duration-300 ease-out motion-reduce:transition-none ${tripMetaOpen ? "grid-rows-[1fr] opacity-100 max-ph:grid-rows-[0fr] max-ph:opacity-0" : "grid-rows-[1fr] opacity-100"}`}
+            >
+              <div className="overflow-hidden min-h-0">
+                <p className="font-inter font-bold md:font-extrabold text-[13.5px] md:text-[24px] leading-[1.2] md:leading-[1.15] tracking-[-0.2px] md:tracking-[-0.5px] m-0 max-ph:truncate max-ph:max-w-[85%]">
+                  {itineraryReduxName || currentItineraryRef?.current?.name || ""}
+                </p>
+                {/* Mobile-only compact sub: dates · pax (design .trip-row .t-sub) */}
+                {tripCompactSub && (
+                  <div className="md:hidden text-[11.5px] text-[#6B7280] mt-[1px] truncate max-ph:max-w-[85%]">
+                    {tripCompactSub}
+                  </div>
+                )}
               </div>
-            )}
+            </div>
 
         {(itineraryRedux?.group_type ||
           itineraryRedux?.number_of_adults ||
@@ -3259,7 +3364,11 @@ Start Location: ${details.startLocation}`;
           // separating us from is itself hidden in expanded mode, so the margin
           // would just stack on the card's 10px top padding and make the top gap
           // read as double the bottom one.
-          <div className={`flex flex-col gap-1.5 mt-[11px] ${tripMetaOpen ? "max-ph:mt-0" : "max-ph:hidden"}`}>
+          <div
+            className={`grid transition-[grid-template-rows,opacity] duration-300 ease-out motion-reduce:transition-none ${tripMetaOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[1fr] opacity-100 max-ph:grid-rows-[0fr] max-ph:opacity-0"}`}
+          >
+            <div className="overflow-hidden min-h-0">
+          <div className="flex flex-col gap-1.5 mt-[11px] max-ph:mt-0">
             {/* Mobile expanded: full (untruncated) itinerary name — design's
                 .trip-detail .ttl. Hidden on desktop (already shown at 24px). */}
             <p className="md:hidden font-inter font-extrabold text-[18px] leading-[1.2] tracking-[-0.4px] m-0 mb-[3px] text-[#171A1F] max-ph:max-w-[85%]">
@@ -3273,7 +3382,10 @@ Start Location: ${details.startLocation}`;
                 {(itineraryRedux?.group_type ||
                   itineraryRedux?.number_of_adults) && (
                   <div ref={travellersColRef} className="flex items-center gap-2 max-ph:flex-col max-ph:items-start max-ph:gap-[3px]">
-                    <span className="text-[10px] font-inter font-bold uppercase tracking-[0.6px] text-[#9aa0a8] whitespace-nowrap">
+                    {/* Label hidden on mobile — the value ("Couple · 2 adults")
+                        reads for itself on the compact card. Kept on desktop,
+                        where the two columns sit inline and need disambiguating. */}
+                    <span className="max-ph:hidden text-[10px] font-inter font-bold uppercase tracking-[0.6px] text-[#9aa0a8] whitespace-nowrap">
                       Travellers
                     </span>
                     <span className="text-[13px] max-ph:text-[12px] font-inter text-[#3b4149] whitespace-nowrap">
@@ -3324,7 +3436,9 @@ Start Location: ${details.startLocation}`;
                   (itineraryRedux?.start_date &&
                     itineraryRedux?.end_date)) && (
                   <div className="flex items-center gap-2 shrink-0 max-ph:flex-col max-ph:items-start max-ph:gap-[3px]">
-                    <span className="text-[10px] font-inter font-bold uppercase tracking-[0.6px] text-[#9aa0a8] whitespace-nowrap">
+                    {/* Label hidden on mobile (see Travellers); the date range
+                        value stands on its own on the compact card. */}
+                    <span className="max-ph:hidden text-[10px] font-inter font-bold uppercase tracking-[0.6px] text-[#9aa0a8] whitespace-nowrap">
                       Dates
                     </span>
                     <span className="text-[13px] max-ph:text-[12px] font-inter text-[#3b4149] whitespace-nowrap">
@@ -3402,8 +3516,8 @@ Start Location: ${details.startLocation}`;
                 where the icons sit top-right. The trip-image gallery is
                 deliberately not shown here — the social proof earns the space
                 better on a narrow card. */}
-            <div className="md:hidden flex items-center gap-[9px] mt-[9px]">
-              <KairaSocialProof groupType={itineraryRedux?.group_type} />
+            <div className="md:hidden flex items-start gap-[9px] mt-[9px]">
+              <KairaSocialProof groupType={itineraryRedux?.group_type} wrap />
               <div className="flex items-center gap-[8px] ml-auto">
                 {!isDraft && (
                   <button
@@ -3438,6 +3552,8 @@ Start Location: ${details.startLocation}`;
               </div>
             </div>
           </div>
+            </div>
+          </div>
         )}
 
         {/* Route strip — sits outside the collapsible meta block so it stays
@@ -3447,9 +3563,14 @@ Start Location: ${details.startLocation}`;
             Typography (Instrument Serif italic + hairline arrow) mirrors the
             route line on the itinerary carousel cards — see PackageCard.jsx. */}
         {routeStops.length > 0 && (
-          <div className="flex items-center gap-[14px] max-ph:gap-[10px] mt-[11px] max-ph:mt-[9px]">
+          <div
+            className={`flex items-center gap-[14px] max-ph:gap-[10px] mt-[11px] max-ph:mt-[9px] ${tripMetaOpen ? "max-ph:items-start" : ""}`}
+          >
+            {/* Collapsed: single line that scrolls sideways. Expanded on mobile:
+                the stops wrap to as many lines as the full route needs
+                (`max-ph:flex-wrap`) so nothing is hidden behind a scroll. */}
             <div
-              className="flex items-center gap-[10px] max-ph:gap-[8px] min-w-0 overflow-x-auto"
+              className={`flex items-center gap-[10px] max-ph:gap-[8px] min-w-0 overflow-x-auto ${tripMetaOpen ? "max-ph:flex-wrap" : ""}`}
               style={{ scrollbarWidth: "none" }}
             >
               {routeStops.map((stop, i) => (
@@ -3490,9 +3611,10 @@ Start Location: ${details.startLocation}`;
                 <circle cx="18" cy="5" r="3" />
                 <path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15" />
               </svg>
-              {/* "Route" is dropped on mobile, where the pill competes with the
-                  stop list for the card's width. */}
-              Change<span className="max-ph:hidden"> Route</span>
+              {/* "Route" is dropped on the collapsed mobile card, where the pill
+                  competes with the stop list for width; the expanded card has
+                  room, so it reads the full "Change Route" there (and desktop). */}
+              Change<span className={tripMetaOpen ? "" : "max-ph:hidden"}> Route</span>
             </button>
           </div>
         )}
@@ -3605,6 +3727,15 @@ Start Location: ${details.startLocation}`;
               // chatkit-restore on refresh).
               viewMode={isMobile ? "itinerary" : viewMode}
             />
+            {/* Only Route / Bookings have somewhere to go back to — the plain
+                itinerary view is the destination itself. */}
+            {(viewMode === "routes" || viewMode === "bookings") && (
+              <BackToItineraryBar
+                onClick={handleBackToItinerary}
+                bottom={bottomStackHeight + 12}
+                barStyle={ctaBarStyle}
+              />
+            )}
           </div>
         ) : null}
       </div>
@@ -3700,9 +3831,9 @@ Start Location: ${details.startLocation}`;
             }}
           >
             {/* MAP view — reached from the header card's Map pill. The back pill
-                is the only way out, so it only appears once there is an
-                itinerary to go back to (before that, the map is the default
-                view and nothing sits behind it). */}
+                (pinned above the cart bar below) is the only way out, so it only
+                appears once there is an itinerary to go back to (before that, the
+                map is the default view and nothing sits behind it). */}
             <div
               className="relative"
               style={{
@@ -3711,9 +3842,6 @@ Start Location: ${details.startLocation}`;
                 minHeight: 0,
               }}
             >
-              {!!activeItineraryId && (
-                <BackToItinerary floating onClick={handleBackToItinerary} />
-              )}
               {/* Only the layout in use mounts a map. Both layout trees are
                   rendered (the other is merely CSS-hidden), and a MapView builds
                   its own google.maps.Map and claims `mapRef` — so mounting both
@@ -3741,6 +3869,13 @@ Start Location: ${details.startLocation}`;
                   {...ctaBarProps}
                   barStyle={ctaBarStyle}
                   viewMode="itinerary"
+                />
+              )}
+              {!isMobile && !!activeItineraryId && (
+                <BackToItineraryBar
+                  onClick={handleBackToItinerary}
+                  bottom={bottomStackHeight + 12}
+                  barStyle={ctaBarStyle}
                 />
               )}
             </div>
@@ -5083,7 +5218,14 @@ const MobileLayout = React.memo(
       if (!el) return;
       lastScrollRef.current = el.scrollTop;
 
-      const onScroll = () => {
+      // Coalesce every burst of scroll events into a single read+update per
+      // animation frame. Doing the layout reads (scrollHeight/clientHeight) and
+      // React setState synchronously inside the scroll event forces a layout
+      // flush on every tick mid-scroll — that thrash is what makes the pane
+      // stutter on mobile. One rAF-batched pass per frame keeps it smooth.
+      let rafId = 0;
+      const update = () => {
+        rafId = 0;
         const y = el.scrollTop;
         const delta = y - lastScrollRef.current;
 
@@ -5100,19 +5242,22 @@ const MobileLayout = React.memo(
         onItineraryScrolledRef.current?.(y > SHOW_ABOVE_PX, delta > 0);
 
         // Never hide if there isn't enough runway to scroll it back into view.
-        const scrollable = el.scrollHeight - el.clientHeight;
-        if (scrollable < headerHeight * 2) {
-          setHideHeader(false);
-          return;
-        }
-
         // Direction-agnostic: the header is only shown at the very top of the
         // pane, so scrolling up mid-list does not bring it back.
-        setHideHeader(y > SHOW_ABOVE_PX);
+        const scrollable = el.scrollHeight - el.clientHeight;
+        setHideHeader(scrollable >= headerHeight * 2 && y > SHOW_ABOVE_PX);
+      };
+
+      const onScroll = () => {
+        if (rafId) return;
+        rafId = requestAnimationFrame(update);
       };
 
       el.addEventListener("scroll", onScroll, { passive: true });
-      return () => el.removeEventListener("scroll", onScroll);
+      return () => {
+        el.removeEventListener("scroll", onScroll);
+        if (rafId) cancelAnimationFrame(rafId);
+      };
     }, [hasItineraryActivity, headerHeight]);
 
     // Switching tabs shouldn't strand the header off-screen.
@@ -5215,17 +5360,18 @@ const MobileLayout = React.memo(
             }}
           >
             <div className="relative flex-1 min-h-0 flex flex-col">
-              {hasItineraryActivity && (
-                <BackToItinerary
-                  floating
-                  onClick={() => handleTabClick("itinerary")}
-                />
-              )}
               {mapContent}
             </div>
             {/* View Cart bar on map tab */}
             {bottomCTABarProps && hasItineraryActivity && (
               <BottomCTABar {...bottomCTABarProps} viewMode="itinerary" />
+            )}
+            {/* Way back out of the map — centered, just above the cart bar. */}
+            {hasItineraryActivity && (
+              <BackToItineraryBar
+                onClick={() => handleTabClick("itinerary")}
+                bottom={ctaBarHeight + 12}
+              />
             )}
           </div>
 
@@ -5242,6 +5388,12 @@ const MobileLayout = React.memo(
               className="absolute inset-x-0 top-0 overflow-y-auto bg-white"
               style={{
                 bottom: ctaBarHeight,
+                // Momentum scrolling + keep the scroll from chaining into the
+                // page/map behind it, and hint the compositor so the pane gets
+                // its own layer — together these kill the mobile scroll stutter.
+                WebkitOverflowScrolling: "touch",
+                overscrollBehavior: "contain",
+                willChange: "scroll-position",
                 opacity: ["itinerary", "routes", "bookings"].includes(activeTab)
                   ? 1
                   : 0,

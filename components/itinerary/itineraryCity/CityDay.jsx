@@ -932,9 +932,31 @@ useEffect(() => {
                       { scroll: false, shallow: true },
                     );
                   }}
-                  className="rounded-9xl ttw-type-small font-400 leading-md px-sm py-xxs text-white bg-[#5CBA66] flex gap-2 items-center justify-center hover:opacity-90"
+                  className="group inline-flex items-center gap-1.5 cursor-pointer transition-opacity hover:opacity-80"
                 >
-                  <FaTaxi /> Sightseeing Taxi Included
+                  <span
+                    className="inline-flex items-center justify-center rounded-full shrink-0"
+                    style={{
+                      width: "18px",
+                      height: "18px",
+                      background: "#DFF3E7",
+                    }}
+                  >
+                    <FaTaxi style={{ fontSize: "10px", color: "#1F8A5A" }} />
+                  </span>
+                  <span
+                    style={{
+                      fontFamily:
+                        "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+                      fontSize: "12.5px",
+                      fontWeight: 500,
+                      color: "#1F8A5A",
+                      lineHeight: 1.2,
+                    }}
+                    className="group-hover:underline"
+                  >
+                    Sightseeing taxi included
+                  </span>
                 </button>
               ))}
             </div>

@@ -284,6 +284,15 @@ const RouteEditSection = (props) => {
       trackSectionViewed,
     } = useAnalytics();
 
+  // The "Update Route" bar renders only while there are unsaved edits. BotApp
+  // stacks its "Back to itinerary" pill just above the bottom bars, but this bar
+  // mounts/unmounts from state it can't observe — tell it so it can re-measure.
+  useEffect(() => {
+    if (typeof window === "undefined") return undefined;
+    window.dispatchEvent(new CustomEvent("route-action-bar-change"));
+    return () => window.dispatchEvent(new CustomEvent("route-action-bar-change"));
+  }, [destinationChanges]);
+
   const items = [
   { id: 1, label: "Route", link: "Route" },
   { id: 2, label: "Itinerary", link: "Itenary" },
@@ -2908,7 +2917,7 @@ export const ActionPanel = (props) => {
          with viewMode forced to "itinerary", so the View Cart bar is pinned at
          bottom-0 on this tab too and would cover an Update Route bar sitting
          there. 88px matches the scroll pane's pb-[88px] reserve for it. */}
-     {destinationChanges ? <div className="z-30 fixed max-ph:left-0 max-ph:right-0 max-ph:w-auto w-[98%] md:w-[47.5%] max-ph:bottom-[88px] bottom-[4.2rem] flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3 flex items-end justify-end max-ph:justify-stretch">
+     {destinationChanges ? <div data-route-action-bar className="z-30 fixed max-ph:left-0 max-ph:right-0 max-ph:w-auto w-[98%] md:w-[47.5%] max-ph:bottom-[88px] bottom-[4.2rem] flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3 flex items-end justify-end max-ph:justify-stretch">
   <button
     type="button"
     onClick={handleSaveButton}

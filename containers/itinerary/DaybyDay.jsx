@@ -316,7 +316,7 @@ const DaybyDay = ({
               <line x1="9" y1="3" x2="9" y2="18" />
               <line x1="15" y1="6" x2="15" y2="21" />
             </svg>
-            <span>See your journey on map</span>
+            <span>See your journey on a map</span>
             <svg
               viewBox="0 0 24 24"
               fill="none"
