@@ -19,7 +19,7 @@ import styles from "./LuxuryEuropeDestinations.module.scss";
  *     includes: string[],
  *     price: { amount, per },
  *     category: 'honeymoon' | 'family' | 'adventure' | 'quick' | 'premium',
- *     seed?: string }
+ *     url?: string }  // navigated to on click, e.g. "/chat/{itinerary_id}"
  */
 
 const DEFAULT_FILTERS = [
@@ -32,260 +32,195 @@ const DEFAULT_FILTERS = [
 ];
 
 const DEFAULT_PACKAGES = [
+
   /* ---------------- Honeymoon ---------------- */
   {
     id: "bali-honeymoon",
-    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/bali1.png",
-    tier: "Most booked",
-    tierVariant: "popular",
-    route: ["Mumbai", "Ubud", "Nusa Penida", "Seminyak"],
-    title: (
-      <>
-        Bali, the <span className="ttwSerif">slow honeymoon</span>
-      </>
-    ),
-    includes: ["Flights", "4-star villas", "Private transfers", "Candle-lit dinner"],
-    price: { amount: "₹59,000", per: "/ person" },
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/175455289633571338653564453125.jpg",
+    tier: "Honeymoon",
+    route: ["Ubud", "Kuta"],
+    title: "A Bali Affair",
+    includes: ["Flights", "2 stays", "3 activities", "Private transfers"],
+    price: { amount: "₹77,406", per: "/ person" },
     category: "honeymoon",
-    seed: "Bali honeymoon, 7 nights, premium",
+    url: "/chat/6b9d80d9-106f-4c28-b63d-62a08b6892a9",
   },
   {
-    id: "paris-honeymoon",
-    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/paris1.jpg",
-    tier: "Iconic",
-    route: ["Delhi", "Paris"],
-    title: (
-      <>
-        Paris, <span className="ttwSerif">just the two of you</span>
-      </>
-    ),
-    includes: ["Flights", "Boutique hotel", "Seine dinner cruise", "Louvre skip-the-line"],
-    price: { amount: "₹1,24,000", per: "/ person" },
+    id: "europe-honeymoon",
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/171118153160943317413330078125.jpg",
+    tier: "Honeymoon",
+    route: ["Interlaken", "Zurich", "Lucerne", "Paris"],
+    title: "The European Daydream",
+    includes: ["Flights", "4 stays", "6 activities", "Private transfers"],
+    price: { amount: "₹2,32,504", per: "/ person" },
     category: "honeymoon",
-    seed: "Paris honeymoon, 6 nights",
+    url: "/chat/9c3322ea-4442-4ea5-b054-3149ea6b5bca",
   },
   {
-    id: "maldives-honeymoon",
-    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/maldives1.png",
-    tier: "Premium",
-    tierVariant: "premium",
-    route: ["Mumbai", "Malé"],
-    title: (
-      <>
-        Maldives, <span className="ttwSerif">over-water quiet</span>
-      </>
-    ),
-    includes: ["Flights", "Water villa", "Speedboat transfer", "Sunset cruise"],
-    price: { amount: "₹1,45,000", per: "/ person" },
+    id: "thailand-honeymoon",
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/170800579665588593482971191406.jpg",
+    tier: "Honeymoon",
+    route: ["Pattaya", "Bangkok"],
+    title: "Bangkok, Beaches & Bride Vibes",
+    includes: ["Flights", "2 stays", "4 activities", "Private transfers"],
+    price: { amount: "₹71,496", per: "/ person" },
     category: "honeymoon",
-    seed: "Maldives honeymoon, 5 nights, water villa",
+    url: "/chat/42c3a590-631b-48b8-8aa8-e90dba680733",
   },
 
   /* ---------------- Family ---------------- */
   {
-    id: "bali-family",
-    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/bali2.jpg",
+    id: "vietnam-family",
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/172189564451271438598632812500.jpeg",
     tier: "Family-friendly",
-    route: ["Bangalore", "Ubud", "Gili T", "Kuta"],
-    title: (
-      <>
-        Bali, <span className="ttwSerif">easy with kids</span>
-      </>
-    ),
-    includes: ["Flights", "Family villas", "Waterbom day", "Rice-field cycle"],
-    price: { amount: "₹62,000", per: "/ person" },
+    route: ["Phu Quoc"],
+    title: "Phu Quoc Before Forever",
+    includes: ["Flights", "1 stay", "5 activities", "Private transfers"],
+    price: { amount: "₹66,170", per: "/ person" },
     category: "family",
-    seed: "Bali family 7 nights",
-  },
-  {
-    id: "dubai-family",
-    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/dubai2.jpg",
-    tier: "Family-friendly",
-    route: ["Delhi", "Dubai"],
-    title: (
-      <>
-        Dubai, <span className="ttwSerif">theme-park days</span>
-      </>
-    ),
-    includes: ["Flights", "City hotel", "Desert safari", "Aquaventure passes"],
-    price: { amount: "₹78,000", per: "/ person" },
-    category: "family",
-    seed: "Dubai family 5 nights",
+    url: "/chat/cbcdf64d-fcc7-4c4a-86cc-74b656e3801a",
   },
   {
     id: "singapore-family",
-    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/singapore2.jpg",
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/170359716563205981254577636719.jpg",
     tier: "Family-friendly",
-    route: ["Mumbai", "Singapore", "Sentosa"],
-    title: (
-      <>
-        Singapore, <span className="ttwSerif">clean and easy</span>
-      </>
-    ),
-    includes: ["Flights", "Central hotel", "Universal Studios", "Gardens by the Bay"],
-    price: { amount: "₹84,000", per: "/ person" },
+    route: ["Singapore", "Kota Kinabalu"],
+    title: "FamJam: Singapore x Kota Kinabulu",
+    includes: ["Flights", "2 stays", "3 activities", "Private transfers"],
+    price: { amount: "₹85,965", per: "/ person" },
     category: "family",
-    seed: "Singapore family 5 nights",
+    url: "/chat/62509134-46fd-4bb7-8a8c-b1233957a8a4",
   },
   {
-    id: "vietnam-family",
-    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/vietnam2.jpg",
+    id: "malaysia-family",
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/countries/168442089471308898925781250000.jpg",
     tier: "Family-friendly",
-    route: ["Bangalore", "Hanoi", "Hạ Long", "Hoi An"],
-    title: (
-      <>
-        Vietnam, <span className="ttwSerif">slow with kids</span>
-      </>
-    ),
-    includes: ["Flights", "Family rooms", "Junk-boat night", "Lantern-making class"],
-    price: { amount: "₹68,000", per: "/ person" },
+    route: ["Kota Kinabalu", "Sandakan"],
+    title: "Wild Hearts of Borneo",
+    includes: ["Flights", "2 stays", "5 activities", "Private transfers"],
+    price: { amount: "₹69,532", per: "/ person" },
     category: "family",
-    seed: "Vietnam family 8 days, Hanoi Hoi An Halong",
+    url: "/chat/b4d2665e-4f0c-42d2-a970-009475118ada",
+  },
+  {
+    id: "dubai-family",
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/175731712356781172752380371094.jpg",
+    tier: "Family-friendly",
+    route: ["Dubai"],
+    title: "Sky-High – The Dubai Experience",
+    includes: ["Flights", "1 stay", "3 activities", "Private transfers"],
+    price: { amount: "₹85,262", per: "/ person" },
+    category: "family",
+    url: "/chat/54bf220e-e80a-48d6-a9fb-f3af570313da",
   },
 
   /* ---------------- Adventure ---------------- */
   {
     id: "bali-adventure",
-    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/bali3.png",
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/175455289633571338653564453125.jpg",
     tier: "Adventure",
-    route: ["Mumbai", "Ubud", "Nusa Penida"],
-    title: (
-      <>
-        Bali, the <span className="ttwSerif">volcano-dawn rush</span>
-      </>
-    ),
-    includes: ["Flights", "Surf-town stay", "Mt Batur sunrise trek", "Nusa Penida cliffs"],
-    price: { amount: "₹64,000", per: "/ person" },
+    route: ["Ubud", "Kuta"],
+    title: "Bali Squad Escape",
+    includes: ["Flights", "2 stays", "6 activities", "Private transfers"],
+    price: { amount: "₹97,146", per: "/ person" },
     category: "adventure",
-    seed: "Bali adventure 7 nights, Batur sunrise",
+    url: "/chat/7bc73324-d197-42e6-bccc-77229613f2e5",
   },
   {
-    id: "grindelwald-adventure",
-    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/europe3.png",
+    id: "thailand-adventure",
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/168553026172950124740600585938.jpeg",
     tier: "Adventure",
-    route: ["Delhi", "Interlaken", "Grindelwald", "Lucerne", "Zurich"],
-    title: (
-      <>
-        Grindelwald, <span className="ttwSerif">Alps up close</span>
-      </>
-    ),
-    includes: ["Flights", "Mountain chalets", "Jungfraujoch rail", "Paragliding slot"],
-    price: { amount: "₹1,68,000", per: "/ person" },
+    route: ["Krabi", "Phuket"],
+    title: "Phuket, Krabi & Chaos",
+    includes: ["Flights", "2 stays", "3 activities", "Private transfers"],
+    price: { amount: "₹67,208", per: "/ person" },
     category: "adventure",
-    seed: "Grindelwald Switzerland adventure, 8 days",
+    url: "/chat/fc85b7b8-1658-470a-bae2-082f2dc50c48",
   },
 
   /* ---------------- Quick escape ---------------- */
   {
-    id: "thailand-quick",
-    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/thailand4.jpg",
+    id: "vietnam-quick",
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/175862306090730118751525878906.png",
     tier: "Quick escape",
-    route: ["Mumbai", "Phuket", "Phi Phi", "Krabi"],
-    title: (
-      <>
-        Thailand, <span className="ttwSerif">long-weekend stretched</span>
-      </>
-    ),
-    includes: ["Flights", "Beachfront stays", "Phi Phi day cruise", "Street-food walk"],
-    price: { amount: "₹52,000", per: "/ person" },
+    route: ["Da Nang", "Phu Quoc", "Ho Chi Minh City", "Hanoi"],
+    title: "Love, Vietnam",
+    includes: ["Flights", "4 stays", "9 activities", "Private transfers"],
+    price: { amount: "₹1,25,751", per: "/ person" },
     category: "quick",
-    seed: "Thailand 6 nights, Bangkok + Phi Phi",
+    url: "/chat/7b220d7b-9116-4aef-8eb0-0c6437a6ed75",
   },
   {
-    id: "srilanka-quick",
-    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/srilanka4.jpg",
+    id: "japan-quick",
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/168553079359370756149291992188.jpeg",
     tier: "Quick escape",
-    route: ["Chennai", "Colombo", "Kandy", "Galle"],
-    title: (
-      <>
-        Sri Lanka, <span className="ttwSerif">short and scenic</span>
-      </>
-    ),
-    includes: ["Flights", "Boutique stays", "Hill-country train", "Galle fort walk"],
-    price: { amount: "₹46,000", per: "/ person" },
+    route: ["Tokyo", "Nagoya", "Takayama", "Kanazawa"],
+    title: "The Soul of Japan",
+    includes: ["4 stays", "3 activities", "Private transfers"],
+    price: { amount: "₹2,81,007", per: "/ person" },
     category: "quick",
-    seed: "Sri Lanka 5 nights, Kandy Galle",
+    url: "/chat/e57f6efa-ac6d-474c-8f56-0009c333136a",
   },
   {
-    id: "nepal-quick",
-    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/nepal4(1).jpg",
+    id: "malaysia-quick",
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/countries/168442089471308898925781250000.jpg",
     tier: "Quick escape",
-    route: ["Delhi", "Kathmandu", "Pokhara"],
-    title: (
-      <>
-        Nepal, <span className="ttwSerif">mountains in five</span>
-      </>
-    ),
-    includes: ["Flights", "Lakeside stay", "Nagarkot sunrise", "Phewa boat ride"],
-    price: { amount: "₹38,000", per: "/ person" },
+    route: ["Kota Kinabalu", "Sandakan"],
+    title: "Borneo Calling 🌴",
+    includes: ["5 activities", "Private transfers"],
+    price: { amount: "₹35,872", per: "/ person" },
     category: "quick",
-    seed: "Nepal 5 nights, Kathmandu Pokhara",
+    url: "/chat/c1a82a79-ea22-4ff7-87e7-585115b95436",
   },
 
   /* ---------------- Premium ---------------- */
   {
-    id: "japan-premium",
-    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/japan5.png",
+    id: "singapore-premium",
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/170359716563205981254577636719.jpg",
     tier: "Premium",
     tierVariant: "premium",
-    route: ["Delhi", "Tokyo", "Hakone", "Kyoto", "Osaka"],
-    title: (
-      <>
-        Japan, the <span className="ttwSerif">neon and quiet</span> mix
-      </>
-    ),
-    includes: ["Flights + JR Pass", "Boutique stays", "1 ryokan night", "Sushi-counter dinner"],
-    price: { amount: "₹1,84,000", per: "/ person" },
+    route: ["Singapore"],
+    title: "Hello, Singapore",
+    includes: ["Flights", "1 stay", "4 activities", "Private transfers"],
+    price: { amount: "₹94,196", per: "/ person" },
     category: "premium",
-    seed: "Japan 10 days, Tokyo + Kyoto + Osaka, premium",
+    url: "/chat/b3b273ed-e0f6-4ccb-9419-1cf6ecc9d4ea",
   },
   {
     id: "europe-premium",
-    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/europe5.jpg",
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/countries/176363325915420746803283691406.jpg",
     tier: "Premium",
     tierVariant: "premium",
-    route: ["Mumbai", "Paris", "Lucerne", "Rome"],
-    title: (
-      <>
-        Europe, the <span className="ttwSerif">grand three</span>
-      </>
-    ),
-    includes: ["Flights", "4-star hotels", "First-class rail", "City food tours"],
-    price: { amount: "₹2,10,000", per: "/ person" },
+    route: ["Amsterdam", "Milan", "Florence", "Rome", "Paris"],
+    title: "Paris • Amsterdam • Amore ❤️",
+    includes: ["Flights", "5 stays", "7 activities", "Private transfers"],
+    price: { amount: "₹2,23,914", per: "/ person" },
     category: "premium",
-    seed: "Europe 12 days, Paris Switzerland Italy, premium",
+    url: "/chat/19d46d7a-a06f-4561-b5a8-c1e046ea6174",
   },
   {
-    id: "korea-premium",
-    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/korea5.jpg",
+    id: "japan-premium",
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/168553079359370756149291992188.jpeg",
     tier: "Premium",
     tierVariant: "premium",
-    route: ["Delhi", "Seoul", "Busan"],
-    title: (
-      <>
-        Korea, <span className="ttwSerif">Seoul to sea</span>
-      </>
-    ),
-    includes: ["Flights", "Design hotels", "KTX to Busan", "Hanok night"],
-    price: { amount: "₹1,52,000", per: "/ person" },
+    route: ["Tokyo", "Osaka"],
+    title: "Japan Era",
+    includes: ["Flights", "2 stays", "3 activities", "Private transfers"],
+    price: { amount: "₹1,02,468", per: "/ person" },
     category: "premium",
-    seed: "South Korea 8 days, Seoul Busan, premium",
+    url: "/chat/da6c1040-d234-49b0-a88c-75bc64467a74",
   },
   {
-    id: "turkey-premium",
-    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/turkey5.jpg",
+    id: "dubai-premium",
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/175731712356781172752380371094.jpg",
     tier: "Premium",
     tierVariant: "premium",
-    route: ["Mumbai", "Istanbul", "Cappadocia", "Antalya"],
-    title: (
-      <>
-        Turkey, <span className="ttwSerif">balloons at dawn</span>
-      </>
-    ),
-    includes: ["Flights", "Cave-suite stay", "Hot-air balloon", "Bosphorus dinner"],
-    price: { amount: "₹1,18,000", per: "/ person" },
+    route: ["Dubai"],
+    title: "Dubai Vibes 🌇",
+    includes: ["Flights", "1 stay", "3 activities", "Private transfers"],
+    price: { amount: "₹64,995", per: "/ person" },
     category: "premium",
-    seed: "Turkey 8 days, Istanbul Cappadocia, premium",
+    url: "/chat/15e6f756-c218-4122-8ca0-afb10fa819b7",
   },
 ];
 
@@ -301,19 +236,10 @@ const LuxuryEuropeDestinations = ({
   const [active, setActive] = useState("all");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
-  // In the "All" view, show each destination only once (cards share an id
-  // prefix per destination, e.g. "bali-honeymoon"/"bali-family" -> "bali"),
-  // so Bali/etc. don't repeat. Category tabs are already unique per destination.
+  // "All" shows every package (paginated 4 at a time); category tabs filter
+  // down to a single category.
   const filtered = useMemo(() => {
-    if (active === "all") {
-      const seen = new Set();
-      return packages.filter((p) => {
-        const key = (p.id || "").split("-")[0];
-        if (seen.has(key)) return false;
-        seen.add(key);
-        return true;
-      });
-    }
+    if (active === "all") return packages;
     return packages.filter((p) => p.category === active);
   }, [packages, active]);
 
@@ -344,7 +270,7 @@ const LuxuryEuropeDestinations = ({
       includes={p.includes}
       price={p.price}
       ctaLabel="Tailor in chat"
-      onClick={() => router.push(`/chat?seed=${encodeURIComponent(p.seed || "")}`)}
+      onClick={() => p.url && router.push(p.url)}
     />
   );
 
