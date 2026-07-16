@@ -351,7 +351,7 @@ const Homepage = (props) => {
             </div>
             <div className={styles.itinGrid}>
               {userItineraries.slice(0, 4).map((it, i) => (
-                <ItineraryCardV2 key={it.id || i} itinerary={it} />
+                <ItineraryCardV2 key={it.id || i} itinerary={it} currency={it?.currency} />
               ))}
             </div>
           </section>

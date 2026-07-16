@@ -8,6 +8,7 @@ import packageStyles from "../home/LuxuryEuropeDestinations.module.scss";
 import { MERCURY_HOST } from "../../../services/constants";
 import { imgUrlEndPoint } from "../../theme/ThemeConstants";
 import { getIndianPrice } from "../../../services/getIndianPrice";
+import { currencySymbols } from "../../../data/currencySymbols";
 
 /*
  * MyTripsSection — renders a logged-in user's plans using the shared
@@ -65,7 +66,14 @@ const buildPrice = (trip) => {
       : null);
 
   if (perPersonValue == null) return null;
-  return { amount: `₹${getIndianPrice(perPersonValue)}`, per: "/ person" };
+  // INR uses lakh/crore grouping; every other currency uses Western
+  // thousands grouping. Unknown/missing currencies fall back to the ₹ symbol.
+  const symbol = currencySymbols[info.currency] || "₹";
+  const formatted =
+    info.currency && info.currency !== "INR"
+      ? Math.round(perPersonValue).toLocaleString("en-US")
+      : getIndianPrice(perPersonValue);
+  return { amount: `${symbol} ${formatted}`, per: "/ person" };
 };
 
 const tripToPackage = (trip) => {

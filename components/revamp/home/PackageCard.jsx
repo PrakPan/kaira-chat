@@ -21,6 +21,8 @@ import styles from "./LuxuryEuropeDestinations.module.scss";
  *   includes    — string[] of green-check inclusions
  *   travellers  — optional string rendered as its own row below the
  *                 inclusions, sharing the same green-check styling
+ *   curatedBy   — optional curator name; shown (with a colourful dot) only
+ *                 when `travellers` is absent
  *   price       — { amount, per }
  *   ctaLabel    — call-to-action text (defaults to "Tailor in chat")
  *   onClick     — click/keydown handler (whole card)
@@ -28,6 +30,27 @@ import styles from "./LuxuryEuropeDestinations.module.scss";
  */
 
 const Arrow = () => <span className={styles.arrow} aria-hidden />;
+
+// Deterministic "colorful" dot so each curator keeps a consistent colour.
+const CURATOR_COLORS = [
+  "#F97316",
+  "#EC4899",
+  "#8B5CF6",
+  "#3B82F6",
+  "#10B981",
+  "#F59E0B",
+  "#EF4444",
+  "#14B8A6",
+];
+
+const curatorColor = (name) => {
+  let hash = 0;
+  for (let i = 0; i < name.length; i += 1) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const base = CURATOR_COLORS[Math.abs(hash) % CURATOR_COLORS.length];
+  return `radial-gradient(circle at 30% 30%, ${base}99, ${base})`;
+};
 
 const tierClassName = (variant) => {
   if (variant === "premium") return `${styles.tier} ${styles.tierPremium}`;
@@ -43,6 +66,7 @@ const PackageCard = ({
   title,
   includes,
   travellers,
+  curatedBy,
   price,
   ctaLabel = "Tailor in chat",
   onClick,
@@ -125,6 +149,31 @@ const PackageCard = ({
                       </svg>
             </div>
             <span className={styles.notinclude}>{travellers}</span>
+          </div>
+        ) : curatedBy ? (
+          <div className={styles.includes}>
+            <span
+              className={styles.notinclude}
+              style={{ gap: "7px", fontSize: "12.5px" }}
+            >
+              <span
+                aria-hidden
+                style={{
+                  width: "16px",
+                  height: "16px",
+                  borderRadius: "50%",
+                  background: curatorColor(curatedBy),
+                  display: "inline-block",
+                  flexShrink: 0,
+                }}
+              />
+              <span>
+                Curated by{" "}
+                <strong style={{ color: "var(--ttw-ink-1)", fontWeight: 600 }}>
+                  {curatedBy}
+                </strong>
+              </span>
+            </span>
           </div>
         ) : null}
 

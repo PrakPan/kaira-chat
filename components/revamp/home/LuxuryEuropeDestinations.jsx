@@ -20,6 +20,7 @@ import styles from "./LuxuryEuropeDestinations.module.scss";
  *     price: { amount, per },
  *     category: 'honeymoon' | 'family' | 'adventure' | 'quick' | 'premium',
  *     url?: string }  // navigated to on click, e.g. "/chat/{itinerary_id}"
+ *     url?: string }  // navigated to on click, e.g. "/chat/{itinerary_id}"
  */
 
 const DEFAULT_FILTERS = [
@@ -36,7 +37,8 @@ const DEFAULT_PACKAGES = [
   /* ---------------- Honeymoon ---------------- */
   {
     id: "bali-honeymoon",
-    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/175455289633571338653564453125.jpg",
+    image:
+      "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/175456211725436902046203613281.jpg",
     tier: "Honeymoon",
     route: ["Ubud", "Kuta"],
     title: "A Bali Affair",
@@ -44,10 +46,12 @@ const DEFAULT_PACKAGES = [
     price: { amount: "₹77,406", per: "/ person" },
     category: "honeymoon",
     url: "/chat/6b9d80d9-106f-4c28-b63d-62a08b6892a9",
+    curated_by: "Muskan Agarwal",
   },
   {
     id: "europe-honeymoon",
-    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/171118153160943317413330078125.jpg",
+    image:
+      "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/171118153160943317413330078125.jpg",
     tier: "Honeymoon",
     route: ["Interlaken", "Zurich", "Lucerne", "Paris"],
     title: "The European Daydream",
@@ -55,10 +59,12 @@ const DEFAULT_PACKAGES = [
     price: { amount: "₹2,32,504", per: "/ person" },
     category: "honeymoon",
     url: "/chat/9c3322ea-4442-4ea5-b054-3149ea6b5bca",
+    curated_by: "Somya Singhal",
   },
   {
     id: "thailand-honeymoon",
-    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/170800579665588593482971191406.jpg",
+    image:
+      "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/170800579665588593482971191406.jpg",
     tier: "Honeymoon",
     route: ["Pattaya", "Bangkok"],
     title: "Bangkok, Beaches & Bride Vibes",
@@ -66,12 +72,14 @@ const DEFAULT_PACKAGES = [
     price: { amount: "₹71,496", per: "/ person" },
     category: "honeymoon",
     url: "/chat/42c3a590-631b-48b8-8aa8-e90dba680733",
+    curated_by: "Somya Singhal",
   },
 
   /* ---------------- Family ---------------- */
   {
     id: "vietnam-family",
-    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/172189564451271438598632812500.jpeg",
+    image:
+      "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/172189564451271438598632812500.jpeg",
     tier: "Family-friendly",
     route: ["Phu Quoc"],
     title: "Phu Quoc Before Forever",
@@ -79,10 +87,12 @@ const DEFAULT_PACKAGES = [
     price: { amount: "₹66,170", per: "/ person" },
     category: "family",
     url: "/chat/cbcdf64d-fcc7-4c4a-86cc-74b656e3801a",
+    curated_by: "Somya Singhal",
   },
   {
     id: "singapore-family",
-    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/170359716563205981254577636719.jpg",
+    image:
+      "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/170359716563205981254577636719.jpg",
     tier: "Family-friendly",
     route: ["Singapore", "Kota Kinabalu"],
     title: "FamJam: Singapore x Kota Kinabulu",
@@ -90,10 +100,12 @@ const DEFAULT_PACKAGES = [
     price: { amount: "₹85,965", per: "/ person" },
     category: "family",
     url: "/chat/62509134-46fd-4bb7-8a8c-b1233957a8a4",
+    curated_by: "Somya Singhal",
   },
   {
     id: "malaysia-family",
-    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/countries/168442089471308898925781250000.jpg",
+    image:
+      "https://d31aoa0ehgvjdi.cloudfront.net/media/countries/168442089471308898925781250000.jpg",
     tier: "Family-friendly",
     route: ["Kota Kinabalu", "Sandakan"],
     title: "Wild Hearts of Borneo",
@@ -101,10 +113,12 @@ const DEFAULT_PACKAGES = [
     price: { amount: "₹69,532", per: "/ person" },
     category: "family",
     url: "/chat/b4d2665e-4f0c-42d2-a970-009475118ada",
+    curated_by: "Somya Singhal",
   },
   {
     id: "dubai-family",
-    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/175731712356781172752380371094.jpg",
+    image:
+      "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/175731712356781172752380371094.jpg",
     tier: "Family-friendly",
     route: ["Dubai"],
     title: "Sky-High – The Dubai Experience",
@@ -112,12 +126,14 @@ const DEFAULT_PACKAGES = [
     price: { amount: "₹85,262", per: "/ person" },
     category: "family",
     url: "/chat/54bf220e-e80a-48d6-a9fb-f3af570313da",
+    curated_by: "Nikhil",
   },
 
   /* ---------------- Adventure ---------------- */
   {
     id: "bali-adventure",
-    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/175455289633571338653564453125.jpg",
+    image:
+      "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/168448423055004620552062988281.jpeg",
     tier: "Adventure",
     route: ["Ubud", "Kuta"],
     title: "Bali Squad Escape",
@@ -125,10 +141,12 @@ const DEFAULT_PACKAGES = [
     price: { amount: "₹97,146", per: "/ person" },
     category: "adventure",
     url: "/chat/7bc73324-d197-42e6-bccc-77229613f2e5",
+    curated_by: "Sarthak Singla",
   },
   {
     id: "thailand-adventure",
-    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/168553026172950124740600585938.jpeg",
+    image:
+      "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/168553026172950124740600585938.jpeg",
     tier: "Adventure",
     route: ["Krabi", "Phuket"],
     title: "Phuket, Krabi & Chaos",
@@ -136,12 +154,14 @@ const DEFAULT_PACKAGES = [
     price: { amount: "₹67,208", per: "/ person" },
     category: "adventure",
     url: "/chat/fc85b7b8-1658-470a-bae2-082f2dc50c48",
+    curated_by: "Somya Singhal",
   },
 
   /* ---------------- Quick escape ---------------- */
   {
     id: "vietnam-quick",
-    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/175862306090730118751525878906.png",
+    image:
+      "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/175862306090730118751525878906.png",
     tier: "Quick escape",
     route: ["Da Nang", "Phu Quoc", "Ho Chi Minh City", "Hanoi"],
     title: "Love, Vietnam",
@@ -149,10 +169,12 @@ const DEFAULT_PACKAGES = [
     price: { amount: "₹1,25,751", per: "/ person" },
     category: "quick",
     url: "/chat/7b220d7b-9116-4aef-8eb0-0c6437a6ed75",
+    curated_by: "Somya Singhal",
   },
   {
     id: "japan-quick",
-    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/168553079359370756149291992188.jpeg",
+    image:
+      "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/168553079359370756149291992188.jpeg",
     tier: "Quick escape",
     route: ["Tokyo", "Nagoya", "Takayama", "Kanazawa"],
     title: "The Soul of Japan",
@@ -160,10 +182,12 @@ const DEFAULT_PACKAGES = [
     price: { amount: "₹2,81,007", per: "/ person" },
     category: "quick",
     url: "/chat/e57f6efa-ac6d-474c-8f56-0009c333136a",
+    curated_by: "Somya Singhal",
   },
   {
     id: "malaysia-quick",
-    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/countries/168442089471308898925781250000.jpg",
+    image:
+      "https://d31aoa0ehgvjdi.cloudfront.net/media/countries/168442089471308898925781250000.jpg",
     tier: "Quick escape",
     route: ["Kota Kinabalu", "Sandakan"],
     title: "Borneo Calling 🌴",
@@ -171,12 +195,14 @@ const DEFAULT_PACKAGES = [
     price: { amount: "₹35,872", per: "/ person" },
     category: "quick",
     url: "/chat/c1a82a79-ea22-4ff7-87e7-585115b95436",
+    curated_by: "Vasu",
   },
 
   /* ---------------- Premium ---------------- */
   {
     id: "singapore-premium",
-    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/170359716563205981254577636719.jpg",
+    image:
+      "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/170359716563205981254577636719.jpg",
     tier: "Premium",
     tierVariant: "premium",
     route: ["Singapore"],
@@ -185,10 +211,12 @@ const DEFAULT_PACKAGES = [
     price: { amount: "₹94,196", per: "/ person" },
     category: "premium",
     url: "/chat/b3b273ed-e0f6-4ccb-9419-1cf6ecc9d4ea",
+    curated_by: "Somya Singhal",
   },
   {
     id: "europe-premium",
-    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/countries/176363325915420746803283691406.jpg",
+    image:
+      "https://d31aoa0ehgvjdi.cloudfront.net/media/countries/176363325915420746803283691406.jpg",
     tier: "Premium",
     tierVariant: "premium",
     route: ["Amsterdam", "Milan", "Florence", "Rome", "Paris"],
@@ -197,10 +225,12 @@ const DEFAULT_PACKAGES = [
     price: { amount: "₹2,23,914", per: "/ person" },
     category: "premium",
     url: "/chat/19d46d7a-a06f-4561-b5a8-c1e046ea6174",
+    curated_by: "Somya Singhal",
   },
   {
     id: "japan-premium",
-    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/168553079359370756149291992188.jpeg",
+    image:
+      "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/168553079359370756149291992188.jpeg",
     tier: "Premium",
     tierVariant: "premium",
     route: ["Tokyo", "Osaka"],
@@ -209,10 +239,12 @@ const DEFAULT_PACKAGES = [
     price: { amount: "₹1,02,468", per: "/ person" },
     category: "premium",
     url: "/chat/da6c1040-d234-49b0-a88c-75bc64467a74",
+    curated_by: "Somya Singhal",
   },
   {
     id: "dubai-premium",
-    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/175731712356781172752380371094.jpg",
+    image:
+      "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/175731712356781172752380371094.jpg",
     tier: "Premium",
     tierVariant: "premium",
     route: ["Dubai"],
@@ -221,6 +253,7 @@ const DEFAULT_PACKAGES = [
     price: { amount: "₹64,995", per: "/ person" },
     category: "premium",
     url: "/chat/15e6f756-c218-4122-8ca0-afb10fa819b7",
+    curated_by: "Shubh",
   },
 ];
 
@@ -249,8 +282,8 @@ const LuxuryEuropeDestinations = ({
   const visible = isMobile
     ? filtered
     : active === "all"
-    ? filtered.slice(0, visibleCount)
-    : filtered;
+      ? filtered.slice(0, visibleCount)
+      : filtered;
   const canSeeMore =
     !isMobile && active === "all" && visibleCount < filtered.length;
 
@@ -268,6 +301,8 @@ const LuxuryEuropeDestinations = ({
       route={p.route}
       title={p.title}
       includes={p.includes}
+      travellers={p.travellers}
+      curatedBy={p.curated_by}
       price={p.price}
       ctaLabel="Tailor in chat"
       onClick={() => p.url && router.push(p.url)}
@@ -284,7 +319,8 @@ const LuxuryEuropeDestinations = ({
               Connected trips
             </span>
             <h2>
-              Kaira-Planned Trips. Yours to <span className="ttwSerif">Personalize.</span>
+              Kaira-Planned Trips. Yours to{" "}
+              <span className="ttwSerif">Personalize.</span>
             </h2>
             <p className="">
               Real routes our travellers loved. Open any trip in chat, change{" "}
@@ -330,7 +366,14 @@ const LuxuryEuropeDestinations = ({
               onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
             >
               See more trips
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <polyline points="6 9 12 15 18 9" />
               </svg>
             </button>

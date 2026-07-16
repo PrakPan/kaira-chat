@@ -1,6 +1,7 @@
 import React from "react";
 import { imgUrlEndPoint } from "../../theme/ThemeConstants";
 import { getIndianPrice } from "../../../services/getIndianPrice";
+import { currencySymbols } from "../../../data/currencySymbols";
 import PackageCard from "../home/PackageCard";
 
 const countItems = (arrLike) => {
@@ -10,7 +11,7 @@ const countItems = (arrLike) => {
   return 0;
 };
 
-const ItineraryCardV2 = ({ itinerary, onClick }) => {
+const ItineraryCardV2 = ({ itinerary, onClick,currency="INR" }) => {
   if (!itinerary) return null;
   const {
     name,
@@ -75,6 +76,16 @@ const ItineraryCardV2 = ({ itinerary, onClick }) => {
     ? Math.round(totalValue / totalPax)
     : null;
 
+  // INR uses lakh/crore grouping; every other currency uses Western
+  // thousands grouping. Unknown/missing currencies fall back to the ₹ symbol.
+  const currencySymbol = currencySymbols[currency] || "₹";
+  const formattedPrice =
+    perPersonPrice != null
+      ? currency && currency !== "INR"
+        ? Math.round(perPersonPrice).toLocaleString("en-US")
+        : getIndianPrice(perPersonPrice)
+      : null;
+
   const routeCities = cities && cities.length ? cities : [];
   const route = routeCities
     .map((c) => (typeof c === "string" ? c : c.name || c.title))
@@ -129,12 +140,13 @@ const ItineraryCardV2 = ({ itinerary, onClick }) => {
       includes={includes}
       travellers={travellers || null}
       price={
-        perPersonPrice
-          ? { amount: `₹${getIndianPrice(perPersonPrice)}`, per: "/ person" }
+        formattedPrice != null
+          ? { amount: `${currencySymbol} ${formattedPrice}`, per: "/ person" }
           : null
       }
       ctaLabel="View trip"
       onClick={handleClick}
+      currency={currency}
     />
   );
 };
