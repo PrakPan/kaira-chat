@@ -79,11 +79,6 @@ import {
 type MobilePanel = "map" | "chat" | "itinerary";
 type LeftPanelMode = "default" | "itinerary-loading" | "itinerary-ready";
 
-// Social proof under the route strip on the expanded mobile card. The count is
-// static — no booking count is exposed on the itinerary payload or any Mercury
-// endpoint today. Swap for a real field when one exists.
-const ROUTE_SOCIAL_PROOF_COUNT = "50+";
-
 // The noun follows the trip's group_type ("Family" → "families"), so the line
 // reads as social proof from people like the traveller. Irregular plurals are
 // listed; anything else takes a trailing "s".
@@ -101,14 +96,36 @@ const groupTypePlural = (groupType?: string | null): string => {
   return GROUP_TYPE_PLURALS[key] ?? `${key}s`;
 };
 
+// How many other trips on this route share the traveller's group_type, read off
+// the detail payload's `similar_route_stats.group_type_stats` ({ Couple: 13,
+// Family: 17, … }) and matched to `group_type` case-insensitively. Returns null
+// whenever there is nothing worth claiming — drafts and the bot flow carry no
+// stats at all, and a count of 1 is left out because the copy is plural and
+// "1 couples" would need singular/verb agreement the line doesn't have.
+const routeSocialProofCount = (
+  stats: any,
+  groupType?: string | null,
+): number | null => {
+  const key = groupType?.trim().toLowerCase();
+  const byGroupType = stats?.group_type_stats;
+  if (!key || !byGroupType) return null;
+  const match = Object.entries(byGroupType).find(
+    ([name]) => name.trim().toLowerCase() === key,
+  );
+  const count = match?.[1];
+  return typeof count === "number" && count > 1 ? count : null;
+};
+
 // Returns a fragment, not a row: the mobile card shares its flex row with the
 // settings/share icons, while desktop gives it a row of its own. `wrap` lets the
 // caller drop the single-line ellipsis so the line wraps to its full text — used
 // on the narrow mobile card, where truncating would clip "…have chosen".
 const KairaSocialProof = ({
+  count,
   groupType,
   wrap = false,
 }: {
+  count: number;
   groupType?: string | null;
   wrap?: boolean;
 }) => (
@@ -126,7 +143,7 @@ const KairaSocialProof = ({
       } text-[13px] max-ph:text-[12px] font-inter text-[#4b5159]`}
     >
       <span className="font-semibold text-[#0B1220]">
-        {ROUTE_SOCIAL_PROOF_COUNT} {groupTypePlural(groupType)}
+        {count} {groupTypePlural(groupType)}
       </span>{" "}
       have chosen this route
     </span>
@@ -580,6 +597,10 @@ export default function BotApp({
   const itineraryRedux = useSelector((state: any) => state.Itinerary);
   const galleryImages = useSelector((state: any) => state.galleryImages);
   const itineraryReduxName = itineraryRedux?.name;
+  const socialProofCount = routeSocialProofCount(
+    itineraryRedux?.similar_route_stats,
+    itineraryRedux?.group_type,
+  );
 
   const attachUserToItinerary = useCallback(async () => {
     if (itineraryRedux?.customer_name) return;
@@ -3570,15 +3591,20 @@ Start Location: ${details.startLocation}`;
                 route. Animated via the same grid-rows height + fade the legend
                 below uses (matching duration-200 ease-out) so the two collapse
                 in sync and the card's height eases instead of snapping. */}
-            <div
-              className={`max-ph:hidden grid transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] motion-reduce:transition-none ${headerCondensed ? "grid-rows-[0fr] opacity-0" : "grid-rows-[1fr] opacity-100"}`}
-            >
-              <div className="overflow-hidden min-h-0">
-                <div className="flex items-center gap-[9px] mt-[2px]">
-                  <KairaSocialProof groupType={itineraryRedux?.group_type} />
+            {socialProofCount !== null && (
+              <div
+                className={`max-ph:hidden grid transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] motion-reduce:transition-none ${headerCondensed ? "grid-rows-[0fr] opacity-0" : "grid-rows-[1fr] opacity-100"}`}
+              >
+                <div className="overflow-hidden min-h-0">
+                  <div className="flex items-center gap-[9px] mt-[2px]">
+                    <KairaSocialProof
+                      count={socialProofCount}
+                      groupType={itineraryRedux?.group_type}
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
             {/* Mobile: Kaira social proof (left) + settings/share (right) on one
                 row at the bottom of the expanded detail. Hidden on desktop,
@@ -3586,7 +3612,13 @@ Start Location: ${details.startLocation}`;
                 deliberately not shown here — the social proof earns the space
                 better on a narrow card. */}
             <div className="md:hidden flex items-start gap-[9px] mt-[9px]">
-              <KairaSocialProof groupType={itineraryRedux?.group_type} wrap />
+              {socialProofCount !== null && (
+                <KairaSocialProof
+                  count={socialProofCount}
+                  groupType={itineraryRedux?.group_type}
+                  wrap
+                />
+              )}
               <div className="flex items-center gap-[8px] ml-auto">
                 {!isDraft && (
                   <button
