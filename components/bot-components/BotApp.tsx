@@ -9,6 +9,16 @@ import { ChatKitPanel } from "./components/ChatKitPanel";
 import MapView from "./components/MapView";
 import Sidebar from "./components/Sidebar";
 import { getUserAvatarColor, getUserInitial } from "./utils/avatarColor";
+import { formatCompactTime, groupThreads } from "./utils/threadGroups";
+import { LOGO_HEIGHT } from "./constants";
+import {
+  HistoryIcon as KairaHistoryIcon,
+  LogoutIcon as KairaLogoutIcon,
+  PlusIcon as KairaPlusIcon,
+  SuitcaseIcon as KairaSuitcaseIcon,
+  UserIcon as KairaUserIcon,
+} from "./components/kairaIcons";
+import { useTripsCount } from "./hooks/useTripsCount";
 import StartScreen, { type TravellerStory } from "./components/StartScreen";
 import IntakeLeftPanel from "./components/IntakeLeftPanel";
 import type { ThemeConfig } from "./types/themeConfig";
@@ -4704,6 +4714,7 @@ export const MobileHeaderMenu = React.memo(
     const [threads, setThreads] = React.useState<any[]>([]);
     const [historyLoading, setHistoryLoading] = React.useState(false);
     const [profileOpen, setProfileOpen] = React.useState(false);
+    const tripsCount = useTripsCount();
     const [showLogin, setShowLogin] = React.useState(false);
     const profileRef = React.useRef<HTMLDivElement>(null);
     const reduxToken = useSelector((state: any) => state.auth.token);
@@ -4836,7 +4847,7 @@ export const MobileHeaderMenu = React.memo(
                 />
               )}
               <div
-                className="fixed top-0 left-0 h-full z-[400] bg-white shadow-2xl flex flex-col transition-transform duration-300 ease-in-out"
+                className="kaira-scope kaira-drawer fixed top-0 left-0 h-full z-[400] shadow-2xl transition-transform duration-300 ease-in-out"
                 style={{
                   width: "85vw",
                   maxWidth: 320,
@@ -4845,13 +4856,15 @@ export const MobileHeaderMenu = React.memo(
                     : "translateX(-110%)",
                 }}
               >
-                <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100 flex-shrink-0">
-                  <span className="font-semibold text-gray-800 text-[15px]">
-                    Chat History
+                <div className="kaira-drawer-head">
+                  <span className="kaira-drawer-title">
+                    <KairaHistoryIcon size={14} />
+                    <span className="kaira-mono">Chat history</span>
                   </span>
                   <button
                     onClick={() => setHistoryOpen(false)}
-                    className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-500"
+                    className="kaira-icon-btn is-sm"
+                    aria-label="Close chat history"
                   >
                     <svg
                       width="16"
@@ -4859,7 +4872,7 @@ export const MobileHeaderMenu = React.memo(
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
-                      strokeWidth="2.5"
+                      strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
                     >
@@ -4868,40 +4881,60 @@ export const MobileHeaderMenu = React.memo(
                     </svg>
                   </button>
                 </div>
-                <div className="flex-1 overflow-y-auto px-3 py-3">
+                <div className="kaira-hist-scroll">
                   {historyLoading ? (
-                    <div className="flex flex-col gap-2">
-                      {[...Array(5)].map((_, i) => (
+                    <div className="flex flex-col gap-1.5 pt-3 px-1">
+                      {[...Array(6)].map((_, i) => (
                         <div
                           key={i}
-                          className="h-10 rounded-lg bg-gray-100 animate-pulse"
+                          className="h-9 rounded-[10px] animate-pulse"
+                          style={{
+                            background: "var(--k-paper-2)",
+                            opacity: 1 - i * 0.12,
+                          }}
                         />
                       ))}
                     </div>
                   ) : threads.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center h-full text-center py-12 gap-3">
-                      <p className="ttw-type-body text-gray-500">No chats yet</p>
+                    <div className="flex flex-col items-center justify-center text-center gap-1.5 px-3 py-10">
+                      <p style={{ fontSize: 13.5, fontWeight: 600 }}>
+                        No chats yet
+                      </p>
+                      <p style={{ fontSize: 12.5, color: "var(--k-ink-4)" }}>
+                        Start a new chat to see history here
+                      </p>
                     </div>
                   ) : (
-                    <div className="flex flex-col gap-0.5">
-                      {threads.map((t: any) => (
-                        <button
-                          key={t.id}
-                          onClick={() => {
-                            onThreadSelect(
-                              t.id,
-                              t.session_id ?? t.filter_session_id,
-                              t.customer_name,
-                            );
-                            setHistoryOpen(false);
-                          }}
-                          className={`w-full text-left px-3 py-2.5 rounded-lg ttw-type-small truncate ${activeThreadId === t.id ? "bg-[#07213A] text-white font-medium" : "text-gray-700 hover:bg-gray-50"}`}
-                          title={t.title || "Untitled"}
-                        >
-                          {t.title || "Untitled"}
-                        </button>
-                      ))}
-                    </div>
+                    // Same Today/Yesterday/… buckets as the desktop rail.
+                    groupThreads(threads).map((group) => (
+                      <div key={group.label} className="mb-1.5">
+                        <div className="kaira-mono kaira-hist-group-label">
+                          {group.label}
+                        </div>
+                        {group.threads.map((t) => (
+                          <button
+                            key={t.id}
+                            onClick={() => {
+                              onThreadSelect(
+                                t.id,
+                                t.session_id ?? t.filter_session_id,
+                                t.customer_name,
+                              );
+                              setHistoryOpen(false);
+                            }}
+                            className={`kaira-hist-item${activeThreadId === t.id ? " is-active" : ""}`}
+                            title={t.title || "Untitled"}
+                          >
+                            <span className="kaira-hist-title">
+                              {t.title || "Untitled"}
+                            </span>
+                            <span className="kaira-hist-time kaira-mono tabular-nums">
+                              {formatCompactTime(t.created_at)}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    ))
                   )}
                 </div>
               </div>
@@ -4910,74 +4943,31 @@ export const MobileHeaderMenu = React.memo(
           )}
 
         {/* Right icons */}
-        <div className="flex items-center gap-1">
+        <div className="kaira-scope flex items-center gap-1">
           {/* Chat history */}
           <button
             onClick={handleHistoryClick}
-            className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-gray-100 transition-colors text-gray-600"
+            className="kaira-icon-btn is-sm"
             aria-label="Chat history"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="19"
-              height="19"
-              viewBox="0 0 21 21"
-              fill="none"
-            >
-              <path
-                d="M10.0306 11.7021C9.57231 11.7004 9.18067 11.5357 8.85572 11.2079C8.53022 10.8806 8.36828 10.4878 8.36991 10.0295C8.37154 9.57114 8.53626 9.17923 8.86409 8.85372C9.19136 8.52877 9.58416 8.36711 10.0425 8.36874C10.5008 8.37037 10.8927 8.53482 11.2182 8.86209C11.5432 9.18991 11.7048 9.58299 11.7032 10.0413C11.7016 10.4996 11.5371 10.8913 11.2099 11.2162C10.882 11.5417 10.489 11.7037 10.0306 11.7021ZM10.0099 17.5353C8.07937 17.5285 6.40802 16.887 4.99588 15.6109C3.58374 14.3353 2.77689 12.7457 2.57532 10.8422L4.28364 10.8483C4.47295 12.2934 5.11092 13.4901 6.19756 14.4384C7.28475 15.3868 8.55751 15.8635 10.0158 15.8687C11.6408 15.8745 13.0212 15.3133 14.1568 14.1851C15.2931 13.0574 15.8641 11.6811 15.8699 10.0561C15.8756 8.43114 15.3144 7.05052 14.1862 5.91428C13.0586 4.7786 11.6823 4.20787 10.0573 4.2021C9.09897 4.19869 8.20235 4.41773 7.36744 4.85921C6.53254 5.30069 5.82898 5.90931 5.25677 6.68505L7.54843 6.6932L7.5425 8.35985L2.54254 8.34209L2.5603 3.34212L4.22696 3.34804L4.22 5.30636C4.93149 4.42 5.79865 3.73557 6.82148 3.25309C7.84376 2.77061 8.92434 2.5314 10.0632 2.53544C11.1049 2.53915 12.08 2.74039 12.9886 3.13918C13.8966 3.53852 14.6864 4.07605 15.3579 4.75177C16.0288 5.42805 16.5607 6.22161 16.9536 7.13246C17.3459 8.04386 17.5402 9.02039 17.5365 10.0621C17.5328 11.1037 17.3316 12.0786 16.9328 12.9866C16.5334 13.8952 15.9959 14.6849 15.3202 15.3559C14.6439 16.0274 13.8503 16.5595 12.9395 16.9524C12.0281 17.3447 11.0516 17.5391 10.0099 17.5353Z"
-                fill="#07213A"
-              />
-            </svg>
+            <KairaHistoryIcon size={19} />
           </button>
 
           {/* New chat */}
           <button
             onClick={onNewChat}
-            className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-gray-100 transition-colors text-gray-600"
+            className="kaira-icon-btn is-sm"
             aria-label="New chat"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="19"
-              height="19"
-              viewBox="0 0 19 19"
-              fill="none"
-            >
-              <path
-                d="M8.30612 1.52887L6.80613 1.52354C3.05615 1.51021 1.55083 3.00487 1.5375 6.75485L1.52151 11.2548C1.50818 15.0048 3.00284 16.5101 6.75282 16.5234L11.2528 16.5394C15.0028 16.5528 16.5081 15.0581 16.5214 11.3081L16.5267 9.80814"
-                stroke="#07213A"
-                strokeWidth="1.7"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M6.15411 8.19642C5.92831 8.42062 5.70174 8.86231 5.6556 9.18465L5.32508 11.441C5.20217 12.2581 5.77764 12.8301 6.59554 12.7205L8.85417 12.406C9.16933 12.3622 9.61262 12.1387 9.84592 11.9146L15.7769 6.0256C16.8005 5.00923 17.2847 3.82595 15.7901 2.32063C14.2954 0.815305 13.1087 1.29109 12.0851 2.30746L6.15411 8.19642Z"
-                stroke="#07213A"
-                strokeWidth="1.7"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M11.2358 3.15234C11.732 4.94662 13.1295 6.35409 14.9277 6.87049"
-                stroke="#07213A"
-                strokeWidth="1.7"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <KairaPlusIcon size={19} />
           </button>
 
           {/* Profile avatar */}
           <div ref={profileRef} className="relative ml-1">
             <button
               onClick={() => setProfileOpen((v) => !v)}
-              className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center border-2 border-gray-200 bg-gray-100"
-              style={
-                showColorAvatar && avatarColor
-                  ? { background: avatarColor, borderColor: avatarColor }
-                  : undefined
-              }
+              className="kaira-avatar"
+              style={avatarColor ? { background: avatarColor } : undefined}
               aria-label="Profile"
             >
               {avatarSrc ? (
@@ -4988,43 +4978,44 @@ export const MobileHeaderMenu = React.memo(
                   className="w-full h-full object-cover"
                 />
               ) : showColorAvatar ? (
-                <span className="ttw-type-small font-bold text-white select-none">
-                  {getUserInitial(name)}
-                </span>
+                getUserInitial(name)
               ) : (
-                <span className="ttw-type-small font-bold text-gray-600">
-                  {initials}
-                </span>
+                initials
               )}
             </button>
             {profileOpen && (
               <div
-                className="absolute right-0 top-10 z-[9999] bg-white rounded-xl shadow-xl border border-gray-100 py-1.5 overflow-hidden"
-                style={{ minWidth: 180 }}
+                className="kaira-scope kaira-menu absolute right-0 top-11 z-[9999]"
+                style={{ minWidth: 190 }}
               >
                 {!token ? (
                   <button
-                    className="w-full text-left px-4 py-2.5 ttw-type-body text-gray-700 hover:bg-gray-50"
+                    className="kaira-menu-item"
                     onClick={() => {
                       setProfileOpen(false);
                       setShowLogin(true);
                     }}
                   >
+                    <KairaUserIcon className="kaira-menu-icon" />
                     Login / Signup
                   </button>
                 ) : (
                   <>
-                    <a
-                      href="/dashboard"
-                      className="flex items-center gap-2 px-4 py-2.5 ttw-type-body text-gray-700 hover:bg-gray-50"
-                    >
-                      My Trips
+                    <a href="/dashboard" className="kaira-menu-item">
+                      <span className="kaira-trips-tile">
+                        <KairaSuitcaseIcon />
+                      </span>
+                      My trips
+                      {tripsCount !== null && (
+                        <span className="kaira-count">{tripsCount}</span>
+                      )}
                     </a>
                     <button
-                      className="w-full flex items-center gap-2 px-4 py-2.5 ttw-type-body text-red-500 hover:bg-red-50"
+                      className="kaira-menu-item is-logout"
                       onClick={handleLogout}
                     >
-                      Logout
+                      <KairaLogoutIcon className="kaira-menu-icon" />
+                      Log out
                     </button>
                   </>
                 )}
@@ -5053,6 +5044,7 @@ MobileHeaderMenu.displayName = "MobileHeaderMenu";
 // ── MobileHeader ──────────────────────────────────────────────────────────────
 // Logo + MobileHeaderMenu. Used outside the chat tab; the chat tab embeds
 // MobileHeaderMenu directly inside ChatKitPanel's "Chat with Kaira" bar.
+
 const MobileHeader = React.memo(
   ({
     onNewChat,
@@ -5067,10 +5059,18 @@ const MobileHeader = React.memo(
     isComplete?: boolean;
     onLoginSuccess?: () => void | Promise<void>;
   }) => (
-    <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 bg-white border-b border-gray-100 z-10">
-      <div className="flex items-center gap-2"  onClick={() => window.location.href = "/"}>
+    <div className="kaira-scope kaira-mheader z-10">
+      <div
+        className="flex items-center cursor-pointer"
+        onClick={() => (window.location.href = "/")}
+      >
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/logo/ttw-lockup.svg" height={24} alt="The Tarzan Way" style={{ height: 24, width: "auto" }} />
+        <img
+          src="/logo/ttw-lockup.svg"
+          height={LOGO_HEIGHT.MOBILE}
+          alt="The Tarzan Way"
+          style={{ height: LOGO_HEIGHT.MOBILE, width: "auto" }}
+        />
       </div>
       <MobileHeaderMenu
         onNewChat={onNewChat}

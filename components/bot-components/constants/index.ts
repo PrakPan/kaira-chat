@@ -35,3 +35,17 @@ export const TRANSFER_MODES = {
   TRAIN: "Train",
   BUS: "Bus",
 } as const;
+// Logo render heights. Both artboards (/logo/ttw-lockup.svg and ttw-mark.svg)
+// reserve the same padding for the -4deg tilt, so an equal height gives an
+// equal-sized tile — keep each surface on these values rather than a local
+// magic number, or the mark changes size as the user moves between them.
+export const LOGO_HEIGHT = {
+  /** Desktop rail (components/Sidebar) — collapsed mark and expanded lockup. */
+  DESKTOP: 38,
+  /**
+   * Every mobile header bar: BotApp's MobileHeader and ChatWelcomeScreen's
+   * own bar on /chat. Shorter than desktop because the mobile bar is a single
+   * compact row that also fits three actions on a ~360px viewport.
+   */
+  MOBILE: 32,
+} as const;
