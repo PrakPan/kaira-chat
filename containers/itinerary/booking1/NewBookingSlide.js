@@ -1169,21 +1169,25 @@ const ItineraryInclusions = ({
                   return (
                     <div key={booking.id}>
                       <div
-                        className={`p-3 flex items-start gap-3 hover:bg-gray-50 transition-colors ${
+                        className={`p-3 flex items-start gap-3 hover:bg-primary-lightPurple transition-colors ${
                           !selectedInclusions[booking.id] ? "" : ""
                         }`}
                       >
                         {/* Booking Details */}
-                        <div className="flex-1 min-w-0">
+                        <div
+                          className={`flex-1 min-w-0 group ${
+                            hasDetails ? "cursor-pointer" : ""
+                          }`}
+                          onClick={
+                            hasDetails
+                              ? () => onOpenDetails?.(booking)
+                              : undefined
+                          }
+                        >
                           <div className="text-sm-md font-400 leading-xl mb-sm">
                             <span
                               className={
-                                hasDetails ? "cursor-pointer hover:underline" : ""
-                              }
-                              onClick={
-                                hasDetails
-                                  ? () => onOpenDetails?.(booking)
-                                  : undefined
+                                hasDetails ? "group-hover:underline" : ""
                               }
                             >
                               {booking.detail.name}
