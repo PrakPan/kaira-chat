@@ -2,6 +2,7 @@ import { useEffect, useState, useRef, Fragment } from "react";
 import { connect, useSelector } from "react-redux";
 
 import ItineraryCity from "../../components/itinerary/itineraryCity";
+import DownloadShareBanners from "../../components/itinerary/DownloadShareBanners";
 import CityItem from "./VerticalLayout";
 import media from "../../components/media";
 import BookingModal from "../../components/modals/bookingupdated/Index";
@@ -752,6 +753,12 @@ const DaybyDay = ({
             showPins={showPins}
           />
         </div>
+        {/* End-of-itinerary banners: download PDF + share, below the day-by-day.
+            2a "Clean stacked" on mobile, 1a "Clean pair" on desktop (kaira design). */}
+        <DownloadShareBanners
+          itineraryId={router.query?.id}
+          itineraryName={Itinerary?.name}
+        />
       </div>
     </>
   );
