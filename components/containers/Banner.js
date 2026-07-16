@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Button from "../ui/button/Index";
-import ChatWithKairaCta from "./../revamp/destination/ChatWithKairaCta";
 
 const Container = styled.div`
   display: none;
@@ -43,11 +42,36 @@ const MobileBar = styled.div`
   max-width: 440px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: 10px;
   padding: 7px 7px 7px 16px;
   border-radius: 999px;
   box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.45);
+`;
+
+/* Yellow "Chat with Kaira" pill — black text + arrow. Shared by the mobile
+   bar and the desktop banner. */
+const KairaCta = styled.button`
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+  background-color: #f7e700;
+  color: #000;
+  border: none;
+  border-radius: 999px;
+  padding: 9px 16px;
+  font-family: "Inter", -apple-system, sans-serif;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+
+  @media screen and (min-width: 768px) {
+    gap: 9px;
+    padding: 11px 22px;
+    font-size: 15px;
+  }
 `;
 
 const MobileText = styled.p`
@@ -132,7 +156,11 @@ const Banner = (props) => {
           Plan your trip to <Serif>{destinationName}</Serif>
         </>
       );
-    return "Plan your trip";
+    return (
+      <>
+        Plan your trip within <Serif>minutes</Serif>
+      </>
+    );
   };
 
   if (showBanner)
@@ -142,17 +170,21 @@ const Banner = (props) => {
         <MobileContainer newYear={props.newYear}>
           <MobileBar>
             <MobileText>{renderMobileText()}</MobileText>
-            <ChatWithKairaCta
-              onClick={props.onclick}
-              label="Plan with Kaira"
-              showHelper={false}
-              style={{
-                padding: "9px 14px",
-                fontSize: "12.5px",
-                flexShrink: 0,
-                whiteSpace: "nowrap",
-              }}
-            />
+            <KairaCta type="button" onClick={props.onclick}>
+              Chat with Kaira
+              <svg
+                viewBox="0 0 12 12"
+                height="14"
+                width="14"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M2 10L10 2M10 2H4M10 2V8"></path>
+              </svg>
+            </KairaCta>
           </MobileBar>
         </MobileContainer>
       )}
@@ -191,11 +223,21 @@ const Banner = (props) => {
             </div>
           </Button> */}
            <div className="flex justify-center">
-              <ChatWithKairaCta
-                onClick={props.onclick}
-                label="Plan with Kaira"
-                showHelper={false}
-              />
+              <KairaCta type="button" onClick={props.onclick}>
+                Chat with Kaira
+                <svg
+                  viewBox="0 0 12 12"
+                  height="14"
+                  width="14"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M2 10L10 2M10 2H4M10 2V8"></path>
+                </svg>
+              </KairaCta>
             </div>
         </GridContainer>
       </Container>

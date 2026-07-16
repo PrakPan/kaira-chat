@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { MERCURY_HOST } from "../../../../services/constants";
 import type { IntakeFormState } from "../IntakeForm/types";
@@ -181,8 +181,18 @@ const IntakeLeftPanel: React.FC = () => {
   const lqip = toLqip(baseImage);
   // Track the hero image load so we can shimmer until it's ready. Reset on
   // every image change (keyed <img> remounts, but this state lives here).
+  const imgRef = useRef<HTMLImageElement | null>(null);
   const [imgLoaded, setImgLoaded] = useState(false);
-  useEffect(() => setImgLoaded(false), [image]);
+  useEffect(() => {
+    // A cached image can finish loading before React attaches the `onLoad`
+    // handler on the freshly-keyed <img>, so `onLoad` never fires and
+    // `imgLoaded` would stay false forever — leaving the blurred LQIP visible
+    // on top of a hidden (opacity:0) sharp image. Seed the state from the
+    // element's own completion status here, then let onLoad/onError drive the
+    // genuine network case.
+    const node = imgRef.current;
+    setImgLoaded(!!(node && node.complete && node.naturalWidth > 0));
+  }, [image]);
   // Big title: destination name with "your way" beneath it; the destination's
   // headline copy becomes the subtext. Falls back to the default hero copy
   // before any destination is picked.
@@ -214,6 +224,7 @@ const IntakeLeftPanel: React.FC = () => {
       {/* Background image (keyed so it cross-fades on change) */}
       <img
         key={image}
+        ref={imgRef}
         src={image}
         alt={destination?.name || "Destination"}
         fetchPriority="high"

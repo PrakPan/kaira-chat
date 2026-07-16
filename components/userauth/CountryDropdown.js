@@ -122,12 +122,18 @@ const CountryCodeDropdown = ({
 
   function searchCountries(query) {
     const searchResults = [];
+    const q = query.trim().toLowerCase();
+    // Also match on dial code so "+971" / "971" finds the country, not just its
+    // name. Strip the leading "+" from both sides so either form works.
+    const qDigits = q.replace(/^\+/, "");
 
     Object.keys(CountryCodes).forEach((key) => {
       const country = CountryCodes[key];
+      const label = (country.label || "").toLowerCase();
       if (
-        key.includes(query) ||
-        key.toLowerCase().includes(query.toLowerCase())
+        key.toLowerCase().includes(q) ||
+        label.includes(q) ||
+        (qDigits && label.replace(/^\+/, "").includes(qDigits))
       ) {
         searchResults.push(country);
       }
@@ -151,7 +157,7 @@ const CountryCodeDropdown = ({
           placeholder="Search"
         ></input>
       </div>
-      <div className="border-b-2">{topOptions}</div>
+      {!search && <div className="border-b-2">{topOptions}</div>}
       {options}
     </div>
   );

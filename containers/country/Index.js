@@ -182,7 +182,8 @@ const Index = (props) => {
         meta={
           <>
             <span>
-              <span className="star">★</span> <b>4.9</b> Google · 1,200+ reviews
+              <span className="star">★</span> <b>4.9</b> 
+              {/* Google · 1,200+ reviews */}
             </span>
             {/* <span>·</span> */}
             {/* <span>
@@ -282,7 +283,7 @@ const Index = (props) => {
             </div>
             <MobileCardCarousel gridClass={styles.itinGrid}>
               {userItineraries.slice(0, 4).map((it, i) => (
-                <ItineraryCardV2 key={it.id || i} itinerary={it} />
+                <ItineraryCardV2 key={it.id || i} itinerary={it} currency={it?.currency} />
               ))}
             </MobileCardCarousel>
           </section>

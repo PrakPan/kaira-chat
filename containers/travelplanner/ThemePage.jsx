@@ -268,7 +268,8 @@ export default function ThemePage(props) {
         meta={
           <>
             <span>
-              <span className="star">★</span> <b>4.8</b> Google · 1,200+ reviews
+              <span className="star">★</span> <b>4.8</b> 
+              {/* Google · 1,200+ reviews */}
             </span>
             <span>·</span>
             {/* <span>
@@ -719,6 +720,7 @@ export default function ThemePage(props) {
                               <ItineraryCardV2
                                 key={it.id || i}
                                 itinerary={it}
+                                currency={it?.currency}
                               />
                             ))}
                         </div>
@@ -772,6 +774,7 @@ export default function ThemePage(props) {
                             <ItineraryCardV2
                               key={el.id ?? el.page_id ?? i}
                               itinerary={el}
+                              currency={el?.currency}
                             />
                           ))}
                         </div>

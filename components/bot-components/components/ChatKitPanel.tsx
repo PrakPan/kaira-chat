@@ -51,7 +51,7 @@ const CHATKIT = "https://dev.chat.tarzanway.com"
 // carries no `prompt_login` effect to source the message from. Mirrors the
 // server's standard save-our-work `prompt_login` message.
 const DEFAULT_PROMPT_LOGIN_MESSAGE =
-  "Quick login so I can save our work as we go. You won't lose a thing, and your ₹5,000 credit locks in. 👇";
+  "Sign in to continue so I can save our work as we go. You won't lose a thing, and your ₹5,000 credit locks in. 👇";
 
 export interface AttachmentFile {
   /** Temporary local ID (before server responds) or server-assigned ID */
@@ -705,11 +705,16 @@ startEmptyIntake = false,
   // in place of the real ones until `load_quick_replies` lands.
   const [quickReplyShimmer, setQuickReplyShimmer] = useState(false);
   const [quickReplyLoading, setQuickReplyLoading] = useState(false);
-  // Mirror the shimmer flag in a ref so the stable sendMessage wrapper can tell,
-  // at call time, whether a send needs to interrupt the quick-reply tail of an
-  // otherwise-finished stream.
-  const quickReplyShimmerRef = useRef(false);
-  quickReplyShimmerRef.current = quickReplyShimmer;
+  // Mirror the full quick-reply phase — the shimmer skeleton *and* the loaded
+  // chips — in a ref so the stable sendMessage wrapper can tell, at call time,
+  // whether a send needs to interrupt the quick-reply tail of an otherwise-
+  // finished stream. The answer text is already rendered throughout this window
+  // (only the quick replies keep the SSE open), so a new send must abort that
+  // tail rather than be dropped by the hook's in-flight guard. Covering the
+  // loaded-chips case too fixes sends that were silently dropped when the user
+  // typed a fresh query after the chips had already arrived.
+  const inQuickReplyPhaseRef = useRef(false);
+  inQuickReplyPhaseRef.current = quickReplyShimmer || quickReplies.length > 0;
   // Guards the in-chat intake form so the `form_fields` effect injects the card
   // only once per session even if the effect re-emits across stream chunks.
   const intakeFormInjectedRef = useRef(false);
@@ -782,6 +787,12 @@ startEmptyIntake = false,
   // While the in-chat intake form is active (show_intake_form / form_fields),
   // lock the composer + quick replies so the user answers via the form card.
   const intakeFormActive = useSelector((s: any) => !!s.IntakeForm?.active);
+  // A destination already seeded into the intake slice (e.g. the hero "Start
+  // planning" CTA's `?destination=` param) — used to open the empty intake form
+  // straight on the "When" step instead of the already-answered destination step.
+  const intakePrefillDestinationName = useSelector(
+    (s: any) => s.IntakeForm?.destination?.name || "",
+  );
   const isComposerLocked =
     isItineraryCompleting || isItineraryPolling || intakeFormActive;
   const authToken = reduxToken ?? getAuthToken();
@@ -1683,7 +1694,12 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
     // Don't auto-scroll to the bottom of the freshly-injected form — keep
     // Kaira's greeting in view on the /chat?intake=1 landing.
     suppressIntakeAutoScrollRef.current = true;
-    dispatch(updateIntakeForm({ active: true, completed: false, step: 0 }));
+    // When the destination is already prefilled (from the hero CTA's
+    // `?destination=`), skip the answered destination step and land on "When".
+    const startStep = intakePrefillDestinationName ? 1 : 0;
+    dispatch(
+      updateIntakeForm({ active: true, completed: false, step: startStep }),
+    );
     setMessages((prev) => [
       ...prev,
       {
@@ -1717,9 +1733,22 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
 
   // Wrap sendWidgetAction so we can replay the same action after a post-login
   // retry (e.g. inject.context that triggered prompt_login while logged out).
+  //
+  // A server-bound widget CTA (e.g. "Confirm & Get Price") starts a fresh
+  // streamed response just like a text send, so it must clear the previous
+  // turn's quick replies up front — same as sendMessage. Otherwise the
+  // lingering chips keep `inQuickReplyPhase` true, which keeps
+  // `isStreamingResponse` false and leaves the composer unlocked ("Ask me
+  // anything" + Send) while the widget action is actively streaming, letting
+  // the user fire a message into an in-flight turn. Clearing them here means
+  // the composer correctly shows "Kaira is working…" + Stop for the whole
+  // widget-triggered stream, and only unlocks again once the new turn's own
+  // quick-reply tail arrives.
   const sendWidgetAction = useCallback(
     (type: string, payload: Record<string, unknown>) => {
       lastSentActionRef.current = { kind: "widget", type, payload };
+      setQuickReplies([]);
+      setQuickReplyShimmer(false);
       return rawSendWidgetAction(type, payload);
     },
     [rawSendWidgetAction],
@@ -2224,7 +2253,11 @@ case "shimmer_day_by_day": {
         }
         case "delete_activity_from_itinerary": {
           const payload = (data.data ?? {}) as Record<string, unknown>;
+          const bookingId = payload?.booking_id as string | undefined;
           dispatch(deleteActivityFromItinerary(payload));
+          // Refresh the pricing surface when a booked activity is removed so
+          // the cart total doesn't show stale pricing (mirrors hotel/transfer).
+          if (bookingId) dispatch(SetCallPaymentInfo(!callPaymentInfo));
           const text = typeof data.message === "string" ? data.message : "Activity removed from your itinerary.";
           dispatch(openNotification({ type: "success", heading: "Success!", text }));
           break;
@@ -2402,11 +2435,13 @@ const sendMessage = useCallback(
         [text].filter(Boolean),
       );
     }
-    // If only quick replies are still loading, the answer is already done —
-    // interrupt that tail so the new message isn't dropped by the hook's
-    // in-flight guard.
+    // If we're anywhere in the quick-reply tail — shimmer loading OR chips
+    // already shown — the answer itself is done and only the quick replies keep
+    // the SSE open. Interrupt that tail so the new message aborts it and starts
+    // fresh instead of being dropped by the hook's `isStreaming && !interrupt`
+    // guard (which previously swallowed sends made after the chips had loaded).
     rawSendMessage(text, attachmentIds, attachmentMeta, {
-      interrupt: quickReplyShimmerRef.current,
+      interrupt: inQuickReplyPhaseRef.current,
       formSubmitted: opts?.formSubmitted,
     });
   },
@@ -4027,6 +4062,15 @@ const handleShowLogin = useCallback(() => {
                     return;
                   }
 
+                  // ── View itinerary ────────────────────────────────────
+                  // "View itinerary" widget CTA reveals the itinerary panel
+                  // and scrolls/flashes Day 1 (mobile also switches to the
+                  // itinerary tab). Handled locally — no server round-trip.
+                  if (action.type === "itinerary.view") {
+                    onViewItinerary?.();
+                    return;
+                  }
+
                   sendWidgetAction(action.type, payload);
                 }}
               />
@@ -4193,10 +4237,12 @@ const handleShowLogin = useCallback(() => {
       {/* ── Composer ─────────────────────────────────────────────────────── */}
       {/* While the in-chat intake form is open on phone, drop the disabled
           composer entirely — the form's own sticky Continue button is the only
-          bottom action. Desktop keeps the (disabled) composer visible. */}
+          bottom action. Same for the inline sign-in card (login_card / OtpCard):
+          on phones the composer is only blocked, so hide it and let the card be
+          the sole bottom action. Desktop keeps the (disabled) composer visible. */}
       <div
         className={`kp-composer-wrap flex-shrink-0 relative${
-          intakeFormActive ? " max-ph:hidden" : ""
+          intakeFormActive || loginBlocked ? " max-ph:hidden" : ""
         }`}
       >
         <div className="mx-auto">

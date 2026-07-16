@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import HeadingContent from "./HeadingContent";
 import styles from "./HeroSection.module.scss";
 import HomeHeadingContent from "./HomeHeadingContent";
@@ -63,7 +62,7 @@ const HeroSection = ({ title, subtitle, slug }) => {
       <div className="ttwContainer">
         <div className={styles.heroGrid}>
 
-         { slug == "home" ? <HomeHeadingContent title={title} subtitle={subtitle}  /> : <HeadingContent title={title} subtitle={subtitle}  />}
+         { ((slug == "home")  || (slug == "homepage")) ? <HomeHeadingContent title={title} subtitle={subtitle}  /> : <HeadingContent title={title} subtitle={subtitle}  />}
 
           <div className={styles.kairaWrap}>
             {POLAROIDS.map((p) => (
@@ -84,15 +83,6 @@ const HeroSection = ({ title, subtitle, slug }) => {
                 <span className={styles.dot}></span> online · ~2s reply
               </div>
             </div>
-
-            {slug != "home" && (
-              <Link href="/chat?intake=1" className={styles.kairaCta}>
-                Start planning
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M5 12h14M13 6l6 6-6 6" />
-                </svg>
-              </Link>
-            )}
           </div>
         </div>
       </div>

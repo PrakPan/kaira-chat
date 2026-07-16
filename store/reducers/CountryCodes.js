@@ -1,23 +1,11 @@
 import * as actionTypes from "../actions/actionsTypes";
+import countryCodes from "../data/countryCodes";
 
-// Define initial state
-const initialState = {
-  India: {
-    img: "https://flagcdn.com/in.svg",
-    label: "+91",
-    value: "India",
-  },
-  "United Kingdom": {
-    img: "https://flagcdn.com/gb.svg",
-    label: "+44",
-    value: "United Kingdom",
-  },
-  "United States": {
-    img: "https://flagcdn.com/us.svg",
-    label: "+1",
-    value: "United States",
-  },
-};
+// Define initial state — the full bundled dial-code list (previously only India/
+// UK/US were seeded and the rest were fetched from restcountries.com, which is
+// now deprecated). Shipping the complete list keeps every country available and
+// searchable without any runtime network dependency.
+const initialState = countryCodes;
 
 // Define reducer
 const reducer = (state = initialState, action) => {

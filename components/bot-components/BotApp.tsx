@@ -418,9 +418,18 @@ export default function BotApp({
   const [chatKey, setChatKey] = useState(0);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
 
-  // ── Init showStartScreen/isChatActive from sessionId to prevent flicker on reload ──
-  const [showStartScreen, setShowStartScreen] = useState(!sessionId);
-  const [isChatActive, setIsChatActive] = useState(!!sessionId);
+  // ── Init showStartScreen/isChatActive to prevent flicker on load ──
+  // Both derive only from the `sessionId`/`themeConfig` props (identical on the
+  // server and client, so no hydration mismatch). On a fresh, non-theme /chat
+  // open there is no inspiration surface — the empty state is the in-chat
+  // intake form — so we hide StartScreen and reveal the chat panel from the
+  // very first paint. The router-ready effects then inject the intake form
+  // (or handle a ?seed / ?intake handoff). Only theme pages keep the
+  // StartScreen + ChatWelcomeScreen inspiration surfaces on a fresh open.
+  const [showStartScreen, setShowStartScreen] = useState(
+    !sessionId && !!themeConfig,
+  );
+  const [isChatActive, setIsChatActive] = useState(!!sessionId || !themeConfig);
   // When reloading with a sessionId, mark hasBotResponded true so the left panel is visible
   // while we restore the thread data. It will be properly set by the restore flow.
   const [hasBotResponded, setHasBotResponded] = useState(!!sessionId);
@@ -2685,6 +2694,31 @@ export default function BotApp({
     [loadThread, dispatch, restoreItineraryDirectly],
   );
 
+  // Activate a fresh, empty in-chat intake form. Shared by the `?intake=1`
+  // "Plan with Kaira" landing, the bare direct-/chat default, and the New
+  // Chat action on non-theme pages. Optionally seeds the destination step.
+  const activateEmptyIntake = useCallback(
+    (destName?: string) => {
+      dispatch(resetIntakeForm());
+      if (destName) {
+        const dest = { name: destName };
+        dispatch(
+          updateIntakeForm({
+            destination: dest,
+            destinations: [dest],
+            query: destName,
+            stepsCompleted: [true, false, false, false],
+          }),
+        );
+      }
+      setStartEmptyIntake(true);
+      setIntakeActive(true);
+      setShowStartScreen(false);
+      setIsChatActive(true);
+    },
+    [dispatch],
+  );
+
   const handleNewChat = () => {
     clearStaleChatSessions();
     initialPromptRef.current = null;
@@ -2749,6 +2783,16 @@ export default function BotApp({
       setActiveChatSessionId(undefined);
       window.history.pushState({}, "", targetPath);
     }
+
+    // Non-theme /chat: the fresh surface defaults to the in-chat intake form
+    // rather than the inspiration StartScreen. Theme pages keep their themed
+    // StartScreen/ChatWelcomeScreen inspiration surface. Runs after the resets
+    // above (which set startEmptyIntake=false / showStartScreen=true) so it
+    // overrides them; the chatKey bump remounts ChatKitPanel, whose
+    // startEmptyIntake effect then injects the empty form.
+    if (!themeConfig) {
+      activateEmptyIntake();
+    }
   };
 
   const executePromptSelect = (prompt: string, attachmentIds?: string[]) => {
@@ -2779,7 +2823,17 @@ export default function BotApp({
     const seed = (querySeed || handoffSeed || "").toString().trim();
     const files = takePendingFiles();
 
-    if (!seed && (!files || files.length === 0)) return;
+    if (!seed && (!files || files.length === 0)) {
+      // No hero handoff. On a bare, direct /chat open — no theme inspiration
+      // surface, no restored session, no tailored landing, and no ?intake flag
+      // (handled by its own effect below) — default the empty state to the
+      // in-chat intake form instead of the StartScreen/ChatWelcomeScreen
+      // inspiration surfaces. Those surfaces now only show on theme pages.
+      if (!themeConfig && !sessionId && !fromTailored && !router.query.intake) {
+        activateEmptyIntake();
+      }
+      return;
+    }
 
     if (files && files.length > 0) {
       // Pre-fill composer + upload files; let the user click send so the
@@ -2825,8 +2879,6 @@ export default function BotApp({
     if (!wantsIntake) return;
     hasConsumedIntakeFlagRef.current = true;
 
-    dispatch(resetIntakeForm());
-
     // Optional `?destination=<name>` from the hero "Start planning" CTA seeds
     // the intake form's destination step so it lands pre-filled (e.g. "Greece"
     // from the theme page, or the destination page's own place).
@@ -2834,22 +2886,8 @@ export default function BotApp({
     const destName = (
       Array.isArray(destParam) ? destParam[0] : destParam || ""
     ).trim();
-    if (destName) {
-      const dest = { name: destName };
-      dispatch(
-        updateIntakeForm({
-          destination: dest,
-          destinations: [dest],
-          query: destName,
-          stepsCompleted: [true, false, false, false],
-        }),
-      );
-    }
 
-    setStartEmptyIntake(true);
-    setIntakeActive(true);
-    setShowStartScreen(false);
-    setIsChatActive(true);
+    activateEmptyIntake(destName || undefined);
 
     if (typeof window !== "undefined") {
       try {
@@ -2932,6 +2970,33 @@ export default function BotApp({
     return Array.from(byKey.values());
   }, [locations, endpointPins, botMode]);
 
+  // "View itinerary" widget CTA → reveal the itinerary panel (desktop swaps
+  // viewMode, mobile switches the bottom tab), then scroll to Day 1 and flash
+  // it so the user sees where their itinerary begins. The panel may need a tick
+  // to mount after the view switch, so we retry finding Day 1 briefly. Removing
+  // + re-adding the class (with a forced reflow) restarts the flash on repeat
+  // clicks.
+  const handleViewItinerary = React.useCallback(() => {
+    if (isMobile) mobileTabSwitchRef.current?.("itinerary");
+    else setViewMode("itinerary");
+
+    let attempts = 0;
+    const flashDay1 = () => {
+      const el = document.getElementById("bot-itinerary-day-1");
+      if (!el) {
+        if (attempts++ < 25) window.setTimeout(flashDay1, 120);
+        return;
+      }
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+      el.classList.remove("ttw-day-flash");
+      // Force reflow so the animation replays when Day 1 is already on screen.
+      void el.offsetWidth;
+      el.classList.add("ttw-day-flash");
+      window.setTimeout(() => el.classList.remove("ttw-day-flash"), 3100);
+    };
+    window.setTimeout(flashDay1, 120);
+  }, [isMobile]);
+
   const sharedChatKitProps = {
     onLocationReceived: handleLocationReceived,
     onNewQuery: handleNewQuery,
@@ -2965,7 +3030,7 @@ export default function BotApp({
     onTravellerStoryDismiss: () => setActiveTravellerStory(null),
     onLoginSuccess: attachUserToItinerary,
     loginMandatory: router.query.login === "false" ? false : undefined,
-    onViewItinerary: () => mobileTabSwitchRef.current?.("itinerary"),
+    onViewItinerary: handleViewItinerary,
     onIntakeFormStart: () => setIntakeActive(true),
     initialFiles,
     initialInputText,

@@ -147,7 +147,7 @@ const Home = ({ token, hotLocationSearch, checkAuthState, setHotLocationSearch }
 
       <div className={styles.ttwRevamp}>
         <NavigationMenu message={"Welcome to The Tarzan Way!"} />
-        <HeroSection  />
+        <HeroSection  slug="homepage"/>
         <TrustFactors />
         <KairaLovingSection />
         {token && <MyTripsSection className="max-w-7xl" />}
@@ -160,6 +160,7 @@ const Home = ({ token, hotLocationSearch, checkAuthState, setHotLocationSearch }
           ctaLabel="Start planning"
         />
 
+        <LuxuryEuropeDestinations />
         <GoogleReviewsSection />
         <SectionCta
           // label="End of · Real reviews"
@@ -176,7 +177,7 @@ const Home = ({ token, hotLocationSearch, checkAuthState, setHotLocationSearch }
           ctaLabel="Get my own moment"
         />
 
-        <LuxuryEuropeDestinations />
+       
         <KairaPlansSection />
         <WhyKairaSection />
         <SectionCta

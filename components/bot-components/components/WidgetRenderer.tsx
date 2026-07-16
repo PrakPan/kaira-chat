@@ -2356,6 +2356,45 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
               {description}
             </p>
           )}
+
+          {/* Address — shown below the description only when present */}
+          {address && (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "flex-start",
+                gap: 6,
+                marginTop: description ? 8 : 0,
+              }}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#8a93a6"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                style={{ flexShrink: 0, marginTop: 2 }}
+              >
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+              <span
+                style={{
+                  fontSize: 12,
+                  color: "var(--color-text-secondary)",
+                  lineHeight: 1.45,
+                  fontFamily:
+                    "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+                }}
+              >
+                {address}
+              </span>
+            </div>
+          )}
         </div>
 
         <div className="w-full sm:w-[140px] shrink-0 self-start">

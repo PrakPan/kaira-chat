@@ -222,7 +222,7 @@ const Experience = (props) => {
             </div>
             <div className={styles.itinGrid}>
               {props.cityData.itineraries.slice(0, 4).map((it, i) => (
-                <ItineraryCardV2 key={it.id || i} itinerary={it} />
+                <ItineraryCardV2 key={it.id || i} itinerary={it} currency={it?.currency} />
               ))}
             </div>
           </section>

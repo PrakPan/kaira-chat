@@ -190,7 +190,7 @@ export async function getStaticProps(context) {
   let locations = [];
   let hotLocationSearch = [];
   let Type = "State";
-  let Id = PagesToIdMapping[path] != undefined ? PagesToIdMapping[path] : "";
+  let Id = PagesToIdMapping?.[path] != undefined ? PagesToIdMapping?.[path] : "";
   console.log("id is: ",Id)
   let isThemePage = false;
   //mercury api
