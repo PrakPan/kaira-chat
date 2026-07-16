@@ -174,11 +174,12 @@ mixpanel.track('Sign up');`,
             }}
           />
 
-          {/* ---------- Favicon ---------- */}
-          <link
-            rel="icon"
-            href="https://d31aoa0ehgvjdi.cloudfront.net/media/website/logoyellow.png"
-          />
+          {/* ---------- Favicon / app icons ---------- */}
+          <link rel="icon" href="/favicon.ico" sizes="any" />
+          <link rel="icon" type="image/svg+xml" href="/logo/ttw-icon.svg" />
+          <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+          <link rel="manifest" href="/site.webmanifest" />
+          <meta name="theme-color" content="#0b1220" />
 
           {this.props.styleTags}
         </Head>

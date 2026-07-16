@@ -82,7 +82,11 @@ interface SidebarProps {
   onNewChat?: () => void;
   onToggle?: () => void;
   isCollapsed?: boolean;
-  onThreadSelect?: (threadId: string, sessionId?: string, customerName?: string) => void;
+  onThreadSelect?: (
+    threadId: string,
+    sessionId?: string,
+    customerName?: string,
+  ) => void;
   activeThreadId?: string | null;
   /** True when itinerary is fully created (P2), false/undefined = P1 */
   isComplete?: boolean;
@@ -146,7 +150,11 @@ const ChatHistoryDrawer: React.FC<{
   onClose: () => void;
   threads: Thread[];
   activeThreadId?: string | null;
-  onThreadSelect?: (id: string, sessionId?: string, customerName?: string) => void;
+  onThreadSelect?: (
+    id: string,
+    sessionId?: string,
+    customerName?: string,
+  ) => void;
   loading: boolean;
   hasMore?: boolean;
   loadingMore?: boolean;
@@ -252,10 +260,10 @@ const ChatHistoryDrawer: React.FC<{
                       onClose();
                     }}
                     className={`w-full text-left px-3 py-2.5 rounded-lg text-[13.5px] transition-colors flex items-center gap-2.5 ${
- isActive
- ? "bg-[#07213A] text-white font-medium"
- : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
- }`}
+                      isActive
+                        ? "bg-[#07213A] text-white font-medium"
+                        : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                    }`}
                     title={thread.title || "Untitled"}
                   >
                     <svg
@@ -277,8 +285,8 @@ const ChatHistoryDrawer: React.FC<{
                     {relative && (
                       <span
                         className={`flex-shrink-0 ttw-type-small whitespace-nowrap tabular-nums ${
- isActive ? "text-white/70" : "text-gray-400"
- }`}
+                          isActive ? "text-white/70" : "text-gray-400"
+                        }`}
                       >
                         {relative}
                       </span>
@@ -377,7 +385,8 @@ const SidebarProfile: React.FC<{
   const imgUrlEndPoint = "https://d31aoa0ehgvjdi.cloudfront.net/";
   // Same default avatar NavigationMenu/ProfileDropDown fall back to. Shown when
   // the user is logged out instead of the "T"/initials placeholder.
-  const defaultProfileImg = imgUrlEndPoint + "media/icons/navigation/profile-user.png";
+  const defaultProfileImg =
+    imgUrlEndPoint + "media/icons/navigation/profile-user.png";
   const avatarSrc = token
     ? image && image !== "null" && image !== null
       ? imgUrlEndPoint + image
@@ -530,9 +539,9 @@ const SidebarProfile: React.FC<{
             <div
               onClick={(e) => e.stopPropagation()}
               // className="fixed bg-white overflow-y-auto z-[3300]
- // left-0 right-0 bottom-0 w-full min-h-[85vh] rounded-t-2xl shadow-[0_-10px_30px_rgba(0,0,0,0.15)]
- // md:left-1/2 md:right-auto md:bottom-auto md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[min(480px,95vw)] md:rounded-2xl md:shadow-[0_25px_60px_rgba(0,0,0,0.3)] flex items-center
- // justify-center"
+              // left-0 right-0 bottom-0 w-full min-h-[85vh] rounded-t-2xl shadow-[0_-10px_30px_rgba(0,0,0,0.15)]
+              // md:left-1/2 md:right-auto md:bottom-auto md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[min(480px,95vw)] md:rounded-2xl md:shadow-[0_25px_60px_rgba(0,0,0,0.3)] flex items-center
+              // justify-center"
             >
               <BotLoginModal
                 show={showLogin}
@@ -710,7 +719,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
       <div
         className="absolute left-0 top-0 h-full flex flex-col bg-white overflow-visible z-[160] shadow-md flex-shrink-0 transition-all duration-300 ease-in-out"
-        style={{ width: isCollapsed ? 64 : "14rem" }}
+        style={{ width: isCollapsed ? 68 : "14rem" }}
       >
         {/* Logo */}
         <div
@@ -723,19 +732,29 @@ const Sidebar: React.FC<SidebarProps> = ({
               onClick={() => router.push("/")}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logoblack.svg" height={22} width={22} alt="logo" />
-              <span className="font-semibold text-gray-800 ttw-type-body whitespace-nowrap">
-                thetarzanway
-              </span>
+              <img
+                src="/logo/ttw-lockup.svg"
+                height={30}
+                alt="The Tarzan Way"
+                style={{ height: 30, width: "auto" }}
+              />
             </div>
           ) : (
-            <SidebarTooltip label="thetarzanway">
+            <SidebarTooltip label="The Tarzan Way">
               <div
                 className="flex items-center justify-center w-full cursor-pointer"
                 onClick={() => router.push("/")}
               >
+                {/* 30px renders the same 30x30 tile as the expanded lockup at
+                    height 30: both artboards reserve the same padding for the
+                    -4deg tilt, so equal heights give an equal-sized tile. */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/logoblack.svg" height={22} width={22} alt="logo" />
+                <img
+                  src="/logo/ttw-mark.svg"
+                  height={30}
+                  width={30}
+                  alt="The Tarzan Way"
+                />
               </div>
             </SidebarTooltip>
           )}

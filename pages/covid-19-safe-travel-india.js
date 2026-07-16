@@ -19,7 +19,11 @@ const Covid = () => {
           property="og:description"
           content="Keeping safe from coronavirus while traveling in India is very important and we have taken a number of steps to make sure that your travel experience in India is the safest and we are taking multiple steps to prevent anything happening to our travelers while traveling in India during the pandemic outbreak of coronavirus"
         />
-        <meta property="og:image" content="/logoblack.svg" />
+        <meta property="og:image" content="https://thetarzanway.com/og-image.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image" content="https://thetarzanway.com/og-image.png" />
         <meta
           property="keywords"
           content="safe travel during covid india, safe travel destinations covid, safe travel destinations after covid, safe travel india destinations, safe travel locations 2020, safe travel india, safe travel india post covid, safe travel recommendations, safe travel recommendations india, safety during travel, travel safety india, travel safety post covid, travel safety coronavirus, safety travel india, safe travel meaning, safety, travel packages india, can you travel safely during covid, how do you travel safely india, how to travel safe india, travel safe india, is travel safe in india, travel safety india post covid "

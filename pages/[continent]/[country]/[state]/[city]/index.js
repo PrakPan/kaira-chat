@@ -54,7 +54,11 @@ const Experience = (props) => {
           property="og:description"
           content={`${props.cityData.meta_description}`}
         />
-        <meta property="og:image" content="/logoblack.svg" />
+        <meta property="og:image" content="https://thetarzanway.com/og-image.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image" content="https://thetarzanway.com/og-image.png" />
         <title>
           Plan Your Trip to {props.cityData.name} | AI Trip Planner & Custom Travel Itineraries | The Tarzan Way
         </title>
