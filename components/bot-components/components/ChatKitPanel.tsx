@@ -2374,7 +2374,11 @@ case "shimmer_day_by_day": {
         }
         case "delete_activity_from_itinerary": {
           const payload = (data.data ?? {}) as Record<string, unknown>;
+          const bookingId = payload?.booking_id as string | undefined;
           dispatch(deleteActivityFromItinerary(payload));
+          // Refresh the pricing surface when a booked activity is removed so
+          // the cart total doesn't show stale pricing (mirrors hotel/transfer).
+          if (bookingId) dispatch(SetCallPaymentInfo(!callPaymentInfo));
           const text = typeof data.message === "string" ? data.message : "Activity removed from your itinerary.";
           dispatch(openNotification({ type: "success", heading: "Success!", text }));
           break;
