@@ -155,6 +155,7 @@ const Home = ({ token, hotLocationSearch, checkAuthState, setHotLocationSearch }
           ctaLabel="Start planning"
         />
 
+        <LuxuryEuropeDestinations />
         <GoogleReviewsSection />
         <SectionCta
           // label="End of · Real reviews"
@@ -171,7 +172,7 @@ const Home = ({ token, hotLocationSearch, checkAuthState, setHotLocationSearch }
           ctaLabel="Get my own moment"
         />
 
-        <LuxuryEuropeDestinations />
+       
         <KairaPlansSection />
         <WhyKairaSection />
         <SectionCta

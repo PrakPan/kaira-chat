@@ -720,6 +720,7 @@ export default function ThemePage(props) {
                               <ItineraryCardV2
                                 key={it.id || i}
                                 itinerary={it}
+                                currency={it?.currency}
                               />
                             ))}
                         </div>
@@ -773,6 +774,7 @@ export default function ThemePage(props) {
                             <ItineraryCardV2
                               key={el.id ?? el.page_id ?? i}
                               itinerary={el}
+                              currency={el?.currency}
                             />
                           ))}
                         </div>

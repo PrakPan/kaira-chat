@@ -33,7 +33,7 @@ const UserDashboard = (props) => {
   const fetchData = (showMore = false) => {
     if (showMore) setShowMoreLoading(true);
     axiomyplansinstance
-      .get(`/?currency=${"INR"}&limit=9&offset=${offSet}`, {
+      .get(`/?currency=${currency?.currency || "INR"}&limit=9&offset=${offSet}`, {
         headers: {
           Authorization: `Bearer ${props.token}`,
         },
@@ -145,6 +145,7 @@ const UserDashboard = (props) => {
                   <ItineraryCardV2
                     key={plan?.id ?? i}
                     itinerary={plan}
+                    currency={currency?.currency || "INR"}
                   />
                 ))}
               </div>

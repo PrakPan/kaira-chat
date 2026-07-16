@@ -184,7 +184,7 @@ const ComponentDisplay = ({ component, handlePlanButton, setDestination }) => (
     ) : component.carousel === "itinerary-2" ? (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
         {component.elements.map((el, i) => (
-          <ItineraryCardV2 key={el.id ?? el.page_id ?? i} itinerary={el} />
+          <ItineraryCardV2 key={el.id ?? el.page_id ?? i} itinerary={el} currency={el?.currency} />
         ))}
       </div>
     ) : component.carousel === "activity-1" ? (
