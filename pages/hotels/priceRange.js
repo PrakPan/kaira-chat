@@ -106,7 +106,7 @@ const PriceRange = ({ input, setInput, name, small}) => {
           onClick={() => setOpen((prev) => !prev)}
           className="flex flex-col gap-2"
         >
-          <div className={`text-bold ${small==true?"text-xs":"text-2xl"} text-2xl !text-black`}>₹{input.price_lower_range}-₹{input.price_upper_range}</div>
+          <div className={`text-bold ${small==true?"text-xs":"text-2xl"} text-2xl !text-black`}>₹{input?.price_lower_range}-₹{input?.price_upper_range}</div>
         </div>
       )}
     </div>

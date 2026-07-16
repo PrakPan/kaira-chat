@@ -291,6 +291,9 @@ function useUserLocationData() {
 }
 
 function getAuthToken(): string | null {
+  // localStorage is browser-only; guard so render-time calls don't crash
+  // SSR/static-export (this is called in the render body via `reduxToken ?? getAuthToken()`).
+  if (typeof window === "undefined") return null;
   return (
     localStorage.getItem("token") ??
     localStorage.getItem("authToken") ??
@@ -1605,9 +1608,11 @@ const canResumeAfterLoginRef = useRef(false);
    */
 const sessionIdRef = useRef<string>((() => {
     if (propSessionId) return propSessionId;
-    // 2. Fall back to URL
-    const match = window.location.pathname.match(/\/chat\/([a-f0-9-]{36})/);
-    if (match) return match[1];
+    // 2. Fall back to URL (browser only; window is undefined during SSR/export)
+    if (typeof window !== "undefined") {
+      const match = window.location.pathname.match(/\/chat\/([a-f0-9-]{36})/);
+      if (match) return match[1];
+    }
     // 3. Generate new (only for fresh /chat)
     return generateSessionId();
   })());

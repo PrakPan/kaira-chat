@@ -23,10 +23,11 @@ const HeroSection = ({ title, subtitle, image, slug=null,setShowTailoredModal}) 
   const [animationStarted, setAnimationStarted] = useState(false);
   let isPageWide = media("(min-width: 768px)");
 
-  // Use prop image if provided (single or array), otherwise use default heroImages
+  // Use prop image if provided (single or array); fall back to an empty array
+  // (not null) so `.length`/`.map` below never crash when no image is passed.
   const imagesToUse = image
     ? (Array.isArray(image) ? image : [image])
-    : null;
+    : [];
 
   // Reset animation state when image prop changes (navigation) — keep refs intact to avoid flicker
   useEffect(() => {

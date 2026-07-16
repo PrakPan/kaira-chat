@@ -101,6 +101,10 @@ const RoomsGuests = ({ input, setInput, name ,small}) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // This is a widget that expects input/name props. When rendered without them
+  // (e.g. hit directly as a static-export route), bail out instead of crashing.
+  if (!name || !input || !input[name]) return null;
+
   return (
     <div ref={dropdownRef} className={`${small==true?"h-[65px] w-[250px]":"h-[100px] w-[290px]"} block text-gray-600 px-2 py-2 font-medium mb-1 border border-gray-300 rounded-md hover:bg-blue-200 focus:ring-2 focus:ring-blue-500 outline-none`}>
       <div className={`${small==true&&"text-xs mb-2"}`}>City, Property Name Or Locations</div>

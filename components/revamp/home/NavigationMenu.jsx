@@ -52,6 +52,14 @@ const NavigationMenu = (props) => {
   );
   const slideIndex = Number(router.query.slideIndex) || 0;
 
+  // localStorage is browser-only; reading it during render crashes SSR. Read it
+  // after mount so the server (and the first client render) see null, keeping
+  // hydration in sync, then reflect the real token on the client.
+  const [accessToken, setAccessToken] = useState(null);
+  useEffect(() => {
+    setAccessToken(localStorage.getItem("access_token"));
+  }, []);
+
 
   // Memoized handlers to prevent unnecessary re-renders
   const handleMenuItemHover = useCallback((element, isHovering) => {
@@ -141,7 +149,7 @@ const NavigationMenu = (props) => {
                   Plan with Kaira <svg viewBox="0 0 12 12"  height="14" width="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 10L10 2M10 2H4M10 2V8"></path></svg>
           </button>}
           
-          {localStorage.getItem("access_token") ? (
+          {accessToken ? (
             <ProfileDropDown
             pill
             name={props.name}
@@ -153,7 +161,7 @@ const NavigationMenu = (props) => {
             showDropDownProfileListMobile={showDropDownProfileListMobile}
             notifications={[]}
             toggleProfileList={toggleProfileList}
-            token={localStorage.getItem("access_token")}
+            token={accessToken}
             />
           ) : (
             <Button size="small" onClick={handleCTAClick}>

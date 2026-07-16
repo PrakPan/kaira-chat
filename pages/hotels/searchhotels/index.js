@@ -85,6 +85,9 @@ const ImageContainer = styled.div`
 `;
 
 function convertDate(dateStr) {
+  // dateStr comes from router.query, which is empty during static prerender —
+  // guard against undefined so the useState initializer doesn't crash SSR/export.
+  if (!dateStr) return "";
   const [year, day, month] = dateStr.split("-");
   return `${year}-${month}-${day}`;
 }

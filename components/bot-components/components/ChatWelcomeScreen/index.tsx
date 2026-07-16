@@ -234,6 +234,9 @@ const HERO_HOOKS: string[] = [
 ];
 
 function getAuthToken(): string | null {
+  // localStorage is browser-only; guard so render-time calls don't crash
+  // SSR/static-export (this runs in the render body via `reduxToken ?? getAuthToken()`).
+  if (typeof window === "undefined") return null;
   return (
     localStorage.getItem("token") ??
     localStorage.getItem("authToken") ??

@@ -256,7 +256,8 @@ MyApp.getInitialProps = async ({ Component, ctx }) => {
   };
 };
 
-// Wrap Redux store and disable SSR for heavy hydration
-export default dynamic(() => Promise.resolve(store.withRedux(MyApp)), {
-  ssr: false,
-});
+// Wrap Redux store. next-redux-wrapper's withRedux is SSR-safe, so the app is
+// server-rendered normally — do NOT wrap this in dynamic(ssr:false), which
+// blanks the entire tree on the server (empty <div id="__next">) and defeats
+// SSR/SEO. Fix any hydration mismatch at the specific component instead.
+export default store.withRedux(MyApp);

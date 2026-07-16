@@ -4047,6 +4047,9 @@ type MobileTab = "chat" | "map" | "routes" | "itinerary" | "bookings";
 const CHATKIT_API_URL_MOBILE = "https://dev.chat.tarzanway.com/chatkit";
 
 function getAuthToken(): string | null {
+  // localStorage is browser-only; guard so render-time calls don't crash
+  // SSR/static-export (this is called in render bodies via `reduxToken ?? getAuthToken()`).
+  if (typeof window === "undefined") return null;
   return (
     localStorage.getItem("token") ??
     localStorage.getItem("authToken") ??

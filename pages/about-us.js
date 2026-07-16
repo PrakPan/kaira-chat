@@ -8,14 +8,10 @@ import StartJourney from "../components/containers/ChatWithUs/ChatWithUs";
 import Head from "next/head";
 import Layout from "../components/Layout";
 import Team from "../containers/aboutus/Ourteam/Index";
-import usePageLoaded from "../components/custom hooks/usePageLoaded";
 import CtaBoardingSection from "../components/revamp/home/CtaBoardingSection";
 
 const AboutUsContainer = () => {
-  const isPageLoaded = usePageLoaded();
-
-  if (isPageLoaded)
-    return (
+  return (
       <Layout>
         <Head>
           <title>About Us | Travel India | The Tarzan Way</title>
@@ -61,7 +57,6 @@ const AboutUsContainer = () => {
 
       </Layout>
     );
-  else return <div></div>;
 };
 
 export default AboutUsContainer;
