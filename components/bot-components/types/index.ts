@@ -97,6 +97,11 @@ export interface MapViewProps {
    * Re-entering the map resets the city card decks to their default state.
    */
   isVisible?: boolean;
+  /**
+   * Height (px, up from the viewport bottom) of the fixed cart / route bars
+   * overlaying the map, so the day-by-day cards can be kept clear of them.
+   */
+  chromeBottom?: number;
 }
 
 export interface ItineraryViewProps {

@@ -62,6 +62,13 @@ interface MapProps {
   currentRoute: Location[] | null;
   /** True while the map pane is the one on screen — see MapViewProps.isVisible. */
   isVisible?: boolean;
+  /**
+   * Height in px, measured up from the viewport bottom, of the fixed cart / route
+   * bars that overlay the map. The day-by-day cards are kept clear of this band
+   * (plus the back-to-itinerary pill floating just above it) so they stay fully
+   * visible — see the placement pass.
+   */
+  chromeBottom?: number;
 }
 
 /**
@@ -119,9 +126,6 @@ const deckAnchorGeom = (card: DeckCard, index: number): AnchorGeom =>
     ? dotAnchor(ACTIVE_ELEMENT_MARKER_SIZE)
     : CITY_PIN_ANCHOR;
 
-/** Zoom the map settles at when a city's elements are opened up. */
-const EXPLORE_ZOOM = 13;
-
 /**
  * Stacking order for overlapping decks. Earlier stops sit on top of later ones —
  * the route reads first-to-last, so city 2's card should cover city 3's, not the
@@ -132,6 +136,27 @@ const EXPLORE_ZOOM = 13;
 const DECK_FOCUS_Z = 1000;
 const deckZIndex = (index: number, total: number, focused: boolean): number =>
   focused ? DECK_FOCUS_Z : Math.max(1, total - index);
+
+/**
+ * The dismissed-map the deck stack opens with: only the first city's card is
+ * shown, the rest start collapsed onto their pins and open when their pin (or
+ * marker) is clicked — see showCityCard. "First" is the earliest route stop
+ * that matched a deck, since cityCards is built in route order.
+ */
+const collapsedButFirst = (cards: DeckCard[]): Record<string, boolean> => {
+  const dismissed: Record<string, boolean> = {};
+  cards.forEach((card, index) => {
+    if (index > 0) dismissed[card.id] = true;
+  });
+  return dismissed;
+};
+
+/** The back-to-itinerary pill floats this far above the cart bar; a card kept
+ * clear of the bar should clear the pill too. */
+const BACK_PILL_CLEARANCE = 52;
+/** Breathing room reserved along the top of the pane (header / fullscreen
+ * control) so a card never tucks under it. */
+const TOP_CHROME = 12;
 
 /** The little triangle joining a card to its pin. */
 const DeckTail = ({ placement }: { placement: DeckPlacement }) => (
@@ -466,7 +491,17 @@ function buildPopupHTML({
 }
 
 const MyMap = forwardRef<google.maps.Map | null, MapProps>(
-  ({ state, locations, userLocation, currentRoute, isVisible = true }, ref) => {
+  (
+    {
+      state,
+      locations,
+      userLocation,
+      currentRoute,
+      isVisible = true,
+      chromeBottom = 0,
+    },
+    ref,
+  ) => {
     const mapRef = useRef<HTMLDivElement>(null);
     const mapInstance = useRef<google.maps.Map | null>(null);
     const markersRef = useRef<google.maps.Marker[]>([]);
@@ -714,17 +749,28 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
     }, [cityCards]);
 
     // Leaving the map and coming back is a fresh look at it, so the decks
-    // return to their default state — every deck open, showing its city card —
-    // rather than preserving whatever the user dismissed or paged to last time.
+    // return to their default state — only the first city's card open, the rest
+    // collapsed onto their pins (see collapsedButFirst) — rather than preserving
+    // whatever the user dismissed or paged to last time.
     const wasVisibleRef = useRef(isVisible);
     useEffect(() => {
       const reEntered = isVisible && !wasVisibleRef.current;
       wasVisibleRef.current = isVisible;
       if (!reEntered) return;
-      setDismissedCards((prev) => (Object.keys(prev).length ? {} : prev));
+      setDismissedCards(collapsedButFirst(cityCards));
       setCardIndex((prev) => (Object.keys(prev).length ? {} : prev));
       setFocusedCardId(null);
-    }, [isVisible]);
+    }, [isVisible, cityCards]);
+
+    // A fresh mount with the map already on screen (e.g. desktop opening
+    // straight to the map tab) never trips the re-enter transition above, so
+    // collapse to the first city's card the first time the decks populate.
+    const didInitialCollapseRef = useRef(false);
+    useEffect(() => {
+      if (didInitialCollapseRef.current || cityCards.length === 0) return;
+      didInitialCollapseRef.current = true;
+      setDismissedCards(collapsedButFirst(cityCards));
+    }, [cityCards]);
 
     // Which side of its pin each deck sits on, chosen by the placement pass.
     const [deckPlacements, setDeckPlacements] = useState<
@@ -900,7 +946,27 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
         });
       });
 
-      const next = chooseDeckPlacements(boxes, obstacles, vw, vh);
+      // The fixed cart / route bars overlay the bottom of the pane, and the
+      // back-to-itinerary pill floats just above them. chromeBottom is measured
+      // up from the viewport bottom, so fold in however far this container sits
+      // above that bottom to get how deep the bars actually reach into the pane,
+      // then reserve the pill's band on top. Cards are steered out of the result
+      // so they stay fully visible instead of tucking under the bars.
+      const rect = container.getBoundingClientRect();
+      const viewportH =
+        typeof window !== "undefined" ? window.innerHeight : rect.bottom;
+      const barsIntoPane = Math.max(
+        0,
+        chromeBottom - Math.max(0, viewportH - rect.bottom),
+      );
+      const insets = {
+        top: TOP_CHROME,
+        right: 0,
+        bottom: barsIntoPane > 0 ? barsIntoPane + BACK_PILL_CLEARANCE : 0,
+        left: 0,
+      };
+
+      const next = chooseDeckPlacements(boxes, obstacles, vw, vh, insets);
 
       // Written straight to the DOM as well as to state: the transform has to
       // land in the same frame as the measurement it came from, while the state
@@ -925,7 +991,14 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
           );
         return same ? prev : next;
       });
-    }, [overlayNodes, deckCards, cardIndex, dismissedCards, effectiveLocations]);
+    }, [
+      overlayNodes,
+      deckCards,
+      cardIndex,
+      dismissedCards,
+      effectiveLocations,
+      chromeBottom,
+    ]);
 
     // Re-place after the cards have rendered (relayoutDecks is keyed on
     // `cardIndex`, and both the card on show and the pin it hangs off change with
@@ -939,11 +1012,26 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
       if (!mapReady || !mapInstance.current) return undefined;
       const raf = requestAnimationFrame(relayoutDecks);
       const listener = mapInstance.current.addListener("idle", relayoutDecks);
+
+      // A card's height is not settled when it first mounts — its title and
+      // one-liner reflow to a second line, and paging swaps in an element with
+      // more or less text. Measured short, it gets parked with its lower half
+      // hanging under the cart bar. Re-place whenever any card changes size so
+      // the slide-into-view always works off the height actually on screen.
+      let pending = 0;
+      const ro = new ResizeObserver(() => {
+        cancelAnimationFrame(pending);
+        pending = requestAnimationFrame(relayoutDecks);
+      });
+      overlayNodes.forEach(({ node }) => ro.observe(node));
+
       return () => {
         cancelAnimationFrame(raf);
+        cancelAnimationFrame(pending);
         listener.remove();
+        ro.disconnect();
       };
-    }, [relayoutDecks, mapReady]);
+    }, [relayoutDecks, mapReady, overlayNodes]);
 
     // Decks overlap wherever two cities sit close together on screen. Clicking a
     // pin (or the card itself) lifts that deck above its neighbours — the only
@@ -981,39 +1069,29 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
       };
     }, [cityCards.length]);
 
-    // Open one of a deck's elements: its card re-anchors to that element's own
-    // marker (see the overlay effect), so the map follows it there — otherwise
-    // paging through a city's day-by-day would walk the card off screen. Zooming
-    // in is reserved for the step *into* a city, so the pager doesn't keep
-    // wrenching the map once the user is already inside it.
-    const openElement = useCallback(
-      (card: DeckCard, target: number, zoomIn = false) => {
-        const index = Math.min(
-          Math.max(0, target),
-          Math.max(0, card.elements.length - 1),
-        );
-        setCardIndex((prev) =>
-          prev[card.id] === index ? prev : { ...prev, [card.id]: index },
-        );
-        setDismissedCards((prev) =>
-          prev[card.id] ? { ...prev, [card.id]: false } : prev,
-        );
-        setFocusedCardId(card.id);
+    // Open one of a deck's elements. The map is deliberately left exactly where
+    // it was when the pane opened — no pan, no zoom — so paging through a city's
+    // day-by-day never moves it; only the user's own gestures do. The card
+    // re-anchors to the element's marker (see the overlay effect) and the
+    // placement pass keeps it inside the visible pane.
+    const openElement = useCallback((card: DeckCard, target: number) => {
+      const index = Math.min(
+        Math.max(0, target),
+        Math.max(0, card.elements.length - 1),
+      );
+      setCardIndex((prev) =>
+        prev[card.id] === index ? prev : { ...prev, [card.id]: index },
+      );
+      setDismissedCards((prev) =>
+        prev[card.id] ? { ...prev, [card.id]: false } : prev,
+      );
+      setFocusedCardId(card.id);
+    }, []);
 
-        const map = mapInstance.current;
-        const el = card.elements[index];
-        if (!map || !hasCoords(el)) return;
-        if (zoomIn && (map.getZoom() ?? 0) < EXPLORE_ZOOM) {
-          map.setZoom(EXPLORE_ZOOM);
-        }
-        map.panTo({ lat: el.lat, lng: el.lng });
-      },
-      [],
-    );
-
-    // Back out of a city's elements to the city card, which is pinned to the
-    // city's own marker — so pan back to it, or the card would re-appear on a pin
-    // the user has since left behind.
+    // Back out of a city's elements to the city card (also the handler for a
+    // city pin/marker click). Like openElement, it leaves the map untouched: a
+    // city pin is always inside the fitted route, so its card is already on
+    // screen and the placement pass keeps it clear of the chrome.
     const showCityCard = useCallback((card: DeckCard) => {
       setCardIndex((prev) =>
         (prev[card.id] ?? CITY_VIEW) === CITY_VIEW
@@ -1024,7 +1102,6 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
         prev[card.id] ? { ...prev, [card.id]: false } : prev,
       );
       setFocusedCardId(card.id);
-      mapInstance.current?.panTo({ lat: card.lat, lng: card.lng });
     }, []);
 
     // Expose the map instance to parent via ref
@@ -1581,7 +1658,7 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
               {index === CITY_VIEW ? (
                 <CityOverviewCard
                   card={card}
-                  onExplore={() => openElement(card, 0, true)}
+                  onExplore={() => openElement(card, 0)}
                   onClose={() =>
                     setDismissedCards((prev) => ({ ...prev, [id]: true }))
                   }

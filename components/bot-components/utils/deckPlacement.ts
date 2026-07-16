@@ -107,11 +107,25 @@ export const overlapArea = (a: Rect, b: Rect): number =>
   Math.max(0, Math.min(a.x2, b.x2) - Math.max(a.x1, b.x1)) *
   Math.max(0, Math.min(a.y2, b.y2) - Math.max(a.y1, b.y1));
 
-/** How much of `r` falls outside a vw×vh viewport. */
-export const offscreenArea = (r: Rect, vw: number, vh: number): number => {
+/** How much of `r` falls outside the usable `bounds`. */
+export const offscreenArea = (r: Rect, bounds: Rect): number => {
   const area = (r.x2 - r.x1) * (r.y2 - r.y1);
-  return Math.max(0, area - overlapArea(r, { x1: 0, y1: 0, x2: vw, y2: vh }));
+  return Math.max(0, area - overlapArea(r, bounds));
 };
+
+/**
+ * Chrome overlaying the map pane that cards must stay clear of — the fixed cart
+ * bar and back pill along the bottom, a header along the top. Measured in the
+ * map container's own pixels; defaults to nothing.
+ */
+export interface Insets {
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
+}
+
+const NO_INSETS: Insets = { top: 0, right: 0, bottom: 0, left: 0 };
 
 /** Where the marker's middle sits, vertically, relative to its own point. */
 const markerMidY = (a: AnchorGeom): number => (a.down - a.up) / 2;
@@ -200,25 +214,26 @@ const slideIntoView = (
   h: number,
   dx: number,
   dy: number,
-  vw: number,
-  vh: number,
+  bounds: Rect,
 ): { dx: number; dy: number } => {
   if (side === "top" || side === "bottom") {
-    if (w + 2 * VIEWPORT_MARGIN > vw) return { dx, dy }; // wider than the pane
+    // Too wide to fit — align its left edge to the safe area so any overflow
+    // spills off the right rather than clipping the card's left (and its tail).
+    if (w > bounds.x2 - bounds.x1) return { dx: bounds.x1 - x, dy };
     const left = x + dx;
     const right = left + w;
-    if (left < VIEWPORT_MARGIN) return { dx: dx + (VIEWPORT_MARGIN - left), dy };
-    if (right > vw - VIEWPORT_MARGIN)
-      return { dx: dx - (right - (vw - VIEWPORT_MARGIN)), dy };
+    if (left < bounds.x1) return { dx: dx + (bounds.x1 - left), dy };
+    if (right > bounds.x2) return { dx: dx - (right - bounds.x2), dy };
     return { dx, dy };
   }
 
-  if (h + 2 * VIEWPORT_MARGIN > vh) return { dx, dy };
+  // Too tall to fit — align its top to the safe area, keeping the card's header
+  // and image on screen rather than centring it so both ends spill.
+  if (h > bounds.y2 - bounds.y1) return { dx, dy: bounds.y1 - y };
   const top = y + dy;
   const bottom = top + h;
-  if (top < VIEWPORT_MARGIN) return { dx, dy: dy + (VIEWPORT_MARGIN - top) };
-  if (bottom > vh - VIEWPORT_MARGIN)
-    return { dx, dy: dy - (bottom - (vh - VIEWPORT_MARGIN)) };
+  if (top < bounds.y1) return { dx, dy: dy + (bounds.y1 - top) };
+  if (bottom > bounds.y2) return { dx, dy: dy - (bottom - bounds.y2) };
   return { dx, dy };
 };
 
@@ -232,9 +247,20 @@ export function chooseDeckPlacements(
   obstacles: Obstacle[],
   vw: number,
   vh: number,
+  insets: Insets = NO_INSETS,
 ): Record<string, DeckPlacement> {
   const placed: Rect[] = [];
   const out: Record<string, DeckPlacement> = {};
+
+  // The region a card may occupy: the pane minus its breathing-room margin and
+  // minus any chrome overlaying the edges. Clamped so an over-tall inset on a
+  // short pane can't invert the box — the middle always stays usable.
+  const bounds: Rect = {
+    x1: Math.min(insets.left + VIEWPORT_MARGIN, vw / 2),
+    y1: Math.min(insets.top + VIEWPORT_MARGIN, vh / 2),
+    x2: Math.max(vw - insets.right - VIEWPORT_MARGIN, vw / 2),
+    y2: Math.max(vh - insets.bottom - VIEWPORT_MARGIN, vh / 2),
+  };
 
   decks.forEach(({ id, x, y, w, h, anchor }) => {
     let best: { side: DeckSide; dx: number; dy: number } | null = null;
@@ -246,7 +272,7 @@ export function chooseDeckPlacements(
         // Score the placement as it will actually be drawn — a candidate that
         // only fits once slid back into the pane should be judged on where it
         // lands, not on where it started.
-        const slid = slideIntoView(side, x, y, w, h, dx, dy, vw, vh);
+        const slid = slideIntoView(side, x, y, w, h, dx, dy, bounds);
         const rect = rectFrom(x, y, w, h, slid.dx, slid.dy);
 
         let score = si * COST_SIDE + ai * COST_ALIGN;
@@ -256,7 +282,7 @@ export function chooseDeckPlacements(
         placed.forEach((other) => {
           score += overlapArea(rect, other) * COST_OVERLAP_DECK;
         });
-        score += offscreenArea(rect, vw, vh) * COST_OFFSCREEN;
+        score += offscreenArea(rect, bounds) * COST_OFFSCREEN;
 
         if (score < bestScore) {
           bestScore = score;

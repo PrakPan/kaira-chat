@@ -3911,6 +3911,7 @@ Start Location: ${details.startLocation}`;
                   mapRef={mapRef}
                   isRoutePreparing={isRoutePreparing}
                   isVisible={viewMode === "map"}
+                  chromeBottom={bottomStackHeight}
                 />
               )}
               {/* The cart bar lives inside itineraryPanel, which is display:none
@@ -4014,6 +4015,7 @@ Start Location: ${details.startLocation}`;
                 // sets viewMode to "map" for the chat tab as well, so viewMode
                 // alone can't tell whether the map pane is on screen.
                 isVisible={mobilePanel === "map"}
+                chromeBottom={bottomStackHeight}
               />
             ) : null
           }
