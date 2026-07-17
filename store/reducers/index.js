@@ -35,6 +35,7 @@ import chatStateReducer from "./chatState";
 import galleryImages from "./galleryImages";
 import AncillaryBookings from "./ancillaryBookings";
 import IntakeForm from "./IntakeForm";
+import PricingForm from "./PricingForm";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -72,7 +73,8 @@ const rootReducer = combineReducers({
   chatState: chatStateReducer,
   galleryImages,
   AncillaryBookings,
-  IntakeForm
+  IntakeForm,
+  PricingForm
 });
 
 export default rootReducer;
