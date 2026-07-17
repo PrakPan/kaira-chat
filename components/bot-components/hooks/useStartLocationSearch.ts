@@ -41,7 +41,7 @@ export function useStartLocationSearch(query: string, minChars = 2) {
       const controller = new AbortController();
       abortRef.current = controller;
       try {
-        const base = MERCURY_HOST || "https://dev.mercury.tarzanway.com";
+        const base = MERCURY_HOST || "https://mercury.tarzanway.com";
         const res = await fetch(
           `${base}/api/v1/geos/search/start_locations/?q=${encodeURIComponent(q)}`,
           { signal: controller.signal, headers: { Accept: "application/json" } },

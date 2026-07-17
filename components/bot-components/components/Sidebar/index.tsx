@@ -29,7 +29,7 @@ import {
 } from "../kairaIcons";
 import { useTripsCount } from "../../hooks/useTripsCount";
 
-const CHATKIT_API_URL = "https://dev.chat.tarzanway.com/chatkit";
+const CHATKIT_API_URL = "https://chat.tarzanway.com/chatkit";
 
 const SIDEBAR_WIDTH_EXPANDED = 288;
 const SIDEBAR_WIDTH_COLLAPSED = 76;
