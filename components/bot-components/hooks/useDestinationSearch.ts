@@ -31,8 +31,11 @@ function mapRow(row: SuggestRow): Destination {
  * Debounced lookup against the geos suggest endpoint. Fires only for queries of
  * ≥2 characters; aborts in-flight requests when the query changes or the hook
  * unmounts. Returns CDN-resolved destination rows.
+ *
+ * `type` optionally scopes the suggest endpoint (e.g. "City" so the pricing
+ * form's departure-city search only returns cities). Omitted → all geo types.
  */
-export function useDestinationSearch(query: string, minChars = 2) {
+export function useDestinationSearch(query: string, minChars = 2, type?: string) {
   const [results, setResults] = useState<Destination[]>([]);
   const [loading, setLoading] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
@@ -53,8 +56,9 @@ export function useDestinationSearch(query: string, minChars = 2) {
       abortRef.current = controller;
       try {
         const base = MERCURY_HOST || "https://dev.mercury.tarzanway.com";
+        const typeParam = type ? `type=${encodeURIComponent(type)}&` : "";
         const res = await fetch(
-          `${base}/api/v1/geos/search/suggest/?q=${encodeURIComponent(q)}`,
+          `${base}/api/v1/geos/search/suggest/?${typeParam}q=${encodeURIComponent(q)}`,
           { signal: controller.signal, headers: { Accept: "application/json" } },
         );
         if (!res.ok) throw new Error(`suggest ${res.status}`);
@@ -75,7 +79,7 @@ export function useDestinationSearch(query: string, minChars = 2) {
     }, 280);
 
     return () => clearTimeout(handle);
-  }, [query, minChars]);
+  }, [query, minChars, type]);
 
   // Abort any pending request on unmount.
   useEffect(() => () => abortRef.current?.abort(), []);

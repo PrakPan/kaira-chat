@@ -39,9 +39,12 @@ import setItineraryStatus from "../../../store/actions/itineraryStatus";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 import BotLoginModal from "./BotLoginModal";
 import { updateIntakeForm } from "../../../store/actions/intakeForm";
+import { updatePricingForm } from "../../../store/actions/pricingForm";
 import IntakeFormCard from "./IntakeForm";
+import PricingFormCard from "./PricingForm";
 import OtpCard from "./IntakeForm/OtpCard";
 import { parseFormFields, parseShowIntakeForm, parseIntakeFormWidgetId, isIntakeFormWidgetId } from "./IntakeForm/intakePrompt";
+import { parseShowPricingForm, parsePricingFormWidgetId, parsePricingCardCopy, isPricingFormWidgetId } from "./PricingForm/pricingPrompt";
 
 const CHATKIT_API_URL = "https://dev.chat.tarzanway.com/chatkit";
 const PAGINATION_SCROLL_THRESHOLD = 80;
@@ -842,6 +845,8 @@ startEmptyIntake = false,
   // Guards the in-chat intake form so the `form_fields` effect injects the card
   // only once per session even if the effect re-emits across stream chunks.
   const intakeFormInjectedRef = useRef(false);
+  // Same one-shot guard for the in-chat pricing form card.
+  const pricingFormInjectedRef = useRef(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [pendingMessage, setPendingMessage] = useState<string | null>(null);
@@ -1774,8 +1779,17 @@ const handleSessionCreated = useCallback((ourSessionId: string) => {
   const handleIntakeWidgetRef = useRef<
     ((item: { id: string; widget: Record<string, unknown> }) => void) | null
   >(null);
+  const handlePricingWidgetRef = useRef<
+    ((item: { id: string; widget: Record<string, unknown> }) => void) | null
+  >(null);
   const stableOnWidget = useCallback(
     (item: { id: string; widget: Record<string, unknown> }) => {
+      // Route by the widget id prefix — pricing vs intake forms are both handled
+      // by the host but seed different Redux slices.
+      if (isPricingFormWidgetId(item.widget?.id)) {
+        handlePricingWidgetRef.current?.(item);
+        return;
+      }
       handleIntakeWidgetRef.current?.(item);
     },
     [],
@@ -2196,6 +2210,33 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
         // NOTE: `show_intake_form` is no longer a client effect — the backend
         // now streams the intake form as a widget (`intake-form:{...}`),
         // handled by handleIntakeFormWidget via useChat's onWidget.
+        case "pricing_form_shimmer": {
+          // Server is about to compute the pricing-form prefill — show a
+          // skeleton loader in the card's place until the pricing-form widget
+          // lands. Inject the card once so the skeleton has somewhere to render;
+          // the loading flag flips it to the shimmer view. Unlike the intake
+          // form this does NOT lock the composer.
+          const loading = data.loading !== false; // default true
+          dispatch(updatePricingForm({ active: true, completed: false, loading }));
+          if (loading && !pricingFormInjectedRef.current) {
+            pricingFormInjectedRef.current = true;
+            setMessages((prev) =>
+              prev.some((m) => m.type === "pricing_form")
+                ? prev
+                : [
+                    ...prev,
+                    {
+                      id: `pricing-form-${sessionIdRef.current}`,
+                      role: "assistant",
+                      content: "",
+                      timestamp: new Date(),
+                      type: "pricing_form",
+                    },
+                  ],
+            );
+          }
+          break;
+        }
         case "display_itinerary": {
           emitEndpointsFromEffect(name, data);
           // Pass the full effect payload (not just `.itinerary`) so pax +
@@ -2533,6 +2574,47 @@ case "shimmer_day_by_day": {
   );
   handleIntakeWidgetRef.current = handleIntakeFormWidget;
 
+  // ── Streamed pricing-form widget ──────────────────────────────────────────
+  // The backend streams the "confirm a few final details before pricing" card
+  // as a widget item whose id encodes the prefill JSON (`pricing-form:{...}`).
+  // Parse it, seed the Redux slice with prefilled toggles + completion markers,
+  // and inject the interactive pricing card once. Unlike the intake form this
+  // does NOT lock the composer (`active` here is informational only).
+  const handlePricingFormWidget = useCallback(
+    (item: { id: string; widget: Record<string, unknown> }) => {
+      const prefill = parsePricingFormWidgetId(item.widget?.id);
+      if (!prefill) return;
+      dispatch(
+        updatePricingForm({
+          active: true,
+          completed: false,
+          loading: false,
+          ...parsePricingCardCopy(item.widget),
+          ...parseShowPricingForm(prefill),
+        }),
+      );
+      if (!pricingFormInjectedRef.current) {
+        pricingFormInjectedRef.current = true;
+        setMessages((prev) =>
+          prev.some((m) => m.type === "pricing_form")
+            ? prev
+            : [
+                ...prev,
+                {
+                  id: `pricing-form-${sessionIdRef.current}`,
+                  role: "assistant",
+                  content: "",
+                  timestamp: new Date(),
+                  type: "pricing_form",
+                },
+              ],
+        );
+      }
+    },
+    [dispatch, setMessages],
+  );
+  handlePricingWidgetRef.current = handlePricingFormWidget;
+
   // ── Wrap sendMessage to clear quick replies ───────────────────────────────
 const sendMessage = useCallback(
   (
@@ -2580,6 +2662,16 @@ const sendMessage = useCallback(
 // the inline sign-in card (login_card) and replays the message after verify —
 // so we never inject an OTP card from the client here.
 const handleIntakeComplete = useCallback(
+  (composed: string) => {
+    sendMessage(composed, undefined, undefined, { formSubmitted: true });
+  },
+  [sendMessage],
+);
+
+// ── Pricing form completion ──────────────────────────────────────────────────
+// Same contract as the intake form: send the composed final-details message
+// straight to Kaira with the form_submitted flag.
+const handlePricingComplete = useCallback(
   (composed: string) => {
     sendMessage(composed, undefined, undefined, { formSubmitted: true });
   },
@@ -2978,6 +3070,10 @@ useEffect(() => {
               type: "intake_form",
             });
           }
+        } else if (isPricingFormWidgetId(item.widget?.id)) {
+          // Pricing form is a transient final-confirmation step — hide it on
+          // thread load (never restore it into the transcript). The Redux slice
+          // is deactivated in the restore effect below.
         } else {
           indexEdgesFromWidget(item.widget);
           out.push({
@@ -3050,6 +3146,13 @@ useEffect(() => {
     // after switching threads. (Case 2 fix.)
     dispatch(updateIntakeForm({ active: false, completed: false }));
   }
+
+  // Pricing form is always hidden on thread load — deactivate the slice so a
+  // stale `active` from a prior thread doesn't linger, and reset the one-shot
+  // injection guard so a fresh pricing-form widget can inject its card in this
+  // restored session.
+  dispatch(updatePricingForm({ active: false, completed: false, loading: false }));
+  pricingFormInjectedRef.current = false;
 
   for (const effect of itineraryEffects) {
     if (effect.name === "itinerary_entities" && effect.data?.entities) {
@@ -3686,6 +3789,14 @@ const handleShowLogin = useCallback(() => {
                   <IntakeFormCard
                     key={msg.id}
                     onComplete={handleIntakeComplete}
+                  />
+                );
+              }
+              if (msg.type === "pricing_form") {
+                return (
+                  <PricingFormCard
+                    key={msg.id}
+                    onComplete={handlePricingComplete}
                   />
                 );
               }
