@@ -6,6 +6,7 @@ import { store } from "../store/store";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "overlayscrollbars/overlayscrollbars.css";
 import "../containers/itinerary/typography.css";
+import "../styles/kaira-sidebar.css";
 import { useRouter } from "next/router";
 import * as ga from "../services/ga/Index";
 import { FACEBOOK_PIXEL_ID, GOOGLE_CLIENT_ID } from "../services/constants";

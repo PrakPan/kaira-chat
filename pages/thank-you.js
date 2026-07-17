@@ -29,7 +29,11 @@ const Home = (props) => {
           property="og:description"
           content="The Tarzan Way is a travel based startup with the vision to simplify travel and build immersive travel programs across India. We personalize travel package and provide unique travel experience for travel in India"
         />
-        <meta property="og:image" content="/logoblack.svg" />
+        <meta property="og:image" content="https://thetarzanway.com/og-image.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image" content="https://thetarzanway.com/og-image.png" />
         <meta
           property="keywords"
           content="travel in india, tour in india, india travel, travel agents near me, plan a trip, travel and experience culture, local travel experience, customized trip planner india, customized holiday packages, customized packages in computer, customized travel, honeymoon travel packages, personalized travel package"

@@ -29,7 +29,7 @@
 }
 
 /* Brand logo. Desktop shows the full wordmark lockup; tablet & smaller
-   swap to the standalone signpost mark (logoblack.svg) at a fixed width
+   swap to the standalone vine-t mark (/logo/ttw-mark.svg) at a fixed width
    so it never shrinks. */
 .logo {
   display: inline-flex;
@@ -39,12 +39,12 @@
 
 /* Full wordmark lockup — desktop only */
 .logoFull {
-  height: 30px !important;
+  height: 38px !important;
   width: auto !important;
   max-width: none !important;
 }
 
-/* Signpost-only mark — tablet & smaller */
+/* Vine-t mark only — tablet & smaller */
 .logoMark {
   display: none;
   width: 30px;
@@ -183,10 +183,11 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.12);
 }
 
+/* The sidebar is dark, so use the on-dark lockup rather than inverting the
+   on-light one — an invert filter would flatten the yellow "way" to white. */
 .sidebarLogo {
   height: 36px;
   width: auto;
-  filter: brightness(0) invert(1);
 }
 
 .closeButton {

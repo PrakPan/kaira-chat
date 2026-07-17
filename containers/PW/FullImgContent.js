@@ -62,6 +62,16 @@ const LogosContainer = styled.div`
   }
 `;
 
+/* Matches the width/widthmobile ImageLoader was given for the old mark. */
+const TTWMark = styled.img`
+  width: 2rem;
+  height: auto;
+
+  @media screen and (min-width: 768px) {
+    width: 3rem;
+  }
+`;
+
 const LogoText = styled.div`
   font-size: 12px;
   color: black;
@@ -190,13 +200,9 @@ const FullImgContent = (props) => {
             borderRadius: "5px",
           }}
         >
-          <ImageLoader
-            leftalign
-            url="media/website/logoblack.svg"
-            width="3rem"
-            widthmobile="2rem"
-            height="auto"
-          ></ImageLoader>
+          {/* Local asset, so a plain <img>: ImageLoader always base64-encodes
+              its url into a CloudFront image-handler request. */}
+          <TTWMark src="/logo/ttw-mark.svg" alt="The Tarzan Way" />
           <LogoText className="font-opesans hiden-mobile" style={{}}>
             The Tarzan Way
           </LogoText>

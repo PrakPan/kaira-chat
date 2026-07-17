@@ -1,8 +1,15 @@
 import styled, { keyframes } from "styled-components";
-import { useState } from "react";
+import { createContext, useMemo, useState } from "react";
 import { useEffect } from "react";
 import ReactDOM from "react-dom";
 import Image from "next/image";
+
+/**
+ * Exposes the drawer's live open/exit state to descendants that portal
+ * themselves out of the panel (see DrawerActionFooter) and therefore can't
+ * inherit its animation or geometry from the DOM. `null` outside a Drawer.
+ */
+export const DrawerContext = createContext(null);
 
 const leftSlideIn = keyframes`
 from {
@@ -149,6 +156,11 @@ export default function Drawer(props) {
     }, 100);
   }
 
+  const drawerContext = useMemo(
+    () => ({ open, fade, anchor: props.anchor }),
+    [open, fade, props.anchor]
+  );
+
   return _document
     ? ReactDOM.createPortal(
         <div className="App">
@@ -175,7 +187,11 @@ export default function Drawer(props) {
 
               >
                {props?.isCloseButtonEnable && <div className="flex w-full justify-end py-[16px] px-[10px]"> <button onClick={onCLose} className="ttw-btn-close" > Close <Image src={'/assets/icons/close.svg'} width={9} height={9} /> </button> </div>  }
-                <div className="h-full">{props.children}</div>
+                <div className="h-full">
+                  <DrawerContext.Provider value={drawerContext}>
+                    {props.children}
+                  </DrawerContext.Provider>
+                </div>
               </DrawerContainer>
             </div>
           )}

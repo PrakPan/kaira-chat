@@ -67,6 +67,8 @@ const TransferDrawer = ({
   combo,
   booking_id,
   transferType,
+  drawerZIndex,
+  onClose,
 }) => {
   const handleDrawerClose = useHandleClose();
   const dispatch = useDispatch();
@@ -659,6 +661,7 @@ const TransferDrawer = ({
   const handleClose = () => {
     setIsDrawerOpen(false);
     handleDrawerClose();
+    onClose?.();
   };
 
   return (
@@ -666,7 +669,7 @@ const TransferDrawer = ({
       show={isDrawerOpen}
       anchor={"right"}
       backdrop
-      style={{ zIndex: 1501 }}
+      style={{ zIndex: drawerZIndex ?? 1501 }}
       className=""
       onHide={handleClose}
       mobileWidth="100%"
@@ -691,6 +694,7 @@ const TransferDrawer = ({
                 error={error}
                 handleEditRoute={handleEditRoute}
                 data={data}
+                drawerZIndex={drawerZIndex}
               />
             )
           ) : loading ? (

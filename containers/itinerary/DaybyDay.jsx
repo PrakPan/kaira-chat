@@ -2,6 +2,7 @@ import { useEffect, useState, useRef, Fragment } from "react";
 import { connect, useSelector } from "react-redux";
 
 import ItineraryCity from "../../components/itinerary/itineraryCity";
+import DownloadShareBanners from "../../components/itinerary/DownloadShareBanners";
 import CityItem from "./VerticalLayout";
 import media from "../../components/media";
 import BookingModal from "../../components/modals/bookingupdated/Index";
@@ -36,6 +37,12 @@ const getCityColor = (index) => {
   availableColors = availableColors.filter(c => c !== color);
   return color;
 };
+
+// Pure, stateless per-city color. Unlike getCityColor above it does NOT mutate
+// the module-level availableColors/usedColors pools, so calling it for the chat
+// stop-card dot can't desync the existing transfer-pin color sequence.
+const cityColorByIndex = (i) =>
+  CITY_COLOR_CODES[(Number.isInteger(i) && i >= 0 ? i : 0) % CITY_COLOR_CODES.length];
 
 const DaybyDay = ({
   transferBookings,
@@ -233,7 +240,7 @@ const DaybyDay = ({
 
     return (
       <div
-        className={`flex flex-col gap-3 mt-4xl max-ph:mt-lg ${!isPageWide ? "" : "max-w-[51vw]"}`}
+        className={`flex flex-col gap-3 mt-4xl max-ph:mt-lg ${!isPageWide || props?.fromChat ? "" : "max-w-[51vw]"}`}
         aria-busy="true"
         aria-live="polite"
         aria-label="Loading itinerary"
@@ -273,11 +280,60 @@ const DaybyDay = ({
   return (
     <>
       <div
-        className={`flex flex-col gap-3 mt-4xl max-ph:mt-lg ${!isPageWide ? "" : "max-w-[51vw]"
+        className={`flex flex-col gap-3 ${props?.fromChat ? "mt-3 max-ph:mt-0" : "mt-4xl max-ph:mt-lg"} ${!isPageWide || props?.fromChat ? "" : "max-w-[51vw]"
           }`}
       >
 
-        <div className="flex flex-col">
+        {/* Entry into the map, at the head of the journey it plots. Chat-only:
+            the map view lives in BotApp, so the standalone itinerary page passes
+            no onViewMap and this never renders. Styling mirrors the destination
+            pages' "Discover trip ideas" pill (GetInspiredDrawer's trigger), with
+            two deliberate departures: it stays visible on mobile (that trigger is
+            desktop-only), and its padding is set in arbitrary values rather than
+            `px-3` — bootstrap.min.css loads after Tailwind and its `.px-3` is
+            `1rem !important`, which silently inflates the pill. */}
+        {props?.fromChat && props?.onViewMap && (
+          <button
+            type="button"
+            onClick={props.onViewMap}
+            // `border-[1px] border-solid`, NOT `border`: bootstrap.min.css loads
+            // after Tailwind and its `.border` is the whole shorthand with
+            // `!important` (`border: <width> <style> var(--bs-border-color)`), so
+            // it overrides the colour and the pill renders bootstrap grey. Same
+            // collision as `.px-3`. Arbitrary values don't collide.
+            className="group self-start inline-flex items-center gap-[7px] rounded-[10px] border-[1px] border-solid border-[#922ADC] bg-[#F7ECFF] px-[11px] py-[5px] text-[13px] max-ph:text-[12px] font-semibold text-[#922ADC] transition-all duration-200 hover:-translate-y-0.5"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+              className="w-[15px] h-[15px] shrink-0"
+            >
+              <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
+              <line x1="9" y1="3" x2="9" y2="18" />
+              <line x1="15" y1="6" x2="15" y2="21" />
+            </svg>
+            <span>See your journey on a map</span>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+              className="w-[16px] h-[16px] shrink-0 transition-transform duration-200 group-hover:translate-x-[3px]"
+            >
+              <path d="M5 12h14M13 6l6 6-6 6" />
+            </svg>
+          </button>
+        )}
+
+        <div className={`flex flex-col ${props?.fromChat ? "gap-2" : ""}`}>
           <CityItem
             setShowLoginModal={setShowLoginModal}
             key="start-city-label"
@@ -434,9 +490,11 @@ const DaybyDay = ({
 
 
             return (
-              <div key={city.id}>    
+              <div key={city.id} className={props?.fromChat ? "flex flex-col gap-2" : ""}>
                 <ItineraryCity
                   mercuryItinerary={props?.mercuryItinerary}
+                  fromChat={props?.fromChat}
+                  dotColour={cityColorByIndex(index)}
                   key={`itinerary-city-${city.id}`}
                   nextCity={ itineraryDaybyDay?.cities?.[index + 1]}
                   city={city}
@@ -695,6 +753,12 @@ const DaybyDay = ({
             showPins={showPins}
           />
         </div>
+        {/* End-of-itinerary banners: download PDF + share, below the day-by-day.
+            2a "Clean stacked" on mobile, 1a "Clean pair" on desktop (kaira design). */}
+        <DownloadShareBanners
+          itineraryId={router.query?.id}
+          itineraryName={Itinerary?.name}
+        />
       </div>
     </>
   );

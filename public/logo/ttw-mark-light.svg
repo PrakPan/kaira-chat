@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none" role="img" aria-label="The Tarzan Way">
+  <g transform="rotate(-4 32 32)">
+    <rect x="2.018" y="2.018" width="59.963" height="59.963" rx="15.78" fill="#0b1220"/>
+    <rect x="2.413" y="2.413" width="59.174" height="59.174" rx="15.385" fill="none" stroke="#fafaf5" stroke-opacity="0.16" stroke-width="0.789"/>
+    <g transform="translate(15.694 13.327) scale(0.562 0.566)" fill="none" stroke-width="8" stroke-linecap="round">
+      <path d="M22 8V50" stroke="#fafaf5"/>
+      <path d="M22 50q0 9 10 9" stroke="#fafaf5"/>
+      <path d="M7 24q16 -13 35 -2" stroke="#f7e700"/>
+      <circle cx="44" cy="23" r="6.5" fill="#f7e700" stroke="none"/>
+    </g>
+  </g>
+</svg>

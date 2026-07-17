@@ -95,7 +95,11 @@ const Home = ({ token, hotLocationSearch, checkAuthState, setHotLocationSearch }
           property="og:description"
           content="Plan your trip with Kaira, an AI travel assistant backed by local human curators. Search hundreds of platforms, get a curator-reviewed itinerary, and pay only for what you book. No markups, no hidden fees."
         />
-        <meta property="og:image" content="/logoblack.svg" />
+        <meta property="og:image" content="https://thetarzanway.com/og-image.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image" content="https://thetarzanway.com/og-image.png" />
         <meta
           property="keywords"
           content="ai trip planner,ai travel planner,travel itinerary planner,custom travel itineraries,personalized travel planning,smart trip planner,automated itinerary builder,online trip planner,digital travel planner,travel planning platform,customized holiday packages,personalized travel package,luxury travel planning,honeymoon travel packages,family travel packages,international travel planner,travel packages with itinerary,create travel itinerary online,plan my trip online,The Tarzan Way, hotels,flights,activities,transfers local travel experience"
@@ -108,7 +112,8 @@ const Home = ({ token, hotLocationSearch, checkAuthState, setHotLocationSearch }
               "@context": "https://schema.org",
               "@type": "TravelAgency",
               name: "The Tarzan Way",
-              image: "https://thetarzanway.com/logoblack.svg",
+              image: "https://thetarzanway.com/og-image.png",
+              logo: "https://thetarzanway.com/icon-512.png",
               url: "https://thetarzanway.com/",
               telephone: "+91 7827441548",
               address: {

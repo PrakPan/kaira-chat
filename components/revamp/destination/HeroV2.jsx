@@ -64,6 +64,67 @@ const HeroV2 = ({
     router.push(url);
   };
 
+  const handleSubmit = (e) => {
+    e?.preventDefault?.();
+    const seed = (value || "").trim();
+    if (!seed && attachments.length === 0) {
+      if (setShowTailoredModal) setShowTailoredModal(true);
+      return;
+    }
+    goToChat(seed, attachments);
+  };
+
+  const handleFilePick = (e) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    setAttachments((prev) => [...prev, ...files]);
+    e.target.value = "";
+  };
+
+  const removeAttachment = (idx) => {
+    setAttachments((prev) => prev.filter((_, i) => i !== idx));
+  };
+
+  const startMic = () => {
+    const Ctor = getSpeechRecognition();
+    if (!Ctor) return;
+    if (isListening) {
+      recognitionRef.current?.stop?.();
+      return;
+    }
+    const rec = new Ctor();
+    rec.lang = "en-IN";
+    rec.interimResults = true;
+    rec.continuous = false;
+    let interim = "";
+
+    rec.onresult = (event) => {
+      interim = "";
+      let finalText = "";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) finalText += transcript;
+        else interim += transcript;
+      }
+      setValue((prev) => {
+        const base = (prev || "").replace(/\s*$/, "");
+        const merged = `${base}${base ? " " : ""}${finalText || interim}`.trim();
+        return merged;
+      });
+      requestAnimationFrame(() => autoGrow(textareaRef.current));
+    };
+
+    rec.onerror = () => setIsListening(false);
+    rec.onend = () => setIsListening(false);
+    recognitionRef.current = rec;
+    try {
+      rec.start();
+      setIsListening(true);
+    } catch {
+      setIsListening(false);
+    }
+  };
+
   const handlePromptClick = (p) => {
     // Prompts may be plain strings (the label doubles as the seed) or objects
     // carrying a short display `label` plus a full self-contained `prompt`.

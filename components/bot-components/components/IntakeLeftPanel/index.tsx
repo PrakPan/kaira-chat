@@ -134,6 +134,32 @@ function toLqip(url: string): string | null {
   return null;
 }
 
+// Rendered height of the lockup in this panel's header.
+const LOGO_H = 34;
+
+// The lockup artboard (scripts/logo/gen_logo.py) in its own units. Its viewBox
+// opens at -4,-4 and runs 122 tall because the tile's -4deg tilt pushes the
+// bbox negative on both axes. UNIT converts an artboard unit to a rendered px.
+const VIEWBOX_X0 = -4;
+const VIEWBOX_Y0 = -4;
+const VIEWBOX_H = 122;
+const UNIT = LOGO_H / VIEWBOX_H;
+
+// Indent that lines the caption up with the "the tarzan way" wordmark instead of
+// the tile it sits beside: the wordmark starts at x=144 — a 114px tile plus a
+// 30px gap — measured from the viewBox's left edge.
+const WORDMARK_X = 144; // TILE (114) + GAP_OUTER (30)
+const CAPTION_INDENT = (WORDMARK_X - VIEWBOX_X0) * UNIT;
+
+// "the tarzan" has no descenders, so its ink stops at y=77.25 while the artboard
+// floor sits at y=118 (the tilted tile) — leaving the <img> box trailing ~11px
+// of blank space under the wordmark. Pull the caption back up through it so the
+// visible gap is CAPTION_GAP rather than CAPTION_GAP plus that slack.
+const WORDMARK_BOTTOM_Y = 77.25;
+const CAPTION_GAP = 5;
+const CAPTION_PULL =
+  CAPTION_GAP - (VIEWBOX_Y0 + VIEWBOX_H - WORDMARK_BOTTOM_Y) * UNIT;
+
 /**
  * Left hero panel shown during the intake flow. The background image, headline
  * and place tag swap whenever the user selects a destination in the form (read
@@ -268,19 +294,21 @@ const IntakeLeftPanel: React.FC = () => {
       {/* Content */}
       <div className="absolute inset-0 z-[3] flex flex-col p-[30px_34px]">
         {/* Logo */}
-        <div className="flex items-center gap-[10px]">
-          <div
-            className="w-[34px] h-[34px] grid place-items-center rounded-[10px] font-serif italic text-[19px]"
-            // style={{ background: "#f7e700", color: "#0f1a2e", transform: "rotate(-6deg)" }}
+        {/* items-start: without it the column's default `align-items: stretch`
+            widens the auto-width <img> to the full panel, and the SVG's
+            preserveAspectRatio then centres the lockup inside that box. */}
+        <div className="flex flex-col items-start">
+          <img src="/logo/ttw-lockup-light.svg" alt="The Tarzan Way" style={{ height: LOGO_H, width: "auto" }} />
+          <span
+            className="text-[10.5px] leading-none"
+            style={{
+              color: "rgba(255,255,255,0.7)",
+              marginLeft: CAPTION_INDENT,
+              marginTop: CAPTION_PULL,
+            }}
           >
-           <img src="https://d31aoa0ehgvjdi.cloudfront.net/media/website/logoyellow.png" alt="The Tarzan Way" width={36} height={36} />
-          </div>
-          <div className="flex flex-col leading-none text-white">
-            <span className="text-[15px] font-bold tracking-tight">thetarzanway</span>
-            <span className="text-[10.5px] mt-[2px]" style={{ color: "rgba(255,255,255,0.7)" }}>
-              plan with Kaira
-            </span>
-          </div>
+            plan with Kaira
+          </span>
         </div>
 
         {/* Bottom */}

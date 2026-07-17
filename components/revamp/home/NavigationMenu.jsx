@@ -124,8 +124,8 @@ const NavigationMenu = (props) => {
     <div className="w-100 bg-text-white"> 
       <nav className={styles.navigationMenu + " " + props.className + " max-ph:!p-md max-ph:shadow-soft"} role="navigation">
         <div className={"hover-pointer " + styles.logo} onClick={() => router.push("/")}>
-          <Image src={TTW} alt="TTW Logo" priority className={styles.logoFull} />
-          <img src="/logoblack.svg" alt="TTW" className={styles.logoMark} />
+          <Image src={TTW} alt="The Tarzan Way" priority className={styles.logoFull} />
+          <img src="/logo/ttw-mark.svg" alt="The Tarzan Way" className={styles.logoMark} />
         </div>
         {pathname!="/new-trip"&& <SearchInput />}
         {/* Desktop Menu */}
@@ -224,7 +224,7 @@ const NavigationMenu = (props) => {
         aria-label="Mobile navigation menu"
       >
         <div className={styles.sidebarHeader}>
-          <Image src={TTW} alt="TTW Logo" className={styles.sidebarLogo}  />
+          <img src="/logo/ttw-lockup-light.svg" alt="The Tarzan Way" className={styles.sidebarLogo} />
           <button
             className={styles.closeButton}
             onClick={toggleMobileMenu}

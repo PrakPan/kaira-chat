@@ -105,29 +105,26 @@ function SmallGallery(props) {
 
     return (
         <>
-            <Container className={!props?.isDraft ?`pr-[24px] ${isDesktop  ? "border-l pl-[24px]" : ""} min-h-full` : "min-h-full"}>
+            <Container className={props?.compact ? "min-h-full" : !props?.isDraft ?`pr-[24px] ${isDesktop  ? "border-l pl-[24px]" : ""} min-h-full` : "min-h-full"}>
                 {props.images && renderImages.map((item, index) => <>
-                    <SingleImage key={index} onClick={() => handleOpenGallery(index, null, 'Image')} style={{ left: -(index * 20) }} className='rounded-full border-white border-[3px] cursor-pointer'>
+                    <SingleImage key={index} onClick={() => handleOpenGallery(index, null, 'Image')} style={{ left: -(index * (props?.compact ? 16 : 20)), width: props?.compact ? 26 : 44, height: props?.compact ? 26 : 44 }} className={`rounded-full border-white ${props?.compact ? "border-2" : "border-[3px]"} cursor-pointer`}>
                         {/* <Image src={item} width={50} height={50} /> */}
                         <ImageLoader
-                            // dimensions={{ width: 44, height: 44 }}
                             url={item.image || item}
                             style={{
-                                width: "44px",
-                                height: "44px",
+                                width: props?.compact ? "26px" : "44px",
+                                height: props?.compact ? "26px" : "44px",
                                 objectFit: "cover",
                                 cursor: "pointer",
                                 margin: "auto",
-                                // display: "block",
                               }}
-                            // dimensionsMobile={{ width: 44, height: 44 }}
                             noLazy
                         ></ImageLoader>
                     </SingleImage>
                 </>)}
                 {props.images?.length > renderImages.length && !props.isDraft &&
-                    <div style={{ left: -(renderImages.length * 20) }} className='relative rounded-full border-white border-[3px] '>
-                        <MoreImageOverlay className='rounded-full cursor-pointer' onClick={() => handleOpenGallery(0, null, 'More Images')}>
+                    <div style={{ left: -(renderImages.length * (props?.compact ? 16 : 20)) }} className={`relative rounded-full border-white ${props?.compact ? "border-2" : "border-[3px]"} `}>
+                        <MoreImageOverlay className='rounded-full cursor-pointer' style={props?.compact ? { width: 26, height: 26, fontSize: 11 } : undefined} onClick={() => handleOpenGallery(0, null, 'More Images')}>
                             +{props?.images?.length - renderImages.length}
                         </MoreImageOverlay>
                     </div>
