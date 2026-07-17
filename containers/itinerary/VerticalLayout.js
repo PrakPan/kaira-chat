@@ -1122,6 +1122,12 @@ const CityItem = ({
 
   const Itinerary = useSelector(state =>state.Itinerary)
 
+  // P1 (Draft) stage: the itinerary isn't confirmed/built yet, so its transfers
+  // are client-side drafts (BotApp stamps them `draft-transfer-*` / is_draft) with
+  // no booking on the server. The booking-details drawer would 404 on those ids,
+  // so the chip's View CTA is hidden and the chip itself is inert until P2.
+  const isP1Draft = Itinerary?.status === "Draft";
+
   // P1/Draft transfer-loader safety net. The draft row shows P1TransferLoader
   // while a leg's transfer is still expected (transfers_status PENDING — set by
   // display_itinerary right after the day-by-day lands). It must stop when
@@ -1785,7 +1791,8 @@ useEffect(() => {
 
   // Right-side action group on every chat transfer chip: [Change] [View ›].
   // Change opens the change drawer; View opens the booking-details drawer (the
-  // chip's own onClick). On mobile only Change shows — View is hidden.
+  // chip's own onClick). On mobile only Change shows — View is hidden. In P1
+  // there is no server-side booking to view, so View is dropped there too.
   const transferChipActions = (
     <div className="flex items-center gap-[14px] max-ph:gap-0 shrink-0">
       <button
@@ -1795,11 +1802,20 @@ useEffect(() => {
       >
         Change
       </button>
-      <span className="text-[12.5px] max-ph:text-[11.5px] font-[600] text-[#1f6feb] whitespace-nowrap max-ph:hidden">
-        View ›
-      </span>
+      {!isP1Draft && (
+        <span className="text-[12.5px] max-ph:text-[11.5px] font-[600] text-[#1f6feb] whitespace-nowrap max-ph:hidden">
+          View ›
+        </span>
+      )}
     </div>
   );
+
+  // Chip body click → booking-details drawer, except in P1 where the chip is inert.
+  const handleTransferChipClick = (combo) => {
+    if (isP1Draft) return;
+    handleEdit(combo, booking);
+  };
+  const transferChipCursor = isP1Draft ? "" : "cursor-pointer";
 
 
   return (
@@ -1929,8 +1945,8 @@ useEffect(() => {
                  its own approx time. Mirrors the old "Train to Kyoto, Flight
                  to Chūbu Centrair" combo but split into scannable rows. */
               <div
-                onClick={() => handleEdit(true, booking)}
-                className="flex items-stretch w-full rounded-[12px] border-[1px] cursor-pointer overflow-hidden bg-[#EEF4FE] border-[#DBE7FB]"
+                onClick={() => handleTransferChipClick(true)}
+                className={`flex items-stretch w-full rounded-[12px] border-[1px] ${transferChipCursor} overflow-hidden bg-[#EEF4FE] border-[#DBE7FB]`}
               >
                 <div className="flex-1 min-w-0 flex flex-col">
                   {comboChildren.map((leg, i) => {
@@ -1984,8 +2000,8 @@ useEffect(() => {
             ) : isFlightLeg ? (
               /* Chat: dedicated flight card */
               <div
-                onClick={() => handleEdit(transfer_type === "combo", booking)}
-                className="flex items-center gap-[13px] max-ph:gap-[11px] w-full px-[15px] max-ph:px-[12px] py-[13px] max-ph:py-[11px] rounded-[12px] max-ph:rounded-[11px] bg-[#EEF4FE] border-[1px] border-[#DBE7FB] cursor-pointer"
+                onClick={() => handleTransferChipClick(transfer_type === "combo")}
+                className={`flex items-center gap-[13px] max-ph:gap-[11px] w-full px-[15px] max-ph:px-[12px] py-[13px] max-ph:py-[11px] rounded-[12px] max-ph:rounded-[11px] bg-[#EEF4FE] border-[1px] border-[#DBE7FB] ${transferChipCursor}`}
               >
                 <MdOutlineFlightTakeoff size={20} color="#1f6feb" />
                 <div className="flex-1 min-w-0">
@@ -2003,8 +2019,8 @@ useEffect(() => {
             ) : (
               /* Chat: transfer chip */
               <div
-                onClick={() => handleEdit(transfer_type === "combo", booking)}
-                className="flex items-center gap-[12px] max-ph:gap-[10px] w-full px-[15px] max-ph:px-[12px] py-[11px] max-ph:py-[9px] rounded-[12px] max-ph:rounded-[11px] bg-[#EEF4FE] border-[1px] border-[#DBE7FB] cursor-pointer"
+                onClick={() => handleTransferChipClick(transfer_type === "combo")}
+                className={`flex items-center gap-[12px] max-ph:gap-[10px] w-full px-[15px] max-ph:px-[12px] py-[11px] max-ph:py-[9px] rounded-[12px] max-ph:rounded-[11px] bg-[#EEF4FE] border-[1px] border-[#DBE7FB] ${transferChipCursor}`}
               >
                 <span className="flex items-center shrink-0 text-[#1f6feb]">
                   {booking?.children
