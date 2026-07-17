@@ -18,6 +18,8 @@ const TYPE_META: Record<
   poi: { label: "Self exploration", color: "#5CBA66", tint: "#ECF7ED" },
 };
 
+const LINK_BLUE = "#2563EB";
+
 const pagerBtn = (disabled: boolean): React.CSSProperties => ({
   display: "flex",
   alignItems: "center",
@@ -45,6 +47,14 @@ interface Props {
   /** Step back out to the city's overview card. */
   onBack: () => void;
   onFocus: () => void;
+  /** Open this element's detail drawer. Absent when the itinerary gave the
+   * element no id to look up, which drops the link rather than offering one that
+   * opens an empty drawer. */
+  onSeeDetails?: () => void;
+  /** The next city on the route, when this is the city's last element — the
+   * pager walks on into it rather than dead-ending. */
+  nextCityName?: string | null;
+  onNextCity?: () => void;
 }
 
 /**
@@ -59,6 +69,9 @@ const CityElementCard: React.FC<Props> = ({
   onNext,
   onBack,
   onFocus,
+  onSeeDetails,
+  nextCityName,
+  onNextCity,
 }) => {
   const total = card.elements.length;
   const el = card.elements[Math.min(index, total - 1)];
@@ -67,6 +80,10 @@ const CityElementCard: React.FC<Props> = ({
   const meta = TYPE_META[el.type] ?? TYPE_META.poi;
   const atStart = index <= 0;
   const atEnd = index >= total - 1;
+  // The last element of a city hands the walk over to the next city instead of
+  // stopping — the route carries on, so the pager should too. Only the trip's
+  // final city has nowhere left to go.
+  const walksOn = atEnd && !!onNextCity && !!nextCityName;
 
   return (
     <CardShell onFocus={onFocus}>
@@ -153,6 +170,30 @@ const CityElementCard: React.FC<Props> = ({
           </p>
         )}
 
+        {onSeeDetails && (
+          <button
+            type="button"
+            onClick={onSeeDetails}
+            style={{
+              display: "block",
+              margin: "6px 0 0",
+              padding: 0,
+              border: "none",
+              background: "none",
+              fontFamily: "inherit",
+              fontSize: 11,
+              fontWeight: 600,
+              lineHeight: "16px",
+              color: LINK_BLUE,
+              textDecoration: "underline",
+              textUnderlineOffset: 2,
+              cursor: "pointer",
+            }}
+          >
+            See details
+          </button>
+        )}
+
         {/* Pushed to the card's two edges — negative margins pull the buttons'
             padding back out to the card's own gutter so the labels line up with
             the text above them. */}
@@ -178,11 +219,25 @@ const CityElementCard: React.FC<Props> = ({
           </button>
           <button
             type="button"
-            onClick={onNext}
-            disabled={atEnd}
-            style={pagerBtn(atEnd)}
+            onClick={walksOn ? onNextCity : onNext}
+            disabled={atEnd && !walksOn}
+            title={walksOn ? `Next: Explore ${nextCityName}` : undefined}
+            style={{
+              ...pagerBtn(atEnd && !walksOn),
+              // The handover label is far longer than "Next" and a long city
+              // name would otherwise push Previous off the card.
+              ...(walksOn ? { flexShrink: 1, minWidth: 0 } : null),
+            }}
           >
-            Next
+            <span
+              style={{
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {walksOn ? `Next: Explore ${nextCityName}` : "Next"}
+            </span>
             <Chevron dir="next" />
           </button>
         </div>

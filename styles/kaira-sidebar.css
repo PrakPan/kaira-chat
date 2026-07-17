@@ -30,6 +30,7 @@
   /* Semantic */
   --k-red: #b84034;
   --k-red-soft: #fff1ee;
+  --k-green: #1f8a5a;
 
   --k-r-md: 10px;
   --k-r-pill: 999px;
@@ -245,6 +246,15 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   text-align: left;
+}
+
+/* Marks a chat that produced an itinerary. Unlike the age stamp this is
+   information, not chrome, so it stays visible rather than waiting on hover. */
+.kaira-scope .kaira-hist-marker {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  color: var(--k-green);
 }
 
 .kaira-scope .kaira-hist-time {

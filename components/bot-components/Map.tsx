@@ -11,10 +11,22 @@ import { createPortal } from "react-dom";
 import { useSelector } from "react-redux";
 import CityElementCard from "./components/CityElementCard";
 import CityOverviewCard from "./components/CityOverviewCard";
+import ElementMarker, {
+  ACTIVE_ELEMENT_MARKER_SIZE,
+  ELEMENT_MARKER_SIZE,
+} from "./components/ElementMarker";
+import CityPinMarker from "./components/CityPinMarker";
+import POIDetailsDrawer from "../drawers/poiDetails/POIDetailsDrawer";
+import { categoryColor, categoryGlyph } from "./utils/categoryIcons";
+import {
+  createHtmlMarker,
+  type HtmlMarkerOverlay,
+} from "./utils/htmlMarkerOverlay";
 import {
   buildCityCards,
   type CityCard,
   type CityCardElement,
+  type CityElementType,
 } from "./utils/cityDayElements";
 import { geocodePlace, type LatLng } from "./utils/geocodePlaces";
 import {
@@ -95,11 +107,9 @@ const hasCoords = (
 ): el is CityCardElement & { lat: number; lng: number } =>
   !!el && el.lat != null && el.lng != null;
 
-/** Category markers are circles centred on their point. The element whose card
- * is open wears the larger one, so it is obvious which of a cluster of pins the
- * card in front of you belongs to. */
-const ELEMENT_MARKER_SIZE = 36;
-const ACTIVE_ELEMENT_MARKER_SIZE = 48;
+/** Standalone category markers — map locations that are not part of a city's
+ * day-by-day deck, and so are still drawn as a plain marker icon. */
+const CATEGORY_MARKER_SIZE = 36;
 
 /**
  * Which marker a deck's card hangs off right now: the element being shown, or
@@ -157,6 +167,20 @@ const BACK_PILL_CLEARANCE = 52;
 /** Breathing room reserved along the top of the pane (header / fullscreen
  * control) so a card never tucks under it. */
 const TOP_CHROME = 12;
+
+/**
+ * A container for an HTML marker: absolutely positioned, sitting on its point
+ * however `transform` says, and swallowing clicks so a marker press never also
+ * reads as a press on the map. Gestures are left alone, so a drag that happens
+ * to start on a marker still pans.
+ */
+const markerNode = (transform: string): HTMLDivElement => {
+  const node = document.createElement("div");
+  node.style.position = "absolute";
+  node.style.transform = transform;
+  google.maps.OverlayView.preventMapHitsFrom(node);
+  return node;
+};
 
 /** The little triangle joining a card to its pin. */
 const DeckTail = ({ placement }: { placement: DeckPlacement }) => (
@@ -330,39 +354,14 @@ function getEndpointPin(kind: "start" | "end"): google.maps.Icon {
   };
 }
 
-// Generic category marker (non-route stops, and every day-by-day element)
-function getMarkerIcon(type: string, active = false): google.maps.Icon {
-  const configs: Record<string, { bg: string; svg: string }> = {
-    restaurant: {
-      bg: "#2AB0FC",
-      svg: `<path d="M5.83203 18.3337V10.7087C5.1237 10.5142 4.52995 10.1253 4.05078 9.54199C3.57161 8.95866 3.33203 8.2781 3.33203 7.50032V1.66699H4.9987V7.50032H5.83203V1.66699H7.4987V7.50032H8.33203V1.66699H9.9987V7.50032C9.9987 8.2781 9.75911 8.95866 9.27995 9.54199C8.80078 10.1253 8.20703 10.5142 7.4987 10.7087V18.3337H5.83203ZM14.1654 18.3337V11.667H11.6654V5.83366C11.6654 4.68088 12.0716 3.69824 12.8841 2.88574C13.6966 2.07324 14.6793 1.66699 15.832 1.66699V18.3337H14.1654Z" fill="white"/>`,
-    },
-    poi: {
-      bg: "#5CBA66",
-      svg: `<g clip-path="url(#cp)"><path d="M16.0846 14.0837C16.418 13.5003 16.668 12.8337 16.668 12.0837C16.668 10.0003 15.0013 8.33366 12.918 8.33366C10.8346 8.33366 9.16797 10.0003 9.16797 12.0837C9.16797 14.167 10.8346 15.8337 12.918 15.8337C13.668 15.8337 14.3346 15.5837 14.918 15.2503L17.5846 17.917L18.7513 16.7503L16.0846 14.0837ZM12.918 14.167C11.7513 14.167 10.8346 13.2503 10.8346 12.0837C10.8346 10.917 11.7513 10.0003 12.918 10.0003C14.0846 10.0003 15.0013 10.917 15.0013 12.0837C15.0013 13.2503 14.0846 14.167 12.918 14.167ZM10.0013 16.667V18.3337C5.4013 18.3337 1.66797 14.6003 1.66797 10.0003C1.66797 5.40032 5.4013 1.66699 10.0013 1.66699C14.0346 1.66699 17.393 4.53366 18.168 8.33366H16.443C15.9096 6.28366 14.443 4.60866 12.5013 3.82533V4.16699C12.5013 5.08366 11.7513 5.83366 10.8346 5.83366H9.16797V7.50032C9.16797 7.95866 8.79297 8.33366 8.33464 8.33366H6.66797V10.0003H8.33464V12.5003H7.5013L3.50964 8.50866C3.4013 8.99199 3.33464 9.48366 3.33464 10.0003C3.33464 13.6753 6.3263 16.667 10.0013 16.667Z" fill="white"/></g><defs><clipPath id="cp"><rect width="20" height="20" fill="white"/></clipPath></defs>`,
-    },
-    hotel: {
-      bg: "#FD6D6C",
-      svg: `<path d="M0.832031 15.833V3.33301H2.4987V11.6663H9.16537V4.99967H15.832C16.7487 4.99967 17.5334 5.32606 18.1862 5.97884C18.839 6.63162 19.1654 7.41634 19.1654 8.33301V15.833H17.4987V13.333H2.4987V15.833H0.832031ZM4.0612 10.1038C3.57509 9.61773 3.33203 9.02745 3.33203 8.33301C3.33203 7.63856 3.57509 7.04829 4.0612 6.56217C4.54731 6.07606 5.13759 5.83301 5.83203 5.83301C6.52648 5.83301 7.11675 6.07606 7.60287 6.56217C8.08898 7.04829 8.33203 7.63856 8.33203 8.33301C8.33203 9.02745 8.08898 9.61773 7.60287 10.1038C7.11675 10.59 6.52648 10.833 5.83203 10.833C5.13759 10.833 4.54731 10.59 4.0612 10.1038ZM10.832 11.6663H17.4987V8.33301C17.4987 7.87467 17.3355 7.48231 17.0091 7.15592C16.6827 6.82954 16.2904 6.66634 15.832 6.66634H10.832V11.6663ZM6.42578 8.92676C6.5855 8.76704 6.66537 8.56912 6.66537 8.33301C6.66537 8.0969 6.5855 7.89898 6.42578 7.73926C6.26606 7.57954 6.06814 7.49967 5.83203 7.49967C5.59592 7.49967 5.398 7.57954 5.23828 7.73926C5.07856 7.89898 4.9987 8.0969 4.9987 8.33301C4.9987 8.56912 5.07856 8.76704 5.23828 8.92676C5.398 9.08648 5.59592 9.16634 5.83203 9.16634C6.06814 9.16634 6.26606 9.08648 6.42578 8.92676Z" fill="white"/>`,
-    },
-    activity: {
-      bg: "#AD5BE7",
-      svg: `<path d="M16.957 21.0837C16.5598 21.0837 16.174 21.0531 15.7997 20.992C15.4254 20.9309 15.0626 20.8392 14.7112 20.717L1.83203 16.0191L2.29036 14.7128L8.61536 17.0274L10.1966 12.9482L6.91953 9.53366C6.50703 9.10588 6.3428 8.59789 6.42682 8.0097C6.51085 7.42151 6.81259 6.97463 7.33203 6.66908L10.5174 4.83574C10.7772 4.68296 11.0407 4.59512 11.3081 4.5722C11.5754 4.54928 11.839 4.5913 12.0987 4.69824C12.3584 4.78991 12.5838 4.93505 12.7747 5.13366C12.9657 5.33227 13.107 5.56908 13.1987 5.84408L13.4966 6.82949C13.6952 7.48644 14.0199 8.06699 14.4706 8.57116C14.9213 9.07533 15.4598 9.45727 16.0862 9.71699L16.5674 8.25033L17.8737 8.66283L16.8424 11.8253C15.7119 11.642 14.7112 11.1989 13.8404 10.4962C12.9695 9.79338 12.3279 8.92255 11.9154 7.88366L9.60078 9.21283L12.3737 12.3753L10.3341 17.6462L13.1758 18.6774L15.1008 12.7878C15.3147 12.8642 15.5286 12.933 15.7424 12.9941C15.9563 13.0552 16.1779 13.1087 16.407 13.1545L14.4591 19.1587L15.1695 19.4107C15.4445 19.5024 15.731 19.575 16.0289 19.6285C16.3268 19.6819 16.6362 19.7087 16.957 19.7087C17.3543 19.7087 17.7324 19.6705 18.0914 19.5941C18.4504 19.5177 18.798 19.4031 19.1341 19.2503L20.1654 20.2816C19.6765 20.5413 19.1647 20.7399 18.6299 20.8774C18.0952 21.0149 17.5376 21.0837 16.957 21.0837ZM13.8289 5.42012C13.4699 5.06109 13.2904 4.62949 13.2904 4.12533C13.2904 3.62116 13.4699 3.18956 13.8289 2.83053C14.1879 2.47151 14.6195 2.29199 15.1237 2.29199C15.6279 2.29199 16.0595 2.47151 16.4185 2.83053C16.7775 3.18956 16.957 3.62116 16.957 4.12533C16.957 4.62949 16.7775 5.06109 16.4185 5.42012C16.0595 5.77914 15.6279 5.95866 15.1237 5.95866C14.6195 5.95866 14.1879 5.77914 13.8289 5.42012Z" fill="white"/>`,
-    },
-  };
-
-  const { bg, svg } = configs[type] ?? configs.poi;
-  const viewBox = type === "activity" ? "0 0 22 22" : "0 0 20 20";
-
-  // The element whose card is open wears a bigger disc inside a white collar, so
-  // that in a cluster of pins it is unmistakably the one the card is pointing at.
-  // Drawn in the same 36-unit space and scaled up, so the glyph keeps its
-  // proportions instead of rattling around inside a larger circle.
-  const size = active ? ACTIVE_ELEMENT_MARKER_SIZE : ELEMENT_MARKER_SIZE;
-  const collar = active
-    ? `<circle cx="18" cy="18" r="17.5" fill="#fff" filter="url(#sh)"/>
-       <circle cx="18" cy="18" r="15" fill="${bg}"/>`
-    : `<circle cx="18" cy="18" r="16" fill="${bg}" filter="url(#sh)"/>`;
+// Category marker for a standalone map location — a search result or any pin the
+// bot drops that is not part of a city's day-by-day. The deck's own elements are
+// drawn from their photos instead (see components/ElementMarker), so this is
+// only the plain-pictogram case.
+function getMarkerIcon(type: string): google.maps.Icon {
+  const bg = categoryColor(type);
+  const { viewBox, markup } = categoryGlyph(type);
+  const size = CATEGORY_MARKER_SIZE;
 
   return {
     url:
@@ -370,12 +369,12 @@ function getMarkerIcon(type: string, active = false): google.maps.Icon {
       encodeURIComponent(`
         <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36">
           <filter id="sh" x="-40%" y="-40%" width="180%" height="180%">
-            <feDropShadow dx="0" dy="4" stdDeviation="3" flood-color="rgba(124,121,121,${active ? 0.4 : 0.25})"/>
+            <feDropShadow dx="0" dy="4" stdDeviation="3" flood-color="rgba(124,121,121,0.25)"/>
           </filter>
-          ${collar}
+          <circle cx="18" cy="18" r="16" fill="${bg}" filter="url(#sh)"/>
           <g transform="translate(8, 8)">
             <svg width="20" height="20" viewBox="${viewBox}" fill="none" xmlns="http://www.w3.org/2000/svg">
-              ${svg}
+              ${markup}
             </svg>
           </g>
         </svg>
@@ -900,9 +899,9 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
 
       // Every marker on the map right now — these are what the cards work around.
       // City pins hang from their tip and are close to untouchable; element
-      // markers are circles centred on their point (see getMarkerIcon) and are a
-      // softer constraint, since a city that packs a dozen of them into a few
-      // hundred metres leaves nowhere that clears them all.
+      // markers are discs centred on their point (see components/ElementMarker)
+      // and are a softer constraint, since a city that packs a dozen of them into
+      // a few hundred metres leaves nowhere that clears them all.
       const obstacles: Obstacle[] = [];
       (effectiveLocations ?? []).forEach((loc) => {
         const p = toPixel(loc.lat, loc.lng);
@@ -1103,6 +1102,45 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
       );
       setFocusedCardId(card.id);
     }, []);
+
+    // The element whose detail drawer is open. Kept here rather than lifted to
+    // BotApp because the drawer portals itself to #modal-portal — it renders the
+    // same from anywhere in the tree, and the map is what knows which element
+    // was asked about.
+    const [detail, setDetail] = useState<{
+      id: string;
+      type: CityElementType;
+      name: string;
+      image: string | null;
+      itineraryCityId: string | null;
+      cityId: string | null;
+      cityName: string;
+    } | null>(null);
+
+    const showElementDetail = useCallback((card: DeckCard, index: number) => {
+      const el = card.elements[index];
+      if (!el?.entityId) return;
+      setDetail({
+        id: el.entityId,
+        type: el.type,
+        name: el.name,
+        image: el.image,
+        itineraryCityId: card.itineraryCityId,
+        cityId: card.cityId,
+        cityName: card.cityName,
+      });
+    }, []);
+
+    // Hand the walk over to the next city: its card opens, and the city we came
+    // from collapses back onto its pin so the map keeps showing one card rather
+    // than a trail of them. Nothing is lost — its pin reopens it.
+    const walkOnToCity = useCallback(
+      (fromId: string, next: DeckCard) => {
+        setDismissedCards((prev) => ({ ...prev, [fromId]: true }));
+        showCityCard(next);
+      },
+      [showCityCard],
+    );
 
     // Expose the map instance to parent via ref
     useImperativeHandle(ref, () => mapInstance.current!, [mapReady]);
@@ -1414,6 +1452,17 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
             : loc.type === "end_city"
               ? "end"
               : null;
+
+        // A city carrying a day-by-day deck draws its own pin as an HTML overlay
+        // (see htmlPinnedCities), so that it and the photo markers gathered on it
+        // land in one pane and can be ordered against each other. Leaving a
+        // marker icon here too would just stack a second pin under it.
+        const hasHtmlPin =
+          !endpointKind &&
+          isRouteStop &&
+          cityCards.some((c) => c.stopIndex === routeIndex);
+        if (hasHtmlPin) return;
+
         if (endpointKind) {
           // Trip origin / departure pin — distinct from numbered route stops.
           markerIcon = getEndpointPin(endpointKind);
@@ -1547,83 +1596,191 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
     }, [effectiveLocations, userLocation, effectiveRoute, mapInstance, clampZoomAfterFit, state.zoom, mapReady, cityCards, showCityCard]);
 
     // A marker for every day-by-day element the itinerary places inside a city,
-    // wearing the same category icon its card's chip does. Clicking one opens
-    // that element's card.
+    // showing the place's own photo. Clicking one opens that element's card.
+    //
+    // These are HTML overlays rather than `google.maps.Marker`s: a marker icon is
+    // a single image, and an SVG one may not reference an external photo, so a
+    // photo marker has to be drawn as DOM (see components/ElementMarker).
     //
     // Kept as a keyed diff rather than a wipe-and-rebuild: the geocodes trickle
     // in one element at a time, and tearing every marker off the map on each one
     // would leave the whole set flickering while a city resolves.
-    const elementMarkersRef = useRef<Record<string, google.maps.Marker>>({});
-    // Marker click handlers outlive the render that made them — read the decks
-    // through a ref so a click always acts on the element's current coordinates.
-    const deckCardsRef = useRef<DeckCard[]>(deckCards);
-    useEffect(() => {
-      deckCardsRef.current = deckCards;
-    }, [deckCards]);
+    const elementOverlaysRef = useRef<
+      Record<string, { overlay: HtmlMarkerOverlay; node: HTMLDivElement }>
+    >({});
+    const [elementMarkerNodes, setElementMarkerNodes] = useState<
+      { key: string; node: HTMLDivElement }[]
+    >([]);
 
     useEffect(() => {
       if (!mapReady || !mapInstance.current) return;
 
-      const live = elementMarkersRef.current;
+      const live = elementOverlaysRef.current;
       const wanted = new Set<string>();
+      let changed = false;
 
       deckCards.forEach((card) => {
-        const shown = cardIndex[card.id] ?? CITY_VIEW;
-        card.elements.forEach((el, index) => {
+        card.elements.forEach((el) => {
           if (!hasCoords(el)) return;
           const key = elementKey(card.id, el);
           wanted.add(key);
 
-          // The open element's marker is the enlarged one, and rides above its
-          // neighbours — in a cluster that is what ties the card to its pin.
-          const active = index === shown && !dismissedCards[card.id];
-          const icon = getMarkerIcon(el.type, active);
-          // Under the city pins, which are the route the elements hang off.
-          const zIndex = active ? 300 : 100;
-
           const existing = live[key];
           if (existing) {
-            existing.setPosition({ lat: el.lat, lng: el.lng });
-            existing.setIcon(icon);
-            existing.setZIndex(zIndex);
+            existing.overlay.setPosition({ lat: el.lat, lng: el.lng });
             return;
           }
 
-          const marker = new google.maps.Marker({
-            position: { lat: el.lat, lng: el.lng },
-            map: mapInstance.current!,
-            title: el.name,
-            icon,
-            zIndex,
-          });
-          marker.addListener("click", () => {
-            infoWindowRef.current?.close();
-            const fresh =
-              deckCardsRef.current.find((c) => c.id === card.id) ?? card;
-            openElement(fresh, index);
-          });
-          live[key] = marker;
+          // Centred on its point, so growing the active disc never walks the
+          // marker off its own coordinates.
+          const node = markerNode("translate(-50%, -50%)");
+          const overlay = createHtmlMarker({ lat: el.lat, lng: el.lng }, node);
+          overlay.setMap(mapInstance.current!);
+          live[key] = { overlay, node };
+          changed = true;
         });
       });
 
       Object.keys(live).forEach((key) => {
         if (wanted.has(key)) return;
-        live[key].setMap(null);
+        live[key].overlay.setMap(null);
         delete live[key];
+        changed = true;
       });
-    }, [deckCards, cardIndex, dismissedCards, mapReady, openElement]);
 
-    // The diff above only prunes markers it can still see; unmounting takes the
+      // Only when the set itself moved — a re-render on every geocode's
+      // reposition would portal all the markers again for nothing.
+      if (changed)
+        setElementMarkerNodes(
+          Object.entries(live).map(([key, { node }]) => ({ key, node })),
+        );
+    }, [deckCards, mapReady]);
+
+    // The diff above only prunes overlays it can still see; unmounting takes the
     // rest off the map.
     useEffect(
       () => () => {
-        Object.values(elementMarkersRef.current).forEach((marker) =>
-          marker.setMap(null),
+        Object.values(elementOverlaysRef.current).forEach(({ overlay }) =>
+          overlay.setMap(null),
         );
-        elementMarkersRef.current = {};
+        elementOverlaysRef.current = {};
       },
       [],
     );
+
+    // The numbered pin for every city that carries a deck, drawn as HTML for the
+    // same reason its elements are — see utils/htmlMarkerOverlay. Cities without
+    // a deck, and the trip's start / end pins, stay marker icons (see the
+    // location effect above), since nothing clusters on top of them.
+    const htmlPinnedCities = useMemo(() => {
+      const endpoints = new Set<number>();
+      (effectiveLocations ?? []).forEach((location) => {
+        const loc = location as any;
+        if (loc.type !== "start_city" && loc.type !== "end_city") return;
+        const stop = effectiveRoute?.findIndex((r) => r.id === location.id) ?? -1;
+        if (stop !== -1) endpoints.add(stop);
+      });
+      return deckCards.filter((card) => !endpoints.has(card.stopIndex));
+    }, [deckCards, effectiveLocations, effectiveRoute]);
+
+    const cityPinOverlaysRef = useRef<
+      Record<string, { overlay: HtmlMarkerOverlay; node: HTMLDivElement }>
+    >({});
+    const [cityPinNodes, setCityPinNodes] = useState<
+      { id: string; node: HTMLDivElement }[]
+    >([]);
+
+    useEffect(() => {
+      if (!mapReady || !mapInstance.current) return;
+
+      const live = cityPinOverlaysRef.current;
+      const wanted = new Set<string>();
+      let changed = false;
+
+      htmlPinnedCities.forEach((card) => {
+        wanted.add(card.id);
+        const existing = live[card.id];
+        if (existing) {
+          existing.overlay.setPosition({ lat: card.lat, lng: card.lng });
+          return;
+        }
+        // The teardrop hangs from its tip, which is the city's point.
+        const node = markerNode("translate(-50%, -100%)");
+        const overlay = createHtmlMarker({ lat: card.lat, lng: card.lng }, node);
+        overlay.setMap(mapInstance.current!);
+        live[card.id] = { overlay, node };
+        changed = true;
+      });
+
+      Object.keys(live).forEach((id) => {
+        if (wanted.has(id)) return;
+        live[id].overlay.setMap(null);
+        delete live[id];
+        changed = true;
+      });
+
+      if (changed)
+        setCityPinNodes(
+          Object.entries(live).map(([id, { node }]) => ({ id, node })),
+        );
+    }, [htmlPinnedCities, mapReady]);
+
+    useEffect(
+      () => () => {
+        Object.values(cityPinOverlaysRef.current).forEach(({ overlay }) =>
+          overlay.setMap(null),
+        );
+        cityPinOverlaysRef.current = {};
+      },
+      [],
+    );
+
+    // A city pin sits above the photo markers that gather round it, and an open
+    // element's marker above the pin — the order the map had when both were
+    // marker icons, now that both are DOM in one pane.
+    useEffect(() => {
+      const order = new Map(deckCards.map((c, i) => [c.id, i]));
+      cityPinNodes.forEach(({ id, node }) => {
+        node.style.zIndex = String(200 + (order.get(id) ?? 0));
+      });
+    }, [cityPinNodes, deckCards]);
+
+    /** The element whose card is open — the one marker the user is certainly
+     * looking for, so it wears the bigger disc and rides above its neighbours. */
+    const isElementActive = useCallback(
+      (cardId: string, index: number) =>
+        index === (cardIndex[cardId] ?? CITY_VIEW) && !dismissedCards[cardId],
+      [cardIndex, dismissedCards],
+    );
+
+    // The element behind each live marker node, so the portal pass below can
+    // render one without re-walking the decks per marker.
+    const markerTargets = useMemo(() => {
+      const byKey: Record<
+        string,
+        { card: DeckCard; el: CityCardElement; index: number }
+      > = {};
+      deckCards.forEach((card) =>
+        card.elements.forEach((el, index) => {
+          byKey[elementKey(card.id, el)] = { card, el, index };
+        }),
+      );
+      return byKey;
+    }, [deckCards]);
+
+    // Marker discs overlap wherever two places sit close together. Ordered out
+    // here on the containers, like the decks above and for the same reason: each
+    // container is its own stacking context, so a z-index inside a marker could
+    // only order that marker's own parts.
+    useEffect(() => {
+      elementMarkerNodes.forEach(({ key, node }) => {
+        const target = markerTargets[key];
+        if (!target) return;
+        node.style.zIndex = String(
+          isElementActive(target.card.id, target.index) ? 300 : 100,
+        );
+      });
+    }, [elementMarkerNodes, markerTargets, isElementActive]);
 
     return (
       <>
@@ -1635,6 +1792,44 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
           to { opacity: 1; transform: none; }
         }`}</style>
         <div ref={mapRef} style={{ width: "100%", height: "100%" }} />
+        {cityPinNodes.map(({ id, node }) => {
+          const card = deckCards.find((c) => c.id === id);
+          if (!card) return null;
+          return createPortal(
+            <CityPinMarker
+              number={card.stopIndex + 1}
+              cityName={card.cityName}
+              onClick={() => {
+                infoWindowRef.current?.close();
+                showCityCard(card);
+              }}
+            />,
+            node,
+            id,
+          );
+        })}
+        {/* One photo marker per element with coordinates. Rendered here, rather
+            than written into the overlay's node imperatively, so a marker is
+            plain React — its own image-failure state, its own hover. */}
+        {elementMarkerNodes.map(({ key, node }) => {
+          const target = markerTargets[key];
+          if (!target) return null;
+          const { card, el, index } = target;
+          return createPortal(
+            <ElementMarker
+              name={el.name}
+              image={el.image}
+              type={el.type}
+              active={isElementActive(card.id, index)}
+              onClick={() => {
+                infoWindowRef.current?.close();
+                openElement(card, index);
+              }}
+            />,
+            node,
+            key,
+          );
+        })}
         {overlayNodes.map(({ id, node }) => {
           const card = deckCards.find((c) => c.id === id);
           if (!card || dismissedCards[id]) return null;
@@ -1643,6 +1838,10 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
             card.elements.length - 1,
           );
           const placement = deckPlacements[id] ?? DEFAULT_PLACEMENT;
+          // The route carries on past this city's last element, so the pager
+          // does too — decks are built in route order, so the next one along is
+          // the next city the trip visits.
+          const nextDeck = deckCards[deckCards.findIndex((c) => c.id === id) + 1];
           return createPortal(
             // The tail is absolutely positioned against the card, so a card slid
             // along its pin's edge still points back at its own marker. Keyed on
@@ -1672,6 +1871,15 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
                   onNext={() => openElement(card, index + 1)}
                   onBack={() => showCityCard(card)}
                   onFocus={() => setFocusedCardId(id)}
+                  onSeeDetails={
+                    card.elements[index]?.entityId
+                      ? () => showElementDetail(card, index)
+                      : undefined
+                  }
+                  nextCityName={nextDeck?.cityName ?? null}
+                  onNextCity={
+                    nextDeck ? () => walkOnToCity(id, nextDeck) : undefined
+                  }
                 />
               )}
               <DeckTail placement={placement} />
@@ -1680,6 +1888,28 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
             id,
           );
         })}
+        {/* Portalled out to #modal-portal by Drawer, so it is unaffected by the
+            map's own stacking. */}
+        {detail && (
+          <POIDetailsDrawer
+            itineraryDrawer
+            show
+            handleCloseDrawer={() => setDetail(null)}
+            activityData={{ id: detail.id, type: detail.type }}
+            iconId={detail.id}
+            name={detail.name}
+            image={detail.image}
+            showBookingDetail
+            itinerary_city_id={detail.itineraryCityId}
+            cityID={detail.cityId}
+            cityName={detail.cityName}
+            // "See details" is a look, not an edit — the itinerary is changed
+            // from its own panel, which is also the only place equipped to
+            // refresh when it is.
+            removeDelete
+            removeChange
+          />
+        )}
       </>
     );
   },

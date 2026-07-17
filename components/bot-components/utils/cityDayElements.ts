@@ -13,6 +13,13 @@ export interface CityCardElement {
   image: string | null;
   oneLiner: string | null;
   type: CityElementType;
+  /**
+   * The id the detail drawer fetches by — a booking / poi / activity id, not the
+   * slab element's own id. Resolved exactly as the itinerary panel does (see
+   * getEntityId), so a card's "See details" opens the same drawer its row does.
+   * Null when the payload carries no usable id, which hides the link.
+   */
+  entityId: string | null;
   /** Continuous day index across the whole trip, matching the itinerary panel. */
   dayNumber: number;
   /** "Fri 6 Jun", or null when the day carries no date (skeleton / draft). */
@@ -29,6 +36,11 @@ export interface CityCardElement {
 export interface CityCard {
   id: string;
   cityName: string;
+  /** The itinerary's own id for this city — what the detail drawer scopes its
+   * lookups to (`itinerary_city_id`). */
+  itineraryCityId: string | null;
+  /** The underlying geo city id, distinct from itineraryCityId. */
+  cityId: string | null;
   /**
    * The city's own coordinates, when it has any. Draft and skeleton itineraries
    * carry `latitude: null` (see BotApp's transformDraftToItinerary), so these
@@ -41,6 +53,9 @@ export interface CityCard {
   image: string | null;
   /** Days spent in the city, for the city card's subtitle. */
   dayCount: number;
+  /** "Wed 15 Jul – Sun 19 Jul" — when the city is in and out on the same day,
+   * just that one date. Null on dateless drafts. */
+  dateRange: string | null;
   elements: CityCardElement[];
 }
 
@@ -61,6 +76,22 @@ const resolveElementType = (item: any): string | null => {
 
 const getName = (item: any): string =>
   item?.name || item?.restaurants?.[0]?.name || item?.heading || "";
+
+// The id the detail drawer fetches by. Ported verbatim from CityDay.jsx's
+// getItemId (`||` chains and all) — the map's "See details" and the panel's row
+// must resolve to the same entity, or the two open different drawers for what
+// the user sees as one thing.
+const getEntityId = (item: any, type: string): string | null => {
+  const id =
+    type === "activity"
+      ? item?.booking?.id || item?.id || item?.activity
+      : type === "poi"
+        ? item?.poi || item?.id
+        : type === "restaurant"
+          ? item?.restaurants?.[0]?.id || item?.restaurant || item?.id
+          : null;
+  return id == null ? null : String(id);
+};
 
 const resolveImage = (raw: unknown): string | null => {
   if (!raw || typeof raw !== "string") return null;
@@ -132,6 +163,14 @@ const formatDate = (dateStr?: string | null): string | null => {
   return `${SHORT_WEEKDAYS[d.getDay()]} ${d.getDate()} ${SHORT_MONTHS[d.getMonth()]}`;
 };
 
+// The span a city is visited over, for its card — first day-by-day date to last.
+const formatDateRange = (days: any[]): string | null => {
+  const first = formatDate(days[0]?.date);
+  const last = formatDate(days[days.length - 1]?.date);
+  if (!first) return null;
+  return !last || last === first ? first : `${first} – ${last}`;
+};
+
 // How many days precede city `index`. Intermediate cities have a checkout day
 // whose date matches the next city's first day — collapse those so the same
 // date keeps the same Day N across the city boundary. Ported from
@@ -174,6 +213,7 @@ export function buildCityCards(itinerary: any): CityCard[] {
           image: getImage(el),
           oneLiner: getOneLiner(el),
           type,
+          entityId: getEntityId(el, type),
           dayNumber,
           dateLabel,
           lat,
@@ -187,10 +227,13 @@ export function buildCityCards(itinerary: any): CityCard[] {
     cards.push({
       id: String(c?.id ?? city.gmaps_place_id ?? city.id ?? city.name),
       cityName: city.name ?? "",
+      itineraryCityId: c?.id == null ? null : String(c.id),
+      cityId: city?.id == null ? null : String(city.id),
       lat: toCoord(city.latitude),
       lng: toCoord(city.longitude),
       image: getCityImage(city),
       dayCount: (c?.day_by_day ?? []).length || Number(c?.duration) || 0,
+      dateRange: formatDateRange(c?.day_by_day ?? []),
       elements,
     });
   });

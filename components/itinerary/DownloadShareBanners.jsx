@@ -1,19 +1,21 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useSelector } from "react-redux";
 import { FaWhatsapp } from "react-icons/fa";
+import BotLoginModal from "../bot-components/components/BotLoginModal";
 import { MERCURY_HOST } from "../../services/constants";
 
 /**
  * DownloadShareBanners
  * --------------------
  * A pair of end-of-itinerary banners rendered below the day-by-day list:
- *   • Download — exports the itinerary as a PDF from the mercury admin endpoint.
+ *   • Download — exports the itinerary as a PDF from the mercury API endpoint.
  *   • Share    — copy link / WhatsApp / Instagram.
  *
  * Two layouts are shipped and toggled purely by CSS media query (a scoped
  * <style> block below), NOT by the JS `media()` hook — that hook is client-only
  * and would flash / hydrate-mismatch on a structural switch:
  *   • mobile  (< 768px) → design variant "2a · Clean stacked"    (.dsb-mobile)
- *   • desktop (≥ 768px) → design variant "1a · Clean pair"       (.dsb-desktop)
+ *   • desktop (≥ 768px) → full-width rows, action pinned right   (.dsb-desktop)
  *
  * Styling is deliberately inline with literal hex values (kaira design tokens)
  * to sidestep the bootstrap.min.css-loads-after-Tailwind collisions documented
@@ -134,18 +136,89 @@ const copyText = async (text) => {
 const DownloadShareBanners = ({ itineraryId, itineraryName }) => {
   const [downloading, setDownloading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
+  // Set when a download was blocked by the login gate, so the token-watch effect
+  // below knows to resume it once the user is through the modal.
+  const pendingDownload = useRef(false);
+  const reduxToken = useSelector((state) => state.auth.token);
+  // The /trips/[type]/[slug] route has no `id` query param — the page stashes the
+  // real itinerary id in redux instead, so fall back to it like the drawers do.
+  const reduxItineraryId = useSelector((state) => state.ItineraryId);
 
-  const id = Array.isArray(itineraryId) ? itineraryId[0] : itineraryId;
+  const propId = Array.isArray(itineraryId) ? itineraryId[0] : itineraryId;
+  const id = propId || reduxItineraryId;
   const host = (MERCURY_HOST || "").replace(/\/$/, "");
-  const pdfUrl =
-    id && host ? `${host}/admin/itinerary/itinerary/export-pdf/${id}/` : null;
+  const pdfUrl = id && host ? `${host}/api/v1/itinerary/${id}/export-pdf/` : null;
+
+  // Read at call time rather than render time: localStorage is unavailable
+  // during SSR, and login writes `access_token` before redux settles.
+  const getAuthToken = () =>
+    reduxToken ||
+    (typeof window !== "undefined" ? localStorage.getItem("access_token") : null);
+
+  // The endpoint is protected, so this can't be a plain window.open — the PDF is
+  // fetched with the bearer token and handed to the browser as a blob.
+  const runDownload = async (token) => {
+    if (!pdfUrl || !token) return;
+    setDownloading(true);
+    try {
+      const res = await fetch(pdfUrl, {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.status === 401 || res.status === 403) {
+        // Token expired/rejected — re-open the gate and retry after login.
+        pendingDownload.current = true;
+        setShowLogin(true);
+        return;
+      }
+      if (!res.ok) throw new Error(`PDF export failed: ${res.status}`);
+      const blob = await res.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = objectUrl;
+      anchor.download = `${itineraryName || "itinerary"}.pdf`;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      setTimeout(() => URL.revokeObjectURL(objectUrl), 60_000);
+    } catch (err) {
+      console.error("Could not download the itinerary PDF:", err);
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   const handleDownload = () => {
-    if (!pdfUrl) return;
-    setDownloading(true);
-    window.open(pdfUrl, "_blank", "noopener,noreferrer");
-    setTimeout(() => setDownloading(false), 1600);
+    if (downloading) return;
+    // Auth gate first: a logged-out click opens the modal rather than firing a
+    // request that would only come back 401.
+    const token = getAuthToken();
+    if (!token) {
+      pendingDownload.current = true;
+      setShowLogin(true);
+      return;
+    }
+    runDownload(token);
   };
+
+  // Resume a gated download once login lands. Clearing the ref before firing
+  // keeps this safe to call from both the modal's onSuccess and the token watch
+  // below, whichever wins — the second call is a no-op.
+  const resumePendingDownload = () => {
+    if (!pendingDownload.current) return;
+    const token = getAuthToken();
+    if (!token) return;
+    pendingDownload.current = false;
+    setShowLogin(false);
+    runDownload(token);
+  };
+
+  // The token watch covers login paths that don't run onSuccess (e.g. social).
+  useEffect(() => {
+    resumePendingDownload();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reduxToken]);
 
   const handleCopy = async () => {
     try {
@@ -227,22 +300,27 @@ const DownloadShareBanners = ({ itineraryId, itineraryName }) => {
     borderRadius: 18,
     padding,
   });
-  const downloadBtn = (padding, fontSize, gap, marginTop) => ({
-    marginTop,
-    alignSelf: "flex-start",
+  // Look only — the desktop row takes its sizing from .dsb-cta-lg so the
+  // container query can shrink it; the mobile card passes explicit sizes.
+  const downloadBtnBase = {
     display: "inline-flex",
     alignItems: "center",
-    gap,
     background: C.yellow,
     color: C.ink,
     border: "none",
     borderRadius: 999,
     boxShadow: SHADOW_YELLOW,
-    padding,
     fontFamily: FONT_SANS,
     fontWeight: 700,
-    fontSize,
     cursor: "pointer",
+  };
+  const downloadBtn = (padding, fontSize, gap, marginTop) => ({
+    ...downloadBtnBase,
+    marginTop,
+    alignSelf: "flex-start",
+    gap,
+    padding,
+    fontSize,
   });
   const iconBox = (size, bg, color) => ({
     flexShrink: 0,
@@ -263,7 +341,52 @@ const DownloadShareBanners = ({ itineraryId, itineraryName }) => {
         .dsb-desktop { display: none; }
         @media (min-width: 768px) {
           .dsb-mobile { display: none; }
-          .dsb-desktop { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 32px; }
+          /* Sized against the card's own width, not the viewport's: the itinerary
+             column is narrow while a side panel is open, so @media can't see it. */
+          .dsb-desktop { display: flex; flex-direction: column; gap: 16px; margin-bottom: 32px; container-type: inline-size; }
+        }
+        /* Desktop rows: icon + copy hold the first line and the action sits at
+           the right end; only once the copy would drop below ~260px — i.e. the
+           buttons have closed right up on the text — does the action wrap to its
+           own line. The buttons within an action always stay on one line,
+           shrinking via the container queries instead. */
+        .dsb-row { display: flex; align-items: center; flex-wrap: wrap; gap: 18px; }
+        .dsb-row-body { flex: 1 1 260px; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+        /* nowrap: the three chips always stay on one line and shrink instead. */
+        .dsb-row-action { flex: 0 1 auto; min-width: 0; max-width: 100%; display: flex; flex-wrap: nowrap; gap: 8px; }
+        /* Chip / CTA sizing lives here rather than inline so the container
+           queries below can actually override it (inline styles would win). */
+        .dsb-chip-lg { flex: 0 1 auto; min-width: 0; display: inline-flex; align-items: center; gap: 8px; border-radius: 999px; padding: 9px 15px; }
+        .dsb-chip-lg .dsb-chip-icon { flex: none; display: inline-flex; padding: 6px; border-radius: 999px; }
+        .dsb-chip-lg .dsb-chip-icon svg { width: 18px; height: 18px; }
+        .dsb-chip-lg .dsb-chip-label { font-weight: 600; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .dsb-cta-lg { padding: 11px 20px; gap: 9px; font-size: 13.5px; }
+        @container (max-width: 940px) {
+          .dsb-chip-lg { gap: 7px; padding: 8px 12px; }
+          .dsb-chip-lg .dsb-chip-icon { padding: 5px; }
+          .dsb-chip-lg .dsb-chip-icon svg { width: 17px; height: 17px; }
+          .dsb-chip-lg .dsb-chip-label { font-size: 12.5px; }
+          .dsb-cta-lg { padding: 10px 17px; gap: 8px; font-size: 13px; }
+        }
+        @container (max-width: 760px) {
+          .dsb-chip-lg { gap: 6px; padding: 7px 10px; }
+          .dsb-chip-lg .dsb-chip-icon { padding: 4px; }
+          .dsb-chip-lg .dsb-chip-icon svg { width: 16px; height: 16px; }
+          .dsb-chip-lg .dsb-chip-label { font-size: 12px; }
+          .dsb-cta-lg { padding: 9px 15px; gap: 7px; font-size: 12.5px; }
+        }
+        @container (max-width: 560px) {
+          .dsb-chip-lg { gap: 5px; padding: 6px 9px; }
+          .dsb-chip-lg .dsb-chip-icon { padding: 3px; }
+          .dsb-chip-lg .dsb-chip-icon svg { width: 15px; height: 15px; }
+          .dsb-chip-lg .dsb-chip-label { font-size: 11.5px; }
+          .dsb-cta-lg { padding: 8px 13px; gap: 6px; font-size: 12px; }
+        }
+        @container (max-width: 430px) {
+          .dsb-chip-lg { gap: 4px; padding: 5px 8px; }
+          .dsb-chip-lg .dsb-chip-icon svg { width: 14px; height: 14px; }
+          .dsb-chip-lg .dsb-chip-label { font-size: 11px; }
+          .dsb-cta-lg { padding: 8px 12px; font-size: 11.5px; }
         }
         .dsb-card { transition: transform .25s cubic-bezier(.2,.7,.3,1), box-shadow .25s cubic-bezier(.2,.7,.3,1); }
         .dsb-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px -10px rgba(11,18,32,.15); }
@@ -387,14 +510,14 @@ const DownloadShareBanners = ({ itineraryId, itineraryName }) => {
         </div>
       </div>
 
-      {/* ===== DESKTOP · 1a Clean pair (matches the itinerary cards) ===== */}
+      {/* ===== DESKTOP · full-width rows, action pinned right ===== */}
       <div className="dsb-desktop">
         {/* Download */}
-        <div className="dsb-card" style={{ ...cardBase(24), display: "flex", gap: 18 }}>
+        <div className="dsb-card dsb-row" style={cardBase(24)}>
           <div style={iconBox(52, C.yellowSoft, C.yellow700)}>
             <IconFile size={22} />
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 6, minWidth: 0 }}>
+          <div className="dsb-row-body">
             <div style={eyebrow(10)}>Keep a copy</div>
             <div
               style={{
@@ -411,25 +534,31 @@ const DownloadShareBanners = ({ itineraryId, itineraryName }) => {
             <div style={{ fontFamily: FONT_SANS, fontSize: 13.5, lineHeight: 1.5, color: C.ink3 }}>
               Full day-by-day plan and bookings as a PDF.
             </div>
-            <button
-              type="button"
-              className="dsb-cta"
-              onClick={handleDownload}
-              disabled={!pdfUrl}
-              style={{ ...downloadBtn("11px 20px", 13.5, 9, 10), opacity: pdfUrl ? 1 : 0.6 }}
-            >
-              <IconDownload size={17} />
-              <span>{downloadLabel}</span>
-            </button>
           </div>
+          <button
+            type="button"
+            className="dsb-cta dsb-cta-lg"
+            onClick={handleDownload}
+            disabled={!pdfUrl}
+            style={{
+              ...downloadBtnBase,
+              alignSelf: "center",
+              flex: "0 0 auto",
+              whiteSpace: "nowrap",
+              opacity: pdfUrl ? 1 : 0.6,
+            }}
+          >
+            <IconDownload size={17} />
+            <span>{downloadLabel}</span>
+          </button>
         </div>
 
         {/* Share */}
-        <div className="dsb-card" style={{ ...cardBase(24), display: "flex", gap: 18 }}>
+        <div className="dsb-card dsb-row" style={cardBase(24)}>
           <div style={iconBox(52, C.blueSoft, C.blueInk)}>
             <IconShare size={22} />
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 6, minWidth: 0 }}>
+          <div className="dsb-row-body">
             <div style={eyebrow(10)}>Send it along</div>
             <div
               style={{
@@ -446,44 +575,49 @@ const DownloadShareBanners = ({ itineraryId, itineraryName }) => {
             <div style={{ fontFamily: FONT_SANS, fontSize: 13.5, lineHeight: 1.5, color: C.ink3 }}>
               Send it to whoever&apos;s coming with you.
             </div>
-            <div style={{ marginTop: 10, display: "flex", flexWrap: "wrap", gap: 8 }}>
-              {chips.map((chip) => (
-                <button
-                  key={chip.key}
-                  type="button"
-                  className="dsb-chip"
-                  onClick={chip.onClick}
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: 8,
-                    background: C.paper,
-                    border: `1px solid ${C.line}`,
-                    borderRadius: 999,
-                    padding: "9px 15px",
-                    cursor: "pointer",
-                  }}
-                >
-                  <span
-                    style={{
-                      color: chip.fg,
-                      background: chip.bg,
-                      display: "inline-flex",
-                      padding: 6,
-                      borderRadius: 999,
-                    }}
-                  >
-                    {chip.icon}
-                  </span>
-                  <span style={{ fontFamily: FONT_SANS, fontWeight: 600, fontSize: 13, color: C.ink }}>
-                    {chip.label}
-                  </span>
-                </button>
-              ))}
-            </div>
+          </div>
+          <div className="dsb-row-action">
+            {chips.map((chip) => (
+              <button
+                key={chip.key}
+                type="button"
+                className="dsb-chip dsb-chip-lg"
+                onClick={chip.onClick}
+                style={{
+                  background: C.paper,
+                  border: `1px solid ${C.line}`,
+                  cursor: "pointer",
+                }}
+              >
+                <span className="dsb-chip-icon" style={{ color: chip.fg, background: chip.bg }}>
+                  {chip.icon}
+                </span>
+                <span className="dsb-chip-label" style={{ fontFamily: FONT_SANS, color: C.ink }}>
+                  {chip.label}
+                </span>
+              </button>
+            ))}
           </div>
         </div>
       </div>
+
+      {/* Same modal + zIndex the itinerary page already uses in MenuV2. */}
+      <div className="z-[1650]">
+        <BotLoginModal
+          show={showLogin && !reduxToken}
+          zIndex={"3300"}
+          itinary_id={id}
+          message="Log in to download your itinerary"
+          onhide={() => {
+            // Only a real dismissal should cancel the queued download — if a token
+            // has landed, this is the post-login close and the resume must survive.
+            if (!getAuthToken()) pendingDownload.current = false;
+            setShowLogin(false);
+          }}
+          onSuccess={resumePendingDownload}
+        />
+      </div>
+
     </div>
   );
 };

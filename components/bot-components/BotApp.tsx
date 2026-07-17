@@ -14,6 +14,7 @@ import { LOGO_HEIGHT } from "./constants";
 import {
   HistoryIcon as KairaHistoryIcon,
   LogoutIcon as KairaLogoutIcon,
+  MapIcon as KairaMapIcon,
   PlusIcon as KairaPlusIcon,
   SuitcaseIcon as KairaSuitcaseIcon,
   UserIcon as KairaUserIcon,
@@ -4956,12 +4957,12 @@ export const MobileHeaderMenu = React.memo(
                 <div className="kaira-drawer-head">
                   <span className="kaira-drawer-title">
                     <KairaHistoryIcon size={14} />
-                    <span className="kaira-mono">Chat history</span>
+                    <span className="kaira-mono">Recent chats</span>
                   </span>
                   <button
                     onClick={() => setHistoryOpen(false)}
                     className="kaira-icon-btn is-sm"
-                    aria-label="Close chat history"
+                    aria-label="Close recent chats"
                   >
                     <svg
                       width="16"
@@ -5025,6 +5026,14 @@ export const MobileHeaderMenu = React.memo(
                             <span className="kaira-hist-title">
                               {t.title || "Untitled"}
                             </span>
+                            {t.itinerary_created && (
+                              <span
+                                className="kaira-hist-marker"
+                                title="Itinerary created"
+                              >
+                                <KairaMapIcon />
+                              </span>
+                            )}
                             <span className="kaira-hist-time kaira-mono tabular-nums">
                               {formatCompactTime(t.created_at)}
                             </span>
@@ -5045,7 +5054,7 @@ export const MobileHeaderMenu = React.memo(
           <button
             onClick={handleHistoryClick}
             className="kaira-icon-btn is-sm"
-            aria-label="Chat history"
+            aria-label="Recent chats"
           >
             <KairaHistoryIcon size={19} />
           </button>

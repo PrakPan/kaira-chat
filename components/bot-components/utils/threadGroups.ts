@@ -13,6 +13,8 @@ export interface Thread {
   session_id?: string;
   filter_session_id?: string;
   customer_name?: string;
+  /** True once the chat produced an itinerary — drives the history-row marker. */
+  itinerary_created?: boolean;
 }
 
 const IST_OFFSET = (5 * 60 + 30) * 60 * 1000;

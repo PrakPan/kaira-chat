@@ -22,6 +22,7 @@ import {
   ChevronIcon,
   HistoryIcon,
   LogoutIcon,
+  MapIcon,
   PlusIcon,
   SuitcaseIcon,
   UserIcon,
@@ -188,6 +189,11 @@ const ChatHistoryList: React.FC<{
                 <span className="kaira-hist-title">
                   {thread.title || "Untitled"}
                 </span>
+                {thread.itinerary_created && (
+                  <span className="kaira-hist-marker" title="Itinerary created">
+                    <MapIcon />
+                  </span>
+                )}
                 <span className="kaira-hist-time kaira-mono tabular-nums">
                   {formatCompactTime(thread.created_at)}
                 </span>
@@ -624,14 +630,14 @@ const Sidebar: React.FC<SidebarProps> = ({
         {/* Chat history */}
         {isCollapsed ? (
           <div className="flex-1 flex flex-col items-center pt-0.5">
-            <SidebarTooltip label="Chat history">
+            <SidebarTooltip label="Recent chats">
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   onToggle?.();
                 }}
                 className="kaira-icon-btn"
-                aria-label="Chat history"
+                aria-label="Recent chats"
               >
                 <HistoryIcon size={19} />
               </button>
@@ -641,7 +647,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           <>
             <div className="kaira-hist-header">
               <HistoryIcon size={13} />
-              <span className="kaira-mono">Chat history</span>
+              <span className="kaira-mono">Recent chats</span>
             </div>
             <ChatHistoryList
               threads={threads}
