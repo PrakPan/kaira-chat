@@ -838,7 +838,6 @@ startEmptyIntake = false,
   const isStaffUser =
     !!reduxEmail && reduxEmail.toLowerCase().endsWith("@thetarzanway.com");
 
-    console.log("reduxEmail", reduxEmail);
   // True when a logged-in, non-staff user is viewing another person's
   // itinerary — block the composer and quick replies in that case.
   const isForeignItinerary =
@@ -1692,8 +1691,6 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
     onSessionCreated: handleSessionCreated,
     loginMandatory,
   });
-
-    console.log("Messages",messages);
 
   // Logged-out user viewing an existing thread (restored via threads.get_by_id)
   // sees the inline sign-in card as the last message. In that state the

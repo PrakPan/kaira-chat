@@ -6637,7 +6637,6 @@ const toggleTransferDetails = (priceOptionId) => {
               results: [...(otherTransfer.results || []), ...newResults],
             };
 
-            console.log("Merged Data on Load More:", isAllAboardSource,newResults.length);
 
             // Hide load more if: not AllAboard source, or results < 5
             const shouldShowMore = isAllAboardSource && newResults.length === 5;
