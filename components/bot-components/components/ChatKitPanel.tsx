@@ -1432,6 +1432,11 @@ startEmptyIntake = false,
   // reload; when false we restore it (with prefill) so the user can still fill
   // it. Read by parseThreadItems (incl. pagination) so the gate is consistent.
   const restoredFormFilledRef = useRef(false);
+  // Same idea for the pricing form, mirroring `confirm_pricing_form_submitted`.
+  // When the user has already submitted pricing (true) the card stays hidden on
+  // reload; when false we restore the interactive card (with prefill) so they
+  // can still submit it. Read by parseThreadItems so the gate is consistent.
+  const restoredPricingSubmittedRef = useRef(false);
 
   // Tracks whether the user is pinned to the bottom of the message list. The
   // auto-scroll effect only fires when this is true, so the transcript won't
@@ -2945,9 +2950,18 @@ useEffect(() => {
             });
           }
         } else if (isPricingFormWidgetId(item.widget?.id)) {
-          // Pricing form is a transient final-confirmation step — hide it on
-          // thread load (never restore it into the transcript). The Redux slice
-          // is deactivated in the restore effect below.
+          // Pricing form is the final-confirmation step. Restore the interactive
+          // card only while it hasn't been submitted yet
+          // (`confirm_pricing_form_submitted === false`); once submitted it's
+          // dropped from the transcript. Redux seeding is handled in the restore
+          // effect below.
+          if (!restoredPricingSubmittedRef.current) {
+            out.push({
+              id: item.id, role: "assistant", content: "",
+              timestamp: new Date(item.created_at),
+              type: "pricing_form",
+            });
+          }
         } else {
           indexEdgesFromWidget(item.widget);
           out.push({
@@ -2977,6 +2991,10 @@ useEffect(() => {
   // Set before parseThreadItems runs — it (and pagination) reads this to decide
   // whether the intake-form card is restored into the transcript.
   restoredFormFilledRef.current = restoredThread.form_filled === true;
+  // Same gate for the pricing form — restore the card only when pricing hasn't
+  // been submitted yet.
+  restoredPricingSubmittedRef.current =
+    restoredThread.confirm_pricing_form_submitted === true;
 
   const restored = parseThreadItems(restoredThread.items?.data ?? []);
 
@@ -3021,12 +3039,40 @@ useEffect(() => {
     dispatch(updateIntakeForm({ active: false, completed: false }));
   }
 
-  // Pricing form is always hidden on thread load — deactivate the slice so a
-  // stale `active` from a prior thread doesn't linger, and reset the one-shot
-  // injection guard so a fresh pricing-form widget can inject its card in this
-  // restored session.
-  dispatch(updatePricingForm({ active: false, completed: false, loading: false }));
-  pricingFormInjectedRef.current = false;
+  // ── Restore the in-chat pricing form ──────────────────────────────────────
+  // When the thread carries a pricing-form widget that hasn't been submitted
+  // (`confirm_pricing_form_submitted === false`), parseThreadItems restores the
+  // card and we re-seed the Redux slice from the widget's encoded prefill so it
+  // shows the prefilled toggles/city. When submitted (or absent) we deactivate
+  // the slice so a stale `active` from a prior thread doesn't linger, and reset
+  // the one-shot injection guard so a fresh pricing-form widget can inject its
+  // card in this restored session.
+  const pricingWidgetItem = (restoredThread.items?.data ?? []).find(
+    (it: any) => it?.type === "widget" && isPricingFormWidgetId(it?.widget?.id),
+  );
+  if (pricingWidgetItem && !restoredPricingSubmittedRef.current) {
+    const prefill = parsePricingFormWidgetId(pricingWidgetItem.widget?.id);
+    if (prefill) {
+      dispatch(
+        updatePricingForm({
+          active: true,
+          completed: false,
+          loading: false,
+          ...parsePricingCardCopy(pricingWidgetItem.widget),
+          ...parseShowPricingForm(prefill),
+        }),
+      );
+      // Already injected from history — block the live widget/effect path from
+      // adding a second card in this session.
+      pricingFormInjectedRef.current = true;
+    } else {
+      dispatch(updatePricingForm({ active: false, completed: false, loading: false }));
+      pricingFormInjectedRef.current = false;
+    }
+  } else {
+    dispatch(updatePricingForm({ active: false, completed: false, loading: false }));
+    pricingFormInjectedRef.current = false;
+  }
 
   for (const effect of itineraryEffects) {
     if (effect.name === "itinerary_entities" && effect.data?.entities) {
