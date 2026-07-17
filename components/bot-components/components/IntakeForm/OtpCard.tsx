@@ -297,37 +297,188 @@ const OtpCard: React.FC<OtpCardProps> = ({
         />
       </div>
       <div
-        className="rounded-[16px] p-4 min-w-0 flex-1"
+        className="rounded-[16px] min-w-0 flex-1"
         style={{
-          background: "#fff",
-          border: "1px solid #ececec",
+          // First step adopts the cream "welcome back" card look; the OTP /
+          // details steps keep the original white card so they're unchanged.
+          background: otpSent ? "#fff" : "#FAFAF5",
+          border: otpSent ? "1px solid #ececec" : "1px solid #e7e3d9",
+          padding: otpSent ? 16 : 22,
           maxWidth: 420,
           boxShadow: "0 14px 30px -14px rgba(11,18,32,.14)",
         }}
       >
-      <div className="text-[11px] font-extrabold text-[#445069] uppercase tracking-wide mb-[10px]">
-        {heading}
-      </div>
+      {/* The small uppercase eyebrow belongs to the OTP / details steps; the
+          redesigned first step carries its own title instead. */}
+      {otpSent && (
+        <div className="text-[11px] font-extrabold text-[#445069] uppercase tracking-wide mb-[10px]">
+          {heading}
+        </div>
+      )}
 
       {!otpSent ? (
         <>
-          <div className="relative">
-            <div
-              ref={fieldRowRef}
-              className="flex rounded-[12px] overflow-hidden"
-              style={{ background: "#fafaf5", border: "1.5px solid #ececec" }}
+          {/* Kaira identity — inline brand header (replaces the removed
+              left-gutter chat avatar), so the card reads as Kaira on its own. */}
+          <div className="flex items-center gap-[11px] mb-[20px]">
+            <img
+              src="/KairaInsta.png"
+              alt="Kaira"
+              className="w-[48px] h-[48px] rounded-full object-cover shrink-0"
+              style={{
+                border: "3px solid #fff",
+                boxShadow: "0 4px 14px -4px rgba(15,26,46,.3)",
+              }}
+            />
+            <div>
+              <div className="text-[17px] font-bold text-[#0f1a2e] leading-none">
+                kaira
+                <span style={{ color: "#f7e700", WebkitTextStroke: "0.4px #0f1a2e" }}>
+                  .
+                </span>
+              </div>
+              <div className="text-[12px] font-medium text-[#8a93a6] mt-[2px]">
+                Your AI Trip Planner
+              </div>
+            </div>
+          </div>
+
+          {/* Title + subtitle */}
+          <div
+            className="text-[26px] max-ph:text-[24px] font-extrabold text-[#0f1a2e] leading-[1.03]"
+            style={{ letterSpacing: "-0.03em" }}
+          >
+            <span className="mr-2">Sign In</span>
+            <em
+              style={{
+                fontFamily: "'Instrument Serif', Georgia, serif",
+                fontStyle: "italic",
+                fontWeight: 400,
+              }}
             >
+             to Continue
+            </em>
+            {/* <span className="ml-2"> to Continue</span> */}
+            
+          </div>
+          <div className="text-[13.5px] text-[#445069] mt-[8px] leading-[2] mb-3">
+            Your number is your login. Your holidays are waiting.
+          </div>
+
+          {/* Benefits */}
+          <ul className="list-none m-0 mt-[20px] p-0 grid gap-[12px]">
+            {[
+              "Save this holiday to your account",
+              "See your exact price, not just the ballpark",
+              "I'll WhatsApp you if it gets cheaper",
+            ].map((b) => (
+              <li
+                key={b}
+                className="flex gap-[10px] items-start text-[13.5px] leading-[1.4] text-[#2a3444]"
+              >
+                <span
+                  className="shrink-0 w-[20px] h-[20px] mt-[1px] rounded-[7px] flex items-center justify-center"
+                  style={{ background: "rgba(15,26,46,.06)" }}
+                >
+                  <svg width="12" height="12" viewBox="0 0 20 20" fill="none">
+                    <path
+                      d="M4 10.5l3.5 3.5L16 5.5"
+                      stroke="#0f1a2e"
+                      strokeWidth="2.2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </span>
+                <span>{b}</span>
+              </li>
+            ))}
+          </ul>
+
+          {/* Coupon — navy island, yellow amount, ticket-notch cut-outs. The
+              notches are card-cream circles half-clipped by overflow-hidden so
+              they read as bites out of the navy pill. */}
+          <div
+            className="relative flex items-center gap-[12px] mt-[18px] overflow-hidden rounded-[16px] px-[15px] py-[13px]"
+            style={{ background: "#0f1a2e", color: "#FAFAF5" }}
+          >
+            <span
+              aria-hidden
+              className="absolute rounded-full"
+              style={{
+                width: 14,
+                height: 14,
+                background: "#FAFAF5",
+                left: -7,
+                top: "50%",
+                transform: "translateY(-50%)",
+              }}
+            />
+            <span
+              aria-hidden
+              className="absolute rounded-full"
+              style={{
+                width: 14,
+                height: 14,
+                background: "#FAFAF5",
+                right: -7,
+                top: "50%",
+                transform: "translateY(-50%)",
+              }}
+            />
+            <span
+              className="shrink-0 w-[34px] h-[34px] rounded-[9px] grid place-items-center"
+              style={{ background: "rgba(247,231,0,.14)" }}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M4 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2 2 2 0 0 0 0 4 2 2 0 0 1 0 4 2 2 0 0 1-2 2H6a2 2 0 0 1-2-2 2 2 0 0 0 0-4 2 2 0 0 1 0-4Z"
+                  stroke="#f7e700"
+                  strokeWidth="1.6"
+                />
+                <path
+                  d="M14 8v8"
+                  stroke="#f7e700"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  strokeDasharray="1.5 2.5"
+                />
+              </svg>
+            </span>
+            <span>
+              <span
+                className="block text-[18px] font-semibold tabular-nums leading-[1.1]"
+                style={{
+                  color: "#f7e700",
+                  fontFamily: "'JetBrains Mono', ui-monospace, monospace",
+                }}
+              >
+                ₹5,000 off
+              </span>
+              <span
+                className="block text-[12px] mt-[2px] leading-[1.3]"
+                style={{ color: "rgba(251,248,239,.72)" }}
+              >
+                in your account for when you book
+              </span>
+            </span>
+          </div>
+
+          {/* Phone field — same dropdown + input + portal wiring, restyled to
+              the mockup (separate country chip + white input). */}
+          <div className="relative mt-[20px]">
+            <div ref={fieldRowRef} className="flex gap-[8px]">
               <button
                 type="button"
                 onClick={() => setOpenCountryCodeOption(true)}
-                className="px-[12px] py-[11px] text-[14.5px] font-bold flex items-center gap-[6px] shrink-0"
-                style={{ borderRight: "1px solid #ececec" }}
+                className="flex items-center gap-[6px] shrink-0 px-[13px] rounded-[14px] text-[14px] font-semibold text-[#0f1a2e]"
+                style={{ background: "#fff", border: "1px solid #e7e3d9" }}
               >
                 {flagImg ? (
                   <img
                     src={flagImg}
                     alt=""
-                    className="w-[20px] h-[14px] object-cover rounded-[2px]"
+                    className="w-[22px] h-[15px] object-cover rounded-[2px]"
                   />
                 ) : (
                   <span>🇮🇳</span>
@@ -355,7 +506,13 @@ const OtpCard: React.FC<OtpCardProps> = ({
                   if (mobileFail) dispatch(authaction.authResetLogin() as any);
                 }}
                 placeholder="98XXX XXXXX"
-                className="flex-1 min-w-0 border-0 outline-none px-[14px] py-[11px] text-[15px] bg-transparent font-semibold tabular-nums"
+                className="flex-1 min-w-0 outline-none rounded-[14px] px-[16px] py-[13px] text-[15px] font-semibold tabular-nums"
+                style={{
+                  background: "#fff",
+                  border: "1.5px solid #0f1a2e",
+                  fontFamily: "'JetBrains Mono', ui-monospace, monospace",
+                  letterSpacing: "0.03em",
+                }}
               />
             </div>
 
@@ -456,6 +613,22 @@ const OtpCard: React.FC<OtpCardProps> = ({
               {mobilefailmessage || "Couldn't send the code. Please try again."}
             </div>
           )}
+
+          {/* Trust line */}
+          <div
+            className="mt-[16px] pt-[14px]"
+            style={{ borderTop: "1px solid #e7e3d9" }}
+          >
+            <div
+              className="text-center text-[9.5px] uppercase leading-[1.9] text-[#8a93a6]"
+              style={{
+                fontFamily: "'JetBrains Mono', ui-monospace, monospace",
+                letterSpacing: "0.1em",
+              }}
+            >
+              10,000+ holidays planned · GST invoice · secure payments
+            </div>
+          </div>
         </>
       ) : userDetailsRequired ? (
         <>
