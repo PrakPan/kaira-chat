@@ -11,6 +11,9 @@ export interface PricingFormState {
   heading: string;
   subheading: string;
   startCity: string | null;
+  /** Google place id for the committed departure location (from the
+   *  start_locations endpoint), kept so the backend can resolve it exactly. */
+  startCityPlaceId: string | null;
   /** The departure-city search input text — mirrors `startCity` once committed,
    *  but holds the live query while the user is searching for a new city. */
   startCityQuery: string;

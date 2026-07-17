@@ -1,21 +1,22 @@
 import React from "react";
-import useDestinationSearch from "../../../hooks/useDestinationSearch";
-import type { Destination } from "../../IntakeForm/types";
+import useStartLocationSearch, {
+  type StartLocation,
+} from "../../../hooks/useStartLocationSearch";
 
 interface StartCitySearchProps {
   query: string;
   /** True only while the user is actively searching for a new departure city
    *  (query differs from the committed selection). When false we neither fire
-   *  the suggest API nor show results. */
+   *  the start_locations API nor show results. */
   searchActive?: boolean;
   onQueryChange: (q: string) => void;
-  onPick: (city: Destination) => void;
+  onPick: (loc: StartLocation) => void;
   onClear: () => void;
 }
 
-/** Departure-city search input + live City suggest-API results (single-select).
- *  Mirrors the intake form's DestinationSearch but scopes the endpoint to
- *  `type=City` and only ever commits one city. */
+/** Departure-city search input + live `start_locations` autocomplete results
+ *  (single-select). The results render as an absolute-positioned overlay so
+ *  they float over the content below instead of pushing it down. */
 const StartCitySearch: React.FC<StartCitySearchProps> = ({
   query,
   searchActive = query.trim().length >= 2,
@@ -23,17 +24,13 @@ const StartCitySearch: React.FC<StartCitySearchProps> = ({
   onPick,
   onClear,
 }) => {
-  // Scope the suggest endpoint to cities only; pass "" when not searching so no
-  // request fires for a committed selection.
-  const { results, loading } = useDestinationSearch(
-    searchActive ? query : "",
-    2,
-    "City",
-  );
+  const { results, loading } = useStartLocationSearch(searchActive ? query : "");
   const showResults = searchActive;
 
   return (
-    <div>
+    // `relative` so the results overlay anchors to the input; `z-20` keeps it
+    // above the toggles below.
+    <div className="relative z-20">
       <div
         className="flex items-center gap-[9px] rounded-[11px] px-[13px]"
         style={{ background: "#fafaf5", border: "1.5px solid #ececec" }}
@@ -67,8 +64,12 @@ const StartCitySearch: React.FC<StartCitySearchProps> = ({
 
       {showResults && (
         <div
-          className="flex flex-col gap-[5px] overflow-y-auto pr-[2px] mt-2"
-          style={{ maxHeight: "min(220px, 34dvh)" }}
+          className="absolute left-0 right-0 top-[calc(100%+6px)] flex flex-col gap-[5px] overflow-y-auto p-[6px] rounded-[12px] bg-white"
+          style={{
+            maxHeight: "min(240px, 40dvh)",
+            border: "1px solid #ececec",
+            boxShadow: "0 16px 36px -12px rgba(11,18,32,.28)",
+          }}
         >
           {loading && results.length === 0 && (
             <div className="p-3 text-center text-[12.5px] text-[#8a93a6] italic">
@@ -82,31 +83,22 @@ const StartCitySearch: React.FC<StartCitySearchProps> = ({
           )}
           {results.map((r) => (
             <button
-              key={r.resource_id || r.name}
+              key={r.place_id || r.text}
               type="button"
               onClick={() => onPick(r)}
-              className="flex items-center gap-[11px] p-[9px_11px] rounded-[12px] text-left w-full transition-all"
-              style={{ background: "#fff", border: "1px solid #ececec" }}
+              className="flex items-center gap-[11px] p-[9px_11px] rounded-[10px] text-left w-full transition-all hover:bg-[#fafaf5]"
+              style={{ background: "#fff" }}
             >
               <span
-                className="w-[30px] h-[30px] rounded-[9px] overflow-hidden grid place-items-center shrink-0"
+                className="w-[30px] h-[30px] rounded-[9px] grid place-items-center shrink-0 text-[15px]"
                 style={{ background: "#fafaf5" }}
               >
-                {r.image ? (
-                  <img src={r.image} alt={r.name} className="w-full h-full object-cover" />
-                ) : (
-                  <span>🏙️</span>
-                )}
+                🏙️
               </span>
-              <span className="flex-1 flex flex-col min-w-0">
-                <span className="text-[13.5px] font-bold text-[#0b1220] truncate">
-                  {r.name}
+              <span className="flex-1 min-w-0">
+                <span className="block text-[13.5px] font-semibold text-[#0b1220] truncate">
+                  {r.text}
                 </span>
-                {r.place_tag && (
-                  <span className="text-[11px] text-[#8a93a6] font-medium truncate">
-                    {r.place_tag}
-                  </span>
-                )}
               </span>
               <span className="text-[10.5px] font-extrabold text-[#8a93a6] shrink-0">
                 SELECT
