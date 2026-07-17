@@ -2,7 +2,7 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updatePricingForm } from "../../../../store/actions/pricingForm";
 import type { PricingFormState } from "./types";
-import type { Destination } from "../IntakeForm/types";
+import type { StartLocation } from "../../hooks/useStartLocationSearch";
 import { canSubmitPricing, composePricingMessage } from "./pricingPrompt";
 import PricingFormSkeleton from "./ui/PricingFormSkeleton";
 import StartCitySearch from "./ui/StartCitySearch";
@@ -131,15 +131,21 @@ const PricingFormCard: React.FC<PricingFormCardProps> = ({ onComplete }) => {
     !!state.startCity && query.trim() === state.startCity.trim();
   const isSearchingCity = query.trim().length >= 2 && !committed;
 
-  const pickCity = (city: Destination) =>
+  const pickCity = (loc: StartLocation) =>
     update({
-      startCity: city.name,
-      startCityQuery: city.name,
+      startCity: loc.text,
+      startCityPlaceId: loc.place_id || null,
+      startCityQuery: loc.text,
       startCityCompleted: true,
     });
 
   const clearCity = () =>
-    update({ startCity: null, startCityQuery: "", startCityCompleted: false });
+    update({
+      startCity: null,
+      startCityPlaceId: null,
+      startCityQuery: "",
+      startCityCompleted: false,
+    });
 
   const canSubmit = canSubmitPricing(state);
 
@@ -152,7 +158,7 @@ const PricingFormCard: React.FC<PricingFormCardProps> = ({ onComplete }) => {
 
   return (
     <div
-      className="ml-10 w-[calc(100%-40px)] max-ph:ml-0 max-ph:-mx-1 max-ph:w-auto rounded-[20px] max-ph:rounded-none bg-white overflow-hidden"
+      className="ml-10 w-[calc(100%-40px)] max-ph:ml-0 max-ph:-mx-1 max-ph:w-auto rounded-[20px] max-ph:rounded-none bg-white"
       style={{ maxWidth: 480, border: "1px solid #ececec" }}
     >
       {/* ── Enhanced header — colourful gradient + attention icons ────────────── */}

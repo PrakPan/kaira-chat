@@ -15,8 +15,9 @@ export const initialPricingFormState = {
   heading: "Almost there!",
   subheading: "Confirm a few final details before pricing.",
   // Departure city — prefilled from the widget, shown as a tag, and editable
-  // via a City suggest-API search (single city only).
-  startCity: null, // string city name
+  // via the start_locations autocomplete API (single location only).
+  startCity: null, // string location label
+  startCityPlaceId: null, // Google place id of the committed location
   startCityQuery: "", // live search-input text
   startCityCompleted: false,
   // Whether the trip is international — gates the visa / eSIM questions.
