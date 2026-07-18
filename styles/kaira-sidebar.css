@@ -93,9 +93,11 @@
   transition: background var(--k-t-fast) var(--k-ease-out);
 }
 
+/* Standalone expand button shares the collapsed rail's 42px tap target so it
+   lines up with the new-chat and history icons below it. */
 .kaira-scope .kaira-collapse-btn.is-standalone {
-  width: 38px;
-  height: 38px;
+  width: 42px;
+  height: 42px;
   border-radius: var(--k-r-md);
 }
 
@@ -173,6 +175,22 @@
 }
 
 .kaira-scope .kaira-icon-btn:hover {
+  background: var(--k-paper-2);
+}
+
+/* Boxed variant — white surface + hairline, matching the expand button so the
+   collapsed rail's bare-icon actions (history) read at the same weight as the
+   bordered ones rather than looking lighter/smaller. */
+.kaira-scope .kaira-icon-btn.is-boxed {
+  background: var(--k-white);
+  border: 1px solid var(--k-line);
+}
+
+/* Needs its own hover: `.is-boxed { background: white }` sits after the base
+   `:hover` at equal specificity, so without this the white would win even on
+   hover and the button wouldn't react. Matches the expand button's white →
+   paper-2 shift. */
+.kaira-scope .kaira-icon-btn.is-boxed:hover {
   background: var(--k-paper-2);
 }
 
@@ -331,6 +349,28 @@
   border-radius: 8px;
   background: var(--k-yellow);
   color: var(--k-ink);
+}
+
+/* Collapsed rail: the tile is the whole visible mark (no label beside it), so
+   it grows to the 34px avatar size for an even bottom pair. */
+.kaira-scope .kaira-trips-tile.is-lg {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--k-r-md);
+}
+
+/* Log-out leading tile — same 26px footprint as the trips tile so the two
+   footer action rows share one icon size. Red icon on a soft-red wash. */
+.kaira-scope .kaira-logout-tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: var(--k-red-soft);
+  color: var(--k-red);
 }
 
 /* Trip count. Sits with the label rather than pushed to the far edge, to read
@@ -525,10 +565,6 @@
 }
 
 .kaira-scope .kaira-menu-item.is-logout {
-  color: var(--k-red);
-}
-
-.kaira-scope .kaira-menu-item.is-logout .kaira-menu-icon {
   color: var(--k-red);
 }
 

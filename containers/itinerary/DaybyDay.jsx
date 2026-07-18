@@ -99,10 +99,22 @@ const DaybyDay = ({
   const itineraryStatus = useSelector(
     (state) => state.ItineraryStatus?.itinerary_status,
   );
+  const finalizedStatus = useSelector(
+    (state) => state.ItineraryStatus?.finalized_status,
+  );
   const hasNoCities = !itineraryDaybyDay?.cities?.length;
   const isItineraryLoading =
     hasNoCities &&
     (itineraryStatus === "PENDING" || itineraryStatus === "SUCCESS");
+
+  // Has the whole itinerary finished building (P2 / finalized)? In the P1
+  // route-preview stage the day-by-day route is already generated, so
+  // `itinerary_status` is SUCCESS while the trip is still a draft — that's NOT
+  // "complete". `finalized_status` is the authoritative signal: BotApp only
+  // flips it to SUCCESS (alongside applyBotMode("p2")) once ITINERARY + HOTELS
+  // + TRANSFERS + PRICING have all resolved. Used to gate the end-of-itinerary
+  // Download/Share banners in the chat (P1) flow.
+  const itineraryIsComplete = finalizedStatus === "SUCCESS";
 
   let isPageWide = media("(min-width: 768px)");
   const cityRefs = useRef({});
@@ -754,11 +766,16 @@ const DaybyDay = ({
           />
         </div>
         {/* End-of-itinerary banners: download PDF + share, below the day-by-day.
-            2a "Clean stacked" on mobile, 1a "Clean pair" on desktop (kaira design). */}
-        <DownloadShareBanners
-          itineraryId={router.query?.id}
-          itineraryName={Itinerary?.name}
-        />
+            2a "Clean stacked" on mobile, 1a "Clean pair" on desktop (kaira design).
+            Hidden in the P1 chat state while the itinerary is still building —
+            only surfaced once creation completes. Standalone (non-chat) itinerary
+            views always render them. */}
+        {(!props.fromChat || itineraryIsComplete) && (
+          <DownloadShareBanners
+            itineraryId={router.query?.id}
+            itineraryName={Itinerary?.name}
+          />
+        )}
       </div>
     </>
   );

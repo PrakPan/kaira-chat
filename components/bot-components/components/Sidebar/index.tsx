@@ -398,8 +398,8 @@ const SidebarFooter: React.FC<{
                 aria-label="My trips"
                 onClick={stopPropagation}
               >
-                <span className="kaira-trips-tile">
-                  <SuitcaseIcon />
+                <span className="kaira-trips-tile is-lg">
+                  <SuitcaseIcon size={18} />
                 </span>
               </a>
             </Link>
@@ -435,7 +435,9 @@ const SidebarFooter: React.FC<{
       </Link>
 
       <button className="kaira-logout-btn" onClick={handleLogout}>
-        <LogoutIcon />
+        <span className="kaira-logout-tile">
+          <LogoutIcon size={15} />
+        </span>
         Log out
       </button>
     </>
@@ -605,7 +607,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               className="kaira-collapse-btn is-standalone"
               aria-label="Expand sidebar"
             >
-              <ChevronIcon direction="right" size={16} />
+              <ChevronIcon direction="right" size={18} />
             </button>
           </div>
         )}
@@ -648,10 +650,10 @@ const Sidebar: React.FC<SidebarProps> = ({
                   e.stopPropagation();
                   onToggle?.();
                 }}
-                className="kaira-icon-btn"
+                className="kaira-icon-btn is-boxed"
                 aria-label="Recent chats"
               >
-                <HistoryIcon size={19} />
+                <HistoryIcon size={18} />
               </button>
             </SidebarTooltip>
           </div>

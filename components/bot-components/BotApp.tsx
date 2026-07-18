@@ -5127,7 +5127,9 @@ export const MobileHeaderMenu = React.memo(
                       className="kaira-menu-item is-logout"
                       onClick={handleLogout}
                     >
-                      <KairaLogoutIcon className="kaira-menu-icon" />
+                      <span className="kaira-logout-tile">
+                        <KairaLogoutIcon size={15} />
+                      </span>
                       Log out
                     </button>
                   </>
