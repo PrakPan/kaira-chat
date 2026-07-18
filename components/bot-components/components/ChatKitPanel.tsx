@@ -1462,6 +1462,12 @@ startEmptyIntake = false,
   const hasUpdatedUrl = useRef(false);
   const postLoginFiredRef = useRef(false);
   const loginFlowArmedRef = useRef(false);
+  // Set once the user chooses "Skip login". After opting out we suppress any
+  // further inline `prompt_login` cards for the rest of the session — otherwise
+  // the resume (or any later action) re-triggers the backend's save-our-work
+  // prompt and the card loops straight back, blocking the chat. A genuine login
+  // is still reachable via the BotLoginModal (composer `requireAuth` / CTAs).
+  const loginOptedOutRef = useRef(false);
   // Always-current mirror of `isLoggedIn` so handleEffect can read fresh auth
   // state without depending on its (memoized) closure — used to ignore a stale
   // `prompt_login` that arrives after the user has already signed in.
@@ -1810,6 +1816,9 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
       // thread and seeds a first message — see the inject.context effect — since
       // sendWidgetAction can only append to an existing thread.)
       hasInjectedContextRef.current = false;
+      // A cloned chat is a fresh conversation — clear any prior "skip login"
+      // opt-out so the clone can surface its own sign-in prompt.
+      loginOptedOutRef.current = false;
       // Re-key the session to the new itinerary_id so every subsequent request
       // (chat sends, status polling) is scoped to the clone. sessionIdRef is
       // mount-fixed, so set it directly; the re-render triggered by
@@ -2180,6 +2189,10 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
           break;
         }
 case "prompt_login": {
+  // The user already chose "Skip login" this session — honour that and don't
+  // re-inject the card (the backend replays this prompt on the opted-out
+  // resume). Without this the card loops straight back and blocks the chat.
+  if (loginOptedOutRef.current) break;
   // Mid-chat login: remember what to replay, then drop an inline login card
   // into the thread (instead of the modal). The token-watch effect re-fires
   // `pendingPostLoginAction` automatically once auth succeeds.
@@ -2557,12 +2570,40 @@ const handlePricingComplete = useCallback(
   [sendMessage],
 );
 
-// Inline `prompt_login` card verified — just retire the card. The token-watch
-// effect re-fires `pendingPostLoginAction` (the message/widget action that
-// triggered the login) once the auth token lands, mirroring BotLoginModal.
+// Inline `prompt_login` card verified — retire the card and attach the now
+// logged-in user to the itinerary (no-op if already associated). The token-
+// watch effect re-fires `pendingPostLoginAction` (the message/widget action
+// that triggered the login) once the auth token lands, mirroring BotLoginModal.
 const handleLoginCardVerified = useCallback(() => {
   setMessages((prev) => prev.filter((m) => m.type !== "login_card"));
-}, [setMessages]);
+  // Ensure a user who logs in via the inline card (e.g. after itinerary
+  // completion) gets attached to the itinerary — BotLoginModal does this via
+  // onSuccess, but the inline card path never went through it.
+  void onLoginSuccess?.();
+}, [setMessages, onLoginSuccess]);
+
+// Inline login card skipped — the user deliberately opts out of signing in.
+// Retire the card and resume the conversation as a logged-out (opted-out) user
+// so the backend continues the thread instead of waiting on auth. Mirrors the
+// post-login resume path (same gate) but flags the skip via `login_opted_out`.
+const handleLoginCardSkip = useCallback(() => {
+  setMessages((prev) => prev.filter((m) => m.type !== "login_card"));
+  // Remember the opt-out so a re-emitted `prompt_login` (the backend replays the
+  // route-built prompt on resume) doesn't loop the card back into the thread.
+  loginOptedOutRef.current = true;
+  // Clear any armed post-login replay — there's no login coming, so nothing
+  // should re-fire later if the user does sign in for something else.
+  loginFlowArmedRef.current = false;
+  pendingPostLoginAction.current = null;
+  pendingRestoreResumeRef.current = false;
+  // Resume silently — same guard the token-watch effect uses. Only append to an
+  // existing thread we're allowed to resume (own/anonymous chat, not a foreign
+  // itinerary); resume can only append, never create a thread. When there's no
+  // resumable thread we simply retire the card and let the user carry on.
+  if (canResumeAfterLoginRef.current && threadIdRef.current) {
+    sendWidgetAction("resume_after_login", { login_opted_out: true });
+  }
+}, [setMessages, sendWidgetAction, threadIdRef]);
 
   // ── Side-effects ──────────────────────────────────────────────────────────
   useEffect(() => {
@@ -3546,8 +3587,10 @@ const handleShowLogin = useCallback(() => {
       if (isItineraryCompleting) return;
       // Block when viewing someone else's itinerary (non-staff)
       if (isForeignItinerary) return;
-      // Gate logged-out users behind login
-      if (!isLoggedIn) {
+      // Gate logged-out users behind login — only in P2. In P1 (chat-only
+      // stage) logged-out users may chat anonymously; the backend prompts for
+      // login itself (prompt_login) once it actually needs an account.
+      if (!isLoggedIn && botMode === "p2") {
         setShowLoginModal(true);
         return;
       }
@@ -3559,7 +3602,7 @@ const handleShowLogin = useCallback(() => {
       // of the turn this quick reply just kicked off.
       setInput("");
     },
-    [isStreaming, sendMessage, isItineraryCompleting, isLoggedIn, isForeignItinerary],
+    [isStreaming, sendMessage, isItineraryCompleting, isLoggedIn, isForeignItinerary, botMode],
   );
 
   const showError = !!error && !errorDismissed;
@@ -3747,6 +3790,7 @@ const handleShowLogin = useCallback(() => {
                   <OtpCard
                     key={msg.id}
                     onVerified={handleLoginCardVerified}
+                    onSkip={handleLoginCardSkip}
                     heading="Sign in to continue"
                     submitLabel="Send OTP"
                   />
@@ -4453,9 +4497,16 @@ const handleShowLogin = useCallback(() => {
             onRemoveAttachment={handleRemoveAttachment}
             // In the logged-out thread-detail flow the inline sign-in card is
             // shown, so the composer is just blocked — no BotLoginModal popup.
-            requireAuth={loginBlocked ? false : !isLoggedIn || isForeignItinerary}
+            // In P1 (chat-only stage) logged-out users may chat anonymously —
+            // don't gate the composer; only require auth in P2. The backend
+            // still emits prompt_login when it genuinely needs an account.
+            requireAuth={
+              loginBlocked
+                ? false
+                : (!isLoggedIn && botMode === "p2") || isForeignItinerary
+            }
             onAuthRequired={() => {
-              if (!isLoggedIn) {
+              if (!isLoggedIn && botMode === "p2") {
                 setShowLoginModal(true);
               } else if (isForeignItinerary && botMode === "p2") {
                 // Foreign-itinerary block in P2: the user is logged in but

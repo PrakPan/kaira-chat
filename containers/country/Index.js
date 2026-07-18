@@ -149,9 +149,7 @@ const Index = (props) => {
         slug={props?.slug}
         themeConfig={props?.themeConfig}
         kicker={
-          userItineraries?.length
-            ? `${userItineraries.length}+ ${destinationName} trips planned by Kaira`
-            : `Plan your ${destinationName} trip with Kaira`
+         `Plan your ${destinationName} trip with Kaira`
         }
         title={
           <>
