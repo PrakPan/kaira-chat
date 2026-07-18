@@ -458,6 +458,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMoreThreads, setHasMoreThreads] = useState(false);
   const userId = useSelector((state: any) => state.auth?.id);
+  const isLoggedIn = !!userId;
 
   const THREADS_PAGE_SIZE = 20;
 
@@ -514,9 +515,16 @@ const Sidebar: React.FC<SidebarProps> = ({
   };
 
   // History is now always on screen when expanded, so it loads as soon as we
-  // know the user — not only once a thread is active.
+  // know the user — not only once a thread is active. On logout, wipe the
+  // previous session's threads so they can't linger in memory (and can't flash
+  // for the next user who signs in before their own fetch lands).
   useEffect(() => {
-    if (userId) fetchThreads();
+    if (userId) {
+      fetchThreads();
+    } else {
+      setThreads([]);
+      setHasMoreThreads(false);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeThreadId, userId]);
 
@@ -627,8 +635,12 @@ const Sidebar: React.FC<SidebarProps> = ({
           </div>
         )}
 
-        {/* Chat history */}
-        {isCollapsed ? (
+        {/* Recent chats — only when signed in. Logged out there's no history
+            to show, so we drop the section and let a spacer hold the footer at
+            the bottom (the list/icon block is what normally grows to fill). */}
+        {!isLoggedIn ? (
+          <div className="flex-1" />
+        ) : isCollapsed ? (
           <div className="flex-1 flex flex-col items-center pt-0.5">
             <SidebarTooltip label="Recent chats">
               <button

@@ -4854,6 +4854,10 @@ export const MobileHeaderMenu = React.memo(
       } else {
         // On logout, clear immediately
         setLocalImg(null);
+        // Drop the previous session's threads + close the drawer so no stale
+        // history survives a logout.
+        setThreads([]);
+        setHistoryOpen(false);
       }
     }, [token]);
 
@@ -5050,14 +5054,17 @@ export const MobileHeaderMenu = React.memo(
 
         {/* Right icons */}
         <div className="kaira-scope flex items-center gap-1">
-          {/* Chat history */}
-          <button
-            onClick={handleHistoryClick}
-            className="kaira-icon-btn is-sm"
-            aria-label="Recent chats"
-          >
-            <KairaHistoryIcon size={19} />
-          </button>
+          {/* Recent chats — hidden logged out, matching the desktop rail: no
+              history means an empty drawer isn't worth a header button. */}
+          {isLoggedIn && (
+            <button
+              onClick={handleHistoryClick}
+              className="kaira-icon-btn is-sm"
+              aria-label="Recent chats"
+            >
+              <KairaHistoryIcon size={19} />
+            </button>
+          )}
 
           {/* New chat */}
           <button
