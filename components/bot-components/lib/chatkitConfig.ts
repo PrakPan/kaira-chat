@@ -5,7 +5,7 @@ export const readEnvString = (value: unknown): string | undefined =>
     ? value.trim()
     : undefined;
 
-export const CHATKIT_API_URL = "https://dev.chat.tarzanway.com/chatkit" ?? "/chatkit";
+export const CHATKIT_API_URL = "https://chat.tarzanway.com/chatkit" ?? "/chatkit";
 
 /**
  * ChatKit requires a domain key at runtime. Use the local fallback while

@@ -1989,7 +1989,7 @@ export default function BotApp({
       // pre-emptive/post-status setViewMode("itinerary") below.
       isRestoringRef.current = true;
       try {
-        const res = await fetch("https://dev.chat.tarzanway.com/chatkit", {
+        const res = await fetch("https://chat.tarzanway.com/chatkit", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -2407,7 +2407,7 @@ export default function BotApp({
 
       // ── Step 3: chatkit threads.list → loadThread (threads.get_by_id) ────
       try {
-        const listRes = await fetch("https://dev.chat.tarzanway.com/chatkit", {
+        const listRes = await fetch("https://chat.tarzanway.com/chatkit", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -3880,23 +3880,29 @@ Start Location: ${details.startLocation}`;
                 {itineraryContainerNode}
               </div>
             </div>
-            <BottomCTABar
-              {...ctaBarProps}
-              barStyle={ctaBarStyle}
-              // Force itinerary on mobile: the panel itself is rendered
-              // inside MobileLayout's itinerary tab, so the CTA bar should
-              // never be gated by viewMode (which can lag on "map" after a
-              // chatkit-restore on refresh).
-              viewMode={isMobile ? "itinerary" : viewMode}
-            />
-            {/* Only Route / Bookings have somewhere to go back to — the plain
-                itinerary view is the destination itself. */}
-            {(viewMode === "routes" || viewMode === "bookings") && (
-              <BackToItineraryBar
-                onClick={handleBackToItinerary}
-                bottom={bottomStackHeight + 12}
-                barStyle={ctaBarStyle}
-              />
+            {/* Desktop only. On mobile these fixed bars are rendered by
+                MobileLayout as siblings of its scroll pane — nesting a
+                position:fixed bar inside that pane (which carries
+                -webkit-overflow-scrolling:touch) makes iOS position it against
+                the *scrolled content* rather than the viewport, so the bar
+                scrolls off-screen and the cart bar disappears on phones. */}
+            {!isMobile && (
+              <>
+                <BottomCTABar
+                  {...ctaBarProps}
+                  barStyle={ctaBarStyle}
+                  viewMode={viewMode}
+                />
+                {/* Only Route / Bookings have somewhere to go back to — the
+                    plain itinerary view is the destination itself. */}
+                {(viewMode === "routes" || viewMode === "bookings") && (
+                  <BackToItineraryBar
+                    onClick={handleBackToItinerary}
+                    bottom={bottomStackHeight + 12}
+                    barStyle={ctaBarStyle}
+                  />
+                )}
+              </>
             )}
           </div>
         ) : null}
@@ -4772,7 +4778,7 @@ BottomCTABar.displayName = "BottomCTABar";
 // ── MobileLayout — full-screen views with top tab bar + mobile header ─────────
 type MobileTab = "chat" | "map" | "routes" | "itinerary" | "bookings";
 
-const CHATKIT_API_URL_MOBILE = "https://dev.chat.tarzanway.com/chatkit";
+const CHATKIT_API_URL_MOBILE = "https://chat.tarzanway.com/chatkit";
 
 function getAuthToken(): string | null {
   return (
@@ -5571,12 +5577,12 @@ const MobileLayout = React.memo(
           {hasItineraryActivity && (
             <div
               ref={scrollPaneRef}
-              // BottomCTABar is `fixed bottom-0` on mobile (and renders on every
-              // tab here — BotApp passes it viewMode="itinerary"), so it takes
-              // no flow space and would cover the last card at max scroll.
-              // End the pane above it rather than padding the pane by its
-              // height: padding is scrollable, so it forced a scrollbar even
-              // when the content fit. Shrinking the pane cannot.
+              // The cart bar (rendered as a sibling below this pane) is
+              // `fixed bottom-0`, so it takes no flow space and would cover the
+              // last card at max scroll. End the pane above it rather than
+              // padding the pane by its height: padding is scrollable, so it
+              // forced a scrollbar even when the content fit. Shrinking the pane
+              // cannot.
               className="absolute inset-x-0 top-0 overflow-y-auto bg-white"
               style={{
                 // Full height (the spacer below reserves the navbar's row inside
@@ -5615,6 +5621,29 @@ const MobileLayout = React.memo(
               {itineraryContent}
             </div>
           )}
+
+          {/* Cart bar (+ back-to-itinerary pill) for the itinerary / routes /
+              bookings tabs. Rendered here as a SIBLING of the scroll pane, never
+              inside it: on iOS a position:fixed element nested in a
+              -webkit-overflow-scrolling:touch scroller is positioned against the
+              scrolled content instead of the viewport, so it scrolls off-screen
+              and vanishes — which is exactly why the bar was missing on phones.
+              The map tab keeps its own copy outside the pane for the same reason.
+              The pane reserves `ctaBarHeight` at its foot so this never covers the
+              last card. */}
+          {bottomCTABarProps &&
+            hasItineraryActivity &&
+            ["itinerary", "routes", "bookings"].includes(activeTab) && (
+              <>
+                <BottomCTABar {...bottomCTABarProps} viewMode="itinerary" />
+                {["routes", "bookings"].includes(activeTab) && (
+                  <BackToItineraryBar
+                    onClick={() => handleTabClick("itinerary")}
+                    bottom={ctaBarHeight + 12}
+                  />
+                )}
+              </>
+            )}
         </div>
 
         {/* ── Floating Kaira icon + chat banner — on itinerary/routes/bookings views ── */}
