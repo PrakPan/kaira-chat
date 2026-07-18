@@ -28,8 +28,7 @@ import {
   UserIcon,
 } from "../kairaIcons";
 import { useTripsCount } from "../../hooks/useTripsCount";
-
-const CHATKIT_API_URL = "https://chat.tarzanway.com/chatkit";
+import { CHATKIT_API_URL } from "../../../../services/constants";
 
 const SIDEBAR_WIDTH_EXPANDED = 288;
 const SIDEBAR_WIDTH_COLLAPSED = 76;

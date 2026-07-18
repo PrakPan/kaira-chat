@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 import { getIndianPrice } from "../../../services/getIndianPrice";
 import { getHumanDateWithYear } from "../../../services/getHumanDateWithYear";
 import urls from "../../../services/urls";
-import { ITINERARY_STATUSES } from "../../../services/constants";
+import { ITINERARY_STATUSES, MERCURY_HOST } from "../../../services/constants";
 import axiossalecreateinstance, {
   myplansv2,
 } from "../../../services/sales/itinerary/SaleCreate";
@@ -1970,7 +1970,7 @@ const Details = (props) => {
 
       axios
       .post(
-            "https://mercury.tarzanway.com/payment/verify/",
+            `${MERCURY_HOST}/payment/verify/`,
             { ...response },
             { headers: { Authorization: `Bearer ${props.token}` } }
           )
