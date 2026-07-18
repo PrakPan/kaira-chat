@@ -129,7 +129,19 @@ const HomeHeadingContent = ({ title, subtitle }) => {
 
   return (
     <div className={styles.headingContent}>
-      <div className={styles.kicker}>
+      <div
+        className={styles.kicker}
+        role="button"
+        tabIndex={0}
+        onClick={() => router.push("/chat")}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            router.push("/chat");
+          }
+        }}
+        style={{ cursor: "pointer" }}
+      >
         <span className={styles.kickerDot}></span>
         Kaira is online · replies in ~2s
       </div>

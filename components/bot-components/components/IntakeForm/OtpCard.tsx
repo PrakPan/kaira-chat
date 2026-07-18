@@ -13,6 +13,10 @@ import CountryCodeDropdown from "../../../userauth/CountryDropdown";
 interface OtpCardProps {
   /** Fired once after a successful verify (token present in auth state). */
   onVerified: () => void;
+  /** Fired when the user chooses to skip signing in ("Skip login"). Lets the
+   *  parent resume the chat as a logged-out (opted-out) user. Omit to hide the
+   *  skip link entirely. */
+  onSkip?: () => void;
   /** Optional copy overrides so the same card can serve the intake-save flow
    *  and a mid-chat `prompt_login` sign-in. */
   heading?: string;
@@ -27,6 +31,7 @@ interface OtpCardProps {
  */
 const OtpCard: React.FC<OtpCardProps> = ({
   onVerified,
+  onSkip,
   heading = "Save our work",
   submitLabel = "Send OTP & Start",
 }) => {
@@ -612,6 +617,21 @@ const OtpCard: React.FC<OtpCardProps> = ({
             <div className="text-[11.5px] text-[#e85a4f] mt-2 font-semibold text-center">
               {mobilefailmessage || "Couldn't send the code. Please try again."}
             </div>
+          )}
+
+          {/* Skip login — lets the user continue without signing in. The parent
+              resumes the chat flagged as opted-out (login_opted_out) so the
+              backend knows this was a deliberate skip, not a pending sign-in. */}
+          {onSkip && (
+            <button
+              type="button"
+              onClick={onSkip}
+              disabled={loading}
+              className="w-full mt-[12px] text-[12.5px] font-semibold text-[#2e3034]"
+              style={{ cursor: loading ? "not-allowed" : "pointer" }}
+            >
+              Skip login?
+            </button>
           )}
 
           {/* Trust line */}

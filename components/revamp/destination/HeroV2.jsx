@@ -215,7 +215,19 @@ const HeroV2 = ({
         <div className={styles.heroV2Grid}>
           <div>
             {kicker && (
-              <div className={styles.heroV2Kicker}>
+              <div
+                className={styles.heroV2Kicker}
+                role="button"
+                tabIndex={0}
+                onClick={() => router.push("/chat")}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    router.push("/chat");
+                  }
+                }}
+                style={{ cursor: "pointer" }}
+              >
                 <span className="dot" />
                 {kicker}
               </div>
