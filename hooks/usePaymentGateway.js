@@ -6,6 +6,7 @@ import { openNotification } from '../store/actions/notification';
 import revolutPaymentHandler from '../services/payment/revolutPaymentHandler';
 import paymentGatewayService from '../services/payment/paymentGatewayService';
 import setCart from '../store/actions/Cart';
+import { MERCURY_HOST } from '../services/constants';
 
 const usePaymentGateway = (props) => {
   const dispatch = useDispatch();
@@ -283,7 +284,7 @@ const usePaymentGateway = (props) => {
       const verifyPayload = paymentGatewayService.prepareVerifyPayload(response, gateway);
 
       const res = await axios.post(
-        `https://mercury.tarzanway.com/payment/verify/`,
+        `${MERCURY_HOST}/payment/verify/`,
         verifyPayload,
         { headers: { Authorization: `Bearer ${props?.token}` } }
       );

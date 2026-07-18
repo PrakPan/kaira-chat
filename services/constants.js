@@ -2,7 +2,8 @@ export const CONTENT_SERVER_HOST = process.env.NEXT_PUBLIC_CONTENT_SERVER_HOST;
 
 export const MIS_SERVER_HOST = process.env.NEXT_PUBLIC_MIS_SERVER_HOST;
 
-export const MERCURY_HOST = process.env.NEXT_PUBLIC_MERCURY_HOST;
+export const MERCURY_HOST =
+  process.env.NEXT_PUBLIC_MERCURY_HOST || "https://mercury.tarzanway.com";
 
 export const CLIENT_ID = process.env.NEXT_PUBLIC_CLIENT_ID;
 
@@ -29,7 +30,13 @@ export const SENTRY_ENV = process.env.NEXT_PUBLIC_SENTRY_ENV;
 
 export const SENTRY_RELEASE = process.env.NEXT_PUBLIC_SENTRY_RELEASE;
 
-export const CHATBOT_SOCKET_HOST=process.env.NEXT_PUBLIC_CHATBOT_SOCKET_HOST
+export const CHATBOT_SOCKET_HOST =
+  process.env.NEXT_PUBLIC_CHATBOT_SOCKET_HOST || "wss://chat.tarzanway.com/ws";
+
+export const CHATKIT_HOST =
+  process.env.NEXT_PUBLIC_CHATKIT_HOST || "https://chat.tarzanway.com";
+
+export const CHATKIT_API_URL = `${CHATKIT_HOST}/chatkit`;
 
 export const ITINERARY_STATUSES = {
   itinerarary_under_preparation: "ITINERARY_UNDER_PREPARATION",

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import ActivityAddDrawer from "../../drawers/poiDetails/activityAddDrawer";
 import { useDispatch, useSelector } from "react-redux";
+import { MERCURY_HOST } from "../../../services/constants";
 import TransferDrawer from "../../../containers/itinerary/TransferDrawer";
 import { useRouter } from "next/router";
 import { getDatesInRange } from "../../../helper/DateUtils";
@@ -508,7 +509,7 @@ const isDraft = useSelector((state) => state.Itinerary.status) === "Draft";
   try {
     setActivityLoading(true);
     const response = await fetch(
-      `https://mercury.tarzanway.com/api/v1/ancillaries/activity/${activityId}/?currency=INR`,
+      `${MERCURY_HOST}/api/v1/ancillaries/activity/${activityId}/?currency=INR`,
       {
         method: "POST",
         headers: {

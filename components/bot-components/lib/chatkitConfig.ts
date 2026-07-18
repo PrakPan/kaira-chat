@@ -1,11 +1,12 @@
 import { StartScreenPrompt, ToolOption } from "@openai/chatkit";
+import { CHATKIT_API_URL as CHATKIT_API_URL_FROM_ENV } from "../../../services/constants";
 
 export const readEnvString = (value: unknown): string | undefined =>
   typeof value === "string" && value.trim().length > 0
     ? value.trim()
     : undefined;
 
-export const CHATKIT_API_URL = "https://chat.tarzanway.com/chatkit" ?? "/chatkit";
+export const CHATKIT_API_URL = CHATKIT_API_URL_FROM_ENV;
 
 /**
  * ChatKit requires a domain key at runtime. Use the local fallback while

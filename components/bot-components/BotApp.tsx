@@ -55,7 +55,7 @@ import setCart from "../../store/actions/Cart";
 import { openNotification } from "../../store/actions/notification";
 import { setUnreadMessages, setThreadCustomerName } from "../../store/actions/chatState";
 import axios from "axios";
-import { MERCURY_HOST } from "../../services/constants";
+import { MERCURY_HOST, CHATKIT_API_URL } from "../../services/constants";
 import SmallGallery from "../../containers/newitinerary/overview/SmallGallery";
 import NewSummaryContainers from "../../containers/itinerary/NewSummaryContainers";
 import Image from "next/image";
@@ -2002,7 +2002,7 @@ export default function BotApp({
       // pre-emptive/post-status setViewMode("itinerary") below.
       isRestoringRef.current = true;
       try {
-        const res = await fetch("https://chat.tarzanway.com/chatkit", {
+        const res = await fetch(CHATKIT_API_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -2420,7 +2420,7 @@ export default function BotApp({
 
       // ── Step 3: chatkit threads.list → loadThread (threads.get_by_id) ────
       try {
-        const listRes = await fetch("https://chat.tarzanway.com/chatkit", {
+        const listRes = await fetch(CHATKIT_API_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -4810,7 +4810,7 @@ BottomCTABar.displayName = "BottomCTABar";
 // ── MobileLayout — full-screen views with top tab bar + mobile header ─────────
 type MobileTab = "chat" | "map" | "routes" | "itinerary" | "bookings";
 
-const CHATKIT_API_URL_MOBILE = "https://chat.tarzanway.com/chatkit";
+const CHATKIT_API_URL_MOBILE = CHATKIT_API_URL;
 
 function getAuthToken(): string | null {
   return (

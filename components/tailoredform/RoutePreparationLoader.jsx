@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useAnalyticsSession } from "../../hooks/useAnalyticsSession";
+import { CHATBOT_SOCKET_HOST } from "../../services/constants";
 
 const RoutePreparationLoader = ({
   itineraryId,
@@ -99,7 +100,7 @@ const RoutePreparationLoader = ({
       }
 
       try {
-        const socketUrl = `wss://chat.tarzanway.com/ws?session_id=${sessionId}`;
+        const socketUrl = `${CHATBOT_SOCKET_HOST}?session_id=${sessionId}`;
 
         socketRef.current = new WebSocket(socketUrl);
 
