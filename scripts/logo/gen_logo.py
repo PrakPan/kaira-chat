@@ -32,6 +32,8 @@ os.makedirs(OUT, exist_ok=True)
 NAVY = "#0b1220"
 YELLOW = "#f7e700"
 CREAM = "#fafaf5"
+SLATE = "#445069"        # tagline text on light backgrounds (from the design)
+SLATE_LIGHT = "#94a2ba"  # tagline text on dark backgrounds (lightened slate)
 
 # ---------------------------------------------------------------- text shaping
 
@@ -94,6 +96,7 @@ class Font:
 
 inter = Font(os.path.join(FONTS, "Inter.ttf"))
 serif = Font(os.path.join(FONTS, "InstrumentSerif-Italic.ttf"))
+mono = Font(os.path.join(FONTS, "JetBrainsMono-SemiBold.otf"))
 
 # ---------------------------------------------------------------- layout (px)
 
@@ -114,6 +117,16 @@ BOX_ROT = -1.5
 
 g1, w1 = inter.shape("the tarzan", T1_SIZE, T1_LS)
 g2, w2 = serif.shape("way", T2_SIZE, T2_LS)
+
+# secondary line: JetBrains Mono, uppercase, wide tracking. Left edge aligns with
+# the wordmark's left edge (no leading dot). Emitted as its OWN asset
+# (ttw-tagline*.svg), not baked into the lockup — the app composes mark + wordmark
+# + tagline and sizes the tagline independently so it stays legible; a tagline
+# scaled with a 32-40px nav lockup is an unreadable smudge.
+TAG_TEXT = "POWERED BY KAIRA"
+TAG_SIZE = 11.5
+TAG_LS = 0.30 * TAG_SIZE           # 3.45px (letter-spacing .3em)
+gt, tag_w = mono.shape(TAG_TEXT, TAG_SIZE, TAG_LS)
 
 # span1: block box in a flex line -> height is its line box
 h1 = inter.line_height * T1_SIZE
@@ -153,12 +166,12 @@ def fmt(v):
 
 # Ink bbox of the vine-t in its own 58x66 viewBox (stroke width 8, round caps
 # => +/-4 beyond each path):
-#   stem  (22,8)-(22,50)  -> x 18..26,     y 4..54
-#   hook  q curve         -> x 18..36,     y 46..63
-#   vine  q curve         -> x 3..46,      y 12.95..28
-#   berry circle r6.5     -> x 37.5..50.5, y 16.5..29.5
-#   union                 -> x 3..50.5,    y 4..63
-INK = (3.0, 4.0, 50.5, 63.0)
+#   stem  (25,9)-(25,53)  -> x 21..29,     y 5..57
+#   hook  q curve         -> x 21..40,     y 49..67
+#   vine  q curve         -> x 3..50,      y 14.67..31
+#   berry circle r6.5     -> x 39.5..52.5, y 17.5..30.5
+#   union                 -> x 3..52.5,    y 5..67
+INK = (3.0, 5.0, 52.5, 67.0)
 
 
 def tile_group(bg, stem, accent, x=0.0, y=0.0, rot=TILE_ROT, size=TILE, r=TILE_R,
@@ -197,10 +210,10 @@ def tile_group(bg, stem, accent, x=0.0, y=0.0, rot=TILE_ROT, size=TILE, r=TILE_R
     return f'''  <g{rota}>
     {rect}
     <g transform="translate({fmt(x + ix)} {fmt(y + iy)}) scale({fmt(sx)} {fmt(sy)})" fill="none" stroke-width="8" stroke-linecap="round">
-      <path d="M22 8V50" stroke="{stem}"/>
-      <path d="M22 50q0 9 10 9" stroke="{stem}"/>
-      <path d="M7 24q16 -13 35 -2" stroke="{accent}"/>
-      <circle cx="44" cy="23" r="6.5" fill="{accent}" stroke="none"/>
+      <path d="M25 9V53" stroke="{stem}"/>
+      <path d="M25 53q0 10 11 10" stroke="{stem}"/>
+      <path d="M7 27q19 -15 39 -3" stroke="{accent}"/>
+      <circle cx="46" cy="24" r="6.5" fill="{accent}" stroke="none"/>
     </g>
   </g>'''
 
@@ -272,6 +285,51 @@ def lockup(path, tile_bg, tile_stem, tile_accent, text_fill, box_fill, way_fill,
     return svg
 
 
+def wordmark_bbox():
+    bx = word_x + w1 + GAP_INNER
+    by = word_top + box_top
+    b_text = text_ink(inter, g1, T1_SIZE, BASELINE, word_x)
+    b_box = rot_bounds(bx, by, box_w, box_h, BOX_ROT)
+    return (min(b_text[0], b_box[0]), min(b_text[1], b_box[1]),
+            max(b_text[2], b_box[2]), max(b_text[3], b_box[3]))
+
+
+def wordmark(path, text_fill, box_fill, way_fill):
+    # "the tarzan way" alone, tightly cropped. Lets the app compose the lockup
+    # itself (mark + wordmark + a LIVE-text tagline), so the tagline can be sized
+    # independently and stay legible at the 32-40px the lockup renders in nav —
+    # a tagline baked into the full-lockup SVG shrinks to an unreadable smudge.
+    fx0, fy0, fx1, fy1 = wordmark_bbox()
+    x0, y0 = math.floor(fx0), math.floor(fy0)
+    x1, y1 = math.ceil(fx1), math.ceil(fy1)
+    vw, vh = x1 - x0, y1 - y0
+    svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="{x0} {y0} {vw} {vh}" width="{vw}" height="{vh}" fill="none" role="img" aria-label="the tarzan way">
+{wordmark_group(text_fill, box_fill, way_fill)}
+</svg>
+'''
+    with open(os.path.join(OUT, path), "w") as f:
+        f.write(svg)
+    return svg
+
+
+def tagline_svg(path, tag_fill):
+    # "POWERED BY KAIRA" outlined, tightly cropped to its ink so the app can
+    # butt its left edge against the wordmark's left edge.
+    base_in_line = mono.ascent * TAG_SIZE + (mono.linegap * TAG_SIZE) / 2.0
+    dt = mono.outline(gt, TAG_SIZE, base_in_line, x0=0.0)
+    fx0, fy0, fx1, fy1 = text_ink(mono, gt, TAG_SIZE, base_in_line, 0.0)
+    x0, y0 = math.floor(fx0), math.floor(fy0)
+    x1, y1 = math.ceil(fx1), math.ceil(fy1)
+    vw, vh = x1 - x0, y1 - y0
+    svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="{x0} {y0} {vw} {vh}" width="{vw}" height="{vh}" fill="none" role="img" aria-label="Powered by Kaira">
+  <path d="{dt}" fill="{tag_fill}"/>
+</svg>
+'''
+    with open(os.path.join(OUT, path), "w") as f:
+        f.write(svg)
+    return svg
+
+
 def mark(path, bg, stem, accent, size=64, rot=TILE_ROT, radius_ratio=30.0 / 114.0,
          art_scale=1.0, optical=False, inset=0.0, border=None):
     """Standalone tile mark on a size x size canvas.
@@ -304,6 +362,15 @@ lockup("ttw-lockup.svg", NAVY, CREAM, YELLOW, NAVY, YELLOW, NAVY)
 # on-dark: navy tile + hairline, cream stem, yellow accent, cream wordmark
 lockup("ttw-lockup-light.svg", NAVY, CREAM, YELLOW, CREAM, YELLOW, NAVY,
        border=DARK_BORDER)
+
+# --- standalone wordmark (app composes mark + wordmark + tagline) ------------
+# on-light: navy wordmark; on-dark: cream wordmark. Yellow "way" box either way.
+wordmark("ttw-wordmark.svg", NAVY, YELLOW, NAVY)
+wordmark("ttw-wordmark-light.svg", CREAM, YELLOW, NAVY)
+
+# --- standalone tagline (sized independently by the app for legibility) ------
+tagline_svg("ttw-tagline.svg", SLATE)         # on light
+tagline_svg("ttw-tagline-light.svg", SLATE_LIGHT)  # on dark
 
 # --- standalone marks (keep the -4deg tilt, padded so corners fit) -----------
 mark("ttw-mark.svg", NAVY, CREAM, YELLOW)

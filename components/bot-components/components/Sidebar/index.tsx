@@ -18,6 +18,7 @@ import {
   groupThreads,
 } from "../../utils/threadGroups";
 import { LOGO_HEIGHT } from "../../constants";
+import BrandLockup from "../../../brand/BrandLockup";
 import {
   ChevronIcon,
   HistoryIcon,
@@ -576,13 +577,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 className="flex items-center overflow-hidden cursor-pointer min-w-0"
                 onClick={() => router.push("/")}
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/logo/ttw-lockup.svg"
-                  height={LOGO_HEIGHT.DESKTOP}
-                  alt="The Tarzan Way"
-                  style={{ height: LOGO_HEIGHT.DESKTOP, width: "auto" }}
-                />
+                <BrandLockup size={LOGO_HEIGHT.DESKTOP} variant="light" />
               </div>
               <button
                 onClick={onToggle}

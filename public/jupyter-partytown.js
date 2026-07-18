@@ -181,8 +181,9 @@
     analyticsState.queue.push(event);
     
     
-    // Critical events - send immediately
-    const criticalEvents = ['payment_attempted', 'booking_confirmed', 'user_login', 'user_logout'];
+    // Critical events - send immediately (session_started included so every
+    // session is recorded even if the visitor bounces before the batch flushes)
+    const criticalEvents = ['session_started', 'payment_attempted', 'booking_confirmed', 'user_login', 'user_logout'];
     
     if (criticalEvents.includes(eventName)) {
       const singleEvent = analyticsState.queue.pop();
@@ -359,7 +360,9 @@
   // Initialize
   const initializeAnalytics = async (config = {}) => {
     
-    analyticsState.sessionId = generateUUID();
+    // Prefer the session id computed on the main thread (persisted, with a
+    // 30-min sliding timeout). Only generate one as a last resort.
+    analyticsState.sessionId = config.sessionId || analyticsState.sessionId || generateUUID();
     analyticsState.anonymousId = getOrCreateAnonymousId();
     
     if (config.apiEndpoint) analyticsState.apiEndpoint = config.apiEndpoint;
@@ -484,10 +487,49 @@
     return flushEvents();
   };
 
+  // Point the sender at a session id computed on the main thread. Called on
+  // init (via config) and whenever the main thread re-mints a session.
+  const setSession = (sessionId) => {
+    if (sessionId) analyticsState.sessionId = sessionId;
+    return analyticsState.sessionId;
+  };
+
+  // Keep user attribution in sync (login/logout/hydration) without emitting a
+  // spurious identify event.
+  const setUserId = (userId) => {
+    analyticsState.userId =
+      userId === undefined || userId === null || userId === '' ? null : userId;
+    return analyticsState.userId;
+  };
+
+  // Unload-safe flush. navigator.sendBeacon with a text/plain blob keeps this a
+  // CORS-simple request (no preflight, which beacons can't do); the backend
+  // parses the JSON body regardless of Content-Type. Falls back to async flush.
+  const flushBeacon = () => {
+    if (analyticsState.queue.length === 0) return true;
+    try {
+      if (typeof navigator !== 'undefined' && typeof navigator.sendBeacon === 'function') {
+        const events = analyticsState.queue;
+        const url = `${analyticsState.apiEndpoint}/v1/events/batch`;
+        const blob = new Blob([JSON.stringify(events)], { type: 'text/plain;charset=UTF-8' });
+        const ok = navigator.sendBeacon(url, blob);
+        if (ok) {
+          analyticsState.queue = [];
+          analyticsState.stats.eventsSent += events.length;
+          return true;
+        }
+      }
+    } catch (e) {
+      // fall through to async flush
+    }
+    flushEvents();
+    return false;
+  };
+
   const cleanup = () => {
     if (analyticsState.flushTimer) clearTimeout(analyticsState.flushTimer);
     if (analyticsState.retryTimer) clearTimeout(analyticsState.retryTimer);
-    forceFlush();
+    flushBeacon();
   };
 
   // Expose API
@@ -496,6 +538,9 @@
     track,
     trackBulk,
     flushEvents: forceFlush,
+    flushBeacon,
+    setSession,
+    setUserId,
     identifyUser,
     getState,
     cleanup,
