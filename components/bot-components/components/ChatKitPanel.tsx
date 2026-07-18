@@ -1455,6 +1455,10 @@ startEmptyIntake = false,
   // ── Refs ─────────────────────────────────────────────────────────────────
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesScrollRef = useRef<HTMLDivElement>(null);
+  // Wraps every message + custom card. Observed for size changes so async-
+  // growing content (login/OTP card, the stepped status loader, images,
+  // widgets) re-pins the view to the bottom — see the ResizeObserver effect.
+  const messagesContentRef = useRef<HTMLDivElement>(null);
   const hasProcessedInitial = useRef(false);
   const hasUpdatedUrl = useRef(false);
   const postLoginFiredRef = useRef(false);
@@ -2634,6 +2638,28 @@ const handleLoginCardVerified = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isStreaming]);
 
+  // Custom in-thread cards grow *after* they mount: the stepped status loader
+  // (StatusNotesCard) accumulates step lines, the inline login/OTP card and
+  // intake/pricing forms lay out asynchronously, images/widgets settle late.
+  // None of that flows through the `messages`-keyed effect above, so a single
+  // scroll lands mid-card and the user has to nudge down to see the rest.
+  // Watch the content wrapper's size and re-pin to the bottom on any growth —
+  // but only while the user is already parked at the bottom (isAtBottomRef),
+  // so a manual scroll-up to read earlier messages is never yanked back down.
+  useEffect(() => {
+    const content = messagesContentRef.current;
+    const scroller = messagesScrollRef.current;
+    if (!content || !scroller || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(() => {
+      // Prepending older messages / intake landing manage their own scroll.
+      if (isFetchingMoreRef.current || suppressIntakeAutoScrollRef.current) return;
+      if (!isAtBottomRef.current) return;
+      scroller.scrollTop = scroller.scrollHeight;
+    });
+    ro.observe(content);
+    return () => ro.disconnect();
+  }, []);
+
   // Mobile: when the chat tab is hidden behind another tab, scrollIntoView
   // calls fired by the auto-scroll effect above don't reliably move the
   // scroll container — text_deltas streamed in the background grow the
@@ -3681,7 +3707,7 @@ const handleShowLogin = useCallback(() => {
         className="flex-1 min-h-0 min-w-0 overflow-y-auto overflow-x-hidden px-[0.25rem] md:!px-4 py-4 scroll-smooth"
       >
 
-          <div className="mx-auto">
+          <div ref={messagesContentRef} className="mx-auto">
             {isLoadingMore && (
               <div className="flex items-center justify-center py-3">
                 <Spinner size={16} />

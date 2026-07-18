@@ -3998,20 +3998,23 @@ Start Location: ${details.startLocation}`;
               the left pane. */}
          {botMode != "p2" ? <div
             className={`absolute inset-0 z-20 transition-opacity duration-500 ease-in-out ${
- seedActive || (intakeActive && (intakeDestination || startEmptyIntake))
+ !hasBotResponded &&
+ (seedActive || (intakeActive && (intakeDestination || startEmptyIntake)))
  ? "pointer-events-auto"
  : "pointer-events-none"
  }`}
             style={{
               opacity:
-                seedActive ||
-                (intakeActive && (intakeDestination || startEmptyIntake))
+                !hasBotResponded &&
+                (seedActive ||
+                  (intakeActive && (intakeDestination || startEmptyIntake)))
                   ? 1
                   : 0,
             }}
           >
-            {(seedActive ||
-              (intakeActive && (intakeDestination || startEmptyIntake))) &&
+            {!hasBotResponded &&
+              (seedActive ||
+                (intakeActive && (intakeDestination || startEmptyIntake))) &&
               botMode != "p2" && <IntakeLeftPanel />}
           </div> : null}
 
