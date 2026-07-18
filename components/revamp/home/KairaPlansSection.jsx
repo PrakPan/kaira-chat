@@ -33,7 +33,9 @@ const TRAVEL_STYLES = [
       "Slow mornings and quiet villas, planned around just the two of you.",
     image:
       "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/Honeymoon package.jpg",
-    link: chat("Honeymoon package"),
+    link: chat(
+      "Honeymoon package. Slow mornings and quiet villas, planned around just the two of you."
+    ),
   },
   {
     id: "family-abroad",
@@ -43,7 +45,9 @@ const TRAVEL_STYLES = [
       "Easy routes, kid-friendly stays and plenty for everyone to do.",
     image:
       "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/Familt trip abroad.jpg",
-    link: chat("Family trip abroad"),
+    link: chat(
+      "Family trip abroad. Easy routes, kid-friendly stays and plenty for everyone to do."
+    ),
   },
   {
     id: "solo-itineraries",
@@ -53,7 +57,9 @@ const TRAVEL_STYLES = [
       "Safe, social and well-paced. Routes built for travelling on your own.",
     image:
       "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/solo travel.jpg",
-    link: chat("Solo travel itinerary"),
+    link: chat(
+      "Solo travel itinerary. Safe, social and well-paced. Routes built for travelling on your own."
+    ),
   },
   {
     id: "adventure-trips",
@@ -63,7 +69,9 @@ const TRAVEL_STYLES = [
       "Treks, climbs and big-view days for travellers who like it active.",
     image:
       "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/adventure activity.jpg",
-    link: chat("Adventure trip"),
+    link: chat(
+      "Adventure trip. Treks, climbs and big-view days for travellers who like it active."
+    ),
   },
   {
     id: "maldives-budget",
@@ -73,7 +81,9 @@ const TRAVEL_STYLES = [
       "Overwater dreams without the overwater price. Local islands, smart timing.",
     image:
       "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/maldiv on budget.jpg",
-    link: chat("Maldives on a budget"),
+    link: chat(
+      "Maldives on a budget. Overwater dreams without the overwater price. Local islands, smart timing."
+    ),
   },
   {
     id: "budget-international",
@@ -83,7 +93,9 @@ const TRAVEL_STYLES = [
       "Your first stamp abroad without breaking the bank. Real prices, no markups.",
     image:
       "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/budgetinternational.jpg",
-    link: chat("Budget international trip"),
+    link: chat(
+      "Budget international trip. Your first stamp abroad without breaking the bank. Real prices, no markups."
+    ),
   },
   {
     id: "luxury-travel",
@@ -93,7 +105,9 @@ const TRAVEL_STYLES = [
       "Design hotels, private transfers and the good tables, sorted end to end.",
     image:
       "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/luxury travel.jpg",
-    link: chat("Luxury holiday"),
+    link: chat(
+      "Luxury holiday. Design hotels, private transfers and the good tables, sorted end to end."
+    ),
   },
   {
     id: "japan-cherry",
@@ -103,7 +117,9 @@ const TRAVEL_STYLES = [
       "Time it right for sakura. Kyoto, Tokyo and the quiet spots in between.",
     image:
       "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/Japan in cherry blossom season .jpg",
-    link: chat("Japan in cherry blossom season"),
+    link: chat(
+      "Japan in cherry blossom season. Time it right for sakura. Kyoto, Tokyo and the quiet spots in between."
+    ),
   },
   {
     id: "bali-honeymoons",
@@ -113,7 +129,9 @@ const TRAVEL_STYLES = [
       "Ubud greens to Seminyak sunsets, shaped into one slow honeymoon.",
     image:
       "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/Bali for honeymoon.jpg",
-    link: chat("Bali honeymoon"),
+    link: chat(
+      "Bali honeymoon. Ubud greens to Seminyak sunsets, shaped into one slow honeymoon."
+    ),
   },
   {
     id: "vietnam-kids",
@@ -123,7 +141,9 @@ const TRAVEL_STYLES = [
       "Lantern towns, junk-boat nights and food the whole family will love.",
     image:
       "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/Vietnam with kids   .jpg",
-    link: chat("Vietnam family trip with kids"),
+    link: chat(
+      "Vietnam family trip with kids. Lantern towns, junk-boat nights and food the whole family will love."
+    ),
   },
   {
     id: "thailand-weekend",
@@ -133,7 +153,9 @@ const TRAVEL_STYLES = [
       "Three days, two flights, one beach. A reset that fits a long weekend.",
     image:
       "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/Thiland.jpg",
-    link: chat("Thailand long weekend"),
+    link: chat(
+      "Thailand long weekend. Three days, two flights, one beach. A reset that fits a long weekend."
+    ),
   },
   {
     id: "europe-summer",
@@ -143,7 +165,9 @@ const TRAVEL_STYLES = [
       "Long days, lake towns and the classic run, timed for peak season.",
     image:
       "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/Europe in summer.jpg",
-    link: chat("Europe in summer"),
+    link: chat(
+      "Europe in summer. Long days, lake towns and the classic run, timed for peak season."
+    ),
   },
   {
     id: "rajasthan-winter",
@@ -153,7 +177,9 @@ const TRAVEL_STYLES = [
       "Forts, dunes and cool desert evenings. The best season to go.",
     image:
       "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/Rajasthan in winter.jpg",
-    link: chat("Rajasthan in winter"),
+    link: chat(
+      "Rajasthan in winter. Forts, dunes and cool desert evenings. The best season to go."
+    ),
   },
   {
     id: "kerala-backwaters",
@@ -183,7 +209,9 @@ const TRAVEL_STYLES = [
       "Monasteries, mountain air and permits handled. Quietly unforgettable.",
     image:
       "https://d31aoa0ehgvjdi.cloudfront.net/media/website/real-trips/Bhutan from delhi.jpg",
-    link: chat("Bhutan trip from Delhi"),
+    link: chat(
+      "Bhutan trip from Delhi. Monasteries, mountain air and permits handled. Quietly unforgettable."
+    ),
   },
 ];
 

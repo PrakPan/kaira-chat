@@ -20,6 +20,7 @@ import styles from "./LuxuryEuropeDestinations.module.scss";
  *     price: { amount, per },
  *     category: 'honeymoon' | 'family' | 'adventure' | 'quick' | 'premium',
  *     url?: string }  // navigated to on click, e.g. "/chat/{itinerary_id}"
+ *     url?: string }  // navigated to on click, e.g. "/chat/{itinerary_id}"
  */
 
 const DEFAULT_FILTERS = [
@@ -32,6 +33,7 @@ const DEFAULT_FILTERS = [
 ];
 
 const DEFAULT_PACKAGES = [
+
   /* ---------------- Honeymoon ---------------- */
   {
     id: "bali-honeymoon",

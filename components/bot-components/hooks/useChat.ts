@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback } from "react";
 import { getAdParams, getLandingPage } from "../../../helper/adAttribution";
 import { isIntakeFormWidgetId } from "../components/IntakeForm/intakePrompt";
+import { isPricingFormWidgetId } from "../components/PricingForm/pricingPrompt";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -27,7 +28,7 @@ export interface Message {
   content: string;
   timestamp: Date;
   isStreaming?: boolean;
-  type?: "text" | "widget" | "intake_form" | "login_card";
+  type?: "text" | "widget" | "intake_form" | "pricing_form" | "login_card";
   widgetItem?: {
     id: string;
     widget: Record<string, unknown>;
@@ -650,7 +651,10 @@ export function useChat({
             // (item.widget.id = "intake-form:{...}"; item.id is the message id)
             // and must render as the interactive IntakeForm card, not the raw
             // widget placeholder. Hand them to the host (ChatKitPanel) instead.
-            if (isIntakeFormWidgetId(item.widget?.id)) {
+            if (
+              isIntakeFormWidgetId(item.widget?.id) ||
+              isPricingFormWidgetId(item.widget?.id)
+            ) {
               onWidget?.(item);
               return;
             }
@@ -854,7 +858,10 @@ export function useChat({
               // (item.widget.id = "intake-form:{...}"; item.id is the message
               // id) and must render as the interactive IntakeForm card, not the
               // raw widget placeholder. Hand them to the host (ChatKitPanel).
-              if (isIntakeFormWidgetId(item.widget?.id)) {
+              if (
+                isIntakeFormWidgetId(item.widget?.id) ||
+                isPricingFormWidgetId(item.widget?.id)
+              ) {
                 onWidget?.(item);
                 return;
               }

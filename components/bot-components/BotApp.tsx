@@ -442,6 +442,12 @@ export default function BotApp({
   // the default hero banner on the left and inject an empty intake form on the
   // right, without waiting for a backend message.
   const [startEmptyIntake, setStartEmptyIntake] = useState(false);
+  // True when the chat was opened via a hero prompt seed (`?seed=...`). Like the
+  // `?intake=1` landing it shows the IntakeLeftPanel default hero on the left
+  // immediately — but WITHOUT injecting an empty intake form on the right, since
+  // the seeded message + the backend's own form_fields drive the conversation.
+  // The hero then swaps to the destination image once the intake picks a place.
+  const [seedActive, setSeedActive] = useState(false);
   // The destination chosen inside the in-chat intake form. The left hero panel
   // only takes over once a place is picked; until then we keep the StartScreen
   // (inspiration) visible instead of a default hero image.
@@ -509,6 +515,12 @@ export default function BotApp({
   );
   const currency = useSelector((state: any) => state.currency);
   const [isMobile, setIsMobile] = useState(false);
+  // `isMobile` starts false (SSR has no viewport) and only resolves to the real
+  // value after the breakpoint effect measures the window on mount. Handoffs
+  // that pick a ChatKitPanel instance by `isMobile` (the hero seed consumer
+  // below) must wait for this so they don't act against the desktop panel and
+  // then have it torn down when `isMobile` flips — see the seed effect.
+  const [viewportMeasured, setViewportMeasured] = useState(false);
   // Mobile effect popup — shown for 10s when focus_route / itinerary effects fire
   const [mobileEffectPopup, setMobileEffectPopup] = useState<{
     type: "map" | "itinerary";
@@ -856,6 +868,7 @@ export default function BotApp({
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
     check();
+    setViewportMeasured(true);
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
   }, []);
@@ -2511,6 +2524,7 @@ export default function BotApp({
     setCompletingItineraryId(null);
     setLoaderDisplayText(null);
     setLeftPanelMode("default");
+    setSeedActive(false);
     setItineraryId("");
     currentItineraryRef.current = null;
 
@@ -2650,6 +2664,7 @@ export default function BotApp({
       setHasBotResponded(false);
       setShowStartScreen(false);
       setIsChatActive(true);
+      setSeedActive(false);
       currentItineraryRef.current = null;
       // Close payment drawer from previous itinerary
       setShowPaymentDrawer(false);
@@ -2745,6 +2760,7 @@ export default function BotApp({
     // effect (onIntakeFormStart → setIntakeActive(true)) and pop the
     // IntakeLeftPanel hero back up on the fresh chat.
     setStartEmptyIntake(false);
+    setSeedActive(false);
     dispatch(resetIntakeForm());
     setCompletingItineraryId(null);
     setLoaderDisplayText(null);
@@ -2816,6 +2832,14 @@ export default function BotApp({
   useEffect(() => {
     if (hasConsumedHeroHandoffRef.current) return;
     if (!router.isReady) return;
+    // Wait until the viewport has been measured before consuming the handoff.
+    // On a client-side navigation from the hero, `router.isReady` is already
+    // true on first render while `isMobile` is still its SSR default (false),
+    // so acting now would send the seed through the desktop ChatKitPanel — which
+    // is then unmounted when `isMobile` flips to true, leaving the freshly
+    // mounted mobile panel blank until a refresh. Gating on `viewportMeasured`
+    // guarantees the correct panel is mounted before the seed is sent.
+    if (!viewportMeasured) return;
     hasConsumedHeroHandoffRef.current = true;
 
     const queryParam = router.query.seed;
@@ -2835,6 +2859,12 @@ export default function BotApp({
       }
       return;
     }
+
+    // Reveal the IntakeLeftPanel default hero on the left straight away (desktop)
+    // so a seeded chat doesn't sit against a blank panel while the first reply is
+    // still in flight. The hero swaps to the destination image once intake picks
+    // a place.
+    setSeedActive(true);
 
     if (files && files.length > 0) {
       // Pre-fill composer + upload files; let the user click send so the
@@ -2862,8 +2892,10 @@ export default function BotApp({
       }
     }
     // We deliberately want this to run only once. The ref guards re-runs.
+    // `viewportMeasured` is a dep so the effect fires once the viewport is
+    // measured, even when `router.isReady` was already true on first render.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router.isReady]);
+  }, [router.isReady, viewportMeasured]);
 
   // ── "Plan with Kaira" CTA landing (`?intake=1`) ───────────────────────────
   // All Plan-with-Kaira CTAs route here via openTailoredModal. Start a fresh,
@@ -3972,18 +4004,24 @@ Start Location: ${details.startLocation}`;
               the left pane. */}
          {botMode != "p2" ? <div
             className={`absolute inset-0 z-20 transition-opacity duration-500 ease-in-out ${
- intakeActive && (intakeDestination || startEmptyIntake)
+ !hasBotResponded &&
+ (seedActive || (intakeActive && (intakeDestination || startEmptyIntake)))
  ? "pointer-events-auto"
  : "pointer-events-none"
  }`}
             style={{
               opacity:
-                intakeActive && (intakeDestination || startEmptyIntake) ? 1 : 0,
+                !hasBotResponded &&
+                (seedActive ||
+                  (intakeActive && (intakeDestination || startEmptyIntake)))
+                  ? 1
+                  : 0,
             }}
           >
-            {intakeActive && (intakeDestination || startEmptyIntake) && botMode != "p2" &&(
-              <IntakeLeftPanel />
-            )}
+            {!hasBotResponded &&
+              (seedActive ||
+                (intakeActive && (intakeDestination || startEmptyIntake))) &&
+              botMode != "p2" && <IntakeLeftPanel />}
           </div> : null}
 
           <style>{`#chatContainer::-webkit-scrollbar { display: none; }`}</style>

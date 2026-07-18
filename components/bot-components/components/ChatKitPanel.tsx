@@ -39,9 +39,12 @@ import setItineraryStatus from "../../../store/actions/itineraryStatus";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 import BotLoginModal from "./BotLoginModal";
 import { updateIntakeForm } from "../../../store/actions/intakeForm";
+import { updatePricingForm } from "../../../store/actions/pricingForm";
 import IntakeFormCard from "./IntakeForm";
+import PricingFormCard from "./PricingForm";
 import OtpCard from "./IntakeForm/OtpCard";
 import { parseFormFields, parseShowIntakeForm, parseIntakeFormWidgetId, isIntakeFormWidgetId } from "./IntakeForm/intakePrompt";
+import { parseShowPricingForm, parsePricingFormWidgetId, parsePricingCardCopy, isPricingFormWidgetId } from "./PricingForm/pricingPrompt";
 
 const CHATKIT_API_URL = "https://chat.tarzanway.com/chatkit";
 const PAGINATION_SCROLL_THRESHOLD = 80;
@@ -718,6 +721,8 @@ startEmptyIntake = false,
   // Guards the in-chat intake form so the `form_fields` effect injects the card
   // only once per session even if the effect re-emits across stream chunks.
   const intakeFormInjectedRef = useRef(false);
+  // Same one-shot guard for the in-chat pricing form card.
+  const pricingFormInjectedRef = useRef(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [pendingMessage, setPendingMessage] = useState<string | null>(null);
@@ -833,7 +838,6 @@ startEmptyIntake = false,
   const isStaffUser =
     !!reduxEmail && reduxEmail.toLowerCase().endsWith("@thetarzanway.com");
 
-    console.log("reduxEmail", reduxEmail);
   // True when a logged-in, non-staff user is viewing another person's
   // itinerary — block the composer and quick replies in that case.
   const isForeignItinerary =
@@ -1427,6 +1431,11 @@ startEmptyIntake = false,
   // reload; when false we restore it (with prefill) so the user can still fill
   // it. Read by parseThreadItems (incl. pagination) so the gate is consistent.
   const restoredFormFilledRef = useRef(false);
+  // Same idea for the pricing form, mirroring `confirm_pricing_form_submitted`.
+  // When the user has already submitted pricing (true) the card stays hidden on
+  // reload; when false we restore the interactive card (with prefill) so they
+  // can still submit it. Read by parseThreadItems so the gate is consistent.
+  const restoredPricingSubmittedRef = useRef(false);
 
   // Tracks whether the user is pinned to the bottom of the message list. The
   // auto-scroll effect only fires when this is true, so the transcript won't
@@ -1446,6 +1455,10 @@ startEmptyIntake = false,
   // ── Refs ─────────────────────────────────────────────────────────────────
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesScrollRef = useRef<HTMLDivElement>(null);
+  // Wraps every message + custom card. Observed for size changes so async-
+  // growing content (login/OTP card, the stepped status loader, images,
+  // widgets) re-pins the view to the bottom — see the ResizeObserver effect.
+  const messagesContentRef = useRef<HTMLDivElement>(null);
   const hasProcessedInitial = useRef(false);
   const hasUpdatedUrl = useRef(false);
   const postLoginFiredRef = useRef(false);
@@ -1648,8 +1661,17 @@ const handleSessionCreated = useCallback((ourSessionId: string) => {
   const handleIntakeWidgetRef = useRef<
     ((item: { id: string; widget: Record<string, unknown> }) => void) | null
   >(null);
+  const handlePricingWidgetRef = useRef<
+    ((item: { id: string; widget: Record<string, unknown> }) => void) | null
+  >(null);
   const stableOnWidget = useCallback(
     (item: { id: string; widget: Record<string, unknown> }) => {
+      // Route by the widget id prefix — pricing vs intake forms are both handled
+      // by the host but seed different Redux slices.
+      if (isPricingFormWidgetId(item.widget?.id)) {
+        handlePricingWidgetRef.current?.(item);
+        return;
+      }
       handleIntakeWidgetRef.current?.(item);
     },
     [],
@@ -1673,8 +1695,6 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
     onSessionCreated: handleSessionCreated,
     loginMandatory,
   });
-
-    console.log("Messages",messages);
 
   // Logged-out user viewing an existing thread (restored via threads.get_by_id)
   // sees the inline sign-in card as the last message. In that state the
@@ -2070,6 +2090,33 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
         // NOTE: `show_intake_form` is no longer a client effect — the backend
         // now streams the intake form as a widget (`intake-form:{...}`),
         // handled by handleIntakeFormWidget via useChat's onWidget.
+        case "pricing_form_shimmer": {
+          // Server is about to compute the pricing-form prefill — show a
+          // skeleton loader in the card's place until the pricing-form widget
+          // lands. Inject the card once so the skeleton has somewhere to render;
+          // the loading flag flips it to the shimmer view. Unlike the intake
+          // form this does NOT lock the composer.
+          const loading = data.loading !== false; // default true
+          dispatch(updatePricingForm({ active: true, completed: false, loading }));
+          if (loading && !pricingFormInjectedRef.current) {
+            pricingFormInjectedRef.current = true;
+            setMessages((prev) =>
+              prev.some((m) => m.type === "pricing_form")
+                ? prev
+                : [
+                    ...prev,
+                    {
+                      id: `pricing-form-${sessionIdRef.current}`,
+                      role: "assistant",
+                      content: "",
+                      timestamp: new Date(),
+                      type: "pricing_form",
+                    },
+                  ],
+            );
+          }
+          break;
+        }
         case "display_itinerary": {
           emitEndpointsFromEffect(name, data);
           // Pass the full effect payload (not just `.itinerary`) so pax +
@@ -2407,6 +2454,47 @@ case "shimmer_day_by_day": {
   );
   handleIntakeWidgetRef.current = handleIntakeFormWidget;
 
+  // ── Streamed pricing-form widget ──────────────────────────────────────────
+  // The backend streams the "confirm a few final details before pricing" card
+  // as a widget item whose id encodes the prefill JSON (`pricing-form:{...}`).
+  // Parse it, seed the Redux slice with prefilled toggles + completion markers,
+  // and inject the interactive pricing card once. Unlike the intake form this
+  // does NOT lock the composer (`active` here is informational only).
+  const handlePricingFormWidget = useCallback(
+    (item: { id: string; widget: Record<string, unknown> }) => {
+      const prefill = parsePricingFormWidgetId(item.widget?.id);
+      if (!prefill) return;
+      dispatch(
+        updatePricingForm({
+          active: true,
+          completed: false,
+          loading: false,
+          ...parsePricingCardCopy(item.widget),
+          ...parseShowPricingForm(prefill),
+        }),
+      );
+      if (!pricingFormInjectedRef.current) {
+        pricingFormInjectedRef.current = true;
+        setMessages((prev) =>
+          prev.some((m) => m.type === "pricing_form")
+            ? prev
+            : [
+                ...prev,
+                {
+                  id: `pricing-form-${sessionIdRef.current}`,
+                  role: "assistant",
+                  content: "",
+                  timestamp: new Date(),
+                  type: "pricing_form",
+                },
+              ],
+        );
+      }
+    },
+    [dispatch, setMessages],
+  );
+  handlePricingWidgetRef.current = handlePricingFormWidget;
+
   // ── Wrap sendMessage to clear quick replies ───────────────────────────────
 const sendMessage = useCallback(
   (
@@ -2454,6 +2542,16 @@ const sendMessage = useCallback(
 // the inline sign-in card (login_card) and replays the message after verify —
 // so we never inject an OTP card from the client here.
 const handleIntakeComplete = useCallback(
+  (composed: string) => {
+    sendMessage(composed, undefined, undefined, { formSubmitted: true });
+  },
+  [sendMessage],
+);
+
+// ── Pricing form completion ──────────────────────────────────────────────────
+// Same contract as the intake form: send the composed final-details message
+// straight to Kaira with the form_submitted flag.
+const handlePricingComplete = useCallback(
   (composed: string) => {
     sendMessage(composed, undefined, undefined, { formSubmitted: true });
   },
@@ -2539,6 +2637,28 @@ const handleLoginCardVerified = useCallback(() => {
     }
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isStreaming]);
+
+  // Custom in-thread cards grow *after* they mount: the stepped status loader
+  // (StatusNotesCard) accumulates step lines, the inline login/OTP card and
+  // intake/pricing forms lay out asynchronously, images/widgets settle late.
+  // None of that flows through the `messages`-keyed effect above, so a single
+  // scroll lands mid-card and the user has to nudge down to see the rest.
+  // Watch the content wrapper's size and re-pin to the bottom on any growth —
+  // but only while the user is already parked at the bottom (isAtBottomRef),
+  // so a manual scroll-up to read earlier messages is never yanked back down.
+  useEffect(() => {
+    const content = messagesContentRef.current;
+    const scroller = messagesScrollRef.current;
+    if (!content || !scroller || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(() => {
+      // Prepending older messages / intake landing manage their own scroll.
+      if (isFetchingMoreRef.current || suppressIntakeAutoScrollRef.current) return;
+      if (!isAtBottomRef.current) return;
+      scroller.scrollTop = scroller.scrollHeight;
+    });
+    ro.observe(content);
+    return () => ro.disconnect();
+  }, []);
 
   // Mobile: when the chat tab is hidden behind another tab, scrollIntoView
   // calls fired by the auto-scroll effect above don't reliably move the
@@ -2852,6 +2972,19 @@ useEffect(() => {
               type: "intake_form",
             });
           }
+        } else if (isPricingFormWidgetId(item.widget?.id)) {
+          // Pricing form is the final-confirmation step. Restore the interactive
+          // card only while it hasn't been submitted yet
+          // (`confirm_pricing_form_submitted === false`); once submitted it's
+          // dropped from the transcript. Redux seeding is handled in the restore
+          // effect below.
+          if (!restoredPricingSubmittedRef.current) {
+            out.push({
+              id: item.id, role: "assistant", content: "",
+              timestamp: new Date(item.created_at),
+              type: "pricing_form",
+            });
+          }
         } else {
           indexEdgesFromWidget(item.widget);
           out.push({
@@ -2881,6 +3014,10 @@ useEffect(() => {
   // Set before parseThreadItems runs — it (and pagination) reads this to decide
   // whether the intake-form card is restored into the transcript.
   restoredFormFilledRef.current = restoredThread.form_filled === true;
+  // Same gate for the pricing form — restore the card only when pricing hasn't
+  // been submitted yet.
+  restoredPricingSubmittedRef.current =
+    restoredThread.confirm_pricing_form_submitted === true;
 
   const restored = parseThreadItems(restoredThread.items?.data ?? []);
 
@@ -2923,6 +3060,41 @@ useEffect(() => {
     // prior `active: false` would leave a genuinely unfilled thread unlocked —
     // after switching threads. (Case 2 fix.)
     dispatch(updateIntakeForm({ active: false, completed: false }));
+  }
+
+  // ── Restore the in-chat pricing form ──────────────────────────────────────
+  // When the thread carries a pricing-form widget that hasn't been submitted
+  // (`confirm_pricing_form_submitted === false`), parseThreadItems restores the
+  // card and we re-seed the Redux slice from the widget's encoded prefill so it
+  // shows the prefilled toggles/city. When submitted (or absent) we deactivate
+  // the slice so a stale `active` from a prior thread doesn't linger, and reset
+  // the one-shot injection guard so a fresh pricing-form widget can inject its
+  // card in this restored session.
+  const pricingWidgetItem = (restoredThread.items?.data ?? []).find(
+    (it: any) => it?.type === "widget" && isPricingFormWidgetId(it?.widget?.id),
+  );
+  if (pricingWidgetItem && !restoredPricingSubmittedRef.current) {
+    const prefill = parsePricingFormWidgetId(pricingWidgetItem.widget?.id);
+    if (prefill) {
+      dispatch(
+        updatePricingForm({
+          active: true,
+          completed: false,
+          loading: false,
+          ...parsePricingCardCopy(pricingWidgetItem.widget),
+          ...parseShowPricingForm(prefill),
+        }),
+      );
+      // Already injected from history — block the live widget/effect path from
+      // adding a second card in this session.
+      pricingFormInjectedRef.current = true;
+    } else {
+      dispatch(updatePricingForm({ active: false, completed: false, loading: false }));
+      pricingFormInjectedRef.current = false;
+    }
+  } else {
+    dispatch(updatePricingForm({ active: false, completed: false, loading: false }));
+    pricingFormInjectedRef.current = false;
   }
 
   for (const effect of itineraryEffects) {
@@ -3535,7 +3707,7 @@ const handleShowLogin = useCallback(() => {
         className="flex-1 min-h-0 min-w-0 overflow-y-auto overflow-x-hidden px-[0.25rem] md:!px-4 py-4 scroll-smooth"
       >
 
-          <div className="mx-auto">
+          <div ref={messagesContentRef} className="mx-auto">
             {isLoadingMore && (
               <div className="flex items-center justify-center py-3">
                 <Spinner size={16} />
@@ -3560,6 +3732,14 @@ const handleShowLogin = useCallback(() => {
                   <IntakeFormCard
                     key={msg.id}
                     onComplete={handleIntakeComplete}
+                  />
+                );
+              }
+              if (msg.type === "pricing_form") {
+                return (
+                  <PricingFormCard
+                    key={msg.id}
+                    onComplete={handlePricingComplete}
                   />
                 );
               }
