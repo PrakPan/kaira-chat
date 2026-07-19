@@ -1770,11 +1770,17 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
   // widget-triggered stream, and only unlocks again once the new turn's own
   // quick-reply tail arrives.
   const sendWidgetAction = useCallback(
-    (type: string, payload: Record<string, unknown>) => {
+    (
+      type: string,
+      payload: Record<string, unknown>,
+      // Extra top-level request fields (siblings of `params`), passed straight
+      // through to useChat — used for `login_opted_out` on skip-login.
+      rootFields?: Record<string, unknown>,
+    ) => {
       lastSentActionRef.current = { kind: "widget", type, payload };
       setQuickReplies([]);
       setQuickReplyShimmer(false);
-      return rawSendWidgetAction(type, payload);
+      return rawSendWidgetAction(type, payload, rootFields);
     },
     [rawSendWidgetAction],
   );
@@ -2601,7 +2607,9 @@ const handleLoginCardSkip = useCallback(() => {
   // itinerary); resume can only append, never create a thread. When there's no
   // resumable thread we simply retire the card and let the user carry on.
   if (canResumeAfterLoginRef.current && threadIdRef.current) {
-    sendWidgetAction("resume_after_login", { login_opted_out: true });
+    // `login_opted_out` goes at the ROOT of the request body (3rd arg), not in
+    // the action payload — the backend reads the skip flag top-level.
+    sendWidgetAction("resume_after_login", {}, { login_opted_out: true });
   }
 }, [setMessages, sendWidgetAction, threadIdRef]);
 
