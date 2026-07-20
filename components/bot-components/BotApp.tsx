@@ -68,6 +68,7 @@ import NotificationPopup from "../ui/NotificationPopup";
 import BotLoginModal from "./components/BotLoginModal";
 import { createPortal } from "react-dom";
 import { currencySymbols } from "../../data/currencySymbols";
+import { formatCurrencyValue } from "../../services/formatCurrencyValue";
 import { useAnalytics } from "../../hooks/useAnalytics";
 import Login from "../modals/Login";
 import { FiCalendar } from "react-icons/fi";
@@ -4649,7 +4650,7 @@ const BottomCTABar = React.memo(
     const rawCost = perPerson
       ? cart?.per_person_discounted_cost
       : cart?.discounted_cost;
-    const cost = Number.isFinite(rawCost) ? Math.round(rawCost) : null;
+    const cost = Number.isFinite(rawCost) ? rawCost : null;
     const currencySymbol = currencySymbols[currency?.currency] || "₹";
 
     const couponBadge = (
@@ -4729,7 +4730,7 @@ const BottomCTABar = React.memo(
                   breakpoint — see the foot line at the bottom of the bar. */}
               <span className="font-sans text-[16px] md:text-[21px] font-bold leading-tight text-[#111827] whitespace-nowrap">
                 {currencySymbol}
-                {cost.toLocaleString("en-IN")}/-
+                {formatCurrencyValue(cost, currency?.currency)}/-
               </span>
             </>
           ) : cart?.error ? (

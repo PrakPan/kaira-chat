@@ -2947,8 +2947,16 @@ useEffect(() => {
   // Convert raw thread items (from threads.get_by_id payloads) into Message[]
   const parseThreadItems = useCallback((items: any[]): Message[] => {
     const out: Message[] = [];
+    // A reasoning `workflow` item precedes the assistant_message it produced.
+    // The per-step thoughts aren't persisted, but its `summary.duration` is —
+    // stash it here and attach it to the next assistant_message so we can show
+    // the collapsed "Thought for {duration}s" label above that reply on reload.
+    let pendingReasoningDuration: number | null = null;
     for (const item of items ?? []) {
       if (item.type === "user_message") {
+        // A fresh user turn — any dangling reasoning duration belongs to the
+        // previous turn and had no visible reply to attach to; drop it.
+        pendingReasoningDuration = null;
         const text = item.content?.find((c: any) => c.type === "input_text")?.text ?? "";
 
         // Extract attachments — server may return them as a sibling array of
@@ -3002,10 +3010,26 @@ useEffect(() => {
         });
       } else if (item.type === "assistant_message") {
         const text = item.content?.find((c: any) => c.type === "output_text")?.text ?? "";
-        if (text) out.push({
-          id: item.id, role: "assistant", content: text,
-          timestamp: new Date(item.created_at), isStreaming: false,
-        });
+        if (text) {
+          out.push({
+            id: item.id, role: "assistant", content: text,
+            timestamp: new Date(item.created_at), isStreaming: false,
+            ...(pendingReasoningDuration != null
+              ? { reasoningDuration: pendingReasoningDuration }
+              : {}),
+          });
+          pendingReasoningDuration = null;
+        }
+      } else if (item.type === "workflow") {
+        // Reasoning workflow — carry its duration to the next assistant reply.
+        const dur = item.workflow?.summary?.duration;
+        if (
+          item.workflow?.type === "reasoning" &&
+          typeof dur === "number" &&
+          dur > 0
+        ) {
+          pendingReasoningDuration = dur;
+        }
       } else if (item.type === "widget") {
         // Intake-form widgets restore as the interactive IntakeForm card, not
         // the raw widget placeholder — but only when the form hasn't been
