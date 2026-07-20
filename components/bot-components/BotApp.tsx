@@ -11,7 +11,6 @@ import Sidebar from "./components/Sidebar";
 import { getUserAvatarColor, getUserInitial } from "./utils/avatarColor";
 import { formatCompactTime, groupThreads } from "./utils/threadGroups";
 import { LOGO_HEIGHT } from "./constants";
-import BrandLockup from "../brand/BrandLockup";
 import {
   HistoryIcon as KairaHistoryIcon,
   LogoutIcon as KairaLogoutIcon,
@@ -5224,7 +5223,13 @@ const MobileHeader = React.memo(
         className="flex items-center cursor-pointer"
         onClick={() => (window.location.href = "/")}
       >
-        <BrandLockup size={LOGO_HEIGHT.MOBILE} variant="light" />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/logo/ttw-lockup.svg"
+          height={LOGO_HEIGHT.MOBILE}
+          alt="The Tarzan Way"
+          style={{ height: LOGO_HEIGHT.MOBILE, width: "auto" }}
+        />
       </div>
       <MobileHeaderMenu
         onNewChat={onNewChat}

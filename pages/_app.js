@@ -23,7 +23,6 @@ import { usePathname } from "next/navigation";
 import BotApp from "../components/bot-components/BotApp";
 import JupyterAnalytics from "../components/JupyterAnalytics";
 import { captureAdParams, captureLandingPage } from "../helper/adAttribution";
-import { syncSession, getEntryContext } from "../services/sessionTracker";
 
 // Polyfill for requestIdleCallback (Safari compatibility)
 if (typeof window !== "undefined" && !window.requestIdleCallback) {
@@ -114,19 +113,8 @@ function MyApp({ Component, pageProps }) {
       requestIdleCallback(() => {
         ga.pageview(url);
         if (window.fbq) window.fbq("track", "PageView");
-
-        // Slide the session's inactivity window; if it had expired, a new
-        // session id is minted and we open it with a fresh session_started.
-        const sess = syncSession();
-        if (window.JupiterAnalytics) {
-          if (sess?.isNew && window.JupiterAnalytics.setSession) {
-            window.JupiterAnalytics.setSession(sess.sessionId);
-            if (window.JupiterAnalytics.track)
-              window.JupiterAnalytics.track("session_started", getEntryContext());
-          }
-          if (window.JupiterAnalytics.trackPageView)
-            window.JupiterAnalytics.trackPageView(url);
-        }
+        if (window.JupiterAnalytics?.trackPageView)
+          window.JupiterAnalytics.trackPageView(url);
       });
     };
 
@@ -215,9 +203,18 @@ function MyApp({ Component, pageProps }) {
         `}
       </Script>
 
-      {/* Jupiter Analytics is loaded via the <JupyterAnalytics/> component
-          below (Partytown worker). The legacy jupiter.js script + init was
-          removed to avoid a second, competing tracking path. */}
+      {/* Jupiter Analytics */}
+      <Script
+        src="https://jupiter.tarzanway.com/jupiter.js"
+        strategy="afterInteractive"
+      />
+      <Script strategy="afterInteractive">
+        {`
+          if(window.JupiterAnalytics){
+            window.JupiterAnalytics.init({ siteId: 'tarzanway-web', apiHost: 'https://jupiter.tarzanway.com' });
+          }
+        `}
+      </Script>
 
       <div id="modal-root"></div>
 

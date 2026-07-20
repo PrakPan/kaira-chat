@@ -8,7 +8,6 @@ import Socials from "./Socials";
 import linksArr from "./Links";
 import openTailoredModal from "../../services/openTailoredModal";
 import urls from "../../services/urls";
-import BrandLockup from "../brand/BrandLockup";
 
 /* =========================================
    Site footer — ink-rail background, yellow
@@ -242,7 +241,8 @@ const NewFooter = () => {
         <Grid>
           <Brand>
             <div className="logo-line">
-              <BrandLockup size={36} variant="dark" />
+              <img className="logo-lockup" src="/logo/ttw-lockup-light.svg" alt="The Tarzan Way" />
+              <span className="tag">by Kaira · est. 2018</span>
             </div>
             <p className="blurb">
               Trips planned in conversation, not forms. Powered by Kaira, our

@@ -1,11 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none" role="img" aria-label="The Tarzan Way">
   <g>
     <rect x="0" y="0" width="64" height="64" rx="16.842" fill="#0b1220"/>
-    <g transform="translate(11.017 4.606) scale(0.756 0.761)" fill="none" stroke-width="8" stroke-linecap="round">
-      <path d="M25 9V53" stroke="#fafaf5"/>
-      <path d="M25 53q0 10 11 10" stroke="#fafaf5"/>
-      <path d="M7 27q19 -15 39 -3" stroke="#f7e700"/>
-      <circle cx="46" cy="24" r="6.5" fill="#f7e700" stroke="none"/>
+    <g transform="translate(11.773 6.508) scale(0.756 0.761)" fill="none" stroke-width="8" stroke-linecap="round">
+      <path d="M22 8V50" stroke="#fafaf5"/>
+      <path d="M22 50q0 9 10 9" stroke="#fafaf5"/>
+      <path d="M7 24q16 -13 35 -2" stroke="#f7e700"/>
+      <circle cx="44" cy="23" r="6.5" fill="#f7e700" stroke="none"/>
     </g>
   </g>
 </svg>

@@ -2,10 +2,10 @@
   <g transform="rotate(-4 32 32)">
     <rect x="2.018" y="2.018" width="59.963" height="59.963" rx="15.78" fill="#0b1220"/>
     <g transform="translate(15.694 13.327) scale(0.562 0.566)" fill="none" stroke-width="8" stroke-linecap="round">
-      <path d="M25 9V53" stroke="#fafaf5"/>
-      <path d="M25 53q0 10 11 10" stroke="#fafaf5"/>
-      <path d="M7 27q19 -15 39 -3" stroke="#f7e700"/>
-      <circle cx="46" cy="24" r="6.5" fill="#f7e700" stroke="none"/>
+      <path d="M22 8V50" stroke="#fafaf5"/>
+      <path d="M22 50q0 9 10 9" stroke="#fafaf5"/>
+      <path d="M7 24q16 -13 35 -2" stroke="#f7e700"/>
+      <circle cx="44" cy="23" r="6.5" fill="#f7e700" stroke="none"/>
     </g>
   </g>
 </svg>
