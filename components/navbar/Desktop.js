@@ -55,7 +55,7 @@ const TTWLogoContainer = styled(CenterNav)`
   }
 `;
 
-/* The full brand lockup (mark + wordmark + "Powered by Kaira" tagline) via
+/* The full brand lockup (mark + wordmark + "AI Trip Planner" tagline) via
    BrandLockup, which composes the parts so the tagline stays legible at 40px. */
 const NAV_LOCKUP_STYLE = {
   margin: "0.5rem 0.5rem 0.5rem 2rem",

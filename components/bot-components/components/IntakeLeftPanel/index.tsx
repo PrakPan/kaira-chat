@@ -136,7 +136,7 @@ function toLqip(url: string): string | null {
 }
 
 // Tile height of the lockup in this panel's header. BrandLockup composes the
-// "Powered by Kaira" tagline under the wordmark, so no separate caption here.
+// "AI Trip Planner" tagline under the wordmark, so no separate caption here.
 const LOGO_H = 34;
 
 /**

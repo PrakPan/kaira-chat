@@ -118,14 +118,14 @@ BOX_ROT = -1.5
 g1, w1 = inter.shape("the tarzan", T1_SIZE, T1_LS)
 g2, w2 = serif.shape("way", T2_SIZE, T2_LS)
 
-# secondary line: JetBrains Mono, uppercase, wide tracking. Left edge aligns with
-# the wordmark's left edge (no leading dot). Emitted as its OWN asset
-# (ttw-tagline*.svg), not baked into the lockup — the app composes mark + wordmark
-# + tagline and sizes the tagline independently so it stays legible; a tagline
-# scaled with a 32-40px nav lockup is an unreadable smudge.
-TAG_TEXT = "POWERED BY KAIRA"
+# secondary line: JetBrains Mono, uppercase, wide tracking, led by a yellow accent
+# dot. Emitted as its OWN asset (ttw-tagline*.svg), not baked into the lockup — the
+# app composes mark + wordmark + tagline and sizes the tagline independently so it
+# stays legible; a tagline scaled with a 32-40px nav lockup is an unreadable smudge.
+TAG_TEXT = "AI TRIP PLANNER"
 TAG_SIZE = 11.5
-TAG_LS = 0.30 * TAG_SIZE           # 3.45px (letter-spacing .3em)
+TAG_LS = 0.12 * TAG_SIZE           # 1.38px (letter-spacing .12em) — kept tight so
+                                   # the line fits within the wordmark width below it
 gt, tag_w = mono.shape(TAG_TEXT, TAG_SIZE, TAG_LS)
 
 # span1: block box in a flex line -> height is its line box
@@ -313,15 +313,27 @@ def wordmark(path, text_fill, box_fill, way_fill):
 
 
 def tagline_svg(path, tag_fill):
-    # "POWERED BY KAIRA" outlined, tightly cropped to its ink so the app can
-    # butt its left edge against the wordmark's left edge.
+    # "AI TRIP PLANNER" outlined, led by a yellow accent dot, tightly cropped to
+    # its ink. The dot is vertically centred on the caps and its left edge sits at
+    # x=0 so the app can butt the line's left edge against the wordmark's.
     base_in_line = mono.ascent * TAG_SIZE + (mono.linegap * TAG_SIZE) / 2.0
-    dt = mono.outline(gt, TAG_SIZE, base_in_line, x0=0.0)
-    fx0, fy0, fx1, fy1 = text_ink(mono, gt, TAG_SIZE, base_in_line, 0.0)
+    # measure the text ink first (at x0=0) to size + place the dot off the caps
+    ix0, iy0, ix1, iy1 = text_ink(mono, gt, TAG_SIZE, base_in_line, 0.0)
+    cap_h = iy1 - iy0
+    dot_r = 0.34 * cap_h               # ~68% of cap height — big enough to read at 6-7px
+    dot_gap = 0.50 * cap_h             # space between dot and first letter
+    dot_cx = dot_r                     # dot left edge at x=0
+    dot_cy = (iy0 + iy1) / 2.0         # centred on the caps
+    text_x = 2 * dot_r + dot_gap - ix0  # shift text right to clear the dot + gap
+    dt = mono.outline(gt, TAG_SIZE, base_in_line, x0=text_x)
+    # union bounds: dot (x 0..2r, y within the caps) + shifted text ink
+    fx0, fy0 = 0.0, min(iy0, dot_cy - dot_r)
+    fx1, fy1 = ix1 + text_x, max(iy1, dot_cy + dot_r)
     x0, y0 = math.floor(fx0), math.floor(fy0)
     x1, y1 = math.ceil(fx1), math.ceil(fy1)
     vw, vh = x1 - x0, y1 - y0
-    svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="{x0} {y0} {vw} {vh}" width="{vw}" height="{vh}" fill="none" role="img" aria-label="Powered by Kaira">
+    svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="{x0} {y0} {vw} {vh}" width="{vw}" height="{vh}" fill="none" role="img" aria-label="AI Trip Planner">
+  <circle cx="{fmt(dot_cx)}" cy="{fmt(dot_cy)}" r="{fmt(dot_r)}" fill="{YELLOW}"/>
   <path d="{dt}" fill="{tag_fill}"/>
 </svg>
 '''

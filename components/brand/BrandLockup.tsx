@@ -11,7 +11,7 @@ type Variant = "light" | "dark";
  * Why: baked into the lockup the tagline scales with the logo and, at the
  * 32-40px the logo renders in nav/header/sidebar, collapses to an unreadable
  * ~3px smudge. Composing it separately lets us floor its height (see `taglineH`)
- * so "Powered by Kaira" stays legible even on a small logo. Below `taglineMinSize`
+ * so "AI Trip Planner" stays legible even on a small logo. Below `taglineMinSize`
  * it is dropped entirely (clean mark+wordmark).
  */
 const ASSETS: Record<Variant, { mark: string; wordmark: string; tagline: string }> = {
@@ -29,15 +29,15 @@ const ASSETS: Record<Variant, { mark: string; wordmark: string; tagline: string 
 
 // Aspect ratios (width / height) of the wordmark and tagline artboards, taken
 // from their viewBoxes in scripts/logo/gen_logo.py. Keep in sync if the
-// artboards change (ttw-wordmark: 359x82, ttw-tagline "POWERED BY KAIRA": 162x9).
+// artboards change (ttw-wordmark: 359x82, ttw-tagline "• AI TRIP PLANNER": 132x9).
 const WORDMARK_AR = 359 / 82;
-const TAGLINE_AR = 162 / 9;
+const TAGLINE_AR = 132 / 9;
 
-// Floor for the tagline height (px): below this "Powered by Kaira" stops being
+// Floor for the tagline height (px): below this "AI Trip Planner" stops being
 // legible. On small logos the tagline renders at this floor rather than shrinking
-// with the mark, so it stays readable (at the cost of overhanging the wordmark a
-// little — fine for the short line, which is why the long one was dropped).
-const TAGLINE_MIN_H = 7.5;
+// with the mark, so it stays readable. It is still hard-capped to the wordmark
+// width below (see `taglineW`), so it can never overhang the line above it.
+const TAGLINE_MIN_H = 6.5;
 
 export interface BrandLockupProps {
   /** Tile (mark) height in px — the logo's visual size. */
@@ -45,7 +45,7 @@ export interface BrandLockupProps {
   /** "light" = light background (navy wordmark); "dark" = dark background (cream). */
   variant?: Variant;
   /**
-   * Show the "Powered by Kaira" line.
+   * Show the "AI Trip Planner" line.
    *  - "auto" (default): shown when `size >= taglineMinSize`.
    *  - true / false: force on / off.
    */
@@ -83,8 +83,26 @@ export default function BrandLockup({
 
   const gap = 0.17 * size; // mark -> text column
   const wordmarkH = 0.66 * size; // wordmark height
+  const wordmarkW = wordmarkH * WORDMARK_AR;
   const colGap = Math.max(3, 0.09 * size); // wordmark -> tagline
-  const taglineH = Math.max(TAGLINE_MIN_H, 0.074 * size); // floored for legibility
+
+  // Vertical alignment: the wordmark+tagline column is centered as a group on the
+  // tile (equal margin above the wordmark and below the tagline). `img { margin }`
+  // from global/Bootstrap resets would break this, so every image below zeroes its
+  // margin explicitly — without that the phantom margin skews the flex centering.
+  const imgReset = { margin: 0, maxWidth: "none" as const };
+
+  // ...then lift the whole block a hair above dead-centre — optically it reads as
+  // balanced against the tile's visual weight (kept small so it never rises past
+  // the tile top, even at the smallest logo sizes).
+  const textRise = 0.03 * size;
+
+  // Tagline: floored for legibility, then hard-capped to the wordmark width so it
+  // never overhangs the line above. When the cap bites, height scales down with
+  // the width (AR preserved) rather than the line getting clipped or stretched.
+  const taglineH0 = Math.max(TAGLINE_MIN_H, 0.074 * size);
+  const taglineW = Math.min(taglineH0 * TAGLINE_AR, wordmarkW);
+  const taglineH = taglineW / TAGLINE_AR;
 
   return (
     <span
@@ -104,10 +122,15 @@ export default function BrandLockup({
         src={a.mark}
         alt=""
         aria-hidden
-        style={{ height: size, width: size, display: "block", flex: "none" }}
+        style={{ height: size, width: size, display: "block", flex: "none", ...imgReset }}
       />
       <span
-        style={{ display: "inline-flex", flexDirection: "column", gap: colGap }}
+        style={{
+          display: "inline-flex",
+          flexDirection: "column",
+          gap: colGap,
+          transform: `translateY(${-textRise}px)`,
+        }}
       >
         <img
           src={a.wordmark}
@@ -115,8 +138,9 @@ export default function BrandLockup({
           aria-hidden
           style={{
             height: wordmarkH,
-            width: wordmarkH * WORDMARK_AR,
+            width: wordmarkW,
             display: "block",
+            ...imgReset,
           }}
         />
         {showTagline && (
@@ -126,8 +150,9 @@ export default function BrandLockup({
             aria-hidden
             style={{
               height: taglineH,
-              width: taglineH * TAGLINE_AR,
+              width: taglineW,
               display: "block",
+              ...imgReset,
             }}
           />
         )}
