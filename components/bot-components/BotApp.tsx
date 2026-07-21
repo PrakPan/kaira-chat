@@ -24,6 +24,7 @@ import StartScreen, { type TravellerStory } from "./components/StartScreen";
 import IntakeLeftPanel from "./components/IntakeLeftPanel";
 import type { ThemeConfig } from "./types/themeConfig";
 import ChatWelcomeScreen from "./components/ChatWelcomeScreen";
+import BrandLockup from "../brand/BrandLockup";
 import ItineraryShimmer from "./components/ItineraryShimmer";
 import { useUserLocation } from "./hooks/useUserLocation";
 import { useMapBounds } from "./hooks/useMapBounds";
@@ -5224,13 +5225,7 @@ const MobileHeader = React.memo(
         className="flex items-center cursor-pointer"
         onClick={() => (window.location.href = "/")}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/logo/ttw-lockup.svg"
-          height={LOGO_HEIGHT.MOBILE}
-          alt="The Tarzan Way"
-          style={{ height: LOGO_HEIGHT.MOBILE, width: "auto" }}
-        />
+        <BrandLockup size={LOGO_HEIGHT.MOBILE} variant="light" />
       </div>
       <MobileHeaderMenu
         onNewChat={onNewChat}
