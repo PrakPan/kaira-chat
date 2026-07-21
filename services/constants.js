@@ -5,6 +5,9 @@ export const MIS_SERVER_HOST = process.env.NEXT_PUBLIC_MIS_SERVER_HOST;
 export const MERCURY_HOST =
   process.env.NEXT_PUBLIC_MERCURY_HOST || "https://mercury.tarzanway.com";
 
+export const JUPITER_HOST =
+  process.env.NEXT_PUBLIC_JUPITER_HOST || "https://jupiter.tarzanway.com";
+
 export const CLIENT_ID = process.env.NEXT_PUBLIC_CLIENT_ID;
 
 export const CLIENT_SECRET = process.env.NEXT_PUBLIC_CLIENT_SECRET;

@@ -9,7 +9,7 @@ import "../containers/itinerary/typography.css";
 import "../styles/kaira-sidebar.css";
 import { useRouter } from "next/router";
 import * as ga from "../services/ga/Index";
-import { FACEBOOK_PIXEL_ID, GOOGLE_CLIENT_ID } from "../services/constants";
+import { FACEBOOK_PIXEL_ID, GOOGLE_CLIENT_ID, JUPITER_HOST } from "../services/constants";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import dynamic from "next/dynamic";
 import Head from "next/head";
@@ -23,7 +23,6 @@ import { usePathname } from "next/navigation";
 import BotApp from "../components/bot-components/BotApp";
 import JupyterAnalytics from "../components/JupyterAnalytics";
 import { captureAdParams, captureLandingPage } from "../helper/adAttribution";
-import { syncSession, getEntryContext } from "../services/sessionTracker";
 
 // Polyfill for requestIdleCallback (Safari compatibility)
 if (typeof window !== "undefined" && !window.requestIdleCallback) {
@@ -114,19 +113,8 @@ function MyApp({ Component, pageProps }) {
       requestIdleCallback(() => {
         ga.pageview(url);
         if (window.fbq) window.fbq("track", "PageView");
-
-        // Slide the session's inactivity window; if it had expired, a new
-        // session id is minted and we open it with a fresh session_started.
-        const sess = syncSession();
-        if (window.JupiterAnalytics) {
-          if (sess?.isNew && window.JupiterAnalytics.setSession) {
-            window.JupiterAnalytics.setSession(sess.sessionId);
-            if (window.JupiterAnalytics.track)
-              window.JupiterAnalytics.track("session_started", getEntryContext());
-          }
-          if (window.JupiterAnalytics.trackPageView)
-            window.JupiterAnalytics.trackPageView(url);
-        }
+        if (window.JupiterAnalytics?.trackPageView)
+          window.JupiterAnalytics.trackPageView(url);
       });
     };
 
@@ -215,9 +203,18 @@ function MyApp({ Component, pageProps }) {
         `}
       </Script>
 
-      {/* Jupiter Analytics is loaded via the <JupyterAnalytics/> component
-          below (Partytown worker). The legacy jupiter.js script + init was
-          removed to avoid a second, competing tracking path. */}
+      {/* Jupiter Analytics */}
+      <Script
+        src={`${JUPITER_HOST}/jupiter.js`}
+        strategy="afterInteractive"
+      />
+      <Script strategy="afterInteractive">
+        {`
+          if(window.JupiterAnalytics){
+            window.JupiterAnalytics.init({ siteId: 'tarzanway-web', apiHost: '${JUPITER_HOST}' });
+          }
+        `}
+      </Script>
 
       <div id="modal-root"></div>
 
@@ -227,7 +224,7 @@ function MyApp({ Component, pageProps }) {
           <ClarityInit />
           <Theme>
             <JupyterAnalytics
-              apiEndpoint="https://dev.jupiter.tarzanway.com"
+              apiEndpoint={JUPITER_HOST}
               userId={id || null}
               batchSize={10}
               flushInterval={3000}

@@ -21,6 +21,9 @@ interface OtpCardProps {
    *  and a mid-chat `prompt_login` sign-in. */
   heading?: string;
   submitLabel?: string;
+  /** Current itinerary id, sent on the login-funnel analytics events (the chat
+   *  URL isn't `/itinerary/...`, so the worker can't derive it on its own). */
+  itineraryId?: string;
 }
 
 /**
@@ -34,11 +37,28 @@ const OtpCard: React.FC<OtpCardProps> = ({
   onSkip,
   heading = "Save our work",
   submitLabel = "Send OTP & Start",
+  itineraryId,
 }) => {
   const dispatch = useDispatch();
-  const { trackUserLogin } = useAnalytics();
+  const {
+    trackUserLogin,
+    trackLoginInitiateStarted,
+    trackLoginInitiateCompleted,
+    trackLoginCompleteStarted,
+    trackLoginCompleteCompleted,
+    trackSkipLoginCompleted,
+  } = useAnalytics();
   const recaptchaRef = useRef<any>(null);
   const verifiedFiredRef = useRef(false);
+  // Login-funnel analytics. `initiatePendingRef` marks an OTP-send request as
+  // in-flight so the effect below fires login_initiate_completed exactly once
+  // when it settles (works for both first send and resend, where otpSent doesn't
+  // toggle). `initiateIsResendRef` remembers which kind it was.
+  const initiatePendingRef = useRef(false);
+  const initiateIsResendRef = useRef(false);
+  // Captures the new-user flag at verify time — AUTH_SUCCESS clears redux's
+  // `newUser` before the token effect fires login_complete_completed.
+  const completeWasNewUserRef = useRef(false);
   // The last 4-digit code we've already submitted for verification. Guards the
   // auto-submit so a re-fired input event (mobile OTP autofill, IME, a stray
   // keystroke while the request is in flight) can't post the same OTP twice —
@@ -55,6 +75,8 @@ const OtpCard: React.FC<OtpCardProps> = ({
   const emailfailmessage = useSelector((s: any) => s.auth?.emailfailmessage);
   const newUser = useSelector((s: any) => s.auth?.newUser);
   const token = useSelector((s: any) => s.auth?.token);
+  // Resolved after a successful verify — sent as user_id on login_complete_completed.
+  const userId = useSelector((s: any) => s.auth?.id);
   const CountryCodes = useSelector((s: any) => s.CountryCodes);
   // Visitor's IP-resolved location (bootstrapped once in _app). Used to preselect
   // the country code so international users don't have to change it from India.
@@ -153,13 +175,54 @@ const OtpCard: React.FC<OtpCardProps> = ({
   // Full dial-code-prefixed mobile used for both initiate + complete.
   const fullMobile = `${dialCode}${phone}`;
 
-  // When auth.token appears, the verify succeeded — notify the parent once.
+  // Shared properties for the login-funnel analytics events. Held in a ref that
+  // we refresh every render so the state-transition effects (whose deps don't
+  // include phone/channel) always read the latest values without re-running.
+  const loginCtxRef = useRef<Record<string, any>>({});
+  loginCtxRef.current = {
+    itinerary_id: itineraryId,
+    channel: whatsapp ? "whatsapp" : "sms",
+    country: extension,
+    dial_code: dialCode,
+    mobile: fullMobile,
+  };
+
+  // When auth.token appears, the verify succeeded — notify the parent once and
+  // close out the login-complete funnel event (the tracker flushes it right away
+  // since the parent may unmount this card as the chat resumes).
   useEffect(() => {
     if (token && !verifiedFiredRef.current) {
       verifiedFiredRef.current = true;
+      trackLoginCompleteCompleted({
+        ...loginCtxRef.current,
+        user_id: userId ?? null,
+        is_new_user: completeWasNewUserRef.current,
+      });
       onVerified();
     }
-  }, [token, onVerified]);
+  }, [token, onVerified, trackLoginCompleteCompleted, userId]);
+
+  // Settle an in-flight OTP-send: once it's no longer loading, a definitive
+  // outcome has landed. otpSent (with no mobileFail) means the code went out →
+  // login_initiate_completed; mobileFail means it was rejected (bad number, rate
+  // limit, network) → no completed event. Keyed on the outcome flags rather than
+  // a loading edge so it's correct regardless of dispatch batching, and works
+  // for resend (where otpSent stays true across the request).
+  useEffect(() => {
+    if (!initiatePendingRef.current || loading) return;
+    if (mobileFail) {
+      initiatePendingRef.current = false; // rejected — not "completed"
+      return;
+    }
+    if (otpSent) {
+      initiatePendingRef.current = false;
+      trackLoginInitiateCompleted({
+        ...loginCtxRef.current,
+        is_resend: initiateIsResendRef.current,
+        is_new_user: !!newUser,
+      });
+    }
+  }, [loading, otpSent, mobileFail, newUser, trackLoginInitiateCompleted]);
 
   // Keep the portaled dropdown pinned just below the field. Recompute on open
   // and on any scroll/resize (capture=true catches the inner chat scroller too)
@@ -198,6 +261,12 @@ const OtpCard: React.FC<OtpCardProps> = ({
 
   const sendOtp = () => {
     if (!phoneValid) return;
+    initiateIsResendRef.current = false;
+    initiatePendingRef.current = true;
+    trackLoginInitiateStarted({
+      ...loginCtxRef.current,
+      is_resend: false,
+    });
     // Clear any prior "couldn't send" error before firing a fresh request so a
     // stale message (e.g. a rate-limit warning) doesn't linger past the retry.
     if (mobileFail) dispatch(authaction.authResetLogin() as any);
@@ -214,6 +283,12 @@ const OtpCard: React.FC<OtpCardProps> = ({
   // code verifies cleanly, and re-arms the countdown. (Mirrors BotLoginModal.)
   const resendOtp = () => {
     if (loading || counter > 0) return;
+    initiateIsResendRef.current = true;
+    initiatePendingRef.current = true;
+    trackLoginInitiateStarted({
+      ...loginCtxRef.current,
+      is_resend: true,
+    });
     setOtp("");
     submittedCodeRef.current = null;
     setOtpResent((p) => !p);
@@ -226,6 +301,12 @@ const OtpCard: React.FC<OtpCardProps> = ({
   };
 
   const verify = (code: string) => {
+    // AUTH_SUCCESS clears newUser, so capture it now for login_complete_completed.
+    completeWasNewUserRef.current = !!newUser;
+    trackLoginCompleteStarted({
+      ...loginCtxRef.current,
+      is_new_user: !!newUser,
+    });
     dispatch(
       authaction.auth(
         fullMobile,
@@ -274,6 +355,13 @@ const OtpCard: React.FC<OtpCardProps> = ({
     setOtp("");
     submittedCodeRef.current = null;
     dispatch(authaction.authResetOtpFail() as any);
+  };
+
+  // "Continue without login" — record the deliberate skip before handing control
+  // back to the parent (which resumes the chat and may unmount this card).
+  const handleSkip = () => {
+    trackSkipLoginCompleted({ ...loginCtxRef.current });
+    onSkip?.();
   };
 
   // Go back to the phone-entry step. `phone` lives in local state so it's kept
@@ -625,12 +713,12 @@ const OtpCard: React.FC<OtpCardProps> = ({
           {onSkip && (
             <button
               type="button"
-              onClick={onSkip}
+              onClick={handleSkip}
               disabled={loading}
               className="w-full mt-[12px] text-[12.5px] font-semibold text-[#2e3034]"
               style={{ cursor: loading ? "not-allowed" : "pointer" }}
             >
-             Continue without login
+              Continue without login
             </button>
           )}
 

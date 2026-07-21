@@ -7,6 +7,7 @@ import * as orderaction from "../../../store/actions/order";
 import { MdEdit } from "react-icons/md";
 import { useRouter } from "next/router";
 import { getIndianPrice } from "../../../services/getIndianPrice";
+import { formatCurrencyValue } from "../../../services/formatCurrencyValue";
 import { getHumanDateWithYear } from "../../../services/getHumanDateWithYear";
 import urls from "../../../services/urls";
 import { ITINERARY_STATUSES, MERCURY_HOST } from "../../../services/constants";
@@ -142,7 +143,7 @@ const CouponModal = ({
       const formattedCoupons = response.data.map((coupon) => ({
         id: coupon.id,
         code: coupon.code,
-        title: `Save ${currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}${coupon.discount_value}`,
+        title: `Save ${currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}${formatCurrencyValue(coupon.discount_value, currency)}`,
         description: coupon.description,
         expiry: new Date(coupon.end_time).toLocaleDateString("en-IN"),
         type: coupon.discount_type.toLowerCase(),
@@ -621,7 +622,7 @@ const PaymentSuccess = ({ amount, onDownloadInvoice, loading }) => {
             <p className="text-md font-400 leading-xl text-text-spacegrey mb-zero max-ph:mb-md">
               Your full payment of{" "}
               {currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}
-              {amount?.toLocaleString("en-IN")} has been received. No pending
+              {formatCurrencyValue(amount, currency)} has been received. No pending
               balance.
             </p>
           </div>
@@ -795,7 +796,7 @@ const CouponSection = ({
                     {currencySymbols?.[currency]
                       ? currencySymbols?.[currency]
                       : "₹"}
-                    {maxDiscount.toLocaleString("en-IN")}
+                    {formatCurrencyValue(maxDiscount, currency)}
                   </span>
                 )}
               </div>
@@ -870,7 +871,7 @@ const PriceDetails = ({
             {currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}
             {typeof itineraryCost === "string"
               ? itineraryCost
-              : itineraryCost.toLocaleString("en-IN")}
+              : formatCurrencyValue(itineraryCost, currency)}
           </span>
         </div>
 
@@ -888,7 +889,7 @@ const PriceDetails = ({
             <span>GST</span>
             <span>
               {currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}
-              {Cart?.gst?.toLocaleString("en-IN")}
+              {formatCurrencyValue(Cart?.gst, currency)}
             </span>
           </div>}
       
@@ -898,7 +899,7 @@ const PriceDetails = ({
             <span>TCS</span>
             <span>
               {currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}
-              {Cart?.tcs?.toLocaleString("en-IN")}
+              {formatCurrencyValue(Cart?.tcs, currency)}
             </span>
           </div>
         )}
@@ -911,8 +912,8 @@ const PriceDetails = ({
                 ? currencySymbols?.[currency]
                   ? "-" +
                     currencySymbols?.[currency] +
-                    Math.abs(couponDiscount).toLocaleString("en-IN")
-                  : "-₹" + Math.abs(couponDiscount).toLocaleString("en-IN")
+                    formatCurrencyValue(Math.abs(couponDiscount), currency)
+                  : "-₹" + formatCurrencyValue(Math.abs(couponDiscount), currency)
                 : `${currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}0`}
             </span>
           </div>
@@ -926,7 +927,7 @@ const PriceDetails = ({
               {currencySymbols?.[currency]
                 ? currencySymbols?.[currency]
                 : "₹"}{" "}
-              {finalTotal.toLocaleString("en-IN")}
+              {formatCurrencyValue(finalTotal, currency)}
             </span>
           </div>
         </div>
@@ -1139,7 +1140,7 @@ const ItineraryInclusions = ({
                       {currencySymbols?.[currency]
                         ? currencySymbols?.[currency]
                         : "₹"}{" "}
-                      {getIndianPrice(Math.round(categoryTotal))}
+                      {formatCurrencyValue(categoryTotal, currency)}
                     </div>
                   )}
                 </>
@@ -1318,7 +1319,7 @@ const ItineraryInclusions = ({
                             {currencySymbols?.[currency]
                               ? currencySymbols?.[currency]
                               : "₹"}
-                            {getIndianPrice(Math.round(booking.booking_cost))}
+                            {formatCurrencyValue(booking.booking_cost, currency)}
                           </div>
                         )}
                       </div>
@@ -2551,7 +2552,7 @@ const Details = (props) => {
                   areAllInclusionsPaid() &&
                   Cart?.discounted_cost > 0 ? (
                     <PaymentSuccess
-                      amount={getIndianPrice(Math.round(Cart?.discounted_cost))}
+                      amount={Cart?.discounted_cost}
                       onDownloadInvoice={() => {}}
                     />
                   ) : !isItineraryInFuture() && !areAnyInclusionsPaid() ? (
@@ -2859,19 +2860,15 @@ const Details = (props) => {
                     {/* Price Details */}
 
                     <PriceDetails
-                      itineraryCost={getIndianPrice(
-                        Math.round(
-                          Cart?.taxation_policy == "TCS" ? Cart?.total_itinerary_cost : Cart?.total_cost
-                        )
-                      )}
+                      itineraryCost={
+                        Cart?.taxation_policy == "TCS"
+                          ? Cart?.total_itinerary_cost
+                          : Cart?.total_cost
+                      }
                       lockInCost={0}
                       couponDiscount={appliedCoupon ? -couponSavedAmount : 0}
-                      surchargesTaxes={
-                        Math.round(Cart?.surcharges_and_taxes) || 0
-                      }
-                      totalPayable={getIndianPrice(
-                        Math.round(calculateFilteredTotal()),
-                      )}
+                      surchargesTaxes={Cart?.surcharges_and_taxes || 0}
+                      totalPayable={calculateFilteredTotal()}
                       selectedPaymentOption={selectedPaymentOption}
                       selectedInclusions={selectedInclusions}
                       totalBookingsCost={Cart?.total_bookings_cost}
@@ -2885,8 +2882,9 @@ const Details = (props) => {
                             color="green"
                             className="inline align-middle mr-1 font-semibold"
                           />
-                          {`You have paid ${currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}${Math.round(
+                          {`You have paid ${currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}${formatCurrencyValue(
                             Cart?.amount_paid,
+                            currency,
                           )} for your itinerary. ${
                             Cart.total_payable_amount != 0
                               ? "Please pay the remaining balance at least 7 days before your trip starts to confirm your booking."

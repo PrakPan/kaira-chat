@@ -13,7 +13,10 @@
     userId: null,
     anonymousId: null,
     userIp: null,
-    apiEndpoint: 'https://dev.jupiter.tarzanway.com',
+    // Fallback only — the real endpoint is injected at runtime via JUPITER_CONFIG
+    // (initializeAnalytics), which is fed from NEXT_PUBLIC_JUPITER_HOST. This is a
+    // static public asset so it can't read process.env at build time.
+    apiEndpoint: 'https://jupiter.tarzanway.com',
     apiKey: '',
     queue: [],
     failedQueue: [],
@@ -181,9 +184,8 @@
     analyticsState.queue.push(event);
     
     
-    // Critical events - send immediately (session_started included so every
-    // session is recorded even if the visitor bounces before the batch flushes)
-    const criticalEvents = ['session_started', 'payment_attempted', 'booking_confirmed', 'user_login', 'user_logout'];
+    // Critical events - send immediately
+    const criticalEvents = ['payment_attempted', 'booking_confirmed', 'user_login', 'user_logout'];
     
     if (criticalEvents.includes(eventName)) {
       const singleEvent = analyticsState.queue.pop();
@@ -221,7 +223,9 @@
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${analyticsState.apiKey}`
         },
-        body: JSON.stringify(event)
+        body: JSON.stringify(event),
+        // Let the request outlive the page if the tab is closing mid-send.
+        keepalive: true
       });
 
       if (response.ok) {
@@ -239,7 +243,14 @@
 
   // Flush events
   const flushEvents = async () => {
-    if (analyticsState.queue.length === 0 || analyticsState.pendingFlush) return;
+    if (analyticsState.queue.length === 0) return;
+    // A flush is already in flight. Don't drop the just-queued events on the
+    // floor — reschedule so they go out once the current send settles (e.g.
+    // when the queue hits batchSize while a previous batch is still posting).
+    if (analyticsState.pendingFlush) {
+      scheduleFlush();
+      return;
+    }
 
     analyticsState.pendingFlush = true;
 
@@ -273,7 +284,9 @@
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${analyticsState.apiKey}`
         },
-        body: JSON.stringify(event)
+        body: JSON.stringify(event),
+        // Let the request outlive the page if the tab is closing mid-send.
+        keepalive: true
       });
 
       if (response.ok) {
@@ -300,7 +313,9 @@
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${analyticsState.apiKey}`
         },
-        body: JSON.stringify(events)
+        body: JSON.stringify(events),
+        // Let the batch outlive the page if the tab is closing mid-send.
+        keepalive: true
       });
 
       if (response.ok) {
@@ -360,9 +375,7 @@
   // Initialize
   const initializeAnalytics = async (config = {}) => {
     
-    // Prefer the session id computed on the main thread (persisted, with a
-    // 30-min sliding timeout). Only generate one as a last resort.
-    analyticsState.sessionId = config.sessionId || analyticsState.sessionId || generateUUID();
+    analyticsState.sessionId = generateUUID();
     analyticsState.anonymousId = getOrCreateAnonymousId();
     
     if (config.apiEndpoint) analyticsState.apiEndpoint = config.apiEndpoint;
@@ -487,50 +500,59 @@
     return flushEvents();
   };
 
-  // Point the sender at a session id computed on the main thread. Called on
-  // init (via config) and whenever the main thread re-mints a session.
-  const setSession = (sessionId) => {
-    if (sessionId) analyticsState.sessionId = sessionId;
-    return analyticsState.sessionId;
-  };
-
-  // Keep user attribution in sync (login/logout/hydration) without emitting a
-  // spurious identify event.
-  const setUserId = (userId) => {
-    analyticsState.userId =
-      userId === undefined || userId === null || userId === '' ? null : userId;
-    return analyticsState.userId;
-  };
-
-  // Unload-safe flush. navigator.sendBeacon with a text/plain blob keeps this a
-  // CORS-simple request (no preflight, which beacons can't do); the backend
-  // parses the JSON body regardless of Content-Type. Falls back to async flush.
-  const flushBeacon = () => {
-    if (analyticsState.queue.length === 0) return true;
-    try {
-      if (typeof navigator !== 'undefined' && typeof navigator.sendBeacon === 'function') {
-        const events = analyticsState.queue;
-        const url = `${analyticsState.apiEndpoint}/v1/events/batch`;
-        const blob = new Blob([JSON.stringify(events)], { type: 'text/plain;charset=UTF-8' });
-        const ok = navigator.sendBeacon(url, blob);
-        if (ok) {
-          analyticsState.queue = [];
-          analyticsState.stats.eventsSent += events.length;
-          return true;
-        }
-      }
-    } catch (e) {
-      // fall through to async flush
-    }
-    flushEvents();
-    return false;
-  };
-
   const cleanup = () => {
     if (analyticsState.flushTimer) clearTimeout(analyticsState.flushTimer);
     if (analyticsState.retryTimer) clearTimeout(analyticsState.retryTimer);
-    flushBeacon();
+    forceFlush();
   };
+
+  // Best-effort flush when the page is hidden or unloading so queued (and
+  // previously-failed, retry-pending) events aren't lost when the tab closes or
+  // the user backgrounds it. The keepalive fetches above let these requests
+  // complete during unload. Bypasses the pendingFlush/timer machinery — this is
+  // a terminal, fire-and-forget drain.
+  const flushOnHide = () => {
+    if (analyticsState.retryTimer) {
+      clearTimeout(analyticsState.retryTimer);
+      analyticsState.retryTimer = null;
+    }
+    // Fold retry-pending events back into the outgoing batch so they go too.
+    if (analyticsState.failedQueue.length) {
+      analyticsState.queue.push(...analyticsState.failedQueue);
+      analyticsState.failedQueue = [];
+    }
+    if (analyticsState.queue.length === 0) return;
+
+    const events = [...analyticsState.queue];
+    analyticsState.queue = [];
+    if (analyticsState.flushTimer) {
+      clearTimeout(analyticsState.flushTimer);
+      analyticsState.flushTimer = null;
+    }
+
+    if (events.length === 1) {
+      sendSingleEvent(events[0]);
+    } else {
+      sendBatch(events);
+    }
+  };
+
+  // Register lifecycle listeners. Partytown proxies these to the real document/
+  // window; wrapped in try/catch so a proxy hiccup can't break initialization.
+  try {
+    if (typeof addEventListener === 'function') {
+      addEventListener('visibilitychange', () => {
+        if (typeof document !== 'undefined' && document.visibilityState === 'hidden') {
+          flushOnHide();
+        }
+      });
+      // pagehide is the reliable unload signal on mobile Safari (beforeunload
+      // isn't); pairs with keepalive to salvage the final batch.
+      addEventListener('pagehide', flushOnHide);
+    }
+  } catch (e) {
+    console.warn('Could not attach analytics lifecycle listeners:', e);
+  }
 
   // Expose API
   const JupiterAnalytics = {
@@ -538,9 +560,6 @@
     track,
     trackBulk,
     flushEvents: forceFlush,
-    flushBeacon,
-    setSession,
-    setUserId,
     identifyUser,
     getState,
     cleanup,
