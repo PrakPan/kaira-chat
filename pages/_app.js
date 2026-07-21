@@ -9,7 +9,7 @@ import "../containers/itinerary/typography.css";
 import "../styles/kaira-sidebar.css";
 import { useRouter } from "next/router";
 import * as ga from "../services/ga/Index";
-import { FACEBOOK_PIXEL_ID, GOOGLE_CLIENT_ID } from "../services/constants";
+import { FACEBOOK_PIXEL_ID, GOOGLE_CLIENT_ID, JUPITER_HOST } from "../services/constants";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import dynamic from "next/dynamic";
 import Head from "next/head";
@@ -205,13 +205,13 @@ function MyApp({ Component, pageProps }) {
 
       {/* Jupiter Analytics */}
       <Script
-        src="https://jupiter.tarzanway.com/jupiter.js"
+        src={`${JUPITER_HOST}/jupiter.js`}
         strategy="afterInteractive"
       />
       <Script strategy="afterInteractive">
         {`
           if(window.JupiterAnalytics){
-            window.JupiterAnalytics.init({ siteId: 'tarzanway-web', apiHost: 'https://jupiter.tarzanway.com' });
+            window.JupiterAnalytics.init({ siteId: 'tarzanway-web', apiHost: '${JUPITER_HOST}' });
           }
         `}
       </Script>
@@ -224,7 +224,7 @@ function MyApp({ Component, pageProps }) {
           <ClarityInit />
           <Theme>
             <JupyterAnalytics
-              apiEndpoint="https://jupiter.tarzanway.com"
+              apiEndpoint={JUPITER_HOST}
               userId={id || null}
               batchSize={10}
               flushInterval={3000}
