@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import Head from "next/head";
 import { connect, useSelector } from "react-redux";
-import BotApp from "../../components/bot-components/BotApp";
+import BotApp from "../../components/bot-components/BotAppClient";
 import setHotLocationSearch from "../../store/actions/hotLocationSearch";
 import * as authaction from "../../store/actions/auth";
 

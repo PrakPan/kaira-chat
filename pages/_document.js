@@ -31,11 +31,10 @@ export default class MyDocument extends Document {
     return (
       <Html id="html" lang="en">
         <Head>
-          <title>AI Trip Planner & Custom Travel Itineraries | The Tarzan Way</title>
-          <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=5"
-          />
+          {/* No <title> or viewport here — a title in _document renders a
+              SECOND title tag on every page, and Next.js disallows viewport in
+              _document. Both live in _app.js (next/head), which dedupes against
+              page-level tags. */}
 
           {/* ---------- Fonts (non render-blocking, SSR-safe) ----------
               All families in a single request. Loaded as media="print" so the
@@ -73,6 +72,10 @@ export default class MyDocument extends Document {
           </noscript>
           <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+          <link
+            href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+            rel="stylesheet"
+          />
 
           {/* Third-party SDKs deferred so they don't block initial render */}
           <script defer src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`}></script>
@@ -169,16 +172,16 @@ e.src="undefined"!==typeof MIXPANEL_CUSTOM_LIB_URL?
 MIXPANEL_CUSTOM_LIB_URL:"file:"===f.location.protocol&&"//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js".match(/^\/\\//)?
 "https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js":"//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js";
 g=f.getElementsByTagName("script")[0];g.parentNode.insertBefore(e,g)}})(document,window.mixpanel||[]);
-mixpanel.init('a87174a5773c86d78b1c1b8d51015a16', {debug: true});
-mixpanel.track('Sign up');`,
+mixpanel.init('a87174a5773c86d78b1c1b8d51015a16', {debug: false});`,
             }}
           />
 
-          {/* ---------- Favicon ---------- */}
-          <link
-            rel="icon"
-            href="https://d31aoa0ehgvjdi.cloudfront.net/media/website/logoyellow.png"
-          />
+          {/* ---------- Favicon / app icons ---------- */}
+          <link rel="icon" href="/favicon.ico" sizes="any" />
+          <link rel="icon" type="image/svg+xml" href="/logo/ttw-icon.svg" />
+          <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+          <link rel="manifest" href="/site.webmanifest" />
+          <meta name="theme-color" content="#0b1220" />
 
           {this.props.styleTags}
         </Head>

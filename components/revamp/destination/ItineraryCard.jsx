@@ -53,7 +53,7 @@ const ItineraryCard = ({ itinerary, onClick }) => {
           </div>
         </div>
 
-        <style>{`
+        <style dangerouslySetInnerHTML={{ __html: `
           .swiper-pagination-bullet {
             background: rgba(255, 255, 255, 0.6);
             opacity: 1;
@@ -64,7 +64,7 @@ const ItineraryCard = ({ itinerary, onClick }) => {
           .swiper-pagination {
             bottom: 16px !important;
           }
-        `}</style>
+        ` }} />
       </div>
 
       <div className="mt-2">

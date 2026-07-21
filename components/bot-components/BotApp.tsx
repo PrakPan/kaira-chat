@@ -7,19 +7,29 @@ import React, {
 } from "react";
 import { ChatKitPanel } from "./components/ChatKitPanel";
 import MapView from "./components/MapView";
-import ViewToggle from "./components/ViewToggle";
 import Sidebar from "./components/Sidebar";
 import { getUserAvatarColor, getUserInitial } from "./utils/avatarColor";
+import { formatCompactTime, groupThreads } from "./utils/threadGroups";
+import { LOGO_HEIGHT } from "./constants";
+import {
+  HistoryIcon as KairaHistoryIcon,
+  LogoutIcon as KairaLogoutIcon,
+  MapIcon as KairaMapIcon,
+  PlusIcon as KairaPlusIcon,
+  SuitcaseIcon as KairaSuitcaseIcon,
+  UserIcon as KairaUserIcon,
+} from "./components/kairaIcons";
+import { useTripsCount } from "./hooks/useTripsCount";
 import StartScreen, { type TravellerStory } from "./components/StartScreen";
 import IntakeLeftPanel from "./components/IntakeLeftPanel";
 import type { ThemeConfig } from "./types/themeConfig";
 import ChatWelcomeScreen from "./components/ChatWelcomeScreen";
 import ItineraryShimmer from "./components/ItineraryShimmer";
-import TrustIndicators from "./components/TrustIndicators";
 import { useUserLocation } from "./hooks/useUserLocation";
 import { useMapBounds } from "./hooks/useMapBounds";
 import { getPlatform } from "./hooks/useChat";
 import ItineraryContainer from "../../containers/itinerary/ItineraryContainer";
+import ItineraryLegend from "../itinerary/itineraryCity/ItineraryLegend";
 import type {
   Location,
   ItineraryData,
@@ -45,7 +55,7 @@ import setCart from "../../store/actions/Cart";
 import { openNotification } from "../../store/actions/notification";
 import { setUnreadMessages, setThreadCustomerName } from "../../store/actions/chatState";
 import axios from "axios";
-import { MERCURY_HOST } from "../../services/constants";
+import { MERCURY_HOST, CHATKIT_API_URL } from "../../services/constants";
 import SmallGallery from "../../containers/newitinerary/overview/SmallGallery";
 import NewSummaryContainers from "../../containers/itinerary/NewSummaryContainers";
 import Image from "next/image";
@@ -58,9 +68,10 @@ import NotificationPopup from "../ui/NotificationPopup";
 import BotLoginModal from "./components/BotLoginModal";
 import { createPortal } from "react-dom";
 import { currencySymbols } from "../../data/currencySymbols";
+import { formatCurrencyValue } from "../../services/formatCurrencyValue";
 import { useAnalytics } from "../../hooks/useAnalytics";
 import Login from "../modals/Login";
-import { FiMap, FiNavigation, FiCalendar, FiBookmark } from "react-icons/fi";
+import { FiCalendar } from "react-icons/fi";
 import { tr } from "date-fns/locale";
 import {
   takePendingFiles,
@@ -69,6 +80,151 @@ import {
 
 type MobilePanel = "map" | "chat" | "itinerary";
 type LeftPanelMode = "default" | "itinerary-loading" | "itinerary-ready";
+
+// The noun follows the trip's group_type ("Family" → "families"), so the line
+// reads as social proof from people like the traveller. Irregular plurals are
+// listed; anything else takes a trailing "s".
+const GROUP_TYPE_PLURALS: Record<string, string> = {
+  family: "families",
+  couple: "couples",
+  solo: "solo travellers",
+  friends: "friends",
+  group: "groups",
+};
+
+const groupTypePlural = (groupType?: string | null): string => {
+  const key = groupType?.trim().toLowerCase();
+  if (!key) return "travellers";
+  return GROUP_TYPE_PLURALS[key] ?? `${key}s`;
+};
+
+// How many other trips on this route share the traveller's group_type, read off
+// the detail payload's `similar_route_stats.group_type_stats` ({ Couple: 13,
+// Family: 17, … }) and matched to `group_type` case-insensitively. Returns null
+// whenever there is nothing worth claiming — drafts and the bot flow carry no
+// stats at all, and a count of 1 is left out because the copy is plural and
+// "1 couples" would need singular/verb agreement the line doesn't have.
+const routeSocialProofCount = (
+  stats: any,
+  groupType?: string | null,
+): number | null => {
+  const key = groupType?.trim().toLowerCase();
+  const byGroupType = stats?.group_type_stats;
+  if (!key || !byGroupType) return null;
+  const match = Object.entries(byGroupType).find(
+    ([name]) => name.trim().toLowerCase() === key,
+  );
+  const count = match?.[1];
+  return typeof count === "number" && count > 1 ? count : null;
+};
+
+// Returns a fragment, not a row: the mobile card shares its flex row with the
+// settings/share icons, while desktop gives it a row of its own. `wrap` lets the
+// caller drop the single-line ellipsis so the line wraps to its full text — used
+// on the narrow mobile card, where truncating would clip "…have chosen".
+const KairaSocialProof = ({
+  count,
+  groupType,
+  wrap = false,
+}: {
+  count: number;
+  groupType?: string | null;
+  wrap?: boolean;
+}) => (
+  <>
+    <span className="shrink-0 w-[30px] h-[30px] rounded-full overflow-hidden bg-gradient-to-b from-[#a8d2f5] to-[#7ab8e8]">
+      <img
+        src="/KairaInsta.png"
+        alt="Kaira"
+        className="w-full h-full object-cover"
+      />
+    </span>
+    <span
+      className={`min-w-0 ${
+        wrap ? "" : "truncate"
+      } text-[13px] max-ph:text-[12px] font-inter text-[#4b5159]`}
+    >
+      <span className="font-semibold text-[#0B1220]">
+        {count} {groupTypePlural(groupType)}
+      </span>{" "}
+      have chosen this route
+    </span>
+  </>
+);
+
+// Hairline long arrow separating route stops in the header card. Matches the
+// carousel cards' `.arrow` (a 1px rule with a small chevron head).
+const RouteArrow = () => (
+  <svg
+    width="22"
+    height="8"
+    viewBox="0 0 22 8"
+    fill="none"
+    aria-hidden
+    className="shrink-0"
+  >
+    <path
+      d="M0 4h20M17 1l3.2 3-3.2 3"
+      stroke="#c3c7cc"
+      strokeWidth="1"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+// The Map / Bookings / Route views have no tab strip to return through, so each
+// carries this. It's a rounded pill; positioning is left to BackToItineraryBar,
+// which pins it centered, just above the cart bar, on every one of those views.
+const BackToItinerary = ({ onClick }: { onClick: () => void }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className="pointer-events-auto flex items-center gap-[6px] rounded-full bg-[#07213A] shadow-[0_2px_10px_rgba(11,18,32,0.12)] pl-[11px] pr-[15px] py-[8px] text-[12.5px] font-inter font-semibold text-white hover:bg-[#0d2b47]"
+  >
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M19 12H5" />
+      <path d="m12 19-7-7 7-7" />
+    </svg>
+    Back to itinerary
+  </button>
+);
+
+// Pins the pill `fixed`, horizontally centered, a hair above the cart bar.
+// `barStyle` (the panel-aligned left/width the cart bar itself uses) keeps it
+// inside the left pane on desktop; without it — on mobile — it spans the screen
+// and centers there. `bottom` is the measured cart-bar height plus a small gap.
+const BackToItineraryBar = ({
+  onClick,
+  bottom,
+  barStyle,
+}: {
+  onClick: () => void;
+  bottom: number;
+  barStyle?: React.CSSProperties;
+}) => (
+  <div
+    className="fixed z-30 flex justify-center pointer-events-none"
+    style={{
+      left: barStyle?.left ?? 0,
+      width: barStyle?.width,
+      right: barStyle ? "auto" : 0,
+      bottom,
+    }}
+  >
+    <BackToItinerary onClick={onClick} />
+  </div>
+);
 
 function transformDraftToItinerary(draft: any) {
   const routes = draft?.routes ?? [];
@@ -287,6 +443,12 @@ export default function BotApp({
   // the default hero banner on the left and inject an empty intake form on the
   // right, without waiting for a backend message.
   const [startEmptyIntake, setStartEmptyIntake] = useState(false);
+  // True when the chat was opened via a hero prompt seed (`?seed=...`). Like the
+  // `?intake=1` landing it shows the IntakeLeftPanel default hero on the left
+  // immediately — but WITHOUT injecting an empty intake form on the right, since
+  // the seeded message + the backend's own form_fields drive the conversation.
+  // The hero then swaps to the destination image once the intake picks a place.
+  const [seedActive, setSeedActive] = useState(false);
   // The destination chosen inside the in-chat intake form. The left hero panel
   // only takes over once a place is picked; until then we keep the StartScreen
   // (inspiration) visible instead of a default hero image.
@@ -354,6 +516,12 @@ export default function BotApp({
   );
   const currency = useSelector((state: any) => state.currency);
   const [isMobile, setIsMobile] = useState(false);
+  // `isMobile` starts false (SSR has no viewport) and only resolves to the real
+  // value after the breakpoint effect measures the window on mount. Handoffs
+  // that pick a ChatKitPanel instance by `isMobile` (the hero seed consumer
+  // below) must wait for this so they don't act against the desktop panel and
+  // then have it torn down when `isMobile` flips — see the seed effect.
+  const [viewportMeasured, setViewportMeasured] = useState(false);
   // Mobile effect popup — shown for 10s when focus_route / itinerary effects fire
   const [mobileEffectPopup, setMobileEffectPopup] = useState<{
     type: "map" | "itinerary";
@@ -452,6 +620,10 @@ export default function BotApp({
   const itineraryRedux = useSelector((state: any) => state.Itinerary);
   const galleryImages = useSelector((state: any) => state.galleryImages);
   const itineraryReduxName = itineraryRedux?.name;
+  const socialProofCount = routeSocialProofCount(
+    itineraryRedux?.similar_route_stats,
+    itineraryRedux?.group_type,
+  );
 
   const attachUserToItinerary = useCallback(async () => {
     if (itineraryRedux?.customer_name) return;
@@ -491,12 +663,12 @@ export default function BotApp({
   );
   const statusNotes = useSelector((state: any) => state.ItineraryStatus?.notes);
 
-  // ── Single source of truth for "itinerary is complete" (drives the
-  // Route/Bookings tabs in ViewToggle + MobileLayout) ──────────────────────
+  // ── Single source of truth for "itinerary is complete" (gates the Bookings
+  // CTA on the cart bar) ───────────────────────────────────────────────────
   // Previously each call site recomputed this from `state.Itinerary.status`,
   // which is set LATE — only after ItineraryContainer finishes polling and
   // fetches the canonical itinerary. On first arrival at P2 that field is
-  // still "Draft"/undefined, so Route + Bookings tabs (and the gallery-backed
+  // still "Draft"/undefined, so Route + Bookings entry points (and the gallery-backed
   // views) were missing until a manual refresh. The ItineraryStatus slice's
   // `finalized_status`/`itinerary_status` are set EARLY (synchronously from
   // the status endpoint in restoreItineraryDirectly), so prefer those and
@@ -519,6 +691,119 @@ export default function BotApp({
   const [showShare, setShowShare] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showSettingsLoginPrompt, setShowSettingsLoginPrompt] = useState(false);
+  // Mobile: the compact trip strip collapses the traveller/date/social meta
+  // behind a chevron. Desktop always shows the full header.
+  const [tripMetaOpen, setTripMetaOpen] = useState(false);
+  // Expanding the card grows it by ~120px, and that layout shift (plus any
+  // momentum still settling from the fling that got the user here) fires a
+  // downward scroll event, which would collapse the card again immediately.
+  const suppressMetaCollapseUntilRef = React.useRef(0);
+
+  // Once the itinerary pane is scrolled off the top, the trip card sheds
+  // everything but its three identifying lines — name, travellers/dates, route.
+  // Same on desktop (where the card is a pinned header strip) and mobile (where
+  // it is `sticky top-0` inside the pane).
+  const [headerCondensed, setHeaderCondensed] = useState(false);
+
+  // Stable identities so they don't defeat MobileLayout's React.memo.
+  // `scrolledAway` drives the condensed card; the meta block only collapses on
+  // a *downward* scroll, so scrolling back up doesn't fight a chevron tap.
+  const handleItineraryScrolled = useCallback(
+    (scrolledAway: boolean, isDown: boolean) => {
+      setHeaderCondensed(scrolledAway);
+      if (!isDown) return;
+      if (Date.now() < suppressMetaCollapseUntilRef.current) return;
+      setTripMetaOpen(false);
+    },
+    [],
+  );
+
+  // The bottom CTA bar is `fixed` (a transformed ancestor would trap it, and
+  // #chatContainer would scroll it away if it were absolute), so it can't
+  // inherit the left panel's box. Measure the panel and hand the bar its exact
+  // left/width — that's what makes its right edge meet the chat divider even as
+  // the sidebar collapses and the panel animates to a new width.
+  const leftPanelRef = useRef<HTMLDivElement | null>(null);
+  const [leftPanelBox, setLeftPanelBox] = useState<{
+    left: number;
+    width: number;
+  } | null>(null);
+  useEffect(() => {
+    if (isMobile) {
+      setLeftPanelBox(null);
+      return undefined;
+    }
+    const el = leftPanelRef.current;
+    if (!el) return undefined;
+    const measure = () => {
+      const { left, width } = el.getBoundingClientRect();
+      setLeftPanelBox({ left, width });
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    window.addEventListener("resize", measure);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, [isMobile]);
+  const ctaBarStyle = React.useMemo<React.CSSProperties | undefined>(
+    () =>
+      isMobile || !leftPanelBox
+        ? undefined
+        : { left: leftPanelBox.left, width: leftPanelBox.width, right: "auto" },
+    [isMobile, leftPanelBox],
+  );
+
+  // Desktop scroller for the itinerary body. On mobile the pane that actually
+  // scrolls lives in MobileLayout, which reports through onItineraryScrolled.
+  const desktopItineraryScrollRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (isMobile) return undefined;
+    const el = desktopItineraryScrollRef.current;
+    if (!el) return undefined;
+
+    const CONDENSE_BELOW_PX = 8; // anything past a hairline counts as scrolled
+    const onScroll = () => setHeaderCondensed(el.scrollTop > CONDENSE_BELOW_PX);
+    onScroll(); // a re-mounted pane can already be scrolled
+
+    el.addEventListener("scroll", onScroll, { passive: true });
+    return () => el.removeEventListener("scroll", onScroll);
+  }, [isMobile, activeItineraryId, viewMode]);
+
+  const handleTripMetaToggle = useCallback(() => {
+    setTripMetaOpen((open) => {
+      if (open) return false;
+      // Opening: the card expands in place, wherever the pane is scrolled to.
+      suppressMetaCollapseUntilRef.current = Date.now() + 700;
+      return true;
+    });
+  }, []);
+  // The expanded-header DATES value overflows the tight two-column meta on some
+  // phones. Measure the full-year width against the space left after the
+  // Travellers column and only fall back to a 2-digit year when it won't fit.
+  const [datesShort, setDatesShort] = useState(false);
+  const metaGroupRef = useRef<HTMLDivElement | null>(null);
+  const travellersColRef = useRef<HTMLDivElement | null>(null);
+  const datesMeasureRef = useRef<HTMLSpanElement | null>(null);
+  useEffect(() => {
+    const compute = () => {
+      const group = metaGroupRef.current;
+      const measure = datesMeasureRef.current;
+      if (!group || !measure || measure.offsetWidth === 0) return;
+      const travW = travellersColRef.current?.offsetWidth || 0;
+      const available = group.clientWidth - travW - 12; // 12px = column gap
+      setDatesShort(measure.offsetWidth > available - 2);
+    };
+    compute();
+    const raf = requestAnimationFrame(compute);
+    window.addEventListener("resize", compute);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", compute);
+    };
+  }, [itineraryRedux?.start_date, itineraryRedux?.end_date, tripMetaOpen]);
   const [showApiLoginPrompt, setShowApiLoginPrompt] = useState(false);
   // Login gate for the start-screen / welcome surfaces (prompt cards, theme
   // prompts, traveller stories). Holds the action to replay after login.
@@ -584,6 +869,7 @@ export default function BotApp({
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
     check();
+    setViewportMeasured(true);
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
   }, []);
@@ -797,10 +1083,12 @@ export default function BotApp({
     [dispatch, setChatBotIdOnce, fromTailored],
   );
 
-  const countCartItems = useMemo(() => {
+  const countCartItems = useMemo<number>(() => {
     if (!cart?.summary) return 0;
-    return Object.values(cart.summary).reduce(
-      (sum: number, item: any) => sum + (item.count ?? 0),
+    // `Object.values` on an untyped slice yields unknown[], so reduce's result
+    // widens to unknown without the explicit type argument.
+    return Object.values(cart.summary).reduce<number>(
+      (sum, item: any) => sum + (item?.count ?? 0),
       0,
     );
   }, [cart?.summary]);
@@ -1143,8 +1431,8 @@ export default function BotApp({
         // visible through the refresh instead of flickering to blank.
         start_city: current?.start_city ?? null,
         end_city: current?.end_city ?? null,
-        // Preserve the current top-level status (e.g. "Finalized") so that
-        // ViewToggle's Routes/Bookings tabs don't briefly disappear during a
+        // Preserve the current top-level status (e.g. "Finalized") so that the
+        // Bookings CTA doesn't briefly disappear during a
         // mid-P2 refresh. Prefer Redux (which reflects the status endpoint's
         // authoritative value) over currentItineraryRef, which is fed from
         // bot draft events that always carry status:"Draft".
@@ -1715,7 +2003,7 @@ export default function BotApp({
       // pre-emptive/post-status setViewMode("itinerary") below.
       isRestoringRef.current = true;
       try {
-        const res = await fetch("https://dev.chat.tarzanway.com/chatkit", {
+        const res = await fetch(CHATKIT_API_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -2133,7 +2421,7 @@ export default function BotApp({
 
       // ── Step 3: chatkit threads.list → loadThread (threads.get_by_id) ────
       try {
-        const listRes = await fetch("https://dev.chat.tarzanway.com/chatkit", {
+        const listRes = await fetch(CHATKIT_API_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -2237,6 +2525,7 @@ export default function BotApp({
     setCompletingItineraryId(null);
     setLoaderDisplayText(null);
     setLeftPanelMode("default");
+    setSeedActive(false);
     setItineraryId("");
     currentItineraryRef.current = null;
 
@@ -2376,6 +2665,7 @@ export default function BotApp({
       setHasBotResponded(false);
       setShowStartScreen(false);
       setIsChatActive(true);
+      setSeedActive(false);
       currentItineraryRef.current = null;
       // Close payment drawer from previous itinerary
       setShowPaymentDrawer(false);
@@ -2471,6 +2761,7 @@ export default function BotApp({
     // effect (onIntakeFormStart → setIntakeActive(true)) and pop the
     // IntakeLeftPanel hero back up on the fresh chat.
     setStartEmptyIntake(false);
+    setSeedActive(false);
     dispatch(resetIntakeForm());
     setCompletingItineraryId(null);
     setLoaderDisplayText(null);
@@ -2542,6 +2833,14 @@ export default function BotApp({
   useEffect(() => {
     if (hasConsumedHeroHandoffRef.current) return;
     if (!router.isReady) return;
+    // Wait until the viewport has been measured before consuming the handoff.
+    // On a client-side navigation from the hero, `router.isReady` is already
+    // true on first render while `isMobile` is still its SSR default (false),
+    // so acting now would send the seed through the desktop ChatKitPanel — which
+    // is then unmounted when `isMobile` flips to true, leaving the freshly
+    // mounted mobile panel blank until a refresh. Gating on `viewportMeasured`
+    // guarantees the correct panel is mounted before the seed is sent.
+    if (!viewportMeasured) return;
     hasConsumedHeroHandoffRef.current = true;
 
     const queryParam = router.query.seed;
@@ -2561,6 +2860,12 @@ export default function BotApp({
       }
       return;
     }
+
+    // Reveal the IntakeLeftPanel default hero on the left straight away (desktop)
+    // so a seeded chat doesn't sit against a blank panel while the first reply is
+    // still in flight. The hero swaps to the destination image once intake picks
+    // a place.
+    setSeedActive(true);
 
     if (files && files.length > 0) {
       // Pre-fill composer + upload files; let the user click send so the
@@ -2588,8 +2893,10 @@ export default function BotApp({
       }
     }
     // We deliberately want this to run only once. The ref guards re-runs.
+    // `viewportMeasured` is a dep so the effect fires once the viewport is
+    // measured, even when `router.isReady` was already true on first render.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router.isReady]);
+  }, [router.isReady, viewportMeasured]);
 
   // ── "Plan with Kaira" CTA landing (`?intake=1`) ───────────────────────────
   // All Plan-with-Kaira CTAs route here via openTailoredModal. Start a fresh,
@@ -2836,6 +3143,180 @@ Start Location: ${details.startLocation}`;
     return "Itinerary";
   }, [viewMode]);
 
+  // Route strip shown at the foot of the header card: each stay city with its
+  // night count. start_city / end_city are deliberately excluded — they are
+  // departure/return points, not stays, and carry no nights.
+  const routeStops = useMemo(() => {
+    const stops: { key: string; name: string; nights: number }[] = [];
+    (itineraryRedux?.cities || []).forEach((c: any, i: number) => {
+      const name = c?.city?.name;
+      if (name) {
+        stops.push({
+          key: `${c?.id ?? name}-${i}`,
+          name,
+          nights: c?.duration ?? 0,
+        });
+      }
+    });
+    return stops;
+  }, [itineraryRedux?.cities]);
+
+  // ── View switching — there is no tab strip ───────────────────────────────
+  // Map / Bookings / Route are each reached from a CTA on the surface that owns
+  // them (the header card's route strip, the cart bar's booking count) and each
+  // view carries its own way back to the itinerary. Mobile has to go through
+  // MobileLayout's activeTab as well as viewMode, hence the mobileTabSwitchRef.
+
+  // In Draft the route isn't editable through the Route view yet, so the edit
+  // goes through chat — same as the traveller/date pencils.
+  const handleChangeRoute = useCallback(() => {
+    if (isDraft) {
+      handleItineraryContainerSendMessage("change my route");
+      return;
+    }
+    if (isMobile) mobileTabSwitchRef.current?.("routes");
+    else setViewMode("routes");
+  }, [isDraft, isMobile, handleItineraryContainerSendMessage]);
+
+  // The stops for the flex layout the strip uses everywhere except the desktop
+  // card at the top: arrow + stop as separate flex items, the row's `gap` spaces
+  // them. (The floated desktop-top layout builds its own inline version below,
+  // where the stops have to flow as inline text to wrap around the button.)
+  const routeStopEls = routeStops.map((stop, i) => (
+    <React.Fragment key={stop.key}>
+      {i > 0 && <RouteArrow />}
+      {/* Instrument Serif has only a 400 weight (no wght axis on the
+          _document.js font link), so contrast comes from the near-black ink +
+          size rather than font-weight — a faux bold would smear this italic. */}
+      <span className="font-serif italic text-[17px] max-ph:text-[15px] leading-[1.25] text-[#171A1F] whitespace-nowrap">
+        {stop.name}
+        {stop.nights > 0 && <> ({stop.nights}N)</>}
+      </span>
+    </React.Fragment>
+  ));
+  // Editing the route hangs off the route strip because it acts on the same data
+  // the strip shows. Seeing it on the map does not — that CTA sits at the head of
+  // the day-by-day, above the starting city, where the journey it plots begins.
+  const changeRouteButton = (
+    <button
+      type="button"
+      aria-label="Change route"
+      onClick={handleChangeRoute}
+      className="shrink-0 flex items-center gap-[6px] max-ph:gap-[5px] text-[12px] max-ph:text-[11px] font-inter font-semibold text-white bg-[#122A43] hover:bg-[#1c3b5c] active:bg-[#0d1f31] transition-colors rounded-full pl-[10px] pr-[13px] max-ph:pl-[8px] max-ph:pr-[11px] py-[6px] max-ph:py-[5px] whitespace-nowrap"
+    >
+      <svg
+        width="13"
+        height="13"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <circle cx="6" cy="19" r="3" />
+        <circle cx="18" cy="5" r="3" />
+        <path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15" />
+      </svg>
+      {/* "Route" is dropped on the collapsed mobile card, where the pill
+          competes with the stop list for width; the expanded card has room, so
+          it reads the full "Change Route" there (and desktop). */}
+      Change<span className={tripMetaOpen ? "" : "max-ph:hidden"}> Route</span>
+    </button>
+  );
+
+  // True once the itinerary has cities the map can actually plot — the fallback
+  // route (and with it the numbered pins, the dashed polyline and the day-by-day
+  // decks) is built from these, so it's what makes clearing the POI pins safe.
+  const hasMappableItinerary = useMemo(
+    () =>
+      (itineraryRedux?.cities ?? []).some((c: any) => {
+        const city = c?.city ?? c;
+        return city?.latitude != null && city?.longitude != null;
+      }),
+    [itineraryRedux?.cities],
+  );
+
+  const handleViewMap = useCallback(() => {
+    // "View route on map" promises the trip, so drop any POI pins left behind by
+    // an earlier focus_on_map / display_pois_on_map — including the replay of one
+    // on reload. Those pins suppress the map's Redux fallback route entirely
+    // (Map.tsx builds it only when `locations` is empty), which is what leaves
+    // the map showing bare category markers with no route and no city cards.
+    // Guarded on an itinerary we can actually plot, so we never clear the map
+    // with nothing to fall back to. Skipped entirely when a live focus_route is
+    // on screen: that route already draws its pins and decks, and its cities are
+    // *merged into* `locations` (handleRouteReceived), so clearing them there
+    // would strip the markers off the polyline.
+    const hasLiveRoute = !!currentRoute?.length;
+    if (activeItineraryId && hasMappableItinerary && !hasLiveRoute) {
+      setLocations([]);
+    }
+    if (isMobile) mobileTabSwitchRef.current?.("map");
+    else setViewMode("map");
+  }, [isMobile, activeItineraryId, hasMappableItinerary, currentRoute]);
+
+  const handleViewBookings = useCallback(() => {
+    if (isMobile) mobileTabSwitchRef.current?.("bookings");
+    else setViewMode("bookings");
+  }, [isMobile]);
+
+  const handleBackToItinerary = useCallback(() => {
+    if (isMobile) mobileTabSwitchRef.current?.("itinerary");
+    else setViewMode("itinerary");
+  }, [isMobile]);
+
+  // How tall the stack of fixed bottom bars is, so the "Back to itinerary" pill
+  // can sit just above the topmost of them and never cover an actionable
+  // control. Two kinds of bars live down there: the cart bar (always) and the
+  // Route view's "Update Route" bar (only while the route has unsaved edits).
+  // Both are `fixed` but at different `bottom` offsets, so height alone isn't
+  // enough — measure each bar's top edge as a distance up from the viewport
+  // bottom and take the largest. Several copies of the cart bar exist at once
+  // (desktop map vs panel; on mobile the map tab's is only opacity:0, not
+  // unmounted) and some are display:none'd to a 0 rect — those are skipped.
+  const [bottomStackHeight, setBottomStackHeight] = useState(0);
+  useEffect(() => {
+    const SELECTOR = "[data-bottom-cta-bar],[data-route-action-bar]";
+    const measure = () => {
+      const vh = window.innerHeight;
+      let top = 0;
+      document.querySelectorAll(SELECTOR).forEach((el) => {
+        const rect = (el as HTMLElement).getBoundingClientRect();
+        if (rect.height === 0) return; // hidden / display:none copy
+        const fromBottom = vh - rect.top;
+        if (fromBottom > top) top = fromBottom;
+      });
+      setBottomStackHeight(top);
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    document.querySelectorAll(SELECTOR).forEach((el) => ro.observe(el));
+    window.addEventListener("resize", measure);
+    // The Update Route bar mounts/unmounts from deep inside RouteEditSection on
+    // an edit — a state change BotApp can't see — so it fires this event and we
+    // re-measure (and re-query, picking up the freshly-mounted bar).
+    window.addEventListener("route-action-bar-change", measure);
+    // Price / status resolves asynchronously and re-flows the cart bar to two
+    // lines; a late re-measure catches that even when no dep below has changed.
+    const t = setTimeout(measure, 400);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", measure);
+      window.removeEventListener("route-action-bar-change", measure);
+      clearTimeout(t);
+    };
+  }, [
+    viewMode,
+    isMobile,
+    cart,
+    pricingStatus,
+    loaderDisplayText,
+    activeItineraryId,
+    countCartItems,
+    isDraft,
+  ]);
+
   // null for skeleton/draft so ItineraryContainer skips polling
   const itineraryContainerId = useMemo(() => {
     if (activeItineraryId === "skeleton" || activeItineraryId === "draft")
@@ -2866,9 +3347,37 @@ Start Location: ${details.startLocation}`;
       }
       refetchCounter={itineraryRefetchCounter}
       onSendMessage={handleItineraryContainerSendMessage}
+      onViewMap={handleViewMap}
       activeTab={activeTab}
     />
   ) : null;
+
+  // Compact mobile header sub-line ("dates · pax") shown under the title in the
+  // collapsed trip strip (mirrors the design's .trip-row .t-sub).
+  const _tripDates =
+    itineraryRedux?.start_date && itineraryRedux?.end_date
+      ? `${new Date(itineraryRedux.start_date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })} – ${new Date(itineraryRedux.end_date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}`
+      : itineraryRedux?.travel_date || "";
+  // Same dates with a 2-digit year — used on mobile where the two-column meta
+  // is too tight for the full "2026" and the dates would otherwise overflow.
+  const _tripDatesShort =
+    itineraryRedux?.start_date && itineraryRedux?.end_date
+      ? `${new Date(itineraryRedux.start_date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "2-digit" })} – ${new Date(itineraryRedux.end_date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "2-digit" })}`
+      : itineraryRedux?.travel_date || "";
+  const _tripPax = [
+    itineraryRedux?.number_of_adults
+      ? `${itineraryRedux.number_of_adults} adult${itineraryRedux.number_of_adults > 1 ? "s" : ""}`
+      : "",
+    itineraryRedux?.number_of_children > 0
+      ? `${itineraryRedux.number_of_children} child${itineraryRedux.number_of_children > 1 ? "ren" : ""}`
+      : "",
+    itineraryRedux?.number_of_infants > 0
+      ? `${itineraryRedux.number_of_infants} infant${itineraryRedux.number_of_infants > 1 ? "s" : ""}`
+      : "",
+  ]
+    .filter(Boolean)
+    .join(", ");
+  const tripCompactSub = [_tripDates, _tripPax].filter(Boolean).join(" · ");
 
   // ── Shared itinerary panel content (header strip + container + CTA) ──────
   // On mobile, MobileLayout's activeTab already gates visibility (the panel
@@ -2876,7 +3385,72 @@ Start Location: ${details.startLocation}`;
   // tab). Adding a `display:none` here based on viewMode caused a blank
   // itinerary tab on P2 refresh: activeTab landed on "itinerary" but
   // viewMode was still "map" because of timing in the chatkit restore flow.
-  // Desktop keeps the gate so the ViewToggle can swap map ↔ itinerary.
+  // Everything the cart bar needs except `barStyle` / `viewMode`, which vary by
+  // where it is mounted. Hoisted because the bar now appears in three places —
+  // the desktop itinerary panel, the desktop map view, and MobileLayout — and
+  // they must stay in lockstep.
+  const ctaBarProps = {
+    activeItineraryId,
+    showItineraryShimmer,
+    isDraft,
+    cart,
+    pricingStatus,
+    loaderDisplayText: statusDisplayText || loaderDisplayText,
+    currency,
+    countCartItems,
+    isHovered,
+    setIsHovered,
+    popupStyle,
+    onConfirm: () => {
+      trackChatItineraryConfirmed?.(activeItineraryId || "", "P1", []);
+      chatSendMessageRef.current?.("Yes, I confirm the Itinerary");
+      if (isMobile) mobileTabSwitchRef.current?.("chat");
+    },
+    onViewCart: () => {
+      if (!authToken) {
+        setShowApiLoginPrompt(true);
+        return;
+      }
+      trackChatCartViewed?.(activeItineraryId || "", "P2", []);
+      openPaymentDrawer();
+    },
+    onViewBookings: itineraryIsComplete ? handleViewBookings : undefined,
+    notes: statusNotes,
+    onGetInTouch: () => {
+      if (!activeItineraryId) return;
+      const token = localStorage.getItem("access_token");
+      axios
+        .get(
+          `${MERCURY_HOST}/api/v1/itinerary/${activeItineraryId}/get_in_touch/`,
+          { headers: { Authorization: `Bearer ${token}` } },
+        )
+        .then(() =>
+          dispatch(
+            openNotification({
+              type: "success",
+              heading: "Request received",
+              text: "Our team will get in touch with you shortly!",
+            }),
+          ),
+        )
+        .catch(() =>
+          dispatch(
+            openNotification({
+              type: "error",
+              heading: "Something went wrong",
+              text: "Please try again.",
+            }),
+          ),
+        );
+    },
+    onRetryCart: () => {
+      if (!activeItineraryId) return;
+      dispatch(setCart({}));
+      fetchPaymentData(activeItineraryId);
+    },
+  };
+
+  // Desktop keeps the gate so viewMode can swap map ↔ itinerary.
   const itineraryPanel = (
     <div
       style={{
@@ -2893,17 +3467,364 @@ Start Location: ${details.startLocation}`;
         overflow: isMobile ? "visible" : "hidden",
       }}
     >
-      {/* Header strip */}
-      <div className="bg-white flex flex-col px-3 py-3 border-b border-slate-100">
-        <div className="flex justify-between items-start">
-          <p className="font-inter font-semibold text-lg leading-tight">
-            {itineraryReduxName || currentItineraryRef?.current?.name || ""}
-          </p>
+      {/* Header strip — full-width bar on desktop, compact rounded card on mobile
+          (design's .trip strip).
+          On mobile the card sticks to the top of the itinerary scroll pane. The
+          sticky element is this wrapper (not the card) so its white background
+          fills the card's mx/mt gutters — otherwise the timeline would show
+          through them while scrolling underneath. */}
+      <div className="max-ph:sticky max-ph:top-0 max-ph:z-30 max-ph:bg-white">
+      {/* Arbitrary px values, not px-3/py-3: bootstrap's `.px-3`/`.py-3` are
+          `1rem !important` and land after Tailwind, so they silently overrode
+          every padding this card asked for (`md:px-[22px]`, `max-ph:px-[12px]`,
+          `max-ph:pt-[7px]`, `max-ph:pb-[10px]`) — every width really rendered at
+          bootstrap's 16px. Desktop is pinned to that same 16px (changing it
+          isn't what was asked); mobile gets an even 10px box, matching the cart
+          bar's gutter. One element serves both the expanded and collapsed card
+          — `tripMetaOpen` only hides inner content — so this covers both. */}
+      <div
+        // Mobile: tapping anywhere on the card (not just the chevron) toggles
+        // the collapsible trip meta. Interactive children — the settings/share/
+        // change buttons, the legend chips, the chevron itself — are all
+        // `<button>`s, so a tap that lands inside one is left to that control
+        // and doesn't also toggle the card (closest() guard). Desktop no-ops:
+        // it has no compact/expanded split, so `isMobile`/`tripCompactSub` bail.
+        onClick={(e) => {
+          if (!isMobile || !tripCompactSub) return;
+          if (
+            (e.target as HTMLElement).closest(
+              "button, a, input, label, select, textarea",
+            )
+          )
+            return;
+          handleTripMetaToggle();
+        }}
+        className="bg-white flex flex-col p-[16px] border-b border-slate-100 max-ph:border max-ph:border-[#ECECEC] max-ph:rounded-[14px] max-ph:mx-3 max-ph:mt-[10px] max-ph:p-[10px]"
+      >
+        {/* Route and Bookings render inside this same panel (MenuV2 swaps its
+            body on activeTab). The way out of them — like the Map view's — is a
+            single centered pill pinned just above the cart bar (BackToItineraryBar
+            below), so it's not duplicated in this header. */}
+        {/* `relative` (all breakpoints) so the settings/share/chevron cluster
+            can be absolutely pinned to the top-right instead of sitting in a
+            flow column. As a column it reserved its width down the whole card
+            height, which is what left the heading, meta and route strip unable
+            to use the right side of the card. Out of flow, the content column
+            below spans the full width and the icons just float over its top
+            right corner. */}
+        <div className="flex justify-between items-start gap-3 max-ph:gap-2 relative">
+          <div className="flex flex-col flex-1 min-w-0">
+            {/* Compact title + sub are max-width-capped on mobile so they
+                truncate before the absolutely-positioned icons. (Padding can't
+                reserve truncation space — text overflows into it — so a
+                max-width is used.) The expanded detail below is full width. */}
+            {/* Compact title + sub. On mobile they collapse away when the card
+                is expanded (the expanded detail below carries the full name);
+                the grid-rows 1fr↔0fr trick animates that as a smooth height +
+                opacity fade instead of the old `max-ph:hidden` snap. Desktop
+                stays open (base 1fr — only `max-ph:` collapses), since the 24px
+                title here is the header itself. */}
+            <div
+              className={`grid transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] motion-reduce:transition-none ${tripMetaOpen ? "grid-rows-[1fr] opacity-100 max-ph:grid-rows-[0fr] max-ph:opacity-0" : "grid-rows-[1fr] opacity-100"}`}
+            >
+              <div className="overflow-hidden min-h-0">
+                {/* md:pr reserves the top-right corner for the now-absolute
+                    settings/share icons, so a long name wraps to more lines on
+                    the left while the icons stay pinned top-right (they no
+                    longer hold open a column). Mobile clears its chevron with
+                    the max-width + truncate instead. */}
+                <p className="font-inter font-bold md:font-extrabold text-[13.5px] md:text-[24px] leading-[1.2] md:leading-[1.15] tracking-[-0.2px] md:tracking-[-0.5px] m-0 md:pr-[100px] max-ph:truncate max-ph:max-w-[85%]">
+                  {itineraryReduxName || currentItineraryRef?.current?.name || ""}
+                </p>
+                {/* Mobile-only compact sub: dates · pax (design .trip-row .t-sub) */}
+                {tripCompactSub && (
+                  <div className="md:hidden text-[11.5px] text-[#6B7280] mt-[1px] truncate max-ph:max-w-[85%]">
+                    {tripCompactSub}
+                  </div>
+                )}
+              </div>
+            </div>
 
-          <div className="flex gap-3 items-center">
+        {(itineraryRedux?.group_type ||
+          itineraryRedux?.number_of_adults ||
+          itineraryRedux?.travel_date ||
+          (itineraryRedux?.start_date && itineraryRedux?.end_date)) && (
+          // max-ph:mt-0 when expanded: the compact title this margin was
+          // separating us from is itself hidden in expanded mode, so the margin
+          // would just stack on the card's 10px top padding and make the top gap
+          // read as double the bottom one.
+          <div
+            className={`grid transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] motion-reduce:transition-none ${tripMetaOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[1fr] opacity-100 max-ph:grid-rows-[0fr] max-ph:opacity-0"}`}
+          >
+            <div className="overflow-hidden min-h-0">
+          <div className="flex flex-col gap-1.5 mt-[11px] max-ph:mt-0">
+            {/* Mobile expanded: full (untruncated) itinerary name — design's
+                .trip-detail .ttl. Hidden on desktop (already shown at 24px). */}
+            <p className="md:hidden font-inter font-extrabold text-[18px] leading-[1.2] tracking-[-0.4px] m-0 mb-[3px] text-[#171A1F] max-ph:max-w-[85%]">
+              {itineraryReduxName || currentItineraryRef?.current?.name || ""}
+            </p>
+            {/* Outer row — column on mobile (so the gallery slides below the
+                meta), single row on desktop (gallery sits to the right of
+                traveller/date, matching the original design). */}
+            <div className="flex items-start gap-2 md:gap-[22px] max-ph:gap-[13px] max-ph:flex-col max-ph:items-stretch md:items-center">
+              <div ref={metaGroupRef} className="flex items-center gap-[22px] flex-nowrap md:flex-wrap max-ph:items-start max-ph:gap-[12px]">
+                {(itineraryRedux?.group_type ||
+                  itineraryRedux?.number_of_adults) && (
+                  <div ref={travellersColRef} className="flex items-center gap-2 max-ph:flex-col max-ph:items-start max-ph:gap-[3px]">
+                    {/* No "Travellers" label — the value ("Couple · 2 adults")
+                        reads for itself on both mobile and desktop. */}
+                    <span className="text-[13px] max-ph:text-[12px] font-inter text-[#3b4149] whitespace-nowrap">
+                      {itineraryRedux.group_type
+                        ? `${itineraryRedux.group_type}${
+                            itineraryRedux.number_of_adults
+                              ? ` · ${itineraryRedux.number_of_adults} adult${itineraryRedux.number_of_adults > 1 ? "s" : ""}`
+                              : ""
+                          }`
+                        : itineraryRedux.number_of_adults
+                          ? `${itineraryRedux.number_of_adults} adult${itineraryRedux.number_of_adults > 1 ? "s" : ""}`
+                          : ""}
+                      {itineraryRedux.number_of_children > 0
+                        ? `, ${itineraryRedux.number_of_children} child${itineraryRedux.number_of_children > 1 ? "ren" : ""}`
+                        : ""}
+                      {itineraryRedux.number_of_infants > 0
+                        ? `, ${itineraryRedux.number_of_infants} infant${itineraryRedux.number_of_infants > 1 ? "s" : ""}`
+                        : ""}
+                    </span>
+                    {isDraft && (
+                      <button
+                        type="button"
+                        aria-label="Change traveller count"
+                        className="flex items-center justify-center hover:opacity-70"
+                        onClick={() =>
+                          handleItineraryContainerSendMessage(
+                            "change traveller count",
+                          )
+                        }
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="14"
+                          height="14"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                        >
+                          <path
+                            d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                            fill="#ACACAC"
+                          />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                )}
+                {(itineraryRedux?.travel_date ||
+                  (itineraryRedux?.start_date &&
+                    itineraryRedux?.end_date)) && (
+                  <div className="flex items-center gap-2 shrink-0 max-ph:flex-col max-ph:items-start max-ph:gap-[3px]">
+                    {/* No "Dates" label — the date range value stands on its
+                        own on both mobile and desktop. */}
+                    <span className="text-[13px] max-ph:text-[12px] font-inter text-[#3b4149] whitespace-nowrap">
+                      {itineraryRedux.start_date && itineraryRedux.end_date ? (
+                        <>
+                          {/* Mobile: full year when it fits, else the measured
+                              2-digit fallback. Desktop always full. */}
+                          <span className="md:hidden">
+                            {datesShort ? _tripDatesShort : _tripDates}
+                          </span>
+                          <span className="max-ph:hidden">{_tripDates}</span>
+                          {/* Hidden full-year probe used to measure overflow. */}
+                          <span
+                            ref={datesMeasureRef}
+                            aria-hidden
+                            className="md:hidden absolute invisible pointer-events-none whitespace-nowrap"
+                          >
+                            {_tripDates}
+                          </span>
+                        </>
+                      ) : (
+                        itineraryRedux.travel_date
+                      )}
+                    </span>
+                    {isDraft && (
+                      <button
+                        type="button"
+                        aria-label="Change travelling date"
+                        className="flex items-center justify-center hover:opacity-70"
+                        onClick={() =>
+                          handleItineraryContainerSendMessage(
+                            "change my travelling date",
+                          )
+                        }
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="14"
+                          height="14"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                        >
+                          <path
+                            d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                            fill="#ACACAC"
+                          />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+              {!isMobile && itineraryRedux?.images?.length > 0 && (
+                <SmallGallery
+                  compact
+                  maxShow={Math.min(3, galleryImages.images.length)}
+                  images={galleryImages.images}
+                  closeLabel="Back to Itinerary"
+                />
+              )}
+            </div>
+
+            {/* Desktop: social proof gets its own row between the meta line and
+                the route strip. On mobile it shares a row with the icons below.
+                Collapsed once the pane is scrolled off the top (headerCondensed)
+                so the condensed card keeps only name, travellers/dates and
+                route. Animated via the same grid-rows height + fade the legend
+                below uses (matching duration-200 ease-out) so the two collapse
+                in sync and the card's height eases instead of snapping. */}
+            {socialProofCount !== null && (
+              <div
+                className={`max-ph:hidden grid transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] motion-reduce:transition-none ${headerCondensed ? "grid-rows-[0fr] opacity-0" : "grid-rows-[1fr] opacity-100"}`}
+              >
+                <div className="overflow-hidden min-h-0">
+                  <div className="flex items-center gap-[9px] mt-[2px]">
+                    <KairaSocialProof
+                      count={socialProofCount}
+                      groupType={itineraryRedux?.group_type}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Mobile: Kaira social proof (left) + settings/share (right) on one
+                row at the bottom of the expanded detail. Hidden on desktop,
+                where the icons sit top-right. The trip-image gallery is
+                deliberately not shown here — the social proof earns the space
+                better on a narrow card. */}
+            <div className="md:hidden flex items-start gap-[9px] mt-[9px]">
+              {socialProofCount !== null && (
+                <KairaSocialProof
+                  count={socialProofCount}
+                  groupType={itineraryRedux?.group_type}
+                  wrap
+                />
+              )}
+              <div className="flex items-center gap-[8px] ml-auto">
+                {!isDraft && (
+                  <button
+                    aria-label="Settings"
+                    className="flex items-center justify-center w-[34px] h-[34px] rounded-full bg-gray-100 hover:bg-gray-200"
+                    onClick={() => {
+                      if (!authToken) {
+                        setShowSettingsLoginPrompt(true);
+                        return;
+                      }
+                      axios
+                        .get(
+                          `${MERCURY_HOST}/api/v1/itinerary/${activeItineraryId}/bookings/hotels/?fields=no_of_hotels`,
+                        )
+                        .then((res) =>
+                          setIsHotelsPresent(res.data.no_of_hotels > 0),
+                        )
+                        .catch(() => setIsHotelsPresent(false))
+                        .finally(() => setShowSettings(true));
+                    }}
+                  >
+                    <Image src="/settings.svg" height={18} width={18} alt="Settings" />
+                  </button>
+                )}
+                <button
+                  aria-label="Share"
+                  className="flex items-center justify-center w-[34px] h-[34px] rounded-full bg-gray-100 hover:bg-gray-200"
+                  onClick={() => setShowShare(true)}
+                >
+                  <Image src="/share.svg" height={18} width={18} alt="Share" />
+                </button>
+              </div>
+            </div>
+          </div>
+            </div>
+          </div>
+        )}
+
+        {/* Route strip — sits outside the collapsible meta block so it stays
+            visible in the collapsed mobile card. Typography (Instrument Serif
+            italic + hairline arrow) mirrors the route line on the itinerary
+            carousel cards — see PackageCard.jsx.
+            Two layouts:
+            • Desktop card at the top (`!isMobile && !headerCondensed`) — the
+              stops and the Change Route button share one wrapping flow, so the
+              route uses the full width and the button trails the last stop,
+              sitting right where the route text ends (not pinned to the far
+              right). A short route keeps it on line one just after the final
+              stop; a long route lets it follow the last stop onto a later line.
+            • Everywhere else — the condensed desktop strip and the mobile card —
+              the stops sit in their own row that scrolls sideways when it can't
+              wrap, with the button pinned beside it (mobile keeps its
+              collapsed-scroll / expanded-wrap behaviour unchanged). */}
+        {routeStops.length > 0 &&
+          (!isMobile && !headerCondensed ? (
+            // Desktop card at the top: two columns. The stops wrap in the left
+            // column; the Change Route button gets its own column and stays on
+            // the first line (items-start pins it to the top), so it never drops
+            // to a second line. The stops column is content-sized (no flex-1),
+            // so on a short route the button trails right after the text, and it
+            // shrinks to wrap (min-w-0 + flex-wrap) on a long route while the
+            // button holds its first-line spot.
+            <div className="mt-[11px] flex items-start gap-[14px]">
+              <div className="flex flex-wrap items-center gap-x-[10px] gap-y-[8px] min-w-0">
+                {routeStopEls}
+              </div>
+              {changeRouteButton}
+            </div>
+          ) : (
+            <div
+              className={`flex items-center gap-[14px] max-ph:gap-[10px] mt-[11px] max-ph:mt-[9px] ${tripMetaOpen ? "max-ph:items-start" : ""}`}
+            >
+              {/* Collapsed mobile / condensed desktop: single line that scrolls
+                  sideways. Expanded mobile: the stops wrap to as many lines as
+                  the full route needs (`max-ph:flex-wrap`). */}
+              <div
+                className={`flex items-center gap-[10px] max-ph:gap-[8px] min-w-0 overflow-x-auto ${tripMetaOpen ? "max-ph:flex-wrap" : ""}`}
+                style={{ scrollbarWidth: "none" }}
+              >
+                {routeStopEls}
+              </div>
+              {changeRouteButton}
+            </div>
+          ))}
+
+        {/* Kaira Protected / label legend. Hidden once the pane is scrolled off
+            the top (headerCondensed) so only the trip's identifying lines stay
+            pinned — on mobile and desktop alike. Collapsed via an animated
+            grid-rows height (the same trick the meta block above uses) instead
+            of an instant unmount: the card is `sticky top-0` on mobile, so
+            snapping a row out mid-scroll would jump the content below it.
+            overflow-hidden is applied only while collapsed, so the expanded
+            legend's "what the labels mean" dropdown (absolute, opens downward)
+            is never clipped. */}
+        <div
+          className={`grid transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] motion-reduce:transition-none ${headerCondensed ? "grid-rows-[0fr] opacity-0" : "grid-rows-[1fr] opacity-100"}`}
+        >
+          <div className={headerCondensed ? "overflow-hidden min-h-0" : "min-h-0"}>
+            <ItineraryLegend />
+          </div>
+        </div>
+          </div>
+
+          <div className="flex gap-3 max-ph:gap-[6px] items-center absolute top-0 right-0">
             {!isDraft && (
               <button
-                className="flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200"
+                className="max-ph:hidden flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200"
                 onClick={() => {
                   if (!authToken) {
                     setShowSettingsLoginPrompt(true);
@@ -2936,176 +3857,40 @@ Start Location: ${details.startLocation}`;
               />
             )}
             <button
-              className="flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200"
+              className="max-ph:hidden flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200"
               onClick={() => setShowShare(true)}
             >
               <Image src="/share.svg" height={22} width={22} alt="Share" />
             </button>
+            {/* Mobile: toggle the collapsed trip meta (design .trip chevron) */}
+            {tripCompactSub && (
+              <button
+                type="button"
+                aria-label="Toggle trip details"
+                aria-expanded={tripMetaOpen}
+                onClick={handleTripMetaToggle}
+                className="md:hidden flex items-center justify-center w-9 h-9 max-ph:w-[28px] max-ph:h-[28px] shrink-0"
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  className={`transition-transform max-ph:w-4 max-ph:h-4 ${tripMetaOpen ? "rotate-180" : ""}`}
+                >
+                  <path
+                    d="m6 9 6 6 6-6"
+                    stroke="#8a9099"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+            )}
           </div>
         </div>
-
-        {(itineraryRedux?.group_type ||
-          itineraryRedux?.number_of_adults ||
-          itineraryRedux?.travel_date ||
-          (itineraryRedux?.start_date && itineraryRedux?.end_date)) && (
-          <div className="flex flex-col gap-1.5 mt-1.5">
-            {/* Outer row — column on mobile (so the gallery slides below the
-                meta), single row on desktop (gallery sits to the right of
-                traveller/date, matching the original design). */}
-            <div className="flex items-start gap-2 max-ph:flex-col max-ph:items-stretch md:items-center">
-              <div className="flex items-center gap-4 flex-wrap">
-                {(itineraryRedux?.group_type ||
-                  itineraryRedux?.number_of_adults) && (
-                  <div className="flex flex-col">
-                    <span className="text-[10px] font-inter uppercase tracking-wide">
-                      Traveller Type
-                    </span>
-                    <div className="flex items-center gap-1.5 mt-0.5">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="12"
-                        viewBox="0 0 16 12"
-                        fill="none"
-                      >
-                        <path
-                          d="M11.1133 6.75342C12.0266 7.37342 12.6666 8.21342 12.6666 9.33342V11.3334H15.3333V9.33342C15.3333 7.88008 12.9533 7.02008 11.1133 6.75342Z"
-                          fill="#ACACAC"
-                        />
-                        <path
-                          d="M9.99995 6.00008C11.4733 6.00008 12.6666 4.80675 12.6666 3.33341C12.6666 1.86008 11.4733 0.666748 9.99995 0.666748C9.68661 0.666748 9.39328 0.733415 9.11328 0.826748C9.66661 1.51341 9.99995 2.38675 9.99995 3.33341C9.99995 4.28008 9.66661 5.15341 9.11328 5.84008C9.39328 5.93341 9.68661 6.00008 9.99995 6.00008Z"
-                          fill="#ACACAC"
-                        />
-                        <path
-                          d="M6.00065 6.00008C7.47398 6.00008 8.66732 4.80675 8.66732 3.33341C8.66732 1.86008 7.47398 0.666748 6.00065 0.666748C4.52732 0.666748 3.33398 1.86008 3.33398 3.33341C3.33398 4.80675 4.52732 6.00008 6.00065 6.00008ZM6.00065 2.00008C6.73398 2.00008 7.33398 2.60008 7.33398 3.33341C7.33398 4.06675 6.73398 4.66675 6.00065 4.66675C5.26732 4.66675 4.66732 4.06675 4.66732 3.33341C4.66732 2.60008 5.26732 2.00008 6.00065 2.00008Z"
-                          fill="#ACACAC"
-                        />
-                        <path
-                          d="M6.00033 6.66675C4.22033 6.66675 0.666992 7.56008 0.666992 9.33341V11.3334H11.3337V9.33341C11.3337 7.56008 7.78032 6.66675 6.00033 6.66675ZM10.0003 10.0001H2.00033V9.34008C2.13366 8.86008 4.20033 8.00008 6.00033 8.00008C7.80032 8.00008 9.86699 8.86008 10.0003 9.33341V10.0001Z"
-                          fill="#ACACAC"
-                        />
-                      </svg>
-                      <span className="text-[12px] font-inter font-medium">
-                        {itineraryRedux.group_type
-                          ? `${itineraryRedux.group_type}${
-                              itineraryRedux.number_of_adults
-                                ? ` (${itineraryRedux.number_of_adults} Adult${itineraryRedux.number_of_adults > 1 ? "s" : ""})`
-                                : ""
-                            }`
-                          : itineraryRedux.number_of_adults
-                            ? `${itineraryRedux.number_of_adults} Adult${itineraryRedux.number_of_adults > 1 ? "s" : ""}`
-                            : ""}
-                        {itineraryRedux.number_of_children > 0
-                          ? `, ${itineraryRedux.number_of_children} Child${itineraryRedux.number_of_children > 1 ? "ren" : ""}`
-                          : ""}
-                        {itineraryRedux.number_of_infants > 0
-                          ? `, ${itineraryRedux.number_of_infants} Infant${itineraryRedux.number_of_infants > 1 ? "s" : ""}`
-                          : ""}
-                      </span>
-                      {isDraft && (
-                        <button
-                          type="button"
-                          aria-label="Change traveller count"
-                          className="flex items-center justify-center hover:opacity-70"
-                          onClick={() =>
-                            handleItineraryContainerSendMessage(
-                              "change traveller count",
-                            )
-                          }
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="14"
-                            height="14"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                          >
-                            <path
-                              d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
-                              fill="#ACACAC"
-                            />
-                          </svg>
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                )}
-                {(itineraryRedux?.travel_date ||
-                  (itineraryRedux?.start_date &&
-                    itineraryRedux?.end_date)) && (
-                  <div className="flex flex-col">
-                    <span className="text-[10px] font-inter uppercase tracking-wide">
-                      Date of Travelling
-                    </span>
-                    <div className="flex items-center gap-1.5 mt-0.5">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        viewBox="0 0 16 16"
-                        fill="none"
-                      >
-                        <path
-                          d="M3.33333 14.6666C2.96667 14.6666 2.65267 14.5361 2.39133 14.2753C2.13044 14.0139 2 13.6999 2 13.3333V3.99992C2 3.63325 2.13044 3.31947 2.39133 3.05859C2.65267 2.79725 2.96667 2.66659 3.33333 2.66659H4V1.33325H5.33333V2.66659H10.6667V1.33325H12V2.66659H12.6667C13.0333 2.66659 13.3473 2.79725 13.6087 3.05859C13.8696 3.31947 14 3.63325 14 3.99992V13.3333C14 13.6999 13.8696 14.0139 13.6087 14.2753C13.3473 14.5361 13.0333 14.6666 12.6667 14.6666H3.33333ZM3.33333 13.3333H12.6667V6.66659H3.33333V13.3333ZM3.33333 5.33325H12.6667V3.99992H3.33333V5.33325ZM3.33333 5.33325V3.99992V5.33325Z"
-                          fill="#ACACAC"
-                        />
-                      </svg>
-                      <span className="text-[12px] font-inter font-medium">
-                        {itineraryRedux.start_date && itineraryRedux.end_date
-                          ? `${new Date(
-                              itineraryRedux.start_date,
-                            ).toLocaleDateString("en-GB", {
-                              day: "numeric",
-                              month: "short",
-                              year: "numeric",
-                            })} – ${new Date(
-                              itineraryRedux.end_date,
-                            ).toLocaleDateString("en-GB", {
-                              day: "numeric",
-                              month: "short",
-                              year: "numeric",
-                            })}`
-                          : itineraryRedux.travel_date}
-                      </span>
-                      {isDraft && (
-                        <button
-                          type="button"
-                          aria-label="Change travelling date"
-                          className="flex items-center justify-center hover:opacity-70"
-                          onClick={() =>
-                            handleItineraryContainerSendMessage(
-                              "change my travelling date",
-                            )
-                          }
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="14"
-                            height="14"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                          >
-                            <path
-                              d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
-                              fill="#ACACAC"
-                            />
-                          </svg>
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-              {itineraryRedux?.images?.length > 0 && (
-                <SmallGallery
-                  maxShow={Math.min(3, galleryImages.images.length)}
-                  images={galleryImages.images}
-                  closeLabel="Back to Itinerary"
-                />
-              )}
-            </div>
-          </div>
-        )}
+      </div>
       </div>
 
       {/* Body */}
@@ -3113,6 +3898,7 @@ Start Location: ${details.startLocation}`;
         {activeItineraryId ? (
           <div className="flex flex-col h-full overflow-hidden">
             <div
+              ref={desktopItineraryScrollRef}
               className="flex-1 overflow-y-auto"
               style={{ scrollbarWidth: "none" }}
             >
@@ -3127,76 +3913,30 @@ Start Location: ${details.startLocation}`;
                 {itineraryContainerNode}
               </div>
             </div>
-            <BottomCTABar
-              // Force itinerary on mobile: the panel itself is rendered
-              // inside MobileLayout's itinerary tab, so the CTA bar should
-              // never be gated by viewMode (which can lag on "map" after a
-              // chatkit-restore on refresh).
-              viewMode={isMobile ? "itinerary" : viewMode}
-              activeItineraryId={activeItineraryId}
-              showItineraryShimmer={showItineraryShimmer}
-              isDraft={isDraft}
-              cart={cart}
-              pricingStatus={pricingStatus}
-              loaderDisplayText={statusDisplayText || loaderDisplayText}
-              currency={currency}
-              countCartItems={countCartItems}
-              isHovered={isHovered}
-              setIsHovered={setIsHovered}
-              popupStyle={popupStyle}
-              onConfirm={() => {
-                trackChatItineraryConfirmed?.(
-                  activeItineraryId || "",
-                  "P1",
-                  [],
-                );
-                chatSendMessageRef.current?.("Yes, I confirm the Itinerary");
-                if (isMobile) mobileTabSwitchRef.current?.("chat");
-              }}
-              onViewCart={() => {
-                if(!authToken) {
-                setShowApiLoginPrompt(true);
-                return;
-              }
-                trackChatCartViewed?.(activeItineraryId || "", "P2", []);
-                openPaymentDrawer();
-              }}
-              notes={statusNotes}
-              onGetInTouch={() => {
-                if (!activeItineraryId) return;
-                const token = localStorage.getItem("access_token");
-                axios
-                  .get(
-                    `${MERCURY_HOST}/api/v1/itinerary/${activeItineraryId}/get_in_touch/`,
-                    {
-                      headers: { Authorization: `Bearer ${token}` },
-                    },
-                  )
-                  .then(() =>
-                    dispatch(
-                      openNotification({
-                        type: "success",
-                        heading: "Request received",
-                        text: "Our team will get in touch with you shortly!",
-                      }),
-                    ),
-                  )
-                  .catch(() =>
-                    dispatch(
-                      openNotification({
-                        type: "error",
-                        heading: "Something went wrong",
-                        text: "Please try again.",
-                      }),
-                    ),
-                  );
-              }}
-              onRetryCart={() => {
-                if (!activeItineraryId) return;
-                dispatch(setCart({}));
-                fetchPaymentData(activeItineraryId);
-              }}
-            />
+            {/* Desktop only. On mobile these fixed bars are rendered by
+                MobileLayout as siblings of its scroll pane — nesting a
+                position:fixed bar inside that pane (which carries
+                -webkit-overflow-scrolling:touch) makes iOS position it against
+                the *scrolled content* rather than the viewport, so the bar
+                scrolls off-screen and the cart bar disappears on phones. */}
+            {!isMobile && (
+              <>
+                <BottomCTABar
+                  {...ctaBarProps}
+                  barStyle={ctaBarStyle}
+                  viewMode={viewMode}
+                />
+                {/* Only Route / Bookings have somewhere to go back to — the
+                    plain itinerary view is the destination itself. */}
+                {(viewMode === "routes" || viewMode === "bookings") && (
+                  <BackToItineraryBar
+                    onClick={handleBackToItinerary}
+                    bottom={bottomStackHeight + 12}
+                    barStyle={ctaBarStyle}
+                  />
+                )}
+              </>
+            )}
           </div>
         ) : null}
       </div>
@@ -3231,6 +3971,7 @@ Start Location: ${details.startLocation}`;
 
         {/* LEFT PANEL */}
         <div
+          ref={leftPanelRef}
           className="flex flex-col overflow-hidden transition-all duration-500 ease-in-out relative bg-white"
           style={{ width: "50%", minWidth: 0 }}
         >
@@ -3261,24 +4002,30 @@ Start Location: ${details.startLocation}`;
           {/* INTAKE HERO — shown over StartScreen/map only once a destination
               is chosen; its image swaps with the chosen destination. Before a
               pick we keep the StartScreen above. inset-0 keeps the hero within
-              the left pane so the bottom TrustIndicators bar stays visible. */}
+              the left pane. */}
          {botMode != "p2" ? <div
             className={`absolute inset-0 z-20 transition-opacity duration-500 ease-in-out ${
- intakeActive && (intakeDestination || startEmptyIntake)
+ !hasBotResponded &&
+ (seedActive || (intakeActive && (intakeDestination || startEmptyIntake)))
  ? "pointer-events-auto"
  : "pointer-events-none"
  }`}
             style={{
               opacity:
-                intakeActive && (intakeDestination || startEmptyIntake) ? 1 : 0,
+                !hasBotResponded &&
+                (seedActive ||
+                  (intakeActive && (intakeDestination || startEmptyIntake)))
+                  ? 1
+                  : 0,
             }}
           >
-            {intakeActive && (intakeDestination || startEmptyIntake) && botMode != "p2" &&(
-              <IntakeLeftPanel />
-            )}
+            {!hasBotResponded &&
+              (seedActive ||
+                (intakeActive && (intakeDestination || startEmptyIntake))) &&
+              botMode != "p2" && <IntakeLeftPanel />}
           </div> : null}
 
-          <style>{`#chatContainer::-webkit-scrollbar { display: none; }`}</style>
+          <style dangerouslySetInnerHTML={{ __html: `#chatContainer::-webkit-scrollbar { display: none; }` }} />
           <div
             id="chatContainer"
             className="flex flex-col h-full bg-white border-slate-200 transition-opacity duration-500 ease-in-out"
@@ -3290,30 +4037,55 @@ Start Location: ${details.startLocation}`;
               msOverflowStyle: "none",
             }}
           >
-            <ViewToggle
-              viewMode={viewMode}
-              setViewMode={setViewMode}
-              hasItineraryActivity={!!activeItineraryId}
-              isComplete={itineraryIsComplete}
-            />
-
-            {/* MAP tab */}
+            {/* MAP view — reached from the header card's Map pill. The back pill
+                (pinned above the cart bar below) is the only way out, so it only
+                appears once there is an itinerary to go back to (before that, the
+                map is the default view and nothing sits behind it). */}
             <div
+              className="relative"
               style={{
                 display: viewMode === "map" ? "flex" : "none",
                 flex: 1,
                 minHeight: 0,
               }}
             >
-              <MapView
-                mapState={mapState}
-                locations={mapLocations}
-                userLocation={userLocation}
-                currentRoute={currentRoute}
-                isLoadingLocation={isLoadingLocation}
-                mapRef={mapRef}
-                isRoutePreparing={isRoutePreparing}
-              />
+              {/* Only the layout in use mounts a map. Both layout trees are
+                  rendered (the other is merely CSS-hidden), and a MapView builds
+                  its own google.maps.Map and claims `mapRef` — so mounting both
+                  on a phone left two maps fighting over the ref, with the hidden
+                  0x0 one able to win it. */}
+              {!isMobile && (
+                <MapView
+                  mapState={mapState}
+                  locations={mapLocations}
+                  userLocation={userLocation}
+                  currentRoute={currentRoute}
+                  isLoadingLocation={isLoadingLocation}
+                  mapRef={mapRef}
+                  isRoutePreparing={isRoutePreparing}
+                  isVisible={viewMode === "map"}
+                  chromeBottom={bottomStackHeight}
+                />
+              )}
+              {/* The cart bar lives inside itineraryPanel, which is display:none
+                  on the map — so the map lost it. Mobile already carries its own
+                  copy on the map tab; this is the desktop equivalent. Pinned to
+                  "itinerary" for the same reason mobile's is: the bar's own
+                  viewMode gates its CTAs, and "map" is not one of them. */}
+              {!isMobile && !!activeItineraryId && (
+                <BottomCTABar
+                  {...ctaBarProps}
+                  barStyle={ctaBarStyle}
+                  viewMode="itinerary"
+                />
+              )}
+              {!isMobile && !!activeItineraryId && (
+                <BackToItineraryBar
+                  onClick={handleBackToItinerary}
+                  bottom={bottomStackHeight + 12}
+                  barStyle={ctaBarStyle}
+                />
+              )}
             </div>
 
             {/* ITINERARY / BOOKINGS / ROUTES — desktop only renders when !isMobile */}
@@ -3380,16 +4152,25 @@ Start Location: ${details.startLocation}`;
           onThreadSelect={handleThreadSelect}
           activeThreadId={activeThreadId}
           onRegisterTabSwitch={handleRegisterMobileTabSwitch}
+          onItineraryScrolled={handleItineraryScrolled}
           mapContent={
-            <MapView
-              mapState={mapState}
-              locations={mapLocations}
-              userLocation={userLocation}
-              currentRoute={currentRoute}
-              isLoadingLocation={isLoadingLocation}
-              mapRef={mapRef}
-              isRoutePreparing={isRoutePreparing}
-            />
+            // Mounted only on mobile — see the desktop MapView above.
+            isMobile ? (
+              <MapView
+                mapState={mapState}
+                locations={mapLocations}
+                userLocation={userLocation}
+                currentRoute={currentRoute}
+                isLoadingLocation={isLoadingLocation}
+                mapRef={mapRef}
+                isRoutePreparing={isRoutePreparing}
+                // Mobile visibility follows the tab, not viewMode: handleTabClick
+                // sets viewMode to "map" for the chat tab as well, so viewMode
+                // alone can't tell whether the map pane is on screen.
+                isVisible={mobilePanel === "map"}
+                chromeBottom={bottomStackHeight}
+              />
+            ) : null
           }
           chatContent={
             // Always use ChatKitPanel — render both welcome + ChatKitPanel; CSS hides/shows
@@ -3460,72 +4241,7 @@ Start Location: ${details.startLocation}`;
           itineraryContent={isMobile ? itineraryPanel : null}
           mobileEffectPopup={mobileEffectPopup}
           onDismissMobileEffectPopup={() => setMobileEffectPopup(null)}
-          bottomCTABarProps={{
-            viewMode,
-            activeItineraryId,
-            showItineraryShimmer,
-            isDraft,
-            cart,
-            pricingStatus,
-            loaderDisplayText: statusDisplayText || loaderDisplayText,
-            currency,
-            countCartItems,
-            isHovered,
-            setIsHovered,
-            popupStyle,
-            onConfirm: () => {
-              trackChatItineraryConfirmed?.(
-                activeItineraryId || "",
-                "P1",
-                [],
-              );
-              chatSendMessageRef.current?.("Yes, I confirm the Itinerary");
-              if (isMobile) mobileTabSwitchRef.current?.("chat");
-            },
-            onViewCart: () => {
-              if(!authToken) {
-                setShowApiLoginPrompt(true);
-                return;
-              }
-              trackChatCartViewed?.(activeItineraryId || "", "P2", []);
-              openPaymentDrawer();
-            },
-            notes: statusNotes,
-            onGetInTouch: () => {
-              if (!activeItineraryId) return;
-              const token = localStorage.getItem("access_token");
-              axios
-                .get(
-                  `${MERCURY_HOST}/api/v1/itinerary/${activeItineraryId}/get_in_touch/`,
-                  {
-                    headers: { Authorization: `Bearer ${token}` },
-                  },
-                )
-                .then(() =>
-                  dispatch(
-                    openNotification({
-                      type: "success",
-                      heading: "Request received",
-                      text: "Our team will get in touch with you shortly!",
-                    }),
-                  ),
-                )
-                .catch(() =>
-                  dispatch(
-                    openNotification({
-                      type: "error",
-                      heading: "Something went wrong",
-                      text: "Please try again.",
-                    }),
-                  ),
-                );
-            },
-            onRetryCart: () => {
-              if (!activeItineraryId) return;
-              dispatch(setCart({}));
-              fetchPaymentData(activeItineraryId);
-            },
-          }}
+          bottomCTABarProps={{ ...ctaBarProps, viewMode }}
           onSettingsClick={() => {
             if (!authToken) {
               setShowSettingsLoginPrompt(true);
@@ -3543,12 +4259,6 @@ Start Location: ${details.startLocation}`;
           onLoginSuccess={attachUserToItinerary}
         />
       </div>
-
-      {isChatActive && (
-        <div className="max-ph:hidden flex-shrink-0 w-full">
-          <TrustIndicators />
-        </div>
-      )}
 
       <ConfirmationModal
         show={showConfirmModal}
@@ -3733,7 +4443,16 @@ interface BottomCTABarProps {
   onViewCart: () => void;
   onGetInTouch?: () => void;
   onRetryCart?: () => void;
+  // The Bookings view's only entry point. Left undefined until the itinerary is
+  // complete — that is the same gate the Bookings tab used to carry — and the
+  // chip is then hidden entirely, so an incomplete itinerary shows no dead CTA.
+  onViewBookings?: () => void;
   notes?: any[];
+  // Desktop only: the measured left/width of the itinerary panel, so the fixed
+  // bar spans it exactly and its right edge meets the chat divider. A
+  // percentage can't express this — the panel is 50% of what's left after the
+  // (collapsible) sidebar. Undefined on mobile, where `w-full` is correct.
+  barStyle?: React.CSSProperties;
 }
 
 /**
@@ -3750,8 +4469,10 @@ interface BottomCTABarProps {
  */
 const ItineraryStepsLoader = ({
   displayText,
+  barStyle,
 }: {
   displayText: string | null;
+  barStyle?: React.CSSProperties;
 }) => {
   const [steps, setSteps] = React.useState<string[]>([]);
   const seenRef = React.useRef<Set<string>>(new Set());
@@ -3769,7 +4490,7 @@ const ItineraryStepsLoader = ({
   const lastIdx = steps.length - 1;
 
   return (
-    <div className="z-20 fixed w-full md:w-[48%] max-ph:bottom-0 md:bottom-[4.2rem] flex-shrink-0 bg-[#F7E700] border-t border-slate-100 shadow-[0_-4px_16px_rgba(11,18,32,0.06)] px-4 pt-3.5 pb-4">
+    <div data-bottom-cta-bar style={barStyle} className="z-20 fixed w-full md:w-[48%] bottom-0 flex-shrink-0 bg-[#fffaf5] border-t border-slate-100 shadow-[0_-4px_16px_rgba(11,18,32,0.06)] px-4 pt-3.5 pb-4">
       <div>
         <div className="flex items-center gap-3">
           {/* Spinning ring with hourglass glyph — same chrome as the original loader */}
@@ -3843,7 +4564,7 @@ const ItineraryStepsLoader = ({
 
         {/* Indeterminate progress bar — same as the original loader */}
         <div className="mt-3 h-1.5 w-full bg-[#f4f3ec] rounded-full overflow-hidden">
-          <div className="ttw-steps-loader-bar h-full w-2/5 rounded-full bg-gradient-to-r from-[#f7e700] to-[#e8b800]" />
+          <div className="ttw-steps-loader-bar h-full w-2/5 rounded-full bg-[#f7e700]" />
         </div>
       </div>
     </div>
@@ -3868,7 +4589,9 @@ const BottomCTABar = React.memo(
     onViewCart,
     onGetInTouch,
     onRetryCart,
+    onViewBookings,
     notes,
+    barStyle,
   }: BottomCTABarProps) => {
     if (
       !["itinerary", "bookings"].includes(viewMode) ||
@@ -3878,7 +4601,7 @@ const BottomCTABar = React.memo(
 
     if (isDraft) {
       return (
-        <div className="z-20 fixed w-full md:w-[47.5%] max-ph:bottom-0 md:!bottom-[4.2rem] flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3 flex items-center justify-center">
+        <div data-bottom-cta-bar style={barStyle} className="z-20 fixed w-full md:w-[47.5%] bottom-0 flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3 flex items-center justify-center">
           <button
             onClick={onConfirm}
             className="flex items-center justify-center h-[40px] px-5 gap-2 rounded-[8px] bg-[#F7E700] ttw-type-body font-inter !font-bold"
@@ -3895,7 +4618,7 @@ const BottomCTABar = React.memo(
 
     if (isPricingFailedWithEmptyNotes) {
       return (
-        <div className="z-20 fixed w-full md:w-[48%] max-ph:bottom-0 md:bottom-[4.2rem] flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3 flex items-center justify-between">
+        <div data-bottom-cta-bar style={barStyle} className="z-20 fixed w-full md:w-[48%] bottom-0 flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3 flex items-center justify-between">
           <p className="text-red-600 ttw-type-body">
             Get in touch to finalize the pricing!
           </p>
@@ -3915,14 +4638,19 @@ const BottomCTABar = React.memo(
       if (!loaderDisplayText) return null;
       // Stepped progress card rendered in the bottom bar space (same place
       // the cart row sits), replacing the old centered overlay.
-      return <ItineraryStepsLoader displayText={loaderDisplayText} />;
+      return (
+        <ItineraryStepsLoader
+          displayText={loaderDisplayText}
+          barStyle={barStyle}
+        />
+      );
     }
 
     const perPerson = cart?.pay_only_for_one || cart?.show_per_person_cost;
     const rawCost = perPerson
       ? cart?.per_person_discounted_cost
       : cart?.discounted_cost;
-    const cost = Number.isFinite(rawCost) ? Math.round(rawCost) : null;
+    const cost = Number.isFinite(rawCost) ? rawCost : null;
     const currencySymbol = currencySymbols[currency?.currency] || "₹";
 
     const couponBadge = (
@@ -3948,8 +4676,45 @@ const BottomCTABar = React.memo(
       </span>
     );
 
+    // The price is what it is because of these bookings, so the count doubles as
+    // the door into the Bookings view — it sits directly under the total it
+    // explains. Hidden while the Bookings view is already open.
+    const bookingsChip =
+      onViewBookings && countCartItems > 0 && viewMode !== "bookings" ? (
+        <button
+          type="button"
+          onClick={onViewBookings}
+          className="flex items-center text-[11px] md:text-[12px] text-[#6E757A] hover:text-[#122A43] transition-colors whitespace-nowrap"
+        >
+          {/* No flex `gap` here — it would space the chevron off the count as
+              widely as it spaces the words. The label carries its own space. */}
+          Inclusive of&nbsp;
+          <span className="font-semibold text-[#122A43] underline underline-offset-2">
+            {countCartItems} booking{countCartItems > 1 ? "s" : ""}
+          </span>
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden
+            className="-ml-[1px]"
+          >
+            <path d="m9 18 6-6-6-6" />
+          </svg>
+        </button>
+      ) : null;
+
+    // px-[24px], not px-4: bootstrap.min.css is imported after Tailwind and its
+    // `.px-4` is `1.5rem !important`, so a Tailwind `px-*` override at the same
+    // specificity silently loses. Arbitrary values don't collide. 24px is what
+    // the bar has always rendered at — keep desktop as-is.
     return (
-      <div className="z-20 fixed w-full md:w-[48%] max-ph:bottom-0 md:bottom-[4.2rem] flex-shrink-0 bg-[#fffaf5] border-t border-slate-100 px-4 py-2 flex flex-col gap-1">
+      <div data-bottom-cta-bar style={barStyle} className="z-20 fixed w-full md:w-[48%] bottom-0 flex-shrink-0 bg-[#fffaf5] border-t border-slate-100 px-[24px] max-ph:px-[10px] py-2 flex flex-col gap-1">
         <div className="flex items-center justify-between">
         <div className="flex flex-col">
           {cost !== null ? (
@@ -3961,9 +4726,11 @@ const BottomCTABar = React.memo(
                     ? "Estimated Price"
                     : "Total Cost"}
               </span>
+              {/* The bookings count sits in the foot line below, on every
+                  breakpoint — see the foot line at the bottom of the bar. */}
               <span className="font-sans text-[16px] md:text-[21px] font-bold leading-tight text-[#111827] whitespace-nowrap">
                 {currencySymbol}
-                {cost.toLocaleString("en-IN")}/-
+                {formatCurrencyValue(cost, currency?.currency)}/-
               </span>
             </>
           ) : cart?.error ? (
@@ -4031,9 +4798,15 @@ const BottomCTABar = React.memo(
           )}
         </div>
         </div>
-        {/* Coupon hint: own line below the CTA, aligned to the right end */}
-        {cost !== null && (
-          <div className="flex justify-end">{couponBadge}</div>
+        {/* Foot line: the bookings count under the price it explains, and the
+            coupon hint under the CTA it applies to. justify-end (not
+            justify-between) so the coupon badge stays put when there is no
+            bookings chip to push it right. */}
+        {(cost !== null || bookingsChip) && (
+          <div className="flex items-center justify-end gap-3">
+            {bookingsChip && <span className="mr-auto">{bookingsChip}</span>}
+            {cost !== null && couponBadge}
+          </div>
         )}
       </div>
     );
@@ -4044,7 +4817,7 @@ BottomCTABar.displayName = "BottomCTABar";
 // ── MobileLayout — full-screen views with top tab bar + mobile header ─────────
 type MobileTab = "chat" | "map" | "routes" | "itinerary" | "bookings";
 
-const CHATKIT_API_URL_MOBILE = "https://dev.chat.tarzanway.com/chatkit";
+const CHATKIT_API_URL_MOBILE = CHATKIT_API_URL;
 
 function getAuthToken(): string | null {
   // localStorage is browser-only; guard so render-time calls don't crash
@@ -4087,6 +4860,7 @@ export const MobileHeaderMenu = React.memo(
     const [threads, setThreads] = React.useState<any[]>([]);
     const [historyLoading, setHistoryLoading] = React.useState(false);
     const [profileOpen, setProfileOpen] = React.useState(false);
+    const tripsCount = useTripsCount();
     const [showLogin, setShowLogin] = React.useState(false);
     const profileRef = React.useRef<HTMLDivElement>(null);
     const reduxToken = useSelector((state: any) => state.auth.token);
@@ -4128,6 +4902,10 @@ export const MobileHeaderMenu = React.memo(
       } else {
         // On logout, clear immediately
         setLocalImg(null);
+        // Drop the previous session's threads + close the drawer so no stale
+        // history survives a logout.
+        setThreads([]);
+        setHistoryOpen(false);
       }
     }, [token]);
 
@@ -4219,7 +4997,7 @@ export const MobileHeaderMenu = React.memo(
                 />
               )}
               <div
-                className="fixed top-0 left-0 h-full z-[400] bg-white shadow-2xl flex flex-col transition-transform duration-300 ease-in-out"
+                className="kaira-scope kaira-drawer fixed top-0 left-0 h-full z-[400] shadow-2xl transition-transform duration-300 ease-in-out"
                 style={{
                   width: "85vw",
                   maxWidth: 320,
@@ -4228,13 +5006,15 @@ export const MobileHeaderMenu = React.memo(
                     : "translateX(-110%)",
                 }}
               >
-                <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100 flex-shrink-0">
-                  <span className="font-semibold text-gray-800 text-[15px]">
-                    Chat History
+                <div className="kaira-drawer-head">
+                  <span className="kaira-drawer-title">
+                    <KairaHistoryIcon size={14} />
+                    <span className="kaira-mono">Recent chats</span>
                   </span>
                   <button
                     onClick={() => setHistoryOpen(false)}
-                    className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-500"
+                    className="kaira-icon-btn is-sm"
+                    aria-label="Close recent chats"
                   >
                     <svg
                       width="16"
@@ -4242,7 +5022,7 @@ export const MobileHeaderMenu = React.memo(
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
-                      strokeWidth="2.5"
+                      strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
                     >
@@ -4251,40 +5031,68 @@ export const MobileHeaderMenu = React.memo(
                     </svg>
                   </button>
                 </div>
-                <div className="flex-1 overflow-y-auto px-3 py-3">
+                <div className="kaira-hist-scroll">
                   {historyLoading ? (
-                    <div className="flex flex-col gap-2">
-                      {[...Array(5)].map((_, i) => (
+                    <div className="flex flex-col gap-1.5 pt-3 px-1">
+                      {[...Array(6)].map((_, i) => (
                         <div
                           key={i}
-                          className="h-10 rounded-lg bg-gray-100 animate-pulse"
+                          className="h-9 rounded-[10px] animate-pulse"
+                          style={{
+                            background: "var(--k-paper-2)",
+                            opacity: 1 - i * 0.12,
+                          }}
                         />
                       ))}
                     </div>
                   ) : threads.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center h-full text-center py-12 gap-3">
-                      <p className="ttw-type-body text-gray-500">No chats yet</p>
+                    <div className="flex flex-col items-center justify-center text-center gap-1.5 px-3 py-10">
+                      <p style={{ fontSize: 13.5, fontWeight: 600 }}>
+                        No chats yet
+                      </p>
+                      <p style={{ fontSize: 12.5, color: "var(--k-ink-4)" }}>
+                        Start a new chat to see history here
+                      </p>
                     </div>
                   ) : (
-                    <div className="flex flex-col gap-0.5">
-                      {threads.map((t: any) => (
-                        <button
-                          key={t.id}
-                          onClick={() => {
-                            onThreadSelect(
-                              t.id,
-                              t.session_id ?? t.filter_session_id,
-                              t.customer_name,
-                            );
-                            setHistoryOpen(false);
-                          }}
-                          className={`w-full text-left px-3 py-2.5 rounded-lg ttw-type-small truncate ${activeThreadId === t.id ? "bg-[#07213A] text-white font-medium" : "text-gray-700 hover:bg-gray-50"}`}
-                          title={t.title || "Untitled"}
-                        >
-                          {t.title || "Untitled"}
-                        </button>
-                      ))}
-                    </div>
+                    // Same Today/Yesterday/… buckets as the desktop rail.
+                    groupThreads(threads).map((group) => (
+                      <div key={group.label} className="mb-1.5">
+                        <div className="kaira-mono kaira-hist-group-label">
+                          {group.label}
+                        </div>
+                        {group.threads.map((t) => (
+                          <button
+                            key={t.id}
+                            onClick={() => {
+                              onThreadSelect(
+                                t.id,
+                                t.session_id ?? t.filter_session_id,
+                                t.customer_name,
+                              );
+                              setHistoryOpen(false);
+                            }}
+                            className={`kaira-hist-item${activeThreadId === t.id ? " is-active" : ""}`}
+                            title={t.title || "Untitled"}
+                          >
+                            <span className="kaira-hist-title">
+                              {t.title || "Untitled"}
+                            </span>
+                            {t.itinerary_created && (
+                              <span
+                                className="kaira-hist-marker"
+                                title="Itinerary created"
+                              >
+                                <KairaMapIcon />
+                              </span>
+                            )}
+                            <span className="kaira-hist-time kaira-mono tabular-nums">
+                              {formatCompactTime(t.created_at)}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    ))
                   )}
                 </div>
               </div>
@@ -4293,74 +5101,34 @@ export const MobileHeaderMenu = React.memo(
           )}
 
         {/* Right icons */}
-        <div className="flex items-center gap-1">
-          {/* Chat history */}
-          <button
-            onClick={handleHistoryClick}
-            className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-gray-100 transition-colors text-gray-600"
-            aria-label="Chat history"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="19"
-              height="19"
-              viewBox="0 0 21 21"
-              fill="none"
+        <div className="kaira-scope flex items-center gap-1">
+          {/* Recent chats — hidden logged out, matching the desktop rail: no
+              history means an empty drawer isn't worth a header button. */}
+          {isLoggedIn && (
+            <button
+              onClick={handleHistoryClick}
+              className="kaira-icon-btn is-sm"
+              aria-label="Recent chats"
             >
-              <path
-                d="M10.0306 11.7021C9.57231 11.7004 9.18067 11.5357 8.85572 11.2079C8.53022 10.8806 8.36828 10.4878 8.36991 10.0295C8.37154 9.57114 8.53626 9.17923 8.86409 8.85372C9.19136 8.52877 9.58416 8.36711 10.0425 8.36874C10.5008 8.37037 10.8927 8.53482 11.2182 8.86209C11.5432 9.18991 11.7048 9.58299 11.7032 10.0413C11.7016 10.4996 11.5371 10.8913 11.2099 11.2162C10.882 11.5417 10.489 11.7037 10.0306 11.7021ZM10.0099 17.5353C8.07937 17.5285 6.40802 16.887 4.99588 15.6109C3.58374 14.3353 2.77689 12.7457 2.57532 10.8422L4.28364 10.8483C4.47295 12.2934 5.11092 13.4901 6.19756 14.4384C7.28475 15.3868 8.55751 15.8635 10.0158 15.8687C11.6408 15.8745 13.0212 15.3133 14.1568 14.1851C15.2931 13.0574 15.8641 11.6811 15.8699 10.0561C15.8756 8.43114 15.3144 7.05052 14.1862 5.91428C13.0586 4.7786 11.6823 4.20787 10.0573 4.2021C9.09897 4.19869 8.20235 4.41773 7.36744 4.85921C6.53254 5.30069 5.82898 5.90931 5.25677 6.68505L7.54843 6.6932L7.5425 8.35985L2.54254 8.34209L2.5603 3.34212L4.22696 3.34804L4.22 5.30636C4.93149 4.42 5.79865 3.73557 6.82148 3.25309C7.84376 2.77061 8.92434 2.5314 10.0632 2.53544C11.1049 2.53915 12.08 2.74039 12.9886 3.13918C13.8966 3.53852 14.6864 4.07605 15.3579 4.75177C16.0288 5.42805 16.5607 6.22161 16.9536 7.13246C17.3459 8.04386 17.5402 9.02039 17.5365 10.0621C17.5328 11.1037 17.3316 12.0786 16.9328 12.9866C16.5334 13.8952 15.9959 14.6849 15.3202 15.3559C14.6439 16.0274 13.8503 16.5595 12.9395 16.9524C12.0281 17.3447 11.0516 17.5391 10.0099 17.5353Z"
-                fill="#07213A"
-              />
-            </svg>
-          </button>
+              <KairaHistoryIcon size={19} />
+            </button>
+          )}
 
           {/* New chat */}
           <button
             onClick={onNewChat}
-            className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-gray-100 transition-colors text-gray-600"
+            className="kaira-icon-btn is-sm"
             aria-label="New chat"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="19"
-              height="19"
-              viewBox="0 0 19 19"
-              fill="none"
-            >
-              <path
-                d="M8.30612 1.52887L6.80613 1.52354C3.05615 1.51021 1.55083 3.00487 1.5375 6.75485L1.52151 11.2548C1.50818 15.0048 3.00284 16.5101 6.75282 16.5234L11.2528 16.5394C15.0028 16.5528 16.5081 15.0581 16.5214 11.3081L16.5267 9.80814"
-                stroke="#07213A"
-                strokeWidth="1.7"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M6.15411 8.19642C5.92831 8.42062 5.70174 8.86231 5.6556 9.18465L5.32508 11.441C5.20217 12.2581 5.77764 12.8301 6.59554 12.7205L8.85417 12.406C9.16933 12.3622 9.61262 12.1387 9.84592 11.9146L15.7769 6.0256C16.8005 5.00923 17.2847 3.82595 15.7901 2.32063C14.2954 0.815305 13.1087 1.29109 12.0851 2.30746L6.15411 8.19642Z"
-                stroke="#07213A"
-                strokeWidth="1.7"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M11.2358 3.15234C11.732 4.94662 13.1295 6.35409 14.9277 6.87049"
-                stroke="#07213A"
-                strokeWidth="1.7"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <KairaPlusIcon size={19} />
           </button>
 
           {/* Profile avatar */}
           <div ref={profileRef} className="relative ml-1">
             <button
               onClick={() => setProfileOpen((v) => !v)}
-              className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center border-2 border-gray-200 bg-gray-100"
-              style={
-                showColorAvatar && avatarColor
-                  ? { background: avatarColor, borderColor: avatarColor }
-                  : undefined
-              }
+              className="kaira-avatar"
+              style={avatarColor ? { background: avatarColor } : undefined}
               aria-label="Profile"
             >
               {avatarSrc ? (
@@ -4371,43 +5139,46 @@ export const MobileHeaderMenu = React.memo(
                   className="w-full h-full object-cover"
                 />
               ) : showColorAvatar ? (
-                <span className="ttw-type-small font-bold text-white select-none">
-                  {getUserInitial(name)}
-                </span>
+                getUserInitial(name)
               ) : (
-                <span className="ttw-type-small font-bold text-gray-600">
-                  {initials}
-                </span>
+                initials
               )}
             </button>
             {profileOpen && (
               <div
-                className="absolute right-0 top-10 z-[9999] bg-white rounded-xl shadow-xl border border-gray-100 py-1.5 overflow-hidden"
-                style={{ minWidth: 180 }}
+                className="kaira-scope kaira-menu absolute right-0 top-11 z-[9999]"
+                style={{ minWidth: 190 }}
               >
                 {!token ? (
                   <button
-                    className="w-full text-left px-4 py-2.5 ttw-type-body text-gray-700 hover:bg-gray-50"
+                    className="kaira-menu-item"
                     onClick={() => {
                       setProfileOpen(false);
                       setShowLogin(true);
                     }}
                   >
+                    <KairaUserIcon className="kaira-menu-icon" />
                     Login / Signup
                   </button>
                 ) : (
                   <>
-                    <a
-                      href="/dashboard"
-                      className="flex items-center gap-2 px-4 py-2.5 ttw-type-body text-gray-700 hover:bg-gray-50"
-                    >
-                      My Trips
+                    <a href="/dashboard" className="kaira-menu-item">
+                      <span className="kaira-trips-tile">
+                        <KairaSuitcaseIcon />
+                      </span>
+                      My trips
+                      {tripsCount !== null && (
+                        <span className="kaira-count">{tripsCount}</span>
+                      )}
                     </a>
                     <button
-                      className="w-full flex items-center gap-2 px-4 py-2.5 ttw-type-body text-red-500 hover:bg-red-50"
+                      className="kaira-menu-item is-logout"
                       onClick={handleLogout}
                     >
-                      Logout
+                      <span className="kaira-logout-tile">
+                        <KairaLogoutIcon size={15} />
+                      </span>
+                      Log out
                     </button>
                   </>
                 )}
@@ -4436,6 +5207,7 @@ MobileHeaderMenu.displayName = "MobileHeaderMenu";
 // ── MobileHeader ──────────────────────────────────────────────────────────────
 // Logo + MobileHeaderMenu. Used outside the chat tab; the chat tab embeds
 // MobileHeaderMenu directly inside ChatKitPanel's "Chat with Kaira" bar.
+
 const MobileHeader = React.memo(
   ({
     onNewChat,
@@ -4450,13 +5222,18 @@ const MobileHeader = React.memo(
     isComplete?: boolean;
     onLoginSuccess?: () => void | Promise<void>;
   }) => (
-    <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 bg-white border-b border-gray-100 z-10">
-      <div className="flex items-center gap-2"  onClick={() => window.location.href = "/"}>
+    <div className="kaira-scope kaira-mheader z-10">
+      <div
+        className="flex items-center cursor-pointer"
+        onClick={() => (window.location.href = "/")}
+      >
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/logoblack.svg" height={22} width={22} alt="logo" />
-        <span className="font-semibold text-gray-800 ttw-type-body" >
-          thetarzanway
-        </span>
+        <img
+          src="/logo/ttw-lockup.svg"
+          height={LOGO_HEIGHT.MOBILE}
+          alt="The Tarzan Way"
+          style={{ height: LOGO_HEIGHT.MOBILE, width: "auto" }}
+        />
       </div>
       <MobileHeaderMenu
         onNewChat={onNewChat}
@@ -4495,6 +5272,8 @@ interface MobileLayoutProps {
   bottomCTABarProps?: BottomCTABarProps;
   onSettingsClick?: () => void;
   onLoginSuccess?: () => void | Promise<void>;
+  /** Collapse the expanded trip-details card when the itinerary pane scrolls. */
+  onItineraryScrolled?: (scrolledAway: boolean, isDown: boolean) => void;
 }
 
 const MobileLayout = React.memo(
@@ -4523,6 +5302,7 @@ const MobileLayout = React.memo(
     bottomCTABarProps,
     onSettingsClick,
     onLoginSuccess,
+    onItineraryScrolled,
   }: MobileLayoutProps) => {
     // On a sessionId refresh, BotApp seeds `mobilePanel` to "itinerary" (same
     // signal desktop uses for its viewMode default). Honour it here so an
@@ -4538,9 +5318,15 @@ const MobileLayout = React.memo(
     const dispatchLayout = useDispatch();
     const [showChatBanner, setShowChatBanner] = React.useState(true);
 
-    // Sync mobilePanel (legacy) so BotApp state stays consistent
+    // Sync mobilePanel (legacy) so BotApp state stays consistent. The map tab
+    // reports itself as "map" rather than collapsing into "itinerary": it is the
+    // only signal BotApp has for whether the mobile map pane is actually on
+    // screen. viewMode can't answer that — handleTabClick sets it to "map" for
+    // the CHAT tab too.
     React.useEffect(() => {
-      setMobilePanel(activeTab === "chat" ? "chat" : "itinerary");
+      setMobilePanel(
+        activeTab === "chat" ? "chat" : activeTab === "map" ? "map" : "itinerary",
+      );
     }, [activeTab, setMobilePanel]);
 
     // Clear unread flag when user switches to chat tab
@@ -4577,7 +5363,8 @@ const MobileLayout = React.memo(
 
     // When itinerary activity starts on mobile, keep the user on the chat tab
     // rather than yanking them into the itinerary view. The "View Itinerary"
-    // pill above the composer and the top tab bar let them switch manually.
+    // pill above the composer and the bar below the header let them switch
+    // manually.
     const prevHasActivityRef = React.useRef(hasItineraryActivity);
     React.useEffect(() => {
       // Activity dropped (e.g. switched from a P2 thread to a P1 thread that
@@ -4595,104 +5382,197 @@ const MobileLayout = React.memo(
       prevHasActivityRef.current = hasItineraryActivity;
     }, [hasItineraryActivity, activeTab, setViewMode]);
 
-    // Top tab bar — Chat + Map + Itinerary + Route + Bookings when itinerary is active
-   const tabs: {
-  key: MobileTab;
-  label: string;
-  show: boolean;
-  icon: React.ReactNode;
-}[] = [
-  { key: "map", label: "Map", show: hasItineraryActivity, icon: <FiMap size={14} /> },
-  {
-    key: "routes",
-    label: "Route",
-    show: isComplete,
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="6" cy="6" r="2.5" />
-        <circle cx="18" cy="18" r="2.5" />
-        <path d="M9 6h7a2 2 0 0 1 2 2v7" />
-      </svg>
-    ),
-  },
-  { key: "itinerary", label: "Itinerary", show: hasItineraryActivity, icon: <FiCalendar size={14} /> },
-  {
-    key: "bookings",
-    label: "Bookings",
-    show: isComplete,
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M19 14l-5-5-9 9" />
-        <path d="M5 21h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2z" />
-      </svg>
-    ),
-  },
-];
-    const visibleTabs = tabs.filter((t) => t.show);
+    // There is no tab strip. Map / Bookings / Route are each reached from a CTA
+    // on the itinerary (the header card's Map + Change Route pills, the cart
+    // bar's booking count) and each carries its own way back — see
+    // BackToItinerary. Every MobileTab is still a valid target and
+    // handleTabClick still switches to all of them; only the strip is gone.
+    //
+    // The chat tab is the exception: nothing on it belongs to the itinerary, so
+    // it keeps one persistent entry point back into the trip. (The
+    // mobileEffectPopup pill also does this, but only once and only for 10s.)
 
-    const activeTabStyle: React.CSSProperties = {
-      background: "#07213A",
-      color: "#fff",
-      borderRadius: "10px",
-      border: "1px solid #FFFACD",
-      boxShadow: "0 2px 8px rgba(195,195,195,0.35)",
-    };
-    const inactiveTabStyle: React.CSSProperties = {
-      borderRadius: "10px",
-      color: "#0B1220",
-    };
+    // ── Mobile header: an absolute bar pinned to the top of the layout ────
+    // It never moves or reflows on scroll — the panes below are offset down by
+    // its measured height so nothing hides behind it. (It used to be a flex
+    // child that collapsed via an animated negative margin-top on scroll, but
+    // that reflowed the pane every frame and read as a scroll glitch.)
+    //
+    // NOTE: window/document never scrolls on this page — <main> is
+    // `h-dvh overflow-hidden`, so a window scroll listener would never fire.
+    // The real scroller is the itinerary/routes/bookings pane below, and the
+    // two thresholds here only drive the trip card's condense/meta-collapse.
+    const SCROLL_JITTER_PX = 6; // ignore sub-pixel / momentum noise
+    const SHOW_ABOVE_PX = 48; // condense the trip card past this scroll depth
+    // Two stops for the navbar rather than one: it hides once scrolled past
+    // NAV_HIDE_PX and only returns within NAV_SHOW_PX of the top. The gap
+    // between them (hysteresis) stops momentum/rubber-band jitter at a single
+    // boundary from flipping it on and off — that flicker was the "glitch".
+    const NAV_SHOW_PX = 4;
+    const NAV_HIDE_PX = 40;
+
+    const scrollPaneRef = React.useRef<HTMLDivElement | null>(null);
+    const headerRef = React.useRef<HTMLDivElement | null>(null);
+    const lastScrollRef = React.useRef(0);
+    const [headerHeight, setHeaderHeight] = React.useState(0);
+    // The navbar shows only at the top of the pane and slides up out of view
+    // once scrolled — driven by the pane's scroll position, applied via a GPU
+    // transform (see the header markup below).
+    const [navHidden, setNavHidden] = React.useState(false);
+
+    const headerVisible = activeTab !== "chat";
+
+    // Held in a ref so the scroll listener below never re-registers on it.
+    const onItineraryScrolledRef = React.useRef(onItineraryScrolled);
+    onItineraryScrolledRef.current = onItineraryScrolled;
+
+    // Measure the absolute navbar so the panes below can be offset by its real
+    // height (padding + border + the 36px icon buttons ≈ 61px — measured, not
+    // hard-coded). useLayoutEffect so the offset is set before paint and the
+    // itinerary never flashes underneath the navbar on mount.
+    React.useLayoutEffect(() => {
+      const el = headerRef.current;
+      if (!el) {
+        setHeaderHeight(0);
+        return undefined;
+      }
+      const measure = () => setHeaderHeight(el.offsetHeight);
+      measure();
+      const ro = new ResizeObserver(measure);
+      ro.observe(el);
+      return () => ro.disconnect();
+    }, [headerVisible]);
+
+    React.useEffect(() => {
+      const el = scrollPaneRef.current;
+      if (!el) return;
+      lastScrollRef.current = el.scrollTop;
+
+      // Coalesce every burst of scroll events into a single update per animation
+      // frame. Calling setState synchronously inside the scroll event forces a
+      // layout flush on every tick mid-scroll — that thrash is what makes the
+      // pane stutter on mobile. One rAF-batched pass per frame keeps it smooth.
+      let rafId = 0;
+      const update = () => {
+        rafId = 0;
+        const y = el.scrollTop;
+        const delta = y - lastScrollRef.current;
+
+        // iOS rubber-banding drives scrollTop negative / past the end; the
+        // jitter guard keeps that momentum noise from toggling the condensed
+        // trip card. Skipped inside the reveal band so a slow drift to rest a
+        // few px down still registers.
+        if (Math.abs(delta) < SCROLL_JITTER_PX && y > SHOW_ABOVE_PX) return;
+        lastScrollRef.current = y;
+
+        // The navbar is visible only at the top and slides away once scrolled.
+        // Hysteresis: hide past NAV_HIDE_PX, show only back within NAV_SHOW_PX;
+        // in the dead band between them leave it as-is so boundary jitter can't
+        // flicker it. Direction-agnostic — it returns on scrolling back to top.
+        if (y <= NAV_SHOW_PX) setNavHidden(false);
+        else if (y > NAV_HIDE_PX) setNavHidden(true);
+
+        // Away from the top the trip-details card condenses to its identifying
+        // lines; a downward scroll additionally collapses the expanded meta.
+        onItineraryScrolledRef.current?.(y > SHOW_ABOVE_PX, delta > 0);
+      };
+
+      const onScroll = () => {
+        if (rafId) return;
+        rafId = requestAnimationFrame(update);
+      };
+
+      el.addEventListener("scroll", onScroll, { passive: true });
+      return () => {
+        el.removeEventListener("scroll", onScroll);
+        if (rafId) cancelAnimationFrame(rafId);
+      };
+    }, [hasItineraryActivity]);
+
+    // Re-baseline the scroll delta on tab change so the first scroll of the new
+    // pane isn't misread as a large jump, and show the navbar again (a new tab
+    // starts at the top).
+    React.useEffect(() => {
+      lastScrollRef.current = scrollPaneRef.current?.scrollTop ?? 0;
+      setNavHidden(false);
+    }, [activeTab]);
+
+    // The scroll pane ends where the fixed CTA bar begins. Measure the bar
+    // rather than assume a height — it swaps between a one-line confirm button,
+    // the steps loader and the two-line cart row, each a different height, and
+    // a stale guess leaves a dead white strip between the pane and the bar.
+    const [ctaBarHeight, setCtaBarHeight] = React.useState(0);
+    React.useEffect(() => {
+      const el = document.querySelector("[data-bottom-cta-bar]");
+      if (!el) {
+        setCtaBarHeight(0);
+        return undefined;
+      }
+      const measure = () => setCtaBarHeight(el.getBoundingClientRect().height);
+      measure();
+      const ro = new ResizeObserver(measure);
+      ro.observe(el);
+      return () => ro.disconnect();
+      // bottomCTABarProps carries cart/pricingStatus, so it changes whenever the
+      // bar swaps variants and this re-queries the (newly mounted) element.
+    }, [bottomCTABarProps, hasItineraryActivity, activeTab]);
 
     return (
       <div className="flex flex-col h-full overflow-hidden relative">
         {/* ── Mobile header — hidden on chat tab; ChatKitPanel renders its
            own top bar with the menu on the right of "Chat with Kaira". ── */}
-        {activeTab !== "chat" && (
-          <MobileHeader
-            onNewChat={onNewChat}
-            onThreadSelect={onThreadSelect}
-            activeThreadId={activeThreadId}
-            isComplete={isComplete}
-            onLoginSuccess={onLoginSuccess}
-          />
+        {headerVisible && (
+          <div
+            ref={headerRef}
+            // Absolute — not sticky, not a collapsing flex child. Pinned to the
+            // top and shown only near the top of the pane; on scroll it slides
+            // straight up out of view via a GPU transform. (The old approach
+            // animated margin-top, reflowing the pane every frame — that was the
+            // scroll glitch.) A scrolling spacer of the same height sits at the
+            // top of the pane below, so the content still starts under the navbar
+            // at rest and nothing moves when it slides away.
+            className="absolute top-0 inset-x-0 z-40 bg-white transition-[transform,opacity] duration-300 ease-out motion-reduce:transition-none"
+            style={{
+              transform: navHidden ? "translateY(-100%)" : "translateY(0)",
+              opacity: navHidden ? 0 : 1,
+              pointerEvents: navHidden ? "none" : "auto",
+              willChange: "transform, opacity",
+            }}
+            aria-hidden={navHidden}
+          >
+            <MobileHeader
+              onNewChat={onNewChat}
+              onThreadSelect={onThreadSelect}
+              activeThreadId={activeThreadId}
+              isComplete={isComplete}
+              onLoginSuccess={onLoginSuccess}
+            />
+          </div>
         )}
 
-        {/* ── Top tab bar — only when itinerary is active ── */}
-        {hasItineraryActivity && visibleTabs.length > 0 && (
-          <div className="flex-shrink-0 bg-white border-b border-gray-100 flex items-center gap-2">
-            <div
-              className="flex flex-1 gap-1 p-[3px]"
-              style={{
-                borderRadius: "10px",
-                border: "1px solid #E5E5E5",
-                background: "#fff",
-              }}
+        {/* ── Chat tab: the one persistent way back into the trip ── */}
+        {hasItineraryActivity && activeTab === "chat" && (
+          <button
+            type="button"
+            onClick={() => handleTabClick("itinerary")}
+            className="flex-shrink-0 bg-white border-b border-gray-100 flex items-center justify-center gap-2 px-3 py-[9px] text-[12.5px] font-inter font-semibold text-[#122A43] active:bg-[#F4F6F8]"
+          >
+            <FiCalendar size={14} />
+            View Itinerary
+            <svg
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
             >
-              {visibleTabs.map((tab) => (
-  <button
-    key={tab.key}
-    onClick={() => handleTabClick(tab.key)}
-    className="flex-1 px-2 py-2 text-[12px] font-semibold transition-all duration-200 whitespace-nowrap flex items-center justify-center gap-1.5"
-    style={activeTab === tab.key ? activeTabStyle : inactiveTabStyle}
-  >
-    {tab.icon}
-    {tab.label}
-  </button>
-))}
-            </div>
-            {/* Settings icon — only when itinerary is fully created */}
-            {/* {isComplete && onSettingsClick && (
-            <button
-              onClick={onSettingsClick}
-              className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
-              aria-label="Settings"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#07213A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="3"/>
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-              </svg>
-            </button>
-          )} */}
-          </div>
+              <path d="m9 18 6-6-6-6" />
+            </svg>
+          </button>
         )}
 
         {/* ── Content area — full remaining height ── */}
@@ -4711,25 +5591,54 @@ const MobileLayout = React.memo(
 
           {/* MAP view */}
           <div
-            className="absolute inset-0 flex flex-col"
+            className="absolute inset-x-0 bottom-0 flex flex-col"
             style={{
+              top: headerHeight, // sit below the absolute navbar
               opacity: activeTab === "map" ? 1 : 0,
               pointerEvents: activeTab === "map" ? "auto" : "none",
               zIndex: activeTab === "map" ? 2 : 1,
             }}
           >
-            <div className="flex-1 min-h-0 flex flex-col">{mapContent}</div>
+            <div className="relative flex-1 min-h-0 flex flex-col">
+              {mapContent}
+            </div>
             {/* View Cart bar on map tab */}
             {bottomCTABarProps && hasItineraryActivity && (
               <BottomCTABar {...bottomCTABarProps} viewMode="itinerary" />
+            )}
+            {/* Way back out of the map — centered, just above the cart bar. */}
+            {hasItineraryActivity && (
+              <BackToItineraryBar
+                onClick={() => handleTabClick("itinerary")}
+                bottom={ctaBarHeight + 12}
+              />
             )}
           </div>
 
           {/* ITINERARY / ROUTES / BOOKINGS view */}
           {hasItineraryActivity && (
             <div
-              className="absolute inset-0 overflow-y-auto bg-white"
+              ref={scrollPaneRef}
+              // The cart bar (rendered as a sibling below this pane) is
+              // `fixed bottom-0`, so it takes no flow space and would cover the
+              // last card at max scroll. End the pane above it rather than
+              // padding the pane by its height: padding is scrollable, so it
+              // forced a scrollbar even when the content fit. Shrinking the pane
+              // cannot.
+              className="absolute inset-x-0 top-0 overflow-y-auto bg-white"
               style={{
+                // Full height (the spacer below reserves the navbar's row inside
+                // the scroll flow); end where the fixed CTA bar begins.
+                bottom: ctaBarHeight,
+                // Momentum scrolling; keep the scroll from chaining into the
+                // surface behind it; and hard-clip horizontal overflow so a
+                // too-wide child can't turn this vertical pane into a two-axis
+                // scroller (that sideways drift was the "horizontal scroll" and
+                // the diagonal glitch). willChange hints its own compositor layer.
+                WebkitOverflowScrolling: "touch",
+                overscrollBehavior: "contain",
+                overflowX: "hidden",
+                willChange: "scroll-position",
                 opacity: ["itinerary", "routes", "bookings"].includes(activeTab)
                   ? 1
                   : 0,
@@ -4743,9 +5652,40 @@ const MobileLayout = React.memo(
                   : 1,
               }}
             >
+              {/* Scrolling spacer the height of the absolute navbar. The navbar
+                  overlays this at rest; it scrolls away with the content so the
+                  navbar can slide up without leaving a gap or shifting anything.
+                  The sticky trip card sits after it and pins to the very top
+                  once the spacer scrolls past. */}
+              {headerVisible && (
+                <div style={{ height: headerHeight }} aria-hidden />
+              )}
               {itineraryContent}
             </div>
           )}
+
+          {/* Cart bar (+ back-to-itinerary pill) for the itinerary / routes /
+              bookings tabs. Rendered here as a SIBLING of the scroll pane, never
+              inside it: on iOS a position:fixed element nested in a
+              -webkit-overflow-scrolling:touch scroller is positioned against the
+              scrolled content instead of the viewport, so it scrolls off-screen
+              and vanishes — which is exactly why the bar was missing on phones.
+              The map tab keeps its own copy outside the pane for the same reason.
+              The pane reserves `ctaBarHeight` at its foot so this never covers the
+              last card. */}
+          {bottomCTABarProps &&
+            hasItineraryActivity &&
+            ["itinerary", "routes", "bookings"].includes(activeTab) && (
+              <>
+                <BottomCTABar {...bottomCTABarProps} viewMode="itinerary" />
+                {["routes", "bookings"].includes(activeTab) && (
+                  <BackToItineraryBar
+                    onClick={() => handleTabClick("itinerary")}
+                    bottom={ctaBarHeight + 12}
+                  />
+                )}
+              </>
+            )}
         </div>
 
         {/* ── Floating Kaira icon + chat banner — on itinerary/routes/bookings views ── */}

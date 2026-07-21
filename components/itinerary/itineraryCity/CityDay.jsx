@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import ActivityAddDrawer from "../../drawers/poiDetails/activityAddDrawer";
 import { useDispatch, useSelector } from "react-redux";
+import { MERCURY_HOST } from "../../../services/constants";
 import TransferDrawer from "../../../containers/itinerary/TransferDrawer";
 import { useRouter } from "next/router";
 import { getDatesInRange } from "../../../helper/DateUtils";
@@ -188,6 +189,9 @@ const SHORT_MONTHS = [
 ];
 const SHORT_WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
+// Returns the weekday and the "15 Aug" remainder separately so the caller can
+// drop the weekday on mobile, where the mono tracking makes the full
+// "SAT 15 AUG" ~68px wide and it — not the day number — sets the column width.
 const formatDayHeaderDate = (dateStr) => {
   if (!dateStr) return null;
   // API uses ISO "YYYY-MM-DD" — parse as a local date so we don't drift a day.
@@ -199,7 +203,10 @@ const formatDayHeaderDate = (dateStr) => {
     d = new Date(dateStr);
   }
   if (isNaN(d.getTime())) return null;
-  return `${SHORT_WEEKDAYS[d.getDay()]} ${d.getDate()} ${SHORT_MONTHS[d.getMonth()]}`;
+  return {
+    weekday: SHORT_WEEKDAYS[d.getDay()],
+    dayMonth: `${d.getDate()} ${SHORT_MONTHS[d.getMonth()]}`,
+  };
 };
 
 // ─── Helper: editorial day-summary heading ────────────────────────────────────
@@ -502,7 +509,7 @@ const isDraft = useSelector((state) => state.Itinerary.status) === "Draft";
   try {
     setActivityLoading(true);
     const response = await fetch(
-      `https://dev.mercury.tarzanway.com/api/v1/ancillaries/activity/${activityId}/?currency=INR`,
+      `${MERCURY_HOST}/api/v1/ancillaries/activity/${activityId}/?currency=INR`,
       {
         method: "POST",
         headers: {
@@ -829,6 +836,8 @@ useEffect(() => {
 
   const isDesktop = useMediaQuery("(min-width:767px)");
 
+  const dayDate = formatDayHeaderDate(props.day?.date);
+
   return (
     <>
      <div
@@ -839,23 +848,31 @@ useEffect(() => {
         className="flex sm:flex-row flex-col border-b border-[#ECECEC] last:border-b-0 w-full justify-center">
 
         {/* COL 1: Day number + date — matches HTML .day-num-block */}
-        <div className="sm:w-fit w-full shrink-0 pl-4 pr-2 sm:pr-0 sm:pt-6 pt-4 sm:pb-6 pb-2 flex sm:flex-col flex-row sm:items-start items-baseline gap-3 sm:min-w-[64px]">
-          <div className="flex flex-col  sm:items-start items-baseline gap-2 sm:gap-1 shrink-0">
-            <span className="ttw-type-day-num text-[#0B1220] m-0 whitespace-nowrap">
+        <div className="sm:w-fit w-full shrink-0 pl-[0.3rem] sm:pl-4 pr-2 sm:pr-0 sm:pt-6 pt-3 sm:pb-6 pb-1.5 flex sm:flex-col flex-row items-start gap-2.5 sm:gap-3 sm:min-w-[64px]">
+          <div className="flex flex-col items-start gap-1.5 sm:gap-1 shrink-0">
+            {/* 36px serif is too heavy once the columns stack — drop to 26px on
+                mobile so the number sits closer to the title's optical weight. */}
+            <span className="ttw-type-day-num !text-[26px] sm:!text-[36px] text-[#0B1220] m-0 whitespace-nowrap">
               {String(props.index + 1).padStart(2, "0")}
             </span>
-            {props.day?.date && (
+            {dayDate && (
               <span className="ttw-type-day-date text-[#8892A6] m-0 whitespace-nowrap">
-                {formatDayHeaderDate(props.day.date)}
+                {/* Weekday is dropped below 640px — see formatDayHeaderDate. */}
+                <span className="max-sm:hidden">{`${dayDate.weekday} `}</span>
+                {dayDate.dayMonth}
               </span>
             )}
           </div>
 
           {/* Mobile-only: day summary to the right of the day number + date.
-              On desktop the editorial heading in COL 2 carries this instead. */}
+              On desktop the editorial heading in COL 2 carries this instead.
+              Top-aligned (not centered) so the title's first line reads level
+              with the "01"; mt-[1px] is the optical nudge that lines the 13px
+              cap-height up with the 26px serif's, which overhangs its own box
+              because of line-height: 0.9. */}
           {props.day?.day_summary && (
             <h3
-              className="ttw-type-h6 text-[#0B1220] m-0 leading-[1.1] break-words flex-1 min-w-0 self-center sm:hidden"
+              className="ttw-type-h6 text-[#0B1220] m-0 mt-[1px] leading-[1.1] break-words flex-1 min-w-0 sm:hidden"
               style={{ fontWeight: 500 }}
             >
               {renderDaySummary(props.day.day_summary)}
@@ -878,7 +895,10 @@ useEffect(() => {
         </div>
 
         {/* COL 2: Content */}
-        <div className="flex-1 sm:pr-4 px-[0.3rem] md:px-4 sm:pt-6 md:pt-4 pb-4 sm:pb-6 min-w-0">
+        {/* On mobile both columns use px-[0.3rem] so the "01", the MORNING
+            label and the activity cards share one left edge, and that edge
+            mirrors the row's right gutter. */}
+        <div className="flex-1 px-[0.3rem] sm:pr-4 md:px-4 sm:pt-6 md:pt-4 pb-4 sm:pb-6 min-w-0">
 
           {/* Editorial day summary — baseline-aligned with the "01" day number.
               The number is 36px serif, so on desktop the smaller heading is
@@ -918,9 +938,31 @@ useEffect(() => {
                       { scroll: false, shallow: true },
                     );
                   }}
-                  className="rounded-9xl ttw-type-small font-400 leading-md px-sm py-xxs text-white bg-[#5CBA66] flex gap-2 items-center justify-center hover:opacity-90"
+                  className="group inline-flex items-center gap-1.5 cursor-pointer transition-opacity hover:opacity-80"
                 >
-                  <FaTaxi /> Sightseeing Taxi Included
+                  <span
+                    className="inline-flex items-center justify-center rounded-full shrink-0"
+                    style={{
+                      width: "18px",
+                      height: "18px",
+                      background: "#DFF3E7",
+                    }}
+                  >
+                    <FaTaxi style={{ fontSize: "10px", color: "#1F8A5A" }} />
+                  </span>
+                  <span
+                    style={{
+                      fontFamily:
+                        "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+                      fontSize: "12.5px",
+                      fontWeight: 500,
+                      color: "#1F8A5A",
+                      lineHeight: 1.2,
+                    }}
+                    className="group-hover:underline"
+                  >
+                    Sightseeing taxi included
+                  </span>
                 </button>
               ))}
             </div>

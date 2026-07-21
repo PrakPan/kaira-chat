@@ -6,7 +6,8 @@ require('dotenv').config();
 
 
 const generateSitemap = async () => {
-  const BASE_URL = "https://mercury.tarzanway.com";
+  const BASE_URL =
+    process.env.NEXT_PUBLIC_MERCURY_HOST || "https://mercury.tarzanway.com";
   const PROD_BASE_URL=  "https://dev.thetarzanway.com";
 
   // Fetch continents list

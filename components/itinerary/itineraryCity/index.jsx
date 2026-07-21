@@ -141,9 +141,29 @@ const EditIcon = () => (
   </svg>
 );
 
+const HotelIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="15"
+    height="15"
+    viewBox="0 0 24 24"
+    fill="none"
+    className="shrink-0"
+  >
+    <path
+      d="M3 21V7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v14M15 21V11h5a1 1 0 0 1 1 1v9M3 21h18M6.5 9.5h2M6.5 12.5h2M6.5 15.5h2M11 9.5h1M11 12.5h1"
+      stroke="#6B7280"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
 /* ─── Main component ────────────────────────────────────────────────────── */
 const ItineraryCity = (props) => {
   const [viewMore, setViewMore] = useState(true);
+  const [editMode, setEditMode] = useState(false);
   const { token } = useSelector((state) => state.auth);
   const stay = useSelector((state) => state.Stays);
   const [loading, setLoading] = useState(false);
@@ -490,33 +510,139 @@ const ItineraryCity = (props) => {
     ((hotels_status === "SUCCESS") || (hotels_status ==="FAILURE")) &&
     !!multiHotelStays?.[0]?.id;
 
+  // ── Chat "Edit" reveal actions ──────────────────────────────────────────
+  // On the chat page the per-stop actions are hidden behind an Edit toggle.
+  // These handlers mirror, one-for-one, the always-visible header buttons used
+  // on the standalone (non-chat) itinerary page below.
+  const isDraftStatus = itineraryDaybyDay.status == "Draft";
+
+  const openActivityDrawer = () => {
+    trackActivityBookingAdd?.(currentItineraryId, "city_header");
+    setShowActivityDrawer(true);
+    router.push(
+      {
+        pathname: window.location.pathname,
+        query: {
+          drawer: "activity",
+          itinerary_city_id: props?.city?.id,
+          city_id: props?.city?.city?.id,
+        },
+      },
+      undefined,
+      { scroll: false, shallow: true },
+    );
+  };
+
+  const openTaxiDrawer = () => {
+    trackTaxiCardClicked?.(currentItineraryId, "", "city_header_add_taxi");
+    trackTaxiBookingAdd?.(currentItineraryId, "", "city_header_add_taxi");
+    router.push(
+      {
+        pathname: window.location.pathname,
+        query: {
+          drawer: "addCityTaxi",
+          itinerary_city_id: props?.city?.id,
+          ...(itineraryDaybyDay?.destination_type === "Domestic"
+            ? { taxiTab: "multicity" }
+            : {}),
+        },
+      },
+      undefined,
+      { scroll: false, shallow: true },
+    );
+  };
+
+  const changeHotelFromChat = () => {
+    if (!localStorage?.getItem("access_token")) {
+      props?.setShowLoginModal(true);
+      return;
+    }
+    if (isDraftStatus) {
+      trackHotelCardClicked?.(
+        currentItineraryId,
+        multiHotelStays?.[0]?.id || "",
+        "city_header_change_hotel_draft",
+      );
+      props?.onSendMessage?.(`change hotel in ${props?.city?.city?.name}`);
+      return;
+    }
+    trackHotelCardClicked?.(
+      currentItineraryId,
+      multiHotelStays?.[0]?.id || "",
+      "city_header_change_hotel",
+    );
+    router.push(
+      {
+        pathname: window.location.pathname,
+        query: {
+          ...(currentItineraryId ? { id: currentItineraryId } : {}),
+          drawer: "changeHotelBooking",
+          itinerary_city_id: props?.city?.id,
+          city_id: props?.city?.city?.id,
+        },
+      },
+      undefined,
+      { scroll: false, shallow: true },
+    );
+    props?.handleClickAc?.(
+      props?.index,
+      props?.city,
+      props?.city?.city?.id,
+      props?.city?.id,
+      "Change",
+    );
+  };
+
+  const changeTransferFromChat = () =>
+    props?.onSendMessage?.(`change transfer in ${props?.city?.city?.name}`);
+
   return (
     <div
       data-city-id={stay ? stay[props?.index]?.city_id : props?.city?.id}
       ref={(el) => (props.cityRefs.current[props.city.id] = el)}
-      className="rounded-lg flex flex-col w-full bg-white border-[0.5px] border-[#e5e5e5]"
+      className={
+        props?.fromChat
+          ? "flex flex-col gap-2 w-full"
+          : "rounded-lg flex flex-col w-full bg-white border-[0.5px] border-[#e5e5e5]"
+      }
     >
       {/* ── Card header ─────────────────────────────────────────────────── */}
-      <div className="px-4 pt-4 pb-3 w-full border-b border-[#EBEBEB] font-inter">
+      {/* On chat the stop header is its own card, un-nested from the day cards
+          below. Off chat the `contents` wrapper is layout-transparent, so the
+          original single-card structure is preserved exactly. */}
+      <div
+        className={
+          props?.fromChat
+            ? "rounded-[16px] bg-white border-[1px] border-[#ECECEC] overflow-hidden"
+            : "contents"
+        }
+      >
+      <div className={`w-full font-inter ${props?.fromChat ? "px-[0.3rem] md:px-4 py-[10px] md:py-[15px]" : "px-4 pt-4 pb-3 border-b border-[#EBEBEB]"}`}>
         {/*
           Row 1
           LEFT : City name (bold, truncated)
           RIGHT: [+ Activity] [+ Taxi] — always aligned to city name baseline
         */}
         <div className="flex items-center justify-between gap-3">
-          <div className="md:text-[18px] text-[16px] font-semibold leading-snug min-w-0 flex items-center gap-1 overflow-hidden">
+          <div className={`${props?.fromChat ? "md:text-[17px] max-ph:text-[15.5px] font-extrabold tracking-[-0.3px]" : "md:text-[18px] font-semibold"} text-[16px] leading-snug min-w-0 flex items-center gap-1 overflow-hidden`}>
+            {props?.fromChat && props?.dotColour && (
+              <span
+                className="inline-block w-3 h-3 rounded-full shrink-0 mr-1"
+                style={{ background: props.dotColour }}
+              />
+            )}
             <span className="truncate">{props?.city?.city?.name}</span>
             {props?.city?.duration === 0 ? (
               <span className="shrink-0"> (Transit City)</span>
             ) : props?.city?.duration > 0 ? (
               <>
-                <span className="max-ph:hidden md:inline shrink-0 md:text-[18px] text-[16px] font-semibold leading-snug"> - {props?.city?.duration} {props?.city?.duration > 1 ? "Nights" : "Night"}</span>
-                <span className="md:hidden shrink-0 md:text-[18px] text-[16px] font-semibold leading-snug"> - {props?.city?.duration}N</span>
+                <span className={`max-ph:hidden md:inline shrink-0 ${props?.fromChat ? "md:text-[13px] text-[#6B7280] font-semibold" : "md:text-[18px] text-[16px] font-semibold"} leading-snug`}> - {props?.city?.duration} {props?.city?.duration > 1 ? "Nights" : "Night"}</span>
+                <span className={`md:hidden shrink-0 ${props?.fromChat ? "text-[13px] text-[#6B7280]" : "md:text-[18px] text-[16px]"} font-semibold leading-snug`}> - {props?.city?.duration}N</span>
               </>
             ) : null}
           </div>
 
-          {!(itineraryDaybyDay.status == "Draft") ? (
+          {!(itineraryDaybyDay.status == "Draft") && !props?.fromChat ? (
             <div className="flex items-center gap-2 shrink-0">
               <button
                 onClick={() => {
@@ -582,6 +708,46 @@ const ItineraryCity = (props) => {
               </button>
             </div>
           ) : null}
+          {props?.fromChat && (
+            <>
+              {/* Mobile: Edit toggle reveals the per-stop actions row below. */}
+              <button
+                type="button"
+                onClick={() => setEditMode((v) => !v)}
+                aria-expanded={editMode}
+                className="flex md:hidden items-center gap-1.5 max-ph:gap-[5px] shrink-0 bg-[#F4F3EF] border-[1px] border-[#ECECEC] rounded-full px-[13px] max-ph:px-[11px] py-[7px] max-ph:py-[6px] text-[10px] font-semibold text-[#3b4149]"
+              >
+                <EditIcon />
+                Edit
+                {editMode ? (
+                  <RiArrowDropUpLine size={16} />
+                ) : (
+                  <RiArrowDropDownLine size={16} />
+                )}
+              </button>
+
+              {/* Desktop: Add activity + Add taxi live in the header row where
+                  the Edit toggle was (no toggle on desktop). */}
+              {!isDraftStatus && (
+                <div className="flex max-ph:hidden items-center gap-[9px] shrink-0">
+                  <button
+                    onClick={openActivityDrawer}
+                    className="flex items-center justify-center gap-1 px-3.5 py-2 rounded-full border-[1px] border-[#E3E2DD] bg-white text-[12.5px] font-semibold text-[#2c2f34] whitespace-nowrap"
+                  >
+                    <PlusCircleIcon id={`act_ic_top_${props?.city?.id}`} />
+                    Add activity
+                  </button>
+                  <button
+                    onClick={openTaxiDrawer}
+                    className="flex items-center justify-center gap-1 px-3.5 py-2 rounded-full border-[1px] border-[#E3E2DD] bg-white text-[12.5px] font-semibold text-[#2c2f34] whitespace-nowrap"
+                  >
+                    <PlusCircleIcon id={`taxi_ic_top_${props?.city?.id}`} />
+                    Add taxi
+                  </button>
+                </div>
+              )}
+            </>
+          )}
         </div>
 
         {/*
@@ -589,7 +755,7 @@ const ItineraryCity = (props) => {
           LEFT : Hotel name (truncated) • X Days, Y Night • rating ★
           RIGHT: ✏ Change Hotel — aligned to the same row as hotel info
         */}
-        <div className="flex items-center justify-between gap-3 mt-1 min-w-0">
+        <div className={`flex items-center justify-between gap-3 ${props?.fromChat ? "mt-[4px] max-ph:mt-[5px]" : "mt-1"} min-w-0 ${props?.fromChat && !hotelExists && hotels_status !== "PENDING" ? "max-ph:hidden" : ""}`}>
           {/* Left side */}
           <div className="flex items-center min-w-0 flex-1 overflow-hidden">
             {hotels_status === "PENDING" ? (
@@ -614,21 +780,23 @@ const ItineraryCity = (props) => {
                 />
               </div>
             ) : hotelExists ? (
-              <div className="flex flex-col gap-1 min-w-0 w-full">
+              <div className={`flex flex-col gap-1 min-w-0 ${props?.fromChat ? "w-auto max-ph:w-full" : "w-full"}`}>
                 {multiHotelStays.map((hotel) => {
                   const isDraftStage = itineraryDaybyDay.status === "Draft";
                   return (
                   <div
                     key={hotel.id}
-                    className="flex items-center gap-1 text-[14px] text-[#111827] min-w-0 flex-wrap"
+                    className={`flex items-center ${props?.fromChat ? "gap-[9px] max-ph:gap-[8px] max-ph:text-[13px] flex-nowrap" : "gap-1 flex-wrap"} text-[14px] text-[#111827] min-w-0`}
                   >
+                    {/* Chat: hotel icon before the stay name */}
+                    {props?.fromChat && <HotelIcon />}
                     {/* Hotel name — truncated in p2, full text in p1 (Draft) */}
                     <span
-                      className={
+                      className={`${
                         isDraftStage
                           ? "underline cursor-pointer break-words"
-                          : "underline cursor-pointer truncate shrink min-w-0 max-w-[130px] md:max-w-none md:overflow-visible md:whitespace-normal md:break-words"
-                      }
+                          : `underline cursor-pointer truncate shrink min-w-0 ${props?.fromChat ? "" : "max-w-[130px]"} md:max-w-none md:overflow-visible md:whitespace-normal md:break-words`
+                      } ${props?.fromChat ? "text-[#1f6feb] font-semibold" : ""}`}
                       onClick={() => {
                         trackHotelCardClicked?.(
                           currentItineraryId,
@@ -647,8 +815,10 @@ const ItineraryCity = (props) => {
                     {/* Rating + star */}
                     {(hotel?.rating && hotel?.rating !== 0 && hotel?.rating !== null) || (hotel.star_category && hotel?.star_category !== 0) ? (
                       <>
-                        <span className="text-[#6B7280] shrink-0">•</span>
-                        <span className="font-[500] shrink-0">
+                        {!props?.fromChat && (
+                          <span className="text-[#6B7280] shrink-0">•</span>
+                        )}
+                        <span className={`${props?.fromChat ? "font-[700] text-[13px] text-[#111827]" : "font-[500]"} shrink-0`}>
                           {hotel.rating || hotel.star_category}{" "}
                         </span>
                         <StarIcon />
@@ -661,7 +831,11 @@ const ItineraryCity = (props) => {
             ) : (
               !(itineraryDaybyDay.status == "Draft") && (
                 <button
-                  className="text-blue cursor-pointer text-[14px] font-medium hover:underline whitespace-nowrap"
+                  className={
+                    props?.fromChat
+                      ? "flex max-ph:hidden items-center gap-[5px] shrink-0 px-3.5 py-2 rounded-full border-[1px] border-[#E3E2DD] bg-white font-semibold text-[#2c2f34] whitespace-nowrap text-[12.5px]"
+                      : "text-blue cursor-pointer text-[14px] font-medium hover:underline whitespace-nowrap"
+                  }
                   onClick={(e) => {
                     trackHotelCardClicked?.(
                       currentItineraryId,
@@ -671,14 +845,33 @@ const ItineraryCity = (props) => {
                     handleStay(e, "Add", props.city.city.name, "Add", null);
                   }}
                 >
-                  + Add Stay in {props?.city?.city?.name}
+                  {props?.fromChat ? (
+                    <>
+                      <PlusCircleIcon id={`add_stay_${props?.city?.id}`} />
+                      Add Stay in {props?.city?.city?.name}
+                    </>
+                  ) : (
+                    <>+ Add Stay in {props?.city?.city?.name}</>
+                  )}
                 </button>
               )
+            )}
+
+            {/* Desktop (chat): Change hotel sits inline right after the hotel
+                name (no Edit toggle). */}
+            {props?.fromChat && hotelExists && (
+              <button
+                onClick={changeHotelFromChat}
+                className="flex max-ph:hidden items-center gap-[5px] shrink-0 ml-[10px] px-3.5 py-2 rounded-full border-[1px] border-[#E3E2DD] bg-white font-semibold text-[#2c2f34] whitespace-nowrap text-[12.5px]"
+              >
+                <EditIcon />
+                Change hotel
+              </button>
             )}
           </div>
 
           {/* Right side: Change Hotel — only when hotel row is visible */}
-          {hotelExists && !(itineraryDaybyDay.status == "Draft") && (
+          {hotelExists && !(itineraryDaybyDay.status == "Draft") && !props?.fromChat && (
             <button
               onClick={() => {
                 if (!localStorage?.getItem("access_token")) {
@@ -719,7 +912,7 @@ const ItineraryCity = (props) => {
           )}
 
           {/* Right side (Draft/p1): Change Hotel — sends message to bot */}
-          {hotelExists && itineraryDaybyDay.status == "Draft" && (
+          {hotelExists && itineraryDaybyDay.status == "Draft" && !props?.fromChat && (
             <button
               onClick={() => {
                 if (!localStorage?.getItem("access_token")) {
@@ -745,8 +938,8 @@ const ItineraryCity = (props) => {
 
         {/* Draft/p1: Change Transfer CTA — sends message to bot */}
         {itineraryDaybyDay.status == "Draft" &&
-          hasIntracityTransfer && (
-            <div className="flex items-center justify-between gap-3 mt-1 min-w-0">
+          hasIntracityTransfer && !props?.fromChat && (
+            <div className={`flex items-center justify-between gap-3 ${props?.fromChat ? "mt-[10px] max-ph:mt-[9px]" : "mt-1"} min-w-0`}>
               <div className="text-[14px] text-[#111827]">Transfer</div>
               <button
                 onClick={() =>
@@ -762,9 +955,82 @@ const ItineraryCity = (props) => {
             </div>
           )}
 
+          {/* Chat (mobile): single actions row. Add Stay (no hotel) stays
+              always visible; Change hotel / Add activity / Add taxi are revealed
+              by the "Edit" toggle. All buttons share one flex-nowrap row and the
+              same compact size. */}
+          {props?.fromChat && ((!hotelExists && !isDraftStatus) || editMode) && (
+            <div className="flex md:hidden flex-nowrap items-center justify-between gap-[6px] mt-2">
+              {/* All action buttons are direct children so they distribute
+                  evenly across the row (justify-between). */}
+              {!hotelExists && !isDraftStatus && (
+                <button
+                  onClick={(e) => {
+                    trackHotelCardClicked?.(
+                      currentItineraryId,
+                      "",
+                      "city_header_add_stay",
+                    );
+                    handleStay(e, "Add", props.city.city.name, "Add", null);
+                  }}
+                  className="flex items-center justify-center gap-1 shrink-0 px-[9px] py-[5px] rounded-full border-[1px] border-[#E3E2DD] bg-white text-[10px] font-semibold text-[#2c2f34] whitespace-nowrap"
+                >
+                  <PlusCircleIcon id={`add_stay_edit_${props?.city?.id}`} />
+                  Add Stay
+                </button>
+              )}
+              {hotelExists && editMode && (
+                <button
+                  onClick={changeHotelFromChat}
+                  className="flex items-center justify-center gap-1 shrink-0 px-[9px] py-[5px] rounded-full border-[1px] border-[#E3E2DD] bg-white font-semibold text-[#2c2f34] whitespace-nowrap text-[10px]"
+                >
+                  <EditIcon />
+                  Change hotel
+                </button>
+              )}
+              {isDraftStatus && hasIntracityTransfer && editMode && (
+                <button
+                  onClick={changeTransferFromChat}
+                  className="flex items-center justify-center gap-1 shrink-0 px-[9px] py-[5px] rounded-full border-[1px] border-[#E3E2DD] bg-white font-semibold text-[#2c2f34] whitespace-nowrap text-[10px]"
+                >
+                  <EditIcon />
+                  Change transfer
+                </button>
+              )}
+              {editMode && !isDraftStatus && (
+                <button
+                  onClick={openActivityDrawer}
+                  className="flex items-center justify-center gap-1 shrink-0 px-[9px] py-[5px] rounded-full border-[1px] border-[#E3E2DD] bg-white text-[10px] font-semibold text-[#2c2f34] whitespace-nowrap"
+                >
+                  <PlusCircleIcon id={`act_ic_edit_${props?.city?.id}`} />
+                  Add activity
+                </button>
+              )}
+              {editMode && !isDraftStatus && (
+                <button
+                  onClick={openTaxiDrawer}
+                  className="flex items-center justify-center gap-1 shrink-0 px-[9px] py-[5px] rounded-full border-[1px] border-[#E3E2DD] bg-white text-[10px] font-semibold text-[#2c2f34] whitespace-nowrap"
+                >
+                  <PlusCircleIcon id={`taxi_ic_edit_${props?.city?.id}`} />
+                  Add taxi
+                </button>
+              )}
+            </div>
+          )}
+
+      </div>
       </div>
       {/* ── End header ──────────────────────────────────────────────────── */}
 
+      {/* On chat the day cards live in their own card, separated from the stop
+          card above; off chat the `contents` wrapper is layout-transparent. */}
+      <div
+        className={
+          props?.fromChat
+            ? "rounded-[16px] bg-white border-[1px] border-[#ECECEC] overflow-hidden"
+            : "contents"
+        }
+      >
       {viewMore ? (
         <>
           <CityDaybyDay
@@ -798,6 +1064,7 @@ const ItineraryCity = (props) => {
           nextCity={props?.nextCity}
         />
       )}
+      </div>
 
       {/* POI Details Drawer */}
       {drawer === "showPoiDetail" &&

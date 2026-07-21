@@ -46,7 +46,7 @@ function useUserAvatarSrc(): string | null {
 // `!important` is required because the avatar divs set sizing/display
 // inline, and we override `.msg.kaira` / `.msg.user` inline `maxWidth`.
 const MessageBubbleResponsiveStyles: React.FC = () => (
-  <style>{`
+  <style dangerouslySetInnerHTML={{ __html: `
     @media (max-width: 767px) {
       .msg {
         position: relative;
@@ -77,7 +77,7 @@ const MessageBubbleResponsiveStyles: React.FC = () => (
       .msg.kaira .msg-avatar { left: 12px; }
       .msg.user  .msg-avatar { right: 12px; }
     }
-  `}</style>
+  ` }} />
 );
 
 const UserAvatar: React.FC<{
@@ -752,7 +752,7 @@ const FeedbackPopup: React.FC<{
           </button>
         </div>
 
-        <style>{`
+        <style dangerouslySetInnerHTML={{ __html: `
           @keyframes fbBackdropIn {
             from { opacity: 0; }
             to   { opacity: 1; }
@@ -767,7 +767,7 @@ const FeedbackPopup: React.FC<{
               padding: 18px !important;
             }
           }
-        `}</style>
+        ` }} />
       </div>
     </div>,
     document.body,
@@ -1167,12 +1167,12 @@ const ThinkingActive: React.FC<{ lead?: string; steps: Step[] }> = ({
       </div>
     )}
     <ThinkingStepsList steps={steps} streaming />
-    <style>{`
+    <style dangerouslySetInnerHTML={{ __html: `
       @keyframes thinkPulse {
         0%, 80%, 100% { transform: scale(0.4); opacity: 0.3; }
         40%           { transform: scale(1);   opacity: 1; }
       }
-    `}</style>
+    ` }} />
   </div>
 );
 
@@ -1359,6 +1359,26 @@ const ThinkingBlock: React.FC<{
   );
 };
 
+// ─── ThoughtSummary ───────────────────────────────────────────────────────────
+// Static "Thought for Xs" label restored from a persisted reasoning workflow's
+// summary.duration on page reload. Unlike ThinkingBlock (which is driven by the
+// live SSE thought stream), the per-step thoughts aren't persisted — so there's
+// nothing to expand and we render the collapsed label only. Styling mirrors the
+// ThinkingBlock "done" header so live and reloaded transcripts look identical.
+
+const ThoughtSummary: React.FC<{ seconds: number }> = ({ seconds }) => (
+  <div
+    style={{
+      marginBottom: 12,
+      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+    }}
+  >
+    <span style={{ fontSize: 14, color: "#374151", fontWeight: 400 }}>
+      Thought for {seconds}s
+    </span>
+  </div>
+);
+
 // ─── RetryButton ──────────────────────────────────────────────────────────────
 // Shown in place of feedback thumbs when an assistant message failed to send
 // because the user was offline. Re-sends the previous user message via the
@@ -1476,12 +1496,12 @@ const ErrorBubble: React.FC<{
           </div>
         )}
       </div>
-      <style>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         @keyframes errFadeIn {
           from { opacity: 0; transform: translateY(2px); }
           to   { opacity: 1; transform: translateY(0); }
         }
-      `}</style>
+      ` }} />
     </div>
   );
 };
@@ -1491,7 +1511,7 @@ const ErrorBubble: React.FC<{
 // clamp() so a paragraph that's tight on a 375px phone scales smoothly up to
 // the design's 14.5/17/19/22px steps on desktop.
 const ChatMdStyles: React.FC = () => (
-  <style>{`
+  <style dangerouslySetInnerHTML={{ __html: `
     .chat-md {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       font-size: clamp(13.5px, 3.6vw, 14.5px);
@@ -1576,7 +1596,7 @@ const ChatMdStyles: React.FC = () => (
       color: #fff;
     }
     
-  `}</style>
+  ` }} />
 );
 
 // ─── MessageBubble ────────────────────────────────────────────────────────────
@@ -1690,12 +1710,12 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           </div>
         </div>
         <MessageBubbleResponsiveStyles />
-        <style>{`
+        <style dangerouslySetInnerHTML={{ __html: `
           @keyframes msgInK {
             from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
           }
-        `}</style>
+        ` }} />
       </div>
     );
   }
@@ -1783,12 +1803,12 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
         </div>
         <ChatMdStyles />
         <MessageBubbleResponsiveStyles />
-        <style>{`
+        <style dangerouslySetInnerHTML={{ __html: `
           @keyframes msgIn {
             from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
           }
-        `}</style>
+        ` }} />
       </div>
     );
   }
@@ -1812,6 +1832,13 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
 
   // Show thinking block if we have tasks (whether streaming or done)
   const showThinking = hasTasks;
+  // On reload the live thought stream is gone, but a persisted reasoning
+  // workflow leaves behind its duration. When there are no live tasks, show the
+  // static "Thought for Xs" label above the reply instead.
+  const showThoughtSummary =
+    !hasTasks &&
+    typeof message.reasoningDuration === "number" &&
+    message.reasoningDuration > 0;
   // Show dots only when truly nothing else: no progress, no tasks, no content
   const showDots = !hasProgress && !hasTasks && !hasContent && streaming;
 
@@ -1870,6 +1897,11 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           />
         )}
 
+        {/* Reasoning duration restored from history (no live tasks on reload) */}
+        {showThoughtSummary && (
+          <ThoughtSummary seconds={message.reasoningDuration!} />
+        )}
+
         {/* Main response content */}
         {hasContent && message.isError ? (
           <ErrorBubble
@@ -1918,12 +1950,12 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
       </div>
       <ChatMdStyles />
       <MessageBubbleResponsiveStyles />
-      <style>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         @keyframes msgInK {
           from { opacity: 0; transform: translateY(8px); }
           to { opacity: 1; transform: translateY(0); }
         }
-      `}</style>
+      ` }} />
     </div>
   );
 };
@@ -2366,7 +2398,7 @@ export const ItineraryCloneCta: React.FC<ItineraryCloneCtaProps> = ({
           ))}
         </div>
       </div>
-      <style>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         @keyframes ctaRise {
           from { opacity: 0; transform: translateY(10px); }
           to   { opacity: 1; transform: translateY(0); }
@@ -2375,7 +2407,7 @@ export const ItineraryCloneCta: React.FC<ItineraryCloneCtaProps> = ({
           from { opacity: 0; transform: translateY(8px); }
           to { opacity: 1; transform: translateY(0); }
         }
-      `}</style>
+      ` }} />
       </div>
       <MessageBubbleResponsiveStyles />
     </div>
@@ -2532,7 +2564,7 @@ export const ThinkingDots: React.FC = () => {
         ({seconds}s{showThinkingMore ? " · thinking more" : ""})
       </span>
 
-      <style>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         @keyframes thinkPulse {
           0%, 80%, 100% { transform: scale(0.4); opacity: 0.3; }
           40%           { transform: scale(1);   opacity: 1; }
@@ -2568,7 +2600,7 @@ export const ThinkingDots: React.FC = () => {
             -webkit-text-fill-color: #0B0B0B;
           }
         }
-      `}</style>
+      ` }} />
     </div>
   );
 };

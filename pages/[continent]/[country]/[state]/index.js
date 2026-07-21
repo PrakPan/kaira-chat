@@ -93,7 +93,11 @@ const TravelPlanner = (props) => {
           property="og:description"
           content={`${props.Data?.meta_description}`}
         />
-        <meta property="og:image" content="/logoblack.svg" />
+        <meta property="og:image" content="https://thetarzanway.com/og-image.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image" content="https://thetarzanway.com/og-image.png" />
         <meta
           property="keywords"
           content={`${Array.isArray(props?.Data?.meta_keywords)
@@ -143,7 +147,7 @@ export async function getStaticPaths() {
 
     const allPaths = [...data];
 
-    for (var i = 0; i < 2; i++) {
+    for (var i = 0; i < allPaths?.length; i++) {
       const pathArr = allPaths[i].path.split("/");
       var [continentSlug, countrySlug, stateSlug] = pathArr;
       paths.push({

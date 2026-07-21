@@ -20,7 +20,7 @@ import CloneItinerary from "../../CloneItinerary/Index";
 import ModalWithBackdrop from "../../ui/ModalWithBackdrop";
 import BottomModal from "../../ui/LowerModal";
 import useMediaQuery from "../../../hooks/useMedia";
-import { MERCURY_HOST } from "../../../services/constants";
+import { MERCURY_HOST, CHATKIT_HOST, CHATKIT_API_URL } from "../../../services/constants";
 import { openNotification } from "../../../store/actions/notification";
 import setItinerary, {
   deletePoiFromItinerary,
@@ -46,9 +46,8 @@ import OtpCard from "./IntakeForm/OtpCard";
 import { parseFormFields, parseShowIntakeForm, parseIntakeFormWidgetId, isIntakeFormWidgetId } from "./IntakeForm/intakePrompt";
 import { parseShowPricingForm, parsePricingFormWidgetId, parsePricingCardCopy, isPricingFormWidgetId } from "./PricingForm/pricingPrompt";
 
-const CHATKIT_API_URL = "https://dev.chat.tarzanway.com/chatkit";
 const PAGINATION_SCROLL_THRESHOLD = 80;
-const CHATKIT = "https://dev.chat.tarzanway.com"
+const CHATKIT = CHATKIT_HOST;
 
 // Fallback lead-in copy shown above the sign-in card when a restored thread
 // carries no `prompt_login` effect to source the message from. Mirrors the
@@ -122,12 +121,12 @@ const QuickReplyShimmerChip: React.FC<{ width: string }> = ({ width }) => (
       flexShrink: 0,
     }}
   >
-    <style>{`
+    <style dangerouslySetInnerHTML={{ __html: `
       @keyframes quickReplyShimmer {
         0% { background-position: 200% 0; }
         100% { background-position: -200% 0; }
       }
-    `}</style>
+    ` }} />
   </div>
 );
 
@@ -267,7 +266,7 @@ function useUserLocationData() {
         const ipRes = await fetch("https://api.ipify.org?format=json");
         const { ip } = await ipRes.json();
         const locRes = await fetch(
-          `https://dev.mercury.tarzanway.com/api/v1/geos/search/user_location/?ip=${ip}`,
+          `${MERCURY_HOST}/api/v1/geos/search/user_location/?ip=${ip}`,
         );
         const data: UserLocationData = await locRes.json();
         localStorage.setItem("userLocationData", JSON.stringify(data));
@@ -355,7 +354,7 @@ const WelcomeState = () => (
 // Scoped class names so they don't collide with global styles. Applied to the
 // header, message bubbles, and composer wrap inside ChatKitPanel.
 const ChatPanelStyles = () => (
-  <style>{`
+  <style dangerouslySetInnerHTML={{ __html: `
     .kp-root,
     .kp-root *,
     .kp-root *::before,
@@ -418,7 +417,7 @@ const ChatPanelStyles = () => (
       50% { opacity: 0.5; transform: scale(0.7); }
     }
     .kp-composer-wrap {
-  padding: 12px 20px 18px;
+  padding: 12px 20px;
   border-top: 1px solid #ececec;
   background: #fff;
 }
@@ -427,167 +426,94 @@ const ChatPanelStyles = () => (
     padding: 8px 12px 10px;
   }
 }
-    /* ── Status notes card (mirrors .wait-card from the left panel) ── */
+    /* ── Itinerary progress card (chat) ─────────────────────────────────── */
     .sn-card {
-      background: #fff;
-      border: 1px solid #ececec;
-      border-radius: 22px;
-      padding: 22px 22px 20px;
       margin: 8px 0 14px;
-      position: relative;
-      overflow: hidden;
       animation: snIn 0.4s cubic-bezier(0.2,0.7,0.3,1);
+    }
+    /* The scroll container only carries 4px of side padding on mobile, and the
+       card — unlike a message bubble — has no avatar gutter to inset it, so it
+       would otherwise sit flush against the edge. */
+    @media (max-width: 768px) {
+      .sn-card { margin: 8px 8px 14px; }
     }
     @keyframes snIn {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    /* Border-scan animation only runs while tasks are still in flight. Once
-       polling ends the parent drops the .is-active modifier, killing the
-       sweep so a settled card looks calm. */
-    .sn-card.is-active::before {
-      content: '';
-      position: absolute;
-      top: 0; left: -100%;
-      width: 100%; height: 3px;
-      background: linear-gradient(90deg, transparent, #f7e700, transparent);
-      animation: snScan 2.4s ease-in-out infinite;
-    }
-    @keyframes snScan { 0% { left: -100%; } 100% { left: 100%; } }
-    .sn-stage {
-      display: inline-flex; align-items: center; gap: 7px;
-      padding: 5px 11px;
-      background: #0b1220; color: #f7e700;
-      border-radius: 999px;
-      font-size: 11px; font-weight: 700; letter-spacing: 0.04em;
-      margin-bottom: 14px;
-    }
-    .sn-stage .sn-pulse {
-      width: 6px; height: 6px; background: #f7e700; border-radius: 50%;
-      animation: kpStageDot 1.4s ease-in-out infinite;
-    }
     .sn-title {
-      font-size: 18px; font-weight: 800; color: #0b1220;
-      letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 14px;
+      font-size: 17px; font-weight: 700; color: #0f1a2e;
+      letter-spacing: -0.01em; line-height: 1.2; margin: 0 0 14px;
     }
-    .sn-list { list-style: none; display: flex; flex-direction: column; gap: 8px; padding: 0; margin: 0; }
-    .sn-item {
-      display: grid; grid-template-columns: 22px 1fr; gap: 10px;
-      align-items: flex-start;
-      padding: 10px 12px;
-      background: #fafaf5;
-      border: 1px solid #ececec;
-      border-radius: 12px;
-      font-size: 13px; line-height: 1.45;
-      color: #1a2436;
-      animation: snItemIn 0.35s ease-out;
-      transition: background 0.25s, border-color 0.25s, color 0.25s;
+    .sn-title em {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-style: italic; font-weight: 400; letter-spacing: 0.01em;
     }
-    /* Active (latest batch while polling) — peach surface, pulsing dot. */
-    .sn-item.sn-item-active {
-      background: #fff4e8;
-      border-color: #ffd4b8;
-      color: #0b1220;
+    .sn-steps { list-style: none; display: flex; flex-direction: column; gap: 10px; padding: 0; margin: 0; }
+    .sn-row {
+      display: flex; align-items: center; gap: 13px;
+      padding: 15px 18px;
+      background: #FBF8EF;
+      border: 1px solid rgba(15,26,46,0.07);
+      border-radius: 16px 5px 16px 5px;
+      opacity: 0; transform: translateY(6px);
+      animation: snRowIn 0.5s cubic-bezier(0.3,0.7,0.3,1) forwards;
     }
-    /* Done (any earlier batch, or every batch once polling ends) — muted. */
-    .sn-item.sn-item-done {
-      background: #fff;
-      color: #445069;
-    }
-    @keyframes snItemIn {
-      from { opacity: 0; transform: translateX(-6px); }
-      to { opacity: 1; transform: translateX(0); }
-    }
-    .sn-item-dot {
-      width: 18px; height: 18px;
-      border-radius: 50%;
-      background: #1f8a5a; color: #fff;
+    @keyframes snRowIn { to { opacity: 1; transform: translateY(0); } }
+    .sn-ic {
+      flex: none; width: 22px; height: 22px; border-radius: 50%;
       display: grid; place-items: center;
-      flex-shrink: 0; margin-top: 1px;
     }
-    .sn-item-dot svg { width: 10px; height: 10px; }
-    /* Active dot — coral pulse instead of green check. */
-    .sn-item.sn-item-active .sn-item-dot {
-      background: transparent;
-      border: 2px solid #e85a4f;
+    .sn-ic-done { background: #0f1a2e; color: #f7e700; }
+    .sn-ic-done svg { display: block; width: 12px; height: 12px; }
+    /* Live step — ink ring with a yellow halo breathing outwards. */
+    .sn-ic-live {
+      box-shadow: inset 0 0 0 2px #0f1a2e, 0 0 0 0 rgba(247,231,0,0.85);
+      animation: snLivePulse 1.6s ease-in-out infinite;
     }
-    .sn-item.sn-item-active .sn-item-dot::after {
+    .sn-ic-live::after {
       content: '';
-      width: 6px; height: 6px;
-      background: #e85a4f;
-      border-radius: 50%;
-      animation: snPulse 1.2s ease-in-out infinite;
+      width: 7px; height: 7px; border-radius: 50%; background: #0f1a2e;
     }
-    @keyframes snPulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.45; transform: scale(0.6); }
+    @keyframes snLivePulse {
+      0%,100% { box-shadow: inset 0 0 0 2px #0f1a2e, 0 0 0 0 rgba(247,231,0,0.8); }
+      50% { box-shadow: inset 0 0 0 2px #0f1a2e, 0 0 0 7px rgba(247,231,0,0); }
     }
-    /* Pure mid-line divider between batches — no text. */
-    .sn-divider {
-      list-style: none;
-      height: 1px;
-      margin: 6px 4px;
-      background: linear-gradient(90deg, transparent, #ececec 18%, #ececec 82%, transparent);
+    .sn-txt { font-size: 14.5px; font-weight: 600; line-height: 1.3; color: #0f1a2e; }
+    .sn-row-done .sn-txt { color: rgba(15,26,46,0.55); }
+    /* Placeholder row — polling started but no step line has arrived yet. */
+    .sn-skel {
+      height: 10px; width: 60%; border-radius: 999px;
+      background: linear-gradient(90deg, rgba(15,26,46,0.08), rgba(15,26,46,0.16), rgba(15,26,46,0.08));
+      background-size: 200% 100%;
+      animation: snSkel 1.3s ease-in-out infinite;
     }
-    /* Standalone loader row — sits at the bottom of the active batch (or
-       on its own before the first batch arrives). No text per spec. */
-    .sn-loader-row {
-      display: flex; align-items: center; justify-content: center;
-      padding: 8px 12px;
+    @keyframes snSkel {
+      from { background-position: 200% 0; }
+      to { background-position: -200% 0; }
     }
-    .sn-spinner {
-      width: 16px; height: 16px;
-      border: 2px solid #ffd4b8;
-      border-top-color: #e85a4f;
-      border-radius: 50%;
-      animation: snSpin 0.9s linear infinite;
-      flex-shrink: 0;
+    @media (prefers-reduced-motion: reduce) {
+      .sn-row { animation: none; opacity: 1; transform: none; }
+      .sn-ic-live { animation: none; }
     }
-    @keyframes snSpin { to { transform: rotate(360deg); } }
-    /* Done footer — replaces the loader once notes returns empty. */
-    .sn-done-row {
-      display: flex; align-items: center; gap: 9px;
-      margin-top: 4px;
-      padding: 10px 12px;
-      background: #e0f2e9;
-      border: 1px solid #b6dec7;
-      border-radius: 12px;
-      font-size: 13px; font-weight: 700; color: #1f8a5a;
-      animation: snItemIn 0.3s ease-out;
-    }
-    .sn-done-icon {
-      width: 18px; height: 18px;
-      border-radius: 50%;
-      background: #1f8a5a; color: #fff;
-      display: grid; place-items: center;
-      flex-shrink: 0;
-    }
-    .sn-done-icon svg { width: 10px; height: 10px; }
-  `}</style>
+  ` }} />
 );
 
 /**
  * StatusNotesCard
- * Renders the progress signals coming from the /status/ poll inside the chat,
- * styled like the left "wait-card" from the reference HTML.
+ * Renders the progress signals coming from the /status/ poll inside the chat
+ * as a stepped list: every step the server has already moved past shows an
+ * ink check, the newest one pulses, and the list stays pinned once the build
+ * settles.
  *
- * Sources merged:
- *   - `notes`: array of step lines (server batches several at once).
- *   - `displayText`: rolling status string (the same value the BottomCTA
- *     loader shows). Often the only thing that updates poll-to-poll.
- *
- * Behaviour:
- *   - A "batch" is a snapshot of `notes` containing N lines; consecutive
- *     batches get a horizontal "next update" divider between them.
- *   - `displayText` updates flow into the *current* batch (or a fresh
- *     leading batch if none exists yet) as additional step lines, so each
- *     new poll value appears immediately rather than being silently
- *     swallowed.
- *   - The loader stays visible until `notes` arrives empty (server signal
- *     that no more steps are coming) or `isPolling` flips off. Collected
- *     batches remain pinned after that so the user keeps the timeline.
+ * Steps come from `displayText` only — the rolling status string ("Crafting
+ * your day by day itinerary", …). The `notes` array is *not* rendered: its
+ * lines are server bookkeeping, and the BottomCTA loader in BotApp leaves them
+ * out for the same reason. It is still consumed as a signal — an empty `notes`
+ * snapshot means the server has no further steps coming, so the pulse stops.
  */
 interface StatusNotesCardProps {
+  /** Completion signal only — never rendered. See the note above. */
   notes: any[] | undefined;
   displayText?: string | null | undefined;
   isPolling: boolean;
@@ -595,11 +521,11 @@ interface StatusNotesCardProps {
   /** Identifier for the most recent user message. When this changes the
    *  card resets and disappears — the user has moved on to a new turn. */
   resetKey?: string | null;
-  /** Card heading. Defaults to the edit/update copy; creation passes a
-   *  build-specific heading. */
+  /** Card heading, split so the trailing word renders in the serif italic
+   *  accent the rest of the bot UI uses. Defaults to the edit/update copy;
+   *  creation passes build-specific copy. */
   title?: string;
-  /** Active-stage pill label shown while the loader is in flight. */
-  stageLabel?: string;
+  titleAccent?: string;
 }
 const StatusNotesCard: React.FC<StatusNotesCardProps> = ({
   notes,
@@ -607,37 +533,30 @@ const StatusNotesCard: React.FC<StatusNotesCardProps> = ({
   isPolling,
   cycleKey,
   resetKey,
-  title = "Kaira is working on your changes",
-  stageLabel = "Updating your itinerary",
+  title = "Kaira is working on your",
+  titleAccent = "changes",
 }) => {
-  type Batch = { id: number; items: string[] };
-  const [batches, setBatches] = useState<Batch[]>([]);
+  const [steps, setSteps] = useState<string[]>([]);
   const [loaderActive, setLoaderActive] = useState<boolean>(true);
   // Set when the user kicks off a new turn — suppresses the card until the
   // next polling cycle (or fresh data) revives it.
   const [dismissed, setDismissed] = useState<boolean>(false);
   const prevNotesKeyRef = useRef<string>("");
-  const prevDisplayRef = useRef<string>("");
-  // Tracks every line we've ever shown this cycle (notes + display_text),
-  // keyed by the line text. Prevents duplicates when notes already contains
-  // the same text that arrived via display_text on a prior poll.
+  // Every line shown this cycle, so a display_text value that repeats across
+  // polls doesn't add a duplicate row.
   const seenLinesRef = useRef<Set<string>>(new Set());
-  const batchIdRef = useRef(0);
   const cycleRef = useRef<string>(cycleKey);
-
 
   // New polling cycle → reset everything (and revive the card if it was
   // dismissed by a prior user turn).
   useEffect(() => {
     if (cycleRef.current === cycleKey) return;
     cycleRef.current = cycleKey;
-    setBatches([]);
+    setSteps([]);
     setLoaderActive(true);
     setDismissed(false);
     prevNotesKeyRef.current = "";
-    prevDisplayRef.current = "";
     seenLinesRef.current = new Set();
-    batchIdRef.current = 0;
   }, [cycleKey]);
 
   // New user message → dismiss the card. The user has moved on, so any
@@ -647,67 +566,38 @@ const StatusNotesCard: React.FC<StatusNotesCardProps> = ({
   useEffect(() => {
     if (prevResetKeyRef.current === resetKey) return;
     prevResetKeyRef.current = resetKey;
-    setBatches([]);
+    setSteps([]);
     setLoaderActive(false);
     setDismissed(true);
     prevNotesKeyRef.current = "";
-    prevDisplayRef.current = "";
     seenLinesRef.current = new Set();
-    batchIdRef.current = 0;
   }, [resetKey]);
 
-  // Track new note snapshots (server may push 1+ lines at once).
+  // An empty `notes` snapshot is the server saying "no more steps" — stop the
+  // pulse and freeze the list. The lines themselves are never rendered.
   useEffect(() => {
-    const arr = Array.isArray(notes) ? notes : [];
-    const items = arr
-      .map((n) =>
-        typeof n === "string"
-          ? n
-          : (n?.text ?? n?.message ?? n?.note ?? n?.title ?? JSON.stringify(n)),
-      )
-      .map((s) => (typeof s === "string" ? s.trim() : ""))
-      .filter(Boolean);
-    const key = items.join("||");
+    const count = Array.isArray(notes) ? notes.length : 0;
+    const key = String(count);
     if (key === prevNotesKeyRef.current) return;
     prevNotesKeyRef.current = key;
-    if (items.length === 0) {
-      // Empty notes from server — stop loader, freeze the card.
+    if (count === 0) {
       setLoaderActive(false);
       return;
     }
-    const fresh = items.filter((it) => !seenLinesRef.current.has(it));
-    if (fresh.length === 0) return;
-    fresh.forEach((it) => seenLinesRef.current.add(it));
-    batchIdRef.current += 1;
-    setBatches((prev) => [...prev, { id: batchIdRef.current, items: fresh }]);
     setLoaderActive(true);
   }, [notes]);
 
-  // Track display_text updates. Each new non-empty value is appended to the
-  // current batch (or seeds the first batch). Same de-dup as notes so we
-  // don't echo a line that's already in the list.
+  // Each new display_text value becomes the next step row; the one before it
+  // flips to done.
   useEffect(() => {
     const txt = typeof displayText === "string" ? displayText.trim() : "";
-    if (!txt) return;
-    if (txt === prevDisplayRef.current) return;
-    prevDisplayRef.current = txt;
-    if (seenLinesRef.current.has(txt)) return;
+    if (!txt || seenLinesRef.current.has(txt)) return;
     seenLinesRef.current.add(txt);
-    setBatches((prev) => {
-      if (prev.length === 0) {
-        batchIdRef.current += 1;
-        return [{ id: batchIdRef.current, items: [txt] }];
-      }
-      // Append into the most recent batch.
-      const next = prev.slice();
-      const last = next[next.length - 1];
-      next[next.length - 1] = { ...last, items: [...last.items, txt] };
-      return next;
-    });
+    setSteps((prev) => [...prev, txt]);
     setLoaderActive(true);
   }, [displayText]);
 
-  // Polling ended without an empty-notes signal → still hide loader.
+  // Polling ended without an empty-notes signal → still stop the pulse.
   useEffect(() => {
     if (!isPolling) setLoaderActive(false);
   }, [isPolling]);
@@ -719,61 +609,49 @@ const StatusNotesCard: React.FC<StatusNotesCardProps> = ({
   // `is_polling` flag is still set from a prior session.
   if (cycleKey === "init") return null;
   if (dismissed) return null;
-  if (batches.length === 0 && !isPolling) return null;
+  if (steps.length === 0 && !isPolling) return null;
 
-  // An item is "active" when it lives in the latest batch AND polling is
-  // still in flight. The moment the next batch arrives (or polling ends)
-  // it flips to "done" — coral pulsing dot becomes a green check.
-  const latestBatchIdx = batches.length - 1;
-  const isActiveBatch = (idx: number) => loaderActive && idx === latestBatchIdx;
-  const showDoneFooter = !loaderActive && batches.length > 0;
+  // The newest step is the live one while the build is still running; once it
+  // settles every row reads as done.
+  const lastIdx = steps.length - 1;
 
   return (
-    <div className={`sn-card${loaderActive ? " is-active" : ""}`}>
-      {loaderActive && (
-        <span className="sn-stage">
-          <span className="sn-pulse" />
-          {stageLabel}
-        </span>
-      )}
-      <div className="sn-title">{title}</div>
-      <ul className="sn-list">
-        {batches.map((b, bi) => (
-          <React.Fragment key={b.id}>
-            {bi > 0 && <li className="sn-divider" aria-hidden="true" />}
-            {b.items.map((it, ii) => {
-              const active = isActiveBatch(bi);
-              return (
-                <li
-                  className={`sn-item ${active ? "sn-item-active" : "sn-item-done"}`}
-                  key={`${b.id}-${ii}`}
-                >
-                  <span className="sn-item-dot">
-                    {active ? null : (
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
-                    )}
-                  </span>
-                  <span>{it}</span>
-                </li>
-              );
-            })}
-          </React.Fragment>
-        ))}
-        {loaderActive && (
-          <li className="sn-loader-row" aria-label="Loading next step">
-            <span className="sn-spinner" />
-          </li>
-        )}
-        {showDoneFooter && (
-          <li className="sn-done-row" role="status">
-            <span className="sn-done-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-            </span>
-            <span>Done</span>
+    <div className="sn-card">
+      <p className="sn-title">
+        {title} <em>{titleAccent}</em>
+      </p>
+      <ul className="sn-steps">
+        {steps.map((step, i) => {
+          const live = loaderActive && i === lastIdx;
+          return (
+            <li
+              className={`sn-row${live ? "" : " sn-row-done"}`}
+              key={`${i}-${step}`}
+              style={{ animationDelay: `${Math.min(i, 4) * 0.1}s` }}
+            >
+              <span className={`sn-ic ${live ? "sn-ic-live" : "sn-ic-done"}`}>
+                {live ? null : (
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      d="M5 12.5l4 4 10-10"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                )}
+              </span>
+              <span className="sn-txt">{step}</span>
+            </li>
+          );
+        })}
+        {/* First poll hasn't produced a step line yet — hold the row shape. */}
+        {steps.length === 0 && loaderActive && (
+          <li className="sn-row" aria-label="Loading next step">
+            <span className="sn-ic sn-ic-live" />
+            <span className="sn-skel" />
           </li>
         )}
       </ul>
@@ -880,11 +758,11 @@ startEmptyIntake = false,
     (state: any) => !!state.ItineraryStatus?.is_polling,
   );
   // Streamed progress signals from the /status/ poll. Two parallel fields:
-  //   - `notes`: a list of step lines (sometimes empty).
+  //   - `notes`: server bookkeeping lines. Not rendered anywhere — an empty
+  //     snapshot is only read as "no more steps coming".
   //   - `display_text`: a single rolling status string ("Crafting day by day…").
-  // The BottomCTA loader only consumes `display_text`, which is why the chat
-  // card looked empty before — most polls only update display_text, not notes.
-  // StatusNotesCard merges both into a single progressive list.
+  //     This is what StatusNotesCard turns into step rows, same as the
+  //     BottomCTA loader in BotApp.
   const statusNotes = useSelector(
     (state: any) => state.ItineraryStatus?.notes as any[] | undefined,
   );
@@ -962,7 +840,6 @@ startEmptyIntake = false,
   const isStaffUser =
     !!reduxEmail && reduxEmail.toLowerCase().endsWith("@thetarzanway.com");
 
-    console.log("reduxEmail", reduxEmail);
   // True when a logged-in, non-staff user is viewing another person's
   // itinerary — block the composer and quick replies in that case.
   const isForeignItinerary =
@@ -1556,6 +1433,11 @@ startEmptyIntake = false,
   // reload; when false we restore it (with prefill) so the user can still fill
   // it. Read by parseThreadItems (incl. pagination) so the gate is consistent.
   const restoredFormFilledRef = useRef(false);
+  // Same idea for the pricing form, mirroring `confirm_pricing_form_submitted`.
+  // When the user has already submitted pricing (true) the card stays hidden on
+  // reload; when false we restore the interactive card (with prefill) so they
+  // can still submit it. Read by parseThreadItems so the gate is consistent.
+  const restoredPricingSubmittedRef = useRef(false);
 
   // Tracks whether the user is pinned to the bottom of the message list. The
   // auto-scroll effect only fires when this is true, so the transcript won't
@@ -1575,10 +1457,20 @@ startEmptyIntake = false,
   // ── Refs ─────────────────────────────────────────────────────────────────
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesScrollRef = useRef<HTMLDivElement>(null);
+  // Wraps every message + custom card. Observed for size changes so async-
+  // growing content (login/OTP card, the stepped status loader, images,
+  // widgets) re-pins the view to the bottom — see the ResizeObserver effect.
+  const messagesContentRef = useRef<HTMLDivElement>(null);
   const hasProcessedInitial = useRef(false);
   const hasUpdatedUrl = useRef(false);
   const postLoginFiredRef = useRef(false);
   const loginFlowArmedRef = useRef(false);
+  // Set once the user chooses "Skip login". After opting out we suppress any
+  // further inline `prompt_login` cards for the rest of the session — otherwise
+  // the resume (or any later action) re-triggers the backend's save-our-work
+  // prompt and the card loops straight back, blocking the chat. A genuine login
+  // is still reachable via the BotLoginModal (composer `requireAuth` / CTAs).
+  const loginOptedOutRef = useRef(false);
   // Always-current mirror of `isLoggedIn` so handleEffect can read fresh auth
   // state without depending on its (memoized) closure — used to ignore a stale
   // `prompt_login` that arrives after the user has already signed in.
@@ -1761,7 +1653,7 @@ const handleSessionCreated = useCallback((ourSessionId: string) => {
   // ── useChat ───────────────────────────────────────────────────────────────
   const apiUrl =
     botMode === "p2"
-      ? "https://dev.chat.tarzanway.com/chatkit/p2"
+      ? `${CHATKIT_API_URL}/p2`
       : CHATKIT_API_URL;
 
   // Stable onEffect wrapper — must be a named useCallback, never inline inside
@@ -1813,8 +1705,6 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
     onSessionCreated: handleSessionCreated,
     loginMandatory,
   });
-
-    console.log("Messages",messages);
 
   // Logged-out user viewing an existing thread (restored via threads.get_by_id)
   // sees the inline sign-in card as the last message. In that state the
@@ -1885,11 +1775,17 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
   // widget-triggered stream, and only unlocks again once the new turn's own
   // quick-reply tail arrives.
   const sendWidgetAction = useCallback(
-    (type: string, payload: Record<string, unknown>) => {
+    (
+      type: string,
+      payload: Record<string, unknown>,
+      // Extra top-level request fields (siblings of `params`), passed straight
+      // through to useChat — used for `login_opted_out` on skip-login.
+      rootFields?: Record<string, unknown>,
+    ) => {
       lastSentActionRef.current = { kind: "widget", type, payload };
       setQuickReplies([]);
       setQuickReplyShimmer(false);
-      return rawSendWidgetAction(type, payload);
+      return rawSendWidgetAction(type, payload, rootFields);
     },
     [rawSendWidgetAction],
   );
@@ -1931,6 +1827,9 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
       // thread and seeds a first message — see the inject.context effect — since
       // sendWidgetAction can only append to an existing thread.)
       hasInjectedContextRef.current = false;
+      // A cloned chat is a fresh conversation — clear any prior "skip login"
+      // opt-out so the clone can surface its own sign-in prompt.
+      loginOptedOutRef.current = false;
       // Re-key the session to the new itinerary_id so every subsequent request
       // (chat sends, status polling) is scoped to the clone. sessionIdRef is
       // mount-fixed, so set it directly; the re-render triggered by
@@ -2301,6 +2200,10 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
           break;
         }
 case "prompt_login": {
+  // The user already chose "Skip login" this session — honour that and don't
+  // re-inject the card (the backend replays this prompt on the opted-out
+  // resume). Without this the card loops straight back and blocks the chat.
+  if (loginOptedOutRef.current) break;
   // Mid-chat login: remember what to replay, then drop an inline login card
   // into the thread (instead of the modal). The token-watch effect re-fires
   // `pendingPostLoginAction` automatically once auth succeeds.
@@ -2668,22 +2571,41 @@ const handleIntakeComplete = useCallback(
   [sendMessage],
 );
 
-// ── Pricing form completion ──────────────────────────────────────────────────
-// Same contract as the intake form: send the composed final-details message
-// straight to Kaira with the form_submitted flag.
-const handlePricingComplete = useCallback(
-  (composed: string) => {
-    sendMessage(composed, undefined, undefined, { formSubmitted: true });
-  },
-  [sendMessage],
-);
-
 // Inline `prompt_login` card verified — just retire the card. The token-watch
 // effect re-fires `pendingPostLoginAction` (the message/widget action that
 // triggered the login) once the auth token lands, mirroring BotLoginModal.
 const handleLoginCardVerified = useCallback(() => {
   setMessages((prev) => prev.filter((m) => m.type !== "login_card"));
-}, [setMessages]);
+  // Ensure a user who logs in via the inline card (e.g. after itinerary
+  // completion) gets attached to the itinerary — BotLoginModal does this via
+  // onSuccess, but the inline card path never went through it.
+  void onLoginSuccess?.();
+}, [setMessages, onLoginSuccess]);
+
+// Inline login card skipped — the user deliberately opts out of signing in.
+// Retire the card and resume the conversation as a logged-out (opted-out) user
+// so the backend continues the thread instead of waiting on auth. Mirrors the
+// post-login resume path (same gate) but flags the skip via `login_opted_out`.
+const handleLoginCardSkip = useCallback(() => {
+  setMessages((prev) => prev.filter((m) => m.type !== "login_card"));
+  // Remember the opt-out so a re-emitted `prompt_login` (the backend replays the
+  // route-built prompt on resume) doesn't loop the card back into the thread.
+  loginOptedOutRef.current = true;
+  // Clear any armed post-login replay — there's no login coming, so nothing
+  // should re-fire later if the user does sign in for something else.
+  loginFlowArmedRef.current = false;
+  pendingPostLoginAction.current = null;
+  pendingRestoreResumeRef.current = false;
+  // Resume silently — same guard the token-watch effect uses. Only append to an
+  // existing thread we're allowed to resume (own/anonymous chat, not a foreign
+  // itinerary); resume can only append, never create a thread. When there's no
+  // resumable thread we simply retire the card and let the user carry on.
+  if (canResumeAfterLoginRef.current && threadIdRef.current) {
+    // `login_opted_out` goes at the ROOT of the request body (3rd arg), not in
+    // the action payload — the backend reads the skip flag top-level.
+    sendWidgetAction("resume_after_login", {}, { login_opted_out: true });
+  }
+}, [setMessages, sendWidgetAction, threadIdRef]);
 
   // ── Side-effects ──────────────────────────────────────────────────────────
   useEffect(() => {
@@ -2757,6 +2679,28 @@ const handleLoginCardVerified = useCallback(() => {
     }
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isStreaming]);
+
+  // Custom in-thread cards grow *after* they mount: the stepped status loader
+  // (StatusNotesCard) accumulates step lines, the inline login/OTP card and
+  // intake/pricing forms lay out asynchronously, images/widgets settle late.
+  // None of that flows through the `messages`-keyed effect above, so a single
+  // scroll lands mid-card and the user has to nudge down to see the rest.
+  // Watch the content wrapper's size and re-pin to the bottom on any growth —
+  // but only while the user is already parked at the bottom (isAtBottomRef),
+  // so a manual scroll-up to read earlier messages is never yanked back down.
+  useEffect(() => {
+    const content = messagesContentRef.current;
+    const scroller = messagesScrollRef.current;
+    if (!content || !scroller || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(() => {
+      // Prepending older messages / intake landing manage their own scroll.
+      if (isFetchingMoreRef.current || suppressIntakeAutoScrollRef.current) return;
+      if (!isAtBottomRef.current) return;
+      scroller.scrollTop = scroller.scrollHeight;
+    });
+    ro.observe(content);
+    return () => ro.disconnect();
+  }, []);
 
   // Mobile: when the chat tab is hidden behind another tab, scrollIntoView
   // calls fired by the auto-scroll effect above don't reliably move the
@@ -2997,8 +2941,16 @@ useEffect(() => {
   // Convert raw thread items (from threads.get_by_id payloads) into Message[]
   const parseThreadItems = useCallback((items: any[]): Message[] => {
     const out: Message[] = [];
+    // A reasoning `workflow` item precedes the assistant_message it produced.
+    // The per-step thoughts aren't persisted, but its `summary.duration` is —
+    // stash it here and attach it to the next assistant_message so we can show
+    // the collapsed "Thought for {duration}s" label above that reply on reload.
+    let pendingReasoningDuration: number | null = null;
     for (const item of items ?? []) {
       if (item.type === "user_message") {
+        // A fresh user turn — any dangling reasoning duration belongs to the
+        // previous turn and had no visible reply to attach to; drop it.
+        pendingReasoningDuration = null;
         const text = item.content?.find((c: any) => c.type === "input_text")?.text ?? "";
 
         // Extract attachments — server may return them as a sibling array of
@@ -3052,10 +3004,26 @@ useEffect(() => {
         });
       } else if (item.type === "assistant_message") {
         const text = item.content?.find((c: any) => c.type === "output_text")?.text ?? "";
-        if (text) out.push({
-          id: item.id, role: "assistant", content: text,
-          timestamp: new Date(item.created_at), isStreaming: false,
-        });
+        if (text) {
+          out.push({
+            id: item.id, role: "assistant", content: text,
+            timestamp: new Date(item.created_at), isStreaming: false,
+            ...(pendingReasoningDuration != null
+              ? { reasoningDuration: pendingReasoningDuration }
+              : {}),
+          });
+          pendingReasoningDuration = null;
+        }
+      } else if (item.type === "workflow") {
+        // Reasoning workflow — carry its duration to the next assistant reply.
+        const dur = item.workflow?.summary?.duration;
+        if (
+          item.workflow?.type === "reasoning" &&
+          typeof dur === "number" &&
+          dur > 0
+        ) {
+          pendingReasoningDuration = dur;
+        }
       } else if (item.type === "widget") {
         // Intake-form widgets restore as the interactive IntakeForm card, not
         // the raw widget placeholder — but only when the form hasn't been
@@ -3071,9 +3039,18 @@ useEffect(() => {
             });
           }
         } else if (isPricingFormWidgetId(item.widget?.id)) {
-          // Pricing form is a transient final-confirmation step — hide it on
-          // thread load (never restore it into the transcript). The Redux slice
-          // is deactivated in the restore effect below.
+          // Pricing form is the final-confirmation step. Restore the interactive
+          // card only while it hasn't been submitted yet
+          // (`confirm_pricing_form_submitted === false`); once submitted it's
+          // dropped from the transcript. Redux seeding is handled in the restore
+          // effect below.
+          if (!restoredPricingSubmittedRef.current) {
+            out.push({
+              id: item.id, role: "assistant", content: "",
+              timestamp: new Date(item.created_at),
+              type: "pricing_form",
+            });
+          }
         } else {
           indexEdgesFromWidget(item.widget);
           out.push({
@@ -3100,9 +3077,20 @@ useEffect(() => {
   if (isStreaming) return;
   appliedRestoredThreadRef.current = restoredThread;
 
+  // A thread the user chose to continue without login carries a root-level
+  // `login_opted_out: true`. Mirror it into the ref (resetting to false for
+  // threads without it) so this restore — and any re-emitted `prompt_login` on
+  // it — suppresses the inline card and leaves the composer/quick replies
+  // unblocked. Absent/false key → current flow (card shown, composer gated).
+  loginOptedOutRef.current = restoredThread.login_opted_out === true;
+
   // Set before parseThreadItems runs — it (and pagination) reads this to decide
   // whether the intake-form card is restored into the transcript.
   restoredFormFilledRef.current = restoredThread.form_filled === true;
+  // Same gate for the pricing form — restore the card only when pricing hasn't
+  // been submitted yet.
+  restoredPricingSubmittedRef.current =
+    restoredThread.confirm_pricing_form_submitted === true;
 
   const restored = parseThreadItems(restoredThread.items?.data ?? []);
 
@@ -3147,12 +3135,40 @@ useEffect(() => {
     dispatch(updateIntakeForm({ active: false, completed: false }));
   }
 
-  // Pricing form is always hidden on thread load — deactivate the slice so a
-  // stale `active` from a prior thread doesn't linger, and reset the one-shot
-  // injection guard so a fresh pricing-form widget can inject its card in this
-  // restored session.
-  dispatch(updatePricingForm({ active: false, completed: false, loading: false }));
-  pricingFormInjectedRef.current = false;
+  // ── Restore the in-chat pricing form ──────────────────────────────────────
+  // When the thread carries a pricing-form widget that hasn't been submitted
+  // (`confirm_pricing_form_submitted === false`), parseThreadItems restores the
+  // card and we re-seed the Redux slice from the widget's encoded prefill so it
+  // shows the prefilled toggles/city. When submitted (or absent) we deactivate
+  // the slice so a stale `active` from a prior thread doesn't linger, and reset
+  // the one-shot injection guard so a fresh pricing-form widget can inject its
+  // card in this restored session.
+  const pricingWidgetItem = (restoredThread.items?.data ?? []).find(
+    (it: any) => it?.type === "widget" && isPricingFormWidgetId(it?.widget?.id),
+  );
+  if (pricingWidgetItem && !restoredPricingSubmittedRef.current) {
+    const prefill = parsePricingFormWidgetId(pricingWidgetItem.widget?.id);
+    if (prefill) {
+      dispatch(
+        updatePricingForm({
+          active: true,
+          completed: false,
+          loading: false,
+          ...parsePricingCardCopy(pricingWidgetItem.widget),
+          ...parseShowPricingForm(prefill),
+        }),
+      );
+      // Already injected from history — block the live widget/effect path from
+      // adding a second card in this session.
+      pricingFormInjectedRef.current = true;
+    } else {
+      dispatch(updatePricingForm({ active: false, completed: false, loading: false }));
+      pricingFormInjectedRef.current = false;
+    }
+  } else {
+    dispatch(updatePricingForm({ active: false, completed: false, loading: false }));
+    pricingFormInjectedRef.current = false;
+  }
 
   for (const effect of itineraryEffects) {
     if (effect.name === "itinerary_entities" && effect.data?.entities) {
@@ -3233,7 +3249,10 @@ useEffect(() => {
     // to the standard login/clone gating instead.
     const isP2Restore =
       botModeRef.current === "p2" || threadIsCompleted;
-    const showRestoreLoginCard = !(isLoggedInRef.current || isP2Restore);
+    // Skip the card entirely when the user already opted out of login on this
+    // thread — they continue as a logged-out visitor with the composer open.
+    const showRestoreLoginCard =
+      !loginOptedOutRef.current && !(isLoggedInRef.current || isP2Restore);
     // Lead-in line rendered as a normal Kaira bubble above the restored login
     // card. Source it from the thread's first `prompt_login` effect (there can
     // be several across the thread — the first is the one that armed sign-in);
@@ -3604,8 +3623,10 @@ const handleShowLogin = useCallback(() => {
       if (isItineraryCompleting) return;
       // Block when viewing someone else's itinerary (non-staff)
       if (isForeignItinerary) return;
-      // Gate logged-out users behind login
-      if (!isLoggedIn) {
+      // Gate logged-out users behind login — only in P2. In P1 (chat-only
+      // stage) logged-out users may chat anonymously; the backend prompts for
+      // login itself (prompt_login) once it actually needs an account.
+      if (!isLoggedIn && botMode === "p2") {
         setShowLoginModal(true);
         return;
       }
@@ -3617,7 +3638,7 @@ const handleShowLogin = useCallback(() => {
       // of the turn this quick reply just kicked off.
       setInput("");
     },
-    [isStreaming, sendMessage, isItineraryCompleting, isLoggedIn, isForeignItinerary],
+    [isStreaming, sendMessage, isItineraryCompleting, isLoggedIn, isForeignItinerary, botMode],
   );
 
   const showError = !!error && !errorDismissed;
@@ -3654,7 +3675,7 @@ const handleShowLogin = useCallback(() => {
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div
-      className={`kp-root flex flex-col h-full min-h-0 bg-white max-h-[100dvh] md:max-h-[93.5vh] border-[0.5px] border-l-[#e5e5e5] overflow-x-hidden`}
+      className={`kp-root flex flex-col h-full min-h-0 bg-white max-h-[100dvh] border-[0.5px] border-l-[#e5e5e5] overflow-x-hidden`}
       style={{
         fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
         WebkitFontSmoothing: "antialiased",
@@ -3764,7 +3785,7 @@ const handleShowLogin = useCallback(() => {
         className="flex-1 min-h-0 min-w-0 overflow-y-auto overflow-x-hidden px-[0.25rem] md:!px-4 py-4 scroll-smooth"
       >
 
-          <div className="mx-auto">
+          <div ref={messagesContentRef} className="mx-auto">
             {isLoadingMore && (
               <div className="flex items-center justify-center py-3">
                 <Spinner size={16} />
@@ -3805,6 +3826,7 @@ const handleShowLogin = useCallback(() => {
                   <OtpCard
                     key={msg.id}
                     onVerified={handleLoginCardVerified}
+                    onSkip={handleLoginCardSkip}
                     heading="Sign in to continue"
                     submitLabel="Send OTP"
                   />
@@ -4381,8 +4403,8 @@ const handleShowLogin = useCallback(() => {
 
             {/* Itinerary creation progress (tailored form → /chat/[id], or the
                 bot's own completion flow). Mirrors the edit-time status card:
-                streams the same `display_text` / `notes` from the /status/ poll
-                as a batched in-chat card instead of a bare spinner. Gated on
+                streams the same `display_text` from the /status/ poll as a
+                stepped in-chat card instead of a bare spinner. Gated on
                 `isItineraryCompleting` (creation), which is fresh per session —
                 no stale-flag mount guard needed, so it also shows on a refresh
                 mid-build. */}
@@ -4392,13 +4414,13 @@ const handleShowLogin = useCallback(() => {
               isPolling={isItineraryCompleting}
               cycleKey={isItineraryCompleting ? "create-cycle" : "init"}
               resetKey={null}
-              title="Kaira is building your itinerary"
-              stageLabel="Building your itinerary"
+              title="Kaira is building your"
+              titleAccent="itinerary"
             />
 
             {/* Itinerary update progress (Update Dates / Route Edit / Reprice /
-                refresh_itinerary). Renders the streaming `notes` from the
-                /status/ poll as a batched in-chat card. */}
+                refresh_itinerary). Same stepped card, fed by the streaming
+                `display_text` from the /status/ poll. */}
             <StatusNotesCard
               notes={statusNotes}
               displayText={statusDisplayText}
@@ -4440,7 +4462,7 @@ const handleShowLogin = useCallback(() => {
                 ))}
               </div>
             </div>
-            <style>{`@keyframes qrShimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }`}</style>
+            <style dangerouslySetInnerHTML={{ __html: `@keyframes qrShimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }` }} />
           </div>
         )}
 
@@ -4511,9 +4533,16 @@ const handleShowLogin = useCallback(() => {
             onRemoveAttachment={handleRemoveAttachment}
             // In the logged-out thread-detail flow the inline sign-in card is
             // shown, so the composer is just blocked — no BotLoginModal popup.
-            requireAuth={loginBlocked ? false : !isLoggedIn || isForeignItinerary}
+            // In P1 (chat-only stage) logged-out users may chat anonymously —
+            // don't gate the composer; only require auth in P2. The backend
+            // still emits prompt_login when it genuinely needs an account.
+            requireAuth={
+              loginBlocked
+                ? false
+                : (!isLoggedIn && botMode === "p2") || isForeignItinerary
+            }
             onAuthRequired={() => {
-              if (!isLoggedIn) {
+              if (!isLoggedIn && botMode === "p2") {
                 setShowLoginModal(true);
               } else if (isForeignItinerary && botMode === "p2") {
                 // Foreign-itinerary block in P2: the user is logged in but
@@ -5044,12 +5073,12 @@ const SkeletonImage: React.FC<SkeletonImageProps> = ({ src, alt, width, height }
           transition: "opacity 0.25s ease",
         }}
       />
-      <style>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         @keyframes travellerSkeletonShimmer {
           0% { background-position: 200% 0; }
           100% { background-position: -200% 0; }
         }
-      `}</style>
+      ` }} />
     </div>
   );
 };

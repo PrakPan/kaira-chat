@@ -123,33 +123,18 @@ const Grid = styled.div`
 const Brand = styled.div`
   .logo-line {
     display: flex;
-    align-items: center;
-    gap: 12px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
   }
-  .logo-mark {
-    width: 36px;
+  .logo-lockup {
     height: 36px;
-    background: #f7e700;
-    color: #0f1a2e;
-    border-radius: 9px;
-    display: grid;
-    place-items: center;
-    font-family: "Instrument Serif", serif;
-    font-style: normal;
-    font-size: 20px;
-    transform: rotate(-6deg);
+    width: auto;
   }
-  .brand-word .name {
-    font-weight: 700;
-    font-size: 16px;
-    letter-spacing: -0.015em;
-    color: #fff;
-  }
-  .brand-word .tag {
+  .tag {
     display: block;
     font-size: 11px;
     color: rgba(255, 255, 255, 0.55);
-    margin-top: 2px;
   }
   .blurb {
     margin-top: 18px;
@@ -256,12 +241,8 @@ const NewFooter = () => {
         <Grid>
           <Brand>
             <div className="logo-line">
-              {/* <div className="logo-mark">t</div> */}
-              <img src="https://d31aoa0ehgvjdi.cloudfront.net/media/website/logoyellow.png" alt="The Tarzan Way" width={36} height={36} />
-              <div className="brand-word">
-                <span className="name">the tarzanway</span>
-                <span className="tag">by Kaira · est. 2018</span>
-              </div>
+              <img className="logo-lockup" src="/logo/ttw-lockup-light.svg" alt="The Tarzan Way" />
+              <span className="tag">by Kaira · est. 2018</span>
             </div>
             <p className="blurb">
               Trips planned in conversation, not forms. Powered by Kaira, our

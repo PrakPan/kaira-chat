@@ -233,11 +233,10 @@ const Index = (props) => {
                     (item.continent ? [item.continent] : [])
                   }
                   gradientOverlay={item.gradientOverlay}
-                  onClick={() =>
-                    onItemClick
-                      ? onItemClick(item)
-                      : item.path && window.location.replace("/" + item.path)
+                  link={
+                    !onItemClick && item.path ? "/" + item.path : undefined
                   }
+                  onClick={onItemClick ? () => onItemClick(item) : undefined}
                   setShowTailoredModal={setShowTailoredModal}
                   {...cardProps}
                 />

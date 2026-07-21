@@ -27,7 +27,11 @@ const AboutUsContainer = () => {
             property="og:description"
             content="The Tarzan Way is the best trip-planning platform to craft your trips, your way using AI Trip Planner. Create, browse, customise travel itineraries, manage bookings - all in one place. Here’s our journey on how we started as a travel startup in India to curate experiential travel programs and provide tailored custom-made travel itineraries!"
           />
-          <meta property="og:image" content="/logoblack.svg" />
+          <meta property="og:image" content="https://thetarzanway.com/og-image.png" />
+          <meta property="og:image:width" content="1200" />
+          <meta property="og:image:height" content="630" />
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:image" content="https://thetarzanway.com/og-image.png" />
           <meta
             property="keywords"
             content="ai trip planner, trip planner, itinerary, travel plan, ai itinerary, ai plan, craft a trip, wanderlog, inspirock, tripit, local travel experience, customized trip planner, customized holiday packages, customized packages in computer, honeymoon travel packages, personalized travel package, hotels, flights, activities, transfers,"

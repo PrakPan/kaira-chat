@@ -13,7 +13,11 @@ const Itinerary = () => {
           property="og:description"
           content="We envision to simplify travel and build immersive travel experiences."
         />
-        <meta property="og:image" content="/logoblack.svg" />
+        <meta property="og:image" content="https://thetarzanway.com/og-image.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image" content="https://thetarzanway.com/og-image.png" />
         <script />
       </Head>
 

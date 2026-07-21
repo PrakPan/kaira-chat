@@ -413,12 +413,7 @@ const Menu = (props) => {
                       (destination.continent ? [destination.continent] : [])
                     }
                     gradientOverlay={destination.gradientOverlay}
-                    onClick={() => {
-                      console.log(
-                        `Clicked on ${destination.name || destination.title}`
-                      );
-                      window.location.replace("/" + destination.path);
-                    }}
+                    link={destination.path ? "/" + destination.path : undefined}
                   />
                 </div>
               </SwiperSlide>

@@ -1,5 +1,6 @@
 import axios from "axios";
 import Cookies from "js-cookie";
+import { MERCURY_HOST } from "./constants";
 
 // ── User-location bootstrap ──────────────────────────────────────────────────
 // Resolves the visitor's location once and caches it for 3 days (localStorage +
@@ -139,7 +140,7 @@ export async function bootstrapUserLocation(onResolved) {
     const ip = ipRes?.data?.ip;
     if (!ip) throw new Error("No IP");
     const locRes = await axios.get(
-      `https://dev.mercury.tarzanway.com/api/v1/geos/search/user_location/?ip=${ip}`
+      `${MERCURY_HOST}/api/v1/geos/search/user_location/?ip=${ip}`
     );
     if (locRes?.data) apply(locRes.data, true);
     else apply(DELHI_LOCATION, true);

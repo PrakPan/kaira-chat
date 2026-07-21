@@ -51,14 +51,14 @@ const PricingFormSkeleton: React.FC = () => {
         <div className="ttw-pricing-skel h-[42px] w-full rounded-[11px]" />
       </div>
 
-      <style>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         @keyframes ttwPricingShimmer { 0% { background-position: -320px 0; } 100% { background-position: 320px 0; } }
         .ttw-pricing-skel {
           background: linear-gradient(90deg, #ece9e1 0%, #f6f4ee 50%, #ece9e1 100%);
           background-size: 640px 100%;
           animation: ttwPricingShimmer 1.3s linear infinite;
         }
-      `}</style>
+      ` }} />
     </div>
   );
 };

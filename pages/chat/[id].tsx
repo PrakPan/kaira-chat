@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { connect, useSelector } from "react-redux";
-import BotApp from "../../components/bot-components/BotApp";
+import BotApp from "../../components/bot-components/BotAppClient";
 import * as authaction from "../../store/actions/auth";
 
 const ChatSessionPage = ({ checkAuthState }: { checkAuthState: () => void }) => {

@@ -12,6 +12,8 @@ const MapView: React.FC<MapViewProps> = ({
   isLoadingLocation,
   mapRef,
   isRoutePreparing = false,
+  isVisible = true,
+  chromeBottom = 0,
 }) => {
   // Animate in when first mounted (after the start screen fades out)
   const [revealed, setRevealed] = useState(false);
@@ -38,6 +40,8 @@ const MapView: React.FC<MapViewProps> = ({
         locations={locations}
         userLocation={userLocation}
         currentRoute={currentRoute}
+        isVisible={isVisible}
+        chromeBottom={chromeBottom}
         ref={mapRef}
       />
 

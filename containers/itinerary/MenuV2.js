@@ -528,9 +528,18 @@ const setActiveTab = (tab) => {
       return;
     }
 
+    // Use props.id (the canonical itinerary id piped down from BotApp), NOT
+    // router.query.id. The chat page updates the URL via history.pushState,
+    // which Next's router doesn't observe, so router.query.id is stale/undefined
+    // after a thread switch or itinerary creation (see pages/chat/[id].tsx).
+    const itinId = props.id || router.query.id;
+    if (!itinId || itinId === "skeleton" || itinId === "draft") {
+      return;
+    }
+
     try {
       const response = await axios.get(
-        `${MERCURY_HOST}/api/v1/itinerary/${router.query.id}/attach-user/`,
+        `${MERCURY_HOST}/api/v1/itinerary/${itinId}/attach-user/`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
@@ -712,6 +721,8 @@ Start Location: ${details.startLocation}`;
       {props.mercuryItinerary
         ? props?.itineraryDaybyDay && (
             <DaybyDay
+              fromChat={props?.fromChat}
+              onViewMap={props?.onViewMap}
               mercuryItinerary={props?.mercuryItinerary}
               activityBookings={props?.activityBookings}
               setActivityBookings={props?.setActivityBookings}
@@ -960,6 +971,8 @@ Start Location: ${details.startLocation}`;
           {props.mercuryItinerary ? (
             props?.itineraryDaybyDay && (
               <DaybyDay
+                fromChat={props?.fromChat}
+                onViewMap={props?.onViewMap}
                 mercuryItinerary={props?.mercuryItinerary}
                 activityBookings={props?.activityBookings}
                 setActivityBookings={props?.setActivityBookings}
@@ -1218,6 +1231,8 @@ props.fromChat ? (
       {props.mercuryItinerary
         ? props?.itineraryDaybyDay && (
             <DaybyDay
+              fromChat={props?.fromChat}
+              onViewMap={props?.onViewMap}
               mercuryItinerary={props?.mercuryItinerary}
               activityBookings={props?.activityBookings}
               setActivityBookings={props?.setActivityBookings}
@@ -1511,6 +1526,8 @@ props.fromChat ? (
                 {props.mercuryItinerary
                   ? props?.itinerary && (
                       <DaybyDay
+                        fromChat={props?.fromChat}
+                        onViewMap={props?.onViewMap}
                         mercuryItinerary={props?.mercuryItinerary}
                         activityBookings={props?.activityBookings}
                         setActivityBookings={props?.setActivityBookings}

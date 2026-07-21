@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import {usePathname} from "next/navigation"
 import { useCallback, useMemo, useState, useEffect } from "react";
@@ -76,15 +77,41 @@ const NavigationMenu = (props) => {
   );
 
   // Memoized menu items to prevent unnecessary re-renders
-  const desktopMenuItems = useMemo(
-    () => [], // Empty array since navigation items are removed
-    [isActive]
-  );
+  // A crawlable primary-nav link to the destinations hub (which links out to
+  // every continent). Rendered as a real <a> so it's part of the link graph.
+  const navLinkStyle = {
+    color: "inherit",
+    textDecoration: "none",
+    fontWeight: 500,
+    whiteSpace: "nowrap",
+  };
 
-  const mobileMenuItems = useMemo(
-    () => [], // Empty array since navigation items are removed
-    [isActive, closeMobileMenu, handleMenuItemHover]
-  );
+  // const desktopMenuItems = useMemo(
+  //   () => [
+  //     <li key="nav-destinations" className="mr-4" role="none">
+  //       <Link href="/destinations" role="menuitem" style={navLinkStyle}>
+  //         Destinations
+  //       </Link>
+  //     </li>,
+  //   ],
+  //   [isActive]
+  // );
+
+  // const mobileMenuItems = useMemo(
+  //   () => [
+  //     <li key="nav-destinations-m" role="none">
+  //       <Link
+  //         href="/destinations"
+  //         role="menuitem"
+  //         style={navLinkStyle}
+  //         onClick={closeMobileMenu}
+  //       >
+  //         Destinations
+  //       </Link>
+  //     </li>,
+  //   ],
+  //   [isActive, closeMobileMenu, handleMenuItemHover]
+  // );
   const toggleProfileList = () => {
     setShowDropDownProfileList(!showDropDownProfileList);
     setShowDropDownProfileListMobile(!showDropDownProfileListMobile);
@@ -131,16 +158,16 @@ const NavigationMenu = (props) => {
     <>
     <div className="w-100 bg-text-white"> 
       <nav className={styles.navigationMenu + " " + props.className + " max-ph:!p-md max-ph:shadow-soft"} role="navigation">
-        <div className={"hover-pointer " + styles.logo} onClick={() => router.push("/")}>
-          <Image src={TTW} alt="TTW Logo" priority className={styles.logoFull} />
-          <img src="/logoblack.svg" alt="TTW" className={styles.logoMark} />
-        </div>
+        <Link href="/" className={"hover-pointer " + styles.logo} aria-label="The Tarzan Way — home">
+          <Image src={TTW} alt="The Tarzan Way" priority className={styles.logoFull} />
+          <img src="/logo/ttw-mark.svg" alt="The Tarzan Way" className={styles.logoMark} />
+        </Link>
         {pathname!="/new-trip"&& <SearchInput />}
         {/* Desktop Menu */}
         <ul className={styles.menuList} role="menubar">
-          <li className="mr-4"></li>
+          {/* <li className="mr-4"></li>
           {desktopMenuItems}
-          <li></li>
+          <li></li> */}
           {props.token?<>{(pathname!="/dashboard"&&pathname!="/new-trip")&&<button className="MediumIndigoButton" onClick={()=>router.push("/dashboard")}>
                   My Trips
           </button>}</>: null}
@@ -232,7 +259,7 @@ const NavigationMenu = (props) => {
         aria-label="Mobile navigation menu"
       >
         <div className={styles.sidebarHeader}>
-          <Image src={TTW} alt="TTW Logo" className={styles.sidebarLogo}  />
+          <img src="/logo/ttw-lockup-light.svg" alt="The Tarzan Way" className={styles.sidebarLogo} />
           <button
             className={styles.closeButton}
             onClick={toggleMobileMenu}
@@ -243,9 +270,9 @@ const NavigationMenu = (props) => {
           </button>
         </div>
 
-        <ul className={styles.mobileMenuList} role="menu">
+        {/* <ul className={styles.mobileMenuList} role="menu">
           {mobileMenuItems}
-        </ul>
+        </ul> */}
 
         <div
           ref={(el) => (menuItemsRef.current[0] = el)}

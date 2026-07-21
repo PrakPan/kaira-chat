@@ -114,12 +114,12 @@ const ThinkingDots = () => (
         }}
       />
     ))}
-    <style>{`
+    <style dangerouslySetInnerHTML={{ __html: `
       @keyframes thinkPulse {
         0%, 80%, 100% { transform: scale(0.4); opacity: 0.3; }
         40%            { transform: scale(1);   opacity: 1; }
       }
-    `}</style>
+    ` }} />
   </div>
 );
 

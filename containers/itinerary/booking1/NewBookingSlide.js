@@ -7,9 +7,10 @@ import * as orderaction from "../../../store/actions/order";
 import { MdEdit } from "react-icons/md";
 import { useRouter } from "next/router";
 import { getIndianPrice } from "../../../services/getIndianPrice";
+import { formatCurrencyValue } from "../../../services/formatCurrencyValue";
 import { getHumanDateWithYear } from "../../../services/getHumanDateWithYear";
 import urls from "../../../services/urls";
-import { ITINERARY_STATUSES } from "../../../services/constants";
+import { ITINERARY_STATUSES, MERCURY_HOST } from "../../../services/constants";
 import axiossalecreateinstance, {
   myplansv2,
 } from "../../../services/sales/itinerary/SaleCreate";
@@ -72,6 +73,9 @@ import { currencySymbols } from "../../../data/currencySymbols";
 import { resetChatSession } from "../../../store/actions/chatState";
 import VisaSearchDrawer from "../../../components/drawers/visaDetails/VisaSearchDrawer";
 import EsimPackagesDrawer from "../../../components/drawers/esimDetails/EsimPackagesDrawer";
+import CartBookingDetail, {
+  getBookingDetailType,
+} from "./CartBookingDetail";
 import {
   addAncillaryBooking,
   removeAncillaryBooking,
@@ -139,7 +143,7 @@ const CouponModal = ({
       const formattedCoupons = response.data.map((coupon) => ({
         id: coupon.id,
         code: coupon.code,
-        title: `Save ${currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}${coupon.discount_value}`,
+        title: `Save ${currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}${formatCurrencyValue(coupon.discount_value, currency)}`,
         description: coupon.description,
         expiry: new Date(coupon.end_time).toLocaleDateString("en-IN"),
         type: coupon.discount_type.toLowerCase(),
@@ -618,7 +622,7 @@ const PaymentSuccess = ({ amount, onDownloadInvoice, loading }) => {
             <p className="text-md font-400 leading-xl text-text-spacegrey mb-zero max-ph:mb-md">
               Your full payment of{" "}
               {currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}
-              {amount?.toLocaleString("en-IN")} has been received. No pending
+              {formatCurrencyValue(amount, currency)} has been received. No pending
               balance.
             </p>
           </div>
@@ -792,7 +796,7 @@ const CouponSection = ({
                     {currencySymbols?.[currency]
                       ? currencySymbols?.[currency]
                       : "₹"}
-                    {maxDiscount.toLocaleString("en-IN")}
+                    {formatCurrencyValue(maxDiscount, currency)}
                   </span>
                 )}
               </div>
@@ -867,7 +871,7 @@ const PriceDetails = ({
             {currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}
             {typeof itineraryCost === "string"
               ? itineraryCost
-              : itineraryCost.toLocaleString("en-IN")}
+              : formatCurrencyValue(itineraryCost, currency)}
           </span>
         </div>
 
@@ -885,7 +889,7 @@ const PriceDetails = ({
             <span>GST</span>
             <span>
               {currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}
-              {Cart?.gst?.toLocaleString("en-IN")}
+              {formatCurrencyValue(Cart?.gst, currency)}
             </span>
           </div>}
       
@@ -895,7 +899,7 @@ const PriceDetails = ({
             <span>TCS</span>
             <span>
               {currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}
-              {Cart?.tcs?.toLocaleString("en-IN")}
+              {formatCurrencyValue(Cart?.tcs, currency)}
             </span>
           </div>
         )}
@@ -908,8 +912,8 @@ const PriceDetails = ({
                 ? currencySymbols?.[currency]
                   ? "-" +
                     currencySymbols?.[currency] +
-                    Math.abs(couponDiscount).toLocaleString("en-IN")
-                  : "-₹" + Math.abs(couponDiscount).toLocaleString("en-IN")
+                    formatCurrencyValue(Math.abs(couponDiscount), currency)
+                  : "-₹" + formatCurrencyValue(Math.abs(couponDiscount), currency)
                 : `${currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}0`}
             </span>
           </div>
@@ -923,7 +927,7 @@ const PriceDetails = ({
               {currencySymbols?.[currency]
                 ? currencySymbols?.[currency]
                 : "₹"}{" "}
-              {finalTotal.toLocaleString("en-IN")}
+              {formatCurrencyValue(finalTotal, currency)}
             </span>
           </div>
         </div>
@@ -969,6 +973,7 @@ const ItineraryInclusions = ({
   Cart,
   selectedInclusions,
   onToggleInclusion,
+  onOpenDetails,
   arePricesHidden,
   updatingInclusions = {},
   defaultExpanded = false,
@@ -1135,7 +1140,7 @@ const ItineraryInclusions = ({
                       {currencySymbols?.[currency]
                         ? currencySymbols?.[currency]
                         : "₹"}{" "}
-                      {getIndianPrice(Math.round(categoryTotal))}
+                      {formatCurrencyValue(categoryTotal, currency)}
                     </div>
                   )}
                 </>
@@ -1160,18 +1165,34 @@ const ItineraryInclusions = ({
                     ? getChildrenFlights(booking.id)
                     : [];
 
+                  const hasDetails = !!getBookingDetailType(booking);
 
                   return (
                     <div key={booking.id}>
                       <div
-                        className={`p-3 flex items-start gap-3 hover:bg-gray-50 transition-colors ${
+                        className={`p-3 flex items-start gap-3 hover:bg-primary-lightPurple transition-colors ${
                           !selectedInclusions[booking.id] ? "" : ""
                         }`}
                       >
                         {/* Booking Details */}
-                        <div className="flex-1 min-w-0">
+                        <div
+                          className={`flex-1 min-w-0 group ${
+                            hasDetails ? "cursor-pointer" : ""
+                          }`}
+                          onClick={
+                            hasDetails
+                              ? () => onOpenDetails?.(booking)
+                              : undefined
+                          }
+                        >
                           <div className="text-sm-md font-400 leading-xl mb-sm">
-                            {booking.detail.name}
+                            <span
+                              className={
+                                hasDetails ? "group-hover:underline" : ""
+                              }
+                            >
+                              {booking.detail.name}
+                            </span>
                             {booking?.detail?.booking_type === "Visa" ? <span className="ml-2 px-1.5 py-0.5 text-xs font-medium bg-purple-100  text-purple-800 rounded">Visa</span> : booking?.detail?.booking_type === "eSIM" ? <span className="ml-2 px-1.5 py-0.5 text-xs font-medium bg-green-100  text-green-800 rounded ">eSim</span> : null}
                           </div>
                           {booking.status === "Paid" && (
@@ -1298,7 +1319,7 @@ const ItineraryInclusions = ({
                             {currencySymbols?.[currency]
                               ? currencySymbols?.[currency]
                               : "₹"}
-                            {getIndianPrice(Math.round(booking.booking_cost))}
+                            {formatCurrencyValue(booking.booking_cost, currency)}
                           </div>
                         )}
                       </div>
@@ -1416,6 +1437,8 @@ const Details = (props) => {
   }, [travellerDetailsOpen]);
   const [showVisaDrawer, setShowVisaDrawer] = useState(false);
   const [showEsimDrawer, setShowEsimDrawer] = useState(false);
+  // The cart row whose detail drawer is open, if any.
+  const [detailBooking, setDetailBooking] = useState(null);
   const [getInTouchLoading, setGetInTouchLoading] = useState(false);
   const { itinerary_status, transfers_status, pricing_status, final_status } =
     useSelector((state) => state.ItineraryStatus);
@@ -1447,6 +1470,41 @@ const Details = (props) => {
     Cart?.coupon_usage?.discount || 0,
   );
   const [showCouponModal, setShowCouponModal] = useState(false);
+
+  // Desktop: the drawer itself doesn't scroll, so the bookings/pricing row has
+  // to be told exactly how tall it may be — from its own top edge down to the
+  // trust bar. Measured rather than assumed: the back-link, the price timer and
+  // the payment-failed banner all move the row's top around.
+  const paymentRowRef = useRef(null);
+  const trustBarRef = useRef(null);
+  const [paymentRowHeight, setPaymentRowHeight] = useState(0);
+  useEffect(() => {
+    if (!showPaymentDrawer || !isPageWide) {
+      setPaymentRowHeight(0);
+      return undefined;
+    }
+    const measure = () => {
+      const row = paymentRowRef.current;
+      if (!row) return;
+      const top = row.getBoundingClientRect().top;
+      const trust = trustBarRef.current?.getBoundingClientRect().height || 0;
+      setPaymentRowHeight(Math.max(0, window.innerHeight - top - trust));
+    };
+    // The drawer slides in over ~200ms; measure once it has landed, then keep
+    // in sync as the trust bar or the viewport changes.
+    const raf = requestAnimationFrame(measure);
+    const timer = setTimeout(measure, 250);
+    const ro = new ResizeObserver(measure);
+    if (trustBarRef.current) ro.observe(trustBarRef.current);
+    window.addEventListener("resize", measure);
+    return () => {
+      cancelAnimationFrame(raf);
+      clearTimeout(timer);
+      ro.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, [showPaymentDrawer, isPageWide, pricing_status, props?.loadpricing]);
+
   const [isRemovingCoupon, setIsRemovingCoupon] = useState(false);
   const [couponUsageData, setCouponUsageData] = useState(
     Cart?.coupon_usage || null,
@@ -1913,7 +1971,7 @@ const Details = (props) => {
 
       axios
       .post(
-            "https://dev.mercury.tarzanway.com/payment/verify/",
+            `${MERCURY_HOST}/payment/verify/`,
             { ...response },
             { headers: { Authorization: `Bearer ${props.token}` } }
           )
@@ -2404,7 +2462,10 @@ const Details = (props) => {
           width={"100%"}
           mobileWidth={"100%"}
           style={{ zIndex: 1600 }}
-          className={`!bg-primary-cornsilk ${
+          // md:!overflow-hidden — the drawer itself must not scroll on desktop;
+          // the bookings column and the pricing column each scroll on their own.
+          // (`!` beats the styled-component's `overflow: auto`.)
+          className={`!bg-primary-cornsilk md:!overflow-hidden ${
             showCouponModal ? "overflow-hidden" : ""
           }`}
           onHide={() => handleCloseDrawer()}
@@ -2439,11 +2500,20 @@ const Details = (props) => {
               </div>
             )}
 
-            {/* Updated row with proper overflow handling */}
-            <div className="row py-md bg-text-white">
+            {/* Updated row with proper overflow handling.
+                On desktop the row is sized to the space left between its own
+                top and the trust bar, so the two columns scroll inside it and
+                the drawer never scrolls as a whole. The old
+                `max-h-[calc(100vh-210px)]` guessed that chrome height, and any
+                drift showed up as a second, outer scrollbar. */}
+            <div
+              ref={paymentRowRef}
+              className="row py-md bg-text-white md:overflow-hidden"
+              style={isPageWide && paymentRowHeight ? { height: paymentRowHeight } : undefined}
+            >
               {/* Left column - Scrollable content */}
               <div
-                className="col-md-8 border-r-sm border-text-disabled md:overflow-y-auto md:max-h-[calc(100vh-210px)] pb-4 md:pb-0 pr-md"
+                className="col-md-8 border-r-sm border-text-disabled md:overflow-y-auto md:h-full pb-4 md:pb-0 pr-md"
                 style={{
                   scrollbarWidth: "none",
                   msOverflowStyle: "none",
@@ -2482,7 +2552,7 @@ const Details = (props) => {
                   areAllInclusionsPaid() &&
                   Cart?.discounted_cost > 0 ? (
                     <PaymentSuccess
-                      amount={getIndianPrice(Math.round(Cart?.discounted_cost))}
+                      amount={Cart?.discounted_cost}
                       onDownloadInvoice={() => {}}
                     />
                   ) : !isItineraryInFuture() && !areAnyInclusionsPaid() ? (
@@ -2729,6 +2799,7 @@ const Details = (props) => {
                       Cart={Cart}
                       selectedInclusions={selectedInclusions}
                       onToggleInclusion={handleToggleInclusion}
+                      onOpenDetails={setDetailBooking}
                       arePricesHidden={Cart?.are_prices_hidden}
                       updatingInclusions={updatingInclusions}
                       defaultExpanded={
@@ -2744,9 +2815,9 @@ const Details = (props) => {
               </div>
 
               {/* Right column - Fixed/Sticky pricing section */}
-              <div className="col-md-4">
+              <div className="col-md-4 md:h-full">
                 <div
-                  className="md:sticky md:top-4 md:max-h-[calc(100vh-120px)] md:overflow-y-auto"
+                  className="md:h-full md:overflow-y-auto"
                   style={{
                     scrollbarWidth: "none",
                     msOverflowStyle: "none",
@@ -2789,19 +2860,15 @@ const Details = (props) => {
                     {/* Price Details */}
 
                     <PriceDetails
-                      itineraryCost={getIndianPrice(
-                        Math.round(
-                          Cart?.taxation_policy == "TCS" ? Cart?.total_itinerary_cost : Cart?.total_cost
-                        )
-                      )}
+                      itineraryCost={
+                        Cart?.taxation_policy == "TCS"
+                          ? Cart?.total_itinerary_cost
+                          : Cart?.total_cost
+                      }
                       lockInCost={0}
                       couponDiscount={appliedCoupon ? -couponSavedAmount : 0}
-                      surchargesTaxes={
-                        Math.round(Cart?.surcharges_and_taxes) || 0
-                      }
-                      totalPayable={getIndianPrice(
-                        Math.round(calculateFilteredTotal()),
-                      )}
+                      surchargesTaxes={Cart?.surcharges_and_taxes || 0}
+                      totalPayable={calculateFilteredTotal()}
                       selectedPaymentOption={selectedPaymentOption}
                       selectedInclusions={selectedInclusions}
                       totalBookingsCost={Cart?.total_bookings_cost}
@@ -2815,8 +2882,9 @@ const Details = (props) => {
                             color="green"
                             className="inline align-middle mr-1 font-semibold"
                           />
-                          {`You have paid ${currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}${Math.round(
+                          {`You have paid ${currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}${formatCurrencyValue(
                             Cart?.amount_paid,
+                            currency,
                           )} for your itinerary. ${
                             Cart.total_payable_amount != 0
                               ? "Please pay the remaining balance at least 7 days before your trip starts to confirm your booking."
@@ -3130,7 +3198,14 @@ const Details = (props) => {
             token={props?.token}
             payment={Cart}
           />
-          <TrustFactor />
+          {/* Pinned to the bottom of the drawer on desktop. `sticky` (not
+              `fixed`): the drawer's slide animation leaves a transform on its
+              container, which would trap a fixed child. The drawer itself is
+              the scroller, so bottom-0 sticks to its viewport edge. On mobile
+              it stays in flow — a fixed pay bar already owns that strip. */}
+          <div ref={trustBarRef} className="md:sticky md:bottom-0 md:z-20 bg-white">
+            <TrustFactor />
+          </div>
         </Drawer>
       )}
 
@@ -3261,6 +3336,24 @@ const Details = (props) => {
           if (bookingId) dispatch(removeAncillaryBooking(bookingId));
         }}
       />
+
+      {/* Detail drawer for the cart row whose name was clicked. Keyed so each
+          booking gets a fresh mount — the underlying drawers fetch once. */}
+      {detailBooking && (
+        <CartBookingDetail
+          key={detailBooking.id}
+          booking={detailBooking}
+          onClose={() => {
+            setDetailBooking(null);
+            // A drawer can delete or swap the booking it is showing, and the
+            // ones that do close themselves afterwards. Re-pull the cart on the
+            // way out so the line items and total can't go stale.
+            props?.getPaymentHandler?.();
+          }}
+          setShowLoginModal={props?.setShowLoginModal}
+          getPaymentHandler={props?.getPaymentHandler}
+        />
+      )}
     </>
   );
 };

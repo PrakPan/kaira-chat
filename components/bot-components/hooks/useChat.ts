@@ -35,6 +35,11 @@ export interface Message {
   };
   progressSteps?: ProgressStep[];
   thinkingTasks?: ThinkingTask[];
+  /** Duration (in seconds) of a completed reasoning workflow, restored from the
+   *  thread-detail API's `workflow.summary.duration` on page reload. The live
+   *  per-step thoughts aren't persisted, so on reload we can only show the
+   *  collapsed "Thought for {reasoningDuration}s" label above the message. */
+  reasoningDuration?: number;
   attachments?: MessageAttachment[];
   /** Per-message sender identity from the thread-detail API (threads.get_by_id).
    *  `senderUserId` is the `user_id` that authored the message; `customerName`
@@ -581,7 +586,14 @@ export function useChat({
   // ─── sendWidgetAction ─────────────────────────────────────────────────────
 
   const sendWidgetAction = useCallback(
-    async (type: string, payload: Record<string, unknown>) => {
+    async (
+      type: string,
+      payload: Record<string, unknown>,
+      // Optional extra fields spread at the ROOT of the request body (siblings
+      // of `params`/`domain_key`), for flags the backend reads top-level rather
+      // than inside the action payload — e.g. `login_opted_out` on skip-login.
+      rootFields?: Record<string, unknown>,
+    ) => {
       if (!threadIdRef.current) return;
 
       const assistantMsgId = `assistant-${Date.now()}`;
@@ -618,6 +630,7 @@ export function useChat({
           sessionId: sessionIdRef.current,
         }),
         ...(botMode === "p2" && itineraryId ? { itinerary_id: itineraryId } : {}),
+        ...(rootFields ?? {}),
       };
 
       try {

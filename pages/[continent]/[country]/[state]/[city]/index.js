@@ -25,10 +25,12 @@ const Experience = (props) => {
   }, [props?.hotLocationSearch]);
 
   const schemaData = {
-    "@context": "https://schema.org/",
-    "@type": "item",
+    "@context": "https://schema.org",
+    "@type": "TouristDestination",
     name: props.cityData.name,
-    description: props.cityData.short_description,
+    description:
+      props.cityData.short_description || props.cityData.meta_description,
+    url: `https://thetarzanway.com/${props.path}`,
   };
 
   return (
@@ -37,10 +39,6 @@ const Experience = (props) => {
       id={props.cityData.id}
       page={"City Page"}
     >
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
-      ></script>
       <Head>
         <meta
           name="description"
@@ -54,7 +52,11 @@ const Experience = (props) => {
           property="og:description"
           content={`${props.cityData.meta_description}`}
         />
-        <meta property="og:image" content="/logoblack.svg" />
+        <meta property="og:image" content="https://thetarzanway.com/og-image.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image" content="https://thetarzanway.com/og-image.png" />
         <title>
           Plan Your Trip to {props.cityData.name} | AI Trip Planner & Custom Travel Itineraries | The Tarzan Way
         </title>
@@ -80,6 +82,15 @@ const Experience = (props) => {
           rel="canonical"
           href={`https://thetarzanway.com/${props.path}`}
         ></link>
+        <meta
+          property="og:url"
+          content={`https://thetarzanway.com/${props.path}`}
+        />
+        <meta property="og:type" content="website" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
+        />
       </Head>
 {/* 
       {props.pageData ? (

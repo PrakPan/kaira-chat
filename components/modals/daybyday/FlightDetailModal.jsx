@@ -63,7 +63,8 @@ const FlightDetailModal = ({
   error,
   setShowLoginModal,
   handleEditRoute,
-  data
+  data,
+  drawerZIndex,
 }) => {
   const router = useRouter();
   const fareRules = fareRule?.fareRuleDetail;
@@ -321,7 +322,7 @@ const FlightDetailModal = ({
       )}
 
       {!isEmbedded && (
-        <DrawerActionFooter zIndex={1502}>
+        <DrawerActionFooter zIndex={drawerZIndex ? drawerZIndex + 1 : 1502}>
           <button
             className="ttw-btn-remove-pill"
             onClick={handleDelete}

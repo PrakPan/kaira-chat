@@ -80,7 +80,7 @@ const TravelPlanner = ({
         <title>
           {Data.social_share_title
             ? Data.social_share_title
-            : "Plan Your Trip to  | Trip Planner & Itinerary | The Tarzan Way"}
+            : `Plan Your Trip to ${Data.name} | Trip Planner & Itinerary | The Tarzan Way`}
         </title>
         <meta
           name="description"
@@ -106,7 +106,11 @@ const TravelPlanner = ({
               : `Plan your dream trip to ${Data.name} with The Tarzan Way's AI itinerary. Explore top attractions, local cuisine, and book your flights, accommodations, and transfers all in one go ${Data.name}.`
           }
         />
-        <meta property="og:image" content="/logoblack.svg" />
+        <meta property="og:image" content="https://thetarzanway.com/og-image.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image" content="https://thetarzanway.com/og-image.png" />
         <meta
           property="keywords"
           content={
@@ -116,10 +120,29 @@ const TravelPlanner = ({
           }
         ></meta>
 
+        <meta
+          property="og:url"
+          content={`https://thetarzanway.com/theme/${slug}`}
+        />
+        <meta property="og:type" content="website" />
         <link
           rel="canonical"
           href={`https://thetarzanway.com/theme/${slug}`}
         ></link>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "TouristDestination",
+              name: Data.name,
+              description:
+                Data.meta_description ||
+                `Plan your dream trip to ${Data.name} with The Tarzan Way's AI itinerary.`,
+              url: `https://thetarzanway.com/theme/${slug}`,
+            }),
+          }}
+        />
       </Head>
 
       <ThemePage themePage experienceData={Data} slug={slug}></ThemePage>

@@ -90,6 +90,18 @@ export interface MapViewProps {
   isLoadingLocation: boolean;
   mapRef: React.MutableRefObject<google.maps.Map | null>;
    isRoutePreparing?: boolean;
+  /**
+   * Whether the map pane is the one on screen. The map never unmounts (desktop
+   * hides it with `display:none`, mobile with `opacity:0`), so it can't detect
+   * this itself — and mobile's opacity toggle is invisible to any DOM observer.
+   * Re-entering the map resets the city card decks to their default state.
+   */
+  isVisible?: boolean;
+  /**
+   * Height (px, up from the viewport bottom) of the fixed cart / route bars
+   * overlaying the map, so the day-by-day cards can be kept clear of them.
+   */
+  chromeBottom?: number;
 }
 
 export interface ItineraryViewProps {

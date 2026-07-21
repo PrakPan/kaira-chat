@@ -59,14 +59,24 @@ import { setAncillaryBookings } from "../../store/actions/ancillaryBookings";
 
 const Container = styled.div`
   width: 100%;
-  padding: 17px 16px 0 16px;
+  /* In chat, the panel sits directly under the trip header card, and desktop
+     opens that gap with DaybyDay's own \`mt-3\` (12px) against zero padding here.
+     Mobile zeroes that margin (\`max-ph:mt-0\`), so the gap has to come from this
+     padding instead — 12px, to match desktop. The standalone itinerary page
+     keeps its original 17px.
+     NOTE the transient \`$chatPanel\` prop rather than the \`fromChat\` the rules
+     below read: <Container> is rendered with NO props, so every \`props.fromChat\`
+     ternary in this block is dead and always takes its false branch. Passing a
+     real \`fromChat\` would wake all of them at once and reflow the desktop panel;
+     a separate prop changes only the padding. */
+  padding: ${props => props.$chatPanel ? '12px 16px 0 16px' : '17px 16px 0 16px'};
   max-width: 100vw;
   background-color: white;
 
   @media screen and (min-width: 768px) {
     width: ${props => props.fromChat ? '100%' : '95%'};
     margin: ${props => props.fromChat ? '0' : '-0.2vh auto 0 1rem'};
-    padding: ${props => props.fromChat ? '0 0 80px 0' : '0'};
+    padding: ${props => props.fromChat ? '0 22px 80px 22px' : '0'};
   }
   @media screen and (max-width: 639px) {
     overflow-x: hidden;
@@ -1640,7 +1650,7 @@ useEffect(() => {
   }
 
   return (
-      <Container>
+      <Container $chatPanel={props.fromChat}>
         <NotesPopup
           notes={notes}
           // notes={["Activities are being priced, please check back later for the final cost."," Transfers are being priced, please check back later for the final cost."," Hotels are being priced, please check back later for the final cost."," Itinerary is being priced, please check back later for the final cost."," Please check back later for the final cost."," Activities are being priced, please check back later for the final cost."," Transfers are being priced, please check back later for the final cost."," Hotels are being priced, please check back later for the final cost."," Itinerary is being priced, please check back later for the final cost."," Please check back later for the final cost."," Activities are being priced, please check back later for the final cost."," Transfers are being priced, please check back later for the final cost."," Hotels are being priced, please check back later for the final cost."," Itinerary is being priced, please check back later for the final cost."," Please check back later for the final cost."," Activities are being priced, please check back later for the final cost."," Transfers are being priced, please check back later for the final cost."," Hotels are being priced, please check back later for the final cost."," Itinerary is being priced, please check back later for the final cost."," Please check back later for the final cost."]}
@@ -1720,6 +1730,7 @@ useEffect(() => {
           <Menu
             mercuryItinerary
             onSendMessage={props?.onSendMessage}
+            onViewMap={props?.onViewMap}
             fromChat={props.fromChat}
             activeTab={props.activeTab} 
             loadbookings={!loadbookings}

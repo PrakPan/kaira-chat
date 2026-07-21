@@ -4,8 +4,8 @@ import type { AttachmentFile } from "../ChatKitPanel";
 import { useSelector } from "react-redux";
 import StartScreen from "../StartScreen";
 import type { ThemeConfig } from "../../types/themeConfig";
-
-const CHATKIT_API_URL = "https://dev.chat.tarzanway.com/chatkit";
+import { LOGO_HEIGHT } from "../../constants";
+import { CHATKIT_API_URL } from "../../../../services/constants";
 
 // Right-pane design ported from chat-empty-v4 reference. Scoped under `.cws-root`
 // so the generic class names (.chip, .trust-line, etc.) can't leak globally.
@@ -476,7 +476,11 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
 
   return (
     <div className="cws-root flex flex-col h-full">
-      <style>{CWS_STYLES}</style>
+      {/* Inject CSS via dangerouslySetInnerHTML, not children: <style> is a raw-text
+          element, so React escapes apostrophes in children to &#x27; on the server
+          (which the browser won't decode inside <style>), breaking the CSS and
+          causing a hydration mismatch. */}
+      <style dangerouslySetInnerHTML={{ __html: CWS_STYLES }} />
 
       {/* ── Mobile-only header — logo + injected menu actions. Mirrors
            ChatKitPanel's top bar so the welcome screen has parity with the
@@ -484,8 +488,12 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
       <div className="md:hidden flex-shrink-0 flex items-center justify-between gap-2 px-4 py-3 bg-white border-b border-gray-100">
         <div className="flex items-center gap-2 min-w-0" onClick={()=> window.location.href = "/"} style={{ cursor: "pointer" }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logoblack.svg" height={22} width={22} alt="logo" />
-          <span className="font-semibold text-gray-800 ttw-type-body">thetarzanway</span>
+          <img
+            src="/logo/ttw-lockup.svg"
+            height={LOGO_HEIGHT.MOBILE}
+            alt="The Tarzan Way"
+            style={{ height: LOGO_HEIGHT.MOBILE, width: "auto" }}
+          />
         </div>
         {mobileMenu && <div className="flex-shrink-0">{mobileMenu}</div>}
       </div>
@@ -603,7 +611,9 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
             aria-modal="true"
             aria-label="Inspiration"
           >
-            <style>{`
+            <style
+              dangerouslySetInnerHTML={{
+                __html: `
               @keyframes inspFadeIn {
                 from { opacity: 0; }
                 to { opacity: 1; }
@@ -612,7 +622,9 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
                 from { transform: translateY(100%); }
                 to { transform: translateY(0); }
               }
-            `}</style>
+            `,
+              }}
+            />
 
             {/* Drag handle */}
             <div className="flex justify-center pt-2 pb-1 flex-shrink-0">

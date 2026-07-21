@@ -6,6 +6,7 @@ import { store } from "../store/store";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "overlayscrollbars/overlayscrollbars.css";
 import "../containers/itinerary/typography.css";
+import "../styles/kaira-sidebar.css";
 import { useRouter } from "next/router";
 import * as ga from "../services/ga/Index";
 import { FACEBOOK_PIXEL_ID, GOOGLE_CLIENT_ID } from "../services/constants";
@@ -19,7 +20,6 @@ import { cleanExpiredLocalStorage } from "../services/localStorageUtils";
 import { bootstrapUserLocation } from "../services/userLocationBootstrap";
 import { changeUserLocation } from "../store/actions/userLocation";
 import { usePathname } from "next/navigation";
-import BotApp from "../components/bot-components/BotApp";
 import JupyterAnalytics from "../components/JupyterAnalytics";
 import { captureAdParams, captureLandingPage } from "../helper/adAttribution";
 
@@ -158,17 +158,14 @@ function MyApp({ Component, pageProps }) {
   return (
     <>
       <Head>
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=5"
-        />
+        {/* The single viewport for the whole app (Next disallows it in _document). */}
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        {/* Default title; per-page <title> tags override this via next/head
+            deduplication, so every page ends up with exactly one title. */}
+        <title>AI Trip Planner & Custom Travel Itineraries | The Tarzan Way</title>
         <meta
           name="google-site-verification"
           content="JBrEGecffz4oDnRTLJNj0Mxly-wVGeieQdS1k7NZvaY"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-          rel="stylesheet"
         />
       </Head>
 
