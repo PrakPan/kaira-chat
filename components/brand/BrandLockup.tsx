@@ -11,7 +11,7 @@ type Variant = "light" | "dark";
  * Why: baked into the lockup the tagline scales with the logo and, at the
  * 32-40px the logo renders in nav/header/sidebar, collapses to an unreadable
  * ~3px smudge. Composing it separately lets us floor its height (see `taglineH`)
- * so "Powered by Kaira" stays legible even on a small logo. Below `taglineMinSize`
+ * so "AI TRIP PLANNER" stays legible even on a small logo. Below `taglineMinSize`
  * it is dropped entirely (clean mark+wordmark).
  */
 const ASSETS: Record<Variant, { mark: string; wordmark: string; tagline: string }> = {
@@ -29,11 +29,11 @@ const ASSETS: Record<Variant, { mark: string; wordmark: string; tagline: string 
 
 // Aspect ratios (width / height) of the wordmark and tagline artboards, taken
 // from their viewBoxes in scripts/logo/gen_logo.py. Keep in sync if the
-// artboards change (ttw-wordmark: 359x82, ttw-tagline "POWERED BY KAIRA": 162x9).
+// artboards change (ttw-wordmark: 359x82, ttw-tagline "• AI TRIP PLANNER": 162x9).
 const WORDMARK_AR = 359 / 82;
 const TAGLINE_AR = 162 / 9;
 
-// Floor for the tagline height (px): below this "Powered by Kaira" stops being
+// Floor for the tagline height (px): below this "AI TRIP PLANNER" stops being
 // legible. On small logos the tagline renders at this floor rather than shrinking
 // with the mark, so it stays readable (at the cost of overhanging the wordmark a
 // little — fine for the short line, which is why the long one was dropped).
@@ -45,7 +45,7 @@ export interface BrandLockupProps {
   /** "light" = light background (navy wordmark); "dark" = dark background (cream). */
   variant?: Variant;
   /**
-   * Show the "Powered by Kaira" line.
+   * Show the "AI TRIP PLANNER" line.
    *  - "auto" (default): shown when `size >= taglineMinSize`.
    *  - true / false: force on / off.
    */

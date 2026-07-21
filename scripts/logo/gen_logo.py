@@ -118,12 +118,13 @@ BOX_ROT = -1.5
 g1, w1 = inter.shape("the tarzan", T1_SIZE, T1_LS)
 g2, w2 = serif.shape("way", T2_SIZE, T2_LS)
 
-# secondary line: JetBrains Mono, uppercase, wide tracking. Left edge aligns with
-# the wordmark's left edge (no leading dot). Emitted as its OWN asset
-# (ttw-tagline*.svg), not baked into the lockup — the app composes mark + wordmark
-# + tagline and sizes the tagline independently so it stays legible; a tagline
-# scaled with a 32-40px nav lockup is an unreadable smudge.
-TAG_TEXT = "POWERED BY KAIRA"
+# secondary line: JetBrains Mono, uppercase, wide tracking, with a leading yellow
+# dot. The dot sits at the left edge (aligned with the wordmark's left edge) and
+# the text follows. Emitted as its OWN asset (ttw-tagline*.svg), not baked into
+# the lockup — the app composes mark + wordmark + tagline and sizes the tagline
+# independently so it stays legible; a tagline scaled with a 32-40px nav lockup is
+# an unreadable smudge.
+TAG_TEXT = "AI TRIP PLANNER"
 TAG_SIZE = 11.5
 TAG_LS = 0.30 * TAG_SIZE           # 3.45px (letter-spacing .3em)
 gt, tag_w = mono.shape(TAG_TEXT, TAG_SIZE, TAG_LS)
@@ -312,16 +313,30 @@ def wordmark(path, text_fill, box_fill, way_fill):
     return svg
 
 
-def tagline_svg(path, tag_fill):
-    # "POWERED BY KAIRA" outlined, tightly cropped to its ink so the app can
-    # butt its left edge against the wordmark's left edge.
+def tagline_svg(path, tag_fill, dot_fill):
+    # "• AI TRIP PLANNER": a yellow dot then the outlined text. Cropped tightly to
+    # the dot+text ink so the app can butt its left edge (the dot) against the
+    # wordmark's left edge.
     base_in_line = mono.ascent * TAG_SIZE + (mono.linegap * TAG_SIZE) / 2.0
-    dt = mono.outline(gt, TAG_SIZE, base_in_line, x0=0.0)
-    fx0, fy0, fx1, fy1 = text_ink(mono, gt, TAG_SIZE, base_in_line, 0.0)
+    # measure the text ink at the origin to size/position the dot against it
+    tx0, ty0, tx1, ty1 = text_ink(mono, gt, TAG_SIZE, base_in_line, 0.0)
+    cap_h = ty1 - ty0
+    dot_r = cap_h * 0.30
+    dot_gap = cap_h * 0.70          # dot -> text
+    # shift the text right so its ink left edge lands just past the dot
+    text_x = 2 * dot_r + dot_gap - tx0
+    dot_cx = dot_r
+    dot_cy = (ty0 + ty1) / 2.0
+    dt = mono.outline(gt, TAG_SIZE, base_in_line, x0=text_x)
+    fx0 = 0.0
+    fy0 = min(ty0, dot_cy - dot_r)
+    fx1 = tx1 + text_x
+    fy1 = max(ty1, dot_cy + dot_r)
     x0, y0 = math.floor(fx0), math.floor(fy0)
     x1, y1 = math.ceil(fx1), math.ceil(fy1)
     vw, vh = x1 - x0, y1 - y0
-    svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="{x0} {y0} {vw} {vh}" width="{vw}" height="{vh}" fill="none" role="img" aria-label="Powered by Kaira">
+    svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="{x0} {y0} {vw} {vh}" width="{vw}" height="{vh}" fill="none" role="img" aria-label="AI Trip Planner">
+  <circle cx="{fmt(dot_cx)}" cy="{fmt(dot_cy)}" r="{fmt(dot_r)}" fill="{dot_fill}"/>
   <path d="{dt}" fill="{tag_fill}"/>
 </svg>
 '''
@@ -369,8 +384,8 @@ wordmark("ttw-wordmark.svg", NAVY, YELLOW, NAVY)
 wordmark("ttw-wordmark-light.svg", CREAM, YELLOW, NAVY)
 
 # --- standalone tagline (sized independently by the app for legibility) ------
-tagline_svg("ttw-tagline.svg", SLATE)         # on light
-tagline_svg("ttw-tagline-light.svg", SLATE_LIGHT)  # on dark
+tagline_svg("ttw-tagline.svg", SLATE, YELLOW)         # on light
+tagline_svg("ttw-tagline-light.svg", SLATE_LIGHT, YELLOW)  # on dark
 
 # --- standalone marks (keep the -4deg tilt, padded so corners fit) -----------
 mark("ttw-mark.svg", NAVY, CREAM, YELLOW)
@@ -390,4 +405,10 @@ if __name__ == "__main__":
     print(f"wordmark            {word_w:.2f} x {word_h:.2f}")
     print(f"lockup layout       {lock_w:.2f} x {lock_h:.2f}")
     print(f"lockup viewBox      {bb[2]-bb[0]:.2f} x {bb[3]-bb[1]:.2f}  (aspect {(bb[2]-bb[0])/(bb[3]-bb[1]):.4f})")
+    import re
+    tsvg = tagline_svg("_probe.svg", SLATE, YELLOW)
+    m = re.search(r'viewBox="(\S+) (\S+) (\S+) (\S+)"', tsvg)
+    tw, th = float(m.group(3)), float(m.group(4))
+    os.remove(os.path.join(OUT, "_probe.svg"))
+    print(f"tagline viewBox     {tw:.0f} x {th:.0f}  (TAGLINE_AR = {tw:.0f} / {th:.0f} = {tw/th:.4f})")
     print(f"wrote -> {OUT}")
