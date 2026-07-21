@@ -1359,6 +1359,26 @@ const ThinkingBlock: React.FC<{
   );
 };
 
+// ─── ThoughtSummary ───────────────────────────────────────────────────────────
+// Static "Thought for Xs" label restored from a persisted reasoning workflow's
+// summary.duration on page reload. Unlike ThinkingBlock (which is driven by the
+// live SSE thought stream), the per-step thoughts aren't persisted — so there's
+// nothing to expand and we render the collapsed label only. Styling mirrors the
+// ThinkingBlock "done" header so live and reloaded transcripts look identical.
+
+const ThoughtSummary: React.FC<{ seconds: number }> = ({ seconds }) => (
+  <div
+    style={{
+      marginBottom: 12,
+      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+    }}
+  >
+    <span style={{ fontSize: 14, color: "#374151", fontWeight: 400 }}>
+      Thought for {seconds}s
+    </span>
+  </div>
+);
+
 // ─── RetryButton ──────────────────────────────────────────────────────────────
 // Shown in place of feedback thumbs when an assistant message failed to send
 // because the user was offline. Re-sends the previous user message via the
@@ -1812,6 +1832,13 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
 
   // Show thinking block if we have tasks (whether streaming or done)
   const showThinking = hasTasks;
+  // On reload the live thought stream is gone, but a persisted reasoning
+  // workflow leaves behind its duration. When there are no live tasks, show the
+  // static "Thought for Xs" label above the reply instead.
+  const showThoughtSummary =
+    !hasTasks &&
+    typeof message.reasoningDuration === "number" &&
+    message.reasoningDuration > 0;
   // Show dots only when truly nothing else: no progress, no tasks, no content
   const showDots = !hasProgress && !hasTasks && !hasContent && streaming;
 
@@ -1868,6 +1895,11 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
             // Still "streaming" visually until both workflow done AND content has started
             isStreaming={!allTasksDone || (!hasContent && streaming)}
           />
+        )}
+
+        {/* Reasoning duration restored from history (no live tasks on reload) */}
+        {showThoughtSummary && (
+          <ThoughtSummary seconds={message.reasoningDuration!} />
         )}
 
         {/* Main response content */}

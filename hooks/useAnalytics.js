@@ -227,7 +227,7 @@ export const useAnalytics = () => {
     };
 
     checkStatus();
-    
+
     // Periodic check in case worker loads later
     const interval = setInterval(() => {
       if (!workerReady && checkWorkerReady()) {
@@ -237,9 +237,36 @@ export const useAnalytics = () => {
       }
     }, 1000);
 
+    // Backup unload flush from the main thread. The worker registers its own
+    // pagehide/visibilitychange listeners, but Partytown can deliver those to
+    // the worker with a lag; triggering the flush here too maximizes the chance
+    // the final batch is sent before the tab closes.
+    const flushOnHide = () => {
+      if (checkWorkerReady()) {
+        callWorkerFunctionDirect('flushEvents');
+      }
+    };
+    const handleVisibility = () => {
+      if (typeof document !== 'undefined' && document.visibilityState === 'hidden') {
+        flushOnHide();
+      }
+    };
+    if (typeof document !== 'undefined') {
+      document.addEventListener('visibilitychange', handleVisibility);
+    }
+    if (typeof window !== 'undefined') {
+      window.addEventListener('pagehide', flushOnHide);
+    }
+
     return () => {
       clearInterval(interval);
       stopHeartbeat();
+      if (typeof document !== 'undefined') {
+        document.removeEventListener('visibilitychange', handleVisibility);
+      }
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('pagehide', flushOnHide);
+      }
     };
   }, [workerReady]);
 
@@ -277,6 +304,37 @@ export const useAnalytics = () => {
     // User & Session Events
     trackUserLogin: useCallback(async (userId) => {
       return await callWorkerFunction('trackUserLogin', userId);
+    }, []),
+
+    // Login funnel (WhatsApp/SMS OTP) — started/completed pairs around the
+    // /initiate/ (send OTP) and /complete/ (verify) calls, plus the skip action.
+    // The caller passes a snake_case properties object (channel, country,
+    // dial_code, mobile, is_resend, is_new_user, user_id).
+    trackLoginInitiateStarted: useCallback(async (properties = {}) => {
+      return await callWorkerFunction('track', 'login_initiate_started', properties);
+    }, []),
+
+    trackLoginInitiateCompleted: useCallback(async (properties = {}) => {
+      return await callWorkerFunction('track', 'login_initiate_completed', properties);
+    }, []),
+
+    trackLoginCompleteStarted: useCallback(async (properties = {}) => {
+      return await callWorkerFunction('track', 'login_complete_started', properties);
+    }, []),
+
+    trackLoginCompleteCompleted: useCallback(async (properties = {}) => {
+      const result = await callWorkerFunction('track', 'login_complete_completed', properties);
+      // Terminal funnel event — flush now, the sign-in card usually unmounts
+      // right after (chat resumes) before the batch interval would fire.
+      await callWorkerFunction('flushEvents');
+      return result;
+    }, []),
+
+    trackSkipLoginCompleted: useCallback(async (properties = {}) => {
+      const result = await callWorkerFunction('track', 'skip_login_completed', properties);
+      // Terminal funnel event — flush now before the card unmounts.
+      await callWorkerFunction('flushEvents');
+      return result;
     }, []),
     
     trackUserLogout: useCallback(async (userId) => {

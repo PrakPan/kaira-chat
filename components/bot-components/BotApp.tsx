@@ -11,7 +11,6 @@ import Sidebar from "./components/Sidebar";
 import { getUserAvatarColor, getUserInitial } from "./utils/avatarColor";
 import { formatCompactTime, groupThreads } from "./utils/threadGroups";
 import { LOGO_HEIGHT } from "./constants";
-import BrandLockup from "../brand/BrandLockup";
 import {
   HistoryIcon as KairaHistoryIcon,
   LogoutIcon as KairaLogoutIcon,
@@ -69,6 +68,7 @@ import NotificationPopup from "../ui/NotificationPopup";
 import BotLoginModal from "./components/BotLoginModal";
 import { createPortal } from "react-dom";
 import { currencySymbols } from "../../data/currencySymbols";
+import { formatCurrencyValue } from "../../services/formatCurrencyValue";
 import { useAnalytics } from "../../hooks/useAnalytics";
 import Login from "../modals/Login";
 import { FiCalendar } from "react-icons/fi";
@@ -4650,7 +4650,7 @@ const BottomCTABar = React.memo(
     const rawCost = perPerson
       ? cart?.per_person_discounted_cost
       : cart?.discounted_cost;
-    const cost = Number.isFinite(rawCost) ? Math.round(rawCost) : null;
+    const cost = Number.isFinite(rawCost) ? rawCost : null;
     const currencySymbol = currencySymbols[currency?.currency] || "₹";
 
     const couponBadge = (
@@ -4730,7 +4730,7 @@ const BottomCTABar = React.memo(
                   breakpoint — see the foot line at the bottom of the bar. */}
               <span className="font-sans text-[16px] md:text-[21px] font-bold leading-tight text-[#111827] whitespace-nowrap">
                 {currencySymbol}
-                {cost.toLocaleString("en-IN")}/-
+                {formatCurrencyValue(cost, currency?.currency)}/-
               </span>
             </>
           ) : cart?.error ? (
@@ -5224,7 +5224,13 @@ const MobileHeader = React.memo(
         className="flex items-center cursor-pointer"
         onClick={() => (window.location.href = "/")}
       >
-        <BrandLockup size={LOGO_HEIGHT.MOBILE} variant="light" />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/logo/ttw-lockup.svg"
+          height={LOGO_HEIGHT.MOBILE}
+          alt="The Tarzan Way"
+          style={{ height: LOGO_HEIGHT.MOBILE, width: "auto" }}
+        />
       </div>
       <MobileHeaderMenu
         onNewChat={onNewChat}
