@@ -581,7 +581,14 @@ export function useChat({
   // ─── sendWidgetAction ─────────────────────────────────────────────────────
 
   const sendWidgetAction = useCallback(
-    async (type: string, payload: Record<string, unknown>) => {
+    async (
+      type: string,
+      payload: Record<string, unknown>,
+      // Optional extra fields spread at the ROOT of the request body (siblings
+      // of `params`/`domain_key`), for flags the backend reads top-level rather
+      // than inside the action payload — e.g. `login_opted_out` on skip-login.
+      rootFields?: Record<string, unknown>,
+    ) => {
       if (!threadIdRef.current) return;
 
       const assistantMsgId = `assistant-${Date.now()}`;
@@ -618,6 +625,7 @@ export function useChat({
           sessionId: sessionIdRef.current,
         }),
         ...(botMode === "p2" && itineraryId ? { itinerary_id: itineraryId } : {}),
+        ...(rootFields ?? {}),
       };
 
       try {

@@ -1770,11 +1770,17 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
   // widget-triggered stream, and only unlocks again once the new turn's own
   // quick-reply tail arrives.
   const sendWidgetAction = useCallback(
-    (type: string, payload: Record<string, unknown>) => {
+    (
+      type: string,
+      payload: Record<string, unknown>,
+      // Extra top-level request fields (siblings of `params`), passed straight
+      // through to useChat — used for `login_opted_out` on skip-login.
+      rootFields?: Record<string, unknown>,
+    ) => {
       lastSentActionRef.current = { kind: "widget", type, payload };
       setQuickReplies([]);
       setQuickReplyShimmer(false);
-      return rawSendWidgetAction(type, payload);
+      return rawSendWidgetAction(type, payload, rootFields);
     },
     [rawSendWidgetAction],
   );
@@ -2601,7 +2607,9 @@ const handleLoginCardSkip = useCallback(() => {
   // itinerary); resume can only append, never create a thread. When there's no
   // resumable thread we simply retire the card and let the user carry on.
   if (canResumeAfterLoginRef.current && threadIdRef.current) {
-    sendWidgetAction("resume_after_login", { login_opted_out: true });
+    // `login_opted_out` goes at the ROOT of the request body (3rd arg), not in
+    // the action payload — the backend reads the skip flag top-level.
+    sendWidgetAction("resume_after_login", {}, { login_opted_out: true });
   }
 }, [setMessages, sendWidgetAction, threadIdRef]);
 
@@ -3051,6 +3059,13 @@ useEffect(() => {
   if (isStreaming) return;
   appliedRestoredThreadRef.current = restoredThread;
 
+  // A thread the user chose to continue without login carries a root-level
+  // `login_opted_out: true`. Mirror it into the ref (resetting to false for
+  // threads without it) so this restore — and any re-emitted `prompt_login` on
+  // it — suppresses the inline card and leaves the composer/quick replies
+  // unblocked. Absent/false key → current flow (card shown, composer gated).
+  loginOptedOutRef.current = restoredThread.login_opted_out === true;
+
   // Set before parseThreadItems runs — it (and pagination) reads this to decide
   // whether the intake-form card is restored into the transcript.
   restoredFormFilledRef.current = restoredThread.form_filled === true;
@@ -3216,7 +3231,10 @@ useEffect(() => {
     // to the standard login/clone gating instead.
     const isP2Restore =
       botModeRef.current === "p2" || threadIsCompleted;
-    const showRestoreLoginCard = !(isLoggedInRef.current || isP2Restore);
+    // Skip the card entirely when the user already opted out of login on this
+    // thread — they continue as a logged-out visitor with the composer open.
+    const showRestoreLoginCard =
+      !loginOptedOutRef.current && !(isLoggedInRef.current || isP2Restore);
     // Lead-in line rendered as a normal Kaira bubble above the restored login
     // card. Source it from the thread's first `prompt_login` effect (there can
     // be several across the thread — the first is the one that armed sign-in);

@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react';
 import { getOrCreateSession, getEntryContext } from '../services/sessionTracker';
 
 export default function JupyterAnalytics({
-  apiEndpoint = 'https://jupiter.tarzanway.com', // Your actual API host
+  apiEndpoint = 'https://dev.jupiter.tarzanway.com', // Your actual API host
   apiKey = '',
   userId = null,
   batchSize = 10,

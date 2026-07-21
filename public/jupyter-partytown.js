@@ -13,7 +13,7 @@
     userId: null,
     anonymousId: null,
     userIp: null,
-    apiEndpoint: 'https://jupiter.tarzanway.com',
+    apiEndpoint: 'https://dev.jupiter.tarzanway.com',
     apiKey: '',
     queue: [],
     failedQueue: [],

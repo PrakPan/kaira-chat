@@ -381,8 +381,8 @@ wordmark("ttw-wordmark.svg", NAVY, YELLOW, NAVY)
 wordmark("ttw-wordmark-light.svg", CREAM, YELLOW, NAVY)
 
 # --- standalone tagline (sized independently by the app for legibility) ------
-tagline_svg("ttw-tagline.svg", SLATE)         # on light
-tagline_svg("ttw-tagline-light.svg", SLATE_LIGHT)  # on dark
+tagline_svg("ttw-tagline.svg", SLATE, YELLOW)         # on light
+tagline_svg("ttw-tagline-light.svg", SLATE_LIGHT, YELLOW)  # on dark
 
 # --- standalone marks (keep the -4deg tilt, padded so corners fit) -----------
 mark("ttw-mark.svg", NAVY, CREAM, YELLOW)
@@ -402,4 +402,10 @@ if __name__ == "__main__":
     print(f"wordmark            {word_w:.2f} x {word_h:.2f}")
     print(f"lockup layout       {lock_w:.2f} x {lock_h:.2f}")
     print(f"lockup viewBox      {bb[2]-bb[0]:.2f} x {bb[3]-bb[1]:.2f}  (aspect {(bb[2]-bb[0])/(bb[3]-bb[1]):.4f})")
+    import re
+    tsvg = tagline_svg("_probe.svg", SLATE, YELLOW)
+    m = re.search(r'viewBox="(\S+) (\S+) (\S+) (\S+)"', tsvg)
+    tw, th = float(m.group(3)), float(m.group(4))
+    os.remove(os.path.join(OUT, "_probe.svg"))
+    print(f"tagline viewBox     {tw:.0f} x {th:.0f}  (TAGLINE_AR = {tw:.0f} / {th:.0f} = {tw/th:.4f})")
     print(f"wrote -> {OUT}")

@@ -227,7 +227,7 @@ function MyApp({ Component, pageProps }) {
           <ClarityInit />
           <Theme>
             <JupyterAnalytics
-              apiEndpoint="https://jupiter.tarzanway.com"
+              apiEndpoint="https://dev.jupiter.tarzanway.com"
               userId={id || null}
               batchSize={10}
               flushInterval={3000}
