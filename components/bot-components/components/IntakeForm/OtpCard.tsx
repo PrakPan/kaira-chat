@@ -630,7 +630,7 @@ const OtpCard: React.FC<OtpCardProps> = ({
               className="w-full mt-[12px] text-[12.5px] font-semibold text-[#2e3034]"
               style={{ cursor: loading ? "not-allowed" : "pointer" }}
             >
-              Skip login?
+              Continue without login
             </button>
           )}
 
