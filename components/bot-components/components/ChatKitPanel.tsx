@@ -3825,6 +3825,7 @@ const handleShowLogin = useCallback(() => {
                 return (
                   <OtpCard
                     key={msg.id}
+                    itineraryId={localItineraryId}
                     onVerified={handleLoginCardVerified}
                     onSkip={handleLoginCardSkip}
                     heading="Sign in to continue"

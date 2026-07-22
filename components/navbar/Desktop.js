@@ -17,6 +17,7 @@ import media from "../media";
 import openTailoredModal from "../../services/openTailoredModal";
 import { logEvent } from "../../services/ga/Index";
 import { useAnalytics } from "../../hooks/useAnalytics";
+import BrandLockup from "../brand/BrandLockup";
 
 const NavbarContainer = styled.div`
   position: relative;
@@ -54,15 +55,12 @@ const TTWLogoContainer = styled(CenterNav)`
   }
 `;
 
-/* Local asset, so a plain <img> rather than ImageLoader (which base64-encodes
-   its url into a CloudFront image-handler request). The full brand lockup —
-   the wordmark is part of the artwork, so no separate CompanyName text. */
-const NavLockup = styled.img`
-  height: 40px;
-  width: auto;
-  margin: 0.5rem 0.5rem 0.5rem 2rem;
-  cursor: pointer;
-`;
+/* The full brand lockup (mark + wordmark + "AI Trip Planner" tagline) via
+   BrandLockup, which composes the parts so the tagline stays legible at 40px. */
+const NAV_LOCKUP_STYLE = {
+  margin: "0.5rem 0.5rem 0.5rem 2rem",
+  cursor: "pointer",
+};
 
 const Header = styled.div`
   position: ${(props) => (props.staticnav ? "static" : "fixed")} !important;
@@ -155,10 +153,7 @@ const Navbar = (props) => {
   };
 
   // Dark header gets the on-dark lockup (navy tile + hairline, cream wordmark).
-  const lockupSrc =
-    props.headerColor === "black"
-      ? "/logo/ttw-lockup-light.svg"
-      : "/logo/ttw-lockup.svg";
+  const lockupVariant = props.headerColor === "black" ? "dark" : "light";
 
   return (
     <div>
@@ -175,15 +170,20 @@ const Navbar = (props) => {
           <CenterNav staticnav={props.staticnav} hidecta={props.hidecta}>
             <TTWLogoContainer>
               {props.hidehomecta ? (
-                <NavLockup src={lockupSrc} alt="The Tarzan Way" />
+                <BrandLockup
+                  size={40}
+                  variant={lockupVariant}
+                  style={NAV_LOCKUP_STYLE}
+                />
               ) : (
                 <Link
                   style={{ textDecoration: "none" }}
                   href={!props.PW ? urls.HOMEPAGE : "/corporates/physicswallah"}
                 >
-                  <NavLockup
-                    src={lockupSrc}
-                    alt="The Tarzan Way"
+                  <BrandLockup
+                    size={40}
+                    variant={lockupVariant}
+                    style={NAV_LOCKUP_STYLE}
                     onClick={
                       !props.PW ? _handleHomepageRedirect : _handlePWRedirect
                     }

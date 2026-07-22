@@ -60,7 +60,7 @@ const nextConfig = {
   //       patterns: [
   //         {
   //           from: 'lib/analytics.js',
-  //           to: 'static/jupiter-analytics.js',
+  //           to: 'static/dev.jupiter-analytics.js',
   //         },
   //       ],
   //     })

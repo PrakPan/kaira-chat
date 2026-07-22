@@ -13,6 +13,9 @@
     userId: null,
     anonymousId: null,
     userIp: null,
+    // Fallback only — the real endpoint is injected at runtime via JUPITER_CONFIG
+    // (initializeAnalytics), which is fed from NEXT_PUBLIC_JUPITER_HOST. This is a
+    // static public asset so it can't read process.env at build time.
     apiEndpoint: 'https://jupiter.tarzanway.com',
     apiKey: '',
     queue: [],
@@ -220,7 +223,9 @@
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${analyticsState.apiKey}`
         },
-        body: JSON.stringify(event)
+        body: JSON.stringify(event),
+        // Let the request outlive the page if the tab is closing mid-send.
+        keepalive: true
       });
 
       if (response.ok) {
@@ -238,7 +243,14 @@
 
   // Flush events
   const flushEvents = async () => {
-    if (analyticsState.queue.length === 0 || analyticsState.pendingFlush) return;
+    if (analyticsState.queue.length === 0) return;
+    // A flush is already in flight. Don't drop the just-queued events on the
+    // floor — reschedule so they go out once the current send settles (e.g.
+    // when the queue hits batchSize while a previous batch is still posting).
+    if (analyticsState.pendingFlush) {
+      scheduleFlush();
+      return;
+    }
 
     analyticsState.pendingFlush = true;
 
@@ -272,7 +284,9 @@
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${analyticsState.apiKey}`
         },
-        body: JSON.stringify(event)
+        body: JSON.stringify(event),
+        // Let the request outlive the page if the tab is closing mid-send.
+        keepalive: true
       });
 
       if (response.ok) {
@@ -299,7 +313,9 @@
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${analyticsState.apiKey}`
         },
-        body: JSON.stringify(events)
+        body: JSON.stringify(events),
+        // Let the batch outlive the page if the tab is closing mid-send.
+        keepalive: true
       });
 
       if (response.ok) {
@@ -489,6 +505,54 @@
     if (analyticsState.retryTimer) clearTimeout(analyticsState.retryTimer);
     forceFlush();
   };
+
+  // Best-effort flush when the page is hidden or unloading so queued (and
+  // previously-failed, retry-pending) events aren't lost when the tab closes or
+  // the user backgrounds it. The keepalive fetches above let these requests
+  // complete during unload. Bypasses the pendingFlush/timer machinery — this is
+  // a terminal, fire-and-forget drain.
+  const flushOnHide = () => {
+    if (analyticsState.retryTimer) {
+      clearTimeout(analyticsState.retryTimer);
+      analyticsState.retryTimer = null;
+    }
+    // Fold retry-pending events back into the outgoing batch so they go too.
+    if (analyticsState.failedQueue.length) {
+      analyticsState.queue.push(...analyticsState.failedQueue);
+      analyticsState.failedQueue = [];
+    }
+    if (analyticsState.queue.length === 0) return;
+
+    const events = [...analyticsState.queue];
+    analyticsState.queue = [];
+    if (analyticsState.flushTimer) {
+      clearTimeout(analyticsState.flushTimer);
+      analyticsState.flushTimer = null;
+    }
+
+    if (events.length === 1) {
+      sendSingleEvent(events[0]);
+    } else {
+      sendBatch(events);
+    }
+  };
+
+  // Register lifecycle listeners. Partytown proxies these to the real document/
+  // window; wrapped in try/catch so a proxy hiccup can't break initialization.
+  try {
+    if (typeof addEventListener === 'function') {
+      addEventListener('visibilitychange', () => {
+        if (typeof document !== 'undefined' && document.visibilityState === 'hidden') {
+          flushOnHide();
+        }
+      });
+      // pagehide is the reliable unload signal on mobile Safari (beforeunload
+      // isn't); pairs with keepalive to salvage the final batch.
+      addEventListener('pagehide', flushOnHide);
+    }
+  } catch (e) {
+    console.warn('Could not attach analytics lifecycle listeners:', e);
+  }
 
   // Expose API
   const JupiterAnalytics = {

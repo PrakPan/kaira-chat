@@ -1,9 +1,7 @@
-import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import {usePathname} from "next/navigation"
 import { useCallback, useMemo, useState, useEffect } from "react";
-import { TTW } from "../assets";
+import BrandLockup from "../../brand/BrandLockup";
 import { menuAnimations } from "../common/animations/menuAnimations";
 import { useMobileMenu } from "../common/hooks/useMobileMenu";
 import styles from "./NavigationMenu.module.scss";
@@ -158,8 +156,8 @@ const NavigationMenu = (props) => {
     <>
     <div className="w-100 bg-text-white"> 
       <nav className={styles.navigationMenu + " " + props.className + " max-ph:!p-md max-ph:shadow-soft"} role="navigation">
-        <Link href="/" className={"hover-pointer " + styles.logo} aria-label="The Tarzan Way — home">
-          <Image src={TTW} alt="The Tarzan Way" priority className={styles.logoFull} />
+        <Link className={"hover-pointer " + styles.logo} onClick={() => router.push("/")}>
+          <BrandLockup size={38} variant="light" className={styles.logoFull} />
           <img src="/logo/ttw-mark.svg" alt="The Tarzan Way" className={styles.logoMark} />
         </Link>
         {pathname!="/new-trip"&& <SearchInput />}
@@ -259,7 +257,7 @@ const NavigationMenu = (props) => {
         aria-label="Mobile navigation menu"
       >
         <div className={styles.sidebarHeader}>
-          <img src="/logo/ttw-lockup-light.svg" alt="The Tarzan Way" className={styles.sidebarLogo} />
+          <BrandLockup size={36} variant="dark" className={styles.sidebarLogo} />
           <button
             className={styles.closeButton}
             onClick={toggleMobileMenu}

@@ -1,8 +1,9 @@
 import Script from 'next/script';
 import { useEffect } from 'react';
+import { JUPITER_HOST } from '../services/constants';
 
-export default function JupyterAnalytics({ 
-  apiEndpoint = 'https://jupiter.tarzanway.com', // Your actual API host
+export default function JupyterAnalytics({
+  apiEndpoint = JUPITER_HOST, // Analytics API host (NEXT_PUBLIC_JUPITER_HOST)
   apiKey = '',
   userId = null,
   batchSize = 10,
