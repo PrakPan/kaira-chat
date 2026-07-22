@@ -80,7 +80,11 @@ export default class MyDocument extends Document {
 
 
           {/* ---------- Partytown ---------- */}
-          <Partytown debug={false} forward={["gtag", "mixpanel", "clarity"]} />
+          {/* Clarity is intentionally NOT forwarded through Partytown — its
+              session-replay recorder must observe the real DOM on the main
+              thread. Under Partytown its internals get proxied as primitives
+              and it throws "Cannot create property '__clrSId' on string". */}
+          <Partytown debug={false} forward={["gtag", "mixpanel"]} />
 
           {/* ---------- Google Tag Manager ---------- */}
           {isProduction && cleanGTMId && (
@@ -135,8 +139,9 @@ gtag('config', 'AW-738037519');
                 chat="false"
               ></script>
 
+              {/* Clarity runs on the main thread (no type="text/partytown") so
+                  its recorder can observe the real DOM. */}
               <script
-                type="text/partytown"
                 dangerouslySetInnerHTML={{
                   __html: `(function(c,l,a,r,i,t,y){
 c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};

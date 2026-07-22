@@ -469,6 +469,7 @@ const DaybyDay = ({
             firstCity={true}
             fromChat={props.fromChat}
             isDraft={isDraft}
+            onSendMessage={onSendMessage}
           />
           {itineraryDaybyDay?.cities?.map((city, index) => {
             var idMapping =
@@ -593,6 +594,7 @@ const DaybyDay = ({
                       _updatePaymentHandler={_updatePaymentHandler}
                       getPaymentHandler={getPaymentHandler}
                       fromChat={props.fromChat}
+                      onSendMessage={onSendMessage}
                     />
                   </div>
                 )}
@@ -742,6 +744,7 @@ const DaybyDay = ({
             fromChat={props.fromChat}
             isDraft={isDraft}
             showPins={showPins}
+            onSendMessage={onSendMessage}
           />
           <CityItem
             setShowLoginModal={setShowLoginModal}

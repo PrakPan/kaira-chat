@@ -1667,12 +1667,14 @@ export default function BotApp({
         for (const c of currentItineraryRef.current?.cities ?? []) {
           if (c.city?.name && c.id) nameToId[c.city.name] = String(c.id);
         }
-        const bookingTypeFromLeg = (leg: string) =>
-          leg.toLowerCase().includes("flight")
-            ? "Flight"
-            : leg.toLowerCase().includes("train")
-              ? "Train"
-              : "Taxi";
+        const bookingTypeFromLeg = (leg: string) => {
+          const l = leg.toLowerCase();
+          if (l.includes("flight")) return "Flight";
+          if (l.includes("train")) return "Train";
+          if (l.includes("ferry") || l.includes("boat")) return "Ferry";
+          if (l.includes("bus")) return "Bus";
+          return "Taxi";
+        };
         // DaybyDay reads transfer cards via the intercity map. The first/last
         // (home → first city, last city → home) tiles look up by
         // `<gmaps_place_id>:<first_city_id>` and `<last_city_id>:<gmaps_place_id>`,
