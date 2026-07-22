@@ -710,7 +710,7 @@ const OtpCard: React.FC<OtpCardProps> = ({
           {/* Skip login — lets the user continue without signing in. The parent
               resumes the chat flagged as opted-out (login_opted_out) so the
               backend knows this was a deliberate skip, not a pending sign-in. */}
-          {onSkip && (
+          {/* {onSkip && (
             <button
               type="button"
               onClick={handleSkip}
@@ -720,7 +720,7 @@ const OtpCard: React.FC<OtpCardProps> = ({
             >
               Continue without login
             </button>
-          )}
+          )} */}
 
           {/* Trust line */}
           <div

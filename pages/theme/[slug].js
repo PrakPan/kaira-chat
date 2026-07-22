@@ -80,7 +80,7 @@ const TravelPlanner = ({
         <title>
           {Data.social_share_title
             ? Data.social_share_title
-            : `Plan Your Trip to ${Data.name} | Trip Planner & Itinerary | The Tarzan Way`}
+            : `${Data.name} Packages & Destinations for Indian Travellers | The Tarzan Way`}
         </title>
         <meta
           name="description"

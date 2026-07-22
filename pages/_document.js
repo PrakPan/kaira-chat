@@ -77,9 +77,11 @@ export default class MyDocument extends Document {
             rel="stylesheet"
           />
 
-          {/* Third-party SDKs deferred so they don't block initial render */}
-          <script defer src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`}></script>
-          <script defer src="https://cdn.platform.openai.com/deployments/chatkit/chatkit.js"></script>
+          {/* Google Maps + ChatKit are NOT loaded here anymore (CWV): loading
+              them in <head> on every page was a large render-blocking cost.
+              ChatKit's CDN bundle was unused (the chat uses a custom hook), so
+              it's removed entirely. Google Maps is now loaded on demand by the
+              map components via loadGoogleMaps() (utils/loadGoogleMaps). */}
 
 
           {/* ---------- Partytown ---------- */}

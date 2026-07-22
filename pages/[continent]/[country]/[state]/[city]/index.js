@@ -33,6 +33,15 @@ const Experience = (props) => {
     url: `https://thetarzanway.com/${props.path}`,
   };
 
+  // Country display name for the title, derived from the URL path
+  // (continent/country/state/city).
+  const countryName = props?.path
+    ? (props.path.split("/")[1] || "")
+        .split("_")
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(" ")
+    : "";
+
   return (
     <Layout
       destination={props.cityData.name}
@@ -58,7 +67,8 @@ const Experience = (props) => {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:image" content="https://thetarzanway.com/og-image.png" />
         <title>
-          Plan Your Trip to {props.cityData.name} | AI Trip Planner & Custom Travel Itineraries | The Tarzan Way
+          Plan Your Trip to {props.cityData.name}
+          {countryName ? `, ${countryName}` : ""} | Itineraries & Packages | The Tarzan Way
         </title>
         <meta
           property="keywords"

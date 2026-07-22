@@ -29,6 +29,16 @@ const IndexedItinerary = ({
 }) => {
   const router = useRouter();
 
+  // Title template: "{N} Days {Destination} Itinerary — {GroupType} Trip Plan".
+  // Falls back to the CMS page_title when duration/cities aren't available.
+  const groupTypeLabel = Data?.path
+    ? (Data.path.split("/")[0] || "").replace(/^\w/, (c) => c.toUpperCase())
+    : "";
+  const tripsTitle =
+    Data?.duration && Data?.cities?.length
+      ? `${Data.duration} Days ${Data.cities[0]} Itinerary — ${groupTypeLabel} Trip Plan | The Tarzan Way`
+      : Data?.page_title || "Plan your trip with The Tarzan Way";
+
   useEffect(() => {
     if (Data?.ID) {
       setItineraryId(Data?.ID);
@@ -55,7 +65,7 @@ const IndexedItinerary = ({
   return (
     <LayoutV2 staticnav itinerary page={"Itinerary Page"}>
       <Head>
-        <title>{Data?.page_title || 'Plan your trip with The Tarzan Way'}</title>
+        <title>{tripsTitle}</title>
         <meta name="description" content={Data?.meta_description} />
         <meta
           name="keywords"

@@ -9,6 +9,7 @@ import React, {
 } from "react";
 import { createPortal } from "react-dom";
 import { useSelector } from "react-redux";
+import { loadGoogleMaps } from "./utils/loadGoogleMaps";
 import CityElementCard from "./components/CityElementCard";
 import CityOverviewCard from "./components/CityOverviewCard";
 import ElementMarker, {
@@ -1179,17 +1180,16 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
         });
       };
 
-      if (typeof window !== "undefined" && window.google?.maps) {
-        initMap();
-      } else {
-        const interval = setInterval(() => {
-          if (window.google?.maps) {
-            clearInterval(interval);
-            initMap();
-          }
-        }, 100);
-        return () => clearInterval(interval);
-      }
+      // Maps SDK is no longer in <head>; load it on demand, then init.
+      let cancelled = false;
+      loadGoogleMaps()
+        .then(() => {
+          if (!cancelled) initMap();
+        })
+        .catch(() => {});
+      return () => {
+        cancelled = true;
+      };
     }, []);
 
     // Clamp zoom after fitBounds — avoids being too zoomed out on wide desktop containers.

@@ -10,6 +10,7 @@ import MapView from "./components/MapView";
 import Sidebar from "./components/Sidebar";
 import { getUserAvatarColor, getUserInitial } from "./utils/avatarColor";
 import { formatCompactTime, groupThreads } from "./utils/threadGroups";
+import { loadGoogleMaps } from "./utils/loadGoogleMaps";
 import { LOGO_HEIGHT } from "./constants";
 import {
   HistoryIcon as KairaHistoryIcon,
@@ -1903,8 +1904,10 @@ export default function BotApp({
       if (!placeId) return null;
       if (geocodeCacheRef.current[placeId])
         return geocodeCacheRef.current[placeId];
-      if (typeof window === "undefined" || !window.google?.maps?.Geocoder)
-        return null;
+      if (typeof window === "undefined") return null;
+      // Ensure the on-demand Maps SDK is loaded before geocoding.
+      await loadGoogleMaps();
+      if (!window.google?.maps?.Geocoder) return null;
       try {
         const geocoder = new window.google.maps.Geocoder();
         const result = await geocoder.geocode({ placeId });

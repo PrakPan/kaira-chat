@@ -32,7 +32,7 @@ const TravelPlanner = (props) => {
     >
       <Head>
         <title>
-          {props?.Data?.name} | AI Trip Planner & Custom Travel Itineraries | The Tarzan Way
+          {props?.Data?.name} Trip Packages & Itineraries from India | The Tarzan Way
         </title>
         <meta
           name="description"

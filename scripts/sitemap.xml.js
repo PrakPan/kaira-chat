@@ -97,6 +97,8 @@ const generateSitemap = async () => {
     },
     { title: "All Destinations", link: PROD_BASE_URL + "/destinations" },
     { title: "Corporates", link: PROD_BASE_URL + "/corporates" },
+    { title: "Chat with Kaira", link: PROD_BASE_URL + "/chat" },
+    { title: "About Us", link: PROD_BASE_URL + "/about-us" },
   ];
 
   const allPaths = [

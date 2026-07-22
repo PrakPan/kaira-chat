@@ -108,7 +108,7 @@ const Experience = (props) => {
         }
         description={
           <>
-            Tell Kaira <b>your vibe and dates</b> — she'll craft a{" "}
+            Tell Kaira <b>your vibe and dates</b> — she'll craft your{" "}
             <span className={styles.serif}>{cityDisplayName} trip</span> that{" "}
             <span className={styles.serif}>actually flows.</span>
           </>
@@ -265,7 +265,7 @@ const Experience = (props) => {
             under 2 minutes.
           </p>
           <ChatWithKairaCta
-            onClick={handleChatWithKaira}
+            href="/chat"
             showHelper={false}
             // onClick={() => setShowTailoredModal(true)}
           />
