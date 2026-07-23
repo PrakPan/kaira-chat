@@ -28,7 +28,7 @@ const SlideFive = (props) => {
         <div className='flex gap-md flex-col items-center justify-center text-center'>
           <div className='text-lg font-600'> Your trip is being planned </div>
           <div className='text-md font-400 leading-xl text-spacegrey'>Our AI is crafting the perfect itinerary based on your preferences. You will receive that soon.</div>
-          {!localStorage.getItem("access_token") ? (
+          {!(typeof window !== "undefined" && localStorage.getItem("access_token")) ? (
             <Button
               fontSize="1rem"
               fontWeight="500"

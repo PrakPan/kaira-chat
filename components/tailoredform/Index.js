@@ -732,7 +732,12 @@ const Enquiry = (props) => {
       });
   };
 
-  const totalSlides = localStorage.getItem("access_token")
+  // Guard against SSR/prerender where localStorage is undefined. Runs in the
+  // render body (unlike the other localStorage reads, which are in handlers/
+  // effects), so it must be safe when window is absent.
+  const isLoggedIn =
+    typeof window !== "undefined" && !!localStorage.getItem("access_token");
+  const totalSlides = isLoggedIn
     ? slideThreeData.addHotels
       ? 4
       : 3
