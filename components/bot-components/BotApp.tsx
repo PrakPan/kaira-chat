@@ -5105,24 +5105,24 @@ export const MobileHeaderMenu = React.memo(
           {isLoggedIn && (
             <button
               onClick={handleHistoryClick}
-              className="kaira-icon-btn is-sm"
+              className="kaira-icon-btn is-sm is-filled"
               aria-label="Recent chats"
             >
-              <KairaHistoryIcon size={19} />
+              <KairaHistoryIcon size={18} />
             </button>
           )}
 
-          {/* New chat */}
+          {/* New chat — solid ink circle, matching the desktop collapsed rail. */}
           <button
             onClick={onNewChat}
-            className="kaira-icon-btn is-sm"
+            className="kaira-newchat-icon-btn is-sm"
             aria-label="New chat"
           >
-            <KairaPlusIcon size={19} />
+            <KairaPlusIcon size={18} />
           </button>
 
           {/* Profile avatar */}
-          <div ref={profileRef} className="relative ml-1">
+          <div ref={profileRef} className="relative">
             <button
               onClick={() => setProfileOpen((v) => !v)}
               className="kaira-avatar"
