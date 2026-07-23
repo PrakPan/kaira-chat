@@ -51,7 +51,9 @@ const VehicleDetailModal = ({
     }
   };
   // const transfer = useSelector((state) => state.Itinerary);
-  let isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
+  let isPageWide =
+    typeof window !== "undefined" &&
+    window.matchMedia("(min-width: 768px)")?.matches;
   const {
     name,
     transfer_details,

@@ -73,7 +73,9 @@ const FlightDetailModal = ({
   const [loading, setLoading] = useState(false);
   const { id } = useSelector(state => state.auth);
   const dispatch = useDispatch();
-  let isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
+  let isPageWide =
+    typeof window !== "undefined" &&
+    window.matchMedia("(min-width: 768px)")?.matches;
   const { trackTransferBookingDelete } = useAnalytics();
 
 
