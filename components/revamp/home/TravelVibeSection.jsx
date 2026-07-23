@@ -39,11 +39,11 @@ const TravelVibeSection = (props) => {
       tags: ["TTW Exclusive"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
-      link: "theme/honeymoon-2025",
+      link: "theme/honeymoon-2026",
     },
     {
       id: 2,
-      title: "Road Trips 2025",
+      title: "Road Trips 2026",
       description: "DRIVE DIARIES",
       image: `${imgUrlEndPoint}media/page/174860004456110548973083496094.jpg`,
       fallbackImage:

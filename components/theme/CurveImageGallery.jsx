@@ -284,4 +284,14 @@ const Carousel3D = () => {
   );
 };
 
-export default Carousel3D;
+/*
+ * Memoized so React renders this once and never reconciles the subtree again.
+ * The panorama vendor slider (/vendor/panorama-slider.js) initializes Swiper in
+ * `loop` mode, which clones slide DOM nodes and applies the 3D curve transforms
+ * directly to the DOM. This component takes no props, so any parent (Home)
+ * re-render — triggered by Redux/auth state changes ("any action") — would
+ * otherwise reconcile this subtree, wipe Swiper's cloned nodes/inline transforms
+ * and flatten the gallery. React.memo prevents that; a full refresh always
+ * re-runs the vendor init, which is why refresh looked correct.
+ */
+export default React.memo(Carousel3D);

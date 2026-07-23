@@ -329,7 +329,7 @@ const IntakeLeftPanel: React.FC = () => {
             style={{ borderTop: "1px solid rgba(255,255,255,0.18)" }}
           >
             <span className="text-white text-[12px] font-semibold flex items-center gap-[6px]">
-              <span style={{ color: "#ffc400" }}>★</span> <b>4.9</b>/5 Google
+              <span style={{ color: "#ffc400" }}>★</span> <b className="mr-[-4px]">4.9</b>/5 Google
             </span>
             <span className="w-px h-[18px]" style={{ background: "rgba(255,255,255,0.2)" }} />
             <span className="text-white text-[12px] font-semibold">

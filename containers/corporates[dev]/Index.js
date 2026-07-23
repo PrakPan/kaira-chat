@@ -534,7 +534,7 @@ const AffiliatePage = (props) => {
 
       <CorporatePlanning />
 
-      <Carousel3D className="lg:w-[190%]" />
+      {/* <Carousel3D className="lg:w-[190%]" /> */}
       <TestimonialCarousel />
       <FaqSection Faqs={Faqs} />
       <CtaBoardingSection />
