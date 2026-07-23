@@ -1212,7 +1212,7 @@ const getTitle = () => {
       show={isOpen}
       anchor={"right"}
       backdrop
-      bgColor="#fafaf5"
+      bgColor="#fafafa"
       style={{ zIndex: 1501 }}
       className="!overflow-y-hidden"
       onHide={onClose}
@@ -1221,9 +1221,9 @@ const getTitle = () => {
     >
       <div className="overflow-y-scroll h-screen px-6 max-ph:px-4">
         {/* Header */}
-        <div className="py-4 bg-[#fafaf5] z-[900] flex flex-col gap-3 pb-2 sticky top-0">
+        <div className="py-4 bg-[#fafafa] z-[900] flex flex-row items-center gap-3 pb-2 sticky top-0">
           <BackArrow handleClick={onClose} />
-          <div className="ttw-type-h2 font-semibold text-[#0b1220]">
+          <div className="ttw-type-h2 font-semibold text-[#0b1220] !text-[19px] max-ph:!text-[17px] leading-tight truncate min-w-0 flex-1">
             {getTitle()}
           </div>
         </div>
@@ -1231,7 +1231,7 @@ const getTitle = () => {
         {/* Content */}
         <div className="flex-1 pb-24">
           {/* Search Form */}
-          <div className="bg-[#f4f3ec] rounded-xl p-4 mb-4">
+          <div className="bg-[#f4f4f4] rounded-xl p-4 mb-4">
             {/* Location Fields */}
             <div className="grid grid-cols-1 lg:grid-cols-2 max-ph:grid-cols-1 gap-4 mb-4">
               {/* Source Field */}
@@ -1283,7 +1283,7 @@ const getTitle = () => {
                           onMouseDown={() => {
                             handleSuggestionSelect(suggestion, "source");
                           }}
-                          className="px-3 py-2 hover:bg-[#f4f3ec] cursor-pointer border-b border-[#ececec] last:border-b-0"
+                          className="px-3 py-2 hover:bg-[#f4f4f4] cursor-pointer border-b border-[#ececec] last:border-b-0"
                         >
                           <div className="flex items-center space-x-2">
                             <span className="ttw-type-small text-[#0b1220]">
@@ -1358,7 +1358,7 @@ const getTitle = () => {
                             onMouseDown={() =>
                               handleSuggestionSelect(suggestion, "destination")
                             }
-                            className="px-3 py-2 hover:bg-[#f4f3ec] cursor-pointer border-b border-[#ececec] last:border-b-0"
+                            className="px-3 py-2 hover:bg-[#f4f4f4] cursor-pointer border-b border-[#ececec] last:border-b-0"
                           >
                             <div className="flex items-center space-x-2">
                               <span className="ttw-type-small text-[#0b1220]">
@@ -1432,9 +1432,9 @@ const getTitle = () => {
                       <div
                         key={option.value}
                         onMouseDown={() => handleTimeSelect(option.value)}
-                        className={`px-3 py-2 hover:bg-[#f4f3ec] cursor-pointer border-b border-[#ececec] last:border-b-0 ${
+                        className={`px-3 py-2 hover:bg-[#f4f4f4] cursor-pointer border-b border-[#ececec] last:border-b-0 ${
                           formData.transferTime === option.value
-                            ? "bg-[#f4f3ec] text-[#0b1220]"
+                            ? "bg-[#f4f4f4] text-[#0b1220]"
                             : ""
                         }`}
                       >
@@ -1559,7 +1559,7 @@ const getTitle = () => {
               type="button"
               onClick={loadMoreTransfers}
               disabled={isLoadingMore}
-              className="w-full mt-3 py-3 rounded-xl border border-[#ececec] text-sm font-medium text-[#0b1220] hover:bg-[#f4f3ec] transition-colors disabled:opacity-50 flex items-center justify-center"
+              className="w-full mt-3 py-3 rounded-xl border border-[#ececec] text-sm font-medium text-[#0b1220] hover:bg-[#f4f4f4] transition-colors disabled:opacity-50 flex items-center justify-center"
             >
               {isLoadingMore ? (
                 <PulseLoader size={8} speedMultiplier={0.6} color="#0b1220" />

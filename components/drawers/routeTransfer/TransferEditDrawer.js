@@ -1194,7 +1194,16 @@ const TransferEditDrawer = (props) => {
                 }}
               />
 
-              {email && email?.includes('tarzanway.com') && (
+              {transferType !== TRANSFER_TYPES.ONEWAYTRIP.name && (
+                <div className="flex-1 min-w-0 font-600 text-[#0b1220] text-[18px] max-ph:text-[15px] leading-tight truncate">
+                  {(drawerType === "multicity" || booking_type === "multicity")
+                    ? `Add Taxi in ${city || mercuryTransfer?.source?.city_name}`
+                    : "Changing Transfer"}
+                </div>
+              )}
+
+              {email && email?.includes('tarzanway.com') &&
+                transferType === TRANSFER_TYPES.ONEWAYTRIP.name && (
                 <a
                   href={`${MERCURY_HOST}/admin/geos/route/search-route/?origin=${props?.origin || originCityId || mercuryTransfer?.source?.city}&destination=${props?.destination || destinationCityId || mercuryTransfer?.destination?.city}`}
                   target="_blank"
@@ -1225,7 +1234,7 @@ const TransferEditDrawer = (props) => {
           )}
         </div>
         {currentStep === 0 && (
-          <>
+          <div className="w-full flex flex-col gap-md -mt-xs">
             <div>
               {transferType === TRANSFER_TYPES.ONEWAYTRIP.name ? (
                 <div className="ttw-type-h3 leading-2xl !text-[19px] max-ph:!text-[17px]">
@@ -1233,13 +1242,13 @@ const TransferEditDrawer = (props) => {
                   transfer from {city || mercuryTransfer?.source?.city_name} to{" "}
                   {dcity || mercuryTransfer?.destination?.city_name}{" "}
                 </div>
-              ) : (
-                <div className="ttw-type-h3 leading-2xl !text-[19px] max-ph:!text-[17px]">
-                  {(drawerType === "multicity" || booking_type === "multicity") ? `Add Taxi in ${city || mercuryTransfer?.source?.city_name}` : "Changing Transfer"}
-                </div>
-              )}
+              ) : null}
 
-              <div className="text-[#445069] ttw-type-body-xl leading-lg-md mt-xs">
+              <div
+                className={`text-[#445069] ttw-type-body-xl leading-lg-md ${
+                  transferType === TRANSFER_TYPES.ONEWAYTRIP.name ? "mt-xs" : ""
+                }`}
+              >
                 {" "}
                 Explore all available transfer options at a glance and pick what
                 suits you best.{" "}
@@ -1247,21 +1256,21 @@ const TransferEditDrawer = (props) => {
             </div>
 
             {transferType === TRANSFER_TYPES.MULTICITYROUNDTRIP.name && (
-              <div className="w-full flex flex-wrap items-center gap-md mt-md">
+              <div className="w-full max-w-[520px] flex items-stretch gap-2">
                 {[
-                  { id: "sightseeing", label: "Sightseeing Taxi" },
-                  { id: "airport", label: "Pickup/Drop Taxi" },
-                  { id: "multicity", label: "Multicity Taxi" },
+                  { id: "sightseeing", label: "Sightseeing" },
+                  { id: "airport", label: "Pickup/Drop" },
+                  { id: "multicity", label: "Multicity" },
                 ].map((tab) => {
                   const isActive = multicityTab === tab.id;
                   return (
                     <label
                       key={tab.id}
-                      className={`flex items-center gap-xs cursor-pointer ttw-type-body px-md py-xs rounded-md-lg border-sm border-solid ${
- isActive
- ? "border-[#f7e700] bg-[#fffde7] font-600"
- : "border-[#ececec] font-500"
- }`}
+                      className={`flex-1 min-w-0 flex items-center justify-center text-center cursor-pointer ttw-type-body px-2 py-xs rounded-md-lg border-sm border-solid transition-colors ${
+                        isActive
+                          ? "border-[#f7e700] bg-[#fffde7] font-600"
+                          : "border-[#e6e6e6] bg-[#f4f4f4] font-500 hover:bg-[#ececec]"
+                      }`}
                     >
                       <input
                         type="radio"
@@ -1275,21 +1284,13 @@ const TransferEditDrawer = (props) => {
                         }}
                         className="sr-only"
                       />
-                      <span
-                        aria-hidden="true"
-                        className={`w-4 h-4 rounded-full border-sm border-solid ${
- isActive
- ? "bg-[#f7e700] border-[#f7e700]"
- : "border-[#ececec]"
- }`}
-                      />
-                      <span>{tab.label}</span>
+                      <span className="truncate">{tab.label}</span>
                     </label>
                   );
                 })}
               </div>
             )}
-          </>
+          </div>
         )}
 
         {(loadingTransfers &&
@@ -1479,7 +1480,7 @@ const TransferEditDrawer = (props) => {
             {currentStep === 0 && (
               <>
                 <div className="w-full flex flex-col items-center ">
-                  <hr className="my-lg w-100" />
+                  <hr className="-mt-xs mb-lg w-100" />
                 </div>
               </>
             )}
