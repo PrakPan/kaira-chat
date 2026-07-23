@@ -1004,7 +1004,8 @@ const CityItem = ({
   date_of_journey,
   fromChat,
   isDraft,
-  showPins
+  showPins,
+  onSendMessage,
 }) => {
   const router = useRouter();
   const dispatch = useDispatch();
@@ -1761,6 +1762,20 @@ useEffect(() => {
   // the same drawer as any other transfer (not the multicity taxi drawer).
   const handleChangeTransfer = (e) => {
     e?.stopPropagation?.();
+    // P1 (Draft): the transfer is a client-side draft (start/end combo or a
+    // between-city leg) with no server booking to edit, so "Change" routes the
+    // swap through chat instead of the drawer. The drawer only opens in P2.
+    if (isP1Draft) {
+      const src =
+        origin_city_name || oCityData?.city_name || booking?.from_city || "";
+      const dest =
+        destination_city_name ||
+        dCityData?.city_name ||
+        booking?.to_city ||
+        "";
+      onSendMessage?.(`change transfer from ${src} to ${dest}`);
+      return;
+    }
     if (!localStorage.getItem("access_token")) {
       setShowLoginModal(true);
       return;
@@ -1940,7 +1955,36 @@ useEffect(() => {
         <>
           {/* EXISTING BOOKING DISPLAY - Icon and City Name */}
           {fromChat ? (
-            comboChildren ? (
+            isP1Draft &&
+            Array.isArray(booking?.legs) &&
+            booking.legs.length > 0 ? (
+              /* Chat P1 (Draft): the server sends the route as leg strings
+                 ("Ferry from Nusa Penida to Sanur", "Flight from Bali to New
+                 Delhi", …) with no bookable id yet. Combo legs (start/end
+                 transfers spanning multiple hops) are shown comma-separated and
+                 wrap onto new lines on mobile. The chip body is inert in P1 —
+                 "Change" routes through chat (handleChangeTransfer), the drawer
+                 only opens in P2. */
+              <div className="flex items-start gap-[12px] max-ph:gap-[10px] w-full px-[15px] max-ph:px-[12px] py-[11px] max-ph:py-[9px] rounded-[12px] max-ph:rounded-[11px] bg-[#EEF4FE] border-[1px] border-[#DBE7FB]">
+                <span className="flex items-center shrink-0 text-[#1f6feb] mt-[1px]">
+                  {correctIcon(booking_type, "#1f6feb")}
+                </span>
+                <div className="flex-1 min-w-0">
+                  <div className="text-[13px] max-ph:text-[12px] font-[600] text-[#1c2c44] leading-snug break-words">
+                    {booking.legs.join(", ")}
+                  </div>
+                  {/* The draft only carries the first leg's duration, so a
+                      multi-leg combo total would be wrong — show it for a
+                      single-leg transfer only. */}
+                  {booking.legs.length === 1 && durationLabel ? (
+                    <div className="text-[12px] max-ph:text-[11px] text-[#7b8aa3] mt-0.5">
+                      {durationLabel}
+                    </div>
+                  ) : null}
+                </div>
+                {transferChipActions}
+              </div>
+            ) : comboChildren ? (
               /* Chat: combo (multi-leg) card — one row per booking, each with
                  its own approx time. Mirrors the old "Train to Kyoto, Flight
                  to Chūbu Centrair" combo but split into scannable rows. */

@@ -1246,14 +1246,25 @@ startEmptyIntake = false,
     // Normalise: accept an array of transfers, a { transfers: [...] } wrapper,
     // or a single transfer object with edges[].
     const list: any[] = Array.isArray(raw)
-      ? raw
+      ? [...raw]
       : Array.isArray(raw?.transfers)
-        ? raw.transfers
+        ? [...raw.transfers]
         : Array.isArray(raw?.data?.transfers)
-          ? raw.data.transfers
+          ? [...raw.data.transfers]
           : Array.isArray(raw?.edges)
             ? [raw]
             : [];
+
+    // The combo start/end transfers (home → first city, last city → home) are
+    // emitted as `start_transfer` / `end_transfer` siblings — not inside the
+    // `transfers` array — and each carries its own multi-leg `edges[]`. Index
+    // those too, otherwise a transfer.select click on a start/end combo leg in
+    // P2 can't resolve its edge context and the drawer falls back to the
+    // mode-selection step.
+    const st = raw?.start_transfer ?? raw?.data?.start_transfer;
+    const et = raw?.end_transfer ?? raw?.data?.end_transfer;
+    if (Array.isArray(st?.edges)) list.push(st);
+    if (Array.isArray(et?.edges)) list.push(et);
 
     for (const t of list) {
       const edges = t?.edges ?? [];
