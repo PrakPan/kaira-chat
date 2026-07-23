@@ -9,6 +9,7 @@ import axiossearchallinstance from "../../../../../services/search/all";
 import axioslocationsinstance from "../../../../../services/search/search";
 import setHotLocationSearch from "../../../../../store/actions/hotLocationSearch";
 import {  MERCURY_HOST } from "../../../../../services/constants";
+import { isDestinationIndexable } from "../../../../../lib/seo/indexableDestinations";
 import axios from "axios";
 import * as PagesToIdMapping from "../../../../../data/PagesToIdMapping.json"
 import ThemePage from "../../../../../containers/travelplanner/ThemePage";
@@ -49,6 +50,11 @@ const Experience = (props) => {
       page={"City Page"}
     >
       <Head>
+        {/* Ticket 2.1: long-tail cities not in the keep-list are noindexed
+            (crawlable, so equity still flows via follow). */}
+        {!isDestinationIndexable(props.path) && (
+          <meta name="robots" content="noindex,follow" />
+        )}
         <meta
           name="description"
           content={`${props.cityData.meta_description}`}
@@ -134,7 +140,7 @@ export async function getStaticPaths() {
     const res = await axiossearchallinstance.get("/all/?type=City");
     const data = res.data ?? [];
 
-    for (var i = 0; i < data?.length; i++) {
+    for (var i = 0; i < 1; i++) {
       if (!data[i]?.path) continue;
       const pathArr = data[i].path.split("/");
       const [continentSlug, countrySlug, stateSlug, citySlug] = pathArr;

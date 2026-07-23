@@ -2571,6 +2571,17 @@ const handleIntakeComplete = useCallback(
   [sendMessage],
 );
 
+
+// ── Pricing form completion ──────────────────────────────────────────────────
+// Same contract as the intake form: send the composed final-details message
+// straight to Kaira with the form_submitted flag.
+const handlePricingComplete = useCallback(
+  (composed: string) => {
+    sendMessage(composed, undefined, undefined, { formSubmitted: true });
+  },
+  [sendMessage],
+);
+
 // Inline `prompt_login` card verified — just retire the card. The token-watch
 // effect re-fires `pendingPostLoginAction` (the message/widget action that
 // triggered the login) once the auth token lands, mirroring BotLoginModal.

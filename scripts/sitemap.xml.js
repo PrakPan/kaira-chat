@@ -3,6 +3,9 @@ const fs = require("fs");
 const { baseApiUrl } = require("mapbox-gl");
 const path = require("path");
 require('dotenv').config();
+// Ticket 2.1: only keep-listed states/cities go in the sitemap; the noindexed
+// long tail is excluded here (and carries <meta robots noindex,follow> in-page).
+const { isDestinationIndexable } = require("../lib/seo/indexableDestinations");
 
 
 const generateSitemap = async () => {
@@ -43,6 +46,9 @@ const generateSitemap = async () => {
 
   let statesPaths = statesData
   .filter((object) => object.path !== undefined)
+  .filter((object) =>
+    isDestinationIndexable(object.path.replaceAll(" ", "_").toLowerCase())
+  )
   .map((object) => {
     return {
       title: "State Planner",
@@ -58,6 +64,7 @@ const generateSitemap = async () => {
 
   let cityPaths = citiesData
   .filter((object) => object.path !== undefined)
+  .filter((object) => isDestinationIndexable(object.path))
   .map((object) => {
     return { title: "City Planner", link: PROD_BASE_URL + "/" + object.path };
   });

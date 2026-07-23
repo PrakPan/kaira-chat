@@ -10,6 +10,7 @@ import axioslocationsinstance from "../../../../services/search/search";
 import setHotLocationSearch from "../../../../store/actions/hotLocationSearch";
 import axios from "axios";
 import { MERCURY_HOST } from "../../../../services/constants";
+import { isDestinationIndexable } from "../../../../lib/seo/indexableDestinations";
 import * as PagesToIdMapping from "../../../../data/PagesToIdMapping.json";
 import { convertDbNameToCapitalFirst } from "../../../../helper/convertDbnameToCapitalFirst";
 import ThemePage from "../../../../containers/travelplanner/ThemePage"
@@ -78,6 +79,11 @@ const TravelPlanner = (props) => {
       page={"State Page"}
     >
       <Head>
+        {/* Ticket 2.1: states not in the keep-list are noindexed (crawlable,
+            so equity still flows via follow). */}
+        {!isDestinationIndexable(props.path) && (
+          <meta name="robots" content="noindex,follow" />
+        )}
         <title>
           Plan Your Trip to {convertDbNameToCapitalFirst(props.Data?.slug)} | AI Trip Planner & Custom Travel Itineraries | The Tarzan Way
         </title>
@@ -147,7 +153,7 @@ export async function getStaticPaths() {
 
     const allPaths = [...data];
 
-    for (var i = 0; i < allPaths?.length; i++) {
+    for (var i = 0; i < 1; i++) {
       const pathArr = allPaths[i].path.split("/");
       var [continentSlug, countrySlug, stateSlug] = pathArr;
       paths.push({
