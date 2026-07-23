@@ -5310,6 +5310,27 @@ const MobileLayout = React.memo(
     const dispatchLayout = useDispatch();
     const [showChatBanner, setShowChatBanner] = React.useState(true);
 
+    // Track whether the user has opened the chat drawer at least once. The
+    // floating Kaira banner only shows on non-chat tabs, so once this flips true
+    // the user has been in the chat and left it — invite them to "Continue
+    // chatting with Kaira" rather than the first-time "Chat with Kaira".
+    const [hasOpenedChat, setHasOpenedChat] = React.useState(false);
+    const prevActiveTabRef = React.useRef(activeTab);
+    React.useEffect(() => {
+      if (activeTab === "chat") {
+        setHasOpenedChat(true);
+      } else if (prevActiveTabRef.current === "chat") {
+        // Just returned from the chat drawer — opening chat hid the banner
+        // (setShowChatBanner(false) on the icon click), so re-surface it here
+        // to immediately invite the user to continue chatting.
+        setShowChatBanner(true);
+      }
+      prevActiveTabRef.current = activeTab;
+    }, [activeTab]);
+    const kairaBannerText = hasOpenedChat
+      ? "Continue chatting with Kaira"
+      : "Chat with Kaira";
+
     // Sync mobilePanel (legacy) so BotApp state stays consistent. The map tab
     // reports itself as "map" rather than collapsing into "itinerary": it is the
     // only signal BotApp has for whether the mobile map pane is actually on
@@ -5709,7 +5730,7 @@ const MobileLayout = React.memo(
                     </svg>
                   </button>
                   <p className="ttw-type-body pr-1 mb-0">
-                    Hey, I’m Kaira - Your AI Trip Planner
+                    {kairaBannerText}
                   </p>
                   {/* Speech bubble arrow */}
                   <div className="absolute -bottom-2 right-8 w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[#F7E700]" />
@@ -5822,7 +5843,7 @@ const MobileLayout = React.memo(
                   </svg>
                 </button>
                 <p className="ttw-type-body pr-3 mb-0">
-                  Hey, I’m Kaira - Your AI Trip Planner
+                  {kairaBannerText}
                 </p>
                 <div className="absolute -bottom-2 right-8 w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[#F7E700]" />
               </div>
