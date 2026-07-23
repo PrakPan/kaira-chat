@@ -159,6 +159,12 @@
   background: var(--k-ink-3);
 }
 
+/* Mobile header variant — sized to match the profile avatar (34px). */
+.kaira-scope .kaira-newchat-icon-btn.is-sm {
+  width: 34px;
+  height: 34px;
+}
+
 /* ── Generic collapsed icon button ─────────────────────────────────────── */
 .kaira-scope .kaira-icon-btn {
   display: flex;
@@ -500,6 +506,19 @@
 .kaira-scope .kaira-icon-btn.is-sm {
   width: 38px;
   height: 38px;
+}
+
+/* Mobile header history — filled circle, sized and shaped to sit alongside the
+   new-chat "+" and profile avatar (34px) as one consistent set. */
+.kaira-scope .kaira-icon-btn.is-sm.is-filled {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--k-r-pill);
+  background: var(--k-paper-2);
+}
+
+.kaira-scope .kaira-icon-btn.is-sm.is-filled:hover {
+  background: var(--k-ink-6);
 }
 
 .kaira-scope.kaira-drawer {

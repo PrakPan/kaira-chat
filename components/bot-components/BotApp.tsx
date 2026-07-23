@@ -25,6 +25,7 @@ import StartScreen, { type TravellerStory } from "./components/StartScreen";
 import IntakeLeftPanel from "./components/IntakeLeftPanel";
 import type { ThemeConfig } from "./types/themeConfig";
 import ChatWelcomeScreen from "./components/ChatWelcomeScreen";
+import BrandLockup from "../brand/BrandLockup";
 import ItineraryShimmer from "./components/ItineraryShimmer";
 import { useUserLocation } from "./hooks/useUserLocation";
 import { useMapBounds } from "./hooks/useMapBounds";
@@ -5110,24 +5111,24 @@ export const MobileHeaderMenu = React.memo(
           {isLoggedIn && (
             <button
               onClick={handleHistoryClick}
-              className="kaira-icon-btn is-sm"
+              className="kaira-icon-btn is-sm is-filled"
               aria-label="Recent chats"
             >
-              <KairaHistoryIcon size={19} />
+              <KairaHistoryIcon size={18} />
             </button>
           )}
 
-          {/* New chat */}
+          {/* New chat — solid ink circle, matching the desktop collapsed rail. */}
           <button
             onClick={onNewChat}
-            className="kaira-icon-btn is-sm"
+            className="kaira-newchat-icon-btn is-sm"
             aria-label="New chat"
           >
-            <KairaPlusIcon size={19} />
+            <KairaPlusIcon size={18} />
           </button>
 
           {/* Profile avatar */}
-          <div ref={profileRef} className="relative ml-1">
+          <div ref={profileRef} className="relative">
             <button
               onClick={() => setProfileOpen((v) => !v)}
               className="kaira-avatar"
@@ -5230,13 +5231,7 @@ const MobileHeader = React.memo(
         className="flex items-center cursor-pointer"
         onClick={() => (window.location.href = "/")}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/logo/ttw-lockup.svg"
-          height={LOGO_HEIGHT.MOBILE}
-          alt="The Tarzan Way"
-          style={{ height: LOGO_HEIGHT.MOBILE, width: "auto" }}
-        />
+        <BrandLockup size={LOGO_HEIGHT.MOBILE} variant="light" />
       </div>
       <MobileHeaderMenu
         onNewChat={onNewChat}
