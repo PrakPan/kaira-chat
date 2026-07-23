@@ -3,12 +3,15 @@ const fs = require("fs");
 const { baseApiUrl } = require("mapbox-gl");
 const path = require("path");
 require('dotenv').config();
+// Ticket 2.1: only keep-listed states/cities go in the sitemap; the noindexed
+// long tail is excluded here (and carries <meta robots noindex,follow> in-page).
+const { isDestinationIndexable } = require("../lib/seo/indexableDestinations");
 
 
 const generateSitemap = async () => {
   const BASE_URL =
     process.env.NEXT_PUBLIC_MERCURY_HOST || "https://mercury.tarzanway.com";
-  const PROD_BASE_URL=  "https://thetarzanway.com";
+  const PROD_BASE_URL=  "https://dev.thetarzanway.com";
 
   // Fetch continents list
   const continents = await axios.get(
@@ -43,6 +46,9 @@ const generateSitemap = async () => {
 
   let statesPaths = statesData
   .filter((object) => object.path !== undefined)
+  .filter((object) =>
+    isDestinationIndexable(object.path.replaceAll(" ", "_").toLowerCase())
+  )
   .map((object) => {
     return {
       title: "State Planner",
@@ -58,6 +64,7 @@ const generateSitemap = async () => {
 
   let cityPaths = citiesData
   .filter((object) => object.path !== undefined)
+  .filter((object) => isDestinationIndexable(object.path))
   .map((object) => {
     return { title: "City Planner", link: PROD_BASE_URL + "/" + object.path };
   });
@@ -97,6 +104,8 @@ const generateSitemap = async () => {
     },
     { title: "All Destinations", link: PROD_BASE_URL + "/destinations" },
     { title: "Corporates", link: PROD_BASE_URL + "/corporates" },
+    { title: "Chat with Kaira", link: PROD_BASE_URL + "/chat" },
+    { title: "About Us", link: PROD_BASE_URL + "/about-us" },
   ];
 
   const allPaths = [

@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { AiFillStar } from "react-icons/ai";
@@ -46,6 +47,9 @@ const DestinationCard = ({
     if (link) router.push(link);
   };
 
+  // A destination link with no custom onClick becomes a real crawlable anchor.
+  const asAnchor = !!link && !onClick;
+
   // Full-bleed editorial card — mirrors CountryCardV2.
   if (showImageText) {
     const meta = [];
@@ -68,17 +72,8 @@ const DestinationCard = ({
         </>
       );
 
-    return (
-      <div
-        role="button"
-        tabIndex={0}
-        onClick={handleClick}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") handleClick();
-        }}
-        className={`${styles.countryCard} ${className}`}
-        style={{ height }}
-      >
+    const editorialInner = (
+      <>
         <ImageWithSkeleton
           src={resolvedImage}
           asBackground
@@ -107,13 +102,40 @@ const DestinationCard = ({
             </div>
           )}
         </div>
+      </>
+    );
+
+    if (asAnchor) {
+      return (
+        <Link
+          href={link}
+          className={`${styles.countryCard} ${className}`}
+          style={{ height }}
+        >
+          {editorialInner}
+        </Link>
+      );
+    }
+
+    return (
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={handleClick}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") handleClick();
+        }}
+        className={`${styles.countryCard} ${className}`}
+        style={{ height }}
+      >
+        {editorialInner}
       </div>
     );
   }
 
   // Image on top, details below — used for activity / product cards.
-  return (
-    <div onClick={handleClick} className={`w-full cursor-pointer ${className}`}>
+  const stackedInner = (
+    <>
       <div
         className="relative w-full overflow-hidden rounded-lg sm:rounded-2xl"
         style={{ height }}
@@ -153,6 +175,20 @@ const DestinationCard = ({
           </div>
         )}
       </div>
+    </>
+  );
+
+  if (asAnchor) {
+    return (
+      <Link href={link} className={`block w-full ${className}`}>
+        {stackedInner}
+      </Link>
+    );
+  }
+
+  return (
+    <div onClick={handleClick} className={`w-full cursor-pointer ${className}`}>
+      {stackedInner}
     </div>
   );
 };

@@ -145,7 +145,7 @@ const GetInspiredSection: React.FC<GetInspiredSectionProps> = ({
            Visibility is controlled via a scoped <style> media query rather than
            a Tailwind `md:hidden` class: inline `display` styles would otherwise
            override the class and leak the fixed bar onto desktop. */}
-      <style>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         .gi-inspire-bar {
           position: fixed;
           left: 0; right: 0; bottom: 0;
@@ -162,7 +162,7 @@ const GetInspiredSection: React.FC<GetInspiredSectionProps> = ({
           .gi-inspire-bar { display: none !important; }
           .gi-inspire-sheet { display: none !important; }
         }
-      `}</style>
+      ` }} />
       <button
         type="button"
         onClick={() => setShowInspiration(true)}
@@ -203,9 +203,9 @@ const GetInspiredSection: React.FC<GetInspiredSectionProps> = ({
             aria-modal="true"
             aria-label="Inspiration"
           >
-            <style>{`
+            <style dangerouslySetInnerHTML={{ __html: `
               @keyframes giFadeIn { from { opacity: 0; } to { opacity: 1; } }
-            `}</style>
+            ` }} />
 
             {/* Drag handle — grab here to slide the sheet up/down. */}
             <div

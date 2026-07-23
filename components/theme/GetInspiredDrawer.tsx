@@ -97,11 +97,11 @@ const GetInspiredDrawer: React.FC<GetInspiredDrawerProps> = ({
       {/* Keep the trigger desktop-only even if Tailwind's responsive classes
           are ever purged — the drawer content itself is gated by `open`, which
           can only be set from this (hidden-on-mobile) trigger. */}
-      <style>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         @media (max-width: 767px) {
           .gi-drawer-trigger { display: none !important; }
         }
-      `}</style>
+      ` }} />
 
       {/* Slide-in panel — reuses the shared <Drawer> (portal, backdrop, body
           scroll-lock and right-anchored slide animation all live there). The

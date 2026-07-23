@@ -32,7 +32,7 @@ const TravelPlanner = (props) => {
     >
       <Head>
         <title>
-          {props?.Data?.name} | AI Trip Planner & Custom Travel Itineraries | The Tarzan Way
+          {props?.Data?.name} Trip Packages & Itineraries from India | The Tarzan Way
         </title>
         <meta
           name="description"
@@ -58,10 +58,27 @@ const TravelPlanner = (props) => {
           content={`${props?.Data?.name} trip planner, ai trip planner, trip planner, itinerary, travel plan, ai itinerary, ai plan, craft a trip, travel in ${props?.Data?.name}, ${props?.Data?.name} tour package, experience ${props?.Data?.name} culture, ${props?.Data?.name} holiday package, local travel experience, customized trip planner, customized holiday packages, customized packages in computer, honeymoon travel packages, personalized travel package, best places in ${props?.Data?.name}, places to visit in ${props?.Data?.name}, best activities in ${props?.Data?.name}, things to do in ${props?.Data?.name}, package for ${props?.Data?.name}, top places in ${props?.Data?.name}, wanderlog, inspirock, tripit, hotels, flights, activities, transfers, solo travel, family travel,`}
         ></meta>
 
+        <meta
+          property="og:url"
+          content={`https://thetarzanway.com/${props.path}`}
+        />
+        <meta property="og:type" content="website" />
         <link
           rel="canonical"
           href={`https://thetarzanway.com/${props.path}`}
         ></link>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "TouristDestination",
+              name: props?.Data?.name,
+              description: `Discover ${props?.Data?.name} with The Tarzan Way's AI Trip Planner. Book your flights, accommodations, and transfers all in one go and discover must-visit destinations for an extraordinary journey.`,
+              url: `https://thetarzanway.com/${props.path}`,
+            }),
+          }}
+        />
         <script
           type="module"
           crossorigin
@@ -97,7 +114,7 @@ export async function getStaticPaths() {
       `${MERCURY_HOST}/api/v1/geos/search/all/?type=Country`
     );
     const data = res.data;
-    for (var i = 0; i < data?.length; i++) {
+    for (var i = 0; i < 2; i++) {
       const pathArr = data[i].path.split("/");
       var [continentSlug, countrySlug] = pathArr;
       paths.push({

@@ -7,6 +7,8 @@
 // every re-render — are cached for the tab's lifetime, and the lookups run one
 // at a time rather than firing a whole itinerary's worth at once.
 
+import { loadGoogleMaps } from "./loadGoogleMaps";
+
 export interface LatLng {
   lat: number;
   lng: number;
@@ -105,8 +107,10 @@ export const geocodePlace = async (
     return stored;
   }
 
-  if (typeof window === "undefined" || !window.google?.maps?.Geocoder)
-    return null;
+  if (typeof window === "undefined") return null;
+  // Ensure the on-demand Maps SDK is loaded before geocoding.
+  await loadGoogleMaps();
+  if (!window.google?.maps?.Geocoder) return null;
 
   return enqueue(async () => {
     // The queue means another caller may have resolved this while we waited.

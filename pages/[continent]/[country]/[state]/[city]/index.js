@@ -9,6 +9,7 @@ import axiossearchallinstance from "../../../../../services/search/all";
 import axioslocationsinstance from "../../../../../services/search/search";
 import setHotLocationSearch from "../../../../../store/actions/hotLocationSearch";
 import {  MERCURY_HOST } from "../../../../../services/constants";
+import { isDestinationIndexable } from "../../../../../lib/seo/indexableDestinations";
 import axios from "axios";
 import * as PagesToIdMapping from "../../../../../data/PagesToIdMapping.json"
 import ThemePage from "../../../../../containers/travelplanner/ThemePage";
@@ -25,11 +26,22 @@ const Experience = (props) => {
   }, [props?.hotLocationSearch]);
 
   const schemaData = {
-    "@context": "https://schema.org/",
-    "@type": "item",
+    "@context": "https://schema.org",
+    "@type": "TouristDestination",
     name: props.cityData.name,
-    description: props.cityData.short_description,
+    description:
+      props.cityData.short_description || props.cityData.meta_description,
+    url: `https://thetarzanway.com/${props.path}`,
   };
+
+  // Country display name for the title, derived from the URL path
+  // (continent/country/state/city).
+  const countryName = props?.path
+    ? (props.path.split("/")[1] || "")
+        .split("_")
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(" ")
+    : "";
 
   return (
     <Layout
@@ -37,11 +49,12 @@ const Experience = (props) => {
       id={props.cityData.id}
       page={"City Page"}
     >
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
-      ></script>
       <Head>
+        {/* Ticket 2.1: long-tail cities not in the keep-list are noindexed
+            (crawlable, so equity still flows via follow). */}
+        {!isDestinationIndexable(props.path) && (
+          <meta name="robots" content="noindex,follow" />
+        )}
         <meta
           name="description"
           content={`${props.cityData.meta_description}`}
@@ -60,7 +73,8 @@ const Experience = (props) => {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:image" content="https://thetarzanway.com/og-image.png" />
         <title>
-          Plan Your Trip to {props.cityData.name} | AI Trip Planner & Custom Travel Itineraries | The Tarzan Way
+          Plan Your Trip to {props.cityData.name}
+          {countryName ? `, ${countryName}` : ""} | Itineraries & Packages | The Tarzan Way
         </title>
         <meta
           property="keywords"
@@ -84,6 +98,15 @@ const Experience = (props) => {
           rel="canonical"
           href={`https://thetarzanway.com/${props.path}`}
         ></link>
+        <meta
+          property="og:url"
+          content={`https://thetarzanway.com/${props.path}`}
+        />
+        <meta property="og:type" content="website" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
+        />
       </Head>
 {/* 
       {props.pageData ? (
@@ -117,7 +140,7 @@ export async function getStaticPaths() {
     const res = await axiossearchallinstance.get("/all/?type=City");
     const data = res.data ?? [];
 
-    for (var i = 0; i < data?.length; i++) {
+    for (var i = 0; i < 1; i++) {
       if (!data[i]?.path) continue;
       const pathArr = data[i].path.split("/");
       const [continentSlug, countrySlug, stateSlug, citySlug] = pathArr;

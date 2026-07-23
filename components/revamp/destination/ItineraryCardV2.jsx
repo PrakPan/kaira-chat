@@ -123,12 +123,14 @@ const ItineraryCardV2 = ({ itinerary, onClick,currency="INR" }) => {
     .filter(Boolean)
     .join(", ");
 
-  const handleClick = () => {
-    if (onClick) return onClick(itinerary);
-    if (id) window.location.assign("/itinerary/" + id);
-    else if (path) window.location.assign("/" + path);
-    else if (slug) window.location.assign("/itinerary/" + slug);
-  };
+  // Destination of the card as a real URL so it renders a crawlable anchor.
+  const href = id
+    ? "/itinerary/" + id
+    : path
+    ? "/" + path
+    : slug
+    ? "/itinerary/" + slug
+    : null;
 
   return (
     <PackageCard
@@ -145,7 +147,10 @@ const ItineraryCardV2 = ({ itinerary, onClick,currency="INR" }) => {
           : null
       }
       ctaLabel="View trip"
-      onClick={handleClick}
+      // A custom onClick means the caller wants a non-navigation action;
+      // otherwise emit a real crawlable link to the itinerary.
+      href={onClick ? undefined : href}
+      onClick={onClick ? () => onClick(itinerary) : undefined}
       currency={currency}
     />
   );

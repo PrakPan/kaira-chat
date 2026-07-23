@@ -1,5 +1,5 @@
 
-import React, { useEffect, forwardRef, useImperativeHandle } from 'react';
+import React, { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import styled from 'styled-components';
 
@@ -102,7 +102,15 @@ const Dictate = forwardRef((props, ref) => {
         }
     }, [transcript, props.onTranscriptChange])
 
-    if (!browserSupportsSpeechRecognition) {
+    // Speech-recognition support is browser-only, so the server always renders
+    // the empty <span>. Defer the real mic UI until after mount so the first
+    // client render matches the server HTML and hydration doesn't mismatch.
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    if (!mounted || !browserSupportsSpeechRecognition) {
         return <span></span>;
     }
 

@@ -10,14 +10,18 @@ import React from "react";
 const ChatWithKairaCta = ({
   label = "Start planning",
   onClick,
+  href,
   className = "",
   style,
   showHelper = true,
   helperText = "Planning is free. You only pay when you book.",
 }) => {
+  // With an href this renders a real crawlable <a> (SEO: destination pages link
+  // to /chat); onClick is still fired for any analytics/side-effects.
+  const Tag = href ? "a" : "button";
   const button = (
-    <button
-      type="button"
+    <Tag
+      {...(href ? { href } : { type: "button" })}
       className={className.trim()}
       onClick={onClick}
       style={{
@@ -34,6 +38,7 @@ const ChatWithKairaCta = ({
         fontWeight: 600,
         cursor: "pointer",
         transition: "all 0.15s",
+        textDecoration: "none",
         ...style,
       }}
     >
@@ -64,7 +69,7 @@ const ChatWithKairaCta = ({
           <polyline points="12 5 19 12 12 19" />
         </svg>
       </span>
-    </button>
+    </Tag>
   );
 
   if (!showHelper || !helperText) return button;

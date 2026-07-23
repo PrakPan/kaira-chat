@@ -235,6 +235,9 @@ const HERO_HOOKS: string[] = [
 ];
 
 function getAuthToken(): string | null {
+  // localStorage is browser-only; guard so render-time calls don't crash
+  // SSR/static-export (this runs in the render body via `reduxToken ?? getAuthToken()`).
+  if (typeof window === "undefined") return null;
   return (
     localStorage.getItem("token") ??
     localStorage.getItem("authToken") ??
@@ -474,7 +477,11 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
 
   return (
     <div className="cws-root flex flex-col h-full">
-      <style>{CWS_STYLES}</style>
+      {/* Inject CSS via dangerouslySetInnerHTML, not children: <style> is a raw-text
+          element, so React escapes apostrophes in children to &#x27; on the server
+          (which the browser won't decode inside <style>), breaking the CSS and
+          causing a hydration mismatch. */}
+      <style dangerouslySetInnerHTML={{ __html: CWS_STYLES }} />
 
       {/* ── Mobile-only header — logo + injected menu actions. Mirrors
            ChatKitPanel's top bar so the welcome screen has parity with the
@@ -599,7 +606,9 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
             aria-modal="true"
             aria-label="Inspiration"
           >
-            <style>{`
+            <style
+              dangerouslySetInnerHTML={{
+                __html: `
               @keyframes inspFadeIn {
                 from { opacity: 0; }
                 to { opacity: 1; }
@@ -608,7 +617,9 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
                 from { transform: translateY(100%); }
                 to { transform: translateY(0); }
               }
-            `}</style>
+            `,
+              }}
+            />
 
             {/* Drag handle */}
             <div className="flex justify-center pt-2 pb-1 flex-shrink-0">

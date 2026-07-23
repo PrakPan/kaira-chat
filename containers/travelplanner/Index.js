@@ -222,7 +222,7 @@ const Homepage = (props) => {
         }
         description={
           <>
-            Tell Kaira <b>your vibe and dates</b> — she'll craft a{" "}
+            Tell Kaira <b>your vibe and dates</b> — she'll craft your{" "}
             <span className={styles.serif}>{destinationName} trip</span> that{" "}
             <span className={styles.serif}>actually flows.</span>
           </>
@@ -403,7 +403,7 @@ const Homepage = (props) => {
             {renderCarousel(props.experienceData.locations, "StateTopLocations")}
             <div className="flex justify-center mt-8">
               <ChatWithKairaCta
-                onClick={handleChatWithKaira}
+                href="/chat"
                 // onClick={() => setShowTailoredModal(true)}
               />
             </div>
@@ -430,7 +430,7 @@ const Homepage = (props) => {
             {index % 2 ? (
               <div className="flex justify-center mt-8">
                 <ChatWithKairaCta
-                  onClick={handleChatWithKaira}
+                  href="/chat"
                   // onClick={() => handlePlanButtonClick(heading.name)}
                 />
               </div>
@@ -567,7 +567,7 @@ const Homepage = (props) => {
             {renderCarousel(props.locations, "OtherDestinations")}
             <div className="flex justify-center mt-8">
               <ChatWithKairaCta
-                onClick={handleChatWithKaira}
+                href="/chat"
                 // onClick={() => setShowTailoredModal(true)}
               />
             </div>
@@ -597,7 +597,7 @@ const Homepage = (props) => {
             under 2 minutes.
           </p>
           <ChatWithKairaCta
-            onClick={handleChatWithKaira}
+            href="/chat"
             showHelper={false}
             // onClick={() =>
             //   handlePlanButtonClick(`Final CTA - ${destinationName}`)

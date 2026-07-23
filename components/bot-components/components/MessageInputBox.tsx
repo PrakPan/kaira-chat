@@ -427,7 +427,7 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
         transition: "border-color 0.2s, background 0.2s, box-shadow 0.2s",
       }}
     >
-      <style>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         .kp-chat-input:focus-within {
           border-color: #0f1a2e !important;
           box-shadow: 0 0 0 3px rgba(11,18,32,0.06);
@@ -478,7 +478,7 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
           font-size: 12px;
           font-weight: 700;
         }
-      `}</style>
+      ` }} />
 
       {/* Hidden file input */}
       <input
@@ -529,7 +529,7 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
 
       {/* Textarea + animated placeholder */}
       <div style={{ position: "relative" }}>
-        <style>{`
+        <style dangerouslySetInnerHTML={{ __html: `
           @keyframes slideUpIn {
             from { opacity: 0; transform: translateY(10px); }
             to   { opacity: 1; transform: translateY(0);    }
@@ -540,7 +540,7 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
           }
           .ph-slide-in  { animation: slideUpIn  0.35s ease forwards; }
           .ph-slide-out { animation: slideUpOut 0.35s ease forwards; }
-        `}</style>
+        ` }} />
 
         <textarea
           ref={textareaRef}

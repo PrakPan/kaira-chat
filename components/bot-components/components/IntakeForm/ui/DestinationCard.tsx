@@ -60,14 +60,14 @@ const DestinationCard: React.FC<DestinationCardProps> = ({
           style={{ opacity: imgLoaded ? 1 : 0, transition: "opacity .3s ease" }}
         />
       )}
-      <style>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         @keyframes ttwDcardShimmer { 0% { background-position: -300px 0; } 100% { background-position: 300px 0; } }
         .ttw-dcard-skel {
           background: linear-gradient(90deg, #ece9e1 0%, #f6f4ee 50%, #ece9e1 100%);
           background-size: 600px 100%;
           animation: ttwDcardShimmer 1.3s linear infinite;
         }
-      `}</style>
+      ` }} />
       <div
         className="absolute inset-0"
         style={{

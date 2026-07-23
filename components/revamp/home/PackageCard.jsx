@@ -69,6 +69,7 @@ const PackageCard = ({
   curatedBy,
   price,
   ctaLabel = "Tailor in chat",
+  href,
   onClick,
   className = "",
 }) => {
@@ -76,12 +77,15 @@ const PackageCard = ({
 
   return (
     <a
+      href={href || undefined}
       className={`${styles.card} ${className}`.trim()}
-      role={interactive ? "button" : undefined}
-      tabIndex={interactive ? 0 : undefined}
+      // With an href this is a real crawlable link; without one, keep the
+      // button semantics for the onClick-only callers.
+      role={!href && interactive ? "button" : undefined}
+      tabIndex={!href && interactive ? 0 : undefined}
       onClick={onClick}
       onKeyDown={(e) => {
-        if (interactive && e.key === "Enter") onClick(e);
+        if (!href && interactive && e.key === "Enter") onClick(e);
       }}
     >
       <ImageWithSkeleton src={image} asBackground className={styles.img}>

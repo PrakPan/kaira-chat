@@ -12,7 +12,7 @@ import WhatMakesUsSection from "../components/revamp/home/WhatMakesUsSection";
 import NewFooter from "../components/newfooter/Index";
 import MyTripsSection from "../components/revamp/destination/mytrips";
 import TrustFactors from "../components/revamp/home/TrustFactors";
-import FaqSection from "../components/revamp/home/FaqSection";
+import FaqSection, { defaultFaqData } from "../components/revamp/home/FaqSection";
 import LuxuryEuropeDestinations from "../components/revamp/home/LuxuryEuropeDestinations";
 import KairaLovingSection from "../components/revamp/home/KairaLovingSection";
 import TravelerStoriesSection from "../components/revamp/home/TravelerStoriesSection";
@@ -83,6 +83,9 @@ const Home = ({ token, hotLocationSearch, checkAuthState, setHotLocationSearch }
     <>
       <Head>
         <title>AI Trip Planner with Human Expertise | The Tarzan Way</title>
+        <link rel="canonical" href="https://thetarzanway.com/" />
+        {/* Preload the LCP hero image so it paints sooner (CWV). */}
+        <link rel="preload" as="image" href="/KairaInsta.jpg" />
         <meta
           name="description"
           content="Plan your trip with Kaira, an AI travel assistant backed by local human curators. Search hundreds of platforms, get a curator-reviewed itinerary, and pay only for what you book."
@@ -98,6 +101,8 @@ const Home = ({ token, hotLocationSearch, checkAuthState, setHotLocationSearch }
         <meta property="og:image" content="https://thetarzanway.com/og-image.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
+        <meta property="og:url" content="https://thetarzanway.com/" />
+        <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:image" content="https://thetarzanway.com/og-image.png" />
         <meta
@@ -140,6 +145,20 @@ const Home = ({ token, hotLocationSearch, checkAuthState, setHotLocationSearch }
                 "https://www.instagram.com/thetarzanway/",
                 "https://www.linkedin.com/company/thetarzanway/",
               ],
+            }),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              mainEntity: defaultFaqData.map((f) => ({
+                "@type": "Question",
+                name: f.question,
+                acceptedAnswer: { "@type": "Answer", text: f.answer },
+              })),
             }),
           }}
         />

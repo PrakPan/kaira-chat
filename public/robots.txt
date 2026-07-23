@@ -1,18 +1,9 @@
-
 User-agent: *
 Disallow: /dashboard/
 Disallow: /itinerary/
-Disallow: /preview-travel-experiene/
+Disallow: /preview-travel-experience/
 Disallow: /test/
 Disallow: /500/
 Disallow: /404/
- 
 
-
-
-
-
-
-
-
-
+Sitemap: https://thetarzanway.com/sitemap.xml

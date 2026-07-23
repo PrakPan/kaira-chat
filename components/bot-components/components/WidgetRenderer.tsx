@@ -5545,7 +5545,7 @@ function NodeRenderer({
 // defaults, and semantic neutral surfaces so every widget reads as part
 // of the same family without rewriting each card.
 const WidgetScopeStyles: React.FC = () => (
-  <style>{`
+  <style dangerouslySetInnerHTML={{ __html: `
     .kp-widget {
       --w-yellow: #f7e700;
       --w-ink: #0b1220;
@@ -5573,7 +5573,7 @@ const WidgetScopeStyles: React.FC = () => (
       font-weight: 400;
       letter-spacing: -0.01em;
     }
-  `}</style>
+  ` }} />
 );
 
 export function WidgetRenderer({ widget, onAction, disabled = false }: WidgetRendererProps) {

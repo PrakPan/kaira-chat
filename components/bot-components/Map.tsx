@@ -9,6 +9,7 @@ import React, {
 } from "react";
 import { createPortal } from "react-dom";
 import { useSelector } from "react-redux";
+import { loadGoogleMaps } from "./utils/loadGoogleMaps";
 import CityElementCard from "./components/CityElementCard";
 import CityOverviewCard from "./components/CityOverviewCard";
 import ElementMarker, {
@@ -1179,17 +1180,16 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
         });
       };
 
-      if (typeof window !== "undefined" && window.google?.maps) {
-        initMap();
-      } else {
-        const interval = setInterval(() => {
-          if (window.google?.maps) {
-            clearInterval(interval);
-            initMap();
-          }
-        }, 100);
-        return () => clearInterval(interval);
-      }
+      // Maps SDK is no longer in <head>; load it on demand, then init.
+      let cancelled = false;
+      loadGoogleMaps()
+        .then(() => {
+          if (!cancelled) initMap();
+        })
+        .catch(() => {});
+      return () => {
+        cancelled = true;
+      };
     }, []);
 
     // Clamp zoom after fitBounds — avoids being too zoomed out on wide desktop containers.
@@ -1787,10 +1787,10 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
         {/* Paging a deck swaps one card for the next on a marker a few pixels
             from the last one, which on its own reads as nothing happening. The
             card lifts in, so the change is felt. */}
-        <style>{`@keyframes ttwDeckCardIn {
+        <style dangerouslySetInnerHTML={{ __html: `@keyframes ttwDeckCardIn {
           from { opacity: 0; transform: scale(0.94); }
           to { opacity: 1; transform: none; }
-        }`}</style>
+        }` }} />
         <div ref={mapRef} style={{ width: "100%", height: "100%" }} />
         {cityPinNodes.map(({ id, node }) => {
           const card = deckCards.find((c) => c.id === id);

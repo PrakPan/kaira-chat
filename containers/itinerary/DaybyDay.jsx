@@ -257,7 +257,7 @@ const DaybyDay = ({
         aria-live="polite"
         aria-label="Loading itinerary"
       >
-        <style>{`
+        <style dangerouslySetInnerHTML={{ __html: `
           @keyframes daybydaySkeletonShimmer {
             0%   { background-position: -400px 0; }
             100% { background-position: 400px 0; }
@@ -278,7 +278,7 @@ const DaybyDay = ({
           @media (prefers-reduced-motion: reduce) {
             .dbd-skel, .dbd-skel-food { animation: none; }
           }
-        `}</style>
+        ` }} />
         {skeletonCities.map((days, i) => (
           <Fragment key={`skel-city-${i}`}>
             <SkelCity days={days} />
@@ -469,6 +469,7 @@ const DaybyDay = ({
             firstCity={true}
             fromChat={props.fromChat}
             isDraft={isDraft}
+            onSendMessage={onSendMessage}
           />
           {itineraryDaybyDay?.cities?.map((city, index) => {
             var idMapping =
@@ -593,6 +594,7 @@ const DaybyDay = ({
                       _updatePaymentHandler={_updatePaymentHandler}
                       getPaymentHandler={getPaymentHandler}
                       fromChat={props.fromChat}
+                      onSendMessage={onSendMessage}
                     />
                   </div>
                 )}
@@ -742,6 +744,7 @@ const DaybyDay = ({
             fromChat={props.fromChat}
             isDraft={isDraft}
             showPins={showPins}
+            onSendMessage={onSendMessage}
           />
           <CityItem
             setShowLoginModal={setShowLoginModal}

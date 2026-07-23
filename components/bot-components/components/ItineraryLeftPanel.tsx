@@ -524,7 +524,7 @@ const ItineraryLeftPanel: React.FC<ItineraryLeftPanelProps> = ({
   if (mode === "full" && itineraryId) {
     return (
       <>
-        <style>{EMBEDDED_CSS}</style>
+        <style dangerouslySetInnerHTML={{ __html: EMBEDDED_CSS }} />
         <div
           className="embedded-itinerary-panel h-full overflow-y-auto bg-white"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}

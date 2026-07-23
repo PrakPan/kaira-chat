@@ -80,7 +80,7 @@ const TravelPlanner = ({
         <title>
           {Data.social_share_title
             ? Data.social_share_title
-            : "Plan Your Trip to  | Trip Planner & Itinerary | The Tarzan Way"}
+            : `${Data.name} Packages & Destinations for Indian Travellers | The Tarzan Way`}
         </title>
         <meta
           name="description"
@@ -120,10 +120,29 @@ const TravelPlanner = ({
           }
         ></meta>
 
+        <meta
+          property="og:url"
+          content={`https://thetarzanway.com/theme/${slug}`}
+        />
+        <meta property="og:type" content="website" />
         <link
           rel="canonical"
           href={`https://thetarzanway.com/theme/${slug}`}
         ></link>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "TouristDestination",
+              name: Data.name,
+              description:
+                Data.meta_description ||
+                `Plan your dream trip to ${Data.name} with The Tarzan Way's AI itinerary.`,
+              url: `https://thetarzanway.com/theme/${slug}`,
+            }),
+          }}
+        />
       </Head>
 
       <ThemePage themePage experienceData={Data} slug={slug}></ThemePage>

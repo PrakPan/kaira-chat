@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import useChat from './hook/UseChat';
 import Markdown from 'react-markdown';
@@ -114,12 +114,12 @@ const ThinkingDots = () => (
         }}
       />
     ))}
-    <style>{`
+    <style dangerouslySetInnerHTML={{ __html: `
       @keyframes thinkPulse {
         0%, 80%, 100% { transform: scale(0.4); opacity: 0.3; }
         40%            { transform: scale(1);   opacity: 1; }
       }
-    `}</style>
+    ` }} />
   </div>
 );
 
@@ -248,7 +248,13 @@ function ChatSection(props) {
   }, []);
 
   const handleShowLogin = () => dispatch(authShowLogin());
-  const isLoggedIn = !!localStorage.getItem('access_token');
+  // localStorage is browser-only; reading it during render crashes SSR/export.
+  // Read it after mount so the server (and first client render) see false,
+  // keeping hydration in sync, then reflect the real auth state on the client.
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  useEffect(() => {
+    setIsLoggedIn(!!localStorage.getItem('access_token'));
+  }, []);
 
   const handleQuickReply = (reply) => {
     if (isTyping) return;

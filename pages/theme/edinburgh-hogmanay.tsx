@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import Head from "next/head";
 import { connect } from "react-redux";
-import BotApp from "../../components/bot-components/BotApp";
+import BotApp from "../../components/bot-components/BotAppClient";
 import * as authaction from "../../store/actions/auth";
 import type { ThemeConfig } from "../../components/bot-components/types/themeConfig";
 import edinburghHogmanayTravellerStories from "../../data/edinburghHogmanayTravellerStories";

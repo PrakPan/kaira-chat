@@ -10,6 +10,7 @@ import MapView from "./components/MapView";
 import Sidebar from "./components/Sidebar";
 import { getUserAvatarColor, getUserInitial } from "./utils/avatarColor";
 import { formatCompactTime, groupThreads } from "./utils/threadGroups";
+import { loadGoogleMaps } from "./utils/loadGoogleMaps";
 import { LOGO_HEIGHT } from "./constants";
 import {
   HistoryIcon as KairaHistoryIcon,
@@ -1668,12 +1669,14 @@ export default function BotApp({
         for (const c of currentItineraryRef.current?.cities ?? []) {
           if (c.city?.name && c.id) nameToId[c.city.name] = String(c.id);
         }
-        const bookingTypeFromLeg = (leg: string) =>
-          leg.toLowerCase().includes("flight")
-            ? "Flight"
-            : leg.toLowerCase().includes("train")
-              ? "Train"
-              : "Taxi";
+        const bookingTypeFromLeg = (leg: string) => {
+          const l = leg.toLowerCase();
+          if (l.includes("flight")) return "Flight";
+          if (l.includes("train")) return "Train";
+          if (l.includes("ferry") || l.includes("boat")) return "Ferry";
+          if (l.includes("bus")) return "Bus";
+          return "Taxi";
+        };
         // DaybyDay reads transfer cards via the intercity map. The first/last
         // (home → first city, last city → home) tiles look up by
         // `<gmaps_place_id>:<first_city_id>` and `<last_city_id>:<gmaps_place_id>`,
@@ -1904,8 +1907,10 @@ export default function BotApp({
       if (!placeId) return null;
       if (geocodeCacheRef.current[placeId])
         return geocodeCacheRef.current[placeId];
-      if (typeof window === "undefined" || !window.google?.maps?.Geocoder)
-        return null;
+      if (typeof window === "undefined") return null;
+      // Ensure the on-demand Maps SDK is loaded before geocoding.
+      await loadGoogleMaps();
+      if (!window.google?.maps?.Geocoder) return null;
       try {
         const geocoder = new window.google.maps.Geocoder();
         const result = await geocoder.geocode({ placeId });
@@ -4026,7 +4031,7 @@ Start Location: ${details.startLocation}`;
               botMode != "p2" && <IntakeLeftPanel />}
           </div> : null}
 
-          <style>{`#chatContainer::-webkit-scrollbar { display: none; }`}</style>
+          <style dangerouslySetInnerHTML={{ __html: `#chatContainer::-webkit-scrollbar { display: none; }` }} />
           <div
             id="chatContainer"
             className="flex flex-col h-full bg-white border-slate-200 transition-opacity duration-500 ease-in-out"
@@ -4821,6 +4826,9 @@ type MobileTab = "chat" | "map" | "routes" | "itinerary" | "bookings";
 const CHATKIT_API_URL_MOBILE = CHATKIT_API_URL;
 
 function getAuthToken(): string | null {
+  // localStorage is browser-only; guard so render-time calls don't crash
+  // SSR/static-export (this is called in render bodies via `reduxToken ?? getAuthToken()`).
+  if (typeof window === "undefined") return null;
   return (
     localStorage.getItem("token") ??
     localStorage.getItem("authToken") ??

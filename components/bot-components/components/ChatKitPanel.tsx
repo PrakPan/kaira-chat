@@ -121,12 +121,12 @@ const QuickReplyShimmerChip: React.FC<{ width: string }> = ({ width }) => (
       flexShrink: 0,
     }}
   >
-    <style>{`
+    <style dangerouslySetInnerHTML={{ __html: `
       @keyframes quickReplyShimmer {
         0% { background-position: 200% 0; }
         100% { background-position: -200% 0; }
       }
-    `}</style>
+    ` }} />
   </div>
 );
 
@@ -293,6 +293,9 @@ function useUserLocationData() {
 }
 
 function getAuthToken(): string | null {
+  // localStorage is browser-only; guard so render-time calls don't crash
+  // SSR/static-export (this is called in the render body via `reduxToken ?? getAuthToken()`).
+  if (typeof window === "undefined") return null;
   return (
     localStorage.getItem("token") ??
     localStorage.getItem("authToken") ??
@@ -351,7 +354,7 @@ const WelcomeState = () => (
 // Scoped class names so they don't collide with global styles. Applied to the
 // header, message bubbles, and composer wrap inside ChatKitPanel.
 const ChatPanelStyles = () => (
-  <style>{`
+  <style dangerouslySetInnerHTML={{ __html: `
     .kp-root,
     .kp-root *,
     .kp-root *::before,
@@ -493,7 +496,7 @@ const ChatPanelStyles = () => (
       .sn-row { animation: none; opacity: 1; transform: none; }
       .sn-ic-live { animation: none; }
     }
-  `}</style>
+  ` }} />
 );
 
 /**
@@ -1243,14 +1246,25 @@ startEmptyIntake = false,
     // Normalise: accept an array of transfers, a { transfers: [...] } wrapper,
     // or a single transfer object with edges[].
     const list: any[] = Array.isArray(raw)
-      ? raw
+      ? [...raw]
       : Array.isArray(raw?.transfers)
-        ? raw.transfers
+        ? [...raw.transfers]
         : Array.isArray(raw?.data?.transfers)
-          ? raw.data.transfers
+          ? [...raw.data.transfers]
           : Array.isArray(raw?.edges)
             ? [raw]
             : [];
+
+    // The combo start/end transfers (home → first city, last city → home) are
+    // emitted as `start_transfer` / `end_transfer` siblings — not inside the
+    // `transfers` array — and each carries its own multi-leg `edges[]`. Index
+    // those too, otherwise a transfer.select click on a start/end combo leg in
+    // P2 can't resolve its edge context and the drawer falls back to the
+    // mode-selection step.
+    const st = raw?.start_transfer ?? raw?.data?.start_transfer;
+    const et = raw?.end_transfer ?? raw?.data?.end_transfer;
+    if (Array.isArray(st?.edges)) list.push(st);
+    if (Array.isArray(et?.edges)) list.push(et);
 
     for (const t of list) {
       const edges = t?.edges ?? [];
@@ -1502,9 +1516,11 @@ const canResumeAfterLoginRef = useRef(false);
    */
 const sessionIdRef = useRef<string>((() => {
     if (propSessionId) return propSessionId;
-    // 2. Fall back to URL
-    const match = window.location.pathname.match(/\/chat\/([a-f0-9-]{36})/);
-    if (match) return match[1];
+    // 2. Fall back to URL (browser only; window is undefined during SSR/export)
+    if (typeof window !== "undefined") {
+      const match = window.location.pathname.match(/\/chat\/([a-f0-9-]{36})/);
+      if (match) return match[1];
+    }
     // 3. Generate new (only for fresh /chat)
     return generateSessionId();
   })());
@@ -2566,6 +2582,7 @@ const handleIntakeComplete = useCallback(
   [sendMessage],
 );
 
+
 // ── Pricing form completion ──────────────────────────────────────────────────
 // Same contract as the intake form: send the composed final-details message
 // straight to Kaira with the form_submitted flag.
@@ -2576,10 +2593,9 @@ const handlePricingComplete = useCallback(
   [sendMessage],
 );
 
-// Inline `prompt_login` card verified — retire the card and attach the now
-// logged-in user to the itinerary (no-op if already associated). The token-
-// watch effect re-fires `pendingPostLoginAction` (the message/widget action
-// that triggered the login) once the auth token lands, mirroring BotLoginModal.
+// Inline `prompt_login` card verified — just retire the card. The token-watch
+// effect re-fires `pendingPostLoginAction` (the message/widget action that
+// triggered the login) once the auth token lands, mirroring BotLoginModal.
 const handleLoginCardVerified = useCallback(() => {
   setMessages((prev) => prev.filter((m) => m.type !== "login_card"));
   // Ensure a user who logs in via the inline card (e.g. after itinerary
@@ -4469,7 +4485,7 @@ const handleShowLogin = useCallback(() => {
                 ))}
               </div>
             </div>
-            <style>{`@keyframes qrShimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }`}</style>
+            <style dangerouslySetInnerHTML={{ __html: `@keyframes qrShimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }` }} />
           </div>
         )}
 
@@ -5080,12 +5096,12 @@ const SkeletonImage: React.FC<SkeletonImageProps> = ({ src, alt, width, height }
           transition: "opacity 0.25s ease",
         }}
       />
-      <style>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         @keyframes travellerSkeletonShimmer {
           0% { background-position: 200% 0; }
           100% { background-position: -200% 0; }
         }
-      `}</style>
+      ` }} />
     </div>
   );
 };

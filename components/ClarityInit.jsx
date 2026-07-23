@@ -1,16 +1,17 @@
 import { useEffect } from "react";
-import { initClaritySession, getJupiterSessionId } from "../utils/claritySession";
+import { initClaritySession } from "../utils/claritySession";
 import { useAnalytics } from "../hooks/useAnalytics";
 
 export default function ClarityInit() {
-  const { isReady } = useAnalytics();
+  const { isReady, track } = useAnalytics();
 
   useEffect(() => {
-    // Only initialize Clarity once Jupiter Analytics is ready
+    // Once Jupiter Analytics is ready, link the sessions. Pass `track` so the
+    // Clarity <-> Jupiter session link is stored as a Jupiter event.
     if (isReady) {
-      initClaritySession();    
+      initClaritySession(track);
     }
-  }, [isReady]);
+  }, [isReady, track]);
 
   return null;
 }

@@ -613,7 +613,7 @@ const OtpCard: React.FC<OtpCardProps> = ({
                 default is a fixed/centered overlay). Because it's portaled to
                 <body>, `fixed` here is viewport-relative — the wrapper supplies
                 the measured top/left — so the chat's scroll area can't clip it. */}
-            <style>{`
+            <style dangerouslySetInnerHTML={{ __html: `
               .ttwIntakeCountryDropdown [data-country-dropdown="true"] {
                 position: relative !important;
                 top: auto !important;
@@ -626,7 +626,7 @@ const OtpCard: React.FC<OtpCardProps> = ({
                 max-height: 300px !important;
                 margin-top: 0 !important;
               }
-            `}</style>
+            ` }} />
 
             {openCountryCodeOption &&
               dropdownPos &&
@@ -710,7 +710,7 @@ const OtpCard: React.FC<OtpCardProps> = ({
           {/* Skip login — lets the user continue without signing in. The parent
               resumes the chat flagged as opted-out (login_opted_out) so the
               backend knows this was a deliberate skip, not a pending sign-in. */}
-          {onSkip && (
+          {/* {onSkip && (
             <button
               type="button"
               onClick={handleSkip}
@@ -720,7 +720,7 @@ const OtpCard: React.FC<OtpCardProps> = ({
             >
               Continue without login
             </button>
-          )}
+          )} */}
 
           {/* Trust line */}
           <div

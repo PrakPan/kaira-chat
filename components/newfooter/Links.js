@@ -14,6 +14,21 @@ const linksArr = [
     ],
   },
   {
+    heading: "Top Destinations",
+    data: [
+      { title: "India", link: "/asia/india" },
+      { title: "Thailand", link: "/asia/thailand" },
+      { title: "Indonesia", link: "/asia/indonesia" },
+      { title: "Japan", link: "/asia/japan" },
+      { title: "Vietnam", link: "/asia/vietnam" },
+      { title: "Singapore", link: "/asia/singapore" },
+      { title: "Dubai (UAE)", link: "/asia/united_arab_emirates" },
+      { title: "Italy", link: "/europe/italy" },
+      { title: "France", link: "/europe/france" },
+      { title: "Spain", link: "/europe/spain" },
+    ],
+  },
+  {
     heading: "Travel Styles",
     data: [
       { title: "Personalise", link: "" },
@@ -26,7 +41,7 @@ const linksArr = [
   {
     heading: "Company",
     data: [
-      { title: "Blogs", link: ["http://blog.thetarzanway.com/"] },
+      { title: "Blogs", link: ["https://blog.thetarzanway.com/"] },
       { title: "For Corporates", link: urls.CORPORATES },
       { title: "Testimonials", link: urls.TESTIMONIALS },
       { title: "About Us", link: urls.ABOUT_US },

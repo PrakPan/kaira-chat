@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { imgUrlEndPoint } from "../../theme/ThemeConstants";
@@ -43,21 +44,10 @@ const CountryCardV2 = ({ item, hot = false, onClick }) => {
       ),
     });
 
-  const handleClick = () => {
-    if (onClick) return onClick(item);
-    if (item.path) window.location.replace("/" + item.path);
-  };
+  const href = item.path ? "/" + item.path : null;
 
-  return (
-    <div
-      role="button"
-      tabIndex={0}
-      onClick={handleClick}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") handleClick();
-      }}
-      className={styles.countryCard}
-    >
+  const cardInner = (
+    <>
       <ImageWithSkeleton
         src={image}
         asBackground
@@ -92,8 +82,38 @@ const CountryCardV2 = ({ item, hot = false, onClick }) => {
           </div>
         )}
       </div>
-    </div>
+    </>
   );
+
+  // A custom onClick means the caller wants a non-navigation action (e.g. a
+  // drawer) — preserve the button behavior in that case.
+  if (onClick) {
+    return (
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={() => onClick(item)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") onClick(item);
+        }}
+        className={styles.countryCard}
+      >
+        {cardInner}
+      </div>
+    );
+  }
+
+  // Otherwise render a real crawlable anchor to the destination (was an
+  // onClick + window.location.replace, invisible to crawlers).
+  if (href) {
+    return (
+      <Link href={href} className={styles.countryCard}>
+        {cardInner}
+      </Link>
+    );
+  }
+
+  return <div className={styles.countryCard}>{cardInner}</div>;
 };
 
 export default CountryCardV2;

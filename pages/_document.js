@@ -31,11 +31,10 @@ export default class MyDocument extends Document {
     return (
       <Html id="html" lang="en">
         <Head>
-          <title>AI Trip Planner & Custom Travel Itineraries | The Tarzan Way</title>
-          <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=5"
-          />
+          {/* No <title> or viewport here — a title in _document renders a
+              SECOND title tag on every page, and Next.js disallows viewport in
+              _document. Both live in _app.js (next/head), which dedupes against
+              page-level tags. */}
 
           {/* ---------- Fonts (non render-blocking, SSR-safe) ----------
               All families in a single request. Loaded as media="print" so the
@@ -73,14 +72,24 @@ export default class MyDocument extends Document {
           </noscript>
           <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+          <link
+            href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+            rel="stylesheet"
+          />
 
-          {/* Third-party SDKs deferred so they don't block initial render */}
-          <script defer src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`}></script>
-          <script defer src="https://cdn.platform.openai.com/deployments/chatkit/chatkit.js"></script>
+          {/* Google Maps + ChatKit are NOT loaded here anymore (CWV): loading
+              them in <head> on every page was a large render-blocking cost.
+              ChatKit's CDN bundle was unused (the chat uses a custom hook), so
+              it's removed entirely. Google Maps is now loaded on demand by the
+              map components via loadGoogleMaps() (utils/loadGoogleMaps). */}
 
 
           {/* ---------- Partytown ---------- */}
-          <Partytown debug={false} forward={["gtag", "mixpanel", "clarity"]} />
+          {/* Clarity is intentionally NOT forwarded through Partytown — its
+              session-replay recorder must observe the real DOM on the main
+              thread. Under Partytown its internals get proxied as primitives
+              and it throws "Cannot create property '__clrSId' on string". */}
+          <Partytown debug={false} forward={["gtag", "mixpanel"]} />
 
           {/* ---------- Google Tag Manager ---------- */}
           {isProduction && cleanGTMId && (
@@ -135,8 +144,9 @@ gtag('config', 'AW-738037519');
                 chat="false"
               ></script>
 
+              {/* Clarity runs on the main thread (no type="text/partytown") so
+                  its recorder can observe the real DOM. */}
               <script
-                type="text/partytown"
                 dangerouslySetInnerHTML={{
                   __html: `(function(c,l,a,r,i,t,y){
 c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
@@ -169,8 +179,7 @@ e.src="undefined"!==typeof MIXPANEL_CUSTOM_LIB_URL?
 MIXPANEL_CUSTOM_LIB_URL:"file:"===f.location.protocol&&"//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js".match(/^\/\\//)?
 "https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js":"//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js";
 g=f.getElementsByTagName("script")[0];g.parentNode.insertBefore(e,g)}})(document,window.mixpanel||[]);
-mixpanel.init('a87174a5773c86d78b1c1b8d51015a16', {debug: true});
-mixpanel.track('Sign up');`,
+mixpanel.init('a87174a5773c86d78b1c1b8d51015a16', {debug: false});`,
             }}
           />
 

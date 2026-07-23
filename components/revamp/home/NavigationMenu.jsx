@@ -1,7 +1,9 @@
+import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import {usePathname} from "next/navigation"
 import { useCallback, useMemo, useState, useEffect } from "react";
-import BrandLockup from "../../brand/BrandLockup";
+import { TTW } from "../assets";
 import { menuAnimations } from "../common/animations/menuAnimations";
 import { useMobileMenu } from "../common/hooks/useMobileMenu";
 import styles from "./NavigationMenu.module.scss";
@@ -51,6 +53,14 @@ const NavigationMenu = (props) => {
   );
   const slideIndex = Number(router.query.slideIndex) || 0;
 
+  // localStorage is browser-only; reading it during render crashes SSR. Read it
+  // after mount so the server (and the first client render) see null, keeping
+  // hydration in sync, then reflect the real token on the client.
+  const [accessToken, setAccessToken] = useState(null);
+  useEffect(() => {
+    setAccessToken(localStorage.getItem("access_token"));
+  }, []);
+
 
   // Memoized handlers to prevent unnecessary re-renders
   const handleMenuItemHover = useCallback((element, isHovering) => {
@@ -67,15 +77,41 @@ const NavigationMenu = (props) => {
   );
 
   // Memoized menu items to prevent unnecessary re-renders
-  const desktopMenuItems = useMemo(
-    () => [], // Empty array since navigation items are removed
-    [isActive]
-  );
+  // A crawlable primary-nav link to the destinations hub (which links out to
+  // every continent). Rendered as a real <a> so it's part of the link graph.
+  const navLinkStyle = {
+    color: "inherit",
+    textDecoration: "none",
+    fontWeight: 500,
+    whiteSpace: "nowrap",
+  };
 
-  const mobileMenuItems = useMemo(
-    () => [], // Empty array since navigation items are removed
-    [isActive, closeMobileMenu, handleMenuItemHover]
-  );
+  // const desktopMenuItems = useMemo(
+  //   () => [
+  //     <li key="nav-destinations" className="mr-4" role="none">
+  //       <Link href="/destinations" role="menuitem" style={navLinkStyle}>
+  //         Destinations
+  //       </Link>
+  //     </li>,
+  //   ],
+  //   [isActive]
+  // );
+
+  // const mobileMenuItems = useMemo(
+  //   () => [
+  //     <li key="nav-destinations-m" role="none">
+  //       <Link
+  //         href="/destinations"
+  //         role="menuitem"
+  //         style={navLinkStyle}
+  //         onClick={closeMobileMenu}
+  //       >
+  //         Destinations
+  //       </Link>
+  //     </li>,
+  //   ],
+  //   [isActive, closeMobileMenu, handleMenuItemHover]
+  // );
   const toggleProfileList = () => {
     setShowDropDownProfileList(!showDropDownProfileList);
     setShowDropDownProfileListMobile(!showDropDownProfileListMobile);
@@ -122,16 +158,16 @@ const NavigationMenu = (props) => {
     <>
     <div className="w-100 bg-text-white"> 
       <nav className={styles.navigationMenu + " " + props.className + " max-ph:!p-md max-ph:shadow-soft"} role="navigation">
-        <div className={"hover-pointer " + styles.logo} onClick={() => router.push("/")}>
-          <BrandLockup size={38} variant="light" className={styles.logoFull} />
+        <Link href="/" className={"hover-pointer " + styles.logo} aria-label="The Tarzan Way — home">
+          <Image src={TTW} alt="The Tarzan Way" priority className={styles.logoFull} />
           <img src="/logo/ttw-mark.svg" alt="The Tarzan Way" className={styles.logoMark} />
-        </div>
+        </Link>
         {pathname!="/new-trip"&& <SearchInput />}
         {/* Desktop Menu */}
         <ul className={styles.menuList} role="menubar">
-          <li className="mr-4"></li>
+          {/* <li className="mr-4"></li>
           {desktopMenuItems}
-          <li></li>
+          <li></li> */}
           {props.token?<>{(pathname!="/dashboard"&&pathname!="/new-trip")&&<button className="MediumIndigoButton" onClick={()=>router.push("/dashboard")}>
                   My Trips
           </button>}</>: null}
@@ -140,7 +176,7 @@ const NavigationMenu = (props) => {
                   Plan with Kaira <svg viewBox="0 0 12 12"  height="14" width="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 10L10 2M10 2H4M10 2V8"></path></svg>
           </button>}
           
-          {localStorage.getItem("access_token") ? (
+          {accessToken ? (
             <ProfileDropDown
             pill
             name={props.name}
@@ -152,7 +188,7 @@ const NavigationMenu = (props) => {
             showDropDownProfileListMobile={showDropDownProfileListMobile}
             notifications={[]}
             toggleProfileList={toggleProfileList}
-            token={localStorage.getItem("access_token")}
+            token={accessToken}
             />
           ) : (
             <Button size="small" onClick={handleCTAClick}>
@@ -223,7 +259,7 @@ const NavigationMenu = (props) => {
         aria-label="Mobile navigation menu"
       >
         <div className={styles.sidebarHeader}>
-          <BrandLockup size={36} variant="dark" className={styles.sidebarLogo} />
+          <img src="/logo/ttw-lockup-light.svg" alt="The Tarzan Way" className={styles.sidebarLogo} />
           <button
             className={styles.closeButton}
             onClick={toggleMobileMenu}
@@ -234,9 +270,9 @@ const NavigationMenu = (props) => {
           </button>
         </div>
 
-        <ul className={styles.mobileMenuList} role="menu">
+        {/* <ul className={styles.mobileMenuList} role="menu">
           {mobileMenuItems}
-        </ul>
+        </ul> */}
 
         <div
           ref={(el) => (menuItemsRef.current[0] = el)}

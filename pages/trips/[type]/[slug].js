@@ -29,6 +29,16 @@ const IndexedItinerary = ({
 }) => {
   const router = useRouter();
 
+  // Title template: "{N} Days {Destination} Itinerary — {GroupType} Trip Plan".
+  // Falls back to the CMS page_title when duration/cities aren't available.
+  const groupTypeLabel = Data?.path
+    ? (Data.path.split("/")[0] || "").replace(/^\w/, (c) => c.toUpperCase())
+    : "";
+  const tripsTitle =
+    Data?.duration && Data?.cities?.length
+      ? `${Data.duration} Days ${Data.cities[0]} Itinerary — ${groupTypeLabel} Trip Plan | The Tarzan Way`
+      : Data?.page_title || "Plan your trip with The Tarzan Way";
+
   useEffect(() => {
     if (Data?.ID) {
       setItineraryId(Data?.ID);
@@ -55,8 +65,7 @@ const IndexedItinerary = ({
   return (
     <LayoutV2 staticnav itinerary page={"Itinerary Page"}>
       <Head>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>{Data?.page_title || 'Plan your trip with The Tarzan Way'}</title>
+        <title>{tripsTitle}</title>
         <meta name="description" content={Data?.meta_description} />
         <meta
           name="keywords"
@@ -88,29 +97,33 @@ const IndexedItinerary = ({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: `
-                {
-                "@context": "https://schema.org/",
-                "@type": "Product",
-                "name": "${Data?.page_title}",
-                "image": [
-                  "https://d31aoa0ehgvjdi.cloudfront.net/${Data?.image}"
-                ],
-                "description": "${Data?.meta_description}",
-                "aggregateRating": {
-                  "@type": "AggregateRating",
-                  "ratingValue": ${Data?.review},
-                  "reviewCount": ${Data?.rating_count}
-                },
-                "offers": {
-                  "@type": "Offer",
-                  "price": ${Data?.price},
-                  "priceCurrency": "INR",
-                  "availability": "LimitedAvailability",
-                  "priceValidUntil": "${Data?.priceValid}"
-                }
-              }
-            `,
+            // Built with JSON.stringify so missing fields (null review/price)
+            // can't emit invalid JSON the way a string template would.
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Trip",
+              name: Data?.page_title,
+              description: Data?.meta_description,
+              url: `https://thetarzanway.com/trips/${Data?.path}`,
+              ...(Data?.image
+                ? {
+                    image: [
+                      `https://d31aoa0ehgvjdi.cloudfront.net/${Data.image}`,
+                    ],
+                  }
+                : {}),
+              ...(Data?.price
+                ? {
+                    offers: {
+                      "@type": "Offer",
+                      price: Data.price,
+                      priceCurrency: "INR",
+                      availability: "https://schema.org/LimitedAvailability",
+                      priceValidUntil: Data?.priceValid,
+                    },
+                  }
+                : {}),
+            }),
           }}
         />
       </Head>

@@ -254,7 +254,7 @@ const StartScreen: React.FC<StartScreenProps> = ({
   className="flex-1 h-full overflow-y-auto pb-16"
   style={{ scrollbarWidth: "none", msOverflowStyle: "none", background: "#fafaf5" }}
 >
-      <style>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         .start-screen-scroll::-webkit-scrollbar { display: none; }
         @keyframes fadeSlideUp {
           from { opacity: 0; transform: translateY(16px); }
@@ -291,7 +291,7 @@ const StartScreen: React.FC<StartScreenProps> = ({
         .kaira-step:hover {
           background: #f9fafb;
         }
-      `}</style>
+      ` }} />
 
       <div className="start-screen-scroll px-6 py-6 mt-2 space-y-8 ">
 
@@ -405,12 +405,12 @@ const StartScreen: React.FC<StartScreenProps> = ({
             <path d="M6 9l6 6 6-6" />
           </svg>
         </div>
-        <style>{`
+        <style dangerouslySetInnerHTML={{ __html: `
           @keyframes startScreenBounce {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(3px); }
           }
-        `}</style>
+        ` }} />
       </div>
     </div>
   );

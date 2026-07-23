@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styles from "./FaqSection.module.scss";
 
-const defaultFaqData = [
+export const defaultFaqData = [
   {
     question: "What exactly is The Tarzan Way?",
     answer:

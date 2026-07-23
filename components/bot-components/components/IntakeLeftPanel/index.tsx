@@ -255,7 +255,7 @@ const IntakeLeftPanel: React.FC = () => {
         }}
       />
 
-      <style>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         /* Instant, network-free blurred-looking backdrop shown until the hero
            decodes. Soft diagonal navy blend, gently breathing so it doesn't
            read as a dead frame. */
@@ -268,7 +268,7 @@ const IntakeLeftPanel: React.FC = () => {
         }
         @keyframes ttwHeroPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.82; } }
         @keyframes ttwHeroFade { from { opacity: 0; transform: scale(1.06); } to { opacity: 1; transform: scale(1); } }
-      `}</style>
+      ` }} />
 
       {/* Content */}
       <div className="absolute inset-0 z-[3] flex flex-col p-[30px_34px]">

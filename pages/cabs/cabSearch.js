@@ -101,6 +101,10 @@ const CabSearch = ({ input, setInput, name }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // This is a widget that expects input/name props. When rendered without them
+  // (e.g. hit directly as a static-export route), bail out instead of crashing.
+  if (!name || !input || !input[name]) return null;
+
   return (
     <div
       ref={dropdownRef}

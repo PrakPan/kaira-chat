@@ -305,7 +305,7 @@ const LuxuryEuropeDestinations = ({
       curatedBy={p.curated_by}
       price={p.price}
       ctaLabel="Tailor in chat"
-      onClick={() => p.url && router.push(p.url)}
+      href={p.url || undefined}
     />
   );
 

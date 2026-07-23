@@ -336,7 +336,7 @@ const DownloadShareBanners = ({ itineraryId, itineraryName }) => {
 
   return (
     <div style={{ marginTop: 12 }}>
-      <style>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         .dsb-mobile { display: flex; flex-direction: column; gap: 14px; }
         .dsb-desktop { display: none; }
         @media (min-width: 768px) {
@@ -398,7 +398,7 @@ const DownloadShareBanners = ({ itineraryId, itineraryName }) => {
           .dsb-card, .dsb-cta, .dsb-chip { transition: none; }
           .dsb-card:hover, .dsb-cta:hover, .dsb-chip:hover { transform: none; }
         }
-      `}</style>
+      ` }} />
 
       {/* ===== MOBILE · 2a Clean stacked ===== */}
       <div className="dsb-mobile">
