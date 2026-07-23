@@ -1168,7 +1168,7 @@ const TransferEditDrawer = (props) => {
       }}
     >
       <div
-        className={`relative px-xl bg-white z-[900] flex flex-col gap-xl pt-4 ${
+        className={`relative px-xl max-ph:px-md bg-white z-[900] flex flex-col gap-xl pt-4 ${
  transfers[selectedTransferIndex]?.transfers?.length > 1
  ? "md:pb-0"
  : "md:pb-[30px]"
@@ -1213,6 +1213,14 @@ const TransferEditDrawer = (props) => {
                   }
                 }}
               />
+              {currentStep >= 1 &&
+              transferType === TRANSFER_TYPES.ONEWAYTRIP.name &&
+              transfers?.[selectedTransferIndex]?.transfers?.length === 1 &&
+              transfers?.[selectedTransferIndex]?.name ? (
+                <div className="flex-1 min-w-0 font-600 text-[#0b1220] text-[18px] max-ph:text-[15px] leading-tight truncate">
+                  {transfers[selectedTransferIndex].name}
+                </div>
+              ) : null}
             </>
           )}
         </div>
@@ -1220,13 +1228,13 @@ const TransferEditDrawer = (props) => {
           <>
             <div>
               {transferType === TRANSFER_TYPES.ONEWAYTRIP.name ? (
-                <div className="ttw-type-h3 leading-2xl">
+                <div className="ttw-type-h3 leading-2xl !text-[19px] max-ph:!text-[17px]">
                   {props.addOrEdit === "transferAdd" ? "Adding" : "Changing"}{" "}
                   transfer from {city || mercuryTransfer?.source?.city_name} to{" "}
                   {dcity || mercuryTransfer?.destination?.city_name}{" "}
                 </div>
               ) : (
-                <div className="ttw-type-h3 leading-2xl">
+                <div className="ttw-type-h3 leading-2xl !text-[19px] max-ph:!text-[17px]">
                   {(drawerType === "multicity" || booking_type === "multicity") ? `Add Taxi in ${city || mercuryTransfer?.source?.city_name}` : "Changing Transfer"}
                 </div>
               )}
@@ -2668,6 +2676,7 @@ const RouteContainer = (props) => {
                   setFlightResults={setFlightResults}
                   skipFetch={false}
                   heading={name}
+                  hideHeading={true}
                 />
               ) : singleTransfer?.mode === "Taxi" ? (
                 <ComboTaxi
@@ -2715,6 +2724,7 @@ const RouteContainer = (props) => {
                   setTaxiResults={setTaxiResults}
                   skipTaxiResults={false}
                   heading={name}
+                  hideHeading={true}
                 />
               ) : (
                 <OtherTransfer
@@ -2730,6 +2740,7 @@ const RouteContainer = (props) => {
                     number_of_adults + number_of_children + number_of_infants
                   }
                   name={name}
+                  hideHeading={true}
                   mode={singleTransfer?.mode}
                   check_in={check_in}
                   currentStep={currentStep}
@@ -6399,6 +6410,7 @@ const OtherTransfer = ({
   booking_id,
   mode,
   name,
+  hideHeading,
 }) => {
   const ref = useRef(null);
   const dateRef = useRef(null);
@@ -7839,7 +7851,9 @@ const toggleTransferDetails = (priceOptionId) => {
         )}
       <div className="w-full">
         <div>
-          <div className="ttw-type-h3 leading-2xl mb-md"> {name}</div>
+          {!hideHeading && (
+            <div className="ttw-type-h3 leading-2xl mb-md"> {name}</div>
+          )}
         </div>
 
         <TransferDateTimeFields

@@ -16,7 +16,7 @@ import {
   Section,
 } from "../../tailoredform/slidetwo/EnterPassenger";
 
-export const Pax = ({ pax, setPax, combo, limit = null }) => {
+export const Pax = ({ pax, setPax, combo, limit = null, fluid = false }) => {
   const refDesktop = useRef(null);
   const refMobile = useRef(null);
   const isDesktop = useMediaQuery("(min-width:768px)");
@@ -278,18 +278,40 @@ export const Pax = ({ pax, setPax, combo, limit = null }) => {
   );
 
   return (
-    <div className="relative w-fit h-fit flex flex-row items-center gap-2 rounded-lg cursor-pointer z-[10]">
-      {/* Trigger (unchanged) */}
+    <div
+      className={`relative h-fit flex flex-row items-center gap-2 rounded-lg cursor-pointer z-[10] ${
+        fluid ? "w-full min-w-0" : "w-fit"
+      }`}
+    >
+      {/* Trigger — `fluid` lets the field shrink to its slot (reduced padding +
+          truncated label) instead of forcing its content width, so it fits
+          tight mobile rows. Default keeps the original fixed-width rendering. */}
       <div
         onClick={() => setShowPax((prev) => !prev)}
-        className="flex items-center gap-1.5 w-full bg-[#f4f3ec] py-[0.7rem] px-4 rounded-lg"
+        className={`flex items-center gap-1.5 w-full bg-[#f4f3ec] py-[0.7rem] rounded-lg ${
+          fluid ? "min-w-0 px-3" : "px-4"
+        }`}
       >
         <FaUserFriends className="shrink-0 text-[#0b1220]" size={16} />
-        <div className="ttw-type-small md:ttw-type-body font-medium">Travellers</div>
-        <div className="ttw-type-small md:ttw-type-body font-medium">|</div>
-        <div className="ttw-type-small font-medium whitespace-nowrap">
-          {summary}
-        </div>
+        {fluid ? (
+          <div className="min-w-0 flex-1 truncate">
+            <span className="ttw-type-small md:ttw-type-body font-medium">
+              Travellers
+            </span>
+            <span className="ttw-type-small md:ttw-type-body font-medium">
+              {" | "}
+            </span>
+            <span className="ttw-type-small font-medium">{summary}</span>
+          </div>
+        ) : (
+          <>
+            <div className="ttw-type-small md:ttw-type-body font-medium">Travellers</div>
+            <div className="ttw-type-small md:ttw-type-body font-medium">|</div>
+            <div className="ttw-type-small font-medium whitespace-nowrap">
+              {summary}
+            </div>
+          </>
+        )}
         <IoIosArrowDown className="shrink-0" />
       </div>
 

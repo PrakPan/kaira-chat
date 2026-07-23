@@ -75,6 +75,10 @@ const PickupDropDrawer = ({
     useState(false);
   const [errors, setErrors] = useState({});
   const [traceId, setTraceId] = useState(null);
+  // Progressive polling (Mozio): whether more transfer quotes are still coming, and the
+  // Load More in-flight state.
+  const [hasMoreQuotes, setHasMoreQuotes] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [source, setSource] = useState(null);
   const [hubSuggestions, setHubSuggestions] = useState([]);
   const [isLoadingHubs, setIsLoadingHubs] = useState(false);
@@ -820,6 +824,8 @@ const getStationName = () => {
     setIsLoadingQuotes(true);
     setTransferQuotes([]);
     setSearchError("");
+    setHasMoreQuotes(false);
+    setTraceId(null);
 
     const requestBody = {
       source: null,
@@ -862,8 +868,11 @@ const getStationName = () => {
           setSource(res?.data.data?.source);
           setTraceId(res.data?.trace_id);
           setTransferQuotes(res.data.data.quotes);
+          // `next` (Mozio progressive polling) may sit top-level or inside data.
+          setHasMoreQuotes(!!(res.data?.next ?? res.data.data?.next));
         } else {
           setIsLoadingQuotes(false);
+          setHasMoreQuotes(false);
           setSearchError("No transfer options found for the selected route");
         }
         setIsLoadingQuotes(false);
@@ -875,6 +884,40 @@ const getStationName = () => {
           error.response.data?.errors?.[0]?.message[0]
         );
         setSearchError(error.response.data?.errors?.[0]?.message[0]);
+      });
+  };
+
+  // Load More: poll Mozio once more for the next batch. The backend accumulates
+  // server-side and returns the FULL set each time, so we REPLACE transferQuotes
+  // (not append). `trace_id` is the handle to re-poll; `next` says whether to keep
+  // offering the button.
+  const loadMoreTransfers = () => {
+    if (!traceId || isLoadingMore) return;
+    setIsLoadingMore(true);
+    axiosTaxiSearch
+      .post(`?currency=${currency?.currency || "INR"}`, {
+        load_more: true,
+        trace_id: traceId,
+        number_of_travellers: formData.passengers,
+      })
+      .then((res) => {
+        setIsLoadingMore(false);
+        if (res.data?.success) {
+          setHasMoreQuotes(!!(res.data?.next ?? res.data.data?.next));
+          if (res.data?.trace_id) setTraceId(res.data.trace_id);
+          const quotes = res.data?.data?.quotes;
+          if (quotes && quotes.length) setTransferQuotes(quotes);
+        } else {
+          setHasMoreQuotes(false);
+        }
+      })
+      .catch((error) => {
+        // Transient failure — keep existing results and let the user retry the button.
+        setIsLoadingMore(false);
+        console.error(
+          "Load more transfers error:",
+          error?.response?.data?.errors?.[0]?.message?.[0]
+        );
       });
   };
 
@@ -1495,7 +1538,7 @@ const getTitle = () => {
                       ? destination_itinerary_city_id
                       : origin_itinerary_city_id
                   }
-                  key={index}
+                  key={quote.result_index || index}
                   data={quote}
                   handleAirportTaxiSelect={handleSubmit}
                   combo={false}
@@ -1510,6 +1553,23 @@ const getTitle = () => {
               ))}
             </div>
           )}
+
+          {hasMoreQuotes && !isLoadingQuotes ? (
+            <button
+              type="button"
+              onClick={loadMoreTransfers}
+              disabled={isLoadingMore}
+              className="w-full mt-3 py-3 rounded-xl border border-[#ececec] text-sm font-medium text-[#0b1220] hover:bg-[#f4f3ec] transition-colors disabled:opacity-50 flex items-center justify-center"
+            >
+              {isLoadingMore ? (
+                <PulseLoader size={8} speedMultiplier={0.6} color="#0b1220" />
+              ) : transferQuotes.length ? (
+                "Load More"
+              ) : (
+                "Search for more options"
+              )}
+            </button>
+          ) : null}
         </div>
       </div>
       <SearchLoaderOverlay

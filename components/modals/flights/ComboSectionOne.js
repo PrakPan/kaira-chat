@@ -372,7 +372,7 @@ const ComboSection = (props) => {
           <div className="md:hidden">
             <div className="flex items-stretch gap-2 mb-2">
               {preferred_departure_time && (
-                <div className="calendar-container relative flex-1">
+                <div className="calendar-container relative flex-1 min-w-0">
                   <div
                     className="flex items-center gap-2 rounded-lg cursor-pointer bg-[#F9F9F9] py-2.5 px-3 h-full"
                     onClick={() => setShowCalendar(!showCalendar)}
@@ -421,7 +421,7 @@ const ComboSection = (props) => {
                 </div>
               )}
               
-              <div className="flex-1">
+              <div className="flex-1 min-w-0">
                 <Pax
                   setShowPax={setShowPax}
                   pax={pax}
@@ -429,6 +429,7 @@ const ComboSection = (props) => {
                   showPax={showPax}
                   combo={true}
                   limit={9}
+                  fluid
                 />
               </div>
             </div>

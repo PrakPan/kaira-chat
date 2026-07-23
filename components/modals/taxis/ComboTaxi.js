@@ -68,8 +68,51 @@ const ComboTaxi = (props) => {
   const [quotes, setQuotes] = useState(
     props?.taxiResults ? props?.taxiResults : []
   );
+  // Progressive polling (Mozio): trace_id to re-poll with + Load More in-flight state.
+  // `viewMoreStatus` (declared above) is reused as the "more coming" flag.
+  const [traceId, setTraceId] = useState(null);
+  const [moreLoadingState, setMoreLoadingState] = useState(false);
   const dispatch = useDispatch();
   const currency = useSelector(state=>state.currency);
+
+  // Load More (Mozio progressive polling): poll once more. The backend accumulates
+  // server-side and returns the FULL set each time, so REPLACE quotes (not append).
+  // trace_id is the handle to re-poll; `next` says whether to keep offering the button.
+  const loadMoreTaxis = () => {
+    if (!traceId || moreLoadingState) return;
+    setMoreLoadingState(true);
+    axiosTaxiSearch
+      .post(`/?currency=${currency?.currency || "INR"}`, {
+        load_more: true,
+        trace_id: traceId,
+        number_of_travellers:
+          number_of_adults + number_of_children + number_of_infants,
+      })
+      .then((res) => {
+        setMoreLoadingState(false);
+        if (res.data?.success) {
+          setViewMoreStatus(!!(res.data?.next ?? res.data.data?.next));
+          if (res.data?.trace_id) setTraceId(res.data.trace_id);
+          const q = res.data?.data?.quotes;
+          if (q && q.length) {
+            setQuotes(
+              q.map((item) => ({
+                ...item,
+                distance: res.data.data.distance,
+                duration: res.data.data.duration,
+                trace_id: res.data.trace_id,
+                source: res.data.data?.source,
+              }))
+            );
+          }
+        } else {
+          setViewMoreStatus(false);
+        }
+      })
+      .catch(() => {
+        setMoreLoadingState(false);
+      });
+  };
   
 
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
@@ -237,6 +280,9 @@ const ComboTaxi = (props) => {
     setUpdateLoadingState(false);
     setOptionsJSX([]);
     setQuotes([]);
+    setViewMoreStatus(false);
+    setTraceId(null);
+    setMoreLoadingState(false);
     props?.setTaxiResults((prev) => {
       let newData = { ...prev };
       delete newData[props?.KEY];
@@ -346,6 +392,9 @@ const ComboTaxi = (props) => {
                 source: res.data.data?.source,
               }))
             );
+            setTraceId(res.data.trace_id || null);
+            // `next` (Mozio progressive polling) may sit top-level or inside data.
+            setViewMoreStatus(!!(res.data?.next ?? res.data.data?.next));
             props?.setTaxiResults((prev) => {
               let newData = { ...prev };
 
@@ -491,7 +540,11 @@ const ComboTaxi = (props) => {
           <GridContainer style={{ clear: "right" }}>
             <ContentContainer style={{ position: "relative" }}>
 
-              <div className="ttw-type-h2 font-semibold mb-md text-[#0b1220]"> {props.heading}</div>
+              {!props.hideHeading && (
+                <div className="font-semibold mb-md text-[#0b1220] text-[18px] max-ph:text-[15px] leading-snug">
+                  {props.heading}
+                </div>
+              )}
 
               <div className="">
                 {(selectedDate || props?.comboStartDate) && (
@@ -571,6 +624,23 @@ const ComboTaxi = (props) => {
                     ))}
                     {loading && !quotes.length ? <Skeleton /> : null}
                   </div>
+
+                  {viewMoreStatus && !loading ? (
+                    <div className="flex justify-center mt-5 mb-1">
+                      <button
+                        type="button"
+                        onClick={loadMoreTaxis}
+                        disabled={moreLoadingState}
+                        className="inline-flex items-center justify-center px-6 py-2.5 rounded-full border border-[#e2e2da] bg-white text-sm font-medium text-[#0b1220] shadow-[0_1px_2px_rgba(11,18,32,0.05)] hover:border-[#0b1220] hover:bg-[#f4f3ec] active:scale-[0.98] transition-all disabled:opacity-50 disabled:pointer-events-none"
+                      >
+                        {moreLoadingState
+                          ? "Loading…"
+                          : quotes.length
+                          ? "Load more"
+                          : "Search for more options"}
+                      </button>
+                    </div>
+                  ) : null}
 
                   {updateLoadingState ? (
                     <div className="center-div" style={{}}>

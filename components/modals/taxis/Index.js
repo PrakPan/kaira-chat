@@ -42,6 +42,9 @@ const Booking = (props) => {
   const [noResults, setNoResults] = useState(false);
   const [showTransferEditDrawer, setShowTransferEditDrawer] = useState(false);
   const [isMercury, setIsMercury] = useState(false);
+  // Progressive polling (Mozio): trace_id to re-poll with, and whether more results are coming.
+  const [traceId, setTraceId] = useState(null);
+  const [moreLoadingState, setMoreLoadingState] = useState(false);
    const {number_of_adults,number_of_children,number_of_infants} = useSelector(state => state.Itinerary);
  
  // console.log("OCity,D",props?.oCityData,props?.dCityData);
@@ -52,10 +55,42 @@ const Booking = (props) => {
     }
   }, [props.alternates, props.budget, props.showTaxiModal]);
 
+  // Build the taxi result cards from a search/load-more response. Shared by the initial
+  // search and Load More so both render identically. `result_index` is stable per option
+  // across polls (backend guarantee), so it's a safe React key and lets re-renders reuse
+  // existing cards instead of re-mounting them.
+  const buildTaxiCards = (resData) => {
+    const quotes = resData?.data?.quotes || [];
+    return quotes.map((quote, i) => (
+      <TaxiSearched
+        key={quote.result_index || i}
+        setHideBookingModal={props.setHideBookingModal}
+        _updateSearchedTaxi={_updateSearchedTaxi}
+        selectedBooking={props.selectedBooking}
+        getPaymentHandler={props.getPaymentHandler}
+        _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+        data={{
+          ...quote,
+          distance: resData.data.distance,
+          duration: resData.data.duration,
+          trace_id: resData.trace_id,
+          source: resData.data?.source,
+        }}
+        handleTaxiSelect={props.handleTaxiSelect}
+      ></TaxiSearched>
+    ));
+  };
+
+  // `next` may arrive top-level or nested in data depending on the supplier envelope.
+  const readNext = (resData) => resData?.next ?? resData?.data?.next ?? false;
+
   const fetchData = () => {
     setError(false);
     setLoading(true);
     setUpdateLoadingState(false);
+    setViewMoreStatus(false);
+    setMoreLoadingState(false);
+    setTraceId(null);
     setOptionsJSX([]);
 
     {props?.mercury && 
@@ -111,33 +146,18 @@ const Booking = (props) => {
       .post("", requestData)
       .then((res) => {
         if (res.data.success) {
-          setNoResults(false);
-
-          let options = [];
-          for (var i = 0; i < res.data?.data?.quotes?.length; i++) {
-            options.push(
-              <TaxiSearched
-                setHideBookingModal={props.setHideBookingModal}
-                _updateSearchedTaxi={_updateSearchedTaxi}
-                selectedBooking={props.selectedBooking}
-                getPaymentHandler={props.getPaymentHandler}
-                _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-                data={{
-                  ...res.data.data.quotes[i],
-                  distance: res.data.data.distance,
-                  duration: res.data.data.duration,
-                  trace_id: res.data.trace_id,
-                  source: res.data.data?.source,
-                }}
-                handleTaxiSelect={props.handleTaxiSelect}
-              ></TaxiSearched>
-            );
-          }
-          if (!options.length) setNoResults(true);
-          setOptionsJSX(options);
+          const hasNext = readNext(res.data);
+          const cards = buildTaxiCards(res.data);
+          setTraceId(res.data.trace_id || null);
+          setViewMoreStatus(!!hasNext);
+          // Only "no results" when the search is done AND found nothing. If more are
+          // still coming (hasNext), keep the Load More affordance instead.
+          setNoResults(cards.length === 0 && !hasNext);
+          setOptionsJSX(cards);
         } else {
           setNoResults(true);
           setViewMoreStatus(false);
+          setTraceId(null);
           setOptionsJSX([]);
         }
         setLoading(false);
@@ -148,6 +168,48 @@ const Booking = (props) => {
         props.openNotification({
           type: "error",
           text: err?.response?.data?.errors[0]?.message[0] || "There seems to be a problem, please try again later!",
+          heading: "Error!",
+        });
+      });
+  };
+
+  // Load More: poll Mozio once more for the next batch. The backend accumulates
+  // server-side and returns the FULL set each time, so we REPLACE optionsJSX (not
+  // append). `trace_id` is the handle to re-poll; `next` tells us whether to keep
+  // offering the button.
+  const _loadMore = () => {
+    if (!traceId || moreLoadingState) return;
+    setMoreLoadingState(true);
+    axiosTaxiSearch
+      .post("", {
+        load_more: true,
+        trace_id: traceId,
+        number_of_travellers:
+          number_of_adults + number_of_children + number_of_infants,
+      })
+      .then((res) => {
+        setMoreLoadingState(false);
+        if (res.data.success) {
+          const hasNext = readNext(res.data);
+          setViewMoreStatus(!!hasNext);
+          if (res.data.trace_id) setTraceId(res.data.trace_id);
+          const cards = buildTaxiCards(res.data);
+          if (cards.length) {
+            setNoResults(false);
+            setOptionsJSX(cards);
+          } else if (!hasNext) {
+            setNoResults(true);
+          }
+        } else {
+          setViewMoreStatus(false);
+        }
+      })
+      .catch(() => {
+        // Transient failure — keep existing results and let the user retry via the button.
+        setMoreLoadingState(false);
+        props.openNotification({
+          type: "error",
+          text: "Couldn't load more options, please try again.",
           heading: "Error!",
         });
       });
@@ -269,14 +331,23 @@ const Booking = (props) => {
                     </div>
                   ) : null}
 
-                  {viewMoreStatus && !optionsJSX.length ? (
-                    <button
-                      type="button"
-                      onClick={_loadAccommodationsHandler}
-                      className="w-full mt-4 py-3 rounded-xl border border-[#ececec] ttw-type-small font-500 text-[#0b1220] hover:bg-[#f4f3ec] transition-colors disabled:opacity-50"
-                    >
-                      View More
-                    </button>
+                  {viewMoreStatus && !loading ? (
+                    <div className="flex justify-center mt-5 mb-1">
+                      <button
+                        type="button"
+                        onClick={_loadMore}
+                        disabled={moreLoadingState}
+                        className="inline-flex items-center justify-center px-6 py-2.5 rounded-full border border-[#e2e2da] bg-white ttw-type-small font-500 text-[#0b1220] shadow-[0_1px_2px_rgba(11,18,32,0.05)] hover:border-[#0b1220] hover:bg-[#f4f3ec] active:scale-[0.98] transition-all disabled:opacity-50 disabled:pointer-events-none"
+                      >
+                        {moreLoadingState ? (
+                          <PulseLoader size={7} color="#0b1220" />
+                        ) : optionsJSX.length ? (
+                          "Load more"
+                        ) : (
+                          "Search for more options"
+                        )}
+                      </button>
+                    </div>
                   ) : null}
                 </OptionsContainer>
               ) : null}

@@ -1454,17 +1454,19 @@ const ComboFlight = (props) => {
 
   if (props.token)
     return (
-      <div className="w-full">
+      <div className="w-full max-ph:overflow-x-clip">
         <ToastContainer />
         <SearchLoaderOverlay
           isVisible={loading && !flights.length}
           displayText="Finding best transfers for you"
           zIndex={1505}
         />
-        <div className="ttw-type-h2 font-semibold text-[#0b1220] !mb-md !text-[24px] max-sm:!text-[18px]">
-          {" "}
-          {props.heading}
-        </div>
+        {!props.hideHeading && (
+          <div className="ttw-type-h2 font-semibold text-[#0b1220] !mb-md !text-[24px] max-sm:!text-[18px]">
+            {" "}
+            {props.heading}
+          </div>
+        )}
 
         {showWarningModal &&
           ReactDOM.createPortal(

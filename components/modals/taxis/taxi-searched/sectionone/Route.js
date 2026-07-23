@@ -369,8 +369,23 @@ const Section = (props) => {
           </div>
         ), document.body)}
 
-        <div className="flex justify-between max-ph:flex-col">
-          <div>
+        <div className="flex justify-between items-center gap-3 max-ph:flex-col max-ph:items-stretch max-ph:gap-3">
+          <div className="flex gap-3 items-center flex-1 min-w-0 max-ph:items-start">
+            {props.data?.taxi_category?.image ? (
+              <div className="flex-none w-[76px] h-[52px] max-ph:w-[64px] max-ph:h-[46px] rounded-lg bg-[#f4f3ec] flex items-center justify-center overflow-hidden">
+                <img
+                  src={props.data.taxi_category.image}
+                  alt={props.data?.taxi_category?.type || "Taxi"}
+                  className="object-contain w-full h-full"
+                  style={{ margin: 0, maxWidth: "none" }}
+                  onError={(e) => {
+                    if (e.currentTarget.parentElement)
+                      e.currentTarget.parentElement.style.display = "none";
+                  }}
+                />
+              </div>
+            ) : null}
+            <div className="flex-1 min-w-0">
             <div className="flex justify-between w-100">
               <span className="text-md font-600 leading-xl text-[#0b1220] ">
                 {props.data?.taxi_category?.model_name ? (
@@ -396,16 +411,18 @@ const Section = (props) => {
 
             <div className="flex flex-row justify-between">
               <div className="flex flex-col ">
-                <div className="font-400 text-[14px] leading-xl-sm flex gap-1 text-[#445069] ">
-                  {props.data?.taxi_category?.seating_capacity ?  props.data?.taxi_category?.seating_capacity + "-seater" : null}
-                   {bagCapacity > 0 && (
-                        
-                          <div className="flex items-center">
-                           , <MdOutlineLuggage />
-  {bagCapacity} Luggage bags
-                            </div>
-                          
-                      )}
+                <div className="font-400 text-[14px] leading-xl-sm flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[#445069]">
+                  {props.data?.taxi_category?.seating_capacity ? (
+                    <span className="whitespace-nowrap">
+                      {props.data.taxi_category.seating_capacity}-seater
+                    </span>
+                  ) : null}
+                  {bagCapacity > 0 && (
+                    <span className="flex items-center gap-1 whitespace-nowrap">
+                      <MdOutlineLuggage />
+                      {bagCapacity} Luggage bags
+                    </span>
+                  )}
                 </div>
                 <div>
                   {/* <Accordion
@@ -454,8 +471,9 @@ const Section = (props) => {
                 </div>
               </div>
             </div>
+            </div>
           </div>
-          <div className="flex flex-col justify-between items-end max-ph:flex-row max-ph:items-center">
+          <div className="flex flex-col justify-between items-end gap-2 flex-shrink-0 max-ph:flex-row max-ph:items-center max-ph:justify-between max-ph:w-full">
             <div>
               <span className="text-lg font-mono text-[#0b1220] 2xl-md">
                 {`${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}` + getIndianPrice(Math.ceil(props.data.price.total))}
