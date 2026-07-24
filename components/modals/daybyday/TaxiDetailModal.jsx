@@ -1,23 +1,10 @@
 import React from "react";
-import { PulseLoader } from "react-spinners";
-import styled from "styled-components";
-import Image from "next/image";
-import BackArrow from "../../ui/BackArrow";
 import ImageLoader from "../../ImageLoader";
-import { Generalbuttonstyle } from "../../ui/button/Generallinkbutton";
+import BookingDetailHeader from "../../revamp/common/components/BookingDetailHeader";
+import BookingDetailActions from "../../revamp/common/components/BookingDetailActions";
 import ComboTaxi from "../taxis/ComboTaxi";
 import { useState } from "react";
 import { FaTaxi } from "react-icons/fa";
-
-const BackText = styled.div`
-  font-size: 1.5rem;
-  line-height: 2rem;
-`;
-
-const Text = styled.div`
-  font-size: 1.5rem;
-  line-height: 2rem;
-`;
 
 const TaxiDetailModal = ({
   data,
@@ -140,52 +127,44 @@ const TaxiDetailModal = ({
         );
       }
 
+  const title =
+    data?.name ||
+    `Taxi from ${data?.transfer_details?.trips?.[0]?.origin?.address} to ${data?.transfer_details?.trips?.[0]?.destination?.address}`;
+
+  const handleChangeTransfer = () => {
+    if (isAirport) {
+      setIsTransferDrawerOpen(true);
+      return;
+    }
+    handleEditRoute(data);
+  };
+
+  const canChange = !isEmbedded && !noChange;
+  const canDelete = !!handleDelete && type !== "combo";
+
   return !showTaxi ? (
     <>
-      <div className=" bg-[#f4f3ec] w-full h-full flex flex-col">
-        {!isEmbedded && (
-          <div className="p-4 flex items-center justify-between">
-            <BackArrow handleClick={handleClose} />
-          </div>
-        )}
-
-        <div className="px-4 flex justify-between">
-          <h1 className="text-xl font-bold text-[#1a2436] ">
-            {loading ? (
-              <div className="w-64 h-7 bg-[#ececec] opacity-50 rounded"></div>
-            ) : (
-            !noHeading && (data?.name || `Taxi from ${data?.transfer_details?.trips?.[0]?.origin?.address} to ${data?.transfer_details?.trips?.[0]?.destination?.address}`)
-            )}
-          </h1>
-          {!isEmbedded && !noChange && (
-            <div className="font-lexend flex justify-between items-start !m-0">
-              {loading ? (
-                <div className="w-16 h-5 bg-[#ececec] opacity-50 rounded"></div>
-              ) : (
-                <>
-                  {/* <Text>{name}</Text> */}
-                  <Generalbuttonstyle
-                    borderRadius={"7px"}
-                    fontSize={"1rem"}
-                    padding={"7px 25px"}
-                    marginMobile={"0px 0px 0px 2px"}
-                    onClick={() => {
-                      if(isAirport){
-                        setIsTransferDrawerOpen(true);
-                        return
-                      }
-                      // handleClose()
-                      handleEditRoute(data)
-                      //setShowTaxi(true);console.log("")
-                    }}
-                  >
-                    Change
-                  </Generalbuttonstyle>
-                </>
-              )}
+      <div className=" bg-white w-full h-full flex flex-col">
+        {!isEmbedded ? (
+          <BookingDetailHeader
+            title={title}
+            loading={loading}
+            onBack={handleClose}
+            className="px-4"
+          />
+        ) : (
+          !noHeading && (
+            <div className="px-4">
+              <h1 className="ttw-type-h4 font-600 text-[#1a2436]">
+                {loading ? (
+                  <div className="w-64 h-7 bg-[#ececec] opacity-50 rounded"></div>
+                ) : (
+                  title
+                )}
+              </h1>
             </div>
-          )}
-        </div>
+          )
+        )}
 
         <div className="flex-1 px-4 pt-4">
           <div className="bg-white p-6 rounded-2xl shadow-sm relative border border-[#ececec]">
@@ -387,28 +366,17 @@ const TaxiDetailModal = ({
           </>}
         </div>
 
-        {/* Delete Booking Button (Fixed) */}
-        {handleDelete && type !== "combo" && (
-          <div className="p-4 bg-[#fafaf5] sticky bottom-0 z-10 border-t border-[#ececec]">
-            <button
-              className="ttw-btn-remove-pill"
-              onClick={onDeleteClick}
-              disabled={loading || deleting}
-            >
-              {deleting ? (
-                <PulseLoader size={10} speedMultiplier={0.6} color="#CD2026" />
-              ) : (
-                <>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                    <path d="M3 6h18" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                    <path d="M8 6V4.5A1.5 1.5 0 019.5 3h5A1.5 1.5 0 0116 4.5V6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                    <path d="M18.5 6l-.7 12.1a2 2 0 01-2 1.9H8.2a2 2 0 01-2-1.9L5.5 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M10 10.5v5M14 10.5v5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                  </svg>
-                  Delete Booking
-                </>
-              )}
-            </button>
+        {/* Delete (left) + Change (right) — pinned action bar */}
+        {!isEmbedded && (canDelete || canChange) && (
+          <div className="p-4 bg-white sticky bottom-0 z-10 border-t border-[#ececec]">
+            <BookingDetailActions
+              onDelete={canDelete ? onDeleteClick : undefined}
+              deleting={deleting}
+              deleteDisabled={loading}
+              onChange={canChange ? handleChangeTransfer : undefined}
+              changeLabel="Change Transfer"
+              changeDisabled={loading}
+            />
           </div>
         )}
       </div>

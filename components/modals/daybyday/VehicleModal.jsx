@@ -1,11 +1,9 @@
 import React, { useState } from "react";
 import TransfersIcon from "../../../helper/TransfersIcon";
 import Pin from "../../../containers/newitinerary/breif/route/Pin";
-import { PulseLoader } from "react-spinners";
 import styled from "styled-components";
-import Image from "next/image";
-import BackArrow from "../../ui/BackArrow";
-import { Generalbuttonstyle } from "../../ui/button/Generallinkbutton";
+import BookingDetailHeader from "../../revamp/common/components/BookingDetailHeader";
+import BookingDetailActions from "../../revamp/common/components/BookingDetailActions";
 const FloatingView = styled.div`
   position: sticky;
   bottom: 10px;
@@ -118,67 +116,35 @@ const VehicleDetailModal = ({
     );
   }
 
+  const canChange = !isEmbedded && typeof handleEditRoute === "function";
+  const canDelete = !!handleDelete && type != "combo";
+
   return (
     <>
-      <div className=" bg-[#f4f3ec] w-full h-full flex flex-col">
+      <div className=" bg-white w-full h-full flex flex-col">
         {!isEmbedded && (
-          <div className="p-4 flex items-center">
-            <BackArrow handleClick={handleClose} />
-          </div>
-        )}
-        <div className="flex justify-between">
-          {!isEmbedded && (
-            <div className="flex items-center px-4">
-              {isPageWide && (
-                <div className="bg-[#eef2fb] rounded-lg p-2 mr-3">
-                  {loading ? (
-                    <div className="w-20 h-12 bg-[#ececec] opacity-50 rounded-lg"></div>
-                  ) : (
-                    <TransfersIcon
-                      TransportMode={booking_type || transfer_details?.mode}
-                      Instyle={{
-                        fontSize:
-                          transfer_details?.mode === "Bus" ? "2.5rem" : "3rem",
-                        color: "black",
-                      }}
-                      classname={{ width: 80, height: 75 }}
-                    />
-                  )}
-                </div>
-              )}
-              <span className=" md:text-xl font-semibold text-[#0b1220]">
-                {loading ? (
-                  <div className="w-32 h-5 bg-[#ececec] opacity-50 rounded"></div>
-                ) : (
-                  name
-                )}
-              </span>
-            </div>
-          )}
-          {!isEmbedded && (
-            <div className=" flex justify-between items-start !m-0 p-4">
-              {loading ? (
-                <div className="w-16 h-5 bg-[#ececec] opacity-50 rounded"></div>
-              ) : (
-                <>
-                  {/* <Text>{name}</Text> */}
-                  <Generalbuttonstyle
-                    borderRadius={"7px"}
-                    fontSize={"1rem"}
-                    padding={"7px 25px"}
-                    onClick={() => {
-                      // handleClose()
-                      handleEditRoute(data)
-                      //setShowTaxi(true);console.log("")
+          <BookingDetailHeader
+            title={name}
+            loading={loading}
+            onBack={handleClose}
+            className="px-4"
+            leading={
+              isPageWide && !loading ? (
+                <div className="bg-[#eef2fb] rounded-lg p-1.5">
+                  <TransfersIcon
+                    TransportMode={booking_type || transfer_details?.mode}
+                    Instyle={{
+                      fontSize:
+                        transfer_details?.mode === "Bus" ? "1.25rem" : "1.5rem",
+                      color: "black",
                     }}
-                  >
-                    Change
-                  </Generalbuttonstyle>
-                </>
-              )}
-            </div>
-          )}
-        </div>
+                    classname={{ width: 28, height: 28 }}
+                  />
+                </div>
+              ) : null
+            }
+          />
+        )}
 
         {/* Ticket Section Label */}
         <div className="px-4 pt-2 pb-2">
@@ -460,28 +426,17 @@ const VehicleDetailModal = ({
             />
           </FloatingView>
         )} */}
-        {/* Delete Booking Button (Fixed) */}
-        {handleDelete && type != "combo" && (
-          <div className="p-4 bg-[#fafaf5] sticky bottom-0 z-10 border-t border-[#ececec]">
-            <button
-              className="ttw-btn-remove-pill"
-              onClick={onDeleteClick}
-              disabled={loading || deleting}
-            >
-              {deleting ? (
-                <PulseLoader size={10} speedMultiplier={0.6} color="#CD2026" />
-              ) : (
-                <>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                    <path d="M3 6h18" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                    <path d="M8 6V4.5A1.5 1.5 0 019.5 3h5A1.5 1.5 0 0116 4.5V6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                    <path d="M18.5 6l-.7 12.1a2 2 0 01-2 1.9H8.2a2 2 0 01-2-1.9L5.5 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M10 10.5v5M14 10.5v5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                  </svg>
-                  Delete Booking
-                </>
-              )}
-            </button>
+        {/* Delete (left) + Change (right) — pinned action bar */}
+        {!isEmbedded && (canDelete || canChange) && (
+          <div className="p-4 bg-white sticky bottom-0 z-10 border-t border-[#ececec]">
+            <BookingDetailActions
+              onDelete={canDelete ? onDeleteClick : undefined}
+              deleting={deleting}
+              deleteDisabled={loading}
+              onChange={canChange ? () => handleEditRoute(data) : undefined}
+              changeLabel="Change Transfer"
+              changeDisabled={loading}
+            />
           </div>
         )}
       </div>

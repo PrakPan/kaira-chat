@@ -2,8 +2,9 @@ import { useEffect, useState, useRef } from "react";
 import styled from "styled-components";
 import ImageLoader from "../../../ImageLoader";
 import DrawerActionFooter from "../../../revamp/common/components/DrawerActionFooter";
+import BookingDetailHeader from "../../../revamp/common/components/BookingDetailHeader";
+import BookingDetailActions from "../../../revamp/common/components/BookingDetailActions";
 import Image from "../../../ImageLoader";
-import NextImage from "next/image";
 import { getHumanTime } from "../../../../services/getHumanTime";
 import Rooms from "../roomtypes/Index";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
@@ -11,7 +12,6 @@ import useMediaQuery from "../../../media";
 import SkeletonCard from "../../../ui/SkeletonCard";
 import { connect, useDispatch } from "react-redux";
 import Tag from "../../../cards/bookings/activitybooking/imagecontainer/Tag";
-import { PulseLoader } from "react-spinners";
 import { setStays } from "../../../../store/actions/StayBookings";
 import { useRouter } from "next/router";
 import { axiosDeleteBooking } from "../../../../services/itinerary/bookings";
@@ -235,13 +235,6 @@ const CheckInText = styled.div`
   margin-block: 1rem;
 `;
 
-const FlexBox = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.5rem;
-`;
-
 const HotelBookingDetails = (props) => {
   const isDesktop = useMediaQuery("(min-width:1148px)");
   const [loading, setLoading] = useState(false);
@@ -446,6 +439,16 @@ const HotelBookingDetails = (props) => {
     setRunTimeShowPopup(false);
   };
 
+  // Hands off to the hotel-search flow the caller owns (accommodation/Index.js
+  // → handleClickAc). Lives in the bottom action bar next to Remove.
+  const handleChangeHotel = () => {
+    if (!localStorage.getItem("access_token")) {
+      props?.setShowLoginModal(true);
+      return;
+    }
+    props.BookingButtonFun();
+  };
+
   useEffect(() => {
     if (data?.rating  > 0) {
       items?.splice(2, 0, { id: 'section-3', label: "Reviews", link: "Reviews" });
@@ -490,7 +493,7 @@ const HotelBookingDetails = (props) => {
         show={runTimeShowPopup}
         anchor={"right"}
         backdrop
-        bgColor="#fafaf5"
+        bgColor="#ffffff"
         className="!overflow-y-hidden"
         onHide={handleCloseDrawer}
         width={"50%"}
@@ -500,9 +503,11 @@ const HotelBookingDetails = (props) => {
         style={props?.drawerZIndex ? { zIndex: props.drawerZIndex } : undefined}
       >
         <Container className="px-6 max-ph:px-4 pb-3">
-          <div className="py-4 bg-[#fafaf5] z-[900] flex flex-col gap-3 pb-2 sticky top-0">
-            <NextImage src="/backarrow.svg" className="cursor-pointer" width={22} height={2} onClick={handleCloseDrawer} />
-          </div>
+          <BookingDetailHeader
+            title={data?.hotel_details?.name}
+            loading={loadingDetails}
+            onBack={handleCloseDrawer}
+          />
           {loadingDetails ? (
             <POIDetailsSkeleton />
           ) : (
@@ -514,27 +519,6 @@ const HotelBookingDetails = (props) => {
                   </span>
                 </> : null
               }
-              <FlexBox>
-                <div className="ttw-type-h3 text-[#0b1220] font-600">
-                  {data?.hotel_details?.name}
-                </div>
-
-                <button
-                  className="ttw-btn-secondary whitespace-nowrap ttw-type-body"
-                  padding="7px 25px"
-                  borderRadius="7px"
-                  onClick={() => {
-                    if (!localStorage.getItem("access_token")) {
-                      props?.setShowLoginModal(true);
-                      return;
-                    }
-                    props.BookingButtonFun();
-                  }}
-                >
-                  Change Hotel
-                </button>
-              </FlexBox>
-
               <div className="flex gap-sm mt-sm">
                 {
                   <div className="flex gap-xs ttw-type-small text-[#445069]"> <span> {svgIcons.loaction} </span> <span> {data?.hotel_details?.city}{","} {data?.hotel_details?.country} </span></div>
@@ -557,7 +541,7 @@ const HotelBookingDetails = (props) => {
                 )}
               </div>
 
-              <div className="overflow-y-scroll pb-24" ref={scrollableTabRef} style={{ height: `calc(100vh - 195px)` }}>
+              <div className="overflow-y-scroll pb-24" ref={scrollableTabRef} style={{ height: `calc(100vh - 170px)` }}>
 
                 {/* Gallery Start  */}
                 {isDesktop ? (
@@ -1188,7 +1172,7 @@ const HotelBookingDetails = (props) => {
 
                 {/* Tabs Start  */}
                 <div className="flex flex-col">
-                  <div className="sticky top-0 z-10 bg-[#fafaf5] border-b-sm border-solid border-[#ececec]">
+                  <div className="sticky top-0 z-10 bg-white border-b-sm border-solid border-[#ececec]">
                     <ScrollableMenuTabs
                       classStyle="w-100"
                       items={items}
@@ -1468,21 +1452,14 @@ const HotelBookingDetails = (props) => {
                         that has a google_maps_link took the first branch and so
                         never rendered a delete button at all. */}
                     <DrawerActionFooter zIndex={footerZIndex}>
-                      <button onClick={handleDelete} className="ttw-btn-remove-pill" disabled={loading}>
-                        {loading ? (
-                          <PulseLoader size={10} speedMultiplier={0.6} color="#CD2026" />
-                        ) : (
-                          <>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                              <path d="M3 6h18" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                              <path d="M8 6V4.5A1.5 1.5 0 019.5 3h5A1.5 1.5 0 0116 4.5V6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                              <path d="M18.5 6l-.7 12.1a2 2 0 01-2 1.9H8.2a2 2 0 01-2-1.9L5.5 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                              <path d="M10 10.5v5M14 10.5v5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                            </svg>
-                            Remove From Itinerary
-                          </>
-                        )}
-                      </button>
+                      <BookingDetailActions
+                        onDelete={handleDelete}
+                        deleting={loading}
+                        deleteLabel="Remove from Itinerary"
+                        onChange={handleChangeHotel}
+                        changeLabel="Change Stay"
+                        changeDisabled={loading}
+                      />
                     </DrawerActionFooter>
                   </div>
                 </div>

@@ -212,7 +212,7 @@ const POIDetailsDrawer = (props) => {
       backdrop
       width={"50%"}
       mobileWidth={"100%"}
-      bgColor="#fafaf5"
+      bgColor="#ffffff"
       style={{
         zIndex: props.drawerZIndex ?? (props.itineraryDrawer ? 1503 : 1501),
       }}

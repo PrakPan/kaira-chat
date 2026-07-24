@@ -522,6 +522,67 @@ a.termsnavunderlinelink {
     cursor: not-allowed;
 }
 
+/* "Change …" CTA in the booking-detail drawers' bottom bar — same yellow fill
+   as the itinerary View Cart button, shaped like its .ttw-btn-remove-pill
+   sibling so the two sit as a matched pair. */
+.ttw-btn-change-pill {
+    width: 100%;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: theme('spacing.xs');
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: var(--font-family-montserrat);
+    border-radius: 9999px;
+    border: 1.5px solid var(--color-site-yellow);
+    background-color: var(--color-site-yellow);
+    color: var(--color-midnight-indigo);
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.ttw-btn-change-pill:hover:not(:disabled) {
+    background-color: var(--color-pure-black);
+    border-color: var(--color-pure-black);
+    color: var(--color-pure-white);
+}
+
+.ttw-btn-change-pill:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Both pills share a bottom bar, so on phones they have to fit side by side
+   within the drawer width — at desktop padding the pair overflows and drags a
+   horizontal scrollbar across the whole drawer. */
+@media screen and (max-width: 520px) {
+    .ttw-btn-remove-pill,
+    .ttw-btn-change-pill {
+        padding: 10px 12px;
+        font-size: 12.5px;
+        gap: 6px;
+    }
+}
+
+/* Remove-pill label: full descriptive text on wider screens, the short verb on
+   phones so it never truncates in the half-width action bar. Driven from plain
+   CSS (matched to the 520px pill-shrink breakpoint above) because this build
+   does not emit Tailwind's max-[520px] arbitrary variant. */
+.ttw-remove-label-short {
+    display: none;
+}
+
+@media screen and (max-width: 520px) {
+    .ttw-remove-label-full {
+        display: none;
+    }
+    .ttw-remove-label-short {
+        display: inline-block;
+    }
+}
+
 .border-color-light-grey {
     border-color: var(--border-color-white-gray);
 }

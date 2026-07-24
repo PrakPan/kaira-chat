@@ -4,9 +4,10 @@ import { useState } from "react";
 import { TbArrowBack } from "react-icons/tb";
 import { MERCURY_HOST } from "../../../services/constants";
 import DrawerActionFooter from "../../revamp/common/components/DrawerActionFooter";
+import BookingDetailHeader from "../../revamp/common/components/BookingDetailHeader";
+import BookingDetailActions from "../../revamp/common/components/BookingDetailActions";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { PulseLoader } from "react-spinners";
 import { SectionTitle, Divider } from "./kairaSections";
 import axios from "axios";
 import { useDispatch } from "react-redux";
@@ -124,7 +125,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #fafaf5;
+  background: #ffffff;
 `;
 
 const BackContainer = styled.div`
@@ -133,7 +134,7 @@ const BackContainer = styled.div`
   gap: 0.5rem;
   position: sticky;
   z-index: 1;
-  background: #fafaf5;
+  background: #ffffff;
   top: 0;
   padding-block: 0.75rem;
 
@@ -408,6 +409,42 @@ const ActivityDetails = (props) => {
     setLoading(false);
   };
 
+  // "Change Activity" reuses the itinerary's own activity-selection drawer
+  // (drawer=showAddActivity) — the same trigger the day cards fire to fill a
+  // slot, and the parallel to how "Change POI" opens the POI picker. Gated to
+  // booked contexts: v1 previews and drafts have no swap flow, and the trigger
+  // needs the slot's city id + day index to target the right selection drawer.
+  const canChange =
+    !isDraft &&
+    props?.version !== "v1" &&
+    props?.type !== "restaurant" &&
+    props?.itinerary_city_id != null &&
+    props?.dayIndex != null;
+
+  const handleChangeActivity = () => {
+    if (!token) {
+      props?.setShowLoginModal(true);
+      return;
+    }
+    const activityDate = itinerary?.cities?.find(
+      (city) => city.id === props?.itinerary_city_id,
+    )?.day_by_day?.[props?.dayIndex]?.date;
+
+    router.push(
+      {
+        pathname: window.location.pathname,
+        query: {
+          drawer: "showAddActivity",
+          itinerary_city_id: props?.itinerary_city_id,
+          idx: props?.dayIndex,
+          date: activityDate,
+        },
+      },
+      undefined,
+      { scroll: false, shallow: true },
+    );
+  };
+
   function OnImageError(i) {
     if (!ImagesError[i]) {
       setImagesError((prev) => {
@@ -467,15 +504,10 @@ const ActivityDetails = (props) => {
           className="px-lg max-ph:px-sm gap-xl pb-[104px]"
           itineraryDrawer={props.itineraryDrawer}
         >
-          <div className="mt-[1rem]">
-            <Image
-              src="/backarrow.svg"
-              className="cursor-pointer"
-              width={22}
-              height={2}
-              onClick={(e) => props.handleCloseDrawer(e)}
-            />
-          </div>
+          <BookingDetailHeader
+            title={props?.data?.display_name || props?.data?.name}
+            onBack={(e) => props.handleCloseDrawer(e)}
+          />
 
           <>
             {props?.data?.image && (
@@ -584,7 +616,7 @@ const ActivityDetails = (props) => {
             )}
           </>
           <div className="">
-            <Title>{props?.data?.display_name || props.data.name}</Title>
+            {/* Name lives in the sticky BookingDetailHeader above. */}
             {props.data?.tags && <Text>{tags}</Text>}
             {aboutText != null && aboutText != undefined && (
               <div>
@@ -979,25 +1011,14 @@ const ActivityDetails = (props) => {
                     (props?.itineraryDrawer ? 1503 : 1501)) + 1
                 }
               >
-                <button
-                  className="ttw-btn-remove-pill"
-                  onClick={handleDelete}
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <PulseLoader size={10} speedMultiplier={0.6} color="#CD2026" />
-                  ) : (
-                    <>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                        <path d="M3 6h18" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                        <path d="M8 6V4.5A1.5 1.5 0 019.5 3h5A1.5 1.5 0 0116 4.5V6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                        <path d="M18.5 6l-.7 12.1a2 2 0 01-2 1.9H8.2a2 2 0 01-2-1.9L5.5 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                        <path d="M10 10.5v5M14 10.5v5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                      </svg>
-                      Remove from Itinerary
-                    </>
-                  )}
-                </button>
+                <BookingDetailActions
+                  onDelete={handleDelete}
+                  deleting={loading}
+                  deleteLabel="Remove from Itinerary"
+                  onChange={canChange ? handleChangeActivity : undefined}
+                  changeLabel="Change Activity"
+                  changeDisabled={loading}
+                />
               </DrawerActionFooter>
             )}
           </div>

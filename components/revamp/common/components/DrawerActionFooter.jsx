@@ -51,7 +51,7 @@ export default function DrawerActionFooter({ children, zIndex = 1502 }) {
     <FooterBar
       $zIndex={zIndex}
       $leaving={drawer ? drawer.fade !== "in" : false}
-      className="border-t border-[#ececec] bg-[#fafaf5] px-5 py-3 flex flex-col gap-2.5"
+      className="border-t border-[#ececec] bg-white px-4 md:px-5 py-3 flex flex-col gap-2.5"
     >
       {children}
     </FooterBar>,

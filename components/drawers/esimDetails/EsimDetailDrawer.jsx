@@ -4,6 +4,8 @@ import { useRouter } from "next/router";
 import Image from "next/image";
 import { PulseLoader } from "react-spinners";
 import Drawer from "../../ui/Drawer";
+import BookingDetailHeader from "../../revamp/common/components/BookingDetailHeader";
+import BookingDetailActions from "../../revamp/common/components/BookingDetailActions";
 import { esimPackageDetail, esimBooking } from "../../../services/ancillaries/esimServices";
 import { openNotification } from "../../../store/actions/notification";
 import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
@@ -133,31 +135,18 @@ export default function EsimDetailDrawer({ show, pkg, onHide, onBooked, onAdded,
       backdrop
       width="50%"
       mobileWidth="100%"
-      bgColor="#fafaf5"
+      bgColor="#ffffff"
       style={{ zIndex: drawerZIndex }}
       className="!overflow-y-hidden"
       onHide={onHide}
     >
       <div className="h-screen flex flex-col overflow-hidden">
         <div className="overflow-y-scroll flex-1 px-6 max-ph:px-4 pb-24">
-          {/* Back */}
-          <div className="py-4 bg-[#fafaf5] sticky top-0 z-10 flex items-center justify-between">
-            <Image
-              src="/backarrow.svg"
-              className="cursor-pointer"
-              width={22}
-              height={2}
-              onClick={onHide}
-            />
-            {showManageActions && (
-              <button
-                className="ttw-btn-secondary whitespace-nowrap ttw-type-body"
-                onClick={() => setShowSearch(true)}
-              >
-                Change
-              </button>
-            )}
-          </div>
+          <BookingDetailHeader
+            title={displayPkg?.title}
+            loading={loading}
+            onBack={onHide}
+          />
 
           {loading ? (
             <div className="flex flex-col gap-4 mt-2">
@@ -196,10 +185,7 @@ export default function EsimDetailDrawer({ show, pkg, onHide, onBooked, onAdded,
                 </div>
               )}
 
-              {/* Title */}
-              <div className="ttw-type-h3 font-600 text-[#0b1220] leading-snug mb-1">
-                {displayPkg?.title}
-              </div>
+              {/* Title lives in the header above */}
 
               {/* Key specs row */}
               <div className="flex items-center gap-3 ttw-type-small text-[#445069] mb-3">
@@ -332,27 +318,16 @@ export default function EsimDetailDrawer({ show, pkg, onHide, onBooked, onAdded,
 
         {/* Sticky CTA */}
         {!loading && !error && (traceId || displayPkg?.id) && (
-          <div className="sticky bottom-0 z-10 border-t border-[#ececec] px-6 py-4 bg-[#fafaf5]">
+          <div className="sticky bottom-0 z-10 border-t border-[#ececec] px-6 max-ph:px-4 py-4 bg-white">
             {showManageActions ? (
-              <button
-                className="ttw-btn-remove-pill"
-                onClick={handleRemove}
-                disabled={removing}
-              >
-                {removing ? (
-                  <PulseLoader size={8} color="#CD2026" />
-                ) : (
-                  <>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                      <path d="M3 6h18" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                      <path d="M8 6V4.5A1.5 1.5 0 019.5 3h5A1.5 1.5 0 0116 4.5V6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                      <path d="M18.5 6l-.7 12.1a2 2 0 01-2 1.9H8.2a2 2 0 01-2-1.9L5.5 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                      <path d="M10 10.5v5M14 10.5v5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                    </svg>
-                    Remove from Itinerary
-                  </>
-                )}
-              </button>
+              <BookingDetailActions
+                onDelete={handleRemove}
+                deleting={removing}
+                deleteLabel="Remove from Itinerary"
+                onChange={() => setShowSearch(true)}
+                changeLabel="Change eSIM"
+                changeDisabled={removing}
+              />
             ) : (
               <button
                 className="w-full bg-[#f7e700] text-black font-500 ttw-type-body py-3 rounded-xl flex items-center justify-center gap-2 disabled:opacity-60"

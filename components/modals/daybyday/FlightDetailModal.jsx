@@ -1,18 +1,17 @@
 import React, { useState } from "react";
-import { Heading } from "../flights/SectionOne";
 import { IoMdClose } from "react-icons/io";
 import { FlightSegment } from "../../../containers/itinerary/TransfersContainer/FlightDetail";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { updateTransferBookings } from "../../../store/actions/transferBookingsStore";
-import { PulseLoader } from "react-spinners";
 import DrawerActionFooter from "../../revamp/common/components/DrawerActionFooter";
+import BookingDetailHeader from "../../revamp/common/components/BookingDetailHeader";
+import BookingDetailActions from "../../revamp/common/components/BookingDetailActions";
 import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
 import { toast, ToastContainer } from "react-toastify";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import { openNotification } from "../../../store/actions/notification";
-import BackArrow from "../../ui/BackArrow";
 import { Generalbuttonstyle } from "../../ui/button/Generallinkbutton";
 import { TbArrowBack } from "react-icons/tb";
 import { useAnalytics } from "../../../hooks/useAnalytics";
@@ -147,54 +146,20 @@ const FlightDetailModal = ({
 
   return (
     <div
-      className={`relative flex flex-col gap-4 rounded-md px-3 py-2 ${
-        !isEmbedded ? "pb-[104px]" : ""
+      // pt-2 only (not py-2): the standalone drawer pins a fixed action footer
+      // over the bottom of the scroll pane, so the bottom padding has to be the
+      // footer's clearance — a competing py-2 padding-bottom would shrink it and
+      // leave the last fare-rule lines hidden behind the bar.
+      className={`relative flex flex-col gap-4 rounded-md px-3 pt-2 ${
+        !isEmbedded ? "pb-[104px]" : "pb-2"
       }`}
     >
       {!isEmbedded && (
-        <div className="flex flex-col gap-2">
-          <Heading>
-            <div className="flex flex-row items-center gap-2">
-              <BackArrow handleClick={handleClose} />
-            </div>
-          </Heading>
-        </div>
-      )}
-      {!drawer && !isEmbedded && (
-        <div className="flex justify-between">
-          {" "}
-          <Text>{name}</Text>
-          {
-            <div>
-              {loading ? (
-                <div className="w-16 h-5 bg-[#ececec] opacity-50 rounded"></div>
-              ) : (
-                <>
-                  {/* <Text>{name}</Text> */}
-                  {/* <Generalbuttonstyle
-                    borderRadius={"7px"}
-                    fontSize={"1rem"}
-                    padding={"7px 25px"}
-                    onClick={() => {
-                      handleClose()
-                      handleEditRoute()
-                    }}
-                  >
-                    Change
-                  </Generalbuttonstyle> */}
-                  <button className="ttw-btn-secondary"
-                    onClick={() => {
-                      // handleClose()
-                      handleEditRoute()
-                    }}
-                  >
-                    Change
-                  </button>
-                </>
-              )}
-            </div>
-          }
-        </div>
+        <BookingDetailHeader
+          title={drawer ? null : name}
+          onBack={handleClose}
+          className="-mx-3 px-3"
+        />
       )}
 
 
@@ -325,25 +290,17 @@ const FlightDetailModal = ({
 
       {!isEmbedded && (
         <DrawerActionFooter zIndex={drawerZIndex ? drawerZIndex + 1 : 1502}>
-          <button
-            className="ttw-btn-remove-pill"
-            onClick={handleDelete}
-            disabled={loading}
-          >
-            {loading ? (
-              <PulseLoader size={10} speedMultiplier={0.6} color="#CD2026" />
-            ) : (
-              <>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M3 6h18" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                  <path d="M8 6V4.5A1.5 1.5 0 019.5 3h5A1.5 1.5 0 0116 4.5V6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                  <path d="M18.5 6l-.7 12.1a2 2 0 01-2 1.9H8.2a2 2 0 01-2-1.9L5.5 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M10 10.5v5M14 10.5v5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                </svg>
-                Delete Booking
-              </>
-            )}
-          </button>
+          <BookingDetailActions
+            onDelete={handleDelete}
+            deleting={loading}
+            onChange={
+              !drawer && typeof handleEditRoute === "function"
+                ? () => handleEditRoute()
+                : undefined
+            }
+            changeLabel="Change Transfer"
+            changeDisabled={loading}
+          />
         </DrawerActionFooter>
       )}
 

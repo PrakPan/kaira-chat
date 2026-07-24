@@ -6,9 +6,10 @@ import SkeletonCard from "../../ui/SkeletonCard";
 import { IoIosArrowDown } from "react-icons/io";
 import { MERCURY_HOST } from "../../../services/constants";
 import DrawerActionFooter from "../../revamp/common/components/DrawerActionFooter";
+import BookingDetailHeader from "../../revamp/common/components/BookingDetailHeader";
+import BookingDetailActions from "../../revamp/common/components/BookingDetailActions";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { PulseLoader } from "react-spinners";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
@@ -92,7 +93,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #fafaf5;
+  background: #ffffff;
   color: #0b1220;
 `;
 
@@ -102,7 +103,7 @@ const BackContainer = styled.div`
   gap: 0.5rem;
   position: sticky;
   z-index: 1;
-  background: #fafaf5;
+  background: #ffffff;
   top: 0;
   padding-block: 0.75rem;
 
@@ -481,6 +482,23 @@ const POIDetails = (props) => {
       </span>
     );
 
+  // Delete/Change now share the bottom action bar; the visibility rules are the
+  // ones the header button and the footer button each used to carry.
+  const canDelete =
+    !(props?.removeDelete == true) && props?.version != "v1" && !isDraft;
+  const canChange =
+    !(props?.removeChange === true) &&
+    !isDraft &&
+    !(props?.type === "restaurant");
+
+  const handleChangePoi = () => {
+    if (!token) {
+      props?.setShowLoginModal(true);
+      return;
+    }
+    setShowDrawer(true);
+  };
+
   return (
     <>
       {props?.data ? (
@@ -491,29 +509,10 @@ const POIDetails = (props) => {
               <div className="w-5 h-5 border-2 rounded-full border-t-black animate-spin"></div>
             </div>
           )}
-          <div className="py-4 max-ph:py-3 bg-[#fafaf5] z-[900] sticky top-0 flex flex-col gap-3 pb-2">
-            <Image src="/backarrow.svg" className="cursor-pointer" width={22} height={2} onClick={(e) => props.handleCloseDrawer(e)} />
-          </div>
-          <div className="flex justify-between items-start gap-3">
-            <div className="ttw-type-h2 font-semibold text-[#0b1220]">{props.data.name}</div>
-            {!(props?.removeChange === true) && !isDraft && !(props?.type === "restaurant") && (
-              <button
-                type="button"
-                className="ttw-btn-secondary whitespace-nowrap ttw-type-body"
-                onClick={() => {
-                  if (!token) {
-                    props?.setShowLoginModal(true);
-                    return;
-                  }
-                  setShowDrawer(true);
-                }}
-              >
-                Change
-              </button>
-            )}
-          </div>
-
-       
+          <BookingDetailHeader
+            title={props.data.name}
+            onBack={(e) => props.handleCloseDrawer(e)}
+          />
 
           <>
             {props?.data?.extra_images?.length > 3 ? (
@@ -1085,27 +1084,14 @@ const POIDetails = (props) => {
 
             <DrawerActionFooter zIndex={(props?.itineraryDrawer ? 1503 : 1501) + 1}>
 
-              {!(props?.removeDelete == true) && props?.version != "v1" && !isDraft && (
-                <button
-                  className="ttw-btn-remove-pill"
-                  onClick={handleDelete}
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <PulseLoader size={10} speedMultiplier={0.6} color="#CD2026" />
-                  ) : (
-                    <>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                        <path d="M3 6h18" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                        <path d="M8 6V4.5A1.5 1.5 0 019.5 3h5A1.5 1.5 0 0116 4.5V6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                        <path d="M18.5 6l-.7 12.1a2 2 0 01-2 1.9H8.2a2 2 0 01-2-1.9L5.5 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                        <path d="M10 10.5v5M14 10.5v5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                      </svg>
-                      Remove from Itinerary
-                    </>
-                  )}
-                </button>
-              )}
+              <BookingDetailActions
+                onDelete={canDelete ? handleDelete : undefined}
+                deleting={loading}
+                deleteLabel="Remove from Itinerary"
+                onChange={canChange ? handleChangePoi : undefined}
+                changeLabel="Change POI"
+                changeDisabled={loading}
+              />
 
               {/* Chat-opened flow: "Add to Itinerary" CTA. Emits a widget
                   action up to ChatKitPanel so the assistant can book the

@@ -4,8 +4,9 @@ import FlightDetailModal from "../../components/modals/daybyday/FlightDetailModa
 import TaxiDetailModal from "../../components/modals/daybyday/TaxiDetailModal";
 import Drawer from "../../components/ui/Drawer";
 import BackArrow from "../../components/ui/BackArrow";
+import BookingDetailHeader from "../../components/revamp/common/components/BookingDetailHeader";
+import BookingDetailActions from "../../components/revamp/common/components/BookingDetailActions";
 import FlightDetailLoader from "../../components/modals/daybyday/FlightDetailLoader";
-import { PulseLoader } from "react-spinners";
 import VehicleDetailModal from "../../components/modals/daybyday/VehicleModal";
 import VehicleDetailLoader from "../../components/modals/daybyday/VehicleDetailLoader";
 import { AiOutlineRight, AiOutlineDown, AiOutlineUp } from "react-icons/ai";
@@ -664,6 +665,14 @@ const TransferDrawer = ({
     onClose?.();
   };
 
+  // Combo legs can only be re-routed while none of them is paid for, and
+  // sightseeing / multicity-flight combos have no edit flow at all.
+  const canChangeCombo =
+    data?.transfer_type != "sightseeing" &&
+    drawer != "SightSeeing" &&
+    !(data?.combo_type === "multicity" && data?.booking_type === "Flight") &&
+    !!data?.children?.every((child) => child.status !== "Paid");
+
   return (
     <Drawer
       show={isDrawerOpen}
@@ -674,7 +683,7 @@ const TransferDrawer = ({
       onHide={handleClose}
       mobileWidth="100%"
       width={"50%"}
-      bgColor="#fafaf5"
+      bgColor="#ffffff"
     >
       {!isCombo ? (
         <>
@@ -751,47 +760,17 @@ const TransferDrawer = ({
         </>
       ) : (
         <div className="h-screen flex flex-col overflow-hidden">
-          <div className="py-4 px-6 max-ph:px-4 bg-[#fafaf5] z-[900] flex flex-col gap-3 pb-2 sticky top-0">
-            <Image
-              src="/backarrow.svg"
-              className="cursor-pointer"
-              width={22}
-              height={2}
-              onClick={handleClose}
-            />
-            <div className="flex justify-between items-center gap-3">
-              <div>
-                <div className="ttw-type-h2 font-semibold text-[#0b1220]">
-                  {data.name ||
-                    `${data.children[0]?.source_address?.name || ""} to ${
-                      data.children[data.children.length - 1]
-                        ?.destination_address?.name || ""
-                    }`}
-                </div>
-              </div>
-              {data?.transfer_type != "sightseeing" &&
-                drawer != "SightSeeing" &&
-                !(
-                  data?.combo_type === "multicity" &&
-                  data?.booking_type === "Flight"
-                ) && (
-                  <div>
-                    {data?.children?.every(
-                      (child) => child.status !== "Paid",
-                    ) && (
-                      <button
-                        className="ttw-btn-secondary whitespace-nowrap ttw-type-body"
-                        onClick={() => {
-                          handleEditRoute(data);
-                        }}
-                      >
-                        Change
-                      </button>
-                    )}
-                  </div>
-                )}
-            </div>
-          </div>
+          <BookingDetailHeader
+            title={
+              data.name ||
+              `${data.children[0]?.source_address?.name || ""} to ${
+                data.children[data.children.length - 1]?.destination_address
+                  ?.name || ""
+              }`
+            }
+            onBack={handleClose}
+            className="px-6 max-ph:px-4"
+          />
 
           <div className="overflow-y-scroll flex-1 px-6 max-ph:px-4 py-4 pb-24">
             {data?.combo_type == "multicity" &&
@@ -943,53 +922,17 @@ const TransferDrawer = ({
             )}
           </div>
 
-          {data?.combo_type != "multicity" && (
-            <div className="sticky bottom-0 z-10 border-t border-[#ececec] px-6 max-ph:px-4 py-4 bg-[#fafaf5]">
-              <button
-                className="ttw-btn-remove-pill"
-                onClick={() => onDeleteClick(data)}
-                disabled={deleting}
-              >
-                {deleting ? (
-                  <PulseLoader size={10} speedMultiplier={0.6} color="#CD2026" />
-                ) : (
-                  <>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                      <path d="M3 6h18" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                      <path d="M8 6V4.5A1.5 1.5 0 019.5 3h5A1.5 1.5 0 0116 4.5V6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                      <path d="M18.5 6l-.7 12.1a2 2 0 01-2 1.9H8.2a2 2 0 01-2-1.9L5.5 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                      <path d="M10 10.5v5M14 10.5v5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                    </svg>
-                    Delete Booking
-                  </>
-                )}
-              </button>
-            </div>
-          )}
-
-          {data?.combo_type === "multicity" && (
-            <div className="sticky bottom-0 z-10 border-t border-[#ececec] px-6 max-ph:px-4 py-4 bg-[#fafaf5]">
-              <button
-                className="ttw-btn-remove-pill"
-                onClick={() => onDeleteClick(data)}
-                disabled={deleting}
-              >
-                {deleting ? (
-                  <PulseLoader size={10} speedMultiplier={0.6} color="#CD2026" />
-                ) : (
-                  <>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                      <path d="M3 6h18" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                      <path d="M8 6V4.5A1.5 1.5 0 019.5 3h5A1.5 1.5 0 0116 4.5V6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                      <path d="M18.5 6l-.7 12.1a2 2 0 01-2 1.9H8.2a2 2 0 01-2-1.9L5.5 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                      <path d="M10 10.5v5M14 10.5v5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                    </svg>
-                    Delete Booking
-                  </>
-                )}
-              </button>
-            </div>
-          )}
+          {/* Delete (left) + Change (right) — one bar for both combo shapes */}
+          <div className="sticky bottom-0 z-10 border-t border-[#ececec] px-6 max-ph:px-4 py-4 bg-white">
+            <BookingDetailActions
+              onDelete={() => onDeleteClick(data)}
+              deleting={deleting}
+              onChange={
+                canChangeCombo ? () => handleEditRoute(data) : undefined
+              }
+              changeLabel="Change Transfer"
+            />
+          </div>
         </div>
       )}
       {/* {!isPageWide && (
