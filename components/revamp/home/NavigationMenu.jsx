@@ -56,10 +56,13 @@ const NavigationMenu = (props) => {
   // localStorage is browser-only; reading it during render crashes SSR. Read it
   // after mount so the server (and the first client render) see null, keeping
   // hydration in sync, then reflect the real token on the client.
+  // Re-read on every redux auth-token change so login/logout update instantly:
+  // logout clears localStorage and resets props.token, which re-runs this and
+  // flips the UI to Login/Signup without needing a page refresh.
   const [accessToken, setAccessToken] = useState(null);
   useEffect(() => {
     setAccessToken(localStorage.getItem("access_token"));
-  }, []);
+  }, [props.token]);
 
 
   // Memoized handlers to prevent unnecessary re-renders
