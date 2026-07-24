@@ -3496,8 +3496,10 @@ function RouteTimeline({ stops }: { stops: ParsedRouteStop[] }) {
               >
                 <span
                   style={{
+                    fontFamily:
+                      "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
                     fontSize: "clamp(14px, 4vw, 15px)",
-                    fontWeight: 500,
+                    fontWeight: 700,
                     color: "#0b1220",
                     lineHeight: 1.25,
                   }}
@@ -3762,13 +3764,11 @@ function ListViewNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetR
   }
 
   // Standalone route/itinerary list (not wrapped in a route Card) — render the
-  // image-matched timeline directly.
+  // full editorial card (green header band + timeline + cost) so it matches the
+  // Card-wrapped route widget exactly. `node` doubles as the routeList here; the
+  // cost card silently drops out when there's no "Estimated trip cost" text.
   if (isRouteListView(children)) {
-    return (
-      <div style={{ width: "100%" }}>
-        <RouteTimeline stops={parseRouteEntries(children)} />
-      </div>
-    );
+    return <RouteItineraryCard node={node} routeList={node} />;
   }
 
   return (
