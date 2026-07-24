@@ -4736,7 +4736,7 @@ const BottomCTABar = React.memo(
                   breakpoint — see the foot line at the bottom of the bar. */}
               <span className="font-sans text-[16px] md:text-[21px] font-bold leading-tight text-[#111827] whitespace-nowrap">
                 {currencySymbol}
-                {formatCurrencyValue(cost, currency?.currency)}/-
+                {formatCurrencyValue(Math.round(cost), currency?.currency)}/-
               </span>
             </>
           ) : cart?.error ? (
