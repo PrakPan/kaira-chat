@@ -42,6 +42,12 @@ import TailoredFormMobileModal from "../../components/modals/TailoredFomrMobile.
 import styles from "../../styles/pages/revamp/destination.module.scss";
 import SectionCta from "../../components/revamp/home/SectionCta.jsx";
 import MobileCardCarousel from "../../components/revamp/destination/MobileCardCarousel.jsx";
+import HomeHeroSection from "../../components/revamp/home/legacy/HeroSection.jsx";
+
+// Thailand country page id (from data/PagesToIdMapping.json → "asia/thailand").
+// When the country page is Thailand we swap in the homepage hero and point
+// every CTA at /new-trip instead of the tailored modal / intake chat.
+const THAILAND_PAGE_ID = "86c0051c-1e99-46cf-b59a-d425a067319b";
 
 const Index = (props) => {
   const [userItineraries, setUserItineraries] = useState([]);
@@ -52,9 +58,19 @@ const Index = (props) => {
 
   const router = useRouter();
 
-  // Chat with Kaira CTA → navigate the user to the /chat page.
+  // Is this the Thailand country page? (matches either the resolved page_id or
+  // the fetched country id.)
+  const isThailand =
+    props?.page_id === THAILAND_PAGE_ID || props?.data?.id === THAILAND_PAGE_ID;
+
+  // On Thailand every CTA reads "+ Create a Trip Now!" and opens /new-trip.
+  const ctaLabel = isThailand ? "+ Create a Trip Now!" : "Start planning";
+  const ctaHref = isThailand ? "/new-trip" : "/chat?intake=1";
+
+  // Chat with Kaira CTA → navigate the user to the /chat page (or /new-trip on
+  // the Thailand page).
   const handleChatWithKaira = () => {
-    router.push("/chat");
+    router.push(isThailand ? "/new-trip" : "/chat");
   };
 
   const handleOpenDrawer = (data, type) => {
@@ -91,6 +107,10 @@ const Index = (props) => {
   );
 
   const handlePlanButtonClick = (location) => {
+    if (isThailand) {
+      router.push("/new-trip");
+      return;
+    }
     setShowTailoredModal(true);
     logEvent({
       action: "Plan_Itinerary",
@@ -144,6 +164,9 @@ const Index = (props) => {
 
   return (
     <div className={styles.destinationPage}>
+      {isThailand ? (
+        <HomeHeroSection />
+      ) : (
       <HeroV2
         destinationLabel={destinationName}
         slug={props?.slug}
@@ -195,6 +218,7 @@ const Index = (props) => {
           </>
         }
       />
+      )}
 
       {/* STATS STRIP */}
       <DestinationStatsStrip
@@ -289,8 +313,9 @@ const Index = (props) => {
           // label="End of · How it works"
           // heading="How it"
           // accent="works."
-          ctaLabel="Start planning"
-          destination={destinationName}
+          ctaLabel={ctaLabel}
+          href={ctaHref}
+          destination={isThailand ? undefined : destinationName}
         />
         </div>
       ) : null}
@@ -306,15 +331,18 @@ const Index = (props) => {
           // label="End of · How it works"
           // heading="How it"
           // accent="works."
-          ctaLabel="Start planning"
-          destination={destinationName}
+          ctaLabel={ctaLabel}
+          href={ctaHref}
+          destination={isThailand ? undefined : destinationName}
         />
 
       <div className={styles.container}>
         <DesktopBanner
           loading={desktopBannerLoading}
           hideMobile={props.hideMobileBanner}
-          onclick={() => setShowTailoredModal(true)}
+          onclick={() =>
+            isThailand ? router.push("/new-trip") : setShowTailoredModal(true)
+          }
           text={`Craft a personalized itinerary${
             props.data?.slug
               ? " to " + convertDbNameToCapitalFirst(props.data?.slug) + " now"
@@ -382,8 +410,9 @@ const Index = (props) => {
           // label="End of · How it works"
           // heading="How it"
           // accent="works."
-          ctaLabel="Start planning"
-          destination={destinationName}
+          ctaLabel={ctaLabel}
+          href={ctaHref}
+          destination={isThailand ? undefined : destinationName}
         />
             </div>
           </section>
@@ -486,8 +515,9 @@ const Index = (props) => {
           // label="End of · How it works"
           // heading="How it"
           // accent="works."
-          ctaLabel="Start planning"
-          destination={destinationName}
+          ctaLabel={ctaLabel}
+          href={ctaHref}
+          destination={isThailand ? undefined : destinationName}
         />
             </div>
           </section>
@@ -534,8 +564,9 @@ const Index = (props) => {
           // label="End of · How it works"
           // heading="How it"
           // accent="works."
-          ctaLabel="Start planning"
-          destination={destinationName}
+          ctaLabel={ctaLabel}
+          href={ctaHref}
+          destination={isThailand ? undefined : destinationName}
         />
             </div>
           </section>
@@ -554,8 +585,9 @@ const Index = (props) => {
           // label="End of · How it works"
           // heading="How it"
           // accent="works."
-          ctaLabel="Start planning"
-          destination={destinationName}
+          ctaLabel={ctaLabel}
+          href={ctaHref}
+          destination={isThailand ? undefined : destinationName}
         />
 
         {/* OTHER COUNTRIES IN CONTINENT */}
@@ -601,8 +633,9 @@ const Index = (props) => {
           // label="End of · How it works"
           // heading="How it"
           // accent="works."
-          ctaLabel="Start planning"
-          destination={destinationName}
+          ctaLabel={ctaLabel}
+          href={ctaHref}
+          destination={isThailand ? undefined : destinationName}
         />
             </div>
           </section>
