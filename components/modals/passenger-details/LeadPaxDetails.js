@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CountryCodeDropdown from "../../userauth/CountryDropdown";
 import { FiChevronDown } from "react-icons/fi";
 import { useSelector } from "react-redux";
@@ -40,6 +40,26 @@ const LeadPaxDetails = ({ input, setInput }) => {
     passport_expiry: false,
     passport_issue_date: false,
   });
+
+  // The flag selector only writes isd_code when the user actively picks a
+  // country, so an untouched selector would submit no country code at all.
+  // Default it to India up front (matching the flag shown by default), and
+  // when re-opening with a saved code, reflect that country in the flag.
+  useEffect(() => {
+    if (!CountryCodes) return;
+    if (!input.isd_code) {
+      if (CountryCodes["India"]) {
+        setExtension("India");
+        setInput((prev) => ({ ...prev, isd_code: CountryCodes["India"].label }));
+      }
+      return;
+    }
+    const match = Object.keys(CountryCodes).find(
+      (key) => CountryCodes[key].label === input.isd_code
+    );
+    if (match) setExtension(match);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [CountryCodes]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

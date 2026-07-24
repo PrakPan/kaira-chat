@@ -15,6 +15,7 @@ const buildAdult = (isLead = false) => ({
   dob: "",
   email: "",
   contact_number: "",
+  isd_code: "",
   is_lead: isLead,
   type: "adult",
   passport_number: "",
@@ -182,6 +183,9 @@ const AddTravellerDetails = ({ itinerary, onSuccess }) => {
     }
     if (!lead.contact_number?.trim()) {
       return "Lead traveller must provide a contact number.";
+    }
+    if (!lead.isd_code?.toString().trim()) {
+      return "Lead traveller must have a country code selected.";
     }
 
     const labelFor = (g, i, kind) => `${kind} ${i + 1}`;
