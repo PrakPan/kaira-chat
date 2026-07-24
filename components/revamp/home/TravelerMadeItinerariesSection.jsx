@@ -3743,7 +3743,11 @@ const TravelerMadeItinerariesSection = (props) => {
                     variant="filled"
                     size="medium"
                     onClick={() => {
-                      router.push("/chat");
+                      if(props?.corporates) {
+                        router.push("/chat");
+                      } else {
+                        router.push("/new-trip");
+                      }
                     }}
                     className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
                   >

@@ -97,7 +97,7 @@ export async function getStaticPaths() {
     );
     const data = res.data.data.pages;
 
-    for (var i = 0; i < 2; i++) {
+    for (var i = 0; i < 1; i++) {
       paths.push({
         params: {
           continent: data[i]['path'],

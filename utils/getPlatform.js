@@ -1,4 +1,9 @@
 const getPlatform = () => {
+  // Guard against SSR/prerender where navigator/window are undefined.
+  if (typeof navigator === 'undefined' || typeof window === 'undefined') {
+    return 'desktop';
+  }
+
   const userAgent = navigator.userAgent.toLowerCase();
   const width = window.innerWidth;
 

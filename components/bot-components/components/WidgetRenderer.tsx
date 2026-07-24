@@ -3258,6 +3258,478 @@ function isRouteListView(children: WidgetNode[]): boolean {
   });
 }
 
+// ─── Route itinerary card (image-matched "shared itinerary" design) ──────────
+// Renders the route/itinerary widget as: a green editorial header band with a
+// derived trip title, a colored-dot timeline (city + nights pill + one-liner +
+// transfer chips between stops), and an "EST / PERSON" cost card. All content
+// is derived from the widget JSON — no decorative chrome without a data source.
+
+const ROUTE_DOT_FALLBACK = "#8a93a6";
+
+interface ParsedRouteStop {
+  city: string;
+  nights: string;      // "1N" / "3N" (empty for departure/return endpoints)
+  secondary: string;   // one-liner description, or "Departure" / "Return"
+  dotColor: string;
+  transfers: string[]; // badge labels for the leg leaving this stop
+  isEndpoint: boolean; // true when there are no nights (a departure/return pin)
+}
+
+// Append an 8-digit alpha channel to a #rrggbb hex; returns "transparent" for
+// anything that isn't a plain 6-digit hex so the halo silently degrades.
+function withAlpha(hex: string, alpha: number): string {
+  const m = /^#([0-9a-f]{6})$/i.exec(hex);
+  if (!m) return "transparent";
+  const a = Math.round(Math.max(0, Math.min(1, alpha)) * 255)
+    .toString(16)
+    .padStart(2, "0");
+  return `#${m[1]}${a}`;
+}
+
+// Split a transfer badge label ("🚆 Sleeper train overnight, saves a hotel")
+// into emoji + bold mode ("Sleeper train") + secondary rest ("overnight, …").
+function parseTransferLabel(label: string): { emoji: string; mode: string; rest: string } {
+  const trimmed = (label ?? "").trim();
+  // Leading non-alphanumeric run = emoji/symbol prefix. Avoid \p{…}/u escapes
+  // (unavailable at this tsconfig target); the char class still consumes the
+  // emoji's surrogate-pair code units fine.
+  const em = trimmed.match(/^([^A-Za-z0-9]+)/);
+  const emoji = em ? em[1].trim() : "";
+  const after = em ? trimmed.slice(em[0].length).trim() : trimmed;
+  const parts = after.split(/\s+/).filter(Boolean);
+  // Bold up to the first two leading alphabetic words (mode name); the rest —
+  // durations, arrows, notes — renders in the secondary color.
+  let i = 0;
+  while (i < parts.length && i < 2 && /^[A-Za-z]+$/.test(parts[i])) i++;
+  if (i === 0) i = Math.min(1, parts.length);
+  return { emoji, mode: parts.slice(0, i).join(" "), rest: parts.slice(i).join(" ") };
+}
+
+// Walk the route ListView items into an ordered list of stops, folding each
+// transfer badge into the stop that precedes it.
+function parseRouteEntries(children: WidgetNode[]): ParsedRouteStop[] {
+  const stops: ParsedRouteStop[] = [];
+
+  for (const item of children) {
+    const kids = (item.children ?? []) as WidgetNode[];
+
+    // Dot color lives on the small full-radius Box inside a Col.
+    let dotColor: string | undefined;
+    for (const c of kids) {
+      if (c.type !== "Col") continue;
+      for (const kid of (c.children ?? []) as WidgetNode[]) {
+        if (
+          kid.type === "Box" &&
+          kid.radius === "full" &&
+          kid.size != null &&
+          (kid.size as number) <= 10
+        ) {
+          dotColor = resolveBg(kid.background as string | undefined);
+        }
+      }
+    }
+
+    // No dot → this is a transfer leg. Fold its badge into the previous stop.
+    if (dotColor == null) {
+      const badges = extractAllBadges(item);
+      const label = ((badges[0]?.label ?? badges[0]?.value ?? "") as string).trim();
+      if (label && stops.length > 0) stops[stops.length - 1].transfers.push(label);
+      continue;
+    }
+
+    // A stop: first plain Text = city, "| 1N" = nights, secondary/xs = one-liner
+    // (or the "Departure"/"Return" label on endpoints).
+    let city = "";
+    let nights = "";
+    let secondary = "";
+    for (const c of kids) {
+      if (c.type !== "Text") continue;
+      const v = ((c.value as string | undefined) ?? "").trim();
+      if (!v) continue;
+      if (/^\|/.test(v)) {
+        nights = v.replace(/^\|\s*/, "");
+      } else if (c.color === "secondary" || c.size === "xs") {
+        secondary = secondary ? `${secondary} ${v}` : v;
+      } else if (!city) {
+        city = v;
+      } else if (!nights) {
+        nights = v;
+      }
+    }
+
+    stops.push({
+      city,
+      nights,
+      secondary,
+      dotColor: dotColor ?? ROUTE_DOT_FALLBACK,
+      transfers: [],
+      isEndpoint: !nights,
+    });
+  }
+
+  return stops;
+}
+
+// Extract the "Estimated trip cost: …" text and split it into a compact label
+// + amount pair for the cost card.
+function findRouteCostText(node: WidgetNode): string {
+  const hit = findNodesByType(node, "Text").find((t) =>
+    /estimat|trip cost|per person/i.test((t.value as string | undefined) ?? ""),
+  );
+  return ((hit?.value as string | undefined) ?? "").trim();
+}
+
+function parseRouteCost(raw: string): { label: string; amount: string } {
+  if (!raw) return { label: "", amount: "" };
+  const perPerson = /per\s*person/i.test(raw);
+  let amount = raw
+    .replace(/^.*?cost[:\s-]*/i, "")
+    .replace(/per\s*person/i, "")
+    .trim();
+  // Fallback when the text carried no "cost" keyword to strip against.
+  if (/estimat/i.test(amount) && amount.includes(":")) {
+    amount = amount.slice(amount.indexOf(":") + 1).trim();
+  }
+  return { label: perPerson ? "EST / PERSON" : "ESTIMATED", amount };
+}
+
+function NightsPill({ nights }: { nights: string }) {
+  return (
+    <span
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        padding: "1px 6px",
+        borderRadius: 5,
+        background: "#eef0ec",
+        color: "#6B7280",
+        fontSize: 10,
+        fontWeight: 600,
+        letterSpacing: "0.03em",
+        lineHeight: 1.4,
+        flexShrink: 0,
+      }}
+    >
+      {nights}
+    </span>
+  );
+}
+
+function RouteTransferChip({ label }: { label: string }) {
+  const { emoji, mode, rest } = parseTransferLabel(label);
+  return (
+    <div
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 6,
+        maxWidth: "100%",
+        padding: "5px 11px",
+        borderRadius: 9999,
+        background: "#f2f3f0",
+        lineHeight: 1.3,
+        flexWrap: "wrap",
+        rowGap: 2,
+      }}
+    >
+      {emoji && (
+        <span style={{ fontSize: 14, flexShrink: 0, lineHeight: 1 }}>{emoji}</span>
+      )}
+      {mode && (
+        <span style={{ fontSize: 12, fontWeight: 600, color: "#0b1220" }}>{mode}</span>
+      )}
+      {rest && <span style={{ fontSize: 12, color: "#9aa2ad" }}>{rest}</span>}
+    </div>
+  );
+}
+
+function RouteTimeline({ stops }: { stops: ParsedRouteStop[] }) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column" }}>
+      {stops.map((s, idx) => {
+        const isLast = idx === stops.length - 1;
+        return (
+          <div key={idx} style={{ display: "flex", gap: 12 }}>
+            {/* Rail: colored pin dot + dashed connector */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                width: 12,
+                flexShrink: 0,
+              }}
+            >
+              <div
+                style={{
+                  width: 11,
+                  height: 11,
+                  borderRadius: "50%",
+                  background: s.dotColor,
+                  marginTop: 4,
+                  boxShadow: `0 0 0 3px ${withAlpha(s.dotColor, 0.16)}`,
+                  flexShrink: 0,
+                }}
+              />
+              {!isLast && (
+                <div
+                  style={{
+                    flex: 1,
+                    width: 0,
+                    marginTop: 4,
+                    minHeight: 18,
+                    borderLeft: "2px dashed #d7dbe0",
+                  }}
+                />
+              )}
+            </div>
+
+            {/* Content: city + nights, one-liner, transfer chips */}
+            <div style={{ flex: 1, minWidth: 0, paddingBottom: isLast ? 0 : 16 }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 7,
+                  flexWrap: "wrap",
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: "clamp(14px, 4vw, 15px)",
+                    fontWeight: 500,
+                    color: "#0b1220",
+                    lineHeight: 1.25,
+                  }}
+                >
+                  {s.city}
+                </span>
+                {s.nights && <NightsPill nights={s.nights} />}
+                {s.isEndpoint && s.secondary && (
+                  <span
+                    style={{
+                      fontSize: 10,
+                      fontWeight: 600,
+                      letterSpacing: "0.08em",
+                      textTransform: "uppercase",
+                      color: "#9aa2ad",
+                    }}
+                  >
+                    {s.secondary}
+                  </span>
+                )}
+              </div>
+
+              {!s.isEndpoint && s.secondary && (
+                <div
+                  style={{
+                    marginTop: 2,
+                    fontSize: "clamp(12px, 3.4vw, 13px)",
+                    color: "#6B7280",
+                    lineHeight: 1.5,
+                  }}
+                >
+                  {s.secondary}
+                </div>
+              )}
+
+              {s.transfers.length > 0 && (
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "flex-start",
+                    gap: 7,
+                    marginTop: 9,
+                  }}
+                >
+                  {s.transfers.map((t, i) => (
+                    <RouteTransferChip key={i} label={t} />
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function RouteCostCard({ label, amount }: { label: string; amount: string }) {
+  return (
+    <div
+      style={{
+        marginTop: 16,
+        border: "1px solid #ececec",
+        borderRadius: 14,
+        padding: "13px 16px",
+      }}
+    >
+      <div
+        style={{
+          fontSize: 10,
+          fontWeight: 600,
+          letterSpacing: "0.12em",
+          textTransform: "uppercase",
+          color: "#9aa2ad",
+          marginBottom: 4,
+        }}
+      >
+        {label}
+      </div>
+      <div
+        style={{
+          fontSize: "clamp(16px, 4.6vw, 18px)",
+          fontWeight: 700,
+          color: "#0b1220",
+          letterSpacing: "-0.01em",
+          lineHeight: 1.15,
+        }}
+      >
+        {amount}
+      </div>
+    </div>
+  );
+}
+
+function RouteHeaderBand({
+  title,
+  departure,
+  totalNights,
+  stopCount,
+}: {
+  title: string;
+  departure: string;
+  totalNights: number;
+  stopCount: number;
+}) {
+  const pill = (text: string) => (
+    <span
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        padding: "3px 9px",
+        borderRadius: 9999,
+        background: "rgba(255,255,255,0.16)",
+        color: "#ffffff",
+        fontSize: 10.5,
+        fontWeight: 600,
+        letterSpacing: "0.02em",
+      }}
+    >
+      {text}
+    </span>
+  );
+  return (
+    <div
+      style={{
+        background:
+          "linear-gradient(135deg, #2f6b52 0%, #3c7c5e 55%, #4a8a69 100%)",
+        padding: "clamp(15px, 4.5vw, 18px) clamp(16px, 4.5vw, 20px)",
+      }}
+    >
+      {departure && (
+        <div
+          style={{
+            fontSize: 10,
+            fontWeight: 600,
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+            color: "rgba(255,255,255,0.72)",
+            marginBottom: 6,
+          }}
+        >
+          From {departure}
+        </div>
+      )}
+      <div
+        className="kp-serif"
+        style={{
+          fontSize: "clamp(20px, 6vw, 24px)",
+          lineHeight: 1.14,
+          color: "#ffffff",
+        }}
+      >
+        {title}
+      </div>
+      {(totalNights > 0 || stopCount > 0) && (
+        <div style={{ marginTop: 11, display: "flex", gap: 7, flexWrap: "wrap" }}>
+          {totalNights > 0 && pill(`${totalNights}N`)}
+          {stopCount > 0 && pill(`${stopCount} ${stopCount === 1 ? "stop" : "stops"}`)}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function RouteItineraryCard({
+  node,
+  routeList,
+}: {
+  node: WidgetNode;
+  routeList: WidgetNode;
+}) {
+  const stops = parseRouteEntries((routeList.children ?? []) as WidgetNode[]);
+  const { label, amount } = parseRouteCost(findRouteCostText(node));
+
+  const destinations = stops.filter((s) => !s.isEndpoint);
+  const departure = stops.find((s) => s.isEndpoint)?.city ?? "";
+  const title = destinations.length
+    ? destinations.map((s) => s.city).join(" · ")
+    : stops[0]?.city ?? "Your itinerary";
+  const totalNights = destinations.reduce(
+    (sum, s) => sum + (parseInt(s.nights, 10) || 0),
+    0,
+  );
+
+  return (
+    <div
+      style={{
+        background: "#ffffff",
+        border: "1px solid #ececec",
+        borderRadius: 18,
+        overflow: "hidden",
+        width: "100%",
+        maxWidth: "100%",
+        marginTop: 10,
+        boxSizing: "border-box",
+        boxShadow: "0 4px 24px rgba(11,18,32,0.06)",
+      }}
+    >
+      <RouteHeaderBand
+        title={title}
+        departure={departure}
+        totalNights={totalNights}
+        stopCount={destinations.length}
+      />
+      <div
+        style={{
+          padding:
+            "clamp(16px, 4.5vw, 18px) clamp(16px, 4.5vw, 18px) clamp(18px, 5vw, 20px)",
+        }}
+      >
+        <RouteTimeline stops={stops} />
+        {amount && <RouteCostCard label={label} amount={amount} />}
+      </div>
+    </div>
+  );
+}
+
+// Returns the route ListView nested in a Card, or null if this isn't a route
+// card. Used by CardNode to intercept the whole itinerary card.
+function findRouteListView(node: WidgetNode): WidgetNode | null {
+  for (const c of (node.children ?? []) as WidgetNode[]) {
+    if (
+      c.type === "ListView" &&
+      isRouteListView((c.children ?? []) as WidgetNode[])
+    ) {
+      return c;
+    }
+  }
+  return null;
+}
+
 // ─── ListView – routes to TransportListView when applicable ──────────────────
 
 function ListViewNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetRendererProps["onAction"] }) {
@@ -3289,28 +3761,21 @@ function ListViewNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetR
     return <TransportListView node={node} onAction={onAction} />;
   }
 
-  const isRoute = isRouteListView(children);
+  // Standalone route/itinerary list (not wrapped in a route Card) — render the
+  // image-matched timeline directly.
+  if (isRouteListView(children)) {
+    return (
+      <div style={{ width: "100%" }}>
+        <RouteTimeline stops={parseRouteEntries(children)} />
+      </div>
+    );
+  }
 
   return (
-    <div style={{ display: "inline-flex", flexDirection: "column", fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",paddingLeft: isRoute ? 16 : 0 }}>
-      {children.map((item, idx) => {
-        const content = (
-          <ListViewItemNode key={(item.key as string) ?? idx} node={item} onAction={onAction} />
-        );
-
-        if (isRoute) {
-          return (
-            <RouteItemContext.Provider
-              key={(item.key as string) ?? idx}
-              value={{ index: idx, isLast: idx === children.length - 1 }}
-            >
-              {content}
-            </RouteItemContext.Provider>
-          );
-        }
-
-        return content;
-      })}
+    <div style={{ display: "inline-flex", flexDirection: "column", fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}>
+      {children.map((item, idx) => (
+        <ListViewItemNode key={(item.key as string) ?? idx} node={item} onAction={onAction} />
+      ))}
     </div>
   );
 }
@@ -5444,6 +5909,14 @@ function CardNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetRende
   const drawerButton = findOpenDrawerButton(node);
   if (drawerButton) {
     return <ElementPreviewCard node={node} button={drawerButton} onAction={onAction} />;
+  }
+
+  // Route / itinerary card — a Card wrapping an estimated-cost box and a route
+  // ListView (colored pin-dot timeline). Rendered as the polished editorial
+  // itinerary design instead of the generic passthrough.
+  const routeList = findRouteListView(node);
+  if (routeList) {
+    return <RouteItineraryCard node={node} routeList={routeList} />;
   }
 
   const children = (node.children ?? []) as WidgetNode[];

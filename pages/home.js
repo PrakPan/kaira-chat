@@ -1,92 +1,53 @@
 import Head from "next/head";
-import dynamic from "next/dynamic";
-import { useEffect } from "react";
-import { useRouter } from "next/router";
-import { connect } from "react-redux";
-
+// import HomepageContainer from "../containers/homepage/Index";
+import HeroSection from "../components/revamp/home/legacy/HeroSection";
 import NavigationMenu from "../components/revamp/home/NavigationMenu";
-import HeroSection from "../components/revamp/home/HeroSection";
 import JourneySimplified from "../components/revamp/home/JourneySimplified";
-import GoogleReviewsSection from "../components/revamp/home/GoogleReviewsSection";
+import PlacesBragSection from "../components/revamp/home/legacy/PlacesBragSection";
+import FullSlider from "../components/revamp/home/FullSlider";
+import MostLovedItinerariesSection from "../components/revamp/destination/MostLovedItinerariesSection";
+import TravelerMadeItinerariesSection from "../components/revamp/home/TravelerMadeItinerariesSection";
+import TravelVibeSection from "../components/revamp/home/TravelVibeSection";
+import WhereNextSection from "../components/revamp/home/WhereNextSection";
 import WhatMakesUsSection from "../components/revamp/home/WhatMakesUsSection";
-import NewFooter from "../components/newfooter/Index";
-import MyTripsSection from "../components/revamp/destination/mytrips";
-import TrustFactors from "../components/revamp/home/TrustFactors";
-import FaqSection, { defaultFaqData } from "../components/revamp/home/FaqSection";
-import LuxuryEuropeDestinations from "../components/revamp/home/LuxuryEuropeDestinations";
-import KairaLovingSection from "../components/revamp/home/KairaLovingSection";
-import TravelerStoriesSection from "../components/revamp/home/TravelerStoriesSection";
-import KairaPlansSection from "../components/revamp/home/KairaPlansSection";
-import WhyKairaSection from "../components/revamp/home/WhyKairaSection";
+import FaqSection from "../components/revamp/home/FaqSection";
 import CtaBoardingSection from "../components/revamp/home/CtaBoardingSection";
-import SectionCta from "../components/revamp/home/SectionCta";
-import Banner from "../components/containers/Banner";
+import NewFooter from "../components/newfooter/Index";
 
+// import Layout from "../components/Layout";
+import { connect, useSelector } from "react-redux";
 import * as authaction from "../store/actions/auth";
 import setHotLocationSearch from "../store/actions/hotLocationSearch";
-
+import { useEffect } from "react";
 import styles from "../styles/pages/revamp/home.module.scss";
-
-import axios from "axios";
 import axiospagelistinstance from "../services/pages/list";
 import axioscountrydetailsinstance from "../services/pages/country";
+import axiosCountInstance from "../services/itinerary/count";
 import axioslocationsinstance from "../services/search/search";
+import axios from "axios";
 import { MERCURY_HOST } from "../services/constants";
 import * as PagesToIdMapping from "../data/PagesToIdMapping.json";
-import HomeSectionCta from "../components/revamp/home/HomeSectionCta";
+import { useRouter } from "next/router";
+import Login from "../components/modals/Login";
+import MyTripsSection from "../components/revamp/destination/mytrips";
+import TestimonialCarousel from "../components/theme/TestimonialCarousel";
+import PartnersSection from "../components/theme/PartnersSection";
+import LuxuryEuropeDestinations from "../components/revamp/home/LuxuryEuropeDestinations";
+import TrustFactors from "../components/revamp/home/TrustFactors";
+import ThemeHeadline from "../containers/travelplanner/ThemeHeadines";
 
-// Polyfill for requestIdleCallback (Safari compatibility)
-if (typeof window !== "undefined" && !window.requestIdleCallback) {
-  window.requestIdleCallback = function (callback) {
-    const start = Date.now();
-    return setTimeout(function () {
-      callback({
-        didTimeout: false,
-        timeRemaining: function () {
-          return Math.max(0, 50 - (Date.now() - start));
-        },
-      });
-    }, 1);
-  };
-  window.cancelIdleCallback = function (id) {
-    clearTimeout(id);
-  };
-}
 
-/* ---------------- Code-split below-the-fold sections (no SSR) ---------------- */
 
-const TestimonialCarousel = dynamic(() => import("../components/theme/TestimonialCarousel"), {
-  ssr: false,
-  loading: () => <div style={{ height: 260, background: "#f3f4f6" }} className="mt-[2rem]" />,
-});
-const PartnersSection = dynamic(() => import("../components/theme/PartnersSection"), {
-  ssr: false,
-  loading: () => <div style={{ height: 160, background: "#f3f4f6" }} />,
-});
-
-/* ---------------- Page ---------------- */
-
-const Home = ({ token, hotLocationSearch, checkAuthState, setHotLocationSearch }) => {
-  const router = useRouter();
-
+const Home = (props) => {
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      requestIdleCallback(() => {
-        checkAuthState();
-        if (hotLocationSearch?.length) {
-          setHotLocationSearch(hotLocationSearch);
-        }
-      });
-    }
+    props.checkAuthState();
+    props.setHotLocationSearch(props.hotLocationSearch);
   }, []);
-
+  const router = useRouter();
   return (
     <>
       <Head>
         <title>AI Trip Planner with Human Expertise | The Tarzan Way</title>
-        <link rel="canonical" href="https://thetarzanway.com/" />
-        {/* Preload the LCP hero image so it paints sooner (CWV). */}
-        <link rel="preload" as="image" href="/KairaInsta.jpg" />
         <meta
           name="description"
           content="Plan your trip with Kaira, an AI travel assistant backed by local human curators. Search hundreds of platforms, get a curator-reviewed itinerary, and pay only for what you book."
@@ -111,193 +72,203 @@ const Home = ({ token, hotLocationSearch, checkAuthState, setHotLocationSearch }
           content="ai trip planner,ai travel planner,travel itinerary planner,custom travel itineraries,personalized travel planning,smart trip planner,automated itinerary builder,online trip planner,digital travel planner,travel planning platform,customized holiday packages,personalized travel package,luxury travel planning,honeymoon travel packages,family travel packages,international travel planner,travel packages with itinerary,create travel itinerary online,plan my trip online,The Tarzan Way, hotels,flights,activities,transfers local travel experience"
         ></meta>
 
+        <link rel="canonical" href={`https://thetarzanway.com`}></link>
+
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
+            __html: `
+            {
               "@context": "https://schema.org",
               "@type": "TravelAgency",
-              name: "The Tarzan Way",
-              image: "https://thetarzanway.com/og-image.png",
-              logo: "https://thetarzanway.com/icon-512.png",
-              url: "https://thetarzanway.com/",
-              telephone: "+91 7827441548",
-              address: {
+              "name": "The Tarzan Way",
+              "image": "https://thetarzanway.com/logoblack.svg",
+              "@id": "",
+              "url": "https://thetarzanway.com/",
+              "telephone": "+91 8448687703",
+              "address": {
                 "@type": "PostalAddress",
-                addressCountry: "IN",
+                "streetAddress": "",
+                "addressLocality": "",
+                "postalCode": "",
+                "addressCountry": "IN"
               },
-              openingHoursSpecification: {
+              "openingHoursSpecification": {
                 "@type": "OpeningHoursSpecification",
-                dayOfWeek: [
+                "dayOfWeek": [
                   "Monday",
                   "Tuesday",
                   "Wednesday",
                   "Thursday",
                   "Friday",
                   "Saturday",
-                  "Sunday",
+                  "Sunday"
                 ],
-                opens: "00:00",
-                closes: "23:59",
+                "opens": "00:00",
+                "closes": "23:59"
               },
-              sameAs: [
+              "sameAs": [
                 "https://www.facebook.com/thetarzanway/",
                 "https://twitter.com/thetarzanway",
                 "https://www.instagram.com/thetarzanway/",
                 "https://www.linkedin.com/company/thetarzanway/",
-              ],
-            }),
-          }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "FAQPage",
-              mainEntity: defaultFaqData.map((f) => ({
-                "@type": "Question",
-                name: f.question,
-                acceptedAnswer: { "@type": "Answer", text: f.answer },
-              })),
-            }),
+                "https://in.pinterest.com/thetarzanway/"
+              ]
+            }
+          `,
           }}
         />
       </Head>
 
+      {/* <HomepageContainer
+        asiaLocations={props.asiaLocations}
+        europeLocations={props.europeLocations}
+        token={props.token}
+        locations={props.locations}
+        ThemeData={props.ThemeData}
+        continetCarousel={props.continetCarousel}
+      ></HomepageContainer> */}
+
       <div className={styles.ttwRevamp}>
-        <NavigationMenu message={"Welcome to The Tarzan Way!"} />
-        <HeroSection slug={"home"} />
-        <TrustFactors />
-        <KairaLovingSection />
-        {token && <MyTripsSection className="max-w-7xl" />}
+        <NavigationMenu />
+        {/* <ThemeHeadline text={`Limited-Time Offer: Up to ₹20,000 OFF | Book Before Dec 20`}/> */}
+        <HeroSection slug={'home'} />
+        <TrustFactors/>
+        {/* <JourneySimplified /> */}
+        {props.token && <MyTripsSection className={'max-w-7xl'} />}
 
-        <JourneySimplified />
-        <HomeSectionCta
-          // label="End of · How it works"
-          // heading="How it"
-          // accent="works."
-          ctaLabel="Start planning"
-        />
 
-        <GoogleReviewsSection />
-        <HomeSectionCta
-          // label="End of · Real reviews"
-          // heading="Real reviews from"
-          // accent="real travellers."
-          ctaLabel="Start planning"
-        />
-
-        <TravelerStoriesSection />
-        <HomeSectionCta
-          // label="End of · Real trips. Real moments"
-          // heading="Real trips. Real"
-          // accent="moments."
-          ctaLabel="Start planning"
-        />
-
-        <LuxuryEuropeDestinations />
-        <KairaPlansSection />
-        <WhyKairaSection />
-        <HomeSectionCta
-          // label="End of · Why Kaira"
-          // heading="Why travellers choose"
-          // accent="Kaira."
-          marginTop="20px"
-          ctaLabel="Start planning"
-        />
-        {/* <PartnersSection />
-        <TestimonialCarousel /> */}
+        <PlacesBragSection />
+        {/* <LuxuryEuropeDestinations /> */}
+        <TravelerMadeItinerariesSection />
+        {/* <FullSlider /> */}
+        <TravelVibeSection />
+        <PartnersSection />
+        {/* <WhereNextSection /> */}
+        <WhatMakesUsSection />
+        <TestimonialCarousel />
         <FaqSection />
-        <HomeSectionCta
-          // label="End of · Questions, answered"
-          // heading="Questions,"
-          // accent="answered."
-          ctaLabel="Start planning"
-        />
-        <CtaBoardingSection />
-
-        <Banner
-          onclick={() => router.push("/chat?intake=1")}
-          text="Craft your personalized itinerary now!"
-        />
+        <CtaBoardingSection ctaLabel="Plan my trip" ctaHref="/new-trip" />
       </div>
-
       <NewFooter page="Homepage" />
+      {/* <div id="login" className="width-[100%] z-[1650]">
+        <Login
+          show={props.showLogin}
+          onhide={props.authCloseLogin}
+          itinary_id={props?.itinary_id}
+          zIndex={"3300"}
+        />
+      </div> */}
     </>
   );
 };
 
-/* ---------------- Redux ---------------- */
+const mapStateToPros = (state) => {
+  return {
+    token: state.auth.token,
+    showLogin: state.auth.showLogin,
+  };
+};
 
-const mapStateToProps = (state) => ({
-  token: state.auth.token,
-});
+const mapDispatchToProps = (dispatch) => {
+  return {
+    checkAuthState: () => dispatch(authaction.checkAuthState()),
+    authCloseLogin: () => dispatch(authaction.authCloseLogin()),
+    setHotLocationSearch: (payload) => dispatch(setHotLocationSearch(payload)),
+  };
+};
 
-const mapDispatchToProps = (dispatch) => ({
-  checkAuthState: () => dispatch(authaction.checkAuthState()),
-  setHotLocationSearch: (payload) => dispatch(setHotLocationSearch(payload)),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Home);
-
-/* ---------------- getStaticProps ---------------- */
+export default connect(mapStateToPros, mapDispatchToProps)(Home);
 
 export async function getStaticProps() {
-  let locations = [];
-  let asiaLocations = [];
-  let europeLocations = [];
-  let continetCarousel = [];
+  var ThemeData = [];
+  var locations = [];
+  var asiaLocations = [];
+  var europeLocations = [];
+  var continetCarousel = [];
+  let Count = null;
   let hotLocationSearch = [];
-
-  const pageId = PagesToIdMapping["asia/india"] ?? "";
-
+  let pageId =
+    PagesToIdMapping["asia/india"] != undefined
+      ? PagesToIdMapping["asia/india"]
+      : "";
   try {
-    const [countryRes, themeRes, continentRes, hotRes] = await Promise.all([
-      axios.get(`${MERCURY_HOST}/api/v1/geos/country/${pageId}`),
-      axiospagelistinstance.get(
-        "/?page_type=Theme&fields=id,slug,overview_image,tagline,path,image,name"
-      ),
-      axiospagelistinstance.get("/?page_type=Continent&fields=id,slug,overview_image,tagline,path"),
-      axioslocationsinstance.get("hot_destinations/"),
-    ]);
-
-    locations = countryRes?.data?.data?.country?.states || [];
-    hotLocationSearch = hotRes?.data || [];
-
-    const continentPages = continentRes?.data?.data?.pages || [];
-
-    const continentData = await Promise.all(
-      continentPages.map(async (continent) => {
-        const res = await axioscountrydetailsinstance.get(
-          `/?continent=${continent.slug}&fields=id,name,path,tagline,image,is_hot_location&limit=100`
-        );
-
-        const countries = res?.data?.data?.countries || [];
-
-        if (continent.slug === "asia") asiaLocations = countries;
-        if (continent.slug === "europe") europeLocations = countries;
-
-        return {
-          ...continent,
-          hot_destinations: countries.filter((c) => c.is_hot_location).slice(0, 6),
-        };
-      })
+    const pageListResponse = await axios.get(
+      `${MERCURY_HOST}/api/v1/geos/country/${pageId}`
     );
 
-    continetCarousel = continentData;
+    locations = pageListResponse.data.data.country.states;
   } catch (err) {
-    console.error("[HomePage:getStaticProps]", err.message);
+    console.log("[ERROR][PageListResponse:getStaticProps]: ", err.message);
+  }
+
+  try {
+    const ThemeDataRes = await axiospagelistinstance.get(
+      "/?page_type=Theme&fields=id,page_type,slug,overview_image,tagline,path,image,name"
+    );
+    ThemeData = ThemeDataRes.data.data.pages;
+  } catch (err) {
+    console.log("[ERROR][Fetch ThemeData]:", err.message);
+  }
+
+  let continetCarouselResponse = [];
+  try {
+    const continentData = await axiospagelistinstance.get(
+      "/?page_type=Continent&fields=id,page_type,slug,overview_image,tagline,path"
+    );
+    continetCarouselResponse = continentData.data.data.pages;
+  } catch (err) {
+    console.log("[ERROR][Fetch ContinentData]:", err.message);
+  }
+
+  for (let i = 0; i < continetCarouselResponse.length; i++) {
+    try {
+      const countrydetailsResponse = await axioscountrydetailsinstance.get(
+        `/?continent=${continetCarouselResponse[i].slug}&fields=id,name,path,tagline,image,is_hot_location,best_time,budget&limit=100`
+      );
+
+      if (continetCarouselResponse[i].slug.toLowerCase() === "asia") {
+        asiaLocations = countrydetailsResponse.data.data.countries;
+      }
+
+      if (continetCarouselResponse[i].slug.toLowerCase() === "europe") {
+        europeLocations = countrydetailsResponse.data.data.countries;
+      }
+
+      let hot_data = countrydetailsResponse.data.data.countries.filter(
+        (country) => country.is_hot_location
+      );
+      hot_data = hot_data.slice(0, 6);
+
+      continetCarousel.push({
+        ...continetCarouselResponse[i],
+        hot_destinations: hot_data,
+      });
+    } catch (err) {
+      console.log(
+        `[ERROR][CountryDetails for ${continetCarouselResponse[i].destination}]:`,
+        err.message
+      );
+    }
+  }
+
+  try {
+    const response = await axioslocationsinstance.get("hot_destinations/");
+    if (response.data?.length) {
+      hotLocationSearch = response.data;
+    }
+  } catch (err) {
+    console.log(`[ERROR][HomePage][axioslocationsinstance:/hot_destinations]`);
   }
 
   return {
     props: {
+      ThemeData,
       locations,
       asiaLocations,
       europeLocations,
       continetCarousel,
       hotLocationSearch,
     },
-    // revalidate: 3600,
   };
 }
