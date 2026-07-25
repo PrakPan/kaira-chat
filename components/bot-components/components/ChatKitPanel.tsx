@@ -325,6 +325,97 @@ const Spinner = ({ size = 16 }: { size?: number }) => (
   </svg>
 );
 
+// Mobile landing card shown in place of the full intake form (which is too heavy
+// on a phone). It greets the user and asks how they want to start:
+//   • Has dates + destination → the quick form (expands, hides composer).
+//   • Still dreaming → just chat it out below (nudge to the composer).
+// The separate greeting bubble is hidden on mobile since it's folded in here.
+const IntakeStartCard: React.FC<{
+  onStart: () => void;
+  onChat: () => void;
+}> = ({ onStart, onChat }) => (
+  <div className="px-3">
+    <div className="rounded-2xl border border-[#ececec] bg-white p-4">
+      {/* Greeting + question */}
+      <div className="flex items-start gap-3">
+        <span
+          className="shrink-0 grid place-items-center w-11 h-11 rounded-full text-[20px]"
+          style={{
+            background:
+              "linear-gradient(135deg, #f7e700 0%, #ff7eb3 55%, #7c5cff 100%)",
+          }}
+        >
+          <span aria-hidden>👋</span>
+        </span>
+        <div className="min-w-0 flex-1">
+          <div className="text-[15px] font-semibold text-[#0b1220] leading-snug">
+            Hi, I'm Kaira, your travel friend.
+          </div>
+          <div className="text-[13px] text-[#6B7280] leading-snug mt-1">
+            How do you want to start?
+          </div>
+        </div>
+      </div>
+
+      {/* Path 1 — has the details → quick form */}
+      <button
+        type="button"
+        onClick={onStart}
+        className="mt-3 w-full flex items-center gap-3 rounded-xl border border-[#ffe9a8] px-4 py-3 text-left active:scale-[0.99] transition-transform"
+        style={{ background: "linear-gradient(135deg, #fff8dc 0%, #fff1c2 100%)" }}
+      >
+        <span
+          className="shrink-0 grid place-items-center w-9 h-9 rounded-lg text-[18px]"
+          style={{ background: "linear-gradient(135deg, #ffd23f 0%, #ffb300 100%)" }}
+          aria-hidden
+        >
+          🧭
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block text-[14px] font-semibold text-[#0b1220] leading-tight">
+            I've got the details
+          </span>
+          <span className="block text-[12px] text-[#8a7a2e] leading-snug mt-0.5">
+            Dates &amp; destination ready — let's map it out
+          </span>
+        </span>
+        <svg className="text-[#8a7a2e]" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M5 12h14M13 6l6 6-6 6" />
+        </svg>
+      </button>
+
+      {/* Path 2 — still dreaming → focus the composer to chat it out */}
+      <button
+        type="button"
+        onClick={onChat}
+        className="mt-2.5 w-full flex items-center gap-3 rounded-xl border border-[#ffd9cc] px-4 py-3 text-left active:scale-[0.99] transition-transform"
+        style={{ background: "linear-gradient(135deg, #fff1ec 0%, #ffe3d6 100%)" }}
+      >
+        <span
+          className="shrink-0 grid place-items-center w-9 h-9 rounded-lg text-[18px]"
+          style={{ background: "linear-gradient(135deg, #ff9e7d 0%, #ff7eb3 100%)" }}
+          aria-hidden
+        >
+          💭
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block text-[14px] font-semibold text-[#0b1220] leading-tight">
+            Still just dreaming?
+          </span>
+          <span className="block text-[12px] text-[#a5674f] leading-snug mt-0.5">
+            Tell me your vibe below — I'll take it from here
+          </span>
+        </span>
+        <svg className="text-[#a5674f]" width="16" height="16" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 5v14M6 13l6 6 6-6" />
+        </svg>
+      </button>
+    </div>
+  </div>
+);
+
 const WelcomeState = () => (
   <div className="flex flex-col items-center justify-center h-full px-6 pb-20 select-none">
     <div
@@ -791,9 +882,28 @@ startEmptyIntake = false,
     }
     prevPollingRef.current = isItineraryPolling;
   }, [isItineraryPolling]);
-  // While the in-chat intake form is active (show_intake_form / form_fields),
-  // lock the composer + quick replies so the user answers via the form card.
+  // The in-chat intake form renders as a card in the thread. Its blocking
+  // behaviour depends on WHERE it came from:
+  //   • Client-injected landing form (`/chat?intake=1`, "Plan with Kaira"
+  //     CTA) → composer stays OPEN. The user can fill the form OR just start
+  //     typing; typing retires the form + greeting bubbles (see sendMessage).
+  //   • Backend-streamed intake widget (form_fields / intake-form:{…}) →
+  //     composer is LOCKED so the user answers via the form card.
+  // `intakeFormBlocking` marks the latter; it's set true by the backend intake
+  // handlers and false by the client landing injection.
   const intakeFormActive = useSelector((s: any) => !!s.IntakeForm?.active);
+  const intakeFormCompleted = useSelector((s: any) => !!s.IntakeForm?.completed);
+  const [intakeFormBlocking, setIntakeFormBlocking] = useState(false);
+  // The intake card blocks input only when it's a backend-streamed form.
+  const intakeFormLocks = intakeFormActive && intakeFormBlocking;
+  // Mobile-only: the non-blocking landing form is heavy on a phone, so it first
+  // shows a compact "start" card (collapsed) with the composer still visible.
+  // Tapping it expands the full form and hides the composer; a Back CTA on the
+  // form collapses back to the card and restores the composer.
+  const [intakeCardExpanded, setIntakeCardExpanded] = useState(false);
+  const intakeLandingMobile =
+    isMobile && intakeFormActive && !intakeFormBlocking;
+  const intakeCardBlocks = intakeLandingMobile && intakeCardExpanded;
   // A destination already seeded into the intake slice (e.g. the hero "Start
   // planning" CTA's `?destination=` param) — used to open the empty intake form
   // straight on the "When" step instead of the already-answered destination step.
@@ -801,7 +911,10 @@ startEmptyIntake = false,
     (s: any) => s.IntakeForm?.destination?.name || "",
   );
   const isComposerLocked =
-    isItineraryCompleting || isItineraryPolling || intakeFormActive;
+    isItineraryCompleting ||
+    isItineraryPolling ||
+    intakeFormLocks ||
+    intakeCardBlocks;
   const authToken = reduxToken ?? getAuthToken();
   const isLoggedIn = !!authToken;
 
@@ -1598,6 +1711,12 @@ const sessionIdRef = useRef<string>((() => {
   // Snapshot user prompts (text content of all user messages in the current
   // thread) — chat lifecycle events include this in `properties.user_prompts`.
   const messagesRef = useRef<Message[]>([]);
+  // Mirror the intake-form state so the stable sendMessage callback can tell,
+  // at call time, whether an unfilled (non-blocking) intake card is on screen
+  // that should be retired when the user types their own message instead.
+  const intakeFormActiveRef = useRef(false);
+  const intakeFormCompletedRef = useRef(false);
+  const intakeFormBlockingRef = useRef(false);
   const getUserPrompts = useCallback((): string[] => {
     return (messagesRef.current || [])
       .filter((m: any) => m?.role === "user")
@@ -1732,6 +1851,10 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
     if (!startEmptyIntake) return;
     if (intakeFormInjectedRef.current) return;
     intakeFormInjectedRef.current = true;
+    // Client landing form — non-blocking, the user may bypass it by typing.
+    setIntakeFormBlocking(false);
+    // Mobile starts collapsed (compact card); user taps to expand the form.
+    setIntakeCardExpanded(false);
     // Don't auto-scroll to the bottom of the freshly-injected form — keep
     // Kaira's greeting in view on the /chat?intake=1 landing.
     suppressIntakeAutoScrollRef.current = true;
@@ -1806,6 +1929,10 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
   // Mirror messages into a ref so analytics calls can pull user_prompts
   // without subscribing to the messages array directly.
   messagesRef.current = messages;
+  // Mirror intake-form state for the stable sendMessage callback.
+  intakeFormActiveRef.current = intakeFormActive;
+  intakeFormCompletedRef.current = intakeFormCompleted;
+  intakeFormBlockingRef.current = intakeFormBlocking;
   // Keep the fresh-auth mirror current for handleEffect's prompt_login guard.
   isLoggedInRef.current = isLoggedIn;
   // Mirror the ownership gate so the post-login effect can decide whether to
@@ -2066,6 +2193,8 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
           // widget) lands. Inject the card once so the skeleton has somewhere to
           // render; the loading flag flips it to the shimmer view.
           const loading = data.loading !== false; // default true
+          // Backend-driven intake form — lock the composer.
+          setIntakeFormBlocking(true);
           dispatch(updateIntakeForm({ active: true, completed: false, loading }));
           if (loading && !intakeFormInjectedRef.current) {
             intakeFormInjectedRef.current = true;
@@ -2092,6 +2221,8 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
           // slice, inject the form card into the thread once, and let BotApp
           // flip the left panel to the intake hero image. Clears any pending
           // shimmer set by `intake_form_shimmer`.
+          // Backend-driven intake form — lock the composer.
+          setIntakeFormBlocking(true);
           dispatch(
             updateIntakeForm({
               active: true,
@@ -2457,6 +2588,9 @@ case "shimmer_day_by_day": {
       // not the outer message id.
       const prefill = parseIntakeFormWidgetId(item.widget?.id);
       if (!prefill) return;
+      // Backend-streamed intake form — lock the composer so the user answers
+      // via the card.
+      setIntakeFormBlocking(true);
       dispatch(
         updateIntakeForm({
           active: true,
@@ -2541,6 +2675,32 @@ const sendMessage = useCallback(
     setQuickReplyShimmer(false);
     lastSentMessageRef.current = text;
     lastSentActionRef.current = { kind: "message", text };
+
+    // If the user types their own message while an unfilled intake form is on
+    // screen (i.e. this send isn't the form's own submission), they've chosen
+    // to bypass the form — retire the intake greeting + form card bubbles and
+    // deactivate the slice so the conversation flows as a normal chat.
+    if (
+      !opts?.formSubmitted &&
+      intakeFormActiveRef.current &&
+      !intakeFormCompletedRef.current &&
+      !intakeFormBlockingRef.current
+    ) {
+      setMessages((prev) =>
+        prev.filter(
+          (m) =>
+            m.type !== "intake_form" &&
+            !String(m.id ?? "").startsWith("intake-greeting-"),
+        ),
+      );
+      dispatch(updateIntakeForm({ active: false, completed: false }));
+      // Release the fire-once injection guard. Without this the backend's
+      // reply to this bypass message (which streams a fresh intake-form widget,
+      // e.g. prefilled with "europe") would be silently dropped by
+      // handleIntakeFormWidget's `!intakeFormInjectedRef.current` check, so the
+      // card only reappears on refresh (when the ref resets).
+      intakeFormInjectedRef.current = false;
+    }
 
     // User-initiated send: snap the view to the latest message even if they
     // had scrolled up earlier in the session.
@@ -3132,6 +3292,8 @@ useEffect(() => {
   if (intakeWidgetItem && !restoredFormFilledRef.current) {
     const prefill = parseIntakeFormWidgetId(intakeWidgetItem.widget?.id);
     if (prefill) {
+      // Restored from history = a backend intake form → lock the composer.
+      setIntakeFormBlocking(true);
       dispatch(
         updateIntakeForm({
           active: true,
@@ -3154,6 +3316,7 @@ useEffect(() => {
     // prior thread's `active: true` would keep the composer locked — and a
     // prior `active: false` would leave a genuinely unfilled thread unlocked —
     // after switching threads. (Case 2 fix.)
+    setIntakeFormBlocking(false);
     dispatch(updateIntakeForm({ active: false, completed: false }));
   }
 
@@ -3607,6 +3770,16 @@ const handleShowLogin = useCallback(() => {
     [attachments, authToken, selectedModel, userLocationData, localItineraryId, reduxUserId],
   );
 
+  // Focus the chat composer — used by the mobile start card's "Still dreaming?"
+  // option so tapping it drops the user straight into the input to chat.
+  const focusComposerInput = useCallback(() => {
+    if (typeof document === "undefined") return;
+    const el = document.querySelector(
+      ".kp-composer-wrap textarea, .kp-composer-wrap input",
+    ) as HTMLElement | null;
+    el?.focus();
+  }, []);
+
   const handleSubmit = useCallback(() => {
     setShowLoginPrompt(false);
     const hasText = !!input.trim();
@@ -3826,8 +3999,46 @@ const handleShowLogin = useCallback(() => {
             )}
          
             {messages.map((msg, idx) => {
+              // On mobile the landing greeting is folded into the start card, so
+              // hide the standalone greeting bubble to save vertical space.
+              if (
+                intakeLandingMobile &&
+                String(msg.id ?? "").startsWith("intake-greeting-")
+              ) {
+                return null;
+              }
               // ── Custom in-thread cards (intake form + inline OTP) ──────────
               if (msg.type === "intake_form") {
+                // Mobile landing: show a compact card first (composer visible);
+                // tap to expand the full form (composer hidden). A Back CTA
+                // collapses back to the card.
+                if (intakeLandingMobile && !intakeCardExpanded) {
+                  return (
+                    <IntakeStartCard
+                      key={msg.id}
+                      onStart={() => setIntakeCardExpanded(true)}
+                      onChat={focusComposerInput}
+                    />
+                  );
+                }
+                if (intakeLandingMobile && intakeCardExpanded) {
+                  return (
+                    <div key={msg.id}>
+                      <button
+                        type="button"
+                        onClick={() => setIntakeCardExpanded(false)}
+                        className="mb-2 inline-flex items-center gap-1.5 rounded-full border border-[#e4e4e4] bg-white px-3 py-1.5 text-[13px] font-medium text-[#07213a] active:scale-95 transition-transform"
+                      >
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                          stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M15 18l-6-6 6-6" />
+                        </svg>
+                        Back
+                      </button>
+                      <IntakeFormCard onComplete={handleIntakeComplete} />
+                    </div>
+                  );
+                }
                 return (
                   <IntakeFormCard
                     key={msg.id}
@@ -3982,6 +4193,19 @@ const handleShowLogin = useCallback(() => {
                   }
 
                   const payload = action.payload ?? {};
+
+                  // ── Prompt to chat ────────────────────────────────────
+                  // A widget CTA (e.g. the route card's "Confirm Route" /
+                  // "Modify") that should feed its intent into the chat as a
+                  // normal user turn rather than a server widget action.
+                  if (action.type === "chat.prompt") {
+                    const text = (payload.text ?? payload.prompt ?? "") as string;
+                    if (text.trim()) {
+                      setCloneCtaSuppressed(true);
+                      sendMessage(text.trim());
+                    }
+                    return;
+                  }
 
                   // ── Activity ──────────────────────────────────────────
                   // activity.view / activity.detail / open_activity_drawer
@@ -4524,7 +4748,7 @@ const handleShowLogin = useCallback(() => {
           the sole bottom action. Desktop keeps the (disabled) composer visible. */}
       <div
         className={`kp-composer-wrap flex-shrink-0 relative${
-          intakeFormActive || loginBlocked ? " max-ph:hidden" : ""
+          intakeFormLocks || intakeCardBlocks || loginBlocked ? " max-ph:hidden" : ""
         }`}
       >
         <div className="mx-auto">
@@ -4546,8 +4770,10 @@ const handleShowLogin = useCallback(() => {
                 ? "Planning your trip…"
                 : isItineraryPolling
                 ? "Updating your itinerary…"
-                : intakeFormActive
+                : intakeFormLocks || intakeCardBlocks
                 ? "Complete the form above to continue…"
+                : intakeFormActive
+                ? "Fill the form above, or just tell me what you're planning…"
                 : "Ask me anything"
             }
             showAttach={!isComposerLocked && !loginBlocked}

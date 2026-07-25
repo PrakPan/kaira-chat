@@ -20,9 +20,11 @@ interface Props {
   number: number;
   cityName: string;
   onClick: () => void;
+  /** Teardrop + number color from the cities widget; center stays white. */
+  color?: string;
 }
 
-const CityPinMarker: React.FC<Props> = ({ number, cityName, onClick }) => (
+const CityPinMarker: React.FC<Props> = ({ number, cityName, onClick, color = BRAND }) => (
   <button
     type="button"
     onClick={onClick}
@@ -51,7 +53,7 @@ const CityPinMarker: React.FC<Props> = ({ number, cityName, onClick }) => (
     >
       <path
         d="M24 0C10.7314 0 0 10.7155 0 23.9643C0 39.495 17.9202 55.8391 22.7908 59.9944C23.4984 60.5982 24.5016 60.5982 25.2092 59.9944C30.0798 55.8391 48 39.495 48 23.9643C48 10.7155 37.2686 0 24 0ZM24 32.523C19.2686 32.523 15.4286 28.6887 15.4286 23.9643C15.4286 19.2399 19.2686 15.4056 24 15.4056C28.7314 15.4056 32.5714 19.2399 32.5714 23.9643C32.5714 28.6887 28.7314 32.523 24 32.523Z"
-        fill={BRAND}
+        fill={color}
       />
       {/* Fills the teardrop's hollow centre, so the number reads against white
           rather than against the map. */}
@@ -63,7 +65,7 @@ const CityPinMarker: React.FC<Props> = ({ number, cityName, onClick }) => (
         fontFamily="Inter, Arial, sans-serif"
         fontSize="13"
         fontWeight="700"
-        fill={BRAND}
+        fill={color}
       >
         {number}
       </text>

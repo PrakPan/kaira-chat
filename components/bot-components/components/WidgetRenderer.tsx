@@ -1,4 +1,4 @@
-import React, { useState, useContext, createContext } from "react";
+import React, { useState, useContext, createContext, useEffect, useMemo } from "react";
 import { PiAirplaneTakeoff } from "react-icons/pi";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
@@ -3266,6 +3266,32 @@ function isRouteListView(children: WidgetNode[]): boolean {
 
 const ROUTE_DOT_FALLBACK = "#8a93a6";
 
+// Fallback hero for the route header when we can't resolve a city image — a
+// neutral, non-specific travel scene so the banner never collapses.
+const ROUTE_HEADER_FALLBACK_IMAGE =
+  "https://images.unsplash.com/photo-1503917988258-f87a78e3c995?auto=format&fit=crop&w=800&q=80";
+
+// Best-effort city image from the Redux itinerary (drafts/bot flow often carry
+// none — then the caller uses ROUTE_HEADER_FALLBACK_IMAGE). Checks the common
+// shapes the itinerary payload uses for a city's hero image.
+function resolveCityImage(itinerary: any, cityName: string): string {
+  const cities = itinerary?.cities;
+  if (!Array.isArray(cities) || !cityName) return "";
+  const target = cityName.trim().toLowerCase();
+  const match = cities.find((c: any) => {
+    const n = (c?.city?.name ?? c?.name ?? "") as string;
+    return n.trim().toLowerCase() === target;
+  });
+  if (!match) return "";
+  const img =
+    match?.city?.image ??
+    match?.city?.image_url ??
+    match?.image ??
+    match?.image_url ??
+    (Array.isArray(match?.city?.images) ? match.city.images[0] : undefined);
+  return typeof img === "string" ? img : "";
+}
+
 interface ParsedRouteStop {
   city: string;
   nights: string;      // "1N" / "3N" (empty for departure/return endpoints)
@@ -3391,6 +3417,101 @@ function parseRouteCost(raw: string): { label: string; amount: string } {
     amount = amount.slice(amount.indexOf(":") + 1).trim();
   }
   return { label: perPerson ? "EST / PERSON" : "ESTIMATED", amount };
+}
+
+// The trip date chip ("🗓️ July 2026") — a short Text sibling of the cost line
+// carrying a month/year or a calendar glyph. Returned verbatim (emoji kept).
+function findRouteDateText(node: WidgetNode): string {
+  const MONTHS =
+    /\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\b/i;
+  const hit = findNodesByType(node, "Text").find((t) => {
+    const v = ((t.value as string | undefined) ?? "").trim();
+    if (!v || /cost/i.test(v)) return false;
+    return /🗓|📅/.test(v) || (MONTHS.test(v) && /\b\d{4}\b/.test(v));
+  });
+  return ((hit?.value as string | undefined) ?? "").trim();
+}
+
+// Pull the currency token the server sent with the cost — a symbol (₹ $ € £ ﷼ …)
+// or a 3-letter ISO code (USD / INR). Falls back to the passed default so the
+// pricing always shows *some* currency.
+function extractCurrencySymbol(raw: string, fallback: string): string {
+  if (!raw) return fallback;
+  // Any non-digit, non-space, non-separator run immediately before a number is
+  // treated as a currency glyph (covers ﷼, ₫, ₽, RM, etc. beyond the common set).
+  const sym = raw.match(/([^\s\d.,–\-]+)\s*\d/);
+  if (sym && sym[1]) return sym[1];
+  const iso = raw.match(/\b([A-Z]{3})\b/);
+  if (iso && iso[1]) return iso[1];
+  return fallback;
+}
+
+// Compact a single amount into design-style short form: 65000 → "65K",
+// 250000 → "2.5L" (INR) / "250K" (others), 12000000 → "1.2Cr" (INR) / "12M".
+function compactAmount(n: number, indian: boolean): { value: string; suffix: string } {
+  const trim = (v: number) => {
+    const r = Math.round(v * 10) / 10;
+    return Number.isInteger(r) ? String(r) : r.toFixed(1);
+  };
+  if (indian) {
+    if (n >= 10000000) return { value: trim(n / 10000000), suffix: "Cr" };
+    if (n >= 100000) return { value: trim(n / 100000), suffix: "L" };
+    if (n >= 1000) return { value: trim(n / 1000), suffix: "K" };
+  } else {
+    if (n >= 1000000000) return { value: trim(n / 1000000000), suffix: "B" };
+    if (n >= 1000000) return { value: trim(n / 1000000), suffix: "M" };
+    if (n >= 1000) return { value: trim(n / 1000), suffix: "K" };
+  }
+  return { value: String(Math.round(n)), suffix: "" };
+}
+
+// Arabic-script / right-to-left currencies. For these the amount reads
+// right-to-left, so the magnitude suffix (K/M/…) is placed on the LEFT of the
+// number (next to the symbol) instead of trailing it: "﷼M120–160".
+const RTL_CURRENCY_CODES = new Set([
+  "SAR", "AED", "QAR", "OMR", "KWD", "BHD", "IRR", "YER", "EGP",
+  "IQD", "JOD", "LYD", "DZD", "TND", "MAD", "LBP", "SYP",
+]);
+function isRtlCurrency(symbol: string): boolean {
+  // Arabic script blocks: Arabic (0600–06FF), Supplement (0750–077F),
+  // Extended-A (08A0–08FF), Presentation Forms-A (FB50–FDFF, incl. ﷼ U+FDFC)
+  // and Forms-B (FE70–FEFF). Covers ﷼, د.إ, ر.س, ﷼-family glyphs, etc.
+  if (/[؀-ۿݐ-ݿࢠ-ࣿﭐ-﷿ﹰ-﻿]/.test(symbol)) {
+    return true;
+  }
+  return RTL_CURRENCY_CODES.has(symbol.toUpperCase());
+}
+
+// Format the route cost string to the compact design form — "₹65–75K" for a
+// range, "₹70K" for a single value. For RTL currencies the suffix moves left
+// ("﷼M120–160"). Falls back to the raw string when no numbers can be parsed
+// (so odd server text is never dropped).
+function formatRouteCost(raw: string, symbol: string): string {
+  if (!raw) return "";
+  const nums = (raw.match(/[\d][\d,]*(?:\.\d+)?/g) ?? [])
+    .map((s) => parseFloat(s.replace(/,/g, "")))
+    .filter((n) => !isNaN(n));
+  if (nums.length === 0) return raw;
+  const indian = symbol === "₹" || symbol.toUpperCase() === "INR";
+  const rtl = isRtlCurrency(symbol);
+  const sep = /[A-Za-z]$/.test(symbol) ? `${symbol} ` : symbol; // "INR 12K" vs "₹12K"
+  // Compose one amount as symbol + value + suffix, moving the suffix to the
+  // left of the number for RTL currencies.
+  const one = (value: string, suffix: string) =>
+    rtl ? `${sep}${suffix}${value}` : `${sep}${value}${suffix}`;
+  if (nums.length >= 2) {
+    const lo = compactAmount(nums[0], indian);
+    const hi = compactAmount(nums[1], indian);
+    // Share the suffix when both land in the same magnitude ("65–75K").
+    if (lo.suffix === hi.suffix) {
+      return rtl
+        ? `${sep}${hi.suffix}${lo.value}–${hi.value}`
+        : `${sep}${lo.value}–${hi.value}${hi.suffix}`;
+    }
+    return `${one(lo.value, lo.suffix)}–${one(hi.value, hi.suffix)}`;
+  }
+  const a = compactAmount(nums[0], indian);
+  return one(a.value, a.suffix);
 }
 
 function NightsPill({ nights }: { nights: string }) {
@@ -3595,17 +3716,145 @@ function RouteCostCard({ label, amount }: { label: string; amount: string }) {
   );
 }
 
+// ─── Stolen count ("STOLEN Nx") ──────────────────────────────────────────────
+// How many other travellers have stolen (cloned) an itinerary covering this
+// exact set of cities. Fetched from the similar-stats endpoint the moment the
+// route widget mounts. A tiny loader shows on the tag while in flight; the tag
+// silently vanishes on failure or a zero count (nothing worth boasting about).
+
+interface RouteCity {
+  name: string;
+  country: string;
+}
+
+type StolenStatus = "loading" | "done" | "error";
+
+function useRouteStolenCount(cities: RouteCity[]): {
+  count: number;
+  status: StolenStatus;
+} {
+  const [count, setCount] = useState(0);
+  const [status, setStatus] = useState<StolenStatus>("loading");
+
+  // Stable dependency so the effect only re-runs when the actual city set
+  // changes, not on every parent re-render (cities is rebuilt each render).
+  const key = useMemo(
+    () => cities.map((c) => `${c.name}|${c.country}`).join(","),
+    [cities],
+  );
+
+  useEffect(() => {
+    if (cities.length === 0) {
+      setStatus("error");
+      return;
+    }
+
+    let cancelled = false;
+    setStatus("loading");
+
+    const token =
+      (typeof window !== "undefined" &&
+        (localStorage.getItem("token") ??
+          localStorage.getItem("authToken") ??
+          localStorage.getItem("access_token"))) ||
+      "";
+
+    axios
+      .post(
+        `${MERCURY_HOST}/api/v1/geos/route/similar-stats/`,
+        { cities },
+        token ? { headers: { Authorization: `Bearer ${token}` } } : undefined,
+      )
+      .then((res) => {
+        if (cancelled) return;
+        const n = Number((res.data as any)?.no_of_itineraries) || 0;
+        setCount(n);
+        setStatus("done");
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setStatus("error");
+      });
+
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key]);
+
+  return { count, status };
+}
+
+// Yellow "STOLEN Nx" pill for the route header. Renders a small spinner while
+// the count is loading, and nothing at all once we know it failed or is zero.
+function StolenBadge({ count, status }: { count: number; status: StolenStatus }) {
+  if (status === "error") return null;
+  if (status === "done" && count <= 0) return null;
+
+  return (
+    <span
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 5,
+        padding: "3px 9px",
+        borderRadius: 9999,
+        background: "#f7e700",
+        color: "#0b1220",
+        fontSize: 10.5,
+        fontWeight: 700,
+        letterSpacing: "0.06em",
+        textTransform: "uppercase",
+        lineHeight: 1.4,
+        alignSelf: "flex-start",
+      }}
+    >
+      {status === "loading" ? (
+        <>
+          <span
+            style={{
+              width: 11,
+              height: 11,
+              borderRadius: "50%",
+              border: "2px solid rgba(11,18,32,0.25)",
+              borderTopColor: "#0b1220",
+              display: "inline-block",
+              animation: "kpStolenSpin 0.7s linear infinite",
+            }}
+          />
+          Stolen
+          <style
+            dangerouslySetInnerHTML={{
+              __html:
+                "@keyframes kpStolenSpin{to{transform:rotate(360deg)}}",
+            }}
+          />
+        </>
+      ) : (
+        `Stolen ${count}×`
+      )}
+    </span>
+  );
+}
+
+// Image-backed route header. No prose title/departure line — just an image
+// banner (first city image, else fallback) with the tags overlaid: the stolen
+// count, the trip date chip, and the nights/stops pills.
 function RouteHeaderBand({
-  title,
-  departure,
+  image,
+  dateLabel,
   totalNights,
   stopCount,
+  stolen,
 }: {
-  title: string;
-  departure: string;
+  image: string;
+  dateLabel: string;
   totalNights: number;
   stopCount: number;
+  stolen?: { count: number; status: StolenStatus };
 }) {
+  const [imgSrc, setImgSrc] = useState(image || ROUTE_HEADER_FALLBACK_IMAGE);
+
   const pill = (text: string) => (
     <span
       style={{
@@ -3613,7 +3862,8 @@ function RouteHeaderBand({
         alignItems: "center",
         padding: "3px 9px",
         borderRadius: 9999,
-        background: "rgba(255,255,255,0.16)",
+        background: "rgba(255,255,255,0.22)",
+        backdropFilter: "blur(4px)",
         color: "#ffffff",
         fontSize: 10.5,
         fontWeight: 600,
@@ -3623,44 +3873,161 @@ function RouteHeaderBand({
       {text}
     </span>
   );
+
+  const hasPills = totalNights > 0 || stopCount > 0 || !!dateLabel;
+
   return (
     <div
       style={{
-        background:
-          "linear-gradient(135deg, #2f6b52 0%, #3c7c5e 55%, #4a8a69 100%)",
-        padding: "clamp(15px, 4.5vw, 18px) clamp(16px, 4.5vw, 20px)",
+        position: "relative",
+        minHeight: 116,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        padding: "clamp(13px, 4vw, 16px) clamp(14px, 4vw, 18px)",
+        overflow: "hidden",
       }}
     >
-      {departure && (
+      {/* Hidden loader — swaps to the fallback if the city image 404s. */}
+      <img
+        src={imgSrc}
+        alt=""
+        aria-hidden
+        onError={() => {
+          if (imgSrc !== ROUTE_HEADER_FALLBACK_IMAGE) {
+            setImgSrc(ROUTE_HEADER_FALLBACK_IMAGE);
+          }
+        }}
+        style={{
+          position: "absolute",
+          inset: 0,
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+        }}
+      />
+      {/* Dark gradient so the tags stay legible over any image. */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background:
+            "linear-gradient(180deg, rgba(11,18,32,0.42) 0%, rgba(11,18,32,0.12) 42%, rgba(11,18,32,0.55) 100%)",
+        }}
+      />
+
+      {/* Top row — stolen tag */}
+      <div style={{ position: "relative", display: "flex" }}>
+        {stolen && <StolenBadge count={stolen.count} status={stolen.status} />}
+      </div>
+
+      {/* Bottom row — date + nights/stops pills */}
+      {hasPills && (
         <div
           style={{
-            fontSize: 10,
-            fontWeight: 600,
-            letterSpacing: "0.1em",
-            textTransform: "uppercase",
-            color: "rgba(255,255,255,0.72)",
-            marginBottom: 6,
+            position: "relative",
+            marginTop: 12,
+            display: "flex",
+            gap: 7,
+            flexWrap: "wrap",
+            alignItems: "center",
           }}
         >
-          From {departure}
+          {dateLabel && pill(dateLabel)}
+          {totalNights > 0 && pill(`${totalNights}N`)}
+          {stopCount > 0 &&
+            pill(`${stopCount} ${stopCount === 1 ? "stop" : "stops"}`)}
         </div>
       )}
-      <div
-        className="kp-serif"
+    </div>
+  );
+}
+
+// Resolve a city's country from the Redux itinerary (best-effort). During P1
+// planning the itinerary may be empty, so this returns "" and the similar-stats
+// endpoint resolves the city by name alone.
+function resolveCityCountry(itinerary: any, cityName: string): string {
+  const cities = itinerary?.cities;
+  if (!Array.isArray(cities) || !cityName) return "";
+  const target = cityName.trim().toLowerCase();
+  const match = cities.find((c: any) => {
+    const n = (c?.city?.name ?? c?.name ?? "") as string;
+    return n.trim().toLowerCase() === target;
+  });
+  if (!match) return "";
+  const country =
+    match?.city?.country ?? match?.country ?? match?.city?.country_name;
+  if (typeof country === "string") return country;
+  if (country && typeof country === "object") {
+    return (country.code ?? country.name ?? "") as string;
+  }
+  return "";
+}
+
+// Matched pair of route CTAs — "Confirm Route" (primary) + "Modify"
+// (secondary). Both send a prompt straight into the chat when clicked so the
+// user's intent flows to Kaira as a normal turn.
+function RouteActionButtons({
+  onAction,
+}: {
+  onAction?: WidgetRendererProps["onAction"];
+}) {
+  const widgetDisabled = useContext(DisabledActionContext);
+  const promptToChat = (text: string) => {
+    if (widgetDisabled) return;
+    onAction?.({ type: "chat.prompt", payload: { text } });
+  };
+
+  const base: React.CSSProperties = {
+    flex: 1,
+    padding: "11px 16px",
+    borderRadius: 9999,
+    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+    fontSize: 13.5,
+    fontWeight: 600,
+    cursor: widgetDisabled ? "not-allowed" : "pointer",
+    opacity: widgetDisabled ? 0.5 : 1,
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 7,
+    boxSizing: "border-box",
+    whiteSpace: "nowrap",
+    lineHeight: "18px",
+    transition: "background 0.15s ease, border-color 0.15s ease",
+  };
+
+  return (
+    <div style={{ display: "flex", gap: 10, marginTop: 14 }}>
+     
+      <button
+        type="button"
+        disabled={widgetDisabled}
+        onClick={() => promptToChat("I'd like to modify this route")}
         style={{
-          fontSize: "clamp(20px, 6vw, 24px)",
-          lineHeight: 1.14,
+          ...base,
+          border: "1px solid #07213a",
+          background: "#ffffff",
+          color: "#07213a",
+        }}
+      >
+        Modify
+      </button>
+
+       <button
+        type="button"
+        disabled={widgetDisabled}
+        onClick={() => promptToChat("Confirm this route")}
+        style={{
+          ...base,
+          border: "1px solid #07213a",
+          background: "#07213a",
           color: "#ffffff",
         }}
       >
-        {title}
-      </div>
-      {(totalNights > 0 || stopCount > 0) && (
-        <div style={{ marginTop: 11, display: "flex", gap: 7, flexWrap: "wrap" }}>
-          {totalNights > 0 && pill(`${totalNights}N`)}
-          {stopCount > 0 && pill(`${stopCount} ${stopCount === 1 ? "stop" : "stops"}`)}
-        </div>
-      )}
+        Confirm Route
+        
+      </button>
     </div>
   );
 }
@@ -3668,15 +4035,19 @@ function RouteHeaderBand({
 function RouteItineraryCard({
   node,
   routeList,
+  onAction,
 }: {
   node: WidgetNode;
   routeList: WidgetNode;
+  onAction?: WidgetRendererProps["onAction"];
 }) {
   const stops = parseRouteEntries((routeList.children ?? []) as WidgetNode[]);
-  const { label, amount } = parseRouteCost(findRouteCostText(node));
+  const costText = findRouteCostText(node);
+  const { label, amount } = parseRouteCost(costText);
+  const fallbackSymbol = useItineraryCurrencySymbol();
+  const itinerary = useItineraryState();
 
   const destinations = stops.filter((s) => !s.isEndpoint);
-  const departure = stops.find((s) => s.isEndpoint)?.city ?? "";
   const title = destinations.length
     ? destinations.map((s) => s.city).join(" · ")
     : stops[0]?.city ?? "Your itinerary";
@@ -3684,6 +4055,32 @@ function RouteItineraryCard({
     (sum, s) => sum + (parseInt(s.nights, 10) || 0),
     0,
   );
+
+  // Cities for the similar-stats ("stolen count") lookup — the visited stops,
+  // with country resolved from the itinerary when available.
+  const statCities: RouteCity[] = useMemo(
+    () =>
+      (destinations.length ? destinations : stops).map((s) => ({
+        name: s.city,
+        country: resolveCityCountry(itinerary, s.city),
+      })),
+    // stops/destinations are rebuilt each render; the hook keys off the values.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [title, itinerary],
+  );
+  const stolen = useRouteStolenCount(statCities);
+
+  // Currency from the server's cost text (₹ / $ / ﷼ / USD …), falling back to
+  // the itinerary currency when the text carries none.
+  const symbol = extractCurrencySymbol(amount, fallbackSymbol);
+  const formattedAmount = formatRouteCost(amount, symbol);
+  const dateLabel = findRouteDateText(node);
+
+  // Header hero — first destination city's image if the itinerary has one,
+  // else the neutral fallback (RouteHeaderBand also self-heals on load error).
+  const firstCity = (destinations[0] ?? stops[0])?.city ?? "";
+  const headerImage =
+    resolveCityImage(itinerary, firstCity) || ROUTE_HEADER_FALLBACK_IMAGE;
 
   return (
     <div
@@ -3700,10 +4097,11 @@ function RouteItineraryCard({
       }}
     >
       <RouteHeaderBand
-        title={title}
-        departure={departure}
+        image={headerImage}
+        dateLabel={dateLabel}
         totalNights={totalNights}
         stopCount={destinations.length}
+        stolen={stolen}
       />
       <div
         style={{
@@ -3712,7 +4110,8 @@ function RouteItineraryCard({
         }}
       >
         <RouteTimeline stops={stops} />
-        {amount && <RouteCostCard label={label} amount={amount} />}
+        {formattedAmount && <RouteCostCard label={label} amount={formattedAmount} />}
+        <RouteActionButtons onAction={onAction} />
       </div>
     </div>
   );
@@ -3768,7 +4167,7 @@ function ListViewNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetR
   // Card-wrapped route widget exactly. `node` doubles as the routeList here; the
   // cost card silently drops out when there's no "Estimated trip cost" text.
   if (isRouteListView(children)) {
-    return <RouteItineraryCard node={node} routeList={node} />;
+    return <RouteItineraryCard node={node} routeList={node} onAction={onAction} />;
   }
 
   return (
@@ -5916,7 +6315,7 @@ function CardNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetRende
   // itinerary design instead of the generic passthrough.
   const routeList = findRouteListView(node);
   if (routeList) {
-    return <RouteItineraryCard node={node} routeList={routeList} />;
+    return <RouteItineraryCard node={node} routeList={routeList} onAction={onAction} />;
   }
 
   const children = (node.children ?? []) as WidgetNode[];
