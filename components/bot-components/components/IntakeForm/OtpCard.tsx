@@ -374,7 +374,7 @@ const OtpCard: React.FC<OtpCardProps> = ({
   };
 
   return (
-    <div className="flex gap-[10px] mt-1 max-ph:gap-0 max-ph:-mx-1">
+    <div className="flex gap-[10px] mt-1 max-ph:gap-0 max-ph:px-3">
       {/* Kaira avatar in the left gutter — same gradient ring + image as her
           chat replies, so the sign-in card reads as part of the conversation.
           Hidden on phones (like other bot avatars) to give the card full width. */}
@@ -390,7 +390,7 @@ const OtpCard: React.FC<OtpCardProps> = ({
         />
       </div>
       <div
-        className="rounded-[16px] min-w-0 flex-1"
+        className="rounded-[16px] min-w-0 flex-1 max-ph:!max-w-none"
         style={{
           // First step adopts the cream "welcome back" card look; the OTP /
           // details steps keep the original white card so they're unchanged.
@@ -412,8 +412,9 @@ const OtpCard: React.FC<OtpCardProps> = ({
       {!otpSent ? (
         <>
           {/* Kaira identity — inline brand header (replaces the removed
-              left-gutter chat avatar), so the card reads as Kaira on its own. */}
-          <div className="flex items-center gap-[11px] mb-[20px]">
+              left-gutter chat avatar), so the card reads as Kaira on its own.
+              Hidden on phones to reclaim the vertical space the card wastes. */}
+          <div className="flex items-center gap-[11px] mb-[20px] max-ph:hidden">
             <img
               src="/KairaInsta.png"
               alt="Kaira"
@@ -892,6 +893,13 @@ const OtpCard: React.FC<OtpCardProps> = ({
         </>
       )}
 
+      {/* Hide the floating reCAPTCHA badge on phones — it overlaps the card and
+          wastes screen space. (reCAPTCHA still runs; the badge is only visual.) */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        @media (max-width: 768px) {
+          .grecaptcha-badge { visibility: hidden !important; }
+        }
+      ` }} />
       <ReCAPTCHA
         size="invisible"
         sitekey={RECAPTCHA_SITE_KEY as string}

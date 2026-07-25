@@ -192,7 +192,7 @@ const Banner = (props) => {
           </MobileBar>
         </MobileContainer>
       )}
-      <Container className="flex place-self-end" newYear={props.newYear}>
+      <Container newYear={props.newYear}>
         <GridContainer>
           <div className="center-div">
             <Text className="">{renderText()}</Text>

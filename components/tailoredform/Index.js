@@ -1071,10 +1071,17 @@ const Enquiry = (props) => {
                       onhide={onHide}
                       zIndex={"3300"}
                       onSuccess={() => {
+                        // Close the login modal explicitly on success. Its
+                        // visibility is driven by local `showLoginForm`, so
+                        // relying on the subsequent /chat navigation to unmount
+                        // it leaves the modal stuck open whenever completion is
+                        // slow, errors, or has no itinerary id to navigate to.
+                        onHide();
                         completeItineraryCreate();
                       }}
                       isTailored={true}
                       onSkipLogin={() => {
+                        onHide();
                         completeItineraryCreate();
                       }}
                       message={"Welcome to The Tarzan Way!"}

@@ -128,10 +128,22 @@ export async function getStaticPaths() {
     console.error("[ERROR][countryPage:getStaticPaths]: ", err.message);
   }
 
-  return {
-    paths:paths,
-    fallback:false
+  // Ensure the Thailand country page is always built. The loop above only
+  // pre-builds a couple of countries, and with `output: "export"` +
+  // `fallback: false` any path not listed here 404s (there is no on-demand
+  // fallback in a static export). De-dupe in case it's already included.
+  if (
+    !paths.some(
+      (p) => p.params.continent === "asia" && p.params.country === "thailand"
+    )
+  ) {
+    paths.push({ params: { continent: "asia", country: "thailand" } });
   }
+
+  return {
+    paths: paths,
+    fallback: false,
+  };
 }
 
 
