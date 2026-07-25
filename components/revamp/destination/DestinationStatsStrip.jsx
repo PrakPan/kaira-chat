@@ -1,6 +1,9 @@
-import React from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { getIndianPrice } from "../../../services/getIndianPrice";
+import { setStatsStripPinned } from "../../../services/floatingStatsStrip";
 import styles from "../../../styles/pages/revamp/destination.module.scss";
+
+const PHONE_QUERY = "(max-width: 767px)";
 
 const Serif = ({ children }) => (
   <span className={styles.serif}>{children}</span>
@@ -62,13 +65,15 @@ const buildVisaStat = (data) => {
 };
 
 // Builds stat cards from the detail-API `data` object, prioritising real data.
-// Order: Trip cost (budget) → Typical duration → Best months → Visa.
+// Order: Trip cost (budget) → Visa → Typical duration → Best months.
+// Only the first four survive on the page, so the two questions every traveller
+// asks first (what does it cost, do I need a visa) always make the cut.
 // Currency is intentionally excluded.
 const buildApiStats = (data) => {
   if (!data) return [];
   const stats = [];
 
-  // Trip cost — from `budget` when available.
+  // 1. Trip cost — from `budget` when available.
   if (data.budget) {
     const durationNights = data.min_duration || data.ideal_duration_days;
     stats.push({
@@ -84,7 +89,11 @@ const buildApiStats = (data) => {
     });
   }
 
-  // Typical duration — always shown.
+  // 2. Visa.
+  const visaStat = buildVisaStat(data);
+  if (visaStat) stats.push(visaStat);
+
+  // 3. Typical duration — always shown.
   const min = data.min_duration;
   const max = data.max_duration;
   const ideal = data.ideal_duration_days;
@@ -117,7 +126,7 @@ const buildApiStats = (data) => {
     sub: ideal ? `First-timers: ${ideal}N sweet spot` : undefined,
   });
 
-  // Best months.
+  // 4. Best months.
   const bm = data.best_months;
   if (Array.isArray(bm) && bm.length) {
     const first = bm[0]?.months;
@@ -143,12 +152,24 @@ const buildApiStats = (data) => {
     });
   }
 
-  // Visa.
-  const visaStat = buildVisaStat(data);
-  if (visaStat) stats.push(visaStat);
-
   return stats;
 };
+
+const ChevronIcon = ({ dir }) => (
+  <svg
+    viewBox="0 0 24 24"
+    width="16"
+    height="16"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.4"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden
+  >
+    <path d={dir === "left" ? "M15 6l-6 6 6 6" : "M9 6l6 6-6 6"} />
+  </svg>
+);
 
 const DestinationStatsStrip = ({ data, fallbacks = [] }) => {
   const apiStats = buildApiStats(data);
@@ -158,18 +179,143 @@ const DestinationStatsStrip = ({ data, fallbacks = [] }) => {
   const validFallbacks = fallbacks.filter((f) => f && f.when !== false);
   const stats = [...apiStats, ...validFallbacks].slice(0, 4);
 
+  const wrapRef = useRef(null);
+  const barRef = useRef(null);
+  const scrollerRef = useRef(null);
+
+  const [isPhone, setIsPhone] = useState(false);
+  // On phones the strip starts pinned to the bottom of the viewport so the
+  // numbers are on screen the moment the page loads, and drops into the flow
+  // once the page scrolls down to its real slot.
+  const [pinned, setPinned] = useState(false);
+  const [barHeight, setBarHeight] = useState(0);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia(PHONE_QUERY);
+    const apply = () => setIsPhone(mq.matches);
+    apply();
+    if (mq.addEventListener) {
+      mq.addEventListener("change", apply);
+      return () => mq.removeEventListener("change", apply);
+    }
+    mq.addListener(apply);
+    return () => mq.removeListener(apply);
+  }, []);
+
+  // The wrapper holds the strip's height open while the strip itself is fixed,
+  // so the page never jumps when it docks. Phone padding is identical in both
+  // states, which keeps the measured height stable across the swap.
+  useEffect(() => {
+    const el = barRef.current;
+    if (!el) return undefined;
+    const measure = () => setBarHeight(el.offsetHeight);
+    measure();
+    if (typeof ResizeObserver === "undefined") return undefined;
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [stats.length]);
+
+  useEffect(() => {
+    if (!isPhone) {
+      setPinned(false);
+      setStatsStripPinned(false);
+      return undefined;
+    }
+    const update = () => {
+      const wrap = wrapRef.current;
+      const bar = barRef.current;
+      if (!wrap || !bar) return;
+      // Still pinned while the strip's in-page slot sits below where the fixed
+      // bar is drawn; the moment the slot scrolls up to it, the strip docks.
+      const next =
+        wrap.getBoundingClientRect().top > window.innerHeight - bar.offsetHeight;
+      setPinned(next);
+      setStatsStripPinned(next);
+    };
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+      setStatsStripPinned(false);
+    };
+  }, [isPhone, barHeight]);
+
+  // Arrow affordances for the horizontal scroller — without them the strip
+  // reads as a cut-off row rather than something you can swipe.
+  const syncArrows = useCallback(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const max = el.scrollWidth - el.clientWidth;
+    setCanScrollLeft(el.scrollLeft > 4);
+    setCanScrollRight(max > 4 && el.scrollLeft < max - 4);
+  }, []);
+
+  useEffect(() => {
+    syncArrows();
+    window.addEventListener("resize", syncArrows);
+    return () => window.removeEventListener("resize", syncArrows);
+  }, [syncArrows, stats.length, pinned]);
+
+  const scrollByStep = (dir) => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    el.scrollBy({ left: dir * el.clientWidth * 0.8, behavior: "smooth" });
+  };
+
   if (stats.length === 0) return null;
 
   return (
-    <div className={styles.statsStrip}>
-      <div className={styles.statsStripInner}>
-        {stats.map((stat, i) => (
-          <div className={styles.stat} key={i}>
-            <div className={styles.statLabel}>{stat.label}</div>
-            <div className={styles.statValue}>{stat.value}</div>
-            {stat.sub && <div className={styles.statSub}>{stat.sub}</div>}
-          </div>
-        ))}
+    <div
+      className={styles.statsStripWrap}
+      ref={wrapRef}
+      style={pinned && barHeight ? { height: barHeight } : undefined}
+    >
+      <div
+        ref={barRef}
+        className={`${styles.statsStrip} ${pinned ? styles.statsStripPinned : ""}`}
+      >
+        <button
+          type="button"
+          aria-label="Scroll stats left"
+          tabIndex={canScrollLeft ? 0 : -1}
+          onClick={() => scrollByStep(-1)}
+          className={`${styles.statsArrow} ${styles.statsArrowLeft} ${
+            canScrollLeft ? "" : styles.statsArrowHidden
+          }`}
+        >
+          <ChevronIcon dir="left" />
+        </button>
+
+        <div
+          className={styles.statsStripInner}
+          ref={scrollerRef}
+          onScroll={syncArrows}
+        >
+          {stats.map((stat, i) => (
+            <div className={styles.stat} key={i}>
+              <div className={styles.statLabel}>{stat.label}</div>
+              <div className={styles.statValue}>{stat.value}</div>
+              {stat.sub && <div className={styles.statSub}>{stat.sub}</div>}
+            </div>
+          ))}
+        </div>
+
+        <button
+          type="button"
+          aria-label="Scroll stats right"
+          tabIndex={canScrollRight ? 0 : -1}
+          onClick={() => scrollByStep(1)}
+          className={`${styles.statsArrow} ${styles.statsArrowRight} ${
+            canScrollRight ? "" : styles.statsArrowHidden
+          }`}
+        >
+          <ChevronIcon dir="right" />
+        </button>
       </div>
     </div>
   );

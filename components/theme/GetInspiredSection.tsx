@@ -16,6 +16,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import { setPendingSeed } from "../../services/heroChatHandoff";
+import { useStatsStripPinned } from "../../services/floatingStatsStrip";
 import StartScreen from "../bot-components/components/StartScreen";
 import type { ThemeConfig } from "../bot-components/types/themeConfig";
 import styles from "../../styles/pages/revamp/destination.module.scss";
@@ -29,6 +30,7 @@ const GetInspiredSection: React.FC<GetInspiredSectionProps> = ({
 }) => {
   const router = useRouter();
   const [showInspiration, setShowInspiration] = useState(false);
+  const statsStripPinned = useStatsStripPinned();
 
   // ── Draggable bottom-sheet state (mobile) ──
   // The sheet element is 92% of the viewport tall. We move it vertically with a
@@ -163,14 +165,18 @@ const GetInspiredSection: React.FC<GetInspiredSectionProps> = ({
           .gi-inspire-sheet { display: none !important; }
         }
       ` }} />
-      <button
-        type="button"
-        onClick={() => setShowInspiration(true)}
-        className="gi-inspire-bar"
-      >
-        <span>Discover Trip ideas for Greece</span>
-        <span aria-hidden>→</span>
-      </button>
+      {/* Hidden while the destination stats strip is floating at the bottom of
+          the viewport, so only one bar ever owns that slot. */}
+      {!statsStripPinned && (
+        <button
+          type="button"
+          onClick={() => setShowInspiration(true)}
+          className="gi-inspire-bar"
+        >
+          <span>Discover Trip ideas for Greece</span>
+          <span aria-hidden>→</span>
+        </button>
+      )}
 
       {/* ── Mobile: inspiration bottom sheet ── */}
       {showInspiration && (

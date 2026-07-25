@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import {
   setPendingFiles,
@@ -8,6 +8,7 @@ import { truncateAtSentence } from "../../../helper/truncateAtSentence";
 import styles from "../../../styles/pages/revamp/destination.module.scss";
 import Link from "next/link";
 import GetInspiredDrawer from "../../theme/GetInspiredDrawer";
+import TripIdeasSheet from "./TripIdeasSheet";
 import { KairaAvatar } from "../home/HeroSection";
 import heroStyles from "../home/HeroSection.module.scss";
 
@@ -56,6 +57,24 @@ const HeroV2 = ({
   // slide-in inspiration drawer instead.
   const isThemePage = slug === "theme-greece";
   const [showPrompts, setShowPrompts] = useState(false);
+  // On phones the same prompts open as a bottom sheet instead of inline chips.
+  const [showIdeasSheet, setShowIdeasSheet] = useState(false);
+  const [isPhone, setIsPhone] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const apply = () => {
+      setIsPhone(mq.matches);
+      if (!mq.matches) setShowIdeasSheet(false);
+    };
+    apply();
+    if (mq.addEventListener) {
+      mq.addEventListener("change", apply);
+      return () => mq.removeEventListener("change", apply);
+    }
+    mq.addListener(apply);
+    return () => mq.removeListener(apply);
+  }, []);
 
   const goToChat = (seed, files) => {
     if (files && files.length) setPendingFiles(files);
@@ -267,8 +286,12 @@ const HeroV2 = ({
                 prompts.length > 0 && (
                   <button
                     type="button"
-                    onClick={() => setShowPrompts((v) => !v)}
-                    aria-expanded={showPrompts}
+                    onClick={() =>
+                      isPhone
+                        ? setShowIdeasSheet(true)
+                        : setShowPrompts((v) => !v)
+                    }
+                    aria-expanded={isPhone ? showIdeasSheet : showPrompts}
                     className="inline-flex items-center gap-2 rounded-xl border border-[#E7D4F7] bg-[#F7ECFF] px-3 py-1 text-[13px] font-semibold text-[#922ADC] no-underline transition-all duration-200 hover:-translate-y-0.5 hover:border-[#922ADC] shadow-none"
                   >
                     <span aria-hidden>✦</span>
@@ -310,6 +333,16 @@ const HeroV2 = ({
                 })}
               </div>
             )}
+            <TripIdeasSheet
+              open={showIdeasSheet}
+              onClose={() => setShowIdeasSheet(false)}
+              onSelect={(text) => {
+                setShowIdeasSheet(false);
+                handlePromptClick(text);
+              }}
+              destinationLabel={destinationLabel}
+              prompts={prompts}
+            />
             {meta && <div className={styles.heroV2Meta}>{meta}</div>}
           </div>
 

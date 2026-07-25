@@ -176,10 +176,35 @@
 }
 
 /* ============ STATS STRIP ============ */
+/* Holds the strip's height open on phones while the strip itself is pinned to
+   the bottom of the viewport, so docking it never shifts the page. */
+.statsStripWrap {
+  position: relative;
+}
 .statsStrip {
+  position: relative;
   background: var(--ttw-ink-rail);
   color: white;
   padding: 22px 0;
+  @media (max-width: 767px) {
+    /* Same padding pinned or docked — the measured height must not change
+       across the swap. The safe-area inset keeps the pinned bar clear of the
+       iOS home indicator. */
+    padding: 14px 0 calc(14px + env(safe-area-inset-bottom));
+  }
+}
+/* Phone-only floating state: the strip rides the bottom of the screen from
+   page load until the page scrolls down to its in-page slot. Sits below the
+   Bootstrap modal/backdrop layer (1050) so dialogs still cover it. */
+.statsStripPinned {
+  @media (max-width: 767px) {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1030;
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.32);
+  }
 }
 .statsStripInner {
   max-width: 1240px;
@@ -194,12 +219,49 @@
     gap: 18px;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+    scroll-padding-left: 42px;
+    /* Room for the circular scroll arrows so they never sit on top of a stat. */
+    padding: 0 42px;
     scrollbar-width: none;
     -ms-overflow-style: none;
     &::-webkit-scrollbar {
       display: none;
     }
   }
+}
+/* Circular scroll affordances — only where the strip actually scrolls. */
+.statsArrow {
+  display: none;
+  @media (max-width: 1024px) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: #ffffff;
+    color: var(--ttw-ink-rail);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+    z-index: 2;
+    transition: opacity 0.18s ease;
+  }
+}
+.statsArrowLeft {
+  left: 8px;
+}
+.statsArrowRight {
+  right: 8px;
+}
+.statsArrowHidden {
+  opacity: 0;
+  pointer-events: none;
 }
 .stat {
   display: flex;
@@ -210,6 +272,7 @@
   @media (max-width: 1024px) {
     flex: 0 0 auto;
     min-width: 180px;
+    scroll-snap-align: start;
   }
 }
 .statLabel {

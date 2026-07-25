@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Button from "../ui/button/Index";
+import { useStatsStripPinned } from "../../services/floatingStatsStrip";
 
 const Container = styled.div`
   display: none;
@@ -118,6 +119,9 @@ const Text = styled.p`
 
 const Banner = (props) => {
   const [showBanner, setShowBanner] = useState(false);
+  // On phones the destination stats strip floats at the bottom until the page
+  // scrolls down to its slot — this bar waits its turn so the two never stack.
+  const statsStripPinned = useStatsStripPinned();
 
   useEffect(() => {
     let scrollhandler = () => {
@@ -166,7 +170,7 @@ const Banner = (props) => {
   if (showBanner)
     return (
       <>
-      {!props.hideMobile && (
+      {!props.hideMobile && !statsStripPinned && (
         <MobileContainer newYear={props.newYear}>
           <MobileBar>
             <MobileText>{renderMobileText()}</MobileText>
