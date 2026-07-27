@@ -1,231 +1,367 @@
 // pages/theme/filmy-getaways.tsx
+//
+// Filmy Getaways — an editorial, cinematic theme landing (the "02 · Theme"
+// mockup) built from the reusable CinematicThemeLanding component. Every card
+// seeds its prompt into a fresh /chat session with Kaira. The page is wrapped
+// in the shared site Layout so it keeps the standard header + footer.
 
-import { useEffect } from "react";
 import Head from "next/head";
 import { connect } from "react-redux";
-import BotApp from "../../components/bot-components/BotAppClient";
+import { useEffect } from "react";
+import Layout from "../../components/Layout";
 import * as authaction from "../../store/actions/auth";
-import type { ThemeConfig } from "../../components/bot-components/types/themeConfig";
+import CinematicThemeLanding from "../../components/theme/cinematic/CinematicThemeLanding";
+import { useSeedChat } from "../../components/theme/cinematic/useSeedChat";
+import type { CinematicThemeConfig } from "../../components/theme/cinematic/types";
 
-const IMAGE_BASE =
-  "https://d31aoa0ehgvjdi.cloudfront.net/media/website/filmy-getaways-2026";
+const CDN = "https://d31aoa0ehgvjdi.cloudfront.net";
+const IMAGE_BASE = `${CDN}/media/website/filmy-getaways-2026`;
 
-const filmyGetawaysThemeConfig: ThemeConfig = {
-  welcome: {
-    subtitle: "The film ends. Your trip begins.",
-    promptChips: [
+// ── Prompts (authoritative, per the campaign brief) ────────────────────────
+const PROMPTS = {
+  // Bollywood
+  ddlj:
+    "Create a romantic Switzerland itinerary inspired by the feeling of Dilwale Dulhania Le Jayenge. Prioritize scenic train journeys, charming alpine villages, breathtaking mountain landscapes, lakeside towns, cozy cafés, slow mornings, and unforgettable viewpoints. The itinerary should feel relaxed, cinematic, and immersive rather than rushed, balancing iconic Swiss experiences with hidden gems.",
+  znmd:
+    "Plan a Spain road trip inspired by Zindagi Na Milegi Dobara. Design the journey around friendship, freedom, adventure, and unforgettable experiences rather than simply covering cities. Prioritize scenic drives, coastal towns, authentic Spanish culture, lively nightlife, beautiful sunsets, local food experiences, and meaningful moments. Balance iconic highlights with offbeat recommendations to create a journey that feels spontaneous yet well-paced.",
+  yjhd:
+    "Create a Himalayan adventure inspired by Yeh Jawaani Hai Deewani. Balance adventure, friendships, peaceful mountain moments, and cozy cafés. Recommend the best Himalayan destinations for the season instead of limiting the itinerary to one state. Include scenic drives, breathtaking viewpoints, optional treks, local experiences, adventure activities, bonfire evenings, stargazing opportunities, and hidden cafés while keeping the pace relaxed and memorable.",
+  dilChahtaHai:
+    "Build a Goa getaway inspired by Dil Chahta Hai. Focus on unforgettable moments with friends, beach sunsets, scenic drives, lively cafés, hidden beaches, water activities, local food, nightlife, and relaxed afternoons rather than simply covering tourist attractions. Blend iconic experiences with lesser-known gems to create the perfect mix of fun and downtime.",
+  jabWeMet:
+    "Create a mountain escape inspired by Jab We Met. Prioritize charming hill towns, scenic road journeys, cozy cafés, colorful local markets, peaceful viewpoints, authentic cultural experiences, and comfortable stays. Let the itinerary capture the joy of spontaneous travel and slow exploration instead of rushing between destinations.",
+  tamasha:
+    "Design a Corsica escape inspired by Tamasha. Focus on scenic coastal drives, charming villages, beautiful beaches, local cafés, Mediterranean culture, hidden viewpoints, and slow travel experiences that encourage exploration and self-discovery. Balance relaxation with unique local experiences to create a journey that feels both refreshing and meaningful.",
+  // Hollywood
+  midnightInParis:
+    "Create a Paris itinerary inspired by the timeless charm of Midnight in Paris. Prioritize atmospheric cafés, charming neighborhoods, bookstores, art museums, riverside walks, jazz bars, evening strolls, local bakeries, and authentic Parisian experiences. Balance iconic landmarks with hidden gems to create a slow, romantic, and immersive journey.",
+  eatPrayLove:
+    "Plan a Bali escape inspired by Eat Pray Love. Design the journey around wellness, mindfulness, cultural immersion, beautiful nature, hidden cafés, temples, waterfalls, beach sunsets, yoga experiences, spa treatments, and slow travel. Prioritize meaningful local experiences over simply visiting popular tourist attractions.",
+  mammaMia:
+    "Create a Greek island itinerary inspired by Mamma Mia!. Prioritize charming whitewashed villages, crystal-clear beaches, local tavernas, boat trips, coastal walks, hidden viewpoints, island hopping, and spectacular sunsets. The journey should feel joyful, picturesque, and relaxed while blending iconic highlights with authentic island experiences.",
+  harryPotter:
+    "Create a Scotland itinerary inspired by the magical landscapes associated with Harry Potter. Focus on historic castles, scenic rail journeys, misty Highlands, charming villages, dramatic landscapes, ancient streets, cozy pubs, and iconic viewpoints. Capture a sense of wonder and adventure rather than simply visiting filming locations.",
+  lordOfTheRings:
+    "Design a New Zealand adventure inspired by the epic landscapes of The Lord of the Rings. Prioritize breathtaking mountain scenery, pristine lakes, scenic drives, hiking opportunities, charming towns, and immersive nature experiences. Create a journey that feels cinematic, adventurous, and balanced, with a mix of iconic sights and hidden natural gems.",
+  // Step into the scene
+  romanticEscape:
+    "Create a romantic itinerary designed around meaningful experiences rather than packed sightseeing. Prioritize beautiful stays, scenic viewpoints, sunset experiences, charming cafés, intimate dining, leisurely walks, hidden gems, and memorable moments. Balance iconic attractions with peaceful experiences to create a slow, cinematic, and deeply romantic journey.",
+  friendsWhoTravelFar:
+    "Create a fun-filled group itinerary focused on shared experiences, adventure, scenic road journeys, lively cafés, nightlife, local food, unique activities, and unforgettable moments with friends. Prioritize flexibility, memorable experiences, and a balance of excitement and downtime over simply covering tourist attractions.",
+  soloTrip:
+    "Create a solo travel itinerary focused on self-discovery, flexibility, safety, and immersive local experiences. Prioritize walkable neighborhoods, cafés, cultural experiences, scenic viewpoints, peaceful moments, hidden gems, and opportunities to connect with the destination. Maintain a relaxed pace that encourages exploration while leaving room for spontaneity.",
+  // Ask Kaira
+  whichFilmLocation:
+    "Which iconic film-inspired trip should I do first — DDLJ Switzerland, ZNMD Spain, Eat Pray Love Bali, or Mamma Mia Greece? Compare the experience, cost, and atmosphere, then build the ideal itinerary for the one you recommend.",
+};
+
+const filmyGetawaysConfig: CinematicThemeConfig = {
+  header: {
+    title: "Filmy getaways",
+    subtitle: "Theme · Bollywood + Hollywood",
+  },
+  hero: {
+    eyebrow: "Some stories are too good to just watch.",
+    heading: { lead: "Live Your", accent: "Favorite Movie" },
+    // Kept on desktop only (the mobile mockup has no hero subtext).
+    lede: "You've watched the scene enough times. Tell me the film and I'll build the trip around the places that made it — with the touristy bits trimmed out.",
+    placeholder: "Try: the ZNMD Spain trip",
+    prompt: PROMPTS.znmd,
+    chips: [
+      { label: "ZNMD Spain trip", prompt: PROMPTS.znmd },
+      { label: "DDLJ Switzerland trip", prompt: PROMPTS.ddlj },
+      { label: "Eat Pray Love Bali trip", prompt: PROMPTS.eatPrayLove },
+    ],
+    // Desktop-only Kaira polaroid collage — each polaroid opens its destination.
+    images: [
       {
-        icon: "🎬",
-        label: "I want to do the ZNMD Spain trip",
-        prompt:
-          "I want to recreate the ZNMD Spain journey through Pamplona, La Tomatina, Seville, and Barcelona. Build the ultimate itinerary with the best route, key experiences, costs, and festival dates.",
+        image: `${IMAGE_BASE}/DDLJ -- The Switzerland Dream.png`,
+        caption: "Switzerland, DDLJ",
+        href: "/europe/switzerland",
       },
       {
-        icon: "🚆",
-        label: "Plan my DDLJ Switzerland and Europe trip",
-        prompt:
-          "I want the classic DDLJ experience with Alpine trains, scenic villages, and romantic landscapes. Build a 10-day rail itinerary with the best routes, seasons, and costs from India.",
+        image: `${IMAGE_BASE}/ZNMD -- Spain Awaits You.png`,
+        caption: "Spain, ZNMD",
+        href: "/europe/spain",
       },
       {
-        icon: "🎞️",
-        label: "Which film location should I actually visit?",
-        prompt:
-          "Which iconic film-inspired trip should I do first—ZNMD Spain, Queen Europe, Eat Pray Love Bali, or Before Sunrise Vienna? Compare the experience, cost, and atmosphere, then build the ideal itinerary.",
+        image: `${IMAGE_BASE}/Mamma Mia -- Greek Islands.png`,
+        caption: "Greece, Mamma Mia",
+        href: "/europe/greece",
       },
       {
-        icon: "🌴",
-        label: "Plan my Eat Pray Love Bali trip",
-        prompt:
-          "I want to experience Bali from Eat Pray Love, from Ubud and rice terraces to wellness and local culture. Build the ideal itinerary with the best stays, experiences, and trip costs.",
+        image: `${IMAGE_BASE}/Eat Pray Love -- Bali and Italy.png`,
+        caption: "Bali, Eat Pray Love",
+        href: "/asia/indonesia/bali",
       },
     ],
   },
-  rows: [
+  sections: [
+    // ── Bollywood ──
     {
-      heading: "Bollywood Scenes We Could Not Forget",
-      icon: "🎥",
+      type: "cards",
+      heading: { lead: "Bollywood scenes you never", accent: "forgot" },
       cards: [
         {
-          image: `${IMAGE_BASE}/Queen -- Solo Paris and Amsterdam.png `,
-          label: "Queen — Solo Paris and Amsterdam",
-          tags: "Bollywood · Europe",
-          description: "Go alone. Come back with stories.",
-          prompt:
-            "I want a Queen-inspired solo trip through Paris and Amsterdam. Build the perfect itinerary with safe areas, memorable experiences, and the freedom that made the journey so special.",
+          image: `${IMAGE_BASE}/DDLJ -- The Switzerland Dream.png`,
+          name: "DDLJ, the Switzerland dream",
+          line: "Trains, Alps, and romance.",
+          tag: "Switzerland",
+          prompt: PROMPTS.ddlj,
         },
         {
-          image: `${IMAGE_BASE}/ZNMD -- Spain Awaits You.png `,
-          label: "ZNMD — Spain Awaits You",
-          tags: "Bollywood · Spain",
-          description: "Spain. Friendship. No regrets.",
-          prompt:
-            "I want to recreate the ZNMD Spain journey through Pamplona, La Tomatina, Seville, and Barcelona. Build the ultimate itinerary with key experiences, costs, and festival dates.",
+          image: `${IMAGE_BASE}/ZNMD -- Spain Awaits You.png`,
+          name: "ZNMD, Spain awaits",
+          line: "Spain. Friendship. No regrets.",
+          tag: "Spain",
+          objectPosition: "center 30%",
+          prompt: PROMPTS.znmd,
         },
         {
-          image: `${IMAGE_BASE}/Dil Chahta Hai -- Goa Forever.png `,
-          label: "Dil Chahta Hai — Goa Forever",
-          tags: "Bollywood · Goa",
-          description: "Friends, feni, and the sea.",
-          prompt:
-            "I want a Dil Chahta Hai-style Goa getaway with beaches, nightlife, and unforgettable moments with friends. Build the perfect itinerary with the best places to stay, eat, and explore.",
+          image: `${IMAGE_BASE}/Yeh Jawaani -- Mountains to Palace.jpg`,
+          name: "Yeh Jawaani — mountains to palaces",
+          line: "Mountains, desert, road-trip vibes.",
+          tag: "India",
+          prompt: PROMPTS.yjhd,
         },
         {
-          image: `${IMAGE_BASE}/DDLJ -- The Switzerland Dream.png `,
-          label: "DDLJ — The Switzerland Dream",
-          tags: "Bollywood · Europe",
-          description: "Trains, Alps, and romance.",
-          prompt:
-            "I want the classic DDLJ experience through Switzerland and Europe. Build the ideal itinerary with scenic trains, charming towns, and iconic mountain views.",
+          image: `${IMAGE_BASE}/Dil Chahta Hai -- Goa Forever.png`,
+          name: "Dil Chahta Hai, Goa forever",
+          line: "Friends, feni, and the sea.",
+          tag: "Goa",
+          prompt: PROMPTS.dilChahtaHai,
         },
         {
-          image: `${IMAGE_BASE}/Yeh Jawaani -- Mountains to Palace.jpg `,
-          label: "Yeh Jawaani — Mountains to Palaces",
-          tags: "Bollywood · India",
-          description: "Mountains. Desert. Road trip vibes.",
-          prompt:
-            "I want a Yeh Jawaani Hai Deewani-inspired trip from Manali to Udaipur. Build the perfect journey with mountain adventures, scenic routes, and romantic city experiences.",
+          image:
+            "https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?w=1200",
+          name: "Jab We Met, hill-town joy",
+          line: "Spontaneous, slow, unforgettable.",
+          tag: "Mountains",
+          prompt: PROMPTS.jabWeMet,
+        },
+        {
+          image: `${IMAGE_BASE}/Corsica -- Where Tamasha Was Shot.png`,
+          name: "Tamasha, Corsica calling",
+          line: "Cliffs, sea, and silence.",
+          tag: "Corsica",
+          prompt: PROMPTS.tamasha,
         },
       ],
     },
+    // ── Hollywood ──
     {
-      heading: "Hollywood Said Go Here. We Agree.",
-      icon: "🍿",
+      type: "cards",
+      heading: { lead: "Hollywood said go.", accent: "We agree." },
       cards: [
-         {
-          image: `${IMAGE_BASE}/Game of Thrones.png `,
-          label: "Midnight in Paris — Walk Into the Film",
-          tags: "Hollywood · France",
-          description: "When Paris stops performing.",
-          prompt:
-            "Create a Midnight in Paris-inspired 3-day itinerary covering Montmartre, Seine bridges, and Left Bank cafés. Include best timing for light, crowds, and cinematic moments.",
+        {
+          image:
+            "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=1200",
+          name: "Midnight in Paris",
+          line: "When Paris stops performing.",
+          tag: "France",
+          prompt: PROMPTS.midnightInParis,
         },
         {
-          image: `${IMAGE_BASE}/Before Sunrise -- Vienna at Midnight.png `,
-          label: "Before Sunrise — Vienna at Midnight",
-          tags: "Hollywood · Austria",
-          description: "A night that never feels planned.",
-          prompt:
-            "Build a Before Sunrise-style Vienna itinerary focused on slow walks, cafés, parks, and midnight conversations. Capture the exact feel of Jesse and Celine's journey across the city.",
+          image: `${IMAGE_BASE}/Eat Pray Love -- Bali and Italy.png`,
+          name: "Eat Pray Love, Bali & Italy",
+          line: "Some trips change everything.",
+          tag: "Bali + Italy",
+          prompt: PROMPTS.eatPrayLove,
         },
         {
-          image: `${IMAGE_BASE}/Eat Pray Love -- Bali and Italy.png `,
-          label: "Eat Pray Love — Bali and Italy",
-          tags: "Hollywood · Bali + Italy",
-          description: "Some trips change everything.",
-          prompt:
-            "Plan a combined Italy and Bali trip inspired by Eat Pray Love. Cover Rome, Naples, and Ubud with real experiences still worth doing today and total cost from India.",
+          image: `${IMAGE_BASE}/Mamma Mia -- Greek Islands.png`,
+          name: "Mamma Mia — Greek islands",
+          line: "Where life turns into music.",
+          tag: "Greece",
+          prompt: PROMPTS.mammaMia,
         },
         {
-          image: `${IMAGE_BASE}/Mamma Mia -- Greek Islands.png `,
-          label: "Mamma Mia — Greek Islands",
-          tags: "Hollywood · Greece",
-          description: "Where life turns into music.",
-          prompt:
-            "Build an 8-day Greek islands trip inspired by Mamma Mia. Include Skopelos, Skiathos, and Santorini options with the most cinematic stays and island routes.",
+          image:
+            "https://images.unsplash.com/photo-1506377585622-bedcbb027afc?w=1200",
+          name: "Harry Potter, Scotland magic",
+          line: "Castles, mist, and wonder.",
+          tag: "Scotland",
+          prompt: PROMPTS.harryPotter,
         },
         {
-          image: `${IMAGE_BASE}/The Secret Life of Walter Mitty -- Iceland.png `,
-          label: "The Secret Life of Walter Mitty — Iceland",
-          tags: "Hollywood · Iceland",
-          description: "Reality feels optional here.",
-          prompt:
-            "Create a 7-day Iceland road trip inspired by Walter Mitty. Cover the Ring Road, Snaefellsnes Peninsula, and south coast highlights with cinematic stops and routes.",
+          image:
+            "https://images.unsplash.com/photo-1469521669194-babb45599def?w=1200",
+          name: "Lord of the Rings, New Zealand",
+          line: "Landscapes out of legend.",
+          tag: "New Zealand",
+          prompt: PROMPTS.lordOfTheRings,
         },
       ],
     },
+    // ── Step into the scene ──
     {
-      heading: "Your Film. Your Trip.",
-      icon: "🎟️",
+      type: "trips",
+      heading: {
+        lead: "Step into",
+        accent: "the scene",
+        note: "Priced from Delhi · flights included",
+      },
       cards: [
         {
-          image: `${IMAGE_BASE}/Friends Who Travel Far.png `,
-          label: "Friends Who Travel Far",
-          tags: "Bollywood · Group",
-          description: "Three friends. One wild route.",
-          prompt:
-            "Plan a ZNMD style Spain trip for three friends covering Pamplona, La Tomatina, Seville, and Barcelona. Include festival dates, booking timelines, travel between cities, stays, and cost from India.",
+          image: `${IMAGE_BASE}/The Romantic Escape.png`,
+          tag: "Bollywood · romantic · 9N",
+          name: "The romantic escape",
+          line: "Europe made for two.",
+          price: "₹3,85,000 / person",
+          nights: "9 nights",
+          prompt: PROMPTS.romanticEscape,
         },
         {
-          image: `${IMAGE_BASE}/The Romantic Escape.png `,
-          label: "The Romantic Escape",
-          tags: "Bollywood · Romantic",
-          description: "Europe made for two.",
-          prompt:
-            "Build a DDLJ-inspired 10-day honeymoon in Switzerland and nearby Europe. Focus on alpine trains, scenic villages, romantic routes, seasons, and total cost from India.",
+          image: `${IMAGE_BASE}/Friends Who Travel Far.png`,
+          tag: "Bollywood · group · 8N",
+          name: "Friends who travel far",
+          line: "Three friends. One wild route.",
+          price: "₹2,95,000 / person",
+          nights: "8 nights",
+          prompt: PROMPTS.friendsWhoTravelFar,
         },
         {
-          image: `${IMAGE_BASE}/The Solo Reset.jpg `,
-          label: "The Solo Reset Trip",
-          tags: "Films · Solo",
-          description: "Go alone. Come back new.",
-          prompt:
-            "Choose between Queen (Paris–Amsterdam) or Eat Pray Love (Bali–Italy) for a solo trip. Recommend one and build a detailed itinerary with key experiences and cost from India.",
-        },
-        {
-          image: `${IMAGE_BASE}/The Film Route Europe Trip.png `,
-          label: "The Film Route Europe Trip",
-          tags: "Hollywood · Europe",
-          description: "Cities that feel unreal.",
-          prompt:
-            "Create a 12-day Europe trip inspired by Before Sunrise (Vienna), Midnight in Paris, and Letters to Juliet (Verona). Include routes, key experiences, train travel, and total cost from India.",
-        },
-        {
-          image: `${IMAGE_BASE}/Cruise Through the Mediterranean.png `,
-          label: "Cruise Through the Mediterranean",
-          tags: "Bollywood · Europe",
-          description: "Sea, luxury, escape.",
-          prompt:
-            "Plan a Dil Dhadakne Do-inspired Mediterranean cruise covering Italy, Greece, and Turkey. Include best cruise route, key stops, season, and total cost from India.",
+          image: `${IMAGE_BASE}/The Solo Reset.jpg`,
+          tag: "Hollywood · solo · 7N",
+          name: "The solo reset trip",
+          line: "Go alone. Come back new.",
+          price: "₹2,40,000",
+          nights: "7 nights",
+          prompt: PROMPTS.soloTrip,
         },
       ],
     },
+    // ── Other themes ──
     {
-      heading: "The Scenes You Want to Step Into",
-      icon: "🎦",
+      type: "gradient",
+      heading: {
+        eyebrow: "Other themes",
+        lead: "Not a film person?",
+        accent: "Try these",
+      },
+      columns: 6,
       cards: [
         {
-          image: `${IMAGE_BASE}/Rohtang Pass -- 3 Idiots and YJHD.png `,
-          label: "Rohtang Pass — 3 Idiots and YJHD",
-          tags: "Bollywood · Himalayas",
-          description: "The road everyone remembers.",
-          prompt:
-            "Plan a 5-day Manali trip covering Rohtang Pass, inspired by 3 Idiots and Yeh Jawaani Hai Deewani. Include permit details, road conditions in snow vs summer, and full itinerary with Solang Valley, Old Manali, and Beas River.",
+          name: "Perfect proposals",
+          meta: "9 trips",
+          emoji: "💍",
+          gradient: "linear-gradient(150deg, #3d2b52, #b84034 170%)",
+          image: `${CDN}/media/page/174120792592848706245422363281/.png`,
+          href: "/theme/perfect-proposal",
         },
         {
-          image: `${IMAGE_BASE}/Corsica -- Where Tamasha Was Shot.png `,
-          label: "Corsica — Where Tamasha Was Shot",
-          tags: "Bollywood · France",
-          description: "Cliffs, sea, and silence.",
+          name: "New Year & Christmas",
+          meta: "Dec – Jan",
+          emoji: "🎄",
+          gradient: "linear-gradient(150deg, #16324f, #1f8a5a 150%)",
+          image:
+            "https://images.unsplash.com/photo-1512389142860-9c449e58a543?w=1200",
           prompt:
-            "Build a 5-day Corsica itinerary covering Bonifacio, Palombaggia, and mountain villages inspired by Tamasha. Include how to reach from France/Italy and how to combine it with Paris.",
+            "Plan a New Year and Christmas holiday abroad with festive markets, lights, and celebrations. Recommend the best destinations for late December, and build a complete itinerary with stays and experiences.",
         },
         {
-          image: `${IMAGE_BASE}/Juliet's Courtyard.jpg `,
-          label: "Juliet's Courtyard — Verona",
-          tags: "Hollywood · Italy",
-          description: "Walls, wishes, and stories.",
-          prompt:
-            "Create a 2-day Verona itinerary covering Juliet's Courtyard, Piazza delle Erbe, the Roman amphitheatre, and river walks. Include what feels real vs touristy and how to fit it into a wider Italy trip.",
+          name: "Edinburgh Hogmanay",
+          meta: "29 Dec – 2 Jan",
+          emoji: "🏴",
+          gradient: "linear-gradient(150deg, #1a2436, #3d4f7a)",
+          image:
+            "https://images.unsplash.com/photo-1506377585622-bedcbb027afc?w=1200",
+          href: "/theme/edinburgh-hogmanay",
         },
         {
-          image: `${IMAGE_BASE}/Amsterdam -- Queen's Canal Walk.png `,
-          label: "Amsterdam — Queen's Canal Walk",
-          tags: "Bollywood · Netherlands",
-          description: "A city that slows you.",
-          prompt:
-            "Plan a 3-day Amsterdam trip inspired by Queen. Include Jordaan canals, Haarlemmerstraat, Vondelpark, and key solo/couple experiences. Structure it as a Paris extension with safe, cinematic walking routes.",
+          name: "Thailand bachelor",
+          meta: "Groups of 6+",
+          emoji: "🕺",
+          gradient: "linear-gradient(150deg, #b84034, #f0e9d6 190%)",
+          image: `${CDN}/media/website/thailand-theme-2026/ChiangMai.jpg`,
+          href: "/theme/thailand-trip",
         },
         {
-          image: `${IMAGE_BASE}/Santorini -- Mamma Mia Vibes.png `,
-          label: "Santorini — Mamma Mia Vibes",
-          tags: "Hollywood · Greece",
-          description: "Sunsets that feel unreal.",
-          prompt:
-            "Build a 4-night Santorini or Skopelos itinerary inspired by Mamma Mia. Compare both islands, recommend where to stay, and design a day-by-day plan with Athens connection and best viewpoints.",
+          name: "Northern lights",
+          meta: "Nov – Mar",
+          emoji: "🌌",
+          gradient: "linear-gradient(150deg, #0e1530, #445069)",
+          image: `${CDN}/media/page/177133062391213107109069824219.jpg`,
+          href: "/theme/northern-lights",
+        },
+        {
+          name: "Honeymoon isles",
+          meta: "12 trips",
+          emoji: "🫶",
+          gradient: "linear-gradient(150deg, #16324f, #ffe5d1 200%)",
+          image:
+            "https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=1200",
+          href: "/theme/honeymoon-2026",
+        },
+      ],
+    },
+    // ── Destinations ──
+    {
+      type: "gradient",
+      heading: {
+        eyebrow: "Destinations",
+        lead: "Where I",
+        accent: "send people",
+      },
+      columns: 6,
+      mobileGrid: true,
+      cards: [
+        {
+          name: "Switzerland",
+          meta: "18 trips",
+          emoji: "🏔️",
+          gradient: "linear-gradient(150deg, #16324f, #3d4f7a)",
+          image: `${CDN}/media/countries/175930905875495767593383789062.jpg`,
+          href: "/europe/switzerland",
+        },
+        {
+          name: "Spain",
+          meta: "12 trips",
+          emoji: "🍷",
+          gradient: "linear-gradient(150deg, #b84034, #f0e9d6 190%)",
+          image: `${CDN}/media/countries/175344481739372777938842773438.jpg`,
+          href: "/europe/spain",
+        },
+        {
+          name: "Thailand",
+          meta: "21 trips",
+          emoji: "🏝️",
+          gradient: "linear-gradient(150deg, #1f8a5a, #f0e9d6 200%)",
+          image: `${CDN}/media/countries/168442180095400023460388183594.jpg`,
+          href: "/asia/thailand",
+        },
+        {
+          name: "Japan",
+          meta: "16 trips",
+          emoji: "⛩️",
+          gradient: "linear-gradient(150deg, #3d2b52, #b84034 180%)",
+          image: `${CDN}/media/countries/175853838850662446022033691406.jpg`,
+          href: "/asia/japan",
+        },
+        {
+          name: "Iceland",
+          meta: "8 trips",
+          emoji: "🌋",
+          gradient: "linear-gradient(150deg, #0e1530, #445069)",
+          image: `${CDN}/media/countries/168442051714989519119262695312.jpg`,
+          href: "/europe/iceland",
+        },
+        {
+          name: "Bali",
+          meta: "14 trips",
+          emoji: "🌴",
+          gradient: "linear-gradient(150deg, #16324f, #1f8a5a 160%)",
+          image: `${CDN}/media/cities/175456211725436902046203613281.jpg`,
+          href: "/asia/indonesia/bali",
         },
       ],
     },
   ],
+  askBar: {
+    placeholder: "Which film location should I actually visit?",
+    cta: "Ask Kaira",
+    prompt: PROMPTS.whichFilmLocation,
+  },
 };
 
 const FilmyGetawaysThemePage = ({
@@ -233,12 +369,14 @@ const FilmyGetawaysThemePage = ({
 }: {
   checkAuthState: () => void;
 }) => {
+  const seedChat = useSeedChat();
+
   useEffect(() => {
     checkAuthState();
   }, []);
 
   return (
-    <>
+    <Layout page="Theme Page" slug="filmy-getaways">
       <Head>
         <title>
           Filmy Getaways | Film-Inspired Trip Planner & Itinerary | The Tarzan
@@ -246,7 +384,7 @@ const FilmyGetawaysThemePage = ({
         </title>
         <meta
           name="description"
-          content="Plan film-inspired getaways with The Tarzan Way's AI itinerary — ZNMD Spain, DDLJ Switzerland, Queen Europe, Eat Pray Love Bali, Before Sunrise Vienna, and more iconic Bollywood and Hollywood movie destinations for Indian travellers."
+          content="Plan film-inspired getaways with The Tarzan Way's AI itinerary — ZNMD Spain, DDLJ Switzerland, Eat Pray Love Bali, Mamma Mia Greece, and more iconic Bollywood and Hollywood movie destinations for Indian travellers."
         />
         <meta
           property="og:title"
@@ -254,11 +392,15 @@ const FilmyGetawaysThemePage = ({
         />
         <meta
           property="og:description"
-          content="Plan film-inspired getaways with The Tarzan Way's AI itinerary — ZNMD Spain, DDLJ Switzerland, Queen Europe, Eat Pray Love Bali, Before Sunrise Vienna, and more iconic Bollywood and Hollywood movie destinations for Indian travellers."
+          content="Plan film-inspired getaways with The Tarzan Way's AI itinerary — ZNMD Spain, DDLJ Switzerland, Eat Pray Love Bali, Mamma Mia Greece, and more iconic Bollywood and Hollywood movie destinations for Indian travellers."
+        />
+        <link
+          rel="canonical"
+          href="https://thetarzanway.com/theme/filmy-getaways"
         />
       </Head>
-      <BotApp themeConfig={filmyGetawaysThemeConfig} />
-    </>
+      <CinematicThemeLanding config={filmyGetawaysConfig} onSelectPrompt={seedChat} />
+    </Layout>
   );
 };
 
