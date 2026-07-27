@@ -24,6 +24,10 @@ interface OtpCardProps {
   /** Current itinerary id, sent on the login-funnel analytics events (the chat
    *  URL isn't `/itinerary/...`, so the worker can't derive it on its own). */
   itineraryId?: string;
+  /** Renders the card "bare" — no left avatar gutter, no outer border / shadow /
+   *  max-width — so it can fill a host container (e.g. the BotLoginModal bottom
+   *  sheet) instead of floating as a standalone chat card. */
+  bare?: boolean;
 }
 
 /**
@@ -38,6 +42,7 @@ const OtpCard: React.FC<OtpCardProps> = ({
   heading = "Save our work",
   submitLabel = "Send OTP & Start",
   itineraryId,
+  bare = false,
 }) => {
   const dispatch = useDispatch();
   const {
@@ -374,31 +379,50 @@ const OtpCard: React.FC<OtpCardProps> = ({
   };
 
   return (
-    <div className="flex gap-[10px] mt-1 max-ph:gap-0 max-ph:px-3">
+    <div
+      className={
+        bare ? "w-full" : "flex gap-[10px] mt-1 max-ph:gap-0 max-ph:px-3"
+      }
+    >
       {/* Kaira avatar in the left gutter — same gradient ring + image as her
           chat replies, so the sign-in card reads as part of the conversation.
-          Hidden on phones (like other bot avatars) to give the card full width. */}
+          Hidden on phones (like other bot avatars) to give the card full width.
+          Dropped entirely in `bare` mode (the host shell provides its own
+          chrome). */}
+      {!bare && (
+        <div
+          aria-hidden
+          className="w-[30px] h-[30px] rounded-full overflow-hidden shrink-0 max-ph:hidden"
+          style={{ background: "linear-gradient(180deg, #a8d2f5, #7ab8e8)" }}
+        >
+          <img
+            src="/KairaInsta.png"
+            alt="Kaira"
+            className="w-full h-full object-cover"
+          />
+        </div>
+      )}
       <div
-        aria-hidden
-        className="w-[30px] h-[30px] rounded-full overflow-hidden shrink-0 max-ph:hidden"
-        style={{ background: "linear-gradient(180deg, #a8d2f5, #7ab8e8)" }}
-      >
-        <img
-          src="/KairaInsta.png"
-          alt="Kaira"
-          className="w-full h-full object-cover"
-        />
-      </div>
-      <div
-        className="rounded-[16px] min-w-0 flex-1 max-ph:!max-w-none"
+        className={
+          bare
+            ? "min-w-0 w-full"
+            : "rounded-[16px] min-w-0 flex-1 max-ph:!max-w-none"
+        }
         style={{
           // First step adopts the cream "welcome back" card look; the OTP /
           // details steps keep the original white card so they're unchanged.
           background: otpSent ? "#fff" : "#FAFAF5",
-          border: otpSent ? "1px solid #ececec" : "1px solid #e7e3d9",
-          padding: otpSent ? 16 : 22,
-          maxWidth: 420,
-          boxShadow: "0 14px 30px -14px rgba(11,18,32,.14)",
+          // In `bare` mode the host container owns the border / shadow / width,
+          // so the card fills it flush (no double frame).
+          border: bare
+            ? "none"
+            : otpSent
+              ? "1px solid #ececec"
+              : "1px solid #e7e3d9",
+          borderRadius: bare ? 0 : 16,
+          padding: bare ? "4px 20px 20px" : otpSent ? 16 : 22,
+          maxWidth: bare ? "none" : 420,
+          boxShadow: bare ? "none" : "0 14px 30px -14px rgba(11,18,32,.14)",
         }}
       >
       {/* The small uppercase eyebrow belongs to the OTP / details steps; the
@@ -598,6 +622,15 @@ const OtpCard: React.FC<OtpCardProps> = ({
                   // Clear a prior "couldn't send" error as soon as the user
                   // starts correcting the number (once, only if one is shown).
                   if (mobileFail) dispatch(authaction.authResetLogin() as any);
+                }}
+                onKeyDown={(e) => {
+                  // Enter submits the number — same as tapping "Send OTP" —
+                  // but only when the button would actually fire (valid number,
+                  // not mid-send). Matches the disabled state of the button.
+                  if (e.key === "Enter" && phoneValid && !loading) {
+                    e.preventDefault();
+                    sendOtp();
+                  }
                 }}
                 placeholder="98XXX XXXXX"
                 className="flex-1 min-w-0 outline-none rounded-[14px] px-[16px] py-[13px] text-[15px] font-semibold tabular-nums"
@@ -893,12 +926,11 @@ const OtpCard: React.FC<OtpCardProps> = ({
         </>
       )}
 
-      {/* Hide the floating reCAPTCHA badge on phones — it overlaps the card and
-          wastes screen space. (reCAPTCHA still runs; the badge is only visual.) */}
+      {/* Hide the floating reCAPTCHA badge on every screen — it overlaps the
+          card and looks out of place. (reCAPTCHA still runs; the badge is only
+          visual. Google's terms are met by the inline notice in the trust line.) */}
       <style dangerouslySetInnerHTML={{ __html: `
-        @media (max-width: 768px) {
-          .grecaptcha-badge { visibility: hidden !important; }
-        }
+        .grecaptcha-badge { visibility: hidden !important; }
       ` }} />
       <ReCAPTCHA
         size="invisible"

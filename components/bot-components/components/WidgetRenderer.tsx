@@ -7,6 +7,7 @@ import { MERCURY_HOST } from "../../../services/constants";
 import { openNotification } from "../../../store/actions/notification";
 import { FaTaxi, FaWhatsapp } from "react-icons/fa";
 import useMediaQuery from "../../media";
+import BotLoginModal from "./BotLoginModal";
 
 // ─── Widget environment context ───────────────────────────────────────────────
 // Carries ambient data (e.g. botMode) down to individual cards without
@@ -3653,39 +3654,105 @@ function RouteTimeline({ stops }: { stops: ParsedRouteStop[] }) {
   );
 }
 
+// Three reassurance pointers shown beside the estimated cost. The last line
+// leads with the ₹5,000 booking credit to give the card a concrete incentive.
+const ROUTE_COST_POINTERS = [
+  "Flights, stays, transfers included",
+  "Nothing to pay now",
+  "₹5,000 off when you book",
+];
+
+function RouteCostCheck() {
+  return (
+    <span
+      style={{
+        flexShrink: 0,
+        marginTop: 1,
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <svg width="15" height="15" viewBox="0 0 20 20" fill="none" aria-hidden>
+        <path
+          d="M4 10.5l3.5 3.5L16 5.5"
+          stroke="#1FA855"
+          strokeWidth="2.4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </span>
+  );
+}
+
+// Estimated-cost card: the "EST / PERSON" amount on the left, a divider, and the
+// reassurance pointers on the right. Collapses to a stacked layout on phones.
 function RouteCostCard({ label, amount }: { label: string; amount: string }) {
   return (
     <div
+      className="flex gap-[14px] max-ph:flex-col max-ph:gap-[10px]"
       style={{
-        marginTop: 16,
         border: "1px solid #ececec",
-        borderRadius: 14,
-        padding: "13px 16px",
+        borderRadius: 12,
+        padding: "12px 14px",
       }}
     >
-      <div
-        style={{
-          fontSize: 10,
-          fontWeight: 600,
-          letterSpacing: "0.12em",
-          textTransform: "uppercase",
-          color: "#9aa2ad",
-          marginBottom: 4,
-        }}
-      >
-        {label}
+      {/* `!flex-none` on phones drops the row-mode flex-basis (which would be
+          read as a height in the stacked column and open a large empty gap). */}
+      <div className="max-ph:!flex-none max-ph:w-full" style={{ flex: "1 1 130px", minWidth: 0 }}>
+        <div
+          style={{
+            fontSize: 10,
+            fontWeight: 600,
+            letterSpacing: "0.12em",
+            textTransform: "uppercase",
+            color: "#9aa2ad",
+            marginBottom: 4,
+          }}
+        >
+          {label}
+        </div>
+        <div
+          style={{
+            fontSize: "clamp(17px, 4.6vw, 20px)",
+            fontWeight: 700,
+            color: "#0b1220",
+            letterSpacing: "-0.02em",
+            lineHeight: 1.1,
+          }}
+        >
+          {amount}
+        </div>
       </div>
+
+      {/* Vertical rule between amount and pointers; becomes a full-width hairline
+          once the card stacks on phones. */}
       <div
-        style={{
-          fontSize: "clamp(16px, 4.6vw, 18px)",
-          fontWeight: 700,
-          color: "#0b1220",
-          letterSpacing: "-0.01em",
-          lineHeight: 1.15,
-        }}
+        className="w-px self-stretch max-ph:w-full max-ph:h-px"
+        style={{ background: "#ececec", flexShrink: 0 }}
+      />
+
+      <ul
+        className="list-none m-0 p-0 grid gap-[9px] max-ph:!flex-none max-ph:w-full"
+        style={{ flex: "1 1 190px", minWidth: 0 }}
       >
-        {amount}
-      </div>
+        {ROUTE_COST_POINTERS.map((p) => (
+          <li
+            key={p}
+            className="flex gap-[7px] items-start"
+            style={{
+              fontSize: "clamp(11.5px, 3.2vw, 12.5px)",
+              lineHeight: 1.3,
+              color: "#2a3444",
+              fontWeight: 500,
+            }}
+          >
+            <RouteCostCheck />
+            <span>{p}</span>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
@@ -3922,25 +3989,54 @@ function resolveCityCountry(itinerary: any, cityName: string): string {
   return "";
 }
 
-// Matched pair of route CTAs — "Confirm Route" (primary) + "Modify"
-// (secondary). Both send a prompt straight into the chat when clicked so the
-// user's intent flows to Kaira as a normal turn.
+// Estimated-cost + CTA block — the cream "confirm" island under the timeline.
+// Wraps the cost card, the "range moves…" note, and the paired CTAs: "Modify"
+// (secondary) sends a prompt straight into the chat, while "Confirm Route &
+// Sign In" opens the sign-in popup first (or, if already logged in, confirms the
+// route directly). Both flows resolve to the same "Confirm this route" turn so
+// Kaira picks up from where the user left off.
 function RouteActionButtons({
+  label,
+  amount,
   onAction,
 }: {
+  label: string;
+  amount: string;
   onAction?: WidgetRendererProps["onAction"];
 }) {
   const widgetDisabled = useContext(DisabledActionContext);
+  const token = useSelector((s: any) => s?.auth?.token);
+  const itineraryId = useSelector(
+    (s: any) =>
+      (s?.ItineraryId as string | null) ??
+      (s?.Itinerary?.id as string | null) ??
+      "",
+  );
+  const [showLogin, setShowLogin] = useState(false);
+
   const promptToChat = (text: string) => {
     if (widgetDisabled) return;
     onAction?.({ type: "chat.prompt", payload: { text } });
   };
 
+  const confirmRoute = () => promptToChat("Confirm this route");
+
+  // Logged-in users skip the popup and confirm straight away; everyone else
+  // signs in first and the route is confirmed on a successful verify.
+  const handleConfirmClick = () => {
+    if (widgetDisabled) return;
+    if (token) {
+      confirmRoute();
+      return;
+    }
+    setShowLogin(true);
+  };
+
   const base: React.CSSProperties = {
-    padding: "11px 16px",
+    padding: "11px 14px",
     borderRadius: 9999,
     fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-    fontSize: 13.5,
+    fontSize: 13,
     fontWeight: 600,
     cursor: widgetDisabled ? "not-allowed" : "pointer",
     opacity: widgetDisabled ? 0.5 : 1,
@@ -3949,44 +4045,84 @@ function RouteActionButtons({
     justifyContent: "center",
     gap: 7,
     boxSizing: "border-box",
-    whiteSpace: "nowrap",
     lineHeight: "18px",
     transition: "background 0.15s ease, border-color 0.15s ease",
   };
 
   return (
-    <div style={{ display: "flex", gap: 10, marginTop: 14 }}>
-     
-      <button
-        type="button"
-        disabled={widgetDisabled}
-        onClick={() => promptToChat("I'd like to modify this route")}
-        style={{
-          ...base,
-          flex: "2 1 0",
-          border: "1px solid #07213a",
-          background: "#ffffff",
-          color: "#07213a",
-        }}
-      >
-        Modify
-      </button>
+    <div style={{ marginTop: 14 }}>
+      {amount && <RouteCostCard label={label} amount={amount} />}
 
-       <button
-        type="button"
-        disabled={widgetDisabled}
-        onClick={() => promptToChat("Confirm this route")}
-        style={{
-          ...base,
-          flex: "3 1 0",
-          border: "1px solid #07213a",
-          background: "#f7e700",
-          color: "#000",
-        }}
+      {/* Estimate caveat — the range shifts with travel dates and hotel tier. */}
+      <div
+        className="flex items-center gap-[7px]"
+        style={{ margin: "11px 4px 0" }}
       >
-        Confirm Route
+        <svg
+          width="15"
+          height="15"
+          viewBox="0 0 24 24"
+          fill="none"
+          aria-hidden
+          style={{ flexShrink: 0 }}
+        >
+          <circle cx="12" cy="12" r="9" stroke="#9aa2ad" strokeWidth="1.7" />
+          <path
+            d="M12 11v5"
+            stroke="#9aa2ad"
+            strokeWidth="1.7"
+            strokeLinecap="round"
+          />
+          <circle cx="12" cy="7.75" r="1.15" fill="#9aa2ad" />
+        </svg>
+        <span style={{ fontSize: 11.5, color: "#6B7280", lineHeight: 1.3 }}>
+          Range moves with your dates and hotel choice
+        </span>
+      </div>
 
-      </button>
+      <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
+        <button
+          type="button"
+          disabled={widgetDisabled}
+          onClick={() => promptToChat("I'd like to modify this route")}
+          style={{
+            ...base,
+            flex: "2 1 0",
+            border: "1px solid #07213a",
+            background: "#ffffff",
+            color: "#07213a",
+          }}
+        >
+          Modify
+        </button>
+
+        <button
+          type="button"
+          disabled={widgetDisabled}
+          onClick={handleConfirmClick}
+          style={{
+            ...base,
+            flex: "3 1 0",
+            border: "1px solid #07213a",
+            background: "#f7e700",
+            color: "#000",
+          }}
+        >
+          {token ? "Confirm Route" : "Confirm Route & Sign In"}
+        </button>
+      </div>
+
+      <BotLoginModal
+        show={showLogin}
+        onhide={() => setShowLogin(false)}
+        zIndex={3300}
+        message="Sign in to confirm your route"
+        itinary_id={itineraryId}
+        onSuccess={() => {
+          setShowLogin(false);
+          confirmRoute();
+        }}
+      />
     </div>
   );
 }
@@ -4065,8 +4201,11 @@ function RouteItineraryCard({
         }}
       >
         <RouteTimeline stops={stops} />
-        {formattedAmount && <RouteCostCard label={label} amount={formattedAmount} />}
-        <RouteActionButtons onAction={onAction} />
+        <RouteActionButtons
+          label={label}
+          amount={formattedAmount}
+          onAction={onAction}
+        />
       </div>
     </div>
   );
