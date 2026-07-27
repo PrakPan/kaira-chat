@@ -4,6 +4,10 @@ import { setStatsStripPinned } from "../../../services/floatingStatsStrip";
 import styles from "../../../styles/pages/revamp/destination.module.scss";
 
 const PHONE_QUERY = "(max-width: 767px)";
+// Keeps a chip scrolled into view clear of the circular arrow overlay — must
+// stay in step with `.statsArrow` / `scroll-padding-left` in the stylesheet.
+const ARROW_GUTTER = 42;
+const STEP_EPSILON = 4;
 
 const Serif = ({ children }) => (
   <span className={styles.serif}>{children}</span>
@@ -261,10 +265,28 @@ const DestinationStatsStrip = ({ data, fallbacks = [] }) => {
     return () => window.removeEventListener("resize", syncArrows);
   }, [syncArrows, stats.length, pinned]);
 
+  // One stat per tap. Scrolling by a fraction of the viewport skipped two at a
+  // time on phones, so step through the chips' own offsets instead and park
+  // each one past ARROW_GUTTER, clear of the circular arrow.
   const scrollByStep = (dir) => {
     const el = scrollerRef.current;
     if (!el) return;
-    el.scrollBy({ left: dir * el.clientWidth * 0.8, behavior: "smooth" });
+    const items = Array.from(el.children);
+    if (!items.length) return;
+    // Chip offsets in the same coordinate space as scrollLeft.
+    const origin = el.getBoundingClientRect().left - el.scrollLeft;
+    const stops = items.map((it) =>
+      Math.max(0, it.getBoundingClientRect().left - origin - ARROW_GUTTER)
+    );
+    const cur = el.scrollLeft;
+    const target =
+      dir > 0
+        ? stops.find((s) => s > cur + STEP_EPSILON)
+        : [...stops].reverse().find((s) => s < cur - STEP_EPSILON);
+    el.scrollTo({
+      left: target === undefined ? (dir > 0 ? el.scrollWidth : 0) : target,
+      behavior: "smooth",
+    });
   };
 
   if (stats.length === 0) return null;
@@ -290,6 +312,21 @@ const DestinationStatsStrip = ({ data, fallbacks = [] }) => {
         >
           <ChevronIcon dir="left" />
         </button>
+
+        {/* Edge fades — a chip sliding under an arrow reads as broken text
+            otherwise. Sit below the arrows, above the chips. */}
+        <span
+          aria-hidden
+          className={`${styles.statsFade} ${styles.statsFadeLeft} ${
+            canScrollLeft ? "" : styles.statsFadeHidden
+          }`}
+        />
+        <span
+          aria-hidden
+          className={`${styles.statsFade} ${styles.statsFadeRight} ${
+            canScrollRight ? "" : styles.statsFadeHidden
+          }`}
+        />
 
         <div
           className={styles.statsStripInner}

@@ -220,9 +220,11 @@
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scroll-snap-type: x proximity;
+    /* Snapped stats rest clear of the left arrow, but the resting (unscrolled)
+       strip hugs the edge — the left arrow is hidden at scrollLeft 0, so
+       reserving room for it there would just read as dead space. */
     scroll-padding-left: 42px;
-    /* Room for the circular scroll arrows so they never sit on top of a stat. */
-    padding: 0 42px;
+    padding: 0 42px 0 10px;
     scrollbar-width: none;
     -ms-overflow-style: none;
     &::-webkit-scrollbar {
@@ -230,6 +232,41 @@
     }
   }
 }
+/* Edge fades under the arrows, so a chip scrolling past one dissolves instead
+   of being sliced in half by a white circle. */
+.statsFade {
+  display: none;
+  @media (max-width: 1024px) {
+    display: block;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 58px;
+    z-index: 1;
+    pointer-events: none;
+    transition: opacity 0.18s ease;
+  }
+}
+.statsFadeLeft {
+  left: 0;
+  background: linear-gradient(
+    to right,
+    var(--ttw-ink-rail) 34%,
+    rgba(15, 26, 46, 0) 100%
+  );
+}
+.statsFadeRight {
+  right: 0;
+  background: linear-gradient(
+    to left,
+    var(--ttw-ink-rail) 34%,
+    rgba(15, 26, 46, 0) 100%
+  );
+}
+.statsFadeHidden {
+  opacity: 0;
+}
+
 /* Circular scroll affordances — only where the strip actually scrolls. */
 .statsArrow {
   display: none;
