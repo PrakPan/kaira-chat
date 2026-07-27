@@ -711,10 +711,7 @@ const ClickHandler = (child) => {
                   height={2}
                   onClick={(e) => handleCloseDrawer(e)}
                 />
-                <div
-                  className=" flex-1 min-w-0 line-clamp-1 ttw-type-h3 text-[#0b1220]"
-                  style={{ fontWeight: 500 }}
-                >
+                <div className=" flex-1 min-w-0 line-clamp-1 ttw-type-h4 md:ttw-type-h3 font-600 text-[#0b1220]">
                   Add {elementType == "POI" ? "Places to visit" : elementType}{" "}
                   in <span className="ttw-type-serif">{props.cityName}</span>
                 </div>

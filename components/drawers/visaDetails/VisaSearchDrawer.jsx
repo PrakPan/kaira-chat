@@ -200,10 +200,7 @@ export default function VisaSearchDrawer({ show, onHide, onBooked, onAdded, onRe
                 alt="Back"
                 onClick={onHide}
               />
-              <div
-                className="flex-1 min-w-0 line-clamp-1 ttw-type-h3 text-[#0b1220]"
-                style={{ fontWeight: 500 }}
-              >
+              <div className="flex-1 min-w-0 line-clamp-1 ttw-type-h4 md:ttw-type-h3 font-600 text-[#0b1220]">
                 Add Visa
               </div>
             </div>
