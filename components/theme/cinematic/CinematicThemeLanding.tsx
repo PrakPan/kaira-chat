@@ -104,10 +104,24 @@ const SkeletonImage: React.FC<{
 }> = ({ src, alt, objectPosition }) => {
   const [loaded, setLoaded] = React.useState(false);
   const [error, setError] = React.useState(false);
+  const imgRef = React.useRef<HTMLImageElement>(null);
+
+  // SSR/hydration guard: the browser can finish loading the image (often from
+  // cache) before React hydrates and attaches onLoad, so the `load` event fires
+  // into the void and the skeleton would otherwise never clear. On mount, read
+  // the already-decoded image and reconcile state ourselves.
+  React.useEffect(() => {
+    const img = imgRef.current;
+    if (!img || !img.complete) return;
+    if (img.naturalWidth > 0) setLoaded(true);
+    else setError(true);
+  }, [src]);
+
   return (
     <>
       {!loaded && !error && <span className="ctl-skeleton" aria-hidden />}
       <img
+        ref={imgRef}
         src={src}
         alt={alt}
         onLoad={() => setLoaded(true)}
