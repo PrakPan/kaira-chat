@@ -229,7 +229,7 @@ const ViewHotelDetails = (props) => {
         <div className="overflow-y-scroll h-screen px-6 max-ph:px-4">
           <div className="py-4 bg-[#fafaf5] z-[900] flex flex-row items-center gap-3 pb-2 sticky top-0">
             <Image src="/backarrow.svg" className="cursor-pointer" width={22} height={2} onClick={(e) => props.onHide(e)} />
-            <div className="ttw-type-h2 font-semibold text-[#0b1220]">Hotel Details</div>
+            <div className="ttw-type-h4 md:ttw-type-h3 font-600 text-[#0b1220]">Hotel Details</div>
           </div>
           {!error ? (
             <div>

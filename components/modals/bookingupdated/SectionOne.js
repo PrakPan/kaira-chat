@@ -33,7 +33,9 @@ const Section = (props) => {
 
   return (
     <div>
-      <div className="flex flex-row items-center gap-3 my-[1rem]">
+      {/* Top spacing comes from the drawer wrapper's py-4; a top margin here
+          too would double it, so only the bottom gap is set locally. */}
+      <div className="flex flex-row items-center gap-3 mb-[1rem]">
         <Image src="/backarrow.svg" className="cursor-pointer" width={22} height={2} onClick={() => {
           try {
             props?.handleClose();
@@ -41,7 +43,7 @@ const Section = (props) => {
             console.log("unable to close:", error);
           }
         }} />
-        <p className="mb-zero ttw-type-h3 text-[#0b1220]" style={{ fontWeight: 500 }}>
+        <p className="mb-zero ttw-type-h4 md:ttw-type-h3 font-600 text-[#0b1220]">
           {props?.clickType == "Add" ? "Add" : "Changing"} Stays in{" "}
           <span className="ttw-type-serif">
             {props?.booking_city ? props?.booking_city : "City"}

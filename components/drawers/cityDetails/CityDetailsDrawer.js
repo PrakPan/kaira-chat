@@ -78,7 +78,7 @@ const CityDetailsDrawer = (props) => {
               )
             }
           />
-          <div className="ttw-type-h2 font-semibold text-[#0b1220]">
+          <div className="ttw-type-h4 md:ttw-type-h3 font-600 text-[#0b1220]">
             City Details
           </div>
         </div>
