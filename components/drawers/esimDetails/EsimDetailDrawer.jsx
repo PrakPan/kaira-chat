@@ -7,6 +7,7 @@ import Drawer from "../../ui/Drawer";
 import BookingDetailHeader from "../../revamp/common/components/BookingDetailHeader";
 import BookingDetailActions from "../../revamp/common/components/BookingDetailActions";
 import { esimPackageDetail, esimBooking } from "../../../services/ancillaries/esimServices";
+import { getAncillaryBookingDetail } from "../../../services/ancillaries/ancillaryBookingServices";
 import { openNotification } from "../../../store/actions/notification";
 import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
 import { getIndianPrice } from "../../../services/getIndianPrice";
@@ -17,12 +18,15 @@ import EsimPackagesDrawer from "./EsimPackagesDrawer";
 export default function EsimDetailDrawer({ show, pkg, onHide, onBooked, onAdded, onRemoved, bookingId, drawerZIndex = 1710, showManageActions = false }) {
   const router = useRouter();
   const dispatch = useDispatch();
-  const itineraryId = useSelector((state) => state.ItineraryId) || router.query?.id;
+  // sessionId is how the chat itinerary route carries the same id.
+  const itineraryId =
+    useSelector((state) => state.ItineraryId) || router.query?.id || router.query?.sessionId;
   const itinerary = useSelector((state) => state.Itinerary);
   const currency = useSelector((state) => state.currency);
   const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
 
   const [detail, setDetail] = useState(null);
+  const [bookingDetail, setBookingDetail] = useState(null);
   const [traceId, setTraceId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [booking, setBooking] = useState(false);
@@ -30,8 +34,13 @@ export default function EsimDetailDrawer({ show, pkg, onHide, onBooked, onAdded,
   const [showSearch, setShowSearch] = useState(false);
   const [removing, setRemoving] = useState(false);
 
-  const symbol = currencySymbols?.[currency?.currency] || "₹";
+  // Viewing a booking that already exists (cart row / bookings list) vs. picking
+  // a new package out of the search drawer. The booked view reads the stored
+  // booking; only the picker needs a fresh supplier quote and its trace_id.
+  const isBookingDetail = showManageActions && !!bookingId;
+
   const displayPkg = detail || pkg;
+  const symbol = currencySymbols?.[currency?.currency] || "₹";
 
   const { trackEsimBookingAdd } = useAnalytics();
 
@@ -40,8 +49,32 @@ export default function EsimDetailDrawer({ show, pkg, onHide, onBooked, onAdded,
     : { background: "#1B1B1B" };
 
   useEffect(() => {
-    if (show && pkg?.id) fetchDetail();
-  }, [show, pkg?.id]);
+    if (!show) return;
+    if (isBookingDetail) fetchBookingDetail();
+    else if (pkg?.id) fetchDetail();
+  }, [show, pkg?.id, isBookingDetail, bookingId, itineraryId]);
+
+  // Same endpoint the activity booking drawer uses, with "ancillary" as the
+  // booking type — the booking carries its package snapshot in external_data.
+  const fetchBookingDetail = async () => {
+    if (!itineraryId || !bookingId) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await getAncillaryBookingDetail(itineraryId, bookingId);
+      const data = res?.data || null;
+      setBookingDetail(data);
+      setDetail(data?.external_data?.package || null);
+      setTraceId(null);
+    } catch (err) {
+      setError(
+        err?.response?.data?.message ||
+        err?.response?.data?.errors?.[0]?.message?.[0] ||
+        "Failed to load eSIM details.",
+      );
+    }
+    setLoading(false);
+  };
 
   const fetchDetail = async () => {
     setLoading(true);
@@ -67,6 +100,8 @@ export default function EsimDetailDrawer({ show, pkg, onHide, onBooked, onAdded,
     }
     setLoading(false);
   };
+
+  const loadDetail = () => (isBookingDetail ? fetchBookingDetail() : fetchDetail());
 
   const handleBook = async () => {
     const tid = traceId || displayPkg?.id;
@@ -143,7 +178,7 @@ export default function EsimDetailDrawer({ show, pkg, onHide, onBooked, onAdded,
       <div className="h-screen flex flex-col overflow-hidden">
         <div className="overflow-y-scroll flex-1 px-6 max-ph:px-4 pb-24">
           <BookingDetailHeader
-            title={displayPkg?.title}
+            title={displayPkg?.title || bookingDetail?.name}
             loading={loading}
             onBack={onHide}
           />
@@ -162,7 +197,7 @@ export default function EsimDetailDrawer({ show, pkg, onHide, onBooked, onAdded,
               <div className="text-[#445069] text-center">{error}</div>
               <button
                 className="bg-[#f7e700] border border-black text-black px-4 py-2 rounded-lg ttw-type-body-strong"
-                onClick={fetchDetail}
+                onClick={loadDetail}
               >
                 Retry
               </button>
@@ -227,8 +262,9 @@ export default function EsimDetailDrawer({ show, pkg, onHide, onBooked, onAdded,
                 )}
               </div>
 
-              {/* Price card — detail.price is already in the requested currency */}
-              {displayPkg?.price != null && (
+              {/* Price card — only while picking a package. A booked eSIM
+                  shows no price, matching every other booking's detail view. */}
+              {!isBookingDetail && displayPkg?.price != null && (
                 <div className="bg-[#f4f3ec] rounded-xl p-4 mb-4">
                   <div className="ttw-type-small text-[#445069] mb-1">Price</div>
                   <div className="ttw-type-h2 font-700 font-mono text-[#0b1220]">
@@ -317,7 +353,7 @@ export default function EsimDetailDrawer({ show, pkg, onHide, onBooked, onAdded,
         </div>
 
         {/* Sticky CTA */}
-        {!loading && !error && (traceId || displayPkg?.id) && (
+        {!loading && !error && (isBookingDetail ? !!bookingDetail : traceId || displayPkg?.id) && (
           <div className="sticky bottom-0 z-10 border-t border-[#ececec] px-6 max-ph:px-4 py-4 bg-white">
             {showManageActions ? (
               <BookingDetailActions

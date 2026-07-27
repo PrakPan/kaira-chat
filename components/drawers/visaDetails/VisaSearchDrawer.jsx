@@ -181,24 +181,32 @@ export default function VisaSearchDrawer({ show, onHide, onBooked, onAdded, onRe
         backdrop
         width="50%"
         mobileWidth="100%"
-        bgColor="#fafaf5"
+        bgColor="#ffffff"
         style={{ zIndex }}
         className="!overflow-y-hidden"
         onHide={onHide}
       >
         <div className="overflow-y-scroll h-screen px-6 max-ph:px-4">
           {/* Header */}
-          <div className="py-4 bg-[#fafaf5] z-[900] flex flex-col gap-3 pb-2 sticky top-0">
-            <div>
+          <div className="py-4 bg-white z-[900] flex flex-col gap-3 pb-2 sticky top-0">
+            {/* Back arrow and title share one line, same as the other search
+                drawers (activityAddDrawer et al.) */}
+            <div className="flex flex-row items-center gap-3 w-full">
               <Image
                 src="/backarrow.svg"
-                className="cursor-pointer"
+                className="cursor-pointer shrink-0"
                 width={22}
                 height={2}
+                alt="Back"
                 onClick={onHide}
               />
+              <div
+                className="flex-1 min-w-0 line-clamp-1 ttw-type-h3 text-[#0b1220]"
+                style={{ fontWeight: 500 }}
+              >
+                Add Visa
+              </div>
             </div>
-            <div className="ttw-type-h2 font-semibold text-[#0b1220]">Add Visa</div>
 
             {/* Filters */}
             {(filterOptions.purposes.length > 0 ||
