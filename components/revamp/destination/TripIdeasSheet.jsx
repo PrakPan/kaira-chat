@@ -89,7 +89,7 @@ const TripIdeasSheet = ({ open, onClose, onSelect, destinationLabel, prompts = [
           paddingBottom: "env(safe-area-inset-bottom)",
         }}
       >
-        <div className="flex justify-center pt-2.5">
+        <div className="flex justify-center pb-1.5 pt-2">
           <span
             style={{
               width: 40,
@@ -100,8 +100,10 @@ const TripIdeasSheet = ({ open, onClose, onSelect, destinationLabel, prompts = [
           />
         </div>
 
-        <div className="flex items-start justify-between gap-3 px-5 pt-3 pb-3">
-          <div>
+        {/* Header spans the sheet edge to edge, with the close button flush
+            right and a full-width rule under it. */}
+        <div className="flex w-full items-start gap-3 border-0 border-b border-solid border-[#EEEFF2] px-3 pb-2.5 pt-2">
+          <div className="min-w-0 flex-1">
             <div className="text-[17px] font-bold text-[#0B1220]">
               Trip ideas for {destinationLabel || "you"}
             </div>
@@ -113,7 +115,8 @@ const TripIdeasSheet = ({ open, onClose, onSelect, destinationLabel, prompts = [
             type="button"
             onClick={onClose}
             aria-label="Close trip ideas"
-            className="flex size-8 shrink-0 items-center justify-center rounded-full border-0 bg-[#F2F3F5] text-[#0B1220]"
+            className="ml-auto flex size-8 shrink-0 items-center justify-center rounded-full border-0 bg-[#F2F3F5] p-0 text-[#0B1220]"
+            style={{ boxShadow: "none" }}
           >
             <svg
               viewBox="0 0 24 24"
@@ -130,17 +133,20 @@ const TripIdeasSheet = ({ open, onClose, onSelect, destinationLabel, prompts = [
           </button>
         </div>
 
-        <div className="overflow-y-auto px-4 pb-5" style={{ WebkitOverflowScrolling: "touch" }}>
+        {/* Rows carry the icon's own lavender, a shade lighter than the chip so
+            the two still read apart — no borders, no shadows. */}
+        <div className="overflow-y-auto px-2 pb-3 pt-2" style={{ WebkitOverflowScrolling: "touch" }}>
           {entries.map((entry, i) => (
             <button
               key={i}
               type="button"
               onClick={() => onSelect?.(entry.prompt)}
-              className="mb-2 flex w-full items-center gap-3 rounded-2xl border border-[#EDE7F4] bg-white px-3.5 py-3 text-left"
+              className="mb-2 flex w-full items-center gap-3 border-0 bg-[#FBF6FF] px-3 py-2.5 text-left active:bg-[#F4E9FE]"
+              style={{ boxShadow: "none", borderRadius: 14 }}
             >
               <span
                 aria-hidden
-                className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#F7ECFF] text-[15px] text-[#922ADC]"
+                className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#F1E2FD] text-[14px] text-[#922ADC]"
               >
                 {entry.icon || "✦"}
               </span>
