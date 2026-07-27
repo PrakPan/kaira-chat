@@ -397,6 +397,7 @@ export default function ChangePoiBooking(props) {
         </div>
         <ChangePoiDetailsDrawer
           itineraryDrawer
+          kind={props?.kind}
           date={props.date}
           show={showDetails.show}
           setShowDetails={setShowDetails}

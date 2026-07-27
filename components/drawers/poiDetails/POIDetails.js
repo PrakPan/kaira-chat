@@ -183,6 +183,13 @@ const POIDetails = (props) => {
   const imgUrlEndPoint = "https://d31aoa0ehgvjdi.cloudfront.net/";
   const { slabIndex, dayIndex} = router.query;
 
+  // Restaurant slab elements (the "Table Reserved" rows) render through this
+  // drawer too, and the itinerary API keeps a separate restaurant namespace
+  // (restaurant/add, restaurant/delete, restaurant_id/restaurant_index) — the
+  // poi/* routes only understand POI elements. Same split ActivityDetails and
+  // SlabElement already make for delete.
+  const isRestaurant = (props?.kind || props?.type) === "restaurant";
+
   // ── Day picker + time-of-day chips ────────────────────────────────────
   // Mirrors ActivityDetails.jsx so POI / restaurant detail drawers share
   // the same scheduling UX. Static time slots (Morning / Afternoon /
@@ -352,12 +359,16 @@ const POIDetails = (props) => {
     setLoading(true);
     try {
       const res = await axios.delete(
-        `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/poi/delete/`,
+        `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/${
+          isRestaurant ? "restaurant" : "poi"
+        }/delete/`,
         {
           data: {
             itinerary_city_id: props?.itinerary_city_id,
             day_by_day_index: props?.dayIndex,
-            poi_index: slabIndex || props?.slabIndex,
+            ...(isRestaurant
+              ? { restaurant_index: slabIndex || props?.slabIndex }
+              : { poi_index: slabIndex || props?.slabIndex }),
           },
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
@@ -486,10 +497,7 @@ const POIDetails = (props) => {
   // ones the header button and the footer button each used to carry.
   const canDelete =
     !(props?.removeDelete == true) && props?.version != "v1" && !isDraft;
-  const canChange =
-    !(props?.removeChange === true) &&
-    !isDraft &&
-    !(props?.type === "restaurant");
+  const canChange = !(props?.removeChange === true) && !isDraft;
 
   const handleChangePoi = () => {
     if (!token) {
@@ -1089,7 +1097,8 @@ const POIDetails = (props) => {
                 deleting={loading}
                 deleteLabel="Remove from Itinerary"
                 onChange={canChange ? handleChangePoi : undefined}
-                changeLabel="Change POI"
+                changeLabel="Replace with something else"
+                changeLabelShort="Replace"
                 changeDisabled={loading}
               />
 
@@ -1131,6 +1140,7 @@ const POIDetails = (props) => {
             onHide={() => setShowDrawer(false)}
           >
             <AddPoi
+              kind={isRestaurant ? "restaurant" : "poi"}
               cityID={props?.cityID}
               date={props?.date}
               setShowDrawer={setShowDrawer}

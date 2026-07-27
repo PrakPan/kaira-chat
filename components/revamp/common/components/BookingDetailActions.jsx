@@ -21,6 +21,22 @@ const TrashIcon = () => (
   </svg>
 );
 
+const ArrowRightIcon = () => (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M5 12h14" />
+    <path d="m12 5 7 7-7 7" />
+  </svg>
+);
+
 /**
  * The two-button row every booking-detail drawer pins to its bottom bar:
  * destructive action on the left, "Change …" on the right in the site yellow
@@ -39,18 +55,26 @@ export default function BookingDetailActions({
   deleteDisabled = false,
   onChange,
   changeLabel = "Change",
+  changeLabelShort,
   changeDisabled = false,
 }) {
   if (!onDelete && !onChange) return null;
 
-  // min-w-0 lets the pills shrink past their nowrap label instead of widening
-  // the bar — an over-wide bar puts a horizontal scrollbar on the whole drawer.
+  // Both pills grow to share the bar, but they size from their content
+  // (flex-auto, not flex-1) so a long "Change …" label isn't squeezed into an
+  // equal half. The remove pill is the one that gives: min-w-0 lets it shrink
+  // past its label, keeping the bar itself from overflowing the drawer.
+  //
+  // ttw-actions-row is what makes that work: the pill classes carry
+  // `width: 100%` for their standalone usages, and with flex-basis:auto that
+  // width becomes the basis — one pill would claim the whole row. The row
+  // scopes the pills back to `width: auto` (globals.css).
   return (
-    <div className="flex items-center gap-2 md:gap-3 w-full max-w-full">
+    <div className="ttw-actions-row flex items-center gap-2 md:gap-3 w-full max-w-full">
       {onDelete && (
         <button
           type="button"
-          className="ttw-btn-remove-pill flex-1 min-w-0 overflow-hidden"
+          className="ttw-btn-remove-pill flex-auto min-w-0 overflow-hidden"
           onClick={onDelete}
           disabled={deleting || deleteDisabled}
         >
@@ -76,11 +100,24 @@ export default function BookingDetailActions({
       {onChange && (
         <button
           type="button"
-          className="ttw-btn-change-pill flex-1 min-w-0 overflow-hidden"
+          className="ttw-btn-change-pill flex-auto shrink-0"
           onClick={onChange}
           disabled={changeDisabled}
         >
-          <span className="truncate">{changeLabel}</span>
+          {/* Never ellipsised — the pill holds its content width and the remove
+              pill absorbs the squeeze. A caller with a label too long even for
+              that can hand in a short form that swaps in below 520px. */}
+          {changeLabelShort ? (
+            <>
+              <span className="ttw-change-label-full">{changeLabel}</span>
+              <span className="ttw-change-label-short">{changeLabelShort}</span>
+            </>
+          ) : (
+            <span>{changeLabel}</span>
+          )}
+          <span className="shrink-0 flex items-center">
+            <ArrowRightIcon />
+          </span>
         </button>
       )}
     </div>

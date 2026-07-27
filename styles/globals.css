@@ -534,7 +534,7 @@ a.termsnavunderlinelink {
     gap: theme('spacing.xs');
     padding: 12px 20px;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 700;
     font-family: var(--font-family-montserrat);
     border-radius: 9999px;
     border: 1.5px solid var(--color-site-yellow);
@@ -554,6 +554,15 @@ a.termsnavunderlinelink {
     cursor: not-allowed;
 }
 
+/* Inside the two-button action bar the pills size from their content so the
+   longer label decides its own width (BookingDetailActions uses flex-auto,
+   whose flex-basis:auto would otherwise resolve to the width:100% above and
+   let one pill swallow the row). Standalone usages keep width:100%. */
+.ttw-actions-row .ttw-btn-remove-pill,
+.ttw-actions-row .ttw-btn-change-pill {
+    width: auto;
+}
+
 /* Both pills share a bottom bar, so on phones they have to fit side by side
    within the drawer width — at desktop padding the pair overflows and drags a
    horizontal scrollbar across the whole drawer. */
@@ -570,15 +579,18 @@ a.termsnavunderlinelink {
    phones so it never truncates in the half-width action bar. Driven from plain
    CSS (matched to the 520px pill-shrink breakpoint above) because this build
    does not emit Tailwind's max-[520px] arbitrary variant. */
-.ttw-remove-label-short {
+.ttw-remove-label-short,
+.ttw-change-label-short {
     display: none;
 }
 
 @media screen and (max-width: 520px) {
-    .ttw-remove-label-full {
+    .ttw-remove-label-full,
+    .ttw-change-label-full {
         display: none;
     }
-    .ttw-remove-label-short {
+    .ttw-remove-label-short,
+    .ttw-change-label-short {
         display: inline-block;
     }
 }

@@ -240,6 +240,7 @@ const POIDetailsDrawer = (props) => {
                   setIsModalOpen={props?.setIsModalOpen}
                   type={props?.activityData?.type}
                   drawerZIndex={props?.drawerZIndex}
+                  onChangeStart={props?.onChangeStart}
                 >
                   {props?.children}
                 </ActivityDetails>

@@ -3350,6 +3350,14 @@ const Details = (props) => {
             // way out so the line items and total can't go stale.
             props?.getPaymentHandler?.();
           }}
+          // Dismiss the cart itself when a detail drawer hands off to a flow
+          // the itinerary page mounts underneath it (the activity picker).
+          // Plain state, not handleCloseDrawer — that one also rewrites the
+          // URL, which would wipe the drawer query the handoff is pushing.
+          closeCart={() => {
+            setShowPaymentDrawer(false);
+            setShowDetailedPayment(false);
+          }}
           setShowLoginModal={props?.setShowLoginModal}
           getPaymentHandler={props?.getPaymentHandler}
         />
