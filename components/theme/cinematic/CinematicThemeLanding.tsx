@@ -61,6 +61,8 @@ const CinematicStyles = () => (
       .ctl-scroll::-webkit-scrollbar { display: none; }
       .ctl-root input { font-family: inherit; }
       .ctl-root input::placeholder { color: #b8becc; opacity: 1; }
+      .ctl-skeleton { position: absolute; inset: 0; background: linear-gradient(90deg, #e7e9ee 25%, #f2f3f6 37%, #e7e9ee 63%); background-size: 400% 100%; animation: ctlShimmer 1.4s ease infinite; }
+      @keyframes ctlShimmer { 0% { background-position: 100% 0; } 100% { background-position: 0 0; } }
 
       /* Desktop hero Kaira + polaroid collage (mirrors the homepage hero) */
       .ctl-kairawrap { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px 0; min-height: 440px; }
@@ -68,7 +70,7 @@ const CinematicStyles = () => (
       .ctl-kaira img { width: 100%; height: 100%; object-fit: cover; }
       .ctl-polaroid { position: absolute; width: 148px; background: #fff; padding: 8px 8px 26px; box-shadow: 0 12px 28px -8px rgba(11,18,32,0.25); border-radius: 4px; z-index: 3; transition: transform .3s cubic-bezier(.2,.7,.3,1); cursor: pointer; }
       .ctl-polaroid:hover { transform: translateY(-4px) rotate(0deg) !important; z-index: 5; }
-      .ctl-polaroid-img { width: 100%; aspect-ratio: 1 / 1; background-size: cover; background-position: center; border-radius: 2px; }
+      .ctl-polaroid-img { position: relative; overflow: hidden; width: 100%; aspect-ratio: 1 / 1; border-radius: 2px; }
       .ctl-polaroid-cap { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 12px; color: ${INK}; text-align: center; margin-top: 8px; line-height: 1.2; }
       .ctl-kaira-name { text-align: center; margin-top: 16px; z-index: 4; }
       .ctl-kaira-hi { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 20px; color: ${INK}; }
@@ -91,6 +93,37 @@ const Container: React.FC<{ children: React.ReactNode; className?: string }> = (
     {children}
   </div>
 );
+
+// Image that fills its (position: relative) parent and shows a shimmering
+// skeleton until it loads. Used by every card image so slow networks never
+// flash a blank white box.
+const SkeletonImage: React.FC<{
+  src: string;
+  alt: string;
+  objectPosition?: string;
+}> = ({ src, alt, objectPosition }) => {
+  const [loaded, setLoaded] = React.useState(false);
+  const [error, setError] = React.useState(false);
+  return (
+    <>
+      {!loaded && !error && <span className="ctl-skeleton" aria-hidden />}
+      <img
+        src={src}
+        alt={alt}
+        onLoad={() => setLoaded(true)}
+        onError={() => setError(true)}
+        className="w-full h-full object-cover"
+        style={{
+          objectPosition: objectPosition ?? "center",
+          // On error the img stays transparent so the parent backdrop
+          // (gradient tile / neutral fill) shows instead of a broken icon.
+          opacity: loaded && !error ? 1 : 0,
+          transition: "opacity 0.35s ease",
+        }}
+      />
+    </>
+  );
+};
 
 // Renders an optional mono eyebrow, then `lead <serif>accent</serif>`, then an
 // optional mono note. Kept in one block so it never becomes a flex child.
@@ -255,10 +288,9 @@ const CinematicHero: React.FC<{
                     }}
                     onClick={() => img.href && router.push(img.href)}
                   >
-                    <div
-                      className="ctl-polaroid-img"
-                      style={{ backgroundImage: `url('${img.image}')` }}
-                    />
+                    <div className="ctl-polaroid-img">
+                      <SkeletonImage src={img.image} alt={img.caption ?? ""} />
+                    </div>
                     {img.caption && (
                       <div className="ctl-polaroid-cap">{img.caption}</div>
                     )}
@@ -292,15 +324,17 @@ const PromptCard: React.FC<{
   <button
     type="button"
     onClick={() => onSelectPrompt(card.prompt)}
-    className="ctl-card group text-left bg-white rounded-[18px] md:rounded-[22px] overflow-hidden cursor-pointer w-[220px] md:w-auto shrink-0 md:shrink"
+    className="ctl-card group flex flex-col text-left bg-white rounded-[18px] md:rounded-[22px] overflow-hidden cursor-pointer w-[220px] md:w-auto shrink-0 md:shrink"
     style={{ scrollSnapAlign: "start" }}
   >
-    <div className="relative h-[130px] md:h-[200px]" style={{ background: "#eef0f4" }}>
-      <img
+    <div
+      className="relative h-[130px] md:h-[200px] overflow-hidden"
+      style={{ background: "#eef0f4" }}
+    >
+      <SkeletonImage
         src={card.image}
         alt={card.name}
-        className="w-full h-full object-cover"
-        style={{ objectPosition: card.objectPosition ?? "center" }}
+        objectPosition={card.objectPosition}
       />
       {card.tag && (
         <div
@@ -375,14 +409,13 @@ const TripCard: React.FC<{
     className="ctl-card text-left bg-white rounded-[18px] p-[12px] md:p-[16px] flex gap-[12px] md:gap-[16px] cursor-pointer"
   >
     <div
-      className="w-[78px] h-[78px] md:w-[96px] md:h-[96px] shrink-0 rounded-[12px] md:rounded-[14px] overflow-hidden"
+      className="relative w-[78px] h-[78px] md:w-[96px] md:h-[96px] shrink-0 rounded-[12px] md:rounded-[14px] overflow-hidden"
       style={{ background: "#eef0f4" }}
     >
-      <img
+      <SkeletonImage
         src={card.image}
         alt={card.name}
-        className="w-full h-full object-cover"
-        style={{ objectPosition: card.objectPosition ?? "center" }}
+        objectPosition={card.objectPosition}
       />
     </div>
     <div className="flex-1 min-w-0">
@@ -455,14 +488,18 @@ const GradientCard: React.FC<{
       style={{ scrollSnapAlign: "start" }}
     >
       <div
-        className={`flex items-center justify-center ${
+        className={`relative overflow-hidden flex items-center justify-center ${
           compact
             ? "h-[68px] md:h-[84px] text-[26px] md:text-[30px]"
             : "h-[92px] md:h-[104px] text-[30px] md:text-[32px]"
         }`}
         style={{ background: card.gradient }}
       >
-        {card.emoji}
+        {card.image ? (
+          <SkeletonImage src={card.image} alt={card.name} />
+        ) : (
+          card.emoji
+        )}
       </div>
       <div
         className={

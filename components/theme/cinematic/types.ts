@@ -56,6 +56,9 @@ export interface CinematicTripCard {
 export interface CinematicGradientCard {
   emoji: string;
   gradient: string;
+  // When set, the tile shows this image (with a skeleton loader) instead of the
+  // emoji; the gradient stays as the backdrop while it loads / if it fails.
+  image?: string;
   name: string;
   meta?: string;
   prompt?: string;

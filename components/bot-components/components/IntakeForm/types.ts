@@ -48,6 +48,11 @@ export interface IntakeFormState {
   infants: number;
   notes: string;
   featured: Destination[];
+  /** Context-aware suggestion chips for the notes step, fetched from
+   *  `/chatkit/context-chips` when the form is received. Empty until the call
+   *  resolves; the notes step falls back to the static `NOTE_HINTS` when empty
+   *  (including when the fetch fails). */
+  noteHints: string[];
 }
 
 /** Tolerant contract for the backend `form_fields` client effect. Every key is

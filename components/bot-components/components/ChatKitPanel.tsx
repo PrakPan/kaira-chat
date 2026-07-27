@@ -1735,6 +1735,52 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
     loginMandatory,
   });
 
+  // ── Context chips for the intake notes step ────────────────────────────────
+  // When the intake form is received, fetch context-aware suggestion chips for
+  // the final ("notes") step from `/chatkit/context-chips` and stash them on the
+  // slice. On any failure we leave `noteHints` empty so the notes step keeps its
+  // static NOTE_HINTS fallback. Guarded by a ref so we fetch once per active
+  // form and re-arm when it closes.
+  const contextChipsFetchedRef = useRef(false);
+  useEffect(() => {
+    if (!intakeFormActive) {
+      contextChipsFetchedRef.current = false;
+      return;
+    }
+    if (contextChipsFetchedRef.current) return;
+    const threadId = threadIdRef.current;
+    if (!threadId) return;
+    contextChipsFetchedRef.current = true;
+
+    const controller = new AbortController();
+    (async () => {
+      try {
+        const res = await fetch(`${CHATKIT_API_URL}/context-chips`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
+          },
+          body: JSON.stringify({ thread_id: threadId, max_chips: 6 }),
+          signal: controller.signal,
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        const chips = Array.isArray(data?.chips)
+          ? data.chips.filter(
+              (c: unknown): c is string =>
+                typeof c === "string" && c.trim().length > 0,
+            )
+          : [];
+        if (chips.length) dispatch(updateIntakeForm({ noteHints: chips }));
+      } catch {
+        // Network/parse error or abort — keep the static NOTE_HINTS fallback.
+      }
+    })();
+
+    return () => controller.abort();
+  }, [intakeFormActive, authToken, dispatch, threadIdRef]);
+
   // Logged-out user viewing an existing thread (restored via threads.get_by_id)
   // sees the inline sign-in card as the last message. In that state the
   // composer is blocked and clicking it must NOT open the BotLoginModal popup —

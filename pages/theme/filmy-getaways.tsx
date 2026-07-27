@@ -14,8 +14,8 @@ import CinematicThemeLanding from "../../components/theme/cinematic/CinematicThe
 import { useSeedChat } from "../../components/theme/cinematic/useSeedChat";
 import type { CinematicThemeConfig } from "../../components/theme/cinematic/types";
 
-const IMAGE_BASE =
-  "https://d31aoa0ehgvjdi.cloudfront.net/media/website/filmy-getaways-2026";
+const CDN = "https://d31aoa0ehgvjdi.cloudfront.net";
+const IMAGE_BASE = `${CDN}/media/website/filmy-getaways-2026`;
 
 // ── Prompts (authoritative, per the campaign brief) ────────────────────────
 const PROMPTS = {
@@ -246,6 +246,7 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
           meta: "9 trips",
           emoji: "💍",
           gradient: "linear-gradient(150deg, #3d2b52, #b84034 170%)",
+          image: `${CDN}/media/page/174120792592848706245422363281/.png`,
           href: "/theme/perfect-proposal",
         },
         {
@@ -253,6 +254,8 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
           meta: "Dec – Jan",
           emoji: "🎄",
           gradient: "linear-gradient(150deg, #16324f, #1f8a5a 150%)",
+          image:
+            "https://images.unsplash.com/photo-1512389142860-9c449e58a543?w=1200",
           prompt:
             "Plan a New Year and Christmas holiday abroad with festive markets, lights, and celebrations. Recommend the best destinations for late December, and build a complete itinerary with stays and experiences.",
         },
@@ -261,6 +264,8 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
           meta: "29 Dec – 2 Jan",
           emoji: "🏴",
           gradient: "linear-gradient(150deg, #1a2436, #3d4f7a)",
+          image:
+            "https://images.unsplash.com/photo-1506377585622-bedcbb027afc?w=1200",
           href: "/theme/edinburgh-hogmanay",
         },
         {
@@ -268,6 +273,7 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
           meta: "Groups of 6+",
           emoji: "🕺",
           gradient: "linear-gradient(150deg, #b84034, #f0e9d6 190%)",
+          image: `${CDN}/media/website/thailand-theme-2026/ChiangMai.jpg`,
           href: "/theme/thailand-trip",
         },
         {
@@ -275,6 +281,7 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
           meta: "Nov – Mar",
           emoji: "🌌",
           gradient: "linear-gradient(150deg, #0e1530, #445069)",
+          image: `${CDN}/media/page/177133062391213107109069824219.jpg`,
           href: "/theme/northern-lights",
         },
         {
@@ -282,6 +289,8 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
           meta: "12 trips",
           emoji: "🫶",
           gradient: "linear-gradient(150deg, #16324f, #ffe5d1 200%)",
+          image:
+            "https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=1200",
           href: "/theme/honeymoon-2026",
         },
       ],
@@ -302,6 +311,7 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
           meta: "18 trips",
           emoji: "🏔️",
           gradient: "linear-gradient(150deg, #16324f, #3d4f7a)",
+          image: `${CDN}/media/countries/175930905875495767593383789062.jpg`,
           href: "/europe/switzerland",
         },
         {
@@ -309,6 +319,7 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
           meta: "12 trips",
           emoji: "🍷",
           gradient: "linear-gradient(150deg, #b84034, #f0e9d6 190%)",
+          image: `${CDN}/media/countries/175344481739372777938842773438.jpg`,
           href: "/europe/spain",
         },
         {
@@ -316,6 +327,7 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
           meta: "21 trips",
           emoji: "🏝️",
           gradient: "linear-gradient(150deg, #1f8a5a, #f0e9d6 200%)",
+          image: `${CDN}/media/countries/168442180095400023460388183594.jpg`,
           href: "/asia/thailand",
         },
         {
@@ -323,6 +335,7 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
           meta: "16 trips",
           emoji: "⛩️",
           gradient: "linear-gradient(150deg, #3d2b52, #b84034 180%)",
+          image: `${CDN}/media/countries/175853838850662446022033691406.jpg`,
           href: "/asia/japan",
         },
         {
@@ -330,6 +343,7 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
           meta: "8 trips",
           emoji: "🌋",
           gradient: "linear-gradient(150deg, #0e1530, #445069)",
+          image: `${CDN}/media/countries/168442051714989519119262695312.jpg`,
           href: "/europe/iceland",
         },
         {
@@ -337,6 +351,7 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
           meta: "14 trips",
           emoji: "🌴",
           gradient: "linear-gradient(150deg, #16324f, #1f8a5a 160%)",
+          image: `${CDN}/media/cities/175456211725436902046203613281.jpg`,
           href: "/asia/indonesia/bali",
         },
       ],

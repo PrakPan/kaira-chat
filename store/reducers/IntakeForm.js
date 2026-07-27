@@ -30,6 +30,10 @@ export const initialIntakeFormState = {
   // Featured destination tiles shown in step 1 (defaults live in the
   // IntakeForm constants; overridden when the form_fields effect carries them).
   featured: [],
+  // Context-aware suggestion chips for the notes step, fetched from
+  // `/chatkit/context-chips` when the form is received. Empty until the call
+  // resolves; the notes step falls back to the static NOTE_HINTS when empty.
+  noteHints: [],
 };
 
 const reducer = (state = initialIntakeFormState, action) => {

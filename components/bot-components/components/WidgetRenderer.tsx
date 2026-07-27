@@ -3266,32 +3266,6 @@ function isRouteListView(children: WidgetNode[]): boolean {
 
 const ROUTE_DOT_FALLBACK = "#8a93a6";
 
-// Fallback hero for the route header when we can't resolve a city image — a
-// neutral, non-specific travel scene so the banner never collapses.
-const ROUTE_HEADER_FALLBACK_IMAGE =
-  "https://images.unsplash.com/photo-1503917988258-f87a78e3c995?auto=format&fit=crop&w=800&q=80";
-
-// Best-effort city image from the Redux itinerary (drafts/bot flow often carry
-// none — then the caller uses ROUTE_HEADER_FALLBACK_IMAGE). Checks the common
-// shapes the itinerary payload uses for a city's hero image.
-function resolveCityImage(itinerary: any, cityName: string): string {
-  const cities = itinerary?.cities;
-  if (!Array.isArray(cities) || !cityName) return "";
-  const target = cityName.trim().toLowerCase();
-  const match = cities.find((c: any) => {
-    const n = (c?.city?.name ?? c?.name ?? "") as string;
-    return n.trim().toLowerCase() === target;
-  });
-  if (!match) return "";
-  const img =
-    match?.city?.image ??
-    match?.city?.image_url ??
-    match?.image ??
-    match?.image_url ??
-    (Array.isArray(match?.city?.images) ? match.city.images[0] : undefined);
-  return typeof img === "string" ? img : "";
-}
-
 interface ParsedRouteStop {
   city: string;
   nights: string;      // "1N" / "3N" (empty for departure/return endpoints)
@@ -3837,24 +3811,24 @@ function StolenBadge({ count, status }: { count: number; status: StolenStatus })
   );
 }
 
-// Image-backed route header. No prose title/departure line — just an image
-// banner (first city image, else fallback) with the tags overlaid: the stolen
-// count, the trip date chip, and the nights/stops pills.
+// Green editorial route header. Shows the derived trip title (city names) over
+// the brand green gradient — plus the stolen count, the trip date chip, and the
+// nights/stops pills.
 function RouteHeaderBand({
-  image,
+  title,
+  departure,
   dateLabel,
   totalNights,
   stopCount,
   stolen,
 }: {
-  image: string;
+  title: string;
+  departure: string;
   dateLabel: string;
   totalNights: number;
   stopCount: number;
   stolen?: { count: number; status: StolenStatus };
 }) {
-  const [imgSrc, setImgSrc] = useState(image || ROUTE_HEADER_FALLBACK_IMAGE);
-
   const pill = (text: string) => (
     <span
       style={{
@@ -3862,8 +3836,7 @@ function RouteHeaderBand({
         alignItems: "center",
         padding: "3px 9px",
         borderRadius: 9999,
-        background: "rgba(255,255,255,0.22)",
-        backdropFilter: "blur(4px)",
+        background: "rgba(255,255,255,0.16)",
         color: "#ffffff",
         fontSize: 10.5,
         fontWeight: 600,
@@ -3879,60 +3852,45 @@ function RouteHeaderBand({
   return (
     <div
       style={{
-        position: "relative",
-        minHeight: 116,
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-        padding: "clamp(13px, 4vw, 16px) clamp(14px, 4vw, 18px)",
-        overflow: "hidden",
+        background:
+          "linear-gradient(135deg, #2f6b52 0%, #3c7c5e 55%, #4a8a69 100%)",
+        padding: "clamp(15px, 4.5vw, 18px) clamp(16px, 4.5vw, 20px)",
       }}
     >
-      {/* Hidden loader — swaps to the fallback if the city image 404s. */}
-      <img
-        src={imgSrc}
-        alt=""
-        aria-hidden
-        onError={() => {
-          if (imgSrc !== ROUTE_HEADER_FALLBACK_IMAGE) {
-            setImgSrc(ROUTE_HEADER_FALLBACK_IMAGE);
-          }
-        }}
-        style={{
-          position: "absolute",
-          inset: 0,
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
-        }}
-      />
-      {/* Dark gradient so the tags stay legible over any image. */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          background:
-            "linear-gradient(180deg, rgba(11,18,32,0.42) 0%, rgba(11,18,32,0.12) 42%, rgba(11,18,32,0.55) 100%)",
-        }}
-      />
+      {stolen && (
+        <div style={{ display: "flex", marginBottom: 10 }}>
+          <StolenBadge count={stolen.count} status={stolen.status} />
+        </div>
+      )}
 
-      {/* Top row — stolen tag */}
-      <div style={{ position: "relative", display: "flex" }}>
-        {stolen && <StolenBadge count={stolen.count} status={stolen.status} />}
-      </div>
-
-      {/* Bottom row — date + nights/stops pills */}
-      {hasPills && (
+      {departure && (
         <div
           style={{
-            position: "relative",
-            marginTop: 12,
-            display: "flex",
-            gap: 7,
-            flexWrap: "wrap",
-            alignItems: "center",
+            fontSize: 10,
+            fontWeight: 600,
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+            color: "rgba(255,255,255,0.72)",
+            marginBottom: 6,
           }}
         >
+          From {departure}
+        </div>
+      )}
+
+      <div
+        className="kp-serif"
+        style={{
+          fontSize: "clamp(20px, 6vw, 24px)",
+          lineHeight: 1.14,
+          color: "#ffffff",
+        }}
+      >
+        {title}
+      </div>
+
+      {hasPills && (
+        <div style={{ marginTop: 11, display: "flex", gap: 7, flexWrap: "wrap" }}>
           {dateLabel && pill(dateLabel)}
           {totalNights > 0 && pill(`${totalNights}N`)}
           {stopCount > 0 &&
@@ -4005,6 +3963,7 @@ function RouteActionButtons({
         onClick={() => promptToChat("I'd like to modify this route")}
         style={{
           ...base,
+          flex: "2 1 0",
           border: "1px solid #07213a",
           background: "#ffffff",
           color: "#07213a",
@@ -4019,14 +3978,14 @@ function RouteActionButtons({
         onClick={() => promptToChat("Confirm this route")}
         style={{
           ...base,
-          flex: 1,
+          flex: "3 1 0",
           border: "1px solid #07213a",
           background: "#f7e700",
           color: "#000",
         }}
       >
         Confirm Route
-        
+
       </button>
     </div>
   );
@@ -4048,6 +4007,7 @@ function RouteItineraryCard({
   const itinerary = useItineraryState();
 
   const destinations = stops.filter((s) => !s.isEndpoint);
+  const departure = stops.find((s) => s.isEndpoint)?.city ?? "";
   const title = destinations.length
     ? destinations.map((s) => s.city).join(" · ")
     : stops[0]?.city ?? "Your itinerary";
@@ -4076,12 +4036,6 @@ function RouteItineraryCard({
   const formattedAmount = formatRouteCost(amount, symbol);
   const dateLabel = findRouteDateText(node);
 
-  // Header hero — first destination city's image if the itinerary has one,
-  // else the neutral fallback (RouteHeaderBand also self-heals on load error).
-  const firstCity = (destinations[0] ?? stops[0])?.city ?? "";
-  const headerImage =
-    resolveCityImage(itinerary, firstCity) || ROUTE_HEADER_FALLBACK_IMAGE;
-
   return (
     <div
       style={{
@@ -4097,7 +4051,8 @@ function RouteItineraryCard({
       }}
     >
       <RouteHeaderBand
-        image={headerImage}
+        title={title}
+        departure={departure}
         dateLabel={dateLabel}
         totalNights={totalNights}
         stopCount={destinations.length}

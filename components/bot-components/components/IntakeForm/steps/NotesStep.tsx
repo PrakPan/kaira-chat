@@ -17,6 +17,10 @@ const NotesStep: React.FC<StepProps> = ({ state, update }) => {
     update({ notes: next });
   };
 
+  // Prefer the context-aware chips fetched from `/chatkit/context-chips`; fall
+  // back to the static hints when the fetch hasn't resolved or failed.
+  const hints = state.noteHints?.length ? state.noteHints : NOTE_HINTS;
+
   return (
     <div>
       <div className="text-[18px] font-extrabold tracking-tight mb-[3px]">
@@ -52,7 +56,7 @@ const NotesStep: React.FC<StepProps> = ({ state, update }) => {
       </div>
 
       <div className="mt-[11px] flex flex-wrap gap-[5px]">
-        {NOTE_HINTS.map((h) => (
+        {hints.map((h) => (
           <button
             type="button"
             key={h}
