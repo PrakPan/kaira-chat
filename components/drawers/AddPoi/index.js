@@ -36,7 +36,13 @@ const FloatingView = styled.div`
 const AddPoi = (props) => {
   const isDesktop = useMediaQuery("(min-width:768px)");
   const dispatch = useDispatch();
-  const elementType = "POI";
+  // Replacing a restaurant row lists the city's restaurants instead of its
+  // attractions — same query params and response envelope, different resource.
+  const isRestaurant = props?.kind === "restaurant";
+  const elementType = isRestaurant ? "RESTAURANT" : "POI";
+  const catalogue = isRestaurant ? "restaurant" : "poi";
+  const resultsKey = isRestaurant ? "restaurants" : "pois";
+  const itemNoun = isRestaurant ? "restaurants" : "attractions";
   const [selectSearch, setSelectedSearch] = useState("");
   const debouncedSearch = useDebounce(selectSearch);
   const [startDate, setStartDate] = useState(props?.date);
@@ -84,12 +90,14 @@ const AddPoi = (props) => {
     try {
       const res = await axios.get(nextUrl);
 
-      for (var i = 0; i < res.data.data.pois.length; i++) {
+      const page = res?.data?.data?.[resultsKey] || [];
+      for (var i = 0; i < page.length; i++) {
         options.push(
           <ChangePoiBooking
             key={i}
+            kind={catalogue}
             setShowDrawer={props?.setShowDrawer}
-            data={res.data.data.pois[i]}
+            data={page[i]}
             setLoginModal={props.setShowLoginModal}
             date={startDate}
             cityId={props?.cityID}
@@ -136,19 +144,21 @@ const AddPoi = (props) => {
   const fetchPois = async () => {
     try {
       const res = await axios.get(
-        `${MERCURY_HOST}/api/v1/geos/poi/?fields=id,name,city,image,rating,experience_filters,short_description,tags,display_name,one_liner_description,is_very_popular,tips_tricks,is_hidden_gem,gmaps_place_id,user_ratings_total&city_id=${
+        `${MERCURY_HOST}/api/v1/geos/${catalogue}/?fields=id,name,city,image,rating,experience_filters,short_description,tags,display_name,one_liner_description,is_very_popular,tips_tricks,is_hidden_gem,gmaps_place_id,user_ratings_total&city_id=${
           props?.cityID
         }&name=${debouncedSearch}&is_very_popular=${
           filterState?.recommended_only
         }&filters=${filterState?.experienceFilters.join(",")}`
       );
       const result = [];
-      for (var i = 0; i < res.data.data.pois.length; i++) {
+      const list = res?.data?.data?.[resultsKey] || [];
+      for (var i = 0; i < list.length; i++) {
         result.push(
           <ChangePoiBooking
             key={i}
+            kind={catalogue}
             setShowDrawer={props?.setShowDrawer}
-            data={res.data.data.pois[i]}
+            data={list[i]}
             setLoginModal={props.setShowLoginModal}
             date={startDate}
             cityId={props?.cityID}
@@ -199,38 +209,58 @@ const AddPoi = (props) => {
                 value={selectSearch}
                 onChange={searchHandler}
                 placeholder={`Search ${
-                  elementType === "POI" ? "attractions" : "activities"
+                  elementType === "POI" ? "attractions" : itemNoun
                 }`}
                 className="w-full flex items-center ttw-type-body border-2 border-gray-300 rounded-lg px-5 py-2 focus:outline-none focus:border-[#F7E700] h-[44px]"
               ></input>
             </div>
 
-            <div className="relative inline-block">
-              <div
-                className="relative px-[16px] py-[12px] bg-[#1B1B1B] text-white rounded-[8px] h-[44px] flex items-center gap-2 max-sm:hidden cursor-pointer"
-                onClick={() => setShowDynamicfilters(true)}
-              >
-                <Image
-                  src="/filter.svg"
-                  width={20}
-                  height={20}
-                  alt="Filter Icon"
-                />
-                <button>Filters</button>
-                {changed && (
-                  <div className="absolute -right-1 -top-1 h-[20px] w-[20px] rounded-full bg-red-500"></div>
-                )}
+            {/* Experience filters and "Top Recommended" are POI-only — the
+                restaurant catalogue ignores `filters` / `is_very_popular`, so
+                showing the controls there would look broken. */}
+            {!isRestaurant && (
+              <div className="relative inline-block">
+                <div
+                  className="relative px-[16px] py-[12px] bg-[#1B1B1B] text-white rounded-[8px] h-[44px] flex items-center gap-2 max-sm:hidden cursor-pointer"
+                  onClick={() => setShowDynamicfilters(true)}
+                >
+                  <Image
+                    src="/filter.svg"
+                    width={20}
+                    height={20}
+                    alt="Filter Icon"
+                  />
+                  <button>Filters</button>
+                  {changed && (
+                    <div className="absolute -right-1 -top-1 h-[20px] w-[20px] rounded-full bg-red-500"></div>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
           </div>
           <div>
             <div className="flex flex-row items-center justify-between w-full mb-[20px] px-2">
               <div>
-                Showing {options.length} attractions
+                Showing {options.length} {itemNoun}
                 {totalResults ? ` out of ${totalResults}` : null}
                 {props?.cityName ? ` in ${props?.cityName}` : null}
               </div>
-              <div className="max-sm:hidden">
+              {!isRestaurant && (
+                <div className="max-sm:hidden">
+                  <button
+                    onClick={handleRecommneded}
+                    className="flex flex-row items-center gap-1 cursor-pointer"
+                  >
+                    <CheckboxFormComponent
+                      checked={filterState.recommended_only}
+                    />
+                    Top Recommended
+                  </button>
+                </div>
+              )}
+            </div>
+            {!isRestaurant && (
+              <div className="sm:hidden flex justify-between w-full mb-2 px-2">
                 <button
                   onClick={handleRecommneded}
                   className="flex flex-row items-center gap-1 cursor-pointer"
@@ -240,33 +270,24 @@ const AddPoi = (props) => {
                   />
                   Top Recommended
                 </button>
-              </div>
-            </div>
-            <div className="sm:hidden flex justify-between w-full mb-2 px-2">
-              <button
-                onClick={handleRecommneded}
-                className="flex flex-row items-center gap-1 cursor-pointer"
-              >
-                <CheckboxFormComponent checked={filterState.recommended_only} />
-                Top Recommended
-              </button>
-              <div className="flex gap-4">
-                <div
-                  className="relative px-[16px] py-[12px] bg-[#1B1B1B] text-white rounded-[8px] h-[44px] flex items-center gap-2 cursor-pointer"
-                  onClick={() => setShowDynamicfilters(true)}
-                >
-                  <Image
-                    src="/filter.svg"
-                    width={"20"}
-                    height={"20"}
-                    color="white"
-                  />
-                  {changed && (
-                    <div className="absolute -right-1 -top-1 h-[20px] w-[20px] rounded-full !bg-red-500"></div>
-                  )}
+                <div className="flex gap-4">
+                  <div
+                    className="relative px-[16px] py-[12px] bg-[#1B1B1B] text-white rounded-[8px] h-[44px] flex items-center gap-2 cursor-pointer"
+                    onClick={() => setShowDynamicfilters(true)}
+                  >
+                    <Image
+                      src="/filter.svg"
+                      width={"20"}
+                      height={"20"}
+                      color="white"
+                    />
+                    {changed && (
+                      <div className="absolute -right-1 -top-1 h-[20px] w-[20px] rounded-full !bg-red-500"></div>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
         <div className="px-2 ">

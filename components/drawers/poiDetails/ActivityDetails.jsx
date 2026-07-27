@@ -426,6 +426,10 @@ const ActivityDetails = (props) => {
       props?.setShowLoginModal(true);
       return;
     }
+    // The picker is mounted by the day-by-day view at z-1501, so a host that
+    // stacks above it (the cart drawer at 1600) has to get out of the way
+    // first or the picker opens behind it.
+    props?.onChangeStart?.();
     const activityDate = itinerary?.cities?.find(
       (city) => city.id === props?.itinerary_city_id,
     )?.day_by_day?.[props?.dayIndex]?.date;

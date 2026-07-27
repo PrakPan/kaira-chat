@@ -45,6 +45,7 @@ export const getBookingDetailType = (booking) => {
 const CartBookingDetail = ({
   booking,
   onClose,
+  closeCart,
   setShowLoginModal,
   getPaymentHandler,
 }) => {
@@ -64,6 +65,26 @@ const CartBookingDetail = ({
   const activityCity = itinerary?.cities?.find((city) =>
     city?.activities?.some((activity) => activity?.id === booking?.id),
   );
+
+  // "Change Activity" opens the itinerary's activity picker for the slot the
+  // booking sits in, so the drawer needs the day (and slab) index — without
+  // them ActivityDetails hides the button, which is why cart-opened activity
+  // drawers only showed "Remove". A cart row carries just the booking id, so
+  // resolve the slot from the itinerary the way CityDrawer does:
+  // slab_elements[].booking.id is the activity booking id.
+  const activitySlot = React.useMemo(() => {
+    if (!booking?.id) return null;
+    for (const city of itinerary?.cities || []) {
+      const days = city?.day_by_day || [];
+      for (let dayIndex = 0; dayIndex < days.length; dayIndex += 1) {
+        const slabIndex = (days[dayIndex]?.slab_elements || []).findIndex(
+          (element) => element?.booking?.id === booking?.id,
+        );
+        if (slabIndex !== -1) return { city, dayIndex, slabIndex };
+      }
+    }
+    return null;
+  }, [itinerary, booking?.id]);
 
   const handleDeleteTransfer = async (target) => {
     if (!localStorage?.getItem("access_token")) {
@@ -209,9 +230,18 @@ const CartBookingDetail = ({
         show
         showBookingDetail
         activityData={{ id: booking?.id, type: "activity" }}
-        itinerary_city_id={activityCity?.id}
+        itinerary_city_id={activitySlot?.city?.id || activityCity?.id}
+        dayIndex={activitySlot?.dayIndex}
+        slabIndex={activitySlot?.slabIndex}
         name={booking?.detail?.name}
         removeDelete={false}
+        // "Change Activity" hands off to the day-by-day view's activity
+        // picker, which is mounted behind the cart — same reason
+        // handleChangeHotel closes up before pushing its drawer query.
+        onChangeStart={() => {
+          onClose();
+          closeCart?.();
+        }}
         setShowLoginModal={setShowLoginModal}
         getPaymentHandler={getPaymentHandler}
         drawerZIndex={CART_DRAWER_Z_INDEX}

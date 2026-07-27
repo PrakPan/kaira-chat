@@ -38,6 +38,9 @@ const ChangePoiDetailDrawer = (props) => {
   const itinerary = useSelector((state) => state.Itinerary);
   const { slabIndex} = router.query;
   const dispatch = useDispatch();
+  // The picker hands down which catalogue the replacement came from; the
+  // itinerary API keeps restaurants on their own routes/field names.
+  const isRestaurant = props?.kind === "restaurant";
   useEffect(() => {
     if (props.show) fetchData();
   }, [props.show]);
@@ -57,10 +60,15 @@ const ChangePoiDetailDrawer = (props) => {
 
     try {
       const res = await axios.get(
-        `${MERCURY_HOST}/api/v1/geos/poi/${props?.id}/?itinerary_city_id=${props?.itinerary_city_id}`,
+        `${MERCURY_HOST}/api/v1/geos/${isRestaurant ? "restaurant" : "poi"}/${
+          props?.id
+        }/?itinerary_city_id=${props?.itinerary_city_id}`,
       );
-      if (res.data?.data?.poi) {
-        setData(res.data?.data?.poi);
+      const detail = isRestaurant
+        ? res.data?.data?.restaurant
+        : res.data?.data?.poi;
+      if (detail) {
+        setData(detail);
       }
       setLoading(false);
     } catch (error) {
@@ -76,14 +84,18 @@ const ChangePoiDetailDrawer = (props) => {
 
   const updatedActivityBooking = async () => {
     try {
+      const targetIndex = slabIndex || props?.slabIndex;
       const requestData = {
         itinerary_city_id: props?.itinerary_city_id,
-        poi_id: props?.id,
         day_by_day_index: props?.dayIndex || 0,
-        poi_index: slabIndex || props?.slabIndex,
+        ...(isRestaurant
+          ? { restaurant_id: props?.id, restaurant_index: targetIndex }
+          : { poi_id: props?.id, poi_index: targetIndex }),
       };
       const res = await axios.post(
-        `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/poi/add/`,
+        `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/${
+          isRestaurant ? "restaurant" : "poi"
+        }/add/`,
         requestData,
         {
           headers: {
