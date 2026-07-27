@@ -57,6 +57,12 @@ export interface Message {
    *  Variant lets us tailor the icon/copy for offline vs. generic failures. */
   isError?: boolean;
   errorVariant?: "network" | "generic";
+  /** For `type: "intake_form"` cards only. When a NEWER intake-form widget
+   *  arrives in the same chat, the previously-shown card is frozen with a
+   *  snapshot of its state at that moment so it keeps rendering exactly as it
+   *  was — the live `IntakeForm` Redux slice is reused by the new card. Absent
+   *  on the live (interactive) card. */
+  intakeSnapshot?: unknown;
 }
 
 export interface UserLocationData {

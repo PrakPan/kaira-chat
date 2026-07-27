@@ -3831,7 +3831,7 @@ function StolenBadge({ count, status }: { count: number; status: StolenStatus })
           />
         </>
       ) : (
-        `Stolen ${count}×`
+        `Route chosen ${count} times`
       )}
     </span>
   );
@@ -3979,7 +3979,6 @@ function RouteActionButtons({
   };
 
   const base: React.CSSProperties = {
-    flex: 1,
     padding: "11px 16px",
     borderRadius: 9999,
     fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
@@ -4020,9 +4019,10 @@ function RouteActionButtons({
         onClick={() => promptToChat("Confirm this route")}
         style={{
           ...base,
+          flex: 1,
           border: "1px solid #07213a",
-          background: "#07213a",
-          color: "#ffffff",
+          background: "#f7e700",
+          color: "#000",
         }}
       >
         Confirm Route
