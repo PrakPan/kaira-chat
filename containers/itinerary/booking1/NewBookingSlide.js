@@ -15,6 +15,7 @@ import axiossalecreateinstance, {
   myplansv2,
 } from "../../../services/sales/itinerary/SaleCreate";
 import axios from "axios";
+import paymentGatewayService from "../../../services/payment/paymentGatewayService";
 import Accordion from "./Accordion";
 import { BsCalendar2, BsPeopleFill } from "react-icons/bs";
 import { add, addDays, format, isBefore, parseISO, startOfDay } from "date-fns";
@@ -1969,10 +1970,12 @@ const Details = (props) => {
       handler: function (response) {
         setPaymentLoading(true);
 
-      axios
-      .post(
+        // The verify API expects a gateway-tagged envelope:
+        // { gateway: "Razorpay", data: { razorpay_order_id, razorpay_payment_id, razorpay_signature } }
+        axios
+          .post(
             `${MERCURY_HOST}/payment/verify/`,
-            { ...response },
+            paymentGatewayService.prepareVerifyPayload(response, "Razorpay"),
             { headers: { Authorization: `Bearer ${props.token}` } }
           )
           .then((res) => {
