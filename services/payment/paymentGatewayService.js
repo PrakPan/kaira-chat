@@ -1,8 +1,9 @@
 // services/payment/paymentGatewayService.js
 
-const PAYMENT_GATEWAYS = typeof window !== 'undefined' && process.env.NEXT_PUBLIC_PAYMENT_GATEWAYS
-  ? JSON.parse(process.env.NEXT_PUBLIC_PAYMENT_GATEWAYS)
-  : ["Razorpay", "Revolut"];
+const PAYMENT_GATEWAYS =
+  typeof window !== "undefined" && process.env.NEXT_PUBLIC_PAYMENT_GATEWAYS
+    ? JSON.parse(process.env.NEXT_PUBLIC_PAYMENT_GATEWAYS)
+    : ["Razorpay", "Revolut"];
 
 const DEFAULT_GATEWAY = process.env.NEXT_PUBLIC_DEFAULT_GATEWAY || "Razorpay";
 
@@ -14,8 +15,8 @@ const createPaymentGatewayService = () => {
 
   // Load payment gateway script dynamically
   const loadGatewayScript = (gateway) => {
-    if (typeof window === 'undefined') {
-      return Promise.reject(new Error('Window not available'));
+    if (typeof window === "undefined") {
+      return Promise.reject(new Error("Window not available"));
     }
 
     if (loadedScripts[gateway]) {
@@ -24,22 +25,23 @@ const createPaymentGatewayService = () => {
 
     return new Promise((resolve, reject) => {
       const script = document.createElement("script");
-      
+
       if (gateway === "Razorpay") {
         script.src = "https://checkout.razorpay.com/v1/checkout.js";
       } else if (gateway === "Revolut") {
         // Use production or sandbox based on environment
-        const isProduction = process.env.NEXT_PUBLIC_REVOLUT_ENV === 'production';
+        const isProduction =
+          process.env.NEXT_PUBLIC_REVOLUT_ENV === "production";
         script.src =
-        //  isProduction 
-        //   ?
-        //  "https://merchant.revolut.com/embed.js"
+          //  isProduction
+          //   ?
+          //  "https://merchant.revolut.com/embed.js"
 
           "https://sandbox-merchant.revolut.com/embed.js";
       }
 
       script.async = true;
-      
+
       script.onload = () => {
         loadedScripts[gateway] = true;
         console.log(`${gateway} script loaded successfully`);
@@ -52,7 +54,9 @@ const createPaymentGatewayService = () => {
       };
 
       // Check if script already exists
-      const existingScript = document.querySelector(`script[src="${script.src}"]`);
+      const existingScript = document.querySelector(
+        `script[src="${script.src}"]`,
+      );
       if (existingScript) {
         loadedScripts[gateway] = true;
         resolve(true);
@@ -68,7 +72,7 @@ const createPaymentGatewayService = () => {
     const gatewayToTry = preferredGateway || currentGateway;
     const gatewaysToTry = [
       gatewayToTry,
-      ...availableGateways.filter(g => g !== gatewayToTry)
+      ...availableGateways.filter((g) => g !== gatewayToTry),
     ];
 
     for (const gateway of gatewaysToTry) {
@@ -77,7 +81,10 @@ const createPaymentGatewayService = () => {
         currentGateway = gateway;
         return gateway;
       } catch (error) {
-        console.error(`Failed to load ${gateway}, trying next gateway...`,error.message);
+        console.error(
+          `Failed to load ${gateway}, trying next gateway...`,
+          error.message,
+        );
         continue;
       }
     }
@@ -104,7 +111,7 @@ const createPaymentGatewayService = () => {
     return {
       payment_information_id: paymentInfo.id,
       payment_type: paymentInfo.type,
-      gateway: gateway
+      gateway: gateway,
     };
   };
 
@@ -115,28 +122,26 @@ const createPaymentGatewayService = () => {
         gateway: "Razorpay",
         data: {
           razorpay_payment_id: response.razorpay_payment_id,
-        razorpay_order_id: response.razorpay_order_id,
-        razorpay_signature: response.razorpay_signature,
-        }
-        
+          razorpay_order_id: response.razorpay_order_id,
+          razorpay_signature: response.razorpay_signature,
+        },
+
         // order_id: response.order_id
       };
     } else if (gateway === "Revolut") {
       // Handle the new response structure
       return {
-        gateway:"Revolut",
+        gateway: "Revolut",
         data: {
           // revolut_order_id: response.revolut_order_id,
           // public_id: response.public_id,
           order_id: response.order_id,
           // payment_type: response.payment_type
-
-        }
-        
+        },
       };
     }
     return response;
-  }
+  };
 
   return {
     loadGatewayScript,
@@ -146,7 +151,7 @@ const createPaymentGatewayService = () => {
     isGatewayLoaded,
     getAvailableGateways,
     prepareInitiatePayload,
-    prepareVerifyPayload
+    prepareVerifyPayload,
   };
 };
 
