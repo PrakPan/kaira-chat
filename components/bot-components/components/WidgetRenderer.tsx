@@ -4004,7 +4004,6 @@ function RouteActionButtons({
   amount: string;
   onAction?: WidgetRendererProps["onAction"];
 }) {
-  const widgetDisabled = useContext(DisabledActionContext);
   const token = useSelector((s: any) => s?.auth?.token);
   const itineraryId = useSelector(
     (s: any) =>
@@ -4023,7 +4022,6 @@ function RouteActionButtons({
   });
 
   const promptToChat = (text: string) => {
-    if (widgetDisabled) return;
     onAction?.({ type: "chat.prompt", payload: { text } });
   };
 
@@ -4033,7 +4031,6 @@ function RouteActionButtons({
   // Logged-in users act straight away; everyone else signs in first and the
   // pending prompt (modify / confirm) is replayed on a successful verify.
   const handleModifyClick = () => {
-    if (widgetDisabled) return;
     if (token) {
       promptToChat(MODIFY_PROMPT);
       return;
@@ -4043,7 +4040,6 @@ function RouteActionButtons({
   };
 
   const handleConfirmClick = () => {
-    if (widgetDisabled) return;
     if (token) {
       promptToChat(CONFIRM_PROMPT);
       return;
@@ -4058,8 +4054,8 @@ function RouteActionButtons({
     fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
     fontSize: 13,
     fontWeight: 600,
-    cursor: widgetDisabled ? "not-allowed" : "pointer",
-    opacity: widgetDisabled ? 0.5 : 1,
+    cursor: "pointer",
+    opacity: 1,
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",
@@ -4103,7 +4099,6 @@ function RouteActionButtons({
       <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
         <button
           type="button"
-          disabled={widgetDisabled}
           onClick={handleModifyClick}
           style={{
             ...base,
@@ -4118,7 +4113,6 @@ function RouteActionButtons({
 
         <button
           type="button"
-          disabled={widgetDisabled}
           onClick={handleConfirmClick}
           style={{
             ...base,
