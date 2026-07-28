@@ -3482,15 +3482,54 @@ useEffect(() => {
 
   if (restoredHasDisplayItinerary) setHasDisplayItinerary(true);
 
+  // ── Re-inject the inline sign-in card on a logged-out restore ─────────────
+  // When the LAST client effect this thread emitted is `prompt_login` (the
+  // backend's "sign in to save our work" gate), the viewer is logged out, and
+  // they haven't already skipped it (`login_opted_out`), replay the gate on
+  // reload: drop the effect's lead-in message bubble + the inline login card as
+  // the final messages, mirroring the live `prompt_login` handler so a refresh
+  // mid-gate looks identical to the moment the effect first arrived. Arm the
+  // silent post-login resume — there's no user prompt/action to replay here, so
+  // on login success the token-watch effect resumes the thread via
+  // `resume_after_login` instead of re-sending anything.
+  const lastEffect = itineraryEffects[itineraryEffects.length - 1];
+  if (
+    !isLoggedIn &&
+    !loginOptedOutRef.current &&
+    lastEffect?.name === "prompt_login"
+  ) {
+    const base = Date.now();
+    const threadKey = restoredThread.id ?? sessionIdRef.current;
+    const loginMessage =
+      typeof lastEffect.data?.message === "string"
+        ? lastEffect.data.message.trim()
+        : "";
+    if (loginMessage) {
+      restored.push({
+        id: `login-msg-${threadKey}-${base}`,
+        role: "assistant",
+        content: loginMessage,
+        timestamp: new Date(),
+        type: "text",
+      });
+    }
+    restored.push({
+      id: `login-card-${threadKey}-${base}`,
+      role: "assistant",
+      content: "",
+      timestamp: new Date(),
+      type: "login_card",
+    });
+    loginFlowArmedRef.current = true;
+    pendingRestoreResumeRef.current = true;
+  }
+
   if (restored.length > 0) {
-    // Restore the transcript exactly as it was — no inline sign-in card is
-    // injected as the last message on refresh. In P1 (chat-only stage) a
-    // logged-out viewer may keep chatting anonymously, so the composer stays
-    // open; the backend still emits `prompt_login` if/when an action genuinely
-    // needs an account. (P2 already never injected the card — it falls back to
-    // the standard login/clone gating.) The custom login MESSAGE is likewise
-    // not reconstructed on refresh; it depends entirely on a live `prompt_login`
-    // client effect.
+    // Restore the transcript exactly as it was. Aside from the logged-out
+    // `prompt_login` re-injection handled just above, no inline sign-in card is
+    // added on refresh: in P1 (chat-only stage) a logged-out viewer may keep
+    // chatting anonymously, so the composer stays open and the backend re-emits
+    // `prompt_login` if/when an action genuinely needs an account.
     setMessages(restored);
     // Land at the bottom of the restored transcript. Widgets and images lay
     // out asynchronously, so the scrollable height keeps growing for a beat
