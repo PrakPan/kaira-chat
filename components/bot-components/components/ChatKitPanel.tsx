@@ -44,7 +44,7 @@ import IntakeFormCard from "./IntakeForm";
 import type { IntakeFormState } from "./IntakeForm/types";
 import PricingFormCard from "./PricingForm";
 import OtpCard from "./IntakeForm/OtpCard";
-import { parseFormFields, parseShowIntakeForm, parseIntakeFormWidgetId, isIntakeFormWidgetId } from "./IntakeForm/intakePrompt";
+import { parseFormFields, parseShowIntakeForm, parseIntakeFormWidgetId, isIntakeFormWidgetId, composePartialIntakeContext } from "./IntakeForm/intakePrompt";
 import { parseShowPricingForm, parsePricingFormWidgetId, parsePricingCardCopy, isPricingFormWidgetId } from "./PricingForm/pricingPrompt";
 
 const PAGINATION_SCROLL_THRESHOLD = 80;
@@ -2659,6 +2659,11 @@ const sendMessage = useCallback(
     lastSentMessageRef.current = text;
     lastSentActionRef.current = { kind: "message", text };
 
+    // Fields the user already picked in an unsubmitted intake form (e.g.
+    // destination) that should ride along with this typed message — set in the
+    // bypass branch below and forwarded to the backend as hidden context.
+    let intakeContextPrefix: string | undefined;
+
     // If the user types their own message while an unfilled CLIENT landing
     // intake form is on screen (i.e. this send isn't the form's own
     // submission), they've chosen to bypass it — retire the intake greeting +
@@ -2672,6 +2677,13 @@ const sendMessage = useCallback(
       !intakeFormCompletedRef.current &&
       !intakeFormFromBackendRef.current
     ) {
+      // Carry whatever the user already selected in the form (destination, a
+      // chosen month/dates, travellers, notes) so bypassing the form doesn't
+      // drop that context — Kaira still gets e.g. "Destination: Japan" alongside
+      // the "Dec-Jan" the user typed. Empty when nothing was selected yet.
+      intakeContextPrefix =
+        composePartialIntakeContext(intakeFormSliceRef.current) || undefined;
+
       setMessages((prev) =>
         prev.filter(
           (m) =>
@@ -2711,6 +2723,7 @@ const sendMessage = useCallback(
     rawSendMessage(text, attachmentIds, attachmentMeta, {
       interrupt: inQuickReplyPhaseRef.current,
       formSubmitted: opts?.formSubmitted,
+      contextPrefix: intakeContextPrefix,
     });
   },
   [rawSendMessage],
@@ -3412,40 +3425,15 @@ useEffect(() => {
   if (restoredHasDisplayItinerary) setHasDisplayItinerary(true);
 
   if (restored.length > 0) {
-    // Logged-out viewers opening an existing P1 thread (via threads.get_by_id)
-    // can't post. Surface the inline sign-in card as the last message and let
-    // the composer block below key off the presence of this login_card. In P2
-    // (completed itinerary) we don't inject the card — the composer falls back
-    // to the standard login/clone gating instead.
-    const isP2Restore =
-      botModeRef.current === "p2" || threadIsCompleted;
-    // Skip the card entirely when the user already opted out of login on this
-    // thread — they continue as a logged-out visitor with the composer open.
-    const showRestoreLoginCard =
-      !loginOptedOutRef.current && !(isLoggedInRef.current || isP2Restore);
-    // NOTE: the custom login MESSAGE is intentionally NOT reconstructed on
-    // refresh — it is totally dependent on the live `prompt_login` client
-    // effect. On restore we only re-surface the inline sign-in card (so a
-    // logged-out P1 viewer stays gated); its personalized lead-in copy reappears
-    // only if/when the backend replays `prompt_login` in this session.
-    const restoreBase = Date.now();
-    const restoredWithLogin = showRestoreLoginCard
-      ? [
-          ...restored,
-          {
-            id: `login-card-${restoredThread.id ?? "restore"}-${restoreBase}`,
-            role: "assistant" as const,
-            content: "",
-            timestamp: new Date(),
-            type: "login_card" as const,
-          },
-        ]
-      : restored;
-    // Arm the post-login resume: this card carries no prompt/action to replay,
-    // so on login success we resume the restored thread via `resume_after_login`
-    // (gated to the current user's own chat or staff by the effect).
-    if (showRestoreLoginCard) pendingRestoreResumeRef.current = true;
-    setMessages(restoredWithLogin);
+    // Restore the transcript exactly as it was — no inline sign-in card is
+    // injected as the last message on refresh. In P1 (chat-only stage) a
+    // logged-out viewer may keep chatting anonymously, so the composer stays
+    // open; the backend still emits `prompt_login` if/when an action genuinely
+    // needs an account. (P2 already never injected the card — it falls back to
+    // the standard login/clone gating.) The custom login MESSAGE is likewise
+    // not reconstructed on refresh; it depends entirely on a live `prompt_login`
+    // client effect.
+    setMessages(restored);
     // Land at the bottom of the restored transcript. Widgets and images lay
     // out asynchronously, so the scrollable height keeps growing for a beat
     // after setMessages — a single rAF snap leaves the user mid-thread.

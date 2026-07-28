@@ -20,6 +20,11 @@ interface OtpCardProps {
   /** Optional copy overrides so the same card can serve the intake-save flow
    *  and a mid-chat `prompt_login` sign-in. */
   heading?: string;
+  /** Overrides the big first-step title ("Sign In to Continue"). The first two
+   *  words render bold and the remainder in the italic serif accent, matching
+   *  the default styling. Lets BotLoginModal reflect why the user is signing in
+   *  (e.g. "Sign In to modify this route"). */
+  title?: string;
   submitLabel?: string;
   /** Current itinerary id, sent on the login-funnel analytics events (the chat
    *  URL isn't `/itinerary/...`, so the worker can't derive it on its own). */
@@ -40,6 +45,7 @@ const OtpCard: React.FC<OtpCardProps> = ({
   onVerified,
   onSkip,
   heading = "Save our work",
+  title,
   submitLabel = "Send OTP & Start",
   itineraryId,
   bare = false,
@@ -461,23 +467,35 @@ const OtpCard: React.FC<OtpCardProps> = ({
             </div>
           </div>
 
-          {/* Title + subtitle */}
+          {/* Title + subtitle. `title` (when supplied) overrides the default
+              "Sign In to Continue": the first two words stay bold and the rest
+              renders in the italic serif accent, so custom reasons like
+              "Sign In to modify this route" keep the same two-tone look. */}
           <div
             className="text-[26px] max-ph:text-[24px] font-extrabold text-[#0f1a2e] leading-[1.03]"
             style={{ letterSpacing: "-0.03em" }}
           >
-            <span className="mr-2">Sign In</span>
-            <em
-              style={{
-                fontFamily: "'Instrument Serif', Georgia, serif",
-                fontStyle: "italic",
-                fontWeight: 400,
-              }}
-            >
-             to Continue
-            </em>
-            {/* <span className="ml-2"> to Continue</span> */}
-            
+            {(() => {
+              const words = (title?.trim() || "Sign In to Continue").split(/\s+/);
+              const lead = words.slice(0, 2).join(" ");
+              const accent = words.slice(2).join(" ");
+              return (
+                <>
+                  <span className="mr-2">{lead}</span>
+                  {accent && (
+                    <em
+                      style={{
+                        fontFamily: "'Instrument Serif', Georgia, serif",
+                        fontStyle: "italic",
+                        fontWeight: 400,
+                      }}
+                    >
+                      {accent}
+                    </em>
+                  )}
+                </>
+              );
+            })()}
           </div>
           <div className="text-[13.5px] text-[#445069] mt-[8px] leading-[2] mb-3">
             Your number is your login. Your holidays are waiting.

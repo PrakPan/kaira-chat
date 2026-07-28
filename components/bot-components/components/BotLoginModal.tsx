@@ -15,6 +15,9 @@ type BotLoginModalProps = {
   onhide: () => void;
   onSuccess?: () => void | Promise<void>;
   message?: string;
+  /** Overrides the sign-in card's big title (e.g. "Sign In to modify this
+   *  route"). Falls back to OtpCard's default "Sign In to Continue". */
+  title?: string;
   itinary_id?: any;
   isTailored?: boolean;
   onSkipLogin?: () => void;
@@ -194,6 +197,7 @@ const BotLoginModal: React.FC<BotLoginModalProps> = (props) => {
     <OtpCard
       bare
       heading="Sign in to continue"
+      title={props.title}
       submitLabel="Send OTP"
       itineraryId={props.itinary_id}
       onVerified={handleVerified}
@@ -282,58 +286,75 @@ const BotLoginModal: React.FC<BotLoginModalProps> = (props) => {
         </div>
       ) : (
         <div
-          onClick={(e) => e.stopPropagation()}
+          // ── Keyboard-lift layer ──
+          // Rides the sheet above the on-screen keyboard by exactly the
+          // visualViewport inset. Deliberately has NO transition: it tracks the
+          // keyboard frame-for-frame where the browser streams resize events
+          // (Android) and snaps in sync where the inset is reported only once the
+          // keyboard has settled (iOS). A timed transition here is what made the
+          // lift lag/stutter — the keyboard's own animation and ours desynced.
           style={{
             position: "fixed",
             left: 0,
             right: 0,
-            bottom: keyboardInset,
-            background: "#ffffff",
-            borderRadius: "20px 20px 0 0",
-            maxHeight: viewportHeight ? `${viewportHeight}px` : "92vh",
-            overflowY: "auto",
+            bottom: 0,
             zIndex: z as number,
-            boxShadow: "0 -16px 40px rgba(0,0,0,0.18)",
-            // Slide up on open, follow the finger while dragging, slide down on
-            // close. `dragging` kills the transition so the sheet tracks the
-            // touch 1:1; otherwise it eases.
-            transform: open
-              ? dragY
-                ? `translateY(${dragY}px)`
-                : "translateY(0)"
-              : "translateY(100%)",
-            transition: dragging
-              ? "none"
-              : `bottom 0.2s ease-out, transform ${SHEET_ANIM_MS}ms cubic-bezier(0.22, 1, 0.36, 1)`,
+            transform: `translateY(${-keyboardInset}px)`,
+            willChange: "transform",
           }}
         >
-          {yellowStrip}
-          {/* Drag handle — grab zone for the pull-to-dismiss gesture. */}
           <div
-            onTouchStart={onSheetTouchStart}
-            onTouchMove={onSheetTouchMove}
-            onTouchEnd={onSheetTouchEnd}
+            onClick={(e) => e.stopPropagation()}
             style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              padding: "12px 0 6px",
-              flexShrink: 0,
-              cursor: "grab",
-              touchAction: "none",
+              position: "relative",
+              background: "#ffffff",
+              borderRadius: "20px 20px 0 0",
+              maxHeight: viewportHeight ? `${viewportHeight}px` : "92vh",
+              overflowY: "auto",
+              boxShadow: "0 -16px 40px rgba(0,0,0,0.18)",
+              // Open slide + drag-to-close only — kept on its own layer so the
+              // entrance/exit eases while the keyboard tracking above stays
+              // instant. `dragging` kills the transition so the sheet follows the
+              // touch 1:1.
+              willChange: "transform",
+              transform: open
+                ? dragY
+                  ? `translateY(${dragY}px)`
+                  : "translateY(0)"
+                : "translateY(100%)",
+              transition: dragging
+                ? "none"
+                : `transform ${SHEET_ANIM_MS}ms cubic-bezier(0.22, 1, 0.36, 1)`,
             }}
           >
+            {yellowStrip}
+            {/* Drag handle — grab zone for the pull-to-dismiss gesture. */}
             <div
+              onTouchStart={onSheetTouchStart}
+              onTouchMove={onSheetTouchMove}
+              onTouchEnd={onSheetTouchEnd}
               style={{
-                width: 36,
-                height: 5,
-                borderRadius: 3,
-                background: "#D1D5DB",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                padding: "12px 0 6px",
+                flexShrink: 0,
+                cursor: "grab",
+                touchAction: "none",
               }}
-            />
+            >
+              <div
+                style={{
+                  width: 36,
+                  height: 5,
+                  borderRadius: 3,
+                  background: "#D1D5DB",
+                }}
+              />
+            </div>
+            {closeButton}
+            {otpCard}
           </div>
-          {closeButton}
-          {otpCard}
         </div>
       )}
     </>

@@ -140,7 +140,7 @@ export async function getStaticPaths() {
     const res = await axiossearchallinstance.get("/all/?type=City");
     const data = res.data ?? [];
 
-    for (var i = 0; i < data.length; i++) {
+    for (var i = 0; i < 1; i++) {
       if (!data[i]?.path) continue;
       const pathArr = data[i].path.split("/");
       const [continentSlug, countrySlug, stateSlug, citySlug] = pathArr;

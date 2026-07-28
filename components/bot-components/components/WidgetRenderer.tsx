@@ -4013,22 +4013,42 @@ function RouteActionButtons({
       "",
   );
   const [showLogin, setShowLogin] = useState(false);
+  // Which sign-in prompt is pending and what to replay once auth succeeds. Both
+  // "Modify" and "Confirm Route" gate behind login for logged-out users; they
+  // differ only in the popup copy and the chat prompt sent on a successful
+  // verify.
+  const [loginConfig, setLoginConfig] = useState<{ title: string; prompt: string }>({
+    title: "Sign In to confirm your route",
+    prompt: "Confirm this route",
+  });
 
   const promptToChat = (text: string) => {
     if (widgetDisabled) return;
     onAction?.({ type: "chat.prompt", payload: { text } });
   };
 
-  const confirmRoute = () => promptToChat("Confirm this route");
+  const MODIFY_PROMPT = "I'd like to modify this route";
+  const CONFIRM_PROMPT = "Confirm this route";
 
-  // Logged-in users skip the popup and confirm straight away; everyone else
-  // signs in first and the route is confirmed on a successful verify.
+  // Logged-in users act straight away; everyone else signs in first and the
+  // pending prompt (modify / confirm) is replayed on a successful verify.
+  const handleModifyClick = () => {
+    if (widgetDisabled) return;
+    if (token) {
+      promptToChat(MODIFY_PROMPT);
+      return;
+    }
+    setLoginConfig({ title: "Sign In to modify this route", prompt: MODIFY_PROMPT });
+    setShowLogin(true);
+  };
+
   const handleConfirmClick = () => {
     if (widgetDisabled) return;
     if (token) {
-      confirmRoute();
+      promptToChat(CONFIRM_PROMPT);
       return;
     }
+    setLoginConfig({ title: "Sign In to confirm your route", prompt: CONFIRM_PROMPT });
     setShowLogin(true);
   };
 
@@ -4084,7 +4104,7 @@ function RouteActionButtons({
         <button
           type="button"
           disabled={widgetDisabled}
-          onClick={() => promptToChat("I'd like to modify this route")}
+          onClick={handleModifyClick}
           style={{
             ...base,
             flex: "2 1 0",
@@ -4116,11 +4136,11 @@ function RouteActionButtons({
         show={showLogin}
         onhide={() => setShowLogin(false)}
         zIndex={3300}
-        message="Sign in to confirm your route"
+        title={loginConfig.title}
         itinary_id={itineraryId}
         onSuccess={() => {
           setShowLogin(false);
-          confirmRoute();
+          promptToChat(loginConfig.prompt);
         }}
       />
     </div>
@@ -4223,6 +4243,26 @@ function findRouteListView(node: WidgetNode): WidgetNode | null {
     }
   }
   return null;
+}
+
+// True when the widget tree contains a route/itinerary ListView anywhere —
+// whether it's wrapped in a Card (see findRouteListView) or standalone. The
+// route card is a fully self-contained editorial card, so MessageBubble uses
+// this to render it bare — without the default beige bubble surface — and at
+// full chat width instead of the avatar-indented content-widget layout.
+export function isRouteWidget(widget: Record<string, unknown>): boolean {
+  const node = widget as WidgetNode;
+  if (!node || typeof node !== "object") return false;
+  if (
+    node.type === "ListView" &&
+    isRouteListView((node.children ?? []) as WidgetNode[])
+  ) {
+    return true;
+  }
+  for (const child of (node.children ?? []) as WidgetNode[]) {
+    if (isRouteWidget(child as Record<string, unknown>)) return true;
+  }
+  return false;
 }
 
 // ─── ListView – routes to TransportListView when applicable ──────────────────

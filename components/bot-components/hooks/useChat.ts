@@ -753,7 +753,7 @@ export function useChat({
       content: string,
       attachmentIds?: string[],
       attachments?: MessageAttachment[],
-      opts?: { interrupt?: boolean; formSubmitted?: boolean },
+      opts?: { interrupt?: boolean; formSubmitted?: boolean; contextPrefix?: string },
     ) => {
       const trimmed = content.trim();
       if (!trimmed && (!attachmentIds || attachmentIds.length === 0)) return;
@@ -819,9 +819,15 @@ export function useChat({
         attachmentIds,
       };
 
+      // Hidden context (e.g. fields already picked in an unsubmitted intake
+      // form) rides along to the backend prepended to the message, but never
+      // touches the visible user bubble above — that shows only what they typed.
+      const prefix = opts?.contextPrefix?.trim();
+      const contentForBackend = prefix ? `${prefix}\n\n${trimmed}` : trimmed;
+
       const body = threadIdRef.current
-        ? buildSubsequentMessageBody(trimmed, { threadId: threadIdRef.current, ...commonOpts })
-        : buildFirstMessageBody(trimmed, { ...commonOpts, loginMandatory: loginMandatoryRef.current });
+        ? buildSubsequentMessageBody(contentForBackend, { threadId: threadIdRef.current, ...commonOpts })
+        : buildFirstMessageBody(contentForBackend, { ...commonOpts, loginMandatory: loginMandatoryRef.current });
 
       // Flag intake-form submissions so the backend knows this message came
       // from the structured form rather than free-text chat.
