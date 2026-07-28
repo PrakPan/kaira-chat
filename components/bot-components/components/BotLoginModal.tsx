@@ -272,7 +272,9 @@ const BotLoginModal: React.FC<BotLoginModalProps> = (props) => {
             borderRadius: 20,
             width: "min(420px, 95vw)",
             maxHeight: "92vh",
-            overflowY: "auto",
+            // Clip to the rounded corners (so the yellow strip curves with the
+            // top edge) without a scrollbar — the card content fits within cap.
+            overflow: "hidden",
             zIndex: z as number,
             boxShadow: "0 12px 40px rgba(15, 27, 45, 0.16)",
             transition: `opacity ${SHEET_ANIM_MS}ms ease, transform ${SHEET_ANIM_MS}ms cubic-bezier(0.22, 1, 0.36, 1)`,
@@ -310,7 +312,9 @@ const BotLoginModal: React.FC<BotLoginModalProps> = (props) => {
               background: "#ffffff",
               borderRadius: "20px 20px 0 0",
               maxHeight: viewportHeight ? `${viewportHeight}px` : "92vh",
-              overflowY: "auto",
+              // Clip to the rounded top (so the yellow strip curves with the
+              // edge) without a scrollbar — the card content fits within cap.
+              overflow: "hidden",
               boxShadow: "0 -16px 40px rgba(0,0,0,0.18)",
               // Open slide + drag-to-close only — kept on its own layer so the
               // entrance/exit eases while the keyboard tracking above stays

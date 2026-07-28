@@ -1616,6 +1616,12 @@ const sessionIdRef = useRef<string>((() => {
   // hidden when the user sends a follow-up message. This does NOT lock the
   // composer either way (the intake form never blocks input / quick replies).
   const intakeFormFromBackendRef = useRef(false);
+  // The partial intake context the backend already knows about — seeded to a
+  // backend-streamed form's prefill and advanced each time we forward the user's
+  // edits. Lets us send ONLY newly-changed selections alongside a typed message
+  // while a backend widget stays on screen, instead of re-asserting the same
+  // prefill on every follow-up. `null` = nothing synced yet.
+  const lastIntakeContextRef = useRef<string | null>(null);
   const getUserPrompts = useCallback((): string[] => {
     return (messagesRef.current || [])
       .filter((m: any) => m?.role === "user")
@@ -1888,6 +1894,18 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
   // Mirror the ownership gate so the post-login effect can decide whether to
   // resume this chat silently (own/anonymous chat or staff) vs. re-inject.
   canResumeAfterLoginRef.current = !isForeignItinerary;
+
+  // Keep the synced-context baseline from going stale. The moment the intake
+  // form is no longer live — reset on a new chat (`resetIntakeForm` flips
+  // `active` off), submitted (`completed`), or bypassed — drop the baseline so a
+  // later backend widget starts clean and never diffs its edits against a
+  // previous conversation's selections. A backend widget re-seeds the baseline
+  // in the same tick it sets `active: true`, so this never clears a live one.
+  useEffect(() => {
+    if (!intakeFormActive || intakeFormCompleted) {
+      lastIntakeContextRef.current = null;
+    }
+  }, [intakeFormActive, intakeFormCompleted]);
 
   // ── "Create my version" (clone) success ──────────────────────────────────
   // Defined after useChat because it depends on clearMessages (and reads
@@ -2173,15 +2191,24 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
           // shimmer set by `intake_form_shimmer`.
           // Backend-streamed form — persists across follow-up messages.
           intakeFormFromBackendRef.current = true;
+          const formFieldsPrefill = parseFormFields(data as any);
           dispatch(
             updateIntakeForm({
               active: true,
               completed: false,
               loading: false,
               step: 0,
-              ...parseFormFields(data as any),
+              ...formFieldsPrefill,
             }),
           );
+          // The backend already knows the values it just prefilled — baseline
+          // the synced context to them so only the user's own subsequent edits
+          // ride along with a later typed message.
+          lastIntakeContextRef.current =
+            composePartialIntakeContext({
+              ...intakeFormSliceRef.current,
+              ...formFieldsPrefill,
+            }) || null;
           if (!intakeFormInjectedRef.current) {
             intakeFormInjectedRef.current = true;
             setMessages((prev) => [
@@ -2573,14 +2600,22 @@ case "shimmer_day_by_day": {
         });
       }
 
+      const widgetPrefill = parseShowIntakeForm(prefill);
       dispatch(
         updateIntakeForm({
           active: true,
           completed: false,
           loading: false,
-          ...parseShowIntakeForm(prefill),
+          ...widgetPrefill,
         }),
       );
+      // The backend already knows this prefill — baseline the synced context to
+      // it so only the user's own later edits ride along with a typed message.
+      lastIntakeContextRef.current =
+        composePartialIntakeContext({
+          ...intakeFormSliceRef.current,
+          ...widgetPrefill,
+        }) || null;
 
       if (!hasCard) {
         intakeFormInjectedRef.current = true;
@@ -2664,40 +2699,54 @@ const sendMessage = useCallback(
     // bypass branch below and forwarded to the backend as hidden context.
     let intakeContextPrefix: string | undefined;
 
-    // If the user types their own message while an unfilled CLIENT landing
-    // intake form is on screen (i.e. this send isn't the form's own
-    // submission), they've chosen to bypass it — retire the intake greeting +
-    // form card bubbles and deactivate the slice so the conversation flows as a
-    // normal chat. Backend-streamed forms are a deliberate part of the
-    // conversation and are NEVER retired this way — they stay put across
-    // follow-up messages.
+    // If the user types their own message while an unfilled intake form is on
+    // screen (i.e. this send isn't the form's own submission), carry whatever
+    // they've already selected in the form (destination, a chosen month/dates,
+    // travellers, notes) along as hidden context — so Kaira still gets e.g.
+    // "Destination: Japan" alongside the "Dec-Jan" they typed, without needing
+    // to submit the form. Empty when nothing meaningful is selected.
     if (
       !opts?.formSubmitted &&
       intakeFormActiveRef.current &&
-      !intakeFormCompletedRef.current &&
-      !intakeFormFromBackendRef.current
+      !intakeFormCompletedRef.current
     ) {
-      // Carry whatever the user already selected in the form (destination, a
-      // chosen month/dates, travellers, notes) so bypassing the form doesn't
-      // drop that context — Kaira still gets e.g. "Destination: Japan" alongside
-      // the "Dec-Jan" the user typed. Empty when nothing was selected yet.
-      intakeContextPrefix =
+      const partialContext =
         composePartialIntakeContext(intakeFormSliceRef.current) || undefined;
 
-      setMessages((prev) =>
-        prev.filter(
-          (m) =>
-            m.type !== "intake_form" &&
-            !String(m.id ?? "").startsWith("intake-greeting-"),
-        ),
-      );
-      dispatch(updateIntakeForm({ active: false, completed: false }));
-      // Release the fire-once injection guard. Without this the backend's
-      // reply to this bypass message (which streams a fresh intake-form widget,
-      // e.g. prefilled with "europe") would be silently dropped by
-      // handleIntakeFormWidget's `!intakeFormInjectedRef.current` check, so the
-      // card only reappears on refresh (when the ref resets).
-      intakeFormInjectedRef.current = false;
+      if (!intakeFormFromBackendRef.current) {
+        // CLIENT landing form (/chat?intake=1): the user has chosen to bypass
+        // it — forward the selected context, then retire the intake greeting +
+        // form card and deactivate the slice so the conversation flows as a
+        // normal chat.
+        intakeContextPrefix = partialContext;
+        setMessages((prev) =>
+          prev.filter(
+            (m) =>
+              m.type !== "intake_form" &&
+              !String(m.id ?? "").startsWith("intake-greeting-"),
+          ),
+        );
+        dispatch(updateIntakeForm({ active: false, completed: false }));
+        // Release the fire-once injection guard. Without this the backend's
+        // reply to this bypass message (which streams a fresh intake-form
+        // widget, e.g. prefilled with "europe") would be silently dropped by
+        // handleIntakeFormWidget's `!intakeFormInjectedRef.current` check, so
+        // the card only reappears on refresh (when the ref resets).
+        intakeFormInjectedRef.current = false;
+      } else if (partialContext && partialContext !== lastIntakeContextRef.current) {
+        // BACKEND-streamed widget: it's a deliberate part of the conversation
+        // and stays put across follow-up messages (never retired). But if the
+        // user edited its fields since the backend last synced them, ride those
+        // updated selections along as hidden context so Kaira sees the change
+        // without the user submitting the form — mirroring the client bypass
+        // path. Guarded on a diff against the last-synced context so an
+        // unchanged form doesn't re-assert its prefill on every message.
+        intakeContextPrefix = partialContext;
+      }
+
+      // Remember what the backend now knows so subsequent messages only forward
+      // genuinely-new edits.
+      if (intakeContextPrefix) lastIntakeContextRef.current = intakeContextPrefix;
     }
 
     // User-initiated send: snap the view to the latest message even if they
@@ -3293,14 +3342,23 @@ useEffect(() => {
     if (prefill) {
       // Restored backend form — persists across follow-up messages.
       intakeFormFromBackendRef.current = true;
+      const restoredPrefill = parseShowIntakeForm(prefill);
       dispatch(
         updateIntakeForm({
           active: true,
           completed: false,
           loading: false,
-          ...parseShowIntakeForm(prefill),
+          ...restoredPrefill,
         }),
       );
+      // The backend already knows this restored prefill — baseline the synced
+      // context to it so only the user's own later edits ride along with a
+      // typed message.
+      lastIntakeContextRef.current =
+        composePartialIntakeContext({
+          ...intakeFormSliceRef.current,
+          ...restoredPrefill,
+        }) || null;
       // Already injected from history — block the live widget/effect path
       // from adding a second card in this session.
       intakeFormInjectedRef.current = true;
