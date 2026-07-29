@@ -792,6 +792,22 @@ export const useAnalytics = () => {
       if (immediate) await callWorkerFunction('flushEvents');
       return result;
     }, []),
+
+    // ── In-chat intake form (chat_intake) funnel ───────────────────────────
+    // Stage emitter for the four-step intake card, plus its abandonment
+    // branch event. Stage names must match FUNNELS.chatIntake.stages exactly.
+    // No dd_agent / user_prompts here: on the `?intake=1` landing the form is
+    // filled before any message exists, so both would always be empty.
+    trackChatIntakeStage: useCallback(async (eventName, itineraryId = null, extra = {}) => {
+      const { immediate, ...properties } = extra;
+      const result = await callWorkerFunction('track', eventName, {
+        itinerary_id: itineraryId,
+        created_at: nowIST(),
+        ...properties,
+      });
+      if (immediate) await callWorkerFunction('flushEvents');
+      return result;
+    }, []),
   };
 };
 

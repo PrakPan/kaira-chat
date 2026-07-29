@@ -1462,6 +1462,7 @@ const HotelBookingDetails = (props) => {
                         onDelete={handleDelete}
                         deleting={loading}
                         deleteLabel="Remove from Itinerary"
+                        confirmItemLabel="stay"
                         onChange={handleChangeHotel}
                         changeLabel="Change Stay"
                         changeDisabled={loading}

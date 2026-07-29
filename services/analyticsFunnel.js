@@ -28,6 +28,28 @@
  */
 
 export const FUNNELS = {
+  // In-chat intake form (destination → when → who → notes), kept as its own
+  // funnel rather than prepended to `chat` on purpose: the card is conditional.
+  // It appears from the `?intake=1` landing, from the backend's
+  // `intake_form_shimmer` / `form_fields` effects, or from an `intake-form:`
+  // widget — but a user can also just type at /chat and never see it. Folding
+  // it into `chat` would mean either fabricating "form shown" for everyone who
+  // typed instead (back-fill on), or reporting more chat starts than form
+  // completions (back-fill off) — the exact defect this module exists to stop.
+  //
+  // Completing this funnel leads directly into `chat_itinerary_started`: the
+  // composed form message is sent as the first user message.
+  chatIntake: {
+    key: "chat_intake",
+    stages: [
+      "chat_intake_form_shown",
+      "chat_intake_destination_completed",
+      "chat_intake_when_completed",
+      "chat_intake_who_completed",
+      "chat_intake_form_completed",
+    ],
+    optional: [],
+  },
   chat: {
     key: "chat",
     stages: [

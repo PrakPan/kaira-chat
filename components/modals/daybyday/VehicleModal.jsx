@@ -433,6 +433,7 @@ const VehicleDetailModal = ({
               onDelete={canDelete ? onDeleteClick : undefined}
               deleting={deleting}
               deleteDisabled={loading}
+              confirmItemLabel="transfer"
               onChange={canChange ? () => handleEditRoute(data) : undefined}
               changeLabel="Change Transfer"
               changeDisabled={loading}

@@ -927,6 +927,7 @@ const TransferDrawer = ({
             <BookingDetailActions
               onDelete={() => onDeleteClick(data)}
               deleting={deleting}
+              confirmItemLabel="transfer"
               onChange={
                 canChangeCombo ? () => handleEditRoute(data) : undefined
               }
