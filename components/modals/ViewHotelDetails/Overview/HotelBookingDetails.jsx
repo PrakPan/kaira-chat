@@ -252,6 +252,7 @@ const HotelBookingDetails = (props) => {
   });
   const [open, setOpen] = useState(false);
   const scrollableTabRef = useRef(null);
+  const stickyTabsRef = useRef(null);
   const drawerRef = useRef(null);
   const [activeFacilities, setActiveFacilites] = useState([])
   const [viewMoreFacilites, setViewMoreFacilites] = useState(false);
@@ -316,8 +317,11 @@ const HotelBookingDetails = (props) => {
       const containerRect = container.getBoundingClientRect();
       const targetRect = targetEl.getBoundingClientRect();
       const relativeTop = targetRect.top - containerRect.top;
+      // The tab bar is sticky at the top of this scroller, so stopping at the
+      // section's exact top would park its heading behind the tabs.
+      const stickyOffset = stickyTabsRef.current?.offsetHeight || 0;
       container.scrollTo({
-        top: container.scrollTop + relativeTop,
+        top: Math.max(0, container.scrollTop + relativeTop - stickyOffset),
         behavior: "smooth",
       });
     }
@@ -1054,11 +1058,13 @@ const HotelBookingDetails = (props) => {
 
 
         <div className="flex flex-col">
-          <div className="sticky top-0 z-10 bg-[#fafaf5] border-b-sm border-solid border-[#ececec]">
+          <div ref={stickyTabsRef} className="sticky top-0 z-10 bg-[#fafaf5] border-b-sm border-solid border-[#ececec]">
             <ScrollableMenuTabs
               classStyle="w-100"
               items={items}
+              defaultActiveIndex={0}
               scrollContainerRef={scrollableTabRef}
+              stickyRef={stickyTabsRef}
               handleActiveTab={_handleMenuTabsChange} />
           </div>
 

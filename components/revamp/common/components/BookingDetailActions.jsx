@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { PulseLoader } from "react-spinners";
+import RemoveBookingConfirmModal from "./RemoveBookingConfirmModal";
 
 const TrashIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -47,6 +48,11 @@ const ArrowRightIcon = () => (
  * out of the scroll pane, a `sticky bottom-0` div for the rest.
  *
  * Either action may be omitted; a lone button then spans the full width.
+ *
+ * Removing is destructive and cancels the booking, so onDelete never fires
+ * straight from the click — it goes through RemoveBookingConfirmModal first.
+ * Every drawer inherits that gate from here; pass `confirmDelete={false}` for
+ * the rare caller that runs its own confirmation.
  */
 export default function BookingDetailActions({
   onDelete,
@@ -57,8 +63,30 @@ export default function BookingDetailActions({
   changeLabel = "Change",
   changeLabelShort,
   changeDisabled = false,
+  confirmDelete = true,
+  confirmItemLabel = "booking",
+  confirmMessage,
+  confirmLabel,
+  confirmZIndex,
 }) {
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
   if (!onDelete && !onChange) return null;
+
+  const handleDeleteClick = () => {
+    if (confirmDelete) {
+      setConfirmOpen(true);
+      return;
+    }
+    onDelete();
+  };
+
+  // Hand back to the drawer's own `deleting` state — the pill shows the loader
+  // while the request runs, so the sheet closes rather than sitting on top of it.
+  const handleConfirm = () => {
+    setConfirmOpen(false);
+    onDelete();
+  };
 
   // Both pills grow to share the bar, but they size from their content
   // (flex-auto, not flex-1) so a long "Change …" label isn't squeezed into an
@@ -70,56 +98,68 @@ export default function BookingDetailActions({
   // width becomes the basis — one pill would claim the whole row. The row
   // scopes the pills back to `width: auto` (globals.css).
   return (
-    <div className="ttw-actions-row flex items-center gap-2 md:gap-3 w-full max-w-full">
-      {onDelete && (
-        <button
-          type="button"
-          className="ttw-btn-remove-pill flex-auto min-w-0 overflow-hidden"
-          onClick={onDelete}
-          disabled={deleting || deleteDisabled}
-        >
-          {deleting ? (
-            <PulseLoader size={8} speedMultiplier={0.6} color="#CD2026" />
-          ) : (
-            <>
-              <span className="shrink-0 flex items-center">
-                <TrashIcon />
-              </span>
-              {/* Full descriptive label on wider screens; on a phone it can't
-                  fit beside the "Change …" pill, so it drops to just "Remove".
-                  The show/hide lives in globals.css (ttw-remove-label-*) at the
-                  520px pill-shrink breakpoint — this build doesn't emit
-                  Tailwind's max-[520px] arbitrary variant. */}
-              <span className="truncate ttw-remove-label-full">{deleteLabel}</span>
-              <span className="ttw-remove-label-short">Remove</span>
-            </>
-          )}
-        </button>
-      )}
+    <>
+      <div className="ttw-actions-row flex items-center gap-2 md:gap-3 w-full max-w-full">
+        {onDelete && (
+          <button
+            type="button"
+            className="ttw-btn-remove-pill flex-auto min-w-0 overflow-hidden"
+            onClick={handleDeleteClick}
+            disabled={deleting || deleteDisabled}
+          >
+            {deleting ? (
+              <PulseLoader size={8} speedMultiplier={0.6} color="#CD2026" />
+            ) : (
+              <>
+                <span className="shrink-0 flex items-center">
+                  <TrashIcon />
+                </span>
+                {/* Full descriptive label on wider screens; on a phone it can't
+                    fit beside the "Change …" pill, so it drops to just "Remove".
+                    The show/hide lives in globals.css (ttw-remove-label-*) at the
+                    520px pill-shrink breakpoint — this build doesn't emit
+                    Tailwind's max-[520px] arbitrary variant. */}
+                <span className="truncate ttw-remove-label-full">{deleteLabel}</span>
+                <span className="ttw-remove-label-short">Remove</span>
+              </>
+            )}
+          </button>
+        )}
 
-      {onChange && (
-        <button
-          type="button"
-          className="ttw-btn-change-pill flex-auto shrink-0"
-          onClick={onChange}
-          disabled={changeDisabled}
-        >
-          {/* Never ellipsised — the pill holds its content width and the remove
-              pill absorbs the squeeze. A caller with a label too long even for
-              that can hand in a short form that swaps in below 520px. */}
-          {changeLabelShort ? (
-            <>
-              <span className="ttw-change-label-full">{changeLabel}</span>
-              <span className="ttw-change-label-short">{changeLabelShort}</span>
-            </>
-          ) : (
-            <span>{changeLabel}</span>
-          )}
-          <span className="shrink-0 flex items-center">
-            <ArrowRightIcon />
-          </span>
-        </button>
-      )}
-    </div>
+        {onChange && (
+          <button
+            type="button"
+            className="ttw-btn-change-pill flex-auto shrink-0"
+            onClick={onChange}
+            disabled={changeDisabled}
+          >
+            {/* Never ellipsised — the pill holds its content width and the remove
+                pill absorbs the squeeze. A caller with a label too long even for
+                that can hand in a short form that swaps in below 520px. */}
+            {changeLabelShort ? (
+              <>
+                <span className="ttw-change-label-full">{changeLabel}</span>
+                <span className="ttw-change-label-short">{changeLabelShort}</span>
+              </>
+            ) : (
+              <span>{changeLabel}</span>
+            )}
+            <span className="shrink-0 flex items-center">
+              <ArrowRightIcon />
+            </span>
+          </button>
+        )}
+      </div>
+
+      <RemoveBookingConfirmModal
+        open={confirmOpen}
+        onCancel={() => setConfirmOpen(false)}
+        onConfirm={handleConfirm}
+        itemLabel={confirmItemLabel}
+        message={confirmMessage}
+        confirmLabel={confirmLabel}
+        {...(confirmZIndex ? { zIndex: confirmZIndex } : {})}
+      />
+    </>
   );
 }

@@ -293,6 +293,7 @@ const FlightDetailModal = ({
           <BookingDetailActions
             onDelete={handleDelete}
             deleting={loading}
+            confirmItemLabel="flight"
             onChange={
               !drawer && typeof handleEditRoute === "function"
                 ? () => handleEditRoute()

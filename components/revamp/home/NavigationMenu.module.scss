@@ -28,27 +28,28 @@
   }
 }
 
-/* Brand logo. Desktop shows the full wordmark lockup; tablet & smaller
-   swap to the standalone vine-t mark (/logo/ttw-mark.svg) at a fixed width
-   so it never shrinks. */
+/* Brand logo. Desktop shows the full lockup at tile 38; tablet & smaller swap
+   to the same lockup at tile 30. Exactly one of the two is ever visible.
+
+   Both `display` toggles below MUST stay `!important`: BrandLockup sets
+   `display: inline-flex` as an inline style, which otherwise outranks these
+   class rules and leaves both lockups on screen at once. */
 .logo {
   display: inline-flex;
   align-items: center;
   flex-shrink: 0;
 }
 
-/* Full wordmark lockup — desktop only */
+/* Full brand lockup (mark + wordmark + tagline) — desktop only.
+   BrandLockup sizes itself from its `size` prop; forcing a height here would
+   squash the tagline row, so this is only a show/hide hook. */
 .logoFull {
-  height: 38px !important;
-  width: auto !important;
-  max-width: none !important;
+  display: inline-flex !important;
 }
 
-/* Vine-t mark only — tablet & smaller */
+/* Same lockup at a smaller tile — tablet & smaller */
 .logoMark {
-  display: none;
-  width: 30px;
-  height: auto;
+  display: none !important;
 }
 
 @media (max-width: 1024px) {
@@ -56,7 +57,7 @@
     display: none !important;
   }
   .logoMark {
-    display: block;
+    display: inline-flex !important;
   }
 }
 
@@ -185,9 +186,9 @@
 
 /* The sidebar is dark, so use the on-dark lockup rather than inverting the
    on-light one — an invert filter would flatten the yellow "way" to white. */
+/* BrandLockup owns its own height (see `size`); nothing to constrain here. */
 .sidebarLogo {
-  height: 36px;
-  width: auto;
+  display: inline-flex;
 }
 
 .closeButton {

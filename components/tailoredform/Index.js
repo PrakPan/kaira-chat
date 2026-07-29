@@ -35,6 +35,10 @@ import RouteOverviewModal from "./slideOne/RouteOverviewModal";
 import BottomModal from "../ui/LowerModal";
 import { useParams, usePathname, useSearchParams } from "next/navigation";
 import { useAnalytics } from "../../hooks/useAnalytics";
+import {
+  FUNNELS,
+  reportFunnelStage,
+} from "../../services/analyticsFunnel";
 import styled, { keyframes } from "styled-components";
 import { fadeIn } from "react-animations";
 import { authCloseLogin, authShowLogin } from "../../store/actions/auth";
@@ -135,15 +139,39 @@ const Enquiry = (props) => {
   });
 
   const slideIndex = Number(router.query.slideIndex) || 0;
-  const {
-    trackItineraryInitiated,
-    trackItineraryCompleted,
-    trackItineraryCreation,
-    trackItineraryInclusion,
-    trackItineraryPreference,
-    trackItineraryRoute,
-  } = useAnalytics();
+  const { trackItineraryFormStage, trackSkipLoginCompleted } = useAnalytics();
   const { sessionId, isReady } = useAnalyticsSession();
+
+  // ── itinerary_form conversion funnel ──────────────────────────────────────
+  // Every stage goes through services/analyticsFunnel, which dedups per form
+  // run and back-fills any mandatory earlier stage that hasn't fired yet, so
+  // the funnel can never report a later step more often than an earlier one.
+  //
+  // One run == one mount of the form. A hard reload sends the user back to
+  // slide 0 (see the itineraryInititateData guard below), which is genuinely a
+  // new creation attempt, so the guard deliberately isn't persisted.
+  const funnelRunIdRef = useRef(null);
+  if (funnelRunIdRef.current === null) {
+    funnelRunIdRef.current = `form-${Date.now()}-${Math.random()
+      .toString(36)
+      .slice(2, 8)}`;
+  }
+  const trackFormStageRef = useRef(trackItineraryFormStage);
+  trackFormStageRef.current = trackItineraryFormStage;
+  // Latest known itinerary id, read at emit time so back-filled stages carry
+  // the same id as the stage that triggered them.
+  const reportFormStage = (stage, properties = {}) => {
+    reportFunnelStage(FUNNELS.itineraryForm, stage, {
+      scopeId: funnelRunIdRef.current,
+      properties,
+      emit: (eventName, extra) =>
+        trackFormStageRef.current?.(
+          eventName,
+          latestItineraryIdRef.current || null,
+          extra,
+        ),
+    });
+  };
   let isPageWide = media("(min-width: 768px)");
   const source = useSourceParams();
   const [showLoginForm,setShowLoginForm] = useState(false);
@@ -169,10 +197,12 @@ const Enquiry = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Funnel step 1 — the form is open, itinerary creation has begun.
   useEffect(() => {
-    {
-      trackItineraryCreation();
-    }
+    reportFormStage("itinerary_creation_started", {
+      entry_slide: Number(router.query.slideIndex) || 0,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -239,6 +269,39 @@ const Enquiry = (props) => {
     setIsSubmitting(true);
     completeItineraryCreate();
   };
+
+  // Funnel steps 3 & 4 — the route slide is done.
+  //
+  // The "preferences" in this funnel are slide 0's experience filters, which
+  // travel to the backend in the same /initiate payload as the route. That is
+  // why they are reported here rather than at the "Stay Preferences" screen,
+  // and why the funnel lists preferences immediately after route. Stay
+  // preferences (hotel type / meals / special requests) are not a funnel stage;
+  // they ride along on itinerary_creation_completed.
+  const markRouteCompleted = (route, routeEdited) => {
+    reportFormStage("itinerary_route_completed", {
+      route,
+      route_edited: routeEdited,
+    });
+    reportFormStage("itinerary_preferences_completed", {
+      experience_preferences: slideOneData?.selectedPreferences ?? null,
+    });
+  };
+
+  // Funnel steps 6 & 7 — the sign-in gate. `outcome` records how the gate was
+  // passed, because it is genuinely optional here: an already-authenticated
+  // user never sees it, the 3-slide flow never raises it, and the modal itself
+  // offers a skip. Reporting the stage on every path (with the reason) is what
+  // keeps the funnel from showing more completions than logins.
+  const markLoginStage = (stage, outcome) => {
+    reportFormStage(stage, {
+      outcome,
+      already_authenticated: outcome === "already_authenticated",
+    });
+  };
+
+  const hasAccessToken = () =>
+    typeof window !== "undefined" && !!localStorage.getItem("access_token");
 
   const _prevSlideHandler = () => {
     if (slideIndex) {
@@ -330,7 +393,35 @@ const Enquiry = (props) => {
     let dist = divideTravellers(slideThreeData);
     dispatch(setRoomConfiguration(dist));
 
+    // Funnel step 4 — "Who's Going & Inclusions" is done. This used to fire
+    // from completeItineraryCreate, i.e. one step too late and after the
+    // preferences event, which is why the dashboard showed more preferences
+    // than inclusions.
+    reportFormStage("itinerary_inclusions_completed", {
+      inclusions: {
+        add_flights: slideThreeData.addFlights,
+        add_hotels: slideThreeData.addHotels,
+        add_transfers_and_activities: slideThreeData.addInclusions,
+      },
+      group_type: slideThreeData.groupType || "Solo",
+      number_of_adults: slideThreeData.numberOfAdults,
+      number_of_children: slideThreeData.numberOfChildren,
+      number_of_infants: slideThreeData.numberOfInfants,
+    });
+
     if (totalSlides == 3) {
+      // No hotels selected, so this flow never raises the sign-in gate —
+      // record both login stages with the reason so the funnel stays
+      // continuous through to completion.
+      const authed = hasAccessToken();
+      markLoginStage(
+        "user_login_initiated",
+        authed ? "already_authenticated" : "not_required",
+      );
+      markLoginStage(
+        "user_login_completed",
+        authed ? "already_authenticated" : "not_required",
+      );
       _submitDataHandler();
       return;
     }
@@ -513,19 +604,25 @@ const Enquiry = (props) => {
         setApiSucceeded(true);
       }
 
-      trackItineraryInitiated("itinerary_initiated");
-      trackItineraryPreference(itineraryId, slideOneData?.selectedPreferences);
-      if (routeToTrack) {
-        trackItineraryRoute(itineraryId, routeToTrack);
-      } else if (resData.basic_route) {
-        trackItineraryRoute(itineraryId, resData.basic_route);
-      }
-
       setError(null);
 
       // Update the id from THIS response everywhere. The ref is the source of
       // truth read by completeItineraryCreate.
       latestItineraryIdRef.current = newItineraryId;
+
+      // Funnel step 2 — /initiate succeeded. Set the id first so this event
+      // (and any stage back-filled behind it) carries the real itinerary id
+      // rather than the `itineraryId` state, which is still the *previous*
+      // render's value at this point and was null on the very first initiate.
+      //
+      // Only the route slide's own recalculate counts as completing the route
+      // step; a plain initiate from slide 0 does not. Firing
+      // itinerary_route_completed here on every initiate is what inflated that
+      // step above the ones after it.
+      reportFormStage("itinerary_initiate_completed", {
+        route: routeToTrack || resData.basic_route || null,
+        duration: totalDuration,
+      });
       setItineraryId(newItineraryId);
       setLoadingItineraryId(newItineraryId);
 
@@ -547,6 +644,11 @@ const Enquiry = (props) => {
       setIsRouteChanged(false);
 
       if (isRecalculating) {
+        // The user edited the route on slide 1 and this recalculate is what
+        // advances them off it, so the route step is done. (The unedited path
+        // fires the same stages from the slide-1 Continue button below.)
+        markRouteCompleted(routeToTrack || resData.basic_route || null, true);
+
         router.push(
           {
             query: {
@@ -633,12 +735,6 @@ const Enquiry = (props) => {
       special_request: slideFourData.specialRequests,
     };
 
-    trackItineraryInclusion(itineraryId, {
-      add_flights: slideThreeData.addFlights,
-      add_hotels: slideThreeData.addHotels,
-      add_transfers_and_activities: slideThreeData.addInclusions,
-    });
-
     hasCompletedRef.current = true;
     setIsSubmitting(true);
     setIsLoading(true);
@@ -654,11 +750,23 @@ const Enquiry = (props) => {
       .then((response) => {
         setError(null);
         setSubmitted(true);
-        trackItineraryCompleted(
-          finalItineraryId,
-          "itinerary_completed",
+        // Funnel step 8 — /complete succeeded. `latestItineraryIdRef` is what
+        // reportFormStage stamps events with, so make sure it holds the id we
+        // actually completed against before reporting.
+        latestItineraryIdRef.current = finalItineraryId;
+        reportFormStage("itinerary_creation_completed", {
           platform,
-        );
+          currency: currency?.currency || "INR",
+          // Stay preferences aren't a funnel stage of their own (the funnel's
+          // "preferences" are slide 0's experience filters), so carry them here
+          // rather than dropping them.
+          hotel_types: slideFourData?.hotelType ?? null,
+          meal_preferences: slideFourData?.mealPreferences ?? null,
+          special_request: slideFourData?.specialRequests ?? null,
+          // Terminal funnel event and the next line navigates away — get it out
+          // of the batch queue now rather than relying on the pagehide drain.
+          immediate: true,
+        });
         dispatch(setItineraryInitiateData(null));
         dispatch(setItineraryCreated(true));
 
@@ -1085,6 +1193,7 @@ const Enquiry = (props) => {
                       onhide={onHide}
                       zIndex={"3300"}
                       onSuccess={() => {
+                        markLoginStage("user_login_completed", "logged_in");
                         // Close the login modal explicitly on success. Its
                         // visibility is driven by local `showLoginForm`, so
                         // relying on the subsequent /chat navigation to unmount
@@ -1095,6 +1204,15 @@ const Enquiry = (props) => {
                       }}
                       isTailored={true}
                       onSkipLogin={() => {
+                        // skip_login_completed is the branch metric; the funnel
+                        // stage still has to fire (with the reason) or every
+                        // skipper would look like a drop-off that then somehow
+                        // reaches itinerary_creation_completed.
+                        trackSkipLoginCompleted({
+                          itinerary_id: latestItineraryIdRef.current || null,
+                          surface: "tailored_form",
+                        });
+                        markLoginStage("user_login_completed", "skipped");
                         onHide();
                         completeItineraryCreate();
                       }}
@@ -1275,8 +1393,8 @@ const Enquiry = (props) => {
                   disabled={isLoading}
                   onClick={() => {
                     if (!isLoading) {
-                      // Add this check
-                      trackItineraryRoute(itineraryId, locationsLatLong);
+                      // Route slide finished untouched.
+                      markRouteCompleted(locationsLatLong, false);
                       router.push(
                         {
                           query: {
@@ -1349,9 +1467,18 @@ const Enquiry = (props) => {
                   disabled={isSubmitting}
                   onclick={() => {
                     // Check if user is logged in
-                    if (!localStorage.getItem("access_token")) {
+                    if (!hasAccessToken()) {
+                      markLoginStage("user_login_initiated", "gate_shown");
                       setShowLoginForm(true);
                     } else {
+                      markLoginStage(
+                        "user_login_initiated",
+                        "already_authenticated",
+                      );
+                      markLoginStage(
+                        "user_login_completed",
+                        "already_authenticated",
+                      );
                       _submitDataHandler();
                      }
                   }}

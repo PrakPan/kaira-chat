@@ -1,9 +1,25 @@
-import React, { useLayoutEffect, useRef } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updateIntakeForm } from "../../../../store/actions/intakeForm";
+import { useAnalytics } from "../../../../hooks/useAnalytics";
+import {
+  FUNNELS,
+  reportFunnelStage,
+  getChatFunnelScope,
+} from "../../../../services/analyticsFunnel";
 import type { IntakeFormState } from "./types";
 import { TOTAL_STEPS } from "./constants";
 import { composeIntakeMessage, validateStep, whenSummary, paxLabel } from "./intakePrompt";
+
+// Step index → the funnel stage completing that step reports. Index 3 (notes)
+// is the final step, so finishing it *is* finishing the form.
+const STEP_STAGE = [
+  "chat_intake_destination_completed",
+  "chat_intake_when_completed",
+  "chat_intake_who_completed",
+  "chat_intake_form_completed",
+];
+const STEP_NAME = ["destination", "when", "who", "notes"];
 import StepProgress from "./ui/StepProgress";
 import IntakeFormSkeleton from "./ui/IntakeFormSkeleton";
 import DestinationStep from "./steps/DestinationStep";
@@ -32,6 +48,102 @@ const IntakeFormCard: React.FC<IntakeFormCardProps> = ({ onComplete }) => {
     dispatch(updateIntakeForm(partial));
 
   const step = state?.step ?? 0;
+
+  // ── chat_intake funnel ────────────────────────────────────────────────────
+  // Reported from here rather than ChatKitPanel because this is the only place
+  // that knows a step was actually satisfied. Shares the chat session scope, so
+  // the guard survives a refresh and dedups against a re-mount of the card.
+  const { trackChatIntakeStage } = useAnalytics();
+  const trackIntakeRef = useRef(trackChatIntakeStage);
+  trackIntakeRef.current = trackChatIntakeStage;
+  const stateRef = useRef<IntakeFormState>(state);
+  stateRef.current = state;
+
+  const reportIntakeStage = useCallback(
+    (stage: string, properties: Record<string, unknown> = {}) => {
+      reportFunnelStage(FUNNELS.chatIntake, stage, {
+        scopeId: getChatFunnelScope(),
+        persist: true,
+        properties,
+        emit: (eventName: string, extra: Record<string, unknown>) =>
+          trackIntakeRef.current?.(eventName, null, {
+            ...properties,
+            ...extra,
+          }),
+      });
+    },
+    [],
+  );
+
+  // A snapshot of what the user has filled so far — sent with the step events
+  // so a drop-off can be read alongside what they'd already chosen.
+  const intakeSnapshot = () => {
+    const s = stateRef.current;
+    if (!s) return {};
+    return {
+      destinations:
+        s.destinations?.map((d) => d.name).filter(Boolean) ??
+        (s.destination?.name ? [s.destination.name] : []),
+      when_mode: s.when_mode ?? null,
+      flex_month: s.flexMonth ?? null,
+      flex_nights: s.flexNights ?? null,
+      start_date: s.startDate ?? null,
+      end_date: s.endDate ?? null,
+      who: s.who ?? null,
+      adults: s.adults ?? null,
+      children: s.children ?? null,
+      infants: s.infants ?? null,
+      has_notes: !!s.notes?.trim(),
+    };
+  };
+
+  // The card only renders once something injected it into the thread, so its
+  // first appearance is the form being shown. Reporting it here covers all four
+  // injection paths (the `?intake=1` landing, `intake_form_shimmer`,
+  // `form_fields`, and the `intake-form:` widget) with one hook. Skipped for an
+  // already-completed form, which still renders as a read-only summary when a
+  // finished thread is restored.
+  useEffect(() => {
+    const s = stateRef.current;
+    if (!s || s.completed) return;
+    reportIntakeStage("chat_intake_form_shown", {
+      entry_step: s.step ?? 0,
+      prefilled: (s.stepsCompleted ?? []).some(Boolean),
+      was_loading: !!s.loading,
+      ...intakeSnapshot(),
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Leaving with the form still open is a drop-off. `pagehide` is the reliable
+  // signal on mobile Safari (beforeunload isn't), and hidden-visibility covers
+  // backgrounding the tab. Branch event, not a funnel stage — the funnel's own
+  // step counts already show where people stop.
+  useEffect(() => {
+    const reportAbandon = () => {
+      const s = stateRef.current;
+      if (!s?.active || s.completed) return;
+      const at = s.step ?? 0;
+      trackIntakeRef.current?.("chat_intake_form_abandoned", null, {
+        last_step: at,
+        last_step_name: STEP_NAME[at] ?? String(at),
+        steps_completed: (s.stepsCompleted ?? []).filter(Boolean).length,
+        was_loading: !!s.loading,
+        ...intakeSnapshot(),
+        immediate: true,
+      });
+    };
+    const onVisibility = () => {
+      if (document.visibilityState === "hidden") reportAbandon();
+    };
+    window.addEventListener("pagehide", reportAbandon);
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      window.removeEventListener("pagehide", reportAbandon);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const isLast = step === TOTAL_STEPS - 1;
   const stepsCompleted = state?.stepsCompleted ?? [];
   const currentStepCompleted = !!stepsCompleted[step];
@@ -75,6 +187,13 @@ const IntakeFormCard: React.FC<IntakeFormCardProps> = ({ onComplete }) => {
 
   const goNext = () => {
     if (!canAdvance) return;
+    // Report the stage this step satisfies before advancing, so a drop-off is
+    // always attributable to the step the user was actually looking at.
+    reportIntakeStage(STEP_STAGE[step], {
+      step_index: step,
+      step_name: STEP_NAME[step],
+      ...intakeSnapshot(),
+    });
     if (!isLast) {
       update({ step: step + 1 });
       return;

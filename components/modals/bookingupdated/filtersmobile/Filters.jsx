@@ -44,7 +44,9 @@ export default function Filters(props) {
       show={props.showFilter}
       anchor={"right"}
       backdrop
-      width="50%"
+      /* Half of the stay-search drawer (which is 50vw), so it overlays only
+         the right side of it instead of covering the whole list. */
+      width="25%"
       mobileWidth="100%"
       bgColor="#fafaf5"
       style={{ zIndex: props.zIndex ?? 1508 }}

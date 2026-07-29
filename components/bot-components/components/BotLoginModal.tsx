@@ -48,6 +48,7 @@ type BotLoginModalProps = {
   loading?: boolean;
   loadingsocial?: boolean;
   newUser?: boolean;
+  userId?: string | number | null;
   mobileFail?: boolean;
   mobilefailmessage?: string;
   emailFail?: boolean;
@@ -100,7 +101,33 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
   useEffect(() => {
     if (typeof window !== "undefined") setLayoutReady(true);
   }, []);
-  const { trackUserLogin, trackUserAccountUpdate } = useAnalytics();
+  const {
+    trackUserLogin,
+    trackUserAccountUpdate,
+    trackLoginInitiateStarted,
+    trackLoginInitiateCompleted,
+    trackLoginCompleteStarted,
+    trackLoginCompleteCompleted,
+  } = useAnalytics();
+
+  // Login sub-funnel, mirroring the inline chat OtpCard so the OTP flow is
+  // measurable from whichever sign-in surface the user hit. This modal is the
+  // gate the tailored form raises, and it previously reported nothing beyond
+  // user_login on success — which is why the itinerary_form funnel's login
+  // steps were empty.
+  //
+  // `initiatePendingRef` marks an OTP send as in-flight so the effect below
+  // settles it exactly once (works for resend too, where `otpSent` stays true
+  // across the request); `initiateIsResendRef` remembers which kind it was.
+  const initiatePendingRef = useRef(false);
+  const initiateIsResendRef = useRef(false);
+  const loginCtxRef = useRef<Record<string, any>>({});
+  // Guards the terminal login event — the token effect can re-run (redux
+  // updates `name`/`phone` right after `token`) and this must fire once.
+  const completeFiredRef = useRef(false);
+  // AUTH_SUCCESS clears `newUser` before the token lands, so snapshot it at
+  // verify time.
+  const completeWasNewUserRef = useRef(false);
 
   const mobileRef = useRef<HTMLInputElement | null>(null);
   const recaptchaRef = useRef<any>(null);
@@ -198,6 +225,19 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
     }
   }, [props.otpSent, otpResent]);
 
+  // The token appearing means the verify succeeded — close out the login
+  // sub-funnel. Kept separate from the auto-close effect below, which also
+  // waits on phone/name and so can't stand in for "verified".
+  useEffect(() => {
+    if (!props.token || completeFiredRef.current) return;
+    completeFiredRef.current = true;
+    trackLoginCompleteCompleted({
+      ...loginCtxRef.current,
+      user_id: props.userId ?? null,
+      is_new_user: completeWasNewUserRef.current,
+    });
+  }, [props.token, props.userId, trackLoginCompleteCompleted]);
+
   // Auto-close once we have token + phone + name
   useEffect(() => {
     if (
@@ -250,6 +290,45 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
     (props.CountryCodes && props.CountryCodes[extension]?.label) || "+91";
   const fullMobile = `${dialCode}${phone.trim()}`;
 
+  // Shared properties for the login-funnel events. Refreshed every render so
+  // the state-transition effect below (whose deps don't include phone/channel)
+  // always reads the latest values without needing to re-run.
+  loginCtxRef.current = {
+    itinerary_id: props.itinary_id ?? null,
+    channel: whatsapp ? "whatsapp" : "sms",
+    country: extension,
+    dial_code: dialCode,
+    mobile: fullMobile,
+    surface: props.isTailored ? "tailored_form" : "bot_login_modal",
+  };
+
+  // Settle an in-flight OTP send: once it's no longer loading a definitive
+  // outcome has landed. otpSent with no mobileFail means the code went out;
+  // mobileFail means it was rejected (bad number, rate limit, network), which
+  // is not a completion. Keyed on the outcome flags rather than a loading edge
+  // so it's correct regardless of dispatch batching.
+  useEffect(() => {
+    if (!initiatePendingRef.current || props.loading) return;
+    if (props.mobileFail) {
+      initiatePendingRef.current = false;
+      return;
+    }
+    if (props.otpSent) {
+      initiatePendingRef.current = false;
+      trackLoginInitiateCompleted({
+        ...loginCtxRef.current,
+        is_resend: initiateIsResendRef.current,
+        is_new_user: !!props.newUser,
+      });
+    }
+  }, [
+    props.loading,
+    props.otpSent,
+    props.mobileFail,
+    props.newUser,
+    trackLoginInitiateCompleted,
+  ]);
+
   // Switching country only changes the prefix — the input keeps just the local
   // digits, so there's nothing to re-parse into it.
   const handleExtensionChangeOption = (country: string) => {
@@ -284,6 +363,12 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
     }
 
     if (!props.onAuth) return;
+
+    completeWasNewUserRef.current = !!props.newUser;
+    trackLoginCompleteStarted({
+      ...loginCtxRef.current,
+      is_new_user: !!props.newUser,
+    });
     const country =
       props.CountryCodes && props.CountryCodes[extension]
         ? props.CountryCodes[extension].value
@@ -378,6 +463,15 @@ const BotLoginModalRaw: React.FC<BotLoginModalProps> = (props) => {
       }
     }
     setPhoneError("");
+
+    // Same handler serves the first send and every resend — `otpSent` is what
+    // distinguishes them (see onRecaptchaChange).
+    initiateIsResendRef.current = !!props.otpSent;
+    initiatePendingRef.current = true;
+    trackLoginInitiateStarted({
+      ...loginCtxRef.current,
+      is_resend: initiateIsResendRef.current,
+    });
 
     if (props.mobileFail) {
       props.onResetLogin && props.onResetLogin();
@@ -1563,6 +1657,9 @@ const mapStateToProps = (state: any) => ({
   emailfailmessage: state.auth.emailfailmessage,
   CountryCodes: state.CountryCodes,
   userLocation: state.UserLocation?.location,
+  // Resolved after a successful verify — sent as user_id on the
+  // login_complete_completed analytics event.
+  userId: state.auth.id,
 });
 
 const mapDispatchToProps = (dispatch: any) => ({

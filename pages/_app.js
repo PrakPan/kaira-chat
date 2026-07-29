@@ -112,13 +112,37 @@ function MyApp({ Component, pageProps }) {
       requestIdleCallback(() => {
         ga.pageview(url);
         if (window.fbq) window.fbq("track", "PageView");
+        // Pass the title too — without it every page_view landed with
+        // page_title: undefined.
         if (window.JupiterAnalytics?.trackPageView)
-          window.JupiterAnalytics.trackPageView(url);
+          window.JupiterAnalytics.trackPageView(url, document.title);
       });
     };
 
+    // routeChangeComplete only covers client-side navigations, so the very
+    // first page of a visit — the landing page, and every deep link and
+    // refresh — was never reported to Jupiter at all. Fire it once here, after
+    // the tracker has had a chance to load (it is an afterInteractive script,
+    // so it isn't on window yet when this effect first runs).
+    let cancelled = false;
+    const trackInitialPageView = (attempt = 0) => {
+      if (cancelled) return;
+      if (window.JupiterAnalytics?.trackPageView) {
+        window.JupiterAnalytics.trackPageView(
+          router.asPath,
+          document.title,
+        );
+        return;
+      }
+      if (attempt < 20) setTimeout(() => trackInitialPageView(attempt + 1), 500);
+    };
+    trackInitialPageView();
+
     router.events.on("routeChangeComplete", handleRouteChange);
-    return () => router.events.off("routeChangeComplete", handleRouteChange);
+    return () => {
+      cancelled = true;
+      router.events.off("routeChangeComplete", handleRouteChange);
+    };
   }, [router.events]);
 
   // Persist ad attribution params (utm_*, gclid, ...) across navigation:
@@ -199,18 +223,12 @@ function MyApp({ Component, pageProps }) {
         `}
       </Script>
 
-      {/* Jupiter Analytics */}
-      <Script
-        src={`${JUPITER_HOST}/jupiter.js`}
-        strategy="afterInteractive"
-      />
-      <Script strategy="afterInteractive">
-        {`
-          if(window.JupiterAnalytics){
-            window.JupiterAnalytics.init({ siteId: 'tarzanway-web', apiHost: '${JUPITER_HOST}' });
-          }
-        `}
-      </Script>
+      {/* Jupiter Analytics is loaded by <JupyterAnalytics /> below (which pulls
+          /jupyter-partytown.js and owns window.JupiterAnalytics). There used to
+          be a second loader here for `${JUPITER_HOST}/jupiter.js` — that URL
+          404s, and its companion inline script called
+          window.JupiterAnalytics.init(), a method the real tracker doesn't
+          expose, so it threw and raced the real tracker for the same global. */}
 
       <div id="modal-root"></div>
 

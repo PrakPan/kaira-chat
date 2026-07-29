@@ -30,7 +30,11 @@
     scrollThresholds: new Set(),
     isInitialized: false,
     pendingFlush: false,
+    // Full href of the last tracked page view — used as the referrer for the
+    // next one (document.referrer is stale for SPA navigations).
     lastPageUrl: null,
+    // Pathname of the last tracked page view — the page_view dedup key.
+    lastPagePath: null,
     stats: {
       eventsSent: 0,
       eventsRetried: 0,
@@ -93,6 +97,55 @@
     }
   };
 
+  // Session id. Minting a fresh UUID on every page load — which is what this
+  // used to do — silently breaks every funnel that groups by session_id: a
+  // refresh, a hard navigation or a deep link starts a "new session" mid-flow,
+  // so the later steps land under an id that never recorded the earlier ones.
+  // Persist it per tab instead, with the standard 30-minute inactivity
+  // rollover so a genuinely new visit still gets a new session.
+  const SESSION_KEY = 'jupiter_session_id';
+  const SESSION_TS_KEY = 'jupiter_session_last_seen';
+  const SESSION_IDLE_MS = 30 * 60 * 1000;
+
+  const sessionStore = {
+    get: (key) => {
+      try {
+        return sessionStorage.getItem(key);
+      } catch (e) {
+        return null;
+      }
+    },
+    set: (key, value) => {
+      try {
+        sessionStorage.setItem(key, value);
+      } catch (e) {
+        /* private mode / quota — fall back to the in-memory id for this load */
+      }
+    }
+  };
+
+  const getOrCreateSessionId = () => {
+    const now = Date.now();
+    const existing = sessionStore.get(SESSION_KEY);
+    const lastSeen = parseInt(sessionStore.get(SESSION_TS_KEY) || '0', 10);
+
+    if (existing && lastSeen && now - lastSeen < SESSION_IDLE_MS) {
+      sessionStore.set(SESSION_TS_KEY, String(now));
+      return existing;
+    }
+
+    const sessionId = generateUUID();
+    sessionStore.set(SESSION_KEY, sessionId);
+    sessionStore.set(SESSION_TS_KEY, String(now));
+    return sessionId;
+  };
+
+  // Refresh the idle timestamp on every tracked event so an active session
+  // never expires out from under a long flow.
+  const touchSession = () => {
+    sessionStore.set(SESSION_TS_KEY, String(Date.now()));
+  };
+
   const getCurrentItineraryId = () => {
     try {
       const path = location.pathname;
@@ -147,6 +200,17 @@
   // Create event object
   const createEvent = (eventName, properties = {}) => {
     const now = new Date();
+    // Anything tracked before initializeAnalytics resolves (a page_view fired
+    // straight off window.JupiterAnalytics, an event queued during startup)
+    // would otherwise be stamped with a null session_id and be invisible to
+    // every session-scoped funnel. Resolve the id lazily instead.
+    if (!analyticsState.sessionId) {
+      analyticsState.sessionId = getOrCreateSessionId();
+    }
+    if (!analyticsState.anonymousId) {
+      analyticsState.anonymousId = getOrCreateAnonymousId();
+    }
+    touchSession();
     // Hoist identity fields out of properties so they live only at the top
     // level (like session_id) instead of being duplicated inside properties.
     const { itinerary_id, session_id, referrer, ...restProperties } = properties;
@@ -373,21 +437,37 @@
   };
 
   // Initialize
+  //
+  // Called from two places — the auto-init at the bottom of this file (when
+  // JUPITER_CONFIG is already on the page) and JupyterAnalytics.jsx's onLoad
+  // retry loop. Re-running it used to re-roll the session id mid-page, so it's
+  // idempotent: later calls only top up config that wasn't set the first time.
   const initializeAnalytics = async (config = {}) => {
-    
-    analyticsState.sessionId = generateUUID();
+    if (analyticsState.isInitialized) {
+      if (config.apiEndpoint) analyticsState.apiEndpoint = config.apiEndpoint;
+      if (config.apiKey) analyticsState.apiKey = config.apiKey;
+      if (config.userId) analyticsState.userId = config.userId;
+      return;
+    }
+
+    analyticsState.sessionId = getOrCreateSessionId();
     analyticsState.anonymousId = getOrCreateAnonymousId();
-    
+
     if (config.apiEndpoint) analyticsState.apiEndpoint = config.apiEndpoint;
     if (config.apiKey) analyticsState.apiKey = config.apiKey;
     if (config.userId) analyticsState.userId = config.userId;
     if (config.batchSize) analyticsState.batchSize = config.batchSize;
     if (config.flushInterval) analyticsState.flushInterval = config.flushInterval;
-    
-    await getUserIP();
-    
+
+    // Mark ready *before* resolving the IP. getUserIP() calls a third-party
+    // host (api.ipify.org) that ad blockers routinely block, and blocking
+    // `isInitialized` on it meant useAnalytics' readiness poll timed out after
+    // 15s and silently dropped every queued event for those users. The IP is
+    // enrichment, not a precondition — fill it in when (if) it arrives.
     analyticsState.isInitialized = true;
-    
+
+    getUserIP();
+
 
     // track('analytics_initialized', {
     //   version: '1.0.2-partytown',
@@ -411,6 +491,27 @@
   };
 
   const trackPageView = (page, title, itineraryId = null) => {
+    // Exactly one page_view per page. Deduped here rather than at the call
+    // sites because there are several, and they overlap:
+    //
+    //   • _app fires an initial view as soon as this script is available, so
+    //     landing pages and deep links are recorded at all;
+    //   • _app also fires on every routeChangeComplete — which Next emits for
+    //     *shallow* query-only navigations too, so the ad-attribution
+    //     router.replace (utm_*, gclid) and each tailored-form slide change
+    //     (?slideIndex=0..3) each looked like another page view of the same
+    //     page;
+    //   • four page components ([continent]/…/[city], [continent]/[country],
+    //     and the two /theme pages) additionally call trackPageView in a mount
+    //     effect, on top of both of the above.
+    //
+    // The key is the pathname, not the full href: everything above changes
+    // only the query string. A genuine re-visit still logs, because the
+    // pathname has to change and change back for that to happen.
+    const path = location.pathname;
+    if (analyticsState.lastPagePath === path) return null;
+    analyticsState.lastPagePath = path;
+
     analyticsState.scrollThresholds.clear();
     // For SPA navigations document.referrer stays stuck on the original full
     // page load, so use the previous route we tracked as the referrer. Falls
