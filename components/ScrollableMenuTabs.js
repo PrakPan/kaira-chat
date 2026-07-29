@@ -63,9 +63,16 @@ const ScrollableMenuTabs = ({
   scrollOffSet,
   tripsPage,
   scrollContainerRef,
-  handleActiveTab
+  handleActiveTab,
+  // Ref to the sticky wrapper around these tabs, when they pin to the top of
+  // `scrollContainerRef`; lets scroll-spy discount the height it covers.
+  stickyRef,
+  // Which tab starts selected. The itinerary nav has always opened on its
+  // second entry, so that stays the default; detail drawers pass 0 so the
+  // first tab (About) is selected instead of the one next to it.
+  defaultActiveIndex = 1,
 }) => {
-  const [activeItem, setActiveItem] = useState(items[1]?.id);
+  const [activeItem, setActiveItem] = useState(items[defaultActiveIndex]?.id);
   const startDate = useSelector((state) => state.itineraryStartDate.startDate);
   const { ref, isSticky } = useSticky(90);
   const isInView = useFieldOfView("Stays-Head");
@@ -122,7 +129,7 @@ const ScrollableMenuTabs = ({
 
   const debounceFun = useDebounce(handleScroll, 500);
   const sectionIds = items.map(item => item.id);
-  const { markerPos, ...markerHandlers } = useNavigationMarker(scrollContainerRef, sectionIds, onActiveTabChange);
+  const { markerPos, ...markerHandlers } = useNavigationMarker(scrollContainerRef, sectionIds, onActiveTabChange, stickyRef);
 
 
   useEffect(() => {

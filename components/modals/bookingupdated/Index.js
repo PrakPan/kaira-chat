@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import styled from "styled-components";
 import media from "../../media";
@@ -26,12 +26,9 @@ import { ItineraryStatusLoader } from "../../../containers/itinerary/ItineraryCo
 import { useRouter } from "next/router";
 import ViewHotelDetails from "../ViewHotelDetails/viewHotelDetails";
 import axios from "axios";
-import Travelers from "./filtersmobile/Travelers";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import Filters from "./filtersmobile/Filters";
 import FilterChips from "./filtersmobile/FilterChips";
-import { IconButton } from "@mui/material";
-import CheckboxFormComponent from "../../FormComponents/CheckboxFormComponent";
 import BotLoginModal from "../../bot-components/components/BotLoginModal";
 import OfflineQuoteEmptyState from "../../ui/OfflineQuoteEmptyState";
 
@@ -63,31 +60,6 @@ const GetInTouchContainer = styled.div`
   &:hover img {
     filter: invert(100%);
   }
-`;
-
-const SortContainer = styled.div`
-  position: absolute;
-  z-index: 20;
-  box-shadow: rgba(11, 18, 32, 0.12) 0px 3px 8px;
-  background: #fafaf5;
-  border: 1px solid #ececec;
-  border-radius: 0.5rem;
-  right: 0;
-  padding: 0.5rem;
-`;
-
-const SortItem = styled.div`
-  text-align: center;
-  padding: 0.2rem 0.5rem;
-  border-radius: 1.5rem;
-  font-size: 13px;
-  line-height: 1.4;
-  font-weight: 500;
-  cursor: pointer;
-  :hover {
-    background: #f4f3ec;
-  }
-  color: #0b1220;
 `;
 
 const Booking = (props) => {
@@ -167,7 +139,6 @@ const Booking = (props) => {
   });
   const [cloneFilters, setCloneFilter] = useState({});
   const [SelectedSort, setSelectedSort] = useState("Sort");
-  const [sortShow, setSortShow] = useState(false);
   const [selectSearch, setSelectedSearch] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
@@ -185,6 +156,36 @@ const Booking = (props) => {
     city_name: props?.city_name,
     booking_id: props?.booking_id,
   };
+
+  /* Badge on the Filter pill. Refundable / free-breakfast live in the quick-chip
+     row of their own, so only what the filter panel owns is counted here. */
+  const activeFilterCount = useMemo(() => {
+    const lists = [
+      filters?.star_category,
+      filters?.user_ratings,
+      filters?.facilities,
+      filters?.tags,
+    ];
+
+    let count = lists.reduce(
+      (sum, list) => sum + (Array.isArray(list) ? list.length : 0),
+      0
+    );
+
+    if (Array.isArray(filters?.type)) {
+      count += filters.type.filter((item) => item !== "All").length;
+    }
+
+    const budget = filters?.budget || {};
+    const budgetChanged =
+      (budget.price_lower_range != null &&
+        budget.price_lower_range !== defaultBudget.price_lower_range) ||
+      (budget.price_upper_range != null &&
+        budget.price_upper_range !== defaultBudget.price_upper_range);
+
+    return budgetChanged ? count + 1 : count;
+  }, [filters, defaultBudget]);
+
   useEffect(() => {
     if (props?.showBookingModal && currentBooking?.check_in) {
       setMoreOptionsJSX([]);
@@ -859,142 +860,70 @@ const Booking = (props) => {
               )}
             </div>
 
-            <div className="lg:w-[50vw] w-[100vw] py-4 top-0 bg-white z-[900] px-6 max-ph:px-4">
-              <SectionOne
-                booking_city={
-                  currentBooking?.city_name || props?.selectedBooking?.city_name
-                }
-                setHideBookingModal={props?.setHideBookingModal}
-                selectSearch={selectSearch}
-                setSelectedSearch={setSelectedSearch}
-                fetchHotels={fetchHotels}
-                fetchHotelsAutocomplete={fetchHotelsAutocomplete}
-                searchResults={searchResults}
-                resetPaginationStatus={resetPaginationStatus}
-                setMoreOptionsJSX={setMoreOptionsJSX}
-                setSelectedHotelId={setSelectedHotelId}
-                selectedHotelId={selectedHotelId}
-                clickType={props?.clickType}
-                setFilters={setFilters}
-                setShowFilters={setShowFilters}
-                hotelsConf={
-                  itinerary?.hotels_config?.room_configuration || [
-                    { adults: 1, childAges: [] },
-                  ]
-                }
-                handleClose={handleClose}
-                handleSuggestionSelect={handleSuggestionSelect}
-                autocompleteLoading={autocompleteLoading}
-                handleClearSearch={handleClearSearch}
-              ></SectionOne>
-
-              <div className="mt-xs">
-                <Travelers filters={filters} setFilters={setFilters} />
-              </div>
-
-              <div className="flex flex-row flex-wrap gap-5 py-3">
-                <button
-                  onClick={() => {
-                    setRefundable((prev) => !prev);
-                    setFilters((prev) => ({
-                      ...prev,
-                      is_refundable: !prev.is_refundable,
-                      applyFilter: !prev.applyFilter,
-                    }));
-                  }}
-                  className="flex flex-row items-center gap-1 cursor-pointer ttw-type-small text-[#0b1220]"
-                >
-                  <CheckboxFormComponent checked={refundable} />
-                  Refundable
-                </button>
-
-                <button
-                  onClick={() => {
-                    setFreeBreakfast((prev) => !prev);
-                    setFilters((prev) => ({
-                      ...prev,
-                      free_breakfast: !prev.free_breakfast,
-                      applyFilter: !prev.applyFilter,
-                    }));
-                  }}
-                  className="flex flex-row items-center gap-1 cursor-pointer ttw-type-small text-[#0b1220]"
-                >
-                  <CheckboxFormComponent checked={freeBreakfast} />
-                  Free Breakfast
-                </button>
-              </div>
-
-              {totalCount ? (
-                <div className="flex flex-row items-center justify-between mt-lg">
-                  <div className="ttw-type-body text-[#445069]">
-                    Showing {totalCount ? `${totalCount} ` : null}
-                    stays in{" "}
-                    {currentBooking?.city_name ||
-                      props?.selectedBooking?.city_name}
-                  </div>
-
-                  <div>
-                    <div className="ttw-type-small w-[95%] md:w-fit relative">
-                      <div
-                        className="ttw-sort-button whitespace-nowrap relative cursor-pointer"
-                        onClick={() => {
-                          setSortShow(!sortShow);
-                        }}
-                      >
-                        <img
-                          className="inline mr-xs"
-                          src="/assets/stays/sort-icon.svg"
-                        />
-                        <span className="inline max-ph:hidden font-600">{SelectedSort}</span>
-                        {SelectedSort != "Sort" && (
-                          <IconButton
-                            onClick={(e) => {
-                              resetSort();
-                              e.stopPropagation();
-                            }}
-                            className="!ml-xxs"
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="20"
-                              height="20"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                            >
-                              <path
-                                d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z"
-                                fill="#0b1220"
-                              />
-                            </svg>
-                          </IconButton>
-                        )}
-                        {sortShow ? (
-                          <SortContainer>
-                            {filtersObj["sort"].map((e, i) => (
-                              <SortItem
-                                key={i}
-                                onClick={() => {
-                                  setSelectedSort(e);
-                                  _addFilterHandler(e.toLowerCase(), "sort");
-                                }}
-                                selected={e === SelectedSort}
-                              >
-                                {e}
-                              </SortItem>
-                            ))}
-                          </SortContainer>
-                        ) : (
-                          <></>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ) : null}
-
-              {isFilterChangesApplied && (
-                <>
-                  <hr className="mt-md" />
+            {/* Own scroll container: the Drawer's wrapper is a fixed `h-full`
+                box, so a sticky header inside it would unstick after one
+                viewport of scrolling. Scrolling here instead keeps the search
+                header pinned for the whole list. */}
+            <div className="h-full overflow-y-auto no-scrollbar">
+            <SectionOne
+              booking_city={
+                currentBooking?.city_name || props?.selectedBooking?.city_name
+              }
+              setHideBookingModal={props?.setHideBookingModal}
+              selectSearch={selectSearch}
+              setSelectedSearch={setSelectedSearch}
+              fetchHotels={fetchHotels}
+              fetchHotelsAutocomplete={fetchHotelsAutocomplete}
+              searchResults={searchResults}
+              resetPaginationStatus={resetPaginationStatus}
+              setMoreOptionsJSX={setMoreOptionsJSX}
+              setSelectedHotelId={setSelectedHotelId}
+              selectedHotelId={selectedHotelId}
+              clickType={props?.clickType}
+              filters={filters}
+              setFilters={setFilters}
+              setShowFilters={setShowFilters}
+              activeFilterCount={activeFilterCount}
+              hotelsConf={
+                itinerary?.hotels_config?.room_configuration || [
+                  { adults: 1, childAges: [] },
+                ]
+              }
+              handleClose={handleClose}
+              handleSuggestionSelect={handleSuggestionSelect}
+              autocompleteLoading={autocompleteLoading}
+              handleClearSearch={handleClearSearch}
+              checkIn={currentBooking?.check_in}
+              checkOut={currentBooking?.check_out}
+              duration={currentBooking?.duration}
+              refundable={refundable}
+              freeBreakfast={freeBreakfast}
+              onToggleRefundable={() => {
+                setRefundable((prev) => !prev);
+                setFilters((prev) => ({
+                  ...prev,
+                  is_refundable: !prev.is_refundable,
+                  applyFilter: !prev.applyFilter,
+                }));
+              }}
+              onToggleFreeBreakfast={() => {
+                setFreeBreakfast((prev) => !prev);
+                setFilters((prev) => ({
+                  ...prev,
+                  free_breakfast: !prev.free_breakfast,
+                  applyFilter: !prev.applyFilter,
+                }));
+              }}
+              totalCount={totalCount}
+              selectedSort={SelectedSort}
+              sortOptions={filtersObj["sort"]}
+              onSortSelect={(option) => {
+                setSelectedSort(option);
+                _addFilterHandler(option.toLowerCase(), "sort");
+              }}
+              onSortReset={resetSort}
+              filterChips={
+                isFilterChangesApplied ? (
                   <FilterChips
                     defaultBudget={defaultBudget}
                     filters={cloneFilters}
@@ -1006,29 +935,29 @@ const Booking = (props) => {
                     setFilters={setFilters}
                     setIsFilterChangesApplied={setIsFilterChangesApplied}
                   />
-                </>
-              )}
+                ) : null
+              }
+            ></SectionOne>
 
-              {showFilters && (
-                <div>
-                  <Filters
-                    showFilter={showFilters}
-                    filtersState={filtersState}
-                    FILTERS={filtersObj}
-                    filters={filters}
-                    defaultBudget={defaultBudget}
-                    isFilterChangesApplied={isFilterChangesApplied}
-                    _addFilterHandler={_addFilterHandler}
-                    _removeFilterHandler={_removeFilterHandler}
-                    _updateStarFilterHandler={_updateStarFilterHandler}
-                    updateUserStarHandler={updateUserStarHandler}
-                    setshowFilter={setShowFilters}
-                    setFilters={setFilters}
-                    setIsFilterChangesApplied={setIsFilterChangesApplied}
-                  />
-                </div>
-              )}
-            </div>
+            {showFilters && (
+              <div>
+                <Filters
+                  showFilter={showFilters}
+                  filtersState={filtersState}
+                  FILTERS={filtersObj}
+                  filters={filters}
+                  defaultBudget={defaultBudget}
+                  isFilterChangesApplied={isFilterChangesApplied}
+                  _addFilterHandler={_addFilterHandler}
+                  _removeFilterHandler={_removeFilterHandler}
+                  _updateStarFilterHandler={_updateStarFilterHandler}
+                  updateUserStarHandler={updateUserStarHandler}
+                  setshowFilter={setShowFilters}
+                  setFilters={setFilters}
+                  setIsFilterChangesApplied={setIsFilterChangesApplied}
+                />
+              </div>
+            )}
 
             {loading &&
               typeof document !== "undefined" &&
@@ -1053,7 +982,7 @@ const Booking = (props) => {
                 document.body
               )}
 
-            <div className="w-full px-6 max-ph:px-4">
+            <div className="w-full px-6 pt-[16px] max-ph:px-4">
               {unauthorized ? (
                 <p className="text-center m-4 px-2 py-1 rounded-md bg-[#fff1ee] text-[#445069] ttw-type-small border border-[#CD2026]">
                   You're not authorized to take this action, please contact your
@@ -1179,6 +1108,7 @@ const Booking = (props) => {
                   ) : null}
                 </ContentContainer>
               </GridContainer>
+            </div>
             </div>
             {/* {!isPageWide && (
               <FloatingView>

@@ -1,7 +1,13 @@
 import { useCallback, useState, useEffect } from "react";
 import styled from "styled-components";
 
-export const useNavigationMarker = (scrollContainerRef, sectionIds = [], onActiveTabChange) => {
+/**
+ * `stickyRef` is the tab bar pinned to the top of the scroll container. Its
+ * height is read at scroll time (not render time, so it is never stale) and
+ * treated as the real top edge — otherwise a section parked just below the bar
+ * still counts as "not reached yet" and the previous tab stays highlighted.
+ */
+export const useNavigationMarker = (scrollContainerRef, sectionIds = [], onActiveTabChange, stickyRef) => {
   const [markerPos, setMarkerPos] = useState({
     x: 0,
     width: 0,
@@ -24,13 +30,14 @@ export const useNavigationMarker = (scrollContainerRef, sectionIds = [], onActiv
 
   const handleScroll = () => {
     const containerRect = container.getBoundingClientRect();
+    const stickyOffset = stickyRef?.current?.offsetHeight || 0;
 
     for (let i = 0; i < sectionIds.length; i++) {
       const section = document.getElementById(sectionIds[i]);
       if (!section) continue;
 
       const sectionRect = section.getBoundingClientRect();
-      const relativeTop = sectionRect.top - containerRect.top;
+      const relativeTop = sectionRect.top - containerRect.top - stickyOffset;
 
       if (relativeTop <= 0 && Math.abs(relativeTop) < section.offsetHeight) {
         onActiveTabChange && onActiveTabChange(i, sectionIds[i]);
@@ -41,7 +48,7 @@ export const useNavigationMarker = (scrollContainerRef, sectionIds = [], onActiv
 
   container.addEventListener("scroll", handleScroll);
   return () => container.removeEventListener("scroll", handleScroll);
-}, [sectionIds, scrollContainerRef, onActiveTabChange]);
+}, [sectionIds, scrollContainerRef, onActiveTabChange, stickyRef]);
 
 
   return {

@@ -2474,7 +2474,11 @@ const Details = (props) => {
           onHide={() => handleCloseDrawer()}
         >
           <NavigationMenu />
-          <div className="container mt-xl pb-[120px] md:pb-0">
+          {/* Mirrors the nav shell (NavigationMenu.module.scss .navigationMenu:
+              max-width 1240, padding 28px / 16px under 768) so the cart's
+              columns line up with the logo and profile above. Bootstrap's
+              `.container` is a different, stepped width and drifted from it. */}
+          <div className="mx-auto w-full max-w-[1240px] px-[28px] max-ph:px-[16px] mt-xl pb-[120px] md:pb-0">
             <div className="row">
               <div className="col-12 col-sm-12 col-lg-12 col-md-12 mb-sm">
                 <div className="flex items-center w-100 justify-between">
