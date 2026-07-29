@@ -263,6 +263,7 @@ const SidebarFooter: React.FC<{
     localStorage.removeItem("authToken");
     localStorage.removeItem("access_token");
     localStorage.removeItem("user_image");
+    localStorage.removeItem("is_new_user");
     clearUserAvatarColor(); // ← next user gets a fresh letter-avatar color
     setLocalImg(null); // ← clears the avatar immediately
     try {
