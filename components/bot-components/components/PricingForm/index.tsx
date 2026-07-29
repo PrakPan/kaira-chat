@@ -158,7 +158,7 @@ const PricingFormCard: React.FC<PricingFormCardProps> = ({ onComplete }) => {
 
   return (
     <div
-      className="ml-10 w-[calc(100%-40px)] max-ph:ml-0 max-ph:-mx-1 max-ph:w-auto rounded-[20px] max-ph:rounded-none bg-white"
+      className="ml-10 w-[calc(100%-40px)] max-ph:ml-0 max-ph:-mx-1 max-ph:w-auto rounded-[20px] max-ph:rounded-none bg-white mb-3"
       style={{ maxWidth: 480, border: "1px solid #ececec" }}
     >
       {/* ── Enhanced header — colourful gradient + attention icons ────────────── */}

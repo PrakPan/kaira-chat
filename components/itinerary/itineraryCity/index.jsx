@@ -803,9 +803,16 @@ const ItineraryCity = (props) => {
                           hotel.id,
                           "city_header_hotel_name",
                         );
-                        return isDraftStage
-                          ? handleDraftHotelClick(hotel.id)
-                          : fetchDetails(hotel.id);
+                        if (isDraftStage) {
+                          // P1: fire a hotel-detail prompt to the bot instead
+                          // of opening the detail drawer (drawer commented out
+                          // below for now).
+                          props?.onSendMessage?.(
+                            `Show ${hotel?.name}, ${props?.city?.city?.name} Details`,
+                          );
+                          return;
+                        }
+                        return fetchDetails(hotel.id);
                       }}
                       title={hotel?.name}
                     >
@@ -1190,7 +1197,9 @@ const ItineraryCity = (props) => {
         )}
 
 
-        {draftHotelDrawer.show && (
+        {/* P1 hotel detail drawer — disabled for now; at P1 the hotel name
+            click fires a bot prompt instead (see the name onClick above). */}
+        {/* {draftHotelDrawer.show && (
   <HotelP1Detail
     show={draftHotelDrawer.show}
     onHide={() => setDraftHotelDrawer({ show: false, id: null })}
@@ -1202,7 +1211,7 @@ const ItineraryCity = (props) => {
     setShowLoginModal={props?.setShowLoginModal}
     _setImagesHandler={_setImagesHandler}
   />
-)}
+)} */}
 
       {/* Full-screen gallery for city / hotel thumbnail images (p1 city gallery and p1 hotel drawer) */}
       {images && images.length > 0 && (

@@ -1810,13 +1810,13 @@ useEffect(() => {
   // there is no server-side booking to view, so View is dropped there too.
   const transferChipActions = (
     <div className="flex items-center gap-[14px] max-ph:gap-0 shrink-0">
-      <button
+      {!isP1Draft ? <button
         type="button"
         onClick={handleChangeTransfer}
         className="text-[12.5px] max-ph:text-[11.5px] font-[600] text-[#1f6feb] whitespace-nowrap hover:underline"
       >
         Change
-      </button>
+      </button>: null}
       {!isP1Draft && (
         <span className="text-[12.5px] max-ph:text-[11.5px] font-[600] text-[#1f6feb] whitespace-nowrap max-ph:hidden">
           View ›

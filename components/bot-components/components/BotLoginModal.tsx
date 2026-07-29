@@ -95,35 +95,44 @@ const BotLoginModal: React.FC<BotLoginModalProps> = (props) => {
     };
   }, []);
 
-  const scrollFocusIntoView = useCallback((el: HTMLElement | null) => {
-    if (!el) return;
-    setTimeout(() => {
-      el.scrollIntoView({ block: "center", behavior: "smooth" });
-    }, 300);
-  }, []);
+  // Note: we deliberately do NOT call `input.scrollIntoView()` on keyboard
+  // toggles. The sheet header (yellow strip + drag handle + title) is pinned
+  // outside the scroll container and the card body scrolls on its own, so the
+  // browser's native focus-scroll already keeps the focused field visible —
+  // a manual centered scroll only risks dragging the header off-screen.
 
-  // When the keyboard opens/closes, re-scroll the active input into view.
-  useEffect(() => {
-    if (typeof document === "undefined") return;
-    const active = document.activeElement;
-    if (
-      active instanceof HTMLInputElement ||
-      active instanceof HTMLTextAreaElement
-    ) {
-      scrollFocusIntoView(active);
-    }
-  }, [viewportHeight, scrollFocusIntoView]);
-
-  // Lock body scroll while the modal is open so iOS doesn't auto-scroll the
-  // document and push the sheet behind the keyboard.
+  // Lock body scroll while the modal is open. iOS ignores `overflow: hidden`
+  // for its native focus-scroll — when the phone input is focused it scrolls
+  // the document up to reveal the field, and on keyboard close that residual
+  // document scroll leaves our `position: fixed` sheet shifted up (title
+  // clipped). Pinning the body with `position: fixed` at the current scroll
+  // offset stops the focus-scroll entirely; we restore the offset on close.
   useEffect(() => {
     if (!props.show || typeof document === "undefined") return;
-    const prevOverflow = document.body.style.overflow;
-    const prevPosition = document.body.style.position;
-    document.body.style.overflow = "hidden";
+    const { style } = document.body;
+    const scrollY = window.scrollY;
+    const prev = {
+      overflow: style.overflow,
+      position: style.position,
+      top: style.top,
+      left: style.left,
+      right: style.right,
+      width: style.width,
+    };
+    style.overflow = "hidden";
+    style.position = "fixed";
+    style.top = `-${scrollY}px`;
+    style.left = "0";
+    style.right = "0";
+    style.width = "100%";
     return () => {
-      document.body.style.overflow = prevOverflow;
-      document.body.style.position = prevPosition;
+      style.overflow = prev.overflow;
+      style.position = prev.position;
+      style.top = prev.top;
+      style.left = prev.left;
+      style.right = prev.right;
+      style.width = prev.width;
+      window.scrollTo(0, scrollY);
     };
   }, [props.show]);
 
@@ -309,11 +318,15 @@ const BotLoginModal: React.FC<BotLoginModalProps> = (props) => {
             onClick={(e) => e.stopPropagation()}
             style={{
               position: "relative",
+              display: "flex",
+              flexDirection: "column",
               background: "#ffffff",
               borderRadius: "20px 20px 0 0",
               maxHeight: viewportHeight ? `${viewportHeight}px` : "92vh",
               // Clip to the rounded top (so the yellow strip curves with the
-              // edge) without a scrollbar — the card content fits within cap.
+              // edge). The yellow strip + drag handle stay pinned; the card
+              // body below scrolls internally, so keyboard focus-scroll can
+              // never push the title out of view.
               overflow: "hidden",
               boxShadow: "0 -16px 40px rgba(0,0,0,0.18)",
               // Open slide + drag-to-close only — kept on its own layer so the
@@ -357,7 +370,23 @@ const BotLoginModal: React.FC<BotLoginModalProps> = (props) => {
               />
             </div>
             {closeButton}
-            {otpCard}
+            {/* Scrollable card body — the header above stays pinned. `flex: 1`
+                fills the sheet when content is short (no scroll); when the
+                keyboard shrinks the sheet, only this region scrolls (scrollbar
+                hidden) so the focused field stays reachable without hiding the
+                title. */}
+            <div
+              className="hide-scrollbar"
+              style={{
+                flex: 1,
+                minHeight: 0,
+                overflowY: "auto",
+                WebkitOverflowScrolling: "touch",
+                overscrollBehavior: "contain",
+              }}
+            >
+              {otpCard}
+            </div>
           </div>
         </div>
       )}
