@@ -72,6 +72,11 @@ import { createPortal } from "react-dom";
 import { currencySymbols } from "../../data/currencySymbols";
 import { formatCurrencyValue } from "../../services/formatCurrencyValue";
 import { useAnalytics } from "../../hooks/useAnalytics";
+import {
+  FUNNELS,
+  reportFunnelStage,
+  getChatFunnelScope,
+} from "../../services/analyticsFunnel";
 import Login from "../modals/Login";
 import { FiCalendar } from "react-icons/fi";
 import { tr } from "date-fns/locale";
@@ -503,7 +508,27 @@ export default function BotApp({
   // Jupiter analytics — Partytown forwards calls to a worker so the main
   // thread isn't blocked. Used to fire chat lifecycle + cart events from the
   // BottomCTABar, which sits outside ChatKitPanel.
-  const { trackChatItineraryConfirmed, trackChatCartViewed } = useAnalytics();
+  //
+  // These go through services/analyticsFunnel with the *same* scope
+  // ChatKitPanel uses (both read it off the /chat/<id> URL), so a milestone
+  // reported here is deduped against the same milestone reported there, and
+  // reaching one back-fills the earlier steps. Reporting cart-viewed straight
+  // from this bar — with no dedup and no earlier stages — is why the dashboard
+  // showed more cart views than price-received events.
+  const { trackChatFunnelStage } = useAnalytics();
+  const trackChatStageRef = useRef(trackChatFunnelStage);
+  trackChatStageRef.current = trackChatFunnelStage;
+  const reportChatStage = useCallback(
+    (stage: string, itineraryId: string, ddAgent: string) => {
+      reportFunnelStage(FUNNELS.chat, stage, {
+        scopeId: getChatFunnelScope(),
+        persist: true,
+        emit: (eventName: string, extra: Record<string, unknown>) =>
+          trackChatStageRef.current?.(eventName, itineraryId, ddAgent, [], extra),
+      });
+    },
+    [],
+  );
   // true only when itinerary was created in this session (not restored on reload)
   const itineraryCreatedInSessionRef = useRef(false);
   const cart = useSelector((state: any) => state.Cart);
@@ -3408,7 +3433,11 @@ Start Location: ${details.startLocation}`;
     setIsHovered,
     popupStyle,
     onConfirm: () => {
-      trackChatItineraryConfirmed?.(activeItineraryId || "", "P1", []);
+      reportChatStage(
+        "chat_itinerary_confirmed",
+        activeItineraryId || "",
+        "P1",
+      );
       chatSendMessageRef.current?.("Yes, I confirm the Itinerary");
       if (isMobile) mobileTabSwitchRef.current?.("chat");
     },
@@ -3417,7 +3446,7 @@ Start Location: ${details.startLocation}`;
         setShowApiLoginPrompt(true);
         return;
       }
-      trackChatCartViewed?.(activeItineraryId || "", "P2", []);
+      reportChatStage("chat_cart_viewed", activeItineraryId || "", "P2");
       openPaymentDrawer();
     },
     onViewBookings: itineraryIsComplete ? handleViewBookings : undefined,

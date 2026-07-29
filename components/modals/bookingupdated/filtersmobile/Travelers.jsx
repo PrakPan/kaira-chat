@@ -1,19 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import { RiArrowDropDownLine, RiDeleteBin6Line } from "react-icons/ri";
 import Pax from "../../../tailoredform/slidetwo/pax/Pax";
-import useMediaQuery from "../../../media";
 
 const svgIcons = {
-  'user': <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-    <path d="M12.5029 6.84741C13.5304 7.54491 14.2504 8.48991 14.2504 9.74991V11.9999H17.2504V9.74991C17.2504 8.11491 14.5729 7.14741 12.5029 6.84741Z" fill="#ACACAC" />
-    <path d="M11.2504 6C12.9079 6 14.2504 4.6575 14.2504 3C14.2504 1.3425 12.9079 0 11.2504 0C10.8979 0 10.5679 0.0749998 10.2529 0.18C10.8754 0.9525 11.2504 1.935 11.2504 3C11.2504 4.065 10.8754 5.0475 10.2529 5.82C10.5679 5.925 10.8979 6 11.2504 6Z" fill="#ACACAC" />
-    <path d="M6.75 6C8.4075 6 9.75 4.6575 9.75 3C9.75 1.3425 8.4075 0 6.75 0C5.0925 0 3.75 1.3425 3.75 3C3.75 4.6575 5.0925 6 6.75 6ZM6.75 1.5C7.575 1.5 8.25 2.175 8.25 3C8.25 3.825 7.575 4.5 6.75 4.5C5.925 4.5 5.25 3.825 5.25 3C5.25 2.175 5.925 1.5 6.75 1.5Z" fill="#ACACAC" />
-    <path d="M6.75 6.75C4.7475 6.75 0.75 7.755 0.75 9.75V12H12.75V9.75C12.75 7.755 8.7525 6.75 6.75 6.75ZM11.25 10.5H2.25V9.7575C2.4 9.2175 4.725 8.25 6.75 8.25C8.775 8.25 11.1 9.2175 11.25 9.75V10.5Z" fill="#ACACAC" />
+  'user': <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 18 13" fill="none">
+    <path d="M12.5029 6.84741C13.5304 7.54491 14.2504 8.48991 14.2504 9.74991V11.9999H17.2504V9.74991C17.2504 8.11491 14.5729 7.14741 12.5029 6.84741Z" fill="currentColor" />
+    <path d="M11.2504 6C12.9079 6 14.2504 4.6575 14.2504 3C14.2504 1.3425 12.9079 0 11.2504 0C10.8979 0 10.5679 0.0749998 10.2529 0.18C10.8754 0.9525 11.2504 1.935 11.2504 3C11.2504 4.065 10.8754 5.0475 10.2529 5.82C10.5679 5.925 10.8979 6 11.2504 6Z" fill="currentColor" />
+    <path d="M6.75 6C8.4075 6 9.75 4.6575 9.75 3C9.75 1.3425 8.4075 0 6.75 0C5.0925 0 3.75 1.3425 3.75 3C3.75 4.6575 5.0925 6 6.75 6ZM6.75 1.5C7.575 1.5 8.25 2.175 8.25 3C8.25 3.825 7.575 4.5 6.75 4.5C5.925 4.5 5.25 3.825 5.25 3C5.25 2.175 5.925 1.5 6.75 1.5Z" fill="currentColor" />
+    <path d="M6.75 6.75C4.7475 6.75 0.75 7.755 0.75 9.75V12H12.75V9.75C12.75 7.755 8.7525 6.75 6.75 6.75ZM11.25 10.5H2.25V9.7575C2.4 9.2175 4.725 8.25 6.75 8.25C8.775 8.25 11.1 9.2175 11.25 9.75V10.5Z" fill="currentColor" />
   </svg>,
-  'edit': <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-    <path d="M7.33301 1.33325H5.99967C2.66634 1.33325 1.33301 2.66659 1.33301 5.99992V9.99992C1.33301 13.3333 2.66634 14.6666 5.99967 14.6666H9.99967C13.333 14.6666 14.6663 13.3333 14.6663 9.99992V8.66659" stroke="#ACACAC" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-    <path d="M5.43992 7.26659C5.23992 7.46659 5.03992 7.85992 4.99992 8.14659L4.71325 10.1533C4.60659 10.8799 5.11992 11.3866 5.84659 11.2866L7.85325 10.9999C8.13325 10.9599 8.52659 10.7599 8.73325 10.5599L13.9866 5.30659C14.8933 4.39992 15.3199 3.34659 13.9866 2.01326C12.6533 0.679924 11.5999 1.10659 10.6933 2.01326L5.43992 7.26659Z" stroke="#ACACAC" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-    <path d="M9.94043 2.7666C10.3871 4.35994 11.6338 5.6066 13.2338 6.05994" stroke="#ACACAC" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+  'edit': <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 16 16" fill="none">
+    <path d="M7.33301 1.33325H5.99967C2.66634 1.33325 1.33301 2.66659 1.33301 5.99992V9.99992C1.33301 13.3333 2.66634 14.6666 5.99967 14.6666H9.99967C13.333 14.6666 14.6663 13.3333 14.6663 9.99992V8.66659" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M5.43992 7.26659C5.23992 7.46659 5.03992 7.85992 4.99992 8.14659L4.71325 10.1533C4.60659 10.8799 5.11992 11.3866 5.84659 11.2866L7.85325 10.9999C8.13325 10.9599 8.52659 10.7599 8.73325 10.5599L13.9866 5.30659C14.8933 4.39992 15.3199 3.34659 13.9866 2.01326C12.6533 0.679924 11.5999 1.10659 10.6933 2.01326L5.43992 7.26659Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M9.94043 2.7666C10.3871 4.35994 11.6338 5.6066 13.2338 6.05994" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 }
 
@@ -29,7 +28,6 @@ export default function Travelers(props) {
   const [rooms, setRooms] = useState(props.filters.occupancies || []);
   const [open, setOpen] = useState(false);
   const [showError, setShowError] = useState(false);
-   const isDesktop = useMediaQuery("(min-width:400px)");
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -52,7 +50,9 @@ export default function Travelers(props) {
     let total = 0;
     for (let room of rooms) {
       total += room?.adults ? room.adults : 0;
-      total += room?.children ? room.children : 0;
+      // Occupancies carry `childAges`, not a `children` count — reading the
+      // latter silently dropped every child from the pill's total.
+      total += room?.childAges?.length || 0;
     }
 
     setTravelers(total);
@@ -98,23 +98,29 @@ export default function Travelers(props) {
     setOpen(false);
   };
 
+  const roomCount = props.filters.occupancies.length;
+
   return (
-    <div
-      ref={containerRef}
-      className="relative w-fit w-full h-fit flex flex-row items-center gap-2 px-sm-md py-xs rounded-md-lg  bg-text-chinesWhite"
-    >
-      {svgIcons.user}
-      <div className="flex flex-row text-sm-md text-text-charcolblack leading-lg-md font-400 align-items-center w-full items-center">
-        <span>{isDesktop ? "Room Configuration" : "Rooms"} | </span> &nbsp;
-        <span>
-          {travelers} {travelers > 1 ? "travelers" : "traveler"}, {props.filters.occupancies.length}{" "}
-          {props.filters.occupancies.length > 1 ? "rooms" : "room"}
+    <div ref={containerRef} className="relative h-fit w-fit shrink-0">
+      <button
+        type="button"
+        onClick={() => setOpen((prev) => !prev)}
+        className={`flex h-9 flex-row items-center gap-2 whitespace-nowrap rounded-full bg-white px-3.5 ttw-type-small text-[#0b1220] transition-shadow ${
+          open
+            ? "shadow-[0_0_0_1.5px_#0b1220]"
+            : "shadow-[0_1px_2px_rgba(11,18,32,0.09)] hover:shadow-[0_2px_7px_rgba(11,18,32,0.14)]"
+        }`}
+      >
+        <span className="text-[#8a93a5]">{svgIcons.user}</span>
+        <span className="font-500">
+          {travelers} {travelers > 1 ? "travellers" : "traveller"}
         </span>
-
-        <span className="ml-3 cursor-pointer" onClick={() => setOpen((prev) => !prev)} >{svgIcons.edit}</span>
-      </div>
-     
-
+        <span className="text-[#c8ccd6]">·</span>
+        <span className="text-[#445069]">
+          {roomCount} {roomCount > 1 ? "rooms" : "room"}
+        </span>
+        <span className="text-[#8a93a5]">{svgIcons.edit}</span>
+      </button>
 
       {open && <Pax
         roomConfiguration={rooms}

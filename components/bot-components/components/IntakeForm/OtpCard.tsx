@@ -58,7 +58,12 @@ const OtpCard: React.FC<OtpCardProps> = ({
     trackLoginCompleteStarted,
     trackLoginCompleteCompleted,
     trackSkipLoginCompleted,
+    trackUserLoginInitiated,
+    trackUserLoginCompleted,
   } = useAnalytics();
+  // The card only mounts when the backend has asked the user to sign in, so
+  // mounting *is* the gate being raised.
+  const gateReportedRef = useRef(false);
   const recaptchaRef = useRef<any>(null);
   const verifiedFiredRef = useRef(false);
   // Login-funnel analytics. `initiatePendingRef` marks an OTP-send request as
@@ -131,6 +136,19 @@ const OtpCard: React.FC<OtpCardProps> = ({
     dispatch(authaction.authResetLogin() as any);
     dispatch(getCountryCodes() as any);
   }, [dispatch]);
+
+  // Canonical funnel stage — the sign-in gate was raised. Reported here as
+  // well as from BotLoginModal so the login step is populated whichever
+  // sign-in surface the user reached.
+  useEffect(() => {
+    if (gateReportedRef.current) return;
+    gateReportedRef.current = true;
+    trackUserLoginInitiated({
+      itinerary_id: itineraryId ?? null,
+      surface: "chat_otp_card",
+      outcome: "gate_shown",
+    });
+  }, [itineraryId, trackUserLoginInitiated]);
 
   // Preselect the country code from the visitor's IP location (resolved into
   // redux by _app's bootstrap). Only applies until the user picks a country
@@ -209,9 +227,21 @@ const OtpCard: React.FC<OtpCardProps> = ({
         user_id: userId ?? null,
         is_new_user: completeWasNewUserRef.current,
       });
+      trackUserLoginCompleted({
+        ...loginCtxRef.current,
+        surface: "chat_otp_card",
+        outcome: "logged_in",
+        user_id: userId ?? null,
+      });
       onVerified();
     }
-  }, [token, onVerified, trackLoginCompleteCompleted, userId]);
+  }, [
+    token,
+    onVerified,
+    trackLoginCompleteCompleted,
+    trackUserLoginCompleted,
+    userId,
+  ]);
 
   // Settle an in-flight OTP-send: once it's no longer loading, a definitive
   // outcome has landed. otpSent (with no mobileFail) means the code went out →
@@ -372,6 +402,13 @@ const OtpCard: React.FC<OtpCardProps> = ({
   // back to the parent (which resumes the chat and may unmount this card).
   const handleSkip = () => {
     trackSkipLoginCompleted({ ...loginCtxRef.current });
+    // Skipping still passes the gate — record the canonical stage with the
+    // reason so the login step doesn't under-count relative to what follows it.
+    trackUserLoginCompleted({
+      ...loginCtxRef.current,
+      surface: "chat_otp_card",
+      outcome: "skipped",
+    });
     onSkip?.();
   };
 

@@ -37,6 +37,12 @@ import setCart from "../../../store/actions/Cart";
 import { setCurrency } from "../../../store/actions/currencyActions";
 import setItineraryStatus from "../../../store/actions/itineraryStatus";
 import { useAnalytics } from "../../../hooks/useAnalytics";
+import {
+  FUNNELS,
+  reportFunnelStage,
+  getChatFunnelScope,
+  bindChatFunnelScope,
+} from "../../../services/analyticsFunnel";
 import BotLoginModal from "./BotLoginModal";
 import { updateIntakeForm } from "../../../store/actions/intakeForm";
 import { updatePricingForm } from "../../../store/actions/pricingForm";
@@ -1553,24 +1559,16 @@ const sessionIdRef = useRef<string>((() => {
   //    these calls don't block the main thread. Refs let us call them inside
   //    other useCallbacks without changing their deps.
   const {
-    trackChatItineraryStarted,
-    trackChatRouteConfirmed,
-    trackChatItineraryGenerated,
-    trackChatItineraryConfirmed,
-    trackChatPriceReceived,
-    trackChatCartViewed,
+    trackChatFunnelStage,
+    trackChatMessageSent,
     trackHotelCardClicked,
     trackActivityCardClicked,
     trackTransferCardClicked,
     trackPoiCardClicked,
   } = useAnalytics();
   const analyticsRef = useRef({
-    trackChatItineraryStarted,
-    trackChatRouteConfirmed,
-    trackChatItineraryGenerated,
-    trackChatItineraryConfirmed,
-    trackChatPriceReceived,
-    trackChatCartViewed,
+    trackChatFunnelStage,
+    trackChatMessageSent,
     trackHotelCardClicked,
     trackActivityCardClicked,
     trackTransferCardClicked,
@@ -1578,24 +1576,16 @@ const sessionIdRef = useRef<string>((() => {
   });
   useEffect(() => {
     analyticsRef.current = {
-      trackChatItineraryStarted,
-      trackChatRouteConfirmed,
-      trackChatItineraryGenerated,
-      trackChatItineraryConfirmed,
-      trackChatPriceReceived,
-      trackChatCartViewed,
+      trackChatFunnelStage,
+      trackChatMessageSent,
       trackHotelCardClicked,
       trackActivityCardClicked,
       trackTransferCardClicked,
       trackPoiCardClicked,
     };
   }, [
-    trackChatItineraryStarted,
-    trackChatRouteConfirmed,
-    trackChatItineraryGenerated,
-    trackChatItineraryConfirmed,
-    trackChatPriceReceived,
-    trackChatCartViewed,
+    trackChatFunnelStage,
+    trackChatMessageSent,
     trackHotelCardClicked,
     trackActivityCardClicked,
     trackTransferCardClicked,
@@ -1633,17 +1623,38 @@ const sessionIdRef = useRef<string>((() => {
   useEffect(() => { botModeRef.current = botMode; }, [botMode]);
   const ddAgent = () => (botModeRef.current === "p2" ? "P2" : "P1");
 
-  // Fire-once guards for chat lifecycle events. Each event should fire at
-  // most once per session — multiple effect/widget paths can lead to the same
-  // semantic milestone, and we don't want duplicates when both fire.
-  const firedChatEventsRef = useRef<Set<string>>(new Set());
-  const fireChatEventOnce = useCallback(
-    (eventKey: string, fire: () => void) => {
-      if (firedChatEventsRef.current.has(eventKey)) return;
-      firedChatEventsRef.current.add(eventKey);
-      fire();
+  // Chat conversion-funnel reporting. Each milestone is reachable from several
+  // paths (a server effect, the restored-thread widget scan, a button in
+  // BotApp), so services/analyticsFunnel owns the dedup — keyed on the chat
+  // session and persisted in sessionStorage, because a refresh resumes the same
+  // thread and a per-mount ref would let the whole funnel fire again.
+  //
+  // It also back-fills earlier stages. `chat_itinerary_generated` in particular
+  // only has a live trigger (the `display_itinerary` effect), which is never
+  // replayed on a restored thread and never arrives at all on the P2/tailored
+  // path — so it used to report *fewer* generations than confirmations, which
+  // is impossible. Reaching a later milestone proves the itinerary existed.
+  const localItineraryIdRef = useRef<string | undefined>(localItineraryId);
+  useEffect(() => {
+    localItineraryIdRef.current = localItineraryId;
+  }, [localItineraryId]);
+
+  const reportChatStage = useCallback(
+    (stage: string, itineraryIdOverride?: string) => {
+      reportFunnelStage(FUNNELS.chat, stage, {
+        scopeId: getChatFunnelScope(),
+        persist: true,
+        emit: (eventName: string, extra: Record<string, unknown>) =>
+          analyticsRef.current.trackChatFunnelStage?.(
+            eventName,
+            itineraryIdOverride || localItineraryIdRef.current || "",
+            ddAgent(),
+            getUserPrompts(),
+            extra,
+          ),
+      });
     },
-    [],
+    [getUserPrompts],
   );
 
   // ── Location ─────────────────────────────────────────────────────────────
@@ -1662,12 +1673,17 @@ const handleSessionCreated = useCallback((ourSessionId: string) => {
   const alreadyInUrl = window.location.pathname.match(/\/chat\/([a-f0-9-]{36})/);
   if (alreadyInUrl) {
     hasUpdatedUrl.current = true;
+    bindChatFunnelScope(alreadyInUrl[1]);
     return;
   }
 
   hasUpdatedUrl.current = true;
   const target = `/chat/${ourSessionId}`;
   window.history.pushState({}, "", target);
+  // The funnel scope is derived from this URL segment, which didn't exist when
+  // chat_itinerary_started fired. Rebind so the rest of the funnel is recorded
+  // against the same run instead of looking un-started and re-firing.
+  bindChatFunnelScope(ourSessionId);
   // sessionStorage can hit its quota when chatkit_session_* entries pile up.
   // The cached value is an optimization for restore — if writing fails, drop
   // every chatkit_session_* entry and retry once before giving up silently.
@@ -2316,12 +2332,9 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
           // handler unwraps `.itinerary` for the city/route shape itself.
           onItineraryReceived(data);
           setHasDisplayItinerary(true);
-          fireChatEventOnce("chat_itinerary_generated", () =>
-            analyticsRef.current.trackChatItineraryGenerated?.(
-              localItineraryId || ((data.itinerary as any)?.id as string) || "",
-              ddAgent(),
-              getUserPrompts(),
-            ),
+          reportChatStage(
+            "chat_itinerary_generated",
+            localItineraryId || ((data.itinerary as any)?.id as string) || "",
           );
           break;
         }
@@ -2332,13 +2345,7 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
           // The server emits display_transfers once route options are
           // finalized for the chosen itinerary — treat that as the route
           // being confirmed for analytics purposes.
-          fireChatEventOnce("chat_route_confirmed", () =>
-            analyticsRef.current.trackChatRouteConfirmed?.(
-              localItineraryId || "",
-              ddAgent(),
-              getUserPrompts(),
-            ),
-          );
+          reportChatStage("chat_route_confirmed");
   break;
         }
         case "route.lock":
@@ -2347,21 +2354,9 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
         case "route.reorder.start":
         case "itinerary.lock": {
           if (name === "route.lock") {
-            fireChatEventOnce("chat_route_confirmed", () =>
-              analyticsRef.current.trackChatRouteConfirmed?.(
-                localItineraryId || "",
-                ddAgent(),
-                getUserPrompts(),
-              ),
-            );
+            reportChatStage("chat_route_confirmed");
           } else if (name === "itinerary.lock") {
-            fireChatEventOnce("chat_itinerary_confirmed", () =>
-              analyticsRef.current.trackChatItineraryConfirmed?.(
-                localItineraryId || "",
-                ddAgent(),
-                getUserPrompts(),
-              ),
-            );
+            reportChatStage("chat_itinerary_confirmed");
           }
           sendWidgetActionRef.current?.(name, data);
           break;
@@ -2437,13 +2432,7 @@ case "itinerary_completion_process_completed": {
   }
   // Pricing/cart for the trip is finalized at this point — fire
   // chat_price_received once the P2 completion process resolves.
-  fireChatEventOnce("chat_price_received", () =>
-    analyticsRef.current.trackChatPriceReceived?.(
-      completedId || localItineraryId || "",
-      ddAgent(),
-      getUserPrompts(),
-    ),
-  );
+  reportChatStage("chat_price_received", completedId || localItineraryId || "");
   break;
 }
 
@@ -2466,13 +2455,7 @@ case "start_itinerary_completion_process": {
   // Server kicks off completion only after the user has confirmed their
   // itinerary, so this is a reliable trigger for chat_itinerary_confirmed
   // even when the explicit `itinerary.lock` effect doesn't arrive.
-  fireChatEventOnce("chat_itinerary_confirmed", () =>
-    analyticsRef.current.trackChatItineraryConfirmed?.(
-      startId || localItineraryId || "",
-      ddAgent(),
-      getUserPrompts(),
-    ),
-  );
+  reportChatStage("chat_itinerary_confirmed", startId || localItineraryId || "");
   break;
 }
 case "shimmer_day_by_day": {
@@ -2811,13 +2794,19 @@ const sendMessage = useCallback(
       isFirstMessageRef.current = false;
       // Fire chat_itinerary_started on the very first user message of the
       // session — this marks the moment the user kicks off itinerary creation
-      // through the chat flow.
-      analyticsRef.current.trackChatItineraryStarted?.(
-        localItineraryId || "",
-        ddAgent(),
-        [text].filter(Boolean),
-      );
+      // through the chat flow. The ref alone only dedups within a mount; the
+      // funnel guard is what stops a refresh-then-send from starting the same
+      // chat a second time.
+      reportChatStage("chat_itinerary_started");
     }
+
+    // Every send, not just the first. The legacy P2 chat has logged this all
+    // along; the Kaira chat only reported funnel milestones, so its single most
+    // common user action was invisible.
+    analyticsRef.current.trackChatMessageSent?.(
+      localItineraryIdRef.current || "",
+      text,
+    );
     // If we're anywhere in the quick-reply tail — shimmer loading OR chips
     // already shown — the answer itself is done and only the quick replies keep
     // the SSE open. Interrupt that tail so the new message aborts it and starts
@@ -3064,50 +3053,63 @@ const handleLoginCardSkip = useCallback(() => {
       "itinerary.lock",
       "itinerary.confirm",
     ]);
+    // Evidence that a day-by-day itinerary was actually rendered. These
+    // actions only exist inside itinerary content, so seeing any of them in a
+    // restored thread proves `chat_itinerary_generated` happened — the effect
+    // that normally reports it (`display_itinerary`) is never replayed on
+    // restore, which is why that step used to under-count the ones after it.
+    const itineraryTargets = new Set([
+      "itinerary.view",
+      "itinerary.edit",
+      "activity.view",
+      "activity.detail",
+      "open_activity_drawer",
+      "hotel.view",
+      "hotel.detail",
+      "open_hotel_drawer",
+      "transfer.view",
+      "transfer.select",
+      "transfer.detail",
+      "open_transfer_drawer",
+    ]);
 
     let sawPayment = false;
     let sawRoute = false;
+    let sawItinerary = false;
     let sawItineraryLock = false;
     for (const m of messages as any[]) {
       if (m?.type !== "widget") continue;
       const w = m?.widgetItem?.widget;
       if (!sawPayment && hasActionType(w, paymentTargets)) sawPayment = true;
       if (!sawRoute && hasActionType(w, routeTargets)) sawRoute = true;
+      if (!sawItinerary && hasActionType(w, itineraryTargets))
+        sawItinerary = true;
       if (!sawItineraryLock && hasActionType(w, itineraryLockTargets))
         sawItineraryLock = true;
-      if (sawPayment && sawRoute && sawItineraryLock) break;
+      if (sawPayment && sawRoute && sawItinerary && sawItineraryLock) break;
     }
+    // The live path sets this when `display_itinerary` lands; include it so a
+    // fresh stream is covered even if its widgets use a shape the scan misses.
+    if (hasDisplayItinerary) sawItinerary = true;
 
+    // Order matters: report the earliest stage first so back-fill has the
+    // least work to do and each stage carries its own trigger.
     if (sawRoute) {
-      fireChatEventOnce("chat_route_confirmed", () =>
-        analyticsRef.current.trackChatRouteConfirmed?.(
-          localItineraryId || "",
-          ddAgent(),
-          getUserPrompts(),
-        ),
-      );
+      reportChatStage("chat_route_confirmed");
+    }
+    if (sawItinerary || sawItineraryLock || sawPayment) {
+      // Any of these widgets can only exist once the itinerary was generated.
+      reportChatStage("chat_itinerary_generated");
     }
     if (sawItineraryLock || sawPayment) {
       // A "Make Payment" widget only shows up after the itinerary is locked,
       // so payment widgets imply confirmation too.
-      fireChatEventOnce("chat_itinerary_confirmed", () =>
-        analyticsRef.current.trackChatItineraryConfirmed?.(
-          localItineraryId || "",
-          ddAgent(),
-          getUserPrompts(),
-        ),
-      );
+      reportChatStage("chat_itinerary_confirmed");
     }
     if (sawPayment) {
-      fireChatEventOnce("chat_price_received", () =>
-        analyticsRef.current.trackChatPriceReceived?.(
-          localItineraryId || "",
-          ddAgent(),
-          getUserPrompts(),
-        ),
-      );
+      reportChatStage("chat_price_received");
     }
-  }, [messages, fireChatEventOnce, getUserPrompts, localItineraryId]);
+  }, [messages, hasDisplayItinerary, reportChatStage]);
 
 useEffect(() => {
   if (initialPrompt && !hasProcessedInitial.current && locationReady) {
@@ -4249,11 +4251,7 @@ const handleShowLogin = useCallback(() => {
                   // existing payment drawer rather than round-tripping via
                   // sendWidgetAction — the drawer owns the payment flow.
                   if (action.type === "payment.start") {
-                    analyticsRef.current.trackChatCartViewed?.(
-                      localItineraryId || "",
-                      ddAgent(),
-                      getUserPrompts(),
-                    );
+                    reportChatStage("chat_cart_viewed");
                     onPaymentStart?.();
                     return;
                   }

@@ -84,8 +84,8 @@ const VisaCard = ({ visa, onSelect, currency }) => {
           ) : (
             <div className="ttw-type-small text-[#445069]">View pricing</div>
           )}
-          <button className="ttw-type-small font-500 text-[#0b1220] underline flex-shrink-0">
-            View Details
+          <button className="ttw-btn-secondary flex-shrink-0">
+            Details
           </button>
         </div>
       </div>

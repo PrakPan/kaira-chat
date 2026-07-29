@@ -2,7 +2,7 @@ import { useEffect, useCallback, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 
 // Format the current time as an ISO-8601 string in IST (UTC+05:30)
-const nowIST = () => {
+export const nowIST = () => {
   const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
   return new Date(Date.now() + IST_OFFSET_MS).toISOString().replace('Z', '+05:30');
 };
@@ -275,10 +275,12 @@ export const useAnalytics = () => {
     isReady: workerReady,
     
     // Core functions - async versions with immediate event firing
+    // `immediate` is a transport flag, not event data — strip it before the
+    // payload goes out so it never lands in Jupiter's properties column.
     track: useCallback(async (eventName, properties = {}) => {
-      const result = await callWorkerFunction('track', eventName, properties);
-      // Optionally flush immediately for critical events
-      if (properties.immediate) {
+      const { immediate, ...payload } = properties;
+      const result = await callWorkerFunction('track', eventName, payload);
+      if (immediate) {
         await callWorkerFunction('flushEvents');
       }
       return result;
@@ -304,6 +306,28 @@ export const useAnalytics = () => {
     // User & Session Events
     trackUserLogin: useCallback(async (userId) => {
       return await callWorkerFunction('trackUserLogin', userId);
+    }, []),
+
+    // Canonical login funnel stages, reported by every sign-in surface
+    // (BotLoginModal, the inline chat OtpCard) so the conversion funnel has a
+    // single pair of login events regardless of which UI the user hit. The
+    // granular login_* events below stay as a finer-grained sub-funnel.
+    //
+    // `user_login_initiated` = the user was asked to sign in and started;
+    // `user_login_completed` = they are authenticated and the flow may proceed.
+    // Both accept `already_authenticated: true` for the case where the gate was
+    // satisfied without the user doing anything, so the stage isn't silently
+    // missing for logged-in users.
+    trackUserLoginInitiated: useCallback(async (properties = {}) => {
+      return await callWorkerFunction('track', 'user_login_initiated', properties);
+    }, []),
+
+    trackUserLoginCompleted: useCallback(async (properties = {}) => {
+      const result = await callWorkerFunction('track', 'user_login_completed', properties);
+      // The surface that fires this usually unmounts immediately after (the
+      // modal closes / the chat resumes), so don't wait for the batch timer.
+      await callWorkerFunction('flushEvents');
+      return result;
     }, []),
 
     // Login funnel (WhatsApp/SMS OTP) — started/completed pairs around the
@@ -362,20 +386,18 @@ export const useAnalytics = () => {
     }, []),
     
     // Itinerary Events
-    trackItineraryInitiated: useCallback(async (actionSource) => {
-      return await callWorkerFunction('track', actionSource);
-    }, []),
-
-    trackItineraryCompleted: useCallback(async (itineraryId, actionSource, platform = null) => {
-      return await callWorkerFunction('track', actionSource, {itinerary_id: itineraryId,platform});
-    }, []),
-
     trackItineraryPageView: useCallback(async (itineraryId, isFirstVisit = false) => {
-      return await callWorkerFunction('track', itineraryId, isFirstVisit);
+      return await callWorkerFunction('track', 'itinerary_page_view', {
+        itinerary_id: itineraryId,
+        first_visit: isFirstVisit
+      });
     }, []),
-    
+
     trackSwitchItinerary: useCallback(async (fromItineraryId, toItineraryId) => {
-      return await callWorkerFunction('track', fromItineraryId, toItineraryId);
+      return await callWorkerFunction('track', 'switch_itinerary', {
+        from_itinerary_id: fromItineraryId,
+        to_itinerary_id: toItineraryId
+      });
     }, []),
     
     trackSectionViewed: useCallback(async (itineraryId, sectionName=null) => {
@@ -427,25 +449,26 @@ export const useAnalytics = () => {
     }, []),
 
 
-    //Tailored Form 
-    trackItineraryCreation: useCallback(async () => {
-      return await callWorkerFunction('track', 'Itinerary_creation_started',{});
+    // ── Tailored form (itinerary_form) funnel ──────────────────────────────
+    // Generic stage emitter. The form drives its funnel through
+    // services/analyticsFunnel, which needs to emit *any* stage name (including
+    // back-filled earlier ones), so it calls this rather than a per-stage
+    // helper. Stage names must match FUNNELS.itineraryForm.stages exactly —
+    // they are what the Jupiter conversion funnel groups on.
+    trackItineraryFormStage: useCallback(async (eventName, itineraryId = null, extra = {}) => {
+      // `immediate` is a transport flag (used by the terminal stage, which is
+      // followed straight away by a route change) — never part of the payload.
+      const { immediate, ...properties } = extra;
+      const result = await callWorkerFunction('track', eventName, {
+        itinerary_id: itineraryId,
+        created_at: nowIST(),
+        ...properties,
+      });
+      if (immediate) await callWorkerFunction('flushEvents');
+      return result;
     }, []),
 
-     trackItineraryRoute: useCallback(async (itineraryId = null, route=null) => {
-      return await callWorkerFunction('track', 'itinerary_route_completed',{itinerary_id: itineraryId, route});
-    }, []),
 
-     trackItineraryPreference: useCallback(async (itineraryId = null, preferences=null) => {
-      return await callWorkerFunction('track', 'itinerary_preferences_completed',{itinerary_id: itineraryId, preferences});
-    }, []),
-
-     trackItineraryInclusion: useCallback(async (itineraryId = null, inclusions=null) => {
-      return await callWorkerFunction('track', 'itinerary_inclusions_completed',{itinerary_id: itineraryId, inclusions});
-    }, []),
-
-
-    
     // Communication Events
     trackWhatsAppClicked: useCallback(async (itineraryId, amount, currency) => {
       return await callWorkerFunction('track', 'whatsapp_clicked', {
@@ -464,12 +487,20 @@ export const useAnalytics = () => {
     }, []),
     
     // Hotel Events
-    trackHotelCardClicked: useCallback(async (itineraryId, hotelId, actionSource) => {
-      return await callWorkerFunction('track', 'hotel_card_clicked', {itinerary_id: itineraryId, hotel_id: hotelId});
+    trackHotelCardClicked: useCallback(async (itineraryId, hotelId, actionSource = null) => {
+      return await callWorkerFunction('track', 'hotel_card_clicked', {
+        itinerary_id: itineraryId,
+        hotel_id: hotelId,
+        action_source: actionSource
+      });
     }, []),
 
-    trackHotelListClicked: useCallback(async (itineraryId, hotelId, actionSource) => {
-      return await callWorkerFunction('track', 'hotel_search_list', {itinerary_id: itineraryId, hotel_id: hotelId});
+    trackHotelListClicked: useCallback(async (itineraryId, hotelId, actionSource = null) => {
+      return await callWorkerFunction('track', 'hotel_search_list', {
+        itinerary_id: itineraryId,
+        hotel_id: hotelId,
+        action_source: actionSource
+      });
     }, []),
     
     trackHotelCardDetails: useCallback(async (itineraryId, hotelId, actionSource) => {
@@ -741,61 +772,25 @@ export const useAnalytics = () => {
       });
     }, []),
 
-    // Chat lifecycle events. dd_agent is the bot stage (P1 / P2),
-    // created_at marks when the event fired client-side, user_prompts captures
-    // the user's message history at that moment.
-    trackChatItineraryStarted: useCallback(async (itineraryId, ddAgent, userPrompts = []) => {
-      return await callWorkerFunction('track', 'chat_itinerary_started', {
+    // ── Chat (chat) funnel ─────────────────────────────────────────────────
+    // Generic stage emitter for the six chat lifecycle milestones. dd_agent is
+    // the bot stage (P1 / P2), created_at marks when the event fired
+    // client-side, user_prompts captures the user's message history at that
+    // moment. ChatKitPanel and BotApp both route through
+    // services/analyticsFunnel, which needs to emit any stage name (including
+    // back-filled earlier ones), so it calls this rather than a per-stage
+    // helper. Stage names must match FUNNELS.chat.stages exactly.
+    trackChatFunnelStage: useCallback(async (eventName, itineraryId, ddAgent, userPrompts = [], extra = {}) => {
+      const { immediate, ...properties } = extra;
+      const result = await callWorkerFunction('track', eventName, {
         itinerary_id: itineraryId,
         dd_agent: ddAgent,
         created_at: nowIST(),
         user_prompts: userPrompts,
+        ...properties,
       });
-    }, []),
-
-    trackChatRouteConfirmed: useCallback(async (itineraryId, ddAgent, userPrompts = []) => {
-      return await callWorkerFunction('track', 'chat_route_confirmed', {
-        itinerary_id: itineraryId,
-        dd_agent: ddAgent,
-        created_at: nowIST(),
-        user_prompts: userPrompts,
-      });
-    }, []),
-
-    trackChatItineraryGenerated: useCallback(async (itineraryId, ddAgent, userPrompts = []) => {
-      return await callWorkerFunction('track', 'chat_itinerary_generated', {
-        itinerary_id: itineraryId,
-        dd_agent: ddAgent,
-        created_at: nowIST(),
-        user_prompts: userPrompts,
-      });
-    }, []),
-
-    trackChatItineraryConfirmed: useCallback(async (itineraryId, ddAgent, userPrompts = []) => {
-      return await callWorkerFunction('track', 'chat_itinerary_confirmed', {
-        itinerary_id: itineraryId,
-        dd_agent: ddAgent,
-        created_at: nowIST(),
-        user_prompts: userPrompts,
-      });
-    }, []),
-
-    trackChatPriceReceived: useCallback(async (itineraryId, ddAgent, userPrompts = []) => {
-      return await callWorkerFunction('track', 'chat_price_received', {
-        itinerary_id: itineraryId,
-        dd_agent: ddAgent,
-        created_at: nowIST(),
-        user_prompts: userPrompts,
-      });
-    }, []),
-
-    trackChatCartViewed: useCallback(async (itineraryId, ddAgent, userPrompts = []) => {
-      return await callWorkerFunction('track', 'chat_cart_viewed', {
-        itinerary_id: itineraryId,
-        dd_agent: ddAgent,
-        created_at: nowIST(),
-        user_prompts: userPrompts,
-      });
+      if (immediate) await callWorkerFunction('flushEvents');
+      return result;
     }, []),
   };
 };
