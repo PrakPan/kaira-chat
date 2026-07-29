@@ -56,6 +56,11 @@ export interface BrandLockupProps {
    * that should fall back to the clean mark+wordmark.
    */
   taglineMinSize?: number;
+  /**
+   * Render only the mark (no wordmark/tagline) — the compact "mobile logo".
+   * Use on narrow surfaces where the full wordmark would overflow the row.
+   */
+  markOnly?: boolean;
   className?: string;
   style?: React.CSSProperties;
   onClick?: React.MouseEventHandler<HTMLElement>;
@@ -72,6 +77,7 @@ export default function BrandLockup({
   variant = "light",
   tagline = "auto",
   taglineMinSize = 0,
+  markOnly = false,
   className,
   style,
   onClick,
@@ -124,6 +130,7 @@ export default function BrandLockup({
         aria-hidden
         style={{ height: size, width: size, display: "block", flex: "none", ...imgReset }}
       />
+      {!markOnly && (
       <span
         style={{
           display: "inline-flex",
@@ -157,6 +164,7 @@ export default function BrandLockup({
           />
         )}
       </span>
+      )}
     </span>
   );
 }
