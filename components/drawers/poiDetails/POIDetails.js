@@ -1096,6 +1096,11 @@ const POIDetails = (props) => {
                 onDelete={canDelete ? handleDelete : undefined}
                 deleting={loading}
                 deleteLabel="Remove from Itinerary"
+                // A POI/restaurant is a plan entry, not a booking — nothing is
+                // cancelled and it can be added back, so the copy says so.
+                confirmMessage={`Are you sure you want to remove this ${
+                  isRestaurant ? "restaurant" : "place"
+                } from your itinerary? It'll drop off this day's plan, and you can always add it back later.`}
                 onChange={canChange ? handleChangePoi : undefined}
                 changeLabel="Replace with something else"
                 changeLabelShort="Replace"

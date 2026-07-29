@@ -1019,6 +1019,7 @@ const ActivityDetails = (props) => {
                   onDelete={handleDelete}
                   deleting={loading}
                   deleteLabel="Remove from Itinerary"
+                  confirmItemLabel="activity"
                   onChange={canChange ? handleChangeActivity : undefined}
                   changeLabel="Change Activity"
                   changeDisabled={loading}

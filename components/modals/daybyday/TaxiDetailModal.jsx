@@ -373,6 +373,7 @@ const TaxiDetailModal = ({
               onDelete={canDelete ? onDeleteClick : undefined}
               deleting={deleting}
               deleteDisabled={loading}
+              confirmItemLabel="transfer"
               onChange={canChange ? handleChangeTransfer : undefined}
               changeLabel="Change Transfer"
               changeDisabled={loading}

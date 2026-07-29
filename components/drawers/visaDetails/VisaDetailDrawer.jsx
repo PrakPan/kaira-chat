@@ -535,6 +535,7 @@ export default function VisaDetailDrawer({ show, visa, onHide, onBooked, onAdded
                 onDelete={handleRemove}
                 deleting={removing}
                 deleteLabel="Remove from Itinerary"
+                confirmItemLabel="visa"
                 onChange={() => setShowSearch(true)}
                 changeLabel="Change Visa"
                 changeDisabled={removing}

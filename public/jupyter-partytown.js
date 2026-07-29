@@ -30,7 +30,11 @@
     scrollThresholds: new Set(),
     isInitialized: false,
     pendingFlush: false,
+    // Full href of the last tracked page view — used as the referrer for the
+    // next one (document.referrer is stale for SPA navigations).
     lastPageUrl: null,
+    // Pathname of the last tracked page view — the page_view dedup key.
+    lastPagePath: null,
     stats: {
       eventsSent: 0,
       eventsRetried: 0,
@@ -487,12 +491,26 @@
   };
 
   const trackPageView = (page, title, itineraryId = null) => {
-    // Same URL twice in a row is always a double-report, never a real second
-    // view: _app fires an initial page_view as soon as this script is
-    // available, and Next's shallow router.replace for ad-attribution params
-    // emits routeChangeComplete for that same URL. Whichever lands second is
-    // the duplicate.
-    if (analyticsState.lastPageUrl === location.href) return null;
+    // Exactly one page_view per page. Deduped here rather than at the call
+    // sites because there are several, and they overlap:
+    //
+    //   • _app fires an initial view as soon as this script is available, so
+    //     landing pages and deep links are recorded at all;
+    //   • _app also fires on every routeChangeComplete — which Next emits for
+    //     *shallow* query-only navigations too, so the ad-attribution
+    //     router.replace (utm_*, gclid) and each tailored-form slide change
+    //     (?slideIndex=0..3) each looked like another page view of the same
+    //     page;
+    //   • four page components ([continent]/…/[city], [continent]/[country],
+    //     and the two /theme pages) additionally call trackPageView in a mount
+    //     effect, on top of both of the above.
+    //
+    // The key is the pathname, not the full href: everything above changes
+    // only the query string. A genuine re-visit still logs, because the
+    // pathname has to change and change back for that to happen.
+    const path = location.pathname;
+    if (analyticsState.lastPagePath === path) return null;
+    analyticsState.lastPagePath = path;
 
     analyticsState.scrollThresholds.clear();
     // For SPA navigations document.referrer stays stuck on the original full

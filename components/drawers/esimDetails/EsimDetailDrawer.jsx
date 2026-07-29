@@ -360,6 +360,7 @@ export default function EsimDetailDrawer({ show, pkg, onHide, onBooked, onAdded,
                 onDelete={handleRemove}
                 deleting={removing}
                 deleteLabel="Remove from Itinerary"
+                confirmItemLabel="eSIM"
                 onChange={() => setShowSearch(true)}
                 changeLabel="Change eSIM"
                 changeDisabled={removing}
