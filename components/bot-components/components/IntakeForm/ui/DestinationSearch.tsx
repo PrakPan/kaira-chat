@@ -11,6 +11,10 @@ interface DestinationSearchProps {
   onQueryChange: (q: string) => void;
   onPick: (d: Destination) => void;
   onClear: () => void;
+  /** Fired when the input gains focus. Used to wipe the committed selection
+   *  text from the box so the user can type a fresh search — without
+   *  deselecting the picked destinations (their tags stay below). */
+  onFocus?: () => void;
 }
 
 /** Search input + live suggest-API results list for step 1. */
@@ -20,6 +24,7 @@ const DestinationSearch: React.FC<DestinationSearchProps> = ({
   onQueryChange,
   onPick,
   onClear,
+  onFocus,
 }) => {
   // Only feed the hook a live term while searching — a committed selection
   // passes "" so no request fires.
@@ -40,6 +45,7 @@ const DestinationSearch: React.FC<DestinationSearchProps> = ({
           type="text"
           value={query}
           onChange={(e) => onQueryChange(e.target.value)}
+          onFocus={onFocus}
           placeholder="Search any city or country"
           className="flex-1 border-0 outline-none bg-transparent text-[14px] py-[11px] text-[#0b1220]"
         />

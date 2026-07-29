@@ -45,6 +45,7 @@ import type { IntakeFormState } from "./IntakeForm/types";
 import PricingFormCard from "./PricingForm";
 import OtpCard from "./IntakeForm/OtpCard";
 import { parseFormFields, parseShowIntakeForm, parseIntakeFormWidgetId, isIntakeFormWidgetId, composePartialIntakeContext } from "./IntakeForm/intakePrompt";
+import { TOTAL_STEPS } from "./IntakeForm/constants";
 import { parseShowPricingForm, parsePricingFormWidgetId, parsePricingCardCopy, isPricingFormWidgetId } from "./PricingForm/pricingPrompt";
 
 const PAGINATION_SCROLL_THRESHOLD = 80;
@@ -1742,23 +1743,59 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
   });
 
   // ── Context chips for the intake notes step ────────────────────────────────
-  // When the intake form is received, fetch context-aware suggestion chips for
-  // the final ("notes") step from `/chatkit/context-chips` and stash them on the
-  // slice. On any failure we leave `noteHints` empty so the notes step keeps its
-  // static NOTE_HINTS fallback. Guarded by a ref so we fetch once per active
-  // form and re-arm when it closes.
-  const contextChipsFetchedRef = useRef(false);
+  // Once the traveller reaches the final ("notes") step of the intake form with
+  // the three prior steps (destination, when, who) filled, fetch context-aware
+  // suggestion chips from `/chatkit/context-chips`, built from what they picked.
+  // Works for restored threads (thread_id present) AND fresh new-chat /
+  // `?intake=1&destination=…` sessions (thread_id null — the destination / date
+  // / group drive the request). A shimmer loader shows on the notes step while
+  // in flight; on any failure we clear the loader and leave `noteHints` empty so
+  // the step keeps its static NOTE_HINTS fallback.
+  //
+  // We key the fetch on a signature of the three inputs (destination | start
+  // date | group). It fires once per unique combination, so navigating back to
+  // the last step WITHOUT changing any earlier answer does NOT re-call the API —
+  // only an actual edit to destination / dates / group re-fetches.
+  const intakeStep = intakeFormSlice?.step ?? 0;
+  // ALL selected destinations, comma-joined — a multi-select or an added /
+  // changed place is reflected in full (and, via the signature below, re-fetches
+  // chips). Falls back to the single primary destination.
+  const intakeDestinationName = (
+    intakeFormSlice?.destinations?.length
+      ? intakeFormSlice.destinations.map((d: any) => d?.name)
+      : intakeFormSlice?.destination?.name
+        ? [intakeFormSlice.destination.name]
+        : []
+  )
+    .map((n: unknown) => (typeof n === "string" ? n.trim() : ""))
+    .filter(Boolean)
+    .join(", ");
+  const intakeStartDate = intakeFormSlice?.startDate || null;
+  const intakeWho = intakeFormSlice?.who || "";
+  const contextChipsSignatureRef = useRef<string | null>(null);
   useEffect(() => {
     if (!intakeFormActive) {
-      contextChipsFetchedRef.current = false;
+      contextChipsSignatureRef.current = null;
       return;
     }
-    if (contextChipsFetchedRef.current) return;
-    const threadId = threadIdRef.current;
-    if (!threadId) return;
-    contextChipsFetchedRef.current = true;
+    // Only ask for chips on the last (notes) step.
+    const onLastStep = intakeStep === TOTAL_STEPS - 1;
+    if (!onLastStep) return;
+    // The three compulsory steps must be filled before we ask for chips.
+    if (!intakeDestinationName || !intakeWho) return;
+    // Skip if we already fetched for this exact set of answers.
+    const signature = `${intakeDestinationName}|${intakeStartDate || ""}|${intakeWho}`;
+    if (contextChipsSignatureRef.current === signature) return;
+    contextChipsSignatureRef.current = signature;
+
+    // Slice keeps dates as ISO (YYYY-MM-DD); the API expects DD-MM-YYYY.
+    const toDDMMYYYY = (iso: string | null): string => {
+      const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || "").trim());
+      return m ? `${m[3]}-${m[2]}-${m[1]}` : "";
+    };
 
     const controller = new AbortController();
+    dispatch(updateIntakeForm({ noteHintsLoading: true }));
     (async () => {
       try {
         const res = await fetch(`${CHATKIT_API_URL}/context-chips`, {
@@ -1767,7 +1804,13 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
             "Content-Type": "application/json",
             ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
           },
-          body: JSON.stringify({ thread_id: threadId, max_chips: 6 }),
+          body: JSON.stringify({
+            thread_id: threadIdRef.current || null,
+            destination: intakeDestinationName,
+            start_date: toDDMMYYYY(intakeStartDate),
+            group_type: intakeWho,
+            max_chips: 6,
+          }),
           signal: controller.signal,
         });
         if (!res.ok) return;
@@ -1781,11 +1824,22 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
         if (chips.length) dispatch(updateIntakeForm({ noteHints: chips }));
       } catch {
         // Network/parse error or abort — keep the static NOTE_HINTS fallback.
+      } finally {
+        dispatch(updateIntakeForm({ noteHintsLoading: false }));
       }
     })();
 
     return () => controller.abort();
-  }, [intakeFormActive, authToken, dispatch, threadIdRef]);
+  }, [
+    intakeFormActive,
+    intakeStep,
+    intakeDestinationName,
+    intakeStartDate,
+    intakeWho,
+    authToken,
+    dispatch,
+    threadIdRef,
+  ]);
 
   // Logged-out user viewing an existing thread (restored via threads.get_by_id)
   // sees the inline sign-in card as the last message. In that state the

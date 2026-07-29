@@ -34,6 +34,9 @@ export const initialIntakeFormState = {
   // `/chatkit/context-chips` when the form is received. Empty until the call
   // resolves; the notes step falls back to the static NOTE_HINTS when empty.
   noteHints: [],
+  // True while the `/chatkit/context-chips` request for the notes step is in
+  // flight — the notes step shows shimmer chips until it resolves.
+  noteHintsLoading: false,
 };
 
 const reducer = (state = initialIntakeFormState, action) => {
