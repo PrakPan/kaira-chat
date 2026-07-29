@@ -687,14 +687,28 @@ const Enquiry = (props) => {
         // so the gtag/dataLayer beacons still send. Gating navigation on
         // gtag's event_callback previously left users stranded on the
         // dashboard whenever the callback never fired.
+        // Only count the Google Ads conversion for new users. `is_new_user` is
+        // persisted at signup (store/actions/auth.js) because the redux flag is
+        // cleared by AUTH_SUCCESS before we reach itinerary completion. Consume
+        // the flag once fired so it counts once per new user, never for
+        // returning users.
+        let isNewUser = false;
         try {
-          if (typeof window.gtag === "function") {
+          isNewUser = localStorage.getItem("is_new_user") === "true";
+        } catch {}
+
+        try {
+          if (isNewUser && typeof window.gtag === "function") {
+            
             window.gtag("event", "conversion", {
               send_to: "AW-738037519/IF5rCMyxhL8ZEI-e9t8C",
               transaction_id: finalItineraryId,
               value: 1.0,
               currency: currency?.currency || "INR",
             });
+            try {
+              localStorage.removeItem("is_new_user");
+            } catch {}
           }
         } catch (error) {
           console.error("✗ Error firing Google Ads conversion:", error);

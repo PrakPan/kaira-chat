@@ -1279,7 +1279,16 @@ export default function BotApp({
           _id && _id !== "pending" ? _id : itineraryId || activeChatSessionId;
         const currencyCode = currency?.currency || "INR";
 
-        if (typeof (window as any).gtag === "function") {
+        // Only count the Google Ads conversion for new users. `is_new_user` is
+        // persisted at signup (store/actions/auth.js) because the redux flag is
+        // cleared by AUTH_SUCCESS before we reach itinerary completion. Consume
+        // the flag so it fires once per new user, never for returning users.
+        let isNewUser = false;
+        try {
+          isNewUser = localStorage.getItem("is_new_user") === "true";
+        } catch {}
+
+        if (isNewUser && typeof (window as any).gtag === "function") {
           try {
             (window as any).gtag("event", "conversion", {
               send_to: "AW-738037519/IF5rCMyxhL8ZEI-e9t8C",
@@ -1290,6 +1299,11 @@ export default function BotApp({
           } catch (error) {
             console.error("✗ Error firing Google Ads conversion:", error);
           }
+          // Consume the flag once the conversion has been fired so it never
+          // fires again for this (now returning) user.
+          try {
+            localStorage.removeItem("is_new_user");
+          } catch {}
         }
 
         if (Array.isArray((window as any).dataLayer)) {
@@ -4949,6 +4963,7 @@ export const MobileHeaderMenu = React.memo(
       localStorage.removeItem("authToken");
       localStorage.removeItem("access_token");
       localStorage.removeItem("user_image");
+      localStorage.removeItem("is_new_user");
       try {
         dispatch({ type: "AUTH_LOGOUT" });
       } catch {

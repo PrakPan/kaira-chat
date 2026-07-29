@@ -36,7 +36,8 @@ export const logout = () => {
         localStorage.removeItem("expirationDate");
         localStorage.removeItem("MyPlans");
         localStorage.removeItem("user_image");
-       
+        localStorage.removeItem("is_new_user");
+
 
         dispatch(authLogout());
       })
@@ -50,6 +51,7 @@ export const logout = () => {
         localStorage.removeItem("expirationDate");
         localStorage.removeItem("MyPlans");
         localStorage.removeItem("user_image");
+        localStorage.removeItem("is_new_user");
 
       });
   };

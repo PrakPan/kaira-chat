@@ -216,6 +216,7 @@ export const checkAuthState = () => {
         localStorage.removeItem("expirationDate");
         localStorage.removeItem("MyPlans");
         localStorage.removeItem("user_image");
+        localStorage.removeItem("is_new_user");
 
         dispatch(authLogout());
         //refresh token
@@ -307,7 +308,8 @@ export const auth = (
       path: typeof window !== "undefined" ? window.location.pathname : "",
       platform: getPlatform(),
     };
-    if (getState().auth.newUser) {
+    const wasNewUser = getState().auth.newUser;
+    if (wasNewUser) {
       updatedauthdata = {
         ...updatedauthdata,
         is_new_user: true,
@@ -363,6 +365,15 @@ export const auth = (
             "email_last_verified_on",
             userdata.email_last_verified_on
           );
+
+          // Persist new-signup status so the itinerary-completion Google Ads
+          // conversion can fire only for new users. The redux `newUser` flag is
+          // cleared by AUTH_SUCCESS below (and again on close/reset), so it isn't
+          // reliable at itinerary-completion time — this key survives until the
+          // conversion consumes it.
+          if (wasNewUser) {
+            localStorage.setItem("is_new_user", "true");
+          }
 
           //Store token expiration date in local storage
           const expirationDate = new Date(
