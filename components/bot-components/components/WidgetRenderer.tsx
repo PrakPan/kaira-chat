@@ -4123,6 +4123,21 @@ function RouteActionButtons({
           }}
         >
           {token ? "Confirm Route" : "Confirm Route & Sign In"}
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#000"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden
+            style={{ flexShrink: 0 }}
+          >
+            <line x1="5" y1="12" x2="19" y2="12" />
+            <polyline points="12 5 19 12 12 19" />
+          </svg>
         </button>
       </div>
 

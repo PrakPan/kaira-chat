@@ -333,28 +333,32 @@ const ItineraryCity = (props) => {
       props?.onSendMessage?.(
         `Show ${hotel?.name}, ${props?.city?.city?.name} Details`,
       );
-    const accommodationId = hotel?.accommodation || hotel?.id;
-    if (!accommodationId) {
-      injectChatPrompt();
-      return;
-    }
-    try {
-      setP1HotelLoadingId(hotel?.id);
-      const token = localStorage.getItem("access_token");
-      const res = await fetch(
-        `${MERCURY_HOST}/api/v1/hotels/accommodation/${accommodationId}/`,
-        { headers: { Authorization: `Bearer ${token}` } },
-      );
-      if (!res.ok) throw new Error("Failed to fetch accommodation");
-      const json = await res.json();
-      const acc = json?.data?.accommodation;
-      if (!acc) throw new Error("No accommodation detail");
-      setDraftHotelDrawer({ show: true, id: accommodationId, data: acc });
-    } catch (err) {
-      injectChatPrompt();
-    } finally {
-      setP1HotelLoadingId(null);
-    }
+    // P1 (Draft) hotel-name click always injects the hotel-detail prompt into
+    // chat. The accommodation-detail drawer path is intentionally commented out.
+    injectChatPrompt();
+    return;
+    // const accommodationId = hotel?.accommodation || hotel?.id;
+    // if (!accommodationId) {
+    //   injectChatPrompt();
+    //   return;
+    // }
+    // try {
+    //   setP1HotelLoadingId(hotel?.id);
+    //   const token = localStorage.getItem("access_token");
+    //   const res = await fetch(
+    //     `${MERCURY_HOST}/api/v1/hotels/accommodation/${accommodationId}/`,
+    //     { headers: { Authorization: `Bearer ${token}` } },
+    //   );
+    //   if (!res.ok) throw new Error("Failed to fetch accommodation");
+    //   const json = await res.json();
+    //   const acc = json?.data?.accommodation;
+    //   if (!acc) throw new Error("No accommodation detail");
+    //   setDraftHotelDrawer({ show: true, id: accommodationId, data: acc });
+    // } catch (err) {
+    //   injectChatPrompt();
+    // } finally {
+    //   setP1HotelLoadingId(null);
+    // }
   };
 
   const multiHotelStays =
