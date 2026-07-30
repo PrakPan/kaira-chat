@@ -637,7 +637,7 @@ const OtpCard: React.FC<OtpCardProps> = ({
                   if (mobileFail) dispatch(authaction.authResetLogin() as any);
                 }}
                 placeholder="98XXX XXXXX"
-                className="flex-1 min-w-0 outline-none rounded-[14px] px-[16px] py-[13px] text-[15px] font-semibold tabular-nums"
+                className="flex-1 min-w-0 outline-none rounded-[14px] px-[16px] py-[13px] text-[16px] font-semibold tabular-nums"
                 style={{
                   background: "#fff",
                   border: "1.5px solid #0f1a2e",
@@ -789,7 +789,7 @@ const OtpCard: React.FC<OtpCardProps> = ({
               if (userNameError) setUserNameError(false);
             }}
             placeholder="Your name"
-            className="w-full rounded-[11px] px-[14px] py-[11px] text-[14px] outline-none"
+            className="w-full rounded-[11px] px-[14px] py-[11px] text-[16px] outline-none"
             style={{
               background: "#fafaf5",
               border: `1.5px solid ${userNameError ? "#e85a4f" : "#ececec"}`,
@@ -809,7 +809,7 @@ const OtpCard: React.FC<OtpCardProps> = ({
               if (emailFail) dispatch(authaction.authResetEmail() as any);
             }}
             placeholder="Your email"
-            className="w-full mt-[10px] rounded-[11px] px-[14px] py-[11px] text-[14px] outline-none"
+            className="w-full mt-[10px] rounded-[11px] px-[14px] py-[11px] text-[16px] outline-none"
             style={{
               background: "#fafaf5",
               border: `1.5px solid ${emailFail && !token ? "#e85a4f" : "#ececec"}`,

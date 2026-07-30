@@ -351,6 +351,7 @@ const ModalContent: React.FC<ModalContentProps> = ({
             onBlur={onLocationBlur}
             placeholder="Enter the start Location"
             className="w-full pl-9 pr-8 py-2.5 border rounded-[8px] bg-white focus:outline-none ttw-type-body transition-all placeholder:text-gray-400"
+            style={{ fontSize: 16 }}
             autoComplete="off"
             spellCheck={false}
           />

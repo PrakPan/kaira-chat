@@ -121,7 +121,7 @@ export default function BudgetSlider(props) {
                 value={minPrice}
                 onChange={(e) => setMinPrice(e.target.value)}
                 onBlur={handleValueFocusChange}
-                className="text-sm font-normal focus:outline-none min-w-6 max-w-[45px] w-fit"
+                className="text-base sm:text-sm font-normal focus:outline-none min-w-6 max-w-[45px] w-fit"
               ></input>
             </div>
           </div>
@@ -134,7 +134,7 @@ export default function BudgetSlider(props) {
                 value={parseInt(maxPrice) === 10000 ? `${maxPrice}+` : maxPrice}
                 onChange={(e) => setMaxPrice(e.target.value)}
                 onBlur={handleValueFocusChange}
-                className="text-sm font-normal focus:outline-none min-w-6 max-w-[50px] w-fit"
+                className="text-base sm:text-sm font-normal focus:outline-none min-w-6 max-w-[50px] w-fit"
               ></input>
             </div>
           </div>
