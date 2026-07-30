@@ -45,7 +45,7 @@ const NotesStep: React.FC<StepProps> = ({ state, update }) => {
           maxLength={2000}
           onChange={(e) => update({ notes: e.target.value })}
           placeholder="e.g. it's our honeymoon, around ₹2L, love beaches and great food, want one fancy dinner."
-          className="w-full border-0 outline-none bg-transparent text-[13.5px] text-[#0b1220] resize-none leading-relaxed"
+          className="w-full border-0 outline-none bg-transparent text-[16px] text-[#0b1220] resize-none leading-relaxed"
           style={{ minHeight: 80 }}
         />
         <div className="flex items-center gap-2 mt-[6px]">

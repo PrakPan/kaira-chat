@@ -559,7 +559,8 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
           className="w-full bg-transparent resize-none outline-none"
           style={{
             fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-            fontSize: 14.5,
+            // 16px min prevents iOS auto-zoom-on-focus (must stay >= 16)
+            fontSize: 16,
             color: "#0b1220",
             lineHeight: "22px",
             minHeight: 24,
@@ -582,7 +583,8 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
               pointerEvents: "none",
               userSelect: "none",
               fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-              fontSize: 14.5,
+              // Match textarea 16px so overlay aligns and doesn't trigger zoom
+              fontSize: 16,
               lineHeight: "22px",
               color: "#8a93a6",
               whiteSpace: "nowrap",

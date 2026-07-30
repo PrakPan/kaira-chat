@@ -688,7 +688,7 @@ const OtpCard: React.FC<OtpCardProps> = ({
                   }
                 }}
                 placeholder="98XXX XXXXX"
-                className="flex-1 min-w-0 outline-none rounded-[14px] px-[16px] py-[13px] text-[15px] font-semibold tabular-nums"
+                className="flex-1 min-w-0 outline-none rounded-[14px] px-[16px] py-[13px] text-[16px] font-semibold tabular-nums"
                 style={{
                   background: "#fff",
                   border: "1.5px solid #0f1a2e",

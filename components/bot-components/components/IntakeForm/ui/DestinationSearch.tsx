@@ -47,7 +47,7 @@ const DestinationSearch: React.FC<DestinationSearchProps> = ({
           onChange={(e) => onQueryChange(e.target.value)}
           onFocus={onFocus}
           placeholder="Search any city or country"
-          className="flex-1 border-0 outline-none bg-transparent text-[14px] py-[11px] text-[#0b1220]"
+          className="flex-1 border-0 outline-none bg-transparent text-[16px] py-[11px] text-[#0b1220]"
         />
         {query && (
           <button
