@@ -307,13 +307,55 @@ const ItineraryCity = (props) => {
     }
   };
 
-  const [draftHotelDrawer, setDraftHotelDrawer] = useState({ show: false, id: null });
+  const [draftHotelDrawer, setDraftHotelDrawer] = useState({
+    show: false,
+    id: null,
+    data: null,
+  });
   const [showActivityDrawer, setShowActivityDrawer] = useState(false);
+  // Which hotel row is mid-flight fetching its P1 detail (prevents double taps).
+  const [p1HotelLoadingId, setP1HotelLoadingId] = useState(null);
 
-  const handleDraftHotelClick = (hotelId) => {
-  if (!localStorage?.getItem("access_token")) { props?.setShowLoginModal(true); return; }
-  setDraftHotelDrawer({ show: true, id: hotelId });
-};
+  const closeDraftHotelDrawer = () =>
+    setDraftHotelDrawer({ show: false, id: null, data: null });
+
+  // P1 (Draft) hotel-name click: hit the accommodation detail API first. On
+  // success open the <HotelP1Detail> drawer with the fetched payload; on
+  // failure fall back to the previous mobile behaviour — inject a hotel-detail
+  // prompt to the bot, which also surfaces the chat.
+  const handleP1HotelClick = async (hotel) => {
+    if (p1HotelLoadingId) return; // a fetch is already in flight
+    if (!localStorage?.getItem("access_token")) {
+      props?.setShowLoginModal(true);
+      return;
+    }
+    const injectChatPrompt = () =>
+      props?.onSendMessage?.(
+        `Show ${hotel?.name}, ${props?.city?.city?.name} Details`,
+      );
+    const accommodationId = hotel?.accommodation || hotel?.id;
+    if (!accommodationId) {
+      injectChatPrompt();
+      return;
+    }
+    try {
+      setP1HotelLoadingId(hotel?.id);
+      const token = localStorage.getItem("access_token");
+      const res = await fetch(
+        `${MERCURY_HOST}/api/v1/hotels/accommodation/${accommodationId}/`,
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      if (!res.ok) throw new Error("Failed to fetch accommodation");
+      const json = await res.json();
+      const acc = json?.data?.accommodation;
+      if (!acc) throw new Error("No accommodation detail");
+      setDraftHotelDrawer({ show: true, id: accommodationId, data: acc });
+    } catch (err) {
+      injectChatPrompt();
+    } finally {
+      setP1HotelLoadingId(null);
+    }
+  };
 
   const multiHotelStays =
     props.cityHotels ||
@@ -796,7 +838,11 @@ const ItineraryCity = (props) => {
                         isDraftStage
                           ? "underline cursor-pointer break-words"
                           : `underline cursor-pointer truncate shrink min-w-0 ${props?.fromChat ? "" : "max-w-[130px]"} md:max-w-none md:overflow-visible md:whitespace-normal md:break-words`
-                      } ${props?.fromChat ? "text-[#1f6feb] font-semibold" : ""}`}
+                      } ${props?.fromChat ? "text-[#1f6feb] font-semibold" : ""} ${
+                        p1HotelLoadingId === hotel.id
+                          ? "opacity-60 cursor-wait pointer-events-none"
+                          : ""
+                      }`}
                       onClick={() => {
                         trackHotelCardClicked?.(
                           currentItineraryId,
@@ -804,12 +850,10 @@ const ItineraryCity = (props) => {
                           "city_header_hotel_name",
                         );
                         if (isDraftStage) {
-                          // P1: fire a hotel-detail prompt to the bot instead
-                          // of opening the detail drawer (drawer commented out
-                          // below for now).
-                          props?.onSendMessage?.(
-                            `Show ${hotel?.name}, ${props?.city?.city?.name} Details`,
-                          );
+                          // P1: try the accommodation detail API — on success
+                          // open the <HotelP1Detail> drawer, on failure fall
+                          // back to firing a hotel-detail prompt to the bot.
+                          handleP1HotelClick(hotel);
                           return;
                         }
                         return fetchDetails(hotel.id);
@@ -1197,21 +1241,20 @@ const ItineraryCity = (props) => {
         )}
 
 
-        {/* P1 hotel detail drawer — disabled for now; at P1 the hotel name
-            click fires a bot prompt instead (see the name onClick above). */}
-        {/* {draftHotelDrawer.show && (
-  <HotelP1Detail
-    show={draftHotelDrawer.show}
-    onHide={() => setDraftHotelDrawer({ show: false, id: null })}
-    accommodationId={draftHotelDrawer.id}
-    onChangeHotel={() => {
-      setDraftHotelDrawer({ show: false, id: null });
-      props?.handleClickAc(props?.index, props?.city, props?.city?.city?.id, props?.city?.id, "Change");
-    }}
-    setShowLoginModal={props?.setShowLoginModal}
-    _setImagesHandler={_setImagesHandler}
-  />
-)} */}
+        {/* P1 hotel detail drawer — opened when the hotel-name click
+            successfully fetches accommodation detail (see handleP1HotelClick).
+            The payload fetched there is handed in via initialData so the drawer
+            doesn't re-hit the API. */}
+        {draftHotelDrawer.show && (
+          <HotelP1Detail
+            show={draftHotelDrawer.show}
+            onHide={closeDraftHotelDrawer}
+            accommodationId={draftHotelDrawer.id}
+            initialData={draftHotelDrawer.data}
+            setShowLoginModal={props?.setShowLoginModal}
+            _setImagesHandler={_setImagesHandler}
+          />
+        )}
 
       {/* Full-screen gallery for city / hotel thumbnail images (p1 city gallery and p1 hotel drawer) */}
       {images && images.length > 0 && (
