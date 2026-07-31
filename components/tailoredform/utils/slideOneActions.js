@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import styled, { keyframes } from "styled-components";
 import getPlatform from "../../../utils/getPlatform";
 import { useRouter } from "next/router";
-import { getAdParams } from "../../../helper/adAttribution";
+import { getAdParams, getLandingPage } from "../../../helper/adAttribution";
 const fadeInAnimation = keyframes`${fadeIn}`;
 
 
@@ -197,7 +197,14 @@ export function buildItineraryPayload({
   } 
 
   return {
-    source,
+    source: {
+      ...source,
+      // First page the user landed on this session (home, destination, theme, ...);
+      // falls back to the current path if capture missed (e.g. direct entry).
+      landing_page:
+        getLandingPage() ||
+        (typeof window !== "undefined" ? window.location.pathname : ""),
+    },
     experience_filters_selected: preferences,
     start_location: {
       gmaps_place_id: startingLocation?.place_id || "ChIJLbZ-NFv9DDkRzk0gTkm3wlI",
