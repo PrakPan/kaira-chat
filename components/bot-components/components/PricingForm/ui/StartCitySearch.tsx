@@ -45,7 +45,7 @@ const StartCitySearch: React.FC<StartCitySearchProps> = ({
           value={query}
           onChange={(e) => onQueryChange(e.target.value)}
           placeholder="Search your departure city"
-          className="flex-1 border-0 outline-none bg-transparent text-[14px] py-[11px] text-[#0b1220]"
+          className="flex-1 border-0 outline-none bg-transparent text-[16px] py-[11px] text-[#0b1220]"
         />
         {query && (
           <button

@@ -31,6 +31,11 @@ interface IntakeFormCardProps {
   /** Called with the composed message after the form is submitted. The parent
    *  decides whether to send it directly or gate it behind login first. */
   onComplete: (composedMessage: string) => void;
+  /** When provided, this card is FROZEN: it renders from the snapshot instead
+   *  of the live Redux slice and is fully non-interactive. Used for a
+   *  previously-shown intake card once a newer intake-form widget takes over
+   *  the live slice — the old card must keep rendering exactly as it was. */
+  snapshot?: IntakeFormState | null;
 }
 
 /**
@@ -38,14 +43,20 @@ interface IntakeFormCardProps {
  * writes the `IntakeForm` Redux slice; steps 1–3 are required, step 4 optional.
  * On "Done" it composes a structured message and hands it to `onComplete`.
  */
-const IntakeFormCard: React.FC<IntakeFormCardProps> = ({ onComplete }) => {
+const IntakeFormCard: React.FC<IntakeFormCardProps> = ({ onComplete, snapshot }) => {
   const dispatch = useDispatch();
-  const state = useSelector(
+  const liveState = useSelector(
     (s: any) => s.IntakeForm as IntakeFormState,
   );
+  // A frozen card reads its own snapshot and never touches Redux; the live card
+  // reads and writes the shared slice.
+  const frozen = !!snapshot;
+  const state = snapshot ?? liveState;
 
-  const update = (partial: Partial<IntakeFormState>) =>
+  const update = (partial: Partial<IntakeFormState>) => {
+    if (frozen) return;
     dispatch(updateIntakeForm(partial));
+  };
 
   const step = state?.step ?? 0;
 
@@ -182,10 +193,12 @@ const IntakeFormCard: React.FC<IntakeFormCardProps> = ({ onComplete }) => {
   }, [step, state]);
 
   const goBack = () => {
+    if (frozen) return;
     if (step > 0) update({ step: step - 1 });
   };
 
   const goNext = () => {
+    if (frozen) return;
     if (!canAdvance) return;
     // Report the stage this step satisfies before advancing, so a drop-off is
     // always attributable to the step the user was actually looking at.
@@ -260,7 +273,7 @@ const IntakeFormCard: React.FC<IntakeFormCardProps> = ({ onComplete }) => {
       </div> */}
 
       <div
-        className="ml-10 w-[calc(100%-40px)] max-ph:ml-0 max-ph:-mx-1 max-ph:w-auto rounded-[20px] max-ph:rounded-none bg-white"
+        className="ml-10 mb-4 w-[calc(100%-40px)] max-ph:ml-0 max-ph:-mx-1 max-ph:w-auto rounded-[20px] max-ph:rounded-none bg-white"
         style={{
           maxWidth: 480,
           border: "1px solid #ececec",
@@ -346,12 +359,12 @@ const IntakeFormCard: React.FC<IntakeFormCardProps> = ({ onComplete }) => {
         <button
           type="button"
           onClick={goNext}
-          disabled={!canAdvance}
+          disabled={frozen || !canAdvance}
           className="flex-1 px-3 py-[11px] rounded-[11px] text-[13.5px] font-bold text-white inline-flex items-center justify-center gap-[7px] transition-all"
           style={{
-            background: canAdvance ? "#0f1a2e" : "#b8becc",
-            cursor: canAdvance ? "pointer" : "not-allowed",
-            boxShadow: canAdvance ? "0 8px 18px -6px rgba(11,18,32,.25)" : "none",
+            background: !frozen && canAdvance ? "#0f1a2e" : "#b8becc",
+            cursor: !frozen && canAdvance ? "pointer" : "not-allowed",
+            boxShadow: !frozen && canAdvance ? "0 8px 18px -6px rgba(11,18,32,.25)" : "none",
           }}
         >
           {isLast ? "Done" : "Continue"}

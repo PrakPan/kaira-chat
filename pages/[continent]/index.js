@@ -152,7 +152,7 @@ export async function getStaticProps(context) {
   }
 
   try {
-   for (let i = 0; i < contientTheme.length; i++) {
+   for (let i = 0; i < 1; i++) {
       // mercury api
       const countrydetailsResponse = await axioscountrydetailsinstance.get(
         `?limit=100&offset=0&continent=${contientTheme[i].path}`

@@ -3,7 +3,6 @@ import SlideOne from "./slideone/SlideOne";
 import SlideThree from "./slidetwo/SlideThree";
 import { fadeIn } from "react-animations";
 import Login from "../userauth/LogInModal";
-import SlideFour from "./slidefour/SlideFour";
 import SlideTwo from "./slideTwo/SlideTwo";
 import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
@@ -73,13 +72,6 @@ const FlickityComp = (props) => {
           ></SlideThree>
         </Card>
       ) : null}
-
-      {slideIndex === 3 ?
-      <Card> 
-        <SlideFour/> 
-        </Card> : null}
-
-      
     </div>
   );
 };
