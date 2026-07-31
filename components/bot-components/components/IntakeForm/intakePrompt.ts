@@ -160,6 +160,58 @@ export function composeIntakeMessage(state: IntakeFormState): string {
   return `Here are my trip details:\n${lines.join("\n")}`;
 }
 
+// ── Partial context when the user bypasses the form ───────────────────────────
+// When the user types a normal message instead of submitting the intake form,
+// we still want the fields they've ALREADY picked (e.g. destination) to reach
+// Kaira alongside what they typed. This returns a compact summary of only the
+// actively-selected fields — untouched defaults (no destination, an unchosen
+// "flexible" month, no "who" yet) are omitted so we never assert choices the
+// traveller didn't make. Returns "" when nothing meaningful is selected.
+export function composePartialIntakeContext(
+  state: IntakeFormState | null | undefined,
+): string {
+  if (!state) return "";
+  const lines: string[] = [];
+
+  const names = (
+    state.destinations?.length
+      ? state.destinations.map((d) => d.name)
+      : state.destination?.name
+        ? [state.destination.name]
+        : []
+  )
+    .map((n) => n?.trim())
+    .filter(Boolean);
+  if (names.length) {
+    lines.push(
+      `• Destination${names.length > 1 ? "s" : ""}: ${names.join(", ")}`,
+    );
+  }
+
+  // "When" counts as chosen only for a real date range, a picked flexible month,
+  // or an explicit "surprise me" — not the default flexible-with-no-month state.
+  const whenChosen =
+    (state.when_mode === "dates" && !!state.startDate && !!state.endDate) ||
+    (state.when_mode === "flexible" &&
+      !!state.flexMonth &&
+      state.flexMonth !== "Flexible") ||
+    state.when_mode === "surprise";
+  if (whenChosen) lines.push(`• When: ${whenLine(state)}`);
+
+  // Travellers default to 2 adults before the user reaches that step; only
+  // include them once they've actually picked a "who".
+  if (state.who && state.who.trim()) {
+    lines.push(`• Travellers: ${travellersLabel(state)}`);
+  }
+
+  if (state.notes && state.notes.trim()) {
+    lines.push(`• Preferences: ${state.notes.trim()}`);
+  }
+
+  if (!lines.length) return "";
+  return `Trip details the traveller already selected:\n${lines.join("\n")}`;
+}
+
 // ── Parse the backend `form_fields` effect into a partial state ────────────────
 // Tolerant: any subset of keys is accepted; missing keys are simply omitted so
 // the reducer keeps its defaults.

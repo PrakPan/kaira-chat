@@ -57,6 +57,12 @@ export interface Message {
    *  Variant lets us tailor the icon/copy for offline vs. generic failures. */
   isError?: boolean;
   errorVariant?: "network" | "generic";
+  /** For `type: "intake_form"` cards only. When a NEWER intake-form widget
+   *  arrives in the same chat, the previously-shown card is frozen with a
+   *  snapshot of its state at that moment so it keeps rendering exactly as it
+   *  was — the live `IntakeForm` Redux slice is reused by the new card. Absent
+   *  on the live (interactive) card. */
+  intakeSnapshot?: unknown;
 }
 
 export interface UserLocationData {
@@ -330,7 +336,16 @@ interface SseHandlers {
   onWorkflowTaskAdded?: (index: number, content: string) => void;
   onWorkflowTaskUpdated?: (index: number, content: string) => void;
   onWorkflowDone?: () => void;
-  onAssistantMessageId?: (id: string) => void;
+  /**
+   * Fired for every `assistant_message` stream item. `isNewItem` is true for
+   * `thread.item.added` (a distinct message begins) and false for
+   * `thread.item.done` (the same message finished). The consumer uses this to
+   * tell the FIRST assistant message of a turn (which adopts the streaming
+   * placeholder) apart from a SUBSEQUENT one (a separate bubble) — the backend
+   * emits an extra, often-empty assistant message right before a widget, and
+   * collapsing it onto the first would strand the first message's text.
+   */
+  onAssistantMessageId?: (id: string, isNewItem: boolean) => void;
 }
 
 function parseSseLine(raw: string, handlers: SseHandlers) {
@@ -387,7 +402,7 @@ function parseSseLine(raw: string, handlers: SseHandlers) {
   if (type === "thread.item.added") {
     const item = ev.item as Record<string, unknown> | undefined;
     if (item?.type === "assistant_message" && typeof item.id === "string") {
-      handlers.onAssistantMessageId?.(item.id);
+      handlers.onAssistantMessageId?.(item.id, true);
     }
     return;
   }
@@ -406,7 +421,7 @@ function parseSseLine(raw: string, handlers: SseHandlers) {
       return;
     }
     if (item?.type === "assistant_message" && typeof item.id === "string") {
-      handlers.onAssistantMessageId?.(item.id);
+      handlers.onAssistantMessageId?.(item.id, false);
       return;
     }
     return;
@@ -598,6 +613,10 @@ export function useChat({
 
       const assistantMsgId = `assistant-${Date.now()}`;
       let currentAssistantId = assistantMsgId;
+      // Whether the streaming placeholder has adopted a real server-assigned
+      // assistant_message id yet. Only the first assistant message of the turn
+      // claims it; later ones open their own bubbles.
+      let assistantIdClaimed = false;
       setMessages((prev) => [
         ...prev,
         {
@@ -643,20 +662,53 @@ export function useChat({
 
         await readStream(response, {
           onTextChunk: (chunk) => {
+            // Capture the target id NOW — currentAssistantId is mutated by later
+            // stream events and a batched flush would otherwise misroute the text.
+            // See the detailed note on sendMessage's onTextChunk.
+            const targetId = currentAssistantId;
             setMessages((prev) =>
               prev.map((m) =>
-                m.id === currentAssistantId ? { ...m, content: m.content + chunk } : m
+                m.id === targetId ? { ...m, content: m.content + chunk } : m
               )
             );
           },
           onThreadId: handleThreadId,
-          onAssistantMessageId: (realId) => {
+          onAssistantMessageId: (realId, isNewItem) => {
             if (realId === currentAssistantId) return;
-            const oldId = currentAssistantId;
+            if (!assistantIdClaimed) {
+              // First real id of this turn → adopt it onto the placeholder so
+              // text deltas + feedback correlate to the real message id.
+              const oldId = currentAssistantId;
+              currentAssistantId = realId;
+              assistantIdClaimed = true;
+              setMessages((prev) =>
+                prev.map((m) => (m.id === oldId ? { ...m, id: realId } : m))
+              );
+              return;
+            }
+            // A SECOND (or later) assistant_message in the same turn — the
+            // backend emits an extra, often-empty message right before a
+            // widget. It is a distinct bubble, NOT a continuation: renaming the
+            // first bubble onto this id would strand the real text under an id
+            // the rest of the turn treats as the empty pre-widget message and
+            // hide it. Open a fresh bubble instead (an empty one is dropped at
+            // render time). Only the `added` event opens it; the matching
+            // `done` is a no-op so we don't duplicate.
+            if (!isNewItem) return;
+            const prevId = currentAssistantId;
             currentAssistantId = realId;
-            setMessages((prev) =>
-              prev.map((m) => (m.id === oldId ? { ...m, id: realId } : m))
-            );
+            setMessages((prev) => [
+              ...prev.map((m) => (m.id === prevId ? { ...m, isStreaming: false } : m)),
+              {
+                id: realId,
+                role: "assistant",
+                content: "",
+                timestamp: new Date(),
+                isStreaming: true,
+                progressSteps: [],
+                thinkingTasks: [],
+              },
+            ]);
           },
           onEffect: (effect) => onEffect?.(effect),
           onWidget: (item) => {
@@ -684,36 +736,40 @@ export function useChat({
             ]);
           },
           onProgress: (step) => {
+            const targetId = currentAssistantId; // capture — see onTextChunk note
             setMessages((prev) =>
               prev.map((m) =>
-                m.id !== currentAssistantId
+                m.id !== targetId
                   ? m
                   : { ...m, progressSteps: applyProgressStep(m.progressSteps ?? [], step) }
               )
             );
           },
           onWorkflowTaskAdded: (index, content) => {
+            const targetId = currentAssistantId; // capture — see onTextChunk note
             setMessages((prev) =>
               prev.map((m) =>
-                m.id !== currentAssistantId
+                m.id !== targetId
                   ? m
                   : { ...m, thinkingTasks: applyTaskAdded(m.thinkingTasks ?? [], index, content) }
               )
             );
           },
           onWorkflowTaskUpdated: (index, content) => {
+            const targetId = currentAssistantId; // capture — see onTextChunk note
             setMessages((prev) =>
               prev.map((m) =>
-                m.id !== currentAssistantId
+                m.id !== targetId
                   ? m
                   : { ...m, thinkingTasks: applyTaskUpdated(m.thinkingTasks ?? [], index, content) }
               )
             );
           },
           onWorkflowDone: () => {
+            const targetId = currentAssistantId; // capture — see onTextChunk note
             setMessages((prev) =>
               prev.map((m) =>
-                m.id !== currentAssistantId
+                m.id !== targetId
                   ? m
                   : { ...m, thinkingTasks: applyWorkflowDone(m.thinkingTasks ?? []) }
               )
@@ -747,7 +803,7 @@ export function useChat({
       content: string,
       attachmentIds?: string[],
       attachments?: MessageAttachment[],
-      opts?: { interrupt?: boolean; formSubmitted?: boolean },
+      opts?: { interrupt?: boolean; formSubmitted?: boolean; contextPrefix?: string },
     ) => {
       const trimmed = content.trim();
       if (!trimmed && (!attachmentIds || attachmentIds.length === 0)) return;
@@ -764,6 +820,10 @@ export function useChat({
       const userMsgId = `user-${Date.now()}`;
       const assistantMsgId = `assistant-${Date.now() + 1}`;
       let currentAssistantId = assistantMsgId;
+      // Whether the streaming placeholder has adopted a real server-assigned
+      // assistant_message id yet. Only the first assistant message of the turn
+      // claims it; later ones open their own bubbles.
+      let assistantIdClaimed = false;
 
       setMessages((prev) => [
         // Drop the most recent failed assistant message (and the user message
@@ -813,9 +873,15 @@ export function useChat({
         attachmentIds,
       };
 
+      // Hidden context (e.g. fields already picked in an unsubmitted intake
+      // form) rides along to the backend prepended to the message, but never
+      // touches the visible user bubble above — that shows only what they typed.
+      const prefix = opts?.contextPrefix?.trim();
+      const contentForBackend = prefix ? `${prefix}\n\n${trimmed}` : trimmed;
+
       const body = threadIdRef.current
-        ? buildSubsequentMessageBody(trimmed, { threadId: threadIdRef.current, ...commonOpts })
-        : buildFirstMessageBody(trimmed, { ...commonOpts, loginMandatory: loginMandatoryRef.current });
+        ? buildSubsequentMessageBody(contentForBackend, { threadId: threadIdRef.current, ...commonOpts })
+        : buildFirstMessageBody(contentForBackend, { ...commonOpts, loginMandatory: loginMandatoryRef.current });
 
       // Flag intake-form submissions so the backend knows this message came
       // from the structured form rather than free-text chat.
@@ -850,20 +916,57 @@ export function useChat({
           {
             onTextChunk: (chunk) => {
               if (!firstToken) { firstToken = true; onFirstToken?.(); }
+              // Capture the target id NOW, at chunk-arrival time. `currentAssistantId`
+              // is a mutable closure var that later stream events keep advancing; if
+              // the whole SSE response arrives in one batch, React flushes these
+              // setMessages updaters only afterwards — by which point the bare
+              // `currentAssistantId` would already point at a LATER message and the
+              // text would land on the wrong bubble (or be lost). The captured const
+              // pins each chunk to the message that was streaming when it arrived.
+              const targetId = currentAssistantId;
               setMessages((prev) =>
                 prev.map((m) =>
-                  m.id === currentAssistantId ? { ...m, content: m.content + chunk } : m
+                  m.id === targetId ? { ...m, content: m.content + chunk } : m
                 )
               );
             },
             onThreadId: handleThreadId,
-            onAssistantMessageId: (realId) => {
+            onAssistantMessageId: (realId, isNewItem) => {
               if (realId === currentAssistantId) return;
-              const oldId = currentAssistantId;
+              if (!assistantIdClaimed) {
+                // First real id of this turn → adopt it onto the placeholder so
+                // text deltas + feedback correlate to the real message id.
+                const oldId = currentAssistantId;
+                currentAssistantId = realId;
+                assistantIdClaimed = true;
+                setMessages((prev) =>
+                  prev.map((m) => (m.id === oldId ? { ...m, id: realId } : m))
+                );
+                return;
+              }
+              // A SECOND (or later) assistant_message in the same turn — the
+              // backend emits an extra, often-empty message right before a
+              // widget. It is a distinct bubble, NOT a continuation: renaming
+              // the first bubble onto this id would strand the real text under
+              // an id the rest of the turn treats as the empty pre-widget
+              // message and hide it. Open a fresh bubble instead (an empty one
+              // is dropped at render time). Only the `added` event opens it;
+              // the matching `done` is a no-op so we don't duplicate.
+              if (!isNewItem) return;
+              const prevId = currentAssistantId;
               currentAssistantId = realId;
-              setMessages((prev) =>
-                prev.map((m) => (m.id === oldId ? { ...m, id: realId } : m))
-              );
+              setMessages((prev) => [
+                ...prev.map((m) => (m.id === prevId ? { ...m, isStreaming: false } : m)),
+                {
+                  id: realId,
+                  role: "assistant" as const,
+                  content: "",
+                  timestamp: new Date(),
+                  isStreaming: true,
+                  progressSteps: [],
+                  thinkingTasks: [],
+                },
+              ]);
             },
             onEffect: (effect) => onEffect?.(effect),
             onWidget: (item) => {
@@ -891,36 +994,40 @@ export function useChat({
               ]);
             },
             onProgress: (step) => {
+              const targetId = currentAssistantId; // capture — see onTextChunk note
               setMessages((prev) =>
                 prev.map((m) =>
-                  m.id !== currentAssistantId
+                  m.id !== targetId
                     ? m
                     : { ...m, progressSteps: applyProgressStep(m.progressSteps ?? [], step) }
                 )
               );
             },
             onWorkflowTaskAdded: (index, content) => {
+              const targetId = currentAssistantId; // capture — see onTextChunk note
               setMessages((prev) =>
                 prev.map((m) =>
-                  m.id !== currentAssistantId
+                  m.id !== targetId
                     ? m
                     : { ...m, thinkingTasks: applyTaskAdded(m.thinkingTasks ?? [], index, content) }
                 )
               );
             },
             onWorkflowTaskUpdated: (index, content) => {
+              const targetId = currentAssistantId; // capture — see onTextChunk note
               setMessages((prev) =>
                 prev.map((m) =>
-                  m.id !== currentAssistantId
+                  m.id !== targetId
                     ? m
                     : { ...m, thinkingTasks: applyTaskUpdated(m.thinkingTasks ?? [], index, content) }
                 )
               );
             },
             onWorkflowDone: () => {
+              const targetId = currentAssistantId; // capture — see onTextChunk note
               setMessages((prev) =>
                 prev.map((m) =>
-                  m.id !== currentAssistantId
+                  m.id !== targetId
                     ? m
                     : { ...m, thinkingTasks: applyWorkflowDone(m.thinkingTasks ?? []) }
                 )

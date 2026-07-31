@@ -2,7 +2,7 @@ import React, { useMemo, useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useSelector } from "react-redux";
 import type { Message, ProgressStep, ThinkingTask } from "../../hooks/useChat";
-import { WidgetRenderer } from "../WidgetRenderer";
+import { WidgetRenderer, isRouteWidget } from "../WidgetRenderer";
 import {
   getUserAvatarColor,
   getAvatarColorForName,
@@ -1620,6 +1620,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
 
   if (message.type === "widget" && message.widgetItem) {
     const buttonOnly = isButtonOnlyWidget(message.widgetItem.widget);
+    const routeWidget = isRouteWidget(message.widgetItem.widget);
 
     // Pure CTA widgets (e.g. "Confirm This Route") render bare — no avatar,
     // no bubble surround. They're a UI prompt, not a Kaira utterance, so the
@@ -1642,6 +1643,71 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
             onAction={onWidgetAction}
             disabled={widgetDisabled}
           />
+        </div>
+      );
+    }
+
+    // Route / itinerary card keeps the same bubble layout as other content
+    // widgets — Kaira avatar + same max-width — but drops the beige bubble
+    // surface (background + padding) so the self-contained editorial card fills
+    // the full bubble width instead of sitting inset on the tinted base.
+    if (routeWidget) {
+      return (
+        <div
+          className="msg kaira"
+          style={{
+            display: "flex",
+            gap: 10,
+            maxWidth: "98%",
+            marginBottom: 14,
+            animation: "msgInK 0.3s ease-out",
+          }}
+        >
+          {/* Kaira avatar — kept so the route card still reads as her turn. */}
+          <div
+            aria-hidden
+            className="msg-avatar"
+            style={{
+              width: 30,
+              height: 30,
+              borderRadius: "50%",
+              flexShrink: 0,
+              overflow: "hidden",
+              background: "linear-gradient(180deg, #a8d2f5, #7ab8e8)",
+            }}
+          >
+            <img
+              src="/KairaInsta.png"
+              alt="Kaira"
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
+          </div>
+          <div style={{ minWidth: 0, flex: 1 }}>
+            {/* No beige bubble surface here — the route card renders directly so
+                it spans the full inner width. */}
+            <WidgetRenderer
+              widget={message.widgetItem.widget}
+              onAction={onWidgetAction}
+              disabled={widgetDisabled}
+            />
+            <div className="ml-1">
+              {onFeedback && message.id && (
+                <FeedbackButtons
+                  messageId={message.id}
+                  feedback={feedback}
+                  loading={feedbackLoading}
+                  onFeedback={onFeedback}
+                />
+              )}
+            </div>
+          </div>
+          <MessageBubbleResponsiveStyles />
+          <style dangerouslySetInnerHTML={{ __html: `
+            @keyframes msgInK {
+              from { opacity: 0; transform: translateY(8px); }
+              to { opacity: 1; transform: translateY(0); }
+            }
+          ` }} />
         </div>
       );
     }

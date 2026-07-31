@@ -108,4 +108,5 @@ pm2-deploy.sh
 # index_path.py
 
 package-lock.json
-vercel.jsontsconfig.tsbuildinfo
+vercel.json
+tsconfig.tsbuildinfo

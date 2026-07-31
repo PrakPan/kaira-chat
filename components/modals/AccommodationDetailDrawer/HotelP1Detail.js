@@ -202,6 +202,10 @@ const HotelP1Detail = ({
   bookingId,
   setShowLoginModal,
   _setImagesHandler = undefined,
+  // When the opener has already fetched the accommodation payload (e.g. to
+  // decide whether to open this drawer at all), it can hand it in here so the
+  // drawer renders immediately instead of re-hitting the API.
+  initialData = undefined,
 }) => {
   const isDesktop = useMediaQuery("(min-width:1148px)");
   const dispatch = useDispatch();
@@ -228,8 +232,22 @@ const HotelP1Detail = ({
 
   useEffect(() => {
     if (!show || !accommodationId) return;
+    // Prefer the payload passed by the opener; only fall back to fetching when
+    // it isn't available.
+    if (initialData) {
+      setData(initialData);
+      calculateVisibleFacilities(initialData?.hotel_facilities || [], false);
+      if (initialData?.hotel_facilities?.length > 0) {
+        setTabs([
+          { id: "section-1", label: "About",      link: "About"      },
+          { id: "section-3", label: "Amenities",  link: "Amenities"  },
+          { id: "section-2", label: "Location",   link: "Location"   },
+        ]);
+      }
+      return;
+    }
     fetchAccommodation();
-  }, [show, accommodationId]);
+  }, [show, accommodationId, initialData]);
 
   const fetchAccommodation = async () => {
     try {

@@ -47,19 +47,15 @@ import BotLoginModal from "./BotLoginModal";
 import { updateIntakeForm } from "../../../store/actions/intakeForm";
 import { updatePricingForm } from "../../../store/actions/pricingForm";
 import IntakeFormCard from "./IntakeForm";
+import type { IntakeFormState } from "./IntakeForm/types";
 import PricingFormCard from "./PricingForm";
 import OtpCard from "./IntakeForm/OtpCard";
-import { parseFormFields, parseShowIntakeForm, parseIntakeFormWidgetId, isIntakeFormWidgetId } from "./IntakeForm/intakePrompt";
+import { parseFormFields, parseShowIntakeForm, parseIntakeFormWidgetId, isIntakeFormWidgetId, composePartialIntakeContext } from "./IntakeForm/intakePrompt";
+import { TOTAL_STEPS } from "./IntakeForm/constants";
 import { parseShowPricingForm, parsePricingFormWidgetId, parsePricingCardCopy, isPricingFormWidgetId } from "./PricingForm/pricingPrompt";
 
 const PAGINATION_SCROLL_THRESHOLD = 80;
 const CHATKIT = CHATKIT_HOST;
-
-// Fallback lead-in copy shown above the sign-in card when a restored thread
-// carries no `prompt_login` effect to source the message from. Mirrors the
-// server's standard save-our-work `prompt_login` message.
-const DEFAULT_PROMPT_LOGIN_MESSAGE =
-  "Sign in to continue so I can save our work as we go. You won't lose a thing, and your ₹5,000 credit locks in. 👇";
 
 export interface AttachmentFile {
   /** Temporary local ID (before server responds) or server-assigned ID */
@@ -797,9 +793,18 @@ startEmptyIntake = false,
     }
     prevPollingRef.current = isItineraryPolling;
   }, [isItineraryPolling]);
-  // While the in-chat intake form is active (show_intake_form / form_fields),
-  // lock the composer + quick replies so the user answers via the form card.
+  // The in-chat intake form renders as a card in the thread. It NEVER blocks the
+  // message box or quick replies, whatever its source (client-injected landing
+  // form or backend-streamed intake widget): the user can always fill the form
+  // OR just start typing. Proceeding with chat retires the form + greeting
+  // bubbles (see sendMessage).
   const intakeFormActive = useSelector((s: any) => !!s.IntakeForm?.active);
+  const intakeFormCompleted = useSelector((s: any) => !!s.IntakeForm?.completed);
+  // Full slice, mirrored into a ref — used to snapshot the currently-shown
+  // intake card when a newer intake-form widget arrives (see
+  // handleIntakeFormWidget) so the old card freezes instead of re-tracking the
+  // live slice the new card takes over.
+  const intakeFormSlice = useSelector((s: any) => s.IntakeForm);
   // A destination already seeded into the intake slice (e.g. the hero "Start
   // planning" CTA's `?destination=` param) — used to open the empty intake form
   // straight on the "When" step instead of the already-answered destination step.
@@ -807,7 +812,8 @@ startEmptyIntake = false,
     (s: any) => s.IntakeForm?.destination?.name || "",
   );
   const isComposerLocked =
-    isItineraryCompleting || isItineraryPolling || intakeFormActive;
+    isItineraryCompleting ||
+    isItineraryPolling;
   const authToken = reduxToken ?? getAuthToken();
   const isLoggedIn = !!authToken;
 
@@ -1588,6 +1594,25 @@ const sessionIdRef = useRef<string>((() => {
   // Snapshot user prompts (text content of all user messages in the current
   // thread) — chat lifecycle events include this in `properties.user_prompts`.
   const messagesRef = useRef<Message[]>([]);
+  // Mirror the intake-form state so the stable sendMessage callback can tell,
+  // at call time, whether an unfilled (non-blocking) intake card is on screen
+  // that should be retired when the user types their own message instead.
+  const intakeFormActiveRef = useRef(false);
+  const intakeFormCompletedRef = useRef(false);
+  const intakeFormSliceRef = useRef<any>(null);
+  // Source of the currently-shown intake card. `false` = client-injected
+  // landing form (/chat?intake=1) — the user may bypass it by typing, which
+  // retires it. `true` = backend-streamed form (shimmer / form_fields / widget /
+  // restore) — it is a deliberate part of the conversation and must NOT be
+  // hidden when the user sends a follow-up message. This does NOT lock the
+  // composer either way (the intake form never blocks input / quick replies).
+  const intakeFormFromBackendRef = useRef(false);
+  // The partial intake context the backend already knows about — seeded to a
+  // backend-streamed form's prefill and advanced each time we forward the user's
+  // edits. Lets us send ONLY newly-changed selections alongside a typed message
+  // while a backend widget stays on screen, instead of re-asserting the same
+  // prefill on every follow-up. `null` = nothing synced yet.
+  const lastIntakeContextRef = useRef<string | null>(null);
   const getUserPrompts = useCallback((): string[] => {
     return (messagesRef.current || [])
       .filter((m: any) => m?.role === "user")
@@ -1733,12 +1758,118 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
     loginMandatory,
   });
 
+  // ── Context chips for the intake notes step ────────────────────────────────
+  // Once the traveller reaches the final ("notes") step of the intake form with
+  // the three prior steps (destination, when, who) filled, fetch context-aware
+  // suggestion chips from `/chatkit/context-chips`, built from what they picked.
+  // Works for restored threads (thread_id present) AND fresh new-chat /
+  // `?intake=1&destination=…` sessions (thread_id null — the destination / date
+  // / group drive the request). A shimmer loader shows on the notes step while
+  // in flight; on any failure we clear the loader and leave `noteHints` empty so
+  // the step keeps its static NOTE_HINTS fallback.
+  //
+  // We key the fetch on a signature of the three inputs (destination | start
+  // date | group). It fires once per unique combination, so navigating back to
+  // the last step WITHOUT changing any earlier answer does NOT re-call the API —
+  // only an actual edit to destination / dates / group re-fetches.
+  const intakeStep = intakeFormSlice?.step ?? 0;
+  // ALL selected destinations, comma-joined — a multi-select or an added /
+  // changed place is reflected in full (and, via the signature below, re-fetches
+  // chips). Falls back to the single primary destination.
+  const intakeDestinationName = (
+    intakeFormSlice?.destinations?.length
+      ? intakeFormSlice.destinations.map((d: any) => d?.name)
+      : intakeFormSlice?.destination?.name
+        ? [intakeFormSlice.destination.name]
+        : []
+  )
+    .map((n: unknown) => (typeof n === "string" ? n.trim() : ""))
+    .filter(Boolean)
+    .join(", ");
+  const intakeStartDate = intakeFormSlice?.startDate || null;
+  const intakeWho = intakeFormSlice?.who || "";
+  const contextChipsSignatureRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!intakeFormActive) {
+      contextChipsSignatureRef.current = null;
+      return;
+    }
+    // Only ask for chips on the last (notes) step.
+    const onLastStep = intakeStep === TOTAL_STEPS - 1;
+    if (!onLastStep) return;
+    // The three compulsory steps must be filled before we ask for chips.
+    if (!intakeDestinationName || !intakeWho) return;
+    // Skip if we already fetched for this exact set of answers.
+    const signature = `${intakeDestinationName}|${intakeStartDate || ""}|${intakeWho}`;
+    if (contextChipsSignatureRef.current === signature) return;
+    contextChipsSignatureRef.current = signature;
+
+    // Slice keeps dates as ISO (YYYY-MM-DD); the API expects DD-MM-YYYY.
+    const toDDMMYYYY = (iso: string | null): string => {
+      const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || "").trim());
+      return m ? `${m[3]}-${m[2]}-${m[1]}` : "";
+    };
+
+    const controller = new AbortController();
+    dispatch(updateIntakeForm({ noteHintsLoading: true }));
+    (async () => {
+      try {
+        const res = await fetch(`${CHATKIT_API_URL}/context-chips`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
+          },
+          body: JSON.stringify({
+            thread_id: threadIdRef.current || null,
+            destination: intakeDestinationName,
+            start_date: toDDMMYYYY(intakeStartDate),
+            group_type: intakeWho,
+            max_chips: 6,
+          }),
+          signal: controller.signal,
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        const chips = Array.isArray(data?.chips)
+          ? data.chips.filter(
+              (c: unknown): c is string =>
+                typeof c === "string" && c.trim().length > 0,
+            )
+          : [];
+        if (chips.length) dispatch(updateIntakeForm({ noteHints: chips }));
+      } catch {
+        // Network/parse error or abort — keep the static NOTE_HINTS fallback.
+      } finally {
+        dispatch(updateIntakeForm({ noteHintsLoading: false }));
+      }
+    })();
+
+    return () => controller.abort();
+  }, [
+    intakeFormActive,
+    intakeStep,
+    intakeDestinationName,
+    intakeStartDate,
+    intakeWho,
+    authToken,
+    dispatch,
+    threadIdRef,
+  ]);
+
   // Logged-out user viewing an existing thread (restored via threads.get_by_id)
   // sees the inline sign-in card as the last message. In that state the
   // composer is blocked and clicking it must NOT open the BotLoginModal popup —
   // the user signs in through the inline card instead.
   const loginBlocked =
     !isLoggedIn && messages.some((m) => m.type === "login_card");
+
+  // A `prompt_login` sign-in card is on screen. Whenever it is, the message box
+  // and quick replies must be blocked so the user answers via the card first —
+  // this holds regardless of the client-side login flag (the backend asked for
+  // sign-in). `loginBlocked` above additionally drives the logged-out placeholder
+  // / requireAuth behaviour; this flag only gates interactivity.
+  const promptLoginBlocked = messages.some((m) => m.type === "login_card");
 
   // ── Empty intake form on /chat?intake=1 (Plan with Kaira CTAs) ─────────────
   // When the user lands here from a "Plan with Kaira" CTA we inject a fresh,
@@ -1748,6 +1879,8 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
     if (!startEmptyIntake) return;
     if (intakeFormInjectedRef.current) return;
     intakeFormInjectedRef.current = true;
+    // Client landing form — retired if the user types past it (see sendMessage).
+    intakeFormFromBackendRef.current = false;
     // Don't auto-scroll to the bottom of the freshly-injected form — keep
     // Kaira's greeting in view on the /chat?intake=1 landing.
     suppressIntakeAutoScrollRef.current = true;
@@ -1822,11 +1955,27 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
   // Mirror messages into a ref so analytics calls can pull user_prompts
   // without subscribing to the messages array directly.
   messagesRef.current = messages;
+  // Mirror intake-form state for the stable sendMessage callback.
+  intakeFormActiveRef.current = intakeFormActive;
+  intakeFormCompletedRef.current = intakeFormCompleted;
+  intakeFormSliceRef.current = intakeFormSlice;
   // Keep the fresh-auth mirror current for handleEffect's prompt_login guard.
   isLoggedInRef.current = isLoggedIn;
   // Mirror the ownership gate so the post-login effect can decide whether to
   // resume this chat silently (own/anonymous chat or staff) vs. re-inject.
   canResumeAfterLoginRef.current = !isForeignItinerary;
+
+  // Keep the synced-context baseline from going stale. The moment the intake
+  // form is no longer live — reset on a new chat (`resetIntakeForm` flips
+  // `active` off), submitted (`completed`), or bypassed — drop the baseline so a
+  // later backend widget starts clean and never diffs its edits against a
+  // previous conversation's selections. A backend widget re-seeds the baseline
+  // in the same tick it sets `active: true`, so this never clears a live one.
+  useEffect(() => {
+    if (!intakeFormActive || intakeFormCompleted) {
+      lastIntakeContextRef.current = null;
+    }
+  }, [intakeFormActive, intakeFormCompleted]);
 
   // ── "Create my version" (clone) success ──────────────────────────────────
   // Defined after useChat because it depends on clearMessages (and reads
@@ -2082,6 +2231,8 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
           // widget) lands. Inject the card once so the skeleton has somewhere to
           // render; the loading flag flips it to the shimmer view.
           const loading = data.loading !== false; // default true
+          // Backend-streamed form — persists across follow-up messages.
+          intakeFormFromBackendRef.current = true;
           dispatch(updateIntakeForm({ active: true, completed: false, loading }));
           if (loading && !intakeFormInjectedRef.current) {
             intakeFormInjectedRef.current = true;
@@ -2108,15 +2259,26 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
           // slice, inject the form card into the thread once, and let BotApp
           // flip the left panel to the intake hero image. Clears any pending
           // shimmer set by `intake_form_shimmer`.
+          // Backend-streamed form — persists across follow-up messages.
+          intakeFormFromBackendRef.current = true;
+          const formFieldsPrefill = parseFormFields(data as any);
           dispatch(
             updateIntakeForm({
               active: true,
               completed: false,
               loading: false,
               step: 0,
-              ...parseFormFields(data as any),
+              ...formFieldsPrefill,
             }),
           );
+          // The backend already knows the values it just prefilled — baseline
+          // the synced context to them so only the user's own subsequent edits
+          // ride along with a later typed message.
+          lastIntakeContextRef.current =
+            composePartialIntakeContext({
+              ...intakeFormSliceRef.current,
+              ...formFieldsPrefill,
+            }) || null;
           if (!intakeFormInjectedRef.current) {
             intakeFormInjectedRef.current = true;
             setMessages((prev) => [
@@ -2440,15 +2602,59 @@ case "shimmer_day_by_day": {
       // not the outer message id.
       const prefill = parseIntakeFormWidgetId(item.widget?.id);
       if (!prefill) return;
+      // The intake form never blocks the message box or quick replies — the
+      // user can fill the card or just keep typing. It IS backend-streamed, so
+      // it persists across follow-up messages (never retired by typing).
+      intakeFormFromBackendRef.current = true;
+
+      const liveState = intakeFormSliceRef.current;
+      const hasCard = intakeFormInjectedRef.current;
+      // Freeze + append ONLY when the on-screen card is a COMPLETED form (it
+      // renders as a locked summary we must not disturb). A loading shimmer or
+      // an in-progress card is the placeholder for THIS very widget — reuse it
+      // in place (fill it via the dispatch below) so the shimmer→widget handoff
+      // never creates a second, stacked card.
+      const freezeOld = hasCard && !!liveState?.completed;
+
+      if (freezeOld) {
+        const snapshot = liveState;
+        setMessages((prev) => {
+          const frozen = prev.map((m) =>
+            m.type === "intake_form" && m.intakeSnapshot === undefined
+              ? { ...m, intakeSnapshot: snapshot }
+              : m,
+          );
+          return [
+            ...frozen,
+            {
+              id: `intake-form-${sessionIdRef.current}-${Date.now()}`,
+              role: "assistant",
+              content: "",
+              timestamp: new Date(),
+              type: "intake_form",
+            },
+          ];
+        });
+      }
+
+      const widgetPrefill = parseShowIntakeForm(prefill);
       dispatch(
         updateIntakeForm({
           active: true,
           completed: false,
           loading: false,
-          ...parseShowIntakeForm(prefill),
+          ...widgetPrefill,
         }),
       );
-      if (!intakeFormInjectedRef.current) {
+      // The backend already knows this prefill — baseline the synced context to
+      // it so only the user's own later edits ride along with a typed message.
+      lastIntakeContextRef.current =
+        composePartialIntakeContext({
+          ...intakeFormSliceRef.current,
+          ...widgetPrefill,
+        }) || null;
+
+      if (!hasCard) {
         intakeFormInjectedRef.current = true;
         setMessages((prev) =>
           prev.some((m) => m.type === "intake_form")
@@ -2525,6 +2731,61 @@ const sendMessage = useCallback(
     lastSentMessageRef.current = text;
     lastSentActionRef.current = { kind: "message", text };
 
+    // Fields the user already picked in an unsubmitted intake form (e.g.
+    // destination) that should ride along with this typed message — set in the
+    // bypass branch below and forwarded to the backend as hidden context.
+    let intakeContextPrefix: string | undefined;
+
+    // If the user types their own message while an unfilled intake form is on
+    // screen (i.e. this send isn't the form's own submission), carry whatever
+    // they've already selected in the form (destination, a chosen month/dates,
+    // travellers, notes) along as hidden context — so Kaira still gets e.g.
+    // "Destination: Japan" alongside the "Dec-Jan" they typed, without needing
+    // to submit the form. Empty when nothing meaningful is selected.
+    if (
+      !opts?.formSubmitted &&
+      intakeFormActiveRef.current &&
+      !intakeFormCompletedRef.current
+    ) {
+      const partialContext =
+        composePartialIntakeContext(intakeFormSliceRef.current) || undefined;
+
+      if (!intakeFormFromBackendRef.current) {
+        // CLIENT landing form (/chat?intake=1): the user has chosen to bypass
+        // it — forward the selected context, then retire the intake greeting +
+        // form card and deactivate the slice so the conversation flows as a
+        // normal chat.
+        intakeContextPrefix = partialContext;
+        setMessages((prev) =>
+          prev.filter(
+            (m) =>
+              m.type !== "intake_form" &&
+              !String(m.id ?? "").startsWith("intake-greeting-"),
+          ),
+        );
+        dispatch(updateIntakeForm({ active: false, completed: false }));
+        // Release the fire-once injection guard. Without this the backend's
+        // reply to this bypass message (which streams a fresh intake-form
+        // widget, e.g. prefilled with "europe") would be silently dropped by
+        // handleIntakeFormWidget's `!intakeFormInjectedRef.current` check, so
+        // the card only reappears on refresh (when the ref resets).
+        intakeFormInjectedRef.current = false;
+      } else if (partialContext && partialContext !== lastIntakeContextRef.current) {
+        // BACKEND-streamed widget: it's a deliberate part of the conversation
+        // and stays put across follow-up messages (never retired). But if the
+        // user edited its fields since the backend last synced them, ride those
+        // updated selections along as hidden context so Kaira sees the change
+        // without the user submitting the form — mirroring the client bypass
+        // path. Guarded on a diff against the last-synced context so an
+        // unchanged form doesn't re-assert its prefill on every message.
+        intakeContextPrefix = partialContext;
+      }
+
+      // Remember what the backend now knows so subsequent messages only forward
+      // genuinely-new edits.
+      if (intakeContextPrefix) lastIntakeContextRef.current = intakeContextPrefix;
+    }
+
     // User-initiated send: snap the view to the latest message even if they
     // had scrolled up earlier in the session.
     isAtBottomRef.current = true;
@@ -2554,6 +2815,7 @@ const sendMessage = useCallback(
     rawSendMessage(text, attachmentIds, attachmentMeta, {
       interrupt: inQuickReplyPhaseRef.current,
       formSubmitted: opts?.formSubmitted,
+      contextPrefix: intakeContextPrefix,
     });
   },
   [rawSendMessage],
@@ -3134,14 +3396,25 @@ useEffect(() => {
   if (intakeWidgetItem && !restoredFormFilledRef.current) {
     const prefill = parseIntakeFormWidgetId(intakeWidgetItem.widget?.id);
     if (prefill) {
+      // Restored backend form — persists across follow-up messages.
+      intakeFormFromBackendRef.current = true;
+      const restoredPrefill = parseShowIntakeForm(prefill);
       dispatch(
         updateIntakeForm({
           active: true,
           completed: false,
           loading: false,
-          ...parseShowIntakeForm(prefill),
+          ...restoredPrefill,
         }),
       );
+      // The backend already knows this restored prefill — baseline the synced
+      // context to it so only the user's own later edits ride along with a
+      // typed message.
+      lastIntakeContextRef.current =
+        composePartialIntakeContext({
+          ...intakeFormSliceRef.current,
+          ...restoredPrefill,
+        }) || null;
       // Already injected from history — block the live widget/effect path
       // from adding a second card in this session.
       intakeFormInjectedRef.current = true;
@@ -3153,9 +3426,9 @@ useEffect(() => {
     // (`form_filled === true`). Deactivate the slice so any stale `active`
     // state carried over from a previously-restored thread is cleared. The
     // reducer only merges (never resets on thread change), so without this a
-    // prior thread's `active: true` would keep the composer locked — and a
-    // prior `active: false` would leave a genuinely unfilled thread unlocked —
-    // after switching threads. (Case 2 fix.)
+    // prior thread's `active: true` would leave a stale intake card marked
+    // active after switching threads. (Case 2 fix.)
+    intakeFormFromBackendRef.current = false;
     dispatch(updateIntakeForm({ active: false, completed: false }));
   }
 
@@ -3265,54 +3538,55 @@ useEffect(() => {
 
   if (restoredHasDisplayItinerary) setHasDisplayItinerary(true);
 
+  // ── Re-inject the inline sign-in card on a logged-out restore ─────────────
+  // When the LAST client effect this thread emitted is `prompt_login` (the
+  // backend's "sign in to save our work" gate), the viewer is logged out, and
+  // they haven't already skipped it (`login_opted_out`), replay the gate on
+  // reload: drop the effect's lead-in message bubble + the inline login card as
+  // the final messages, mirroring the live `prompt_login` handler so a refresh
+  // mid-gate looks identical to the moment the effect first arrived. Arm the
+  // silent post-login resume — there's no user prompt/action to replay here, so
+  // on login success the token-watch effect resumes the thread via
+  // `resume_after_login` instead of re-sending anything.
+  const lastEffect = itineraryEffects[itineraryEffects.length - 1];
+  if (
+    !isLoggedIn &&
+    !loginOptedOutRef.current &&
+    lastEffect?.name === "prompt_login"
+  ) {
+    const base = Date.now();
+    const threadKey = restoredThread.id ?? sessionIdRef.current;
+    const loginMessage =
+      typeof lastEffect.data?.message === "string"
+        ? lastEffect.data.message.trim()
+        : "";
+    if (loginMessage) {
+      restored.push({
+        id: `login-msg-${threadKey}-${base}`,
+        role: "assistant",
+        content: loginMessage,
+        timestamp: new Date(),
+        type: "text",
+      });
+    }
+    restored.push({
+      id: `login-card-${threadKey}-${base}`,
+      role: "assistant",
+      content: "",
+      timestamp: new Date(),
+      type: "login_card",
+    });
+    loginFlowArmedRef.current = true;
+    pendingRestoreResumeRef.current = true;
+  }
+
   if (restored.length > 0) {
-    // Logged-out viewers opening an existing P1 thread (via threads.get_by_id)
-    // can't post. Surface the inline sign-in card as the last message and let
-    // the composer block below key off the presence of this login_card. In P2
-    // (completed itinerary) we don't inject the card — the composer falls back
-    // to the standard login/clone gating instead.
-    const isP2Restore =
-      botModeRef.current === "p2" || threadIsCompleted;
-    // Skip the card entirely when the user already opted out of login on this
-    // thread — they continue as a logged-out visitor with the composer open.
-    const showRestoreLoginCard =
-      !loginOptedOutRef.current && !(isLoggedInRef.current || isP2Restore);
-    // Lead-in line rendered as a normal Kaira bubble above the restored login
-    // card. Source it from the thread's first `prompt_login` effect (there can
-    // be several across the thread — the first is the one that armed sign-in);
-    // fall back to the standard save-our-work copy when none is present.
-    const firstPromptLogin = itineraryEffects.find(
-      (e: any) => e?.name === "prompt_login",
-    );
-    const restoreLoginMessage =
-      (typeof firstPromptLogin?.data?.message === "string" &&
-        firstPromptLogin.data.message.trim()) ||
-      DEFAULT_PROMPT_LOGIN_MESSAGE;
-    const restoreBase = Date.now();
-    const restoredWithLogin = showRestoreLoginCard
-      ? [
-          ...restored,
-          {
-            id: `login-msg-${restoredThread.id ?? "restore"}-${restoreBase}`,
-            role: "assistant" as const,
-            content: restoreLoginMessage,
-            timestamp: new Date(),
-            type: "text" as const,
-          },
-          {
-            id: `login-card-${restoredThread.id ?? "restore"}-${restoreBase}`,
-            role: "assistant" as const,
-            content: "",
-            timestamp: new Date(),
-            type: "login_card" as const,
-          },
-        ]
-      : restored;
-    // Arm the post-login resume: this card carries no prompt/action to replay,
-    // so on login success we resume the restored thread via `resume_after_login`
-    // (gated to the current user's own chat or staff by the effect).
-    if (showRestoreLoginCard) pendingRestoreResumeRef.current = true;
-    setMessages(restoredWithLogin);
+    // Restore the transcript exactly as it was. Aside from the logged-out
+    // `prompt_login` re-injection handled just above, no inline sign-in card is
+    // added on refresh: in P1 (chat-only stage) a logged-out viewer may keep
+    // chatting anonymously, so the composer stays open and the backend re-emits
+    // `prompt_login` if/when an action genuinely needs an account.
+    setMessages(restored);
     // Land at the bottom of the restored transcript. Widgets and images lay
     // out asynchronously, so the scrollable height keeps growing for a beat
     // after setMessages — a single rAF snap leaves the user mid-thread.
@@ -3834,6 +4108,9 @@ const handleShowLogin = useCallback(() => {
                   <IntakeFormCard
                     key={msg.id}
                     onComplete={handleIntakeComplete}
+                    snapshot={
+                      (msg.intakeSnapshot as IntakeFormState | undefined) ?? null
+                    }
                   />
                 );
               }
@@ -3980,6 +4257,19 @@ const handleShowLogin = useCallback(() => {
                   }
 
                   const payload = action.payload ?? {};
+
+                  // ── Prompt to chat ────────────────────────────────────
+                  // A widget CTA (e.g. the route card's "Confirm Route" /
+                  // "Modify") that should feed its intent into the chat as a
+                  // normal user turn rather than a server widget action.
+                  if (action.type === "chat.prompt") {
+                    const text = (payload.text ?? payload.prompt ?? "") as string;
+                    if (text.trim()) {
+                      setCloneCtaSuppressed(true);
+                      sendMessage(text.trim());
+                    }
+                    return;
+                  }
 
                   // ── Activity ──────────────────────────────────────────
                   // activity.view / activity.detail / open_activity_drawer
@@ -4489,7 +4779,7 @@ const handleShowLogin = useCallback(() => {
 
       {/* ── Quick reply chips ─────────────────────────────────────────────── */}
       {/* Hidden while itinerary creation is in progress — no quick replies/CTAs allowed */}
-      {(quickReplies.length > 0 || quickReplyLoading) && !isComposerLocked && !isForeignItinerary && !loginBlocked && (
+      {(quickReplies.length > 0 || quickReplyLoading) && !isComposerLocked && !isForeignItinerary && !loginBlocked && !promptLoginBlocked && (
         <div className="flex-shrink-0 px-[0.25rem] md:!px-6 pt-2 pb-1">
           <div className="mx-auto">
             <div
@@ -4504,7 +4794,7 @@ const handleShowLogin = useCallback(() => {
                     <SingleChips
                       key={idx}
                       onClick={() => handleQuickReply(reply)}
-                      disabled={isStreaming || isComposerLocked}
+                      disabled={isStreaming || isComposerLocked || promptLoginBlocked}
                     >
                       {reply.label}
                     </SingleChips>
@@ -4522,7 +4812,7 @@ const handleShowLogin = useCallback(() => {
           the sole bottom action. Desktop keeps the (disabled) composer visible. */}
       <div
         className={`kp-composer-wrap flex-shrink-0 relative${
-          intakeFormActive || loginBlocked ? " max-ph:hidden" : ""
+          loginBlocked || promptLoginBlocked ? " max-ph:hidden" : ""
         }`}
       >
         <div className="mx-auto">
@@ -4532,9 +4822,9 @@ const handleShowLogin = useCallback(() => {
             onSubmit={handleSubmit}
             onStop={cancelStream}
             isStreaming={isStreamingResponse}
-            disabled={isComposerLocked || loginBlocked}
+            disabled={isComposerLocked || loginBlocked || promptLoginBlocked}
             placeholder={
-              loginBlocked
+              loginBlocked || promptLoginBlocked
                 ? "Login to continue"
                 : isForeignItinerary
                 ? botMode === "p2"
@@ -4545,10 +4835,10 @@ const handleShowLogin = useCallback(() => {
                 : isItineraryPolling
                 ? "Updating your itinerary…"
                 : intakeFormActive
-                ? "Complete the form above to continue…"
+                ? "Just tell me anything you're planning…"
                 : "Ask me anything"
             }
-            showAttach={!isComposerLocked && !loginBlocked}
+            showAttach={!isComposerLocked && !loginBlocked && !promptLoginBlocked}
             onFilesSelected={handleFilesSelected}
             attachments={attachments}
             onRemoveAttachment={handleRemoveAttachment}
@@ -4558,7 +4848,7 @@ const handleShowLogin = useCallback(() => {
             // don't gate the composer; only require auth in P2. The backend
             // still emits prompt_login when it genuinely needs an account.
             requireAuth={
-              loginBlocked
+              loginBlocked || promptLoginBlocked
                 ? false
                 : (!isLoggedIn && botMode === "p2") || isForeignItinerary
             }

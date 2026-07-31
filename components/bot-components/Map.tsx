@@ -297,8 +297,9 @@ const mapStyles = [
   },
 ];
 
-// Pink numbered pin using exact provided SVG shape
-function getNumberedPin(number: number): google.maps.Icon {
+// Numbered route-stop pin. The teardrop (and number) take the color the cities
+// widget assigned to this stop; the center stays white.
+function getNumberedPin(number: number, color: string = "#FD6D6C"): google.maps.Icon {
   const svg = `
     <svg xmlns="http://www.w3.org/2000/svg" width="48" height="61" viewBox="0 0 48 61" fill="none">
       <defs>
@@ -307,7 +308,7 @@ function getNumberedPin(number: number): google.maps.Icon {
         </filter>
       </defs>
       <!-- exact pin shape with shadow -->
-      <path d="M24 0C10.7314 0 0 10.7155 0 23.9643C0 39.495 17.9202 55.8391 22.7908 59.9944C23.4984 60.5982 24.5016 60.5982 25.2092 59.9944C30.0798 55.8391 48 39.495 48 23.9643C48 10.7155 37.2686 0 24 0ZM24 32.523C19.2686 32.523 15.4286 28.6887 15.4286 23.9643C15.4286 19.2399 19.2686 15.4056 24 15.4056C28.7314 15.4056 32.5714 19.2399 32.5714 23.9643C32.5714 28.6887 28.7314 32.523 24 32.523Z" fill="#FD6D6C" filter="url(#sh)"/>
+      <path d="M24 0C10.7314 0 0 10.7155 0 23.9643C0 39.495 17.9202 55.8391 22.7908 59.9944C23.4984 60.5982 24.5016 60.5982 25.2092 59.9944C30.0798 55.8391 48 39.495 48 23.9643C48 10.7155 37.2686 0 24 0ZM24 32.523C19.2686 32.523 15.4286 28.6887 15.4286 23.9643C15.4286 19.2399 19.2686 15.4056 24 15.4056C28.7314 15.4056 32.5714 19.2399 32.5714 23.9643C32.5714 28.6887 28.7314 32.523 24 32.523Z" fill="${color}" filter="url(#sh)"/>
       <!-- white filled circle over the hollow center -->
       <circle cx="24" cy="23.9643" r="11.5" fill="white"/>
       <!-- number -->
@@ -315,7 +316,7 @@ function getNumberedPin(number: number): google.maps.Icon {
         font-family="Inter, Arial, sans-serif"
         font-size="13"
         font-weight="700"
-        fill="#FD6D6C">${number}</text>
+        fill="${color}">${number}</text>
     </svg>`;
 
   return {
@@ -408,6 +409,26 @@ const getImageUrl = (img) => {
 function resolveAccent(accent?: string): string {
   if (!accent) return "#FD6D6C";
   return ACCENT_COLORS[accent.toLowerCase()] ?? "#FD6D6C";
+}
+
+// Teardrop fill for a route-stop pin — the color the cities widget assigns to
+// the stop. Accepts a hex ("#3b82f6") or a palette name, optionally with a
+// Tailwind-style shade ("blue-500") or "accent." prefix. Falls back to the
+// brand coral so a stop without a color still shows a pin.
+function resolvePinColor(loc?: any): string {
+  const raw = (
+    loc?.color ??
+    loc?.pin_color ??
+    loc?.dot_color ??
+    loc?.accent ??
+    ""
+  )
+    .toString()
+    .trim();
+  if (!raw) return "#FD6D6C";
+  if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(raw)) return raw;
+  const base = raw.toLowerCase().replace(/^accent\./, "").replace(/-\d+$/, "");
+  return ACCENT_COLORS[base] ?? "#FD6D6C";
 }
 
 // Resolve an image URL — return absolute URLs as-is, otherwise prepend the
@@ -1467,13 +1488,15 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
           // Trip origin / departure pin — distinct from numbered route stops.
           markerIcon = getEndpointPin(endpointKind);
         } else if (isRouteStop) {
-          // Numbered pink pin
-          markerIcon = getNumberedPin(routeIndex + 1);
+          // Numbered route pin — colored by the cities widget's stop color.
+          markerIcon = getNumberedPin(routeIndex + 1, resolvePinColor(loc));
         } else if (loc.type) {
           // Category icon
           markerIcon = getMarkerIcon(loc.type);
         } else {
-          // Generic pink location pin (no number) - same shape as numbered pin
+          // Generic location pin (no number) - same shape as numbered pin,
+          // colored by the cities widget's stop color when present.
+          const pinColor = resolvePinColor(loc);
           const svg = `
           <svg xmlns="http://www.w3.org/2000/svg" width="48" height="61" viewBox="0 0 48 61" fill="none">
             <defs>
@@ -1481,7 +1504,7 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
                 <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="rgba(0,0,0,0.30)"/>
               </filter>
             </defs>
-            <path d="M24 0C10.7314 0 0 10.7155 0 23.9643C0 39.495 17.9202 55.8391 22.7908 59.9944C23.4984 60.5982 24.5016 60.5982 25.2092 59.9944C30.0798 55.8391 48 39.495 48 23.9643C48 10.7155 37.2686 0 24 0ZM24 32.523C19.2686 32.523 15.4286 28.6887 15.4286 23.9643C15.4286 19.2399 19.2686 15.4056 24 15.4056C28.7314 15.4056 32.5714 19.2399 32.5714 23.9643C32.5714 28.6887 28.7314 32.523 24 32.523Z" fill="#FD6D6C" filter="url(#sh)"/>
+            <path d="M24 0C10.7314 0 0 10.7155 0 23.9643C0 39.495 17.9202 55.8391 22.7908 59.9944C23.4984 60.5982 24.5016 60.5982 25.2092 59.9944C30.0798 55.8391 48 39.495 48 23.9643C48 10.7155 37.2686 0 24 0ZM24 32.523C19.2686 32.523 15.4286 28.6887 15.4286 23.9643C15.4286 19.2399 19.2686 15.4056 24 15.4056C28.7314 15.4056 32.5714 19.2399 32.5714 23.9643C32.5714 28.6887 28.7314 32.523 24 32.523Z" fill="${pinColor}" filter="url(#sh)"/>
             <circle cx="24" cy="23.9643" r="8.5675" fill="white"/>
           </svg>`;
           markerIcon = {
@@ -1799,6 +1822,7 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
             <CityPinMarker
               number={card.stopIndex + 1}
               cityName={card.cityName}
+              color={resolvePinColor(effectiveRoute?.[card.stopIndex])}
               onClick={() => {
                 infoWindowRef.current?.close();
                 showCityCard(card);

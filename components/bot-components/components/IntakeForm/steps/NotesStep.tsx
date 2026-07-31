@@ -17,6 +17,13 @@ const NotesStep: React.FC<StepProps> = ({ state, update }) => {
     update({ notes: next });
   };
 
+  // Prefer the context-aware chips fetched from `/chatkit/context-chips`; fall
+  // back to the static hints when the fetch hasn't resolved or failed.
+  const hints = state.noteHints?.length ? state.noteHints : NOTE_HINTS;
+  // Widths for the placeholder shimmer chips shown while the context-chips
+  // request is in flight — varied so the row reads like real suggestions.
+  const SHIMMER_WIDTHS = [78, 104, 88, 120, 92, 70];
+
   return (
     <div>
       <div className="text-[18px] font-extrabold tracking-tight mb-[3px]">
@@ -38,7 +45,7 @@ const NotesStep: React.FC<StepProps> = ({ state, update }) => {
           maxLength={2000}
           onChange={(e) => update({ notes: e.target.value })}
           placeholder="e.g. it's our honeymoon, around ₹2L, love beaches and great food, want one fancy dinner."
-          className="w-full border-0 outline-none bg-transparent text-[13.5px] text-[#0b1220] resize-none leading-relaxed"
+          className="w-full border-0 outline-none bg-transparent text-[16px] text-[#0b1220] resize-none leading-relaxed"
           style={{ minHeight: 80 }}
         />
         <div className="flex items-center gap-2 mt-[6px]">
@@ -52,17 +59,43 @@ const NotesStep: React.FC<StepProps> = ({ state, update }) => {
       </div>
 
       <div className="mt-[11px] flex flex-wrap gap-[5px]">
-        {NOTE_HINTS.map((h) => (
-          <button
-            type="button"
-            key={h}
-            onClick={() => addHint(h)}
-            className="px-[11px] py-[6px] rounded-full text-[11.5px] font-semibold text-[#445069] transition-all"
-            style={{ background: "#fff", border: "1px dashed #8a93a6" }}
-          >
-            + {h}
-          </button>
-        ))}
+        {state.noteHintsLoading ? (
+          <>
+            {SHIMMER_WIDTHS.map((w, i) => (
+              <span
+                key={i}
+                aria-hidden="true"
+                className="rounded-full"
+                style={{
+                  width: w,
+                  height: 27,
+                  background:
+                    "linear-gradient(90deg,#f3f4f6 0%,#e9eaee 50%,#f3f4f6 100%)",
+                  backgroundSize: "200% 100%",
+                  animation: "intakeChipShimmer 1.4s ease-in-out infinite",
+                }}
+              />
+            ))}
+            <style>{`
+              @keyframes intakeChipShimmer {
+                0% { background-position: 200% 0; }
+                100% { background-position: -200% 0; }
+              }
+            `}</style>
+          </>
+        ) : (
+          hints.map((h) => (
+            <button
+              type="button"
+              key={h}
+              onClick={() => addHint(h)}
+              className="px-[11px] py-[6px] rounded-full text-[11.5px] font-semibold text-[#445069] transition-all"
+              style={{ background: "#fff", border: "1px dashed #8a93a6" }}
+            >
+              + {h}
+            </button>
+          ))
+        )}
       </div>
     </div>
   );
