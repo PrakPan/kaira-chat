@@ -1392,7 +1392,7 @@ const Enquiry = (props) => {
                   onclick={_SlideThreeSubmitHandler}
                   loading={isLoading}
                   borderRadius="8px"
-                  className={`${!isDesktop && "w-[120px]"}`}
+                  className="whitespace-nowrap"
                 >
                   Get Itinerary!
                 </Button>
