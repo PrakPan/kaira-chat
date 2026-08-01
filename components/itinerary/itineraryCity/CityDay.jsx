@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import ActivityAddDrawer from "../../drawers/poiDetails/activityAddDrawer";
 import { useDispatch, useSelector } from "react-redux";
 import { MERCURY_HOST } from "../../../services/constants";
@@ -373,6 +374,36 @@ const resolveTagLabel = (raw) => {
   return TAG_LABEL_BY_KEY[key] || String(raw).replace(/_/g, " ");
 };
 
+// Plain-English explanation shown when a tag chip is hovered. Copy mirrors the
+// old ItineraryLegend panel — that panel now only carries the Kaira Protected
+// note, so the per-label meanings live here, on the badge itself. Unknown tags
+// simply get no tooltip (resolveTagDesc → null).
+const TAG_DESC_BY_KEY = {
+  on_your_own: "Not pre-booked — go at your own pace. No ticket needed.",
+  self_guided: "Explore at your own pace with directions provided.",
+  semi_guided: "Part guided, part free time to explore on your own.",
+  included: "Already included in your trip package.",
+  guided: "Led by a local guide.",
+  suggested: "A spot we recommend — visit if it appeals to you.",
+  suggest: "A spot we recommend — visit if it appeals to you.",
+  kaira_pick: "A standout Kaira specially recommends for this trip.",
+  kairas_pick: "A standout Kaira specially recommends for this trip.",
+  must_do: "A trip highlight worth prioritising.",
+  insider_spot: "A lesser-known local favourite worth seeking out.",
+  hidden_gem: "A lesser-known local favourite worth seeking out.",
+  local_fav: "A local favourite worth seeking out.",
+  curated: "Hand-picked for this trip.",
+  insta_worthy_view: "A photogenic spot worth capturing.",
+  tickets_held: "Entry tickets are reserved and confirmed for you.",
+  tickets: "Entry tickets are reserved and confirmed for you.",
+  booked: "Reserved and confirmed for you.",
+  table_reserved: "Your table is booked at this restaurant.",
+  table_held: "Your table is booked at this restaurant.",
+  window_seat: "A window seat is reserved for you.",
+};
+
+const resolveTagDesc = (raw) => TAG_DESC_BY_KEY[normalizeTagKey(raw)] || null;
+
 // Pick a style for a tag. Known keys → mapped style; unknown → deterministic
 // fallback color. Caller renders the raw API string as the chip text.
 const resolveTagStyle = (raw) => {
@@ -491,6 +522,16 @@ const CityDay = (props) => {
       )
     );
   const [showActivityDetails, setShowActivityDetails] = useState({ show: false });
+  // Tag-chip hover tooltip. A single portal-rendered bubble (position: fixed to
+  // the viewport) shared by every chip, so no overflow/transform ancestor can
+  // clip it. `null` when nothing is hovered; otherwise { text, x, y } in
+  // viewport pixels (x = chip centre, y = chip top).
+  const [tagTip, setTagTip] = useState(null);
+  const showTagTip = (e, text) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    setTagTip({ text, x: r.left + r.width / 2, y: r.top });
+  };
+  const hideTagTip = () => setTagTip(null);
 const [activityLoading, setActivityLoading] = useState(false);
 const isDraft = useSelector((state) => state.Itinerary.status) === "Draft";
 
@@ -694,25 +735,32 @@ useEffect(() => {
     const tagGroup =
       renderTags.length > 0 || duration ? (
         <span className="flex flex-wrap items-center gap-[5px] !font-normal">
-          {renderTags.map((t, i) => (
-            <span
-              key={`${t}-${i}`}
-              className={`${CHIP_BASE} !font-normal`}
-              style={{ ...CHIP_TEXT_STYLE, ...resolveTagStyle(t) }}
-            >
+          {renderTags.map((t, i) => {
+            const desc = resolveTagDesc(t);
+            return (
               <span
-                aria-hidden="true"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
+                key={`${t}-${i}`}
+                className={`${CHIP_BASE} !font-normal ${
+                  desc ? "cursor-help" : ""
+                }`}
+                style={{ ...CHIP_TEXT_STYLE, ...resolveTagStyle(t) }}
+                onMouseEnter={desc ? (e) => showTagTip(e, desc) : undefined}
+                onMouseLeave={desc ? hideTagTip : undefined}
               >
-                <TagGlyph name={resolveTagIcon(t)} />
+                <span
+                  aria-hidden="true"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <TagGlyph name={resolveTagIcon(t)} />
+                </span>
+                {resolveTagLabel(t)}
               </span>
-              {resolveTagLabel(t)}
-            </span>
-          ))}
+            );
+          })}
           {duration && (
             <span
               className={CHIP_BASE}
@@ -1080,6 +1128,55 @@ useEffect(() => {
     showPackages={false}
   />
 )}
+
+      {/* Tag-chip hover tooltip — portalled to <body> and fixed to the viewport
+          so it can't be clipped by the itinerary's scroll/overflow containers.
+          Anchored above the hovered chip (y = chip top), centred on it. */}
+      {tagTip &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <div
+            role="tooltip"
+            style={{
+              position: "fixed",
+              left: tagTip.x,
+              top: tagTip.y - 8,
+              transform: "translate(-50%, -100%)",
+              zIndex: 9999,
+              pointerEvents: "none",
+              maxWidth: "220px",
+              background: "#0B1220",
+              color: "#FFFFFF",
+              fontFamily:
+                "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+              fontSize: "11.5px",
+              fontWeight: 500,
+              lineHeight: 1.35,
+              letterSpacing: "normal",
+              textTransform: "none",
+              padding: "7px 10px",
+              borderRadius: "8px",
+              boxShadow: "0 8px 24px rgba(11,18,32,0.22)",
+            }}
+          >
+            {tagTip.text}
+            {/* Downward caret */}
+            <span
+              style={{
+                position: "absolute",
+                left: "50%",
+                top: "100%",
+                transform: "translateX(-50%)",
+                width: 0,
+                height: 0,
+                borderLeft: "5px solid transparent",
+                borderRight: "5px solid transparent",
+                borderTop: "5px solid #0B1220",
+              }}
+            />
+          </div>,
+          document.body
+        )}
     </>
   );
 };
