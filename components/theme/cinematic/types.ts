@@ -39,16 +39,86 @@ export interface CinematicPromptCard {
   prompt: string;
 }
 
-// Horizontal "Step into the scene" card — thumbnail + meta + price.
+// Horizontal "Step into the scene" card — thumbnail + meta + price. The
+// thumbnail is either a cover `image` or, when absent, a gradient + `emoji`
+// tile (matches the Lapland "Which Lapland is yours?" cards). An optional
+// `urgent` line renders as a red banner across the card footer.
 export interface CinematicTripCard {
-  image: string;
+  image?: string;
+  emoji?: string; // shown on the gradient tile when no image
+  gradient?: string; // tile backdrop when using emoji
   name: string;
   line?: string;
   tag?: string;
   price?: string;
   nights?: string;
+  urgent?: string; // red urgency banner across the card footer
   objectPosition?: string; // cover-crop focal point (defaults to center)
   prompt: string;
+}
+
+// Gradient/emoji "pillar" card — a hero tile with a mono window badge, name
+// and supporting line. Powers the "Choose Your Arctic Story" scroller. An
+// optional `image` shows in place of the emoji (with a skeleton loader).
+export interface CinematicPillarCard {
+  emoji: string;
+  gradient: string;
+  image?: string;
+  window?: string; // mono badge over the hero tile (e.g. "Sept – Mar")
+  name: string;
+  line?: string;
+  prompt: string;
+}
+
+// Row in a `list` section (e.g. "Where you'd sleep" / "Worth the cold"): a
+// gradient + emoji thumb, a name with an optional highlight badge, a line, and
+// a trailing arrow. Clicking seeds `prompt` or navigates to `href`.
+export interface CinematicListRow {
+  emoji: string;
+  gradient: string;
+  // Optional cover image for the thumb (shows over the gradient, with a
+  // skeleton loader; falls back to the emoji if it fails / is absent).
+  image?: string;
+  objectPosition?: string;
+  name: string;
+  line?: string;
+  badge?: string; // yellow pill next to the name ("Kaira's pick")
+  prompt?: string;
+  href?: string;
+}
+
+// Dark checklist row ("The Santa bit, done properly"): emoji + name + meta.
+export interface CinematicCheckRow {
+  emoji: string;
+  name: string;
+  meta?: string;
+  prompt?: string;
+  href?: string;
+}
+
+// Month/timeline row ("When to actually go"): a mono range + name + line.
+export interface CinematicMonthRow {
+  range: string;
+  name: string;
+  line?: string;
+}
+
+// Testimonial card ("People who went"): rating, traveller type, name, route.
+export interface CinematicStoryCard {
+  rating: string;
+  type: string;
+  name: string;
+  route: string;
+  prompt?: string;
+}
+
+// Numbered step ("Sketch it. I'll finish it."): number, title, serif accent,
+// mono meta line.
+export interface CinematicStep {
+  n: string;
+  title: string;
+  sub?: string; // serif accent word after the title
+  meta?: string;
 }
 
 // Gradient + emoji tile used by "Other themes" and "Destinations". Clicking
@@ -94,6 +164,45 @@ export type CinematicSection =
       // unless `mobileGrid` is set, which renders a 2-up grid instead.
       columns?: number;
       mobileGrid?: boolean;
+      // Full-width button under the grid (e.g. "View all destinations →").
+      footerCta?: CinematicSectionCta;
+    }
+  | {
+      type: "pillars";
+      heading: CinematicHeading;
+      cta?: CinematicSectionCta;
+      cards: CinematicPillarCard[];
+    }
+  | {
+      type: "list";
+      heading: CinematicHeading;
+      rows: CinematicListRow[];
+      // Compact rows (40px thumb, no arrow emphasis) for dense lists like
+      // "Worth the cold"; default rows use a 62px thumb like "Where you'd sleep".
+      compact?: boolean;
+    }
+  | {
+      type: "checklist";
+      heading: CinematicHeading;
+      rows: CinematicCheckRow[];
+    }
+  | {
+      type: "months";
+      heading: CinematicHeading;
+      rows: CinematicMonthRow[];
+      note?: ReactNode; // callout card under the month list
+    }
+  | {
+      type: "stories";
+      heading: CinematicHeading;
+      cards: CinematicStoryCard[];
+    }
+  | {
+      type: "steps";
+      heading: CinematicHeading;
+      steps: CinematicStep[];
+      cta?: CinematicSectionCta; // the "Start planning →" button
+      note?: string; // footer mono line under the CTA
     };
 
 // Film image shown as a rotated polaroid in the desktop hero collage.
