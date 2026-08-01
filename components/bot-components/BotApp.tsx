@@ -2059,11 +2059,39 @@ export default function BotApp({
         });
         const data = await res.json();
 
+        // Resolve the session_id that OWNS this thread. A session_id must map to
+        // exactly one thread_id, and ChatKitPanel's remount re-keys sessionIdRef
+        // from activeChatSessionId — so activeChatSessionId must always reflect
+        // THIS thread's session, never the previously-open one. Order of trust:
+        //   1. sessionIdOverride — the id the caller already knew (the sidebar
+        //      row's session_id, or the URL sid on refresh). Authoritative.
+        //   2. get_by_id response — a best-effort hook; the backend currently
+        //      returns no session_id on threads.get_by_id, so this is normally
+        //      empty. Kept in case that changes.
+        //   3. current URL sid — final fallback so we NEVER leave
+        //      activeChatSessionId pointing at a different (stale) session, which
+        //      would send the previous session_id with this thread_id.
+        const urlSessionId =
+          typeof window !== "undefined"
+            ? window.location.pathname.match(/\/chat\/([a-f0-9-]{36})/)?.[1]
+            : undefined;
+        const derivedSessionId =
+          data.session_id ?? data.filter_session_id ?? data.metadata?.session_id;
         const threadSessionId =
-          sessionIdOverride ??
-          data.session_id ??
-          data.filter_session_id ??
-          data.metadata?.session_id;
+          sessionIdOverride ?? derivedSessionId ?? urlSessionId;
+
+        if (
+          process.env.NODE_ENV !== "production" &&
+          !sessionIdOverride &&
+          !derivedSessionId
+        ) {
+          console.warn(
+            `[loadThread] no session_id from caller or backend for thread ${threadId}; ` +
+              `fell back to URL "${urlSessionId ?? ""}". Pass sessionIdOverride to keep ` +
+              `session_id ↔ thread_id pinned.`,
+          );
+        }
+
         if (threadSessionId) {
           const target = `/chat/${threadSessionId}`;
           if (window.location.pathname !== target) {
@@ -2485,7 +2513,12 @@ export default function BotApp({
           if (typeof rowName === "string" && rowName.trim()) {
             dispatch(setThreadCustomerName(rowName.trim()));
           }
-          await loadThread(threads[0].id, undefined, stage);
+          // Pin the owning session_id explicitly. threads.list was filtered by
+          // `sid`, so this thread belongs to it; passing it (preferring the row's
+          // own session_id) stops loadThread from having to guess — get_by_id
+          // returns no session_id, so without this the pairing would fall back to
+          // the URL and silently drift if the URL ever lags the restore.
+          await loadThread(threads[0].id, threads[0].session_id ?? sid, stage);
         } else if (stage === "P2" && allDone) {
           // P2 trip confirmed but no chat thread yet — seed a summary prompt
           // so the user lands with context. botMode is already "p2" via
