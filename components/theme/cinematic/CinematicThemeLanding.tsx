@@ -806,7 +806,7 @@ const ListSection: React.FC<{
   section: Extract<CinematicSection, { type: "list" }>;
   onSelectPrompt: (p: string) => void;
 }> = ({ section, onSelectPrompt }) => (
-  <section className="pt-[32px] md:pt-[56px] md:pb-[32px]">
+  <section className="pt-[32px] md:pt-[56px] pb-[16px] md:pb-[32px]">
     <Container>
       <Heading heading={section.heading} className="text-[22px] md:text-[34px]" />
       <div
