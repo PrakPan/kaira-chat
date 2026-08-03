@@ -1700,11 +1700,46 @@ useEffect(() => {
       return "Taxi";
     return bt || "Transfer";
   };
+  // A flight starts and ends at an airport, not a city centre — the "Munnar"
+  // leg actually lands at Cochin International — so flights are labelled by
+  // their hub. Provider airport names arrive noisy: trailing "(HAN)"/"(airport)"
+  // suffixes, doubled spaces, and "Arpt"/"Intl" abbreviations mixed in with
+  // otherwise spelled-out names.
+  const cleanAirportName = (name) =>
+    (name || "")
+      .replace(/\s*\([A-Z]{3}\)/g, "")
+      .replace(/\s*\(airport\)/gi, "")
+      .replace(/\bArpt\b/gi, "Airport")
+      .replace(/\bIntl\b/gi, "International")
+      .replace(/\s+/g, " ")
+      .trim();
+
+  // Hub at one end of a flight: the first segment's origin / the last segment's
+  // destination. Falls back to the IATA code, then "" so callers drop back to
+  // the city name — draft/unpriced flights carry no segments at all.
+  const flightHubName = (b, end) => {
+    const segs = b?.transfer_details?.items?.[0]?.segments;
+    if (!Array.isArray(segs) || !segs.length) return "";
+    const point =
+      end === "origin" ? segs[0]?.origin : segs[segs.length - 1]?.destination;
+    return cleanAirportName(point?.airport_name) || point?.airport_code || "";
+  };
+
+  const flightOriginHub = isFlightLeg ? flightHubName(booking, "origin") : "";
+  const flightDestinationHub = isFlightLeg
+    ? flightHubName(booking, "destination")
+    : "";
+
   // Leg cities live in different places by mode: road legs at
   // transfer_details.trips[*].origin/destination.{city|name|address}; flight
-  // legs at transfer_details.items[0].segments[*].origin/destination.city_name.
+  // legs at transfer_details.items[0].segments[*].origin/destination — named by
+  // airport hub, like the single-flight card above.
   const legSrcName = (leg) => {
     const td = leg?.transfer_details;
+    if ((leg?.booking_type || "").toLowerCase().includes("flight")) {
+      const hub = flightHubName(leg, "origin");
+      if (hub) return hub;
+    }
     const o = td?.trips?.[0]?.origin;
     const seg = td?.items?.[0]?.segments?.[0]?.origin;
     return (
@@ -1720,6 +1755,10 @@ useEffect(() => {
   };
   const legDestName = (leg) => {
     const td = leg?.transfer_details;
+    if ((leg?.booking_type || "").toLowerCase().includes("flight")) {
+      const hub = flightHubName(leg, "destination");
+      if (hub) return hub;
+    }
     const trips = td?.trips;
     const d =
       (Array.isArray(trips) && trips[trips.length - 1]?.destination) ||
@@ -2022,7 +2061,9 @@ useEffect(() => {
                           {correctIcon(leg?.booking_type, "#1f6feb")}
                         </span>
                         <div className="flex-1 min-w-0">
-                          <div className="text-[13px] max-ph:text-[12.5px] font-[700] text-[#1c2c44] truncate">
+                          {/* Wraps instead of truncating: a flight leg is named
+                              by its airport hub, which rarely fits one line. */}
+                          <div className="text-[13px] max-ph:text-[12.5px] font-[700] text-[#1c2c44] leading-snug break-words">
                             {src && dest
                               ? `${src} → ${dest}`
                               : `${modeLabel}${dest ? ` to ${dest}` : ""}`}
@@ -2047,10 +2088,14 @@ useEffect(() => {
                 onClick={() => handleTransferChipClick(transfer_type === "combo")}
                 className={`flex items-center gap-[13px] max-ph:gap-[11px] w-full px-[15px] max-ph:px-[12px] py-[13px] max-ph:py-[11px] rounded-[12px] max-ph:rounded-[11px] bg-[#EEF4FE] border-[1px] border-[#DBE7FB] ${transferChipCursor}`}
               >
-                <MdOutlineFlightTakeoff size={20} color="#1f6feb" />
+                <MdOutlineFlightTakeoff size={20} color="#1f6feb" className="shrink-0" />
                 <div className="flex-1 min-w-0">
-                  <div className="text-[13.5px] max-ph:text-[12.5px] font-[700] text-[#1c2c44]">
-                    {origin_city_name} → {destination_city_name}
+                  {/* Hub names run long ("Netaji Subhash Chandra Bose
+                      International Airport"), so this line wraps rather than
+                      truncating — clipping would hide the destination. */}
+                  <div className="text-[13.5px] max-ph:text-[12.5px] font-[700] text-[#1c2c44] leading-snug break-words">
+                    {flightOriginHub || origin_city_name} →{" "}
+                    {flightDestinationHub || destination_city_name}
                   </div>
                   <div className="text-[12px] max-ph:text-[11px] text-[#7b8aa3] mt-0.5">
                     Flight

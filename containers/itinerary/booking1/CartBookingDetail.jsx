@@ -139,10 +139,19 @@ const CartBookingDetail = ({
     }
   };
 
+  // Every "Change …" below hands off to a flow the itinerary page mounts
+  // *underneath* the cart, so the cart has to close or the flow opens behind it.
+  // Plain state via closeCart — not handleCloseDrawer, which also rewrites the
+  // URL and would wipe the drawer query the handoff is pushing.
+  const startChange = () => {
+    onClose();
+    closeCart?.();
+  };
+
   // "Change Hotel" hands off to the search drawer the itinerary already mounts,
   // via the URL contract it consumes.
   const handleChangeHotel = () => {
-    onClose();
+    startChange();
     router.push(
       {
         pathname: router.pathname,
@@ -199,6 +208,7 @@ const CartBookingDetail = ({
         getPaymentHandler={getPaymentHandler}
         setShowLoginModal={setShowLoginModal}
         drawerZIndex={CART_DRAWER_Z_INDEX}
+        onChangeStart={startChange}
         onClose={onClose}
       />
     );
@@ -235,13 +245,7 @@ const CartBookingDetail = ({
         slabIndex={activitySlot?.slabIndex}
         name={booking?.detail?.name}
         removeDelete={false}
-        // "Change Activity" hands off to the day-by-day view's activity
-        // picker, which is mounted behind the cart — same reason
-        // handleChangeHotel closes up before pushing its drawer query.
-        onChangeStart={() => {
-          onClose();
-          closeCart?.();
-        }}
+        onChangeStart={startChange}
         setShowLoginModal={setShowLoginModal}
         getPaymentHandler={getPaymentHandler}
         drawerZIndex={CART_DRAWER_Z_INDEX}

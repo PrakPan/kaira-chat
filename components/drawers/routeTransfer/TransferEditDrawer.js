@@ -244,8 +244,15 @@ const TransferEditDrawer = (props) => {
   const actualClose = useHandleClose();
   const dispatch = useDispatch();
   const router = useRouter();
-  const { drawer, bookingId, oItineraryCity, dItineraryCity, drawerType, taxiTab } =
-    router?.query;
+  const {
+    drawer,
+    bookingId,
+    oItineraryCity,
+    dItineraryCity,
+    drawerType,
+    taxiTab,
+    changeBookingId,
+  } = router?.query;
   const isDesktop = useMediaQuery("(min-width:768px)");
   const [roundTripSuggestions, setRoundTripSuggestions] = useState(null);
   const [multiCitySuggestions, setMultiCitySuggestions] = useState(null);
@@ -255,6 +262,9 @@ const TransferEditDrawer = (props) => {
     const initial = props?.initialTab;
     if (["sightseeing", "airport", "multicity"].includes(initial)) return initial;
     if (["sightseeing", "airport", "multicity"].includes(taxiTab)) return taxiTab;
+    // `drawerType=multicity` in the URL is only set when changing an existing
+    // multi-city combo booking, so open on the Multicity tab.
+    if (drawerType === "multicity") return "multicity";
     return "sightseeing";
   });
   const [tabLoaded, setTabLoaded] = useState({
@@ -397,7 +407,11 @@ const TransferEditDrawer = (props) => {
     if (!sightseeingStartDate || !sightseeingEndDate) return;
     if (isFirstSightseeingDateRun.current) {
       isFirstSightseeingDateRun.current = false;
-      return;
+      // A change flow seeds the pickers from the booking being changed, but the
+      // fetch on open went out before they were filled, so it is unfiltered —
+      // re-query with them or the render-time start_date filter drops every
+      // card and the tab renders empty.
+      if (!sightseeingChanging) return;
     }
     fetchRoutes({ sightseeingFilterRefetch: true });
   }, [sightseeingStartDate, sightseeingEndDate]);
@@ -558,9 +572,25 @@ const TransferEditDrawer = (props) => {
 
   // The existing sightseeing booking for this city, if any (used to surface
   // an "already added" state and pre-select its dates in the date filters).
+  // When we arrived from a booking's "Change Transfer" CTA, resolve that exact
+  // booking — a city can hold more than one intra-city taxi, and [0] is merely
+  // the earliest by check-in.
+  const changedSightseeingBooking =
+    changeBookingId && Array.isArray(intracityBookings)
+      ? intracityBookings.find(
+          (b) => String(b?.id) === String(changeBookingId),
+        )
+      : null;
   const existingSightseeingBooking = Array.isArray(intracityBookings)
-    ? intracityBookings[0]
+    ? changedSightseeingBooking || intracityBookings[0]
     : null;
+
+  // Opened from a sightseeing booking's "Change Transfer": show the search
+  // results rather than the read-only "already added" card, so there is
+  // something to pick. Without this the CTA would loop back to the detail
+  // drawer it came from. Keyed on a booking that actually resolves in this
+  // city's list, so an id from another tab or city can't flip the tab.
+  const sightseeingChanging = !!changedSightseeingBooking;
   const existingBookingStart = existingSightseeingBooking?.check_in
     ? dayjs(existingSightseeingBooking.check_in.split(" ")[0]).format("YYYY-MM-DD")
     : null;
@@ -2051,7 +2081,8 @@ const TransferEditDrawer = (props) => {
                 {multicityTab === "sightseeing" &&
                   existingSightseeingBooking &&
                   !sightseeingDatesChanged &&
-                  !sightseeingRefetching && (
+                  !sightseeingRefetching &&
+                  !sightseeingChanging && (
                     <BookedSightseeingCard
                       booking={existingSightseeingBooking}
                       onClick={() => {
@@ -2079,7 +2110,9 @@ const TransferEditDrawer = (props) => {
 
                 {/* Sightseeing (and any other non-airport, non-multicity) suggestions */}
                 {multicityTab === "sightseeing" &&
-                  (!existingSightseeingBooking || sightseeingDatesChanged) &&
+                  (!existingSightseeingBooking ||
+                    sightseeingDatesChanged ||
+                    sightseeingChanging) &&
                   !sightseeingRefetching &&
                   Array.isArray(roundTripSuggestions) &&
                   roundTripSuggestions
@@ -2113,7 +2146,9 @@ const TransferEditDrawer = (props) => {
 
                 {/* Backward-compat: single roundTripSuggestions object (non-array) */}
                 {multicityTab === "sightseeing" &&
-                  (!existingSightseeingBooking || sightseeingDatesChanged) &&
+                  (!existingSightseeingBooking ||
+                    sightseeingDatesChanged ||
+                    sightseeingChanging) &&
                   roundTripSuggestions &&
                   !Array.isArray(roundTripSuggestions) && (
                     <div className="w-full">
@@ -2198,7 +2233,7 @@ const TransferEditDrawer = (props) => {
                   ((multicityTab === "multicity" && !multiCitySuggestions) ||
                     (multicityTab === "sightseeing" &&
                       !roundTripSuggestions &&
-                      !existingSightseeingBooking) ||
+                      (!existingSightseeingBooking || sightseeingChanging)) ||
                     (multicityTab === "airport" &&
                       !airportSuggestions &&
                       !existingAirportPickup &&
@@ -2243,11 +2278,16 @@ const TransferEditDrawer = (props) => {
             const hasExistingUnchanged =
               multicityTab === "sightseeing" &&
               !!existingSightseeingBooking &&
-              !sightseeingDatesChanged;
+              !sightseeingDatesChanged &&
+              !sightseeingChanging;
             if (hasExistingUnchanged) return null;
 
+            // "Update Dates" only reads right when the dates are the one thing
+            // being edited — a change flow is swapping the taxi itself.
             const isSightseeingUpdate =
-              multicityTab === "sightseeing" && !!existingSightseeingBooking;
+              multicityTab === "sightseeing" &&
+              !!existingSightseeingBooking &&
+              !sightseeingChanging;
             const isDisabled = !selectedCab || updatingTransfer;
 
             return (

@@ -70,6 +70,7 @@ const TransferDrawer = ({
   transferType,
   drawerZIndex,
   onClose,
+  onChangeStart,
 }) => {
   const handleDrawerClose = useHandleClose();
   const dispatch = useDispatch();
@@ -99,6 +100,99 @@ const TransferDrawer = ({
     router?.query;
 
   const currency = useSelector((state) => state.currency);
+  const transferBookingsMap = useSelector(
+    (state) => state?.TransferBookings?.transferBookings,
+  );
+  const itineraryCities = useSelector((state) => state?.Itinerary?.cities);
+
+  // City taxis — sightseeing packages, airport pickup/drop, and the multi-day
+  // combos that bundle them — are changed in the tabbed "Add Taxi" drawer, the
+  // only surface that can search them. A change has to know which tab to land
+  // on and which itinerary city the drawer belongs to.
+  const cityTaxiTab =
+    data?.combo_type === "multicity"
+      ? "multicity"
+      : data?.transfer_type === "sightseeing"
+        ? "sightseeing"
+        : data?.is_airport_pickup || data?.is_airport_drop
+          ? "airport"
+          : null;
+
+  const cityTaxiChange = (() => {
+    if (!data || !cityTaxiTab) return null;
+    const tab = cityTaxiTab;
+
+    // Prefer the key the booking is actually filed under in redux — that is
+    // exactly the key the tabbed drawer's own selectors read, so the drawer
+    // recognises the booking as "already added" instead of offering to add a
+    // duplicate. Mount sites that hand the ids down (and the URL the detail
+    // drawer was opened with) are the fallbacks; the cart passes neither.
+    const fromStore = (() => {
+      if (!data?.id || !transferBookingsMap) return null;
+      for (const bucket of ["intracity", "airport"]) {
+        const group = transferBookingsMap?.[bucket];
+        if (!group) continue;
+        for (const key of Object.keys(group)) {
+          if (
+            Array.isArray(group[key]) &&
+            group[key].some((b) => b?.id === data.id)
+          ) {
+            return key;
+          }
+        }
+      }
+      return null;
+    })();
+
+    // On an intercity leg a drop happens at the origin city and a pickup at the
+    // destination; on the intra-city mounts both ids are the same city anyway.
+    const fromProps = data?.is_airport_drop
+      ? origin_itinerary_city_id || destination_itinerary_city_id
+      : destination_itinerary_city_id || origin_itinerary_city_id;
+
+    // When the store knows where the booking is filed, that key is the only
+    // one worth using — landing the drawer on a different city would make it
+    // read the booking as absent and offer to add a second one.
+    const candidates = fromStore
+      ? [fromStore]
+      : [fromProps, router?.query?.itinerary_city_id];
+
+    // The tabbed drawer only ever mounts under an itinerary city
+    // (itineraryCity/index.jsx keys it off `props.city.id`). Airport legs at the
+    // trip's home cities are filed under a gmaps place id instead, which no
+    // mount can match — leave those on the older addPickupDrop route.
+    const cityId = candidates
+      .filter(Boolean)
+      .find((id) =>
+        itineraryCities?.some?.((c) => String(c?.id) === String(id)),
+      );
+    if (!cityId) return null;
+
+    return { tab, cityId };
+  })();
+
+  // The cart opens this drawer with no leg city ids, but every change flow the
+  // itinerary mounts is keyed by them. The intercity bucket is keyed
+  // "<originItineraryCityId>:<destinationItineraryCityId>", so the booking's own
+  // entry carries both — recover them rather than pushing a URL nothing matches.
+  const [routeOriginCity, routeDestinationCity] = (() => {
+    if (!data?.id) return [];
+    const group = transferBookingsMap?.intercity;
+    if (!group) return [];
+    const key = Object.keys(group).find((k) => {
+      const entry = group[k];
+      return (
+        entry?.id === data.id ||
+        (Array.isArray(entry?.children) &&
+          entry.children.some((c) => c?.id === data.id))
+      );
+    });
+    return key ? key.split(":") : [];
+  })();
+
+  const editOItineraryCity = origin_itinerary_city_id || routeOriginCity;
+  const editDItineraryCity =
+    destination_itinerary_city_id || routeDestinationCity;
 
   const { trackTaxiDetail } = useAnalytics();
 
@@ -109,6 +203,39 @@ const TransferDrawer = ({
   }, [show, isCombo, data?.children?.length]);
 
   const handleEditRoute = (data = null) => {
+    // Every change flow below is mounted by the itinerary page, underneath
+    // whatever opened this drawer. A host that stacks on top of it (the cart)
+    // has to get out of the way first or the flow opens invisibly behind it.
+    onChangeStart?.();
+
+    // Sightseeing / airport pickup-drop: open the tabbed "Add Taxi" drawer for
+    // this city with the matching tab pre-selected, carrying the booking id so
+    // the drawer knows which of the city's taxis is being changed.
+    if (cityTaxiChange) {
+      router.push(
+        {
+          pathname: window.location.pathname,
+          query: {
+            ...(currentItineraryId ? { id: currentItineraryId } : {}),
+            drawer: "addCityTaxi",
+            itinerary_city_id: cityTaxiChange.cityId,
+            taxiTab: cityTaxiChange.tab,
+            // Only the Sightseeing tab uses it; the Airport tab finds the
+            // booking itself from the store.
+            ...(booking_id && cityTaxiChange.tab === "sightseeing"
+              ? { changeBookingId: booking_id }
+              : {}),
+          },
+        },
+        undefined,
+        {
+          scroll: false,
+          shallow: true,
+        },
+      );
+      return;
+    }
+
     router.push(
       {
         pathname: window.location.pathname,
@@ -126,9 +253,14 @@ const TransferDrawer = ({
                 ? "multicity"
                 : null,
           bookingId: booking_id,
-          oItineraryCity: origin_itinerary_city_id,
-          dItineraryCity: destination_itinerary_city_id,
+          oItineraryCity: editOItineraryCity,
+          dItineraryCity: editDItineraryCity,
           doj: data?.check_in,
+          // Changing a multi-city combo should land on the Multicity tab, not
+          // the drawer's default (Sightseeing).
+          ...(data?.combo_type === "multicity"
+            ? { taxiTab: "multicity" }
+            : {}),
         },
       },
       undefined,
@@ -666,12 +798,15 @@ const TransferDrawer = ({
   };
 
   // Combo legs can only be re-routed while none of them is paid for, and
-  // sightseeing / multicity-flight combos have no edit flow at all.
+  // multicity-flight combos have no edit flow at all. The sightseeing terms
+  // below only apply when we have nowhere to send the change: a multi-day taxi
+  // combo opened from the day-by-day "Sightseeing taxi included" chip is still
+  // changeable — it just changes in the tabbed drawer rather than editTransfer.
   const canChangeCombo =
-    data?.transfer_type != "sightseeing" &&
-    drawer != "SightSeeing" &&
     !(data?.combo_type === "multicity" && data?.booking_type === "Flight") &&
-    !!data?.children?.every((child) => child.status !== "Paid");
+    !!data?.children?.every((child) => child.status !== "Paid") &&
+    (!!cityTaxiChange ||
+      (data?.transfer_type != "sightseeing" && drawer != "SightSeeing"));
 
   return (
     <Drawer
@@ -728,7 +863,19 @@ const TransferDrawer = ({
               origin_itinerary_city_id={origin_itinerary_city_id}
               destination_itinerary_city_id={destination_itinerary_city_id}
               handleClose={handleClose}
-              noChange={isIntracity}
+              // Intra-city taxis used to have no change flow at all, hence the
+              // blanket `isIntracity` suppression. Sightseeing and airport
+              // pickup/drop now do (the tabbed "Add Taxi" drawer). Sightseeing
+              // has no other route, so it shows the CTA only where that drawer
+              // can actually open; airport keeps its PickupDropDrawer fallback
+              // and so stays exactly as visible as before.
+              noChange={
+                cityTaxiChange
+                  ? false
+                  : data?.transfer_type === "sightseeing"
+                    ? true
+                    : isIntracity
+              }
               error={error}
               // isAirport={isAirport}
               setIsTransferDrawerOpen={setIsTransferDrawerOpen}

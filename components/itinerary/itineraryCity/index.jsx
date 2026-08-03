@@ -232,6 +232,7 @@ const ItineraryCity = (props) => {
     index,
     itinerary_city_id,
     idx,
+    dayIdx,
     date,
     bookingId,
     city_id,
@@ -439,12 +440,29 @@ const ItineraryCity = (props) => {
     }
   }, []);
 
-  // Close activity drawer when URL back-navigation removes the drawer query
+  // Keep the activity picker in step with the URL in both directions. The city
+  // header opens it with local state and pushes the query alongside, but a
+  // handoff from elsewhere (the cart's "Change Activity", which unmounts before
+  // this city renders) can only arrive as a URL — so the query has to be able to
+  // open it too, not just close it on back-navigation.
+  const activityDrawerFromUrl =
+    drawer === "activity" &&
+    String(itinerary_city_id) === String(props?.city?.id);
+
   useEffect(() => {
-    if (showActivityDrawer && drawer !== "activity") {
-      setShowActivityDrawer(false);
+    if (activityDrawerFromUrl !== showActivityDrawer) {
+      setShowActivityDrawer(activityDrawerFromUrl);
     }
-  }, [drawer]);
+  }, [activityDrawerFromUrl]);
+
+  // Which day the picker should fill. `dayIdx` is this city's own day index —
+  // deliberately not `idx`, which the day cards push as an itinerary-wide index.
+  const activityDayIndex = (() => {
+    const parsed = Number(dayIdx);
+    return activityDrawerFromUrl && Number.isInteger(parsed) && parsed >= 0
+      ? parsed
+      : 0;
+  })();
 
   const handleDeleteTaxi = async (val) => {
     if (!localStorage?.getItem("access_token")) {
@@ -1224,13 +1242,16 @@ const ItineraryCity = (props) => {
           cityName={props?.city?.city?.name}
           cityID={props?.city?.city?.id}
           regionID={props?.city?.city?.region}
-          date={props?.city?.day_by_day?.[0]?.date}
+          date={
+            props?.city?.day_by_day?.[activityDayIndex]?.date ||
+            props?.city?.day_by_day?.[0]?.date
+          }
           start_date={props?.city?.start_date || props?.city?.day_by_day?.[0]?.date}
           duration={props?.city?.duration}
           itinerary_city_id={props?.city?.id}
           mercuryItinerary={props?.mercuryItinerary}
           itinerary_id={router?.query?.id}
-          day_slab_index={0}
+          day_slab_index={activityDayIndex}
           getPaymentHandler={props?.getPaymentHandler}
           getAccommodationAndActivitiesHandler={props?.getAccommodationAndActivitiesHandler}
           setShowLoginModal={props?.setShowLoginModal}

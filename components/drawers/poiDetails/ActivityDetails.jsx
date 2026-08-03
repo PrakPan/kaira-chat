@@ -430,17 +430,25 @@ const ActivityDetails = (props) => {
     // stacks above it (the cart drawer at 1600) has to get out of the way
     // first or the picker opens behind it.
     props?.onChangeStart?.();
-    const activityDate = itinerary?.cities?.find(
+    const activityCity = itinerary?.cities?.find(
       (city) => city.id === props?.itinerary_city_id,
-    )?.day_by_day?.[props?.dayIndex]?.date;
+    );
+    const activityDate = activityCity?.day_by_day?.[props?.dayIndex]?.date;
 
+    // `drawer=activity` is the contract the itinerary's own city header uses and
+    // the only one ItineraryCity mounts a picker for. (`showAddActivity`, which
+    // this used to push, is only consumed inside the expanded CityDrawer — from
+    // the itinerary or the cart it opens nothing.) `dayIdx` is the city's own
+    // day index, so the picker fills the slot the activity actually sits in
+    // rather than defaulting to day 1.
     router.push(
       {
         pathname: window.location.pathname,
         query: {
-          drawer: "showAddActivity",
+          drawer: "activity",
           itinerary_city_id: props?.itinerary_city_id,
-          idx: props?.dayIndex,
+          city_id: activityCity?.city?.id,
+          dayIdx: props?.dayIndex,
           date: activityDate,
         },
       },

@@ -7,10 +7,10 @@ export const useHandleClose = () => {
     const {
       drawer, bookingId, oItineraryCity, dItineraryCity,
       drawerType, transferType, doj, poi_id, type,
-      dayIndex, index, itinerary_city_id, idx, date,
+      dayIndex, index, itinerary_city_id, idx, dayIdx, date,
       city_id, booking, scroll, clickType, itineraryCityId,
       hotel_duration, check_in, check_out, city_name,
-      taxiTab,
+      taxiTab, changeBookingId,
       initialMode, initialEdgeId,
       ...restQuery
     } = router.query;
