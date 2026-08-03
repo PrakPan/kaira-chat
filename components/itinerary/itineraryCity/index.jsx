@@ -492,6 +492,19 @@ const ItineraryCity = (props) => {
     }
   }, [drawer]);
 
+  // Open the activity picker when a "Change Activity" hand-off lands via the
+  // URL (drawer=activity for this city). The always-visible add buttons open it
+  // through openActivityDrawer(); a hand-off from the cart / booking-detail
+  // drawer only sets the URL, so mirror that into local state here.
+  useEffect(() => {
+    if (
+      drawer === "activity" &&
+      String(itinerary_city_id) === String(props?.city?.id)
+    ) {
+      setShowActivityDrawer(true);
+    }
+  }, [drawer, itinerary_city_id, props?.city?.id]);
+
   const handleDeleteTaxi = async (val) => {
     if (!localStorage?.getItem("access_token")) {
       props?.setShowLoginModal(true);

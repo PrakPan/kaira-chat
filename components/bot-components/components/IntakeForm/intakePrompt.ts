@@ -35,6 +35,18 @@ export function formatShort(iso: string | null): string {
   return d.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
 }
 
+// Same as formatShort but includes the year — used when composing the message
+// sent to Kaira so the dates are unambiguous (e.g. "5 Jun 2026").
+export function formatLong(iso: string | null): string {
+  const d = isoToDate(iso);
+  if (!d) return "";
+  return d.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
 export function nightsBetween(startIso: string | null, endIso: string | null): number {
   const s = isoToDate(startIso);
   const e = isoToDate(endIso);
@@ -122,7 +134,7 @@ function whenLine(state: IntakeFormState): string {
   if (state.when_mode === "dates" && state.startDate && state.endDate) {
     const n = nightsBetween(state.startDate, state.endDate);
     const nights = n ? ` (${n} ${n === 1 ? "night" : "nights"})` : "";
-    return `${formatShort(state.startDate)} – ${formatShort(state.endDate)}${nights}`;
+    return `${formatLong(state.startDate)} – ${formatLong(state.endDate)}${nights}`;
   }
   if (state.when_mode === "flexible") {
     const month =

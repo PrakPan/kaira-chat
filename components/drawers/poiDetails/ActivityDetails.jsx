@@ -430,18 +430,25 @@ const ActivityDetails = (props) => {
     // stacks above it (the cart drawer at 1600) has to get out of the way
     // first or the picker opens behind it.
     props?.onChangeStart?.();
-    const activityDate = itinerary?.cities?.find(
+
+    // Reuse the itinerary's own activity picker — same URL contract as the
+    // city header's "Add activity" (openActivityDrawer): drawer=activity +
+    // itinerary_city_id + city_id. The picker host opens on that.
+    const activityCity = itinerary?.cities?.find(
       (city) => city.id === props?.itinerary_city_id,
-    )?.day_by_day?.[props?.dayIndex]?.date;
+    );
 
     router.push(
       {
         pathname: window.location.pathname,
         query: {
-          drawer: "showAddActivity",
+          drawer: "activity",
           itinerary_city_id: props?.itinerary_city_id,
-          idx: props?.dayIndex,
-          date: activityDate,
+          city_id: activityCity?.city?.id,
+          // Carry the booking being changed so the picker's booking request
+          // can pass it back — the backend swaps this booking for the newly
+          // chosen activity instead of adding a second one.
+          booking_id: props?.data?.id,
         },
       },
       undefined,

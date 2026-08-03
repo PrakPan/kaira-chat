@@ -1224,12 +1224,12 @@ const CinematicThemeLanding: React.FC<CinematicThemeLandingProps> = ({
 }) => (
   <div className="ctl-root pb-[32px] md:pb-0">
     <CinematicStyles />
-    {config.header && (
+    {/* {config.header && (
       <CompactHeader
         title={config.header.title}
         subtitle={config.header.subtitle}
       />
-    )}
+    )} */}
     <CinematicHero hero={config.hero} onSelectPrompt={onSelectPrompt} />
 
     {config.sections.map((section, i) => {
