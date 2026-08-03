@@ -31,6 +31,10 @@ import type {
   CinematicPromptCard,
   CinematicTripCard,
   CinematicGradientCard,
+  CinematicPillarCard,
+  CinematicListRow,
+  CinematicCheckRow,
+  CinematicStoryCard,
   CinematicHeroConfig,
   CinematicAskBar,
 } from "./types";
@@ -43,6 +47,8 @@ const BORDER = "#ececec";
 const YELLOW = "#f7e700";
 const PAPER = "#fafaf5";
 const DARK = "#0a1020";
+const RED = "#b84034";
+const SAND = "#f4f3ec";
 
 // ── Scoped styles ──────────────────────────────────────────────────────────
 const CinematicStyles = () => (
@@ -53,6 +59,8 @@ const CinematicStyles = () => (
       .ctl-serif { font-family: 'Instrument Serif', Georgia, 'Times New Roman', serif; font-style: italic; font-weight: 400; }
       .ctl-mono { font-family: ui-monospace, 'JetBrains Mono', 'SFMono-Regular', Menlo, Consolas, monospace; text-transform: uppercase; letter-spacing: 0.14em; font-size: 10px; color: ${FAINT}; }
       .ctl-h { font-family: 'Inter', sans-serif; font-weight: 800; letter-spacing: -0.03em; color: ${INK}; margin: 0; }
+      .ctl-h-light { color: ${PAPER}; }
+      .ctl-h-yellow { color: ${YELLOW}; }
       .ctl-card { transition: transform .25s cubic-bezier(.2,.7,.3,1); }
       .ctl-card:hover { transform: translateY(-2px); }
       .ctl-press { transition: transform .15s cubic-bezier(.2,.7,.3,1); }
@@ -420,46 +428,66 @@ const TripCard: React.FC<{
   <button
     type="button"
     onClick={() => onSelectPrompt(card.prompt)}
-    className="ctl-card text-left bg-white rounded-[18px] p-[12px] md:p-[16px] flex gap-[12px] md:gap-[16px] cursor-pointer"
+    className="ctl-card text-left bg-white rounded-[18px] overflow-hidden flex flex-col cursor-pointer"
   >
-    <div
-      className="relative w-[78px] h-[78px] md:w-[96px] md:h-[96px] shrink-0 rounded-[12px] md:rounded-[14px] overflow-hidden"
-      style={{ background: "#eef0f4" }}
-    >
-      <SkeletonImage
-        src={card.image}
-        alt={card.name}
-        objectPosition={card.objectPosition}
-      />
-    </div>
-    <div className="flex-1 min-w-0">
-      {card.tag && <div className="ctl-mono" style={{ fontSize: 9 }}>{card.tag}</div>}
+    <div className="flex gap-[12px] md:gap-[16px] p-[12px] md:p-[16px]">
       <div
-        className="text-[14.5px] md:text-[16px] font-bold mt-[2px]"
-        style={{ color: INK, letterSpacing: "-0.01em" }}
+        className="relative w-[78px] h-[78px] md:w-[96px] md:h-[96px] shrink-0 rounded-[12px] md:rounded-[14px] overflow-hidden flex items-center justify-center text-[30px]"
+        style={{ background: card.gradient ?? "#eef0f4" }}
       >
-        {card.name}
+        {card.image ? (
+          <SkeletonImage
+            src={card.image}
+            alt={card.name}
+            objectPosition={card.objectPosition}
+          />
+        ) : (
+          card.emoji
+        )}
       </div>
-      {card.line && (
-        <div className="text-[12px] md:text-[13px] mt-[2px]" style={{ color: MUTED }}>
-          {card.line}
+      <div className="flex-1 min-w-0">
+        {card.tag && <div className="ctl-mono" style={{ fontSize: 9 }}>{card.tag}</div>}
+        <div
+          className="text-[14.5px] md:text-[16px] font-bold mt-[2px]"
+          style={{ color: INK, letterSpacing: "-0.01em" }}
+        >
+          {card.name}
         </div>
-      )}
-      {(card.price || card.nights) && (
-        <div className="flex md:flex-col gap-[10px] md:gap-[2px] mt-[6px] md:mt-[10px]">
-          {card.price && (
-            <span className="ctl-mono" style={{ color: INK, fontSize: 10.5 }}>
-              {card.price}
-            </span>
-          )}
-          {card.nights && (
-            <span className="ctl-mono" style={{ fontSize: 10 }}>
-              {card.nights}
-            </span>
-          )}
-        </div>
-      )}
+        {card.line && (
+          <div className="text-[12px] md:text-[13px] mt-[2px]" style={{ color: MUTED }}>
+            {card.line}
+          </div>
+        )}
+        {(card.price || card.nights) && (
+          <div className="flex md:flex-col gap-[10px] md:gap-[2px] mt-[6px] md:mt-[10px]">
+            {card.price && (
+              <span className="ctl-mono" style={{ color: INK, fontSize: 10.5 }}>
+                {card.price}
+              </span>
+            )}
+            {card.nights && (
+              <span className="ctl-mono" style={{ fontSize: 10 }}>
+                {card.nights}
+              </span>
+            )}
+          </div>
+        )}
+      </div>
     </div>
+    {card.urgent && (
+      <div
+        className="flex items-center gap-[8px] px-[14px] py-[8px] mt-auto"
+        style={{ background: "#f4f3ec" }}
+      >
+        <span
+          className="w-[6px] h-[6px] rounded-full shrink-0"
+          style={{ background: RED }}
+        />
+        <span className="ctl-mono" style={{ color: RED, fontSize: 8.5 }}>
+          {card.urgent}
+        </span>
+      </div>
+    )}
   </button>
 );
 
@@ -589,6 +617,500 @@ const GradientSection: React.FC<{
             />
           ))}
         </div>
+        {/* {section.footerCta && (
+          <FooterButton cta={section.footerCta} onSelectPrompt={onSelectPrompt} />
+        )} */}
+      </Container>
+    </section>
+  );
+};
+
+// Full-width outline button under a grid (e.g. "View all destinations →").
+const FooterButton: React.FC<{
+  cta: CinematicSectionCta;
+  onSelectPrompt: (p: string) => void;
+}> = ({ cta, onSelectPrompt }) => {
+  const router = useRouter();
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        if (cta.prompt) onSelectPrompt(cta.prompt);
+        else if (cta.href) router.push(cta.href);
+      }}
+      className="ctl-press mt-[12px] md:mt-[20px] w-full md:w-auto md:mx-auto md:block bg-white rounded-full px-[24px] py-[13px] text-[14px] font-bold cursor-pointer"
+      style={{ color: INK, border: `1px solid ${BORDER}` }}
+    >
+      {cta.label} →
+    </button>
+  );
+};
+
+// ── Pillar card ("Choose Your Arctic Story") ───────────────────────────────
+// Gradient/emoji hero tile with a mono window badge, name and line. Mobile:
+// 236px wide horizontal scroller. Desktop: fills a 3-col grid cell.
+const PillarCard: React.FC<{
+  card: CinematicPillarCard;
+  onSelectPrompt: (p: string) => void;
+}> = ({ card, onSelectPrompt }) => (
+  <button
+    type="button"
+    onClick={() => onSelectPrompt(card.prompt)}
+    className="ctl-card text-left bg-white rounded-[22px] overflow-hidden cursor-pointer w-[236px] md:w-auto shrink-0 md:shrink flex flex-col"
+    style={{ scrollSnapAlign: "start" }}
+  >
+    <div
+      className="relative h-[128px] md:h-[160px] flex items-center justify-center text-[42px]"
+      style={{ background: card.gradient }}
+    >
+      {card.image ? <SkeletonImage src={card.image} alt={card.name} /> : card.emoji}
+      {card.window && (
+        <div
+          className="ctl-mono absolute top-[10px] left-[10px] px-[8px] py-[3px] rounded-[6px]"
+          style={{
+            background: "rgba(10,16,32,0.8)",
+            color: PAPER,
+            backdropFilter: "blur(10px)",
+            fontSize: 8.5,
+            pointerEvents: "none",
+          }}
+        >
+          {card.window}
+        </div>
+      )}
+    </div>
+    <div className="px-[16px] py-[14px]">
+      <div
+        className="text-[16px] md:text-[17px] font-bold"
+        style={{ color: INK, letterSpacing: "-0.01em" }}
+      >
+        {card.name}
+      </div>
+      {card.line && (
+        <div
+          className="text-[13px] leading-[1.5] mt-[3px]"
+          style={{ color: MUTED }}
+        >
+          {card.line}
+        </div>
+      )}
+    </div>
+  </button>
+);
+
+const PillarsSection: React.FC<{
+  section: Extract<CinematicSection, { type: "pillars" }>;
+  onSelectPrompt: (p: string) => void;
+}> = ({ section, onSelectPrompt }) => (
+  <section className="pt-[30px] md:pt-[56px]">
+    <Container>
+      <div className="flex items-end justify-between gap-[16px]">
+        <Heading heading={section.heading} className="text-[22px] md:text-[34px]" />
+        {section.cta && (
+          <div className="max-ph:hidden">
+            <SectionCta cta={section.cta} onSelectPrompt={onSelectPrompt} />
+          </div>
+        )}
+      </div>
+      <div
+        className="ctl-scroll flex md:grid md:grid-cols-3 gap-[12px] md:gap-[16px] mt-[14px] md:mt-[24px] overflow-x-auto md:overflow-visible pb-[4px]"
+        style={{ scrollSnapType: "x mandatory" }}
+      >
+        {section.cards.map((card, i) => (
+          <PillarCard key={`pillar-${i}`} card={card} onSelectPrompt={onSelectPrompt} />
+        ))}
+      </div>
+    </Container>
+  </section>
+);
+
+// ── List row ("Where you'd sleep" / "Worth the cold") ──────────────────────
+const ListRow: React.FC<{
+  row: CinematicListRow;
+  compact?: boolean;
+  onSelectPrompt: (p: string) => void;
+}> = ({ row, compact, onSelectPrompt }) => {
+  const router = useRouter();
+  const act = () => {
+    if (row.prompt) onSelectPrompt(row.prompt);
+    else if (row.href) router.push(row.href);
+  };
+  return (
+    <button
+      type="button"
+      onClick={act}
+      className={`ctl-press w-full text-left flex items-center gap-[12px] md:gap-[14px] bg-white cursor-pointer ${
+        compact ? "rounded-[14px] p-[11px] md:p-[12px]" : "rounded-[18px] p-[12px] md:p-[14px]"
+      }`}
+      style={{ border: `1px solid ${BORDER}` }}
+    >
+      <div
+        className={`relative overflow-hidden shrink-0 flex items-center justify-center ${
+          compact
+            ? "w-[40px] h-[40px] md:w-[54px] md:h-[54px] rounded-[10px] md:rounded-[12px] text-[19px]"
+            : "w-[62px] h-[62px] md:w-[76px] md:h-[76px] rounded-[14px] text-[26px]"
+        }`}
+        style={{ background: row.gradient }}
+      >
+        {row.image ? (
+          <SkeletonImage
+            src={row.image}
+            alt={row.name}
+            objectPosition={row.objectPosition}
+          />
+        ) : (
+          row.emoji
+        )}
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-[7px]">
+          <span
+            className={`font-bold ${compact ? "text-[13.5px] font-semibold" : "text-[15px]"}`}
+            style={{ color: INK, letterSpacing: "-0.01em" }}
+          >
+            {row.name}
+          </span>
+          {row.badge && (
+            <span
+              className="ctl-mono"
+              style={{
+                background: YELLOW,
+                color: INK,
+                padding: "2px 6px",
+                borderRadius: 6,
+                transform: "rotate(-1.5deg)",
+                fontSize: 8,
+              }}
+            >
+              {row.badge}
+            </span>
+          )}
+        </div>
+        {row.line && (
+          <div
+            className={compact ? "text-[12px]" : "text-[12.5px] leading-[1.45] mt-[2px]"}
+            style={{ color: compact ? FAINT : MUTED }}
+          >
+            {row.line}
+          </div>
+        )}
+      </div>
+      <span className="shrink-0 text-[14px]" style={{ color: FAINT }}>
+        →
+      </span>
+    </button>
+  );
+};
+
+const ListSection: React.FC<{
+  section: Extract<CinematicSection, { type: "list" }>;
+  onSelectPrompt: (p: string) => void;
+}> = ({ section, onSelectPrompt }) => (
+  <section className="pt-[32px] md:pt-[56px] pb-[16px] md:pb-[32px]">
+    <Container>
+      <Heading heading={section.heading} className="text-[22px] md:text-[34px]" />
+      <div
+        className={`grid grid-cols-1 mt-[16px] md:mt-[24px] ${
+          section.compact
+            ? "md:grid-cols-3 gap-[8px] md:gap-[12px]"
+            : "md:grid-cols-2 gap-[10px] md:gap-[14px]"
+        }`}
+      >
+        {section.rows.map((row, i) => (
+          <ListRow
+            key={`row-${i}`}
+            row={row}
+            compact={section.compact}
+            onSelectPrompt={onSelectPrompt}
+          />
+        ))}
+      </div>
+    </Container>
+  </section>
+);
+
+// ── Checklist (dark section — "The Santa bit, done properly") ───────────────
+const ChecklistSection: React.FC<{
+  section: Extract<CinematicSection, { type: "checklist" }>;
+  onSelectPrompt: (p: string) => void;
+}> = ({ section, onSelectPrompt }) => {
+  const router = useRouter();
+  return (
+    <section
+      className="mt-[34px] md:mt-[56px] relative overflow-hidden"
+      style={{ background: DARK }}
+    >
+      <div
+        className="absolute pointer-events-none"
+        style={{
+          top: -80,
+          right: -80,
+          width: 320,
+          height: 320,
+          background: "radial-gradient(circle, rgba(247,231,0,0.08), transparent 70%)",
+        }}
+      />
+      <Container className="py-[30px] md:py-[52px]">
+        <Heading
+          heading={section.heading}
+          className="text-[22px] md:text-[34px] ctl-h-light"
+        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-[8px] md:gap-[12px] mt-[16px] md:mt-[24px]">
+          {section.rows.map((row, i) => {
+            const act = () => {
+              if (row.prompt) onSelectPrompt(row.prompt);
+              else if (row.href) router.push(row.href);
+            };
+            const clickable = !!(row.prompt || row.href);
+            return (
+              <button
+                key={`check-${i}`}
+                type="button"
+                onClick={act}
+                disabled={!clickable}
+                className={`text-left flex items-center gap-[12px] rounded-[14px] px-[13px] py-[11px] ${
+                  clickable ? "ctl-press cursor-pointer" : "cursor-default"
+                }`}
+                style={{
+                  background: "rgba(255,255,255,0.04)",
+                  border: "1px solid rgba(255,255,255,0.08)",
+                }}
+              >
+                <span className="text-[19px] shrink-0">{row.emoji}</span>
+                <div className="min-w-0">
+                  <div
+                    className="text-[13.5px] font-semibold"
+                    style={{ color: PAPER }}
+                  >
+                    {row.name}
+                  </div>
+                  {row.meta && (
+                    <div className="ctl-mono mt-[2px]" style={{ fontSize: 8.5 }}>
+                      {row.meta}
+                    </div>
+                  )}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </Container>
+    </section>
+  );
+};
+
+// ── Months / timeline ("When to actually go") ──────────────────────────────
+const MonthsSection: React.FC<{
+  section: Extract<CinematicSection, { type: "months" }>;
+}> = ({ section }) => (
+  <section
+    className="pt-[34px] md:pt-[56px] pb-[4px] md:pb-[8px]"
+    style={{ background: DARK }}
+  >
+    <Container className="pb-[30px] md:pb-[52px]">
+      <Heading
+        heading={section.heading}
+        className="text-[22px] md:text-[34px] ctl-h-yellow"
+      />
+
+      {/* Mobile — single white card with divided rows */}
+      <div
+        className="md:hidden bg-white rounded-[18px] px-[16px] py-[6px] mt-[16px]"
+        style={{ border: `1px solid ${BORDER}` }}
+      >
+        {section.rows.map((row, i) => (
+          <div
+            key={`month-m-${i}`}
+            className="flex gap-[14px] py-[12px]"
+            style={{
+              borderBottom:
+                i < section.rows.length - 1 ? `1px solid ${BORDER}` : "none",
+            }}
+          >
+            <div
+              className="ctl-mono shrink-0 pt-[2px] w-[62px]"
+              style={{ color: INK, fontSize: 10, fontWeight: 600 }}
+            >
+              {row.range}
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-[13.5px] font-semibold" style={{ color: INK }}>
+                {row.name}
+              </div>
+              {row.line && (
+                <div
+                  className="text-[12px] leading-[1.45] mt-[2px]"
+                  style={{ color: MUTED }}
+                >
+                  {row.line}
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop — a row of month cards that fills the width */}
+      <div className="max-ph:hidden grid grid-cols-2 lg:grid-cols-4 gap-[14px] mt-[24px]">
+        {section.rows.map((row, i) => (
+          <div
+            key={`month-d-${i}`}
+            className="bg-white rounded-[16px] p-[18px] flex flex-col"
+            style={{ border: `1px solid ${BORDER}` }}
+          >
+            <div
+              className="ctl-mono inline-block self-start px-[8px] py-[3px] rounded-[6px] mb-[12px]"
+              style={{ background: YELLOW, color: INK, fontSize: 10, fontWeight: 600 }}
+            >
+              {row.range}
+            </div>
+            <div className="text-[16px] font-bold" style={{ color: INK, letterSpacing: "-0.01em" }}>
+              {row.name}
+            </div>
+            {row.line && (
+              <div className="text-[13px] leading-[1.5] mt-[4px]" style={{ color: MUTED }}>
+                {row.line}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {section.note && (
+        <div
+          className="rounded-[14px] px-[14px] md:px-[18px] py-[11px] md:py-[14px] mt-[10px] md:mt-[16px] text-[12px] md:text-[13.5px] leading-[1.5]"
+          style={{ background: SAND, color: MUTED }}
+        >
+          {section.note}
+        </div>
+      )}
+    </Container>
+  </section>
+);
+
+// ── Stories ("People who went") ─────────────────────────────────────────────
+const StoriesSection: React.FC<{
+  section: Extract<CinematicSection, { type: "stories" }>;
+  onSelectPrompt: (p: string) => void;
+}> = ({ section, onSelectPrompt }) => (
+  <section className="pt-[34px] md:pt-[56px]">
+    <Container>
+      <Heading heading={section.heading} className="text-[22px] md:text-[34px]" />
+      <div className="ctl-scroll flex md:grid md:grid-cols-3 gap-[10px] md:gap-[16px] mt-[16px] md:mt-[24px] overflow-x-auto md:overflow-visible pb-[4px]">
+        {section.cards.map((card: CinematicStoryCard, i) => (
+          <button
+            key={`story-${i}`}
+            type="button"
+            onClick={() => card.prompt && onSelectPrompt(card.prompt)}
+            className="ctl-card text-left bg-white rounded-[14px] p-[14px] md:p-[18px] w-[208px] md:w-auto shrink-0 md:shrink cursor-pointer"
+            style={{ border: `1px solid ${BORDER}` }}
+          >
+            <div className="flex items-baseline justify-between">
+              <span className="ctl-mono" style={{ color: "#f5a623", fontSize: 11 }}>
+                ★ {card.rating}
+              </span>
+              <span className="ctl-mono" style={{ fontSize: 9 }}>
+                {card.type}
+              </span>
+            </div>
+            <div
+              className="text-[13px] md:text-[14.5px] font-semibold mt-[8px] leading-[1.4]"
+              style={{ color: INK }}
+            >
+              {card.name}
+            </div>
+            <div className="text-[12px] md:text-[13px] mt-[2px]" style={{ color: MUTED }}>
+              {card.route}
+            </div>
+          </button>
+        ))}
+      </div>
+    </Container>
+  </section>
+);
+
+// ── Steps (dark section — "Sketch it. I'll finish it.") ─────────────────────
+const StepsSection: React.FC<{
+  section: Extract<CinematicSection, { type: "steps" }>;
+  onSelectPrompt: (p: string) => void;
+}> = ({ section, onSelectPrompt }) => {
+  const router = useRouter();
+  const cta = section.cta;
+  return (
+    <section
+      className="mt-[38px] md:mt-[64px] relative overflow-hidden"
+      style={{ background: DARK }}
+    >
+      <div
+        className="absolute pointer-events-none"
+        style={{
+          top: -80,
+          right: -80,
+          width: 320,
+          height: 320,
+          background: "radial-gradient(circle, rgba(247,231,0,0.08), transparent 70%)",
+        }}
+      />
+      <Container className="py-[32px] md:py-[56px]">
+        <Heading
+          heading={section.heading}
+          className="text-[22px] md:text-[34px] ctl-h-light"
+        />
+        <div className="flex flex-col md:flex-row md:gap-[32px] gap-[14px] mt-[22px] md:mt-[32px]">
+          {section.steps.map((st, i) => (
+            <div key={`step-${i}`} className="flex items-center gap-[14px] md:flex-1">
+              <div
+                className="w-[26px] h-[26px] shrink-0 rounded-full flex items-center justify-center"
+                style={{
+                  background: YELLOW,
+                  color: INK,
+                  fontFamily: "'Instrument Serif', serif",
+                  fontStyle: "italic",
+                  fontSize: 14,
+                }}
+              >
+                {st.n}
+              </div>
+              <div>
+                <span className="text-[14px] font-bold" style={{ color: PAPER }}>
+                  {st.title}
+                </span>
+                {st.sub && (
+                  <span className="ctl-serif text-[14px]" style={{ color: FAINT }}>
+                    {" "}
+                    {st.sub}
+                  </span>
+                )}
+                {st.meta && (
+                  <div className="ctl-mono mt-[2px]" style={{ fontSize: 9 }}>
+                    {st.meta}
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+        {cta && (
+          <button
+            type="button"
+            onClick={() => {
+              if (cta.prompt) onSelectPrompt(cta.prompt);
+              else if (cta.href) router.push(cta.href);
+            }}
+            className="ctl-press mt-[24px] md:mt-[32px] w-full md:w-auto md:px-[40px] rounded-full border-none cursor-pointer px-[14px] py-[14px] text-[15px] font-bold"
+            style={{ background: YELLOW, color: INK, boxShadow: "0 8px 20px -10px rgba(247,231,0,0.3)" }}
+          >
+            {cta.label} →
+          </button>
+        )}
+        {section.note && (
+          <div
+            className="ctl-mono text-center md:text-left mt-[12px]"
+            style={{ fontSize: 9 }}
+          >
+            {section.note}
+          </div>
+        )}
       </Container>
     </section>
   );
@@ -702,28 +1224,37 @@ const CinematicThemeLanding: React.FC<CinematicThemeLandingProps> = ({
 }) => (
   <div className="ctl-root pb-[32px] md:pb-0">
     <CinematicStyles />
-    {config.header && (
+    {/* {config.header && (
       <CompactHeader
         title={config.header.title}
         subtitle={config.header.subtitle}
       />
-    )}
+    )} */}
     <CinematicHero hero={config.hero} onSelectPrompt={onSelectPrompt} />
 
     {config.sections.map((section, i) => {
-      if (section.type === "cards") {
-        return (
-          <CardsSection key={`sec-${i}`} section={section} onSelectPrompt={onSelectPrompt} />
-        );
+      const key = `sec-${i}`;
+      switch (section.type) {
+        case "cards":
+          return <CardsSection key={key} section={section} onSelectPrompt={onSelectPrompt} />;
+        case "trips":
+          return <TripsSection key={key} section={section} onSelectPrompt={onSelectPrompt} />;
+        case "pillars":
+          return <PillarsSection key={key} section={section} onSelectPrompt={onSelectPrompt} />;
+        case "list":
+          return <ListSection key={key} section={section} onSelectPrompt={onSelectPrompt} />;
+        case "checklist":
+          return <ChecklistSection key={key} section={section} onSelectPrompt={onSelectPrompt} />;
+        case "months":
+          return <MonthsSection key={key} section={section} />;
+        case "stories":
+          return <StoriesSection key={key} section={section} onSelectPrompt={onSelectPrompt} />;
+        case "steps":
+          return <StepsSection key={key} section={section} onSelectPrompt={onSelectPrompt} />;
+        case "gradient":
+        default:
+          return <GradientSection key={key} section={section} onSelectPrompt={onSelectPrompt} />;
       }
-      if (section.type === "trips") {
-        return (
-          <TripsSection key={`sec-${i}`} section={section} onSelectPrompt={onSelectPrompt} />
-        );
-      }
-      return (
-        <GradientSection key={`sec-${i}`} section={section} onSelectPrompt={onSelectPrompt} />
-      );
     })}
 
     {config.askBar && (
@@ -738,8 +1269,16 @@ export {
   CardsSection,
   TripsSection,
   GradientSection,
+  PillarsSection,
+  ListSection,
+  ChecklistSection,
+  MonthsSection,
+  StoriesSection,
+  StepsSection,
   AskKairaStrip,
   PromptCard,
   TripCard,
   GradientCard,
+  PillarCard,
+  ListRow,
 };

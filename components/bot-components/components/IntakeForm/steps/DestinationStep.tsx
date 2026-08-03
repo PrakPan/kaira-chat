@@ -78,6 +78,12 @@ const DestinationStep: React.FC<StepProps> = ({ state, update }) => {
         onQueryChange={(q) => update({ query: q })}
         onPick={addDestination}
         onClear={clearAll}
+        onFocus={() => {
+          // Focusing the box while it shows the committed selection wipes just
+          // the text so the user can type a new search. The picks stay selected
+          // (their tags remain below); only `query` is cleared, not the list.
+          if (committed) update({ query: "" });
+        }}
       />
 
       {/* Selected destinations — removable tags. Clearing all re-disables

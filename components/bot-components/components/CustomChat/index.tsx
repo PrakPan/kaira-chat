@@ -153,7 +153,7 @@ export const CustomChat: React.FC<CustomChatProps> = ({
               rows={1}
               disabled={isProcessing}
               className="flex-1 px-5 py-3.5 bg-transparent text-gray-900 placeholder-gray-400 outline-none resize-none ttw-type-body"
-              style={{ maxHeight: "120px" }}
+              style={{ maxHeight: "120px", fontSize: 16 }}
             />
 
             {/* Buttons */}

@@ -410,8 +410,8 @@ const ActivityDetails = (props) => {
   };
 
   // "Change Activity" reuses the itinerary's own activity-selection drawer
-  // (drawer=showAddActivity) — the same trigger the day cards fire to fill a
-  // slot, and the parallel to how "Change POI" opens the POI picker. Gated to
+  // (drawer=activity) — the same trigger the city header fires to fill a slot,
+  // and the parallel to how "Change POI" opens the POI picker. Gated to
   // booked contexts: v1 previews and drafts have no swap flow, and the trigger
   // needs the slot's city id + day index to target the right selection drawer.
   const canChange =
@@ -430,17 +430,17 @@ const ActivityDetails = (props) => {
     // stacks above it (the cart drawer at 1600) has to get out of the way
     // first or the picker opens behind it.
     props?.onChangeStart?.();
+
+    // Reuse the itinerary's own activity picker — same URL contract as the
+    // city header's "Add activity" (openActivityDrawer): drawer=activity +
+    // itinerary_city_id + city_id. The picker host opens on that.
+    // (`showAddActivity`, which this used to push, is only consumed inside the
+    // expanded CityDrawer — from the itinerary or the cart it opens nothing.)
     const activityCity = itinerary?.cities?.find(
       (city) => city.id === props?.itinerary_city_id,
     );
     const activityDate = activityCity?.day_by_day?.[props?.dayIndex]?.date;
 
-    // `drawer=activity` is the contract the itinerary's own city header uses and
-    // the only one ItineraryCity mounts a picker for. (`showAddActivity`, which
-    // this used to push, is only consumed inside the expanded CityDrawer — from
-    // the itinerary or the cart it opens nothing.) `dayIdx` is the city's own
-    // day index, so the picker fills the slot the activity actually sits in
-    // rather than defaulting to day 1.
     router.push(
       {
         pathname: window.location.pathname,
@@ -448,8 +448,16 @@ const ActivityDetails = (props) => {
           drawer: "activity",
           itinerary_city_id: props?.itinerary_city_id,
           city_id: activityCity?.city?.id,
+          // `dayIdx` is this city's own day index, so the picker fills the slot
+          // the activity actually sits in rather than defaulting to day 1.
+          // Deliberately not `idx`, which the day cards push as an
+          // itinerary-wide index (dayOffset + index).
           dayIdx: props?.dayIndex,
           date: activityDate,
+          // Carry the booking being changed so the picker's booking request
+          // can pass it back — the backend swaps this booking for the newly
+          // chosen activity instead of adding a second one.
+          booking_id: props?.data?.id,
         },
       },
       undefined,

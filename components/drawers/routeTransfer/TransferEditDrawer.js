@@ -81,6 +81,20 @@ import OfflineQuoteCTA from "../../ui/OfflineQuoteCTA";
 const FONT_SANS = "'Inter', -apple-system, BlinkMacSystemFont, sans-serif";
 const FONT_SERIF = "'Instrument Serif', 'Times New Roman', serif";
 
+const DEFAULT_CHILD_AGE = 10;
+
+// Build the `child_ages` payload from the actual per-child ages the user
+// selected (pax.childAges), falling back to DEFAULT_CHILD_AGE for any child
+// whose age wasn't provided. Always returns an array of length `count`.
+const buildChildAges = (count, ages) => {
+  const n = count || 0;
+  const src = Array.isArray(ages) ? ages : [];
+  return Array.from({ length: n }, (_, i) => {
+    const age = src[i];
+    return typeof age === "number" && !Number.isNaN(age) ? age : DEFAULT_CHILD_AGE;
+  });
+};
+
 const svgIcons = {
   time: (
     <svg
@@ -3326,6 +3340,7 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
         start_datetime: departureDateTime,
         number_of_adults: paxData.adults,
         number_of_children: paxData.children,
+        child_ages: buildChildAges(paxData.children, paxData.childAges),
         number_of_infants: paxData.infants,
         limit: 5,
         offset: currentOffset,
@@ -3438,6 +3453,7 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
       adults: pax.adults,
       children: pax.children,
       infants: pax.infants,
+      childAges: pax.childAges,
     };
     loadTransfers(currentTransfer, paxData, departureDateTime, {
       isLoadMore: true,
@@ -3464,6 +3480,7 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
         adults: pax.adults,
         children: pax.children,
         infants: pax.infants,
+        childAges: pax.childAges,
       };
       const departureDateTime = `${formattedDate}T${currentModeDepartureTime}:00`;
       loadTransfers(currentTransfer, paxData, departureDateTime);
@@ -3494,6 +3511,7 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
         adults: number_of_adults,
         children: number_of_children || 0,
         infants: number_of_infants || 0,
+        childAges: pax?.childAges,
       };
       loadTransfers(
         currentTransfer,
@@ -3959,6 +3977,7 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
           adults: pax.adults,
           children: pax.children,
           infants: pax.infants,
+          childAges: pax.childAges,
         };
         const departureDateTime = `${calculatedStartTime.format(
           "YYYY-MM-DD",
@@ -4963,6 +4982,7 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
               adults: pax?.adults || 1,
               children: pax?.children || 0,
               infants: pax?.infants || 0,
+              childAges: pax?.childAges,
             };
             const departureDateTime = `${currentModeDepartureDate}T${currentModeDepartureTime}:00`;
             loadMoreAllAboardResults(
@@ -6654,6 +6674,7 @@ const toggleTransferDetails = (priceOptionId) => {
           start_datetime: departureDateTime,
           number_of_adults: paxData.adults,
           number_of_children: paxData.children,
+          child_ages: buildChildAges(paxData.children, paxData.childAges),
           number_of_infants: paxData.infants,
         };
 
@@ -7628,6 +7649,7 @@ const toggleTransferDetails = (priceOptionId) => {
           start_datetime: departureDateTime,
           number_of_adults: pax.adults,
           number_of_children: pax.children,
+          child_ages: buildChildAges(pax.children, pax.childAges),
           number_of_infants: pax.infants,
           limit: 5,
           offset: 0,

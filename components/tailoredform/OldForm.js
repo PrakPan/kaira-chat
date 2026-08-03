@@ -16,6 +16,7 @@ import Popup from "../ErrorPopup";
 import { RxCross2 } from "react-icons/rx";
 import usePageLoaded from "../custom hooks/usePageLoaded";
 import { logEvent } from "../../services/ga/Index";
+import { getLandingPage } from "../../helper/adAttribution";
 
 const fadeInAnimation = keyframes`${fadeIn}`;
 
@@ -405,7 +406,14 @@ const Enquiry = (props) => {
 
     // Build itinerary initiate payload
     let initiateData = {
-      source,
+      source: {
+        ...source,
+        // First page the user landed on this session (home, destination, theme, ...);
+        // falls back to the current path if capture missed (e.g. direct entry).
+        landing_page:
+          getLandingPage() ||
+          (typeof window !== "undefined" ? window.location.pathname : ""),
+      },
       experience_filters_selected: preferences,
       user_location: {
         place_id: startingLocation

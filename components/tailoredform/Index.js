@@ -409,35 +409,15 @@ const Enquiry = (props) => {
       number_of_infants: slideThreeData.numberOfInfants,
     });
 
-    if (totalSlides == 3) {
-      // No hotels selected, so this flow never raises the sign-in gate —
-      // record both login stages with the reason so the funnel stays
-      // continuous through to completion.
-      const authed = hasAccessToken();
-      markLoginStage(
-        "user_login_initiated",
-        authed ? "already_authenticated" : "not_required",
-      );
-      markLoginStage(
-        "user_login_completed",
-        authed ? "already_authenticated" : "not_required",
-      );
+    // This is now the final slide — raise the sign-in gate before completing.
+    if (!hasAccessToken()) {
+      markLoginStage("user_login_initiated", "gate_shown");
+      setShowLoginForm(true);
+    } else {
+      markLoginStage("user_login_initiated", "already_authenticated");
+      markLoginStage("user_login_completed", "already_authenticated");
       _submitDataHandler();
-      return;
     }
-    router.push(
-      {
-        // pathname: "/new-trip",
-        query: {
-          ...router.query,
-          slideIndex: slideThreeData.addHotels
-            ? slideIndex + 1
-            : slideIndex + 2,
-        },
-      },
-      undefined,
-      { shallow: true },
-    );
   };
 
   const _slideTwoSkip = () => {
@@ -725,12 +705,10 @@ const Enquiry = (props) => {
       number_of_adults: slideThreeData.numberOfAdults,
       number_of_children: slideThreeData.numberOfChildren,
       number_of_infants: slideThreeData.numberOfInfants,
-      room_configuration: slideThreeData.roomConfiguration,
       add_flights: slideThreeData.addFlights,
       currency: currency?.currency || "INR",
       add_hotels: slideThreeData.addHotels,
       add_transfers_and_activities: slideThreeData.addInclusions,
-      hotel_types: slideFourData.hotelType.map((s) => parseInt(s)),
       meal_preferences: slideFourData.mealPreferences,
       special_request: slideFourData.specialRequests,
     };
@@ -859,34 +837,13 @@ const Enquiry = (props) => {
   // effects), so it must be safe when window is absent.
   const isLoggedIn =
     typeof window !== "undefined" && !!localStorage.getItem("access_token");
-  const totalSlides = isLoggedIn
-    ? slideThreeData.addHotels
-      ? 4
-      : 3
-    : slideThreeData.addHotels
-      ? 4
-      : 3;
-  // const totalSlides = (localStorage.getItem("access_token")&&!slideThreeData.addHotels) ? 3 :(slideThreeData.addHotels&&localStorage.getItem("access_token")) ? 4  : localStorage.getItem("access_token") ? 4 : 5;
+  const totalSlides = 3;
 
   const [steps, setSteps] = useState([
     "Introduction",
     "Customize Route",
     "Who’s Going & Inclusions",
   ]);
-
-  useEffect(() => {
-    const isLoggedIn = !!localStorage.getItem("access_token");
-
-    setSteps((prevSteps) => {
-      let updatedSteps = [...prevSteps];
-
-      updatedSteps = updatedSteps.filter((step) => step !== "Stay Preferences");
-
-      if (slideThreeData?.addHotels) updatedSteps.push("Stay Preferences");
-
-      return updatedSteps;
-    });
-  }, [slideThreeData?.addHotels]);
 
   useEffect(() => {
     if (slideOneData) {
@@ -1435,53 +1392,7 @@ const Enquiry = (props) => {
                   onclick={_SlideThreeSubmitHandler}
                   loading={isLoading}
                   borderRadius="8px"
-                  className={`${!isDesktop && "w-[120px]"}`}
-                >
-                  {totalSlides == 3 ? "Get Itinerary!" : "Continue"}
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {slideIndex === 3 && (
-            <div className="max-w-[600px] my-zero mx-auto max-ph:w-full">
-              <div className="flex justify-between items-center">
-                <button
-                  className={`LargeIndigoOutlinedButton`}
-                  onClick={_prevSlideHandler}
-                >
-                  Back
-                </button>
-                <Button
-                  width={`${isPageWide ? "300px" : "50%"}`}
-                  fontSize="1rem"
-                  padding="0.5rem 1rem"
-                  fontWeight="500"
-                  margin="30px 0"
-                  borderRadius="8px"
-                  borderWidth="1px"
-                  bgColor="#07213A"
-                  height="50px"
-                  color="white"
-                  loading={isSubmitting}
-                  disabled={isSubmitting}
-                  onclick={() => {
-                    // Check if user is logged in
-                    if (!hasAccessToken()) {
-                      markLoginStage("user_login_initiated", "gate_shown");
-                      setShowLoginForm(true);
-                    } else {
-                      markLoginStage(
-                        "user_login_initiated",
-                        "already_authenticated",
-                      );
-                      markLoginStage(
-                        "user_login_completed",
-                        "already_authenticated",
-                      );
-                      _submitDataHandler();
-                     }
-                  }}
+                  className="whitespace-nowrap"
                 >
                   Get Itinerary!
                 </Button>

@@ -29,7 +29,8 @@
 }
 
 /* Brand logo. Desktop shows the full lockup at tile 38; tablet & smaller swap
-   to the same lockup at tile 30. Exactly one of the two is ever visible.
+   to the mark alone at tile 30 (no wordmark) so it never overflows the row.
+   Exactly one of the two is ever visible.
 
    Both `display` toggles below MUST stay `!important`: BrandLockup sets
    `display: inline-flex` as an inline style, which otherwise outranks these
@@ -47,7 +48,7 @@
   display: inline-flex !important;
 }
 
-/* Same lockup at a smaller tile — tablet & smaller */
+/* Mark only (the "T"), no wordmark — tablet & smaller */
 .logoMark {
   display: none !important;
 }

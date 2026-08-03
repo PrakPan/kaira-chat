@@ -155,9 +155,16 @@ const ActivityDetailsDrawer = (props) => {
 
   const updatedActivityBooking = async (data) => {
     try {
+      // When the picker was opened via "Change Activity", the booking being
+      // replaced rides along in the URL (booking_id). Forwarding it tells the
+      // backend to swap that booking for the newly chosen activity rather than
+      // adding a second one; a normal add flow has no booking_id and omits it.
+      const changeBookingId = router.query?.booking_id;
+
       const requestData = {
         itinerary_city_id: props?.itinerary_city_id,
         trace_id: traceId,
+        ...(changeBookingId ? { booking_id: changeBookingId } : {}),
         ...(data?.result_index !== undefined && { result_index: data.result_index }),
         ...(data?.time !== undefined && { time: data.time }),
       };
