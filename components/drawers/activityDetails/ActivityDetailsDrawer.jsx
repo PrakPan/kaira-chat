@@ -75,6 +75,11 @@ const ActivityDetailsDrawer = (props) => {
       data?.amenities || data?._dateOverride || data?._timeOverride
     );
 
+    // Clear any error from a previous (failed) fetch so reopening the drawer —
+    // or retrying another activity — actually re-attempts and can render the
+    // details instead of staying stuck on the earlier error view.
+    setError(null);
+
     if (isInlineUpdate) {
       setUpdateAmenities(true);
     } else {
@@ -330,6 +335,7 @@ const ActivityDetailsDrawer = (props) => {
               onAddToItinerary={props?.onAddToItinerary}
               traceId={traceId}
               fromChat={props?.fromChat}
+              hideCta={props?.hideCta}
             />
           ) : (
             <ActivityDetailsSkeleton
