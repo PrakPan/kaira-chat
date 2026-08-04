@@ -13,6 +13,10 @@ import TransferEditDrawer, {
   getModeIcon,
 } from "../../../components/drawers/routeTransfer/TransferEditDrawer";
 import { FaPlaneDeparture } from "react-icons/fa";
+import {
+  getVehicleCount,
+  VehicleCountBadge,
+} from "../../../components/modals/taxis/MultiVehicleInfo";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 import { setCloneItineraryDrawer } from "../../../store/actions/cloneItinerary";
 import { useDispatch } from "react-redux";
@@ -360,8 +364,13 @@ const TransferBooking = ({
                             </div>
                             <div className="flex flex-col md:flex-row justify-between items-center w-full">
                               <div className="flex flex-col  w-full">
-                                <div className="text-[16px] font-medium w-full">
+                                <div className="text-[16px] font-medium w-full flex flex-wrap items-center gap-2">
                                   <>{booking?.name}</>
+                                  {/* >1 only when the group needed a convoy; the
+                                      price on this row covers every cab. */}
+                                  <VehicleCountBadge
+                                    count={getVehicleCount(booking)}
+                                  />
                                 </div>
                                 <div className="flex sm:text-sm text-[14px]  flex-row text-[#7A7A7A] font-light items-center">
                                   <>{booking?.type}</>
@@ -687,7 +696,7 @@ const TransferBooking = ({
                           </div>
                           <div className="flex justify-between items-center w-full">
                             <div className="flex flex-col  w-full">
-                              <div className="text-[16px] font-medium w-full">
+                              <div className="text-[16px] font-medium w-full flex flex-wrap items-center gap-2">
                                 {book?.booking_type == "Taxi" ? (
                                   book?.transfer_details &&
                                   book?.transfer_details.gozo &&
@@ -706,6 +715,11 @@ const TransferBooking = ({
                                 ) : (
                                   <>{book?.name}</>
                                 )}
+                                {/* >1 only when the group needed a convoy; the
+                                    price on this row covers every cab. */}
+                                <VehicleCountBadge
+                                  count={getVehicleCount(book)}
+                                />
                               </div>
                               <div className="flex sm:text-sm text-[14px]  flex-row text-[#7A7A7A] font-light items-center">
                                 {book?.booking_type == "Taxi" ? (

@@ -16,6 +16,12 @@ import { ImCheckboxChecked, ImCheckboxUnchecked } from "react-icons/im";
 import { FaCar } from "react-icons/fa";
 import { PiTaxiLight } from "react-icons/pi";
 import { currencySymbols } from "../../../../../data/currencySymbols";
+import {
+  getPerVehicleTotal,
+  getVehicleCount,
+  MultiVehicleNote,
+  VehicleCountBadge,
+} from "../../MultiVehicleInfo";
 
 
 const Container = styled.div`
@@ -87,6 +93,14 @@ const ComboSection = (props) => {
     bagCapacity += props.data.taxi_category.bag_capacity;
   }
 
+  // >1 only when no single cab seats the group; then price.total is the convoy
+  // total and per_vehicle_total is what one cab costs.
+  const vehicleCount = getVehicleCount(props.data);
+  const perVehicleTotal = getPerVehicleTotal(props.data);
+  const currencySymbol = currency?.currency
+    ? currencySymbols?.[currency?.currency]
+    : "₹";
+
   const calculateArrivalTime = (startDate, startTime, durationInMinutes) => {
     const startDateTime = dayjs(`${startDate}T${startTime}`);
     const arrivalDateTime = startDateTime.add(durationInMinutes, "minute");
@@ -128,7 +142,7 @@ const ComboSection = (props) => {
         <DetailsContainer>
           <div className="flex justify-between max-ph:flex-col">
             <div>
-              <div className="flex justify-between w-100">
+              <div className="flex flex-wrap items-center gap-2 w-100">
                 <span className="text-md font-600 leading-xl text-[#0b1220] ">
                   {props.data?.taxi_category?.type ? (
                     <>
@@ -144,6 +158,7 @@ const ComboSection = (props) => {
                     "One-way Taxi"
                   )}
                 </span>
+                <VehicleCountBadge count={vehicleCount} />
               </div>
 
               {<div className="text-sm font-400 leading-lg-md text-[#445069]">{props.data?.taxi_category?.model_name}</div>}
@@ -152,7 +167,18 @@ const ComboSection = (props) => {
                 <div className="flex flex-col ">
                   <div className="font-600 text-md-lg leading-xl-sm text-[#0b1220]">
                     {props.data?.taxi_category?.seating_capacity + "-seater"}
+                    {vehicleCount > 1 ? (
+                      <span className="font-400 text-sm text-[#445069]">
+                        {" "}
+                        (per taxi)
+                      </span>
+                    ) : null}
                   </div>
+                  <MultiVehicleNote
+                    count={vehicleCount}
+                    seatingCapacity={props.data?.taxi_category?.seating_capacity}
+                    className="mt-1"
+                  />
                   <FacilitiesContainer>
                     <Accordion
                       borderRadius="0.5rem"
@@ -202,10 +228,17 @@ const ComboSection = (props) => {
               </div>
             </div>
             <div className="flex flex-col justify-between h-full items-end  max-ph:flex-row">
-              <div>
+              <div className="flex flex-col items-end max-ph:items-start">
                 <span className="text-lg font-mono text-[#0b1220] 2xl-md">
-                  {`${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}` + getIndianPrice(Math.ceil(props.data.price.total))}
+                  {currencySymbol + getIndianPrice(Math.ceil(props.data.price.total))}
                 </span>
+                {vehicleCount > 1 && perVehicleTotal ? (
+                  <span className="ttw-type-small text-[#445069] whitespace-nowrap">
+                    {currencySymbol}
+                    {getIndianPrice(Math.ceil(perVehicleTotal))} × {vehicleCount}{" "}
+                    taxis
+                  </span>
+                ) : null}
               </div>
               <div className="flex items-end justify-center">
                 {loading ? (
