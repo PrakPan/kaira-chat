@@ -72,6 +72,61 @@ const TravelPlanner = (props) => {
     }
   ]
 
+  // ── SEO metadata with fallbacks ──────────────────────────────────────────
+  // The CMS often ships an empty meta_description / meta_keywords and a generic
+  // social_share_title for STATE pages, which previously shipped empty
+  // <meta description>, empty og:*, empty keywords and no structured data —
+  // measurably weaker than city pages. Derive sensible fallbacks so every state
+  // page has a complete, page-specific set of tags. Mirrors the city page.
+  const stateName =
+    props.Data?.name || convertDbNameToCapitalFirst(props.Data?.slug) || "";
+  const canonicalUrl = `https://thetarzanway.com/${props.path}`;
+  const pageTitle = `Plan Your Trip to ${convertDbNameToCapitalFirst(
+    props.Data?.slug
+  )} | AI Trip Planner & Custom Travel Itineraries | The Tarzan Way`;
+
+  // Description: prefer CMS meta_description, then the richer editorial copy,
+  // then a name-based default. Collapse whitespace and trim to a snippet length
+  // at a word boundary so long paragraphs don't get cut mid-word.
+  const rawDescription =
+    props.Data?.meta_description ||
+    props.Data?.short_description ||
+    props.Data?.one_liner_description ||
+    props.Data?.tagline ||
+    `Plan your trip to ${stateName} with The Tarzan Way's AI itinerary. Discover the top places to visit, things to do, ideal duration, best time to visit, and build a custom, bookable travel plan.`;
+  let metaDescription = String(rawDescription).replace(/\s+/g, " ").trim();
+  if (metaDescription.length > 300) {
+    metaDescription =
+      metaDescription.slice(0, 300).replace(/\s+\S*$/, "").trim() + "…";
+  }
+
+  // og:title: the CMS social_share_title is frequently the generic site default
+  // for states; fall back to the page-specific title in that case.
+  const GENERIC_SHARE_TITLE = "The Tarzan Way | Personalized Travel Experiences";
+  const ogTitle =
+    props.Data?.social_share_title &&
+    props.Data.social_share_title.trim() &&
+    props.Data.social_share_title.trim() !== GENERIC_SHARE_TITLE
+      ? props.Data.social_share_title
+      : pageTitle;
+
+  // keywords: fall back to a name-derived set when the CMS field is empty.
+  const rawKeywords = Array.isArray(props?.Data?.meta_keywords)
+    ? props.Data.meta_keywords.join(", ")
+    : props?.Data?.meta_keywords;
+  const metaKeywords =
+    rawKeywords && String(rawKeywords).trim()
+      ? rawKeywords
+      : `${stateName} trip planner, ${stateName} itinerary, things to do in ${stateName}, places to visit in ${stateName}, ${stateName} tour package, ${stateName} travel guide, best time to visit ${stateName}, ${stateName} holiday packages, AI trip planner`;
+
+  const schemaData = {
+    "@context": "https://schema.org",
+    "@type": "TouristDestination",
+    name: stateName,
+    description: metaDescription,
+    url: canonicalUrl,
+  };
+
   return (
     <Layout
       page_id={props.Data?.id}
@@ -84,33 +139,16 @@ const TravelPlanner = (props) => {
         {!isDestinationIndexable(props.path) && (
           <meta name="robots" content="noindex,follow" />
         )}
-        <title>
-          Plan Your Trip to {convertDbNameToCapitalFirst(props.Data?.slug)} | AI Trip Planner & Custom Travel Itineraries | The Tarzan Way
-        </title>
-        <meta
-          name="description"
-          content={`${props.Data?.meta_description}`}
-        ></meta>
-        <meta
-          property="og:title"
-          content={`${props.Data?.social_share_title}`}
-        />
-        <meta
-          property="og:description"
-          content={`${props.Data?.meta_description}`}
-        />
+        <title>{pageTitle}</title>
+        <meta name="description" content={metaDescription}></meta>
+        <meta property="og:title" content={ogTitle} />
+        <meta property="og:description" content={metaDescription} />
         <meta property="og:image" content="https://thetarzanway.com/og-image.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:image" content="https://thetarzanway.com/og-image.png" />
-        <meta
-          property="keywords"
-          content={`${Array.isArray(props?.Data?.meta_keywords)
-              ? props?.Data?.meta_keywords.join(", ")
-              : props?.Data?.meta_keywords
-            }`}
-        ></meta>
+        <meta property="keywords" content={metaKeywords}></meta>
 
         <script
           type="module"
@@ -123,10 +161,13 @@ const TravelPlanner = (props) => {
           href="/vendor/panorama-slider.css"
         ></link>
 
-        <link
-          rel="canonical"
-          href={`https://thetarzanway.com/${props.path}`}
-        ></link>
+        <link rel="canonical" href={canonicalUrl}></link>
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:type" content="website" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
+        />
       </Head>
 
       {/* {props.pageData ? (

@@ -424,10 +424,16 @@ const CardsSection: React.FC<{
 const TripCard: React.FC<{
   card: CinematicTripCard;
   onSelectPrompt: (p: string) => void;
-}> = ({ card, onSelectPrompt }) => (
+}> = ({ card, onSelectPrompt }) => {
+  const router = useRouter();
+  const act = () => {
+    if (card.href) router.push(card.href);
+    else if (card.prompt) onSelectPrompt(card.prompt);
+  };
+  return (
   <button
     type="button"
-    onClick={() => onSelectPrompt(card.prompt)}
+    onClick={act}
     className="ctl-card text-left bg-white rounded-[18px] overflow-hidden flex flex-col cursor-pointer"
   >
     <div className="flex gap-[12px] md:gap-[16px] p-[12px] md:p-[16px]">
@@ -489,7 +495,8 @@ const TripCard: React.FC<{
       </div>
     )}
   </button>
-);
+  );
+};
 
 const TripsSection: React.FC<{
   section: Extract<CinematicSection, { type: "trips" }>;
@@ -729,10 +736,13 @@ const ListRow: React.FC<{
   row: CinematicListRow;
   compact?: boolean;
   onSelectPrompt: (p: string) => void;
-}> = ({ row, compact, onSelectPrompt }) => {
+  onSelectActivity?: (activityId: string, source?: string) => void;
+}> = ({ row, compact, onSelectPrompt, onSelectActivity }) => {
   const router = useRouter();
   const act = () => {
-    if (row.prompt) onSelectPrompt(row.prompt);
+    if (row.activityId && onSelectActivity)
+      onSelectActivity(row.activityId, row.activitySource);
+    else if (row.prompt) onSelectPrompt(row.prompt);
     else if (row.href) router.push(row.href);
   };
   return (
@@ -805,7 +815,8 @@ const ListRow: React.FC<{
 const ListSection: React.FC<{
   section: Extract<CinematicSection, { type: "list" }>;
   onSelectPrompt: (p: string) => void;
-}> = ({ section, onSelectPrompt }) => (
+  onSelectActivity?: (activityId: string, source?: string) => void;
+}> = ({ section, onSelectPrompt, onSelectActivity }) => (
   <section className="pt-[32px] md:pt-[56px] pb-[16px] md:pb-[32px]">
     <Container>
       <Heading heading={section.heading} className="text-[22px] md:text-[34px]" />
@@ -822,6 +833,7 @@ const ListSection: React.FC<{
             row={row}
             compact={section.compact}
             onSelectPrompt={onSelectPrompt}
+            onSelectActivity={onSelectActivity}
           />
         ))}
       </div>
@@ -1216,11 +1228,15 @@ const CompactHeader: React.FC<{ title: string; subtitle?: string }> = ({
 export interface CinematicThemeLandingProps {
   config: CinematicThemeConfig;
   onSelectPrompt: (prompt: string) => void;
+  // Opens the read-only activity details drawer for a catalog activity id.
+  // Used by `list` rows that carry an `activityId` (e.g. "Worth the cold").
+  onSelectActivity?: (activityId: string, source?: string) => void;
 }
 
 const CinematicThemeLanding: React.FC<CinematicThemeLandingProps> = ({
   config,
   onSelectPrompt,
+  onSelectActivity,
 }) => (
   <div className="ctl-root pb-[32px] md:pb-0">
     <CinematicStyles />
@@ -1242,7 +1258,14 @@ const CinematicThemeLanding: React.FC<CinematicThemeLandingProps> = ({
         case "pillars":
           return <PillarsSection key={key} section={section} onSelectPrompt={onSelectPrompt} />;
         case "list":
-          return <ListSection key={key} section={section} onSelectPrompt={onSelectPrompt} />;
+          return (
+            <ListSection
+              key={key}
+              section={section}
+              onSelectPrompt={onSelectPrompt}
+              onSelectActivity={onSelectActivity}
+            />
+          );
         case "checklist":
           return <ChecklistSection key={key} section={section} onSelectPrompt={onSelectPrompt} />;
         case "months":

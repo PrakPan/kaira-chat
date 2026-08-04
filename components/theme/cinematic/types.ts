@@ -54,7 +54,10 @@ export interface CinematicTripCard {
   nights?: string;
   urgent?: string; // red urgency banner across the card footer
   objectPosition?: string; // cover-crop focal point (defaults to center)
-  prompt: string;
+  prompt?: string;
+  // When set, clicking navigates here (e.g. an existing itinerary at
+  // /chat/{itinerary_id}) instead of seeding `prompt`. `href` wins if both set.
+  href?: string;
 }
 
 // Gradient/emoji "pillar" card — a hero tile with a mono window badge, name
@@ -85,6 +88,12 @@ export interface CinematicListRow {
   badge?: string; // yellow pill next to the name ("Kaira's pick")
   prompt?: string;
   href?: string;
+  // When set, clicking opens the read-only activity details drawer for this
+  // ancillary/activity id (no Add/Remove CTA) instead of seeding a prompt.
+  // Takes priority over `prompt`/`href`. `activitySource` forwards the
+  // provider source to the detail endpoint when the catalog requires it.
+  activityId?: string;
+  activitySource?: string;
 }
 
 // Dark checklist row ("The Santa bit, done properly"): emoji + name + meta.

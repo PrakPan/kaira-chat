@@ -54,6 +54,25 @@ const ChatPage = ({ checkAuthState }) => {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(appLd) }}
         />
       </Head>
+      {/* Single crawlable H1 for the chat route. The chat UI fills the
+          viewport, so this is visually hidden (via clip, not display:none, so
+          it stays in the rendered DOM and is read by crawlers/screen readers)
+          rather than shown. */}
+      <h1
+        style={{
+          position: "absolute",
+          width: "1px",
+          height: "1px",
+          padding: 0,
+          margin: "-1px",
+          overflow: "hidden",
+          clip: "rect(0, 0, 0, 0)",
+          whiteSpace: "nowrap",
+          border: 0,
+        }}
+      >
+        AI Travel Agent — Plan your trip with Kaira
+      </h1>
       <BotApp />
     </>
   );
