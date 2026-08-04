@@ -109,7 +109,10 @@ const SkeletonImage: React.FC<{
   src: string;
   alt: string;
   objectPosition?: string;
-}> = ({ src, alt, objectPosition }) => {
+  // "cover" (default) fills+crops the frame; "contain" shows the whole image
+  // centered, letterboxed against the parent backdrop.
+  objectFit?: "cover" | "contain";
+}> = ({ src, alt, objectPosition, objectFit }) => {
   const [loaded, setLoaded] = React.useState(false);
   const [error, setError] = React.useState(false);
   const imgRef = React.useRef<HTMLImageElement>(null);
@@ -134,8 +137,9 @@ const SkeletonImage: React.FC<{
         alt={alt}
         onLoad={() => setLoaded(true)}
         onError={() => setError(true)}
-        className="w-full h-full object-cover"
+        className="absolute inset-0 w-full h-full"
         style={{
+          objectFit: objectFit ?? "cover",
           objectPosition: objectPosition ?? "center",
           // On error the img stays transparent so the parent backdrop
           // (gradient tile / neutral fill) shows instead of a broken icon.
@@ -356,7 +360,9 @@ const PromptCard: React.FC<{
       <SkeletonImage
         src={card.image}
         alt={card.name}
-        objectPosition={card.objectPosition}
+        // Top-align the crop so heads/faces stay in frame and any excess is cut
+        // from the bottom rather than off the top. Per-card override still wins.
+        objectPosition={card.objectPosition ?? "center top"}
       />
       {card.tag && (
         <div
@@ -1129,76 +1135,105 @@ const StepsSection: React.FC<{
 };
 
 // ── Ask-Kaira strip ────────────────────────────────────────────────────────
+// Floats exactly like the site-wide <Banner/> (components/containers/Banner.js):
+// a dark centered pill on desktop and a compact dark bar on phones, both hidden
+// until the reader scrolls past half the first viewport. The yellow CTA hands
+// the prompt to a fresh /chat session via `onSelectPrompt`.
 const AskKairaStrip: React.FC<{
   bar: CinematicAskBar;
   onSelectPrompt: (p: string) => void;
-}> = ({ bar, onSelectPrompt }) => (
-  <div className="mt-[40px] md:mt-[64px]">
-    {/* Desktop: dark inline strip */}
-    <div
-      className="max-ph:hidden relative overflow-hidden"
-      style={{ background: DARK }}
-    >
-      <div
-        className="absolute pointer-events-none"
-        style={{
-          top: -120,
-          right: -60,
-          width: 400,
-          height: 400,
-          background:
-            "radial-gradient(circle, rgba(247,231,0,0.08), transparent 70%)",
-        }}
-      />
-      <Container className="py-[22px]">
-        <div className="flex items-center gap-[20px]">
-          <div
-            className="flex-1 flex items-center gap-[12px] rounded-full px-[20px] py-[11px]"
-            style={{
-              background: "rgba(255,255,255,0.06)",
-              border: "1px solid rgba(255,255,255,0.1)",
-            }}
-          >
-            <span className="flex-1 text-[14.5px]" style={{ color: FAINT }}>
-              {bar.placeholder}
-            </span>
-            <button
-              type="button"
-              onClick={() => onSelectPrompt(bar.prompt)}
-              className="rounded-full border-none cursor-pointer px-[20px] py-[10px] text-[13.5px] font-bold"
-              style={{ background: YELLOW, color: INK }}
-            >
-              {bar.cta ?? "Ask Kaira"}
-            </button>
-          </div>
-          <div className="ctl-mono shrink-0" style={{ color: FAINT }}>
-            10,000+ trips · rated 4.9
-          </div>
-        </div>
-      </Container>
-    </div>
+}> = ({ bar }) => {
+  const router = useRouter();
+  const [show, setShow] = React.useState(false);
+  React.useEffect(() => {
+    const onScroll = () =>
+      setShow(window.pageYOffset > window.innerHeight / 2);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
-    {/* Mobile: light bar */}
-    <div
-      className="md:hidden px-[20px] py-[12px]"
-      style={{ background: "rgba(250,250,245,0.95)", borderTop: `1px solid ${BORDER}` }}
+  if (!show) return null;
+
+  const cta = (
+    <button
+      type="button"
+      onClick={() => router.push("/chat")}
+      className="shrink-0 inline-flex items-center gap-[7px] md:gap-[9px] whitespace-nowrap rounded-full border-none cursor-pointer px-[16px] md:px-[22px] py-[9px] md:py-[11px] text-[12.5px] md:text-[15px] font-semibold"
+      style={{ background: YELLOW, color: "#000" }}
     >
-      <div className="flex items-center gap-[10px] bg-white rounded-full pl-[16px] pr-[8px] py-[8px]">
-        <span className="flex-1 text-[13.5px]" style={{ color: "#b8becc" }}>
-          {bar.placeholder}
-        </span>
-        <button
-          type="button"
-          onClick={() => onSelectPrompt(bar.prompt)}
-          className="rounded-full border-none cursor-pointer px-[15px] py-[8px] text-[12.5px] font-semibold"
-          style={{ background: INK, color: PAPER }}
+      {bar.cta ?? "Chat with Kaira"}
+      <svg
+        viewBox="0 0 12 12"
+        height="14"
+        width="14"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M2 10L10 2M10 2H4M10 2V8" />
+      </svg>
+    </button>
+  );
+
+  return (
+    <>
+      {/* Mobile — compact dark pill */}
+      <div
+        className="md:hidden fixed left-0 right-0 z-[998] flex justify-center"
+        style={{
+          bottom: 0,
+          padding: "0 12px calc(12px + env(safe-area-inset-bottom))",
+          pointerEvents: "none",
+        }}
+      >
+        <div
+          className="flex items-center justify-center gap-[10px] w-full max-w-[440px] rounded-full"
+          style={{
+            pointerEvents: "auto",
+            background: "rgba(0,0,0,0.82)",
+            color: "#fff",
+            padding: "7px 7px 7px 16px",
+            boxShadow: "0 8px 24px -8px rgba(0,0,0,0.45)",
+          }}
         >
-          {bar.cta ?? "Ask Kaira"}
-        </button>
+          <span className="flex-1 min-w-0 truncate text-[0.9rem] leading-[1.2]">
+            {bar.placeholder}
+          </span>
+          {cta}
+        </div>
       </div>
-    </div>
-  </div>
-);
+
+      {/* Desktop — centered dark pill */}
+      <div
+        className="max-ph:hidden fixed z-[998]"
+        style={{
+          left: "50%",
+          bottom: 0,
+          transform: "translateX(-50%)",
+          marginBottom: "1rem",
+        }}
+      >
+        <div
+          className="flex items-center"
+          style={{
+            background: "rgba(0,0,0,0.7)",
+            color: "#fff",
+            padding: "0.5rem 1rem",
+            borderRadius: "2rem",
+          }}
+        >
+          <span className="text-[1.25rem]" style={{ margin: "0 2.5vw" }}>
+            {bar.placeholder}
+          </span>
+          {cta}
+        </div>
+      </div>
+    </>
+  );
+};
 
 // ── Compact in-page header (mobile only — desktop uses the site nav) ────────
 const CompactHeader: React.FC<{ title: string; subtitle?: string }> = ({
@@ -1238,7 +1273,11 @@ const CinematicThemeLanding: React.FC<CinematicThemeLandingProps> = ({
   onSelectPrompt,
   onSelectActivity,
 }) => (
-  <div className="ctl-root pb-[32px] md:pb-0">
+  <div
+    className={`ctl-root ${
+      config.askBar ? "pb-[104px] md:pb-[108px]" : "pb-[32px] md:pb-0"
+    }`}
+  >
     <CinematicStyles />
     {/* {config.header && (
       <CompactHeader

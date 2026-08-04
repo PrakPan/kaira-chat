@@ -137,6 +137,8 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
           name: "Jab We Met, hill-town joy",
           line: "Spontaneous, slow, unforgettable.",
           tag: "Mountains",
+          // Portrait still — frame the couple's faces (upper third).
+          objectPosition: "center 40%",
           prompt: PROMPTS.jabWeMet,
         },
         {
@@ -159,6 +161,8 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
           name: "Midnight in Paris",
           line: "When Paris stops performing.",
           tag: "France",
+          // Portrait still — frame the couple's faces (upper third).
+          objectPosition: "center 25%",
           prompt: PROMPTS.midnightInParis,
         },
         {
@@ -181,6 +185,8 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
           name: "Harry Potter, Scotland magic",
           line: "Castles, mist, and wonder.",
           tag: "Scotland",
+          // Portrait still — frame the subject's face (upper third).
+          objectPosition: "center 25%",
           prompt: PROMPTS.harryPotter,
         },
         {
