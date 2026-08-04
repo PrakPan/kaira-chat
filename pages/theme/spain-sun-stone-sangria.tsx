@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { connect } from "react-redux";
+import Head from "next/head";
 import BotApp from "../../components/bot-components/BotAppClient";
 import * as authaction from "../../store/actions/auth";
 import type { ThemeConfig } from "../../components/bot-components/types/themeConfig";
@@ -236,7 +237,25 @@ const SpainSunStoneSangriaThemePage = ({
     checkAuthState();
   }, []);
 
-  return <BotApp themeConfig={spainThemeConfig} />;
+  return (
+    <>
+      <Head>
+        <title>{"Spain Trip Packages & Itineraries for Indian Travellers | The Tarzan Way"}</title>
+        <meta name="description" content={"Plan your Spain trip with The Tarzan Way's AI itinerary — Barcelona, Madrid, Seville, Granada and the Costa del Sol. Best time to go, budgets in ₹, and a custom day-by-day plan."} />
+        <link rel="canonical" href="https://thetarzanway.com/theme/spain-sun-stone-sangria" />
+        <meta property="og:title" content={"Spain Trip Packages & Itineraries for Indian Travellers | The Tarzan Way"} />
+        <meta property="og:description" content={"Plan your Spain trip with The Tarzan Way's AI itinerary — Barcelona, Madrid, Seville, Granada and the Costa del Sol. Best time to go, budgets in ₹, and a custom day-by-day plan."} />
+        <meta property="og:url" content="https://thetarzanway.com/theme/spain-sun-stone-sangria" />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content="https://thetarzanway.com/og-image.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image" content="https://thetarzanway.com/og-image.png" />
+      </Head>
+      <BotApp themeConfig={spainThemeConfig} />
+    </>
+  );
 };
 
 const mapDispatchToProps = (dispatch: any) => ({

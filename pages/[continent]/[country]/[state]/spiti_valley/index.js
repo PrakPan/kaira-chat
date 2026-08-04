@@ -28,7 +28,15 @@ const TravelPlanner = (props) => {
       page="Continent Page"
     >
       <Head>
-        <title>{`${convertDbNameToCapitalFirst(props.Data.slug)} AI Trip Planner & Custom Travel Itineraries | The Tarzan Way`}</title>
+        <title>{`Plan Your Trip to ${convertDbNameToCapitalFirst(props.Data.slug)}${
+          props?.path && props.path.split("/")[1]
+            ? `, ${props.path
+                .split("/")[1]
+                .split("_")
+                .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+                .join(" ")}`
+            : ""
+        } | Itineraries & Packages | The Tarzan Way`}</title>
         <meta
           name="description"
           content={`${props.Data.meta_description}`}

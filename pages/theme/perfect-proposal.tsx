@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { connect } from "react-redux";
+import Head from "next/head";
 import BotApp from "../../components/bot-components/BotAppClient";
 import * as authaction from "../../store/actions/auth";
 import type { ThemeConfig } from "../../components/bot-components/types/themeConfig";
@@ -307,7 +308,25 @@ const KairaPerfectProposalThemePage = ({
     checkAuthState();
   }, []);
 
-  return <BotApp themeConfig={kairaPerfectProposalThemeConfig} />;
+  return (
+    <>
+      <Head>
+        <title>{"Proposal Trip Ideas & Romantic Destinations for Indian Couples | The Tarzan Way"}</title>
+        <meta name="description" content={"Plan the perfect proposal trip with The Tarzan Way's AI itinerary — dreamy destinations, private moments and romantic stays. Budgets in ₹ and a custom day-by-day plan for Indian couples."} />
+        <link rel="canonical" href="https://thetarzanway.com/theme/perfect-proposal" />
+        <meta property="og:title" content={"Proposal Trip Ideas & Romantic Destinations for Indian Couples | The Tarzan Way"} />
+        <meta property="og:description" content={"Plan the perfect proposal trip with The Tarzan Way's AI itinerary — dreamy destinations, private moments and romantic stays. Budgets in ₹ and a custom day-by-day plan for Indian couples."} />
+        <meta property="og:url" content="https://thetarzanway.com/theme/perfect-proposal" />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content="https://thetarzanway.com/og-image.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image" content="https://thetarzanway.com/og-image.png" />
+      </Head>
+      <BotApp themeConfig={kairaPerfectProposalThemeConfig} />
+    </>
+  );
 };
 
 const mapDispatchToProps = (dispatch: any) => ({

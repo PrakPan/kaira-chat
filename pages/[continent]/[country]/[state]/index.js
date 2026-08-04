@@ -81,9 +81,18 @@ const TravelPlanner = (props) => {
   const stateName =
     props.Data?.name || convertDbNameToCapitalFirst(props.Data?.slug) || "";
   const canonicalUrl = `https://thetarzanway.com/${props.path}`;
+  // Country display name for the title, derived from the URL path
+  // (continent/country/state). Mirrors the city page so the destination title
+  // template is consistent across depths (Ticket 3.2).
+  const countryName = props?.path
+    ? (props.path.split("/")[1] || "")
+        .split("_")
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(" ")
+    : "";
   const pageTitle = `Plan Your Trip to ${convertDbNameToCapitalFirst(
     props.Data?.slug
-  )} | AI Trip Planner & Custom Travel Itineraries | The Tarzan Way`;
+  )}${countryName ? `, ${countryName}` : ""} | Itineraries & Packages | The Tarzan Way`;
 
   // Description: prefer CMS meta_description, then the richer editorial copy,
   // then a name-based default. Collapse whitespace and trim to a snippet length

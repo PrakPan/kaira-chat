@@ -203,11 +203,8 @@ const generateSitemap = async () => {
 
   const StaticPaths = [
     { title: "Home Page", link: PROD_BASE_URL, priority: "1.0" },
-    {
-      title: "COVID-19 Safe Travel India",
-      link: PROD_BASE_URL + "/covid-19-safe-travel-india",
-      priority: "0.5",
-    },
+    // Ticket 2.4: the COVID-19 page is stale content and is being 301'd to the
+    // homepage at the edge, so it is intentionally excluded from the sitemap.
     { title: "All Destinations", link: PROD_BASE_URL + "/destinations", priority: "0.9" },
     { title: "Corporates", link: PROD_BASE_URL + "/corporates", priority: "0.6" },
     { title: "Chat with Kaira", link: PROD_BASE_URL + "/chat", priority: "0.7" },
