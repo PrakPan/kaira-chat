@@ -1,97 +1,95 @@
 import React from "react";
-import { PulseLoader } from "react-spinners";
-import styled from "styled-components";
-import Pin from "../../../containers/newitinerary/breif/route/Pin";
-import BackArrow from "../../ui/BackArrow";
 
-const BackText = styled.div`
-  font-size: 1.5rem;
-  line-height: 2rem;
-`;
+const Line = ({ className = "" }) => (
+  <div className={`bg-[#ececec] rounded ${className}`} />
+);
 
-const VehicleDetailLoader = ({ setHandleShow }) => {
+/**
+ * Placeholder for the taxi / train / bus / ferry detail drawer while its
+ * booking loads. Mirrors the real drawer's shell — white pane, sticky header
+ * row, journey card, vehicle card — so nothing shifts when the data lands.
+ */
+const VehicleDetailLoader = () => {
   return (
-    <div className=" bg-[#f4f3ec] w-full h-full flex flex-col overflow-hidden">
-      {/* Header */}
-
-      {/* Vehicle Info */}
-      <div className="flex items-center px-4 py-3 bg-[#fafaf5]">
-        <div className="bg-[#eef2fb] rounded-lg p-2 mr-3 flex-shrink-0">
-          <div className="w-16 h-10 sm:w-20 sm:h-12 bg-[#ececec] opacity-50 rounded-lg"></div>
+    <div className="h-screen bg-white flex flex-col overflow-hidden animate-pulse">
+      <div className="flex-1 overflow-hidden px-6 max-ph:px-4 pb-6">
+        {/* Header */}
+        <div className="flex items-center gap-3 py-4">
+          <Line className="w-6 h-4 shrink-0" />
+          <Line className="w-52 max-w-full h-5" />
         </div>
-        <div className="flex-1 min-w-0">
-          <div className="w-full max-w-32 h-5 bg-[#ececec] opacity-50 rounded"></div>
-        </div>
-      </div>
 
-      {/* Title */}
-      <div className="px-4 pt-2 pb-2 bg-[#fafaf5] ">
-        <div className="w-24 h-5 bg-[#ececec] opacity-50 rounded"></div>
-      </div>
-
-      {/* Main Content */}
-      <div className="flex-1 px-4 py-4 overflow-y-auto">
-        <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-sm relative border border-[#ececec] min-h-0">
-          {/* Route Info */}
-          <div className="flex justify-between items-start gap-2">
-            {/* Source */}
-            <div className="flex flex-col items-start flex-1 min-w-0">
-              <Pin pinColour="green" index={0} length={0} />
-              <div className="mt-2 w-full">
-                <div className="w-full max-w-28 h-4 bg-[#ececec] opacity-50 rounded mb-1"></div>
-                <div className="w-full max-w-20 h-3 bg-[#ececec] opacity-50 rounded mb-1"></div>
-                <div className="w-full max-w-24 h-3 bg-[#ececec] opacity-50 rounded"></div>
+        <div className="pt-2">
+          {/* Journey card */}
+          <div className="mb-4">
+            <Line className="w-16 h-3 mb-2" />
+            <div className="rounded-2xl border border-[#ececec] overflow-hidden">
+              <div className="bg-[#f4f3ec] px-4 py-3">
+                <Line className="w-32 h-4 mb-1.5 bg-[#e2e0d6]" />
+                <Line className="w-24 h-3 bg-[#e2e0d6]" />
               </div>
-            </div>
 
-            {/* Distance - Responsive */}
-            <div className="flex flex-col items-center flex-shrink-0 px-2">
-              <div className="w-12 h-3 bg-[#ececec] opacity-50 rounded mb-2"></div>
-              <div className="border-t border-dashed border-[#b8becc] w-16 sm:w-32 md:w-64"></div>
-            </div>
+              <div className="px-4 py-4">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#ececec] shrink-0" />
+                  <span className="flex-1 border-t border-dashed border-[#ececec]" />
+                  <Line className="w-24 h-4 rounded-full" />
+                  <span className="flex-1 border-t border-dashed border-[#ececec]" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#ececec] shrink-0" />
+                </div>
 
-            {/* Destination */}
-            <div className="flex flex-col items-end flex-1 min-w-0">
-              <Pin pinColour="red" index={0} length={0} />
-              <div className="mt-2 text-right w-full">
-                <div className="w-full max-w-28 h-4 bg-[#ececec] opacity-50 rounded mb-1 ml-auto"></div>
-                <div className="w-full max-w-20 h-3 bg-[#ececec] opacity-50 rounded mb-1 ml-auto"></div>
-                <div className="w-full max-w-24 h-3 bg-[#ececec] opacity-50 rounded ml-auto"></div>
+                <div className="flex items-start justify-between gap-4 mt-3">
+                  <div className="flex-1">
+                    <Line className="w-28 max-w-full h-4 mb-1.5" />
+                    <Line className="w-20 max-w-full h-3 mb-1" />
+                    <Line className="w-24 max-w-full h-3" />
+                  </div>
+                  <div className="flex-1 flex flex-col items-end">
+                    <Line className="w-28 max-w-full h-4 mb-1.5" />
+                    <Line className="w-20 max-w-full h-3 mb-1" />
+                    <Line className="w-24 max-w-full h-3" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 max-ph:grid-cols-1 gap-px bg-[#ececec] border-t border-[#ececec]">
+                {[0, 1].map((i) => (
+                  <div key={i} className="bg-white px-4 py-3">
+                    <Line className="w-16 h-3 mb-1.5" />
+                    <Line className="w-24 h-4" />
+                  </div>
+                ))}
               </div>
             </div>
           </div>
 
-          {/* Transfer Details */}
-          <div className="mt-6 sm:mt-8 pt-4 border-t border-[#ececec]">
-            <div className="w-24 h-4 bg-[#ececec] opacity-50 rounded mb-4"></div>
-
-            <div className="flex flex-col sm:flex-row sm:justify-between gap-4 sm:gap-0 mb-4">
-              <div className="flex-1">
-                <div className="w-full max-w-32 h-4 bg-[#ececec] opacity-50 rounded mb-1"></div>
-                <div className="w-full max-w-24 h-3 bg-[#ececec] opacity-50 rounded"></div>
+          {/* Vehicle card */}
+          <div>
+            <Line className="w-16 h-3 mb-2" />
+            <div className="rounded-2xl border border-[#ececec] overflow-hidden">
+              <div className="bg-[#f4f3ec] px-4 py-3">
+                <Line className="w-24 h-4 bg-[#e2e0d6]" />
               </div>
-              <div className="text-left sm:text-right flex-shrink-0">
-                <div className="w-20 h-4 bg-[#ececec] opacity-50 rounded mb-1"></div>
-                <div className="w-16 h-3 bg-[#ececec] opacity-50 rounded"></div>
+              <div className="border-b border-[#ececec] px-4 py-4 flex justify-center">
+                <Line className="w-full max-w-[220px] h-[120px] rounded-xl" />
+              </div>
+              <div className="grid grid-cols-2 max-ph:grid-cols-1 gap-px bg-[#ececec]">
+                {[0, 1, 2, 3].map((i) => (
+                  <div key={i} className="bg-white px-4 py-3">
+                    <Line className="w-16 h-3 mb-1.5" />
+                    <Line className="w-20 h-4" />
+                  </div>
+                ))}
               </div>
             </div>
-
-            <div>
-              <div className="w-20 h-4 bg-[#ececec] opacity-50 rounded mb-1"></div>
-              <div className="w-24 h-3 bg-[#ececec] opacity-50 rounded"></div>
-            </div>
-          </div>
-
-          {/* Profile Icon */}
-          <div className="absolute bottom-4 sm:bottom-6 right-4 sm:right-6 bg-blue-500 text-white w-8 h-8 flex items-center justify-center rounded-full shadow">
-            <div className="w-4 h-4 bg-[#ececec] opacity-50 rounded"></div>
           </div>
         </div>
       </div>
 
-      {/* Loading Indicator */}
-      <div className="flex justify-center items-center py-4 bg-[#fafaf5] border-t border-[#ececec]">
-        <PulseLoader color="#3B82F6" size={8} />
+      {/* Action bar */}
+      <div className="border-t border-[#ececec] bg-white px-6 max-ph:px-4 py-4 flex gap-3">
+        <Line className="flex-1 h-11 rounded-full" />
+        <Line className="flex-1 h-11 rounded-full" />
       </div>
     </div>
   );

@@ -1,31 +1,90 @@
 import React, { useState } from "react";
-import TransfersIcon from "../../../helper/TransfersIcon";
-import Pin from "../../../containers/newitinerary/breif/route/Pin";
-import styled from "styled-components";
 import BookingDetailHeader from "../../revamp/common/components/BookingDetailHeader";
 import BookingDetailActions from "../../revamp/common/components/BookingDetailActions";
-const FloatingView = styled.div`
-  position: sticky;
-  bottom: 10px;
-  background: black;
-  color: white;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  left: 90%;
-  z-index: 2;
-  cursor: pointer;
-`;
-const BackText = styled.div`
-  font-size: 1.5rem;
-  line-height: 2rem;
-`;
+import DetailCard from "../../revamp/common/components/bookingDetail/DetailCard";
+import DetailError from "../../revamp/common/components/bookingDetail/DetailError";
+import FactList from "../../revamp/common/components/bookingDetail/FactList";
+import ModeThumb from "../../revamp/common/components/bookingDetail/ModeThumb";
+import PolicyNote from "../../revamp/common/components/bookingDetail/PolicyNote";
+import RouteStrip from "../../revamp/common/components/bookingDetail/RouteStrip";
+import StatusPill from "../../revamp/common/components/bookingDetail/StatusPill";
+
+const formatDateTime = (dateString) => {
+  if (!dateString) return {};
+  const date = new Date(dateString);
+  if (Number.isNaN(date.getTime())) return {};
+  return {
+    date: date.toLocaleDateString("en-US", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+      weekday: "short",
+    }),
+    time: date.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    }),
+  };
+};
+
+const addMinutesToDate = (dateString, minutes) => {
+  if (!dateString || typeof minutes !== "number") return {};
+  const date = new Date(dateString);
+  if (Number.isNaN(date.getTime())) return {};
+  date.setMinutes(date.getMinutes() + minutes);
+  return formatDateTime(date.toISOString());
+};
+
+const shortDateTime = (value) => {
+  if (!value) return {};
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return {};
+  return {
+    time: date.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    }),
+    date: date.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+  };
+};
+
+const formatMinutes = (minutes) => {
+  if (typeof minutes !== "number" || Number.isNaN(minutes)) return null;
+  const hours = Math.floor(minutes / 60);
+  const rest = minutes % 60;
+  return `${hours ? `${hours}h ` : ""}${rest}m`.trim();
+};
+
+const paxLabel = (adults, children) =>
+  [
+    adults ? `${adults} adult${adults > 1 ? "s" : ""}` : null,
+    children ? `${children} child${children > 1 ? "ren" : ""}` : null,
+  ]
+    .filter(Boolean)
+    .join(" · ") || null;
+
+/** One station stop on the journey timeline: when, where, and on what. */
+const Stop = ({ stamp, name, note }) => (
+  <div className="min-w-0">
+    <div className="flex items-baseline gap-2 flex-wrap">
+      {stamp?.time ? (
+        <span className="ttw-type-h5 text-[#0b1220]">{stamp.time}</span>
+      ) : null}
+      {stamp?.date ? (
+        <span className="ttw-type-small text-[#8a93a6]">{stamp.date}</span>
+      ) : null}
+    </div>
+    {name ? (
+      <div className="ttw-type-small text-[#445069] break-words">{name}</div>
+    ) : null}
+    {note ? <div className="ttw-type-small text-[#8a93a6]">{note}</div> : null}
+  </div>
+);
+
 const VehicleDetailModal = ({
   data,
-  setIsOpen,
   handleDelete,
   loading,
   booking,
@@ -33,11 +92,23 @@ const VehicleDetailModal = ({
   isEmbedded,
   error,
   handleClose,
-  handleEditRoute
+  handleEditRoute,
 }) => {
+  const [deleting, setDeleting] = useState(false);
+
   if (!data) return null;
 
-  const [deleting, setDeleting] = useState(false);
+  const {
+    name,
+    transfer_details,
+    number_of_adults,
+    number_of_children,
+    check_in,
+    check_out,
+    booking_type,
+    cancellation_policies,
+    status,
+  } = data;
 
   const onDeleteClick = async () => {
     if (deleting) return;
@@ -48,401 +119,190 @@ const VehicleDetailModal = ({
       setDeleting(false);
     }
   };
-  // const transfer = useSelector((state) => state.Itinerary);
-  let isPageWide =
-    typeof window !== "undefined" &&
-    window.matchMedia("(min-width: 768px)")?.matches;
-  const {
-    name,
-    transfer_details,
-    price,
-    currency,
-    number_of_adults,
-    number_of_children,
-    source_address,
-    destination_address,
-    check_in,
-    check_out,
-    booking_type,
-    cancellation_policies
-  } = data;
-
-  const formatDateTime = (dateString) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    return {
-      date: date.toLocaleDateString("en-US", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-        weekday: "long",
-      }),
-      time: date.toLocaleTimeString("en-US", {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true,
-      }),
-    };
-  };
-
-  const addMinutesToDate = (dateString, minutes) => {
-    const date = new Date(dateString);
-    date.setMinutes(date?.getMinutes() + minutes);
-    return formatDateTime(date?.toISOString());
-  };
 
   const departure =
     check_in ||
     transfer_details?.start_datetime ||
     transfer_details?.gozo?.start_date;
-  const duration = transfer_details?.duration;
-
-  const arrival =
-    formatDateTime(check_out) || addMinutesToDate(departure, duration);
   const depart = formatDateTime(departure);
+  const arrival = check_out
+    ? formatDateTime(check_out)
+    : addMinutesToDate(departure, transfer_details?.duration);
+
+  const distance =
+    transfer_details?.distance?.text ||
+    (transfer_details?.distance ? `${transfer_details.distance} km` : null);
+
+  const travelClass =
+    transfer_details?.prices?.[0]?.class ||
+    transfer_details?.results?.[0]?.prices?.[0]?.class_name;
+
+  // Omio / 12go itineraries carry their own leg-by-leg breakdown; direct
+  // suppliers don't, and the route strip above is the whole story for them.
+  const segments = transfer_details?.results?.[0]?.segments || [];
+
+  const mode = booking_type || transfer_details?.mode;
 
   if (error) {
     return (
-      <div
-        style={{
-          textAlign: "center",
-          margin: "auto",
-          height: isPageWide ? "80vh" : "70vh",
-        }}
-        className="center-div"
-      >
-        Oops, unable to get the details at the moment.
+      <div className="bg-white w-full h-full flex flex-col">
+        {!isEmbedded && (
+          <BookingDetailHeader onBack={handleClose} className="px-6 max-ph:px-4" />
+        )}
+        <DetailError />
       </div>
     );
   }
 
   const canChange = !isEmbedded && typeof handleEditRoute === "function";
-  const canDelete = !!handleDelete && type != "combo";
+  const canDelete = !!handleDelete && type !== "combo";
 
-  return (
+  const body = (
     <>
-      <div className=" bg-white w-full h-full flex flex-col">
-        {!isEmbedded && (
-          <BookingDetailHeader
-            title={name}
-            loading={loading}
-            onBack={handleClose}
-            className="px-4"
-            leading={
-              isPageWide && !loading ? (
-                <div className="bg-[#eef2fb] rounded-lg p-1.5">
-                  <TransfersIcon
-                    TransportMode={booking_type || transfer_details?.mode}
-                    Instyle={{
-                      fontSize:
-                        transfer_details?.mode === "Bus" ? "1.25rem" : "1.5rem",
-                      color: "black",
-                    }}
-                    classname={{ width: 28, height: 28 }}
-                  />
+      {/* Journey — the two cities, when it leaves and when it lands. */}
+      <DetailCard
+        label={isEmbedded ? null : "Journey"}
+        title={mode ? `${mode} transfer` : "Transfer"}
+        subtitle={depart?.date}
+        right={status ? <StatusPill status={status} /> : null}
+      >
+        <RouteStrip
+          origin={{
+            name: transfer_details?.source?.city_name,
+            time: depart?.time,
+            date: depart?.date,
+          }}
+          destination={{
+            name: transfer_details?.destination?.city_name,
+            time: arrival?.time,
+            date: arrival?.date,
+          }}
+          meta={distance}
+        />
+
+        <FactList
+          className="border-t border-[#ececec]"
+          columns={2}
+          facts={[
+            {
+              label: "Travellers",
+              value: paxLabel(number_of_adults, number_of_children),
+            },
+            { label: "Class", value: travelClass },
+          ]}
+        />
+      </DetailCard>
+
+      {/* Journey breakdown — every leg, its operator, and the wait between. */}
+      {segments.length > 0 && (
+        <DetailCard label="Journey details" bodyClassName="px-4 py-4">
+          {segments.map((segment, index) => {
+            const dep = shortDateTime(segment?.departure_datetime);
+            const arr = shortDateTime(segment?.arrival_datetime);
+            const next = segments[index + 1];
+            const arrivedAt = segment?.arrival_datetime
+              ? new Date(segment.arrival_datetime)
+              : null;
+            const leavesAt = next?.departure_datetime
+              ? new Date(next.departure_datetime)
+              : null;
+            // Suppliers occasionally hand back overlapping stamps; a zero or
+            // negative wait is bad data, not a layover worth showing.
+            const waitMinutes =
+              arrivedAt && leavesAt
+                ? Math.round((leavesAt - arrivedAt) / 60000)
+                : 0;
+            const layover = waitMinutes > 0 ? formatMinutes(waitMinutes) : null;
+
+            return (
+              <div key={index}>
+                <div className="flex gap-3">
+                  {/* Rail: filled dot leaves, hollow dot arrives */}
+                  <div className="flex flex-col items-center pt-1.5 shrink-0">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#0b1220] shrink-0" />
+                    <span className="w-px flex-1 my-1.5 bg-[#d9d9d2]" />
+                    <span className="w-2.5 h-2.5 rounded-full border-2 border-[#0b1220] bg-white shrink-0" />
+                  </div>
+
+                  <div className="flex-1 min-w-0 flex flex-col gap-3">
+                    <Stop
+                      stamp={dep}
+                      name={segment?.departure_station?.name}
+                      note={segment?.vehicle_number}
+                    />
+
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {segment?.operator?.image ? (
+                        <img
+                          src={segment.operator.image}
+                          alt={segment?.operator?.name || "Operator"}
+                          className="h-5 w-auto object-contain"
+                          style={{ margin: 0, maxWidth: "none" }}
+                        />
+                      ) : null}
+                      <span className="ttw-type-small text-[#445069]">
+                        {segment?.duration_formatted ||
+                          formatMinutes(segment?.duration)}
+                      </span>
+                    </div>
+
+                    <Stop stamp={arr} name={segment?.arrival_station?.name} />
+                  </div>
                 </div>
-              ) : null
-            }
-          />
-        )}
 
-        {/* Ticket Section Label */}
-        <div className="px-4 pt-2 pb-2">
-          <h2 className="text-lg font-medium text-[#0b1220]">
-            {loading ? (
-              <div className="w-24 h-5 bg-[#ececec] opacity-50 rounded"></div>
-            ) : (
-             ""
-            )}
-          </h2>
-        </div>
-
-        {/* Scrollable Ticket Details */}
-        <div className="flex-1 px-4">
-          <div className="bg-white p-6 rounded-2xl shadow-sm relative border border-[#ececec]">
-            {/* Route Info */}
-            <div className="flex justify-between">
-              <div className="flex flex-col items-start">
-                <Pin pinColour={"green"} index={0} length={0} />
-                <div>
-                  {loading ? (
-                    <>
-                      <div className="w-32 h-4 bg-[#ececec] opacity-50 rounded mb-1"></div>
-                      <div className="w-20 h-3 bg-[#ececec] opacity-50 rounded mb-1"></div>
-                      <div className="w-24 h-3 bg-[#ececec] opacity-50 rounded"></div>
-                    </>
-                  ) : (
-                    <>
-                      <p className="font-semibold text-md text-[#0b1220]">
-                        {transfer_details?.source?.city_name}
-                      </p>
-                      <p className="text-[#445069] text-[12px]">
-                        {depart?.time}
-                      </p>
-                      <p className="text-[#445069] text-[12px]">
-                        {depart?.date}
-                      </p>
-                    </>
-                  )}
-                </div>
+                {layover ? (
+                  <div className="flex items-center gap-2 my-3 ml-[22px]">
+                    <span className="ttw-type-small text-[#445069] bg-[#f4f3ec] border border-[#ececec] rounded-full px-3 py-1">
+                      {layover} layover
+                    </span>
+                  </div>
+                ) : null}
               </div>
-
-              <div className="flex flex-col items-center">
-                <span className="text-xs md:text-sm text-[#445069]">
-                  {loading ? (
-                    <div className="w-4 md:w-12 h-3 bg-[#ececec] opacity-50 rounded"></div>
-                  ) : (
-                    `
-                    ${
-                      transfer_details?.distance?.text ||
-                      `${transfer_details?.distance} km`
-                    }
-                    `
-                  )}
-                </span>
-                <div className="border-t border-dashed border-[#b8becc] w-6 md:w-64"></div>
-              </div>
-
-              <div className="flex flex-col items-end">
-                <Pin pinColour={"red"} index={0} length={0} />
-                <div className="text-right">
-                  {loading ? (
-                    <>
-                      <div className="w-32 h-4 bg-[#ececec] opacity-50 rounded mb-1"></div>
-                      <div className="w-20 h-3 bg-[#ececec] opacity-50 rounded mb-1"></div>
-                      <div className="w-24 h-3 bg-[#ececec] opacity-50 rounded"></div>
-                    </>
-                  ) : (
-                    <>
-                      <p className="font-semibold text-md text-[#0b1220]">
-                        {transfer_details?.destination?.city_name}
-                      </p>
-                      <p className="text-[#445069] text-[12px]">
-                        {arrival?.time}
-                      </p>
-                      <p className="text-[#445069] text-[12px]">
-                        {arrival?.date}
-                      </p>
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Transfer Details */}
-           
-<div className="mt-8 pt-4 border-t border-[#ececec]">
-  <p className="text-[#0b1220] font-medium text-sm mb-4">
-    {loading ? (
-      <div className="w-24 h-4 bg-[#ececec] opacity-50 rounded"></div>
-    ) : (
-      "TRANSFER DETAILS"
-    )}
-  </p>
-
-  <div className="grid grid-cols-2 gap-4">
-    <div>
-      {loading ? (
-        <>
-          <div className="w-32 h-4 bg-[#ececec] opacity-50 rounded mb-1"></div>
-          <div className="w-24 h-3 bg-[#ececec] opacity-50 rounded"></div>
-        </>
-      ) : (
-        <>
-          <p className="font-semibold text-md text-[#0b1220]">
-            {number_of_adults} Adults, {number_of_children} Children
-          </p>
-          <p className="text-[#445069] text-sm">Passengers</p>
-        </>
+            );
+          })}
+        </DetailCard>
       )}
 
-
-
-    </div>
-    {!loading && (transfer_details?.prices?.[0]?.class || transfer_details?.results?.[0]?.prices?.[0]?.class_name) && (
-      <div className="">
-        <p className="font-semibold text-md text-[#0b1220]">
-          {transfer_details.prices[0].class || transfer_details.results?.[0]?.prices?.[0]?.class_name}
-        </p>
-        <p className="text-[#445069] text-sm">Class</p>
-      </div>
-    )}
-
-    
-  </div>
-</div>
-
-
-
-{/* Journey Details - Only for Omio/12go with segments - MOVED TO NEW SECTION */}
-{!loading && transfer_details?.results?.[0]?.segments && transfer_details.results[0].segments.length > 0 && (
-  <div className="mt-6 pt-4 border-t border-[#ececec]">
-    <p className="text-[#0b1220] font-medium text-sm mb-4">
-      JOURNEY DETAILS
-    </p>
-    
-    {/* {transfer_details.results[0].segments.length > 1 && (
-      <div className="mb-4 px-3 py-2 bg-gray-50 rounded-lg inline-block">
-        <p className="text-xs text-gray-600 font-medium">
-          {transfer_details.results[0].segments.length} segments · {transfer_details.results[0].segments.length - 1} connection{transfer_details.results[0].segments.length > 2 ? 's' : ''}
-        </p>
-      </div>
-    )} */}
-
-    <div className="space-y-3">
-      {transfer_details.results[0].segments.map((segment, idx) => {
-        const isLast = idx === transfer_details.results[0].segments.length - 1;
-        const depTime = segment.departure_datetime ? new Date(segment.departure_datetime) : null;
-        const arrTime = segment.arrival_datetime ? new Date(segment.arrival_datetime) : null;
-        const nextSegment = !isLast ? transfer_details.results[0].segments[idx + 1] : null;
-        
-        return (
-          <div key={idx} className="relative">
-            {/* Departure */}
-            <div className="flex items-start gap-3">
-              <div className="flex flex-col items-end w-20 shrink-0">
-                {depTime && (
-                  <>
-                    <span className="text-sm font-semibold leading-tight text-[#0b1220]">
-                      {depTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true })}
-                    </span>
-                    <span className="text-xs text-[#8a93a6]">
-                      {depTime.toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-                    </span>
-                  </>
-                )}
-              </div>
-              <div className="flex items-center shrink-0 pt-1">
-                <div className="w-1.5 h-1.5 rounded-full bg-blue-500 ring-4 ring-black"></div>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-[#1a2436] line-clamp-2" title={segment.departure_station?.name}>
-                  {segment.departure_station?.name} <br />
-                  {segment.vehicle_number ? <span className="text-xs text-[#8a93a6]">
-                  {segment.vehicle_number}
-                </span> : null}
-                </p>
-                
-              </div>
-            </div>
-
-            {/* Journey Line with Operator */}
-            <div className="flex items-start gap-3 ml-20 my-2">
-              <div className="flex flex-col items-center shrink-0">
-                <div className="w-0.5 bg-[#b8becc]" style={{ height: "40px" }}></div>
-              </div>
-              <div className="pt-1 flex items-center gap-2 flex-wrap">
-                {segment.operator?.image && (
-                  <img
-                    src={segment.operator.image}
-                    alt={segment.operator.name}
-                    className="h-5 w-auto object-contain"
-                  />
-                )}
-                <span className="text-xs font-medium text-[#445069]">
-                  {segment.duration_formatted || `${Math.floor(segment.duration / 60)}h ${segment.duration % 60}m`}
-                </span>
-              </div>
-            </div>
-
-            {/* Arrival */}
-            {arrTime && (
-              <div className="flex items-start gap-3">
-                <div className="flex flex-col items-end w-20 shrink-0">
-                  <span className="text-sm font-semibold leading-tight text-[#0b1220]">
-                    {arrTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true })}
-                  </span>
-                  <span className="text-xs text-[#8a93a6]">
-                    {arrTime.toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-                  </span>
-                </div>
-                <div className="flex items-center shrink-0 pt-1">
-                  <div className="w-1.5 h-1.5 rounded-full bg-blue-500 ring-4 ring-black"></div>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-[#1a2436] line-clamp-2" title={segment.arrival_station?.name}>
-                    {segment.arrival_station?.name}
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* Layover between segments */}
-            {!isLast && nextSegment && arrTime && (
-              <div className="flex items-center gap-3 ml-20 my-3">
-                <div className="flex flex-col items-center shrink-0">
-                  <div className="w-0.5 h-4 bg-[#ececec]"></div>
-                </div>
-                <div className="flex items-center gap-1.5 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-md text-xs font-medium text-amber-800">
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <span>
-                    {(() => {
-                      const nextDep = new Date(nextSegment.departure_datetime);
-                      const layoverMs = nextDep - arrTime;
-                      const layoverMin = Math.floor(layoverMs / 60000);
-                      const h = Math.floor(layoverMin / 60);
-                      const m = layoverMin % 60;
-                      return h > 0 ? `${h}h ${m}m layover` : `${m}m layover`;
-                    })()}
-                  </span>
-                </div>
-              </div>
-            )}
-          </div>
-        );
-      })}
-    </div>
-  </div>
-)}
-          </div>
-
-          {cancellation_policies && (
-          <>
-            {" "}
-            <div className="flex flex-col">
-              <div className="w-fit py-2 mb-2 text-lg font-bold text-[#0b1220]">
-                Cancellation Policies
-              </div>
-
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: cancellation_policies,
-                }}
-                className="flex flex-col gap-1 text-sm ml-4 text-[#445069]"
-              ></div>
-            </div>
-          </>
-        )}
-        </div>
-
-        {/* {!isPageWide && (
-          <FloatingView>
-            <TbArrowBack
-              style={{ height: "28px", width: "28px" }}
-              cursor={"pointer"}
-              onClick={() => setHandleShow(false)}
-            />
-          </FloatingView>
-        )} */}
-        {/* Delete (left) + Change (right) — pinned action bar */}
-        {!isEmbedded && (canDelete || canChange) && (
-          <div className="p-4 bg-white sticky bottom-0 z-10 border-t border-[#ececec]">
-            <BookingDetailActions
-              onDelete={canDelete ? onDeleteClick : undefined}
-              deleting={deleting}
-              deleteDisabled={loading}
-              confirmItemLabel="transfer"
-              onChange={canChange ? () => handleEditRoute(data) : undefined}
-              changeLabel="Change Transfer"
-              changeDisabled={loading}
-            />
-          </div>
-        )}
-      </div>
-      
+      <PolicyNote html={cancellation_policies} />
     </>
+  );
+
+  if (isEmbedded) {
+    return (
+      <div className="flex flex-col">
+        {name ? <h3 className="ttw-type-h4 text-[#0b1220] mb-3">{name}</h3> : null}
+        {body}
+      </div>
+    );
+  }
+
+  return (
+    <div className="h-screen bg-white flex flex-col overflow-hidden">
+      <div className="flex-1 overflow-y-auto px-6 max-ph:px-4 pb-6">
+        <BookingDetailHeader
+          title={name}
+          loading={loading}
+          onBack={handleClose}
+          leading={!loading && mode ? <ModeThumb mode={mode} /> : null}
+        />
+        <div className="pt-2">{body}</div>
+      </div>
+
+      {/* Remove (left) + Change (right) — pinned action bar */}
+      {(canDelete || canChange) && (
+        <div className="sticky bottom-0 z-10 border-t border-[#ececec] bg-white px-6 max-ph:px-4 py-4">
+          <BookingDetailActions
+            onDelete={canDelete ? onDeleteClick : undefined}
+            deleting={deleting}
+            deleteDisabled={loading}
+            confirmItemLabel="transfer"
+            onChange={canChange ? () => handleEditRoute(data) : undefined}
+            changeLabel="Change Transfer"
+            changeDisabled={loading}
+          />
+        </div>
+      )}
+    </div>
   );
 };
 

@@ -595,6 +595,48 @@ a.termsnavunderlinelink {
     }
 }
 
+/* Supplier-authored policy HTML inside a booking-detail drawer (PolicyNote).
+   The markup varies per provider — bare text, <p> runs, or an unstyled <ul> —
+   and Tailwind's preflight strips list markers and paragraph margins, so the
+   copy would otherwise collapse into one unreadable block. */
+.ttw-policy-html > *:first-child {
+    margin-top: 0;
+}
+
+.ttw-policy-html > *:last-child {
+    margin-bottom: 0;
+}
+
+.ttw-policy-html p {
+    margin: 0 0 8px;
+}
+
+.ttw-policy-html ul,
+.ttw-policy-html ol {
+    margin: 0 0 8px;
+    padding-left: 18px;
+    list-style: disc outside;
+}
+
+.ttw-policy-html ol {
+    list-style: decimal outside;
+}
+
+.ttw-policy-html li {
+    margin-bottom: 4px;
+}
+
+.ttw-policy-html strong,
+.ttw-policy-html b {
+    font-weight: 600;
+    color: #0b1220;
+}
+
+.ttw-policy-html a {
+    color: #0b1220;
+    text-decoration: underline;
+}
+
 .border-color-light-grey {
     border-color: var(--border-color-white-gray);
 }

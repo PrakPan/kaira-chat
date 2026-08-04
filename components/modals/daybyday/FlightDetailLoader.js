@@ -1,61 +1,74 @@
 import React from "react";
-import styled from "styled-components";
-import BackArrow from "../../ui/BackArrow";
 
-const Text = styled.div`
-  font-size: 1.5rem;
-  line-height: 2rem;
-`;
+const Line = ({ className = "" }) => (
+  <div className={`bg-[#ececec] rounded ${className}`} />
+);
 
-const FlightDetailLoader = ({ setShowDetails }) => {
+/**
+ * Placeholder for the flight detail drawer while its booking loads — the same
+ * shell the loaded drawer uses (header, flight card, itinerary card, action
+ * bar) so the layout doesn't jump when the data arrives.
+ */
+const FlightDetailLoader = () => {
   return (
-    <div className="relative flex flex-col gap-4 rounded-md px-3 py-2 animate-pulse">
-      <div className="flex flex-col gap-2">
-        <div className="flex flex-row items-center gap-2">
-          <BackArrow handleClick={() => setShowDetails((prev) => !prev)} />
-          <div className="w-32 h-6 bg-[#ececec] rounded" />
+    <div className="h-screen bg-white flex flex-col overflow-hidden animate-pulse">
+      <div className="flex-1 overflow-hidden px-6 max-ph:px-4 pb-6">
+        {/* Header */}
+        <div className="flex items-center gap-3 py-4">
+          <Line className="w-6 h-4 shrink-0" />
+          <Line className="w-52 max-w-full h-5" />
         </div>
-      </div>
 
-      <Text>
-        <div className="w-48 h-6 bg-[#ececec] rounded mt-2" />
-      </Text>
-
-      {/* FlightSegment Placeholder */}
-      <div className="flex flex-col gap-4 p-2">
-        {[1, 2].map((_, idx) => (
-          <div key={idx} className="border border-[#ececec] p-3 rounded-lg bg-white shadow-sm">
-            <div className="flex justify-between mb-2">
-              <div className="w-20 h-4 bg-[#ececec] rounded" />
-              <div className="w-24 h-4 bg-[#ececec] rounded" />
-            </div>
-            <div className="flex justify-between items-center">
-              <div className="w-16 h-3 bg-[#ececec] rounded" />
-              <div className="w-32 h-3 bg-[#ececec] rounded" />
-              <div className="w-16 h-3 bg-[#ececec] rounded" />
+        <div className="pt-2">
+          {/* Flight card */}
+          <div className="mb-4">
+            <Line className="w-14 h-3 mb-2" />
+            <div className="rounded-2xl border border-[#ececec] overflow-hidden">
+              <div className="bg-[#f4f3ec] px-4 py-3">
+                <Line className="w-36 h-4 mb-1.5 bg-[#e2e0d6]" />
+                <Line className="w-28 h-3 bg-[#e2e0d6]" />
+              </div>
+              <div className="px-4 py-4 flex items-center gap-3">
+                <Line className="w-11 h-11 rounded-full shrink-0" />
+                <div className="flex-1">
+                  <div className="flex justify-between mb-2">
+                    <Line className="w-16 h-3" />
+                    <Line className="w-14 h-3" />
+                    <Line className="w-16 h-3" />
+                  </div>
+                  <Line className="w-full h-3 mb-2" />
+                  <div className="flex justify-between">
+                    <Line className="w-12 h-4" />
+                    <Line className="w-12 h-4" />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        ))}
-      </div>
 
-      {/* Fare Rules Heading */}
-      <div className="flex flex-col mt-4">
-        <div className="w-48 h-5 bg-[#ececec] rounded mb-2" />
-        {/* Rules lines */}
-        <div className="flex flex-col gap-2 ml-4">
-          <div className="w-72 h-3 bg-[#ececec] rounded" />
-          <div className="w-64 h-3 bg-[#ececec] rounded" />
-          <div className="w-80 h-3 bg-[#ececec] rounded" />
-          <div className="w-60 h-3 bg-[#ececec] rounded" />
+          {/* Itinerary card */}
+          <div>
+            <Line className="w-16 h-3 mb-2" />
+            <div className="rounded-2xl border border-[#ececec] p-4 flex flex-col gap-4">
+              {[0, 1].map((i) => (
+                <div key={i} className="flex gap-3">
+                  <Line className="w-9 h-9 rounded-full shrink-0" />
+                  <div className="flex-1">
+                    <Line className="w-40 max-w-full h-4 mb-2" />
+                    <Line className="w-56 max-w-full h-3 mb-1.5" />
+                    <Line className="w-32 max-w-full h-3" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Delete Button Placeholder */}
-      <div className="p-4 bg-[#fafaf5]">
-        <div className="w-full bg-red-300 rounded-lg py-3 flex items-center justify-center text-white">
-          <div className="w-6 h-6 bg-white bg-opacity-30 rounded-full mr-2" />
-          <div className="w-32 h-4 bg-white bg-opacity-30 rounded" />
-        </div>
+      {/* Action bar */}
+      <div className="border-t border-[#ececec] bg-white px-6 max-ph:px-4 py-4 flex gap-3">
+        <Line className="flex-1 h-11 rounded-full" />
+        <Line className="flex-1 h-11 rounded-full" />
       </div>
     </div>
   );
