@@ -5,6 +5,11 @@ import BookingDetailActions from "../../revamp/common/components/BookingDetailAc
 import ComboTaxi from "../taxis/ComboTaxi";
 import { useState } from "react";
 import { FaTaxi } from "react-icons/fa";
+import {
+  getVehicleCount,
+  MultiVehicleNote,
+  VehicleCountBadge,
+} from "../taxis/MultiVehicleInfo";
 
 const TaxiDetailModal = ({
   data,
@@ -111,6 +116,14 @@ const TaxiDetailModal = ({
   const fuelType = transfer_details?.quote?.taxi_category?.fuel_type ||  transfer_details?.quote?.vehicle?.fuel_type;
   const luggageBags = transfer_details?.quote?.taxi_category?.bag_capacity || transfer_details?.quote?.vehicle?.bag_capacity;
   const seatCapacity = transfer_details?.quote?.taxi_category?.seating_capacity || transfer_details?.quote?.vehicle?.seating_capacity;
+
+  // >1 when the group did not fit in one cab, so the booking covers a convoy.
+  // Every spec below (seats, bags, fuel) describes a single cab in that case.
+  const vehicleCount = getVehicleCount(data);
+  const travellerCount =
+    (number_of_adults || 0) +
+    (number_of_children || 0) +
+    (data?.number_of_infants || 0);
 
   if (error) {
         return (
@@ -239,13 +252,31 @@ const TaxiDetailModal = ({
             </div>
 
             <div className="bg-[#f4f3ec] p-4 rounded-lg">
-              <p className="font-semibold text-[#0b1220] mb-4">
-                {loading ? (
-                  <div className="w-24 h-5 bg-[#ececec] opacity-50 rounded"></div>
-                ) : (
-                  "TAXI DETAILS"
-                )}
-              </p>
+              <div className="flex flex-wrap items-center gap-2 mb-4">
+                <p className="font-semibold text-[#0b1220] mb-0">
+                  {loading ? (
+                    <div className="w-24 h-5 bg-[#ececec] opacity-50 rounded"></div>
+                  ) : (
+                    "TAXI DETAILS"
+                  )}
+                </p>
+                {!loading && <VehicleCountBadge count={vehicleCount} />}
+              </div>
+
+              {!loading && (
+                <MultiVehicleNote count={vehicleCount} className="mb-4">
+                  This booking includes {vehicleCount} taxis
+                  {travellerCount > 0
+                    ? ` for your ${travellerCount} traveller${
+                        travellerCount > 1 ? "s" : ""
+                      }`
+                    : ""}
+                  {seatCapacity
+                    ? ` — one ${seatCapacity}-seater cannot fit everyone`
+                    : ""}
+                  . The details below describe a single taxi.
+                </MultiVehicleNote>
+              )}
 
               <div className="flex flex-col md:flex-row gap-4 max-sm:gap-[2rem]">
                 <div className="flex flex-col gap-4 max-sm:gap-[2rem] items-center">
@@ -319,7 +350,9 @@ const TaxiDetailModal = ({
                     {/* Luggage Bags */}
                     {
                       <div>
-                        <p className="text-[#445069] text-sm">Luggage Bags</p>
+                        <p className="text-[#445069] text-sm">
+                          Luggage Bags{vehicleCount > 1 ? " (per taxi)" : ""}
+                        </p>
                         <p className="font-semibold text-[#0b1220]">
                           {loading ? (
                             <div className="w-10 h-5 bg-[#ececec] opacity-50 rounded"></div>
@@ -333,7 +366,9 @@ const TaxiDetailModal = ({
                     {/* Seat Capacity */}
                     {
                       <div>
-                        <p className="text-[#445069] text-sm">Seat Capacity</p>
+                        <p className="text-[#445069] text-sm">
+                          Seat Capacity{vehicleCount > 1 ? " (per taxi)" : ""}
+                        </p>
                         <p className="font-semibold text-[#0b1220]">
                           {loading ? (
                             <div className="w-24 h-5 bg-[#ececec] opacity-50 rounded"></div>
@@ -343,6 +378,25 @@ const TaxiDetailModal = ({
                         </p>
                       </div>
                     }
+
+                    {/* Convoy size — only when the group needed more than one cab */}
+                    {!loading && vehicleCount > 1 && (
+                      <div>
+                        <p className="text-[#445069] text-sm">Taxis Booked</p>
+                        <p className="font-semibold text-[#0b1220]">
+                          {vehicleCount}
+                        </p>
+                      </div>
+                    )}
+
+                    {!loading && vehicleCount > 1 && seatCapacity && (
+                      <div>
+                        <p className="text-[#445069] text-sm">Total Seats</p>
+                        <p className="font-semibold text-[#0b1220]">
+                          {seatCapacity * vehicleCount}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

@@ -45,6 +45,14 @@ import {
 import ComboFlight from "../../modals/flights/ComboFlight";
 import ComboTaxi from "../../modals/taxis/ComboTaxi";
 import {
+  getPerVehicleTotal,
+  getVehicleCount,
+  hasMultiVehicleQuote,
+  MultiVehicleCallout,
+  MultiVehicleNote,
+  VehicleCountBadge,
+} from "../../modals/taxis/MultiVehicleInfo";
+import {
   MdDirectionsBoat,
   MdDirectionsBus,
   MdDirectionsTransit,
@@ -5632,7 +5640,12 @@ const RoundTripSuggestion = ({
           </div>
           <div className="flex flex-col gap-4">
             {pricing?.length > 0
-              ? pricing.map((price, i) => (
+              ? pricing.map((price, i) => {
+                  // >1 only when no single cab seats the group; the price shown
+                  // is then the convoy total, not what one cab costs.
+                  const vehicleCount = getVehicleCount(price);
+                  const perVehicleTotal = getPerVehicleTotal(price);
+                  return (
                   <div
                     key={`price-${i}`}
                     className="w-full flex flex-row items-start gap-2"
@@ -5659,18 +5672,32 @@ const RoundTripSuggestion = ({
                     </div>
 
                     <div className="flex flex-col items-start gap-1">
-                      <div className="text-[#445069] ttw-type-body font-normal">
-                        {price.transfer_details?.model_name ||
-                          price.transfer_details?.type}
-                        :{" "}
-                        <span className="font-700 text-[#0b1220]">
-                          {currency?.currency
-                            ? currencySymbols?.[currency?.currency]
-                            : "₹"}
-                          {getIndianPrice(
-                            Math.floor(price?.transfer_details?.total),
-                          )}
-                        </span>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <div className="text-[#445069] ttw-type-body font-normal">
+                          {price.transfer_details?.model_name ||
+                            price.transfer_details?.type}
+                          :{" "}
+                          <span className="font-700 text-[#0b1220]">
+                            {currency?.currency
+                              ? currencySymbols?.[currency?.currency]
+                              : "₹"}
+                            {getIndianPrice(
+                              Math.floor(price?.transfer_details?.total),
+                            )}
+                          </span>
+                          {vehicleCount > 1 && perVehicleTotal ? (
+                            <span className="ttw-type-small text-[#445069]">
+                              {" "}
+                              (
+                              {currency?.currency
+                                ? currencySymbols?.[currency?.currency]
+                                : "₹"}
+                              {getIndianPrice(Math.floor(perVehicleTotal))} ×{" "}
+                              {vehicleCount} taxis)
+                            </span>
+                          ) : null}
+                        </div>
+                        <VehicleCountBadge count={vehicleCount} />
                       </div>
                       {(viewDetails[i] || true) && (
                         <div className="ttw-type-body">
@@ -5687,11 +5714,19 @@ const RoundTripSuggestion = ({
                           {price?.transfer_details?.fuel_type
                             ? ` Fuel Type ${price.transfer_details?.fuel_type}`
                             : null}
+                          {vehicleCount > 1 ? " (per taxi)" : null}
                         </div>
                       )}
+                      <MultiVehicleNote
+                        count={vehicleCount}
+                        seatingCapacity={
+                          price?.transfer_details?.seating_capacity
+                        }
+                      />
                     </div>
                   </div>
-                ))
+                  );
+                })
               : "No Cabs Available"}
           </div>
         </div>
@@ -5841,7 +5876,12 @@ const MultiCityTripSuggestion = ({
             )}
           </div>
           <div className="flex flex-col gap-4">
-            {pricing.map((price, i) => (
+            {pricing.map((price, i) => {
+              // >1 only when no single cab seats the group; price.total is then
+              // the convoy total, with the one-cab figure in per_vehicle_total.
+              const vehicleCount = getVehicleCount(price);
+              const perVehicleTotal = getPerVehicleTotal(price);
+              return (
               <div
                 key={`price-${i}`}
                 className="w-full flex flex-row items-start gap-2"
@@ -5868,16 +5908,30 @@ const MultiCityTripSuggestion = ({
                 </div>
 
                 <div className="flex flex-col items-start gap-1">
-                  <div className="text-[#445069] ttw-type-body font-normal">
-                    {price?.taxi_category?.model_name ||
-                      price?.taxi_category?.type}
-                    :{" "}
-                    <span className="font-700 text-[#0b1220]">
-                      {currency?.currency
-                        ? currencySymbols?.[currency?.currency]
-                        : "₹"}
-                      {getIndianPrice(Math.floor(price?.price?.total))}
-                    </span>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <div className="text-[#445069] ttw-type-body font-normal">
+                      {price?.taxi_category?.model_name ||
+                        price?.taxi_category?.type}
+                      :{" "}
+                      <span className="font-700 text-[#0b1220]">
+                        {currency?.currency
+                          ? currencySymbols?.[currency?.currency]
+                          : "₹"}
+                        {getIndianPrice(Math.floor(price?.price?.total))}
+                      </span>
+                      {vehicleCount > 1 && perVehicleTotal ? (
+                        <span className="ttw-type-small text-[#445069]">
+                          {" "}
+                          (
+                          {currency?.currency
+                            ? currencySymbols?.[currency?.currency]
+                            : "₹"}
+                          {getIndianPrice(Math.floor(perVehicleTotal))} ×{" "}
+                          {vehicleCount} taxis)
+                        </span>
+                      ) : null}
+                    </div>
+                    <VehicleCountBadge count={vehicleCount} />
                   </div>
                   {(viewDetails[i] || true) && (
                     <div className="ttw-type-body">
@@ -5894,11 +5948,17 @@ const MultiCityTripSuggestion = ({
                       {price?.taxi_category?.fuel_type
                         ? ` Fuel Type: ${price.taxi_category?.fuel_type}`
                         : null}
+                      {vehicleCount > 1 ? " (per taxi)" : null}
                     </div>
                   )}
+                  <MultiVehicleNote
+                    count={vehicleCount}
+                    seatingCapacity={price?.taxi_category?.seating_capacity}
+                  />
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
@@ -5929,6 +5989,8 @@ const BookedSightseeingCard = ({ booking, onClick }) => {
     (booking?.number_of_adults || 0) +
     (booking?.number_of_children || 0) +
     (booking?.number_of_infants || 0);
+  // >1 when the group did not fit in one cab, so the booking covers a convoy.
+  const vehicleCount = getVehicleCount(booking);
 
   const dayCount = (() => {
     if (!booking?.check_in || !booking?.check_out) return null;
@@ -5983,9 +6045,12 @@ const BookedSightseeingCard = ({ booking, onClick }) => {
           <div className="flex flex-col gap-1 flex-1 min-w-0">
             <div className="flex flex-row items-start justify-between gap-2">
               <div className="ttw-type-body font-medium">{displayName}</div>
-              <span className="shrink-0 ttw-type-small font-600 px-2 py-[2px] rounded-full bg-[#e7f5ee] text-[#1f8a5a] whitespace-nowrap">
-                Added to Itinerary
-              </span>
+              <div className="flex flex-wrap items-center justify-end gap-1">
+                <VehicleCountBadge count={vehicleCount} />
+                <span className="shrink-0 ttw-type-small font-600 px-2 py-[2px] rounded-full bg-[#e7f5ee] text-[#1f8a5a] whitespace-nowrap">
+                  Added to Itinerary
+                </span>
+              </div>
             </div>
             {td?.distance?.value ? (
               <div className="text-[#445069] ttw-type-body font-normal">
@@ -6025,6 +6090,7 @@ const BookedSightseeingCard = ({ booking, onClick }) => {
                 ? `${cab.bigBagCapaCity} Big Bag Capacity | `
                 : null}
               {cab?.fuel_type ? `Fuel Type: ${cab.fuel_type}` : null}
+              {vehicleCount > 1 ? " (per taxi)" : null}
             </div>
           )}
           {pax > 0 && (
@@ -6032,6 +6098,14 @@ const BookedSightseeingCard = ({ booking, onClick }) => {
               {pax} Passenger{pax > 1 ? "s" : ""}
             </div>
           )}
+          <MultiVehicleNote
+            count={vehicleCount}
+            seatingCapacity={cab?.seating_capacity}
+          >
+            This booking includes {vehicleCount} taxis
+            {pax > 0 ? ` for your ${pax} travellers` : ""}. The price above
+            covers all {vehicleCount} taxis.
+          </MultiVehicleNote>
         </div>
       </div>
     </div>
@@ -6049,6 +6123,8 @@ const BookedAirportCard = ({ booking, isPickup, onViewDetail, onChange }) => {
     (booking?.number_of_adults || 0) +
     (booking?.number_of_children || 0) +
     (booking?.number_of_infants || 0);
+  // >1 when the group did not fit in one cab, so the booking covers a convoy.
+  const vehicleCount = getVehicleCount(booking);
 
   const fromName =
     td?.source?.name || td?.items?.[0]?.segments?.[0]?.origin?.name || "";
@@ -6146,6 +6222,7 @@ const BookedAirportCard = ({ booking, isPickup, onViewDetail, onChange }) => {
                   ? `${cab.bigBagCapaCity} Big Bag Capacity | `
                   : null}
                 {cab?.fuel_type ? `Fuel Type: ${cab.fuel_type}` : null}
+                {vehicleCount > 1 ? " (per taxi)" : null}
               </div>
             )}
             {pax > 0 && (
@@ -6153,9 +6230,18 @@ const BookedAirportCard = ({ booking, isPickup, onViewDetail, onChange }) => {
                 {pax} Passenger{pax > 1 ? "s" : ""}
               </div>
             )}
+            <MultiVehicleNote
+              count={vehicleCount}
+              seatingCapacity={cab?.seating_capacity}
+            >
+              This booking includes {vehicleCount} taxis
+              {pax > 0 ? ` for your ${pax} travellers` : ""}. The price above
+              covers all {vehicleCount} taxis.
+            </MultiVehicleNote>
           </div>
 
           <div className="flex flex-col items-end gap-2 shrink-0">
+            <VehicleCountBadge count={vehicleCount} />
             <span className="ttw-type-small font-600 px-2 py-[2px] rounded-full bg-[#e7f5ee] text-[#1f8a5a] whitespace-nowrap">
               Added to Itinerary
             </span>
@@ -6195,6 +6281,9 @@ const AirportPickupDropCard = ({ suggestion, isPickup, onSearch }) => {
     ? Math.min(...quotes.map((q) => Number(q?.price?.total)).filter((n) => !Number.isNaN(n)))
     : null;
   const symbol = currency?.currency ? currencySymbols?.[currency?.currency] : "₹";
+  // Search only returns multi-vehicle quotes when nothing seats the group in one
+  // cab, so the "starting from" figure is a convoy total, not a single fare.
+  const isMultiVehicle = hasMultiVehicleQuote(quotes);
 
   return (
     <div className="w-full flex flex-row gap-2 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm border-x-2 border-t-2 border-b-4">
@@ -6233,6 +6322,11 @@ const AirportPickupDropCard = ({ suggestion, isPickup, onSearch }) => {
             ) : null}
           </div>
         </div>
+
+        <MultiVehicleCallout show={isMultiVehicle}>
+          No single taxi seats your whole group, so these options use multiple
+          taxis. Prices shown cover every taxi in the trip.
+        </MultiVehicleCallout>
 
         <div className="flex flex-row items-center justify-between gap-2 flex-wrap">
           {startingPrice != null && Number.isFinite(startingPrice) ? (
