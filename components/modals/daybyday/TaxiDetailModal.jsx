@@ -1,22 +1,20 @@
 import React, { useState } from "react";
-import { IoPeople } from "react-icons/io5";
-import BookingDetailHeader from "../../revamp/common/components/BookingDetailHeader";
 import BookingDetailActions from "../../revamp/common/components/BookingDetailActions";
-import DetailCard from "../../revamp/common/components/bookingDetail/DetailCard";
+import DetailBand from "../../revamp/common/components/bookingDetail/DetailBand";
 import DetailError from "../../revamp/common/components/bookingDetail/DetailError";
-import FactList from "../../revamp/common/components/bookingDetail/FactList";
-import ModeThumb from "../../revamp/common/components/bookingDetail/ModeThumb";
+import DetailSection from "../../revamp/common/components/bookingDetail/DetailSection";
+import DrawerShell from "../../revamp/common/components/bookingDetail/DrawerShell";
+import FactChips from "../../revamp/common/components/bookingDetail/FactChips";
+import JourneyRail from "../../revamp/common/components/bookingDetail/JourneyRail";
 import PolicyNote from "../../revamp/common/components/bookingDetail/PolicyNote";
-import RouteStrip from "../../revamp/common/components/bookingDetail/RouteStrip";
-import StatusPill from "../../revamp/common/components/bookingDetail/StatusPill";
 import VehiclePhoto from "../../revamp/common/components/bookingDetail/VehiclePhoto";
 import { getModeAccent } from "../../revamp/common/components/bookingDetail/modeAccent";
-import vehicleFacts from "../../revamp/common/components/bookingDetail/vehicleFacts";
 import {
   addMinutesToDate,
   dayOffset,
   formatDateTime,
   paxLabel,
+  railStamp,
 } from "../../revamp/common/components/bookingDetail/format";
 import ComboTaxi from "../taxis/ComboTaxi";
 
@@ -69,6 +67,8 @@ const TaxiDetailModal = ({
     }
   };
 
+  const accent = getModeAccent("Taxi");
+
   const departure =
     check_in ||
     transfer_details?.start_datetime ||
@@ -88,31 +88,84 @@ const TaxiDetailModal = ({
       ? `${transfer_details.distance.value} km`
       : null);
   const durationText = transfer_details?.duration?.text;
-  const routeMeta = [distance, durationText].filter(Boolean).join(" · ");
 
   // Both shapes of the quote carry the same vehicle facts under different keys.
   const vehicle =
     transfer_details?.quote?.taxi_category || transfer_details?.quote?.vehicle;
 
   // A sightseeing package is sold by the day from a single pickup point, so it
-  // has no drop address to point a route at — its facts go in a list instead.
+  // has no drop address — its rail counts days rather than tracing a route.
   const isSightseeing = transfer_type === "sightseeing";
   const hasRoute = !!(originName && destinationName);
+  const dayCount = Math.max(1, dayOffset(check_in, check_out) + 1);
 
   const modeLabel = is_airport_pickup
     ? "Airport pickup"
     : is_airport_drop
       ? "Airport drop"
       : isSightseeing
-        ? "Sightseeing taxi"
+        ? "Sightseeing"
         : "Taxi transfer";
 
   const title =
     data?.name ||
     (hasRoute ? `Taxi from ${originName} to ${destinationName}` : modeLabel);
 
-  const accent = getModeAccent("Taxi");
-  const legDayOffset = dayOffset(departure, check_out);
+  // What the band states in one line: a route leg is summarised by how far and
+  // how long, a day package by how many days it runs for.
+  const summary = isSightseeing
+    ? `${dayCount} ${dayCount === 1 ? "day" : "days"}${durationText ? ` · ${durationText} daily` : ""}`
+    : [durationText, distance].filter(Boolean).join(" · ");
+
+  const kicker = isSightseeing
+    ? [depart?.date, arrival?.date].filter(Boolean).join(" – ")
+    : ["Taxi", depart?.date].filter(Boolean).join(" · ");
+
+  const nodes = (() => {
+    // Sightseeing: one node per day at the traveller's disposal.
+    if (isSightseeing && !hasRoute) {
+      return Array.from({ length: dayCount }, (_, i) => {
+        const stamp = railStamp(check_in, i);
+        return {
+          kind: "day",
+          key: `day-${i}`,
+          time: `Day ${i + 1}`,
+          date: stamp.date,
+          title: "At your disposal",
+          subtitle: [durationText, distance].filter(Boolean).join(" · ") || null,
+          tag: i === 0 && originName ? `Pickup: ${originName}` : null,
+        };
+      });
+    }
+
+    return [
+      {
+        kind: "place",
+        key: "from",
+        time: depart?.time,
+        date: depart?.shortDate,
+        title: trip?.origin?.city_name || originName || "Pickup",
+        subtitle: trip?.origin?.city_name ? originName : null,
+      },
+      {
+        kind: "carrier",
+        key: "car",
+        name: vehicle?.type || "Taxi",
+        meta: [distance, durationText].filter(Boolean).join(" · ") || null,
+      },
+      {
+        kind: "place",
+        key: "to",
+        time: arrival?.time,
+        date: arrival?.shortDate,
+        title: trip?.destination?.city_name || destinationName || "Drop",
+        subtitle: trip?.destination?.city_name ? destinationName : null,
+        tag:
+          dayOffset(check_in, check_out) > 0 ? "Arrives next day" : null,
+        tagTone: "warn",
+      },
+    ];
+  })();
 
   const handleChangeTransfer = () => {
     if (isAirport) {
@@ -153,89 +206,44 @@ const TaxiDetailModal = ({
 
   if (error) {
     return (
-      <div className="bg-[#fafaf5] w-full h-full flex flex-col">
-        {!isEmbedded && (
-          <BookingDetailHeader
-            onBack={handleClose}
-            bgClassName="bg-[#fafaf5]"
-            className="px-6 max-ph:px-4"
-          />
-        )}
+      <DrawerShell band={<DetailBand mode="Taxi" onBack={handleClose} loading />}>
         <DetailError />
-      </div>
+      </DrawerShell>
     );
   }
 
   const body = (
     <>
-      {/* Journey — where it picks up, where it drops, and what that costs in
-          distance and time. A sightseeing package has no drop point, so it
-          falls back to the dates it covers. */}
-      <DetailCard
-        label={isEmbedded ? null : "Journey"}
-        accent={accent}
-        leading={<ModeThumb mode="Taxi" size={32} />}
-        title={modeLabel}
-        subtitle={depart?.date}
-        right={status ? <StatusPill status={status} /> : null}
-      >
-        {hasRoute ? (
-          <RouteStrip
-            accent={accent}
-            dayOffset={legDayOffset}
-            origin={{ name: originName, time: depart?.time, date: depart?.date }}
-            destination={{
-              name: destinationName,
-              time: arrival?.time,
-              date: arrival?.date,
-            }}
-            meta={routeMeta}
-          />
-        ) : (
-          <FactList
-            columns={2}
-            facts={[
-              { label: "Pick-up", value: originName },
-              {
-                label: "Starts",
-                value: depart?.time ? `${depart.date} · ${depart.time}` : depart?.date,
-              },
-              {
-                label: "Ends",
-                value: arrival?.time
-                  ? `${arrival.date} · ${arrival.time}`
-                  : arrival?.date,
-              },
-              { label: isSightseeing ? "Distance limit" : "Distance", value: distance },
-              { label: "Duration", value: durationText },
-            ]}
-          />
-        )}
+      <JourneyRail nodes={nodes} accent={accent} />
 
-        <FactList
-          className="border-t border-[#efede6]"
+      <DetailSection label={isSightseeing ? "Package" : "Booking"}>
+        <FactChips
           facts={[
             {
               label: "Travellers",
               value: paxLabel(number_of_adults, number_of_children),
-              icon: <IoPeople size={14} color="#8a93a6" aria-hidden="true" />,
             },
-          ]}
+            isSightseeing
+              ? { label: "Per day", value: distance }
+              : { label: "Distance", value: distance },
+            isSightseeing ? { label: "Hours", value: durationText } : null,
+          ].filter(Boolean)}
         />
-      </DetailCard>
+      </DetailSection>
 
-      {/* Vehicle — the car itself, then its specs as a grid. */}
       {vehicle && (
-        <DetailCard
-          label="Vehicle"
-          accent={accent}
-          title={vehicle?.type || "Taxi"}
-          subtitle={vehicle?.model_name}
-        >
+        <DetailSection label="Vehicle">
           <VehiclePhoto image={vehicle?.image} alt={vehicle?.type} mode="Taxi" />
-
-          <FactList columns={2} facts={vehicleFacts(vehicle)} />
-        </DetailCard>
+          <FactChips
+            facts={[
+              { label: "Class", value: vehicle?.type },
+              { label: "Model", value: vehicle?.model_name },
+              { label: "Fuel", value: vehicle?.fuel_type },
+              { label: "Seats", value: vehicle?.seating_capacity },
+              { label: "Bags", value: vehicle?.bag_capacity },
+            ]}
+          />
+        </DetailSection>
       )}
 
       <PolicyNote html={data?.cancellation_policy} />
@@ -243,13 +251,13 @@ const TaxiDetailModal = ({
     </>
   );
 
-  // Embedded: the combo drawer already owns the scroll pane, the header and the
-  // action bar, so the leg contributes its cards and nothing else.
+  // Embedded: the combo drawer owns the band, the scroll pane and the action
+  // bar, so a leg contributes its rail and sections and nothing else.
   if (isEmbedded) {
     return (
       <div className="flex flex-col">
         {!noHeading && (
-          <h3 className="ttw-type-h4 text-[#0b1220] mb-3">{title}</h3>
+          <h3 className="ttw-type-h4 text-[#0b1220] px-4 pt-3 mb-0">{title}</h3>
         )}
         {body}
       </div>
@@ -257,27 +265,20 @@ const TaxiDetailModal = ({
   }
 
   return (
-    // Paper pane, white cards: the drawer used to be white on white, where the
-    // only thing separating a card from the page was a hairline.
-    <div className="h-screen bg-[#fafaf5] flex flex-col overflow-hidden">
-      <div className="flex-1 overflow-y-auto px-6 max-ph:px-4 pb-6">
-        <BookingDetailHeader
+    <DrawerShell
+      band={
+        <DetailBand
+          mode="Taxi"
           title={title}
-          loading={loading}
+          kicker={kicker}
+          summary={summary}
+          status={status}
           onBack={handleClose}
-          bgClassName="bg-[#fafaf5]"
-          leading={
-            !loading ? (
-              <ModeThumb mode="Taxi" image={vehicle?.image} alt={vehicle?.type} />
-            ) : null
-          }
+          loading={loading}
         />
-        <div className="pt-2">{body}</div>
-      </div>
-
-      {/* Remove (left) + Change (right) — pinned action bar */}
-      {(canDelete || canChange) && (
-        <div className="sticky bottom-0 z-10 border-t border-[#e9e7de] bg-white px-6 max-ph:px-4 py-4">
+      }
+      footer={
+        canDelete || canChange ? (
           <BookingDetailActions
             onDelete={canDelete ? onDeleteClick : undefined}
             deleting={deleting}
@@ -287,9 +288,11 @@ const TaxiDetailModal = ({
             changeLabel="Change Transfer"
             changeDisabled={loading}
           />
-        </div>
-      )}
-    </div>
+        ) : null
+      }
+    >
+      {body}
+    </DrawerShell>
   );
 };
 

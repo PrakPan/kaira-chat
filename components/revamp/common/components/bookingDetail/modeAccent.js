@@ -16,7 +16,8 @@ import { MdOutlineFlightTakeoff, MdTransferWithinAStation } from "react-icons/md
  *  - soft: tinted surface for header strips and icon tiles
  *  - wash: the near-white end of the header gradient
  *  - line: hairline that separates a tinted surface from white
- *  - solid: the saturated tone, for glyphs, route dots and emphasis
+ *  - solid: the saturated tone, for glyphs, rail and dots on white
+ *  - onInk: the lightened tone, for the glyph in the drawer's ink header band
  *
  * Taxi is the exception that proves the system: the brand yellow is too light
  * to carry a glyph, so it keeps the yellow surface and the ink foreground the
@@ -29,6 +30,7 @@ const ACCENTS = {
     wash: "#F6FAFF",
     line: "rgba(29,111,224,0.22)",
     solid: "#1D6FE0",
+    onInk: "#7FB0F5",
     Icon: MdOutlineFlightTakeoff,
   },
   Train: {
@@ -37,6 +39,7 @@ const ACCENTS = {
     wash: "#FAF7FF",
     line: "rgba(126,61,212,0.20)",
     solid: "#7E3DD4",
+    onInk: "#C4A3F0",
     Icon: IoMdTrain,
   },
   Bus: {
@@ -45,6 +48,7 @@ const ACCENTS = {
     wash: "#F6FBF8",
     line: "rgba(31,138,90,0.22)",
     solid: "#1F8A5A",
+    onInk: "#89D4AE",
     Icon: FaBus,
   },
   Ferry: {
@@ -53,17 +57,20 @@ const ACCENTS = {
     wash: "#F5FBFE",
     line: "rgba(14,127,184,0.20)",
     solid: "#0E7FB8",
+    onInk: "#7FC8EA",
     Icon: IoMdBoat,
   },
   Taxi: {
     key: "Taxi",
-    soft: "#FFFBDB",
+    soft: "#FFF3D1",
     wash: "#FFFEF5",
-    // A tint of the legend's #E4D500 rather than the solid colour: at full
-    // strength it draws a gold rule under the header strip, twice the weight of
-    // the ~20%-alpha hairlines every other mode carries.
     line: "rgba(196,175,0,0.35)",
-    solid: "#0B1220",
+    // Gold, not the brand yellow and not ink. Ink is the neutral fallback's
+    // colour too, so a taxi rail drawn in it was indistinguishable from a mode
+    // we failed to recognise — and the brand yellow is far too light to carry a
+    // 2px rail or a glyph. This is the tone the layover chip already uses.
+    solid: "#8A6100",
+    onInk: "#F0D76B",
     Icon: IoCar,
   },
 };
@@ -76,6 +83,7 @@ const NEUTRAL = {
   wash: "#fafaf5",
   line: "#ececec",
   solid: "#0b1220",
+  onInk: "#c9cfda",
   Icon: MdTransferWithinAStation,
 };
 

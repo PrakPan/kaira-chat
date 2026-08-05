@@ -2,33 +2,40 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import { ToastContainer } from "react-toastify";
-import { FlightSegment } from "../../../containers/itinerary/TransfersContainer/FlightDetail";
 import { updateTransferBookings } from "../../../store/actions/transferBookingsStore";
-import BookingDetailHeader from "../../revamp/common/components/BookingDetailHeader";
 import BookingDetailActions from "../../revamp/common/components/BookingDetailActions";
-import DetailCard from "../../revamp/common/components/bookingDetail/DetailCard";
+import DetailBand from "../../revamp/common/components/bookingDetail/DetailBand";
 import DetailError from "../../revamp/common/components/bookingDetail/DetailError";
+import DetailSection from "../../revamp/common/components/bookingDetail/DetailSection";
+import DrawerShell from "../../revamp/common/components/bookingDetail/DrawerShell";
+import FactChips from "../../revamp/common/components/bookingDetail/FactChips";
+import JourneyRail from "../../revamp/common/components/bookingDetail/JourneyRail";
 import PolicyNote from "../../revamp/common/components/bookingDetail/PolicyNote";
-import StatusPill from "../../revamp/common/components/bookingDetail/StatusPill";
-import ModeThumb from "../../revamp/common/components/bookingDetail/ModeThumb";
 import { getModeAccent } from "../../revamp/common/components/bookingDetail/modeAccent";
+import {
+  formatDateTime,
+  formatMinutes,
+} from "../../revamp/common/components/bookingDetail/format";
 import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
 import { openNotification } from "../../../store/actions/notification";
 import { useAnalytics } from "../../../hooks/useAnalytics";
-import LogoContainer from "../flights/new-flight-searched/LogoContainer";
-import FlightDetails from "../flights/new-flight-searched/FlightDetails";
-import { convertMinutesToHours } from "../flights/new-flight-searched/Index";
+import { Logo } from "../flights/new-flight-searched/LogoContainer";
 
-const LOGO_SIZE = 44;
+/** Airline mark, hard-constrained against the app's unscoped img rules. */
+const AirlineMark = ({ code }) => (
+  <span
+    className="rounded-full overflow-hidden shrink-0 flex items-center justify-center bg-white"
+    style={{ width: 18, height: 18 }}
+  >
+    <Logo src={code} ht={18} wd={18} />
+  </span>
+);
 
 const FlightDetailModal = ({
   segments,
   fareRule,
-  setShowDetails,
   name,
   booking_id,
-  originCityId,
-  destinationCityId,
   drawer,
   isEmbedded,
   handleClose,
@@ -45,23 +52,95 @@ const FlightDetailModal = ({
 
   const [loading, setLoading] = useState(false);
 
-  const fareRules = fareRule?.fareRuleDetail;
+  const accent = getModeAccent("Flight");
+
+  const legs = segments || [];
   const item = data?.transfer_details?.items?.[0];
-  const airline = segments?.[0]?.airline;
-  const lastSegment = segments?.[segments?.length - 1];
+  const first = legs[0];
+  const last = legs[legs.length - 1];
 
   const totalPax =
     (data?.number_of_adults || 0) +
     (data?.number_of_children || 0) +
     (data?.number_of_infants || 0);
 
-  const accent = getModeAccent("Flight");
+  const depart = formatDateTime(first?.origin?.departure_time);
 
-  const duration = (() => {
+  const totalDuration = (() => {
     const raw =
-      item?.segments?.[segments?.length - 1]?.accumulated_duration ||
+      item?.segments?.[legs.length - 1]?.accumulated_duration ||
       item?.segments?.[0]?.duration;
-    return typeof raw === "number" ? convertMinutesToHours(raw) : raw;
+    return typeof raw === "number" ? formatMinutes(raw) : raw || null;
+  })();
+
+  const stops = Math.max(0, legs.length - 1);
+
+  // Terminals arrive as "Terminal 3" from some suppliers and a bare "3" from
+  // others, so only prefix the ones that need it.
+  const terminalOf = (point) =>
+    point?.terminal
+      ? String(point.terminal).toLowerCase().includes("terminal")
+        ? point.terminal
+        : `Terminal ${point.terminal}`
+      : null;
+
+  const placeOf = (point, index, isArrival) => {
+    const dt = formatDateTime(
+      isArrival ? point?.arrival_time : point?.departure_time,
+    );
+    return {
+      kind: "place",
+      key: `${isArrival ? "arr" : "dep"}-${index}`,
+      time: dt?.time,
+      date: dt?.shortDate,
+      title: [point?.airport_code, point?.city_name].filter(Boolean).join(" · "),
+      subtitle: [point?.airport_name, terminalOf(point)].filter(Boolean).join(" · "),
+    };
+  };
+
+  const nodes = (() => {
+    const out = [];
+    legs.forEach((segment, index) => {
+      out.push(placeOf(segment?.origin, index, false));
+
+      out.push({
+        kind: "carrier",
+        key: `air-${index}`,
+        icon: segment?.airline?.code ? (
+          <AirlineMark code={segment.airline.code} />
+        ) : null,
+        name: segment?.airline?.name || null,
+        meta: [
+          segment?.airline?.code && segment?.airline?.flight_number
+            ? `${segment.airline.code} ${segment.airline.flight_number}`
+            : null,
+          formatMinutes(segment?.duration),
+        ]
+          .filter(Boolean)
+          .join(" · "),
+      });
+
+      if (index === legs.length - 1) {
+        out.push(placeOf(segment?.destination, index, true));
+        return;
+      }
+
+      out.push({
+        ...placeOf(segment?.destination, index, true),
+        key: `stop-${index}`,
+      });
+
+      const ground = legs[index + 1]?.ground_time;
+      if (ground) {
+        out.push({
+          kind: "wait",
+          key: `wait-${index}`,
+          name: "Change of planes",
+          meta: `${formatMinutes(ground) || ground} layover`,
+        });
+      }
+    });
+    return out;
   })();
 
   const handleDelete = async () => {
@@ -115,103 +194,60 @@ const FlightDetailModal = ({
 
   if (error) {
     return (
-      <div className="bg-[#fafaf5] w-full h-full flex flex-col">
-        {!isEmbedded && (
-          <BookingDetailHeader
-            onBack={handleClose}
-            bgClassName="bg-[#fafaf5]"
-            className="px-6 max-ph:px-4"
-          />
-        )}
+      <DrawerShell band={<DetailBand mode="Flight" onBack={handleClose} loading />}>
         <DetailError />
-      </div>
+      </DrawerShell>
     );
   }
 
   const body = (
     <>
-      {/* The flight itself — who flies it, and the shape of the journey. */}
-      <DetailCard
-        label={isEmbedded ? null : "Flight"}
-        accent={accent}
-        title={airline?.name}
-        subtitle={
-          airline?.code
-            ? `${airline.code}-${airline.flight_number}${
-                totalPax ? ` · ${totalPax} traveller${totalPax > 1 ? "s" : ""}` : ""
-              }`
-            : null
-        }
-        right={
-          data?.status ? (
-            <StatusPill status={data.status} />
-          ) : item?.is_refundable ? (
-            <span className="ttw-type-small font-600 bg-[#DFF3E7] text-[#1F8A5A] px-2.5 py-1 rounded-full whitespace-nowrap">
-              Refundable
-            </span>
-          ) : null
-        }
-        bodyClassName="px-4 py-4"
-      >
-        <div className="flex items-center gap-3">
-          <div
-            className="rounded-full overflow-hidden flex-shrink-0"
-            style={{ width: LOGO_SIZE, height: LOGO_SIZE }}
-          >
-            <LogoContainer
-              data={item || segments}
-              width={LOGO_SIZE}
-              height={LOGO_SIZE}
-            />
-          </div>
+      <JourneyRail nodes={nodes} accent={accent} />
 
-          <FlightDetails
-            data={item}
-            origin={segments?.[0]?.origin}
-            destination={lastSegment?.destination}
-            duration={duration}
-            isNonStop={segments?.length === 1}
-            numStops={(segments?.length || 1) - 1}
-            segments={segments}
-            setShowDetails={setShowDetails}
-          />
-        </div>
-      </DetailCard>
+      <DetailSection label="Booking">
+        <FactChips
+          facts={[
+            {
+              label: "Travellers",
+              value: totalPax
+                ? `${totalPax} traveller${totalPax > 1 ? "s" : ""}`
+                : null,
+            },
+            {
+              label: "Cabin",
+              value: first?.airline?.cabin_class || first?.cabin_class,
+            },
+            { label: "Baggage", value: first?.baggage_allowance },
+            { label: "Cabin bag", value: first?.cabin_baggage_allowance },
+            { label: "Refundable", value: item?.is_refundable ? "Yes" : null },
+          ]}
+        />
+      </DetailSection>
 
-      {/* Leg-by-leg: airports, terminals, layovers. */}
-      {segments?.length > 0 && (
-        <DetailCard label="Itinerary" accent={accent}>
-          <FlightSegment
-            segments={segments}
-            originCityId={originCityId}
-            destinationCityId={destinationCityId}
-            combo={isEmbedded}
-          />
-        </DetailCard>
-      )}
-
-      <PolicyNote html={fareRules} title="Fare details & rules" />
+      <PolicyNote html={fareRule?.fareRuleDetail} title="Fare rules" />
     </>
   );
 
   if (isEmbedded) return <div className="flex flex-col">{body}</div>;
 
   return (
-    // Paper pane, white cards: the drawer used to be white on white, where the
-    // only thing separating a card from the page was a hairline.
-    <div className="h-screen bg-[#fafaf5] flex flex-col overflow-hidden">
-      <div className="flex-1 overflow-y-auto px-6 max-ph:px-4 pb-6">
-        <BookingDetailHeader
+    <DrawerShell
+      band={
+        <DetailBand
+          mode="Flight"
           title={drawer ? null : name}
+          kicker={["Flight", depart?.date].filter(Boolean).join(" · ")}
+          summary={[
+            totalDuration,
+            stops === 0 ? "Non-stop" : `${stops} stop${stops > 1 ? "s" : ""}`,
+          ]
+            .filter(Boolean)
+            .join(" · ")}
+          status={data?.status}
           onBack={handleClose}
-          bgClassName="bg-[#fafaf5]"
-          leading={<ModeThumb mode="Flight" />}
         />
-        <div className="pt-2">{body}</div>
-      </div>
-
-      {/* Remove (left) + Change (right) — pinned action bar */}
-      <div className="sticky bottom-0 z-10 border-t border-[#e9e7de] bg-white px-6 max-ph:px-4 py-4">
+      }
+      footer={
         <BookingDetailActions
           onDelete={handleDelete}
           deleting={loading}
@@ -224,10 +260,11 @@ const FlightDetailModal = ({
           changeLabel="Change Transfer"
           changeDisabled={loading}
         />
-      </div>
-
+      }
+    >
+      {body}
       <ToastContainer />
-    </div>
+    </DrawerShell>
   );
 };
 

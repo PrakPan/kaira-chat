@@ -4,7 +4,11 @@
  * up printing dates in two different shapes.
  */
 
-/** Splits a timestamp into the date and time strings the drawers render. */
+/**
+ * Splits a timestamp into the strings the drawers render: `date` for prose
+ * ("Thu, 20 Aug 2026"), `shortDate` for the rail's narrow time gutter
+ * ("20 Aug"), and `time`.
+ */
 export const formatDateTime = (value) => {
   if (!value) return {};
   const date = new Date(value);
@@ -16,11 +20,27 @@ export const formatDateTime = (value) => {
       year: "numeric",
       weekday: "short",
     }),
+    shortDate: date.toLocaleDateString("en-US", { day: "numeric", month: "short" }),
     time: date.toLocaleTimeString("en-US", {
       hour: "2-digit",
       minute: "2-digit",
       hour12: true,
     }),
+  };
+};
+
+/**
+ * The Nth day of a package, for the day rail a sightseeing booking renders.
+ * Only the start date and a day count come back from the supplier — the days
+ * in between are implied, so they're derived rather than fetched.
+ */
+export const railStamp = (start, dayIndex = 0) => {
+  if (!start) return {};
+  const date = new Date(start);
+  if (Number.isNaN(date.getTime())) return {};
+  date.setDate(date.getDate() + dayIndex);
+  return {
+    date: date.toLocaleDateString("en-US", { day: "numeric", month: "short" }),
   };
 };
 
@@ -84,3 +104,12 @@ export const dayOffset = (from, to) => {
   end.setHours(0, 0, 0, 0);
   return Math.round((end - start) / 86400000);
 };
+
+/**
+ * The booked car on a taxi leg. Suppliers file it under either key on the
+ * quote, so both are checked.
+ */
+export const legVehicle = (leg) =>
+  leg?.transfer_details?.quote?.taxi_category ||
+  leg?.transfer_details?.quote?.vehicle ||
+  null;

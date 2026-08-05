@@ -8,6 +8,7 @@ import AccommodationModal from "../../../components/modals/accommodation/Index";
 import VisaDetailDrawer from "../../../components/drawers/visaDetails/VisaDetailDrawer";
 import EsimDetailDrawer from "../../../components/drawers/esimDetails/EsimDetailDrawer";
 import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
+import { getTransferBookingPath } from "../../../helper/transferBookingPath";
 import { updateTransferBookings } from "../../../store/actions/transferBookingsStore";
 import {
   addAncillaryBooking,
@@ -92,9 +93,7 @@ const CartBookingDetail = ({
       return;
     }
     const deleted = target || {};
-    const path = deleted?.booking_type?.includes(",")
-      ? "combo"
-      : deleted?.booking_type?.toLowerCase();
+    const path = getTransferBookingPath(deleted?.booking_type);
 
     try {
       const response = await axiosDeleteBooking.delete(

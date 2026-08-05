@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 import { useDispatch, useSelector } from "react-redux";
 import TransferDrawer from "../../../containers/itinerary/TransferDrawer";
 import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
+import { getTransferBookingPath } from "../../../helper/transferBookingPath";
 import { updateTransferBookings } from "../../../store/actions/transferBookingsStore";
 import { openNotification } from "../../../store/actions/notification";
 import { BsPeopleFill } from "react-icons/bs";
@@ -255,11 +256,9 @@ const CitySummary = (props) => {
     try {
       setLoading(true);
       const response = await axiosDeleteBooking.delete(
-        `${router?.query?.id}/bookings/${
-          dataPassed?.booking_type?.includes(",")
-            ? `combo`
-            : dataPassed?.booking_type?.toLowerCase()
-        }/${dataPassed?.id}/`,
+        `${router?.query?.id}/bookings/${getTransferBookingPath(
+          dataPassed?.booking_type
+        )}/${dataPassed?.id}/`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,

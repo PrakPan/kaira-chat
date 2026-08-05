@@ -10,6 +10,7 @@ import { MERCURY_HOST } from "../../services/constants";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { axiosDeleteBooking } from "../../services/itinerary/bookings";
+import { getTransferBookingPath } from "../../helper/transferBookingPath";
 import {
   updateAirportTransferBooking,
   updateTransferBookings,
@@ -1302,8 +1303,10 @@ useEffect(() => {
     setLoading(true);
     try {
       const res = await axios.get(
-        `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/${combo ? `combo` : booking?.booking_type.toLowerCase()
-        }/${booking?.id}/`
+        `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/${getTransferBookingPath(
+          booking?.booking_type,
+          { combo }
+        )}/${booking?.id}/`
       );
       setData(res?.data);
       setTransferType(res?.data?.booking_type);
@@ -1325,11 +1328,9 @@ useEffect(() => {
   try {
     setLoading(true);
     const response = await axiosDeleteBooking.delete(
-      `${router?.query?.id}/bookings/${
-        dataPassed?.booking_type?.includes(",")
-          ? `combo`
-          : dataPassed?.booking_type?.toLowerCase()
-      }/${dataPassed?.id}/`,
+      `${router?.query?.id}/bookings/${getTransferBookingPath(
+        dataPassed?.booking_type
+      )}/${dataPassed?.id}/`,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,

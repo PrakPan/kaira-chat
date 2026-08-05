@@ -1,31 +1,23 @@
 import { useState, useEffect } from "react";
-import Image from "next/image";
 import FlightDetailModal from "../../components/modals/daybyday/FlightDetailModal";
 import TaxiDetailModal from "../../components/modals/daybyday/TaxiDetailModal";
 import Drawer from "../../components/ui/Drawer";
-import BookingDetailHeader from "../../components/revamp/common/components/BookingDetailHeader";
 import BookingDetailActions from "../../components/revamp/common/components/BookingDetailActions";
-import DetailCard from "../../components/revamp/common/components/bookingDetail/DetailCard";
+import DetailBand from "../../components/revamp/common/components/bookingDetail/DetailBand";
 import DetailError from "../../components/revamp/common/components/bookingDetail/DetailError";
-import FactList from "../../components/revamp/common/components/bookingDetail/FactList";
-import ModeThumb from "../../components/revamp/common/components/bookingDetail/ModeThumb";
-import PolicyNote from "../../components/revamp/common/components/bookingDetail/PolicyNote";
-import RouteStrip from "../../components/revamp/common/components/bookingDetail/RouteStrip";
-import StatusPill from "../../components/revamp/common/components/bookingDetail/StatusPill";
+import DetailSection from "../../components/revamp/common/components/bookingDetail/DetailSection";
+import DrawerShell from "../../components/revamp/common/components/bookingDetail/DrawerShell";
+import FactChips from "../../components/revamp/common/components/bookingDetail/FactChips";
+import JourneyRail from "../../components/revamp/common/components/bookingDetail/JourneyRail";
 import VehiclePhoto from "../../components/revamp/common/components/bookingDetail/VehiclePhoto";
-import vehicleFacts, {
-  legVehicle,
-  sameVehicle,
-} from "../../components/revamp/common/components/bookingDetail/vehicleFacts";
+import { getModeAccent } from "../../components/revamp/common/components/bookingDetail/modeAccent";
 import {
-  accentGradient,
-  getModeAccent,
-} from "../../components/revamp/common/components/bookingDetail/modeAccent";
-import { dayOffset } from "../../components/revamp/common/components/bookingDetail/format";
+  formatDateTime,
+  legVehicle,
+} from "../../components/revamp/common/components/bookingDetail/format";
 import FlightDetailLoader from "../../components/modals/daybyday/FlightDetailLoader";
 import VehicleDetailModal from "../../components/modals/daybyday/VehicleModal";
 import VehicleDetailLoader from "../../components/modals/daybyday/VehicleDetailLoader";
-import { AiOutlineDown, AiOutlineUp } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 import { openNotification } from "../../store/actions/notification";
 import axios from "axios";
@@ -33,9 +25,8 @@ import { MERCURY_HOST } from "../../services/constants";
 import { useRouter } from "next/router";
 import { useHandleClose } from "../../hooks/useHandleClose";
 import { getDateDifferenceInDays } from "../../helper/DateUtils";
-import { currencySymbols } from "../../data/currencySymbols";
+import { getTransferBookingPath } from "../../helper/transferBookingPath";
 import { useAnalytics } from "../../hooks/useAnalytics";
-import dayjs from "dayjs";
 
 const TransferDrawer = ({
   show,
@@ -93,7 +84,6 @@ const TransferDrawer = ({
   const { drawer, bookingId, oItineraryCity, dItineraryCity, drawerType } =
     router?.query;
 
-  const currency = useSelector((state) => state.currency);
   const transferBookingsMap = useSelector(
     (state) => state?.TransferBookings?.transferBookings,
   );
@@ -318,9 +308,10 @@ const TransferDrawer = ({
       setLoading(true);
       try {
         const res = await axios.get(
-          `${MERCURY_HOST}/api/v1/itinerary/${router.query.sessionId || router?.query?.id}/bookings/${
-            combo ? `combo` : booking_type?.toLowerCase()
-          }/${booking_id}/`,
+          `${MERCURY_HOST}/api/v1/itinerary/${router.query.sessionId || router?.query?.id}/bookings/${getTransferBookingPath(
+            booking_type,
+            { combo },
+          )}/${booking_id}/`,
         );
         setData(res?.data);
         // Sightseeing transfers are intracity taxis — track the detail view
@@ -359,330 +350,107 @@ const TransferDrawer = ({
   // A combo leg, rendered as a collapsible card. Collapsed it reads as a line
   // in the itinerary — what it is, when, and what it costs; expanded it hands
   // off to the same detail body the standalone drawers use.
-  const renderDetailContent = (transferData, index) => {
-    const type =
-      transferData?.transfer_type === "sightseeing"
-        ? "Taxi"
-        : transferData?.booking_type;
-    const isExpanded = expandedIndexes.includes(index);
-    const isMulticity = data?.combo_type === "multicity";
+  // A combo leg as a rail node. Collapsed it says what the service is and
+  // when; tapping it expands the full detail body in place, which is the same
+  // body the standalone drawer renders.
+  const legNode = (child, index) => {
+    const legType =
+      child?.transfer_type === "sightseeing" ? "Taxi" : child?.booking_type;
+    const stamp = formatDateTime(child?.check_in);
+    const end = formatDateTime(child?.check_out);
+    const days = getDateDifferenceInDays(child?.check_in, child?.check_out) + 1;
 
-    const formatDateTime = (dateTimeString) => {
-      if (!dateTimeString) return {};
-      const date = new Date(dateTimeString);
-      if (Number.isNaN(date.getTime())) return {};
-      return {
-        date: date.toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-        }),
-        time: date.toLocaleTimeString("en-US", {
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: true,
-        }),
-      };
-    };
+    const origin = child?.transfer_details?.trips?.[0]?.origin?.address;
+    const destination =
+      child?.transfer_details?.trips?.[0]?.destination?.address;
+    const distance = child?.transfer_details?.distance?.text;
+    const duration = child?.transfer_details?.duration?.text;
 
-    const checkIn = formatDateTime(transferData.check_in);
-    const checkOut = formatDateTime(transferData.check_out);
-    const dateDiff =
-      getDateDifferenceInDays(transferData.check_in, transferData.check_out) + 1;
+    const flightSegments = child?.transfer_details?.items?.[0]?.segments;
 
-    const flightItem = transferData.transfer_details?.items?.[0];
-    const flightSegments = flightItem?.segments;
-
-    const origin = transferData.transfer_details?.trips?.[0]?.origin;
-    const destination = transferData.transfer_details?.trips?.[0]?.destination;
-    const originName = origin?.address;
-    const destinationName = destination?.address;
-    const transferType = transferData.transfer_type;
-    const distance = transferData.transfer_details?.distance?.text;
-    const duration = transferData.transfer_details?.duration?.text;
-
-    const legTitle =
-      transferData.name || `${transferData.booking_type} Transfer`;
-
-    // The one-line summary under the leg title: a flight names its airline and
-    // date, a sightseeing package its span and limits, anything else its route.
-    const legSummary = (() => {
-      if (type === "Flight") {
-        const departure = flightSegments?.[0]?.origin?.departure_time;
+    // What the service is, in one line: a flight names its airline, a day
+    // package its span, anything else the route it covers.
+    const subtitle = (() => {
+      if (legType === "Flight") {
         return [
           flightSegments?.[0]?.airline?.name,
-          departure ? dayjs(departure).format("ddd, MMM D") : null,
+          flightSegments?.[0]?.origin?.city_name &&
+          flightSegments?.[flightSegments.length - 1]?.destination?.city_name
+            ? `${flightSegments[0].origin.city_name} → ${flightSegments[flightSegments.length - 1].destination.city_name}`
+            : null,
         ]
           .filter(Boolean)
           .join(" · ");
       }
-      if (transferType === "sightseeing") {
-        const days = dateDiff <= 1 ? 1 : dateDiff;
-        return [`${days} ${days <= 1 ? "day" : "days"}`, duration, distance]
+      if (child?.transfer_type === "sightseeing") {
+        return [
+          `${days <= 1 ? 1 : days} ${days <= 1 ? "day" : "days"}`,
+          duration,
+          distance,
+        ]
           .filter(Boolean)
           .join(" · ");
       }
-      return originName && destinationName
-        ? `${originName} → ${destinationName}`
-        : originName || destinationName || "";
+      return origin && destination
+        ? `${origin} → ${destination}`
+        : origin || destination || null;
     })();
 
-    // The chip beside the title: a flight shows the cities it connects, every
-    // other mode shows what kind of transfer it is.
-    const legChip =
-      type === "Flight"
-        ? [
-            flightSegments?.[0]?.origin?.city_name,
-            flightSegments?.[flightSegments.length - 1]?.destination?.city_name,
-          ]
-            .filter(Boolean)
-            .join(" → ")
-        : transferType;
-
-    // Each leg wears its own mode's hue, so a five-service taxi package and a
-    // multi-leg flight combo don't read as the same grey list.
-    const legAccent = getModeAccent(type);
-
-    // The combo shell only renders once the fetch has resolved, so a leg never
-    // has to stand in for a loading state of its own.
-    const renderDetailsByType = () => {
-      switch (type) {
-        case "Flight":
-          return (
-            <FlightDetailModal
-              segments={flightSegments}
-              fareRule={flightItem?.fare_rule?.[0]}
-              booking_id={transferData?.id}
-              setShowDetails={null}
-              name={transferData?.name}
-              getPaymentHandler={getPaymentHandler}
-              isEmbedded={true}
-              setShowLoginModal={setShowLoginModal}
-              handleEditRoute={handleEditRoute}
-              data={isCombo ? transferData : data}
-            />
-          );
-        case "Taxi":
-          return (
-            <TaxiDetailModal
-              data={transferData}
-              handleDelete={null}
-              loading={loading}
-              isEmbedded={true}
-              noHeading={true}
-              handleEditRoute={handleEditRoute}
-            />
-          );
-        default:
-          return (
-            <VehicleDetailModal
-              data={transferData}
-              handleDelete={null}
-              loading={loading}
-              isEmbedded={true}
-              handleClose={handleClose}
-              handleEditRoute={handleEditRoute}
-            />
-          );
-      }
+    return {
+      kind: "service",
+      key: child?.id || index,
+      time: stamp?.shortDate,
+      date:
+        child?.transfer_type === "sightseeing" && days > 1
+          ? `${days} days`
+          : stamp?.time,
+      title: child?.name || `${child?.booking_type || "Transfer"} transfer`,
+      subtitle,
+      status: child?.status,
+      end,
+      legType,
+      booking: child,
     };
+  };
 
-    // On a multi-city taxi combo the legs usually ride in the same car, which is
-    // shown once above the list — so a leg only names its own vehicle when the
-    // supplier actually gave it a different one.
-    const ownVehicle = legVehicle(transferData);
-    const distinctVehicle = sameVehicle(ownVehicle, comboVehicle)
-      ? null
-      : ownVehicle;
-
-    const renderMulticityLeg = () => (
-      <div className="flex flex-col gap-3">
-        {originName && destinationName ? (
-          <div className="ttw-detail-card rounded-xl">
-            <RouteStrip
-              accent={legAccent}
-              dayOffset={dayOffset(transferData.check_in, transferData.check_out)}
-              origin={{ name: originName, time: checkIn.time, date: checkIn.date }}
-              destination={{
-                name: destinationName,
-                time: checkOut.time,
-                date: checkOut.date,
-              }}
-              meta={[distance, duration].filter(Boolean).join(" · ")}
-            />
-          </div>
-        ) : (
-          <div className="ttw-detail-card rounded-xl">
-            <FactList
-              columns={2}
-              facts={[
-                {
-                  label: "Starts",
-                  value: checkIn.time
-                    ? `${checkIn.date} · ${checkIn.time}`
-                    : checkIn.date,
-                },
-                {
-                  label: "Ends",
-                  value: checkOut.time
-                    ? `${checkOut.date} · ${checkOut.time}`
-                    : checkOut.date,
-                },
-                {
-                  label:
-                    transferType === "sightseeing" ? "Distance limit" : "Distance",
-                  value: distance,
-                },
-                { label: "Duration", value: duration },
-              ]}
-            />
-          </div>
-        )}
-
-        {distinctVehicle ? (
-          <div className="ttw-detail-card rounded-xl overflow-hidden">
-            <div
-              className="flex items-center gap-2 px-4 py-2 border-b"
-              style={{
-                background: accentGradient(legAccent),
-                borderColor: legAccent.line,
-              }}
-            >
-              <ModeThumb
-                mode={type}
-                image={distinctVehicle.image}
-                alt={distinctVehicle.type}
-                size={26}
-              />
-              <span className="ttw-type-small font-600 text-[#0b1220]">
-                {distinctVehicle.type || "Vehicle"}
-              </span>
-            </div>
-            <FactList columns={2} facts={vehicleFacts(distinctVehicle)} />
-          </div>
-        ) : null}
-
-        <PolicyNote html={transferData.cancellation_policy} className="" />
-      </div>
-    );
-
-    // A leg that can still be re-routed or dropped on its own — only offered
-    // once a sibling leg is paid for, since the combo's own action bar covers
-    // the all-unpaid case.
-    const showLegActions =
-      data?.children?.some((child) => child.status === "Paid") &&
-      transferData.status !== "Paid";
-
-    return (
-      <div
-        key={`${transferData.id}-${index}`}
-        className="ttw-detail-card relative rounded-2xl overflow-hidden mb-3"
-      >
-        {/* Mode rail — the one piece of colour that survives collapsing, so the
-            list still reads as several distinct services at a glance. Inset from
-            the card's corners and rounded on its open edge: run full height, and
-            the 14px corner radius clips its ends into tapered wedges that read
-            as a rendering fault. Same treatment the itinerary day cards use. */}
-        <span
-          className="absolute left-0 top-2.5 bottom-2.5 w-[3px] rounded-r-[3px]"
-          style={{ background: legAccent.solid, opacity: isExpanded ? 1 : 0.5 }}
-        />
-
-        <div
-          className="flex items-start justify-between gap-3 pl-5 pr-4 py-3 cursor-pointer transition-colors hover:bg-[#faf9f4]"
-          // Inline wins over the hover class, so the tint only applies while
-          // open and the hover affordance is left to the collapsed state.
-          style={{ background: isExpanded ? accentGradient(legAccent) : undefined }}
-          onClick={() => toggleExpand(index)}
-        >
-          <div className="min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="ttw-type-h5 text-[#0b1220] mb-0">
-                {index + 1}. {legTitle}
-              </h3>
-              {legChip ? (
-                <span
-                  className="ttw-type-small font-500 px-2 py-0.5 rounded-full capitalize whitespace-nowrap"
-                  style={{ background: legAccent.soft, color: legAccent.solid }}
-                >
-                  {legChip}
-                </span>
-              ) : null}
-              {transferData.status ? (
-                <StatusPill status={transferData.status} />
-              ) : null}
-            </div>
-            {legSummary ? (
-              <div className="ttw-type-small text-[#445069] mt-0.5">
-                {legSummary}
-              </div>
-            ) : null}
-          </div>
-
-          <div className="flex items-center gap-3 shrink-0">
-            {showLegActions ? (
-              <>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleEditRoute(transferData);
-                  }}
-                  className="ttw-type-small font-500 text-[#0b1220] underline whitespace-nowrap"
-                >
-                  Change
-                </button>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDelete(transferData);
-                  }}
-                  className="p-1.5 text-[#CD2026] hover:bg-[#fdeeeb] rounded-lg flex items-center"
-                  title="Remove this leg"
-                  aria-label="Remove this leg"
-                >
-                  <Image src="/delete.svg" width={16} height={16} alt="" />
-                </button>
-              </>
-            ) : null}
-
-            {transferData.price ? (
-              <div className="text-right max-ph:hidden">
-                <div className="ttw-type-body font-600 font-mono text-[#0b1220]">
-                  {currency?.currency
-                    ? currencySymbols?.[currency?.currency]
-                    : "₹"}
-                  {transferData.price?.toLocaleString()}
-                </div>
-              </div>
-            ) : null}
-
-            <span className="text-[#8a93a6] flex items-center">
-              {isExpanded ? (
-                <AiOutlineUp className="w-4 h-4" />
-              ) : (
-                <AiOutlineDown className="w-4 h-4" />
-              )}
-            </span>
-          </div>
-        </div>
-
-        {isExpanded && (
-          <div
-            className="border-t p-3"
-            style={{ borderColor: legAccent.line, background: "#fafaf5" }}
-          >
-            {/* Only a multi-city *taxi* leg gets the trimmed layout — a
-                multi-city flight combo has no shared vehicle to hoist, so its
-                legs still open the full flight detail body. */}
-            {isMulticity && type === "Taxi"
-              ? renderMulticityLeg()
-              : renderDetailsByType()}
-          </div>
-        )}
-      </div>
-    );
+  // The expanded body for a leg — the standalone drawer's own detail, embedded.
+  const renderLegDetail = (child, legType) => {
+    switch (legType) {
+      case "Flight":
+        return (
+          <FlightDetailModal
+            segments={child?.transfer_details?.items?.[0]?.segments}
+            fareRule={child?.transfer_details?.items?.[0]?.fare_rule?.[0]}
+            booking_id={child?.id}
+            name={child?.name}
+            getPaymentHandler={getPaymentHandler}
+            isEmbedded
+            setShowLoginModal={setShowLoginModal}
+            handleEditRoute={handleEditRoute}
+            data={child}
+          />
+        );
+      case "Taxi":
+        return (
+          <TaxiDetailModal
+            data={child}
+            handleDelete={null}
+            isEmbedded
+            noHeading
+            handleEditRoute={handleEditRoute}
+          />
+        );
+      default:
+        return (
+          <VehicleDetailModal
+            data={child}
+            handleDelete={null}
+            isEmbedded
+            handleClose={handleClose}
+            handleEditRoute={handleEditRoute}
+          />
+        );
+    }
   };
 
   const handleClose = () => {
@@ -714,6 +482,51 @@ const TransferDrawer = ({
   const comboAccent = getModeAccent(
     isMulticityTaxi ? "Taxi" : data?.booking_type,
   );
+
+  // A package is a sequence of services, so it reads in the order it happens —
+  // not the order the API happened to return.
+  const comboLegs = [...(data?.children || [])].sort(
+    (a, b) => new Date(a?.check_in || 0) - new Date(b?.check_in || 0),
+  );
+
+  const comboTitle =
+    data?.name ||
+    `${comboLegs[0]?.source_address?.name || ""} to ${
+      comboLegs[comboLegs.length - 1]?.destination_address?.name || ""
+    }`;
+
+  const comboSpan = (() => {
+    const from = formatDateTime(comboLegs[0]?.check_in);
+    const to = formatDateTime(comboLegs[comboLegs.length - 1]?.check_out);
+    if (from?.shortDate && to?.shortDate && from.shortDate !== to.shortDate) {
+      return `${from.shortDate} – ${to.date || to.shortDate}`;
+    }
+    return from?.date || null;
+  })();
+
+  const comboKicker = [
+    isMulticityTaxi ? "Multi-day taxi" : data?.booking_type,
+    comboSpan,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+
+  const comboSummary = isMulticityTaxi
+    ? `${comboLegs.length} services · 1 car`
+    : `${comboLegs.length} ${comboLegs.length === 1 ? "leg" : "legs"}`;
+
+  // The legs, as rail nodes that open in place. `expandedIndexes` still drives
+  // which is open, so the leg-resolution logic above is untouched.
+  const railNodes = comboLegs.map((child, index) => {
+    const node = legNode(child, index);
+    const open = expandedIndexes.includes(index);
+    return {
+      ...node,
+      open,
+      onToggle: () => toggleExpand(index),
+      detail: open ? renderLegDetail(child, node.legType) : null,
+    };
+  });
 
   return (
     <Drawer
@@ -799,92 +612,67 @@ const TransferDrawer = ({
           )}
         </>
       ) : error ? (
-        <div className="h-screen bg-[#fafaf5] flex flex-col overflow-hidden">
-          <BookingDetailHeader
-            onBack={handleClose}
-            bgClassName="bg-[#fafaf5]"
-            className="px-6 max-ph:px-4"
-          />
+        <DrawerShell
+          band={
+            <DetailBand mode={data?.booking_type} onBack={handleClose} loading />
+          }
+        >
           <DetailError />
-        </div>
+        </DrawerShell>
       ) : (
-        // Paper pane, white cards: the drawer used to be white on white, where
-        // the only thing separating a card from the page was a hairline.
-        <div className="h-screen bg-[#fafaf5] flex flex-col overflow-hidden">
-          <div className="overflow-y-auto flex-1 px-6 max-ph:px-4 pb-6">
-            <BookingDetailHeader
-              title={
-                data.name ||
-                `${data.children[0]?.source_address?.name || ""} to ${
-                  data.children[data.children.length - 1]?.destination_address
-                    ?.name || ""
-                }`
-              }
+        <DrawerShell
+          band={
+            <DetailBand
+              mode={isMulticityTaxi ? "Taxi" : data.booking_type}
+              title={comboTitle}
+              kicker={comboKicker}
+              summary={comboSummary}
+              status={data?.status}
               onBack={handleClose}
-              bgClassName="bg-[#fafaf5]"
-              leading={
-                <ModeThumb
-                  mode={isMulticityTaxi ? "Taxi" : data.booking_type}
-                  image={isMulticityTaxi ? comboVehicle?.image : null}
-                  alt={comboVehicle?.type}
-                />
-              }
             />
-
-            <div className="pt-2">
-              {/* Every leg of a multi-city taxi combo rides in the same car, so
-                  the vehicle is described once here rather than per leg. */}
-              {isMulticityTaxi && (
-                <DetailCard
-                  label="Vehicle"
-                  accent={comboAccent}
-                  leading={<ModeThumb mode="Taxi" size={32} />}
-                  title={comboVehicle?.type || "Taxi"}
-                  subtitle={comboVehicle?.model_name}
-                >
-                  <VehiclePhoto
-                    image={comboVehicle?.image}
-                    alt={comboVehicle?.type}
-                    mode="Taxi"
-                  />
-
-                  <FactList columns={2} facts={vehicleFacts(comboVehicle)} />
-                </DetailCard>
-              )}
-
-              <div className="flex items-center gap-2 mb-2">
-                <span
-                  className="w-[3px] h-3 rounded-full shrink-0"
-                  style={{ background: comboAccent.solid }}
-                />
-                <span className="ttw-type-label text-[#8a93a6]">
-                  {isMulticityTaxi
-                    ? "Booking inclusions"
-                    : `${data.children.length} ${
-                        data.children.length === 1 ? "leg" : "legs"
-                      }`}
-                </span>
-              </div>
-
-              {data.children.map((child, index) =>
-                renderDetailContent(child, index),
-              )}
-            </div>
-          </div>
-
-          {/* Remove (left) + Change (right) — one bar for both combo shapes */}
-          <div className="sticky bottom-0 z-10 border-t border-[#e9e7de] px-6 max-ph:px-4 py-4 bg-white">
+          }
+          footer={
             <BookingDetailActions
               onDelete={() => onDeleteClick(data)}
               deleting={deleting}
               confirmItemLabel="transfer"
-              onChange={
-                canChangeCombo ? () => handleEditRoute(data) : undefined
-              }
+              onChange={canChangeCombo ? () => handleEditRoute(data) : undefined}
               changeLabel="Change Transfer"
             />
-          </div>
-        </div>
+          }
+        >
+          {/* Every service in a multi-city taxi package rides in the same car,
+              so the vehicle is stated once, above the services it covers. */}
+          {isMulticityTaxi && (
+            <DetailSection label="The car, throughout" className="pt-3">
+              <VehiclePhoto
+                image={comboVehicle?.image}
+                alt={comboVehicle?.type}
+                mode="Taxi"
+              />
+              <FactChips
+                facts={[
+                  { label: "Class", value: comboVehicle?.type },
+                  { label: "Model", value: comboVehicle?.model_name },
+                  { label: "Fuel", value: comboVehicle?.fuel_type },
+                  { label: "Seats", value: comboVehicle?.seating_capacity },
+                  { label: "Bags", value: comboVehicle?.bag_capacity },
+                ]}
+              />
+            </DetailSection>
+          )}
+
+          <DetailSection
+            label={
+              isMulticityTaxi
+                ? `${comboLegs.length} services included`
+                : `${comboLegs.length} ${comboLegs.length === 1 ? "leg" : "legs"}`
+            }
+            className={isMulticityTaxi ? "" : "pt-3"}
+          >
+            <JourneyRail nodes={railNodes} accent={comboAccent} />
+          </DetailSection>
+        </DrawerShell>
       )}
     </Drawer>
   );
