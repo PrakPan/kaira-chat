@@ -9,6 +9,7 @@ import React, {
 } from "react";
 import { createPortal } from "react-dom";
 import { useSelector } from "react-redux";
+import { optimizedMediaUrl } from "../../lib/mediaImage";
 import { loadGoogleMaps } from "./utils/loadGoogleMaps";
 import CityElementCard from "./components/CityElementCard";
 import CityOverviewCard from "./components/CityOverviewCard";
@@ -401,9 +402,11 @@ const ACCENT_COLORS: Record<string, string> = {
 const getImageUrl = (img) => {
   const imgUrlEndPoint = "https://d31aoa0ehgvjdi.cloudfront.net/";
   if (!img) return "";
-  return img.startsWith("http://") || img.startsWith("https://")
-    ? img
-    : imgUrlEndPoint + img;
+  const url =
+    img.startsWith("http://") || img.startsWith("https://")
+      ? img
+      : imgUrlEndPoint + img;
+  return optimizedMediaUrl(url, { width: 400 });
 };
 
 function resolveAccent(accent?: string): string {
@@ -435,8 +438,10 @@ function resolvePinColor(loc?: any): string {
 // CloudFront base. Used anywhere we consume a server-supplied image path.
 function resolvePopupImageUrl(img?: string): string | undefined {
   if (!img) return undefined;
-  if (/^https?:\/\//i.test(img)) return img;
-  return "https://d31aoa0ehgvjdi.cloudfront.net/" + img.replace(/^\/+/, "");
+  const url = /^https?:\/\//i.test(img)
+    ? img
+    : "https://d31aoa0ehgvjdi.cloudfront.net/" + img.replace(/^\/+/, "");
+  return optimizedMediaUrl(url, { width: 400 });
 }
 
 // Unified compact popup — matches the Figma card design

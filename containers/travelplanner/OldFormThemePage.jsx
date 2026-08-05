@@ -7,7 +7,7 @@ import ThemeBanner from "../../components/containers/ThemeBanner/ThemeBanner";
 import openTailoredModal from "../../services/openTailoredModal";
 import { logEvent } from "../../services/ga/Index";
 import Overview from "../themes/Overview.jsx";
-import Image from "next/image.js";
+import Image from "next/image";
 import TailoredFormMobileModal from "../../components/modals/TailoredFomrMobile";
 import ThemeFaqs from "../themes/ThemeFaqs.jsx";
 import Destination1Carousel from "../../components/theme/Destination1Carousel.jsx";

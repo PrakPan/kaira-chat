@@ -3,6 +3,8 @@
 // city marker. Field resolution mirrors CityDay.jsx (same old/new API quirks),
 // so a card on the map reads exactly like its row in the itinerary panel.
 
+import { optimizedMediaUrl } from "../../../lib/mediaImage";
+
 const IMG_BASE = "https://d31aoa0ehgvjdi.cloudfront.net/";
 
 export type CityElementType = "activity" | "poi";
@@ -95,7 +97,8 @@ const getEntityId = (item: any, type: string): string | null => {
 
 const resolveImage = (raw: unknown): string | null => {
   if (!raw || typeof raw !== "string") return null;
-  return raw.startsWith("http") ? raw : IMG_BASE + raw.replace(/^\/+/, "");
+  const url = raw.startsWith("http") ? raw : IMG_BASE + raw.replace(/^\/+/, "");
+  return optimizedMediaUrl(url, { width: 600 });
 };
 
 const getImage = (item: any): string | null => {

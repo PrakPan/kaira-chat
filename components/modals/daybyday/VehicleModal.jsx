@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { optimizedMediaUrl } from "../../../lib/mediaImage";
 import TransfersIcon from "../../../helper/TransfersIcon";
 import Pin from "../../../containers/newitinerary/breif/route/Pin";
 import styled from "styled-components";
@@ -334,7 +335,7 @@ const VehicleDetailModal = ({
               <div className="pt-1 flex items-center gap-2 flex-wrap">
                 {segment.operator?.image && (
                   <img
-                    src={segment.operator.image}
+                    src={optimizedMediaUrl(segment.operator.image, { width: 400 })}
                     alt={segment.operator.name}
                     className="h-5 w-auto object-contain"
                   />

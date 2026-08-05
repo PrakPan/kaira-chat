@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { IoBagCheckOutline } from "react-icons/io5";
 import { MdOutlineDownhillSkiing } from "react-icons/md";
+import { optimizedMediaUrl } from "../../../lib/mediaImage";
 import MapView from "./MapView";
 import ItineraryShimmer from "./ItineraryShimmer";
 import ViewToggle from "./ViewToggle";
@@ -157,9 +158,12 @@ const FALLBACK_IMG =
   "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=800&auto=format&fit=crop";
 
 const getItemImage = (item: SlabElement) => {
-  if (!item?.icon) return FALLBACK_IMG;
-  if (item.icon.startsWith("http")) return item.icon;
-  return IMG_BASE + item.icon;
+  const raw = !item?.icon
+    ? FALLBACK_IMG
+    : item.icon.startsWith("http")
+    ? item.icon
+    : IMG_BASE + item.icon;
+  return optimizedMediaUrl(raw, { width: 700 });
 };
 
 const getItemName = (item: SlabElement) => item?.heading || item?.name || "";

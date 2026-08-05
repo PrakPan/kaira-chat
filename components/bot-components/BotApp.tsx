@@ -5,6 +5,7 @@ import React, {
   useRef,
   useMemo,
 } from "react";
+import { optimizedMediaUrl } from "../../lib/mediaImage";
 import { ChatKitPanel } from "./components/ChatKitPanel";
 import MapView from "./components/MapView";
 import Sidebar from "./components/Sidebar";
@@ -5217,7 +5218,7 @@ export const MobileHeaderMenu = React.memo(
               {avatarSrc ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
-                  src={avatarSrc}
+                  src={optimizedMediaUrl(avatarSrc, { width: 96 })}
                   alt={name || "Profile"}
                   className="w-full h-full object-cover"
                 />

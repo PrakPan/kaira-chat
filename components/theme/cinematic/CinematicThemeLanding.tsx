@@ -23,6 +23,10 @@
 
 import React from "react";
 import { useRouter } from "next/router";
+// Resize/re-encode our own media at the edge (see lib/mediaImage.js). These
+// scene stills are 1–4 MB PNGs shown in small cards; this cuts them ~30-100×
+// with no visible change. Non-media srcs pass through untouched.
+import { optimizedMediaUrl } from "../../../lib/mediaImage";
 import type {
   CinematicThemeConfig,
   CinematicHeading,
@@ -133,7 +137,7 @@ const SkeletonImage: React.FC<{
       {!loaded && !error && <span className="ctl-skeleton" aria-hidden />}
       <img
         ref={imgRef}
-        src={src}
+        src={optimizedMediaUrl(src, { width: 900 })}
         alt={alt}
         onLoad={() => setLoaded(true)}
         onError={() => setError(true)}

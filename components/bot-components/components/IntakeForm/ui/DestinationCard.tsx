@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { optimizedMediaUrl } from "../../../../../lib/mediaImage";
 import type { Destination } from "../types";
 
 interface DestinationCardProps {
@@ -51,7 +52,7 @@ const DestinationCard: React.FC<DestinationCardProps> = ({
       )}
       {destination.image && (
         <img
-          src={destination.image}
+          src={optimizedMediaUrl(destination.image, { width: 500 })}
           alt={destination.name}
           loading="lazy"
           onLoad={() => setImgLoaded(true)}

@@ -4,7 +4,7 @@ import ChatWithUs from "../../components/containers/ChatWithUs/ChatWithUs";
 import Continentcarousel from "../../components/continentcarousel/continentcarousel";
 import PathNavigation from "../travelplanner/PathNavigation";
 import { logEvent } from "../../services/ga/Index.js";
-import Image from "next/image.js";
+import Image from "next/image";
 import { convertDbNameToCapitalFirst } from "../../helper/convertDbnameToCapitalFirst.js";
 import Poi from "../newcityplanner/pois/Index.js";
 import TailoredFormMobileModal from "../../components/modals/TailoredFomrMobile.js";

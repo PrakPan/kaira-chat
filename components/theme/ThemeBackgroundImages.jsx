@@ -1,7 +1,8 @@
 import PrimaryHeading from "../heading/PrimaryHeading";
+import { optimizedMediaUrl } from "../../lib/mediaImage";
 import media from "../media";
 import { imgUrlEndPoint } from "./ThemeConstants";
-import Image from "next/image.js";
+import Image from "next/image";
 
 const ThemeBackground = (props) =>{
 
@@ -14,7 +15,7 @@ const ThemeBackground = (props) =>{
                 <div className="relative w-full flex items-center justify-between mt-5">
                   {isPageWide &&<div className="w-[9%] h-[5rem]">
                     <Image
-                      src={`${imgUrlEndPoint}media/themes/proposal-filter.png`}
+                      src={optimizedMediaUrl(`${imgUrlEndPoint}media/themes/proposal-filter.png`, { width: 700 })}
                       layout="responsive"
                       width={100} 
                       height={50} 
@@ -29,7 +30,7 @@ const ThemeBackground = (props) =>{
     
                   {isPageWide && <div className="w-[9%] h-[5rem]">
                     <Image
-                      src={`${imgUrlEndPoint}media/themes/proposal-filter.png`}
+                      src={optimizedMediaUrl(`${imgUrlEndPoint}media/themes/proposal-filter.png`, { width: 700 })}
                       layout="responsive"
                       width={100} 
                       height={50} 
@@ -43,7 +44,7 @@ const ThemeBackground = (props) =>{
                 <div className="relative w-full flex items-center justify-between mt-5">
                   {isPageWide && <div className="w-[9%] h-[5rem]">
                     <Image
-                      src={`${imgUrlEndPoint}media/themes/proposal-itinerary.png`}
+                      src={optimizedMediaUrl(`${imgUrlEndPoint}media/themes/proposal-itinerary.png`, { width: 700 })}
                       layout="responsive"
                       width={100} 
                       height={50} 
@@ -57,7 +58,7 @@ const ThemeBackground = (props) =>{
     
                   {isPageWide && <div className="w-[9%] h-[5rem]">
                     <Image
-                      src={`${imgUrlEndPoint}media/themes/proposal-itinerary.png`}
+                      src={optimizedMediaUrl(`${imgUrlEndPoint}media/themes/proposal-itinerary.png`, { width: 700 })}
                       layout="responsive"
                       width={100} 
                       height={50}
@@ -71,7 +72,7 @@ const ThemeBackground = (props) =>{
                 <div className="relative w-full flex items-center justify-between mt-5">
                   {isPageWide && <div className="w-[9%] h-[5rem]">
                     <Image
-                      src={`${imgUrlEndPoint}media/themes/proposal-review.png`}
+                      src={optimizedMediaUrl(`${imgUrlEndPoint}media/themes/proposal-review.png`, { width: 700 })}
                       layout="responsive"
                       width={100} 
                       height={50} 
@@ -86,7 +87,7 @@ const ThemeBackground = (props) =>{
     
                   {isPageWide && <div className="w-[9%] h-[5rem]">
                     <Image
-                      src={`${imgUrlEndPoint}media/themes/proposal-review.png`}
+                      src={optimizedMediaUrl(`${imgUrlEndPoint}media/themes/proposal-review.png`, { width: 700 })}
                       layout="responsive"
                       width={100} 
                       height={50} 

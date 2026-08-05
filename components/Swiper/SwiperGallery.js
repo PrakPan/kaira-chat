@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { optimizedMediaUrl } from "../../lib/mediaImage";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/free-mode";
@@ -117,14 +118,14 @@ const SwiperGallery = (props) => {
               >
                 <img
                   className="w-full rounded-6xl max-ph:!rounded-none"
-                  src={(() => {
+                  src={optimizedMediaUrl((() => {
                     const imgStr = image?.image || image;
                     return typeof imgStr === "string" && imgStr.trim()
                       ? imgStr.includes("https")
                         ? imgStr
                         : imgUrlEndPoint + imgStr
                       : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png";
-                  })()}
+                  })(), { width: 800 })}
                   onError={(e) => {
                     e.currentTarget.src =
                       "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png";
@@ -156,14 +157,14 @@ const SwiperGallery = (props) => {
         {props.images.map((image, index) => (
           <SwiperSlide key={index}>
             <img
-              src={(() => {
+              src={optimizedMediaUrl((() => {
                 const imgStr = image?.image || image;
                 return typeof imgStr === "string" && imgStr.trim()
                   ? imgStr.includes("https")
                     ? imgStr
                     : imgUrlEndPoint + imgStr
                   : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png";
-              })()}
+              })(), { width: 200 })}
               alt="hotel"
               onError={(e) => {
                 console.log(e);

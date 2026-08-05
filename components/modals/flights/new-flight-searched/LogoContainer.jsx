@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { optimizedMediaUrl } from "../../../../lib/mediaImage";
 import Image from "next/image";
 
 import SkeletonCard from "../../../ui/SkeletonCard";
@@ -55,7 +56,7 @@ export const Logo = ({ src, wd, ht }) => {
       >
         <Image
           alt={`${src} airline logo`}
-          src={`https://d31aoa0ehgvjdi.cloudfront.net/media/airlines/${src}.png`}
+          src={optimizedMediaUrl(`https://d31aoa0ehgvjdi.cloudfront.net/media/airlines/${src}.png`, { width: 120 })}
           onLoad={handleImageLoad}
           onError={handleImageError}
           width={finalWidth}

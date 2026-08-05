@@ -1,6 +1,7 @@
 import React, { useState, useContext, createContext, useEffect, useMemo } from "react";
 import { PiAirplaneTakeoff } from "react-icons/pi";
 import { useSelector, useDispatch } from "react-redux";
+import { optimizedMediaUrl } from "../../../lib/mediaImage";
 import axios from "axios";
 import { currencySymbols } from "../../../data/currencySymbols";
 import { MERCURY_HOST } from "../../../services/constants";
@@ -1054,7 +1055,7 @@ function ActivityCard({ node, onAction }: { node: WidgetNode; onAction?: WidgetR
 
         {imgSrc && (
           <div className="w-full h-40 sm:w-[120px] sm:h-[120px] shrink-0 rounded-xl overflow-hidden self-center">
-            <img src={imgSrc} alt={imgAlt} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            <img src={optimizedMediaUrl(imgSrc, { width: 700 })} alt={imgAlt} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           </div>
         )}
       </div>
@@ -1428,7 +1429,7 @@ function PoiCard({
         {imgSrc && (
           <div className="w-full h-40 sm:w-[120px] sm:h-[120px] shrink-0 rounded-xl overflow-hidden self-center">
             <img
-              src={imgSrc}
+              src={optimizedMediaUrl(imgSrc, { width: 700 })}
               alt={imgAlt}
               style={{ width: "100%", height: "100%", objectFit: "cover" }}
             />
@@ -1716,7 +1717,7 @@ function RestaurantCard({
         {imgSrc && (
           <div className="w-full h-40 sm:w-[120px] sm:h-[120px] shrink-0 rounded-xl overflow-hidden self-center">
             <img
-              src={imgSrc}
+              src={optimizedMediaUrl(imgSrc, { width: 700 })}
               alt={imgAlt}
               style={{ width: "100%", height: "100%", objectFit: "cover" }}
             />
@@ -2401,7 +2402,7 @@ const starIcons = Array.from({ length: 5 }, (_, i) =>
         <div className="w-full sm:w-[140px] shrink-0 self-start">
           <div className="w-full h-40 sm:h-[110px] rounded-xl overflow-hidden">
             <img
-              src={imgSrc || HOTEL_PLACEHOLDER_IMAGE}
+              src={optimizedMediaUrl(imgSrc || HOTEL_PLACEHOLDER_IMAGE, { width: 700 })}
               alt={imgAlt || name || "Hotel"}
               loading="lazy"
               onError={(e) => {
@@ -4772,7 +4773,7 @@ function ElementPreviewCard({
             style={{ position: "relative" }}
           >
             <img
-              src={imgSrc}
+              src={optimizedMediaUrl(imgSrc, { width: 700 })}
               alt={title || theme.label}
               style={{ width: "100%", height: "100%", objectFit: "cover" }}
             />

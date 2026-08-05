@@ -10,7 +10,13 @@ const nextConfig = {
   skipTrailingSlashRedirect: true,
 
   images: {
-    unoptimized: true,
+    // Route every <Image> through our Serverless Image Handler so our own media
+    // is resized/re-encoded at the edge (external hosts & local assets pass
+    // through untouched). Replaces `unoptimized: true` — same pixels, far fewer
+    // bytes. Compatible with `output: "export"` because the loader runs client-
+    // side and returns a ready-to-use URL.
+    loader: "custom",
+    loaderFile: "./image-loader.js",
     // domains:[''],
     remotePatterns: [
       {

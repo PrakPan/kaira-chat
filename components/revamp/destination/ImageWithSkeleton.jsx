@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { optimizedMediaUrl } from "../../../lib/mediaImage";
 import styles from "../../../styles/pages/revamp/destination.module.scss";
 
 const ImageWithSkeleton = ({
@@ -47,7 +48,7 @@ const ImageWithSkeleton = ({
       {!loaded && <div className={styles.imgSkeleton} aria-hidden />}
       {src && (
         <img
-          src={src}
+          src={optimizedMediaUrl(src, { width: 700 })}
           alt={alt}
           onLoad={() => setLoaded(true)}
           onError={() => setLoaded(true)}

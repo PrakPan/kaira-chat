@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import { optimizedMediaUrl } from "../../../lib/mediaImage";
 import { useRouter } from "next/router";
 import axios from "axios";
 import { useChat, generateSessionId, getPlatform, type UserLocationData, type MessageAttachment, Message } from "../hooks/useChat";
@@ -5375,7 +5376,7 @@ const SkeletonImage: React.FC<SkeletonImageProps> = ({ src, alt, width, height }
         />
       )}
       <img
-        src={src}
+        src={optimizedMediaUrl(src, { width: 700 })}
         alt={alt}
         onLoad={() => setLoaded(true)}
         className="w-full h-full object-cover"

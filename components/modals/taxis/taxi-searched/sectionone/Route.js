@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { optimizedMediaUrl } from "../../../../../lib/mediaImage";
 import styled from "styled-components";
 import media from "../../../../media";
 import ImageLoader from "../../../../ImageLoader";
@@ -388,7 +389,7 @@ const Section = (props) => {
             {props.data?.taxi_category?.image ? (
               <div className="flex-none w-[76px] h-[52px] max-ph:w-[64px] max-ph:h-[46px] rounded-lg bg-[#f4f3ec] flex items-center justify-center overflow-hidden">
                 <img
-                  src={props.data.taxi_category.image}
+                  src={optimizedMediaUrl(props.data.taxi_category.image, { width: 400 })}
                   alt={props.data?.taxi_category?.type || "Taxi"}
                   className="object-contain w-full h-full"
                   style={{ margin: 0, maxWidth: "none" }}

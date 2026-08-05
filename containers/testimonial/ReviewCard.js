@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { optimizedMediaUrl } from "../../lib/mediaImage";
 import styled from "styled-components";
 import ReactCardFlip from "react-card-flip";
 import ImageLoader from "../../components/ImageLoader";
@@ -168,7 +169,7 @@ const TestimonialCard = (props) => {
         className="font-nunito text-center center-div"
       >
         {(typeof props?.imgUrlEndPoint) === 'boolean' ? <>
-          <img src={props.url} className="rounded-circle w-[14vw] h-[14vw] max-ph:!w-[50vw] max-ph:!h-[50vw]" />
+          <img src={optimizedMediaUrl(props.url, { width: 400 })} className="rounded-circle w-[14vw] h-[14vw] max-ph:!w-[50vw] max-ph:!h-[50vw]" />
         </> :
           <ImageLoader
             widthmobile="60%"

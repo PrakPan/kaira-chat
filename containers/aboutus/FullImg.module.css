@@ -3,7 +3,7 @@
 }
 .BackgroundImg{
     filter: brightness(80%);
-    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.80),rgba(0,0,0,0.55),rgba(0,0,0,0.02)),url("https://d31aoa0ehgvjdi.cloudfront.net/media/website/aboutus.webp");
+    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.80),rgba(0,0,0,0.55),rgba(0,0,0,0.02)),url("https://d31aoa0ehgvjdi.cloudfront.net/eyJidWNrZXQiOiJ0aGV0YXJ6YW53YXktd2ViIiwia2V5IjoibWVkaWEvd2Vic2l0ZS9hYm91dHVzLndlYnAiLCJlZGl0cyI6eyJyZXNpemUiOnsid2lkdGgiOjE2MDAsImZpdCI6Imluc2lkZSIsIndpdGhvdXRFbmxhcmdlbWVudCI6dHJ1ZX0sIndlYnAiOnsicXVhbGl0eSI6ODB9LCJqcGVnIjp7InF1YWxpdHkiOjgwLCJwcm9ncmVzc2l2ZSI6dHJ1ZX19fQ==");
     height: 100vh;
     background-position: center;
     background-attachment: scroll;
@@ -14,7 +14,7 @@
 @media screen and (min-width: 768px){ 
     .BackgroundImg{
         filter: brightness(60%); 
-        background-image: linear-gradient(to right, rgba(0, 0, 0, 0.80),rgba(0,0,0,0.50),rgba(0,0,0,0.02)),url("https://d31aoa0ehgvjdi.cloudfront.net/media/website/aboutus.webp");
+        background-image: linear-gradient(to right, rgba(0, 0, 0, 0.80),rgba(0,0,0,0.50),rgba(0,0,0,0.02)),url("https://d31aoa0ehgvjdi.cloudfront.net/eyJidWNrZXQiOiJ0aGV0YXJ6YW53YXktd2ViIiwia2V5IjoibWVkaWEvd2Vic2l0ZS9hYm91dHVzLndlYnAiLCJlZGl0cyI6eyJyZXNpemUiOnsid2lkdGgiOjE2MDAsImZpdCI6Imluc2lkZSIsIndpdGhvdXRFbmxhcmdlbWVudCI6dHJ1ZX0sIndlYnAiOnsicXVhbGl0eSI6ODB9LCJqcGVnIjp7InF1YWxpdHkiOjgwLCJwcm9ncmVzc2l2ZSI6dHJ1ZX19fQ==");
       background-attachment: fixed;
     
     }

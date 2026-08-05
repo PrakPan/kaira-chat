@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { FaChevronCircleLeft, FaChevronCircleRight } from "react-icons/fa";
 import { imgUrlEndPoint } from '../../components/theme/ThemeConstants';
+import { optimizedMediaUrl } from '../../lib/mediaImage';
 
 
 
@@ -208,7 +209,7 @@ const ImageCard = ({ src, index, isDesktop, mobilePosition }) => {
     <div className={`relative overflow-hidden rounded-2xl bg-gray-200 ${getCardClass()}`}>
       {!imageError ? (
         <img
-          src={src}
+          src={optimizedMediaUrl(src, { width: 800 })}
           alt={`Gallery image ${index + 1}`}
           className={`w-full h-full object-cover transition-all duration-300 hover:scale-105 cursor-pointer ${
             imageLoaded ? 'opacity-100' : 'opacity-0'

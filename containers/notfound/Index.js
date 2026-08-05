@@ -8,7 +8,7 @@ import ChatWithUs from "../../components/containers/ChatWithUs/ChatWithUs";
 const Container = styled.div`
   width: 100vw;
   height: 100vh;
-  background-image: url("https://d31aoa0ehgvjdi.cloudfront.net/media/website/worldMapYellow.jpg");
+  background-image: url("https://d31aoa0ehgvjdi.cloudfront.net/eyJidWNrZXQiOiJ0aGV0YXJ6YW53YXktd2ViIiwia2V5IjoibWVkaWEvd2Vic2l0ZS93b3JsZE1hcFllbGxvdy5qcGciLCJlZGl0cyI6eyJyZXNpemUiOnsid2lkdGgiOjE2MDAsImZpdCI6Imluc2lkZSIsIndpdGhvdXRFbmxhcmdlbWVudCI6dHJ1ZX0sIndlYnAiOnsicXVhbGl0eSI6ODB9LCJqcGVnIjp7InF1YWxpdHkiOjgwLCJwcm9ncmVzc2l2ZSI6dHJ1ZX19fQ==");
   background-color: rgba(100, 100, 100, 0.3);
   background-position: center;
   background-repeat: no-repeat;

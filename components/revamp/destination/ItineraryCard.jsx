@@ -1,4 +1,5 @@
 import React from "react";
+import { optimizedMediaUrl } from "../../../lib/mediaImage";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation } from "swiper";
 import "swiper/css";
@@ -23,7 +24,7 @@ const ItineraryCard = ({ itinerary, onClick }) => {
             <SwiperSlide key={idx} className="h-full" style={{ cursor: "pointer" }}>
               <div className="w-full h-full relative">
                 <img
-                  src={img}
+                  src={optimizedMediaUrl(img, { width: 700 })}
                   alt={`${itinerary.title} ${idx + 1}`}
                   className="w-full h-full object-cover object-center"
                 />

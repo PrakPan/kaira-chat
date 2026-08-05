@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { optimizedMediaUrl } from "../../lib/mediaImage";
 
 const defaultTestimonials = [
   {
@@ -146,7 +147,7 @@ const TestimonialCarousel = (props) => {
       <>
         {!hasError && hasValidSrc ? (
           <img
-            src={src}
+            src={optimizedMediaUrl(src, { width: 500 })}
             alt={alt}
             className={className}
             style={style}

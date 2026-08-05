@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
+import { optimizedMediaUrl } from "../../../../lib/mediaImage";
 import { MERCURY_HOST } from "../../../../services/constants";
 import BrandLockup from "../../../brand/BrandLockup";
 import type { IntakeFormState } from "../IntakeForm/types";
@@ -50,7 +51,9 @@ const IMGIX_HOST = /images\.unsplash\.com|\.imgix\.net/;
 // in `transform()`'s CDN branch match whatever the resizer expects — that one
 // branch is the only thing that needs to change.
 const CDN_HOST = /d31aoa0ehgvjdi\.cloudfront\.net/;
-const CDN_SUPPORTS_RESIZE = false;
+// The Serverless Image Handler (base64 edits) is live on this host, so we mint
+// sized/blurred variants via `optimizedMediaUrl` (see the CDN branch below).
+const CDN_SUPPORTS_RESIZE = true;
 
 // Match the request to what's actually painted: the panel is ~640px wide, so a
 // DPR-capped render is sharp without shipping a 2000px file. Falls back to a
@@ -93,14 +96,8 @@ function transform(url: string, o: ImgOpts): string {
     return setParams(url, p);
   }
   if (CDN_SUPPORTS_RESIZE && CDN_HOST.test(url)) {
-    // Query-param convention — keep in sync with the deployed edge resizer.
-    const p: Record<string, string> = {
-      width: String(o.w),
-      quality: String(o.q),
-      format: "webp",
-    };
-    if (o.blur) p.blur = String(o.blur);
-    return setParams(url, p);
+    // Serverless Image Handler (base64 edits) — resize + optional LQIP blur.
+    return optimizedMediaUrl(url, { width: o.w, quality: o.q, blur: o.blur });
   }
   return url;
 }

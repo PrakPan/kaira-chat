@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { optimizedMediaUrl } from "../../lib/mediaImage";
 import { useRouter } from "next/router";
 import { IoClose } from "react-icons/io5";
 import { FaStar } from "react-icons/fa";
@@ -784,7 +785,7 @@ const ActivityCardExpanded = ({
         <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
           {element.icon ? (
             <img
-              src={imgUrlEndPoint + element.icon}
+              src={optimizedMediaUrl(imgUrlEndPoint + element.icon, { width: 500 })}
               alt={element.heading}
               className="w-8 h-8 rounded-full object-cover"
               onClick={() => handleItemClick(element)}

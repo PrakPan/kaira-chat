@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import defaultTravellerStories from "../../../../data/travellerStories";
 import type { ThemeConfig } from "../../types/themeConfig";
+import { optimizedMediaUrl } from "../../../../lib/mediaImage";
 
 export interface TravellerStory {
   id: number;
@@ -455,7 +456,7 @@ const TripCard: React.FC<TripCardProps> = ({ trip, delay, mounted, onSelect }) =
         <div className="ttw-skeleton absolute inset-0" aria-hidden="true" />
       )}
       <img
-        src={trip.image}
+        src={optimizedMediaUrl(trip.image, { width: 600 })}
         alt={trip.label}
         loading="lazy"
         onLoad={() => setImgLoaded(true)}
@@ -575,7 +576,7 @@ const TrendingCard: React.FC<TrendingCardProps> = ({
         <div className="ttw-skeleton absolute inset-0" aria-hidden="true" />
       )}
       <img
-        src={trip.image}
+        src={optimizedMediaUrl(trip.image, { width: 600 })}
         alt={trip.label}
         loading="lazy"
         onLoad={() => setImgLoaded(true)}
@@ -699,7 +700,7 @@ const TravellerStoryCard: React.FC<TravellerStoryCardProps> = ({
           />
         )}
         <img
-          src={story.image}
+          src={optimizedMediaUrl(story.image, { width: 600 })}
           alt={story.tripName}
           loading="lazy"
           onLoad={() => setImgLoaded(true)}

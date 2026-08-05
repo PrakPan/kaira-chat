@@ -1,4 +1,5 @@
 import React from "react";
+import { optimizedMediaUrl } from "../../../../../lib/mediaImage";
 import useDestinationSearch from "../../../hooks/useDestinationSearch";
 import type { Destination } from "../types";
 
@@ -94,7 +95,7 @@ const DestinationSearch: React.FC<DestinationSearchProps> = ({
                 style={{ background: "#fafaf5" }}
               >
                 {r.image ? (
-                  <img src={r.image} alt={r.name} className="w-full h-full object-cover" />
+                  <img src={optimizedMediaUrl(r.image, { width: 500 })} alt={r.name} className="w-full h-full object-cover" />
                 ) : (
                   <span>📍</span>
                 )}

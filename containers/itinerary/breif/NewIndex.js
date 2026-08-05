@@ -8,7 +8,7 @@ import Drawer from "../../../components/drawers/cityDetails/CityDetailsDrawer";
 import RouteEditSection from "../../newitinerary/breif/route/RouteEditSection.js";
 import RoutesMap from "./RoutesMap.js";
 import { useParams, useSearchParams } from "next/navigation.js";
-import Image from "next/image.js";
+import Image from "next/image";
 import useMediaQuery from "../../../components/media.js";
 import { useDispatch, useSelector } from "react-redux";
 import { setCloneItineraryDrawer } from "../../../store/actions/cloneItinerary.js";

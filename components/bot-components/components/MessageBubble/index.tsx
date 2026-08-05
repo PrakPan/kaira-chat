@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useEffect } from "react";
+import { optimizedMediaUrl } from "../../../../lib/mediaImage";
 import { createPortal } from "react-dom";
 import { useSelector } from "react-redux";
 import type { Message, ProgressStep, ThinkingTask } from "../../hooks/useChat";
@@ -155,7 +156,7 @@ const UserAvatar: React.FC<{
     >
       {showImage ? (
         <img
-          src={avatarSrc!}
+          src={optimizedMediaUrl(avatarSrc!, { width: 96 })}
           alt="You"
           onError={() => setErrored(true)}
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
@@ -234,7 +235,7 @@ const ImageLightbox: React.FC<{ url: string; alt?: string; onClose: () => void }
         &times;
       </button>
       <img
-        src={url}
+        src={optimizedMediaUrl(url, { width: 1600 })}
         alt={alt ?? "preview"}
         onClick={(e) => e.stopPropagation()}
         style={{
@@ -274,7 +275,7 @@ const ImageAttachment: React.FC<{ url: string; name?: string }> = ({ url, name }
         }}
       >
         <img
-          src={url}
+          src={optimizedMediaUrl(url, { width: 300 })}
           alt={name ?? "attachment"}
           style={{
             width: "100%",

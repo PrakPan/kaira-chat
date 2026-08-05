@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { optimizedMediaUrl } from "../../../lib/mediaImage";
 import { createPortal } from "react-dom";
 import ActivityAddDrawer from "../../drawers/poiDetails/activityAddDrawer";
 import { useDispatch, useSelector } from "react-redux";
@@ -67,8 +68,8 @@ const getItemImage = (item) => {
   if (Array.isArray(icon)) icon = icon[0] || null;
   if (!icon || typeof icon !== "string")
     return "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=800&auto=format&fit=crop";
-  if (icon.startsWith("http")) return icon;
-  return imgUrlEndPoint + icon;
+  const url = icon.startsWith("http") ? icon : imgUrlEndPoint + icon;
+  return optimizedMediaUrl(url, { width: 700 });
 };
 
 // ─── Helper: derive time-of-day label ─────────────────────────────────────────

@@ -1,4 +1,5 @@
 import React from "react";
+import { optimizedMediaUrl } from "../../../lib/mediaImage";
 
 // Chrome shared by the two cards a city's deck can show — the city overview and
 // a single day-by-day element (see CityOverviewCard / CityElementCard). Both are
@@ -56,7 +57,7 @@ export const CardImage: React.FC<{
     >
       {src && (
         <img
-          src={src}
+          src={optimizedMediaUrl(src, { width: 500 })}
           alt={alt}
           style={{
             width: "100%",
