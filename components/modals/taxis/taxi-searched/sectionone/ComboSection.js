@@ -17,9 +17,10 @@ import { FaCar } from "react-icons/fa";
 import { PiTaxiLight } from "react-icons/pi";
 import { currencySymbols } from "../../../../../data/currencySymbols";
 import {
-  getPerVehicleTotal,
   getVehicleCount,
   MultiVehicleNote,
+  PerTaxiPrice,
+  resolvePerVehicleTotal,
   VehicleCountBadge,
 } from "../../MultiVehicleInfo";
 
@@ -96,7 +97,11 @@ const ComboSection = (props) => {
   // >1 only when no single cab seats the group; then price.total is the convoy
   // total and per_vehicle_total is what one cab costs.
   const vehicleCount = getVehicleCount(props.data);
-  const perVehicleTotal = getPerVehicleTotal(props.data);
+  const perVehicleTotal = resolvePerVehicleTotal(
+    props.data,
+    props.data?.price?.total,
+    vehicleCount,
+  );
   const currencySymbol = currency?.currency
     ? currencySymbols?.[currency?.currency]
     : "₹";
@@ -232,13 +237,11 @@ const ComboSection = (props) => {
                 <span className="text-lg font-mono text-[#0b1220] 2xl-md">
                   {currencySymbol + getIndianPrice(Math.ceil(props.data.price.total))}
                 </span>
-                {vehicleCount > 1 && perVehicleTotal ? (
-                  <span className="ttw-type-small text-[#445069] whitespace-nowrap">
-                    {currencySymbol}
-                    {getIndianPrice(Math.ceil(perVehicleTotal))} × {vehicleCount}{" "}
-                    taxis
-                  </span>
-                ) : null}
+                <PerTaxiPrice
+                  count={vehicleCount}
+                  perVehicleTotal={perVehicleTotal}
+                  symbol={currencySymbol}
+                />
               </div>
               <div className="flex items-end justify-center">
                 {loading ? (

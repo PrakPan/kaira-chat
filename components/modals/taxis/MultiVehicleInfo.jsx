@@ -1,4 +1,5 @@
 import React from "react";
+import { getIndianPrice } from "../../../services/getIndianPrice";
 
 /**
  * Taxi search only falls back to a convoy when no single cab seats the whole
@@ -34,6 +35,40 @@ export const getPerVehicleTotal = (source) => {
 /** True when any quote in a search result needs more than one cab. */
 export const hasMultiVehicleQuote = (quotes) =>
   Array.isArray(quotes) && quotes.some((quote) => getVehicleCount(quote) > 1);
+
+/**
+ * What one cab costs. Prefers the figure the quote carries; falls back to an
+ * even split of the convoy total for the lighter suggestion payloads that ship
+ * `number_of_vehicles` without `per_vehicle_total`.
+ */
+export const resolvePerVehicleTotal = (source, total, count) => {
+  const quoted = getPerVehicleTotal(source);
+  if (quoted) return quoted;
+  const convoyTotal = Number(total);
+  const vehicles = Number(count ?? getVehicleCount(source));
+  if (!Number.isFinite(convoyTotal) || convoyTotal <= 0) return null;
+  if (!Number.isFinite(vehicles) || vehicles <= 1) return null;
+  return convoyTotal / vehicles;
+};
+
+/**
+ * The one-cab fare spelled out under a convoy total. Silent for a single cab —
+ * there the headline price already *is* the per-taxi price.
+ */
+export const PerTaxiPrice = ({
+  count,
+  perVehicleTotal,
+  symbol = "₹",
+  className = "",
+}) =>
+  count > 1 && perVehicleTotal ? (
+    <span
+      className={`ttw-type-small text-[#445069] whitespace-nowrap ${className}`}
+    >
+      {symbol}
+      {getIndianPrice(Math.ceil(perVehicleTotal))} per taxi × {count} taxis
+    </span>
+  ) : null;
 
 /** Pill spelling out how many cabs a quote/booking covers. Silent for a single cab. */
 export const VehicleCountBadge = ({ count, className = "" }) =>
