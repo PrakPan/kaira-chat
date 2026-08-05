@@ -104,6 +104,26 @@ const buildChildAges = (count, ages) => {
   });
 };
 
+const ALL_ABOARD_PAGE_SIZE = 5;
+
+// AllAboard search results are paginated by the API, which returns a
+// `pagination: { offset, limit, next_offset, has_more, total_journeys }` block
+// alongside `results`. Page with `next_offset` and stop on `has_more` — a short
+// page is NOT a signal that the results are exhausted, so never infer either
+// value from results.length. Other booking sources return everything in one
+// response and carry no pagination block, so they read as "no more pages".
+const readAllAboardPage = (searchData) => {
+  if (searchData?.booking_source !== "AllAboard") {
+    return { hasMore: false, nextOffset: null };
+  }
+  const pagination = searchData?.pagination;
+  const nextOffset = Number(pagination?.next_offset);
+  // Without a usable next_offset we have no cursor to advance to — re-requesting
+  // the current offset would just replay the same page.
+  const hasMore = pagination?.has_more === true && Number.isFinite(nextOffset);
+  return { hasMore, nextOffset: hasMore ? nextOffset : null };
+};
+
 const svgIcons = {
   time: (
     <svg
@@ -2976,12 +2996,6 @@ const NewMultiModeContainer = ({
   const [isProcessingWarning, setIsProcessingWarning] = useState(false);
   const [isProcessingBooking, setIsProcessingBooking] = useState(false);
 
-  // AllAboard pagination state for Train mode
-  const [allAboardOffset, setAllAboardOffset] = useState({});
-  const [loadingMore, setLoadingMore] = useState({});
-  const [hasMoreAllAboard, setHasMoreAllAboard] = useState({});
-  const ALL_ABOARD_LIMIT = 5;
-
   const { trackTransferBookingAdd } = useAnalytics();
  const { intercity } = useSelector(
   (state) => state.TransferBookings
@@ -3351,7 +3365,7 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
         number_of_children: paxData.children,
         child_ages: buildChildAges(paxData.children, paxData.childAges),
         number_of_infants: paxData.infants,
-        limit: 5,
+        limit: ALL_ABOARD_PAGE_SIZE,
         offset: currentOffset,
       };
 
@@ -3365,7 +3379,9 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
       const data = response.data;
 
       if (data.success && data.data) {
-        const isAllAboardSource = data.data.booking_source === "AllAboard";
+        const { hasMore, nextOffset } = readAllAboardPage(data.data);
+        setComboHasMoreAllAboard(hasMore);
+        setComboAllAboardOffset(hasMore ? nextOffset : currentOffset);
 
         if (isLoadMore) {
           // Append new results to existing ones
@@ -3378,23 +3394,12 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
             trace_id: data?.trace_id || existingData?.trace_id,
           };
 
-          const shouldShowMore = isAllAboardSource && newResults.length === 5;
-          setComboHasMoreAllAboard(shouldShowMore);
-          setComboAllAboardOffset(currentOffset + 5);
-
           setDynamicTransferData((prev) => ({
             ...prev,
             [transferKey]: mergedData,
           }));
         } else {
           // Initial load
-          const results = data.data.results || [];
-          const shouldShowMore = isAllAboardSource && results.length === 5;
-          setComboHasMoreAllAboard(shouldShowMore);
-          if (shouldShowMore) {
-            setComboAllAboardOffset(5);
-          }
-
           setDynamicTransferData((prev) => ({
             ...prev,
             [transferKey]: {
@@ -3409,24 +3414,10 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
           delete newErrors[transferKey];
           return newErrors;
         });
-
-        // Track AllAboard pagination state
-        if (
-          option?.mode === "Train" &&
-          data.data.booking_source === "AllAboard"
-        ) {
-          setAllAboardOffset((prev) => ({ ...prev, [transferKey]: 0 }));
-          const resultCount = data.data.results?.length || 0;
-          setHasMoreAllAboard((prev) => ({
-            ...prev,
-            [transferKey]: resultCount >= ALL_ABOARD_LIMIT,
-          }));
-        } else {
-          setHasMoreAllAboard((prev) => ({
-            ...prev,
-            [transferKey]: false,
-          }));
-        }
+      } else if (isLoadMore) {
+        // Nothing usable came back — stop paging rather than leaving the button
+        // pointed at the same offset.
+        setComboHasMoreAllAboard(false);
       }
     } catch (error) {
       if (!isLoadMore) {
@@ -4980,46 +4971,8 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
     },
   );
 
-  // AllAboard "Load More" button for Train mode
-  const isAllAboard = currentTransferData.booking_source === "AllAboard";
-  if (isAllAboard && hasMoreAllAboard[transferKey]) {
-    omioRendered.push(
-      <div key="load-more-allaboard" className="flex justify-center mt-4 mb-2">
-        <button
-          onClick={() => {
-            const paxData = {
-              adults: pax?.adults || 1,
-              children: pax?.children || 0,
-              infants: pax?.infants || 0,
-              childAges: pax?.childAges,
-            };
-            const departureDateTime = `${currentModeDepartureDate}T${currentModeDepartureTime}:00`;
-            loadMoreAllAboardResults(
-              currentTransferData,
-              paxData,
-              departureDateTime,
-            );
-          }}
-          disabled={loadingMore[transferKey]}
-          className="flex items-center gap-2 px-6 py-2.5 bg-[#0b1220] text-white ttw-type-body-strong rounded-full hover:bg-[#0b1220]/90 active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed"
-        >
-          {loadingMore[transferKey] ? (
-            <>
-              <PulseLoader size={8} speedMultiplier={0.6} color="#ffffff" />
-              {/* <span>Loading...</span> */}
-            </>
-          ) : (
-            <>
-              <span>Load More Trains</span>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M6 9l6 6 6-6" />
-              </svg>
-            </>
-          )}
-        </button>
-      </div>
-    );
-  }
+  // The AllAboard "Load More" control for this list is rendered below the
+  // results by the caller (comboHasMoreAllAboard / handleComboLoadMore).
 
   return omioRendered;
 }
@@ -6632,7 +6585,6 @@ const OtherTransfer = ({
   const [allAboardOffset, setAllAboardOffset] = useState(0);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMoreAllAboard, setHasMoreAllAboard] = useState(false);
-  const ALL_ABOARD_LIMIT = 5;
 
   const { number_of_adults, number_of_children, number_of_infants } =
     useSelector((state) => state.Itinerary);
@@ -6812,7 +6764,7 @@ const toggleTransferDetails = (priceOptionId) => {
         };
 
         // Add limit/offset for pagination (always send for AllAboard support)
-        requestBody.limit = 5;
+        requestBody.limit = ALL_ABOARD_PAGE_SIZE;
         requestBody.offset = currentOffset;
 
         const searchUrl = `/search/?currency=${currency?.currency || "INR"}`;
@@ -6834,21 +6786,19 @@ const toggleTransferDetails = (priceOptionId) => {
         if (data.success && data.data) {
           setTraceId(data.trace_id);
 
+          const { hasMore, nextOffset } = readAllAboardPage(data.data);
+          setHasMoreAllAboard(hasMore);
+
           if (isLoadMore && otherTransfer) {
             // Append new results to existing ones
             const newResults = data.data.results || [];
-            const isAllAboardSource = data.data.booking_source === "AllAboard";
 
             const mergedData = {
               ...otherTransfer,
               results: [...(otherTransfer.results || []), ...newResults],
             };
 
-
-            // Hide load more if: not AllAboard source, or results < 5
-            const shouldShowMore = isAllAboardSource && newResults.length === 5;
-            setHasMoreAllAboard(shouldShowMore);
-            setAllAboardOffset(currentOffset + 5);
+            setAllAboardOffset(hasMore ? nextOffset : currentOffset);
 
             setDynamicTransferData((prev) => ({
               ...prev,
@@ -6856,16 +6806,8 @@ const toggleTransferDetails = (priceOptionId) => {
             }));
             setOtherTransfer(mergedData);
           } else {
-            // Initial load - check if booking_source is AllAboard
-            const results = data.data.results || [];
-            const isAllAboardSource = data.data.booking_source === "AllAboard";
-
-            // Show load more only if source is AllAboard and results count >= 5
-            const shouldShowMore = isAllAboardSource && results.length === 5;
-            setHasMoreAllAboard(shouldShowMore);
-            if (shouldShowMore) {
-              setAllAboardOffset(5);
-            }
+            // Initial load
+            setAllAboardOffset(hasMore ? nextOffset : 0);
 
             setDynamicTransferData((prev) => ({
               ...prev,
@@ -7784,7 +7726,7 @@ const toggleTransferDetails = (priceOptionId) => {
           number_of_children: pax.children,
           child_ages: buildChildAges(pax.children, pax.childAges),
           number_of_infants: pax.infants,
-          limit: 5,
+          limit: ALL_ABOARD_PAGE_SIZE,
           offset: 0,
         },
         { headers: authHeaders },
