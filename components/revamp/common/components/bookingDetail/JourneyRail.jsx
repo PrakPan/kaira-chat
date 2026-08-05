@@ -196,11 +196,14 @@ export default function JourneyRail({ nodes, accent, className = "" }) {
           <div
             key={node.key || index}
             className="grid gap-x-3"
-            style={{ gridTemplateColumns: "58px 14px minmax(0,1fr)" }}
+            // 68px, not 58: a 12-hour stamp is eight mono characters wide
+            // ("09:00 AM") and wrapped its meridiem onto a second line at the
+            // narrower track.
+            style={{ gridTemplateColumns: "68px 14px minmax(0,1fr)" }}
           >
             <div className="text-right pt-px">
               {node.time ? (
-                <div className="font-mono text-[12.5px] font-500 text-[#0b1220] tabular-nums leading-tight">
+                <div className="font-mono text-[12.5px] font-500 text-[#0b1220] tabular-nums leading-tight whitespace-nowrap">
                   {node.time}
                 </div>
               ) : null}

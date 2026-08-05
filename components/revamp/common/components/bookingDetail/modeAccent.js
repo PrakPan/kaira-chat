@@ -1,7 +1,11 @@
 import { IoCar } from "react-icons/io5";
 import { IoMdTrain, IoMdBoat } from "react-icons/io";
 import { FaBus } from "react-icons/fa";
-import { MdOutlineFlightTakeoff, MdTransferWithinAStation } from "react-icons/md";
+import {
+  MdOutlineFlightTakeoff,
+  MdTransferWithinAStation,
+} from "react-icons/md";
+import { TbMotorbike, TbSteeringWheel } from "react-icons/tb";
 
 /**
  * Per-transport-mode accent for the booking-detail drawers.
@@ -75,7 +79,33 @@ const ACCENTS = {
   },
 };
 
+// Self-drive is its own thing: a road journey the traveller makes themselves,
+// so it takes the peach from the day-card palette rather than the taxi gold —
+// and a steering wheel rather than a car. A car glyph is what the taxi bookings
+// already use, and the whole point of the distinction is who is driving.
+ACCENTS["Self-Drive"] = {
+  key: "Self-Drive",
+  soft: "#FFE5D1",
+  wash: "#FFF8F2",
+  line: "rgba(180,84,26,0.22)",
+  solid: "#B4541A",
+  onInk: "#F2A97C",
+  Icon: TbSteeringWheel,
+};
+
+ACCENTS.Bike = { ...ACCENTS["Self-Drive"], key: "Bike", Icon: TbMotorbike };
+
 ACCENTS.Car = ACCENTS.Taxi;
+ACCENTS.Rental = ACCENTS["Self-Drive"];
+ACCENTS["Self Drive"] = ACCENTS["Self-Drive"];
+ACCENTS.Selfdrive = ACCENTS["Self-Drive"];
+
+// Looked up case-insensitively: `booking_type` arrives as "Self-Drive",
+// "self-drive" or "SELF-DRIVE" depending on where it was built, and the old
+// capitalise-the-first-letter normalisation only matched one of those.
+const BY_KEY = new Map(
+  Object.entries(ACCENTS).map(([key, accent]) => [key.toLowerCase(), accent]),
+);
 
 const NEUTRAL = {
   key: "Transfer",
@@ -87,15 +117,53 @@ const NEUTRAL = {
   Icon: MdTransferWithinAStation,
 };
 
+const SELF_DRIVE = /self.?drive|rental/i;
+const TWO_WHEELER = /bike|scooter|motorcycle|moped|two.?wheeler/i;
+
+/** Whether a `booking_type` label describes a vehicle the traveller drives. */
+export const isSelfDrive = (mode) => SELF_DRIVE.test(String(mode || ""));
+
 /**
- * `booking_type` reaches the drawers as "Taxi", "taxi", or — on a combo — a
- * comma-joined list of its legs' types, so normalise before looking up.
+ * The accent key for a booking.
+ *
+ * Self-drive splits into car and bike, and that split is not in `booking_type`
+ * — both arrive as "Self-Drive". It is in the vehicle category on the quote, so
+ * the booking OBJECT has to be handed in for the distinction to be possible;
+ * pass a bare label and a two-wheeler will render as a car, which is exactly
+ * what the itinerary rows were doing.
+ */
+export const resolveModeKey = (bookingOrMode) => {
+  if (!bookingOrMode) return null;
+
+  if (typeof bookingOrMode === "string") {
+    return isSelfDrive(bookingOrMode) ? "Self-Drive" : bookingOrMode;
+  }
+
+  const booking = bookingOrMode;
+  const mode = booking?.booking_type || booking?.transfer_details?.mode || null;
+  if (!isSelfDrive(mode)) return mode;
+
+  const quote = booking?.transfer_details?.quote;
+  const vehicle = quote?.taxi_category || quote?.vehicle || null;
+
+  // The category names it ("Bike", "Scooty"); the model and the booking's own
+  // name are the fallbacks for suppliers that only put it in the label.
+  const haystack = [vehicle?.type, vehicle?.model_name, booking?.name]
+    .filter(Boolean)
+    .join(" ");
+
+  return TWO_WHEELER.test(haystack) ? "Bike" : "Self-Drive";
+};
+
+/**
+ * `booking_type` reaches the drawers as "Taxi", "taxi", "Self-Drive", or — on a
+ * combo — a comma-joined list of its legs' types, so normalise before looking
+ * up. Anything unrecognised falls back to the neutral transfer accent.
  */
 export const getModeAccent = (mode) => {
   const first = String(mode || "").split(",")[0].trim().toLowerCase();
   if (!first) return NEUTRAL;
-  const key = first[0].toUpperCase() + first.slice(1);
-  return ACCENTS[key] || NEUTRAL;
+  return BY_KEY.get(first) || NEUTRAL;
 };
 
 /** The header-strip fill: the mode's tint fading toward white. */

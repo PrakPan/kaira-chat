@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { getModeAccent } from "./modeAccent";
+import { resolveImageUrl } from "../../../../../helper/imageUrl";
 
 /**
  * The supplier's photo of the booked car. Cutout car photos are transparent
@@ -18,7 +19,9 @@ export default function VehiclePhoto({ image, alt, mode = "Taxi" }) {
   const [failed, setFailed] = useState(false);
 
   const accent = getModeAccent(mode);
-  const showImage = !!image && !failed;
+  // Our own images arrive as bucket keys, supplier ones as absolute URLs.
+  const src = resolveImageUrl(image);
+  const showImage = !!src && !failed;
 
   return (
     <div
@@ -30,7 +33,7 @@ export default function VehiclePhoto({ image, alt, mode = "Taxi" }) {
       <div className="w-full max-w-[240px] h-full flex justify-center items-center p-3">
         {showImage ? (
           <img
-            src={image}
+            src={src}
             alt={alt || "Vehicle"}
             // Sized and painted inline — the app's unscoped `img {}` rules
             // otherwise crop this to fill (`object-fit: cover`) and run it

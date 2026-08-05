@@ -1,16 +1,18 @@
 import styled from "styled-components";
 import React, { use, useEffect, useRef } from "react";
 import Pin from "../newitinerary/breif/route/Pin";
-import { IoCar } from "react-icons/io5";
 import { MdOutlineFlightTakeoff } from "react-icons/md";
-import { IoMdTrain, IoMdBoat, IoIosArrowForward } from "react-icons/io";
-import { FaBus, FaPen } from "react-icons/fa";
+import { FaPen } from "react-icons/fa";
 import axios from "axios";
 import { MERCURY_HOST } from "../../services/constants";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { axiosDeleteBooking } from "../../services/itinerary/bookings";
 import { getTransferBookingPath } from "../../helper/transferBookingPath";
+import {
+  getModeAccent,
+  resolveModeKey,
+} from "../../components/revamp/common/components/bookingDetail/modeAccent";
 import {
   updateAirportTransferBooking,
   updateTransferBookings,
@@ -384,34 +386,28 @@ const AirportBookingItem = ({
   );
 
 
-  const correctIcon = (TransportMode) => {
-    switch (TransportMode) {
-      case "Flight":
-        return (
-          <MdOutlineFlightTakeoff
-            className="text-2xl text-[#a5a5a5]"
-            size={16}
-            color={"#a5a5a5"}
-          />
-        );
-      case "Taxi":
-      case "Car":
-        return <IoCar className="text-2xl" size={16} color={"#a5a5a5"} />;
-      case "Train":
-        return <IoMdTrain className="text-2xl" size={16} color={"#a5a5a5"} />;
-      case "Ferry":
-        return <IoMdBoat className="text-2xl" size={16} color={"#a5a5a5"} />;
-      case "Bus":
-        return (
-          <FaBus
-            className="text-2xl text-[#a5a5a5]"
-            size={14}
-            color={"#a5a5a5"}
-          />
-        );
-      default:
-        return null;
-    }
+  /**
+   * The mode glyph on an itinerary transfer row.
+   *
+   * Reads the same accent map the booking-detail drawers use, so a mode can't
+   * end up with one icon in the itinerary and another in its drawer. That map
+   * already carried this exact set — flight, taxi, train, ferry, bus — plus the
+   * self-drive glyphs this switch was missing: an unmatched `booking_type` hit
+   * `default: null` and the row rendered no icon at all.
+   *
+   * Takes the booking, not just its type, wherever the caller has one: a
+   * self-drive bike and a self-drive car share the same `booking_type`, and only
+   * the vehicle category on the quote tells them apart. A bare label still works
+   * and resolves to the car.
+   *
+   * `color` was already being passed by callers and silently dropped; it now
+   * applies, defaulting to the grey the switch hardcoded.
+   */
+  const correctIcon = (bookingOrMode, color = "#a5a5a5") => {
+    const key = resolveModeKey(bookingOrMode);
+    if (!key) return null;
+    const { Icon } = getModeAccent(key);
+    return <Icon className="text-2xl" size={16} color={color} />;
   };
 
   const handleInfoHover = (show) => {
@@ -549,10 +545,9 @@ const AirportBookingItem = ({
 
     if (hasCurrentPickup && hasCurrentDrop) {
       const allTypes = [
-        ...new Set([
-          ...currentPickupBookings.map((book) => book?.booking_type),
-          ...currentDropBookings.map((book) => book?.booking_type),
-        ]),
+        ...new Set(
+          [...currentPickupBookings, ...currentDropBookings].map(resolveModeKey),
+        ),
       ];
       const uniqueIcons = allTypes.map((type) => correctIcon(type));
 
@@ -564,7 +559,7 @@ const AirportBookingItem = ({
       );
     } else if (hasCurrentPickup) {
       const pickupIcons = [
-        ...new Set(currentPickupBookings.map((book) => book?.booking_type)),
+        ...new Set(currentPickupBookings.map(resolveModeKey)),
       ].map((type) => correctIcon(type));
       return (
         <div className="flex items-center gap-1">
@@ -574,7 +569,7 @@ const AirportBookingItem = ({
       );
     } else if (hasCurrentDrop) {
       const dropIcons = [
-        ...new Set(currentDropBookings.map((book) => book?.booking_type)),
+        ...new Set(currentDropBookings.map(resolveModeKey)),
       ].map((type) => correctIcon(type));
       return (
         <div className="flex items-center gap-1">
@@ -587,7 +582,7 @@ const AirportBookingItem = ({
         <div className="flex items-center gap-2">
           {currentNoPickupDropBookings.map((book, index) => (
             <div key={index} className="flex items-center gap-1">
-              {correctIcon(book?.booking_type)}
+              {correctIcon(book)}
               <span>{book?.name}</span>
             </div>
           ))}
@@ -1054,24 +1049,14 @@ const CityItem = ({
     handlePickupDropDrawer("drop")
   };
 
-  const correctIcon = (TransportMode, color = "#a5a5a5") => {
-    switch (TransportMode?.toLowerCase()) {
-      case "flight":
-        return (
-          <MdOutlineFlightTakeoff className="text-2xl" size={18} color={color} />
-        );
-      case "taxi":
-      case "car":
-        return <IoCar className="text-2xl" size={16} color={color} />;
-      case "train":
-        return <IoMdTrain className="text-2xl" size={16} color={color} />;
-      case "ferry":
-        return <IoMdBoat className="text-2xl" size={16} color={color} />;
-      case "bus":
-        return <FaBus className="text-2xl" size={16} color={color} />;
-      default:
-        return null;
-    }
+  // Second copy of the same lookup, for the other component in this file. Both
+  // now read the shared accent map, so the two can't drift — and neither drops
+  // a mode it doesn't recognise on the floor the way `default: null` did.
+  const correctIcon = (bookingOrMode, color = "#a5a5a5") => {
+    const key = resolveModeKey(bookingOrMode);
+    if (!key) return null;
+    const { Icon } = getModeAccent(key);
+    return <Icon className="text-2xl" size={16} color={color} />;
   };
 
   const handleClose = useHandleClose()
@@ -1441,24 +1426,6 @@ useEffect(() => {
     }
   }, [router.query.drawer]);
 
-
-  const extractMode = (text) => {
-    const lowerText = text.toLowerCase();
-
-    if (lowerText.includes("flight")) {
-      return "Flight";
-    } else if (lowerText.includes("train")) {
-      return "Train";
-    } else if (lowerText.includes("bus")) {
-      return "Bus";
-    } else if (lowerText.includes("taxi") || lowerText.includes("car")) {
-      return "Car";
-    } else if (lowerText.includes("ferry")) {
-      return "Ferry";
-    } else {
-      return "";
-    }
-  };
 
   const handleTransferSubmit = async (transferData) => {
     if (!localStorage?.getItem("access_token")) {
@@ -2007,7 +1974,7 @@ useEffect(() => {
                  only opens in P2. */
               <div className="flex items-start gap-[12px] max-ph:gap-[10px] w-full px-[15px] max-ph:px-[12px] py-[11px] max-ph:py-[9px] rounded-[12px] max-ph:rounded-[11px] bg-[#EEF4FE] border-[1px] border-[#DBE7FB]">
                 <span className="flex items-center shrink-0 text-[#1f6feb] mt-[1px]">
-                  {correctIcon(booking_type, "#1f6feb")}
+                  {correctIcon(booking, "#1f6feb")}
                 </span>
                 <div className="flex-1 min-w-0">
                   <div className="text-[13px] max-ph:text-[12px] font-[600] text-[#1c2c44] leading-snug break-words">
@@ -2059,7 +2026,7 @@ useEffect(() => {
                         }`}
                       >
                         <span className="flex items-center shrink-0 text-[#1f6feb]">
-                          {correctIcon(leg?.booking_type, "#1f6feb")}
+                          {correctIcon(leg, "#1f6feb")}
                         </span>
                         <div className="flex-1 min-w-0">
                           {/* Wraps instead of truncating: a flight leg is named
@@ -2115,10 +2082,9 @@ useEffect(() => {
                 <span className="flex items-center shrink-0 text-[#1f6feb]">
                   {booking?.children
                     ? booking?.children?.map((book, i) => {
-                        const mode = extractMode(book?.booking_type);
                         return (
                           <React.Fragment key={i}>
-                            {correctIcon(mode, "#1f6feb")}
+                            {correctIcon(book, "#1f6feb")}
                             {i < booking?.children?.length - 1 && (
                               <span>
                                 <RiArrowDropRightLine size={18} color={"#1f6feb"} />
@@ -2127,7 +2093,7 @@ useEffect(() => {
                           </React.Fragment>
                         );
                       })
-                    : correctIcon(booking_type, "#1f6feb")}
+                    : correctIcon(booking, "#1f6feb")}
                 </span>
                 <div className="flex-1 min-w-0">
                   <div className="text-[13px] max-ph:text-[12px] font-[600] text-[#1c2c44] truncate">
@@ -2147,10 +2113,9 @@ useEffect(() => {
             <div className="mt-[4px] flex items-start">
               {booking?.children
                 ? booking?.children?.map((book, i) => {
-                    const mode = extractMode(book?.booking_type);
                     return (
                       <React.Fragment key={i}>
-                        {correctIcon(mode)}
+                        {correctIcon(book)}
                         {i < booking?.children?.length - 1 && (
                           <span>
                             <RiArrowDropRightLine size={18} color={"#a5a5a5"} />
@@ -2159,7 +2124,7 @@ useEffect(() => {
                       </React.Fragment>
                     );
                   })
-                : correctIcon(booking_type)}
+                : correctIcon(booking)}
             </div>
 
             <div className="flex flex-col">

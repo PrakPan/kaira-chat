@@ -113,3 +113,61 @@ export const legVehicle = (leg) =>
   leg?.transfer_details?.quote?.taxi_category ||
   leg?.transfer_details?.quote?.vehicle ||
   null;
+
+/**
+ * How an arrival is described when it lands on a later calendar day. The rail
+ * used to hardcode "Arrives next day" for any offset at all, which read as a
+ * flat lie on a self-drive rental spanning three days.
+ */
+export const arrivalOffsetLabel = (days) => {
+  if (!days || days < 1) return null;
+  return days === 1 ? "Arrives next day" : `Arrives ${days} days later`;
+};
+
+/**
+ * Where a leg starts and ends.
+ *
+ * `transfer_details.source` is NOT a location — on a self-drive booking it is
+ * the string "Self", naming who supplied the quote — so it is only read when it
+ * is actually an object. The route itself lives on `trips`, the same place the
+ * taxi bookings keep it.
+ */
+const placeName = (point) =>
+  point?.city_name || point?.name || point?.address || null;
+
+export const legEndpoints = (booking) => {
+  const details = booking?.transfer_details;
+  const trips = details?.trips;
+  const firstTrip = Array.isArray(trips) ? trips[0] : null;
+  const lastTrip = Array.isArray(trips) ? trips[trips.length - 1] : null;
+
+  const sourceObject =
+    details?.source && typeof details.source === "object" ? details.source : null;
+  const destinationObject =
+    details?.destination && typeof details.destination === "object"
+      ? details.destination
+      : null;
+
+  const from =
+    placeName(sourceObject) ||
+    placeName(firstTrip?.origin) ||
+    placeName(booking?.source_address) ||
+    null;
+
+  const to =
+    placeName(destinationObject) ||
+    placeName(lastTrip?.destination) ||
+    placeName(booking?.destination_address) ||
+    null;
+
+  // The street address, when it says something the city name doesn't.
+  const fromDetail = firstTrip?.origin?.address;
+  const toDetail = lastTrip?.destination?.address;
+
+  return {
+    from,
+    to,
+    fromDetail: fromDetail && fromDetail !== from ? fromDetail : null,
+    toDetail: toDetail && toDetail !== to ? toDetail : null,
+  };
+};

@@ -11,6 +11,7 @@ import VehiclePhoto from "../../revamp/common/components/bookingDetail/VehiclePh
 import { getModeAccent } from "../../revamp/common/components/bookingDetail/modeAccent";
 import {
   addMinutesToDate,
+  arrivalOffsetLabel,
   dayOffset,
   formatDateTime,
   paxLabel,
@@ -160,8 +161,7 @@ const TaxiDetailModal = ({
         date: arrival?.shortDate,
         title: trip?.destination?.city_name || destinationName || "Drop",
         subtitle: trip?.destination?.city_name ? destinationName : null,
-        tag:
-          dayOffset(check_in, check_out) > 0 ? "Arrives next day" : null,
+        tag: arrivalOffsetLabel(dayOffset(check_in, check_out)),
         tagTone: "warn",
       },
     ];

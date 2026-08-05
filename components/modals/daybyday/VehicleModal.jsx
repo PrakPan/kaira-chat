@@ -7,12 +7,21 @@ import DrawerShell from "../../revamp/common/components/bookingDetail/DrawerShel
 import FactChips from "../../revamp/common/components/bookingDetail/FactChips";
 import JourneyRail from "../../revamp/common/components/bookingDetail/JourneyRail";
 import PolicyNote from "../../revamp/common/components/bookingDetail/PolicyNote";
-import { getModeAccent } from "../../revamp/common/components/bookingDetail/modeAccent";
+import VehiclePhoto from "../../revamp/common/components/bookingDetail/VehiclePhoto";
+import {
+  getModeAccent,
+  isSelfDrive as isSelfDriveMode,
+  resolveModeKey,
+} from "../../revamp/common/components/bookingDetail/modeAccent";
+import { resolveImageUrl } from "../../../helper/imageUrl";
 import {
   addMinutesToDate,
+  arrivalOffsetLabel,
   dayOffset,
   formatDateTime,
   formatMinutes,
+  legEndpoints,
+  legVehicle,
   paxLabel,
 } from "../../revamp/common/components/bookingDetail/format";
 
@@ -23,7 +32,7 @@ const OperatorLogo = ({ src, name }) => (
     style={{ height: 15, maxWidth: 68 }}
   >
     <img
-      src={src}
+      src={resolveImageUrl(src)}
       alt={name || "Operator"}
       // Sized and painted inline: the app ships unscoped `img {}` rules that
       // force `object-fit: cover` and a hero-image blur/desaturate filter, and
@@ -79,7 +88,18 @@ const VehicleDetailModal = ({
   };
 
   const mode = booking_type || transfer_details?.mode;
-  const accent = getModeAccent(mode);
+
+  // A self-drive rental is driven by the traveller, so there is no operator to
+  // name and no supplier route to swap it for — the change flow doesn't apply.
+  const isSelfDrive = isSelfDriveMode(mode);
+
+  // The vehicle lives on the quote, under the same key the taxi bookings use.
+  const vehicle = legVehicle(data);
+
+  // Car or bike comes out of the vehicle category, resolved centrally so this
+  // drawer and the itinerary rows always land on the same glyph.
+  const accentKey = resolveModeKey(data) || mode;
+  const accent = getModeAccent(accentKey);
 
   const departure =
     check_in ||
@@ -90,9 +110,15 @@ const VehicleDetailModal = ({
     ? formatDateTime(check_out)
     : addMinutesToDate(departure, transfer_details?.duration);
 
+  // `distance` is an object on the newer suppliers and a bare number on the
+  // older ones; interpolating the object straight in printed "[object Object] km".
   const distance =
     transfer_details?.distance?.text ||
-    (transfer_details?.distance ? `${transfer_details.distance} km` : null);
+    (transfer_details?.distance?.value
+      ? `${transfer_details.distance.value} km`
+      : typeof transfer_details?.distance === "number"
+        ? `${transfer_details.distance} km`
+        : null);
 
   const travelClass =
     transfer_details?.prices?.[0]?.class ||
@@ -105,7 +131,9 @@ const VehicleDetailModal = ({
   const totalDuration =
     transfer_details?.duration?.text ||
     formatMinutes(transfer_details?.results?.[0]?.duration);
-  const crossesMidnight = dayOffset(check_in, check_out) > 0;
+
+  const { from, to, fromDetail, toDetail } = legEndpoints(data);
+  const arrivesLater = arrivalOffsetLabel(dayOffset(check_in, check_out));
 
   // The rail is built from segments when the supplier sent them — a connection
   // becomes a mid-rail node rather than a nested card — and from the booking's
@@ -118,13 +146,17 @@ const VehicleDetailModal = ({
           key: "from",
           time: depart?.time,
           date: depart?.shortDate,
-          title: transfer_details?.source?.city_name || "Departure",
-          subtitle: transfer_details?.source?.station_name || null,
+          title: from || "Departure",
+          subtitle: fromDetail,
         },
         {
           kind: "carrier",
           key: "leg",
-          name: transfer_details?.operator?.name || mode || "Transfer",
+          name: isSelfDrive
+            ? vehicle?.type
+              ? `Self-drive ${vehicle.type}`
+              : "Self-drive"
+            : transfer_details?.operator?.name || mode || "Transfer",
           meta: [totalDuration, distance].filter(Boolean).join(" · ") || null,
         },
         {
@@ -132,9 +164,9 @@ const VehicleDetailModal = ({
           key: "to",
           time: arrival?.time,
           date: arrival?.shortDate,
-          title: transfer_details?.destination?.city_name || "Arrival",
-          subtitle: transfer_details?.destination?.station_name || null,
-          tag: crossesMidnight ? "Arrives next day" : null,
+          title: to || "Arrival",
+          subtitle: toDetail,
+          tag: arrivesLater,
           tagTone: "warn",
         },
       ];
@@ -178,7 +210,7 @@ const VehicleDetailModal = ({
           date: arr?.shortDate,
           title: segment?.arrival_station?.name || "Arrival",
           subtitle: segment?.arrival_station?.city_name || null,
-          tag: crossesMidnight ? "Arrives next day" : null,
+          tag: arrivesLater,
           tagTone: "warn",
         });
         return;
@@ -218,13 +250,14 @@ const VehicleDetailModal = ({
 
   if (error) {
     return (
-      <DrawerShell band={<DetailBand mode={mode} onBack={handleClose} loading />}>
+      <DrawerShell band={<DetailBand mode={accentKey} onBack={handleClose} loading />}>
         <DetailError />
       </DrawerShell>
     );
   }
 
-  const canChange = !isEmbedded && typeof handleEditRoute === "function";
+  const canChange =
+    !isEmbedded && !isSelfDrive && typeof handleEditRoute === "function";
   const canDelete = !!handleDelete && type !== "combo";
 
   const body = (
@@ -243,6 +276,25 @@ const VehicleDetailModal = ({
           ]}
         />
       </DetailSection>
+
+      {vehicle && (
+        <DetailSection label={isSelfDrive ? "Your vehicle" : "Vehicle"}>
+          <VehiclePhoto
+            image={vehicle?.image}
+            alt={vehicle?.type}
+            mode={accentKey}
+          />
+          <FactChips
+            facts={[
+              { label: "Class", value: vehicle?.type },
+              { label: "Model", value: vehicle?.model_name },
+              { label: "Fuel", value: vehicle?.fuel_type },
+              { label: "Seats", value: vehicle?.seating_capacity },
+              { label: "Bags", value: vehicle?.bag_capacity },
+            ]}
+          />
+        </DetailSection>
+      )}
 
       <PolicyNote html={cancellation_policies} />
     </>
@@ -263,7 +315,7 @@ const VehicleDetailModal = ({
     <DrawerShell
       band={
         <DetailBand
-          mode={mode}
+          mode={accentKey}
           title={name}
           kicker={[mode, depart?.date].filter(Boolean).join(" · ")}
           summary={[totalDuration, distance].filter(Boolean).join(" · ")}

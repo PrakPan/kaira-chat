@@ -32,7 +32,7 @@ const VehicleDetailLoader = () => {
             <div
               key={row}
               className="grid gap-x-3"
-              style={{ gridTemplateColumns: "58px 14px minmax(0,1fr)" }}
+              style={{ gridTemplateColumns: "68px 14px minmax(0,1fr)" }}
             >
               <div className="flex flex-col items-end gap-1.5">
                 {row === 1 ? null : (
