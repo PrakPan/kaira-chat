@@ -36,7 +36,13 @@ export interface CinematicPromptCard {
   // CSS object-position for the cover crop (e.g. "center", "top",
   // "center 35%"). Defaults to center. Use to keep a poster's subject in frame.
   objectPosition?: string;
-  prompt: string;
+  prompt?: string;
+  // When set, clicking opens the read-only activity details drawer for this
+  // catalog activity id (e.g. the "Which ticket you actually need" cards)
+  // instead of seeding a prompt. Takes priority over `prompt`. `activitySource`
+  // forwards the provider source to the detail endpoint when required.
+  activityId?: string;
+  activitySource?: string;
 }
 
 // Horizontal "Step into the scene" card — thumbnail + meta + price. The
@@ -119,6 +125,37 @@ export interface CinematicStoryCard {
   name: string;
   route: string;
   prompt?: string;
+  // When set, clicking opens this link — e.g. the traveller's actual itinerary
+  // at /chat/{id}, or their Google review. `href` wins over `prompt`.
+  href?: string;
+}
+
+// Dark "Where to eat" card ("Where to come in from the cold"): a warm spot with
+// a cover image, name, city, one line, and a rating. Clicking seeds `prompt`.
+export interface CinematicEatCard {
+  image: string;
+  name: string;
+  city?: string; // yellow mono label
+  line?: string;
+  rating?: string;
+  reviews?: string; // e.g. "1,240"
+  objectPosition?: string;
+  prompt?: string;
+}
+
+// Dark visa country card ("Your visa, handled"): the country, the cities it
+// covers, and the fee. Clicking opens the country's visa page (`href`).
+export interface CinematicVisaCard {
+  country: string;
+  cities?: string;
+  fee?: string; // e.g. "€90"
+  href?: string;
+}
+
+// Small fact chip under the visa cards (label + value).
+export interface CinematicVisaFact {
+  label: string;
+  value: string;
 }
 
 // Numbered step ("Sketch it. I'll finish it."): number, title, serif accent,
@@ -205,6 +242,21 @@ export type CinematicSection =
       type: "stories";
       heading: CinematicHeading;
       cards: CinematicStoryCard[];
+    }
+  | {
+      // Dark "Where to eat" scroller ("Where to come in from the cold").
+      type: "eats";
+      heading: CinematicHeading;
+      cards: CinematicEatCard[];
+    }
+  | {
+      // Dark "Your visa, handled" section — intro, country fee cards, fact chips.
+      type: "visa";
+      heading: CinematicHeading;
+      intro?: string;
+      cards: CinematicVisaCard[];
+      facts?: CinematicVisaFact[];
+      note?: ReactNode; // callout under the fact chips
     }
   | {
       type: "steps";

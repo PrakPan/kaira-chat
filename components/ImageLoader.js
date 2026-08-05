@@ -4,6 +4,7 @@ import media from "./media";
 import usePageLoaded from "./custom hooks/usePageLoaded";
 import LazyLoad from "react-lazyload";
 import Image from "next/image";
+import { optimizedMediaUrl } from "../lib/mediaImage";
 
 const ImageLoader = (props) => {
   let isPageWide = media("(min-width: 768px)");
@@ -211,6 +212,16 @@ const ImageLoader = (props) => {
   };
 
   let is_url = isValidHttpUrl(props.url);
+  // When a full URL is passed (bypassing the SIH `key` requests above), route
+  // our own media through the resizer instead of serving the raw original.
+  // Non-media/external URLs pass through untouched.
+  const optimizedFullUrl = is_url
+    ? optimizedMediaUrl(props.url, {
+        width: props?.dimensions?.width
+          ? Math.round(Number(props.dimensions.width))
+          : 1200,
+      })
+    : props.url;
 
   const fullImageLoadedHandler = () => {
     if (props.onload) {
@@ -291,7 +302,7 @@ const ImageLoader = (props) => {
               is_url
                 ? error
                   ? transparentImageUrl
-                  : props.url
+                  : optimizedFullUrl
                 : error
                 ? transparentImageUrl
                 : isPageLoaded
@@ -316,7 +327,7 @@ const ImageLoader = (props) => {
               is_url
                 ? error
                   ? transparentImageUrl
-                  : props.url
+                  : optimizedFullUrl
                 : isPageLoaded
                 ? getBtoaUrl(imgUrlEndPoint, imageRequest)
                 : transparentImageUrl
@@ -366,7 +377,7 @@ const ImageLoader = (props) => {
                   : transparentImageUrl
                 : error
                 ? transparentImageUrl
-                : props.url
+                : optimizedFullUrl
             }
             style={{
               height: isTransparent
@@ -391,7 +402,7 @@ const ImageLoader = (props) => {
                   : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                 : error
                 ? transparentImageUrl
-                : props.url
+                : optimizedFullUrl
             }
             transparent={isTransparent}
             onLoad={fullImageLoadedHandler}
@@ -440,7 +451,7 @@ const ImageLoader = (props) => {
                   : transparentImageUrl
                 : error
                 ? transparentImageUrl
-                : props.url
+                : optimizedFullUrl
             }
             style={{
               height: isTransparent
@@ -465,7 +476,7 @@ const ImageLoader = (props) => {
                   : transparentImageUrl
                 : error
                 ? transparentImageUrl
-                : props.url
+                : optimizedFullUrl
             }
             width={props.dimensionsMobile.width}
             height={props.dimensionsMobile.height}
@@ -514,7 +525,7 @@ const ImageLoader = (props) => {
                   : transparentImageUrl
                 : error
                 ? transparentImageUrl
-                : props.url
+                : optimizedFullUrl
             }
             style={{
               height: isTransparent
@@ -538,7 +549,7 @@ const ImageLoader = (props) => {
                   : transparentImageUrl
                 : error
                 ? transparentImageUrl
-                : props.url
+                : optimizedFullUrl
             }
             transparent={isTransparent}
             onLoad={fullImageLoadedHandler}

@@ -39,6 +39,8 @@ import type {
   CinematicListRow,
   CinematicCheckRow,
   CinematicStoryCard,
+  CinematicEatCard,
+  CinematicVisaCard,
   CinematicHeroConfig,
   CinematicAskBar,
 } from "./types";
@@ -350,10 +352,15 @@ const CinematicHero: React.FC<{
 const PromptCard: React.FC<{
   card: CinematicPromptCard;
   onSelectPrompt: (p: string) => void;
-}> = ({ card, onSelectPrompt }) => (
+  onSelectActivity?: (activityId: string, source?: string) => void;
+}> = ({ card, onSelectPrompt, onSelectActivity }) => (
   <button
     type="button"
-    onClick={() => onSelectPrompt(card.prompt)}
+    onClick={() => {
+      if (card.activityId && onSelectActivity)
+        onSelectActivity(card.activityId, card.activitySource);
+      else if (card.prompt) onSelectPrompt(card.prompt);
+    }}
     className="ctl-card group flex flex-col text-left bg-white rounded-[18px] md:rounded-[22px] overflow-hidden cursor-pointer w-[220px] md:w-auto shrink-0 md:shrink"
     style={{ scrollSnapAlign: "start" }}
   >
@@ -405,7 +412,8 @@ const PromptCard: React.FC<{
 const CardsSection: React.FC<{
   section: Extract<CinematicSection, { type: "cards" }>;
   onSelectPrompt: (p: string) => void;
-}> = ({ section, onSelectPrompt }) => (
+  onSelectActivity?: (activityId: string, source?: string) => void;
+}> = ({ section, onSelectPrompt, onSelectActivity }) => (
   <section className="pt-[30px] md:pt-[56px]">
     <Container>
       <div className="flex items-end justify-between gap-[16px]">
@@ -421,7 +429,12 @@ const CardsSection: React.FC<{
         style={{ scrollSnapType: "x mandatory" }}
       >
         {section.cards.map((card, i) => (
-          <PromptCard key={`card-${i}`} card={card} onSelectPrompt={onSelectPrompt} />
+          <PromptCard
+            key={`card-${i}`}
+            card={card}
+            onSelectPrompt={onSelectPrompt}
+            onSelectActivity={onSelectActivity}
+          />
         ))}
       </div>
     </Container>
@@ -1014,7 +1027,9 @@ const MonthsSection: React.FC<{
 const StoriesSection: React.FC<{
   section: Extract<CinematicSection, { type: "stories" }>;
   onSelectPrompt: (p: string) => void;
-}> = ({ section, onSelectPrompt }) => (
+}> = ({ section, onSelectPrompt }) => {
+  const router = useRouter();
+  return (
   <section className="pt-[34px] md:pt-[56px]">
     <Container>
       <Heading heading={section.heading} className="text-[22px] md:text-[34px]" />
@@ -1023,7 +1038,11 @@ const StoriesSection: React.FC<{
           <button
             key={`story-${i}`}
             type="button"
-            onClick={() => card.prompt && onSelectPrompt(card.prompt)}
+            onClick={() => {
+              // A traveller's real itinerary (/chat/{id}) opens; otherwise seed.
+              if (card.href) router.push(card.href);
+              else if (card.prompt) onSelectPrompt(card.prompt);
+            }}
             className="ctl-card text-left bg-white rounded-[14px] p-[14px] md:p-[18px] w-[208px] md:w-auto shrink-0 md:shrink cursor-pointer"
             style={{ border: `1px solid ${BORDER}` }}
           >
@@ -1048,6 +1067,240 @@ const StoriesSection: React.FC<{
         ))}
       </div>
     </Container>
+  </section>
+  );
+};
+
+// ── Eats (dark — "Where to come in from the cold") ──────────────────────────
+// A dark card scroller of warm indoor spots: cover image, name, city (yellow),
+// a line, and a rating. Clicking seeds the card's prompt.
+const EatsSection: React.FC<{
+  section: Extract<CinematicSection, { type: "eats" }>;
+  onSelectPrompt: (p: string) => void;
+}> = ({ section, onSelectPrompt }) => (
+  <section
+    className="mt-[34px] md:mt-[56px] relative overflow-hidden"
+    style={{ background: DARK }}
+  >
+    <div
+      className="absolute pointer-events-none"
+      style={{
+        top: -80,
+        right: -80,
+        width: 320,
+        height: 320,
+        background: "radial-gradient(circle, rgba(247,231,0,0.08), transparent 70%)",
+      }}
+    />
+    <Container className="pt-[30px] md:pt-[52px] pb-[30px] md:pb-[52px]">
+      <Heading
+        heading={section.heading}
+        className="text-[22px] md:text-[34px] ctl-h-light"
+      />
+      <div
+        className="ctl-scroll flex md:grid md:grid-cols-5 gap-[12px] md:gap-[16px] mt-[14px] md:mt-[24px] overflow-x-auto md:overflow-visible pb-[4px]"
+        style={{ scrollSnapType: "x mandatory" }}
+      >
+        {section.cards.map((card, i) => (
+          <button
+            key={`eat-${i}`}
+            type="button"
+            onClick={() => card.prompt && onSelectPrompt(card.prompt)}
+            className="ctl-card text-left rounded-[18px] overflow-hidden cursor-pointer w-[218px] md:w-auto shrink-0 md:shrink flex flex-col"
+            style={{
+              scrollSnapAlign: "start",
+              background: "rgba(255,255,255,0.04)",
+              border: "1px solid rgba(255,255,255,0.08)",
+            }}
+          >
+          <div
+            className="relative h-[124px] md:h-[150px] overflow-hidden"
+            style={{ background: "rgba(255,255,255,0.04)" }}
+          >
+            <SkeletonImage
+              src={card.image}
+              alt={card.name}
+              objectPosition={card.objectPosition}
+            />
+          </div>
+          <div className="px-[15px] py-[13px] md:py-[15px]">
+            <div className="flex items-baseline justify-between gap-[8px]">
+              <span
+                className="text-[14.5px] font-bold"
+                style={{ color: PAPER, letterSpacing: "-0.01em" }}
+              >
+                {card.name}
+              </span>
+              {card.city && (
+                <span
+                  className="ctl-mono shrink-0"
+                  style={{ color: YELLOW, fontSize: 9.5 }}
+                >
+                  {card.city}
+                </span>
+              )}
+            </div>
+            {card.line && (
+              <div
+                className="text-[12.5px] leading-[1.45] mt-[5px]"
+                style={{ color: FAINT }}
+              >
+                {card.line}
+              </div>
+            )}
+            {(card.rating || card.reviews) && (
+              <div className="ctl-mono mt-[9px]" style={{ fontSize: 9.5 }}>
+                {card.rating ? `★ ${card.rating}` : ""}
+                {card.rating && card.reviews ? " · " : ""}
+                {card.reviews ? `${card.reviews} reviews` : ""}
+              </div>
+            )}
+          </div>
+        </button>
+      ))}
+      </div>
+    </Container>
+  </section>
+);
+
+// ── Visa (dark — "Your visa, handled") ──────────────────────────────────────
+// Intro copy, a scroller of country fee cards (each links to its visa page),
+// and a row of fact chips.
+const VisaSection: React.FC<{
+  section: Extract<CinematicSection, { type: "visa" }>;
+}> = ({ section }) => (
+  <section
+    className="mt-[34px] md:mt-[56px] relative overflow-hidden"
+    style={{ background: DARK }}
+  >
+    <div
+      className="absolute pointer-events-none"
+      style={{
+        top: -80,
+        right: -80,
+        width: 320,
+        height: 320,
+        background: "radial-gradient(circle, rgba(247,231,0,0.08), transparent 70%)",
+      }}
+    />
+    <Container className="pt-[30px] md:pt-[52px]">
+      <Heading
+        heading={section.heading}
+        className="text-[22px] md:text-[34px] ctl-h-light"
+      />
+      {section.intro && (
+        <p
+          className="text-[13.5px] md:text-[15px] leading-[1.55] mt-[10px] md:mt-[14px] max-w-[560px]"
+          style={{ color: FAINT }}
+        >
+          {section.intro}
+        </p>
+      )}
+      <div className="ctl-mono mt-[16px] md:mt-[20px]">Visa fee by country</div>
+      <div
+        className="ctl-scroll flex gap-[12px] overflow-x-auto md:overflow-visible pt-[10px] pb-[6px]"
+        style={{ scrollSnapType: "x mandatory" }}
+      >
+      {section.cards.map((card: CinematicVisaCard, i) => {
+        const inner = (
+          <>
+            <div className="flex-1">
+              <div
+                className="text-[15px] font-bold leading-[1.25]"
+                style={{ color: PAPER, letterSpacing: "-0.01em" }}
+              >
+                {card.country}
+              </div>
+              {card.cities && (
+                <div
+                  className="ctl-mono mt-[7px]"
+                  style={{ fontSize: 9, lineHeight: 1.5 }}
+                >
+                  {card.cities}
+                </div>
+              )}
+            </div>
+            <div
+              className="pt-[13px]"
+              style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}
+            >
+              {card.fee && (
+                <div
+                  className="ctl-mono"
+                  style={{ color: YELLOW, fontSize: 15, fontWeight: 600 }}
+                >
+                  {card.fee}
+                </div>
+              )}
+              <div className="ctl-mono mt-[4px]" style={{ fontSize: 9 }}>
+                per person
+              </div>
+            </div>
+          </>
+        );
+        const cls =
+          "shrink-0 w-[158px] h-[168px] box-border flex flex-col rounded-[18px] p-[16px] cursor-pointer no-underline";
+        const st: React.CSSProperties = {
+          scrollSnapAlign: "start",
+          background: "rgba(255,255,255,0.04)",
+          border: "1px solid rgba(255,255,255,0.08)",
+        };
+        return card.href ? (
+          <a
+            key={`visa-${i}`}
+            href={card.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={cls}
+            style={st}
+          >
+            {inner}
+          </a>
+        ) : (
+          <div key={`visa-${i}`} className={cls} style={st}>
+            {inner}
+          </div>
+        );
+      })}
+      </div>
+    </Container>
+    {section.facts && section.facts.length > 0 && (
+      <Container className="pb-[30px] md:pb-[52px]">
+        <div className="flex gap-[8px] mt-[18px]">
+          {section.facts.map((f, i) => (
+            <div
+              key={`fact-${i}`}
+              className="flex-1 rounded-[14px] px-[13px] py-[12px]"
+              style={{
+                border: "1px solid rgba(255,255,255,0.08)",
+                background: "rgba(247,231,0,0.10)",
+              }}
+            >
+              <div
+                className="ctl-mono text-center"
+                style={{ fontSize: 9 }}
+              >
+                {f.label}
+              </div>
+              <div
+                className="text-[13px] font-semibold text-center mt-[4px] leading-[1.25]"
+                style={{ color: PAPER }}
+              >
+                {f.value}
+              </div>
+            </div>
+          ))}
+        </div>
+        {section.note && (
+          <div
+            className="rounded-[14px] px-[14px] md:px-[18px] py-[11px] md:py-[14px] mt-[12px] text-[12px] md:text-[13.5px] leading-[1.5]"
+            style={{ background: "rgba(255,255,255,0.04)", color: FAINT }}
+          >
+            {section.note}
+          </div>
+        )}
+      </Container>
+    )}
   </section>
 );
 
@@ -1138,15 +1391,18 @@ const StepsSection: React.FC<{
   );
 };
 
-// ── Ask-Kaira strip ────────────────────────────────────────────────────────
-// Floats exactly like the site-wide <Banner/> (components/containers/Banner.js):
-// a dark centered pill on desktop and a compact dark bar on phones, both hidden
-// until the reader scrolls past half the first viewport. The yellow CTA hands
-// the prompt to a fresh /chat session via `onSelectPrompt`.
+// ── Ask-Kaira strip ("Docked composer") ─────────────────────────────────────
+// A single, shared design used on every theme page (matches the theme mockup):
+// a paper-tinted, blurred bar pinned to the bottom of the viewport with a white
+// pill inside — the placeholder question on the left, a dark "Ask Kaira" button
+// on the right. Identical on mobile and desktop; the pill just caps its width
+// and centers on wider screens. Hidden until the reader scrolls past half the
+// first viewport (same reveal as the site-wide <Banner/>). The button seeds the
+// bar's prompt into a fresh /chat session via `onSelectPrompt`.
 const AskKairaStrip: React.FC<{
   bar: CinematicAskBar;
   onSelectPrompt: (p: string) => void;
-}> = ({ bar }) => {
+}> = ({ bar, onSelectPrompt }) => {
   const router = useRouter();
   const [show, setShow] = React.useState(false);
   React.useEffect(() => {
@@ -1159,83 +1415,54 @@ const AskKairaStrip: React.FC<{
 
   if (!show) return null;
 
-  const cta = (
-    <button
-      type="button"
-      onClick={() => router.push("/chat")}
-      className="shrink-0 inline-flex items-center gap-[7px] md:gap-[9px] whitespace-nowrap rounded-full border-none cursor-pointer px-[16px] md:px-[22px] py-[9px] md:py-[11px] text-[12.5px] md:text-[15px] font-semibold"
-      style={{ background: YELLOW, color: "#000" }}
-    >
-      {bar.cta ?? "Chat with Kaira"}
-      <svg
-        viewBox="0 0 12 12"
-        height="14"
-        width="14"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M2 10L10 2M10 2H4M10 2V8" />
-      </svg>
-    </button>
-  );
+  const go = () => {
+    if (bar.prompt) onSelectPrompt(bar.prompt);
+    else router.push("/chat");
+  };
 
   return (
-    <>
-      {/* Mobile — compact dark pill */}
+    <div
+      className="fixed left-0 right-0 bottom-0 z-[998]"
+      style={{
+        padding: "10px 14px calc(14px + env(safe-area-inset-bottom))",
+        background: "rgba(250,250,245,0.88)",
+        backdropFilter: "blur(16px)",
+        WebkitBackdropFilter: "blur(16px)",
+        borderTop: `1px solid ${BORDER}`,
+      }}
+    >
       <div
-        className="md:hidden fixed left-0 right-0 z-[998] flex justify-center"
+        className="mx-auto flex items-center gap-[12px] bg-white"
         style={{
-          bottom: 0,
-          padding: "0 12px calc(12px + env(safe-area-inset-bottom))",
-          pointerEvents: "none",
+          maxWidth: 560,
+          border: `1px solid ${BORDER}`,
+          borderRadius: 999,
+          padding: "8px 8px 8px 16px",
+          boxShadow: "0 8px 20px -10px rgba(11,18,32,0.15)",
         }}
       >
-        <div
-          className="flex items-center justify-center gap-[10px] w-full max-w-[440px] rounded-full"
+        <span
+          className="flex-1 min-w-0 truncate"
+          style={{ fontSize: 13.5, color: "#b8becc" }}
+        >
+          {bar.placeholder}
+        </span>
+        <button
+          type="button"
+          onClick={go}
+          className="shrink-0 whitespace-nowrap rounded-full border-none cursor-pointer"
           style={{
-            pointerEvents: "auto",
-            background: "rgba(0,0,0,0.82)",
-            color: "#fff",
-            padding: "7px 7px 7px 16px",
-            boxShadow: "0 8px 24px -8px rgba(0,0,0,0.45)",
+            background: INK,
+            color: PAPER,
+            padding: "8px 15px",
+            fontSize: 12.5,
+            fontWeight: 600,
           }}
         >
-          <span className="flex-1 min-w-0 truncate text-[0.9rem] leading-[1.2]">
-            {bar.placeholder}
-          </span>
-          {cta}
-        </div>
+          {bar.cta ?? "Ask Kaira"}
+        </button>
       </div>
-
-      {/* Desktop — centered dark pill */}
-      <div
-        className="max-ph:hidden fixed z-[998]"
-        style={{
-          left: "50%",
-          bottom: 0,
-          transform: "translateX(-50%)",
-          marginBottom: "1rem",
-        }}
-      >
-        <div
-          className="flex items-center"
-          style={{
-            background: "rgba(0,0,0,0.7)",
-            color: "#fff",
-            padding: "0.5rem 1rem",
-            borderRadius: "2rem",
-          }}
-        >
-          <span className="text-[1.25rem]" style={{ margin: "0 2.5vw" }}>
-            {bar.placeholder}
-          </span>
-          {cta}
-        </div>
-      </div>
-    </>
+    </div>
   );
 };
 
@@ -1295,7 +1522,14 @@ const CinematicThemeLanding: React.FC<CinematicThemeLandingProps> = ({
       const key = `sec-${i}`;
       switch (section.type) {
         case "cards":
-          return <CardsSection key={key} section={section} onSelectPrompt={onSelectPrompt} />;
+          return (
+            <CardsSection
+              key={key}
+              section={section}
+              onSelectPrompt={onSelectPrompt}
+              onSelectActivity={onSelectActivity}
+            />
+          );
         case "trips":
           return <TripsSection key={key} section={section} onSelectPrompt={onSelectPrompt} />;
         case "pillars":
@@ -1315,6 +1549,10 @@ const CinematicThemeLanding: React.FC<CinematicThemeLandingProps> = ({
           return <MonthsSection key={key} section={section} />;
         case "stories":
           return <StoriesSection key={key} section={section} onSelectPrompt={onSelectPrompt} />;
+        case "eats":
+          return <EatsSection key={key} section={section} onSelectPrompt={onSelectPrompt} />;
+        case "visa":
+          return <VisaSection key={key} section={section} />;
         case "steps":
           return <StepsSection key={key} section={section} onSelectPrompt={onSelectPrompt} />;
         case "gradient":
@@ -1340,6 +1578,8 @@ export {
   ChecklistSection,
   MonthsSection,
   StoriesSection,
+  EatsSection,
+  VisaSection,
   StepsSection,
   AskKairaStrip,
   PromptCard,
