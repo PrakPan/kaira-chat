@@ -23,6 +23,11 @@ import { useRouter } from "next/router";
 import { useHandleClose } from "../../hooks/useHandleClose";
 import { getDateDifferenceInDays } from "../../helper/DateUtils";
 import { currencySymbols } from "../../data/currencySymbols";
+import {
+  getVehicleCount,
+  PerTaxiPrice,
+  resolvePerVehicleTotal,
+} from "../../components/modals/taxis/MultiVehicleInfo";
 import { useAnalytics } from "../../hooks/useAnalytics";
 import dayjs from "dayjs";
 const FloatingView = styled.div`
@@ -524,6 +529,18 @@ const TransferDrawer = ({
                     {`${currency?.currency ? currencySymbols?.[currency?.currency] : "₹"}`}
                     {transferData.price?.toLocaleString()}
                   </div>
+                  {/* Convoy bookings price every cab in one figure — say what a
+                      single taxi costs. Only the quote's own per-cab fare is
+                      used here; nothing is derived from the row's total. */}
+                  <PerTaxiPrice
+                    count={getVehicleCount(transferData)}
+                    perVehicleTotal={resolvePerVehicleTotal(transferData)}
+                    symbol={
+                      currency?.currency
+                        ? currencySymbols?.[currency?.currency]
+                        : "₹"
+                    }
+                  />
                   <div className="ttw-type-small text-[#445069]">{checkIn.date}</div>
                 </div>
 
