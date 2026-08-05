@@ -76,6 +76,18 @@ const items = [
   { id: 1, label: "Things To Do", link: "" },
   { id: 2, label: "Places To Visit", link: "" },
 ];
+
+// "15/08/2026" → "15 Aug" — the compact label on the mobile day-picker trigger,
+// where there is no room for the full "15th Aug 2026" the desktop select shows.
+const SHORT_MONTHS = [
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+];
+const shortDayLabel = (ddmmyyyy) => {
+  const m = String(ddmmyyyy || "").match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  if (!m) return null;
+  return `${Number(m[1])} ${SHORT_MONTHS[Number(m[2]) - 1]}`;
+};
 const ActivityAddDrawer = (props) => {
   const router = useRouter();
   const isDesktop = useMediaQuery("(min-width:767px)");
@@ -129,34 +141,50 @@ const ActivityAddDrawer = (props) => {
   const [changed, setChanged] = useState(false);
   const pad = (n) => (n < 10 ? `0${n}` : n);
 
-  // Resolve effective start date — prefer prop.date, then city start_date,
-  // then itinerary-level start_date, then today as last resort.
-  const resolveEffectiveDate = () => {
-    // Try props.date (from URL query)
-    if (props?.date) {
-      const d = new Date(props.date);
-      if (!isNaN(d.getTime())) return props.date;
-    }
-    // Try city start_date passed directly
-    if (props?.start_date) {
-      const d = new Date(props.start_date);
-      if (!isNaN(d.getTime())) {
-        return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
-      }
-    }
-    // Try itinerary-level start_date from Redux
-    if (itinerary?.start_date) {
-      const d = new Date(itinerary.start_date);
-      if (!isNaN(d.getTime())) {
-        return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
-      }
-    }
-    // Fallback: today
-    const today = new Date();
-    return `${pad(today.getDate())}/${pad(today.getMonth() + 1)}/${today.getFullYear()}`;
+  // Normalize any incoming date to the DD/MM/YYYY form the day picker uses for
+  // its option values. Callers hand us either that form already or an ISO
+  // "YYYY-MM-DD" (the day-by-day slab dates), and the <select> only preselects a
+  // day when `startDate` matches an option value character-for-character — an
+  // ISO string silently fell through to "Day 1".
+  const toDayValue = (raw) => {
+    if (!raw) return null;
+    const str = String(raw);
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(str)) return str;
+    // Parse ISO by hand: `new Date("2026-08-15")` is UTC midnight, which reads
+    // as the previous day in any negative-offset timezone.
+    const iso = str.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (iso) return `${iso[3]}/${iso[2]}/${iso[1]}`;
+    const d = new Date(raw);
+    if (isNaN(d.getTime())) return null;
+    return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
   };
 
+  // Resolve effective start date — prefer prop.date (the exact day the caller
+  // opened the drawer for), then city start_date, then itinerary-level
+  // start_date, then today as last resort.
+  const resolveEffectiveDate = () =>
+    toDayValue(props?.date) ||
+    toDayValue(props?.start_date) ||
+    toDayValue(itinerary?.start_date) ||
+    toDayValue(new Date());
+
   const effectiveDate = resolveEffectiveDate();
+
+  // Day 1 of the picker, as a *local* midnight Date. Built from the normalized
+  // DD/MM/YYYY value rather than `new Date(isoString)` — the latter is UTC
+  // midnight, which reads as the previous day in any negative-offset timezone
+  // and shifted every option by one.
+  const dayPickerBaseDate = (() => {
+    const value =
+      toDayValue(props?.start_date) ||
+      toDayValue(props?.date) ||
+      toDayValue(itinerary?.start_date) ||
+      effectiveDate;
+    if (!value) return null;
+    const [dd, mm, yyyy] = value.split("/").map(Number);
+    const d = new Date(yyyy, mm - 1, dd);
+    return isNaN(d.getTime()) ? null : d;
+  })();
 
   // Resolve city duration: prop → itinerary Redux city lookup → 0
   const resolvedCityDuration = (() => {
@@ -173,6 +201,15 @@ const ActivityAddDrawer = (props) => {
 
   const [startDate, setStartDate] = useState(effectiveDate);
   const [showCalender, setShowCalender] = useState(false);
+
+  // Re-seed the day picker whenever the drawer is opened for a different day.
+  // The initial state alone isn't enough: callers that flip local `showDrawer`
+  // state before the query lands mount us with the city's first day, and the
+  // real day arrives a tick later as a prop. Only props move `effectiveDate`,
+  // so a day the user picks by hand is never clobbered.
+  useEffect(() => {
+    setStartDate(effectiveDate);
+  }, [effectiveDate, props.showDrawer]);
 
   const filtersRef = useRef(null);
   const calendarRef = useRef(null);
@@ -657,12 +694,6 @@ const ActivityAddDrawer = (props) => {
     setNearby((prev) => !prev);
   };
 
-  const convertToISODate = (dateStr) => {
-    if (!dateStr) return;
-    const [day, month, year] = dateStr?.split("/");
-    return `${year}-${month?.padStart(2, "0")}-${day?.padStart(2, "0")}`;
-  };
-
 const ClickHandler = (child) => {
   const newType = child === "Things To Do" ? "Activity" : "POI";
   if (newType === elementType) return;
@@ -751,22 +782,9 @@ const ClickHandler = (child) => {
                 >
                   {[...Array(Math.max(0, resolvedCityDuration) + 1)].map(
                     (_, i) => {
-                      // Resolve base date: city start_date → city day-1 date → itinerary.start_date → effectiveDate
-                      const cityStartRaw = props?.start_date || props?.date || null;
-                      let baseDateStr = props?.mercuryItinerary
-                        ? (cityStartRaw || itinerary?.start_date || null)
-                        : convertToISODate(cityStartRaw || itinerary?.start_date || null);
+                      if (!dayPickerBaseDate) return null;
 
-                      // Last resort: parse effectiveDate (DD/MM/YYYY)
-                      if (!baseDateStr && effectiveDate) {
-                        const [dd, mm, yyyy] = effectiveDate.split("/");
-                        baseDateStr = `${yyyy}-${mm}-${dd}`;
-                      }
-
-                      const baseDate = new Date(baseDateStr);
-                      if (isNaN(baseDate.getTime())) return null;
-
-                      const currentDate = new Date(baseDate);
+                      const currentDate = new Date(dayPickerBaseDate);
                       currentDate.setDate(currentDate.getDate() + i);
 
                       const isoDate = `${pad(currentDate.getDate())}/${pad(
@@ -837,15 +855,18 @@ const ClickHandler = (child) => {
 
                 <button
                   onClick={handleNearby}
-                  className="flex flex-row items-center gap-1 cursor-pointer ttw-type-small text-[#0b1220]"
+                  className="flex flex-row items-center gap-1 cursor-pointer ttw-type-small text-[#0b1220] min-w-0"
                 >
                   <CheckboxFormComponent checked={nearby} />
-                  Nearby Activities
+                  <span className="truncate">Nearby Activities</span>
                 </button>
 
-                <div className="flex gap-4">
+                <div className="flex gap-4 shrink-0">
+                  {/* Mobile day picker trigger — carries the selected day's date
+                      so the drawer states which day it is searching, matching the
+                      desktop <select>. */}
                   <div
-                    className="rounded-[12px] border-2 px-[16px] py-[12px] border-[#ececec] cursor-pointer"
+                    className="rounded-[12px] border-2 px-[12px] py-[12px] border-[#ececec] cursor-pointer flex items-center gap-1.5 h-[44px]"
                     onClick={() => setShowCalender(true)}
                   >
                     <Image
@@ -854,6 +875,11 @@ const ClickHandler = (child) => {
                       height={"20"}
                       color="white"
                     />
+                    {shortDayLabel(startDate) && (
+                      <span className="ttw-type-small text-[#0b1220] whitespace-nowrap">
+                        {shortDayLabel(startDate)}
+                      </span>
+                    )}
                   </div>
                   <div
                     className="relative px-[16px] py-[12px] bg-[#0b1220] text-[#fafaf5] rounded-[8px] h-[44px] flex items-center gap-2 cursor-pointer"
@@ -1017,13 +1043,11 @@ const ClickHandler = (child) => {
             >
               <div className="font-600 ttw-type-body text-[#0b1220]">Select Days</div>
               {[...Array(Math.max(0, resolvedCityDuration) + 1)].map((_, i) => {
-                const cityStartRaw = props?.start_date || props?.date || null;
-                const baseDateStr = props?.mercuryItinerary
-                  ? (cityStartRaw || itinerary?.start_date || null)
-                  : convertToISODate(cityStartRaw || itinerary?.start_date || null);
+                // Same base date as the desktop <select>, so both pickers list
+                // exactly the same days.
+                if (!dayPickerBaseDate) return null;
 
-                const baseDate = new Date(baseDateStr);
-                const currentDate = new Date(baseDate);
+                const currentDate = new Date(dayPickerBaseDate);
                 currentDate.setDate(currentDate.getDate() + i);
 
                 // Pad function to ensure two digits
@@ -1037,12 +1061,20 @@ const ClickHandler = (child) => {
 
                 // Format date for display as "Aug 7, 2025"
                 const displayDate = getHumanDate(dateString);
+                const isSelected = dateString === startDate;
 
                 return (
                   <div
                     key={i}
-                    className="cursor-pointer ttw-type-small text-[#0b1220]"
-                    onClick={() => setStartDate(dateString)}
+                    className={`cursor-pointer ttw-type-small px-2 py-1 -mx-2 rounded-[6px] ${
+                      isSelected
+                        ? "bg-[#f7e700] text-[#0b1220]"
+                        : "text-[#0b1220]"
+                    }`}
+                    onClick={() => {
+                      setStartDate(dateString);
+                      setShowCalender(false);
+                    }}
                   >
                     <span className="font-600 ttw-type-body">
                       {displayDate + " | "}

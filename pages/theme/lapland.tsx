@@ -8,11 +8,12 @@
 
 import Head from "next/head";
 import { connect } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Layout from "../../components/Layout";
 import * as authaction from "../../store/actions/auth";
 import CinematicThemeLanding from "../../components/theme/cinematic/CinematicThemeLanding";
 import { useSeedChat } from "../../components/theme/cinematic/useSeedChat";
+import ActivityDetailsDrawer from "../../components/drawers/activityDetails/ActivityDetailsDrawer";
 import type { CinematicThemeConfig } from "../../components/theme/cinematic/types";
 
 // ── Dummy prompts (one per clickable card) ──────────────────────────────────
@@ -21,36 +22,33 @@ const PROMPTS = {
   hero:
     "Plan a magical Lapland winter trip with the northern lights, Santa's village, husky safaris and a glass igloo stay. Recommend the best bases and the ideal number of nights, then build a complete cinematic itinerary balancing snow adventures with slow Nordic evenings.",
   chipLapland:
-    "Design a first-timer's Lapland itinerary covering aurora hunts, reindeer and husky rides, Santa experiences and a glass-roof stay. Recommend the best time to go and a well-paced route with cozy stays.",
+    "We are 2 adults, and our travel dates are flexible. We want to plan a complete Lapland holiday covering the region's best experiences. Include iconic Arctic activities like husky and reindeer safaris, snowmobile rides, scenic winter landscapes, Finnish saunas, cozy stays, and local culture. Build a balanced itinerary with sightseeing, unique experiences, and enough free time to enjoy the Arctic at a relaxed pace.",
   chipAurora:
-    "Build a northern lights focused trip to Lapland designed to maximize aurora sightings — dark-sky bases, flexible nights, guided hunts and glass igloos. Include backup plans for cloudy nights.",
+    "We are 2 adults (a couple), and our travel dates are flexible. We want our trip to focus on experiencing the Northern Lights. Prioritize destinations with high Aurora visibility, include guided Aurora hunts, glass igloos or remote cabins where possible, and schedule activities around the best viewing opportunities. Maximize our chances of seeing the Aurora while still including a few classic Lapland experiences.",
   chipChristmas:
-    "Plan a Christmas-in-Lapland family trip around Santa's hometown — meeting Santa, reindeer sleigh rides, husky safaris and snowy Christmas magic. Recommend the right base and how far ahead to book.",
+    "We are 2 adults, and our travel dates are flexible. We want to experience Lapland during Christmas. Prioritize Santa Claus Village, festive markets, reindeer rides, husky safaris, snow-covered forests, Christmas lights, cozy cafés, and magical winter experiences. We want the itinerary to feel festive, immersive, and perfect for celebrating Christmas in the Arctic.",
   // Pillars — Choose Your Arctic Story
   pillarChristmas:
-    "Create a Christmas in Santa's hometown itinerary in Rovaniemi — meeting Santa, reindeer rides, husky safaris, Santa's post office and one night under a glass igloo. Make it magical for kids while keeping the pace relaxed.",
+    "We are 2 adults, and our travel dates are flexible. We want a Christmas-focused Lapland itinerary with a stay in Rovaniemi. Include Santa Claus Village, reindeer and husky experiences, snowy forests, Christmas markets (if available), cozy cafés, and festive winter activities. Prioritize a magical Christmas atmosphere.",
   pillarAurora:
-    "Plan a northern lights escape to Lapland built around maximizing aurora sightings — the darkest-sky bases, flexible nights and guided hunts. Balance the chase with cozy cabins and saunas.",
+    "We are 2 adults, and our travel dates are flexible. We want a Lapland itinerary focused on maximizing our chances of seeing the Northern Lights. Include stays in Aurora-friendly locations, glass igloos or unique Arctic accommodations where possible, guided Aurora hunts, scenic winter landscapes, Finnish saunas, and Arctic experiences with minimal city time.",
   pillarSlowdown:
-    "Design a slow Nordic winter escape — sauna rituals, silence, snow-heavy pine forests and long quiet evenings. Prioritize rest, nature and the parts of Lapland nobody plans for but everybody remembers.",
+    "We are 2 adults, and our travel dates are flexible. We want a slow-paced Lapland itinerary focused on relaxation and cozy Nordic experiences. Include scenic stays, traditional Finnish saunas, snow-covered forests, local cafés, peaceful walks, optional light winter activities, and plenty of free time.",
+  pillarFairytale:
+    "We are 2 adults, and our travel dates are flexible. We want a cinematic winter wonderland itinerary in Lapland. Include snowy forests, glass igloos or cozy cabins, reindeer and husky safaris, frozen lakes, beautiful viewpoints, magical cafés, and iconic Arctic experiences. We want the trip to feel like a real-life fairytale.",
   // Bases — Where you'd sleep
   baseRovaniemi:
-    "Plan a Lapland trip based in Rovaniemi — Santa's village, easy flights and everything within reach. Best for families with young kids. Build a 5–6 night itinerary with the top winter experiences.",
+    "We are 2 adults, and our travel dates are flexible. We want our trip to be centered around Rovaniemi, with most of our stay here. Prioritize easy access to Santa Claus Village, reindeer farms, husky safaris, snowmobile experiences, Arctic museums, cozy cafés, and festive winter attractions. We'd like a balance of winter activities and relaxed evenings, with accommodation close to the main experiences.",
+  baseHelsinki:
+    "We are 2 adults(a couple), and our travel dates are flexible. We want to combine the best of Helsinki and Lapland. Start our trip in Helsinki to explore Finnish architecture, cafés, markets, saunas, and local culture before heading north to experience the Arctic. Include enough time in both destinations, with a comfortable pace and seamless travel between the city and Lapland.",
   baseSaariselka:
     "Plan a Lapland trip based in Saariselkä — deeper north, darker skies and glass roofs over the snow for the best aurora odds. Build an itinerary focused on northern lights and Arctic wilderness.",
   baseLevi:
     "Plan a Lapland trip based in Levi — ski slopes by day and husky night trails. Great for teens and active families. Build a balanced snow-adventure itinerary.",
   baseKakslauttanen:
     "Plan a splurge Lapland stay at Kakslauttanen — glass igloos, Christmas lights and deep snow. Build a romantic, high-end itinerary around the igloo experience.",
-  // Trips — Which Lapland is yours?
-  tripFamily:
-    "Create a 6-night family Lapland Christmas itinerary across Rovaniemi and Saariselkä — Santa, huskies and a glass roof — for kids aged 4 and up. Include stays, transfers and a day-by-day plan.",
-  tripCouple:
-    "Create a 5-night romantic Lapland itinerary for a couple — a glass igloo, a forest cabin and private saunas under the aurora. Keep it intimate, scenic and unrushed.",
-  tripSlow:
-    "Create a 7-night slow Nordic itinerary — Helsinki, sauna culture, the design district and one long scenic train north. Prioritize rest, design and quiet winter beauty.",
-  tripShort:
-    "Create a 4-night long-weekend Lapland trip based in Rovaniemi — Christmas lights, huskies and one aurora hunt. Make it efficient but still magical.",
+  // Trips — "Which Lapland is yours?" cards now open a saved sample itinerary
+  // at /chat/{id} (see the trips section below), so they carry no prompt.
   // Santa checklist
   santaMeet:
     "Arrange a private meeting with Santa in Rovaniemi with no queue and a photo included, and build the rest of a family day around it.",
@@ -60,19 +58,9 @@ const PROMPTS = {
     "Include a visit to Santa's main post office to post a letter that arrives home next December, and suggest what else to do in the village.",
   santaReindeer:
     "Add a reindeer sleigh ride through the pines to a Lapland itinerary and recommend the quietest, most scenic operator.",
-  // Experiences — Worth the cold
-  expAurora:
-    "Plan an aurora hunt by snowmobile far from roads and light pollution, with a guide and warm gear. Recommend the best base and night for it.",
-  expHusky:
-    "Add a husky trail after dark to a Lapland itinerary — self-driven or guided — and recommend the best location for it.",
-  expGlass:
-    "Include a night sleeping under a heated glass roof watching for the northern lights, and recommend the best glass igloo stays.",
-  expSauna:
-    "Add an authentic smoke sauna and ice-dip experience to a Finland trip and explain the Finnish sauna ritual for first-timers.",
-  expIce:
-    "Plan a quiet ice-fishing morning on a frozen Lapland lake with a guide, and pair it with other calm winter experiences.",
-  expSnowshoe:
-    "Add a snowshoe hike through old-growth Arctic forest to a Lapland itinerary — around two hours, off the beaten path.",
+  // Experiences — "Worth the cold" rows now open the read-only activity
+  // details drawer by activity id (see the section below), so they carry no
+  // prompt.
   // Stories
   storyFamily:
     "Plan a Christmas-week Lapland family trip like the Mehras did with kids aged 6 and 9 — Santa, huskies and snow — over 6 nights.",
@@ -149,7 +137,7 @@ const laplandConfig: CinematicThemeConfig = {
           line: "Meet Santa, reindeer rides, husky safaris, Santa's Post Office, and one magical night under a glass igloo.",
           window: "Sept – Mar",
           emoji: "🎅",
-          image: IMG.rovaniemi,
+          image: `${CDN}/media/website/lapland-2026/ChristmasInSantaHometown.png`,
           gradient: "linear-gradient(160deg, #b84034, #f0e9d6 200%)",
           prompt: PROMPTS.pillarChristmas,
         },
@@ -158,7 +146,7 @@ const laplandConfig: CinematicThemeConfig = {
           line: "Built around maximizing aurora sightings with flexible nights, guided hunts, and darker skies.",
           window: "Nov – Jan",
           emoji: "🌌",
-          image: IMG.finland,
+          image:  IMG.norway,
           gradient: "linear-gradient(160deg, #0e1530, #1f8a5a 150%)",
           prompt: PROMPTS.pillarAurora,
         },
@@ -167,9 +155,18 @@ const laplandConfig: CinematicThemeConfig = {
           line: "Sauna, silence, snow-heavy pines. The part nobody plans for and everybody remembers.",
           window: "All winter",
           emoji: "🌲",
-          image: IMG.sweden,
+          image: `${CDN}/media/website/lapland-2026/TheNordicSlowdown.png`,
           gradient: "linear-gradient(160deg, #16324f, #3d4f7a)",
           prompt: PROMPTS.pillarSlowdown,
+        },
+        {
+          name: "Frozen Fairytale",
+          line: "A cinematic winter wonderland — snowy forests, frozen lakes, cozy cabins and iconic Arctic experiences.",
+          window: "Dec – Mar",
+          emoji: "🏰",
+          image: `${CDN}/media/website/lapland-2026/FrozenFairystyle.png`,
+          gradient: "linear-gradient(160deg, #1a2a4a, #7aa0c8 180%)",
+          prompt: PROMPTS.pillarFairytale,
         },
       ],
     },
@@ -183,7 +180,7 @@ const laplandConfig: CinematicThemeConfig = {
           line: "Santa's village + easy flights + everything within reach",
           badge: "Kaira's pick",
           emoji: "🎄",
-          image: IMG.rovaniemi,
+          image: `${CDN}/media/website/lapland-2026/Rovaniemi.png`,
           gradient: "linear-gradient(150deg, #b84034, #f0e9d6 190%)",
           prompt: PROMPTS.baseRovaniemi,
         },
@@ -211,6 +208,14 @@ const laplandConfig: CinematicThemeConfig = {
           gradient: "linear-gradient(150deg, #0e1530, #445069)",
           prompt: PROMPTS.baseKakslauttanen,
         },
+        {
+          name: "Helsinki",
+          line: "Finnish design + cafés + saunas, then north to the Arctic",
+          emoji: "🏛️",
+          image: `${CDN}/media/website/lapland-2026/Helsinki.png`,
+          gradient: "linear-gradient(150deg, #16324f, #3d4f7a)",
+          prompt: PROMPTS.baseHelsinki,
+        },
       ],
     },
     // ── Which Lapland is yours? ──
@@ -228,7 +233,7 @@ const laplandConfig: CinematicThemeConfig = {
           image: IMG.rovaniemi,
           gradient: "linear-gradient(150deg, #b84034, #1f8a5a 180%)",
           urgent: "Christmas week — 4 rooms left across all bases",
-          prompt: PROMPTS.tripFamily,
+          href: "/chat/456c747e-4c30-4420-a92a-d5ca91841c71",
         },
         {
           tag: "Couple · 5N",
@@ -239,7 +244,7 @@ const laplandConfig: CinematicThemeConfig = {
           emoji: "🫶",
           image: IMG.finland,
           gradient: "linear-gradient(150deg, #0e1530, #1f8a5a 160%)",
-          prompt: PROMPTS.tripCouple,
+          href: "/chat/2b786c5a-2e19-42cd-8cd1-ce52b7429823",
         },
         {
           tag: "Slow · 7N",
@@ -250,7 +255,7 @@ const laplandConfig: CinematicThemeConfig = {
           emoji: "🧖",
           image: IMG.helsinki,
           gradient: "linear-gradient(150deg, #16324f, #3d4f7a)",
-          prompt: PROMPTS.tripSlow,
+          href: "/chat/538033b0-2206-461e-82c0-50a76c9f7d5f",
         },
         {
           tag: "Short · 4N",
@@ -261,7 +266,7 @@ const laplandConfig: CinematicThemeConfig = {
           emoji: "⚡",
           image: IMG.kiruna,
           gradient: "linear-gradient(150deg, #1a2436, #b84034 190%)",
-          prompt: PROMPTS.tripShort,
+          href: "/chat/9a4dae5e-3375-415b-b56b-ae2b3d546e8d",
         },
       ],
     },
@@ -308,7 +313,7 @@ const laplandConfig: CinematicThemeConfig = {
           emoji: "🛵",
           image: IMG.finland,
           gradient: "linear-gradient(140deg, #0e1530, #445069)",
-          prompt: PROMPTS.expAurora,
+          activityId: "6610b432-c665-4d37-96dc-092738b66881",
         },
         {
           name: "Husky trail after dark",
@@ -316,39 +321,39 @@ const laplandConfig: CinematicThemeConfig = {
           emoji: "🐕",
           image: IMG.tromso,
           gradient: "linear-gradient(140deg, #1a2436, #3d4f7a)",
-          prompt: PROMPTS.expHusky,
+          activityId: "897a7ac8-e8e5-4911-912d-41494c71d5fb",
         },
         {
-          name: "Sleep under a glass roof",
-          line: "Lights overhead, heating on",
-          emoji: "🛌",
+          name: "Arctic Lights Chase & Photo Safari",
+          line: "Chase the aurora, come home with the shot",
+          emoji: "📸",
           image: IMG.rovaniemi,
           gradient: "linear-gradient(140deg, #16324f, #1f8a5a 160%)",
-          prompt: PROMPTS.expGlass,
+          activityId: "6610b432-c665-4d37-96dc-092738b66881",
         },
         {
-          name: "Smoke sauna and ice dip",
-          line: "The Finnish rite of passage",
-          emoji: "🧖",
-          image: IMG.helsinki,
-          gradient: "linear-gradient(140deg, #b84034, #f0e9d6 200%)",
-          prompt: PROMPTS.expSauna,
-        },
-        {
-          name: "Ice fishing on a frozen lake",
-          line: "The Arctic at its quietest",
-          emoji: "🎣",
+          name: "Break through the frozen Bothnian Sea",
+          line: "An icebreaker adventure on the Arctic ice",
+          emoji: "🚢",
           image: IMG.sweden,
           gradient: "linear-gradient(140deg, #16324f, #3d4f7a)",
-          prompt: PROMPTS.expIce,
+          activityId: "470fb6f1-064a-4f83-8e8b-867aeeb106a8",
         },
         {
-          name: "Snowshoe through old forest",
-          line: "Two hours, no other footprints",
-          emoji: "🥾",
+          name: "Snowmobile safari & fireside feast",
+          line: "Wilderness ride, then a meal by the fire",
+          emoji: "🛷",
           image: IMG.kiruna,
           gradient: "linear-gradient(140deg, #0e1530, #1f8a5a 170%)",
-          prompt: PROMPTS.expSnowshoe,
+          activityId: "5c910808-12d9-4eca-869b-1d14d73a307f",
+        },
+        {
+          name: "Meet Arctic wildlife in the snow",
+          line: "Reindeer, huskies and more, up close",
+          emoji: "🦌",
+          image: IMG.norway,
+          gradient: "linear-gradient(140deg, #b84034, #f0e9d6 200%)",
+          activityId: "afd2220f-5a46-43f3-9b28-e3226320b2fa",
         },
       ],
     },
@@ -556,8 +561,36 @@ const laplandConfig: CinematicThemeConfig = {
   },
 };
 
+// A sensible default start date for the read-only activity drawer — ~60 days
+// out, in DD/MM/YYYY (the format the detail endpoint expects). The drawer only
+// shows details/indicative pricing here; the visitor picks real dates in chat.
+const defaultActivityDate = () => {
+  const d = new Date();
+  d.setDate(d.getDate() + 60);
+  const dd = String(d.getDate()).padStart(2, "0");
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  return `${dd}/${mm}/${d.getFullYear()}`;
+};
+
 const LaplandThemePage = ({ checkAuthState }: { checkAuthState: () => void }) => {
   const seedChat = useSeedChat();
+  // Read-only activity details drawer (opened from the "Worth the cold" list).
+  const [activityDrawer, setActivityDrawer] = useState<{
+    show: boolean;
+    activityId?: string;
+    source?: string;
+    date?: string;
+  }>({ show: false });
+
+  const openActivity = (activityId: string, source?: string) =>
+    setActivityDrawer({
+      show: true,
+      activityId,
+      source,
+      date: defaultActivityDate(),
+    });
+  const closeActivity = () =>
+    setActivityDrawer((prev) => ({ ...prev, show: false }));
 
   useEffect(() => {
     checkAuthState();
@@ -583,8 +616,72 @@ const LaplandThemePage = ({ checkAuthState }: { checkAuthState: () => void }) =>
           content="Plan a magical Lapland winter trip with The Tarzan Way's AI itinerary — northern lights, Santa's village in Rovaniemi, husky safaris, glass igloos and the best time to go for aurora and Christmas."
         />
         <link rel="canonical" href="https://thetarzanway.com/theme/lapland" />
+        <meta
+          property="og:url"
+          content="https://thetarzanway.com/theme/lapland"
+        />
+        <meta property="og:type" content="website" />
+        <meta
+          property="og:image"
+          content="https://thetarzanway.com/og-image.png"
+        />
+        <meta name="twitter:card" content="summary_large_image" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "TouristTrip",
+                  name: "Lapland Trip Planner — Northern Lights, Santa & Aurora",
+                  description:
+                    "Plan a magical Lapland winter trip with The Tarzan Way's AI itinerary — northern lights, Santa's village in Rovaniemi, husky safaris, glass igloos and the best time to go for aurora and Christmas.",
+                  url: "https://thetarzanway.com/theme/lapland",
+                  image: "https://thetarzanway.com/og-image.png",
+                  provider: {
+                    "@type": "TravelAgency",
+                    name: "The Tarzan Way",
+                    url: "https://thetarzanway.com",
+                  },
+                },
+                {
+                  "@type": "BreadcrumbList",
+                  itemListElement: [
+                    {
+                      "@type": "ListItem",
+                      position: 1,
+                      name: "Home",
+                      item: "https://thetarzanway.com",
+                    },
+                    {
+                      "@type": "ListItem",
+                      position: 2,
+                      name: "Lapland",
+                      item: "https://thetarzanway.com/theme/lapland",
+                    },
+                  ],
+                },
+              ],
+            }),
+          }}
+        />
       </Head>
-      <CinematicThemeLanding config={laplandConfig} onSelectPrompt={seedChat} />
+      <CinematicThemeLanding
+        config={laplandConfig}
+        onSelectPrompt={seedChat}
+        onSelectActivity={openActivity}
+      />
+      {/* Read-only activity details — no Add/Remove CTA on this marketing page */}
+      <ActivityDetailsDrawer
+        show={activityDrawer.show}
+        activityId={activityDrawer.activityId}
+        source={activityDrawer.source}
+        date={activityDrawer.date}
+        hideCta
+        handleCloseDrawer={closeActivity}
+        setShowDrawer={closeActivity}
+      />
     </Layout>
   );
 };

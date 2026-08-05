@@ -26,6 +26,11 @@ import { useRouter } from "next/router";
 import { useHandleClose } from "../../hooks/useHandleClose";
 import { getDateDifferenceInDays } from "../../helper/DateUtils";
 import { getTransferBookingPath } from "../../helper/transferBookingPath";
+import { currencySymbols } from "../../data/currencySymbols";
+import {
+  getVehicleCount,
+  resolvePerVehicleTotal,
+} from "../../components/modals/taxis/MultiVehicleInfo";
 import { useAnalytics } from "../../hooks/useAnalytics";
 
 const TransferDrawer = ({
@@ -84,6 +89,7 @@ const TransferDrawer = ({
   const { drawer, bookingId, oItineraryCity, dItineraryCity, drawerType } =
     router?.query;
 
+  const currency = useSelector((state) => state.currency);
   const transferBookingsMap = useSelector(
     (state) => state?.TransferBookings?.transferBookings,
   );
@@ -396,6 +402,27 @@ const TransferDrawer = ({
         : origin || destination || null;
     })();
 
+    // A convoy booking covers several cabs and prices them as one figure, so the
+    // leg has to say how many and what one of them costs. Ported from the
+    // accordion this rail replaced, where it sat under the leg's total.
+    const vehicleCount = getVehicleCount(child);
+    const perVehicleTotal =
+      vehicleCount > 1 ? resolvePerVehicleTotal(child, child?.price, vehicleCount) : null;
+    const symbol = currency?.currency
+      ? currencySymbols?.[currency?.currency]
+      : "₹";
+    const convoyTag =
+      vehicleCount > 1
+        ? [
+            `${vehicleCount} taxis`,
+            perVehicleTotal
+              ? `${symbol}${Math.ceil(perVehicleTotal).toLocaleString("en-IN")} per taxi`
+              : null,
+          ]
+            .filter(Boolean)
+            .join(" · ")
+        : null;
+
     return {
       kind: "service",
       key: child?.id || index,
@@ -406,6 +433,7 @@ const TransferDrawer = ({
           : stamp?.time,
       title: child?.name || `${child?.booking_type || "Transfer"} transfer`,
       subtitle,
+      tag: convoyTag,
       status: child?.status,
       end,
       legType,

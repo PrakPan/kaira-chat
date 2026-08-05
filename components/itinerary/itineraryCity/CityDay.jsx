@@ -265,6 +265,40 @@ const renderDaySummary = (text) => {
   );
 };
 
+// ─── Plus-in-circle icon ──────────────────────────────────────────────────────
+// Same glyph the city header uses for its stop actions. The clipPath id has to
+// be unique per instance — every day row renders one.
+const PlusCircleIcon = ({ id }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="16"
+    height="16"
+    viewBox="0 0 20 20"
+    fill="none"
+  >
+    <g clipPath={`url(#${id})`}>
+      <path
+        d="M13.2022 9.89942C13.2021 9.74474 13.1407 9.5964 13.0313 9.48703C12.9219 9.37765 12.7736 9.3162 12.6189 9.31617L10.4856 9.31618L10.4856 7.18284C10.4829 7.02991 10.4203 6.88414 10.3112 6.77693C10.2021 6.66972 10.0553 6.60964 9.90233 6.60964C9.74937 6.60964 9.60254 6.66972 9.49345 6.77693C9.38436 6.88414 9.32174 7.02991 9.31908 7.18284L9.31908 9.31618L7.18574 9.31618C7.03281 9.31884 6.88704 9.38146 6.77983 9.49055C6.67262 9.59964 6.61254 9.74647 6.61254 9.89942C6.61254 10.0524 6.67262 10.1992 6.77983 10.3083C6.88704 10.4174 7.03281 10.48 7.18574 10.4827L9.31908 10.4827L9.31908 12.616C9.32174 12.7689 9.38435 12.9147 9.49344 13.0219C9.60253 13.1291 9.74937 13.1892 9.90232 13.1892C10.0553 13.1892 10.2021 13.1291 10.3112 13.0219C10.4203 12.9147 10.4829 12.7689 10.4856 12.616L10.4856 10.4827L12.6189 10.4827C12.7736 10.4826 12.9219 10.4212 13.0313 10.3118C13.1407 10.2024 13.2021 10.0541 13.2022 9.89942Z"
+        fill="#07213A"
+      />
+      <path
+        d="M14.8492 4.94975C13.8703 3.97078 12.623 3.3041 11.2651 3.034C9.90726 2.7639 8.4998 2.90253 7.22071 3.43234C5.94163 3.96215 4.84838 4.85936 4.07921 6.01051C3.31004 7.16165 2.8995 8.51503 2.8995 9.8995C2.8995 11.284 3.31004 12.6373 4.07921 13.7885C4.84838 14.9396 5.94163 15.8368 7.22071 16.3667C8.4998 16.8965 9.90726 17.0351 11.2651 16.765C12.623 16.4949 13.8703 15.8282 14.8492 14.8492C16.1601 13.5355 16.8964 11.7554 16.8964 9.8995C16.8964 8.0436 16.1601 6.26349 14.8492 4.94975ZM5.77471 14.0243C4.9589 13.2085 4.40333 12.1691 4.17825 11.0375C3.95317 9.90597 4.06869 8.73308 4.5102 7.66718C4.95171 6.60128 5.69938 5.69023 6.65867 5.04926C7.61796 4.40828 8.74577 4.06616 9.8995 4.06616C11.0532 4.06616 12.181 4.40828 13.1403 5.04926C14.0996 5.69023 14.8473 6.60128 15.2888 7.66718C15.7303 8.73308 15.8458 9.90597 15.6207 11.0375C15.3957 12.1691 14.8401 13.2085 14.0243 14.0243C12.9295 15.1167 11.4461 15.7302 9.8995 15.7302C8.35292 15.7302 6.8695 15.1167 5.77471 14.0243Z"
+        fill="#07213A"
+      />
+    </g>
+    <defs>
+      <clipPath id={id}>
+        <rect
+          width="14"
+          height="14"
+          fill="white"
+          transform="translate(9.8995) rotate(45)"
+        />
+      </clipPath>
+    </defs>
+  </svg>
+);
+
 // ─── Recommendation SVG icon ──────────────────────────────────────────────────
 const RecommendationIcon = ({ size = 16 }) => (
   <svg
@@ -607,6 +641,32 @@ const isDraft = useSelector((state) => state.Itinerary.status) === "Draft";
     );
   };
 
+  // Per-day "Add activity". Unlike the old city-header entry point this only
+  // pushes the query — ItineraryCity mounts <ActivityAddDrawer> off the URL and
+  // reads `dayIdx` to seed the drawer's day picker with THIS day's date.
+  // Flipping a local `show` flag first would mount the drawer a tick before
+  // `dayIdx` lands, leaving the picker on the city's first day.
+  const handleAddActivityForDay = () => {
+    if (!localStorage.getItem("access_token")) {
+      props?.setShowLoginModal?.(true);
+      return;
+    }
+    trackActivityBookingAdd?.(router.query.id, "day_card");
+    router.push(
+      {
+        pathname: window.location.pathname,
+        query: {
+          drawer: "activity",
+          itinerary_city_id: props?.itinerary_city_id,
+          city_id: props?.city?.id,
+          dayIdx: props?.dayIndex ?? 0,
+        },
+      },
+      undefined,
+      { scroll: false, shallow: true },
+    );
+  };
+
 const handleItemClick = (item) => {
   const resolvedType = resolveElementType(item);
   if (!resolvedType || resolvedType === "recommendation") return;
@@ -886,6 +946,70 @@ useEffect(() => {
 
   const dayDate = formatDayHeaderDate(props.day?.date);
 
+  // Booking actions only exist once the itinerary is out of Draft (p1) and its
+  // pricing has settled — same gate the city header applies to its own actions.
+  const canAddActivity = !isDraft && finalized_status !== "PENDING";
+
+  // This day's sightseeing-taxi chips. Rendered into the heading row alongside
+  // "Add activity" when that button exists, so the two share one line instead
+  // of the taxi taking a line of its own; otherwise (Draft, where there is no
+  // button) it falls back to its original standalone row.
+  const renderTaxiChips = (className) =>
+    matchingIntracityBookings && matchingIntracityBookings.length > 0 ? (
+      <div className={className}>
+        {matchingIntracityBookings.map((taxi) => (
+          <button
+            key={taxi.id}
+            onClick={() => {
+              trackTaxiCardClicked?.(
+                router.query.id,
+                taxi.id,
+                "day_by_day_collapse",
+              );
+              router.push(
+                {
+                  pathname: window.location.pathname,
+                  query: {
+                    ...(router.query.id ? { id: router.query.id } : {}),
+                    drawer: "SightSeeing",
+                    bookingId: taxi.id,
+                    itinerary_city_id: props?.itinerary_city_id,
+                  },
+                },
+                undefined,
+                { scroll: false, shallow: true },
+              );
+            }}
+            className="group inline-flex items-center gap-1.5 cursor-pointer transition-opacity hover:opacity-80"
+          >
+            <span
+              className="inline-flex items-center justify-center rounded-full shrink-0"
+              style={{
+                width: "18px",
+                height: "18px",
+                background: "#DFF3E7",
+              }}
+            >
+              <FaTaxi style={{ fontSize: "10px", color: "#1F8A5A" }} />
+            </span>
+            <span
+              style={{
+                fontFamily:
+                  "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+                fontSize: "12.5px",
+                fontWeight: 500,
+                color: "#1F8A5A",
+                lineHeight: 1.2,
+              }}
+              className="group-hover:underline"
+            >
+              Sightseeing taxi included
+            </span>
+          </button>
+        ))}
+      </div>
+    ) : null;
+
   return (
     <>
      <div
@@ -951,70 +1075,76 @@ useEffect(() => {
           {/* Editorial day summary — baseline-aligned with the "01" day number.
               The number is 36px serif, so on desktop the smaller heading is
               nudged down to share the number's baseline. Only shown when the API
-              sends day_summary; otherwise the content reads as before. */}
-          {props.day?.day_summary && (
-            <h3
-              className="ttw-type-h4 text-[#0B1220] m-0 mb-3 sm:mt-[14px] leading-[0.9] break-words !pt-4 max-sm:hidden"
-              style={{ fontWeight: 500 }}
-            >
-              {renderDaySummary(props.day.day_summary)}
-            </h3>
-          )}
+              sends day_summary; otherwise the content reads as before.
 
-          {matchingIntracityBookings && matchingIntracityBookings.length > 0 && (
-            <div className="flex flex-row gap-xs flex-wrap mb-3">
-              {matchingIntracityBookings.map((taxi) => (
-                <button
-                  key={taxi.id}
-                  onClick={() => {
-                    trackTaxiCardClicked?.(
-                      router.query.id,
-                      taxi.id,
-                      "day_by_day_collapse",
-                    );
-                    router.push(
-                      {
-                        pathname: window.location.pathname,
-                        query: {
-                          ...(router.query.id ? { id: router.query.id } : {}),
-                          drawer: "SightSeeing",
-                          bookingId: taxi.id,
-                          itinerary_city_id: props?.itinerary_city_id,
-                        },
-                      },
-                      undefined,
-                      { scroll: false, shallow: true },
-                    );
-                  }}
-                  className="group inline-flex items-center gap-1.5 cursor-pointer transition-opacity hover:opacity-80"
+              "Add activity" sits at the right end of that heading row. On mobile
+              the heading lives beside the day number in COL 1 instead, so only
+              the button renders here — landing directly under the heading.
+
+              The row carries no `sm:mt-[14px]` even though the old <h3> did: it
+              sat alongside `m-0`, whose Bootstrap `margin:0!important` beat it,
+              so the heading never actually had that offset. Reinstating it here
+              would push the heading 14px off the "01". */}
+          {(props.day?.day_summary || canAddActivity) && (
+            // `flex-1` on the heading (rather than justify-between) does the
+            // spacing: with three children justify-between would strand the
+            // taxi in the middle of the row on desktop.
+            <div className="flex items-center gap-3 mb-3 sm:pt-4">
+              {props.day?.day_summary ? (
+                <h3
+                  className="ttw-type-h4 text-[#0B1220] m-0 leading-[0.9] break-words flex-1 min-w-0 max-sm:hidden"
+                  style={{ fontWeight: 500 }}
                 >
-                  <span
-                    className="inline-flex items-center justify-center rounded-full shrink-0"
-                    style={{
-                      width: "18px",
-                      height: "18px",
-                      background: "#DFF3E7",
-                    }}
-                  >
-                    <FaTaxi style={{ fontSize: "10px", color: "#1F8A5A" }} />
-                  </span>
-                  <span
-                    style={{
-                      fontFamily:
-                        "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-                      fontSize: "12.5px",
-                      fontWeight: 500,
-                      color: "#1F8A5A",
-                      lineHeight: 1.2,
-                    }}
-                    className="group-hover:underline"
-                  >
-                    Sightseeing taxi included
-                  </span>
+                  {renderDaySummary(props.day.day_summary)}
+                </h3>
+              ) : (
+                <span className="flex-1 max-sm:hidden" />
+              )}
+
+              {/* Sightseeing taxi shares this line with the button rather than
+                  taking a row of its own. DOM order puts it before the button
+                  so desktop keeps the button pinned to the far right, in line
+                  with the city header's pills. Below 640px — the same point the
+                  heading moves out to COL 1 — the order swaps and `ml-auto`
+                  throws the taxi to the right edge, leaving the button holding
+                  the left. */}
+              {canAddActivity &&
+                renderTaxiChips(
+                  "flex flex-row items-center gap-x-3 gap-y-1 flex-wrap min-w-0 max-sm:order-2 max-sm:ml-auto",
+                )}
+
+              {/* Styled to match the city header's Change hotel / Add taxi
+                  pills exactly, at both sizes — hence `max-ph` (768px) for the
+                  compact size rather than this card's own `sm` column
+                  breakpoint: the header pills shrink at 768px, so anything
+                  keyed to 640px reads oversized in the 640–768px band.
+
+                  Every base size is written in arbitrary-value form
+                  (`py-[8px]`, not `py-2`; `border-[1px]`, not `border`) because
+                  Bootstrap ships the bare utilities as !important. That both
+                  repaints the pill (#dee2e6) and — worse — outranks the
+                  non-important `max-ph:` overrides, pinning the mobile size to
+                  the desktop one. Arbitrary values are tokens Bootstrap never
+                  defines, so the responsive overrides win normally. */}
+              {canAddActivity && (
+                <button
+                  type="button"
+                  onClick={handleAddActivityForDay}
+                  className="flex items-center justify-center gap-1 shrink-0 rounded-full border-[1px] border-[#E3E2DD] bg-white font-semibold text-[#2c2f34] whitespace-nowrap px-3.5 py-[8px] text-[12.5px] max-ph:px-[9px] max-ph:py-[5px] max-ph:text-[10px] max-sm:order-1"
+                >
+                  <PlusCircleIcon
+                    id={`day_act_ic_${props?.itinerary_city_id}_${props?.index}`}
+                  />
+                  Add activity
                 </button>
-              ))}
+              )}
             </div>
           )}
+
+          {/* Draft only: no Add activity button to share a line with, so
+              the taxi keeps its original standalone row. */}
+          {!canAddActivity &&
+            renderTaxiChips("flex flex-row gap-xs flex-wrap mb-3")}
 
           {elements.length > 0 ? (
             hasAnyTime ? (

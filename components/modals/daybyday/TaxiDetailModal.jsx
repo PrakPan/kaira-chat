@@ -18,6 +18,11 @@ import {
   railStamp,
 } from "../../revamp/common/components/bookingDetail/format";
 import ComboTaxi from "../taxis/ComboTaxi";
+import {
+  getVehicleCount,
+  MultiVehicleNote,
+  VehicleCountBadge,
+} from "../taxis/MultiVehicleInfo";
 
 const TaxiDetailModal = ({
   data,
@@ -107,6 +112,14 @@ const TaxiDetailModal = ({
       : isSightseeing
         ? "Sightseeing"
         : "Taxi transfer";
+
+  // >1 when the group did not fit in one cab, so the booking covers a convoy.
+  // Every spec below (seats, bags, fuel) describes a single cab in that case.
+  const vehicleCount = getVehicleCount(data);
+  const travellerCount =
+    (number_of_adults || 0) +
+    (number_of_children || 0) +
+    (data?.number_of_infants || 0);
 
   const title =
     data?.name ||
@@ -232,15 +245,45 @@ const TaxiDetailModal = ({
       </DetailSection>
 
       {vehicle && (
-        <DetailSection label="Vehicle">
+        <DetailSection
+          label="Vehicle"
+          right={<VehicleCountBadge count={vehicleCount} />}
+        >
+          {/* A convoy prices and describes one cab, so say so before the specs
+              below are read as covering the whole group. */}
+          <MultiVehicleNote count={vehicleCount} className="mx-4 mb-4">
+            This booking includes {vehicleCount} taxis
+            {travellerCount > 0
+              ? ` for your ${travellerCount} traveller${travellerCount > 1 ? "s" : ""}`
+              : ""}
+            {vehicle?.seating_capacity
+              ? ` — one ${vehicle.seating_capacity}-seater cannot fit everyone`
+              : ""}
+            . The details below describe a single taxi.
+          </MultiVehicleNote>
+
           <VehiclePhoto image={vehicle?.image} alt={vehicle?.type} mode="Taxi" />
           <FactChips
             facts={[
               { label: "Class", value: vehicle?.type },
               { label: "Model", value: vehicle?.model_name },
               { label: "Fuel", value: vehicle?.fuel_type },
-              { label: "Seats", value: vehicle?.seating_capacity },
-              { label: "Bags", value: vehicle?.bag_capacity },
+              {
+                label: vehicleCount > 1 ? "Seats / taxi" : "Seats",
+                value: vehicle?.seating_capacity,
+              },
+              {
+                label: vehicleCount > 1 ? "Bags / taxi" : "Bags",
+                value: vehicle?.bag_capacity,
+              },
+              { label: "Taxis", value: vehicleCount > 1 ? vehicleCount : null },
+              {
+                label: "Total seats",
+                value:
+                  vehicleCount > 1 && vehicle?.seating_capacity
+                    ? vehicle.seating_capacity * vehicleCount
+                    : null,
+              },
             ]}
           />
         </DetailSection>

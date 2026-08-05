@@ -23,6 +23,13 @@ import { updateFlightBookingWarning } from "../../../../../services/bookings/Upd
 import { useAnalytics } from "../../../../../hooks/useAnalytics";
 import { currencySymbols } from "../../../../../data/currencySymbols";
 import { MdOutlineLuggage } from "react-icons/md";
+import {
+  getVehicleCount,
+  MultiVehicleNote,
+  PerTaxiPrice,
+  resolvePerVehicleTotal,
+  VehicleCountBadge,
+} from "../../MultiVehicleInfo";
 
 
 const Container = styled.div`
@@ -316,6 +323,18 @@ const Section = (props) => {
   if (props.data?.taxi_category?.bag_capacity)
     bagCapacity += props.data.taxi_category.bag_capacity;
 
+  // >1 only when no single cab seats the group; then price.total is the convoy
+  // total and per_vehicle_total is what one cab costs.
+  const vehicleCount = getVehicleCount(props.data);
+  const perVehicleTotal = resolvePerVehicleTotal(
+    props.data,
+    props.data?.price?.total,
+    vehicleCount,
+  );
+  const currencySymbol = currency?.currency
+    ? currencySymbols?.[currency?.currency]
+    : "₹";
+
 
   if (props.data)
     return (
@@ -386,7 +405,7 @@ const Section = (props) => {
               </div>
             ) : null}
             <div className="flex-1 min-w-0">
-            <div className="flex justify-between w-100">
+            <div className="flex flex-wrap items-center gap-2 w-100">
               <span className="text-md font-600 leading-xl text-[#0b1220] ">
                 {props.data?.taxi_category?.model_name ? (
                   <>
@@ -405,6 +424,7 @@ const Section = (props) => {
                   "One-way Taxi"
                 )}
               </span>
+              <VehicleCountBadge count={vehicleCount} />
             </div>
 
             {<div className="text-sm font-400 leading-lg-md text-[#445069]">{props.data?.taxi_category?.type}</div>}
@@ -423,7 +443,15 @@ const Section = (props) => {
                       {bagCapacity} Luggage bags
                     </span>
                   )}
+                  {vehicleCount > 1 && (
+                    <span className="whitespace-nowrap">(per taxi)</span>
+                  )}
                 </div>
+                <MultiVehicleNote
+                  count={vehicleCount}
+                  seatingCapacity={props.data?.taxi_category?.seating_capacity}
+                  className="mt-1"
+                />
                 <div>
                   {/* <Accordion
                     borderRadius="0.5rem"
@@ -474,10 +502,15 @@ const Section = (props) => {
             </div>
           </div>
           <div className="flex flex-col justify-between items-end gap-2 flex-shrink-0 max-ph:flex-row max-ph:items-center max-ph:justify-between max-ph:w-full">
-            <div>
+            <div className="flex flex-col items-end max-ph:items-start">
               <span className="text-lg font-mono text-[#0b1220] 2xl-md">
-                {`${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}` + getIndianPrice(Math.ceil(props.data.price.total))}
+                {currencySymbol + getIndianPrice(Math.ceil(props.data.price.total))}
               </span>
+              <PerTaxiPrice
+                count={vehicleCount}
+                perVehicleTotal={perVehicleTotal}
+                symbol={currencySymbol}
+              />
             </div>
             <div className="flex items-end justify-center">
               {loading ? (

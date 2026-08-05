@@ -1029,7 +1029,7 @@ export default function ActivityDetails(props) {
         </div>
       )} */}
 
-      {(!isDraft || typeof props?.onAddToItinerary === "function") && (
+      {!props?.hideCta && (!isDraft || typeof props?.onAddToItinerary === "function") && (
         // z-[9] keeps the bar above page content but BELOW the Travellers
         // modal: the shared Pax wrapper is `relative z-[10]`, which traps its
         // BottomModal in a z-10 stacking context. Any bar z-index >= 10 paints

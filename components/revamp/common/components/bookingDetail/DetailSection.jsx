@@ -9,14 +9,22 @@ import React from "react";
  * lifted — was solving a problem the card created. A rule and a label group
  * content just as well and there is no edge to get wrong.
  */
-export default function DetailSection({ label, children, className = "" }) {
+export default function DetailSection({
+  label,
+  right,
+  children,
+  className = "",
+}) {
   if (!children) return null;
 
   return (
     <section className={className}>
       <div className="h-px bg-[#efede6] mx-4 mb-4" />
-      {label ? (
-        <div className="ttw-type-status text-[#8a93a6] px-4 pb-2.5">{label}</div>
+      {label || right ? (
+        <div className="flex items-center justify-between gap-2 px-4 pb-2.5">
+          <span className="ttw-type-status text-[#8a93a6]">{label}</span>
+          {right ? <span className="shrink-0">{right}</span> : null}
+        </div>
       ) : null}
       {children}
     </section>
