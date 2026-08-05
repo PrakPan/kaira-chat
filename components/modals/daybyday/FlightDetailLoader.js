@@ -11,7 +11,7 @@ const Line = ({ className = "" }) => (
  */
 const FlightDetailLoader = () => {
   return (
-    <div className="h-screen bg-white flex flex-col overflow-hidden animate-pulse">
+    <div className="h-screen bg-[#fafaf5] flex flex-col overflow-hidden animate-pulse">
       <div className="flex-1 overflow-hidden px-6 max-ph:px-4 pb-6">
         {/* Header */}
         <div className="flex items-center gap-3 py-4">
@@ -23,7 +23,7 @@ const FlightDetailLoader = () => {
           {/* Flight card */}
           <div className="mb-4">
             <Line className="w-14 h-3 mb-2" />
-            <div className="rounded-2xl border border-[#ececec] overflow-hidden">
+            <div className="ttw-detail-card rounded-2xl overflow-hidden">
               <div className="bg-[#f4f3ec] px-4 py-3">
                 <Line className="w-36 h-4 mb-1.5 bg-[#e2e0d6]" />
                 <Line className="w-28 h-3 bg-[#e2e0d6]" />
@@ -49,7 +49,7 @@ const FlightDetailLoader = () => {
           {/* Itinerary card */}
           <div>
             <Line className="w-16 h-3 mb-2" />
-            <div className="rounded-2xl border border-[#ececec] p-4 flex flex-col gap-4">
+            <div className="ttw-detail-card rounded-2xl p-4 flex flex-col gap-4">
               {[0, 1].map((i) => (
                 <div key={i} className="flex gap-3">
                   <Line className="w-9 h-9 rounded-full shrink-0" />
@@ -66,7 +66,7 @@ const FlightDetailLoader = () => {
       </div>
 
       {/* Action bar */}
-      <div className="border-t border-[#ececec] bg-white px-6 max-ph:px-4 py-4 flex gap-3">
+      <div className="border-t border-[#e9e7de] bg-white px-6 max-ph:px-4 py-4 flex gap-3">
         <Line className="flex-1 h-11 rounded-full" />
         <Line className="flex-1 h-11 rounded-full" />
       </div>

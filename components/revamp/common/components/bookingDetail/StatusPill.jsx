@@ -5,22 +5,24 @@ import React from "react";
  * coloured by what it means rather than always sitting in the same grey.
  *
  * Server values: Added, Quoted, Paid, Confirmed, Cancelled, Refunded, Expired,
- * Hold. Same tones the visa detail drawer introduced.
+ * Hold. Solid fills, no outline — a tinted border around a tinted pill draws a
+ * second edge inside the chip and reads as a seam. Fills come from the chip
+ * palette the itinerary day cards use, which is built for exactly this.
  */
 export const statusTone = (status) => {
   switch (status) {
     case "Confirmed":
     case "Paid":
-      return "bg-[#e7f5ee] text-[#1f7a52] border-[#c7e7d7]";
+      return "bg-[#DFF3E7] text-[#1F8A5A]";
     case "Cancelled":
     case "Refunded":
     case "Expired":
-      return "bg-[#fdeeeb] text-[#b42318] border-[#f5d4cd]";
+      return "bg-[#FCE7E4] text-[#B42318]";
     case "Hold":
     case "Quoted":
-      return "bg-[#fff6df] text-[#8a6100] border-[#f0e0b4]";
+      return "bg-[#FFF3D1] text-[#8A6100]";
     default:
-      return "bg-[#eef2fb] text-[#2b4a8b] border-[#d7e0f3]";
+      return "bg-[#E6F0FF] text-[#1D6FE0]";
   }
 };
 
@@ -29,7 +31,7 @@ export default function StatusPill({ status, className = "" }) {
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 border px-2.5 py-1 rounded-full flex-shrink-0 ttw-type-small font-600 leading-none tracking-[0.02em] ${statusTone(
+      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full flex-shrink-0 ttw-type-small font-600 leading-none tracking-[0.02em] ${statusTone(
         status,
       )} ${className}`}
     >

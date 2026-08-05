@@ -18,6 +18,11 @@ import Image from "next/image";
  *    mode icon), so drawers that identified the booking with a glyph keep it.
  *  - right: optional trailing node (badges/status), kept off the title's line
  *    width so it can't be pushed out by truncation.
+ *  - bgClassName: the sticky background content scrolls under. Defaults to
+ *    white; a drawer whose scroll pane is tinted (the transfer drawers sit on
+ *    the paper tone so their cards read as raised) passes its own, which has to
+ *    replace `bg-white` rather than sit beside it — two `bg-*` utilities on one
+ *    element are resolved by stylesheet order, not by class order.
  */
 export default function BookingDetailHeader({
   title,
@@ -26,10 +31,11 @@ export default function BookingDetailHeader({
   leading = null,
   right = null,
   className = "",
+  bgClassName = "bg-white",
 }) {
   return (
     <div
-      className={`sticky top-0 z-[900] bg-white flex items-center gap-3 py-4 w-full max-w-full ${className}`}
+      className={`sticky top-0 z-[900] ${bgClassName} flex items-center gap-3 py-4 w-full max-w-full ${className}`}
     >
       <Image
         src="/backarrow.svg"

@@ -21,9 +21,9 @@ export default function PolicyNote({
 
   return (
     <section className={className}>
-      <div className="rounded-2xl border border-[#ececec] bg-[#faf9f4] p-4">
+      <div className="ttw-detail-card rounded-2xl p-4">
         <div className="flex items-center gap-2 mb-2">
-          <span className="w-7 h-7 rounded-full bg-white border border-[#ececec] flex items-center justify-center flex-shrink-0 text-[#0b1220]">
+          <span className="w-7 h-7 rounded-full bg-[#f4f3ec] flex items-center justify-center flex-shrink-0 text-[#0b1220]">
             <svg
               width="15"
               height="15"

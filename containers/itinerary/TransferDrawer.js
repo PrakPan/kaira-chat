@@ -13,6 +13,15 @@ import PolicyNote from "../../components/revamp/common/components/bookingDetail/
 import RouteStrip from "../../components/revamp/common/components/bookingDetail/RouteStrip";
 import StatusPill from "../../components/revamp/common/components/bookingDetail/StatusPill";
 import VehiclePhoto from "../../components/revamp/common/components/bookingDetail/VehiclePhoto";
+import vehicleFacts, {
+  legVehicle,
+  sameVehicle,
+} from "../../components/revamp/common/components/bookingDetail/vehicleFacts";
+import {
+  accentGradient,
+  getModeAccent,
+} from "../../components/revamp/common/components/bookingDetail/modeAccent";
+import { dayOffset } from "../../components/revamp/common/components/bookingDetail/format";
 import FlightDetailLoader from "../../components/modals/daybyday/FlightDetailLoader";
 import VehicleDetailModal from "../../components/modals/daybyday/VehicleModal";
 import VehicleDetailLoader from "../../components/modals/daybyday/VehicleDetailLoader";
@@ -27,24 +36,6 @@ import { getDateDifferenceInDays } from "../../helper/DateUtils";
 import { currencySymbols } from "../../data/currencySymbols";
 import { useAnalytics } from "../../hooks/useAnalytics";
 import dayjs from "dayjs";
-
-// The booked car on a taxi leg. Suppliers file it under either key on the quote.
-const legVehicle = (leg) =>
-  leg?.transfer_details?.quote?.taxi_category ||
-  leg?.transfer_details?.quote?.vehicle ||
-  null;
-
-const vehicleFacts = (vehicle) => [
-  { label: "Model", value: vehicle?.model_name },
-  { label: "Fuel type", value: vehicle?.fuel_type },
-  { label: "Luggage bags", value: vehicle?.bag_capacity },
-  { label: "Seat capacity", value: vehicle?.seating_capacity },
-];
-
-// Two legs describe the same car when the supplier gave them the same class and
-// model — worth knowing, because then the car only needs showing once.
-const sameVehicle = (a, b) =>
-  !!a && !!b && a.type === b.type && a.model_name === b.model_name;
 
 const TransferDrawer = ({
   show,
@@ -448,6 +439,10 @@ const TransferDrawer = ({
             .join(" → ")
         : transferType;
 
+    // Each leg wears its own mode's hue, so a five-service taxi package and a
+    // multi-leg flight combo don't read as the same grey list.
+    const legAccent = getModeAccent(type);
+
     // The combo shell only renders once the fetch has resolved, so a leg never
     // has to stand in for a loading state of its own.
     const renderDetailsByType = () => {
@@ -503,8 +498,10 @@ const TransferDrawer = ({
     const renderMulticityLeg = () => (
       <div className="flex flex-col gap-3">
         {originName && destinationName ? (
-          <div className="rounded-xl border border-[#ececec] bg-white">
+          <div className="ttw-detail-card rounded-xl">
             <RouteStrip
+              accent={legAccent}
+              dayOffset={dayOffset(transferData.check_in, transferData.check_out)}
               origin={{ name: originName, time: checkIn.time, date: checkIn.date }}
               destination={{
                 name: destinationName,
@@ -515,7 +512,7 @@ const TransferDrawer = ({
             />
           </div>
         ) : (
-          <div className="rounded-xl border border-[#ececec] bg-white">
+          <div className="ttw-detail-card rounded-xl">
             <FactList
               columns={2}
               facts={[
@@ -543,9 +540,23 @@ const TransferDrawer = ({
         )}
 
         {distinctVehicle ? (
-          <div className="rounded-xl border border-[#ececec] bg-white overflow-hidden">
-            <div className="ttw-type-small font-600 text-[#0b1220] bg-[#f4f3ec] px-4 py-2">
-              {distinctVehicle.type || "Vehicle"}
+          <div className="ttw-detail-card rounded-xl overflow-hidden">
+            <div
+              className="flex items-center gap-2 px-4 py-2 border-b"
+              style={{
+                background: accentGradient(legAccent),
+                borderColor: legAccent.line,
+              }}
+            >
+              <ModeThumb
+                mode={type}
+                image={distinctVehicle.image}
+                alt={distinctVehicle.type}
+                size={26}
+              />
+              <span className="ttw-type-small font-600 text-[#0b1220]">
+                {distinctVehicle.type || "Vehicle"}
+              </span>
             </div>
             <FactList columns={2} facts={vehicleFacts(distinctVehicle)} />
           </div>
@@ -565,10 +576,23 @@ const TransferDrawer = ({
     return (
       <div
         key={`${transferData.id}-${index}`}
-        className="rounded-2xl border border-[#ececec] bg-white overflow-hidden mb-3"
+        className="ttw-detail-card relative rounded-2xl overflow-hidden mb-3"
       >
+        {/* Mode rail — the one piece of colour that survives collapsing, so the
+            list still reads as several distinct services at a glance. Inset from
+            the card's corners and rounded on its open edge: run full height, and
+            the 14px corner radius clips its ends into tapered wedges that read
+            as a rendering fault. Same treatment the itinerary day cards use. */}
+        <span
+          className="absolute left-0 top-2.5 bottom-2.5 w-[3px] rounded-r-[3px]"
+          style={{ background: legAccent.solid, opacity: isExpanded ? 1 : 0.5 }}
+        />
+
         <div
-          className="flex items-start justify-between gap-3 px-4 py-3 cursor-pointer hover:bg-[#faf9f4] transition-colors"
+          className="flex items-start justify-between gap-3 pl-5 pr-4 py-3 cursor-pointer transition-colors hover:bg-[#faf9f4]"
+          // Inline wins over the hover class, so the tint only applies while
+          // open and the hover affordance is left to the collapsed state.
+          style={{ background: isExpanded ? accentGradient(legAccent) : undefined }}
           onClick={() => toggleExpand(index)}
         >
           <div className="min-w-0">
@@ -577,7 +601,10 @@ const TransferDrawer = ({
                 {index + 1}. {legTitle}
               </h3>
               {legChip ? (
-                <span className="ttw-type-small text-[#2b4a8b] bg-[#eef2fb] px-2 py-0.5 rounded-full capitalize whitespace-nowrap">
+                <span
+                  className="ttw-type-small font-500 px-2 py-0.5 rounded-full capitalize whitespace-nowrap"
+                  style={{ background: legAccent.soft, color: legAccent.solid }}
+                >
                   {legChip}
                 </span>
               ) : null}
@@ -642,7 +669,10 @@ const TransferDrawer = ({
         </div>
 
         {isExpanded && (
-          <div className="border-t border-[#ececec] bg-[#faf9f4] p-3">
+          <div
+            className="border-t p-3"
+            style={{ borderColor: legAccent.line, background: "#fafaf5" }}
+          >
             {/* Only a multi-city *taxi* leg gets the trimmed layout — a
                 multi-city flight combo has no shared vehicle to hoist, so its
                 legs still open the full flight detail body. */}
@@ -681,6 +711,9 @@ const TransferDrawer = ({
   // "taxi" silently dropped the vehicle card on most of them.
   const comboVehicle = data?.children?.map(legVehicle).find(Boolean) || null;
   const isMulticityTaxi = data?.combo_type === "multicity" && !!comboVehicle;
+  const comboAccent = getModeAccent(
+    isMulticityTaxi ? "Taxi" : data?.booking_type,
+  );
 
   return (
     <Drawer
@@ -766,15 +799,18 @@ const TransferDrawer = ({
           )}
         </>
       ) : error ? (
-        <div className="h-screen flex flex-col overflow-hidden">
+        <div className="h-screen bg-[#fafaf5] flex flex-col overflow-hidden">
           <BookingDetailHeader
             onBack={handleClose}
+            bgClassName="bg-[#fafaf5]"
             className="px-6 max-ph:px-4"
           />
           <DetailError />
         </div>
       ) : (
-        <div className="h-screen flex flex-col overflow-hidden">
+        // Paper pane, white cards: the drawer used to be white on white, where
+        // the only thing separating a card from the page was a hairline.
+        <div className="h-screen bg-[#fafaf5] flex flex-col overflow-hidden">
           <div className="overflow-y-auto flex-1 px-6 max-ph:px-4 pb-6">
             <BookingDetailHeader
               title={
@@ -785,6 +821,7 @@ const TransferDrawer = ({
                 }`
               }
               onBack={handleClose}
+              bgClassName="bg-[#fafaf5]"
               leading={
                 <ModeThumb
                   mode={isMulticityTaxi ? "Taxi" : data.booking_type}
@@ -798,22 +835,35 @@ const TransferDrawer = ({
               {/* Every leg of a multi-city taxi combo rides in the same car, so
                   the vehicle is described once here rather than per leg. */}
               {isMulticityTaxi && (
-                <DetailCard label="Vehicle" title={comboVehicle?.type || "Taxi"}>
+                <DetailCard
+                  label="Vehicle"
+                  accent={comboAccent}
+                  leading={<ModeThumb mode="Taxi" size={32} />}
+                  title={comboVehicle?.type || "Taxi"}
+                  subtitle={comboVehicle?.model_name}
+                >
                   <VehiclePhoto
                     image={comboVehicle?.image}
                     alt={comboVehicle?.type}
+                    mode="Taxi"
                   />
 
                   <FactList columns={2} facts={vehicleFacts(comboVehicle)} />
                 </DetailCard>
               )}
 
-              <div className="ttw-type-label text-[#8a93a6] mb-2">
-                {isMulticityTaxi
-                  ? "Booking inclusions"
-                  : `${data.children.length} ${
-                      data.children.length === 1 ? "leg" : "legs"
-                    }`}
+              <div className="flex items-center gap-2 mb-2">
+                <span
+                  className="w-[3px] h-3 rounded-full shrink-0"
+                  style={{ background: comboAccent.solid }}
+                />
+                <span className="ttw-type-label text-[#8a93a6]">
+                  {isMulticityTaxi
+                    ? "Booking inclusions"
+                    : `${data.children.length} ${
+                        data.children.length === 1 ? "leg" : "legs"
+                      }`}
+                </span>
               </div>
 
               {data.children.map((child, index) =>
@@ -823,7 +873,7 @@ const TransferDrawer = ({
           </div>
 
           {/* Remove (left) + Change (right) — one bar for both combo shapes */}
-          <div className="sticky bottom-0 z-10 border-t border-[#ececec] px-6 max-ph:px-4 py-4 bg-white">
+          <div className="sticky bottom-0 z-10 border-t border-[#e9e7de] px-6 max-ph:px-4 py-4 bg-white">
             <BookingDetailActions
               onDelete={() => onDeleteClick(data)}
               deleting={deleting}

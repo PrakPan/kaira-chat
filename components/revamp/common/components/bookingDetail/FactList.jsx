@@ -9,6 +9,9 @@ import React from "react";
  *  - columns=2: a grid of stacked label-over-value cells, for vehicle specs and
  *    similar short facts. Collapses to one column on a phone.
  *
+ * A fact may carry an `icon` node, drawn beside its label — vehicle specs read
+ * far faster as glyphs than as four lines of identical grey text.
+ *
  * Facts with an empty value are dropped rather than rendered as "NA" — a blank
  * row carries no information and only lengthens the card.
  *
@@ -30,12 +33,17 @@ export default function FactList({ facts, columns = 1, className = "" }) {
 
     return (
       <div
-        className={`grid grid-cols-2 max-ph:grid-cols-1 gap-px bg-[#ececec] ${className}`}
+        className={`grid grid-cols-2 max-ph:grid-cols-1 gap-px bg-[#efede6] ${className}`}
       >
         {items.map((fact) => (
           <div key={fact.label} className="bg-white px-4 py-3 min-w-0">
-            <div className="ttw-type-small text-[#8a93a6] mb-0.5">{fact.label}</div>
-            <div className="ttw-type-small font-500 text-[#0b1220] break-words">
+            <div className="flex items-center gap-1.5 mb-0.5 text-[#8a93a6]">
+              {fact.icon ? (
+                <span className="shrink-0 flex items-center">{fact.icon}</span>
+              ) : null}
+              <span className="ttw-type-small">{fact.label}</span>
+            </div>
+            <div className="ttw-type-small font-600 text-[#0b1220] break-words">
               {fact.value}
             </div>
           </div>
@@ -46,14 +54,19 @@ export default function FactList({ facts, columns = 1, className = "" }) {
   }
 
   return (
-    <div className={`divide-y divide-[#ececec] ${className}`}>
+    <div className={`divide-y divide-[#efede6] ${className}`}>
       {items.map((fact) => (
         <div
           key={fact.label}
           className="flex items-start justify-between gap-4 px-4 py-2.5"
         >
-          <span className="ttw-type-small text-[#8a93a6] shrink-0">{fact.label}</span>
-          <span className="ttw-type-small font-500 text-[#0b1220] text-right min-w-0 break-words">
+          <span className="flex items-center gap-1.5 shrink-0 text-[#8a93a6]">
+            {fact.icon ? (
+              <span className="shrink-0 flex items-center">{fact.icon}</span>
+            ) : null}
+            <span className="ttw-type-small">{fact.label}</span>
+          </span>
+          <span className="ttw-type-small font-600 text-[#0b1220] text-right min-w-0 break-words">
             {fact.value}
           </span>
         </div>

@@ -595,6 +595,19 @@ a.termsnavunderlinelink {
     }
 }
 
+/* Section cards in the booking-detail drawers.
+   Their pane is the paper tone, where a #ececec outline barely registers and
+   reads as a box ruled around the content rather than as a card. A soft lift
+   separates them instead, and the interior hairlines move to a warm grey that
+   belongs to the paper family — the cold #ececec looked like a stray table
+   border once the surfaces around it were tinted. */
+.ttw-detail-card {
+    background: #ffffff;
+    box-shadow:
+        0 1px 2px rgba(11, 18, 32, 0.05),
+        0 10px 26px -16px rgba(11, 18, 32, 0.22);
+}
+
 /* Supplier-authored policy HTML inside a booking-detail drawer (PolicyNote).
    The markup varies per provider — bare text, <p> runs, or an unstyled <ul> —
    and Tailwind's preflight strips list markers and paragraph margins, so the

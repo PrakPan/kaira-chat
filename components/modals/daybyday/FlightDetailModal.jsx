@@ -10,6 +10,8 @@ import DetailCard from "../../revamp/common/components/bookingDetail/DetailCard"
 import DetailError from "../../revamp/common/components/bookingDetail/DetailError";
 import PolicyNote from "../../revamp/common/components/bookingDetail/PolicyNote";
 import StatusPill from "../../revamp/common/components/bookingDetail/StatusPill";
+import ModeThumb from "../../revamp/common/components/bookingDetail/ModeThumb";
+import { getModeAccent } from "../../revamp/common/components/bookingDetail/modeAccent";
 import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
 import { openNotification } from "../../../store/actions/notification";
 import { useAnalytics } from "../../../hooks/useAnalytics";
@@ -52,6 +54,8 @@ const FlightDetailModal = ({
     (data?.number_of_adults || 0) +
     (data?.number_of_children || 0) +
     (data?.number_of_infants || 0);
+
+  const accent = getModeAccent("Flight");
 
   const duration = (() => {
     const raw =
@@ -111,9 +115,13 @@ const FlightDetailModal = ({
 
   if (error) {
     return (
-      <div className="bg-white w-full h-full flex flex-col">
+      <div className="bg-[#fafaf5] w-full h-full flex flex-col">
         {!isEmbedded && (
-          <BookingDetailHeader onBack={handleClose} className="px-6 max-ph:px-4" />
+          <BookingDetailHeader
+            onBack={handleClose}
+            bgClassName="bg-[#fafaf5]"
+            className="px-6 max-ph:px-4"
+          />
         )}
         <DetailError />
       </div>
@@ -125,6 +133,7 @@ const FlightDetailModal = ({
       {/* The flight itself — who flies it, and the shape of the journey. */}
       <DetailCard
         label={isEmbedded ? null : "Flight"}
+        accent={accent}
         title={airline?.name}
         subtitle={
           airline?.code
@@ -137,7 +146,7 @@ const FlightDetailModal = ({
           data?.status ? (
             <StatusPill status={data.status} />
           ) : item?.is_refundable ? (
-            <span className="ttw-type-small font-600 bg-[#e7f5ee] text-[#1f7a52] border border-[#c7e7d7] px-2.5 py-1 rounded-full whitespace-nowrap">
+            <span className="ttw-type-small font-600 bg-[#DFF3E7] text-[#1F8A5A] px-2.5 py-1 rounded-full whitespace-nowrap">
               Refundable
             </span>
           ) : null
@@ -171,7 +180,7 @@ const FlightDetailModal = ({
 
       {/* Leg-by-leg: airports, terminals, layovers. */}
       {segments?.length > 0 && (
-        <DetailCard label="Itinerary">
+        <DetailCard label="Itinerary" accent={accent}>
           <FlightSegment
             segments={segments}
             originCityId={originCityId}
@@ -188,17 +197,21 @@ const FlightDetailModal = ({
   if (isEmbedded) return <div className="flex flex-col">{body}</div>;
 
   return (
-    <div className="h-screen bg-white flex flex-col overflow-hidden">
+    // Paper pane, white cards: the drawer used to be white on white, where the
+    // only thing separating a card from the page was a hairline.
+    <div className="h-screen bg-[#fafaf5] flex flex-col overflow-hidden">
       <div className="flex-1 overflow-y-auto px-6 max-ph:px-4 pb-6">
         <BookingDetailHeader
           title={drawer ? null : name}
           onBack={handleClose}
+          bgClassName="bg-[#fafaf5]"
+          leading={<ModeThumb mode="Flight" />}
         />
         <div className="pt-2">{body}</div>
       </div>
 
       {/* Remove (left) + Change (right) — pinned action bar */}
-      <div className="sticky bottom-0 z-10 border-t border-[#ececec] bg-white px-6 max-ph:px-4 py-4">
+      <div className="sticky bottom-0 z-10 border-t border-[#e9e7de] bg-white px-6 max-ph:px-4 py-4">
         <BookingDetailActions
           onDelete={handleDelete}
           deleting={loading}

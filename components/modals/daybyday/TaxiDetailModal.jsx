@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { IoPeople } from "react-icons/io5";
 import BookingDetailHeader from "../../revamp/common/components/BookingDetailHeader";
 import BookingDetailActions from "../../revamp/common/components/BookingDetailActions";
 import DetailCard from "../../revamp/common/components/bookingDetail/DetailCard";
@@ -9,42 +10,15 @@ import PolicyNote from "../../revamp/common/components/bookingDetail/PolicyNote"
 import RouteStrip from "../../revamp/common/components/bookingDetail/RouteStrip";
 import StatusPill from "../../revamp/common/components/bookingDetail/StatusPill";
 import VehiclePhoto from "../../revamp/common/components/bookingDetail/VehiclePhoto";
+import { getModeAccent } from "../../revamp/common/components/bookingDetail/modeAccent";
+import vehicleFacts from "../../revamp/common/components/bookingDetail/vehicleFacts";
+import {
+  addMinutesToDate,
+  dayOffset,
+  formatDateTime,
+  paxLabel,
+} from "../../revamp/common/components/bookingDetail/format";
 import ComboTaxi from "../taxis/ComboTaxi";
-
-const formatDateTime = (dateString) => {
-  if (!dateString) return {};
-  const date = new Date(dateString);
-  if (Number.isNaN(date.getTime())) return {};
-  return {
-    date: date.toLocaleDateString("en-US", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-      weekday: "short",
-    }),
-    time: date.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    }),
-  };
-};
-
-const addMinutesToDate = (dateString, minutes) => {
-  if (!dateString || typeof minutes !== "number") return {};
-  const date = new Date(dateString);
-  if (Number.isNaN(date.getTime())) return {};
-  date.setMinutes(date.getMinutes() + minutes);
-  return formatDateTime(date.toISOString());
-};
-
-const paxLabel = (adults, children) =>
-  [
-    adults ? `${adults} adult${adults > 1 ? "s" : ""}` : null,
-    children ? `${children} child${children > 1 ? "ren" : ""}` : null,
-  ]
-    .filter(Boolean)
-    .join(" · ") || null;
 
 const TaxiDetailModal = ({
   data,
@@ -137,6 +111,9 @@ const TaxiDetailModal = ({
     data?.name ||
     (hasRoute ? `Taxi from ${originName} to ${destinationName}` : modeLabel);
 
+  const accent = getModeAccent("Taxi");
+  const legDayOffset = dayOffset(departure, check_out);
+
   const handleChangeTransfer = () => {
     if (isAirport) {
       setIsTransferDrawerOpen(true);
@@ -176,9 +153,13 @@ const TaxiDetailModal = ({
 
   if (error) {
     return (
-      <div className="bg-white w-full h-full flex flex-col">
+      <div className="bg-[#fafaf5] w-full h-full flex flex-col">
         {!isEmbedded && (
-          <BookingDetailHeader onBack={handleClose} className="px-6 max-ph:px-4" />
+          <BookingDetailHeader
+            onBack={handleClose}
+            bgClassName="bg-[#fafaf5]"
+            className="px-6 max-ph:px-4"
+          />
         )}
         <DetailError />
       </div>
@@ -192,12 +173,16 @@ const TaxiDetailModal = ({
           falls back to the dates it covers. */}
       <DetailCard
         label={isEmbedded ? null : "Journey"}
+        accent={accent}
+        leading={<ModeThumb mode="Taxi" size={32} />}
         title={modeLabel}
         subtitle={depart?.date}
         right={status ? <StatusPill status={status} /> : null}
       >
         {hasRoute ? (
           <RouteStrip
+            accent={accent}
+            dayOffset={legDayOffset}
             origin={{ name: originName, time: depart?.time, date: depart?.date }}
             destination={{
               name: destinationName,
@@ -228,11 +213,12 @@ const TaxiDetailModal = ({
         )}
 
         <FactList
-          className="border-t border-[#ececec]"
+          className="border-t border-[#efede6]"
           facts={[
             {
               label: "Travellers",
               value: paxLabel(number_of_adults, number_of_children),
+              icon: <IoPeople size={14} color="#8a93a6" aria-hidden="true" />,
             },
           ]}
         />
@@ -240,18 +226,15 @@ const TaxiDetailModal = ({
 
       {/* Vehicle — the car itself, then its specs as a grid. */}
       {vehicle && (
-        <DetailCard label="Vehicle" title={vehicle?.type || "Taxi"}>
-          <VehiclePhoto image={vehicle?.image} alt={vehicle?.type} />
+        <DetailCard
+          label="Vehicle"
+          accent={accent}
+          title={vehicle?.type || "Taxi"}
+          subtitle={vehicle?.model_name}
+        >
+          <VehiclePhoto image={vehicle?.image} alt={vehicle?.type} mode="Taxi" />
 
-          <FactList
-            columns={2}
-            facts={[
-              { label: "Model", value: vehicle?.model_name },
-              { label: "Fuel type", value: vehicle?.fuel_type },
-              { label: "Luggage bags", value: vehicle?.bag_capacity },
-              { label: "Seat capacity", value: vehicle?.seating_capacity },
-            ]}
-          />
+          <FactList columns={2} facts={vehicleFacts(vehicle)} />
         </DetailCard>
       )}
 
@@ -274,12 +257,15 @@ const TaxiDetailModal = ({
   }
 
   return (
-    <div className="h-screen bg-white flex flex-col overflow-hidden">
+    // Paper pane, white cards: the drawer used to be white on white, where the
+    // only thing separating a card from the page was a hairline.
+    <div className="h-screen bg-[#fafaf5] flex flex-col overflow-hidden">
       <div className="flex-1 overflow-y-auto px-6 max-ph:px-4 pb-6">
         <BookingDetailHeader
           title={title}
           loading={loading}
           onBack={handleClose}
+          bgClassName="bg-[#fafaf5]"
           leading={
             !loading ? (
               <ModeThumb mode="Taxi" image={vehicle?.image} alt={vehicle?.type} />
@@ -291,7 +277,7 @@ const TaxiDetailModal = ({
 
       {/* Remove (left) + Change (right) — pinned action bar */}
       {(canDelete || canChange) && (
-        <div className="sticky bottom-0 z-10 border-t border-[#ececec] bg-white px-6 max-ph:px-4 py-4">
+        <div className="sticky bottom-0 z-10 border-t border-[#e9e7de] bg-white px-6 max-ph:px-4 py-4">
           <BookingDetailActions
             onDelete={canDelete ? onDeleteClick : undefined}
             deleting={deleting}
