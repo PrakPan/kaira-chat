@@ -127,10 +127,10 @@ export const isSelfDrive = (mode) => SELF_DRIVE.test(String(mode || ""));
  * The accent key for a booking.
  *
  * Self-drive splits into car and bike, and that split is not in `booking_type`
- * — both arrive as "Self-Drive". It is in the vehicle category on the quote, so
- * the booking OBJECT has to be handed in for the distinction to be possible;
- * pass a bare label and a two-wheeler will render as a car, which is exactly
- * what the itinerary rows were doing.
+ * — both arrive as "Self-Drive". It is in the vehicle the quote names, so the
+ * booking OBJECT has to be handed in for the distinction to be possible; pass a
+ * bare label and a two-wheeler will render as a car, which is exactly what the
+ * itinerary rows were doing.
  */
 export const resolveModeKey = (bookingOrMode) => {
   if (!bookingOrMode) return null;
@@ -146,14 +146,31 @@ export const resolveModeKey = (bookingOrMode) => {
   const quote = booking?.transfer_details?.quote;
   const vehicle = quote?.taxi_category || quote?.vehicle || null;
 
-  // The category names it ("Bike", "Scooty"); the model and the booking's own
-  // name are the fallbacks for suppliers that only put it in the label.
-  const haystack = [vehicle?.type, vehicle?.model_name, booking?.name]
+  // `vehicle_name` is where a self-drive quote names the vehicle now that it
+  // sends no category object; the category's fields stay first for the quotes
+  // that still carry one, and the booking's own name is the last resort for
+  // suppliers that only put it in the label.
+  const haystack = [
+    vehicle?.type,
+    vehicle?.model_name,
+    quote?.vehicle_name,
+    booking?.name,
+  ]
     .filter(Boolean)
     .join(" ");
 
   return TWO_WHEELER.test(haystack) ? "Bike" : "Self-Drive";
 };
+
+/**
+ * The glyph for the vehicle itself, as opposed to the mode.
+ *
+ * The self-drive accent carries a steering wheel — that glyph's whole job is to
+ * say who is driving — but a row naming the vehicle is talking about the thing
+ * on the road, so it shows a car or a bike.
+ */
+export const getVehicleIcon = (modeOrKey) =>
+  TWO_WHEELER.test(String(modeOrKey || "")) ? TbMotorbike : IoCar;
 
 /**
  * `booking_type` reaches the drawers as "Taxi", "taxi", "Self-Drive", or — on a

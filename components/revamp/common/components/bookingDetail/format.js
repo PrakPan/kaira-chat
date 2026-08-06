@@ -108,10 +108,26 @@ export const dayOffset = (from, to) => {
 /**
  * The booked car on a taxi leg. Suppliers file it under either key on the
  * quote, so both are checked.
+ *
+ * Self-drive quotes no longer send this at all — see `legVehicleName`.
  */
 export const legVehicle = (leg) =>
   leg?.transfer_details?.quote?.taxi_category ||
   leg?.transfer_details?.quote?.vehicle ||
+  null;
+
+/**
+ * What the booked vehicle is called.
+ *
+ * Self-drive quotes dropped the `taxi_category` object; the vehicle now arrives
+ * as a bare string on the quote — `vehicle_name`, e.g. "Avanza / Xenia /
+ * Similar" — so that is read first, and the category's own fields stay as the
+ * fallback for the taxi quotes that still carry them.
+ */
+export const legVehicleName = (leg) =>
+  leg?.transfer_details?.quote?.vehicle_name ||
+  legVehicle(leg)?.model_name ||
+  legVehicle(leg)?.type ||
   null;
 
 /**

@@ -10,6 +10,7 @@ import PolicyNote from "../../revamp/common/components/bookingDetail/PolicyNote"
 import VehiclePhoto from "../../revamp/common/components/bookingDetail/VehiclePhoto";
 import {
   getModeAccent,
+  getVehicleIcon,
   isSelfDrive as isSelfDriveMode,
   resolveModeKey,
 } from "../../revamp/common/components/bookingDetail/modeAccent";
@@ -22,6 +23,7 @@ import {
   formatMinutes,
   legEndpoints,
   legVehicle,
+  legVehicleName,
   paxLabel,
 } from "../../revamp/common/components/bookingDetail/format";
 
@@ -93,13 +95,17 @@ const VehicleDetailModal = ({
   // name and no supplier route to swap it for — the change flow doesn't apply.
   const isSelfDrive = isSelfDriveMode(mode);
 
-  // The vehicle lives on the quote, under the same key the taxi bookings use.
+  // The vehicle lives on the quote. Taxi quotes send a whole category object;
+  // a self-drive quote now sends nothing but the name, so the two are read
+  // separately and the section renders on either.
   const vehicle = legVehicle(data);
+  const vehicleName = legVehicleName(data);
 
-  // Car or bike comes out of the vehicle category, resolved centrally so this
-  // drawer and the itinerary rows always land on the same glyph.
+  // Car or bike comes out of the vehicle the quote names, resolved centrally so
+  // this drawer and the itinerary rows always land on the same glyph.
   const accentKey = resolveModeKey(data) || mode;
   const accent = getModeAccent(accentKey);
+  const VehicleIcon = getVehicleIcon(accentKey);
 
   const departure =
     check_in ||
@@ -277,21 +283,47 @@ const VehicleDetailModal = ({
         />
       </DetailSection>
 
-      {vehicle && (
+      {(vehicle || vehicleName) && (
         <DetailSection label={isSelfDrive ? "Your vehicle" : "Vehicle"}>
-          <VehiclePhoto
-            image={vehicle?.image}
-            alt={vehicle?.type}
-            mode={accentKey}
-          />
+          {/* Only when the supplier actually sent a photo. A self-drive quote
+              never does, and the photo's empty state — a 128px tinted stage
+              holding a faded glyph — is a lot of drawer to spend saying
+              nothing; the name row below carries the vehicle instead. */}
+          {vehicle?.image ? (
+            <VehiclePhoto
+              image={vehicle.image}
+              alt={vehicleName || vehicle?.type}
+              mode={accentKey}
+            />
+          ) : null}
+
+          {vehicleName ? (
+            <div className="flex items-center gap-2.5 px-4 pb-4">
+              <span
+                className="flex items-center justify-center shrink-0 h-9 w-9 rounded-xl"
+                style={{
+                  background: accent.soft,
+                  border: `1px solid ${accent.line}`,
+                }}
+              >
+                <VehicleIcon size={18} color={accent.solid} />
+              </span>
+              <span className="text-[13.5px] font-600 text-[#0b1220] break-words min-w-0">
+                {vehicleName}
+              </span>
+            </div>
+          ) : null}
+
           <FactChips
+            // Whichever field the name came from is already stated in the row
+            // above, so it doesn't get a chip of its own as well.
             facts={[
               { label: "Class", value: vehicle?.type },
               { label: "Model", value: vehicle?.model_name },
               { label: "Fuel", value: vehicle?.fuel_type },
               { label: "Seats", value: vehicle?.seating_capacity },
               { label: "Bags", value: vehicle?.bag_capacity },
-            ]}
+            ].filter((fact) => fact.value !== vehicleName)}
           />
         </DetailSection>
       )}
