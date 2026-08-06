@@ -39,7 +39,7 @@ const TONES = {
   link: { bg: "#e6f0ff", fg: "#1d4e96" },
 };
 
-function Gutter({ show, isFirst, isLast, isDot, isMid, accent }) {
+function Gutter({ show, isFirst, isLast, isDot, isMid, stopsAtDot, accent }) {
   return (
     <div className="relative">
       {show ? (
@@ -48,7 +48,11 @@ function Gutter({ show, isFirst, isLast, isDot, isMid, accent }) {
           style={{
             background: accent.soft,
             top: isFirst ? DOT_CENTER : 0,
-            bottom: isLast ? `calc(100% - ${DOT_CENTER}px)` : 0,
+            // Stops at the dot on the last node, and on an open one — below an
+            // open node the panel interrupts the rail, so a line carrying on
+            // down would just run into the panel's own top rule.
+            bottom:
+              isLast || stopsAtDot ? `calc(100% - ${DOT_CENTER}px)` : 0,
           }}
         />
       ) : null}
@@ -109,11 +113,18 @@ function Block({ node, accent }) {
   );
 }
 
-function Heading({ node, isMid, accent }) {
+function Heading({ node, isMid, stamp }) {
   const inner = (
     <>
       <div className="flex items-start gap-2">
         <div className="min-w-0 flex-1">
+          {/* Compact rows have no time gutter, so the stamp becomes an eyebrow
+              over the title rather than a column beside it. */}
+          {stamp ? (
+            <div className="font-mono text-[9.5px] font-500 uppercase tracking-[0.1em] text-[#8a93a6] mb-1">
+              {stamp}
+            </div>
+          ) : null}
           {node.title ? (
             <h4
               className={`mb-0 text-[#0b1220] font-600 tracking-[-0.015em] ${
@@ -174,13 +185,30 @@ function Heading({ node, isMid, accent }) {
   );
 }
 
-export default function JourneyRail({ nodes, accent, className = "" }) {
+/**
+ * `compact` drops the time gutter and moves each stamp into its heading.
+ *
+ * It exists for one case: a combo's leg list, where every leg expands into a
+ * rail of its own. Two rails with their own 68px time tracks put the inner one
+ * a few pixels from the outer one — unreadable — and left a leg's name barely a
+ * hundred pixels on a phone, so "Bus from Krabi to Phuket" broke over three
+ * lines. Compact pulls the leg list in to a 14px rail, which both separates the
+ * two rails and gives the name the width it needs.
+ */
+export default function JourneyRail({
+  nodes,
+  accent,
+  compact = false,
+  className = "",
+}) {
   const items = (nodes || []).filter(Boolean);
   if (!items.length) return null;
 
   const isDot = items.map((node) => DOT_KINDS.has(node.kind));
   const firstDot = isDot.indexOf(true);
   const lastDot = isDot.lastIndexOf(true);
+
+  const columns = compact ? "14px minmax(0,1fr)" : "68px 14px minmax(0,1fr)";
 
   return (
     <div className={`px-4 pt-4 ${className}`}>
@@ -191,28 +219,35 @@ export default function JourneyRail({ nodes, accent, className = "" }) {
         const isLast = index === lastDot;
         const isMid = dot && !isFirst && !isLast;
         const isTail = index === items.length - 1;
+        const isOpen = dot && !!node.onToggle && !!node.open;
+
+        // A combo's legs each carry their own mode, so a node may override the
+        // rail's accent to colour itself.
+        const tone = node.accent || accent;
 
         return (
+          <React.Fragment key={node.key || index}>
           <div
-            key={node.key || index}
             className="grid gap-x-3"
             // 68px, not 58: a 12-hour stamp is eight mono characters wide
             // ("09:00 AM") and wrapped its meridiem onto a second line at the
             // narrower track.
-            style={{ gridTemplateColumns: "68px 14px minmax(0,1fr)" }}
+            style={{ gridTemplateColumns: columns }}
           >
-            <div className="text-right pt-px">
-              {node.time ? (
-                <div className="font-mono text-[12.5px] font-500 text-[#0b1220] tabular-nums leading-tight whitespace-nowrap">
-                  {node.time}
-                </div>
-              ) : null}
-              {node.date ? (
-                <div className="font-mono text-[9.5px] font-500 uppercase tracking-[0.1em] text-[#8a93a6] mt-0.5">
-                  {node.date}
-                </div>
-              ) : null}
-            </div>
+            {compact ? null : (
+              <div className="text-right pt-px">
+                {node.time ? (
+                  <div className="font-mono text-[12.5px] font-500 text-[#0b1220] tabular-nums leading-tight whitespace-nowrap">
+                    {node.time}
+                  </div>
+                ) : null}
+                {node.date ? (
+                  <div className="font-mono text-[9.5px] font-500 uppercase tracking-[0.1em] text-[#8a93a6] mt-0.5">
+                    {node.date}
+                  </div>
+                ) : null}
+              </div>
+            )}
 
             <Gutter
               show={onRail}
@@ -220,25 +255,45 @@ export default function JourneyRail({ nodes, accent, className = "" }) {
               isLast={isLast}
               isDot={dot}
               isMid={isMid}
-              accent={accent}
+              stopsAtDot={isOpen}
+              accent={tone}
             />
 
-            <div className={`min-w-0 ${isTail ? "pb-4" : dot ? "pb-6" : "pb-[18px]"}`}>
+            <div
+              className={`min-w-0 ${
+                isOpen ? "pb-3" : isTail ? "pb-4" : dot ? "pb-6" : "pb-[18px]"
+              }`}
+            >
               {dot ? (
-                <>
-                  <Heading node={node} isMid={isMid} accent={accent} />
-
-                  {node.onToggle && node.open ? (
-                    <div className="mt-3 -mx-4 border-t border-[#efede6] pt-1">
-                      {node.detail}
-                    </div>
-                  ) : null}
-                </>
+                <Heading
+                  node={node}
+                  isMid={isMid}
+                  stamp={
+                    compact
+                      ? [node.date, node.time].filter(Boolean).join(" · ")
+                      : null
+                  }
+                />
               ) : (
-                <Block node={node} accent={accent} />
+                <Block node={node} accent={tone} />
               )}
             </div>
           </div>
+
+          {/* An expanded leg escapes the grid rather than sitting in its content
+              column. Nested inside it, the embedded drawer body would start
+              past the time track AND the rail — then add its own gutter and a
+              second time track on top, which on a phone left barely 100px for a
+              station name. Full-bleed (-mx-4 cancels this rail's own padding)
+              means nested content gets exactly the same 16px gutter as a
+              standalone drawer. The rail pauses for the panel and resumes at the
+              next node, which is what an opened row should look like. */}
+          {isOpen ? (
+            <div className="-mx-4 mb-4 border-t border-[#efede6]">
+              {node.detail}
+            </div>
+          ) : null}
+          </React.Fragment>
         );
       })}
     </div>

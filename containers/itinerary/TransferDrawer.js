@@ -363,7 +363,6 @@ const TransferDrawer = ({
     const legType =
       child?.transfer_type === "sightseeing" ? "Taxi" : child?.booking_type;
     const stamp = formatDateTime(child?.check_in);
-    const end = formatDateTime(child?.check_out);
     const days = getDateDifferenceInDays(child?.check_in, child?.check_out) + 1;
 
     const origin = child?.transfer_details?.trips?.[0]?.origin?.address;
@@ -426,8 +425,11 @@ const TransferDrawer = ({
     return {
       kind: "service",
       key: child?.id || index,
-      time: stamp?.shortDate,
-      date:
+      accent: getModeAccent(legType || child?.booking_type),
+      date: stamp?.shortDate,
+      // A multi-day package has no meaningful clock time — how long it runs for
+      // is the useful figure in that slot.
+      time:
         child?.transfer_type === "sightseeing" && days > 1
           ? `${days} days`
           : stamp?.time,
@@ -435,9 +437,7 @@ const TransferDrawer = ({
       subtitle,
       tag: convoyTag,
       status: child?.status,
-      end,
       legType,
-      booking: child,
     };
   };
 
@@ -464,7 +464,6 @@ const TransferDrawer = ({
             data={child}
             handleDelete={null}
             isEmbedded
-            noHeading
             handleEditRoute={handleEditRoute}
           />
         );
@@ -698,7 +697,7 @@ const TransferDrawer = ({
             }
             className={isMulticityTaxi ? "" : "pt-3"}
           >
-            <JourneyRail nodes={railNodes} accent={comboAccent} />
+            <JourneyRail nodes={railNodes} accent={comboAccent} compact />
           </DetailSection>
         </DrawerShell>
       )}

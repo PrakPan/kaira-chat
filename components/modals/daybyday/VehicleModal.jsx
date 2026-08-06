@@ -300,16 +300,9 @@ const VehicleDetailModal = ({
     </>
   );
 
-  if (isEmbedded) {
-    return (
-      <div className="flex flex-col">
-        {name ? (
-          <h3 className="ttw-type-h4 text-[#0b1220] px-4 pt-3 mb-0">{name}</h3>
-        ) : null}
-        {body}
-      </div>
-    );
-  }
+  // Embedded in a combo's rail: the node it expands from already names the leg
+  // and owns the gutter, so the body contributes its rail and sections only.
+  if (isEmbedded) return <div className="flex flex-col">{body}</div>;
 
   return (
     <DrawerShell

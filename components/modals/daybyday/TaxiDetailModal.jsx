@@ -40,7 +40,6 @@ const TaxiDetailModal = ({
   selectedBooking,
   handleClose,
   noChange,
-  noHeading,
   error,
   isAirport,
   setIsTransferDrawerOpen,
@@ -294,18 +293,10 @@ const TaxiDetailModal = ({
     </>
   );
 
-  // Embedded: the combo drawer owns the band, the scroll pane and the action
-  // bar, so a leg contributes its rail and sections and nothing else.
-  if (isEmbedded) {
-    return (
-      <div className="flex flex-col">
-        {!noHeading && (
-          <h3 className="ttw-type-h4 text-[#0b1220] px-4 pt-3 mb-0">{title}</h3>
-        )}
-        {body}
-      </div>
-    );
-  }
+  // Embedded in a combo's rail: the node it expands from already names the leg
+  // and owns the band, scroll pane and action bar, so the body contributes its
+  // rail and sections only.
+  if (isEmbedded) return <div className="flex flex-col">{body}</div>;
 
   return (
     <DrawerShell
