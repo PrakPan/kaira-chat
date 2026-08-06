@@ -1,97 +1,81 @@
 import React from "react";
-import { PulseLoader } from "react-spinners";
-import styled from "styled-components";
-import Pin from "../../../containers/newitinerary/breif/route/Pin";
-import BackArrow from "../../ui/BackArrow";
 
-const BackText = styled.div`
-  font-size: 1.5rem;
-  line-height: 2rem;
-`;
+const Line = ({ className = "" }) => (
+  <div className={`bg-[#ececec] rounded ${className}`} />
+);
 
-const VehicleDetailLoader = ({ setHandleShow }) => {
+/**
+ * Placeholder for the taxi / train / bus / ferry detail drawer while its
+ * booking loads. Mirrors the loaded shell — ink band, rail, fact chips, action
+ * bar — so nothing shifts when the data lands.
+ */
+const VehicleDetailLoader = () => {
   return (
-    <div className=" bg-[#f4f3ec] w-full h-full flex flex-col overflow-hidden">
-      {/* Header */}
-
-      {/* Vehicle Info */}
-      <div className="flex items-center px-4 py-3 bg-[#fafaf5]">
-        <div className="bg-[#eef2fb] rounded-lg p-2 mr-3 flex-shrink-0">
-          <div className="w-16 h-10 sm:w-20 sm:h-12 bg-[#ececec] opacity-50 rounded-lg"></div>
+    <div className="h-screen bg-white flex flex-col overflow-hidden animate-pulse">
+      <div className="flex-1 overflow-hidden">
+        {/* Ink band */}
+        <div className="bg-[#0b1220] px-4 pt-3.5 pb-4">
+          <div className="flex items-center gap-2.5">
+            <div className="w-[17px] h-[17px] rounded bg-white/20 shrink-0" />
+            <div className="w-7 h-7 rounded-lg bg-white/15 shrink-0" />
+            <div className="h-4 flex-1 max-w-[180px] rounded bg-white/15" />
+          </div>
+          <div className="flex items-center justify-between gap-3 mt-2.5">
+            <div className="h-2.5 w-28 rounded bg-white/10" />
+            <div className="h-2.5 w-20 rounded bg-white/10" />
+          </div>
         </div>
-        <div className="flex-1 min-w-0">
-          <div className="w-full max-w-32 h-5 bg-[#ececec] opacity-50 rounded"></div>
+
+        {/* Rail */}
+        <div className="px-4 pt-5">
+          {[0, 1, 2].map((row) => (
+            <div
+              key={row}
+              className="grid gap-x-3"
+              style={{ gridTemplateColumns: "68px 14px minmax(0,1fr)" }}
+            >
+              <div className="flex flex-col items-end gap-1.5">
+                {row === 1 ? null : (
+                  <>
+                    <Line className="w-11 h-3" />
+                    <Line className="w-8 h-2" />
+                  </>
+                )}
+              </div>
+              <div className="relative">
+                <span className="absolute left-1/2 -translate-x-1/2 w-[2px] bg-[#ececec] top-0 bottom-0" />
+                {row === 1 ? null : (
+                  <span className="relative block w-2.5 h-2.5 rounded-full mx-auto mt-1 bg-[#ececec]" />
+                )}
+              </div>
+              <div className={row === 2 ? "pb-5" : "pb-6"}>
+                {row === 1 ? (
+                  <Line className="w-40 max-w-full h-9 rounded-[10px]" />
+                ) : (
+                  <>
+                    <Line className="w-32 max-w-full h-4 mb-2" />
+                    <Line className="w-44 max-w-full h-3" />
+                  </>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
-      </div>
 
-      {/* Title */}
-      <div className="px-4 pt-2 pb-2 bg-[#fafaf5] ">
-        <div className="w-24 h-5 bg-[#ececec] opacity-50 rounded"></div>
-      </div>
-
-      {/* Main Content */}
-      <div className="flex-1 px-4 py-4 overflow-y-auto">
-        <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-sm relative border border-[#ececec] min-h-0">
-          {/* Route Info */}
-          <div className="flex justify-between items-start gap-2">
-            {/* Source */}
-            <div className="flex flex-col items-start flex-1 min-w-0">
-              <Pin pinColour="green" index={0} length={0} />
-              <div className="mt-2 w-full">
-                <div className="w-full max-w-28 h-4 bg-[#ececec] opacity-50 rounded mb-1"></div>
-                <div className="w-full max-w-20 h-3 bg-[#ececec] opacity-50 rounded mb-1"></div>
-                <div className="w-full max-w-24 h-3 bg-[#ececec] opacity-50 rounded"></div>
-              </div>
-            </div>
-
-            {/* Distance - Responsive */}
-            <div className="flex flex-col items-center flex-shrink-0 px-2">
-              <div className="w-12 h-3 bg-[#ececec] opacity-50 rounded mb-2"></div>
-              <div className="border-t border-dashed border-[#b8becc] w-16 sm:w-32 md:w-64"></div>
-            </div>
-
-            {/* Destination */}
-            <div className="flex flex-col items-end flex-1 min-w-0">
-              <Pin pinColour="red" index={0} length={0} />
-              <div className="mt-2 text-right w-full">
-                <div className="w-full max-w-28 h-4 bg-[#ececec] opacity-50 rounded mb-1 ml-auto"></div>
-                <div className="w-full max-w-20 h-3 bg-[#ececec] opacity-50 rounded mb-1 ml-auto"></div>
-                <div className="w-full max-w-24 h-3 bg-[#ececec] opacity-50 rounded ml-auto"></div>
-              </div>
-            </div>
-          </div>
-
-          {/* Transfer Details */}
-          <div className="mt-6 sm:mt-8 pt-4 border-t border-[#ececec]">
-            <div className="w-24 h-4 bg-[#ececec] opacity-50 rounded mb-4"></div>
-
-            <div className="flex flex-col sm:flex-row sm:justify-between gap-4 sm:gap-0 mb-4">
-              <div className="flex-1">
-                <div className="w-full max-w-32 h-4 bg-[#ececec] opacity-50 rounded mb-1"></div>
-                <div className="w-full max-w-24 h-3 bg-[#ececec] opacity-50 rounded"></div>
-              </div>
-              <div className="text-left sm:text-right flex-shrink-0">
-                <div className="w-20 h-4 bg-[#ececec] opacity-50 rounded mb-1"></div>
-                <div className="w-16 h-3 bg-[#ececec] opacity-50 rounded"></div>
-              </div>
-            </div>
-
-            <div>
-              <div className="w-20 h-4 bg-[#ececec] opacity-50 rounded mb-1"></div>
-              <div className="w-24 h-3 bg-[#ececec] opacity-50 rounded"></div>
-            </div>
-          </div>
-
-          {/* Profile Icon */}
-          <div className="absolute bottom-4 sm:bottom-6 right-4 sm:right-6 bg-blue-500 text-white w-8 h-8 flex items-center justify-center rounded-full shadow">
-            <div className="w-4 h-4 bg-[#ececec] opacity-50 rounded"></div>
-          </div>
+        {/* Booking section */}
+        <div className="h-px bg-[#efede6] mx-4 mb-4" />
+        <Line className="w-16 h-2.5 mx-4 mb-3" />
+        <div className="flex flex-wrap gap-2 px-4">
+          <Line className="w-32 h-8 rounded-lg" />
+          <Line className="w-24 h-8 rounded-lg" />
+          <Line className="w-20 h-8 rounded-lg" />
         </div>
       </div>
 
-      {/* Loading Indicator */}
-      <div className="flex justify-center items-center py-4 bg-[#fafaf5] border-t border-[#ececec]">
-        <PulseLoader color="#3B82F6" size={8} />
+      {/* Action bar */}
+      <div className="border-t border-[#e2e0d6] bg-white px-4 py-3.5 flex gap-2.5">
+        <Line className="flex-1 h-10 rounded-full" />
+        <Line className="flex-1 h-10 rounded-full" />
       </div>
     </div>
   );

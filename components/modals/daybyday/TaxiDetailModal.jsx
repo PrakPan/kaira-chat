@@ -1,10 +1,23 @@
-import React from "react";
-import ImageLoader from "../../ImageLoader";
-import BookingDetailHeader from "../../revamp/common/components/BookingDetailHeader";
+import React, { useState } from "react";
 import BookingDetailActions from "../../revamp/common/components/BookingDetailActions";
+import DetailBand from "../../revamp/common/components/bookingDetail/DetailBand";
+import DetailError from "../../revamp/common/components/bookingDetail/DetailError";
+import DetailSection from "../../revamp/common/components/bookingDetail/DetailSection";
+import DrawerShell from "../../revamp/common/components/bookingDetail/DrawerShell";
+import FactChips from "../../revamp/common/components/bookingDetail/FactChips";
+import JourneyRail from "../../revamp/common/components/bookingDetail/JourneyRail";
+import PolicyNote from "../../revamp/common/components/bookingDetail/PolicyNote";
+import VehiclePhoto from "../../revamp/common/components/bookingDetail/VehiclePhoto";
+import { getModeAccent } from "../../revamp/common/components/bookingDetail/modeAccent";
+import {
+  addMinutesToDate,
+  arrivalOffsetLabel,
+  dayOffset,
+  formatDateTime,
+  paxLabel,
+  railStamp,
+} from "../../revamp/common/components/bookingDetail/format";
 import ComboTaxi from "../taxis/ComboTaxi";
-import { useState } from "react";
-import { FaTaxi } from "react-icons/fa";
 import {
   getVehicleCount,
   MultiVehicleNote,
@@ -13,8 +26,6 @@ import {
 
 const TaxiDetailModal = ({
   data,
-  setIsOpen,
-  // setHandleShow,
   handleDelete,
   loading,
   booking,
@@ -26,42 +37,30 @@ const TaxiDetailModal = ({
   oCityData,
   dCityData,
   setShowLoginModal,
-  city,
-  dcity,
   selectedBooking,
-  setSelectedBooking,
-  originCityId,
-  destinationCityId,
-  origin_itinerary_city_id,
-  destination_itinerary_city_id,
   handleClose,
   noChange,
-  noHeading,
   error,
   isAirport,
   setIsTransferDrawerOpen,
-  handleEditRoute
+  handleEditRoute,
 }) => {
+  const [showTaxi, setShowTaxi] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
   if (!data) return null;
 
-   let isPageWide =
-     typeof window !== "undefined" &&
-     window.matchMedia("(min-width: 768px)")?.matches;
   const {
-    name,
     transfer_details,
     number_of_adults,
     number_of_children,
-    source_address,
-    destination_address,
     check_in,
     check_out,
     is_airport_drop,
-    is_airport_pickup
+    is_airport_pickup,
+    transfer_type,
+    status,
   } = data;
-
-  const [showTaxi, setShowTaxi] = useState(false);
-  const [deleting, setDeleting] = useState(false);
 
   const onDeleteClick = async () => {
     if (deleting) return;
@@ -73,49 +72,45 @@ const TaxiDetailModal = ({
     }
   };
 
-  const formatDateTime = (dateString) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    return {
-      date: date.toLocaleDateString("en-US", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-        weekday: "short",
-      }),
-      time: date.toLocaleTimeString("en-US", {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true,
-      }),
-    };
-  };
+  const accent = getModeAccent("Taxi");
 
-  const addMinutesToDate = (dateString, minutes) => {
-  
-    const date = new Date(dateString);
-
-    date.setMinutes(date.getMinutes() + minutes);
-    return formatDateTime(date.toISOString());
-  };
   const departure =
     check_in ||
     transfer_details?.start_datetime ||
     transfer_details?.gozo?.start_date;
-  const duration = transfer_details?.duration;
-  const arrival =
-    formatDateTime(check_out) || addMinutesToDate(departure, duration);
   const depart = formatDateTime(departure);
+  const arrival = check_out
+    ? formatDateTime(check_out)
+    : addMinutesToDate(departure, transfer_details?.duration);
+
+  const trip = transfer_details?.trips?.[0];
+  const originName = trip?.origin?.address;
+  const destinationName = trip?.destination?.address;
 
   const distance =
     transfer_details?.distance?.text ||
-    `${transfer_details?.distance?.value} km`;
-  const duration_text = transfer_details?.duration?.text;
-  const model = transfer_details?.quote?.taxi_category?.model_name || transfer_details?.quote?.vehicle?.model_name;
-  const taxiType = transfer_details?.quote?.taxi_category?.type || transfer_details?.quote?.vehicle?.type;
-  const fuelType = transfer_details?.quote?.taxi_category?.fuel_type ||  transfer_details?.quote?.vehicle?.fuel_type;
-  const luggageBags = transfer_details?.quote?.taxi_category?.bag_capacity || transfer_details?.quote?.vehicle?.bag_capacity;
-  const seatCapacity = transfer_details?.quote?.taxi_category?.seating_capacity || transfer_details?.quote?.vehicle?.seating_capacity;
+    (transfer_details?.distance?.value
+      ? `${transfer_details.distance.value} km`
+      : null);
+  const durationText = transfer_details?.duration?.text;
+
+  // Both shapes of the quote carry the same vehicle facts under different keys.
+  const vehicle =
+    transfer_details?.quote?.taxi_category || transfer_details?.quote?.vehicle;
+
+  // A sightseeing package is sold by the day from a single pickup point, so it
+  // has no drop address — its rail counts days rather than tracing a route.
+  const isSightseeing = transfer_type === "sightseeing";
+  const hasRoute = !!(originName && destinationName);
+  const dayCount = Math.max(1, dayOffset(check_in, check_out) + 1);
+
+  const modeLabel = is_airport_pickup
+    ? "Airport pickup"
+    : is_airport_drop
+      ? "Airport drop"
+      : isSightseeing
+        ? "Sightseeing"
+        : "Taxi transfer";
 
   // >1 when the group did not fit in one cab, so the booking covers a convoy.
   // Every spec below (seats, bags, fuel) describes a single cab in that case.
@@ -125,24 +120,64 @@ const TaxiDetailModal = ({
     (number_of_children || 0) +
     (data?.number_of_infants || 0);
 
-  if (error) {
-        return (
-          <div
-            style={{
-              textAlign: "center",
-              margin: "auto",
-              height: isPageWide ? "80vh" : "70vh",
-            }}
-            className="center-div"
-          >
-            Oops, unable to get the details at the moment.
-          </div>
-        );
-      }
-
   const title =
     data?.name ||
-    `Taxi from ${data?.transfer_details?.trips?.[0]?.origin?.address} to ${data?.transfer_details?.trips?.[0]?.destination?.address}`;
+    (hasRoute ? `Taxi from ${originName} to ${destinationName}` : modeLabel);
+
+  // What the band states in one line: a route leg is summarised by how far and
+  // how long, a day package by how many days it runs for.
+  const summary = isSightseeing
+    ? `${dayCount} ${dayCount === 1 ? "day" : "days"}${durationText ? ` · ${durationText} daily` : ""}`
+    : [durationText, distance].filter(Boolean).join(" · ");
+
+  const kicker = isSightseeing
+    ? [depart?.date, arrival?.date].filter(Boolean).join(" – ")
+    : ["Taxi", depart?.date].filter(Boolean).join(" · ");
+
+  const nodes = (() => {
+    // Sightseeing: one node per day at the traveller's disposal.
+    if (isSightseeing && !hasRoute) {
+      return Array.from({ length: dayCount }, (_, i) => {
+        const stamp = railStamp(check_in, i);
+        return {
+          kind: "day",
+          key: `day-${i}`,
+          time: `Day ${i + 1}`,
+          date: stamp.date,
+          title: "At your disposal",
+          subtitle: [durationText, distance].filter(Boolean).join(" · ") || null,
+          tag: i === 0 && originName ? `Pickup: ${originName}` : null,
+        };
+      });
+    }
+
+    return [
+      {
+        kind: "place",
+        key: "from",
+        time: depart?.time,
+        date: depart?.shortDate,
+        title: trip?.origin?.city_name || originName || "Pickup",
+        subtitle: trip?.origin?.city_name ? originName : null,
+      },
+      {
+        kind: "carrier",
+        key: "car",
+        name: vehicle?.type || "Taxi",
+        meta: [distance, durationText].filter(Boolean).join(" · ") || null,
+      },
+      {
+        kind: "place",
+        key: "to",
+        time: arrival?.time,
+        date: arrival?.shortDate,
+        title: trip?.destination?.city_name || destinationName || "Drop",
+        subtitle: trip?.destination?.city_name ? destinationName : null,
+        tag: arrivalOffsetLabel(dayOffset(check_in, check_out)),
+        tagTone: "warn",
+      },
+    ];
+  })();
 
   const handleChangeTransfer = () => {
     if (isAirport) {
@@ -155,332 +190,144 @@ const TaxiDetailModal = ({
   const canChange = !isEmbedded && !noChange;
   const canDelete = !!handleDelete && type !== "combo";
 
-  return !showTaxi ? (
+  if (showTaxi) {
+    return (
+      <ComboTaxi
+        key={data.id}
+        edge={data?.edge}
+        combo={false}
+        showTaxiModal={showTaxi}
+        setShowComboTaxiModal={setShowTaxi}
+        setHideTaxiModal={() => setShowTaxi(false)}
+        getPaymentHandler={getPaymentHandler}
+        _updatePaymentHandler={_updatePaymentHandler}
+        _updateFlightBookingHandler={_updateFlightBookingHandler}
+        selectedBooking={data}
+        itinerary_id={data?.itinerary_id}
+        setShowLoginModal={setShowLoginModal}
+        mercuryTransfer={data}
+        originCityId={data?.trips?.[0]?.origin?.city_id}
+        destinationCityId={data?.trips?.[0]?.destination?.city_id}
+        comboStartDate={data?.trips?.[0]?.start_date || selectedBooking?.start_date}
+        comboStartTime={data?.trips?.[0]?.start_time || "12:00"}
+        dCityData={dCityData}
+        oCityData={oCityData}
+      />
+    );
+  }
+
+  if (error) {
+    return (
+      <DrawerShell band={<DetailBand mode="Taxi" onBack={handleClose} loading />}>
+        <DetailError />
+      </DrawerShell>
+    );
+  }
+
+  const body = (
     <>
-      <div className=" bg-white w-full h-full flex flex-col">
-        {!isEmbedded ? (
-          <BookingDetailHeader
-            title={title}
-            loading={loading}
-            onBack={handleClose}
-            className="px-4"
+      <JourneyRail nodes={nodes} accent={accent} />
+
+      <DetailSection label={isSightseeing ? "Package" : "Booking"}>
+        <FactChips
+          facts={[
+            {
+              label: "Travellers",
+              value: paxLabel(number_of_adults, number_of_children),
+            },
+            isSightseeing
+              ? { label: "Per day", value: distance }
+              : { label: "Distance", value: distance },
+            isSightseeing ? { label: "Hours", value: durationText } : null,
+          ].filter(Boolean)}
+        />
+      </DetailSection>
+
+      {vehicle && (
+        <DetailSection
+          label="Vehicle"
+          right={<VehicleCountBadge count={vehicleCount} />}
+        >
+          {/* A convoy prices and describes one cab, so say so before the specs
+              below are read as covering the whole group. */}
+          <MultiVehicleNote count={vehicleCount} className="mx-4 mb-4">
+            This booking includes {vehicleCount} taxis
+            {travellerCount > 0
+              ? ` for your ${travellerCount} traveller${travellerCount > 1 ? "s" : ""}`
+              : ""}
+            {vehicle?.seating_capacity
+              ? ` — one ${vehicle.seating_capacity}-seater cannot fit everyone`
+              : ""}
+            . The details below describe a single taxi.
+          </MultiVehicleNote>
+
+          <VehiclePhoto image={vehicle?.image} alt={vehicle?.type} mode="Taxi" />
+          <FactChips
+            facts={[
+              { label: "Class", value: vehicle?.type },
+              { label: "Model", value: vehicle?.model_name },
+              { label: "Fuel", value: vehicle?.fuel_type },
+              {
+                label: vehicleCount > 1 ? "Seats / taxi" : "Seats",
+                value: vehicle?.seating_capacity,
+              },
+              {
+                label: vehicleCount > 1 ? "Bags / taxi" : "Bags",
+                value: vehicle?.bag_capacity,
+              },
+              { label: "Taxis", value: vehicleCount > 1 ? vehicleCount : null },
+              {
+                label: "Total seats",
+                value:
+                  vehicleCount > 1 && vehicle?.seating_capacity
+                    ? vehicle.seating_capacity * vehicleCount
+                    : null,
+              },
+            ]}
           />
-        ) : (
-          !noHeading && (
-            <div className="px-4">
-              <h1 className="ttw-type-h4 font-600 text-[#1a2436]">
-                {loading ? (
-                  <div className="w-64 h-7 bg-[#ececec] opacity-50 rounded"></div>
-                ) : (
-                  title
-                )}
-              </h1>
-            </div>
-          )
-        )}
+        </DetailSection>
+      )}
 
-        <div className="flex-1 px-4 pt-4">
-          <div className="bg-white p-6 rounded-2xl shadow-sm relative border border-[#ececec]">
-            <div className="relative flex justify-center items-center mb-6 mt-2">
-              <div
-                className="absolute left-0 right-1/2 border-t border-dashed border-[#b8becc] h-0"
-                style={{ marginRight: "20px" }}
-              ></div>
-
-              <div className="bg-[#f4f3ec] px-4 py-1 rounded-full text-sm z-10 relative">
-                {loading ? (
-                  <div className="w-24 h-4 bg-[#ececec] opacity-50 rounded "></div>
-                ) : (
-                  (data?.transfer_type === "sightseeing" && (data?.transfer_details?.trips?.[0]?.origin?.address  && (data?.transfer_details?.trips?.[0]?.destination?.address))) ? `${distance} | ${duration_text}` : `${distance} | ${duration_text}`
-                )}
-              </div>
-
-              <div
-                className="absolute right-0 left-1/2 border-t border-dashed border-[#b8becc] h-0"
-                style={{ marginLeft: "20px" }}
-              ></div>
-
-              <div className="absolute left-0 w-3 h-3 bg-[#b8becc] rounded-full"></div>
-
-              <div className="absolute right-0 w-3 h-3 bg-[#b8becc] rounded-full"></div>
-            </div>
-
-            <div className="flex justify-between mb-6">
-              <div className="flex flex-col items-start">
-                <div>
-                  {loading ? (
-                    <>
-                      <div className="w-32 h-5 bg-[#ececec] opacity-50 rounded mb-1"></div>
-                      <div className="w-36 h-4 bg-[#ececec] opacity-50 rounded"></div>
-                    </>
-                  ) : (
-                    <>
-                      <p className="font-bold text-lg text-[#0b1220]">
-                        {data?.transfer_type === "sightseeing" && data?.transfer_details?.trips?.[0]?.origin?.address && data?.transfer_details?.trips?.[0]?.destination?.address ? data?.transfer_details?.trips?.[0]?.origin?.address  : data?.transfer_details?.trips?.[0]?.origin?.address}
-                      </p>
-                      <p className="text-[#445069] text-sm flex flex-col sm:flex-row sm:gap-1">
-                        <span>{depart.time}</span>
-                        <span>{depart.date}</span>
-                      </p>
-                    </>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex flex-col items-end">
-                <div className="text-right">
-                  {loading ? (
-                    <>
-                      <div className="w-32 h-5 bg-[#ececec] opacity-50 rounded mb-1"></div>
-                      <div className="w-36 h-4 bg-[#ececec] opacity-50 rounded"></div>
-                    </>
-                  ) : (
-                    <>
-                      {data?.transfer_details?.trips?.[0]?.destination?.address && (
-                        <p className="font-bold text-lg text-[#0b1220]">
-                          {data?.transfer_details?.trips?.[0]?.destination?.address}
-                        </p>
-                      )}
-                     {arrival.time && arrival.date && <p className="text-[#445069] text-sm flex flex-col sm:flex-row sm:gap-1">
-                        <span>{arrival.time ? arrival.time : ""}</span>
-                        <span>{arrival.date ? arrival.date : ""}</span>
-                      </p>}
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-[#f4f3ec] p-4 rounded-lg">
-              <div className="flex flex-wrap items-center gap-2 mb-4">
-                <p className="font-semibold text-[#0b1220] mb-0">
-                  {loading ? (
-                    <div className="w-24 h-5 bg-[#ececec] opacity-50 rounded"></div>
-                  ) : (
-                    "TAXI DETAILS"
-                  )}
-                </p>
-                {!loading && <VehicleCountBadge count={vehicleCount} />}
-              </div>
-
-              {!loading && (
-                <MultiVehicleNote count={vehicleCount} className="mb-4">
-                  This booking includes {vehicleCount} taxis
-                  {travellerCount > 0
-                    ? ` for your ${travellerCount} traveller${
-                        travellerCount > 1 ? "s" : ""
-                      }`
-                    : ""}
-                  {seatCapacity
-                    ? ` — one ${seatCapacity}-seater cannot fit everyone`
-                    : ""}
-                  . The details below describe a single taxi.
-                </MultiVehicleNote>
-              )}
-
-              <div className="flex flex-col md:flex-row gap-4 max-sm:gap-[2rem]">
-                <div className="flex flex-col gap-4 max-sm:gap-[2rem] items-center">
-                <div
-                  className="w-full md:w-auto border border-[#ececec] rounded-lg  flex justify-center items-center"
-                  // style={{ height: "140px" }}
-                >
-                  {loading ? (
-                    <div className="w-full h-full bg-[#ececec] opacity-50 rounded"></div>
-                  ) : (
-
-                    <div className="w-full md:w-[180px] h-[140px]  relative flex justify-center items-center">
-                      {data?.transfer_details?.quote?.taxi_category?.image || data?.transfer_details?.quote?.vehicle?.image ? (
-                        <ImageLoader
-                          url={
-                            data?.transfer_details?.quote?.taxi_category?.image || data?.transfer_details?.quote?.vehicle?.image
-                          }
-                          className="w-full h-full max-sm:w-[40px] max-sm:h-[40px] object-contain"
-                          dimensionsMobile={{width:20, height:20}}
-                        />
-                      ) : (
-                        <FaTaxi className="w-16 h-16 text-[#8a93a6]" />
-                      )}
-                    </div>
-
-                  )}
-
-                </div>
-
-                {taxiType && <div>
-                      <p className="text-[#8a93a6] text-sm"><span className="font-semibold text-[#0b1220]">
-                          {loading ? (
-                            <div className="w-20 h-5 bg-[#ececec] opacity-50 rounded"></div>
-                          ) : (
-                            taxiType ? taxiType : ""
-                          )}
-                      </span></p>
-
-                    </div>}
-                </div>
-
-                <div className="flex-1 w-full">
-                  <div className="grid grid-cols-2 gap-4">
-                    {
-                      <div>
-                        <p className="text-[#445069] text-sm">Model</p>
-                        <p className="font-semibold text-[#0b1220]">
-                          {loading ? (
-                            <div className="w-20 h-5 bg-[#ececec] opacity-50 rounded"></div>
-                          ) : (
-                            model ? model : "NA"
-                          )}
-                        </p>
-                      </div>
-                    }
-
-                    {/* Fuel Type */}
-                    {
-                      <div>
-                        <p className="text-[#445069] text-sm">Fuel Type</p>
-                        <p className="font-semibold text-[#0b1220]">
-                          {loading ? (
-                            <div className="w-20 h-5 bg-[#ececec] opacity-50 rounded"></div>
-                          ) : (
-                            fuelType ? fuelType : "NA"
-                          )}
-                        </p>
-                      </div>
-                    }
-
-                    {/* Luggage Bags */}
-                    {
-                      <div>
-                        <p className="text-[#445069] text-sm">
-                          Luggage Bags{vehicleCount > 1 ? " (per taxi)" : ""}
-                        </p>
-                        <p className="font-semibold text-[#0b1220]">
-                          {loading ? (
-                            <div className="w-10 h-5 bg-[#ececec] opacity-50 rounded"></div>
-                          ) : (
-                            luggageBags ? luggageBags : "NA"
-                          )}
-                        </p>
-                      </div>
-                    }
-
-                    {/* Seat Capacity */}
-                    {
-                      <div>
-                        <p className="text-[#445069] text-sm">
-                          Seat Capacity{vehicleCount > 1 ? " (per taxi)" : ""}
-                        </p>
-                        <p className="font-semibold text-[#0b1220]">
-                          {loading ? (
-                            <div className="w-24 h-5 bg-[#ececec] opacity-50 rounded"></div>
-                          ) : (
-                            seatCapacity ? seatCapacity : "NA"
-                          )}
-                        </p>
-                      </div>
-                    }
-
-                    {/* Convoy size — only when the group needed more than one cab */}
-                    {!loading && vehicleCount > 1 && (
-                      <div>
-                        <p className="text-[#445069] text-sm">Taxis Booked</p>
-                        <p className="font-semibold text-[#0b1220]">
-                          {vehicleCount}
-                        </p>
-                      </div>
-                    )}
-
-                    {!loading && vehicleCount > 1 && seatCapacity && (
-                      <div>
-                        <p className="text-[#445069] text-sm">Total Seats</p>
-                        <p className="font-semibold text-[#0b1220]">
-                          {seatCapacity * vehicleCount}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-              {!loading && data?.cancellation_policy  && (
-                    <div
-                      className="text-[14px]"
-                      dangerouslySetInnerHTML={{
-                        __html: data?.cancellation_policy,
-                      }}
-                    ></div>
-              )}
-            </div>
-          </div>
-          {data?.cancellation_policies&&<>
-            <div
-              className="text-[14px] mt-4"
-              dangerouslySetInnerHTML={{
-                __html: data?.cancellation_policies,
-              }}
-            ></div>
-          </>}
-        </div>
-
-        {/* Delete (left) + Change (right) — pinned action bar */}
-        {!isEmbedded && (canDelete || canChange) && (
-          <div className="p-4 bg-white sticky bottom-0 z-10 border-t border-[#ececec]">
-            <BookingDetailActions
-              onDelete={canDelete ? onDeleteClick : undefined}
-              deleting={deleting}
-              deleteDisabled={loading}
-              confirmItemLabel="transfer"
-              onChange={canChange ? handleChangeTransfer : undefined}
-              changeLabel="Change Transfer"
-              changeDisabled={loading}
-            />
-          </div>
-        )}
-      </div>
+      <PolicyNote html={data?.cancellation_policy} />
+      <PolicyNote html={data?.cancellation_policies} />
     </>
-  ) : (
-    <ComboTaxi
-      key={data.id}
-      edge={data?.edge}
-      combo={false}
-      // handleFlightSelect={handleFlightSelect}
-      showTaxiModal={showTaxi}
-      setShowComboTaxiModal={setShowTaxi}
-      setHideTaxiModal={() => setShowTaxi(false)}
-      // setHideBookingModal={setHideBookingModal}
-      getPaymentHandler={getPaymentHandler}
-      _updatePaymentHandler={_updatePaymentHandler}
-      _updateFlightBookingHandler={_updateFlightBookingHandler}
-      // _updateBookingHandler={_updateBookingHandler}
-      // alternates={alternates}
-      // tailored_id={tailored_id}
-      selectedBooking={data}
-      itinerary_id={data?.itinerary_id}
-      // selectedTransferHeading={selectedTransferHeading}
-      // fetchData={fetchData}
-      setShowLoginModal={setShowLoginModal}
-      // check_in={check_in}
-      // _GetInTouch={_GetInTouch}
-      // daySlabIndex={daySlabIndex}
-      // elementIndex={elementIndex}
-      // routeId={routeId}
-      mercuryTransfer={data}
-      // individual={individual}
-      originCityId={data?.trips?.[0]?.origin?.city_id}
-      destinationCityId={data?.trips?.[0]?.destination?.city_id}
-      // isSelected={
-      //   selectedModeIds[currentStep - 1] === option.id
-      // }
-      // onSelect={handleTaxiSelection}
-      comboStartDate={
-        data?.trips?.[0]?.start_date || selectedBooking?.start_date
+  );
+
+  // Embedded in a combo's rail: the node it expands from already names the leg
+  // and owns the band, scroll pane and action bar, so the body contributes its
+  // rail and sections only.
+  if (isEmbedded) return <div className="flex flex-col">{body}</div>;
+
+  return (
+    <DrawerShell
+      band={
+        <DetailBand
+          mode="Taxi"
+          title={title}
+          kicker={kicker}
+          summary={summary}
+          status={status}
+          onBack={handleClose}
+          loading={loading}
+        />
       }
-      comboStartTime={data?.trips?.[0]?.start_time || "12:00"}
-      // // skipFetch={skipTaxiFetch}
-      // onFilterApplied={handleFilterApplied}
-      dCityData={dCityData}
-      oCityData={oCityData}
-    />
+      footer={
+        canDelete || canChange ? (
+          <BookingDetailActions
+            onDelete={canDelete ? onDeleteClick : undefined}
+            deleting={deleting}
+            deleteDisabled={loading}
+            confirmItemLabel="transfer"
+            onChange={canChange ? handleChangeTransfer : undefined}
+            changeLabel="Change Transfer"
+            changeDisabled={loading}
+          />
+        ) : null
+      }
+    >
+      {body}
+    </DrawerShell>
   );
 };
-
 
 export default TaxiDetailModal;

@@ -1,32 +1,63 @@
 import React, { useState } from "react";
-import { optimizedMediaUrl } from "../../../lib/mediaImage";
-import TransfersIcon from "../../../helper/TransfersIcon";
-import Pin from "../../../containers/newitinerary/breif/route/Pin";
-import styled from "styled-components";
-import BookingDetailHeader from "../../revamp/common/components/BookingDetailHeader";
 import BookingDetailActions from "../../revamp/common/components/BookingDetailActions";
-const FloatingView = styled.div`
-  position: sticky;
-  bottom: 10px;
-  background: black;
-  color: white;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  left: 90%;
-  z-index: 2;
-  cursor: pointer;
-`;
-const BackText = styled.div`
-  font-size: 1.5rem;
-  line-height: 2rem;
-`;
+import DetailBand from "../../revamp/common/components/bookingDetail/DetailBand";
+import DetailError from "../../revamp/common/components/bookingDetail/DetailError";
+import DetailSection from "../../revamp/common/components/bookingDetail/DetailSection";
+import DrawerShell from "../../revamp/common/components/bookingDetail/DrawerShell";
+import FactChips from "../../revamp/common/components/bookingDetail/FactChips";
+import JourneyRail from "../../revamp/common/components/bookingDetail/JourneyRail";
+import PolicyNote from "../../revamp/common/components/bookingDetail/PolicyNote";
+import VehiclePhoto from "../../revamp/common/components/bookingDetail/VehiclePhoto";
+import {
+  getModeAccent,
+  getVehicleIcon,
+  isSelfDrive as isSelfDriveMode,
+  resolveModeKey,
+} from "../../revamp/common/components/bookingDetail/modeAccent";
+import { resolveImageUrl } from "../../../helper/imageUrl";
+import { optimizedMediaUrl } from "../../../lib/mediaImage";
+import {
+  addMinutesToDate,
+  arrivalOffsetLabel,
+  dayOffset,
+  formatDateTime,
+  formatMinutes,
+  legEndpoints,
+  legVehicle,
+  legVehicleName,
+  paxLabel,
+} from "../../revamp/common/components/bookingDetail/format";
+
+/** An operator's logo, hard-constrained against the app's unscoped img rules. */
+const OperatorLogo = ({ src, name }) => (
+  <span
+    className="flex items-center justify-center shrink-0"
+    style={{ height: 15, maxWidth: 68 }}
+  >
+    <img
+      // Resolved to an absolute URL first, then routed through the image
+      // handler: a logo of ours is served resized instead of full-resolution,
+      // and a supplier's own CDN link comes back out untouched.
+      src={optimizedMediaUrl(resolveImageUrl(src), { width: 400 })}
+      alt={name || "Operator"}
+      // Sized and painted inline: the app ships unscoped `img {}` rules that
+      // force `object-fit: cover` and a hero-image blur/desaturate filter, and
+      // no utility class can out-specify a filter nothing else sets.
+      style={{
+        display: "block",
+        height: "100%",
+        width: "auto",
+        maxWidth: "100%",
+        objectFit: "contain",
+        margin: 0,
+        filter: "none",
+      }}
+    />
+  </span>
+);
+
 const VehicleDetailModal = ({
   data,
-  setIsOpen,
   handleDelete,
   loading,
   booking,
@@ -34,11 +65,23 @@ const VehicleDetailModal = ({
   isEmbedded,
   error,
   handleClose,
-  handleEditRoute
+  handleEditRoute,
 }) => {
+  const [deleting, setDeleting] = useState(false);
+
   if (!data) return null;
 
-  const [deleting, setDeleting] = useState(false);
+  const {
+    name,
+    transfer_details,
+    number_of_adults,
+    number_of_children,
+    check_in,
+    check_out,
+    booking_type,
+    cancellation_policies,
+    status,
+  } = data;
 
   const onDeleteClick = async () => {
     if (deleting) return;
@@ -49,401 +92,283 @@ const VehicleDetailModal = ({
       setDeleting(false);
     }
   };
-  // const transfer = useSelector((state) => state.Itinerary);
-  let isPageWide =
-    typeof window !== "undefined" &&
-    window.matchMedia("(min-width: 768px)")?.matches;
-  const {
-    name,
-    transfer_details,
-    price,
-    currency,
-    number_of_adults,
-    number_of_children,
-    source_address,
-    destination_address,
-    check_in,
-    check_out,
-    booking_type,
-    cancellation_policies
-  } = data;
 
-  const formatDateTime = (dateString) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    return {
-      date: date.toLocaleDateString("en-US", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-        weekday: "long",
-      }),
-      time: date.toLocaleTimeString("en-US", {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true,
-      }),
-    };
-  };
+  const mode = booking_type || transfer_details?.mode;
 
-  const addMinutesToDate = (dateString, minutes) => {
-    const date = new Date(dateString);
-    date.setMinutes(date?.getMinutes() + minutes);
-    return formatDateTime(date?.toISOString());
-  };
+  // A self-drive rental is driven by the traveller, so there is no operator to
+  // name and no supplier route to swap it for — the change flow doesn't apply.
+  const isSelfDrive = isSelfDriveMode(mode);
+
+  // The vehicle lives on the quote. Taxi quotes send a whole category object;
+  // a self-drive quote now sends nothing but the name, so the two are read
+  // separately and the section renders on either.
+  const vehicle = legVehicle(data);
+  const vehicleName = legVehicleName(data);
+
+  // Car or bike comes out of the vehicle the quote names, resolved centrally so
+  // this drawer and the itinerary rows always land on the same glyph.
+  const accentKey = resolveModeKey(data) || mode;
+  const accent = getModeAccent(accentKey);
+  const VehicleIcon = getVehicleIcon(accentKey);
 
   const departure =
     check_in ||
     transfer_details?.start_datetime ||
     transfer_details?.gozo?.start_date;
-  const duration = transfer_details?.duration;
-
-  const arrival =
-    formatDateTime(check_out) || addMinutesToDate(departure, duration);
   const depart = formatDateTime(departure);
+  const arrival = check_out
+    ? formatDateTime(check_out)
+    : addMinutesToDate(departure, transfer_details?.duration);
+
+  // `distance` is an object on the newer suppliers and a bare number on the
+  // older ones; interpolating the object straight in printed "[object Object] km".
+  const distance =
+    transfer_details?.distance?.text ||
+    (transfer_details?.distance?.value
+      ? `${transfer_details.distance.value} km`
+      : typeof transfer_details?.distance === "number"
+        ? `${transfer_details.distance} km`
+        : null);
+
+  const travelClass =
+    transfer_details?.prices?.[0]?.class ||
+    transfer_details?.results?.[0]?.prices?.[0]?.class_name;
+
+  // Omio / 12go itineraries carry their own leg-by-leg breakdown; direct
+  // suppliers don't, and the two cities are the whole story for them.
+  const segments = transfer_details?.results?.[0]?.segments || [];
+
+  const totalDuration =
+    transfer_details?.duration?.text ||
+    formatMinutes(transfer_details?.results?.[0]?.duration);
+
+  const { from, to, fromDetail, toDetail } = legEndpoints(data);
+  const arrivesLater = arrivalOffsetLabel(dayOffset(check_in, check_out));
+
+  // The rail is built from segments when the supplier sent them — a connection
+  // becomes a mid-rail node rather than a nested card — and from the booking's
+  // own two cities when it didn't.
+  const nodes = (() => {
+    if (!segments.length) {
+      return [
+        {
+          kind: "place",
+          key: "from",
+          time: depart?.time,
+          date: depart?.shortDate,
+          title: from || "Departure",
+          subtitle: fromDetail,
+        },
+        {
+          kind: "carrier",
+          key: "leg",
+          name: isSelfDrive
+            ? vehicle?.type
+              ? `Self-drive ${vehicle.type}`
+              : "Self-drive"
+            : transfer_details?.operator?.name || mode || "Transfer",
+          meta: [totalDuration, distance].filter(Boolean).join(" · ") || null,
+        },
+        {
+          kind: "place",
+          key: "to",
+          time: arrival?.time,
+          date: arrival?.shortDate,
+          title: to || "Arrival",
+          subtitle: toDetail,
+          tag: arrivesLater,
+          tagTone: "warn",
+        },
+      ];
+    }
+
+    const out = [];
+    segments.forEach((segment, index) => {
+      const dep = formatDateTime(segment?.departure_datetime);
+      const arr = formatDateTime(segment?.arrival_datetime);
+      const next = segments[index + 1];
+      const isLast = index === segments.length - 1;
+
+      out.push({
+        kind: "place",
+        key: `dep-${index}`,
+        time: dep?.time,
+        date: dep?.shortDate,
+        title: segment?.departure_station?.name || `Stop ${index + 1}`,
+        subtitle: segment?.departure_station?.city_name || null,
+        tag: segment?.vehicle_number || null,
+      });
+
+      out.push({
+        kind: "carrier",
+        key: `car-${index}`,
+        icon: segment?.operator?.image ? (
+          <OperatorLogo src={segment.operator.image} name={segment?.operator?.name} />
+        ) : null,
+        name: segment?.operator?.image ? null : segment?.operator?.name || null,
+        meta:
+          segment?.duration_formatted || formatMinutes(segment?.duration) || null,
+      });
+
+      // Only the final arrival gets a node of its own; an intermediate one is
+      // the same station the next segment departs from.
+      if (isLast) {
+        out.push({
+          kind: "place",
+          key: `arr-${index}`,
+          time: arr?.time,
+          date: arr?.shortDate,
+          title: segment?.arrival_station?.name || "Arrival",
+          subtitle: segment?.arrival_station?.city_name || null,
+          tag: arrivesLater,
+          tagTone: "warn",
+        });
+        return;
+      }
+
+      const arrivedAt = segment?.arrival_datetime
+        ? new Date(segment.arrival_datetime)
+        : null;
+      const leavesAt = next?.departure_datetime
+        ? new Date(next.departure_datetime)
+        : null;
+      // Suppliers occasionally hand back overlapping stamps; a zero or negative
+      // wait is bad data, not a layover worth showing.
+      const wait =
+        arrivedAt && leavesAt ? Math.round((leavesAt - arrivedAt) / 60000) : 0;
+
+      out.push({
+        kind: "place",
+        key: `stop-${index}`,
+        time: arr?.time,
+        date: arr?.shortDate,
+        title: segment?.arrival_station?.name || "Change here",
+        subtitle: segment?.arrival_station?.city_name || null,
+      });
+
+      if (wait > 0) {
+        out.push({
+          kind: "wait",
+          key: `wait-${index}`,
+          name: "Change of service",
+          meta: `${formatMinutes(wait)} wait`,
+        });
+      }
+    });
+    return out;
+  })();
 
   if (error) {
     return (
-      <div
-        style={{
-          textAlign: "center",
-          margin: "auto",
-          height: isPageWide ? "80vh" : "70vh",
-        }}
-        className="center-div"
-      >
-        Oops, unable to get the details at the moment.
-      </div>
+      <DrawerShell band={<DetailBand mode={accentKey} onBack={handleClose} loading />}>
+        <DetailError />
+      </DrawerShell>
     );
   }
 
-  const canChange = !isEmbedded && typeof handleEditRoute === "function";
-  const canDelete = !!handleDelete && type != "combo";
+  const canChange =
+    !isEmbedded && !isSelfDrive && typeof handleEditRoute === "function";
+  const canDelete = !!handleDelete && type !== "combo";
 
-  return (
+  const body = (
     <>
-      <div className=" bg-white w-full h-full flex flex-col">
-        {!isEmbedded && (
-          <BookingDetailHeader
-            title={name}
-            loading={loading}
-            onBack={handleClose}
-            className="px-4"
-            leading={
-              isPageWide && !loading ? (
-                <div className="bg-[#eef2fb] rounded-lg p-1.5">
-                  <TransfersIcon
-                    TransportMode={booking_type || transfer_details?.mode}
-                    Instyle={{
-                      fontSize:
-                        transfer_details?.mode === "Bus" ? "1.25rem" : "1.5rem",
-                      color: "black",
-                    }}
-                    classname={{ width: 28, height: 28 }}
-                  />
-                </div>
-              ) : null
-            }
-          />
-        )}
+      <JourneyRail nodes={nodes} accent={accent} />
 
-        {/* Ticket Section Label */}
-        <div className="px-4 pt-2 pb-2">
-          <h2 className="text-lg font-medium text-[#0b1220]">
-            {loading ? (
-              <div className="w-24 h-5 bg-[#ececec] opacity-50 rounded"></div>
-            ) : (
-             ""
-            )}
-          </h2>
-        </div>
+      <DetailSection label="Booking">
+        <FactChips
+          facts={[
+            {
+              label: "Travellers",
+              value: paxLabel(number_of_adults, number_of_children),
+            },
+            { label: "Class", value: travelClass },
+            { label: "Distance", value: distance },
+          ]}
+        />
+      </DetailSection>
 
-        {/* Scrollable Ticket Details */}
-        <div className="flex-1 px-4">
-          <div className="bg-white p-6 rounded-2xl shadow-sm relative border border-[#ececec]">
-            {/* Route Info */}
-            <div className="flex justify-between">
-              <div className="flex flex-col items-start">
-                <Pin pinColour={"green"} index={0} length={0} />
-                <div>
-                  {loading ? (
-                    <>
-                      <div className="w-32 h-4 bg-[#ececec] opacity-50 rounded mb-1"></div>
-                      <div className="w-20 h-3 bg-[#ececec] opacity-50 rounded mb-1"></div>
-                      <div className="w-24 h-3 bg-[#ececec] opacity-50 rounded"></div>
-                    </>
-                  ) : (
-                    <>
-                      <p className="font-semibold text-md text-[#0b1220]">
-                        {transfer_details?.source?.city_name}
-                      </p>
-                      <p className="text-[#445069] text-[12px]">
-                        {depart?.time}
-                      </p>
-                      <p className="text-[#445069] text-[12px]">
-                        {depart?.date}
-                      </p>
-                    </>
-                  )}
-                </div>
-              </div>
+      {(vehicle || vehicleName) && (
+        <DetailSection label={isSelfDrive ? "Your vehicle" : "Vehicle"}>
+          {/* Only when the supplier actually sent a photo. A self-drive quote
+              never does, and the photo's empty state — a 128px tinted stage
+              holding a faded glyph — is a lot of drawer to spend saying
+              nothing; the name row below carries the vehicle instead. */}
+          {vehicle?.image ? (
+            <VehiclePhoto
+              image={vehicle.image}
+              alt={vehicleName || vehicle?.type}
+              mode={accentKey}
+            />
+          ) : null}
 
-              <div className="flex flex-col items-center">
-                <span className="text-xs md:text-sm text-[#445069]">
-                  {loading ? (
-                    <div className="w-4 md:w-12 h-3 bg-[#ececec] opacity-50 rounded"></div>
-                  ) : (
-                    `
-                    ${
-                      transfer_details?.distance?.text ||
-                      `${transfer_details?.distance} km`
-                    }
-                    `
-                  )}
-                </span>
-                <div className="border-t border-dashed border-[#b8becc] w-6 md:w-64"></div>
-              </div>
-
-              <div className="flex flex-col items-end">
-                <Pin pinColour={"red"} index={0} length={0} />
-                <div className="text-right">
-                  {loading ? (
-                    <>
-                      <div className="w-32 h-4 bg-[#ececec] opacity-50 rounded mb-1"></div>
-                      <div className="w-20 h-3 bg-[#ececec] opacity-50 rounded mb-1"></div>
-                      <div className="w-24 h-3 bg-[#ececec] opacity-50 rounded"></div>
-                    </>
-                  ) : (
-                    <>
-                      <p className="font-semibold text-md text-[#0b1220]">
-                        {transfer_details?.destination?.city_name}
-                      </p>
-                      <p className="text-[#445069] text-[12px]">
-                        {arrival?.time}
-                      </p>
-                      <p className="text-[#445069] text-[12px]">
-                        {arrival?.date}
-                      </p>
-                    </>
-                  )}
-                </div>
-              </div>
+          {vehicleName ? (
+            <div className="flex items-center gap-2.5 px-4 pb-4">
+              <span
+                className="flex items-center justify-center shrink-0 h-9 w-9 rounded-xl"
+                style={{
+                  background: accent.soft,
+                  border: `1px solid ${accent.line}`,
+                }}
+              >
+                <VehicleIcon size={18} color={accent.solid} />
+              </span>
+              <span className="text-[13.5px] font-600 text-[#0b1220] break-words min-w-0">
+                {vehicleName}
+              </span>
             </div>
+          ) : null}
 
-            {/* Transfer Details */}
-           
-<div className="mt-8 pt-4 border-t border-[#ececec]">
-  <p className="text-[#0b1220] font-medium text-sm mb-4">
-    {loading ? (
-      <div className="w-24 h-4 bg-[#ececec] opacity-50 rounded"></div>
-    ) : (
-      "TRANSFER DETAILS"
-    )}
-  </p>
-
-  <div className="grid grid-cols-2 gap-4">
-    <div>
-      {loading ? (
-        <>
-          <div className="w-32 h-4 bg-[#ececec] opacity-50 rounded mb-1"></div>
-          <div className="w-24 h-3 bg-[#ececec] opacity-50 rounded"></div>
-        </>
-      ) : (
-        <>
-          <p className="font-semibold text-md text-[#0b1220]">
-            {number_of_adults} Adults, {number_of_children} Children
-          </p>
-          <p className="text-[#445069] text-sm">Passengers</p>
-        </>
+          <FactChips
+            // Whichever field the name came from is already stated in the row
+            // above, so it doesn't get a chip of its own as well.
+            facts={[
+              { label: "Class", value: vehicle?.type },
+              { label: "Model", value: vehicle?.model_name },
+              { label: "Fuel", value: vehicle?.fuel_type },
+              { label: "Seats", value: vehicle?.seating_capacity },
+              { label: "Bags", value: vehicle?.bag_capacity },
+            ].filter((fact) => fact.value !== vehicleName)}
+          />
+        </DetailSection>
       )}
 
-
-
-    </div>
-    {!loading && (transfer_details?.prices?.[0]?.class || transfer_details?.results?.[0]?.prices?.[0]?.class_name) && (
-      <div className="">
-        <p className="font-semibold text-md text-[#0b1220]">
-          {transfer_details.prices[0].class || transfer_details.results?.[0]?.prices?.[0]?.class_name}
-        </p>
-        <p className="text-[#445069] text-sm">Class</p>
-      </div>
-    )}
-
-    
-  </div>
-</div>
-
-
-
-{/* Journey Details - Only for Omio/12go with segments - MOVED TO NEW SECTION */}
-{!loading && transfer_details?.results?.[0]?.segments && transfer_details.results[0].segments.length > 0 && (
-  <div className="mt-6 pt-4 border-t border-[#ececec]">
-    <p className="text-[#0b1220] font-medium text-sm mb-4">
-      JOURNEY DETAILS
-    </p>
-    
-    {/* {transfer_details.results[0].segments.length > 1 && (
-      <div className="mb-4 px-3 py-2 bg-gray-50 rounded-lg inline-block">
-        <p className="text-xs text-gray-600 font-medium">
-          {transfer_details.results[0].segments.length} segments · {transfer_details.results[0].segments.length - 1} connection{transfer_details.results[0].segments.length > 2 ? 's' : ''}
-        </p>
-      </div>
-    )} */}
-
-    <div className="space-y-3">
-      {transfer_details.results[0].segments.map((segment, idx) => {
-        const isLast = idx === transfer_details.results[0].segments.length - 1;
-        const depTime = segment.departure_datetime ? new Date(segment.departure_datetime) : null;
-        const arrTime = segment.arrival_datetime ? new Date(segment.arrival_datetime) : null;
-        const nextSegment = !isLast ? transfer_details.results[0].segments[idx + 1] : null;
-        
-        return (
-          <div key={idx} className="relative">
-            {/* Departure */}
-            <div className="flex items-start gap-3">
-              <div className="flex flex-col items-end w-20 shrink-0">
-                {depTime && (
-                  <>
-                    <span className="text-sm font-semibold leading-tight text-[#0b1220]">
-                      {depTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true })}
-                    </span>
-                    <span className="text-xs text-[#8a93a6]">
-                      {depTime.toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-                    </span>
-                  </>
-                )}
-              </div>
-              <div className="flex items-center shrink-0 pt-1">
-                <div className="w-1.5 h-1.5 rounded-full bg-blue-500 ring-4 ring-black"></div>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-[#1a2436] line-clamp-2" title={segment.departure_station?.name}>
-                  {segment.departure_station?.name} <br />
-                  {segment.vehicle_number ? <span className="text-xs text-[#8a93a6]">
-                  {segment.vehicle_number}
-                </span> : null}
-                </p>
-                
-              </div>
-            </div>
-
-            {/* Journey Line with Operator */}
-            <div className="flex items-start gap-3 ml-20 my-2">
-              <div className="flex flex-col items-center shrink-0">
-                <div className="w-0.5 bg-[#b8becc]" style={{ height: "40px" }}></div>
-              </div>
-              <div className="pt-1 flex items-center gap-2 flex-wrap">
-                {segment.operator?.image && (
-                  <img
-                    src={optimizedMediaUrl(segment.operator.image, { width: 400 })}
-                    alt={segment.operator.name}
-                    className="h-5 w-auto object-contain"
-                  />
-                )}
-                <span className="text-xs font-medium text-[#445069]">
-                  {segment.duration_formatted || `${Math.floor(segment.duration / 60)}h ${segment.duration % 60}m`}
-                </span>
-              </div>
-            </div>
-
-            {/* Arrival */}
-            {arrTime && (
-              <div className="flex items-start gap-3">
-                <div className="flex flex-col items-end w-20 shrink-0">
-                  <span className="text-sm font-semibold leading-tight text-[#0b1220]">
-                    {arrTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true })}
-                  </span>
-                  <span className="text-xs text-[#8a93a6]">
-                    {arrTime.toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-                  </span>
-                </div>
-                <div className="flex items-center shrink-0 pt-1">
-                  <div className="w-1.5 h-1.5 rounded-full bg-blue-500 ring-4 ring-black"></div>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-[#1a2436] line-clamp-2" title={segment.arrival_station?.name}>
-                    {segment.arrival_station?.name}
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* Layover between segments */}
-            {!isLast && nextSegment && arrTime && (
-              <div className="flex items-center gap-3 ml-20 my-3">
-                <div className="flex flex-col items-center shrink-0">
-                  <div className="w-0.5 h-4 bg-[#ececec]"></div>
-                </div>
-                <div className="flex items-center gap-1.5 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-md text-xs font-medium text-amber-800">
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <span>
-                    {(() => {
-                      const nextDep = new Date(nextSegment.departure_datetime);
-                      const layoverMs = nextDep - arrTime;
-                      const layoverMin = Math.floor(layoverMs / 60000);
-                      const h = Math.floor(layoverMin / 60);
-                      const m = layoverMin % 60;
-                      return h > 0 ? `${h}h ${m}m layover` : `${m}m layover`;
-                    })()}
-                  </span>
-                </div>
-              </div>
-            )}
-          </div>
-        );
-      })}
-    </div>
-  </div>
-)}
-          </div>
-
-          {cancellation_policies && (
-          <>
-            {" "}
-            <div className="flex flex-col">
-              <div className="w-fit py-2 mb-2 text-lg font-bold text-[#0b1220]">
-                Cancellation Policies
-              </div>
-
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: cancellation_policies,
-                }}
-                className="flex flex-col gap-1 text-sm ml-4 text-[#445069]"
-              ></div>
-            </div>
-          </>
-        )}
-        </div>
-
-        {/* {!isPageWide && (
-          <FloatingView>
-            <TbArrowBack
-              style={{ height: "28px", width: "28px" }}
-              cursor={"pointer"}
-              onClick={() => setHandleShow(false)}
-            />
-          </FloatingView>
-        )} */}
-        {/* Delete (left) + Change (right) — pinned action bar */}
-        {!isEmbedded && (canDelete || canChange) && (
-          <div className="p-4 bg-white sticky bottom-0 z-10 border-t border-[#ececec]">
-            <BookingDetailActions
-              onDelete={canDelete ? onDeleteClick : undefined}
-              deleting={deleting}
-              deleteDisabled={loading}
-              confirmItemLabel="transfer"
-              onChange={canChange ? () => handleEditRoute(data) : undefined}
-              changeLabel="Change Transfer"
-              changeDisabled={loading}
-            />
-          </div>
-        )}
-      </div>
-      
+      <PolicyNote html={cancellation_policies} />
     </>
+  );
+
+  // Embedded in a combo's rail: the node it expands from already names the leg
+  // and owns the gutter, so the body contributes its rail and sections only.
+  if (isEmbedded) return <div className="flex flex-col">{body}</div>;
+
+  return (
+    <DrawerShell
+      band={
+        <DetailBand
+          mode={accentKey}
+          title={name}
+          kicker={[mode, depart?.date].filter(Boolean).join(" · ")}
+          summary={[totalDuration, distance].filter(Boolean).join(" · ")}
+          status={status}
+          onBack={handleClose}
+          loading={loading}
+        />
+      }
+      footer={
+        canDelete || canChange ? (
+          <BookingDetailActions
+            onDelete={canDelete ? onDeleteClick : undefined}
+            deleting={deleting}
+            deleteDisabled={loading}
+            confirmItemLabel="transfer"
+            onChange={canChange ? () => handleEditRoute(data) : undefined}
+            changeLabel="Change Transfer"
+            changeDisabled={loading}
+          />
+        ) : null
+      }
+    >
+      {body}
+    </DrawerShell>
   );
 };
 

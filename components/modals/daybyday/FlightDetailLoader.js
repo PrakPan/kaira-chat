@@ -1,61 +1,82 @@
 import React from "react";
-import styled from "styled-components";
-import BackArrow from "../../ui/BackArrow";
 
-const Text = styled.div`
-  font-size: 1.5rem;
-  line-height: 2rem;
-`;
+const Line = ({ className = "" }) => (
+  <div className={`bg-[#ececec] rounded ${className}`} />
+);
 
-const FlightDetailLoader = ({ setShowDetails }) => {
+/**
+ * Placeholder for the flight detail drawer while its booking loads. Same shell
+ * as the loaded drawer — ink band, rail, fact chips, action bar — so the layout
+ * doesn't jump when the data arrives. A flight rail runs longer than the other
+ * modes', so it stands in four rows rather than three.
+ */
+const FlightDetailLoader = () => {
   return (
-    <div className="relative flex flex-col gap-4 rounded-md px-3 py-2 animate-pulse">
-      <div className="flex flex-col gap-2">
-        <div className="flex flex-row items-center gap-2">
-          <BackArrow handleClick={() => setShowDetails((prev) => !prev)} />
-          <div className="w-32 h-6 bg-[#ececec] rounded" />
-        </div>
-      </div>
-
-      <Text>
-        <div className="w-48 h-6 bg-[#ececec] rounded mt-2" />
-      </Text>
-
-      {/* FlightSegment Placeholder */}
-      <div className="flex flex-col gap-4 p-2">
-        {[1, 2].map((_, idx) => (
-          <div key={idx} className="border border-[#ececec] p-3 rounded-lg bg-white shadow-sm">
-            <div className="flex justify-between mb-2">
-              <div className="w-20 h-4 bg-[#ececec] rounded" />
-              <div className="w-24 h-4 bg-[#ececec] rounded" />
-            </div>
-            <div className="flex justify-between items-center">
-              <div className="w-16 h-3 bg-[#ececec] rounded" />
-              <div className="w-32 h-3 bg-[#ececec] rounded" />
-              <div className="w-16 h-3 bg-[#ececec] rounded" />
-            </div>
+    <div className="h-screen bg-white flex flex-col overflow-hidden animate-pulse">
+      <div className="flex-1 overflow-hidden">
+        {/* Ink band */}
+        <div className="bg-[#0b1220] px-4 pt-3.5 pb-4">
+          <div className="flex items-center gap-2.5">
+            <div className="w-[17px] h-[17px] rounded bg-white/20 shrink-0" />
+            <div className="w-7 h-7 rounded-lg bg-white/15 shrink-0" />
+            <div className="h-4 flex-1 max-w-[180px] rounded bg-white/15" />
           </div>
-        ))}
-      </div>
+          <div className="flex items-center justify-between gap-3 mt-2.5">
+            <div className="h-2.5 w-28 rounded bg-white/10" />
+            <div className="h-2.5 w-20 rounded bg-white/10" />
+          </div>
+        </div>
 
-      {/* Fare Rules Heading */}
-      <div className="flex flex-col mt-4">
-        <div className="w-48 h-5 bg-[#ececec] rounded mb-2" />
-        {/* Rules lines */}
-        <div className="flex flex-col gap-2 ml-4">
-          <div className="w-72 h-3 bg-[#ececec] rounded" />
-          <div className="w-64 h-3 bg-[#ececec] rounded" />
-          <div className="w-80 h-3 bg-[#ececec] rounded" />
-          <div className="w-60 h-3 bg-[#ececec] rounded" />
+        {/* Rail */}
+        <div className="px-4 pt-5">
+          {[0, 1, 2, 3].map((row) => (
+            <div
+              key={row}
+              className="grid gap-x-3"
+              style={{ gridTemplateColumns: "68px 14px minmax(0,1fr)" }}
+            >
+              <div className="flex flex-col items-end gap-1.5">
+                {row % 2 === 1 ? null : (
+                  <>
+                    <Line className="w-11 h-3" />
+                    <Line className="w-8 h-2" />
+                  </>
+                )}
+              </div>
+              <div className="relative">
+                <span className="absolute left-1/2 -translate-x-1/2 w-[2px] bg-[#ececec] top-0 bottom-0" />
+                {row % 2 === 1 ? null : (
+                  <span className="relative block w-2.5 h-2.5 rounded-full mx-auto mt-1 bg-[#ececec]" />
+                )}
+              </div>
+              <div className={row === 3 ? "pb-5" : "pb-6"}>
+                {row % 2 === 1 ? (
+                  <Line className="w-40 max-w-full h-9 rounded-[10px]" />
+                ) : (
+                  <>
+                    <Line className="w-32 max-w-full h-4 mb-2" />
+                    <Line className="w-44 max-w-full h-3" />
+                  </>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Booking section */}
+        <div className="h-px bg-[#efede6] mx-4 mb-4" />
+        <Line className="w-16 h-2.5 mx-4 mb-3" />
+        <div className="flex flex-wrap gap-2 px-4">
+          <Line className="w-32 h-8 rounded-lg" />
+          <Line className="w-24 h-8 rounded-lg" />
+          <Line className="w-20 h-8 rounded-lg" />
         </div>
       </div>
 
-      {/* Delete Button Placeholder */}
-      <div className="p-4 bg-[#fafaf5]">
-        <div className="w-full bg-red-300 rounded-lg py-3 flex items-center justify-center text-white">
-          <div className="w-6 h-6 bg-white bg-opacity-30 rounded-full mr-2" />
-          <div className="w-32 h-4 bg-white bg-opacity-30 rounded" />
-        </div>
+      {/* Action bar */}
+      <div className="border-t border-[#e2e0d6] bg-white px-4 py-3.5 flex gap-2.5">
+        <Line className="flex-1 h-10 rounded-full" />
+        <Line className="flex-1 h-10 rounded-full" />
       </div>
     </div>
   );

@@ -1,20 +1,23 @@
 import { useState, useEffect } from "react";
-import Image from "next/image";
 import FlightDetailModal from "../../components/modals/daybyday/FlightDetailModal";
 import TaxiDetailModal from "../../components/modals/daybyday/TaxiDetailModal";
 import Drawer from "../../components/ui/Drawer";
-import BackArrow from "../../components/ui/BackArrow";
-import BookingDetailHeader from "../../components/revamp/common/components/BookingDetailHeader";
 import BookingDetailActions from "../../components/revamp/common/components/BookingDetailActions";
+import DetailBand from "../../components/revamp/common/components/bookingDetail/DetailBand";
+import DetailError from "../../components/revamp/common/components/bookingDetail/DetailError";
+import DetailSection from "../../components/revamp/common/components/bookingDetail/DetailSection";
+import DrawerShell from "../../components/revamp/common/components/bookingDetail/DrawerShell";
+import FactChips from "../../components/revamp/common/components/bookingDetail/FactChips";
+import JourneyRail from "../../components/revamp/common/components/bookingDetail/JourneyRail";
+import VehiclePhoto from "../../components/revamp/common/components/bookingDetail/VehiclePhoto";
+import { getModeAccent } from "../../components/revamp/common/components/bookingDetail/modeAccent";
+import {
+  formatDateTime,
+  legVehicle,
+} from "../../components/revamp/common/components/bookingDetail/format";
 import FlightDetailLoader from "../../components/modals/daybyday/FlightDetailLoader";
 import VehicleDetailModal from "../../components/modals/daybyday/VehicleModal";
 import VehicleDetailLoader from "../../components/modals/daybyday/VehicleDetailLoader";
-import { AiOutlineRight, AiOutlineDown, AiOutlineUp } from "react-icons/ai";
-import { Generalbuttonstyle } from "../../components/ui/button/Generallinkbutton";
-import { TbArrowBack } from "react-icons/tb";
-import styled from "styled-components";
-import { FaTaxi } from "react-icons/fa";
-import ImageLoader from "../../components/ImageLoader";
 import { useDispatch, useSelector } from "react-redux";
 import { openNotification } from "../../store/actions/notification";
 import axios from "axios";
@@ -22,30 +25,13 @@ import { MERCURY_HOST } from "../../services/constants";
 import { useRouter } from "next/router";
 import { useHandleClose } from "../../hooks/useHandleClose";
 import { getDateDifferenceInDays } from "../../helper/DateUtils";
+import { getTransferBookingPath } from "../../helper/transferBookingPath";
 import { currencySymbols } from "../../data/currencySymbols";
 import {
   getVehicleCount,
-  PerTaxiPrice,
   resolvePerVehicleTotal,
 } from "../../components/modals/taxis/MultiVehicleInfo";
 import { useAnalytics } from "../../hooks/useAnalytics";
-import dayjs from "dayjs";
-const FloatingView = styled.div`
-  position: sticky;
-  bottom: 60px;
-  left: 100%;
-  background: black;
-  color: white;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 16px;
-  z-index: 2;
-  cursor: pointer;
-`;
 
 const TransferDrawer = ({
   show,
@@ -98,7 +84,6 @@ const TransferDrawer = ({
       setDeleting(false);
     }
   };
-  const isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
   const isCombo = data?.children && data?.children.length > 0;
   const [isDrawerOpen, setIsDrawerOpen] = useState(show);
   const { drawer, bookingId, oItineraryCity, dItineraryCity, drawerType } =
@@ -201,11 +186,51 @@ const TransferDrawer = ({
 
   const { trackTaxiDetail } = useAnalytics();
 
+  // A combo bundles several services, and the drawer is opened from whichever
+  // one the traveller tapped — the "Sightseeing taxi included" chip on a day
+  // card, an airport pickup row, a cart line. Open that leg rather than always
+  // leg 1, working from the most specific signal the caller gave us down to the
+  // vaguest, and falling back to the first leg when none of them identifies one.
+  const openLegIndex = (() => {
+    const children = data?.children;
+    if (!children?.length) return 0;
+
+    // The caller named a booking: either the leg itself or the combo's own id.
+    const targetId = booking_id || bookingId;
+    const byId = children.findIndex(
+      (child) => String(child?.id) === String(targetId),
+    );
+    if (byId !== -1) return byId;
+
+    if (isSightseeing || drawer === "SightSeeing") {
+      const bySightseeing = children.findIndex(
+        (child) => child?.transfer_type === "sightseeing",
+      );
+      if (bySightseeing !== -1) return bySightseeing;
+    }
+
+    if (isAirport || drawer === "AirportTaxiDetail") {
+      // "pickup"/"drop" comes in on the URL for the AirportTaxiDetail route and
+      // as a prop from the mounts that open the drawer directly.
+      const kind = router?.query?.transferType || AirportTransferType;
+      const byAirport = children.findIndex((child) =>
+        kind === "drop"
+          ? child?.is_airport_drop
+          : kind === "pickup"
+            ? child?.is_airport_pickup
+            : child?.is_airport_pickup || child?.is_airport_drop,
+      );
+      if (byAirport !== -1) return byAirport;
+    }
+
+    return 0;
+  })();
+
   useEffect(() => {
     if (show && isCombo && data?.children?.length > 0) {
-      setExpandedIndexes([0]);
+      setExpandedIndexes([openLegIndex]);
     }
-  }, [show, isCombo, data?.children?.length]);
+  }, [show, isCombo, data?.children?.length, openLegIndex]);
 
   const handleEditRoute = (data = null) => {
     // Every change flow below is mounted by the itinerary page, underneath
@@ -289,9 +314,10 @@ const TransferDrawer = ({
       setLoading(true);
       try {
         const res = await axios.get(
-          `${MERCURY_HOST}/api/v1/itinerary/${router.query.sessionId || router?.query?.id}/bookings/${
-            combo ? `combo` : booking_type?.toLowerCase()
-          }/${booking_id}/`,
+          `${MERCURY_HOST}/api/v1/itinerary/${router.query.sessionId || router?.query?.id}/bookings/${getTransferBookingPath(
+            booking_type,
+            { combo },
+          )}/${booking_id}/`,
         );
         setData(res?.data);
         // Sightseeing transfers are intracity taxis — track the detail view
@@ -327,485 +353,131 @@ const TransferDrawer = ({
     fetchDetails();
   }, []);
 
-  const renderDetailContent = (transferData, index) => {
-    const type =
-      transferData?.transfer_type == "sightseeing"
-        ? "Taxi"
-        : transferData?.booking_type;
-    const childTitle = `${index + 1}. ${
-      transferData.name || `${transferData.booking_type} Transfer`
-    }`;
-    const isExpanded = expandedIndexes.includes(index);
+  // A combo leg, rendered as a collapsible card. Collapsed it reads as a line
+  // in the itinerary — what it is, when, and what it costs; expanded it hands
+  // off to the same detail body the standalone drawers use.
+  // A combo leg as a rail node. Collapsed it says what the service is and
+  // when; tapping it expands the full detail body in place, which is the same
+  // body the standalone drawer renders.
+  const legNode = (child, index) => {
+    const legType =
+      child?.transfer_type === "sightseeing" ? "Taxi" : child?.booking_type;
+    const stamp = formatDateTime(child?.check_in);
+    const days = getDateDifferenceInDays(child?.check_in, child?.check_out) + 1;
 
-    const formatDateTime = (dateTimeString) => {
-      if (!dateTimeString) return { date: "", time: "" };
-      const date = new Date(dateTimeString);
-      return {
-        date: date.toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-        }),
-        time: date.toLocaleTimeString("en-US", {
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: true,
-        }),
-      };
-    };
+    const origin = child?.transfer_details?.trips?.[0]?.origin?.address;
+    const destination =
+      child?.transfer_details?.trips?.[0]?.destination?.address;
+    const distance = child?.transfer_details?.distance?.text;
+    const duration = child?.transfer_details?.duration?.text;
 
-    const checkIn = formatDateTime(transferData.check_in);
-    const checkOut = formatDateTime(transferData.check_out);
+    const flightSegments = child?.transfer_details?.items?.[0]?.segments;
 
-    const dateDiff =
-      getDateDifferenceInDays(transferData.check_in, transferData.check_out) +
-      1;
-
-    // Get route information
-    const origin = transferData.transfer_details?.trips?.[0]?.origin;
-    const destination = transferData.transfer_details?.trips?.[0]?.destination;
-    const originName = origin?.address;
-    const destinationName = destination?.address;
-    const transferType = transferData.transfer_type;
-    const distance = transferData.transfer_details?.distance?.text;
-    const duration = transferData.transfer_details?.duration?.text;
-
-    // Get transfer icon
-    const getTransferIcon = (transferType) => {
-      switch (transferType) {
-        case "one-way":
-          return "🚗";
-        case "sightseeing":
-          return "🎯";
-        case "round-trip":
-          return "🔄";
-        default:
-          return "🚗";
+    // What the service is, in one line: a flight names its airline, a day
+    // package its span, anything else the route it covers.
+    const subtitle = (() => {
+      if (legType === "Flight") {
+        return [
+          flightSegments?.[0]?.airline?.name,
+          flightSegments?.[0]?.origin?.city_name &&
+          flightSegments?.[flightSegments.length - 1]?.destination?.city_name
+            ? `${flightSegments[0].origin.city_name} → ${flightSegments[flightSegments.length - 1].destination.city_name}`
+            : null,
+        ]
+          .filter(Boolean)
+          .join(" · ");
       }
-    };
-
-    const renderDetailsByType = () => {
-      if (loading) {
-        return <VehicleDetailLoader />;
+      if (child?.transfer_type === "sightseeing") {
+        return [
+          `${days <= 1 ? 1 : days} ${days <= 1 ? "day" : "days"}`,
+          duration,
+          distance,
+        ]
+          .filter(Boolean)
+          .join(" · ");
       }
+      return origin && destination
+        ? `${origin} → ${destination}`
+        : origin || destination || null;
+    })();
 
-      switch (type) {
-        case "Flight":
-          return (
-            <FlightDetailModal
-              segments={transferData?.transfer_details?.items?.[0]?.segments}
-              fareRule={
-                transferData?.transfer_details?.items?.[0]?.fare_rule?.[0]
-              }
-              booking_id={transferData?.id}
-              setShowDetails={null}
-              name={transferData?.name}
-              getPaymentHandler={getPaymentHandler}
-              isEmbedded={true}
-              setShowLoginModal={setShowLoginModal}
-              handleEditRoute={handleEditRoute}
-              data={isCombo ? transferData : data}
-            />
-          );
-        case "Taxi":
-          return (
-            <TaxiDetailModal
-              data={transferData}
-              handleDelete={null}
-              loading={loading}
-              isEmbedded={true}
-              noHeading={true}
-              handleEditRoute={handleEditRoute}
-            />
-          );
-        default:
-          return (
-            <VehicleDetailModal
-              data={transferData}
-              handleDelete={null}
-              loading={loading}
-              isEmbedded={true}
-              handleClose={handleClose}
-              handleEditRoute={handleEditRoute}
-            />
-          );
-      }
+    // A convoy booking covers several cabs and prices them as one figure, so the
+    // leg has to say how many and what one of them costs. Ported from the
+    // accordion this rail replaced, where it sat under the leg's total.
+    const vehicleCount = getVehicleCount(child);
+    const perVehicleTotal =
+      vehicleCount > 1 ? resolvePerVehicleTotal(child, child?.price, vehicleCount) : null;
+    const symbol = currency?.currency
+      ? currencySymbols?.[currency?.currency]
+      : "₹";
+    const convoyTag =
+      vehicleCount > 1
+        ? [
+            `${vehicleCount} taxis`,
+            perVehicleTotal
+              ? `${symbol}${Math.ceil(perVehicleTotal).toLocaleString("en-IN")} per taxi`
+              : null,
+          ]
+            .filter(Boolean)
+            .join(" · ")
+        : null;
+
+    return {
+      kind: "service",
+      key: child?.id || index,
+      accent: getModeAccent(legType || child?.booking_type),
+      date: stamp?.shortDate,
+      // A multi-day package has no meaningful clock time — how long it runs for
+      // is the useful figure in that slot.
+      time:
+        child?.transfer_type === "sightseeing" && days > 1
+          ? `${days} days`
+          : stamp?.time,
+      title: child?.name || `${child?.booking_type || "Transfer"} transfer`,
+      subtitle,
+      tag: convoyTag,
+      status: child?.status,
+      legType,
     };
+  };
 
-    // Check if this is a multicity combo
-    if (data?.combo_type === "multicity") {
-      return (
-        <div key={`${transferData.id}-${index}`} className="mb-4">
-          <div className="bg-white rounded-2xl border border-[#ececec] overflow-hidden">
-            {/* Header - Always visible */}
-            <div
-              className="flex items-center justify-between p-4 cursor-pointer hover:bg-[#f4f3ec] transition-colors"
-              onClick={() => toggleExpand(index)}
-            >
-              <div className="flex items-center space-x-3 flex-1 min-w-0">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center space-x-2 mb-1">
-                    <h3 className="ttw-type-small md:ttw-type-body font-600 text-[#0b1220] truncate">
-                      {childTitle} &nbsp;
-                      {type === "Flight" ? (
-                        <span className="ttw-type-small bg-[#eef2fb] text-[#1a2436] px-2 py-0.5 rounded-full capitalize">
-                          {
-                            transferData.transfer_details?.items?.[0]
-                              ?.segments?.[0]?.origin?.city_name
-                          }{" "}
-                          →{" "}
-                          {
-                            transferData.transfer_details?.items?.[0]
-                              ?.segments?.[
-                              transferData.transfer_details?.items?.[0]
-                                ?.segments?.length - 1
-                            ]?.destination?.city_name
-                          }
-                        </span>
-                      ) : (
-                        <span className="ttw-type-small bg-[#eef2fb] text-[#1a2436] px-2 py-0.5 rounded-full capitalize">
-                          {transferType}
-                        </span>
-                      )}
-                      {transferData.status === "Paid" && (
-                        <span className="ml-2 ttw-type-small bg-[#e7f5ee] text-[#1f8a5a] px-2 py-0.5 rounded-full">
-                          Paid
-                        </span>
-                      )}
-                    </h3>
-                  </div>
-                  <div className="ttw-type-small text-[#445069]">
-                    {type === "Flight" ? (
-                      <span>
-
-                        {
-                          transferData.transfer_details?.items?.[0]
-                            ?.segments?.[0]?.airline?.name
-                        }{" "}
-                        •
-                        {/* {transferData.transfer_details?.items?.[0]?.segments
-                          ?.length === 1
-                          ? " Non-stop"
-                          : ` ${transferData.transfer_details?.items?.[0]?.segments?.length - 1} stop(s)`} */}
-                        { transferData.transfer_details?.items?.[0]?.segments?.[0]?.origin?.departure_time ? ` ${dayjs(transferData.transfer_details?.items?.[0]?.segments?.[0]?.origin?.departure_time)?.format("ddd, MMM D")}` : null }
-                      </span>
-                    ) : transferType === "sightseeing" ? (
-                      <span>
-                        <div className="w-auto flex items-center gap-1">
-                          <svg
-                            width="13"
-                            height="13"
-                            viewBox="0 0 13 13"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M6.32734 0.417969C3.01534 0.417969 0.333344 3.10597 0.333344 6.41797C0.333344 9.72997 3.01534 12.418 6.32734 12.418C9.64534 12.418 12.3333 9.72997 12.3333 6.41797C12.3333 3.10597 9.64534 0.417969 6.32734 0.417969ZM6.33334 11.218C3.68134 11.218 1.53334 9.06997 1.53334 6.41797C1.53334 3.76597 3.68134 1.61797 6.33334 1.61797C8.98534 1.61797 11.1333 3.76597 11.1333 6.41797C11.1333 9.06997 8.98534 11.218 6.33334 11.218ZM6.20134 3.41797H6.16534C5.92534 3.41797 5.73334 3.60997 5.73334 3.84997V6.68197C5.73334 6.89197 5.84134 7.08997 6.02734 7.19797L8.51734 8.69197C8.72134 8.81197 8.98534 8.75197 9.10534 8.54797C9.23134 8.34397 9.16534 8.07397 8.95534 7.95397L6.63334 6.57397V3.84997C6.63334 3.60997 6.44134 3.41797 6.20134 3.41797Z"
-                              fill="black"
-                            />
-                          </svg>
-                          {dateDiff && (
-                            <span className="ttw-type-small text-[#445069]">
-                              {dateDiff <= 1 ? 1 : dateDiff}{" "}
-                              {dateDiff <= 1 ? "day" : "days"} •
-                            </span>
-                          )}
-                          {duration} • {distance}{" "}
-                        </div>
-                      </span>
-                    ) : (
-                      <span className="truncate">
-                        {originName} → {destinationName}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Price and Date - Desktop */}
-              <div className="hidden md:flex items-center space-x-4">
-                <div className="text-right">
-                  <div className="ttw-type-body font-700 font-mono text-[#0b1220]">
-                    {`${currency?.currency ? currencySymbols?.[currency?.currency] : "₹"}`}
-                    {transferData.price?.toLocaleString()}
-                  </div>
-                  {/* Convoy bookings price every cab in one figure — say what a
-                      single taxi costs. Only the quote's own per-cab fare is
-                      used here; nothing is derived from the row's total. */}
-                  <PerTaxiPrice
-                    count={getVehicleCount(transferData)}
-                    perVehicleTotal={resolvePerVehicleTotal(transferData)}
-                    symbol={
-                      currency?.currency
-                        ? currencySymbols?.[currency?.currency]
-                        : "₹"
-                    }
-                  />
-                  <div className="ttw-type-small text-[#445069]">{checkIn.date}</div>
-                </div>
-
-                <div className="text-[#445069]">
-                  {isExpanded ? (
-                    <AiOutlineUp className="w-5 h-5" />
-                  ) : (
-                    <AiOutlineDown className="w-5 h-5" />
-                  )}
-                </div>
-              </div>
-
-              {/* Price and Arrow - Mobile */}
-              <div className="flex md:hidden items-center space-x-2">
-                <div className="text-[#445069]">
-                  {isExpanded ? (
-                    <AiOutlineUp className="w-4 h-4" />
-                  ) : (
-                    <AiOutlineDown className="w-4 h-4" />
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Mobile Price Row */}
-            {/* Mobile Price Row and Change Button */}
-            <div className="md:hidden px-4 pb-2">
-              <div className="flex justify-between items-center"></div>
-            </div>
-
-            {/* Expanded Content */}
-            {isExpanded && (
-              <div className="border-t border-[#ececec] bg-[#f4f3ec]">
-                <div className="p-2 space-y-4">
-                  {/* Route/Timing Information */}
-                  <div className="bg-white rounded-xl p-3">
-                    {type === "Flight" ? (
-                      // Flight-specific details
-                      <FlightDetailModal
-                        segments={
-                          transferData?.transfer_details?.items?.[0]?.segments
-                        }
-                        fareRule={
-                          transferData?.transfer_details?.items?.[0]
-                            ?.fare_rule?.[0]
-                        }
-                        booking_id={transferData?.id}
-                        setShowDetails={null}
-                        name={transferData?.name}
-                        getPaymentHandler={getPaymentHandler}
-                        isEmbedded={true}
-                        setShowLoginModal={setShowLoginModal}
-                        handleEditRoute={handleEditRoute}
-                        data={transferData}
-                      />
-                    ) : transferType === "sightseeing" ? (
-                      // Check if sightseeing has source and destination addresses
-                      originName && destinationName ? (
-                        <>
-                          <h4 className="ttw-type-body font-600 text-[#0b1220] mb-3">
-                            Route Information
-                          </h4>
-                          <div className="flex items-center justify-between space-x-4">
-                            {/* Source */}
-                            <div className="flex flex-col items-center">
-                              <div className="w-3 h-3 rounded-full bg-[#1f8a5a] mb-1"></div>
-                              <div className="ttw-type-small font-600 text-[#0b1220] text-center">
-                                {originName}
-                              </div>
-                              <div className="ttw-type-small text-[#445069] text-center">
-                                {checkIn.time}
-                              </div>
-                            </div>
-
-                            {/* Dotted line with distance and duration */}
-                            <div className="flex-1 flex flex-col items-center">
-                              <div className="w-full border-t-2 border-dotted border-[#ececec] mb-1"></div>
-                              <div className="ttw-type-small text-[#445069] whitespace-nowrap">
-                                {distance} • {duration}
-                              </div>
-                            </div>
-
-                            {/* Destination */}
-                            <div className="flex flex-col items-center">
-                              <div className="w-3 h-3 rounded-full bg-[#CD2026] mb-1"></div>
-                              <div className="ttw-type-small font-600 text-[#0b1220] text-center">
-                                {destinationName}
-                              </div>
-                              <div className="ttw-type-small text-[#445069] text-center">
-                                {checkOut.time}
-                              </div>
-                            </div>
-                          </div>
-                        </>
-                      ) : (
-                        // Original sightseeing layout
-                        <>
-                          <h4 className="ttw-type-body font-600 text-[#0b1220] mb-3">
-                            Sightseeing Details
-                          </h4>
-                          <div className="grid grid-cols-2 max-ph:grid-cols-1 gap-3">
-                            <div>
-                              <div className="ttw-type-small text-[#445069]">
-                                Duration
-                                {/* : {dateDiff} {dateDiff ==1 ? "day" :"days"} */}
-                              </div>
-                              <div className="ttw-type-body font-600 text-[#0b1220]">
-                                {duration}
-                              </div>
-                            </div>
-                            <div>
-                              <div className="ttw-type-small text-[#445069]">
-                                Distance Limit
-                              </div>
-                              <div className="ttw-type-body font-600 text-[#0b1220]">
-                                {distance}
-                              </div>
-                            </div>
-                          </div>
-                        </>
-                      )
-                    ) : (
-                      // Taxi route information - single row layout
-                      <>
-                        <h4 className="ttw-type-body font-600 text-[#0b1220] mb-3">
-                          Route Information
-                        </h4>
-                        <div className="flex items-center justify-between space-x-4">
-                          {/* Source */}
-                          <div className="flex flex-col items-center">
-                            <div className="w-3 h-3 rounded-full bg-[#1f8a5a] mb-1"></div>
-                            <div className="ttw-type-small font-600 text-[#0b1220] text-center">
-                              {originName}
-                            </div>
-                            <div className="ttw-type-small text-[#445069] text-center">
-                              {checkIn.time}
-                            </div>
-                          </div>
-
-                          {/* Dotted line with distance and duration */}
-                          <div className="flex-1 flex flex-col items-center">
-                            <div className="w-full border-t-2 border-dotted border-[#ececec] mb-1"></div>
-                            <div className="ttw-type-small text-[#445069] whitespace-nowrap">
-                              {distance} • {duration}
-                            </div>
-                          </div>
-
-                          {/* Destination */}
-                          <div className="flex flex-col items-center">
-                            <div className="w-3 h-3 rounded-full bg-[#CD2026] mb-1"></div>
-                            <div className="ttw-type-small font-600 text-[#0b1220] text-center">
-                              {destinationName}
-                            </div>
-                            <div className="ttw-type-small text-[#445069] text-center">
-                              {checkOut.time}
-                            </div>
-                          </div>
-                        </div>
-                      </>
-                    )}
-                  </div>
-
-                  {/* Timing Details for Sightseeing (only if no route info) */}
-                  {transferType === "sightseeing" &&
-                    !(originName && destinationName) && (
-                      <div className="bg-white rounded-xl p-3">
-                        <h4 className="ttw-type-body font-600 text-[#0b1220] mb-3">
-                          Timings
-                        </h4>
-                        <div className="grid grid-cols-2 max-ph:grid-cols-1 gap-3">
-                          <div>
-                            <div className="ttw-type-small text-[#445069]">
-                              {" "}
-                              Start Date
-                            </div>
-                            <div className="ttw-type-body font-600 text-[#0b1220]">
-                              {checkIn.date}
-                            </div>
-                            <div className="ttw-type-small text-[#445069]">
-                              {checkIn.time}
-                            </div>
-                          </div>
-                          <div>
-                            <div className="ttw-type-small text-[#445069]">
-                              End Date
-                            </div>
-                            <div className="ttw-type-body font-600 text-[#0b1220]">
-                              {checkOut.date}
-                            </div>
-                            <div className="ttw-type-small text-[#445069]">
-                              {checkOut.time}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                  {/* Cancellation Policy - Show if exists */}
-                  {transferData.cancellation_policy && (
-                    <div className="bg-white rounded-xl p-3 border-l-4 border-[#f7e700]">
-                      <div
-                        dangerouslySetInnerHTML={{
-                          __html: transferData.cancellation_policy,
-                        }}
-                        className="flex flex-col gap-1 ttw-type-small text-[#445069] ml-4"
-                      ></div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      );
+  // The expanded body for a leg — the standalone drawer's own detail, embedded.
+  const renderLegDetail = (child, legType) => {
+    switch (legType) {
+      case "Flight":
+        return (
+          <FlightDetailModal
+            segments={child?.transfer_details?.items?.[0]?.segments}
+            fareRule={child?.transfer_details?.items?.[0]?.fare_rule?.[0]}
+            booking_id={child?.id}
+            name={child?.name}
+            getPaymentHandler={getPaymentHandler}
+            isEmbedded
+            setShowLoginModal={setShowLoginModal}
+            handleEditRoute={handleEditRoute}
+            data={child}
+          />
+        );
+      case "Taxi":
+        return (
+          <TaxiDetailModal
+            data={child}
+            handleDelete={null}
+            isEmbedded
+            handleEditRoute={handleEditRoute}
+          />
+        );
+      default:
+        return (
+          <VehicleDetailModal
+            data={child}
+            handleDelete={null}
+            isEmbedded
+            handleClose={handleClose}
+            handleEditRoute={handleEditRoute}
+          />
+        );
     }
-
-    // Original rendering for non-multicity
-    return (
-      <div key={`${transferData.id}-${index}`} className="mb-6">
-        <div
-          className="flex items-center justify-between px-4 py-3 bg-[#f4f3ec] rounded-xl cursor-pointer"
-          onClick={() => toggleExpand(index)}
-        >
-          <h3 className="ttw-type-h4 font-600 text-[#0b1220]">{childTitle}</h3>
-          {transferData.status === "Paid" && (
-            <span className="ml-2 ttw-type-small bg-[#e7f5ee] text-[#1f8a5a] px-2 py-0.5 rounded-full">
-              Paid
-            </span>
-          )}
-
-          {data?.children?.some((child) => child.status === "Paid") &&
-            transferData.status !== "Paid" && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleEditRoute(transferData);
-                }}
-                className="ttw-btn-secondary whitespace-nowrap ttw-type-body"
-              >
-                Change
-              </button>
-            )}
-
-          {data?.children?.some((child) => child.status === "Paid") &&
-            transferData.status !== "Paid" && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDelete(transferData);
-                }}
-                className="p-2 text-[#CD2026] hover:bg-[#f4f3ec] rounded"
-                title="Delete"
-              >
-                <Image src="/delete.svg" width={18} height={18} alt="Delete" />
-              </button>
-            )}
-          {isExpanded ? (
-            <AiOutlineDown className="text-[#445069]" />
-          ) : (
-            <AiOutlineRight className="text-[#445069]" />
-          )}
-        </div>
-        {isExpanded && <div className="mt-3">{renderDetailsByType()}</div>}
-      </div>
-    );
   };
 
   const handleClose = () => {
@@ -824,6 +496,64 @@ const TransferDrawer = ({
     !!data?.children?.every((child) => child.status !== "Paid") &&
     (!!cityTaxiChange ||
       (data?.transfer_type != "sightseeing" && drawer != "SightSeeing"));
+
+  // A multi-city taxi combo is the one shape where the legs share a vehicle, so
+  // the drawer leads with the car and the legs are its inclusions.
+  //
+  // Gated on there actually being a vehicle rather than on `booking_type`: a
+  // combo reports that as "taxi", "Taxi" or a comma-joined list of its legs'
+  // types depending on how it was built, and the old equality check against
+  // "taxi" silently dropped the vehicle card on most of them.
+  const comboVehicle = data?.children?.map(legVehicle).find(Boolean) || null;
+  const isMulticityTaxi = data?.combo_type === "multicity" && !!comboVehicle;
+  const comboAccent = getModeAccent(
+    isMulticityTaxi ? "Taxi" : data?.booking_type,
+  );
+
+  // A package is a sequence of services, so it reads in the order it happens —
+  // not the order the API happened to return.
+  const comboLegs = [...(data?.children || [])].sort(
+    (a, b) => new Date(a?.check_in || 0) - new Date(b?.check_in || 0),
+  );
+
+  const comboTitle =
+    data?.name ||
+    `${comboLegs[0]?.source_address?.name || ""} to ${
+      comboLegs[comboLegs.length - 1]?.destination_address?.name || ""
+    }`;
+
+  const comboSpan = (() => {
+    const from = formatDateTime(comboLegs[0]?.check_in);
+    const to = formatDateTime(comboLegs[comboLegs.length - 1]?.check_out);
+    if (from?.shortDate && to?.shortDate && from.shortDate !== to.shortDate) {
+      return `${from.shortDate} – ${to.date || to.shortDate}`;
+    }
+    return from?.date || null;
+  })();
+
+  const comboKicker = [
+    isMulticityTaxi ? "Multi-day taxi" : data?.booking_type,
+    comboSpan,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+
+  const comboSummary = isMulticityTaxi
+    ? `${comboLegs.length} services · 1 car`
+    : `${comboLegs.length} ${comboLegs.length === 1 ? "leg" : "legs"}`;
+
+  // The legs, as rail nodes that open in place. `expandedIndexes` still drives
+  // which is open, so the leg-resolution logic above is untouched.
+  const railNodes = comboLegs.map((child, index) => {
+    const node = legNode(child, index);
+    const open = expandedIndexes.includes(index);
+    return {
+      ...node,
+      open,
+      onToggle: () => toggleExpand(index),
+      detail: open ? renderLegDetail(child, node.legType) : null,
+    };
+  });
 
   return (
     <Drawer
@@ -855,7 +585,6 @@ const TransferDrawer = ({
                 error={error}
                 handleEditRoute={handleEditRoute}
                 data={data}
-                drawerZIndex={drawerZIndex}
               />
             )
           ) : loading ? (
@@ -910,205 +639,68 @@ const TransferDrawer = ({
           )}
         </>
       ) : error ? (
-        <>
-          <div
-            style={{
-              textAlign: "center",
-              margin: "auto",
-              height: isPageWide ? "80vh" : "70vh",
-            }}
-            className="center-div"
-          >
-            Oops, unable to get the details at the moment.
-          </div>
-        </>
+        <DrawerShell
+          band={
+            <DetailBand mode={data?.booking_type} onBack={handleClose} loading />
+          }
+        >
+          <DetailError />
+        </DrawerShell>
       ) : (
-        <div className="h-screen flex flex-col overflow-hidden">
-          <BookingDetailHeader
-            title={
-              data.name ||
-              `${data.children[0]?.source_address?.name || ""} to ${
-                data.children[data.children.length - 1]?.destination_address
-                  ?.name || ""
-              }`
-            }
-            onBack={handleClose}
-            className="px-6 max-ph:px-4"
-          />
-
-          <div className="overflow-y-scroll flex-1 px-6 max-ph:px-4 py-4 pb-24">
-            {data?.combo_type == "multicity" &&
-              data?.booking_type == "taxi" && (
-                <>
-                  <div className="bg-[#f4f3ec] p-4 rounded-xl">
-                    <p className="ttw-type-body font-600 text-[#0b1220] mb-4">
-                      {loading ? (
-                        <div className="w-24 h-5 bg-gray-200 opacity-50 rounded"></div>
-                      ) : (
-                        "TAXI DETAILS"
-                      )}
-                    </p>
-
-                    <div className="flex flex-col md:flex-row gap-4">
-                      <div className="flex flex-col gap-4 items-center">
-                        <div
-                          className="w-full md:w-auto border border-[#ececec] rounded-xl  flex justify-center items-center"
-                          style={{ height: "140px" }}
-                        >
-                          {loading ? (
-                            <div className="w-full h-full bg-gray-200 opacity-50 rounded"></div>
-                          ) : (
-                            <div className="w-full md:w-[180px] h-[140px] relative flex justify-center items-center">
-                              {data?.children[0]?.transfer_details?.quote
-                                ?.taxi_category?.image ? (
-                                <ImageLoader
-                                  url={
-                                    data?.children[0]?.transfer_details?.quote
-                                      ?.taxi_category?.image
-                                  }
-                                  className="w-full h-full object-contain"
-                                />
-                              ) : (
-                                <FaTaxi className="w-16 h-16 text-[#445069]" />
-                              )}
-                            </div>
-                          )}
-                        </div>
-
-                        {data?.children[0]?.transfer_details?.quote
-                          ?.taxi_category?.type && (
-                          <div>
-                            <p className="ttw-type-small text-[#445069]">
-                              <span className="ttw-type-body font-600 text-[#0b1220]">
-                                {loading ? (
-                                  <div className="w-20 h-5 bg-gray-200 opacity-50 rounded"></div>
-                                ) : data?.children[0]?.transfer_details?.quote
-                                    ?.taxi_category?.type ? (
-                                  data?.children[0]?.transfer_details?.quote
-                                    ?.taxi_category?.type
-                                ) : (
-                                  ""
-                                )}
-                              </span>
-                            </p>
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="flex-1 w-full">
-                        <div className="grid grid-cols-2 max-ph:grid-cols-1 gap-4">
-                          {
-                            <div>
-                              <p className="ttw-type-small text-[#445069]">Model</p>
-                              <p className="ttw-type-body font-600 text-[#0b1220]">
-                                {loading ? (
-                                  <div className="w-20 h-5 bg-gray-200 opacity-50 rounded"></div>
-                                ) : data?.children[0]?.transfer_details?.quote
-                                    ?.taxi_category?.model_name ? (
-                                  data?.children[0]?.transfer_details?.quote
-                                    ?.taxi_category?.model_name
-                                ) : (
-                                  "NA"
-                                )}
-                              </p>
-                            </div>
-                          }
-
-                          {/* Fuel Type */}
-                          {
-                            <div>
-                              <p className="ttw-type-small text-[#445069]">Fuel Type</p>
-                              <p className="ttw-type-body font-600 text-[#0b1220]">
-                                {loading ? (
-                                  <div className="w-20 h-5 bg-gray-200 opacity-50 rounded"></div>
-                                ) : data?.children[0]?.transfer_details?.quote
-                                    ?.taxi_category?.fuel_type ? (
-                                  data?.children[0]?.transfer_details?.quote
-                                    ?.taxi_category?.fuel_type
-                                ) : (
-                                  "NA"
-                                )}
-                              </p>
-                            </div>
-                          }
-
-                          {/* Luggage Bags */}
-                          {
-                            <div>
-                              <p className="ttw-type-small text-[#445069]">
-                                Luggage Bags
-                              </p>
-                              <p className="ttw-type-body font-600 text-[#0b1220]">
-                                {loading ? (
-                                  <div className="w-10 h-5 bg-gray-200 opacity-50 rounded"></div>
-                                ) : data?.children[0]?.transfer_details?.quote
-                                    ?.taxi_category?.bag_capacity ? (
-                                  data?.children[0]?.transfer_details?.quote
-                                    ?.taxi_category?.bag_capacity
-                                ) : (
-                                  "NA"
-                                )}
-                              </p>
-                            </div>
-                          }
-
-                          {/* Seat Capacity */}
-                          {
-                            <div>
-                              <p className="ttw-type-small text-[#445069]">
-                                Seat Capacity
-                              </p>
-                              <p className="ttw-type-body font-600 text-[#0b1220]">
-                                {loading ? (
-                                  <div className="w-24 h-5 bg-gray-200 opacity-50 rounded"></div>
-                                ) : data?.children[0]?.transfer_details?.quote
-                                    ?.taxi_category?.seating_capacity ? (
-                                  data?.children[0]?.transfer_details?.quote
-                                    ?.taxi_category?.seating_capacity
-                                ) : (
-                                  "NA"
-                                )}
-                              </p>
-                            </div>
-                          }
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <h2 className="ttw-type-body font-600 ml-2 md:ml-5 text-[#0b1220]">
-                    Booking Inclusions
-                  </h2>
-                </>
-              )}
-            {data.children.map((child, index) =>
-              renderDetailContent(child, index),
-            )}
-          </div>
-
-          {/* Delete (left) + Change (right) — one bar for both combo shapes */}
-          <div className="sticky bottom-0 z-10 border-t border-[#ececec] px-6 max-ph:px-4 py-4 bg-white">
+        <DrawerShell
+          band={
+            <DetailBand
+              mode={isMulticityTaxi ? "Taxi" : data.booking_type}
+              title={comboTitle}
+              kicker={comboKicker}
+              summary={comboSummary}
+              status={data?.status}
+              onBack={handleClose}
+            />
+          }
+          footer={
             <BookingDetailActions
               onDelete={() => onDeleteClick(data)}
               deleting={deleting}
               confirmItemLabel="transfer"
-              onChange={
-                canChangeCombo ? () => handleEditRoute(data) : undefined
-              }
+              onChange={canChangeCombo ? () => handleEditRoute(data) : undefined}
               changeLabel="Change Transfer"
             />
-          </div>
-        </div>
+          }
+        >
+          {/* Every service in a multi-city taxi package rides in the same car,
+              so the vehicle is stated once, above the services it covers. */}
+          {isMulticityTaxi && (
+            <DetailSection label="The car, throughout" className="pt-3">
+              <VehiclePhoto
+                image={comboVehicle?.image}
+                alt={comboVehicle?.type}
+                mode="Taxi"
+              />
+              <FactChips
+                facts={[
+                  { label: "Class", value: comboVehicle?.type },
+                  { label: "Model", value: comboVehicle?.model_name },
+                  { label: "Fuel", value: comboVehicle?.fuel_type },
+                  { label: "Seats", value: comboVehicle?.seating_capacity },
+                  { label: "Bags", value: comboVehicle?.bag_capacity },
+                ]}
+              />
+            </DetailSection>
+          )}
+
+          <DetailSection
+            label={
+              isMulticityTaxi
+                ? `${comboLegs.length} services included`
+                : `${comboLegs.length} ${comboLegs.length === 1 ? "leg" : "legs"}`
+            }
+            className={isMulticityTaxi ? "" : "pt-3"}
+          >
+            <JourneyRail nodes={railNodes} accent={comboAccent} compact />
+          </DetailSection>
+        </DrawerShell>
       )}
-      {/* {!isPageWide && (
-        <FloatingView>
-          <TbArrowBack
-            style={{ height: "28px", width: "28px" }}
-            cursor={"pointer"}
-            onClick={handleClose}
-          />
-        </FloatingView>
-      )} */}
     </Drawer>
   );
 };
