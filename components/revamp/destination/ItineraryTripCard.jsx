@@ -29,6 +29,8 @@ const ItineraryTripCard = ({ itinerary, onClick }) => {
                 <img
                   src={optimizedMediaUrl(imgUrlEndPoint + img, { width: 700 })}
                   alt={`${itinerary.title||itinerary.name} ${idx + 1}`}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover object-center"
                 />
               </div>
