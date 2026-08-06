@@ -8,16 +8,20 @@
 import Head from "next/head";
 import { connect } from "react-redux";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 import Layout from "../../components/Layout";
 import * as authaction from "../../store/actions/auth";
 import CinematicThemeLanding from "../../components/theme/cinematic/CinematicThemeLanding";
 import { useSeedChat } from "../../components/theme/cinematic/useSeedChat";
 import ActivityDetailsDrawer from "../../components/drawers/activityDetails/ActivityDetailsDrawer";
+import CityDetailsDrawer from "../../components/drawers/cityDetails/CityDetailsDrawer";
+import POIDetailsDrawer from "../../components/drawers/poiDetails/POIDetailsDrawer";
 import type { CinematicThemeConfig } from "../../components/theme/cinematic/types";
 
 const U = "https://images.unsplash.com";
 const VISA = "https://visa.thetarzanway.com/country";
 const CHAT = "https://thetarzanway.com/chat";
+const PAGE = "/theme/christmas-markets";
 
 // Catalog activity ids for the "Experiences I'd actually book" cards (from the
 // Mercury BE links) — each opens the read-only activity details drawer.
@@ -29,6 +33,72 @@ const ACTIVITY = {
   spanishRiding: "64d0e542-01af-4aaf-9509-ffcb53089e60",
   canalCruise: "db326346-d61c-4730-b928-301ff81de2b8",
 };
+
+// City ids for the "Which square is worth the stop" rows — each opens the city
+// details drawer (its full list of tours/activities) via ?city_id=.
+const CITY = {
+  vienna: "80f5f7e8-aa6d-408c-bb7d-69f87b955ba8",
+  prague: "2bc8d544-1135-4eba-be73-7609d8b410dc",
+  dresden: "ac9d9319-7b00-43d7-b176-6c3a0b0ec4d8",
+  strasbourg: "d1f30fc9-6a95-49da-9a0b-3a3bae39ef4f",
+};
+
+// Restaurant ids for the "Where to come in from the cold" cards — each opens
+// the restaurant details drawer via ?restaurant_id=.
+const RESTAURANT = {
+  cafeCentral: "f29b64fc-1425-41e7-86a6-b65db6419a2a",
+  louvre: "f3d3008a-fdbf-4263-a640-a056ef089e97",
+  pfund: "8941a385-d363-4c31-b505-7c04d3298eb5",
+  winkel: "2f225f49-7772-49cd-8c2a-b1449c45fab3",
+  cambrinus: "a9937d45-cdf6-43f8-97d8-acf761c2de6e",
+};
+
+const CDN = "https://d31aoa0ehgvjdi.cloudfront.net";
+// Contextual imagery staged in media-staging/christmas-markets-2026/ — upload to
+// S3 at media/website/christmas-markets-2026/ (the CDN path mapped below).
+const IMG_BASE = `${CDN}/media/website/christmas-markets-2026`;
+const IMG = {
+  heroVienna: `${IMG_BASE}/hero-vienna-rathausplatz-hq.jpg`,
+  heroStrasbourg: `${IMG_BASE}/hero-strasbourg-hq.jpg`,
+  heroPrague: `${IMG_BASE}/hero-prague-hq.jpg`,
+  heroBudapest: `${IMG_BASE}/hero-budapest-hq.jpg`,
+  routeAlpine: `${IMG_BASE}/route-alpine-salzburg-hq.jpg`,
+  routeRhine: `${IMG_BASE}/route-rhine-cologne-hq.jpg`,
+  routeCentral: `${IMG_BASE}/route-central-budapest-hq.jpg`,
+  expPragueCastle: `${IMG_BASE}/exp-prague-castle-hq.jpg`,
+  expSchonbrunn: `${IMG_BASE}/exp-schonbrunn-hq.jpg`,
+  expNightWatchman: `${IMG_BASE}/exp-night-watchman-rothenburg-hq.jpg`,
+  expReichstag: `${IMG_BASE}/exp-reichstag-berlin-hq.jpg`,
+  expSpanishRiding: `${IMG_BASE}/exp-spanish-riding-school-hq.jpg`,
+  expCanalCruise: `${IMG_BASE}/exp-amsterdam-canal-cruise-hq.jpg`,
+  marketVienna: `${IMG_BASE}/market-vienna-hq.jpg`,
+  marketPrague: `${IMG_BASE}/market-prague-hq.jpg`,
+  marketDresden: `${IMG_BASE}/market-dresden-striezelmarkt-hq.jpg`,
+  marketStrasbourg: `${IMG_BASE}/market-strasbourg-hq.jpg`,
+  tripFestive: `${IMG_BASE}/trip-festive-munich-hq.jpg`,
+  tripMidnight: `${IMG_BASE}/trip-midnight-vienna-nye-hq.jpg`,
+  tripRhine: `${IMG_BASE}/trip-rhine-amsterdam-hq.jpg`,
+  eatCafeCentral: `${IMG_BASE}/eat-cafe-central-vienna-hq.jpg`,
+  eatCafeLouvre: `${IMG_BASE}/eat-cafe-louvre-prague-hq.jpg`,
+  eatPfund: `${IMG_BASE}/eat-pfunds-molkerei-dresden-hq.jpg`,
+  eatWinkel: `${IMG_BASE}/eat-winkel43-amsterdam-hq.jpg`,
+  eatCambrinus: `${IMG_BASE}/eat-cambrinus-bruges-hq.jpg`,
+};
+// Destination country-page images (reused from each /europe country page).
+const DEST = {
+  austria: `${CDN}/media/countries/168442217817077326774597167969.jpg`,
+  germany: `${CDN}/media/countries/168441976189620375633239746094.jpg`,
+  france: `${CDN}/media/countries/173131953880670285224914550781.webp`,
+  czech: `${CDN}/media/countries/168441870417685723304748535156.jpg`,
+};
+// Other-theme page images (reused from each theme page's hero/first card).
+const THEME_IMG = {
+  northernLights: `${CDN}/media/website/northern-lights-2026/Sleep Beneath The Aurora.jpg`,
+  lapland: `${CDN}/media/countries/168442263137298607826232910156.jpg`,
+  edinburgh: `${CDN}/media/website/edinburgh-hogmanay-2026/Dec 29 --The Torchlight March.jpg`,
+  filmy: `${CDN}/media/website/filmy-getaways-2026/DilChahtaHai.png`,
+};
+
 
 // ── Prompts ─────────────────────────────────────────────────────────────────
 const PROMPTS = {
@@ -98,22 +168,22 @@ const christmasMarketsConfig: CinematicThemeConfig = {
     // Desktop-only Kaira polaroid collage — each polaroid opens its destination.
     images: [
       {
-        image: `${U}/photo-1512389142860-9c449e58a543?w=1200`,
+        image: IMG.heroVienna,
         caption: "Vienna, Rathausplatz",
         href: "/europe/austria",
       },
       {
-        image: `${U}/photo-1543165796-5426273eaab3?w=1200`,
+        image: IMG.heroStrasbourg,
         caption: "Strasbourg, Grande Île",
         href: "/europe/france",
       },
       {
-        image: `${U}/photo-1607344645866-009c320b63e0?w=1200`,
+        image: IMG.heroPrague,
         caption: "Prague, Old Town",
         href: "/europe/czech-republic",
       },
       {
-        image: `${U}/photo-1516550893923-42d28e5677af?w=1200`,
+        image: IMG.heroBudapest,
         caption: "Budapest, Vörösmarty",
         href: "/europe/hungary",
       },
@@ -130,25 +200,26 @@ const christmasMarketsConfig: CinematicThemeConfig = {
       },
       cards: [
         {
-          image: `${U}/photo-1512389142860-9c449e58a543?w=1200`,
+          image: IMG.routeAlpine,
           name: "The Alpine classic",
           line: "Munich · Salzburg · Vienna",
           tag: "9 nights",
           prompt: PROMPTS.alpineClassic,
         },
         {
-          image: `${U}/photo-1543165796-5426273eaab3?w=1200`,
+          image: IMG.routeRhine,
           name: "The Rhine run",
           line: "Strasbourg · Cologne · Amsterdam",
           tag: "8 nights",
           prompt: PROMPTS.rhineRun,
         },
         {
-          image: `${U}/photo-1607344645866-009c320b63e0?w=1200`,
+          image: IMG.routeCentral,
           name: "The Central loop",
           line: "Prague · Vienna · Budapest",
           tag: "10 nights · NYE",
           prompt: PROMPTS.centralLoop,
+          objectPosition: "center 110%",
         },
       ],
     },
@@ -158,42 +229,42 @@ const christmasMarketsConfig: CinematicThemeConfig = {
       heading: { lead: "Experiences I'd", accent: "actually book" },
       cards: [
         {
-          image: `${U}/photo-1607344645866-009c320b63e0?w=1200`,
+          image: IMG.expPragueCastle,
           name: "Prague Castle tour with a local guide",
           line: "The castle complex, told by someone who lives it.",
           tag: "Prague",
           activityId: ACTIVITY.pragueCastle,
         },
         {
-          image: `${U}/photo-1548013146-72479768bada?w=1200`,
+          image: IMG.expSchonbrunn,
           name: "Strudel show at Schönbrunn",
           line: "Watch the apple strudel pulled paper-thin.",
           tag: "Vienna",
           activityId: ACTIVITY.strudelShow,
         },
         {
-          image: `${U}/photo-1576919228236-a097c32a5cd4?w=1200`,
+          image: IMG.expNightWatchman,
           name: "Night Watchman in lantern light",
           line: "A lantern-lit walk through the old town after dark.",
           tag: "Germany",
           activityId: ACTIVITY.nightWatchman,
         },
         {
-          image: `${U}/photo-1560969184-10fe8719e047?w=1200`,
+          image: IMG.expReichstag,
           name: "Reichstag dome & government quarter",
           line: "Berlin's glass dome and the halls of power.",
           tag: "Berlin",
           activityId: ACTIVITY.reichstag,
         },
         {
-          image: `${U}/photo-1541849546-216549ae216d?w=1200`,
+          image: IMG.expSpanishRiding,
           name: "Spanish Riding School tour",
           line: "Behind the scenes with the Lipizzaner horses.",
           tag: "Vienna",
           activityId: ACTIVITY.spanishRiding,
         },
         {
-          image: `${U}/photo-1513622470522-26c3c8a854bc?w=1200`,
+          image: IMG.expCanalCruise,
           name: "Classic boat canal cruise",
           line: "Festive lights from the water.",
           tag: "Amsterdam",
@@ -201,7 +272,7 @@ const christmasMarketsConfig: CinematicThemeConfig = {
         },
       ],
     },
-    // ── Markets — tap a city for all its tours & activities ──
+    // ── Markets — tap a city to open its city details (all its tours) ──
     {
       type: "list",
       heading: {
@@ -211,37 +282,37 @@ const christmasMarketsConfig: CinematicThemeConfig = {
       },
       rows: [
         {
-          image: `${U}/photo-1512389142860-9c449e58a543?w=900`,
+          image: IMG.marketVienna,
           emoji: "🎄",
           gradient: "linear-gradient(150deg, #16324f, #1f8a5a 150%)",
           name: "Vienna",
           badge: "Kaira's pick",
           line: "Rathausplatz glows; the smaller Spittelberg lanes steal the show.",
-          prompt: PROMPTS.activitiesVienna,
+          href: `${PAGE}?city_id=${CITY.vienna}`,
         },
         {
-          image: `${U}/photo-1607344645866-009c320b63e0?w=900`,
+          image: IMG.marketPrague,
           emoji: "🏰",
           gradient: "linear-gradient(150deg, #1a2436, #3d4f7a)",
           name: "Prague",
           line: "Old Town Square, a giant tree, and mulled honey wine.",
-          prompt: PROMPTS.activitiesPrague,
+          href: `${PAGE}?city_id=${CITY.prague}`,
         },
         {
-          image: `${U}/photo-1560969184-10fe8719e047?w=900`,
+          image: IMG.marketDresden,
           emoji: "🥨",
           gradient: "linear-gradient(150deg, #3d2b52, #b84034 170%)",
           name: "Dresden",
           line: "The Striezelmarkt — Germany's oldest, and its Stollen.",
-          prompt: PROMPTS.activitiesDresden,
+          href: `${PAGE}?city_id=${CITY.dresden}`,
         },
         {
-          image: `${U}/photo-1543165796-5426273eaab3?w=900`,
+          image: IMG.marketStrasbourg,
           emoji: "✨",
           gradient: "linear-gradient(150deg, #b84034, #f0e9d6 190%)",
           name: "Strasbourg",
           line: "The oldest of them all, wrapped around the cathedral.",
-          prompt: PROMPTS.activitiesStrasbourg,
+          href: `${PAGE}?city_id=${CITY.strasbourg}`,
         },
       ],
     },
@@ -255,7 +326,7 @@ const christmasMarketsConfig: CinematicThemeConfig = {
       },
       cards: [
         {
-          image: `${U}/photo-1512389142860-9c449e58a543?w=1200`,
+          image: IMG.tripFestive,
           tag: "Markets · classic · 9N",
           name: "The festive classic",
           line: "Munich, Salzburg, Vienna — the great squares.",
@@ -264,7 +335,7 @@ const christmasMarketsConfig: CinematicThemeConfig = {
           prompt: PROMPTS.tripFestive,
         },
         {
-          image: `${U}/photo-1548013146-72479768bada?w=1200`,
+          image: IMG.tripMidnight,
           tag: "NYE · group · 6N",
           name: "The midnight trip",
           line: "Prague to a Vienna New Year's Eve.",
@@ -274,7 +345,7 @@ const christmasMarketsConfig: CinematicThemeConfig = {
           prompt: PROMPTS.tripNye,
         },
         {
-          image: `${U}/photo-1543165796-5426273eaab3?w=1200`,
+          image: IMG.tripRhine,
           tag: "Markets · slow · 8N",
           name: "The slow Rhine",
           line: "Strasbourg, Cologne, Amsterdam — cosy and unhurried.",
@@ -290,49 +361,49 @@ const christmasMarketsConfig: CinematicThemeConfig = {
       heading: { lead: "Where to", accent: "come in from the cold" },
       cards: [
         {
-          image: `${U}/photo-1552832230-c0197dd311b5?w=1200`,
+          image: IMG.eatCafeCentral,
           name: "Café Central",
           city: "Vienna",
           line: "A grand coffeehouse under vaulted ceilings.",
           rating: "4.4",
           reviews: "35,000",
-          prompt: PROMPTS.eatCafeCentral,
+          href: `${PAGE}?restaurant_id=${RESTAURANT.cafeCentral}`,
         },
         {
-          image: `${U}/photo-1514890547357-a9ee288728e0?w=1200`,
+          image: IMG.eatCafeLouvre,
           name: "Café Louvre",
           city: "Prague",
           line: "Coffee, cake and history since 1902.",
           rating: "4.6",
           reviews: "18,000",
-          prompt: PROMPTS.eatCafeLouvre,
+          href: `${PAGE}?restaurant_id=${RESTAURANT.louvre}`,
         },
         {
-          image: `${U}/photo-1467269204594-9661b134dd2b?w=1200`,
+          image: IMG.eatPfund,
           name: "Pfunds Molkerei",
           city: "Dresden",
           line: "The world's most beautiful dairy shop.",
           rating: "4.5",
           reviews: "9,500",
-          prompt: PROMPTS.eatPfund,
+          href: `${PAGE}?restaurant_id=${RESTAURANT.pfund}`,
         },
         {
-          image: `${U}/photo-1499856871958-5b9627545d1a?w=1200`,
+          image: IMG.eatWinkel,
           name: "Winkel 43",
           city: "Amsterdam",
           line: "The apple pie people queue in the cold for.",
           rating: "4.5",
           reviews: "6,800",
-          prompt: PROMPTS.eatWinkel,
+          href: `${PAGE}?restaurant_id=${RESTAURANT.winkel}`,
         },
         {
-          image: `${U}/photo-1477959858617-67f85cf4f1df?w=1200`,
+          image: IMG.eatCambrinus,
           name: "Cambrinus",
           city: "Bruges",
           line: "Belgian beer and comfort food by the fire.",
           rating: "4.4",
           reviews: "7,200",
-          prompt: PROMPTS.eatCambrinus,
+          href: `${PAGE}?restaurant_id=${RESTAURANT.cambrinus}`,
         },
       ],
     },
@@ -489,7 +560,7 @@ const christmasMarketsConfig: CinematicThemeConfig = {
           meta: "Vienna · Salzburg",
           emoji: "🎄",
           gradient: "linear-gradient(150deg, #16324f, #1f8a5a 150%)",
-          image: `${U}/photo-1516550893923-42d28e5677af?w=1200`,
+          image: DEST.austria,
           href: "/europe/austria",
         },
         {
@@ -497,7 +568,7 @@ const christmasMarketsConfig: CinematicThemeConfig = {
           meta: "Nuremberg · Cologne",
           emoji: "🥨",
           gradient: "linear-gradient(150deg, #3d2b52, #b84034 170%)",
-          image: `${U}/photo-1576919228236-a097c32a5cd4?w=1200`,
+          image: DEST.germany,
           href: "/europe/germany",
         },
         {
@@ -505,7 +576,7 @@ const christmasMarketsConfig: CinematicThemeConfig = {
           meta: "Strasbourg",
           emoji: "✨",
           gradient: "linear-gradient(150deg, #b84034, #f0e9d6 190%)",
-          image: `${U}/photo-1543165796-5426273eaab3?w=1200`,
+          image: DEST.france,
           href: "/europe/france",
         },
         {
@@ -513,7 +584,7 @@ const christmasMarketsConfig: CinematicThemeConfig = {
           meta: "Prague",
           emoji: "🏰",
           gradient: "linear-gradient(150deg, #1a2436, #3d4f7a)",
-          image: `${U}/photo-1607344645866-009c320b63e0?w=1200`,
+          image: DEST.czech,
           href: "/europe/czech-republic",
         },
       ],
@@ -534,6 +605,7 @@ const christmasMarketsConfig: CinematicThemeConfig = {
           meta: "Nov – Mar",
           emoji: "🌌",
           gradient: "linear-gradient(150deg, #0e1530, #445069)",
+          image: THEME_IMG.northernLights,
           href: "/theme/northern-lights",
         },
         {
@@ -541,6 +613,7 @@ const christmasMarketsConfig: CinematicThemeConfig = {
           meta: "Dec",
           emoji: "🦌",
           gradient: "linear-gradient(150deg, #16324f, #1f8a5a 160%)",
+          image: THEME_IMG.lapland,
           href: "/theme/lapland",
         },
         {
@@ -548,6 +621,7 @@ const christmasMarketsConfig: CinematicThemeConfig = {
           meta: "29 Dec – 2 Jan",
           emoji: "🏴",
           gradient: "linear-gradient(150deg, #1a2436, #3d4f7a)",
+          image: THEME_IMG.edinburgh,
           href: "/theme/edinburgh-hogmanay",
         },
         {
@@ -555,6 +629,7 @@ const christmasMarketsConfig: CinematicThemeConfig = {
           meta: "Year-round",
           emoji: "🎬",
           gradient: "linear-gradient(150deg, #3d2b52, #b84034 180%)",
+          image: THEME_IMG.filmy,
           href: "/theme/filmy-getaways",
         },
       ],
@@ -600,6 +675,13 @@ const ChristmasMarketsThemePage = ({
   checkAuthState: () => void;
 }) => {
   const seedChat = useSeedChat();
+  const router = useRouter();
+  // City / restaurant detail drawers are driven by URL query params so the
+  // shared card components can open them with a plain href.
+  const cityId = router.query.city_id as string | undefined;
+  const restaurantId = router.query.restaurant_id as string | undefined;
+  const closeQueryDrawer = () =>
+    router.push({ pathname: PAGE }, undefined, { shallow: true });
   // Read-only activity details drawer (opened from the "Experiences" cards).
   const [activityDrawer, setActivityDrawer] = useState<{
     show: boolean;
@@ -711,6 +793,18 @@ const ChristmasMarketsThemePage = ({
         handleCloseDrawer={closeActivity}
         setShowDrawer={closeActivity}
       />
+      {/* City details (all tours/activities in a city) — driven by ?city_id */}
+      {cityId && <CityDetailsDrawer show handleCloseDrawer={closeQueryDrawer} />}
+      {/* Restaurant details — driven by ?restaurant_id */}
+      {restaurantId && (
+        <POIDetailsDrawer
+          show
+          activityData={{ id: restaurantId, type: "restaurant" }}
+          handleCloseDrawer={closeQueryDrawer}
+          removeDelete
+          removeChange
+        />
+      )}
     </Layout>
   );
 };

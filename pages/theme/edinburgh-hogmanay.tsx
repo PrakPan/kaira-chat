@@ -34,6 +34,19 @@ const PIC = {
   whisky: `${IMG}/Scotch Whisky -- Learn It Here.jpg`,
   arthursSeat: `${IMG}/Arthur's Seat -- Climb It.jpg`,
   royalMile: `${IMG}/Royal Mile -- Walk It Properly.jpg`,
+  torchlight2: `${IMG}/Torchlight.png`,
+  streetParty2: `${IMG}/StreetParty.png`,
+  loonyDoon: `${IMG}/LoonyDoon.png`,
+  londonEdinburgh: `${IMG}/LondonEdinburgh.png`,
+  hogmanayAllFourNights: `${IMG}/HogmanayAllFourNights.png`,
+  newYear: `${IMG}/NewYear.png`,
+  theCalmer: `${IMG}/TheCalmer.png`,
+  edinburghLondon2: `${IMG}/EdinburghLondon2.png`,
+  arthur: `${IMG}/Arthur.png`,
+  edinburghCastle: `${IMG}/EdinburghCastle.png`,
+  lochness: `${IMG}/Lochness.png`,
+  speyside: `${IMG}/Speyside.png`,
+
 };
 
 // TODO(images): the "Which ticket you actually need" cards should show the real
@@ -47,6 +60,29 @@ const TICKET_IMG = {
 };
 
 const CHAT = "https://thetarzanway.com/chat";
+const CDN = "https://d31aoa0ehgvjdi.cloudfront.net";
+
+// Other-theme page images (each theme's own hero/first-card photo). The
+// Christmas tile draws from its own christmas-markets-2026 folder once uploaded.
+const THEME_IMG = {
+  christmas: `${CDN}/media/website/christmas-markets-2026/hero-strasbourg-hq.jpg`,
+  lapland: `${CDN}/media/countries/168442263137298607826232910156.jpg`,
+  northernLights: `${CDN}/media/website/northern-lights-2026/Sleep Beneath The Aurora.jpg`,
+  filmy: `${CDN}/media/website/filmy-getaways-2026/DilChahtaHai.png`,
+};
+
+// Destination tiles — navigate to the real UK destination page and reuse the
+// Edinburgh/Scotland/London/whisky photos already in this page's folder.
+// (Highlands and Speyside are Scottish regions → the Scotland page.)
+const DEST = {
+  edinburgh: {
+    href: "/europe/united_kingdom/scotland/edinburgh",
+    image: PIC.castleDawn,
+  },
+  highlands: { href: "/europe/united_kingdom/scotland", image: PIC.highlands },
+  london: { href: "/europe/united_kingdom/england/london", image: PIC.london },
+  speyside: { href: "/europe/united_kingdom/scotland", image: PIC.whisky },
+};
 
 // Catalog activity ids for the "Which ticket you actually need" cards (from the
 // Mercury BE links). Concert & Ceilidh point at the Spectacle activity until
@@ -125,32 +161,34 @@ const edinburghHogmanayConfig: CinematicThemeConfig = {
       heading: { lead: "Four days,", accent: "hour by hour" },
       cards: [
         {
-          image: PIC.torchlight,
+          image: PIC.torchlight2,
           name: "The Torchlight Procession",
           line: "20,000 torches through the Old Town.",
           tag: "Dec 29",
           prompt: PROMPTS.progTorchlight,
         },
         {
-          image: PIC.streetParty,
+          image: PIC.streetParty2,
           name: "Street Party & The Bells",
           line: "Princes Street, fireworks, midnight.",
           tag: "Dec 31",
           prompt: PROMPTS.progStreetParty,
         },
         {
-          image: PIC.firstFootin,
+          image: PIC.loonyDoon,
           name: "The Loony Dook",
           line: "The quirky side of a Scottish new year.",
           tag: "Jan 1",
           prompt: PROMPTS.progLoonyDook,
+          objectPosition: "center 30%",
         },
         {
-          image: PIC.london,
+          image: PIC.londonEdinburgh,
           name: "London + Edinburgh",
           line: "Two cities, one festive trip.",
           tag: "Two cities",
           prompt: PROMPTS.progLondon,
+          objectPosition: "center 30%",
         },
       ],
     },
@@ -233,7 +271,7 @@ const edinburghHogmanayConfig: CinematicThemeConfig = {
       },
       cards: [
         {
-          image: PIC.streetParty,
+          image: PIC.hogmanayAllFourNights,
           tag: "The full festival",
           name: "Hogmanay, all four nights",
           line: "Torchlight to First Footin — the complete run.",
@@ -241,7 +279,7 @@ const edinburghHogmanayConfig: CinematicThemeConfig = {
           href: `${CHAT}/a376fdc1-6fba-4e9d-a6f6-07d96f9f74d5`,
         },
         {
-          image: PIC.highlands,
+          image: PIC.newYear,
           tag: "Highlands",
           name: "New Year's the Highland way",
           line: "The Bells in the city, then north into the snow.",
@@ -249,7 +287,7 @@ const edinburghHogmanayConfig: CinematicThemeConfig = {
           href: `${CHAT}/a57add01-f613-4c99-a24b-aa2528ddc2ea`,
         },
         {
-          image: PIC.beyond,
+          image: PIC.theCalmer,
           tag: "Calmer",
           name: "The calmer Hogmanay",
           line: "All the magic, minus the 75,000-strong crowd.",
@@ -257,7 +295,7 @@ const edinburghHogmanayConfig: CinematicThemeConfig = {
           href: `${CHAT}/796881b5-9dc0-4860-820c-52d26c0d6782`,
         },
         {
-          image: PIC.london,
+          image: PIC.edinburghLondon2,
           tag: "Two cities",
           name: "Edinburgh + London",
           line: "New Year up north, then south by train.",
@@ -272,32 +310,36 @@ const edinburghHogmanayConfig: CinematicThemeConfig = {
       heading: { lead: "What to do with", accent: "the daylight" },
       cards: [
         {
-          image: PIC.arthursSeat,
+          image: PIC.arthur,
           name: "Arthur's Seat at sunrise",
           line: "The volcano over the city. 45 minutes up.",
           tag: "Sunrise",
           prompt: PROMPTS.arthursSeat,
+          objectPosition: "center 30%",
         },
         {
-          image: PIC.castleDawn,
+          image: PIC.edinburghCastle,
           name: "Edinburgh Castle",
           line: "The Crown Jewels, before the crowds.",
           tag: "Half day",
           prompt: PROMPTS.edinburghCastle,
+          objectPosition: "center 20%",
         },
         {
-          image: PIC.highlands,
+          image: PIC.lochness,
           name: "Loch Ness & Glencoe",
           line: "The Highlands under winter snow.",
           tag: "Day trip",
           prompt: PROMPTS.lochNessGlencoe,
+          objectPosition: "center 40%",
         },
         {
-          image: PIC.whisky,
+          image: PIC.speyside,
           name: "Speyside whisky run",
           line: "The distilleries worth the drive.",
           tag: "Day trip",
           prompt: PROMPTS.speyside,
+          objectPosition: "center 30%",
         },
       ],
     },
@@ -413,6 +455,7 @@ const edinburghHogmanayConfig: CinematicThemeConfig = {
           meta: "Nov – Jan",
           emoji: "🎄",
           gradient: "linear-gradient(150deg, #16324f, #1f8a5a 150%)",
+          image: THEME_IMG.christmas,
           href: "/theme/christmas-markets",
         },
         {
@@ -420,6 +463,7 @@ const edinburghHogmanayConfig: CinematicThemeConfig = {
           meta: "Dec",
           emoji: "🦌",
           gradient: "linear-gradient(150deg, #0e1530, #445069)",
+          image: THEME_IMG.lapland,
           href: "/theme/lapland",
         },
         {
@@ -427,6 +471,7 @@ const edinburghHogmanayConfig: CinematicThemeConfig = {
           meta: "Nov – Mar",
           emoji: "🌌",
           gradient: "linear-gradient(150deg, #1a2436, #3d4f7a)",
+          image: THEME_IMG.northernLights,
           href: "/theme/northern-lights",
         },
         {
@@ -434,6 +479,7 @@ const edinburghHogmanayConfig: CinematicThemeConfig = {
           meta: "Year-round",
           emoji: "🎬",
           gradient: "linear-gradient(150deg, #3d2b52, #b84034 180%)",
+          image: THEME_IMG.filmy,
           href: "/theme/filmy-getaways",
         },
       ],
@@ -450,28 +496,32 @@ const edinburghHogmanayConfig: CinematicThemeConfig = {
           meta: "The festival",
           emoji: "🏰",
           gradient: "linear-gradient(150deg, #1a2436, #3d4f7a)",
-          prompt: PROMPTS.ultimate,
+          image: DEST.edinburgh.image,
+          href: DEST.edinburgh.href,
         },
         {
           name: "Scottish Highlands",
           meta: "Glencoe · Skye",
           emoji: "🏔️",
           gradient: "linear-gradient(150deg, #16324f, #445069)",
-          prompt: PROMPTS.lochNessGlencoe,
+          image: DEST.highlands.image,
+          href: DEST.highlands.href,
         },
         {
           name: "London",
           meta: "Add-on",
           emoji: "🎡",
           gradient: "linear-gradient(150deg, #3d2b52, #b84034 180%)",
-          prompt: PROMPTS.edinburghLondon,
+          image: DEST.london.image,
+          href: DEST.london.href,
         },
         {
           name: "Speyside",
           meta: "Whisky country",
           emoji: "🥃",
           gradient: "linear-gradient(150deg, #b84034, #f0e9d6 190%)",
-          prompt: PROMPTS.speyside,
+          image: DEST.speyside.image,
+          href: DEST.speyside.href,
         },
       ],
       footerCta: { label: "View all destinations", href: "/europe" },

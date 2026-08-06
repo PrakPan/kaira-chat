@@ -41,6 +41,7 @@ import type {
   CinematicStoryCard,
   CinematicEatCard,
   CinematicVisaCard,
+  CinematicFeatureCta,
   CinematicHeroConfig,
   CinematicAskBar,
 } from "./types";
@@ -353,7 +354,9 @@ const PromptCard: React.FC<{
   card: CinematicPromptCard;
   onSelectPrompt: (p: string) => void;
   onSelectActivity?: (activityId: string, source?: string) => void;
-}> = ({ card, onSelectPrompt, onSelectActivity }) => (
+  ctaLabel?: string;
+  ctaTone?: "solid" | "dark";
+}> = ({ card, onSelectPrompt, onSelectActivity, ctaLabel, ctaTone }) => (
   <button
     type="button"
     onClick={() => {
@@ -390,7 +393,7 @@ const PromptCard: React.FC<{
         </div>
       )}
     </div>
-    <div className="px-[14px] py-[12px] md:px-[18px] md:py-[16px]">
+    <div className="flex flex-col flex-1 px-[14px] py-[12px] md:px-[18px] md:py-[16px]">
       <div
         className="text-[14px] md:text-[17px] font-bold"
         style={{ color: INK, letterSpacing: "-0.01em" }}
@@ -405,6 +408,24 @@ const PromptCard: React.FC<{
           {card.line}
         </div>
       )}
+      {ctaLabel && (
+        <div className="mt-auto pt-[12px] md:pt-[14px]">
+          <span
+            className="block w-full text-center rounded-full text-[13px] md:text-[13.5px] font-bold px-[14px] py-[11px]"
+            style={
+              ctaTone === "dark"
+                ? { background: INK, color: YELLOW }
+                : {
+                    background: YELLOW,
+                    color: INK,
+                    boxShadow: "0 6px 16px -8px rgba(247,231,0,0.6)",
+                  }
+            }
+          >
+            {ctaLabel}
+          </span>
+        </div>
+      )}
     </div>
   </button>
 );
@@ -414,7 +435,12 @@ const CardsSection: React.FC<{
   onSelectPrompt: (p: string) => void;
   onSelectActivity?: (activityId: string, source?: string) => void;
 }> = ({ section, onSelectPrompt, onSelectActivity }) => (
-  <section className="pt-[30px] md:pt-[56px]">
+  <section
+    className={`pt-[30px] md:pt-[56px] ${
+      section.tone === "sand" ? "pb-[30px] md:pb-[52px]" : ""
+    }`}
+    style={section.tone === "sand" ? { background: SAND } : undefined}
+  >
     <Container>
       <div className="flex items-end justify-between gap-[16px]">
         <Heading heading={section.heading} className="text-[22px] md:text-[34px]" />
@@ -434,6 +460,8 @@ const CardsSection: React.FC<{
             card={card}
             onSelectPrompt={onSelectPrompt}
             onSelectActivity={onSelectActivity}
+            ctaLabel={section.ctaLabel}
+            ctaTone={section.ctaTone}
           />
         ))}
       </div>
@@ -447,7 +475,8 @@ const CardsSection: React.FC<{
 const TripCard: React.FC<{
   card: CinematicTripCard;
   onSelectPrompt: (p: string) => void;
-}> = ({ card, onSelectPrompt }) => {
+  ctaLabel?: string;
+}> = ({ card, onSelectPrompt, ctaLabel }) => {
   const router = useRouter();
   const act = () => {
     if (card.href) router.push(card.href);
@@ -503,6 +532,20 @@ const TripCard: React.FC<{
         )}
       </div>
     </div>
+    {ctaLabel && (
+      <div className="px-[12px] md:px-[16px] pb-[12px] md:pb-[16px]">
+        <span
+          className="block w-full text-center rounded-full text-[13px] font-bold px-[14px] py-[12px]"
+          style={{
+            background: YELLOW,
+            color: INK,
+            boxShadow: "0 6px 16px -8px rgba(247,231,0,0.6)",
+          }}
+        >
+          {ctaLabel}
+        </span>
+      </div>
+    )}
     {card.urgent && (
       <div
         className="flex items-center gap-[8px] px-[14px] py-[8px] mt-auto"
@@ -530,7 +573,12 @@ const TripsSection: React.FC<{
       <Heading heading={section.heading} className="text-[22px] md:text-[34px]" />
       <div className="flex flex-col md:grid md:grid-cols-3 gap-[10px] md:gap-[16px] mt-[14px] md:mt-[24px]">
         {section.cards.map((card, i) => (
-          <TripCard key={`trip-${i}`} card={card} onSelectPrompt={onSelectPrompt} />
+          <TripCard
+            key={`trip-${i}`}
+            card={card}
+            onSelectPrompt={onSelectPrompt}
+            ctaLabel={section.ctaLabel}
+          />
         ))}
       </div>
     </Container>
@@ -1077,7 +1125,9 @@ const StoriesSection: React.FC<{
 const EatsSection: React.FC<{
   section: Extract<CinematicSection, { type: "eats" }>;
   onSelectPrompt: (p: string) => void;
-}> = ({ section, onSelectPrompt }) => (
+}> = ({ section, onSelectPrompt }) => {
+  const router = useRouter();
+  return (
   <section
     className="mt-[34px] md:mt-[56px] relative overflow-hidden"
     style={{ background: DARK }}
@@ -1105,7 +1155,10 @@ const EatsSection: React.FC<{
           <button
             key={`eat-${i}`}
             type="button"
-            onClick={() => card.prompt && onSelectPrompt(card.prompt)}
+            onClick={() => {
+              if (card.href) router.push(card.href);
+              else if (card.prompt) onSelectPrompt(card.prompt);
+            }}
             className="ctl-card text-left rounded-[18px] overflow-hidden cursor-pointer w-[218px] md:w-auto shrink-0 md:shrink flex flex-col"
             style={{
               scrollSnapAlign: "start",
@@ -1123,7 +1176,7 @@ const EatsSection: React.FC<{
               objectPosition={card.objectPosition}
             />
           </div>
-          <div className="px-[15px] py-[13px] md:py-[15px]">
+          <div className="flex flex-col flex-1 px-[15px] py-[13px] md:py-[15px]">
             <div className="flex items-baseline justify-between gap-[8px]">
               <span
                 className="text-[14.5px] font-bold"
@@ -1155,13 +1208,27 @@ const EatsSection: React.FC<{
                 {card.reviews ? `${card.reviews} reviews` : ""}
               </div>
             )}
+            {section.ctaLabel && (
+              <span
+                className="block w-full text-center rounded-full text-[12.5px] font-semibold px-[12px] py-[10px]"
+                style={{
+                  marginTop: "auto",
+                  background: "rgba(247,231,0,0.14)",
+                  color: YELLOW,
+                  border: "1px solid rgba(247,231,0,0.32)",
+                }}
+              >
+                {section.ctaLabel}
+              </span>
+            )}
           </div>
         </button>
       ))}
       </div>
     </Container>
   </section>
-);
+  );
+};
 
 // ── Visa (dark — "Your visa, handled") ──────────────────────────────────────
 // Intro copy, a scroller of country fee cards (each links to its visa page),
@@ -1301,6 +1368,161 @@ const VisaSection: React.FC<{
         )}
       </Container>
     )}
+  </section>
+);
+
+// ── Feature (dark — "A bullet train under the ocean floor") ─────────────────
+// Highlighted fact rows, a 3-up stat grid, and a yellow CTA card that opens the
+// read-only activity drawer (e.g. the JR Pass) or seeds a prompt.
+const FeatureCtaCard: React.FC<{
+  cta: CinematicFeatureCta;
+  onSelectPrompt: (p: string) => void;
+  onSelectActivity?: (activityId: string, source?: string) => void;
+}> = ({ cta, onSelectPrompt, onSelectActivity }) => {
+  const router = useRouter();
+  const act = () => {
+    if (cta.activityId && onSelectActivity)
+      onSelectActivity(cta.activityId, cta.activitySource);
+    else if (cta.prompt) onSelectPrompt(cta.prompt);
+    else router.push("/chat");
+  };
+  return (
+    <button
+      type="button"
+      onClick={act}
+      className="ctl-press w-full text-left flex items-center gap-[14px] rounded-[18px] px-[18px] py-[17px] mt-[12px] cursor-pointer"
+      style={{
+        background: "rgba(247,231,0,0.10)",
+        border: "1px solid rgba(247,231,0,0.28)",
+      }}
+    >
+      <div className="flex-1 min-w-0">
+        <div className="text-[14.5px] font-bold" style={{ color: PAPER }}>
+          {cta.title}
+        </div>
+        {cta.meta && (
+          <div className="ctl-mono mt-[5px]" style={{ fontSize: 9.5 }}>
+            {cta.meta}
+          </div>
+        )}
+      </div>
+      <span
+        className="shrink-0 rounded-full px-[16px] py-[10px] text-[12.5px] font-bold whitespace-nowrap"
+        style={{ background: YELLOW, color: INK }}
+      >
+        Add pass →
+      </span>
+    </button>
+  );
+};
+
+const FeatureSection: React.FC<{
+  section: Extract<CinematicSection, { type: "feature" }>;
+  onSelectPrompt: (p: string) => void;
+  onSelectActivity?: (activityId: string, source?: string) => void;
+}> = ({ section, onSelectPrompt, onSelectActivity }) => (
+  <section
+    className="mt-[34px] md:mt-[56px] relative overflow-hidden"
+    style={{ background: DARK }}
+  >
+    <div
+      className="absolute pointer-events-none"
+      style={{
+        top: -80,
+        right: -80,
+        width: 320,
+        height: 320,
+        background: "radial-gradient(circle, rgba(247,231,0,0.10), transparent 70%)",
+      }}
+    />
+    <Container className="py-[36px] md:py-[56px]">
+      <Heading
+        heading={section.heading}
+        className="text-[24px] md:text-[38px] ctl-h-light"
+      />
+      {section.intro && (
+        <p
+          className="text-[13.5px] md:text-[15px] leading-[1.55] mt-[10px] md:mt-[14px] max-w-[620px]"
+          style={{ color: FAINT }}
+        >
+          {section.intro}
+        </p>
+      )}
+
+      {section.rows && section.rows.length > 0 && (
+        <div className="flex flex-col gap-[10px] mt-[18px] md:mt-[24px]">
+          {section.rows.map((row, i) => (
+            <div
+              key={`frow-${i}`}
+              className="flex items-baseline gap-[14px] rounded-[14px] px-[16px] py-[15px]"
+              style={{
+                background: "rgba(247,231,0,0.07)",
+                border: "1px solid rgba(247,231,0,0.18)",
+              }}
+            >
+              <div
+                className="ctl-mono shrink-0 w-[62px]"
+                style={{ color: YELLOW, fontSize: 12, fontWeight: 600 }}
+              >
+                {row.stat}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div
+                  className="text-[13.5px] font-semibold"
+                  style={{ color: PAPER }}
+                >
+                  {row.name}
+                </div>
+                {row.line && (
+                  <div
+                    className="text-[12.5px] leading-[1.5] mt-[3px]"
+                    style={{ color: FAINT }}
+                  >
+                    {row.line}
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {section.stats && section.stats.length > 0 && (
+        <div className="grid grid-cols-3 gap-[8px] md:gap-[12px] mt-[12px]">
+          {section.stats.map((s, i) => (
+            <div
+              key={`fstat-${i}`}
+              className="rounded-[14px] px-[12px] py-[15px] md:px-[16px] md:py-[18px]"
+              style={{
+                background: "rgba(255,255,255,0.05)",
+                border: "1px solid rgba(255,255,255,0.08)",
+              }}
+            >
+              <div
+                className="ctl-h ctl-h-light text-[21px] md:text-[26px]"
+                style={{ letterSpacing: "-0.03em" }}
+              >
+                {s.stat}
+              </div>
+              <div
+                className="ctl-mono mt-[7px] leading-[1.5]"
+                style={{ fontSize: 8.5 }}
+              >
+                {s.label}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {section.cta && (
+        <FeatureCtaCard
+          cta={section.cta}
+          onSelectPrompt={onSelectPrompt}
+          onSelectActivity={onSelectActivity}
+        />
+      )}
+    </Container>
   </section>
 );
 
@@ -1553,6 +1775,15 @@ const CinematicThemeLanding: React.FC<CinematicThemeLandingProps> = ({
           return <EatsSection key={key} section={section} onSelectPrompt={onSelectPrompt} />;
         case "visa":
           return <VisaSection key={key} section={section} />;
+        case "feature":
+          return (
+            <FeatureSection
+              key={key}
+              section={section}
+              onSelectPrompt={onSelectPrompt}
+              onSelectActivity={onSelectActivity}
+            />
+          );
         case "steps":
           return <StepsSection key={key} section={section} onSelectPrompt={onSelectPrompt} />;
         case "gradient":
@@ -1580,6 +1811,7 @@ export {
   StoriesSection,
   EatsSection,
   VisaSection,
+  FeatureSection,
   StepsSection,
   AskKairaStrip,
   PromptCard,

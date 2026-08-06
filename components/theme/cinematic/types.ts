@@ -141,6 +141,9 @@ export interface CinematicEatCard {
   reviews?: string; // e.g. "1,240"
   objectPosition?: string;
   prompt?: string;
+  // When set, clicking navigates here instead of seeding `prompt` — e.g. a
+  // `?restaurant_id={id}` query that opens the restaurant details drawer.
+  href?: string;
 }
 
 // Dark visa country card ("Your visa, handled"): the country, the cities it
@@ -187,6 +190,31 @@ export interface CinematicSectionCta {
   prompt?: string;
 }
 
+// ── Feature block (dark — e.g. "A bullet train under the ocean floor") ───────
+// A highlighted fact row: a short stat + a name + a supporting line.
+export interface CinematicFeatureRow {
+  stat: string; // e.g. "4 hrs"
+  name: string;
+  line?: string;
+}
+
+// A big-number tile in the feature section's 3-up stat grid.
+export interface CinematicFeatureStat {
+  stat: string; // e.g. "240m"
+  label: string;
+}
+
+// Highlighted CTA card at the foot of the feature block (e.g. the JR Pass): a
+// title + meta that opens the read-only activity drawer via `activityId`
+// (falls back to seeding `prompt`).
+export interface CinematicFeatureCta {
+  title: string;
+  meta?: string;
+  activityId?: string;
+  activitySource?: string;
+  prompt?: string;
+}
+
 // Discriminated union of the section blocks a page can stack. Order in the
 // config array is the render order.
 export type CinematicSection =
@@ -195,11 +223,24 @@ export type CinematicSection =
       heading: CinematicHeading;
       cta?: CinematicSectionCta;
       cards: CinematicPromptCard[];
+      // Section background: "paper" (default) or "sand" (a warm neutral band,
+      // used to group sections like the Hokkaido "Which mountain is yours").
+      tone?: "paper" | "sand";
+      // When set, each card shows a pill CTA at its foot with this label
+      // (e.g. "Create this plan →"). Clicking anywhere on the card still fires
+      // the card action; the label is a visual affordance. Omit to keep the
+      // clean click-through cards used by the other theme pages.
+      ctaLabel?: string;
+      // CTA colour: "solid" (yellow fill, default — for primary "Create this
+      // plan") or "dark" (ink fill + yellow text, for secondary "+ Add to trip").
+      ctaTone?: "solid" | "dark";
     }
   | {
       type: "trips";
       heading: CinematicHeading;
       cards: CinematicTripCard[];
+      // Full-width yellow CTA under each trip (e.g. "Book this itinerary →").
+      ctaLabel?: string;
     }
   | {
       type: "gradient";
@@ -248,6 +289,8 @@ export type CinematicSection =
       type: "eats";
       heading: CinematicHeading;
       cards: CinematicEatCard[];
+      // Optional pill CTA at the foot of each card (e.g. "Add restaurant →").
+      ctaLabel?: string;
     }
   | {
       // Dark "Your visa, handled" section — intro, country fee cards, fact chips.
@@ -257,6 +300,16 @@ export type CinematicSection =
       cards: CinematicVisaCard[];
       facts?: CinematicVisaFact[];
       note?: ReactNode; // callout under the fact chips
+    }
+  | {
+      // Dark editorial feature block (e.g. the undersea Shinkansen): a couple of
+      // highlighted fact rows, a 3-up stat grid, and an activity CTA card.
+      type: "feature";
+      heading: CinematicHeading;
+      intro?: string;
+      rows?: CinematicFeatureRow[];
+      stats?: CinematicFeatureStat[];
+      cta?: CinematicFeatureCta;
     }
   | {
       type: "steps";
