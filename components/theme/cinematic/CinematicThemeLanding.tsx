@@ -27,6 +27,7 @@ import { useRouter } from "next/router";
 // scene stills are 1–4 MB PNGs shown in small cards; this cuts them ~30-100×
 // with no visible change. Non-media srcs pass through untouched.
 import { optimizedMediaUrl } from "../../../lib/mediaImage";
+import Head from "next/head";
 import type {
   CinematicThemeConfig,
   CinematicHeading,
@@ -1749,12 +1750,35 @@ const CinematicThemeLanding: React.FC<CinematicThemeLandingProps> = ({
   config,
   onSelectPrompt,
   onSelectActivity,
-}) => (
+}) => {
+  // Preload the LCP image: the first card of the first section (the hero
+  // collage is desktop-only, so on mobile that card is the largest paint).
+  // Uses the same optimised URL as its eager <img> (width 640) so the browser
+  // reuses one request. Without this the eager image sat ~7s deep in the
+  // network queue behind the JS bundle (Load Delay was 40% of the LCP).
+  const firstSection = config.sections?.[0];
+  const lcpImage =
+    firstSection?.type === "cards" ? firstSection.cards?.[0]?.image : undefined;
+  const lcpPreloadHref = lcpImage
+    ? optimizedMediaUrl(lcpImage, { width: 640 })
+    : undefined;
+
+  return (
   <div
     className={`ctl-root ${
       config.askBar ? "pb-[104px] md:pb-[108px]" : "pb-[32px] md:pb-0"
     }`}
   >
+    {lcpPreloadHref && (
+      <Head>
+        <link
+          rel="preload"
+          as="image"
+          href={lcpPreloadHref}
+          fetchpriority="high"
+        />
+      </Head>
+    )}
     <CinematicStyles />
     {/* {config.header && (
       <CompactHeader
@@ -1821,7 +1845,8 @@ const CinematicThemeLanding: React.FC<CinematicThemeLandingProps> = ({
       <AskKairaStrip bar={config.askBar} onSelectPrompt={onSelectPrompt} />
     )}
   </div>
-);
+  );
+};
 
 export default CinematicThemeLanding;
 export {
