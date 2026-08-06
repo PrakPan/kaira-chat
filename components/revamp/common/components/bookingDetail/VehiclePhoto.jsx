@@ -35,6 +35,8 @@ export default function VehiclePhoto({ image, alt, mode = "Taxi" }) {
           <img
             src={src}
             alt={alt || "Vehicle"}
+            loading="lazy"
+            decoding="async"
             // Sized and painted inline — the app's unscoped `img {}` rules
             // otherwise crop this to fill (`object-fit: cover`) and run it
             // through the hero-image blur/desaturate filter.

@@ -58,6 +58,21 @@ const nextConfig = {
     nextScriptWorkers: true,
     forceSwcTransforms: true,
     instrumentationHook: true,
+    // Tree-shake barrel imports so a `import { X } from "@mui/material"` pulls
+    // only X, not the whole library. These packages dominated the ~571 KB
+    // shared chunk (489 KB of it unused). Officially supported in Next 13.5+;
+    // transparent (same imports) and only affects build-time bundling.
+    optimizePackageImports: [
+      "@mui/material",
+      "@mui/icons-material",
+      "@mui/lab",
+      "@mui/x-date-pickers",
+      "react-icons",
+      "date-fns",
+      "@fortawesome/free-solid-svg-icons",
+      "@fortawesome/free-regular-svg-icons",
+      "@fortawesome/free-brands-svg-icons",
+    ],
   },
 
   // webpack: (config) => {
@@ -93,9 +108,10 @@ const nextConfig = {
   },
 };
 
-// module.exports = withBundleAnalyzer(nextConfig);
-
-module.exports = withSentryConfig(nextConfig, {
+// Bundle analyzer is a no-op unless ANALYZE=true, so it is safe to always wrap.
+// Run `ANALYZE=true npm run build` to inspect chunk composition (e.g. the 571 KB
+// shared vendor chunk) and confirm optimizePackageImports' effect.
+module.exports = withSentryConfig(withBundleAnalyzer(nextConfig), {
   org: "the-tarzan-way",
   project: "front-end",
   experimental:{

@@ -27,6 +27,7 @@ import { useRouter } from "next/router";
 // scene stills are 1–4 MB PNGs shown in small cards; this cuts them ~30-100×
 // with no visible change. Non-media srcs pass through untouched.
 import { optimizedMediaUrl } from "../../../lib/mediaImage";
+import Head from "next/head";
 import type {
   CinematicThemeConfig,
   CinematicHeading,
@@ -119,7 +120,22 @@ const SkeletonImage: React.FC<{
   // "cover" (default) fills+crops the frame; "contain" shows the whole image
   // centered, letterboxed against the parent backdrop.
   objectFit?: "cover" | "contain";
-}> = ({ src, alt, objectPosition, objectFit }) => {
+  // The LCP image (first card of the first section) sets priority so it loads
+  // eagerly and at high fetch priority. Every other image lazy-loads, so the
+  // ~40 off-screen cards no longer download on first paint.
+  priority?: boolean;
+  // Edge-resize target. Cards render ≤360px CSS, so 640 covers 2× retina while
+  // being ~half the bytes of the old flat 900. Callers with a larger frame
+  // (full-bleed heroes) can raise it.
+  width?: number;
+}> = ({
+  src,
+  alt,
+  objectPosition,
+  objectFit,
+  priority = false,
+  width = 640,
+}) => {
   const [loaded, setLoaded] = React.useState(false);
   const [error, setError] = React.useState(false);
   const imgRef = React.useRef<HTMLImageElement>(null);
@@ -140,8 +156,11 @@ const SkeletonImage: React.FC<{
       {!loaded && !error && <span className="ctl-skeleton" aria-hidden />}
       <img
         ref={imgRef}
-        src={optimizedMediaUrl(src, { width: 900 })}
+        src={optimizedMediaUrl(src, { width })}
         alt={alt}
+        loading={priority ? "eager" : "lazy"}
+        fetchPriority={priority ? "high" : "auto"}
+        decoding="async"
         onLoad={() => setLoaded(true)}
         onError={() => setError(true)}
         className="absolute inset-0 w-full h-full"
@@ -356,7 +375,8 @@ const PromptCard: React.FC<{
   onSelectActivity?: (activityId: string, source?: string) => void;
   ctaLabel?: string;
   ctaTone?: "solid" | "dark";
-}> = ({ card, onSelectPrompt, onSelectActivity, ctaLabel, ctaTone }) => (
+  priority?: boolean;
+}> = ({ card, onSelectPrompt, onSelectActivity, ctaLabel, ctaTone, priority }) => (
   <button
     type="button"
     onClick={() => {
@@ -374,6 +394,7 @@ const PromptCard: React.FC<{
       <SkeletonImage
         src={card.image}
         alt={card.name}
+        priority={priority}
         // Top-align the crop so heads/faces stay in frame and any excess is cut
         // from the bottom rather than off the top. Per-card override still wins.
         objectPosition={card.objectPosition ?? "center top"}
@@ -434,7 +455,10 @@ const CardsSection: React.FC<{
   section: Extract<CinematicSection, { type: "cards" }>;
   onSelectPrompt: (p: string) => void;
   onSelectActivity?: (activityId: string, source?: string) => void;
-}> = ({ section, onSelectPrompt, onSelectActivity }) => (
+  // True for the first section on the page — its first card is the LCP image
+  // on mobile (the hero collage is desktop-only), so it loads eagerly.
+  first?: boolean;
+}> = ({ section, onSelectPrompt, onSelectActivity, first }) => (
   <section
     className={`pt-[30px] md:pt-[56px] ${
       section.tone === "sand" ? "pb-[30px] md:pb-[52px]" : ""
@@ -462,6 +486,7 @@ const CardsSection: React.FC<{
             onSelectActivity={onSelectActivity}
             ctaLabel={section.ctaLabel}
             ctaTone={section.ctaTone}
+            priority={first && i === 0}
           />
         ))}
       </div>
@@ -1725,12 +1750,35 @@ const CinematicThemeLanding: React.FC<CinematicThemeLandingProps> = ({
   config,
   onSelectPrompt,
   onSelectActivity,
-}) => (
+}) => {
+  // Preload the LCP image: the first card of the first section (the hero
+  // collage is desktop-only, so on mobile that card is the largest paint).
+  // Uses the same optimised URL as its eager <img> (width 640) so the browser
+  // reuses one request. Without this the eager image sat ~7s deep in the
+  // network queue behind the JS bundle (Load Delay was 40% of the LCP).
+  const firstSection = config.sections?.[0];
+  const lcpImage =
+    firstSection?.type === "cards" ? firstSection.cards?.[0]?.image : undefined;
+  const lcpPreloadHref = lcpImage
+    ? optimizedMediaUrl(lcpImage, { width: 640 })
+    : undefined;
+
+  return (
   <div
     className={`ctl-root ${
       config.askBar ? "pb-[104px] md:pb-[108px]" : "pb-[32px] md:pb-0"
     }`}
   >
+    {lcpPreloadHref && (
+      <Head>
+        <link
+          rel="preload"
+          as="image"
+          href={lcpPreloadHref}
+          fetchpriority="high"
+        />
+      </Head>
+    )}
     <CinematicStyles />
     {/* {config.header && (
       <CompactHeader
@@ -1750,6 +1798,7 @@ const CinematicThemeLanding: React.FC<CinematicThemeLandingProps> = ({
               section={section}
               onSelectPrompt={onSelectPrompt}
               onSelectActivity={onSelectActivity}
+              first={i === 0}
             />
           );
         case "trips":
@@ -1796,7 +1845,8 @@ const CinematicThemeLanding: React.FC<CinematicThemeLandingProps> = ({
       <AskKairaStrip bar={config.askBar} onSelectPrompt={onSelectPrompt} />
     )}
   </div>
-);
+  );
+};
 
 export default CinematicThemeLanding;
 export {
