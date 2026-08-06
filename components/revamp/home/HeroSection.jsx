@@ -24,7 +24,15 @@ export const KairaAvatar = ({ size = "lg", minimal = false }) => {
           </div>
         )}
       </div> */}
-        <img src="/KairaInsta.jpg" alt="Kaira avatar" width="600" height="600" className={styles.kairaImg} />
+        <img
+          src="/KairaInsta.jpg"
+          alt="Kaira avatar"
+          width="600"
+          height="600"
+          fetchpriority="high"
+          decoding="async"
+          className={styles.kairaImg}
+        />
     </div>
   );
 };

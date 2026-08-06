@@ -52,9 +52,21 @@ export default class MyDocument extends Document {
             href="https://fonts.gstatic.com"
             crossOrigin="true"
           />
+
+          {/* ALL families in ONE non-blocking request. media="print" keeps the
+              CSS download off the critical render path; the inline script below
+              flips it to media="all" once it lands. display=swap paints text in
+              the fallback face immediately (so LCP fires on that paint) then
+              swaps with no invisible-text gap.
+
+              Previously TWO extra rel="stylesheet" links (Geist/Instrument/
+              JetBrains Mono, and Poppins) sat below with no media="print" and
+              render-blocked first paint by ~1.1s on mobile — the exact thing
+              the print-swap above was meant to avoid. They are folded into this
+              single request so nothing blocks. */}
           <link
             rel="stylesheet"
-            href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap"
+            href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&family=Poppins:wght@300;400;500;600;700&display=swap"
             media="print"
             data-ttw-fonts="true"
           />
@@ -67,14 +79,20 @@ export default class MyDocument extends Document {
           <noscript>
             <link
               rel="stylesheet"
-              href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap"
+              href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&family=Poppins:wght@300;400;500;600;700&display=swap"
             />
           </noscript>
-          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+          {/* LCP image: the Kaira avatar is the largest paint on destination
+              pages and prominent in the home hero. It is a plain <img> that
+              hydrates in behind JS, so without a preload the browser discovers
+              it seconds late on mobile. Preload + fetchpriority pulls it to the
+              front of the queue. */}
           <link
-            href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-            rel="stylesheet"
+            rel="preload"
+            as="image"
+            href="/KairaInsta.jpg"
+            fetchpriority="high"
           />
 
           {/* Google Maps + ChatKit are NOT loaded here anymore (CWV): loading

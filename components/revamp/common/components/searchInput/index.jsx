@@ -9,6 +9,7 @@ import { CONTENT_SERVER_HOST, MERCURY_HOST } from "../../../../../services/const
 import * as ga from "../../../../../services/ga/Index";
 import urls from "../../../../../services/urls";
 import useDebounce from "../../../../../hooks/useDebounce";
+import { optimizedMediaUrl } from "../../../../../lib/mediaImage";
 import styles from "./SearchInput.module.scss";
 
 const SearchIcon = () => (
@@ -217,7 +218,12 @@ const SearchInput = (props) => {
         className={styles.popularItemImg}
         style={
           r.image
-            ? { backgroundImage: `url('${normalizeImage(r.image)}')` }
+            ? {
+                backgroundImage: `url('${optimizedMediaUrl(
+                  normalizeImage(r.image),
+                  { width: 200 }
+                )}')`,
+              }
             : undefined
         }
       />
@@ -314,9 +320,17 @@ const SearchInput = (props) => {
                           <div
                             className={styles.popularItemImg}
                             style={
-                              item.image
+                              // Gate on `open` so the (hidden) portal panel does
+                              // not fetch these on cold page load, and route the
+                              // URL through the edge optimiser — a ~200px thumb
+                              // instead of a full-res /media original (was pulling
+                              // 0.5–2 MB country/state photos on every page).
+                              open && item.image
                                 ? {
-                                    backgroundImage: `url('${item.image}')`,
+                                    backgroundImage: `url('${optimizedMediaUrl(
+                                      item.image,
+                                      { width: 200 }
+                                    )}')`,
                                   }
                                 : undefined
                             }

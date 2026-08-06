@@ -84,8 +84,8 @@ const Home = ({ token, hotLocationSearch, checkAuthState, setHotLocationSearch }
       <Head>
         <title>AI Trip Planner with Human Expertise | The Tarzan Way</title>
         <link rel="canonical" href="https://thetarzanway.com/" />
-        {/* Preload the LCP hero image so it paints sooner (CWV). */}
-        <link rel="preload" as="image" href="/KairaInsta.jpg" />
+        {/* Kaira avatar LCP preload now lives globally in _document.js with
+            fetchpriority="high" (covers home + destination + theme). */}
         <meta
           name="description"
           content="Plan your trip with Kaira, an AI travel assistant backed by local human curators. Search hundreds of platforms, get a curator-reviewed itinerary, and pay only for what you book."

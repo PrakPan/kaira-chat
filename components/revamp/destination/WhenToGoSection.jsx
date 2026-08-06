@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "../../../styles/pages/revamp/destination.module.scss";
+import { optimizedMediaUrl } from "../../../lib/mediaImage";
 import MobileCardCarousel from "./MobileCardCarousel.jsx";
 
 const renderStars = (count) => {
@@ -66,7 +67,12 @@ const WhenToGoSection = ({ seasonalInfo, destinationName, onSeeMore }) => {
                   className={styles.seasonImg}
                   style={
                     season?.image_url
-                      ? { backgroundImage: `url('${season.image_url}')` }
+                      ? {
+                          backgroundImage: `url('${optimizedMediaUrl(
+                            season.image_url,
+                            { width: 400 }
+                          )}')`,
+                        }
                       : undefined
                   }
                 >

@@ -1,5 +1,6 @@
 import { useRouter } from "next/router";
 import styles from "./WhereNextSection.module.scss";
+import { optimizedMediaUrl } from "../../../lib/mediaImage";
 
 /*
  * "Pick a feeling" — the vibes grid.
@@ -81,7 +82,11 @@ const WhereNextSection = ({ vibes = DEFAULT_VIBES, total = 47 }) => {
             >
               <div
                 className={styles.img}
-                style={{ backgroundImage: `url('${v.image}')` }}
+                style={{
+                  backgroundImage: `url('${optimizedMediaUrl(v.image, {
+                    width: 400,
+                  })}')`,
+                }}
               />
               <span className={styles.pill}>{v.pill}</span>
               <div className={styles.caption}>{v.caption}</div>

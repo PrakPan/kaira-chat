@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import { optimizedMediaUrl } from "../../../lib/mediaImage";
 import {
   setPendingFiles,
   setPendingSeed,
@@ -370,7 +371,11 @@ const HeroV2 = ({
                 >
                   <div
                     className={heroStyles.polaroidImg}
-                    style={{ backgroundImage: `url('${p.image}')` }}
+                    style={{
+                      backgroundImage: `url('${optimizedMediaUrl(p.image, {
+                        width: 440,
+                      })}')`,
+                    }}
                   />
                   {p.caption && (
                     <div className={heroStyles.polaroidCaption}>{p.caption}</div>
