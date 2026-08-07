@@ -12,7 +12,7 @@ import React from "react";
  * Empty values are dropped rather than printed as "NA" — a blank row carries no
  * information and only lengthens the drawer.
  */
-export default function FactChips({ facts, className = "" }) {
+export default function FactChips({ facts, className = "", padded = true }) {
   const items = (facts || []).filter(
     (fact) =>
       fact && fact.value !== null && fact.value !== undefined && fact.value !== "",
@@ -21,7 +21,11 @@ export default function FactChips({ facts, className = "" }) {
   if (!items.length) return null;
 
   return (
-    <div className={`flex flex-wrap gap-x-2 gap-y-1.5 px-4 pb-4 ${className}`}>
+    <div
+      // `padded` off for a chip row nested inside a card, which owns its own
+      // gutter — the drawer's px-4 would push the chips past the card's edge.
+      className={`flex flex-wrap gap-x-2 gap-y-1.5 ${padded ? "px-4 pb-4" : ""} ${className}`}
+    >
       {items.map((fact) => (
         <span
           key={fact.label || fact.value}

@@ -24,6 +24,8 @@ import axiossearchinstance, {
   gmapsAutocomplete,
 } from "../../services/search/searchsuggest";
 import axiosTaxiSearch from "../../services/bookings/TaxiSearch";
+import FleetPicker from "../../components/modals/taxis/fleet/FleetPicker";
+import { currencySymbols } from "../../data/currencySymbols";
 import Skeleton from "../../components/modals/taxis/Skeleton";
 import OfflineQuoteEmptyState from "../../components/ui/OfflineQuoteEmptyState";
 import { useRouter } from "next/router";
@@ -80,6 +82,12 @@ const PickupDropDrawer = ({
   const [hasMoreQuotes, setHasMoreQuotes] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [source, setSource] = useState(null);
+  // Mixed-fleet block, present only when the search fell back to multiple vehicles.
+  const [fleet, setFleet] = useState(null);
+  // Which option is being added — the fleet row's key, or "quote" for a convoy card. Keeps
+  // the loader on the committed option and freezes the rest.
+  const [addingKey, setAddingKey] = useState(null);
+  const [fleetPendingKey, setFleetPendingKey] = useState(null);
   const [hubSuggestions, setHubSuggestions] = useState([]);
   const [isLoadingHubs, setIsLoadingHubs] = useState(false);
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
@@ -868,6 +876,7 @@ const getStationName = () => {
           setSource(res?.data.data?.source);
           setTraceId(res.data?.trace_id);
           setTransferQuotes(res.data.data.quotes);
+          setFleet(res.data.data?.fleet || null);
           // `next` (Mozio progressive polling) may sit top-level or inside data.
           setHasMoreQuotes(!!(res.data?.next ?? res.data.data?.next));
         } else {
@@ -905,6 +914,7 @@ const getStationName = () => {
         if (res.data?.success) {
           setHasMoreQuotes(!!(res.data?.next ?? res.data.data?.next));
           if (res.data?.trace_id) setTraceId(res.data.trace_id);
+          if (res.data?.data?.fleet) setFleet(res.data.data.fleet);
           const quotes = res.data?.data?.quotes;
           if (quotes && quotes.length) setTransferQuotes(quotes);
         } else {
@@ -948,10 +958,11 @@ const getStationName = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (selectedQuote) => {
-    if (!selectedQuote) return;
+  const handleSubmit = async (selectedQuote, vehicles) => {
+    if (!selectedQuote && !vehicles?.length) return;
 
     const submissionData = {
+      vehicles,
       ...formData,
       transferType,
       bookingMode,
@@ -1528,6 +1539,28 @@ const getTitle = () => {
             </div>
           ) : null}
 
+          {fleet ? (
+            <FleetPicker
+              fleet={fleet}
+              source={source}
+              symbol={
+                currency?.currency ? currencySymbols?.[currency?.currency] : "\u20b9"
+              }
+              pendingKey={fleetPendingKey}
+              busy={loading || !!addingKey}
+              onAdd={async (vehicles, _summary, rowKey) => {
+                setFleetPendingKey(rowKey || null);
+                setAddingKey("fleet");
+                try {
+                  await handleSubmit(null, vehicles);
+                } finally {
+                  setFleetPendingKey(null);
+                  setAddingKey(null);
+                }
+              }}
+            />
+          ) : null}
+
           {transferQuotes.length > 0 && (
             <div className="space-y-3">
               {transferQuotes.map((quote, index) => (
@@ -1541,6 +1574,10 @@ const getTitle = () => {
                   key={quote.result_index || index}
                   data={quote}
                   handleAirportTaxiSelect={handleSubmit}
+                  disabled={!!addingKey && addingKey !== `quote-${index}`}
+                  onBusyChange={(busy) =>
+                    setAddingKey(busy ? `quote-${index}` : null)
+                  }
                   combo={false}
                   selectedBooking={selectedBooking}
                   getPaymentHandler={getPaymentHandler}

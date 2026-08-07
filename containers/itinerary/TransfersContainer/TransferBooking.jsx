@@ -14,6 +14,7 @@ import TransferEditDrawer, {
 } from "../../../components/drawers/routeTransfer/TransferEditDrawer";
 import { FaPlaneDeparture } from "react-icons/fa";
 import {
+  getFleetLabel,
   getVehicleCount,
   VehicleCountBadge,
 } from "../../../components/modals/taxis/MultiVehicleInfo";
@@ -370,10 +371,13 @@ const TransferBooking = ({
                                       price on this row covers every cab. */}
                                   <VehicleCountBadge
                                     count={getVehicleCount(booking)}
+                                    label={getFleetLabel(booking)}
                                   />
                                 </div>
                                 <div className="flex sm:text-sm text-[14px]  flex-row text-[#7A7A7A] font-light items-center">
-                                  <>{booking?.type}</>
+                                  {/* `type` is the largest cab only, so it names
+                                      just one car of a mixed fleet. */}
+                                  <>{getFleetLabel(booking) || booking?.type}</>
                                 </div>
 
                                 {isPageWide && booking?.transfer_details && (
@@ -719,6 +723,7 @@ const TransferBooking = ({
                                     price on this row covers every cab. */}
                                 <VehicleCountBadge
                                   count={getVehicleCount(book)}
+                                  label={getFleetLabel(book)}
                                 />
                               </div>
                               <div className="flex sm:text-sm text-[14px]  flex-row text-[#7A7A7A] font-light items-center">

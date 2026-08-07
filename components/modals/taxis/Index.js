@@ -10,6 +10,7 @@ import SectionOne from "./SectionOne";
 import LoadingLottie from "../../ui/LoadingLottie";
 import { ItineraryUpdateLoader } from "../../revamp/common/components/loader";
 import TaxiSearched from "./taxi-searched/Index";
+import TaxiFleetSection from "./fleet/TaxiFleetSection";
 import Drawer from "../../ui/Drawer";
 import SearchLoaderOverlay from "../../ui/SearchLoaderOverlay";
 import { openNotification } from "../../../store/actions/notification";
@@ -45,6 +46,13 @@ const Booking = (props) => {
   // Progressive polling (Mozio): trace_id to re-poll with, and whether more results are coming.
   const [traceId, setTraceId] = useState(null);
   const [moreLoadingState, setMoreLoadingState] = useState(false);
+  // Mixed-fleet block. Only present when no single cab seats the group, so `null` is the
+  // normal case and the section simply does not render.
+  const [fleet, setFleet] = useState(null);
+  const [fleetSource, setFleetSource] = useState(null);
+  // Set while ANY option here is being added — the fleet block or a convoy card. Keeps the
+  // loader on the committed option and greys out the rest.
+  const [addingKey, setAddingKey] = useState(null);
    const {number_of_adults,number_of_children,number_of_infants} = useSelector(state => state.Itinerary);
  
  // console.log("OCity,D",props?.oCityData,props?.dCityData);
@@ -77,6 +85,7 @@ const Booking = (props) => {
           source: resData.data?.source,
         }}
         handleTaxiSelect={props.handleTaxiSelect}
+        onBusyChange={(busy) => setAddingKey(busy ? "quote" : null)}
       ></TaxiSearched>
     ));
   };
@@ -92,6 +101,8 @@ const Booking = (props) => {
     setMoreLoadingState(false);
     setTraceId(null);
     setOptionsJSX([]);
+    setFleet(null);
+    setFleetSource(null);
 
     {props?.mercury && 
       fetchTransferMode
@@ -152,13 +163,21 @@ const Booking = (props) => {
           setViewMoreStatus(!!hasNext);
           // Only "no results" when the search is done AND found nothing. If more are
           // still coming (hasNext), keep the Load More affordance instead.
-          setNoResults(cards.length === 0 && !hasNext);
+          setNoResults(
+            cards.length === 0 &&
+              !hasNext &&
+              !res.data?.data?.fleet?.candidates?.length,
+          );
           setOptionsJSX(cards);
+          setFleet(res.data?.data?.fleet || null);
+          setFleetSource(res.data?.data?.source || null);
         } else {
           setNoResults(true);
           setViewMoreStatus(false);
           setTraceId(null);
           setOptionsJSX([]);
+          setFleet(null);
+          setFleetSource(null);
         }
         setLoading(false);
       })
@@ -194,6 +213,11 @@ const Booking = (props) => {
           setViewMoreStatus(!!hasNext);
           if (res.data.trace_id) setTraceId(res.data.trace_id);
           const cards = buildTaxiCards(res.data);
+          // A load-more poll carries no fleet block; don't let it wipe the one we have.
+          if (res.data?.data?.fleet) {
+            setFleet(res.data.data.fleet);
+            setFleetSource(res.data.data.source || null);
+          }
           if (cards.length) {
             setNoResults(false);
             setOptionsJSX(cards);
@@ -316,7 +340,43 @@ const Booking = (props) => {
 
               {!noResults && !error && !updateBookingState ? (
                 <OptionsContainer id="options">
-                  <div style={{ clear: "right" }}>
+                  {/* Offered above the convoy cards: a mix of cabs is usually cheaper and
+                      fits the group better than N copies of one model. Absent unless the
+                      search fell back to multiple vehicles. */}
+                  {fleet ? (
+                    <TaxiFleetSection
+                      fleet={fleet}
+                      source={fleetSource}
+                      traceId={traceId}
+                      handleTaxiSelect={props.handleTaxiSelect}
+                      booking_id={props?.booking_id}
+                      origin_itinerary_city_id={props?.origin_itinerary_city_id}
+                      destination_itinerary_city_id={
+                        props?.destination_itinerary_city_id
+                      }
+                      edge={props?.edge}
+                      airportBooking={props?.airportBooking}
+                      cityId={props?.cityId}
+                      selectedBooking={props.selectedBooking}
+                      getPaymentHandler={props.getPaymentHandler}
+                      setHideBookingModal={props.setHideBookingModal}
+                      token={props.token}
+                      externalBusy={!!addingKey && addingKey !== "fleet"}
+                      onBusyChange={(busy) =>
+                        setAddingKey(busy ? "fleet" : null)
+                      }
+                    />
+                  ) : null}
+                  <div
+                    style={{ clear: "right" }}
+                    className={
+                      addingKey === "fleet"
+                        ? "opacity-50 pointer-events-none"
+                        : addingKey
+                        ? "pointer-events-none"
+                        : ""
+                    }
+                  >
                     {optionsJSX.length
                       ? optionsJSX
                       : moreOptionsJSX.length

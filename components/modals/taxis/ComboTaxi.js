@@ -10,6 +10,7 @@ import SectionOne from "./SectionOne";
 import LoadingLottie from "../../ui/LoadingLottie";
 import { ItineraryUpdateLoader } from "../../revamp/common/components/loader";
 import TaxiSearched from "./taxi-searched/Index";
+import TaxiFleetSection from "./fleet/TaxiFleetSection";
 import Drawer from "../../ui/Drawer";
 import { openNotification } from "../../../store/actions/notification";
 import Skeleton from "./Skeleton";
@@ -93,6 +94,10 @@ const ComboTaxi = (props) => {
         if (res.data?.success) {
           setViewMoreStatus(!!(res.data?.next ?? res.data.data?.next));
           if (res.data?.trace_id) setTraceId(res.data.trace_id);
+          if (res.data?.data?.fleet) {
+            setFleet(res.data.data.fleet);
+            setFleetSource(res.data.data?.source || null);
+          }
           const q = res.data?.data?.quotes;
           if (q && q.length) {
             setQuotes(
@@ -114,6 +119,13 @@ const ComboTaxi = (props) => {
       });
   };
   
+
+  // Mixed-fleet block, present only when the search fell back to multiple vehicles.
+  const [fleet, setFleet] = useState(null);
+  const [fleetSource, setFleetSource] = useState(null);
+  // Set while ANY option on this screen is being added — the fleet block or a convoy card.
+  // Keeps the loader on the one option the user committed to and greys out the rest.
+  const [addingKey, setAddingKey] = useState(null);
 
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
   const [selectedDate, setSelectedDate] = useState(
@@ -383,6 +395,8 @@ const ComboTaxi = (props) => {
         .then((res) => {
           if (res.data.success) {
             setNoResults(false);
+            setFleet(res.data.data?.fleet || null);
+            setFleetSource(res.data.data?.source || null);
             setQuotes(
               res.data.data.quotes.map((q, i) => ({
                 ...q,
@@ -411,6 +425,8 @@ const ComboTaxi = (props) => {
             setNoResults(true);
             setViewMoreStatus(false);
             setQuotes([]);
+            setFleet(null);
+            setFleetSource(null);
 
             props?.setTaxiResults((prev) => {
               let newData = { ...prev };
@@ -591,6 +607,30 @@ const ComboTaxi = (props) => {
 
               {!noResults && !error && !updateBookingState ? (
                 <OptionsContainer id="options">
+                  {/* A combo LEG commits through bookings/transfer/, which has no field for
+                      a vehicle list, so the picker only appears on the direct-booking path. */}
+                  {fleet && !props?.combo ? (
+                    <TaxiFleetSection
+                      fleet={fleet}
+                      source={fleetSource}
+                      traceId={traceId}
+                      handleTaxiSelect={props.handleTaxiSelect}
+                      booking_id={props?.booking_id}
+                      origin_itinerary_city_id={props?.origin_itinerary_city_id}
+                      destination_itinerary_city_id={
+                        props?.destination_itinerary_city_id
+                      }
+                      edge={props?.edge}
+                      selectedBooking={props.selectedBooking}
+                      getPaymentHandler={props.getPaymentHandler}
+                      setHideBookingModal={props.setHideTaxiModal}
+                      token={props.token}
+                      externalBusy={!!addingKey && addingKey !== "fleet"}
+                      onBusyChange={(busy) =>
+                        setAddingKey(busy ? "fleet" : null)
+                      }
+                    />
+                  ) : null}
                   <div >
                     {quotes.map((quote, index) => (
                       <TaxiSearched
@@ -620,6 +660,10 @@ const ComboTaxi = (props) => {
                         }
                         edge={props?.edge}
                         handleTaxiDeselect={handleTaxiDeselect}
+                        disabled={!!addingKey && addingKey !== `quote-${index}`}
+                        onBusyChange={(busy) =>
+                          setAddingKey(busy ? `quote-${index}` : null)
+                        }
                       />
                     ))}
                     {loading && !quotes.length ? <Skeleton /> : null}

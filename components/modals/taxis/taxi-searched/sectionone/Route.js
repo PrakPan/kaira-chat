@@ -103,7 +103,13 @@ const TaxiHeading = styled.p`
 
 const Section = (props) => {
   let isPageWide = media("(min-width: 768px)");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoadingState] = useState(false);
+  // Mirrors this card's spinner up to the list, which greys out every other option while
+  // one is being added.
+  const setLoading = (value) => {
+    setLoadingState(value);
+    props?.onBusyChange?.(value);
+  };
   const dispatch = useDispatch();
   const itineraryId = useSelector((state) => state.ItineraryId);
   const [showWarningModal, setShowWarningModal] = useState(false);
@@ -522,10 +528,17 @@ const Section = (props) => {
                 </div>
               ) : (
                 <div
-                  className="flex items-center gap-1 cursor-pointer"
-                  onClick={handleUpdate}
+                  className={`flex items-center gap-1 ${
+                    props?.disabled ? "cursor-not-allowed" : "cursor-pointer"
+                  }`}
+                  onClick={props?.disabled ? undefined : handleUpdate}
                 >
-                  <button className="ttw-btn-fill-yellow max-ph:w-full">Add to Itinerary</button>
+                  <button
+                    disabled={props?.disabled}
+                    className="ttw-btn-fill-yellow max-ph:w-full disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Add to Itinerary
+                  </button>
                 </div>
               )}
             </div>
