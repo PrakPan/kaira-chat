@@ -1,460 +1,350 @@
-// pages/theme/greece.tsx
+// pages/theme/greece-islands-done-right.tsx
 //
-// Greece theme page. Renders the same content as the Greece country page
-// (`/[continent]/[country]` -> europe/greece, id
-// "2b285f39-41e7-4100-99b7-1d20782e7437") with three theme-specific tweaks:
-//   1. The hero suggestion chips use the curated greece-islands-done-right
-//      prompts — short label shown, full prompt sent to chat.
-//   2. The "Other destinations in <continent>" section is hidden.
-//   3. A "Get Inspired" surface (mobile pinned bar + desktop inline section)
-//      exposes the same themed cards / traveller stories.
+// Greece Islands Done Right — an editorial, cinematic theme landing built from
+// the reusable CinematicThemeLanding component (converted from the older
+// CountryPage + GetInspiredSection surface). Place / experience cards save to
+// the trip ("+ Add"); the "Greece themes" shapes seed a plan; "Build trip"
+// opens the themed mini-form on /chat (island-count payload → /chatkit).
 
 import Head from "next/head";
 import { connect } from "react-redux";
 import { useEffect } from "react";
 import Layout from "../../components/Layout";
-import CountryPage from "../../containers/country/Index";
-import GetInspiredSection from "../../components/theme/GetInspiredSection";
-import axioslocationsinstance from "../../services/search/search";
-import setHotLocationSearch from "../../store/actions/hotLocationSearch";
-import { useAnalytics } from "../../hooks/useAnalytics";
-import type { ThemeConfig } from "../../components/bot-components/types/themeConfig";
-import greeceTravellerStories from "../../data/greeceTravellerStories";
-import { MERCURY_HOST } from "../../services/constants";
-import axios from "axios";
-import axiospagelistinstance from "../../services/pages/list";
-import axioscountrydetailsinstance, {
-  getCountryPaths,
-} from "../../services/pages/country";
+import * as authaction from "../../store/actions/auth";
+import CinematicThemeLanding from "../../components/theme/cinematic/CinematicThemeLanding";
+import {
+  useSeedChat,
+  useOpenThemeForm,
+} from "../../components/theme/cinematic/useSeedChat";
+import { useThemeSelectionState } from "../../components/theme/cinematic/ThemeSelection";
+import type { CinematicThemeConfig } from "../../components/theme/cinematic/types";
 
+const THEME_SLUG = "greece-islands-done-right";
+const CDN = "https://d31aoa0ehgvjdi.cloudfront.net/media/website";
+const img = (name: string) => `${CDN}/${name}`;
 
-// Hardcoded to the Greece country page.
-const GREECE_ID = "2b285f39-41e7-4100-99b7-1d20782e7437";
-const GREECE_PATH = "europe/greece";
-const GREECE_CONTINENT = "europe";
-const GREECE_COUNTRY = "greece";
-
-const greeceThemeConfig: ThemeConfig = {
-  welcome: {
-    subtitle: "Greece is a big decision. Let's make it an easy one.",
-    promptChips: [
-      {
-        icon: "🌅",
-        label: "Is Santorini actually worth the hype?",
-        prompt:
-          "I'm planning an 11-day Greece trip and can dedicate 3 nights to Santorini. Tell me honestly if it's worth the cost and crowds, or if another island offers a better experience. Then build the best itinerary based on your recommendation.",
-      },
-      {
-        icon: "💶",
-        label: "I have Rs 1.8 lakh — what Greece actually get me?",
-        prompt:
-          "Plan an 8-day Greece trip for ₹1.8 lakh per person, including flights from India. Show what's realistically possible, which islands offer the best value, and create a complete itinerary with stays, transport, and daily experiences.",
-      },
-      {
-        icon: "🗺️",
-        label: "Build me a doable 10-day Greece itinerary",
-        prompt:
-          "Create a seamless 10-day Greece itinerary with Athens and the best island combination. Prioritize smooth connections, minimal travel time, and a relaxed pace, then map out the trip day by day.",
-      },
-      {
-        icon: "💍",
-        label: "Plan a romantic Greece trip for 2",
-        prompt:
-          "Design an 11–12 day Greece trip for a couple focused on romance, sunsets, great food, beautiful hotels, and slow travel. Recommend the ideal route, best islands, and a complete day-by-day itinerary.",
-      },
-    ],
-  },
-  rows: [
-    {
-      heading: "From the Acropolis to the Aegean",
-      icon: "🏛️",
-      cards: [
-        {
-          image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Athens.jpg",
-          label: "Athens — Ruins and Rooftops",
-          tags: "History · City",
-          description: "2,500 years. Still buzzing.",
-          prompt:
-            "Show me how to spend 3 perfect days in Athens—covering ancient landmarks, great neighborhoods, rooftop dining, local culture, and the experiences most visitors miss.",
-        },
-        {
-          image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Santorini.jpg",
-          label: "Santorini — Blue Domes, Real Story",
-          tags: "Scenic · Romantic",
-          description: "The photo is real. Book early.",
-          prompt:
-            "Help me plan 3 unforgettable nights in Santorini. Where should I stay, what is actually worth doing, and how can I experience the island beyond the famous photos?",
-        },
-        {
-          image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Crete.jpg",
-          label: "Crete — More Than a Beach",
-          tags: "Culture · Beach",
-          description: "Biggest island. Wildly underrated.",
-          prompt:
-            "Build me the ideal 4-day Crete itinerary with historic sites, stunning beaches, local food, scenic towns, and the best way to experience the island like a traveler, not a tourist.",
-        },
-        {
-          image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Meteora.jpg",
-          label: "Meteora — Monasteries on Cliffs",
-          tags: "UNESCO · Spiritual",
-          description: "Built on nothing. Literally.",
-          prompt:
-            "Help me understand and explore Meteora in 2 days—covering the most impressive monasteries, viewpoints, history, and the smartest way to visit from Athens.",
-        },
-        {
-          image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Mykonos.jpg",
-          label: "Mykonos — Beyond the Party",
-          tags: "Beach · Nightlife",
-          description: "The calm side of Mykonos.",
-          prompt:
-            "I want to experience the beautiful side of Mykonos, not the party scene. Plan 2 memorable days and tell me if Mykonos is truly worth it compared to Paros or Naxos.",
-        },
-      ],
-    },
-    {
-      heading: "Greece Right Now",
-      icon: "🇬🇷",
-      cards: [
-        {
-          image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Easter in Greece.png",
-          label: "Easter in Greece — Nothing Like It",
-          sublabel: "April–May · Bigger than Christmas",
-          description: "Bigger than Christmas.",
-          prompt:
-            "Plan a Greece trip around Orthodox Easter. Show me the best place to experience the celebrations, how many days I need, where to stay, and how to build the rest of my itinerary around it.",
-        },
-        {
-          image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Epidaurus.png",
-          label: "Epidaurus — The Original Theatre",
-          sublabel: "June–August · 2,400 years old",
-          description: "2,400 years old.",
-          prompt:
-            "Help me experience a performance at Epidaurus. Explain what makes it special and build a short itinerary that combines it with Nafplio and Mycenae.",
-        },
-        {
-          image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Thessaloniki.jpg",
-          label: "Thessaloniki — Where Greeks Holiday",
-          sublabel: "Year-Round · More food per street",
-          description: "More food per street.",
-          prompt:
-            "Plan 2 days in Thessaloniki focused on great food, local culture, historic landmarks, and the best way to combine it with a wider mainland Greece trip.",
-        },
-        {
-          image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Hydra.jpg",
-          label: "Hydra — No Cars. Just Donkeys.",
-          sublabel: "90 minutes from Athens",
-          description: "90 minutes from Athens.",
-          prompt:
-            "Is Hydra worth 2 nights? Show me what a stay on this car-free island looks like, what to do, where to swim, and whether it works better as an overnight stay or day trip.",
-        },
-        {
-          image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Delphi.jpg",
-          label: "Delphi — Where Gods Were Consulted",
-          sublabel: "Day Trip · The centre of the ancient world",
-          description: "The centre of the ancient world.",
-          prompt:
-            "Help me visit Delphi the right way. Explain its history, the must-see highlights, and how to fit it into a mainland Greece itinerary with Athens or Meteora.",
-        },
-      ],
-    },
-    {
-      heading: "TTW's Greece Themes",
-      icon: "🎯",
-      cards: [
-        {
-          image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Classic Greek Islands.jpg",
-          label: "Classic Greek Islands",
-          sublabel: "Islands · Scenic",
-          description: "Santorini. Crete. One more.",
-          prompt:
-            "Plan the perfect 10-day Greek islands trip with Santorini, Crete, and one more island. Recommend the best route, ferry connections, day-by-day itinerary, and realistic mid-range costs.",
-        },
-        {
-          image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Greece With Kids.png",
-          label: "Greece With Kids",
-          sublabel: "Family · Islands",
-          description: "Ruins, beaches, feta.",
-          prompt:
-            "Build a family-friendly 10-day Greece itinerary with the best islands, beaches, ancient sites, and travel pace for children aged 8–13. Include accommodation advice, daily plans, and costs.",
-        },
-        {
-          image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Honeymoon in Greece.png",
-          label: "Honeymoon in Greece",
-          sublabel: "Romantic · Luxury",
-          description: "Blue domes. No crowds.",
-          prompt:
-            "Design an 11-day Greece honeymoon combining iconic Santorini with a quieter romantic island. Include luxury stays, special experiences, dining recommendations, and a complete itinerary.",
-        },
-        {
-          image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Greece Under Rs 1.8 Lakh Per Person.jpg",
-          label: "Greece Under Rs 1.8 Lakh Per Person",
-          sublabel: "Budget · Islands",
-          description: "Aegean, minus the bill.",
-          prompt:
-            "Plan a 7-day Greece trip under ₹1.8 lakh per person including flights. Recommend the best-value destinations, realistic hotels, transport, and a complete day-by-day itinerary.",
-        },
-        {
-          image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Greece Mainland.png",
-          label: "Greece Mainland — Ancient Greek Journey",
-          sublabel: "History · Culture",
-          description: "Before the islands existed.",
-          prompt:
-            "Create a 10-day mainland Greece itinerary focused on Athens, Delphi, Meteora, Mycenae, Epidaurus, and Nafplio. Include transport, daily plans, and the key stories behind each site.",
-        },
-      ],
-    },
-    {
-      heading: "Only in Greece — Experiences Worth Flying For",
-      icon: "✨",
-      cards: [
-        {
-          image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Acropolis.jpg",
-          label: "Acropolis — 8am, No One Else",
-          tags: "History · Athens",
-          description: "You and the Parthenon.",
-          prompt:
-            "Show me how to experience the Acropolis before the crowds. Build the perfect morning, explain what makes the Parthenon special, and help me fit the Acropolis Museum into the day.",
-        },
-        {
-          image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Catamaran.jpg",
-          label: "Catamaran — Santorini From the Sea",
-          tags: "Luxury · Santorini",
-          description: "Better from the water.",
-          prompt:
-            "Plan the ultimate Santorini catamaran experience. Compare private vs shared cruises, highlight the best stops, costs, and timing, and show where it fits into a 3-night stay.",
-        },
-        {
-          image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Samaria Gorge.png",
-          label: "Samaria Gorge — Hike, Then Beach",
-          tags: "Hiking · Crete",
-          description: "16km. Worth every step.",
-          prompt:
-            "Help me tackle the Samaria Gorge. Explain the hike, fitness level required, logistics, what to pack, and how to fit it into a relaxed 4-day Crete itinerary.",
-        },
-        {
-          image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Cook Greek — In a Local Home.png",
-          label: "Cook Greek — In a Local Home",
-          tags: "Food · Cultural",
-          description: "A Greek grandmother's kitchen.",
-          prompt:
-            "Find me an authentic Greek cooking experience with locals. Explain what I'll learn, where to do it, what it costs, and how to build a full food-focused day around it.",
-        },
-        {
-          image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Sail the Cyclades — Your Own Route.png",
-          label: "Sail the Cyclades — Your Own Route",
-          tags: "Sailing · Islands",
-          description: "New island every morning.",
-          prompt:
-            "Help me plan a week-long Cyclades sailing adventure. Recommend the best islands, costs, sailing route, and whether chartering a boat beats traditional island hopping.",
-        },
-      ],
-    },
-  ],
-  travellerStories: greeceTravellerStories,
+const PROMPTS = {
+  santorini:
+    "I'm planning an 11-day Greece trip and can dedicate 3 nights to Santorini. Tell me honestly if it's worth the cost and crowds, or if another island offers a better experience. Then build the best itinerary based on your recommendation.",
+  budget:
+    "Plan an 8-day Greece trip for ₹1.8 lakh per person, including flights from India. Show what's realistically possible, which islands offer the best value, and create a complete itinerary with stays, transport, and daily experiences.",
+  tenDay:
+    "Create a seamless 10-day Greece itinerary with Athens and the best island combination. Prioritize smooth connections, minimal travel time, and a relaxed pace, then map out the trip day by day.",
+  romantic:
+    "Design an 11–12 day Greece trip for a couple focused on romance, sunsets, great food, beautiful hotels, and slow travel. Recommend the ideal route, best islands, and a complete day-by-day itinerary.",
+  // Greece themes — shapes (create a plan)
+  classicIslands:
+    "Plan the perfect 10-day Greek islands trip with Santorini, Crete, and one more island. Recommend the best route, ferry connections, day-by-day itinerary, and realistic mid-range costs.",
+  withKids:
+    "Build a family-friendly 10-day Greece itinerary with the best islands, beaches, ancient sites, and travel pace for children aged 8–13. Include accommodation advice, daily plans, and costs.",
+  honeymoon:
+    "Design an 11-day Greece honeymoon combining iconic Santorini with a quieter romantic island. Include luxury stays, special experiences, dining recommendations, and a complete itinerary.",
+  budgetTheme:
+    "Plan a 7-day Greece trip under ₹1.8 lakh per person including flights. Recommend the best-value destinations, realistic hotels, transport, and a complete day-by-day itinerary.",
+  mainland:
+    "Create a 10-day mainland Greece itinerary focused on Athens, Delphi, Meteora, Mycenae, Epidaurus, and Nafplio. Include transport, daily plans, and the key stories behind each site.",
+  build:
+    "We are 2 travellers, and our travel dates are flexible. Build my complete Greece itinerary around the islands and experiences I've saved on this page — route Athens and the Cyclades with smooth ferry connections at a relaxed pace, then price it.",
+  ask:
+    "Which Greece trip should I do — the classic Santorini + Mykonos run, a slower Cyclades hop with Naxos, or add Crete? Compare the pace, the ferries, the cost, and the best month, then build the full itinerary for the one you recommend.",
 };
 
-// Hero suggestion chips: show the short label, send the full prompt to chat.
-const GREECE_HERO_PROMPTS = (greeceThemeConfig.welcome?.promptChips ?? []).map(
-  (chip) => ({ label: chip.label, prompt: chip.prompt })
-);
+const greeceConfig: CinematicThemeConfig = {
+  header: { title: "Greece islands", subtitle: "Theme · Greece · May – Oct" },
+  hero: {
+    eyebrow: "ATHENS · A CALDERA SUNSET · THE CYCLADES BY FERRY",
+    heading: { lead: "Greece, the islands", accent: "done right" },
+    lede: "Greece is a big decision. Let's make it an easy one. Tell me how many islands and how many of you, and I'll route Athens and the Cyclades so no day is wasted on a ferry.",
+    placeholder: "Try: Athens, Santorini and Naxos, 9 nights in May",
+    prompt: PROMPTS.tenDay,
+    chips: [
+      { label: "Is Santorini worth the hype?", prompt: PROMPTS.santorini },
+      { label: "₹1.8 lakh — what do I get?", prompt: PROMPTS.budget },
+      { label: "A doable 10-day itinerary", prompt: PROMPTS.tenDay },
+      { label: "A romantic Greece for 2", prompt: PROMPTS.romantic },
+    ],
+    images: [
+      { image: img("Santorini.jpg"), caption: "Santorini, caldera" },
+      { image: img("Athens.jpg"), caption: "Athens, the Acropolis" },
+      { image: img("Crete.jpg"), caption: "Crete, the south" },
+      { image: img("Mykonos.jpg"), caption: "Mykonos, quiet side" },
+    ],
+  },
+  sections: [
+    // ── From the Acropolis to the Aegean (save places) ──
+    {
+      type: "cards",
+      selectable: true,
+      itemKind: "place",
+      heading: { lead: "From the Acropolis", accent: "to the Aegean" },
+      cards: [
+        {
+          image: img("Athens.jpg"),
+          name: "Athens — ruins and rooftops",
+          line: "2,500 years. Still buzzing.",
+          tag: "History · City",
+        },
+        {
+          image: img("Santorini.jpg"),
+          name: "Santorini — blue domes, real story",
+          line: "The photo is real. Book early.",
+          tag: "Scenic · Romantic",
+        },
+        {
+          image: img("Crete.jpg"),
+          name: "Crete — more than a beach",
+          line: "Biggest island. Wildly underrated.",
+          tag: "Culture · Beach",
+        },
+        {
+          image: img("Meteora.jpg"),
+          name: "Meteora — monasteries on cliffs",
+          line: "Built on nothing. Literally.",
+          tag: "UNESCO",
+        },
+        {
+          image: img("Mykonos.jpg"),
+          name: "Mykonos — beyond the party",
+          line: "The calm side of Mykonos.",
+          tag: "Beach",
+        },
+      ],
+    },
+    // ── Greece right now (save experiences) ──
+    {
+      type: "cards",
+      selectable: true,
+      itemKind: "experience",
+      heading: { lead: "Greece", accent: "right now" },
+      cards: [
+        {
+          image: img("Easter in Greece.png"),
+          name: "Easter in Greece — nothing like it",
+          line: "Bigger than Christmas.",
+          tag: "Apr – May",
+        },
+        {
+          image: img("Epidaurus.png"),
+          name: "Epidaurus — the original theatre",
+          line: "2,400 years old.",
+          tag: "Jun – Aug",
+        },
+        {
+          image: img("Thessaloniki.jpg"),
+          name: "Thessaloniki — where Greeks holiday",
+          line: "More food per street.",
+          tag: "Year-round",
+        },
+        {
+          image: img("Hydra.jpg"),
+          name: "Hydra — no cars, just donkeys",
+          line: "90 minutes from Athens.",
+          tag: "Day trip",
+        },
+        {
+          image: img("Delphi.jpg"),
+          name: "Delphi — where gods were consulted",
+          line: "The centre of the ancient world.",
+          tag: "Day trip",
+        },
+      ],
+    },
+    // ── TTW's Greece themes (create a plan) ──
+    {
+      type: "cards",
+      tone: "sand",
+      ctaLabel: "Create plan →",
+      heading: { lead: "TTW's Greece", accent: "themes" },
+      cards: [
+        {
+          image: img("Classic Greek Islands.jpg"),
+          name: "Classic Greek Islands",
+          line: "Santorini. Crete. One more.",
+          tag: "Islands",
+          prompt: PROMPTS.classicIslands,
+        },
+        {
+          image: img("Greece With Kids.png"),
+          name: "Greece with kids",
+          line: "Ruins, beaches, feta.",
+          tag: "Family",
+          prompt: PROMPTS.withKids,
+        },
+        {
+          image: img("Honeymoon in Greece.png"),
+          name: "Honeymoon in Greece",
+          line: "Blue domes. No crowds.",
+          tag: "Romantic",
+          prompt: PROMPTS.honeymoon,
+        },
+        {
+          image: img("Greece Under Rs 1.8 Lakh Per Person.jpg"),
+          name: "Greece under ₹1.8 lakh per person",
+          line: "Aegean, minus the bill.",
+          tag: "Budget",
+          prompt: PROMPTS.budgetTheme,
+        },
+        {
+          image: img("Greece Mainland.png"),
+          name: "Greece mainland — ancient journey",
+          line: "Before the islands existed.",
+          tag: "History",
+          prompt: PROMPTS.mainland,
+        },
+      ],
+    },
+    // ── Only in Greece — experiences (save experiences) ──
+    {
+      type: "cards",
+      selectable: true,
+      itemKind: "experience",
+      heading: { lead: "Only in Greece —", accent: "experiences worth flying for" },
+      cards: [
+        {
+          image: img("Acropolis.jpg"),
+          name: "Acropolis — 8am, no one else",
+          line: "You and the Parthenon.",
+          tag: "Athens",
+        },
+        {
+          image: img("Catamaran.jpg"),
+          name: "Catamaran — Santorini from the sea",
+          line: "Better from the water.",
+          tag: "Santorini",
+        },
+        {
+          image: img("Samaria Gorge.png"),
+          name: "Samaria Gorge — hike, then beach",
+          line: "16km. Worth every step.",
+          tag: "Crete",
+        },
+        {
+          image: img("Cook Greek — In a Local Home.png"),
+          name: "Cook Greek — in a local home",
+          line: "A Greek grandmother's kitchen.",
+          tag: "Food",
+        },
+        {
+          image: img("Sail the Cyclades — Your Own Route.png"),
+          name: "Sail the Cyclades — your own route",
+          line: "New island every morning.",
+          tag: "Sailing",
+        },
+      ],
+    },
+    // ── Other themes ──
+    {
+      type: "gradient",
+      heading: { eyebrow: "Other themes", lead: "Somewhere else?", accent: "Try these" },
+      columns: 4,
+      cards: [
+        {
+          name: "Filmy getaways",
+          meta: "Bollywood + Hollywood",
+          emoji: "🎬",
+          gradient: "linear-gradient(150deg, #16324f, #3d4f7a)",
+          href: "/theme/filmy-getaways",
+        },
+        {
+          name: "Christmas markets",
+          meta: "Nov – Jan",
+          emoji: "🎄",
+          gradient: "linear-gradient(150deg, #16324f, #1f8a5a 150%)",
+          href: "/theme/christmas-markets",
+        },
+        {
+          name: "Hokkaido powder",
+          meta: "Dec – Mar",
+          emoji: "🎿",
+          gradient: "linear-gradient(150deg, #16324f, #3d4f7a)",
+          href: "/theme/hokkaido-powder",
+        },
+        {
+          name: "Northern lights",
+          meta: "Nov – Mar",
+          emoji: "🌌",
+          gradient: "linear-gradient(150deg, #0e1530, #445069)",
+          href: "/theme/northern-lights",
+        },
+      ],
+    },
+    // ── How it works ──
+    {
+      type: "steps",
+      heading: {
+        eyebrow: "No markups · pay only for what you book",
+        lead: "Sketch it. I'll",
+        accent: "finish it.",
+      },
+      steps: [
+        { n: "1", title: "Tell me your length", sub: "and how many of you." },
+        { n: "2", title: "I route the ferries", sub: "Athens + the Cyclades." },
+        { n: "3", title: "You book", sub: "only what you love." },
+      ],
+      cta: { label: "Start planning", prompt: PROMPTS.tenDay },
+      note: "10,000+ trips · rated 4.9 across all of them",
+    },
+  ],
+  askBar: {
+    placeholder: "Ask me about the Greek islands…",
+    cta: "Ask Kaira",
+    prompt: PROMPTS.ask,
+    buildPrompt: PROMPTS.build,
+    buildCta: "Build trip",
+  },
+};
 
-const GreeceThemePage = (props: any) => {
-  const { trackPageView } = useAnalytics();
+const GreeceIslandsThemePage = ({
+  checkAuthState,
+}: {
+  checkAuthState: () => void;
+}) => {
+  const seedChat = useSeedChat();
+  const selection = useThemeSelectionState();
+  const openThemeForm = useOpenThemeForm();
+  const handleSelectPrompt = (prompt: string) =>
+    seedChat(prompt, { items: selection.items, slug: THEME_SLUG });
+  const handleBuild = () => openThemeForm(THEME_SLUG, selection.items);
 
   useEffect(() => {
-    props.setHotLocationSearch(props.hotLocationSearch);
-    trackPageView(props.Type, `${props?.Data?.name} Page`);
-  }, [props?.hotLocationSearch]);
+    checkAuthState();
+  }, []);
 
   return (
-    <Layout
-      destination={props?.Data?.name}
-      id={props?.Data?.id}
-      page={"Country Page"}
-    >
+    <Layout page="Theme Page" slug="greece-islands-done-right">
       <Head>
         <title>
-          {props?.Data?.name} | AI Trip Planner & Custom Travel Itineraries | The Tarzan Way
+          Greece Islands Done Right | Trip Planner & Itinerary | The Tarzan Way
         </title>
         <meta
           name="description"
-          content={`Discover ${props?.Data?.name} with The Tarzan Way's AI Trip Planner. Book your flights, accommodations, and transfers all in one go and discover must-visit destinations for an extraordinary journey.`}
-        ></meta>
+          content="Plan a Greek islands trip with The Tarzan Way's AI itinerary — Athens, a Santorini caldera sunset, and the Cyclades by ferry. Island-hop Mykonos, Naxos and Crete at a relaxed pace, for Indian travellers."
+        />
         <meta
           property="og:title"
-          content={
-            props?.Data?.name + " | AI Trip Planner & Custom Travel Itineraries | The Tarzan Way"
-          }
+          content="Greece Islands Done Right | Trip Planner & Itinerary | The Tarzan Way"
         />
         <meta
           property="og:description"
-          content={`Discover ${props?.Data?.name} with The Tarzan Way's AI Trip Planner. Book your flights, accommodations, and transfers all in one go and discover must-visit destinations for an extraordinary journey.`}
+          content="Plan a Greek islands trip with The Tarzan Way's AI itinerary — Athens, a Santorini caldera sunset, and the Cyclades by ferry. Island-hop Mykonos, Naxos and Crete at a relaxed pace, for Indian travellers."
         />
-        <meta property="og:image" content="/logoblack.svg" />
-        <meta
-          property="keywords"
-          content={`${props?.Data?.name} trip planner, ai trip planner, trip planner, itinerary, travel plan, ai itinerary, ai plan, craft a trip, travel in ${props?.Data?.name}, ${props?.Data?.name} tour package, experience ${props?.Data?.name} culture, ${props?.Data?.name} holiday package, local travel experience, customized trip planner, customized holiday packages, customized packages in computer, honeymoon travel packages, personalized travel package, best places in ${props?.Data?.name}, places to visit in ${props?.Data?.name}, best activities in ${props?.Data?.name}, things to do in ${props?.Data?.name}, package for ${props?.Data?.name}, top places in ${props?.Data?.name}, wanderlog, inspirock, tripit, hotels, flights, activities, transfers, solo travel, family travel,`}
-        ></meta>
-
         <link
           rel="canonical"
-          href={`https://thetarzanway.com/theme/greece`}
-        ></link>
-        <script
-          type="module"
-          crossOrigin=""
-          src="/vendor/panorama-slider.js"
-        ></script>
-        <link
-          rel="stylesheet"
-          crossOrigin=""
-          href="/vendor/panorama-slider.css"
-        ></link>
+          href="https://thetarzanway.com/theme/greece-islands-done-right"
+        />
       </Head>
-
-      <CountryPage
-        continetCarousel={props?.continetCarousel}
-        data={props?.Data}
-        // Empty locations hides the "Other destinations in <continent>" section.
-        locations={[]}
-        // Hide the Banner's mobile bar here — the "Get Inspired" pinned bar
-        // already occupies the bottom of the viewport on mobile.
-        hideMobileBanner
-        page_id={props.page_id || ""}
-        type={props?.Type}
-        slug={"theme-greece"}
-        // Powers the HeroV2 "Get inspired" drawer (desktop) — same StartScreen
-        // content as the GetInspiredSection surface below.
-        themeConfig={greeceThemeConfig}
-      ></CountryPage>
-
-      <GetInspiredSection themeConfig={greeceThemeConfig} />
-
-      {/* Spacer so the mobile pinned "Get Inspired" bar never covers content. */}
-      <div className="md:hidden" style={{ height: 56 }} aria-hidden />
+      <CinematicThemeLanding
+        config={greeceConfig}
+        onSelectPrompt={handleSelectPrompt}
+        selection={selection}
+        onBuild={handleBuild}
+      />
     </Layout>
   );
 };
 
-export async function getStaticProps() {
-  let data: any = null;
-  const continetCarousel: any[] = [];
-  let hotLocationSearch: any[] = [];
-  const Type = "Country";
+const mapDispatchToProps = (dispatch: any) => ({
+  checkAuthState: () => dispatch(authaction.checkAuthState()),
+});
 
-  try {
-    // Production mercury: the dev host returns a null `seasonal_info` for this
-    // id (so "When to go" wouldn't render), while prod has the populated data.
-    const res = await axios.get(
-      `https://mercury.tarzanway.com/api/v1/geos/country/${GREECE_ID}`
-    );
-    data = res.data.data.country;
-
-    if (!data) {
-      return {
-        notFound: true,
-      };
-    }
-
-    // Override the hero prompts with the curated greece-islands prompts
-    // (label shown, full prompt sent to chat).
-    data = { ...data, model_prompts: GREECE_HERO_PROMPTS };
-
-    //mercury api
-   const continentData = await axiospagelistinstance.get(
-      "/?page_type=Continent&fields=id,page_type,slug,overview_image,tagline,path"
-    );
-    for (let i = 0; i < continentData.data.data.pages.length; i++) {
-      let continentSlug = continentData.data.data.pages[i].slug;
-
-     const countrydetailsResponse = await axioscountrydetailsinstance.get(
-        `?limit=111&offset=0&continent=${continentSlug}`
-      );
-
-
-      let hot_data = countrydetailsResponse.data.data.countries.filter(
-        (d: any) => d.is_hot_location
-      );
-      hot_data = hot_data.slice(0, 6);
-
-      continetCarousel.push({
-        ...continentData.data.data.pages[i],
-        hot_destinations: hot_data,
-      });
-    }
-  } catch (err: any) {
-    console.error("[ERROR][greeceThemePage:getStaticProps]: ", err.message);
-  }
-
-  try {
-    //dev api
-    const response = await axioslocationsinstance.get(
-      `hot_destinations/?country=${GREECE_COUNTRY}/`
-    );
-    if (response.data?.length) {
-      hotLocationSearch = response.data;
-    }
-  } catch (err) {
-    console.log(
-      `[ERROR][greeceThemePage][axioslocationsinstance:/hot_destinations/?continent=${GREECE_CONTINENT}/]`
-    );
-  }
-
-  // TEMP-VERIFY-STUB: local sandbox blocks Mercury (400), so fall back to a
-  // minimal data object purely to render the page for visual verification.
-  if (!data) {
-    data = {
-      id: GREECE_ID,
-      name: "Greece",
-      slug: "greece",
-      continent: "europe",
-      path: GREECE_PATH,
-      model_prompts: GREECE_HERO_PROMPTS,
-      locations: [],
-      states: [],
-      activities: [],
-      pois: [],
-      itineraries: [],
-    };
-  }
-
-  return {
-    props: {
-      Data: data,
-      continetCarousel,
-      path: GREECE_PATH,
-      hotLocationSearch,
-      page_id: GREECE_ID,
-      Type,
-    },
-  };
-}
-
-const mapDispatchToProps = (dispatch: any) => {
-  return {
-    setHotLocationSearch: (payload: any) =>
-      dispatch(setHotLocationSearch(payload)),
-  };
-};
-
-export default connect(null, mapDispatchToProps)(GreeceThemePage);
+export default connect(null, mapDispatchToProps)(GreeceIslandsThemePage);

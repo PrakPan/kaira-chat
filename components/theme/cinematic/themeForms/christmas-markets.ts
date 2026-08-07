@@ -61,6 +61,13 @@ const christmasMarketsForm: ThemeForm = {
       fareNote: "Short NYE hit; PRG in / VIE out.",
     },
   ],
+  hero: {
+    image:
+      "https://images.unsplash.com/photo-1512389142860-9c449e58a543?w=1200",
+    title: "Christmas markets",
+    subtext: "Glühwein, lantern-lit squares, and New Year's Eve across Europe.",
+    tag: "Europe · Nov – Jan",
+  },
   paxPresets: ["Just us 2", "Family of 4", "Friends of 4", "Group of 6"],
   allowExactDates: true,
   seedPrompts: [

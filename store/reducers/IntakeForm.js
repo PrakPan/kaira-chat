@@ -37,6 +37,10 @@ export const initialIntakeFormState = {
   // True while the `/chatkit/context-chips` request for the notes step is in
   // flight — the notes step shows shimmer chips until it resolves.
   noteHintsLoading: false,
+  // Left-panel hero for the themed mini-form flow (image + copy), set when a
+  // theme page's "Build trip" opens /chat. Null on the normal intake flow —
+  // there the left panel follows the picked destination instead.
+  themeHero: null,
 };
 
 const reducer = (state = initialIntakeFormState, action) => {

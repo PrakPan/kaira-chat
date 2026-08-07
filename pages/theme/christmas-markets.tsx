@@ -229,7 +229,7 @@ const christmasMarketsConfig: CinematicThemeConfig = {
         },
       ],
     },
-    // ── Experiences (each opens the activity details drawer) ──
+    // ── Experiences (card click opens the drawer; "+ Add" saves to the trip) ──
     {
       type: "cards",
       selectable: true,
@@ -281,10 +281,10 @@ const christmasMarketsConfig: CinematicThemeConfig = {
       ],
     },
     // ── Markets — tap a city to open its city details (all its tours) ──
+    // Route-defining cities — NOT saveable (the mini-form's route picks these).
+    // Tapping a card still opens the city page for its tours/activities.
     {
       type: "list",
-      selectable: true,
-      itemKind: "city",
       heading: {
         lead: "Which square is",
         accent: "worth the stop",

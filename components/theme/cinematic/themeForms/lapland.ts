@@ -60,6 +60,13 @@ const laplandForm: ThemeForm = {
       fareNote: "Cheapest of the season; longer daylight.",
     },
   ],
+  hero: {
+    image:
+      "https://d31aoa0ehgvjdi.cloudfront.net/media/website/lapland-2026/Rovaniemi.png",
+    title: "Lapland",
+    subtext: "Santa's own town, husky trails, and the aurora over a glass roof.",
+    tag: "Arctic · Nov – Mar",
+  },
   paxPresets: ["Family of 4", "Just us 2", "Friends of 4", "Group of 6"],
   allowExactDates: true,
   seedPrompts: [

@@ -26,6 +26,15 @@ export interface ThemeFormCopy {
   cta: string;
 }
 
+// Left-hero content shown on /chat's IntakeLeftPanel while the themed form is
+// open (there's no destination picked yet). One theme image + a line of copy.
+export interface ThemeFormHero {
+  image: string;
+  title?: string;
+  subtext?: string;
+  tag?: string; // the little pill (e.g. "Japan · winter")
+}
+
 export interface ThemeForm {
   slug: string;
   display: string;
@@ -36,6 +45,7 @@ export interface ThemeForm {
   paxPresets: string[];
   allowExactDates: boolean;
   seedPrompts: string[]; // quick-reply chips below the composer
+  hero?: ThemeFormHero; // left-panel hero on /chat
 }
 
 // The structured first-message payload sent to /chatkit on submit. `items` is
@@ -47,4 +57,6 @@ export interface ThemeFormSubmission {
   dates: [string, string]; // [start, end] — from the window, or exact-date picks
   pax: string; // chosen pax preset
   items?: Array<{ kind?: string; label?: string; short?: string; id?: string }>;
+  // Quick-reply chips the reader toggled on in the form (seed_prompts).
+  prompts?: string[];
 }

@@ -2999,6 +2999,10 @@ export default function BotApp({
       setShowStartScreen(false);
       setIsChatActive(true);
       setSeedActive(true);
+      // Feed the left hero panel the theme's image + copy (no destination is
+      // picked in the themed flow, so IntakeLeftPanel would otherwise show the
+      // default hero).
+      dispatch(updateIntakeForm({ themeHero: resolvedThemeForm.hero ?? null }));
       // Drop ?themeForm from the URL so a refresh doesn't re-open the form.
       if (querySeed == null && typeof window !== "undefined") {
         try {

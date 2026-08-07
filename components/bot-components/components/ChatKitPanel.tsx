@@ -1962,6 +1962,9 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
     if (!form) return;
     themedFormInjectedRef.current = true;
     suppressIntakeAutoScrollRef.current = true;
+    // Kaira's opener (the theme tagline) rides as a normal assistant bubble so
+    // it gets her avatar + styling like every other message; the form card
+    // follows it.
     setMessages((prev) => [
       ...prev,
       {
@@ -4200,13 +4203,19 @@ const handleShowLogin = useCallback(() => {
                 );
               }
               if (msg.type === "theme_form" && themeFormRef.current) {
+                // Match the regular intake card's container: indent it into the
+                // message column on desktop (not stuck to the left gutter) and
+                // cap the width; full-width on mobile.
                 return (
-                  <div key={msg.id} style={{ padding: "4px 0 8px" }}>
+                  <div
+                    key={msg.id}
+                    className="ml-10 mb-4 w-[calc(100%-40px)] max-ph:ml-0 max-ph:w-auto"
+                    style={{ maxWidth: 480, paddingTop: 4, paddingBottom: 8 }}
+                  >
                     <ThemeIntakeForm
                       form={themeFormRef.current}
                       items={themeItems}
                       onSubmit={handleThemedFormSubmit}
-                      onSeedPrompt={(t) => sendMessage(t)}
                     />
                   </div>
                 );

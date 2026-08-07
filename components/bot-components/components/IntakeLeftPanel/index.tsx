@@ -145,6 +145,11 @@ const IntakeLeftPanel: React.FC = () => {
   const destination = useSelector(
     (s: any) => (s.IntakeForm as IntakeFormState)?.destination,
   );
+  // Theme hero (image + copy) for the themed mini-form flow — used when no
+  // destination is picked (see BotApp's themed-form branch).
+  const themeHero = useSelector(
+    (s: any) => (s.IntakeForm as IntakeFormState)?.themeHero,
+  );
 
   // Resolve a base image from what the destination already carries: its own
   // image, or a curated featured tile matched by name.
@@ -173,8 +178,9 @@ const IntakeLeftPanel: React.FC = () => {
   }, [directImage, destination?.name]);
 
   // The candidate hero before any load-error fallback. If it fails to load we
-  // drop back to the default hero image.
-  const candidate = directImage || suggestImage;
+  // drop back to the default hero image. The theme hero image is used when no
+  // destination is picked (themed mini-form flow).
+  const candidate = directImage || suggestImage || themeHero?.image || null;
   const [imgError, setImgError] = useState(false);
   useEffect(() => setImgError(false), [candidate]);
 
@@ -198,10 +204,11 @@ const IntakeLeftPanel: React.FC = () => {
   // Big title: destination name with "your way" beneath it; the destination's
   // headline copy becomes the subtext. Falls back to the default hero copy
   // before any destination is picked.
-  const title = destination?.name || null;
-  const subtext = destination?.headline || null;
+  const title = destination?.name || themeHero?.title || null;
+  const subtext = destination?.headline || themeHero?.subtext || null;
   const placeTag =
     destination?.place_tag ||
+    themeHero?.tag ||
     (destination ? destination.country || "Your pick" : DEFAULT_HERO.place_tag);
 
   return (

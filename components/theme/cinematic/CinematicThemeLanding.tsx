@@ -1914,13 +1914,42 @@ const AskKairaStrip: React.FC<{
     ? `${bar.buildCta ?? "Build trip"} · ${count}`
     : bar.buildCta ?? "Build trip";
 
-  // Short category tag shown on each saved row (POI / EAT / DO / SCENE …).
-  const tagFor = (kind?: string) => {
-    const k = (kind || "poi").toLowerCase();
-    if (k.startsWith("rest")) return "EAT";
-    if (k.startsWith("act")) return "DO";
-    return k.toUpperCase();
+  // Human label for a saved item's kind (singular). Used for the row tag and
+  // the per-type summary chips (e.g. "poi" → "place", "do" → "activity").
+  const KIND_LABEL: Record<string, string> = {
+    poi: "place",
+    place: "place",
+    do: "activity",
+    activity: "activity",
+    experience: "experience",
+    restaurant: "restaurant",
+    cafe: "café",
+    city: "city",
+    base: "base",
+    ticket: "ticket",
+    scene: "scene",
   };
+  const kindName = (kind?: string) =>
+    KIND_LABEL[(kind || "poi").toLowerCase()] ?? (kind || "place").toLowerCase();
+  const pluralize = (word: string, n: number) => {
+    if (n === 1) return word;
+    if (word.endsWith("y")) return `${word.slice(0, -1)}ies`;
+    if (word.endsWith("s")) return word;
+    return `${word}s`;
+  };
+
+  // Group the selection by kind for the summary chips (e.g. "3 experiences",
+  // "2 places"), preserving first-seen order.
+  const kindCounts: Array<[string, number]> = [];
+  const seenKinds: Record<string, number> = {};
+  items.forEach((it) => {
+    const k = kindName(it.kind);
+    if (seenKinds[k] === undefined) {
+      seenKinds[k] = kindCounts.length;
+      kindCounts.push([k, 0]);
+    }
+    kindCounts[seenKinds[k]][1] += 1;
+  });
 
   const listOpen = hasSelection && expanded;
 
@@ -1979,15 +2008,20 @@ const AskKairaStrip: React.FC<{
                 >
                   <span
                     className="ctl-mono shrink-0"
-                    style={{ fontSize: 9.5, color: FAINT, width: 46 }}
+                    style={{
+                      fontSize: 9.5,
+                      color: FAINT,
+                      whiteSpace: "nowrap",
+                    }}
                   >
-                    {tagFor(it.kind)}
+                    {kindName(it.kind).toUpperCase()}
                   </span>
                   <span
                     className="flex-1 min-w-0 truncate"
                     style={{ color: PAPER, fontWeight: 700, fontSize: 14.5 }}
+                    title={it.label || it.short}
                   >
-                    {it.short || it.label}
+                    {it.label || it.short}
                   </span>
                   <button
                     type="button"
@@ -2063,20 +2097,29 @@ const AskKairaStrip: React.FC<{
                 {count}
               </span>
             </span>
-            <span
-              className="shrink-0"
-              style={{
-                background: SAND,
-                borderRadius: 999,
-                padding: "6px 12px",
-                fontSize: 11,
-                color: MUTED,
-                fontWeight: 600,
-              }}
+            {/* One chip per selected type, e.g. "3 experiences · 2 places". */}
+            <div
+              className="ctl-scroll flex-1 min-w-0 flex items-center gap-[6px]"
+              style={{ overflowX: "auto" }}
             >
-              {count} {count === 1 ? "place" : "places"} saved
-            </span>
-            <span className="flex-1" />
+              {kindCounts.map(([k, n]) => (
+                <span
+                  key={k}
+                  className="shrink-0"
+                  style={{
+                    background: SAND,
+                    borderRadius: 999,
+                    padding: "6px 12px",
+                    fontSize: 11,
+                    color: MUTED,
+                    fontWeight: 600,
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {n} {pluralize(k, n)}
+                </span>
+              ))}
+            </div>
             <span
               className="shrink-0 flex items-center"
               style={{

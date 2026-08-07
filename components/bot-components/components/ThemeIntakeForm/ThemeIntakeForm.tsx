@@ -32,7 +32,6 @@ export interface ThemeIntakeFormProps {
   form: ThemeForm;
   items?: ThemeSelectedItemLike[];
   onSubmit: (submission: ThemeFormSubmission, composedText: string) => void;
-  onSeedPrompt?: (text: string) => void;
 }
 
 const mono: React.CSSProperties = {
@@ -46,7 +45,6 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
   form,
   items = [],
   onSubmit,
-  onSeedPrompt,
 }) => {
   // First date window + first pax preset are pre-selected so the reader can
   // submit in one tap (per _STRUCTURE.md behaviour).
@@ -56,6 +54,13 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
   const [fromDate, setFromDate] = React.useState("");
   const [toDate, setToDate] = React.useState("");
   const [submitted, setSubmitted] = React.useState(false);
+  // Selected quick-reply chips — toggled on/off and sent with the submission in
+  // one go when the reader hits the CTA (not sent immediately on tap).
+  const [selectedPrompts, setSelectedPrompts] = React.useState<string[]>([]);
+  const togglePrompt = (p: string) =>
+    setSelectedPrompts((prev) =>
+      prev.includes(p) ? prev.filter((x) => x !== p) : [...prev, p],
+    );
 
   const win = form.dateWindows[winIdx] ?? form.dateWindows[0];
 
@@ -66,24 +71,52 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
       ? [fromDate, toDate]
       : [win.range[0], win.range[1]];
 
+    // De-dupe saved items (a place can be reachable from more than one section).
+    // Cities that would define a route aren't offered as saves (see the page
+    // configs), so what arrives here are add-ons — activities, restaurants,
+    // POIs — safe to send alongside the chosen route.
+    const dedupedItems: ThemeSelectedItemLike[] = [];
+    const seen = new Set<string>();
+    for (const it of items) {
+      const key = it.id
+        ? `id:${it.id}`
+        : `${(it.kind || "").toLowerCase()}:${(it.label || it.short || "")
+            .trim()
+            .toLowerCase()}`;
+      if (!key.trim() || key === ":" || seen.has(key)) continue;
+      seen.add(key);
+      dedupedItems.push(it);
+    }
+
     const submission: ThemeFormSubmission = {
       slug: form.slug,
       window: win.key,
       skeleton: win.skeleton,
       dates,
       pax,
-      items: items.length ? items : undefined,
+      items: dedupedItems.length ? dedupedItems : undefined,
+      prompts: selectedPrompts.length ? selectedPrompts : undefined,
     };
 
-    const savedLine = items.length
-      ? ` Build it around the ${items.length} ${
-          items.length === 1 ? "place" : "places"
-        } I saved: ${items.map((i) => i.short || i.label).filter(Boolean).join(", ")}.`
+    // Include the window's blurb so the message reads with the chosen
+    // route/length (e.g. "Rhine Run · 8N — Strasbourg → Cologne → Amsterdam").
+    const routeLine = win.blurb ? ` — ${win.blurb}` : "";
+    const savedLine = dedupedItems.length
+      ? ` Build it around the ${dedupedItems.length} ${
+          dedupedItems.length === 1 ? "place" : "places"
+        } I saved: ${dedupedItems
+          .map((i) => i.short || i.label)
+          .filter(Boolean)
+          .join(", ")}.`
+      : "";
+    const promptLine = selectedPrompts.length
+      ? `\n• Also: ${selectedPrompts.join("; ")}`
       : "";
     const composed =
       `Here are my ${form.display} trip details:\n` +
-      `• When: ${win.label} (${dates[0]} to ${dates[1]})\n` +
+      `• When: ${win.label} (${dates[0]} to ${dates[1]})${routeLine}\n` +
       `• Travellers: ${pax}` +
+      promptLine +
       savedLine;
 
     setSubmitted(true);
@@ -91,8 +124,9 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
   };
 
   return (
-    <div style={{ width: "100%", maxWidth: 440 }}>
-      {/* The 2-section card */}
+    <div style={{ width: "100%" }}>
+      {/* The 2-section card (the tagline greeting is a separate message bubble
+          above, with Kaira's avatar). */}
       <div
         style={{
           background: "#ffffff",
@@ -353,7 +387,7 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
       </div>
 
       {/* footer under the card */}
-      {form.copy.footer && (
+      {/* {form.copy.footer && (
         <div
           style={{
             background: SAND,
@@ -367,30 +401,40 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
         >
           {form.copy.footer}
         </div>
-      )}
+      )} */}
 
-      {/* quick-reply chips */}
-      {onSeedPrompt && form.seedPrompts?.length > 0 && !submitted && (
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 10 }}>
-          {form.seedPrompts.map((s) => (
-            <button
-              key={s}
-              type="button"
-              onClick={() => onSeedPrompt(s)}
-              style={{
-                background: "#ffffff",
-                border: `1px solid ${BORDER}`,
-                borderRadius: 999,
-                padding: "8px 13px",
-                fontSize: 11.5,
-                fontWeight: 500,
-                color: MUTED,
-                cursor: "pointer",
-              }}
-            >
-              {s}
-            </button>
-          ))}
+      {/* Quick-reply chips — toggle-selectable. Selected chips are sent with the
+          submission when the CTA is clicked (not fired one at a time). */}
+      {form.seedPrompts?.length > 0 && !submitted && (
+        <div style={{ marginTop: 10 }}>
+          <div style={{ ...mono, color: FAINT, fontSize: 9, marginBottom: 6 }}>
+            Add any of these
+          </div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            {form.seedPrompts.map((s) => {
+              const on = selectedPrompts.includes(s);
+              return (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => togglePrompt(s)}
+                  aria-pressed={on}
+                  style={{
+                    background: on ? INK : "#ffffff",
+                    border: `1px solid ${on ? INK : BORDER}`,
+                    borderRadius: 999,
+                    padding: "8px 13px",
+                    fontSize: 11.5,
+                    fontWeight: on ? 700 : 500,
+                    color: on ? "#fafaf5" : MUTED,
+                    cursor: "pointer",
+                  }}
+                >
+                  {on ? `✓ ${s}` : s}
+                </button>
+              );
+            })}
+          </div>
         </div>
       )}
     </div>

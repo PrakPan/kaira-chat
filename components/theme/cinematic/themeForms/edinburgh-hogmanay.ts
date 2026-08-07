@@ -53,6 +53,13 @@ const edinburghHogmanayForm: ThemeForm = {
       fareNote: "LHR in / GLA out open-jaw; book early.",
     },
   ],
+  hero: {
+    image:
+      "https://images.unsplash.com/photo-1506377585622-bedcbb027afc?w=1200",
+    title: "Edinburgh Hogmanay",
+    subtext: "The world's biggest New Year — torchlit, fireworks over the castle.",
+    tag: "Scotland · 29 Dec – 2 Jan",
+  },
   paxPresets: ["Just us 2", "Solo", "Friends of 4", "Family of 4"],
   allowExactDates: true,
   seedPrompts: [

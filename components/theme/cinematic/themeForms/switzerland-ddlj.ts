@@ -50,6 +50,13 @@ const switzerlandDdljForm: ThemeForm = {
       fareNote: "Autumn shoulder; good fares.",
     },
   ],
+  hero: {
+    image:
+      "https://d31aoa0ehgvjdi.cloudfront.net/media/website/filmy-getaways-2026/DDLJ.png",
+    title: "Switzerland, cinematic",
+    subtext: "Slow trains, misty valleys, and café mornings — the DDLJ way.",
+    tag: "Switzerland",
+  },
   paxPresets: ["Just us 2", "Family of 4", "Friends of 4", "Group of 6"],
   allowExactDates: true,
   seedPrompts: [

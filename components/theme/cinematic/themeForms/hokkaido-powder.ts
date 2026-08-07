@@ -52,6 +52,12 @@ const hokkaidoPowderForm: ThemeForm = {
       fareNote: "Shoulder; cheapest of the season.",
     },
   ],
+  hero: {
+    image: "https://images.unsplash.com/photo-1551292831-023188e78222?w=1200",
+    title: "Hokkaido winter",
+    subtext: "The lightest powder on earth, onsens, and a train beneath the sea.",
+    tag: "Japan · Dec – Mar",
+  },
   paxPresets: ["Just us 2", "3", "Family of 4", "Group of 6"],
   allowExactDates: true,
   seedPrompts: [
