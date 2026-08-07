@@ -13,6 +13,11 @@
 
 const SEED_KEY = "ttw_hero_seed";
 const META_KEY = "ttw_hero_attachments_meta";
+// Structured context that rides alongside the seed prompt when a theme page
+// hands off to /chat — the items the user selected on the page and a slug that
+// identifies the theme. Serialisable, so (unlike files) it lives entirely in
+// sessionStorage and survives a hard reload of /chat. Read-once, like the seed.
+const SEED_META_KEY = "ttw_hero_seed_meta";
 
 let pendingFiles = [];
 
@@ -76,4 +81,46 @@ export const takePendingSeed = () => {
   const val = ss.getItem(SEED_KEY);
   if (val) ss.removeItem(SEED_KEY);
   return val || null;
+};
+
+/**
+ * Stash structured theme context (`{ items, slug }`) to hand off to /chat
+ * alongside the seed prompt. `items` is the list the user selected on the
+ * theme page; `slug` identifies the theme (e.g. "hokkaido-powder"). Passing a
+ * falsy/empty value clears any previously-stored context so a later plain seed
+ * doesn't inherit a stale selection.
+ */
+export const setPendingSeedMeta = (meta) => {
+  const ss = safeSession();
+  if (!ss) return;
+  const items = Array.isArray(meta?.items) ? meta.items.filter(Boolean) : [];
+  const slug = meta?.slug || "";
+  if (!slug && items.length === 0) {
+    ss.removeItem(SEED_META_KEY);
+    return;
+  }
+  try {
+    ss.setItem(SEED_META_KEY, JSON.stringify({ items, slug }));
+  } catch {
+    /* noop */
+  }
+};
+
+/** Read-once counterpart to setPendingSeedMeta. Returns `null` when nothing
+ *  was stashed, else `{ items, slug }`. */
+export const takePendingSeedMeta = () => {
+  const ss = safeSession();
+  if (!ss) return null;
+  const raw = ss.getItem(SEED_META_KEY);
+  if (!raw) return null;
+  ss.removeItem(SEED_META_KEY);
+  try {
+    const parsed = JSON.parse(raw);
+    return {
+      items: Array.isArray(parsed?.items) ? parsed.items : [],
+      slug: typeof parsed?.slug === "string" ? parsed.slug : "",
+    };
+  } catch {
+    return null;
+  }
 };

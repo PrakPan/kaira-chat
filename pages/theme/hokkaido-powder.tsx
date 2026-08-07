@@ -13,9 +13,17 @@ import { useEffect, useState } from "react";
 import Layout from "../../components/Layout";
 import * as authaction from "../../store/actions/auth";
 import CinematicThemeLanding from "../../components/theme/cinematic/CinematicThemeLanding";
-import { useSeedChat } from "../../components/theme/cinematic/useSeedChat";
+import {
+  useSeedChat,
+  useOpenThemeForm,
+} from "../../components/theme/cinematic/useSeedChat";
+import { useThemeSelectionState } from "../../components/theme/cinematic/ThemeSelection";
 import ActivityDetailsDrawer from "../../components/drawers/activityDetails/ActivityDetailsDrawer";
 import type { CinematicThemeConfig } from "../../components/theme/cinematic/types";
+
+// Identifies this theme in the /chatkit request body (`slug`), so the backend
+// knows which theme page a build request came from.
+const THEME_SLUG = "hokkaido-powder";
 
 const U = "https://images.unsplash.com";
 const w = (id: string) => `${U}/${id}?w=1200`;
@@ -108,6 +116,11 @@ const PROMPTS = {
   // Ask bar
   askBar:
     "Which Hokkaido winter trip should I do — Niseko powder week, Tokyo to Hokkaido by rail, or a Snow Festival week with softer slopes? Compare the powder, the pace, the cost, and the best month, then build the full itinerary for the one you recommend.",
+  // "Build this itinerary" — sent when the reader has saved places on the page.
+  // The saved items ride along in the /chatkit request; this brief tells Kaira
+  // to shape the trip around them.
+  buildItinerary:
+    "We are 2 travellers, and our travel dates are flexible. Build my complete Hokkaido winter itinerary around the places I've saved on this page — fit them into the right stops with skiing, onsens, scenic rail and Sapporo at a comfortable pace, then price it.",
 };
 
 const hokkaidoConfig: CinematicThemeConfig = {
@@ -165,11 +178,11 @@ const hokkaidoConfig: CinematicThemeConfig = {
         },
       ],
     },
-    // ── Activities (open the activity drawer) ──
+    // ── Activities (card click opens the drawer; "+ Add" saves to the trip) ──
     {
       type: "cards",
-      ctaLabel: "View details →",
-      ctaTone: "dark",
+      selectable: true,
+      itemKind: "activity",
       heading: { lead: "Activities worth", accent: "the day" },
       cards: [
         {
@@ -252,6 +265,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           line: "The powder capital — long groomers and legendary tree runs.",
           tag: "Niseko",
           prompt: PROMPTS.niseko,
+          item: { kind: "poi", label: "Niseko Tokyu Grand Hirafu", short: "Niseko · Grand Hirafu" },
         },
         {
           image: PIC.skiJump,
@@ -259,6 +273,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           line: "Ride to the Olympic ski jump for the view over Sapporo.",
           tag: "Sapporo",
           prompt: PROMPTS.okura,
+          item: { kind: "poi", label: "Okurayama Ski Jump Stadium", short: "Okurayama Ski Jump" },
         },
         {
           image: PIC.hillside,
@@ -266,6 +281,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           line: "Snow play, tubing and gentle cross-country near the city.",
           tag: "Sapporo",
           prompt: PROMPTS.takino,
+          item: { kind: "poi", label: "Takino Suzuran Hillside Park", short: "Takino Suzuran Park" },
         },
       ],
     },
@@ -283,6 +299,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           line: "Japan's only beer museum, with a tasting room to warm up in.",
           tag: "Sapporo",
           prompt: PROMPTS.beerMuseum,
+          item: { kind: "poi", label: "Sapporo Beer Museum", short: "Sapporo Beer Museum" },
         },
         {
           image: PIC.market,
@@ -290,6 +307,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           line: "Uni, crab and a steaming seafood breakfast bowl.",
           tag: "Sapporo",
           prompt: PROMPTS.nijoMarket,
+          item: { kind: "poi", label: "Nijo Fish Market", short: "Nijo Fish Market" },
         },
         {
           image: PIC.arcade,
@@ -297,6 +315,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           line: "A covered street of shops and izakayas for a snowy evening.",
           tag: "Sapporo",
           prompt: PROMPTS.tanukikoji,
+          item: { kind: "poi", label: "Tanukikoji Arcade", short: "Tanukikoji Arcade" },
         },
         {
           image: PIC.shrine,
@@ -304,6 +323,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           line: "A quiet, snow-covered shrine in Maruyama Park.",
           tag: "Sapporo",
           prompt: PROMPTS.hokkaidoShrine,
+          item: { kind: "poi", label: "Hokkaidō Shrine", short: "Hokkaidō Shrine" },
         },
         {
           image: PIC.brick,
@@ -311,6 +331,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           line: "Historic bayside warehouses, lit up over the winter harbour.",
           tag: "Hakodate",
           prompt: PROMPTS.kanemori,
+          item: { kind: "poi", label: "Kanemori Red Brick Warehouse", short: "Kanemori Warehouse" },
         },
         {
           image: PIC.tower,
@@ -318,6 +339,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           line: "The star-shaped fort, best seen under snow from above.",
           tag: "Hakodate",
           prompt: PROMPTS.goryokaku,
+          item: { kind: "poi", label: "Goryōkaku Tower", short: "Goryōkaku Tower" },
         },
       ],
     },
@@ -371,6 +393,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           rating: "4.4",
           reviews: "12,000",
           prompt: PROMPTS.beerGarden,
+          item: { kind: "restaurant", label: "Sapporo Beer Garden", short: "Sapporo Beer Garden" },
         },
         {
           image: PIC.furano,
@@ -380,6 +403,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           rating: "4.5",
           reviews: "3,800",
           prompt: PROMPTS.ebisoba,
+          item: { kind: "restaurant", label: "Ebisoba Ichigen", short: "Ebisoba Ichigen" },
         },
         {
           image: PIC.noboribetsu,
@@ -389,6 +413,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           rating: "4.5",
           reviews: "5,100",
           prompt: PROMPTS.soupCurry,
+          item: { kind: "restaurant", label: "Soup Curry Suage", short: "Soup Curry Suage" },
         },
         {
           image: PIC.bluePond,
@@ -398,6 +423,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           rating: "4.6",
           reviews: "6,400",
           prompt: PROMPTS.menyaSaimi,
+          item: { kind: "restaurant", label: "Menya Saimi", short: "Menya Saimi" },
         },
         {
           image: PIC.arcade,
@@ -407,6 +433,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           rating: "4.4",
           reviews: "9,200",
           prompt: PROMPTS.afuri,
+          item: { kind: "restaurant", label: "Afuri", short: "Afuri" },
         },
         {
           image: PIC.market,
@@ -416,6 +443,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           rating: "4.5",
           reviews: "2,600",
           prompt: PROMPTS.uniMurakami,
+          item: { kind: "restaurant", label: "Uni Murakami", short: "Uni Murakami" },
         },
       ],
     },
@@ -651,6 +679,8 @@ const hokkaidoConfig: CinematicThemeConfig = {
     placeholder: "Ask me about Hokkaido…",
     cta: "Ask Kaira",
     prompt: PROMPTS.askBar,
+    buildPrompt: PROMPTS.buildItinerary,
+    buildCta: "Build trip",
   },
 };
 
@@ -660,6 +690,16 @@ const HokkaidoPowderThemePage = ({
   checkAuthState: () => void;
 }) => {
   const seedChat = useSeedChat();
+  // Items the reader saves off the page (POIs + restaurants). Handed to /chat
+  // and forwarded in the /chatkit request body so Kaira builds around them.
+  const selection = useThemeSelectionState();
+  const openThemeForm = useOpenThemeForm();
+  // Every seed from this page carries the current selection + theme slug.
+  const handleSelectPrompt = (prompt: string) =>
+    seedChat(prompt, { items: selection.items, slug: THEME_SLUG });
+  // "Build this itinerary" — open the themed mini-form on /chat (no auto-send);
+  // the saved items ride along and are sent to /chatkit only on form submit.
+  const handleBuild = () => openThemeForm(THEME_SLUG, selection.items);
   // Read-only activity drawer (opened from the Activities cards + the JR Pass CTA).
   const [activityDrawer, setActivityDrawer] = useState<{
     show: boolean;
@@ -758,8 +798,10 @@ const HokkaidoPowderThemePage = ({
       </Head>
       <CinematicThemeLanding
         config={hokkaidoConfig}
-        onSelectPrompt={seedChat}
+        onSelectPrompt={handleSelectPrompt}
         onSelectActivity={openActivity}
+        selection={selection}
+        onBuild={handleBuild}
       />
       {/* Read-only activity details — no Add/Remove CTA on this marketing page */}
       <ActivityDetailsDrawer

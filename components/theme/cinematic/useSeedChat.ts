@@ -4,19 +4,51 @@
 // GetInspiredSection handoff: the prompt is stashed via setPendingSeed (module
 // memory + sessionStorage, survives the route change and a hard reload of
 // /chat) and also passed as `?seed=` so a cold /chat load can still pick it up.
+//
+// A theme page may also pass structured context — the items the reader saved on
+// the page and a `slug` naming the theme. That rides along via setPendingSeedMeta
+// and is forwarded verbatim in the first /chatkit request body (see useChat.ts).
 
 import { useCallback } from "react";
 import { useRouter } from "next/router";
-import { setPendingSeed } from "../../../services/heroChatHandoff";
+import {
+  setPendingSeed,
+  setPendingSeedMeta,
+} from "../../../services/heroChatHandoff";
+import type { CinematicSelectableItem } from "./types";
+
+export interface SeedChatMeta {
+  items?: CinematicSelectableItem[];
+  slug?: string;
+}
 
 export function useSeedChat() {
   const router = useRouter();
 
   return useCallback(
-    (prompt: string) => {
+    (prompt: string, meta?: SeedChatMeta) => {
       const seed = (prompt || "").trim();
       if (seed) setPendingSeed(seed);
+      // Always write (setPendingSeedMeta clears itself when empty) so a plain
+      // seed after a themed one never inherits a stale selection.
+      setPendingSeedMeta({ items: meta?.items ?? [], slug: meta?.slug ?? "" });
       router.push(seed ? `/chat?seed=${encodeURIComponent(seed)}` : "/chat");
+    },
+    [router],
+  );
+}
+
+// "Build this itinerary" — opens the themed mini-form on /chat rather than
+// seeding an auto-sent prompt. The saved items + slug ride along via
+// setPendingSeedMeta; /chat resolves the form by slug (?themeForm=) and injects
+// it. Nothing fires to /chatkit until the reader submits the form.
+export function useOpenThemeForm() {
+  const router = useRouter();
+
+  return useCallback(
+    (slug: string, items?: CinematicSelectableItem[]) => {
+      setPendingSeedMeta({ items: items ?? [], slug: slug || "" });
+      router.push(`/chat?themeForm=${encodeURIComponent(slug)}`);
     },
     [router],
   );

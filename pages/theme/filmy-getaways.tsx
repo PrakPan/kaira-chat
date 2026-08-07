@@ -11,8 +11,15 @@ import { useEffect } from "react";
 import Layout from "../../components/Layout";
 import * as authaction from "../../store/actions/auth";
 import CinematicThemeLanding from "../../components/theme/cinematic/CinematicThemeLanding";
-import { useSeedChat } from "../../components/theme/cinematic/useSeedChat";
+import {
+  useSeedChat,
+  useOpenThemeForm,
+} from "../../components/theme/cinematic/useSeedChat";
+import { useThemeSelectionState } from "../../components/theme/cinematic/ThemeSelection";
 import type { CinematicThemeConfig } from "../../components/theme/cinematic/types";
+
+// The themed mini-form + /chatkit slug for this page (Switzerland DDLJ route).
+const THEME_SLUG = "switzerland-ddlj";
 
 const CDN = "https://d31aoa0ehgvjdi.cloudfront.net";
 const IMAGE_BASE = `${CDN}/media/website/filmy-getaways-2026`;
@@ -101,6 +108,8 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
     {
       type: "cards",
       heading: { lead: "Bollywood scenes you never", accent: "forgot" },
+      selectable: true,
+      itemKind: "scene",
       cards: [
         {
           image: `${IMAGE_BASE}/DDLJ.png`,
@@ -154,6 +163,8 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
     {
       type: "cards",
       heading: { lead: "Hollywood said go.", accent: "We agree." },
+      selectable: true,
+      itemKind: "scene",
       cards: [
         {
           image:
@@ -202,6 +213,7 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
     // ── Step into the scene ──
     {
       type: "trips",
+      ctaLabel: "Create plan →",
       heading: {
         lead: "Step into",
         accent: "the scene",
@@ -367,6 +379,7 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
     placeholder: "Which film location should I actually visit?",
     cta: "Ask Kaira",
     prompt: PROMPTS.whichFilmLocation,
+    buildCta: "Build trip",
   },
 };
 
@@ -376,6 +389,11 @@ const FilmyGetawaysThemePage = ({
   checkAuthState: () => void;
 }) => {
   const seedChat = useSeedChat();
+  const selection = useThemeSelectionState();
+  const openThemeForm = useOpenThemeForm();
+  const handleSelectPrompt = (prompt: string) =>
+    seedChat(prompt, { items: selection.items, slug: THEME_SLUG });
+  const handleBuild = () => openThemeForm(THEME_SLUG, selection.items);
 
   useEffect(() => {
     checkAuthState();
@@ -455,7 +473,12 @@ const FilmyGetawaysThemePage = ({
           }}
         />
       </Head>
-      <CinematicThemeLanding config={filmyGetawaysConfig} onSelectPrompt={seedChat} />
+      <CinematicThemeLanding
+        config={filmyGetawaysConfig}
+        onSelectPrompt={handleSelectPrompt}
+        selection={selection}
+        onBuild={handleBuild}
+      />
     </Layout>
   );
 };

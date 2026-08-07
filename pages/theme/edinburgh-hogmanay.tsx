@@ -13,9 +13,15 @@ import { useEffect, useState } from "react";
 import Layout from "../../components/Layout";
 import * as authaction from "../../store/actions/auth";
 import CinematicThemeLanding from "../../components/theme/cinematic/CinematicThemeLanding";
-import { useSeedChat } from "../../components/theme/cinematic/useSeedChat";
+import {
+  useSeedChat,
+  useOpenThemeForm,
+} from "../../components/theme/cinematic/useSeedChat";
+import { useThemeSelectionState } from "../../components/theme/cinematic/ThemeSelection";
 import ActivityDetailsDrawer from "../../components/drawers/activityDetails/ActivityDetailsDrawer";
 import type { CinematicThemeConfig } from "../../components/theme/cinematic/types";
+
+const THEME_SLUG = "edinburgh-hogmanay";
 
 const IMG =
   "https://d31aoa0ehgvjdi.cloudfront.net/media/website/edinburgh-hogmanay-2026";
@@ -198,6 +204,8 @@ const edinburghHogmanayConfig: CinematicThemeConfig = {
     // until their own activities are published on the site.
     {
       type: "cards",
+      selectable: true,
+      itemKind: "ticket",
       heading: { lead: "Which ticket you", accent: "actually need" },
       cards: [
         {
@@ -264,6 +272,7 @@ const edinburghHogmanayConfig: CinematicThemeConfig = {
     // ── Trips — "Which new year is yours?" (open existing itineraries) ──
     {
       type: "trips",
+      ctaLabel: "Create plan →",
       heading: {
         lead: "Which new year is",
         accent: "yours?",
@@ -307,6 +316,8 @@ const edinburghHogmanayConfig: CinematicThemeConfig = {
     // ── Daylight — "What to do with the daylight" (seed prompts) ──
     {
       type: "cards",
+      selectable: true,
+      itemKind: "do",
       heading: { lead: "What to do with", accent: "the daylight" },
       cards: [
         {
@@ -547,6 +558,7 @@ const edinburghHogmanayConfig: CinematicThemeConfig = {
     placeholder: "Ask me about Hogmanay…",
     cta: "Ask Kaira",
     prompt: PROMPTS.askBar,
+    buildCta: "Build trip",
   },
 };
 
@@ -567,6 +579,11 @@ const EdinburghHogmanayThemePage = ({
   checkAuthState: () => void;
 }) => {
   const seedChat = useSeedChat();
+  const selection = useThemeSelectionState();
+  const openThemeForm = useOpenThemeForm();
+  const handleSelectPrompt = (prompt: string) =>
+    seedChat(prompt, { items: selection.items, slug: THEME_SLUG });
+  const handleBuild = () => openThemeForm(THEME_SLUG, selection.items);
   // Read-only activity details drawer (opened from the "Which ticket you
   // actually need" cards).
   const [activityDrawer, setActivityDrawer] = useState<{
@@ -665,8 +682,10 @@ const EdinburghHogmanayThemePage = ({
       </Head>
       <CinematicThemeLanding
         config={edinburghHogmanayConfig}
-        onSelectPrompt={seedChat}
+        onSelectPrompt={handleSelectPrompt}
         onSelectActivity={openActivity}
+        selection={selection}
+        onBuild={handleBuild}
       />
       {/* Read-only activity details — no Add/Remove CTA on this marketing page */}
       <ActivityDetailsDrawer

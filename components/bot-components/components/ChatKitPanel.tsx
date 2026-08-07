@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback, useMemo } from "react"
 import { optimizedMediaUrl } from "../../../lib/mediaImage";
 import { useRouter } from "next/router";
 import axios from "axios";
-import { useChat, generateSessionId, getPlatform, type UserLocationData, type MessageAttachment, Message } from "../hooks/useChat";
+import { useChat, generateSessionId, getPlatform, type UserLocationData, type MessageAttachment, type ThemeSelectedItem, Message } from "../hooks/useChat";
 import { MessageBubble, isButtonOnlyWidget, ItineraryCloneCta } from "./MessageBubble";
 import { MessageInputBox } from "./MessageInputBox";
 import { CHATKIT_API_DOMAIN_KEY as CHATKIT_DOMAIN_KEY } from "../lib/chatkitConfig";
@@ -48,6 +48,11 @@ import BotLoginModal from "./BotLoginModal";
 import { updateIntakeForm } from "../../../store/actions/intakeForm";
 import { updatePricingForm } from "../../../store/actions/pricingForm";
 import IntakeFormCard from "./IntakeForm";
+import ThemeIntakeForm from "./ThemeIntakeForm/ThemeIntakeForm";
+import type {
+  ThemeForm,
+  ThemeFormSubmission,
+} from "../../theme/cinematic/themeForms/types";
 import type { IntakeFormState } from "./IntakeForm/types";
 import PricingFormCard from "./PricingForm";
 import OtpCard from "./IntakeForm/OtpCard";
@@ -214,6 +219,17 @@ onLoginSuccess?: () => void | Promise<void>;
  *  /chatkit request (threads.create). When undefined, the field is omitted
  *  from the body. Subsequent messages never include it. */
 loginMandatory?: boolean;
+/** Theme-page hand-off (see heroChatHandoff): the items the reader saved on a
+ *  /theme landing and the theme slug. Forwarded as `items` / `slug` on the very
+ *  first /chatkit request only; omitted when empty. */
+themeItems?: ThemeSelectedItem[];
+themeSlug?: string;
+/** Themed theme-page mini-form config (date windows + pax presets). When set
+ *  together with `startThemedForm`, a themed 2-section form card is injected
+ *  into the chat on mount instead of the 4-step intake. Nothing fires to
+ *  /chatkit until the reader submits it. */
+themeForm?: ThemeForm | null;
+startThemedForm?: boolean;
 /** Mobile-only: invoked when the user taps the "View Itinerary" CTA rendered
  *  below the composer in P2 mode (or once a display_itinerary effect has fired
  *  in this thread). Used by BotApp to switch the mobile tab to the itinerary
@@ -696,6 +712,10 @@ mobileMenu,
 isPanelVisible = true,
 onLoginSuccess,
 loginMandatory,
+themeItems,
+themeSlug,
+themeForm,
+startThemedForm = false,
 onViewItinerary,
 onTripMetaUpdate,
 onIntakeFormStart,
@@ -726,6 +746,11 @@ startEmptyIntake = false,
   // Guards the in-chat intake form so the `form_fields` effect injects the card
   // only once per session even if the effect re-emits across stream chunks.
   const intakeFormInjectedRef = useRef(false);
+  // Themed theme-page mini-form: keep the config in a ref so the render/submit
+  // callbacks read the latest without re-subscribing, and a one-shot inject guard.
+  const themeFormRef = useRef<ThemeForm | null>(themeForm ?? null);
+  themeFormRef.current = themeForm ?? null;
+  const themedFormInjectedRef = useRef(false);
   // Same one-shot guard for the in-chat pricing form card.
   const pricingFormInjectedRef = useRef(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
@@ -1678,6 +1703,15 @@ const handleSessionCreated = useCallback((ourSessionId: string) => {
     return;
   }
 
+  // The first response resolves asynchronously. If the user pressed browser
+  // back (or otherwise navigated off the /chat surface) while it was in flight,
+  // do NOT push /chat/{id} — that would hijack whatever page they're now on.
+  // Only claim the URL when we're still on the bare /chat surface.
+  const path = window.location.pathname;
+  if (path !== "/chat" && path !== "/chat/") {
+    return;
+  }
+
   hasUpdatedUrl.current = true;
   const target = `/chat/${ourSessionId}`;
   window.history.pushState({}, "", target);
@@ -1757,6 +1791,8 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
     sessionId: sessionIdRef.current,
     onSessionCreated: handleSessionCreated,
     loginMandatory,
+    themeItems,
+    themeSlug,
   });
 
   // ── Context chips for the intake notes step ────────────────────────────────
@@ -1912,6 +1948,39 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
     // Run once on mount when the flag is set.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [startEmptyIntake]);
+
+  // ── Themed theme-page mini-form on /chat?themeForm=<slug> ─────────────────
+  // A theme page's "Build this itinerary" routes here with the theme slug. We
+  // inject Kaira's opener (the theme's tagline) + the themed 2-section form
+  // card. Nothing is sent to /chatkit until the reader submits the form. Mirrors
+  // the empty-intake injection above but uses its own one-shot guard so the two
+  // never collide.
+  useEffect(() => {
+    if (!startThemedForm) return;
+    if (themedFormInjectedRef.current) return;
+    const form = themeFormRef.current;
+    if (!form) return;
+    themedFormInjectedRef.current = true;
+    suppressIntakeAutoScrollRef.current = true;
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: `theme-greeting-${sessionIdRef.current}`,
+        role: "assistant",
+        content: form.tagline,
+        timestamp: new Date(),
+      },
+      {
+        id: `theme-form-${sessionIdRef.current}`,
+        role: "assistant",
+        content: "",
+        timestamp: new Date(),
+        type: "theme_form",
+      },
+    ]);
+    onIntakeFormStart?.();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [startThemedForm]);
 
   // Quick replies stream in on the tail of the response, after the answer is
   // fully rendered but while the SSE connection is still open (so `isStreaming`
@@ -2725,7 +2794,7 @@ const sendMessage = useCallback(
     text: string,
     attachmentIds?: string[],
     attachmentMeta?: MessageAttachment[],
-    opts?: { formSubmitted?: boolean },
+    opts?: { formSubmitted?: boolean; intakePayload?: Record<string, unknown> },
   ) => {
     setQuickReplies([]);
     setQuickReplyShimmer(false);
@@ -2817,6 +2886,7 @@ const sendMessage = useCallback(
       interrupt: inQuickReplyPhaseRef.current,
       formSubmitted: opts?.formSubmitted,
       contextPrefix: intakeContextPrefix,
+      intakePayload: opts?.intakePayload,
     });
   },
   [rawSendMessage],
@@ -2830,6 +2900,20 @@ const sendMessage = useCallback(
 const handleIntakeComplete = useCallback(
   (composed: string) => {
     sendMessage(composed, undefined, undefined, { formSubmitted: true });
+  },
+  [sendMessage],
+);
+
+// ── Themed mini-form completion ──────────────────────────────────────────────
+// Send the readable summary as the user message AND the structured payload
+// (slug/window/skeleton/dates/pax/items) as `intake` on the request body, so the
+// backend routes off the structured data. First fire to /chatkit for this flow.
+const handleThemedFormSubmit = useCallback(
+  (submission: ThemeFormSubmission, composed: string) => {
+    sendMessage(composed, undefined, undefined, {
+      formSubmitted: true,
+      intakePayload: submission as unknown as Record<string, unknown>,
+    });
   },
   [sendMessage],
 );
@@ -4113,6 +4197,18 @@ const handleShowLogin = useCallback(() => {
                       (msg.intakeSnapshot as IntakeFormState | undefined) ?? null
                     }
                   />
+                );
+              }
+              if (msg.type === "theme_form" && themeFormRef.current) {
+                return (
+                  <div key={msg.id} style={{ padding: "4px 0 8px" }}>
+                    <ThemeIntakeForm
+                      form={themeFormRef.current}
+                      items={themeItems}
+                      onSubmit={handleThemedFormSubmit}
+                      onSeedPrompt={(t) => sendMessage(t)}
+                    />
+                  </div>
                 );
               }
               if (msg.type === "pricing_form") {

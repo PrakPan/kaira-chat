@@ -27,6 +27,21 @@ export interface CinematicChip {
   prompt: string;
 }
 
+// A page item the reader can "save" toward their itinerary (an activity, POI,
+// restaurant, …). When a card carries one AND the page provides a selection
+// handler, clicking the card's CTA toggles the item in/out of the selection
+// instead of seeding a chat. The saved list is handed to /chat and forwarded
+// verbatim in the /chatkit request body's `items` field, so keep the shape
+// backend-friendly: `label` is the full name, `short` a compact chip label,
+// `kind` a category ("activity" | "poi" | "restaurant" | …), and `id` the
+// catalog id when there is one (used as the de-dupe key).
+export interface CinematicSelectableItem {
+  kind: string;
+  label: string;
+  short: string;
+  id?: string;
+}
+
 // Image card used by the Bollywood / Hollywood style rows.
 export interface CinematicPromptCard {
   image: string;
@@ -43,6 +58,10 @@ export interface CinematicPromptCard {
   // forwards the provider source to the detail endpoint when required.
   activityId?: string;
   activitySource?: string;
+  // When set and the page supplies a selection handler, clicking the card's
+  // CTA toggles this item into the saved list (with a "selected" treatment)
+  // instead of seeding `prompt`. Takes priority over `prompt`/`activityId`.
+  item?: CinematicSelectableItem;
 }
 
 // Horizontal "Step into the scene" card — thumbnail + meta + price. The
@@ -144,6 +163,9 @@ export interface CinematicEatCard {
   // When set, clicking navigates here instead of seeding `prompt` — e.g. a
   // `?restaurant_id={id}` query that opens the restaurant details drawer.
   href?: string;
+  // Same contract as CinematicPromptCard.item — toggles this restaurant into
+  // the saved list when the page supplies a selection handler.
+  item?: CinematicSelectableItem;
 }
 
 // Dark visa country card ("Your visa, handled"): the country, the cities it
@@ -234,6 +256,12 @@ export type CinematicSection =
       // CTA colour: "solid" (yellow fill, default — for primary "Create this
       // plan") or "dark" (ink fill + yellow text, for secondary "+ Add to trip").
       ctaTone?: "solid" | "dark";
+      // When true, every card in this section becomes an "+ Add" save-toggle
+      // (the page must supply a selection handler). Each card's saved item is
+      // derived from the card (name + tag) unless the card sets an explicit
+      // `item`. `itemKind` sets the category tag shown in the saved list.
+      selectable?: boolean;
+      itemKind?: string;
     }
   | {
       type: "trips";
@@ -267,6 +295,10 @@ export type CinematicSection =
       // Compact rows (40px thumb, no arrow emphasis) for dense lists like
       // "Worth the cold"; default rows use a 62px thumb like "Where you'd sleep".
       compact?: boolean;
+      // When true, each row becomes an "+ Add" save-toggle (the page must supply
+      // a selection handler); the item is derived from the row's name.
+      selectable?: boolean;
+      itemKind?: string;
     }
   | {
       type: "checklist";
@@ -291,6 +323,10 @@ export type CinematicSection =
       cards: CinematicEatCard[];
       // Optional pill CTA at the foot of each card (e.g. "Add restaurant →").
       ctaLabel?: string;
+      // When true, every card becomes an "+ Add" save-toggle (see the `cards`
+      // section note). `itemKind` defaults to "restaurant" here.
+      selectable?: boolean;
+      itemKind?: string;
     }
   | {
       // Dark "Your visa, handled" section — intro, country fee cards, fact chips.
@@ -343,6 +379,13 @@ export interface CinematicAskBar {
   placeholder: string;
   cta?: string;
   prompt: string;
+  // "Build this itinerary" variant. When the reader has saved one or more
+  // items on the page, the docked bar swaps to this prompt/label so the bottom
+  // CTA reads as building the trip around the selection (the saved items ride
+  // along in the /chatkit request). Falls back to `prompt`/`cta` when unset or
+  // when nothing is selected.
+  buildPrompt?: string;
+  buildCta?: string;
 }
 
 export interface CinematicThemeConfig {

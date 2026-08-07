@@ -30,7 +30,11 @@ import BrandLockup from "../brand/BrandLockup";
 import ItineraryShimmer from "./components/ItineraryShimmer";
 import { useUserLocation } from "./hooks/useUserLocation";
 import { useMapBounds } from "./hooks/useMapBounds";
-import { getPlatform } from "./hooks/useChat";
+import { getPlatform, type ThemeSelectedItem } from "./hooks/useChat";
+import {
+  getThemeForm,
+  type ThemeForm,
+} from "../theme/cinematic/themeForms";
 import ItineraryContainer from "../../containers/itinerary/ItineraryContainer";
 import ItineraryLegend from "../itinerary/itineraryCity/ItineraryLegend";
 import type {
@@ -84,6 +88,7 @@ import { tr } from "date-fns/locale";
 import {
   takePendingFiles,
   takePendingSeed,
+  takePendingSeedMeta,
 } from "../../services/heroChatHandoff";
 
 type MobilePanel = "map" | "chat" | "itinerary";
@@ -375,6 +380,18 @@ export default function BotApp({
   const [initialPrompt, setInitialPrompt] = useState<string | null>(null);
   const [initialPromptRequiresLogin, setInitialPromptRequiresLogin] =
     useState(false);
+  // Theme-page hand-off drained from heroChatHandoff alongside the seed — the
+  // items the reader saved and the theme slug. Forwarded to ChatKitPanel so the
+  // first /chatkit request carries them.
+  const [themeItems, setThemeItems] = useState<ThemeSelectedItem[] | undefined>(
+    undefined,
+  );
+  const [themeSlug, setThemeSlug] = useState<string | undefined>(undefined);
+  // Themed theme-page mini-form (date windows + pax). When a theme page's
+  // "Build this itinerary" routes to /chat?themeForm=<slug>, we resolve the
+  // config and flag ChatKitPanel to inject the 2-section form (no auto-send).
+  const [themeForm, setThemeForm] = useState<ThemeForm | null>(null);
+  const [startThemedForm, setStartThemedForm] = useState(false);
   const [initialAttachmentIds, setInitialAttachmentIds] = useState<
     string[] | undefined
   >(undefined);
@@ -2095,7 +2112,12 @@ export default function BotApp({
 
         if (threadSessionId) {
           const target = `/chat/${threadSessionId}`;
-          if (window.location.pathname !== target) {
+          // Only claim the URL if we're still on a /chat surface — this fetch is
+          // async and the user may have navigated away (browser back) meanwhile.
+          if (
+            window.location.pathname !== target &&
+            window.location.pathname.startsWith("/chat")
+          ) {
             window.history.pushState({}, "", target);
           }
           safeSetSessionItem(`chatkit_session_${target}`, threadSessionId);
@@ -2639,14 +2661,32 @@ export default function BotApp({
   // we reload the previous session in place here instead.
   const activeChatSessionIdRef = useRef(activeChatSessionId);
   activeChatSessionIdRef.current = activeChatSessionId;
+  // Always call the latest handleNewChat from the popstate handler below without
+  // re-subscribing the listener (handleNewChat is redefined each render).
+  const handleNewChatRef = useRef<() => void>(() => {});
   useEffect(() => {
     const onPopState = () => {
       const match = window.location.pathname.match(/\/chat\/([a-f0-9-]{36})/);
       const urlSession = match?.[1];
+
+      // Backed out to the bare /chat surface (over a pushed /chat/{id}): reset
+      // to a fresh chat so the previous session's content doesn't linger. /chat
+      // must always show fresh /chat content. Ignore popstate that isn't on the
+      // bare chat surface (drawer-query pops, or pops on other pages).
+      if (!urlSession) {
+        const path = window.location.pathname;
+        const onBareChat = path === "/chat" || path === "/chat/";
+        if (onBareChat && activeChatSessionIdRef.current) {
+          handleNewChatRef.current();
+          setActiveChatSessionId(undefined);
+        }
+        return;
+      }
+
       // Only react to landing on a *different* chat session. Same-session
       // popstate (e.g. backing out of a ?drawer= query) is owned by the router
       // / drawers and must not trigger a reload.
-      if (!urlSession || urlSession === activeChatSessionIdRef.current) return;
+      if (urlSession === activeChatSessionIdRef.current) return;
 
       // Reset the previous session's panel state in place (mirrors the
       // handleThreadSelect reset) so the restored session doesn't paint over
@@ -2891,6 +2931,8 @@ export default function BotApp({
       activateEmptyIntake();
     }
   };
+  // Keep the popstate handler's ref pointing at the latest handleNewChat.
+  handleNewChatRef.current = handleNewChat;
 
   const executePromptSelect = (prompt: string, attachmentIds?: string[]) => {
     // chatSendMessageRef is set by both desktop and mobile ChatKitPanel onSendReady
@@ -2927,6 +2969,48 @@ export default function BotApp({
     const handoffSeed = takePendingSeed();
     const seed = (querySeed || handoffSeed || "").toString().trim();
     const files = takePendingFiles();
+    // Theme-page context (saved items + slug) rides alongside the seed. Drain it
+    // here so ChatKitPanel forwards it on the first /chatkit request. Set before
+    // handlePromptSelect below so the props are current when the panel sends.
+    const seedMeta = takePendingSeedMeta();
+    if (seedMeta) {
+      if (Array.isArray(seedMeta.items) && seedMeta.items.length > 0) {
+        setThemeItems(seedMeta.items);
+      }
+      if (seedMeta.slug) setThemeSlug(seedMeta.slug);
+    }
+
+    // "Build this itinerary" from a theme page routes here with `?themeForm=<slug>`.
+    // Open the themed 2-section mini-form instead of auto-sending — nothing hits
+    // /chatkit until the reader submits it. Takes priority over the seed/empty
+    // paths below. Gate STRICTLY on the query param: a normal prompt-card seed
+    // also stashes a slug in seedMeta (so items+slug reach the request), and must
+    // NOT be mistaken for a build request.
+    const themeFormParam = router.query.themeForm;
+    const themeFormSlug = Array.isArray(themeFormParam)
+      ? themeFormParam[0]
+      : themeFormParam;
+    const resolvedThemeForm = themeFormSlug
+      ? getThemeForm(themeFormSlug)
+      : null;
+    if (resolvedThemeForm) {
+      setThemeForm(resolvedThemeForm);
+      setStartThemedForm(true);
+      setShowStartScreen(false);
+      setIsChatActive(true);
+      setSeedActive(true);
+      // Drop ?themeForm from the URL so a refresh doesn't re-open the form.
+      if (querySeed == null && typeof window !== "undefined") {
+        try {
+          const url = new URL(window.location.href);
+          url.searchParams.delete("themeForm");
+          window.history.replaceState({}, "", url.toString());
+        } catch {
+          /* noop */
+        }
+      }
+      return;
+    }
 
     if (!seed && (!files || files.length === 0)) {
       // No hero handoff. On a bare, direct /chat open — no theme inspiration
@@ -3143,6 +3227,10 @@ export default function BotApp({
     onTravellerStoryDismiss: () => setActiveTravellerStory(null),
     onLoginSuccess: attachUserToItinerary,
     loginMandatory: router.query.login === "false" ? false : undefined,
+    themeItems,
+    themeSlug,
+    themeForm,
+    startThemedForm,
     onViewItinerary: handleViewItinerary,
     onIntakeFormStart: () => setIntakeActive(true),
     initialFiles,

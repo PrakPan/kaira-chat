@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { getAdParams, getLandingPage } from "../../../helper/adAttribution";
 import { isIntakeFormWidgetId } from "../components/IntakeForm/intakePrompt";
 import { isPricingFormWidgetId } from "../components/PricingForm/pricingPrompt";
@@ -28,7 +28,13 @@ export interface Message {
   content: string;
   timestamp: Date;
   isStreaming?: boolean;
-  type?: "text" | "widget" | "intake_form" | "pricing_form" | "login_card";
+  type?:
+    | "text"
+    | "widget"
+    | "intake_form"
+    | "pricing_form"
+    | "login_card"
+    | "theme_form";
   widgetItem?: {
     id: string;
     widget: Record<string, unknown>;
@@ -81,6 +87,16 @@ export interface ClientEffect {
   data: Record<string, unknown>;
 }
 
+/** An item the user saved on a theme page, forwarded verbatim in the first
+ *  /chatkit request body's `items` field. Kept loose — the backend only reads
+ *  what it needs. Mirrors the theme layer's CinematicSelectableItem. */
+export interface ThemeSelectedItem {
+  kind?: string;
+  label?: string;
+  short?: string;
+  id?: string;
+}
+
 interface UseChatOptions {
   apiUrl: string;
   domainKey: string;
@@ -114,6 +130,14 @@ interface UseChatOptions {
    * from the body. Subsequent messages never include it.
    */
   loginMandatory?: boolean;
+  /**
+   * Theme-page context handed off from a /theme landing (see heroChatHandoff):
+   * the items the reader saved and a slug naming the theme. Both are forwarded
+   * on the very first /chatkit request (threads.create) as `items` / `slug`,
+   * and omitted when empty. Subsequent messages never include them.
+   */
+  themeItems?: ThemeSelectedItem[];
+  themeSlug?: string;
 }
 
 // ─── UUID helper ──────────────────────────────────────────────────────────────
@@ -210,6 +234,8 @@ function buildFirstMessageBody(
     sessionId: string;
     attachmentIds?: string[];
     loginMandatory?: boolean;
+    themeItems?: ThemeSelectedItem[];
+    themeSlug?: string;
   }
 ): Record<string, unknown> {
   const body: Record<string, unknown> = {
@@ -224,6 +250,9 @@ function buildFirstMessageBody(
   };
   if (opts.botMode === "p2" && opts.itineraryId) body.itinerary_id = opts.itineraryId;
   if (opts.loginMandatory !== undefined) body.login_mandatory = opts.loginMandatory;
+  // Theme-page hand-off: the saved items + theme slug (first request only).
+  if (opts.themeSlug) body.slug = opts.themeSlug;
+  if (opts.themeItems && opts.themeItems.length > 0) body.items = opts.themeItems;
   return body;
 }
 
@@ -541,6 +570,8 @@ export function useChat({
   sessionId,
   onSessionCreated,
   loginMandatory,
+  themeItems,
+  themeSlug,
 }: UseChatOptions) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
@@ -569,11 +600,26 @@ export function useChat({
   onSessionCreatedRef.current = onSessionCreated;
   const loginMandatoryRef = useRef(loginMandatory);
   loginMandatoryRef.current = loginMandatory;
+  const themeItemsRef = useRef(themeItems);
+  themeItemsRef.current = themeItems;
+  const themeSlugRef = useRef(themeSlug);
+  themeSlugRef.current = themeSlug;
 
   const cancelStream = useCallback(() => {
     abortControllerRef.current?.abort();
     abortControllerRef.current = null;
   }, []);
+
+  // Abort any in-flight /chatkit request when the panel unmounts (e.g. the user
+  // pressed browser back mid-stream), so the request doesn't keep running — and
+  // its callbacks fire — against a page the user has already left.
+  useEffect(
+    () => () => {
+      abortControllerRef.current?.abort();
+      abortControllerRef.current = null;
+    },
+    [],
+  );
 
   // Stable headers builder — reads from refs, never stale
   const buildHeaders = useCallback((): Record<string, string> => ({
@@ -803,7 +849,15 @@ export function useChat({
       content: string,
       attachmentIds?: string[],
       attachments?: MessageAttachment[],
-      opts?: { interrupt?: boolean; formSubmitted?: boolean; contextPrefix?: string },
+      opts?: {
+        interrupt?: boolean;
+        formSubmitted?: boolean;
+        contextPrefix?: string;
+        // Structured theme mini-form submission (slug/window/skeleton/dates/pax/
+        // items). Attached to the first request body as `intake` — the backend
+        // reads it to pick the route instead of parsing free text.
+        intakePayload?: Record<string, unknown>;
+      },
     ) => {
       const trimmed = content.trim();
       if (!trimmed && (!attachmentIds || attachmentIds.length === 0)) return;
@@ -881,12 +935,29 @@ export function useChat({
 
       const body = threadIdRef.current
         ? buildSubsequentMessageBody(contentForBackend, { threadId: threadIdRef.current, ...commonOpts })
-        : buildFirstMessageBody(contentForBackend, { ...commonOpts, loginMandatory: loginMandatoryRef.current });
+        : buildFirstMessageBody(contentForBackend, {
+            ...commonOpts,
+            loginMandatory: loginMandatoryRef.current,
+            themeItems: themeItemsRef.current,
+            themeSlug: themeSlugRef.current,
+          });
 
       // Flag intake-form submissions so the backend knows this message came
       // from the structured form rather than free-text chat.
       if (opts?.formSubmitted) {
         (body as Record<string, unknown>).form_submitted = true;
+      }
+      // Structured theme mini-form payload (window/skeleton/dates/pax/items…) —
+      // sent as `intake` so the backend routes off it rather than the free text.
+      // The intake object already carries slug + items, so drop the duplicate
+      // top-level copies (added by buildFirstMessageBody from themeItems/themeSlug)
+      // to avoid sending the items array twice. The plain-seed flow, which has no
+      // intake payload, keeps the top-level slug/items.
+      if (opts?.intakePayload) {
+        const b = body as Record<string, unknown>;
+        b.intake = opts.intakePayload;
+        delete b.items;
+        delete b.slug;
       }
 
       console.log("[useChat] →", JSON.stringify(body, null, 2));

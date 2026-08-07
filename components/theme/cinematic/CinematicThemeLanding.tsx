@@ -46,6 +46,11 @@ import type {
   CinematicHeroConfig,
   CinematicAskBar,
 } from "./types";
+import {
+  ThemeSelectionProvider,
+  useThemeSelection,
+  type ThemeSelectionValue,
+} from "./ThemeSelection";
 
 // ── Palette ──────────────────────────────────────────────────────────────
 const INK = "#0b1220";
@@ -57,6 +62,13 @@ const PAPER = "#fafaf5";
 const DARK = "#0a1020";
 const RED = "#b84034";
 const SAND = "#f4f3ec";
+
+// Pull a catalog element id out of a drawer href (e.g. "?restaurant_id=abc",
+// "?city_id=xyz") so a saved element carries its id in the /chatkit request.
+const drawerIdFromHref = (href?: string): string | undefined => {
+  const m = href?.match(/[?&][a-z_]*id=([^&]+)/i);
+  return m ? decodeURIComponent(m[1]) : undefined;
+};
 
 // ── Scoped styles ──────────────────────────────────────────────────────────
 const CinematicStyles = () => (
@@ -376,16 +388,63 @@ const PromptCard: React.FC<{
   ctaLabel?: string;
   ctaTone?: "solid" | "dark";
   priority?: boolean;
-}> = ({ card, onSelectPrompt, onSelectActivity, ctaLabel, ctaTone, priority }) => (
+  // Section opted the whole row into "+ Add" selection; derive the item from
+  // the card unless it carries an explicit one.
+  sectionSelectable?: boolean;
+  itemKind?: string;
+}> = ({
+  card,
+  onSelectPrompt,
+  onSelectActivity,
+  ctaLabel,
+  ctaTone,
+  priority,
+  sectionSelectable,
+  itemKind,
+}) => {
+  const selection = useThemeSelection();
+  // The saved item: an explicit card.item wins; else derive from the card when
+  // the section is selectable. An activity card carries its catalog id so the
+  // element id rides along in the request.
+  const item =
+    card.item ??
+    (sectionSelectable
+      ? {
+          kind: itemKind ?? "poi",
+          label: card.name,
+          short: card.tag ?? card.name,
+          ...(card.activityId ? { id: card.activityId } : {}),
+        }
+      : undefined);
+  const selectable = !!(item && selection);
+  const selected = selectable ? selection!.isSelected(item!) : false;
+  // Element cards (an activity drawer) keep opening the drawer on body click —
+  // the "+ Add" CTA does the saving. Non-element selectable cards toggle on
+  // body click as before.
+  const isElement = selectable && !!card.activityId;
+  const toggle = () => item && selection && selection.toggle(item);
+  return (
   <button
     type="button"
     onClick={() => {
+      if (isElement) {
+        onSelectActivity?.(card.activityId!, card.activitySource);
+        return;
+      }
+      if (item && selection) {
+        selection.toggle(item);
+        return;
+      }
       if (card.activityId && onSelectActivity)
         onSelectActivity(card.activityId, card.activitySource);
       else if (card.prompt) onSelectPrompt(card.prompt);
     }}
+    aria-pressed={selectable ? selected : undefined}
     className="ctl-card group flex flex-col text-left bg-white rounded-[18px] md:rounded-[22px] overflow-hidden cursor-pointer w-[220px] md:w-auto shrink-0 md:shrink"
-    style={{ scrollSnapAlign: "start" }}
+    style={{
+      scrollSnapAlign: "start",
+      ...(selected ? { outline: `2px solid ${INK}`, outlineOffset: -2 } : {}),
+    }}
   >
     <div
       className="relative h-[130px] md:h-[200px] overflow-hidden"
@@ -399,6 +458,22 @@ const PromptCard: React.FC<{
         // from the bottom rather than off the top. Per-card override still wins.
         objectPosition={card.objectPosition ?? "center top"}
       />
+      {selectable && selected && (
+        <div
+          className="absolute top-[10px] right-[10px] md:top-[12px] md:right-[12px] flex items-center justify-center rounded-full"
+          style={{
+            width: 26,
+            height: 26,
+            background: INK,
+            color: YELLOW,
+            fontSize: 14,
+            fontWeight: 700,
+            boxShadow: "0 4px 10px -4px rgba(11,18,32,0.5)",
+          }}
+        >
+          ✓
+        </div>
+      )}
       {card.tag && (
         <div
           className="ctl-mono absolute top-[10px] left-[10px] md:top-[12px] md:left-[12px] px-[8px] py-[3px] rounded-[6px]"
@@ -429,27 +504,51 @@ const PromptCard: React.FC<{
           {card.line}
         </div>
       )}
-      {ctaLabel && (
+      {(ctaLabel || selectable) && (
         <div className="mt-auto pt-[12px] md:pt-[14px]">
           <span
+            role={selectable ? "button" : undefined}
+            onClick={
+              selectable
+                ? (e) => {
+                    // The Add CTA saves the item; on element cards this stops the
+                    // click from reaching the card body (which opens the drawer).
+                    e.stopPropagation();
+                    toggle();
+                  }
+                : undefined
+            }
             className="block w-full text-center rounded-full text-[13px] md:text-[13.5px] font-bold px-[14px] py-[11px]"
             style={
-              ctaTone === "dark"
-                ? { background: INK, color: YELLOW }
-                : {
-                    background: YELLOW,
-                    color: INK,
-                    boxShadow: "0 6px 16px -8px rgba(247,231,0,0.6)",
+              selectable && selected
+                ? {
+                    background: INK,
+                    color: YELLOW,
+                    border: "1px solid rgba(247,231,0,0.55)",
                   }
+                : selectable
+                  ? {
+                      background: YELLOW,
+                      color: INK,
+                      boxShadow: "0 6px 16px -8px rgba(247,231,0,0.6)",
+                    }
+                  : ctaTone === "dark"
+                    ? { background: INK, color: YELLOW }
+                    : {
+                        background: YELLOW,
+                        color: INK,
+                        boxShadow: "0 6px 16px -8px rgba(247,231,0,0.6)",
+                      }
             }
           >
-            {ctaLabel}
+            {selectable ? (selected ? "Added ✓" : "+ Add") : ctaLabel}
           </span>
         </div>
       )}
     </div>
   </button>
-);
+  );
+};
 
 const CardsSection: React.FC<{
   section: Extract<CinematicSection, { type: "cards" }>;
@@ -486,6 +585,8 @@ const CardsSection: React.FC<{
             onSelectActivity={onSelectActivity}
             ctaLabel={section.ctaLabel}
             ctaTone={section.ctaTone}
+            sectionSelectable={section.selectable}
+            itemKind={section.itemKind}
             priority={first && i === 0}
           />
         ))}
@@ -833,9 +934,37 @@ const ListRow: React.FC<{
   compact?: boolean;
   onSelectPrompt: (p: string) => void;
   onSelectActivity?: (activityId: string, source?: string) => void;
-}> = ({ row, compact, onSelectPrompt, onSelectActivity }) => {
+  sectionSelectable?: boolean;
+  itemKind?: string;
+}> = ({ row, compact, onSelectPrompt, onSelectActivity, sectionSelectable, itemKind }) => {
   const router = useRouter();
+  const selection = useThemeSelection();
+  const elementId = row.activityId ?? drawerIdFromHref(row.href);
+  const item = sectionSelectable
+    ? {
+        kind: itemKind ?? "poi",
+        label: row.name,
+        short: row.name,
+        ...(elementId ? { id: elementId } : {}),
+      }
+    : undefined;
+  const selectable = !!(item && selection);
+  const selected = selectable ? selection!.isSelected(item!) : false;
+  // An element row (activity drawer or a drawer href) keeps opening the drawer
+  // on body click; the "+ Add" pill saves it.
+  const isElement = selectable && !!(row.activityId || row.href);
+  const toggle = () => item && selection && selection.toggle(item);
   const act = () => {
+    if (isElement) {
+      if (row.activityId && onSelectActivity)
+        onSelectActivity(row.activityId, row.activitySource);
+      else if (row.href) router.push(row.href);
+      return;
+    }
+    if (item && selection) {
+      selection.toggle(item);
+      return;
+    }
     if (row.activityId && onSelectActivity)
       onSelectActivity(row.activityId, row.activitySource);
     else if (row.prompt) onSelectPrompt(row.prompt);
@@ -845,10 +974,13 @@ const ListRow: React.FC<{
     <button
       type="button"
       onClick={act}
+      aria-pressed={selectable ? selected : undefined}
       className={`ctl-press w-full text-left flex items-center gap-[12px] md:gap-[14px] bg-white cursor-pointer ${
         compact ? "rounded-[14px] p-[11px] md:p-[12px]" : "rounded-[18px] p-[12px] md:p-[14px]"
       }`}
-      style={{ border: `1px solid ${BORDER}` }}
+      style={{
+        border: selected ? `1px solid ${INK}` : `1px solid ${BORDER}`,
+      }}
     >
       <div
         className={`relative overflow-hidden shrink-0 flex items-center justify-center ${
@@ -901,9 +1033,37 @@ const ListRow: React.FC<{
           </div>
         )}
       </div>
-      <span className="shrink-0 text-[14px]" style={{ color: FAINT }}>
-        →
-      </span>
+      {selectable ? (
+        <span
+          role="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            toggle();
+          }}
+          className="shrink-0 rounded-full text-[12px] font-bold"
+          style={
+            selected
+              ? {
+                  background: INK,
+                  color: YELLOW,
+                  border: "1px solid rgba(247,231,0,0.55)",
+                  padding: "6px 12px",
+                }
+              : {
+                  background: YELLOW,
+                  color: INK,
+                  padding: "6px 12px",
+                  boxShadow: "0 6px 16px -8px rgba(247,231,0,0.6)",
+                }
+          }
+        >
+          {selected ? "Added ✓" : "+ Add"}
+        </span>
+      ) : (
+        <span className="shrink-0 text-[14px]" style={{ color: FAINT }}>
+          →
+        </span>
+      )}
     </button>
   );
 };
@@ -930,6 +1090,8 @@ const ListSection: React.FC<{
             compact={section.compact}
             onSelectPrompt={onSelectPrompt}
             onSelectActivity={onSelectActivity}
+            sectionSelectable={section.selectable}
+            itemKind={section.itemKind}
           />
         ))}
       </div>
@@ -1152,6 +1314,7 @@ const EatsSection: React.FC<{
   onSelectPrompt: (p: string) => void;
 }> = ({ section, onSelectPrompt }) => {
   const router = useRouter();
+  const selection = useThemeSelection();
   return (
   <section
     className="mt-[34px] md:mt-[56px] relative overflow-hidden"
@@ -1176,19 +1339,50 @@ const EatsSection: React.FC<{
         className="ctl-scroll flex md:grid md:grid-cols-5 gap-[12px] md:gap-[16px] mt-[14px] md:mt-[24px] overflow-x-auto md:overflow-visible pb-[4px]"
         style={{ scrollSnapType: "x mandatory" }}
       >
-        {section.cards.map((card, i) => (
+        {section.cards.map((card, i) => {
+          const hrefId = drawerIdFromHref(card.href);
+          const item =
+            card.item ??
+            (section.selectable
+              ? {
+                  kind: section.itemKind ?? "restaurant",
+                  label: card.name,
+                  short: card.name,
+                  ...(hrefId ? { id: hrefId } : {}),
+                }
+              : undefined);
+          const selectable = !!(item && selection);
+          const selected = selectable ? selection!.isSelected(item!) : false;
+          // A restaurant card with a drawer href keeps opening the drawer on
+          // body click; the "+ Add" CTA saves it.
+          const isElement = selectable && !!card.href;
+          const toggle = () => item && selection && selection.toggle(item);
+          return (
           <button
             key={`eat-${i}`}
             type="button"
             onClick={() => {
+              if (isElement) {
+                router.push(card.href!);
+                return;
+              }
+              if (item && selection) {
+                selection.toggle(item);
+                return;
+              }
               if (card.href) router.push(card.href);
               else if (card.prompt) onSelectPrompt(card.prompt);
             }}
+            aria-pressed={selectable ? selected : undefined}
             className="ctl-card text-left rounded-[18px] overflow-hidden cursor-pointer w-[218px] md:w-auto shrink-0 md:shrink flex flex-col"
             style={{
               scrollSnapAlign: "start",
-              background: "rgba(255,255,255,0.04)",
-              border: "1px solid rgba(255,255,255,0.08)",
+              background: selected
+                ? "rgba(247,231,0,0.10)"
+                : "rgba(255,255,255,0.04)",
+              border: selected
+                ? "1px solid rgba(247,231,0,0.55)"
+                : "1px solid rgba(255,255,255,0.08)",
             }}
           >
           <div
@@ -1233,22 +1427,52 @@ const EatsSection: React.FC<{
                 {card.reviews ? `${card.reviews} reviews` : ""}
               </div>
             )}
-            {section.ctaLabel && (
+            {(section.ctaLabel || selectable) && (
               <span
-                className="block w-full text-center rounded-full text-[12.5px] font-semibold px-[12px] py-[10px]"
+                role={selectable ? "button" : undefined}
+                onClick={
+                  selectable
+                    ? (e) => {
+                        e.stopPropagation();
+                        toggle();
+                      }
+                    : undefined
+                }
+                className="block w-full text-center rounded-full text-[12.5px] px-[12px] py-[10px]"
                 style={{
                   marginTop: "auto",
-                  background: "rgba(247,231,0,0.14)",
-                  color: YELLOW,
-                  border: "1px solid rgba(247,231,0,0.32)",
+                  fontWeight: selectable ? 700 : 600,
+                  ...(selectable
+                    ? selected
+                      ? {
+                          background: INK,
+                          color: YELLOW,
+                          border: "1px solid rgba(247,231,0,0.55)",
+                        }
+                      : {
+                          background: YELLOW,
+                          color: INK,
+                          border: "none",
+                          boxShadow: "0 6px 16px -8px rgba(247,231,0,0.6)",
+                        }
+                    : {
+                        background: "rgba(247,231,0,0.14)",
+                        color: YELLOW,
+                        border: "1px solid rgba(247,231,0,0.32)",
+                      }),
                 }}
               >
-                {section.ctaLabel}
+                {selectable
+                  ? selected
+                    ? "Added ✓"
+                    : "+ Add"
+                  : section.ctaLabel}
               </span>
             )}
           </div>
         </button>
-      ))}
+          );
+        })}
       </div>
     </Container>
   </section>
@@ -1649,9 +1873,16 @@ const StepsSection: React.FC<{
 const AskKairaStrip: React.FC<{
   bar: CinematicAskBar;
   onSelectPrompt: (p: string) => void;
-}> = ({ bar, onSelectPrompt }) => {
+  // "Build this itinerary" action. When provided, the build button (and the
+  // selection popup) call this instead of seeding a prompt — the page routes to
+  // /chat and opens the themed mini-form there. Falls back to seeding
+  // bar.buildPrompt when omitted.
+  onBuild?: () => void;
+}> = ({ bar, onSelectPrompt, onBuild }) => {
   const router = useRouter();
+  const selection = useThemeSelection();
   const [show, setShow] = React.useState(false);
+  const [expanded, setExpanded] = React.useState(true);
   React.useEffect(() => {
     const onScroll = () =>
       setShow(window.pageYOffset > window.innerHeight / 2);
@@ -1660,54 +1891,259 @@ const AskKairaStrip: React.FC<{
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  if (!show) return null;
+  const items = selection?.items ?? [];
+  const count = items.length;
+  const hasSelection = count > 0;
 
-  const go = () => {
+  // Keep the bar mounted once the reader has saved something, even above the
+  // scroll threshold — the tray must stay reachable to review/build.
+  if (!show && !hasSelection) return null;
+
+  const doBuild = () => {
+    if (onBuild) onBuild();
+    else if (bar.buildPrompt) onSelectPrompt(bar.buildPrompt);
+    else router.push("/chat");
+  };
+
+  const openChat = () => {
     if (bar.prompt) onSelectPrompt(bar.prompt);
     else router.push("/chat");
   };
+
+  const buildLabel = hasSelection
+    ? `${bar.buildCta ?? "Build trip"} · ${count}`
+    : bar.buildCta ?? "Build trip";
+
+  // Short category tag shown on each saved row (POI / EAT / DO / SCENE …).
+  const tagFor = (kind?: string) => {
+    const k = (kind || "poi").toLowerCase();
+    if (k.startsWith("rest")) return "EAT";
+    if (k.startsWith("act")) return "DO";
+    return k.toUpperCase();
+  };
+
+  const listOpen = hasSelection && expanded;
 
   return (
     <div
       className="fixed left-0 right-0 bottom-0 z-[998]"
       style={{
         padding: "10px 14px calc(14px + env(safe-area-inset-bottom))",
-        background: "rgba(250,250,245,0.88)",
+        background: "rgba(250,250,245,0.9)",
         backdropFilter: "blur(16px)",
         WebkitBackdropFilter: "blur(16px)",
         borderTop: `1px solid ${BORDER}`,
       }}
     >
-      <div
-        className="mx-auto flex items-center gap-[12px] bg-white"
-        style={{
-          maxWidth: 560,
-          border: `1px solid ${BORDER}`,
-          borderRadius: 999,
-          padding: "8px 8px 8px 16px",
-          boxShadow: "0 8px 20px -10px rgba(11,18,32,0.15)",
-        }}
-      >
-        <span
-          className="flex-1 min-w-0 truncate"
-          style={{ fontSize: 13.5, color: "#b8becc" }}
-        >
-          {bar.placeholder}
-        </span>
-        <button
-          type="button"
-          onClick={go}
-          className="shrink-0 whitespace-nowrap rounded-full border-none cursor-pointer"
-          style={{
-            background: INK,
-            color: PAPER,
-            padding: "8px 15px",
-            fontSize: 12.5,
-            fontWeight: 600,
-          }}
-        >
-          {bar.cta ?? "Ask Kaira"}
-        </button>
+      {/* One centered column so every piece aligns on desktop; full-width under
+          560px on mobile — identical design on both. */}
+      <div className="mx-auto" style={{ maxWidth: 560 }}>
+        {/* Dark saved-list panel (toggled by the summary bar's chevron). */}
+        {listOpen && (
+          <div
+            style={{
+              background: INK,
+              borderRadius: 20,
+              padding: 14,
+              marginBottom: 10,
+              boxShadow: "0 18px 40px -18px rgba(11,18,32,0.5)",
+            }}
+          >
+            <div className="flex items-center justify-between mb-[10px]">
+              <span className="ctl-mono" style={{ fontSize: 11, color: PAPER }}>
+                Your list · {count} {count === 1 ? "item" : "items"}
+              </span>
+              <button
+                type="button"
+                onClick={() => selection?.clear()}
+                className="ctl-mono border-none cursor-pointer bg-transparent"
+                style={{ fontSize: 10, color: FAINT }}
+              >
+                Clear all
+              </button>
+            </div>
+            <div
+              className="ctl-scroll flex flex-col gap-[8px]"
+              style={{ maxHeight: 224, overflowY: "auto" }}
+            >
+              {items.map((it) => (
+                <div
+                  key={it.id ?? `${it.kind}:${it.label}`}
+                  className="flex items-center gap-[12px]"
+                  style={{
+                    background: "rgba(255,255,255,0.045)",
+                    border: "1px solid rgba(255,255,255,0.06)",
+                    borderRadius: 14,
+                    padding: "12px 12px 12px 14px",
+                  }}
+                >
+                  <span
+                    className="ctl-mono shrink-0"
+                    style={{ fontSize: 9.5, color: FAINT, width: 46 }}
+                  >
+                    {tagFor(it.kind)}
+                  </span>
+                  <span
+                    className="flex-1 min-w-0 truncate"
+                    style={{ color: PAPER, fontWeight: 700, fontSize: 14.5 }}
+                  >
+                    {it.short || it.label}
+                  </span>
+                  <button
+                    type="button"
+                    aria-label={`Remove ${it.label}`}
+                    onClick={() => selection?.toggle(it)}
+                    className="ctl-press shrink-0 flex items-center justify-center rounded-full border-none cursor-pointer"
+                    style={{
+                      width: 28,
+                      height: 28,
+                      background: "rgba(255,255,255,0.08)",
+                      color: FAINT,
+                      fontSize: 15,
+                      lineHeight: 1,
+                    }}
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* White summary bar — dark bag + yellow count badge, a "N saved" chip,
+            and a chevron that expands/collapses the dark list. */}
+        {hasSelection && (
+          <button
+            type="button"
+            onClick={() => setExpanded((v) => !v)}
+            aria-expanded={expanded}
+            className="w-full flex items-center gap-[12px] bg-white cursor-pointer"
+            style={{
+              border: `1px solid ${BORDER}`,
+              borderRadius: 999,
+              padding: "8px 14px 8px 8px",
+              marginBottom: 10,
+              boxShadow: "0 8px 20px -10px rgba(11,18,32,0.15)",
+            }}
+          >
+            <span
+              className="relative shrink-0 flex items-center justify-center rounded-full"
+              style={{ width: 38, height: 38, background: INK }}
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke={YELLOW}
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                <path d="M3 6h18" />
+                <path d="M16 10a4 4 0 0 1-8 0" />
+              </svg>
+              <span
+                className="absolute flex items-center justify-center rounded-full"
+                style={{
+                  top: -4,
+                  right: -4,
+                  minWidth: 18,
+                  height: 18,
+                  padding: "0 4px",
+                  background: YELLOW,
+                  color: INK,
+                  fontSize: 10.5,
+                  fontWeight: 700,
+                  border: "2px solid #fff",
+                }}
+              >
+                {count}
+              </span>
+            </span>
+            <span
+              className="shrink-0"
+              style={{
+                background: SAND,
+                borderRadius: 999,
+                padding: "6px 12px",
+                fontSize: 11,
+                color: MUTED,
+                fontWeight: 600,
+              }}
+            >
+              {count} {count === 1 ? "place" : "places"} saved
+            </span>
+            <span className="flex-1" />
+            <span
+              className="shrink-0 flex items-center"
+              style={{
+                color: FAINT,
+                transform: expanded ? "rotate(180deg)" : "none",
+                transition: "transform .2s ease",
+              }}
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke={FAINT}
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </span>
+          </button>
+        )}
+
+        {/* Action row — yellow primary (Build) + a round chat button. */}
+        <div className="flex items-center gap-[10px]">
+          <button
+            type="button"
+            onClick={doBuild}
+            className="ctl-press flex-1 rounded-full border-none cursor-pointer"
+            style={{
+              background: YELLOW,
+              color: INK,
+              padding: 15,
+              fontSize: 15,
+              fontWeight: 700,
+              boxShadow: "0 8px 20px -10px rgba(247,231,0,0.55)",
+            }}
+          >
+            {buildLabel} →
+          </button>
+          <button
+            type="button"
+            aria-label={bar.cta ?? "Ask Kaira"}
+            onClick={openChat}
+            className="ctl-press shrink-0 flex items-center justify-center rounded-full bg-white cursor-pointer"
+            style={{
+              width: 54,
+              height: 54,
+              border: `1px solid ${BORDER}`,
+              boxShadow: "0 8px 20px -10px rgba(11,18,32,0.15)",
+            }}
+          >
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke={INK}
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 8.5-8.5 8.38 8.38 0 0 1 8.5 8.5z" />
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -1744,12 +2180,22 @@ export interface CinematicThemeLandingProps {
   // Opens the read-only activity details drawer for a catalog activity id.
   // Used by `list` rows that carry an `activityId` (e.g. "Worth the cold").
   onSelectActivity?: (activityId: string, source?: string) => void;
+  // Opt-in "save items off the page" selection (see useThemeSelectionState).
+  // When provided, cards carrying an `item` toggle it in/out of the selection
+  // on click instead of seeding, and the docked ask-bar shows the selection
+  // popup + "Build this itinerary" CTA. Omit for a plain seed-only theme page.
+  selection?: ThemeSelectionValue;
+  // "Build this itinerary" action (from the selection popup). When provided,
+  // routes to /chat and opens the themed mini-form rather than auto-seeding.
+  onBuild?: () => void;
 }
 
 const CinematicThemeLanding: React.FC<CinematicThemeLandingProps> = ({
   config,
   onSelectPrompt,
   onSelectActivity,
+  selection,
+  onBuild,
 }) => {
   // Preload the LCP image: the first card of the first section (the hero
   // collage is desktop-only, so on mobile that card is the largest paint).
@@ -1764,6 +2210,7 @@ const CinematicThemeLanding: React.FC<CinematicThemeLandingProps> = ({
     : undefined;
 
   return (
+  <ThemeSelectionProvider value={selection ?? null}>
   <div
     className={`ctl-root ${
       config.askBar ? "pb-[104px] md:pb-[108px]" : "pb-[32px] md:pb-0"
@@ -1842,9 +2289,14 @@ const CinematicThemeLanding: React.FC<CinematicThemeLandingProps> = ({
     })}
 
     {config.askBar && (
-      <AskKairaStrip bar={config.askBar} onSelectPrompt={onSelectPrompt} />
+      <AskKairaStrip
+        bar={config.askBar}
+        onSelectPrompt={onSelectPrompt}
+        onBuild={onBuild}
+      />
     )}
   </div>
+  </ThemeSelectionProvider>
   );
 };
 
