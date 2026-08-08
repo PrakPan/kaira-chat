@@ -284,10 +284,15 @@ const christmasMarketsConfig: CinematicThemeConfig = {
       ],
     },
     // ── Markets — tap a city to open its city details (all its tours) ──
-    // Route-defining cities — NOT saveable (the mini-form's route picks these).
-    // Tapping a card still opens the city page for its tours/activities.
+    // Saveable: "+ Add" puts the city in the trip, the card body still opens
+    // the city page for its tours/activities. These are also the cities the
+    // mini-form's route picks from, so any that the chosen route already
+    // covers are dropped before the submission reaches /chatkit (see
+    // ThemeIntakeForm's route de-dupe) rather than being sent twice.
     {
       type: "list",
+      selectable: true,
+      itemKind: "city",
       heading: {
         lead: "Which square is",
         accent: "worth the stop",

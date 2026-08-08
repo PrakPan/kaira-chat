@@ -32,6 +32,37 @@ const rgba = (hex: string, alpha: number): string => {
   return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${alpha})`;
 };
 
+// Saved items that name a place rather than a thing to do. Only these are
+// checked against the chosen route — an activity or a café can't collide with
+// a route stop, and matching them would risk false positives against skeletons
+// that aren't city lists at all ("jan_powder", "classic_7").
+const PLACE_KINDS = new Set(["city", "base", "stop", "destination"]);
+
+/** `"Café Central"` → `"cafe_central"`. Matches the shape of a window's
+ *  `skeleton` ("prague_vienna_budapest") so the two can be compared. */
+const slugify = (value: string): string =>
+  value
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+
+/** True when the chosen window's route already covers this city. Compared on
+ *  token boundaries so "vienna" hits "prague_vienna_budapest" but "wien" does
+ *  not hit "wienerwald", and multi-word cities ("st_moritz") still match. */
+const routeCovers = (skeleton: string, label: string): boolean => {
+  const route = slugify(skeleton);
+  const city = slugify(label);
+  if (!route || !city) return false;
+  return (
+    route === city ||
+    route.startsWith(`${city}_`) ||
+    route.endsWith(`_${city}`) ||
+    route.includes(`_${city}_`)
+  );
+};
+
 export interface ThemeSelectedItemLike {
   kind?: string;
   label?: string;
@@ -84,11 +115,7 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
   const win = form.dateWindows[winIdx] ?? form.dateWindows[0];
 
   // De-dupe saved items (a place can be reachable from more than one section).
-  // Cities that would define a route aren't offered as saves (see the page
-  // configs), so what arrives here are add-ons — activities, restaurants,
-  // POIs — safe to send alongside the chosen route. Shown back to the reader as
-  // accent tags above the card, and sent verbatim on submit.
-  const dedupedItems: ThemeSelectedItemLike[] = React.useMemo(() => {
+  const uniqueItems: ThemeSelectedItemLike[] = React.useMemo(() => {
     const out: ThemeSelectedItemLike[] = [];
     const seen = new Set<string>();
     for (const it of items) {
@@ -103,6 +130,23 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
     }
     return out;
   }, [items]);
+
+  // Second pass, against the route the reader just chose. Some theme pages let
+  // you save the same cities the route is built from (Christmas markets' "Which
+  // square is worth the stop"), so picking "Prague → Vienna → Budapest" after
+  // saving Prague would otherwise send Prague twice — once as the skeleton and
+  // once as an add-on. Drop those; what's left are genuine extras (activities,
+  // cafés, and cities the route doesn't already visit). Recomputed as the
+  // selection changes, so the tags below show exactly what will be sent.
+  const dedupedItems: ThemeSelectedItemLike[] = React.useMemo(() => {
+    const skeleton = win?.skeleton ?? "";
+    if (!skeleton) return uniqueItems;
+    return uniqueItems.filter((it) => {
+      if (!PLACE_KINDS.has((it.kind || "").toLowerCase())) return true;
+      const label = it.short || it.label || "";
+      return !routeCovers(skeleton, label);
+    });
+  }, [uniqueItems, win?.skeleton]);
 
   const submit = () => {
     if (submitted || !win) return;
