@@ -13,13 +13,24 @@ import type {
   ThemeForm,
   ThemeFormSubmission,
 } from "../../../theme/cinematic/themeForms/types";
+import { getThemePalette } from "../../../theme/cinematic/palettes";
 
 const INK = "#0b1220";
 const MUTED = "#445069";
 const FAINT = "#8a93a6";
 const BORDER = "#ececec";
-const YELLOW = "#f7e700";
 const SAND = "#f4f3ec";
+// Neutral fallback for a theme with no palette registered — the old ink/yellow
+// treatment, so an unthemed form still renders sensibly.
+const NEUTRAL = { accent: INK, accentSoft: SAND, accentOn: "#ffffff" };
+
+/** rgba() form of a #rrggbb accent, for the CTA's coloured drop shadow. */
+const rgba = (hex: string, alpha: number): string => {
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex.trim());
+  if (!m) return `rgba(11,18,32,${alpha})`;
+  const n = parseInt(m[1], 16);
+  return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${alpha})`;
+};
 
 export interface ThemeSelectedItemLike {
   kind?: string;
@@ -62,20 +73,23 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
       prev.includes(p) ? prev.filter((x) => x !== p) : [...prev, p],
     );
 
+  // The theme's colour, resolved from the same slug the page handed over. Every
+  // "chosen" state in the card — the route card, its tick, the saved-item tags
+  // and the CTA — reads from here, so the form looks like the page it came from.
+  const pagePalette = getThemePalette(form.slug);
+  const accent = pagePalette?.accent ?? NEUTRAL.accent;
+  const accentSoft = pagePalette?.accentSoft ?? NEUTRAL.accentSoft;
+  const accentOn = pagePalette?.accentOn ?? NEUTRAL.accentOn;
+
   const win = form.dateWindows[winIdx] ?? form.dateWindows[0];
 
-  const submit = () => {
-    if (submitted || !win) return;
-    const useExact = exactOpen && fromDate && toDate;
-    const dates: [string, string] = useExact
-      ? [fromDate, toDate]
-      : [win.range[0], win.range[1]];
-
-    // De-dupe saved items (a place can be reachable from more than one section).
-    // Cities that would define a route aren't offered as saves (see the page
-    // configs), so what arrives here are add-ons — activities, restaurants,
-    // POIs — safe to send alongside the chosen route.
-    const dedupedItems: ThemeSelectedItemLike[] = [];
+  // De-dupe saved items (a place can be reachable from more than one section).
+  // Cities that would define a route aren't offered as saves (see the page
+  // configs), so what arrives here are add-ons — activities, restaurants,
+  // POIs — safe to send alongside the chosen route. Shown back to the reader as
+  // accent tags above the card, and sent verbatim on submit.
+  const dedupedItems: ThemeSelectedItemLike[] = React.useMemo(() => {
+    const out: ThemeSelectedItemLike[] = [];
     const seen = new Set<string>();
     for (const it of items) {
       const key = it.id
@@ -85,8 +99,17 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
             .toLowerCase()}`;
       if (!key.trim() || key === ":" || seen.has(key)) continue;
       seen.add(key);
-      dedupedItems.push(it);
+      out.push(it);
     }
+    return out;
+  }, [items]);
+
+  const submit = () => {
+    if (submitted || !win) return;
+    const useExact = exactOpen && fromDate && toDate;
+    const dates: [string, string] = useExact
+      ? [fromDate, toDate]
+      : [win.range[0], win.range[1]];
 
     const submission: ThemeFormSubmission = {
       slug: form.slug,
@@ -125,6 +148,35 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
 
   return (
     <div style={{ width: "100%" }}>
+      {/* What the reader saved on the theme page, shown back as accent tags so
+          the handoff is visible rather than implied. Same treatment as the
+          page's own saved-list chips. */}
+      {dedupedItems.length > 0 && (
+        <div style={{ marginBottom: 10, marginLeft: 10}}>
+          <div style={{ ...mono, color: FAINT, fontSize: 9, marginBottom: 6 }}>
+            Building around your {dedupedItems.length}{" "}
+            {dedupedItems.length === 1 ? "pick" : "picks"}
+          </div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+            {dedupedItems.map((it, i) => (
+              <span
+                key={it.id ?? `${it.kind}:${it.label}:${i}`}
+                style={{
+                  ...mono,
+                  background: accentSoft,
+                  color: accent,
+                  padding: "4px 9px",
+                  borderRadius: 6,
+                  fontSize: 8.5,
+                }}
+              >
+                {it.short || it.label}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* The 2-section card (the tagline greeting is a separate message bubble
           above, with Kaira's avatar). */}
       <div
@@ -192,8 +244,8 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
                   gap: 10,
                   textAlign: "left",
                   width: "100%",
-                  background: on ? "rgba(247,231,0,0.16)" : "#ffffff",
-                  border: `1px solid ${on ? "rgba(247,231,0,0.55)" : BORDER}`,
+                  background: on ? accentSoft : "#ffffff",
+                  border: `1px solid ${on ? accent : BORDER}`,
                   borderRadius: 14,
                   padding: "12px 13px",
                   cursor: "pointer",
@@ -202,7 +254,7 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
                 <span
                   style={{
                     ...mono,
-                    color: on ? INK : "#b8becc",
+                    color: on ? accent : "#b8becc",
                     fontSize: 11,
                     flex: "0 0 12px",
                   }}
@@ -371,15 +423,15 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
           style={{
             width: "100%",
             marginTop: 16,
-            background: YELLOW,
-            color: INK,
+            background: accent,
+            color: accentOn,
             border: "none",
             borderRadius: 999,
             padding: 13,
             fontSize: 14,
             fontWeight: 700,
             cursor: "pointer",
-            boxShadow: "0 8px 20px -10px rgba(247,231,0,0.5)",
+            boxShadow: `0 8px 20px -10px ${rgba(accent, 0.5)}`,
           }}
         >
           {form.copy.cta}

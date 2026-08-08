@@ -18,6 +18,7 @@ import {
 } from "../../components/theme/cinematic/useSeedChat";
 import { useThemeSelectionState } from "../../components/theme/cinematic/ThemeSelection";
 import type { CinematicThemeConfig } from "../../components/theme/cinematic/types";
+import { THEME_PALETTES } from "../../components/theme/cinematic/palettes";
 
 const THEME_SLUG = "northern-lights";
 const CDN = "https://d31aoa0ehgvjdi.cloudfront.net/media/website/northern-lights-2026";
@@ -63,12 +64,7 @@ const PROMPTS = {
 
 const northernLightsConfig: CinematicThemeConfig = {
   // Aurora midnight — carries every CTA, the saved state and the docked bar.
-  theme: {
-    accent: "#16324f",
-    accentSoft: "#e6edf4",
-    page: "#f7f9fb",
-    heroTint: "#e9f1f4",
-  },
+  theme: THEME_PALETTES["northern-lights"],
   header: { title: "Northern lights", subtitle: "Theme · Arctic · Sep – Mar" },
   hero: {
     eyebrow: "GLASS ROOFS · HUSKY TRAILS · A SKY THAT COMES ALIVE",

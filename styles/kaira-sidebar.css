@@ -165,6 +165,29 @@
   height: 34px;
 }
 
+/* Mobile chat header close — solid black circle that returns the reader to the
+   theme page they opened the chat from. Same 34px footprint as the row it
+   replaces, so the header height is unchanged. */
+.kaira-scope .kaira-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  padding: 0;
+  border: none;
+  background: #0b1220;
+  color: #ffffff;
+  border-radius: var(--k-r-pill);
+  cursor: pointer;
+  transition: background var(--k-t-fast) var(--k-ease-out);
+}
+
+.kaira-scope .kaira-close-btn:hover {
+  background: var(--k-ink-3);
+}
+
 /* ── Generic collapsed icon button ─────────────────────────────────────── */
 .kaira-scope .kaira-icon-btn {
   display: flex;

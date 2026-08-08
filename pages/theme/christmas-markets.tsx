@@ -21,6 +21,7 @@ import ActivityDetailsDrawer from "../../components/drawers/activityDetails/Acti
 import CityDetailsDrawer from "../../components/drawers/cityDetails/CityDetailsDrawer";
 import POIDetailsDrawer from "../../components/drawers/poiDetails/POIDetailsDrawer";
 import type { CinematicThemeConfig } from "../../components/theme/cinematic/types";
+import { THEME_PALETTES } from "../../components/theme/cinematic/palettes";
 
 const U = "https://images.unsplash.com";
 const VISA = "https://visa.thetarzanway.com/country";
@@ -155,12 +156,7 @@ const PROMPTS = {
 
 const christmasMarketsConfig: CinematicThemeConfig = {
   // Market green — carries every CTA, the saved state and the docked bar.
-  theme: {
-    accent: "#1f6b4a",
-    accentSoft: "#eef4ea",
-    page: "#f8faf6",
-    heroTint: "#f9ece6",
-  },
+  theme: THEME_PALETTES["christmas-markets"],
   header: {
     title: "Christmas markets & NYE",
     subtitle: "Theme · Europe · multi-city",

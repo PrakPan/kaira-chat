@@ -49,6 +49,7 @@ import { updateIntakeForm } from "../../../store/actions/intakeForm";
 import { updatePricingForm } from "../../../store/actions/pricingForm";
 import IntakeFormCard from "./IntakeForm";
 import ThemeIntakeForm from "./ThemeIntakeForm/ThemeIntakeForm";
+import { WidgetThemeProvider } from "./WidgetRenderer";
 import type {
   ThemeForm,
   ThemeFormSubmission,
@@ -107,6 +108,20 @@ const SingleChips = styled.button`
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+
+  /* Phone — the Kaira mock's chips: a hairline white pill in ink text, sitting
+     directly above the composer pill it feeds. */
+  @media (max-width: 768px) {
+    border-radius: 999px;
+    padding: 8px 13px;
+    border: 1px solid #dcdfe5;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 11.5px;
+    color: #0b1220;
+    &:hover {
+      border-color: #dcdfe5;
+    }
   }
 `;
 
@@ -395,6 +410,26 @@ const ChatPanelStyles = () => (
       border-bottom: 1px solid #ececec;
       background: #fff;
       flex-shrink: 0;
+    }
+    /* Phone: the bar collapses out of the column as the reader scrolls down
+       (see headerHidden), handing its ~62px to the thread. max-height rather
+       than display:none so it animates and so the natural height still wins
+       when open. */
+    @media (max-width: 768px) {
+      .kp-header {
+        overflow: hidden;
+        max-height: 140px;
+        transition: max-height 0.24s cubic-bezier(.2,.7,.3,1),
+                    padding 0.24s cubic-bezier(.2,.7,.3,1),
+                    opacity 0.16s ease;
+      }
+      .kp-header.is-hidden {
+        max-height: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+        opacity: 0;
+        border-bottom-color: transparent;
+      }
     }
     .kp-header-ava {
       position: relative;
@@ -1492,6 +1527,10 @@ startEmptyIntake = false,
   // auto-scroll effect only fires when this is true, so the transcript won't
   // yank away from a user who's scrolled up to read earlier messages.
   const isAtBottomRef = useRef(true);
+  // Phone-only: the top bar collapses while the reader scrolls down the thread
+  // and slides back in on an upward scroll or at the top of the list. The
+  // collapse itself is CSS and media-scoped, so this flag is inert on desktop.
+  const [headerHidden, setHeaderHidden] = useState(false);
   // True between a thread restore and the moment we've actually parked the
   // scroll container at the bottom. Widgets/images in restored threads finish
   // laying out asynchronously, so a single smooth scroll lands mid-thread —
@@ -2993,17 +3032,31 @@ const handleLoginCardSkip = useCallback(() => {
   useEffect(() => {
     const c = messagesScrollRef.current;
     if (!c) return;
+    // Same gesture stream drives the phone header's auto-hide: reading forward
+    // collapses it for the extra rows, reading back brings it in. Deliberately
+    // hung off the user's gesture rather than the `scroll` event, so the
+    // auto-scroll that follows every streamed token doesn't hide the header
+    // (and with it the "typing…" status) on its own.
     const onWheel = (e: WheelEvent) => {
       if (e.deltaY < 0) isAtBottomRef.current = false;
+      if (e.deltaY > 4) setHeaderHidden(true);
+      else if (e.deltaY < -4) setHeaderHidden(false);
     };
     let touchStartY = 0;
+    let lastTouchY = 0;
     const onTouchStart = (e: TouchEvent) => {
       touchStartY = e.touches[0]?.clientY ?? 0;
+      lastTouchY = touchStartY;
     };
     const onTouchMove = (e: TouchEvent) => {
       const y = e.touches[0]?.clientY ?? 0;
       // Finger dragging downward → content scrolls up → user is reading above.
       if (y - touchStartY > 5) isAtBottomRef.current = false;
+      // Per-move delta (not the whole-gesture one above) so a long drag can
+      // flip the header back mid-swipe.
+      if (lastTouchY - y > 4) setHeaderHidden(true);
+      else if (y - lastTouchY > 4) setHeaderHidden(false);
+      lastTouchY = y;
     };
     c.addEventListener("wheel", onWheel, { passive: true });
     c.addEventListener("touchstart", onTouchStart, { passive: true });
@@ -3804,6 +3857,11 @@ useEffect(() => {
     if (!c) return;
     const distanceFromBottom = c.scrollHeight - c.scrollTop - c.clientHeight;
     isAtBottomRef.current = distanceFromBottom < 80;
+    // Back at the top of the thread (or nothing to scroll) → the header is
+    // always shown, whichever way the last gesture went.
+    if (c.scrollTop <= 8 || c.scrollHeight - c.clientHeight < 120) {
+      setHeaderHidden(false);
+    }
     if (c.scrollTop <= PAGINATION_SCROLL_THRESHOLD) {
       fetchOlderMessages();
     }
@@ -4060,6 +4118,9 @@ const handleShowLogin = useCallback(() => {
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
+    // Hands the theme slug to every widget in the thread, so a route card's
+    // primary CTA can paint in the theme page's accent (see useWidgetAccent).
+    <WidgetThemeProvider value={themeSlug}>
     <div
       className={`kp-root flex flex-col h-full min-h-0 bg-white max-h-[100dvh] border-[0.5px] border-l-[#e5e5e5] overflow-x-hidden`}
       style={{
@@ -4070,7 +4131,7 @@ const handleShowLogin = useCallback(() => {
     >
       <ChatPanelStyles />
       {/* ── Top bar — mirrors chat-active-v2.html .chat-header ──────────── */}
-      <div className="kp-header">
+      <div className={`kp-header${headerHidden ? " is-hidden" : ""}`}>
         <div className="kp-header-ava">
           <img src="/KairaInsta.png" alt="Kaira" />
           <span className="kp-dot" />
@@ -4856,16 +4917,16 @@ const handleShowLogin = useCallback(() => {
       {quickReplyShimmer &&
         quickReplies.length === 0 &&
         !isComposerLocked && (
-          <div className="flex-shrink-0 px-[0.25rem] md:!px-6 pt-2 pb-1">
+          <div className="flex-shrink-0 px-3 md:!px-6 pt-2 pb-0 md:pb-1">
             <div className="mx-auto">
               <div
-                className="flex gap-2 overflow-hidden pb-1"
+                className="flex gap-[6px] md:gap-2 overflow-hidden pb-[10px] md:pb-1"
                 style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
               >
                 {Array.from({ length: 10 }).map((_, idx) => (
                   <div
                     key={idx}
-                    className="flex-shrink-0 rounded-[6px]"
+                    className="flex-shrink-0 rounded-full md:rounded-[6px]"
                     style={{
                       width: 96,
                       height: 33,
@@ -4886,10 +4947,10 @@ const handleShowLogin = useCallback(() => {
       {/* ── Quick reply chips ─────────────────────────────────────────────── */}
       {/* Hidden while itinerary creation is in progress — no quick replies/CTAs allowed */}
       {(quickReplies.length > 0 || quickReplyLoading) && !isComposerLocked && !isForeignItinerary && !loginBlocked && !promptLoginBlocked && (
-        <div className="flex-shrink-0 px-[0.25rem] md:!px-6 pt-2 pb-1">
+        <div className="flex-shrink-0 px-3 md:!px-6 pt-2 pb-0 md:pb-1">
           <div className="mx-auto">
             <div
-              className="flex gap-2 overflow-x-auto pb-1"
+              className="flex gap-[6px] md:gap-2 overflow-x-auto pb-[10px] md:pb-1"
               style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             >
               {quickReplyLoading
@@ -5440,6 +5501,7 @@ const handleShowLogin = useCallback(() => {
         onHide={() => setEsimDrawer({ show: false })}
       />
     </div>
+    </WidgetThemeProvider>
   );
 }
 

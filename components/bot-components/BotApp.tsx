@@ -35,6 +35,7 @@ import {
   getThemeForm,
   type ThemeForm,
 } from "../theme/cinematic/themeForms";
+import { getThemePagePath } from "../theme/cinematic/palettes";
 import ItineraryContainer from "../../containers/itinerary/ItineraryContainer";
 import ItineraryLegend from "../itinerary/itineraryCity/ItineraryLegend";
 import type {
@@ -2855,6 +2856,22 @@ export default function BotApp({
     [dispatch],
   );
 
+  // Mobile chat header's close button. A thread that started on a theme page
+  // goes straight back to that page; a plain /chat session falls back to the
+  // previous history entry (and the homepage when /chat was opened cold).
+  const handleCloseChat = () => {
+    const themePath = getThemePagePath(themeSlug);
+    if (themePath) {
+      router.push(themePath);
+      return;
+    }
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      router.back();
+      return;
+    }
+    router.push("/");
+  };
+
   const handleNewChat = () => {
     clearStaleChatSessions();
     initialPromptRef.current = null;
@@ -4383,6 +4400,7 @@ Start Location: ${details.startLocation}`;
                         !!activeItineraryId
                       }
                       onLoginSuccess={attachUserToItinerary}
+                      onClose={handleCloseChat}
                     />
                   }
                 />
@@ -4416,6 +4434,7 @@ Start Location: ${details.startLocation}`;
                           !!activeItineraryId
                         }
                         onLoginSuccess={attachUserToItinerary}
+                        onClose={handleCloseChat}
                       />
                     }
                   />
@@ -5028,12 +5047,17 @@ export const MobileHeaderMenu = React.memo(
     activeThreadId,
     isComplete,
     onLoginSuccess,
+    onClose,
   }: {
     onNewChat: () => void;
     onThreadSelect: (id: string, sessionId?: string, customerName?: string) => void;
     activeThreadId: string | null;
     isComplete?: boolean;
     onLoginSuccess?: () => void | Promise<void>;
+    // Mobile-only close: returns the reader to the theme page the chat was
+    // opened from. When set it takes the place of the new-chat and profile
+    // buttons, which is the whole point — one exit, not three actions.
+    onClose?: () => void;
   }) => {
     const userId = (useSelector as any)((s: any) => s.auth?.id);
     const token = (useSelector as any)((s: any) => s.auth?.token);
@@ -5300,7 +5324,14 @@ export const MobileHeaderMenu = React.memo(
             </button>
           )}
 
+          {/* New chat + profile are dropped from the mobile header whenever the
+              close button is present (`onClose`): the header only has room for
+              one action, and getting back out is the one readers reach for.
+              Both stay on the desktop rail, and the markup stays here rather
+              than being deleted so restoring them is a one-line change. */}
+
           {/* New chat — solid ink circle, matching the desktop collapsed rail. */}
+          {!onClose && (
           <button
             onClick={onNewChat}
             className="kaira-newchat-icon-btn is-sm"
@@ -5308,8 +5339,10 @@ export const MobileHeaderMenu = React.memo(
           >
             <KairaPlusIcon size={18} />
           </button>
+          )}
 
           {/* Profile avatar */}
+          {!onClose && (
           <div ref={profileRef} className="relative">
             <button
               onClick={() => setProfileOpen((v) => !v)}
@@ -5371,8 +5404,32 @@ export const MobileHeaderMenu = React.memo(
               </div>
             )}
           </div>
+          )}
+
+          {/* Close — black circle back to the theme page this chat started on. */}
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="kaira-close-btn"
+              aria-label="Close chat"
+            >
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          )}
         </div>
-        
+
         {showLogin && !isLoggedIn && (
           <BotLoginModal
             show={showLogin}

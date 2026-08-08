@@ -17,6 +17,7 @@ import {
 } from "../../components/theme/cinematic/useSeedChat";
 import { useThemeSelectionState } from "../../components/theme/cinematic/ThemeSelection";
 import type { CinematicThemeConfig } from "../../components/theme/cinematic/types";
+import { THEME_PALETTES } from "../../components/theme/cinematic/palettes";
 
 // The themed mini-form + /chatkit slug for this page (Switzerland DDLJ route).
 const THEME_SLUG = "switzerland-ddlj";
@@ -64,12 +65,7 @@ const PROMPTS = {
 
 const filmyGetawaysConfig: CinematicThemeConfig = {
   // Cinema red — carries every CTA, the saved state and the docked bar.
-  theme: {
-    accent: "#a03352",
-    accentSoft: "#f8e5ec",
-    page: "#fbf5f7",
-    heroTint: "#f8e5ec",
-  },
+  theme: THEME_PALETTES["switzerland-ddlj"],
   header: {
     title: "Filmy getaways",
     subtitle: "Theme · Bollywood + Hollywood",

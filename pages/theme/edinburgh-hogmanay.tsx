@@ -20,6 +20,7 @@ import {
 import { useThemeSelectionState } from "../../components/theme/cinematic/ThemeSelection";
 import ActivityDetailsDrawer from "../../components/drawers/activityDetails/ActivityDetailsDrawer";
 import type { CinematicThemeConfig } from "../../components/theme/cinematic/types";
+import { THEME_PALETTES } from "../../components/theme/cinematic/palettes";
 
 const THEME_SLUG = "edinburgh-hogmanay";
 
@@ -136,12 +137,7 @@ const PROMPTS = {
 
 const edinburghHogmanayConfig: CinematicThemeConfig = {
   // Hogmanay purple — carries every CTA, the saved state and the docked bar.
-  theme: {
-    accent: "#6d4a98",
-    accentSoft: "#efe9f5",
-    page: "#faf8f4",
-    heroTint: "#f8ece0",
-  },
+  theme: THEME_PALETTES["edinburgh-hogmanay"],
   header: {
     title: "Edinburgh Hogmanay",
     subtitle: "Theme · 29 Dec – 2 Jan",

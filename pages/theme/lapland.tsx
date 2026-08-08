@@ -19,6 +19,7 @@ import {
 import { useThemeSelectionState } from "../../components/theme/cinematic/ThemeSelection";
 import ActivityDetailsDrawer from "../../components/drawers/activityDetails/ActivityDetailsDrawer";
 import type { CinematicThemeConfig } from "../../components/theme/cinematic/types";
+import { THEME_PALETTES } from "../../components/theme/cinematic/palettes";
 
 const THEME_SLUG = "lapland";
 
@@ -108,12 +109,7 @@ const IMG = {
 
 const laplandConfig: CinematicThemeConfig = {
   // Arctic indigo — carries every CTA, the saved state and the docked bar.
-  theme: {
-    accent: "#3d4f7a",
-    accentSoft: "#eef2fb",
-    page: "#f8f9fc",
-    heroTint: "#eef2fb",
-  },
+  theme: THEME_PALETTES["lapland"],
   header: {
     title: "Lapland",
     subtitle: "Theme · Dec – Mar",

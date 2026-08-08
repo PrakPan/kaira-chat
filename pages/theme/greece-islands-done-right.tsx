@@ -18,6 +18,7 @@ import {
 } from "../../components/theme/cinematic/useSeedChat";
 import { useThemeSelectionState } from "../../components/theme/cinematic/ThemeSelection";
 import type { CinematicThemeConfig } from "../../components/theme/cinematic/types";
+import { THEME_PALETTES } from "../../components/theme/cinematic/palettes";
 
 const THEME_SLUG = "greece-islands-done-right";
 const CDN = "https://d31aoa0ehgvjdi.cloudfront.net/media/website";
@@ -51,12 +52,7 @@ const PROMPTS = {
 
 const greeceConfig: CinematicThemeConfig = {
   // Aegean blue — carries every CTA, the saved state and the docked bar.
-  theme: {
-    accent: "#2f6f9e",
-    accentSoft: "#e6f0f7",
-    page: "#f6fafc",
-    heroTint: "#e9f3f8",
-  },
+  theme: THEME_PALETTES["greece-islands-done-right"],
   header: { title: "Greece islands", subtitle: "Theme · Greece · May – Oct" },
   hero: {
     eyebrow: "ATHENS · A CALDERA SUNSET · THE CYCLADES BY FERRY",

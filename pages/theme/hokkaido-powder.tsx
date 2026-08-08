@@ -20,6 +20,7 @@ import {
 import { useThemeSelectionState } from "../../components/theme/cinematic/ThemeSelection";
 import ActivityDetailsDrawer from "../../components/drawers/activityDetails/ActivityDetailsDrawer";
 import type { CinematicThemeConfig } from "../../components/theme/cinematic/types";
+import { THEME_PALETTES } from "../../components/theme/cinematic/palettes";
 
 // Identifies this theme in the /chatkit request body (`slug`), so the backend
 // knows which theme page a build request came from.
@@ -125,12 +126,7 @@ const PROMPTS = {
 
 const hokkaidoConfig: CinematicThemeConfig = {
   // Hokkaido snow blue — carries every CTA, the saved state and the docked bar.
-  theme: {
-    accent: "#3d6b8f",
-    accentSoft: "#e4eef5",
-    page: "#f7fafb",
-    heroTint: "#ecf4f9",
-  },
+  theme: THEME_PALETTES["hokkaido-powder"],
   header: {
     title: "Hokkaido powder & Sapporo",
     subtitle: "Theme · Japan · Dec – Mar",

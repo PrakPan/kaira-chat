@@ -92,8 +92,11 @@ const Dictate = forwardRef((props, ref) => {
         props.stopDictation();
     }
 
+    // `start` lets a host trigger dictation from its own affordance — the phone
+    // composer's "+" menu has no room for the inline mic, so it calls this.
     useImperativeHandle(ref, () => ({
-        stop: stopListening
+        stop: stopListening,
+        start: startListening
     }));
 
     useEffect(() => {
@@ -101,6 +104,13 @@ const Dictate = forwardRef((props, ref) => {
             props.onTranscriptChange(transcript)
         }
     }, [transcript, props.onTranscriptChange])
+
+    // Mirror the recording flag out so a host that hides the inline mic (again,
+    // the phone composer) can bring it back while dictation is running — it is
+    // the only way to stop.
+    useEffect(() => {
+        props.onListeningChange?.(listening)
+    }, [listening])
 
     // Speech-recognition support is browser-only, so the server always renders
     // the empty <span>. Defer the real mic UI until after mount so the first

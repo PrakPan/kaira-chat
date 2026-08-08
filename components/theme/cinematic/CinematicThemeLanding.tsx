@@ -219,6 +219,16 @@ const CinematicStyles = () => (
       .ctl-sheen { position: absolute; inset: 0; pointer-events: none; background-image: linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent); background-size: 64px 100%; background-repeat: no-repeat; background-position: left center; animation: ctlBarShimmer 3s cubic-bezier(.4,0,.2,1) infinite; }
       @keyframes ctlBarShimmer { 0% { transform: translateX(-100%) skewX(-18deg); } 55%, 100% { transform: translateX(100%) skewX(-18deg); } }
       @keyframes ctlPulseRing { 0% { box-shadow: 0 0 0 0 rgba(31,138,90,0.4); } 70% { box-shadow: 0 0 0 6px rgba(31,138,90,0); } 100% { box-shadow: 0 0 0 0 rgba(31,138,90,0); } }
+      /* Docked bar breakpoint. The phone bar is the full-bleed stack; from 768
+         up it's replaced by the floating pill (the Lapland desktop mockup).
+         Written by hand rather than with md:/hidden utilities so the two can
+         never both resolve to none — they're strict complements. */
+      .ctl-bar-desk { display: none; }
+      .ctl-bar-mob { display: block; }
+      @media (min-width: 768px) {
+        .ctl-bar-desk { display: block; }
+        .ctl-bar-mob { display: none; }
+      }
       .ctl-root input { font-family: inherit; }
       .ctl-root input::placeholder { color: #b8becc; opacity: 1; }
       .ctl-skeleton { position: absolute; inset: 0; background: linear-gradient(90deg, #e7e9ee 25%, #f2f3f6 37%, #e7e9ee 63%); background-size: 400% 100%; animation: ctlShimmer 1.4s ease infinite; }
@@ -2012,9 +2022,282 @@ const AskKairaStrip: React.FC<{
 
   const listOpen = hasSelection && expanded;
 
-  return (
+  // Shared pieces between the phone bar and the desktop pill.
+  const bagIcon = (size: number) => (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke={palette.accentOn}
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+      <path d="M3 6h18" />
+      <path d="M16 10a4 4 0 0 1-8 0" />
+    </svg>
+  );
+
+  const kairaAvatar = (size: number) => (
+    <>
+      <img
+        src={avatar ?? "/KairaInsta.jpg"}
+        alt=""
+        width={size}
+        height={size}
+        className="block rounded-full"
+        style={{
+          width: size,
+          height: size,
+          objectFit: "cover",
+          border: "2px solid #ffffff",
+          boxShadow: "0 8px 20px -8px rgba(11,18,32,0.35)",
+        }}
+      />
+      <span
+        aria-hidden
+        className="absolute rounded-full"
+        style={{
+          bottom: 1,
+          right: 1,
+          width: 10,
+          height: 10,
+          background: "#1f8a5a",
+          border: "2px solid #ffffff",
+          animation: "ctlPulseRing 2s infinite",
+        }}
+      />
+    </>
+  );
+
+  // The saved-list tray. Same card on both breakpoints; only its width and the
+  // gutter around it differ, so the caller passes the wrapper style.
+  const savedTray = (
     <div
-      className="fixed left-0 right-0 bottom-0 z-[998]"
+      style={{
+        ...cardChrome(),
+        borderRadius: 18,
+        padding: "16px 16px 14px",
+        boxShadow: "0 -16px 44px -16px rgba(11,18,32,0.28)",
+      }}
+    >
+      <div className="flex items-center justify-between mb-[12px]">
+        <span className="ctl-mono" style={{ fontSize: 9.5, color: INK }}>
+          Your list · {count} {count === 1 ? "item" : "items"}
+        </span>
+        <button
+          type="button"
+          onClick={() => selection?.clear()}
+          className="ctl-mono border-none cursor-pointer bg-transparent p-0"
+          style={{ fontSize: 9.5, color: FAINT }}
+        >
+          Clear all
+        </button>
+      </div>
+      <div
+        className="ctl-scroll flex flex-col gap-[7px]"
+        style={{ maxHeight: 224, overflowY: "auto" }}
+      >
+        {items.map((it) => (
+          <div
+            key={it.id ?? `${it.kind}:${it.label}`}
+            className="flex items-center gap-[10px]"
+            style={{
+              background: palette.accentSoft,
+              borderRadius: 12,
+              padding: "10px 10px 10px 13px",
+            }}
+          >
+            <span
+              className="ctl-mono shrink-0"
+              style={{
+                fontSize: 8.5,
+                color: palette.accent,
+                whiteSpace: "nowrap",
+              }}
+            >
+              {kindName(it.kind).toUpperCase()}
+            </span>
+            <span
+              className="flex-1 min-w-0 truncate"
+              style={{ color: INK, fontWeight: 500, fontSize: 12.5 }}
+              title={it.label || it.short}
+            >
+              {it.label || it.short}
+            </span>
+            <button
+              type="button"
+              aria-label={`Remove ${it.label}`}
+              onClick={() => selection?.toggle(it)}
+              className="ctl-press shrink-0 flex items-center justify-center rounded-full cursor-pointer p-0"
+              style={{
+                width: 22,
+                height: 22,
+                background: "#ffffff",
+                border: `1px solid ${BORDER}`,
+                color: MUTED,
+                fontSize: 13,
+                lineHeight: 1,
+              }}
+            >
+              ×
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  // ── Desktop: one floating pill ──────────────────────────────────────────
+  // The wide-screen mockup drops the full-bleed bar entirely — bag + count
+  // chips + build CTA + Kaira sit on a single 720px pill floating clear of the
+  // page, with the saved tray as a narrower card above it.
+  const desktopBar = (
+    <div
+      className="ctl-bar-desk fixed left-0 right-0 bottom-0 z-[998]"
+      style={{ pointerEvents: "none" }}
+    >
+      {listOpen && (
+        <div
+          style={{
+            pointerEvents: "auto",
+            width: 560,
+            maxWidth: "92%",
+            margin: "0 auto 10px",
+          }}
+        >
+          {savedTray}
+        </div>
+      )}
+      <div
+        style={{
+          pointerEvents: "auto",
+          width: 720,
+          maxWidth: "92%",
+          margin: "0 auto",
+          paddingBottom: 18,
+        }}
+      >
+        <div
+          className="flex items-center gap-[12px]"
+          style={{
+            background: "rgba(250,250,245,0.92)",
+            backdropFilter: "blur(16px)",
+            WebkitBackdropFilter: "blur(16px)",
+            border: `1px solid ${BORDER}`,
+            borderRadius: 999,
+            padding: 10,
+            boxShadow: "0 18px 44px -18px rgba(11,18,32,0.35)",
+          }}
+        >
+          {/* Bag — toggles the saved tray. */}
+          <button
+            type="button"
+            onClick={hasSelection ? () => setExpanded((v) => !v) : doBuild}
+            aria-expanded={hasSelection ? expanded : undefined}
+            aria-label={hasSelection ? "Your list" : buildLabel}
+            className="relative shrink-0 border-none cursor-pointer p-0 bg-transparent"
+            style={{ width: 46, height: 46 }}
+          >
+            <span
+              className="flex items-center justify-center rounded-full"
+              style={{ width: 46, height: 46, background: palette.accent }}
+            >
+              {bagIcon(18)}
+            </span>
+            {hasSelection && (
+              <span
+                className="ctl-mono absolute flex items-center justify-center rounded-full"
+                style={{
+                  top: -3,
+                  right: -4,
+                  minWidth: 17,
+                  height: 17,
+                  padding: "0 4px",
+                  background: INK,
+                  color: "#ffffff",
+                  fontSize: 9.5,
+                  border: "1.5px solid #ffffff",
+                  letterSpacing: 0,
+                }}
+              >
+                {count}
+              </span>
+            )}
+          </button>
+
+          {hasSelection ? (
+            <>
+              <div className="flex gap-[6px] overflow-hidden">
+                {kindCounts.map(([k, n]) => (
+                  <span
+                    key={k}
+                    className="ctl-mono"
+                    style={{
+                      background: palette.accentSoft,
+                      color: palette.accent,
+                      padding: "6px 11px",
+                      borderRadius: 999,
+                      fontSize: 9,
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {n} {pluralize(k, n)}
+                  </span>
+                ))}
+              </div>
+              <span className="flex-1" />
+            </>
+          ) : (
+            <button
+              type="button"
+              onClick={openChat}
+              className="flex-1 min-w-0 truncate text-left border-none cursor-pointer bg-transparent p-0"
+              style={{ fontSize: 13.5, color: FAINT }}
+            >
+              {bar.placeholder}
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={doBuild}
+            className="ctl-press shrink-0 relative overflow-hidden flex items-center justify-center rounded-full border-none cursor-pointer"
+            style={{
+              background: palette.accent,
+              color: palette.accentOn,
+              padding: "14px 24px",
+              minWidth: 190,
+              fontSize: 14,
+              fontWeight: 700,
+              boxShadow: `0 8px 20px -10px ${palette.accent}`,
+            }}
+          >
+            <span aria-hidden className="ctl-sheen" />
+            {buildLabel} →
+          </button>
+
+          <button
+            type="button"
+            aria-label={bar.cta ?? "Ask Kaira"}
+            onClick={openChat}
+            className="ctl-press relative shrink-0 rounded-full border-none cursor-pointer p-0 bg-transparent"
+            style={{ width: 46, height: 46 }}
+          >
+            {kairaAvatar(46)}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <>
+    {desktopBar}
+    <div
+      className="ctl-bar-mob fixed left-0 right-0 bottom-0 z-[998]"
       style={{
         padding: "10px 14px calc(14px + env(safe-area-inset-bottom))",
         background: "rgba(250,250,245,0.9)",
@@ -2023,88 +2306,12 @@ const AskKairaStrip: React.FC<{
         borderTop: `1px solid ${BORDER}`,
       }}
     >
-      {/* One centered column so every piece aligns on desktop; full-width under
-          560px on mobile — identical design on both. */}
+      {/* One centered column so every piece aligns; full-width under 560px. */}
       <div className="mx-auto" style={{ maxWidth: 560 }}>
         {/* Saved-list panel (toggled by the summary bar's chevron) — a white
             tray whose rows carry the theme wash so the list reads as part of
             the trip being built rather than a generic cart. */}
-        {listOpen && (
-          <div
-            style={{
-              ...cardChrome(),
-              borderRadius: 18,
-              padding: "16px 16px 14px",
-              marginBottom: 10,
-              boxShadow: "0 -16px 44px -16px rgba(11,18,32,0.28)",
-            }}
-          >
-            <div className="flex items-center justify-between mb-[12px]">
-              <span className="ctl-mono" style={{ fontSize: 9.5, color: INK }}>
-                Your list · {count} {count === 1 ? "item" : "items"}
-              </span>
-              <button
-                type="button"
-                onClick={() => selection?.clear()}
-                className="ctl-mono border-none cursor-pointer bg-transparent p-0"
-                style={{ fontSize: 9.5, color: FAINT }}
-              >
-                Clear all
-              </button>
-            </div>
-            <div
-              className="ctl-scroll flex flex-col gap-[7px]"
-              style={{ maxHeight: 224, overflowY: "auto" }}
-            >
-              {items.map((it) => (
-                <div
-                  key={it.id ?? `${it.kind}:${it.label}`}
-                  className="flex items-center gap-[10px]"
-                  style={{
-                    background: palette.accentSoft,
-                    borderRadius: 12,
-                    padding: "10px 10px 10px 13px",
-                  }}
-                >
-                  <span
-                    className="ctl-mono shrink-0"
-                    style={{
-                      fontSize: 8.5,
-                      color: palette.accent,
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    {kindName(it.kind).toUpperCase()}
-                  </span>
-                  <span
-                    className="flex-1 min-w-0 truncate"
-                    style={{ color: INK, fontWeight: 500, fontSize: 12.5 }}
-                    title={it.label || it.short}
-                  >
-                    {it.label || it.short}
-                  </span>
-                  <button
-                    type="button"
-                    aria-label={`Remove ${it.label}`}
-                    onClick={() => selection?.toggle(it)}
-                    className="ctl-press shrink-0 flex items-center justify-center rounded-full cursor-pointer p-0"
-                    style={{
-                      width: 22,
-                      height: 22,
-                      background: "#ffffff",
-                      border: `1px solid ${BORDER}`,
-                      color: MUTED,
-                      fontSize: 13,
-                      lineHeight: 1,
-                    }}
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        {listOpen && <div style={{ marginBottom: 10 }}>{savedTray}</div>}
 
         {/* White summary bar — an accent bag with a count badge, one chip per
             saved type, and a chevron that expands/collapses the list. Shown
@@ -2247,37 +2454,12 @@ const AskKairaStrip: React.FC<{
             className="ctl-press relative shrink-0 rounded-full border-none cursor-pointer p-0 bg-transparent"
             style={{ width: 48, height: 48 }}
           >
-            <img
-              src={avatar ?? "/KairaInsta.jpg"}
-              alt=""
-              width={48}
-              height={48}
-              className="block rounded-full"
-              style={{
-                width: 48,
-                height: 48,
-                objectFit: "cover",
-                border: "2px solid #ffffff",
-                boxShadow: "0 8px 20px -8px rgba(11,18,32,0.35)",
-              }}
-            />
-            <span
-              aria-hidden
-              className="absolute rounded-full"
-              style={{
-                bottom: 1,
-                right: 1,
-                width: 10,
-                height: 10,
-                background: "#1f8a5a",
-                border: "2px solid #ffffff",
-                animation: "ctlPulseRing 2s infinite",
-              }}
-            />
+            {kairaAvatar(48)}
           </button>
         </div>
       </div>
     </div>
+    </>
   );
 };
 
