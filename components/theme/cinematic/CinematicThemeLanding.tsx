@@ -128,16 +128,13 @@ const IMAGE_BADGE: React.CSSProperties = {
 };
 
 // ── Selection CTA ──────────────────────────────────────────────────────────
-// One shared treatment for every "+ Add" / "✓ Added" pill on the page: ink
-// while it's an invitation, green once the item is in the trip, so a scan of
-// the page shows exactly what's been saved. This pair is deliberately NOT
-// theme-tinted — the accent stays reserved for the docked bar and the trip
-// itself, and green reads as "saved" on every theme. Dark sections (the
-// restaurant/feature scrollers on midnight) swap to a translucent-white /
-// muted-green pair, since solid ink disappears against that background.
-const GREEN = "#1f8a5a";
-
+// One shared treatment for every "+ Add" / "✓ Added" pill on the page. Resting
+// state is the accent's pale wash; the saved state fills with the accent so a
+// scan of the page shows exactly what's in the trip. Dark sections (the
+// restaurant/feature scrollers on midnight) keep the same shape on a
+// translucent-white / green pair, since the accent doesn't hold up there.
 const addCtaStyle = (
+  palette: ResolvedPalette,
   selected: boolean,
   dark?: boolean,
 ): React.CSSProperties => {
@@ -154,20 +151,28 @@ const addCtaStyle = (
           border: "1px solid rgba(255,255,255,0.16)",
         };
   return selected
-    ? { background: GREEN, color: "#ffffff", border: `1px solid ${GREEN}` }
-    : { background: INK, color: PAPER, border: `1px solid ${INK}` };
+    ? {
+        background: palette.accent,
+        color: palette.accentOn,
+        border: `1px solid ${palette.accent}`,
+      }
+    : {
+        background: palette.accentSoft,
+        color: palette.accent,
+        border: "1px solid transparent",
+      };
 };
 
 const addCtaLabel = (selected: boolean) => (selected ? "✓ Added" : "+ Add");
 
 // Primary card action ("Create this plan →", "Book this itinerary →") — an
-// outlined white pill that spans the card foot. It reads as the quieter of the
-// two actions on a card row so the ink "+ Add" pills stay the loudest thing.
-const PRIMARY_CTA: React.CSSProperties = {
-  background: "#ffffff",
-  color: INK,
-  border: `1px solid ${INK}`,
-};
+// accent-filled pill that spans the card foot.
+const primaryCtaStyle = (palette: ResolvedPalette): React.CSSProperties => ({
+  background: palette.accent,
+  color: palette.accentOn,
+  border: "none",
+  boxShadow: `0 8px 20px -12px ${palette.accent}`,
+});
 
 // ── Scoped styles ──────────────────────────────────────────────────────────
 const CinematicStyles = () => (
@@ -190,6 +195,22 @@ const CinematicStyles = () => (
          section's left gutter rather than the viewport edge. */
       .ctl-rail { scroll-snap-type: x mandatory; scroll-padding-left: 0; }
       .ctl-rail > * { scroll-snap-align: start; }
+      /* Destinations / "Other themes" tiles. On a phone they read as small
+         cards (photo on top, label beneath). From md up the mockup switches to
+         a photo tile with the label burned into the bottom of the image over a
+         scrim, so the same markup is re-laid-out rather than duplicated. The
+         overrides need !important because the base card sets colour and
+         padding inline. */
+      .ctl-tile-scrim { display: none; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, rgba(11,18,32,0) 30%, rgba(11,18,32,0.78) 100%); }
+      @media (min-width: 768px) {
+        .ctl-tile { position: relative; height: 120px; border-radius: 14px !important; border-color: transparent !important; }
+        .ctl-tile-media { position: absolute; inset: 0; height: 100% !important; }
+        .ctl-tile-scrim { display: block; }
+        .ctl-tile-body { position: absolute; left: 13px; right: 13px; bottom: 11px; padding: 0 !important; }
+        .ctl-tile-name { color: ${PAPER} !important; font-size: 15px !important; font-weight: 800 !important; min-height: 0 !important; }
+        .ctl-tile-meta { color: rgba(250,250,245,0.75) !important; margin-top: 2px !important; font-size: 8.5px !important; }
+      }
+
       /* Docked-bar build button — a slow highlight sweep so the primary action
          stays alive without animating colour. The sweeping layer is the full
          width of the button (the band itself is painted as a no-repeat
@@ -526,6 +547,7 @@ const PromptCard: React.FC<{
   onSand,
 }) => {
   const selection = useThemeSelection();
+  const palette = usePalette();
   // The saved item: an explicit card.item wins; else derive from the card when
   // the section is selectable. An activity card carries its catalog id so the
   // element id rides along in the request.
@@ -566,7 +588,7 @@ const PromptCard: React.FC<{
     className="ctl-card group flex flex-col text-left rounded-[18px] overflow-hidden cursor-pointer w-[262px] md:w-auto shrink-0 md:shrink"
     style={{
       ...cardChrome(onSand),
-      ...(selected ? { borderColor: GREEN } : {}),
+      ...(selected ? { borderColor: palette.accent } : {}),
     }}
   >
     <div
@@ -622,10 +644,10 @@ const PromptCard: React.FC<{
             className="block w-full text-center rounded-full text-[12.5px] md:text-[13px] font-bold px-[14px] py-[10px]"
             style={
               selectable
-                ? addCtaStyle(selected)
+                ? addCtaStyle(palette, selected)
                 : ctaTone === "dark"
-                  ? { background: INK, color: PAPER, border: `1px solid ${INK}` }
-                  : PRIMARY_CTA
+                  ? { background: INK, color: PAPER, border: "none" }
+                  : primaryCtaStyle(palette)
             }
           >
             {selectable ? addCtaLabel(selected) : ctaLabel}
@@ -689,6 +711,7 @@ const TripCard: React.FC<{
   ctaLabel?: string;
 }> = ({ card, onSelectPrompt, ctaLabel }) => {
   const router = useRouter();
+  const palette = usePalette();
   const act = () => {
     if (card.href) router.push(card.href);
     else if (card.prompt) onSelectPrompt(card.prompt);
@@ -766,7 +789,7 @@ const TripCard: React.FC<{
       <div className="px-[16px] pb-[16px]">
         <span
           className="block w-full text-center rounded-full text-[13px] font-semibold px-[14px] py-[11px]"
-          style={PRIMARY_CTA}
+          style={primaryCtaStyle(palette)}
         >
           {ctaLabel}
         </span>
@@ -802,7 +825,9 @@ const GradientCard: React.FC<{
   card: CinematicGradientCard;
   onSelectPrompt: (p: string) => void;
   compact?: boolean; // destinations: shorter tile + no name min-height
-}> = ({ card, onSelectPrompt, compact }) => {
+  // Beyond the paired columns' 4-tile desktop grid — stays in the phone list.
+  hideOnDesktop?: boolean;
+}> = ({ card, onSelectPrompt, compact, hideOnDesktop }) => {
   const router = useRouter();
   const act = () => {
     if (card.prompt) onSelectPrompt(card.prompt);
@@ -812,18 +837,16 @@ const GradientCard: React.FC<{
     <button
       type="button"
       onClick={act}
-      className={`ctl-card text-left overflow-hidden cursor-pointer ${
+      className={`ctl-card ctl-tile text-left overflow-hidden cursor-pointer ${
         compact
           ? "rounded-[14px]"
           : "rounded-[18px] w-[160px] md:w-auto shrink-0 md:shrink"
-      }`}
+      } ${hideOnDesktop ? "md:hidden" : ""}`}
       style={cardChrome(true)}
     >
       <div
-        className={`relative overflow-hidden flex items-center justify-center ${
-          compact
-            ? "h-[90px] md:h-[100px] text-[26px] md:text-[30px]"
-            : "h-[100px] md:h-[110px] text-[30px] md:text-[32px]"
+        className={`ctl-tile-media relative overflow-hidden flex items-center justify-center ${
+          compact ? "h-[90px] text-[26px]" : "h-[100px] text-[30px]"
         }`}
         style={{ background: card.gradient }}
       >
@@ -833,11 +856,10 @@ const GradientCard: React.FC<{
           card.emoji
         )}
       </div>
-      <div className="px-[14px] pt-[12px] pb-[14px]">
+      <span className="ctl-tile-scrim" aria-hidden />
+      <div className="ctl-tile-body relative px-[14px] pt-[12px] pb-[14px]">
         <div
-          className={`font-bold leading-[1.25] ${
-            compact ? "text-[13px] md:text-[13.5px]" : "text-[13px] md:text-[14px]"
-          }`}
+          className="ctl-tile-name text-[13px] font-bold leading-[1.25]"
           style={{
             color: INK,
             letterSpacing: "-0.01em",
@@ -847,7 +869,10 @@ const GradientCard: React.FC<{
           {card.name}
         </div>
         {card.meta && (
-          <div className="ctl-mono" style={{ fontSize: 9.5, marginTop: 5 }}>
+          <div
+            className="ctl-tile-meta ctl-mono"
+            style={{ fontSize: 9.5, marginTop: 5 }}
+          >
             {card.meta}
           </div>
         )}
@@ -856,52 +881,95 @@ const GradientCard: React.FC<{
   );
 };
 
+// Heading + tiles, no section chrome. Standalone it fills the width; paired it
+// fills one half of the desktop row (see GradientPairSection).
+//
+// `desktopLimit` trims the grid to the first N tiles from md up — paired
+// columns show a 2×2 of four, per the mockup — while the phone scroller keeps
+// every tile. The extras are hidden rather than dropped so the mobile list
+// stays complete from the same markup.
+const GradientColumn: React.FC<{
+  section: Extract<CinematicSection, { type: "gradient" }>;
+  onSelectPrompt: (p: string) => void;
+  desktopCols?: number;
+  desktopLimit?: number;
+}> = ({ section, onSelectPrompt, desktopCols, desktopLimit }) => {
+  const cols = desktopCols ?? section.columns ?? 6;
+  const compact = !!section.mobileGrid;
+  return (
+    <div className="min-w-0">
+      <div className="flex items-end justify-between gap-[16px]">
+        <Heading heading={section.heading} className="text-[22px] md:text-[28px]" />
+        {section.cta && (
+          <div className="max-ph:hidden">
+            <SectionCta cta={section.cta} onSelectPrompt={onSelectPrompt} />
+          </div>
+        )}
+      </div>
+      {/* Desktop column count injected per-section; mobile is scroll or 2-up grid */}
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `@media (min-width:768px){ .ctl-grad-${cols}{ display:grid; grid-template-columns:repeat(${cols},minmax(0,1fr)); } }`,
+        }}
+      />
+      <div
+        className={`ctl-scroll ctl-grad-${cols} mt-[14px] md:mt-[18px] gap-[12px] md:gap-[14px] ${
+          section.mobileGrid
+            ? "grid grid-cols-2"
+            : "ctl-rail flex overflow-x-auto pt-[4px] pb-[8px]"
+        }`}
+      >
+        {section.cards.map((card, i) => (
+          <GradientCard
+            key={`grad-${i}`}
+            card={card}
+            onSelectPrompt={onSelectPrompt}
+            compact={compact}
+            hideOnDesktop={desktopLimit != null && i >= desktopLimit}
+          />
+        ))}
+      </div>
+      {/* `footerCta` ("View all destinations →") is intentionally not rendered
+          — the tiles already link through, and the button read as a dead end
+          under the grid. Kept on the type so a page can still declare one. */}
+    </div>
+  );
+};
+
 const GradientSection: React.FC<{
   section: Extract<CinematicSection, { type: "gradient" }>;
   onSelectPrompt: (p: string) => void;
-}> = ({ section, onSelectPrompt }) => {
-  const cols = section.columns ?? 6;
-  const compact = !!section.mobileGrid;
-  return (
-    <section className="pt-[30px] md:pt-[56px]">
-      <Container>
-        <div className="flex items-end justify-between gap-[16px]">
-          <Heading heading={section.heading} className="text-[22px] md:text-[34px]" />
-          {section.cta && (
-            <div className="max-ph:hidden">
-              <SectionCta cta={section.cta} onSelectPrompt={onSelectPrompt} />
-            </div>
-          )}
-        </div>
-        {/* Desktop column count injected per-section; mobile is scroll or 2-up grid */}
-        <style
-          dangerouslySetInnerHTML={{
-            __html: `@media (min-width:768px){ .ctl-grad-${cols}{ display:grid; grid-template-columns:repeat(${cols},minmax(0,1fr)); } }`,
-          }}
-        />
-        <div
-          className={`ctl-scroll ctl-grad-${cols} mt-[14px] md:mt-[24px] gap-[12px] md:gap-[14px] ${
-            section.mobileGrid
-              ? "grid grid-cols-2"
-              : "ctl-rail flex overflow-x-auto pt-[4px] pb-[8px]"
-          }`}
-        >
-          {section.cards.map((card, i) => (
-            <GradientCard
-              key={`grad-${i}`}
-              card={card}
-              onSelectPrompt={onSelectPrompt}
-              compact={compact}
-            />
-          ))}
-        </div>
-        {/* {section.footerCta && (
-          <FooterButton cta={section.footerCta} onSelectPrompt={onSelectPrompt} />
-        )} */}
-      </Container>
-    </section>
-  );
-};
+}> = ({ section, onSelectPrompt }) => (
+  <section className="pt-[30px] md:pt-[56px]">
+    <Container>
+      <GradientColumn section={section} onSelectPrompt={onSelectPrompt} />
+    </Container>
+  </section>
+);
+
+// "The destinations" + "Other themes" as the mockup pairs them: stacked on a
+// phone, two half-width columns of four tiles from md up.
+const GradientPairSection: React.FC<{
+  left: Extract<CinematicSection, { type: "gradient" }>;
+  right: Extract<CinematicSection, { type: "gradient" }>;
+  onSelectPrompt: (p: string) => void;
+}> = ({ left, right, onSelectPrompt }) => (
+  <section className="pt-[30px] md:pt-[72px]">
+    <Container>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-[30px] md:gap-[48px] items-start">
+        {[left, right].map((section, i) => (
+          <GradientColumn
+            key={`grad-col-${i}`}
+            section={section}
+            onSelectPrompt={onSelectPrompt}
+            desktopCols={2}
+            desktopLimit={4}
+          />
+        ))}
+      </div>
+    </Container>
+  </section>
+);
 
 // Full-width outline button under a grid (e.g. "View all destinations →").
 const FooterButton: React.FC<{
@@ -1004,6 +1072,7 @@ const ListRow: React.FC<{
 }> = ({ row, compact, onSelectPrompt, onSelectActivity, sectionSelectable, itemKind }) => {
   const router = useRouter();
   const selection = useThemeSelection();
+  const palette = usePalette();
   const elementId = row.activityId ?? drawerIdFromHref(row.href);
   const item = sectionSelectable
     ? {
@@ -1045,7 +1114,7 @@ const ListRow: React.FC<{
       }`}
       style={{
         ...cardChrome(),
-        ...(selected ? { borderColor: GREEN } : {}),
+        ...(selected ? { borderColor: palette.accent } : {}),
       }}
     >
       <div
@@ -1107,7 +1176,7 @@ const ListRow: React.FC<{
             toggle();
           }}
           className="shrink-0 rounded-full text-[12px] font-bold"
-          style={{ ...addCtaStyle(selected), padding: "8px 14px" }}
+          style={{ ...addCtaStyle(palette, selected), padding: "8px 14px" }}
         >
           {addCtaLabel(selected)}
         </span>
@@ -1331,32 +1400,73 @@ const StoriesSection: React.FC<{
               if (card.href) router.push(card.href);
               else if (card.prompt) onSelectPrompt(card.prompt);
             }}
-            className="ctl-card text-left rounded-[18px] p-[17px] md:p-[20px] w-[262px] md:w-auto shrink-0 md:shrink cursor-pointer"
+            className="ctl-card flex flex-col text-left rounded-[18px] p-[17px] md:p-[20px] w-[262px] md:w-auto shrink-0 md:shrink cursor-pointer"
             style={cardChrome()}
           >
-            <div className="flex items-baseline justify-between">
-              <span className="ctl-mono" style={{ color: "#f5a623", fontSize: 11 }}>
-                ★ {card.rating}
+            {/* Reviewer row — initial disc, who they are and when they went.
+                The score renders as filled stars; the number itself rides in
+                the aria-label so the row stays purely visual. */}
+            <div className="flex items-center gap-[11px]">
+              <span
+                className="shrink-0 flex items-center justify-center rounded-full"
+                style={{
+                  width: 38,
+                  height: 38,
+                  background: palette.accent,
+                  color: palette.accentOn,
+                  fontSize: 15,
+                  fontWeight: 700,
+                }}
+              >
+                {card.name.trim().charAt(0).toUpperCase()}
               </span>
-              <span className="ctl-mono" style={{ fontSize: 9.5 }}>
-                {card.type}
-              </span>
+              <div className="flex-1 min-w-0">
+                <div
+                  className="text-[13.5px] md:text-[14px] font-bold leading-[1.3]"
+                  style={{ color: INK }}
+                >
+                  {card.name}
+                </div>
+                <div className="ctl-mono mt-[2px]" style={{ fontSize: 8.5 }}>
+                  {card.when ?? card.type}
+                </div>
+              </div>
             </div>
             <div
-              className="text-[14px] md:text-[15px] font-bold mt-[10px] leading-[1.4]"
-              style={{ color: INK }}
+              aria-label={`Rated ${card.rating} out of 5`}
+              className="mt-[11px]"
+              style={{ color: "#f5a623", fontSize: 13, letterSpacing: 2 }}
             >
-              {card.name}
+              {"★".repeat(
+                Math.min(5, Math.max(1, Math.round(Number(card.rating) || 5))),
+              )}
             </div>
-            <div
-              className="ctl-mono inline-block mt-[12px] px-[9px] py-[5px] rounded-[6px]"
-              style={{
-                background: palette.accentSoft,
-                color: palette.accent,
-                fontSize: 9.5,
-              }}
-            >
-              {card.route}
+            {card.quote && (
+              <div
+                className="text-[13px] md:text-[13.5px] leading-[1.55] mt-[8px] flex-1"
+                style={{ color: MUTED }}
+              >
+                &ldquo;{card.quote}&rdquo;
+              </div>
+            )}
+            <div className="flex items-center gap-[10px] mt-[14px]">
+              <span
+                className="ctl-mono min-w-0 truncate px-[9px] py-[5px] rounded-[6px]"
+                style={{
+                  background: palette.accentSoft,
+                  color: palette.accent,
+                  fontSize: 9,
+                }}
+              >
+                {card.route}
+              </span>
+              <span className="flex-1" />
+              <span
+                className="shrink-0 text-[12.5px] font-bold whitespace-nowrap"
+                style={{ color: INK }}
+              >
+                See itinerary →
+              </span>
             </div>
           </button>
         ))}
@@ -1375,6 +1485,7 @@ const EatsSection: React.FC<{
 }> = ({ section, onSelectPrompt }) => {
   const router = useRouter();
   const selection = useThemeSelection();
+  const palette = usePalette();
   return (
   <section
     className="mt-[34px] md:mt-[56px] relative overflow-hidden"
@@ -1496,8 +1607,8 @@ const EatsSection: React.FC<{
                 className="block w-full text-center rounded-full text-[12.5px] font-semibold px-[12px] py-[10px] mt-[12px]"
                 style={
                   selectable
-                    ? addCtaStyle(selected, true)
-                    : addCtaStyle(false, true)
+                    ? addCtaStyle(palette, selected, true)
+                    : addCtaStyle(palette, false, true)
                 }
               >
                 {selectable ? addCtaLabel(selected) : section.ctaLabel}
@@ -1656,6 +1767,7 @@ const FeatureCtaCard: React.FC<{
   onSelectActivity?: (activityId: string, source?: string) => void;
 }> = ({ cta, onSelectPrompt, onSelectActivity }) => {
   const router = useRouter();
+  const palette = usePalette();
   const act = () => {
     if (cta.activityId && onSelectActivity)
       onSelectActivity(cta.activityId, cta.activitySource);
@@ -1684,7 +1796,7 @@ const FeatureCtaCard: React.FC<{
       </div>
       <span
         className="shrink-0 rounded-full px-[16px] py-[10px] text-[12.5px] font-semibold whitespace-nowrap"
-        style={addCtaStyle(false, true)}
+        style={addCtaStyle(palette, false, true)}
       >
         + Add
       </span>
@@ -2234,6 +2346,25 @@ const CinematicThemeLanding: React.FC<CinematicThemeLandingProps> = ({
     [config.theme],
   );
 
+  // "The destinations" and "Other themes" share a desktop row in the mockup.
+  // They stay separate entries in the config — the pairing is purely
+  // presentational, so it's derived here from adjacency rather than pushed onto
+  // every page.
+  //
+  // Resolved in one left-to-right pass so a section can only be consumed once:
+  // with three gradients in a row the first two pair and the third renders on
+  // its own, rather than the third being swallowed by an already-paired second.
+  const pairedWithNext = React.useMemo(() => {
+    const paired = new Set<number>();
+    const sections = config.sections;
+    for (let i = 0; i < sections.length - 1; i++) {
+      if (paired.has(i - 1)) continue; // already the tail of the previous pair
+      if (sections[i].type === "gradient" && sections[i + 1].type === "gradient")
+        paired.add(i);
+    }
+    return paired;
+  }, [config.sections]);
+
   return (
   <PaletteContext.Provider value={palette}>
   <ThemeSelectionProvider value={selection ?? null}>
@@ -2264,6 +2395,21 @@ const CinematicThemeLanding: React.FC<CinematicThemeLandingProps> = ({
 
     {config.sections.map((section, i) => {
       const key = `sec-${i}`;
+      // Tail of a pair — already rendered by its partner.
+      if (pairedWithNext.has(i - 1)) return null;
+      if (pairedWithNext.has(i)) {
+        const next = config.sections[i + 1];
+        if (section.type === "gradient" && next.type === "gradient")
+          return (
+            <GradientPairSection
+              key={key}
+              left={section}
+              right={next}
+              onSelectPrompt={onSelectPrompt}
+            />
+          );
+      }
+
       switch (section.type) {
         case "cards":
           return (
@@ -2340,6 +2486,7 @@ export {
   StoriesSection,
   EatsSection,
   VisaSection,
+  GradientPairSection,
   FeatureSection,
   AskKairaStrip,
   PromptCard,

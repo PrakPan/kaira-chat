@@ -2880,6 +2880,16 @@ export default function BotApp({
     // effect (onIntakeFormStart → setIntakeActive(true)) and pop the
     // IntakeLeftPanel hero back up on the fresh chat.
     setStartEmptyIntake(false);
+    // Same for the themed mini-form arrival (/chat?themeForm=<slug> from a
+    // theme page's "Build this itinerary"). Its injection effect is guarded by
+    // a ref that resets with the chatKey remount below, so leaving the flag on
+    // would re-inject the theme greeting + form card into the fresh chat. Drop
+    // the saved items/slug with it so the new chat doesn't forward the previous
+    // theme's selection to /chatkit.
+    setStartThemedForm(false);
+    setThemeForm(null);
+    setThemeItems(undefined);
+    setThemeSlug(undefined);
     setSeedActive(false);
     dispatch(resetIntakeForm());
     setCompletingItineraryId(null);

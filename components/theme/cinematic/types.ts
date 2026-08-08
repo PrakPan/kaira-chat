@@ -143,6 +143,11 @@ export interface CinematicStoryCard {
   type: string;
   name: string;
   route: string;
+  // What they actually said. Rendered as the card's body when present; without
+  // it the card is just the header + route, which still reads fine.
+  quote?: string;
+  // When they travelled, e.g. "February 2026 · Niseko". Falls back to `type`.
+  when?: string;
   prompt?: string;
   // When set, clicking opens this link — e.g. the traveller's actual itinerary
   // at /chat/{id}, or their Google review. `href` wins over `prompt`.

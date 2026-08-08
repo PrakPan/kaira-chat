@@ -478,6 +478,89 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
           font-size: 12px;
           font-weight: 700;
         }
+        .kp-foot {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          margin-top: 6px;
+          padding-top: 6px;
+          border-top: 1px solid #f4f3ec;
+        }
+        .kp-send-plane { display: none; }
+
+        /* ── Phone composer ────────────────────────────────────────────────
+           The mock has one row: a pill-shaped field and a round dark send
+           button. There is no attach, no mic and no divider, so those are
+           dropped here rather than shrunk. The pill moves onto .kp-field and
+           the outer box becomes a bare flex row — it keeps NO border, radius
+           or padding of its own, because .kp-composer-wrap (ChatKitPanel)
+           already draws the bar's top rule and insets it; duplicating either
+           here stacks a second line above the composer.
+
+           Scoped to .kp-composer-wrap on purpose. This component is also the
+           welcome screen's hero input (.cws-input-wrap), which has no bar
+           around it — there the bordered card IS the composer, so it keeps the
+           desktop treatment at every width.
+
+           Attachments still work via drag-and-drop, so they keep a full-width
+           row above the field when present. */
+        @media (max-width: 768px) {
+          .kp-composer-wrap .kp-chat-input {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 7px;
+            border: 0 !important;
+            border-radius: 0 !important;
+            padding: 0 !important;
+            background: transparent !important;
+            box-shadow: none !important;
+          }
+          .kp-composer-wrap .kp-drop,
+          .kp-composer-wrap .kp-attachments { width: 100%; order: -1; }
+          .kp-composer-wrap .kp-field {
+            flex: 1;
+            min-width: 0;
+            border: 1px solid #ececec;
+            border-radius: 999px;
+            padding: 9px 14px;
+            transition: border-color 0.15s;
+          }
+          .kp-composer-wrap .kp-chat-input:focus-within .kp-field { border-color: #0b1220; }
+          /* The overlay is positioned against .kp-field's border box, so it has
+             to repeat the pill's padding to line up with the caret. */
+          .kp-composer-wrap .kp-ph {
+            top: 9px !important;
+            left: 14px !important;
+            right: 14px !important;
+            max-width: calc(100% - 28px) !important;
+          }
+          .kp-composer-wrap .kp-foot {
+            flex: 0 0 auto;
+            border-top: 0;
+            margin-top: 0;
+            padding-top: 0;
+            gap: 0;
+          }
+          .kp-composer-wrap .kp-attach,
+          .kp-composer-wrap .kp-mic { display: none !important; }
+          .kp-composer-wrap .kp-send,
+          .kp-composer-wrap .kp-stop {
+            width: 38px;
+            height: 38px;
+            padding: 0;
+            border-radius: 50%;
+            justify-content: center;
+            gap: 0;
+            background: #0b1220;
+          }
+          .kp-composer-wrap .kp-send:hover { transform: none; }
+          .kp-composer-wrap .kp-btn-label,
+          .kp-composer-wrap .kp-send-arrow { display: none; }
+          .kp-composer-wrap .kp-send-plane { display: block; }
+          .kp-composer-wrap .kp-send svg { width: 14px; height: 14px; stroke: #f7e700; }
+          .kp-composer-wrap .kp-stop svg { width: 15px; height: 15px; color: #f7e700; }
+        }
       ` }} />
 
       {/* Hidden file input */}
@@ -492,6 +575,7 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
       {/* Drag-over overlay hint */}
       {isDragOver && (
         <div
+          className="kp-drop"
           style={{
             textAlign: "center",
             padding: "6px 0",
@@ -507,6 +591,7 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
       {/* Attachment cards */}
       {attachments.length > 0 && (
         <div
+          className="kp-attachments"
           style={{
             display: "flex",
             gap: 8,
@@ -528,7 +613,7 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
       )}
 
       {/* Textarea + animated placeholder */}
-      <div style={{ position: "relative" }}>
+      <div className="kp-field" style={{ position: "relative" }}>
         <style dangerouslySetInnerHTML={{ __html: `
           @keyframes slideUpIn {
             from { opacity: 0; transform: translateY(10px); }
@@ -575,7 +660,7 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
         {!value && (
           <span
             key={placeholderIdx}
-            className={fadingOut ? "ph-slide-out" : "ph-slide-in"}
+            className={`kp-ph ${fadingOut ? "ph-slide-out" : "ph-slide-in"}`}
             style={{
               position: "absolute",
               top: 0,
@@ -597,23 +682,17 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
         )}
       </div>
 
-      {/* Footer action row — mirrors .chat-input-foot */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 4,
-          marginTop: 6,
-          paddingTop: 6,
-          borderTop: "1px solid #f4f3ec",
-        }}
-      >
+      {/* Footer action row — mirrors .chat-input-foot. On a phone this collapses
+          into the composer row itself (see the mobile block in kp-chat-input's
+          stylesheet): attach and mic drop out, and the send pill becomes the
+          round button that sits beside the input. */}
+      <div className="kp-foot">
         {/* Left: attach */}
         {showAttach ? (
           <button
             type="button"
             onClick={handleAttachClick}
-            className="kp-icon-btn"
+            className="kp-icon-btn kp-attach"
             title="Attach"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -623,14 +702,16 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
         ) : null}
 
         {/* Mic (Dictate) */}
-        <Dictate
-          ref={dictateRef}
-          stopDictation={stopDictation}
-          onTranscriptChange={handleTranscriptChange}
-          disabled={disabled || isStreaming}
-          requireAuth={requireAuth}
-          onAuthRequired={onAuthRequired}
-        />
+        <span className="kp-mic">
+          <Dictate
+            ref={dictateRef}
+            stopDictation={stopDictation}
+            onTranscriptChange={handleTranscriptChange}
+            disabled={disabled || isStreaming}
+            requireAuth={requireAuth}
+            onAuthRequired={onAuthRequired}
+          />
+        </span>
 
         {/* Right: send/stop pill */}
         {isStreaming ? (
@@ -641,7 +722,7 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
             className="kp-stop"
           >
             <StopIcon />
-            Stop
+            <span className="kp-btn-label">Stop</span>
           </button>
         ) : (
           <button
@@ -651,10 +732,16 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
             title="Send"
             className="kp-send"
           >
-            Send
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <span className="kp-btn-label">Send</span>
+            <svg className="kp-send-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M5 12h14" />
               <path d="m12 5 7 7-7 7" />
+            </svg>
+            {/* Phone-only glyph — the round button carries a paper plane
+                rather than the desktop pill's "Send →". */}
+            <svg className="kp-send-plane" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M22 2 11 13" />
+              <path d="M22 2 15 22l-4-9-9-4z" />
             </svg>
           </button>
         )}

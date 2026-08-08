@@ -4013,6 +4013,7 @@ function RouteActionButtons({
       "",
   );
   const [showLogin, setShowLogin] = useState(false);
+   const isDesktop = useMediaQuery("(min-width:430px)");
   // Which sign-in prompt is pending and what to replay once auth succeeds. Both
   // "Modify" and "Confirm Route" gate behind login for logged-out users; they
   // differ only in the popup copy and the chat prompt sent on a successful
@@ -4053,7 +4054,7 @@ function RouteActionButtons({
     padding: "11px 14px",
     borderRadius: 9999,
     fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-    fontSize: 13,
+    fontSize: isDesktop ? 13 : 11,
     fontWeight: 600,
     cursor: "pointer",
     opacity: 1,
@@ -4107,6 +4108,7 @@ function RouteActionButtons({
             border: "1px solid #07213a",
             background: "#ffffff",
             color: "#07213a",
+
           }}
         >
           Modify
