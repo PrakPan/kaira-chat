@@ -154,6 +154,13 @@ const PROMPTS = {
 };
 
 const christmasMarketsConfig: CinematicThemeConfig = {
+  // Market green — carries every CTA, the saved state and the docked bar.
+  theme: {
+    accent: "#1f6b4a",
+    accentSoft: "#eef4ea",
+    page: "#f8faf6",
+    heroTint: "#f9ece6",
+  },
   header: {
     title: "Christmas markets & NYE",
     subtitle: "Theme · Europe · multi-city",
@@ -646,22 +653,6 @@ const christmasMarketsConfig: CinematicThemeConfig = {
           href: "/theme/filmy-getaways",
         },
       ],
-    },
-    // ── How it works ──
-    {
-      type: "steps",
-      heading: {
-        eyebrow: "No markups · pay only for what you book",
-        lead: "Sketch it. I'll",
-        accent: "finish it.",
-      },
-      steps: [
-        { n: "1", title: "Tell me your dates", sub: "and rough idea." },
-        { n: "2", title: "I draft the route", sub: "markets, rail, stays." },
-        { n: "3", title: "You book", sub: "only what you love." },
-      ],
-      cta: { label: "Start planning", prompt: PROMPTS.hero },
-      note: "10,000+ trips · rated 4.9 across all of them",
     },
   ],
   askBar: {

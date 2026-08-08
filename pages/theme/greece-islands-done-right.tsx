@@ -50,6 +50,13 @@ const PROMPTS = {
 };
 
 const greeceConfig: CinematicThemeConfig = {
+  // Aegean blue — carries every CTA, the saved state and the docked bar.
+  theme: {
+    accent: "#2f6f9e",
+    accentSoft: "#e6f0f7",
+    page: "#f6fafc",
+    heroTint: "#e9f3f8",
+  },
   header: { title: "Greece islands", subtitle: "Theme · Greece · May – Oct" },
   hero: {
     eyebrow: "ATHENS · A CALDERA SUNSET · THE CYCLADES BY FERRY",
@@ -267,22 +274,6 @@ const greeceConfig: CinematicThemeConfig = {
           href: "/theme/northern-lights",
         },
       ],
-    },
-    // ── How it works ──
-    {
-      type: "steps",
-      heading: {
-        eyebrow: "No markups · pay only for what you book",
-        lead: "Sketch it. I'll",
-        accent: "finish it.",
-      },
-      steps: [
-        { n: "1", title: "Tell me your length", sub: "and how many of you." },
-        { n: "2", title: "I route the ferries", sub: "Athens + the Cyclades." },
-        { n: "3", title: "You book", sub: "only what you love." },
-      ],
-      cta: { label: "Start planning", prompt: PROMPTS.tenDay },
-      note: "10,000+ trips · rated 4.9 across all of them",
     },
   ],
   askBar: {

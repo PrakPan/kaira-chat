@@ -135,6 +135,13 @@ const PROMPTS = {
 };
 
 const edinburghHogmanayConfig: CinematicThemeConfig = {
+  // Hogmanay purple — carries every CTA, the saved state and the docked bar.
+  theme: {
+    accent: "#6d4a98",
+    accentSoft: "#efe9f5",
+    page: "#faf8f4",
+    heroTint: "#f8ece0",
+  },
   header: {
     title: "Edinburgh Hogmanay",
     subtitle: "Theme · 29 Dec – 2 Jan",
@@ -536,22 +543,6 @@ const edinburghHogmanayConfig: CinematicThemeConfig = {
         },
       ],
       footerCta: { label: "View all destinations", href: "/europe" },
-    },
-    // ── How it works (dark) ──
-    {
-      type: "steps",
-      heading: {
-        eyebrow: "No markups · pay only for what you book",
-        lead: "Sketch it. I'll",
-        accent: "finish it.",
-      },
-      steps: [
-        { n: "1", title: "Tell me your dates", sub: "and who's coming." },
-        { n: "2", title: "I lock tickets + rooms", sub: "in the right order." },
-        { n: "3", title: "You book", sub: "only what you love." },
-      ],
-      cta: { label: "Start planning", prompt: PROMPTS.ultimate },
-      note: "10,000+ trips · rated 4.9 across all of them",
     },
   ],
   askBar: {

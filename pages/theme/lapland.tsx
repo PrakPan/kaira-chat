@@ -107,6 +107,13 @@ const IMG = {
 };
 
 const laplandConfig: CinematicThemeConfig = {
+  // Arctic indigo — carries every CTA, the saved state and the docked bar.
+  theme: {
+    accent: "#3d4f7a",
+    accentSoft: "#eef2fb",
+    page: "#f8f9fc",
+    heroTint: "#eef2fb",
+  },
   header: {
     title: "Lapland",
     subtitle: "Theme · Dec – Mar",
@@ -547,22 +554,6 @@ const laplandConfig: CinematicThemeConfig = {
         },
       ],
       footerCta: { label: "View all destinations", href: "/destinations" },
-    },
-    // ── How it works ──
-    {
-      type: "steps",
-      heading: {
-        eyebrow: "No markups · pay only for what you book",
-        lead: "Sketch it. I'll",
-        accent: "finish it.",
-      },
-      steps: [
-        { n: "1", title: "Tell me", sub: "where", meta: "~30 sec" },
-        { n: "2", title: "I plan it", sub: "all", meta: "~90 sec · you watch it build" },
-        { n: "3", title: "Book in", sub: "one tap", meta: "holds, tickets, tables — handled" },
-      ],
-      cta: { label: "Start planning", prompt: PROMPTS.hero },
-      note: "10,000+ trips · rated 4.9 across all of them",
     },
   ],
   askBar: {

@@ -183,15 +183,6 @@ export interface CinematicVisaFact {
   value: string;
 }
 
-// Numbered step ("Sketch it. I'll finish it."): number, title, serif accent,
-// mono meta line.
-export interface CinematicStep {
-  n: string;
-  title: string;
-  sub?: string; // serif accent word after the title
-  meta?: string;
-}
-
 // Gradient + emoji tile used by "Other themes" and "Destinations". Clicking
 // either seeds a `prompt` or navigates to `href` (prompt wins if both set).
 export interface CinematicGradientCard {
@@ -346,13 +337,6 @@ export type CinematicSection =
       rows?: CinematicFeatureRow[];
       stats?: CinematicFeatureStat[];
       cta?: CinematicFeatureCta;
-    }
-  | {
-      type: "steps";
-      heading: CinematicHeading;
-      steps: CinematicStep[];
-      cta?: CinematicSectionCta; // the "Start planning →" button
-      note?: string; // footer mono line under the CTA
     };
 
 // Film image shown as a rotated polaroid in the desktop hero collage.
@@ -388,12 +372,31 @@ export interface CinematicAskBar {
   buildCta?: string;
 }
 
+// Per-theme colour set. The layout is identical on every theme page; only these
+// few values change, so each page ships its own palette and the shared
+// components read it through context (see usePalette in CinematicThemeLanding).
+//
+// `accent` carries every action on the page — the "Create this plan" / "Book
+// this trip" buttons, the saved ("✓ Added") state, the docked bar's build
+// button and bag. `accentSoft` is its pale wash, used for the resting "+ Add"
+// pill, the saved-list rows and the count chips. Everything else (ink, paper,
+// yellow) stays common across themes.
+export interface CinematicThemePalette {
+  accent: string; // e.g. "#3d6b8f" (Hokkaido blue)
+  accentSoft: string; // pale tint of `accent`, e.g. "#e4eef5"
+  accentOn?: string; // text/icon colour on an `accent` fill (defaults to white)
+  page?: string; // page background (defaults to the shared paper)
+  heroTint?: string; // wash faded out behind the hero (defaults to none)
+}
+
 export interface CinematicThemeConfig {
   // Compact in-page header shown above the hero (logo + title + subtitle).
   header?: {
     title: string;
     subtitle?: string;
   };
+  // Theme colours. Omit for the neutral ink/yellow default.
+  theme?: CinematicThemePalette;
   hero: CinematicHeroConfig;
   sections: CinematicSection[];
   askBar?: CinematicAskBar;

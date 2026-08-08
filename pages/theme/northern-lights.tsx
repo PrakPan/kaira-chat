@@ -62,6 +62,13 @@ const PROMPTS = {
 };
 
 const northernLightsConfig: CinematicThemeConfig = {
+  // Aurora midnight — carries every CTA, the saved state and the docked bar.
+  theme: {
+    accent: "#16324f",
+    accentSoft: "#e6edf4",
+    page: "#f7f9fb",
+    heroTint: "#e9f1f4",
+  },
   header: { title: "Northern lights", subtitle: "Theme · Arctic · Sep – Mar" },
   hero: {
     eyebrow: "GLASS ROOFS · HUSKY TRAILS · A SKY THAT COMES ALIVE",
@@ -283,22 +290,6 @@ const northernLightsConfig: CinematicThemeConfig = {
           href: "/theme/edinburgh-hogmanay",
         },
       ],
-    },
-    // ── How it works ──
-    {
-      type: "steps",
-      heading: {
-        eyebrow: "No markups · pay only for what you book",
-        lead: "Sketch it. I'll",
-        accent: "finish it.",
-      },
-      steps: [
-        { n: "1", title: "Tell me your dates", sub: "and your must-sees." },
-        { n: "2", title: "I pick the country", sub: "with the best odds." },
-        { n: "3", title: "You book", sub: "only what you love." },
-      ],
-      cta: { label: "Start planning", prompt: PROMPTS.whichCountry },
-      note: "10,000+ trips · rated 4.9 across all of them",
     },
   ],
   askBar: {

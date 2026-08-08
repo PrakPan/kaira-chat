@@ -63,6 +63,13 @@ const PROMPTS = {
 };
 
 const filmyGetawaysConfig: CinematicThemeConfig = {
+  // Cinema red — carries every CTA, the saved state and the docked bar.
+  theme: {
+    accent: "#a03352",
+    accentSoft: "#f8e5ec",
+    page: "#fbf5f7",
+    heroTint: "#f8e5ec",
+  },
   header: {
     title: "Filmy getaways",
     subtitle: "Theme · Bollywood + Hollywood",

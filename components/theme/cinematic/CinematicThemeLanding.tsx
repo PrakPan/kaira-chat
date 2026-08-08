@@ -45,6 +45,7 @@ import type {
   CinematicFeatureCta,
   CinematicHeroConfig,
   CinematicAskBar,
+  CinematicThemePalette,
 } from "./types";
 import {
   ThemeSelectionProvider,
@@ -70,6 +71,104 @@ const drawerIdFromHref = (href?: string): string | undefined => {
   return m ? decodeURIComponent(m[1]) : undefined;
 };
 
+// ── Theme palette ──────────────────────────────────────────────────────────
+// Every card, CTA and the docked bar read their action colour from here rather
+// than hard-coding the brand yellow, so one page can be Hokkaido blue and the
+// next Hogmanay purple with no layout change. A page opts in via
+// `config.theme`; pages that don't fall back to the neutral ink treatment.
+type ResolvedPalette = Required<CinematicThemePalette>;
+
+const DEFAULT_PALETTE: ResolvedPalette = {
+  accent: INK,
+  accentSoft: SAND,
+  accentOn: "#ffffff",
+  page: PAPER,
+  heroTint: "transparent",
+};
+
+const PaletteContext = React.createContext<ResolvedPalette>(DEFAULT_PALETTE);
+const usePalette = (): ResolvedPalette => React.useContext(PaletteContext);
+
+const resolvePalette = (theme?: CinematicThemePalette): ResolvedPalette => ({
+  ...DEFAULT_PALETTE,
+  ...(theme
+    ? {
+        accent: theme.accent,
+        accentSoft: theme.accentSoft,
+        ...(theme.accentOn ? { accentOn: theme.accentOn } : {}),
+        ...(theme.page ? { page: theme.page } : {}),
+        ...(theme.heroTint ? { heroTint: theme.heroTint } : {}),
+      }
+    : {}),
+});
+
+// ── Card chrome ────────────────────────────────────────────────────────────
+// The new card look: a white tile with a hairline border and an 18px radius
+// that lifts on hover (the lift/shadow itself lives on .ctl-card). Sand-toned
+// sections use a slightly warmer line so the border still reads against them.
+const cardChrome = (onSand?: boolean): React.CSSProperties => ({
+  background: "#ffffff",
+  border: `1px solid ${onSand ? "#e6e3d6" : BORDER}`,
+});
+
+const DARK_CARD: React.CSSProperties = {
+  background: "rgba(255,255,255,0.04)",
+  border: "1px solid rgba(255,255,255,0.08)",
+};
+
+// The mono badge that floats over a card image (city, nights, "2h from
+// Sapporo"): frosted white on light cards so it reads over any photo.
+const IMAGE_BADGE: React.CSSProperties = {
+  background: "rgba(255,255,255,0.94)",
+  backdropFilter: "blur(10px)",
+  WebkitBackdropFilter: "blur(10px)",
+  color: INK,
+  fontSize: 9.5,
+  pointerEvents: "none",
+};
+
+// ── Selection CTA ──────────────────────────────────────────────────────────
+// One shared treatment for every "+ Add" / "✓ Added" pill on the page: ink
+// while it's an invitation, green once the item is in the trip, so a scan of
+// the page shows exactly what's been saved. This pair is deliberately NOT
+// theme-tinted — the accent stays reserved for the docked bar and the trip
+// itself, and green reads as "saved" on every theme. Dark sections (the
+// restaurant/feature scrollers on midnight) swap to a translucent-white /
+// muted-green pair, since solid ink disappears against that background.
+const GREEN = "#1f8a5a";
+
+const addCtaStyle = (
+  selected: boolean,
+  dark?: boolean,
+): React.CSSProperties => {
+  if (dark)
+    return selected
+      ? {
+          background: "rgba(31,138,90,0.18)",
+          color: "#4fbf87",
+          border: "1px solid rgba(31,138,90,0.45)",
+        }
+      : {
+          background: "rgba(255,255,255,0.08)",
+          color: PAPER,
+          border: "1px solid rgba(255,255,255,0.16)",
+        };
+  return selected
+    ? { background: GREEN, color: "#ffffff", border: `1px solid ${GREEN}` }
+    : { background: INK, color: PAPER, border: `1px solid ${INK}` };
+};
+
+const addCtaLabel = (selected: boolean) => (selected ? "✓ Added" : "+ Add");
+
+// Primary card action ("Create this plan →", "Book this itinerary →") — an
+// outlined white pill that spans the card foot. It reads as the quieter of the
+// two actions on a card row so the ink "+ Add" pills stay the loudest thing.
+const PRIMARY_CTA: React.CSSProperties = {
+  background: "#ffffff",
+  color: INK,
+  border: `1px solid ${INK}`,
+};
+
 // ── Scoped styles ──────────────────────────────────────────────────────────
 const CinematicStyles = () => (
   <style
@@ -81,12 +180,24 @@ const CinematicStyles = () => (
       .ctl-h { font-family: 'Inter', sans-serif; font-weight: 800; letter-spacing: -0.03em; color: ${INK}; margin: 0; }
       .ctl-h-light { color: ${PAPER}; }
       .ctl-h-yellow { color: ${YELLOW}; }
-      .ctl-card { transition: transform .25s cubic-bezier(.2,.7,.3,1); }
-      .ctl-card:hover { transform: translateY(-2px); }
+      .ctl-card { transition: transform .25s cubic-bezier(.2,.7,.3,1), box-shadow .25s cubic-bezier(.2,.7,.3,1); }
+      .ctl-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px -10px rgba(11,18,32,0.15); }
       .ctl-press { transition: transform .15s cubic-bezier(.2,.7,.3,1); }
       .ctl-press:hover { transform: translateY(-1px); }
       .ctl-scroll { scrollbar-width: none; -ms-overflow-style: none; }
       .ctl-scroll::-webkit-scrollbar { display: none; }
+      /* Snapping carousels: a card scrolled to always lands flush with the
+         section's left gutter rather than the viewport edge. */
+      .ctl-rail { scroll-snap-type: x mandatory; scroll-padding-left: 0; }
+      .ctl-rail > * { scroll-snap-align: start; }
+      /* Docked-bar build button — a slow highlight sweep so the primary action
+         stays alive without animating colour. The sweeping layer is the full
+         width of the button (the band itself is painted as a no-repeat
+         background), so translating it ±100% crosses the whole button at any
+         width — a fixed pixel/percent travel would stall halfway on desktop. */
+      .ctl-sheen { position: absolute; inset: 0; pointer-events: none; background-image: linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent); background-size: 64px 100%; background-repeat: no-repeat; background-position: left center; animation: ctlBarShimmer 3s cubic-bezier(.4,0,.2,1) infinite; }
+      @keyframes ctlBarShimmer { 0% { transform: translateX(-100%) skewX(-18deg); } 55%, 100% { transform: translateX(100%) skewX(-18deg); } }
+      @keyframes ctlPulseRing { 0% { box-shadow: 0 0 0 0 rgba(31,138,90,0.4); } 70% { box-shadow: 0 0 0 6px rgba(31,138,90,0); } 100% { box-shadow: 0 0 0 0 rgba(31,138,90,0); } }
       .ctl-root input { font-family: inherit; }
       .ctl-root input::placeholder { color: #b8becc; opacity: 1; }
       .ctl-skeleton { position: absolute; inset: 0; background: linear-gradient(90deg, #e7e9ee 25%, #f2f3f6 37%, #e7e9ee 63%); background-size: 400% 100%; animation: ctlShimmer 1.4s ease infinite; }
@@ -237,6 +348,7 @@ const CinematicHero: React.FC<{
   onSelectPrompt: (p: string) => void;
 }> = ({ hero, onSelectPrompt }) => {
   const router = useRouter();
+  const palette = usePalette();
   // Controlled composer: send the typed text (falling back to the example
   // prompt when empty) on Send click or Enter.
   const [composerText, setComposerText] = React.useState("");
@@ -257,6 +369,13 @@ const CinematicHero: React.FC<{
     { bottom: -8, right: 12, rotate: -5 },
   ];
   return (
+    <div
+      // The theme's wash, faded out over the top of the page. Sits behind the
+      // hero only; every section below keeps the plain page background.
+      style={{
+        background: `linear-gradient(180deg, ${palette.heroTint} 0%, rgba(250,250,245,0) 78%)`,
+      }}
+    >
     <Container className="pt-[24px] md:pt-[48px]">
       <div className="md:grid md:grid-cols-[1.05fr_1fr] md:gap-[48px] md:items-center">
         {/* Copy + composer */}
@@ -376,6 +495,7 @@ const CinematicHero: React.FC<{
         )}
       </div>
     </Container>
+    </div>
   );
 };
 
@@ -392,6 +512,8 @@ const PromptCard: React.FC<{
   // the card unless it carries an explicit one.
   sectionSelectable?: boolean;
   itemKind?: string;
+  // The card sits on a sand-toned band, so it needs the warmer hairline.
+  onSand?: boolean;
 }> = ({
   card,
   onSelectPrompt,
@@ -401,6 +523,7 @@ const PromptCard: React.FC<{
   priority,
   sectionSelectable,
   itemKind,
+  onSand,
 }) => {
   const selection = useThemeSelection();
   // The saved item: an explicit card.item wins; else derive from the card when
@@ -440,15 +563,15 @@ const PromptCard: React.FC<{
       else if (card.prompt) onSelectPrompt(card.prompt);
     }}
     aria-pressed={selectable ? selected : undefined}
-    className="ctl-card group flex flex-col text-left bg-white rounded-[18px] md:rounded-[22px] overflow-hidden cursor-pointer w-[220px] md:w-auto shrink-0 md:shrink"
+    className="ctl-card group flex flex-col text-left rounded-[18px] overflow-hidden cursor-pointer w-[262px] md:w-auto shrink-0 md:shrink"
     style={{
-      scrollSnapAlign: "start",
-      ...(selected ? { outline: `2px solid ${INK}`, outlineOffset: -2 } : {}),
+      ...cardChrome(onSand),
+      ...(selected ? { borderColor: GREEN } : {}),
     }}
   >
     <div
-      className="relative h-[130px] md:h-[200px] overflow-hidden"
-      style={{ background: "#eef0f4" }}
+      className="relative h-[148px] md:h-[160px] overflow-hidden"
+      style={{ background: SAND }}
     >
       <SkeletonImage
         src={card.image}
@@ -458,54 +581,32 @@ const PromptCard: React.FC<{
         // from the bottom rather than off the top. Per-card override still wins.
         objectPosition={card.objectPosition ?? "center top"}
       />
-      {selectable && selected && (
-        <div
-          className="absolute top-[10px] right-[10px] md:top-[12px] md:right-[12px] flex items-center justify-center rounded-full"
-          style={{
-            width: 26,
-            height: 26,
-            background: INK,
-            color: YELLOW,
-            fontSize: 14,
-            fontWeight: 700,
-            boxShadow: "0 4px 10px -4px rgba(11,18,32,0.5)",
-          }}
-        >
-          ✓
-        </div>
-      )}
       {card.tag && (
         <div
-          className="ctl-mono absolute top-[10px] left-[10px] md:top-[12px] md:left-[12px] px-[8px] py-[3px] rounded-[6px]"
-          style={{
-            background: YELLOW,
-            color: INK,
-            transform: "rotate(-1.5deg)",
-            fontSize: 9,
-            pointerEvents: "none",
-          }}
+          className="ctl-mono absolute top-[10px] left-[10px] px-[8px] py-[3px] rounded-[6px]"
+          style={IMAGE_BADGE}
         >
           {card.tag}
         </div>
       )}
     </div>
-    <div className="flex flex-col flex-1 px-[14px] py-[12px] md:px-[18px] md:py-[16px]">
+    <div className="flex flex-col flex-1 px-[17px] py-[16px] md:px-[18px] md:py-[17px]">
       <div
-        className="text-[14px] md:text-[17px] font-bold"
+        className="text-[15px] md:text-[16.5px] font-bold leading-[1.3]"
         style={{ color: INK, letterSpacing: "-0.01em" }}
       >
         {card.name}
       </div>
       {card.line && (
         <div
-          className="text-[12.5px] md:text-[13.5px] leading-[1.45] mt-[2px] md:mt-[4px]"
+          className="text-[12.5px] md:text-[13.5px] leading-[1.5] mt-[8px] flex-1"
           style={{ color: MUTED }}
         >
           {card.line}
         </div>
       )}
       {(ctaLabel || selectable) && (
-        <div className="mt-auto pt-[12px] md:pt-[14px]">
+        <div className="mt-auto pt-[14px]">
           <span
             role={selectable ? "button" : undefined}
             onClick={
@@ -518,30 +619,16 @@ const PromptCard: React.FC<{
                   }
                 : undefined
             }
-            className="block w-full text-center rounded-full text-[13px] md:text-[13.5px] font-bold px-[14px] py-[11px]"
+            className="block w-full text-center rounded-full text-[12.5px] md:text-[13px] font-bold px-[14px] py-[10px]"
             style={
-              selectable && selected
-                ? {
-                    background: INK,
-                    color: YELLOW,
-                    border: "1px solid rgba(247,231,0,0.55)",
-                  }
-                : selectable
-                  ? {
-                      background: YELLOW,
-                      color: INK,
-                      boxShadow: "0 6px 16px -8px rgba(247,231,0,0.6)",
-                    }
-                  : ctaTone === "dark"
-                    ? { background: INK, color: YELLOW }
-                    : {
-                        background: YELLOW,
-                        color: INK,
-                        boxShadow: "0 6px 16px -8px rgba(247,231,0,0.6)",
-                      }
+              selectable
+                ? addCtaStyle(selected)
+                : ctaTone === "dark"
+                  ? { background: INK, color: PAPER, border: `1px solid ${INK}` }
+                  : PRIMARY_CTA
             }
           >
-            {selectable ? (selected ? "Added ✓" : "+ Add") : ctaLabel}
+            {selectable ? addCtaLabel(selected) : ctaLabel}
           </span>
         </div>
       )}
@@ -573,10 +660,7 @@ const CardsSection: React.FC<{
           </div>
         )}
       </div>
-      <div
-        className="ctl-scroll flex md:grid md:grid-cols-3 gap-[12px] md:gap-[16px] mt-[12px] md:mt-[24px] overflow-x-auto md:overflow-visible pb-[4px]"
-        style={{ scrollSnapType: "x mandatory" }}
-      >
+      <div className="ctl-scroll ctl-rail flex md:grid md:grid-cols-3 gap-[12px] md:gap-[20px] mt-[12px] md:mt-[24px] overflow-x-auto md:overflow-visible pt-[4px] pb-[10px]">
         {section.cards.map((card, i) => (
           <PromptCard
             key={`card-${i}`}
@@ -587,6 +671,7 @@ const CardsSection: React.FC<{
             ctaTone={section.ctaTone}
             sectionSelectable={section.selectable}
             itemKind={section.itemKind}
+            onSand={section.tone === "sand"}
             priority={first && i === 0}
           />
         ))}
@@ -612,12 +697,17 @@ const TripCard: React.FC<{
   <button
     type="button"
     onClick={act}
-    className="ctl-card text-left bg-white rounded-[18px] overflow-hidden flex flex-col cursor-pointer"
+    className="ctl-card text-left rounded-[18px] overflow-hidden flex flex-col h-full cursor-pointer"
+    style={cardChrome()}
   >
-    <div className="flex gap-[12px] md:gap-[16px] p-[12px] md:p-[16px]">
+    {/* Everything above the CTA lives in one flexible block so the button
+        always lands on the card's bottom edge — cards in the same grid row
+        stretch to equal height, and their CTAs line up regardless of how long
+        the copy is or whether the card carries an urgency notice. */}
+    <div className="flex gap-[15px] md:gap-[16px] p-[16px] flex-1">
       <div
-        className="relative w-[78px] h-[78px] md:w-[96px] md:h-[96px] shrink-0 rounded-[12px] md:rounded-[14px] overflow-hidden flex items-center justify-center text-[30px]"
-        style={{ background: card.gradient ?? "#eef0f4" }}
+        className="relative w-[104px] h-[104px] md:w-[112px] md:h-[112px] shrink-0 rounded-[14px] overflow-hidden flex items-center justify-center text-[30px]"
+        style={{ background: card.gradient ?? SAND }}
       >
         {card.image ? (
           <SkeletonImage
@@ -656,33 +746,29 @@ const TripCard: React.FC<{
             )}
           </div>
         )}
+        {card.urgent && (
+          <div className="flex items-start gap-[8px] mt-[10px]">
+            <span
+              className="w-[6px] h-[6px] rounded-full shrink-0 mt-[4px]"
+              style={{ background: RED }}
+            />
+            <span
+              className="ctl-mono"
+              style={{ color: RED, fontSize: 9.5, lineHeight: 1.4 }}
+            >
+              {card.urgent}
+            </span>
+          </div>
+        )}
       </div>
     </div>
     {ctaLabel && (
-      <div className="px-[12px] md:px-[16px] pb-[12px] md:pb-[16px]">
+      <div className="px-[16px] pb-[16px]">
         <span
-          className="block w-full text-center rounded-full text-[13px] font-bold px-[14px] py-[12px]"
-          style={{
-            background: YELLOW,
-            color: INK,
-            boxShadow: "0 6px 16px -8px rgba(247,231,0,0.6)",
-          }}
+          className="block w-full text-center rounded-full text-[13px] font-semibold px-[14px] py-[11px]"
+          style={PRIMARY_CTA}
         >
           {ctaLabel}
-        </span>
-      </div>
-    )}
-    {card.urgent && (
-      <div
-        className="flex items-center gap-[8px] px-[14px] py-[8px] mt-auto"
-        style={{ background: "#f4f3ec" }}
-      >
-        <span
-          className="w-[6px] h-[6px] rounded-full shrink-0"
-          style={{ background: RED }}
-        />
-        <span className="ctl-mono" style={{ color: RED, fontSize: 8.5 }}>
-          {card.urgent}
         </span>
       </div>
     )}
@@ -726,18 +812,18 @@ const GradientCard: React.FC<{
     <button
       type="button"
       onClick={act}
-      className={`ctl-card text-left bg-white overflow-hidden cursor-pointer ${
+      className={`ctl-card text-left overflow-hidden cursor-pointer ${
         compact
           ? "rounded-[14px]"
-          : "rounded-[18px] w-[152px] md:w-auto shrink-0 md:shrink"
+          : "rounded-[18px] w-[160px] md:w-auto shrink-0 md:shrink"
       }`}
-      style={{ scrollSnapAlign: "start" }}
+      style={cardChrome(true)}
     >
       <div
         className={`relative overflow-hidden flex items-center justify-center ${
           compact
-            ? "h-[68px] md:h-[84px] text-[26px] md:text-[30px]"
-            : "h-[92px] md:h-[104px] text-[30px] md:text-[32px]"
+            ? "h-[90px] md:h-[100px] text-[26px] md:text-[30px]"
+            : "h-[100px] md:h-[110px] text-[30px] md:text-[32px]"
         }`}
         style={{ background: card.gradient }}
       >
@@ -747,16 +833,10 @@ const GradientCard: React.FC<{
           card.emoji
         )}
       </div>
-      <div
-        className={
-          compact
-            ? "px-[11px] py-[9px] md:px-[14px] md:py-[14px]"
-            : "px-[12px] py-[10px] md:px-[15px] md:py-[15px]"
-        }
-      >
+      <div className="px-[14px] pt-[12px] pb-[14px]">
         <div
           className={`font-bold leading-[1.25] ${
-            compact ? "text-[12.5px] md:text-[13.5px]" : "text-[13px] md:text-[14px]"
+            compact ? "text-[13px] md:text-[13.5px]" : "text-[13px] md:text-[14px]"
           }`}
           style={{
             color: INK,
@@ -767,10 +847,7 @@ const GradientCard: React.FC<{
           {card.name}
         </div>
         {card.meta && (
-          <div
-            className="ctl-mono"
-            style={{ fontSize: 8.5, marginTop: compact ? 3 : 5 }}
-          >
+          <div className="ctl-mono" style={{ fontSize: 9.5, marginTop: 5 }}>
             {card.meta}
           </div>
         )}
@@ -803,14 +880,11 @@ const GradientSection: React.FC<{
           }}
         />
         <div
-          className={`ctl-scroll ctl-grad-${cols} mt-[14px] md:mt-[24px] gap-[10px] md:gap-[14px] ${
+          className={`ctl-scroll ctl-grad-${cols} mt-[14px] md:mt-[24px] gap-[12px] md:gap-[14px] ${
             section.mobileGrid
               ? "grid grid-cols-2"
-              : "flex overflow-x-auto pb-[4px]"
+              : "ctl-rail flex overflow-x-auto pt-[4px] pb-[8px]"
           }`}
-          style={{
-            scrollSnapType: section.mobileGrid ? undefined : "x mandatory",
-          }}
         >
           {section.cards.map((card, i) => (
             <GradientCard
@@ -860,39 +934,33 @@ const PillarCard: React.FC<{
   <button
     type="button"
     onClick={() => onSelectPrompt(card.prompt)}
-    className="ctl-card text-left bg-white rounded-[22px] overflow-hidden cursor-pointer w-[236px] md:w-auto shrink-0 md:shrink flex flex-col"
-    style={{ scrollSnapAlign: "start" }}
+    className="ctl-card text-left rounded-[18px] overflow-hidden cursor-pointer w-[262px] md:w-auto shrink-0 md:shrink flex flex-col"
+    style={cardChrome()}
   >
     <div
-      className="relative h-[128px] md:h-[160px] flex items-center justify-center text-[42px]"
+      className="relative h-[148px] md:h-[160px] flex items-center justify-center text-[42px]"
       style={{ background: card.gradient }}
     >
       {card.image ? <SkeletonImage src={card.image} alt={card.name} /> : card.emoji}
       {card.window && (
         <div
           className="ctl-mono absolute top-[10px] left-[10px] px-[8px] py-[3px] rounded-[6px]"
-          style={{
-            background: "rgba(10,16,32,0.8)",
-            color: PAPER,
-            backdropFilter: "blur(10px)",
-            fontSize: 8.5,
-            pointerEvents: "none",
-          }}
+          style={IMAGE_BADGE}
         >
           {card.window}
         </div>
       )}
     </div>
-    <div className="px-[16px] py-[14px]">
+    <div className="px-[17px] py-[17px]">
       <div
-        className="text-[16px] md:text-[17px] font-bold"
+        className="text-[15px] md:text-[16.5px] font-bold leading-[1.3]"
         style={{ color: INK, letterSpacing: "-0.01em" }}
       >
         {card.name}
       </div>
       {card.line && (
         <div
-          className="text-[13px] leading-[1.5] mt-[3px]"
+          className="text-[12.5px] md:text-[13.5px] leading-[1.5] mt-[8px]"
           style={{ color: MUTED }}
         >
           {card.line}
@@ -916,10 +984,7 @@ const PillarsSection: React.FC<{
           </div>
         )}
       </div>
-      <div
-        className="ctl-scroll flex md:grid md:grid-cols-3 gap-[12px] md:gap-[16px] mt-[14px] md:mt-[24px] overflow-x-auto md:overflow-visible pb-[4px]"
-        style={{ scrollSnapType: "x mandatory" }}
-      >
+      <div className="ctl-scroll ctl-rail flex md:grid md:grid-cols-3 gap-[12px] md:gap-[20px] mt-[14px] md:mt-[24px] overflow-x-auto md:overflow-visible pt-[4px] pb-[10px]">
         {section.cards.map((card, i) => (
           <PillarCard key={`pillar-${i}`} card={card} onSelectPrompt={onSelectPrompt} />
         ))}
@@ -975,11 +1040,12 @@ const ListRow: React.FC<{
       type="button"
       onClick={act}
       aria-pressed={selectable ? selected : undefined}
-      className={`ctl-press w-full text-left flex items-center gap-[12px] md:gap-[14px] bg-white cursor-pointer ${
-        compact ? "rounded-[14px] p-[11px] md:p-[12px]" : "rounded-[18px] p-[12px] md:p-[14px]"
+      className={`ctl-card w-full text-left flex items-center gap-[12px] md:gap-[14px] cursor-pointer ${
+        compact ? "rounded-[14px] p-[11px] md:p-[12px]" : "rounded-[18px] p-[14px] md:p-[16px]"
       }`}
       style={{
-        border: selected ? `1px solid ${INK}` : `1px solid ${BORDER}`,
+        ...cardChrome(),
+        ...(selected ? { borderColor: GREEN } : {}),
       }}
     >
       <div
@@ -1041,23 +1107,9 @@ const ListRow: React.FC<{
             toggle();
           }}
           className="shrink-0 rounded-full text-[12px] font-bold"
-          style={
-            selected
-              ? {
-                  background: INK,
-                  color: YELLOW,
-                  border: "1px solid rgba(247,231,0,0.55)",
-                  padding: "6px 12px",
-                }
-              : {
-                  background: YELLOW,
-                  color: INK,
-                  padding: "6px 12px",
-                  boxShadow: "0 6px 16px -8px rgba(247,231,0,0.6)",
-                }
-          }
+          style={{ ...addCtaStyle(selected), padding: "8px 14px" }}
         >
-          {selected ? "Added ✓" : "+ Add"}
+          {addCtaLabel(selected)}
         </span>
       ) : (
         <span className="shrink-0 text-[14px]" style={{ color: FAINT }}>
@@ -1264,11 +1316,12 @@ const StoriesSection: React.FC<{
   onSelectPrompt: (p: string) => void;
 }> = ({ section, onSelectPrompt }) => {
   const router = useRouter();
+  const palette = usePalette();
   return (
   <section className="pt-[34px] md:pt-[56px]">
     <Container>
       <Heading heading={section.heading} className="text-[22px] md:text-[34px]" />
-      <div className="ctl-scroll flex md:grid md:grid-cols-3 gap-[10px] md:gap-[16px] mt-[16px] md:mt-[24px] overflow-x-auto md:overflow-visible pb-[4px]">
+      <div className="ctl-scroll ctl-rail flex md:grid md:grid-cols-3 gap-[12px] md:gap-[20px] mt-[16px] md:mt-[24px] overflow-x-auto md:overflow-visible pt-[4px] pb-[10px]">
         {section.cards.map((card: CinematicStoryCard, i) => (
           <button
             key={`story-${i}`}
@@ -1278,24 +1331,31 @@ const StoriesSection: React.FC<{
               if (card.href) router.push(card.href);
               else if (card.prompt) onSelectPrompt(card.prompt);
             }}
-            className="ctl-card text-left bg-white rounded-[14px] p-[14px] md:p-[18px] w-[208px] md:w-auto shrink-0 md:shrink cursor-pointer"
-            style={{ border: `1px solid ${BORDER}` }}
+            className="ctl-card text-left rounded-[18px] p-[17px] md:p-[20px] w-[262px] md:w-auto shrink-0 md:shrink cursor-pointer"
+            style={cardChrome()}
           >
             <div className="flex items-baseline justify-between">
               <span className="ctl-mono" style={{ color: "#f5a623", fontSize: 11 }}>
                 ★ {card.rating}
               </span>
-              <span className="ctl-mono" style={{ fontSize: 9 }}>
+              <span className="ctl-mono" style={{ fontSize: 9.5 }}>
                 {card.type}
               </span>
             </div>
             <div
-              className="text-[13px] md:text-[14.5px] font-semibold mt-[8px] leading-[1.4]"
+              className="text-[14px] md:text-[15px] font-bold mt-[10px] leading-[1.4]"
               style={{ color: INK }}
             >
               {card.name}
             </div>
-            <div className="text-[12px] md:text-[13px] mt-[2px]" style={{ color: MUTED }}>
+            <div
+              className="ctl-mono inline-block mt-[12px] px-[9px] py-[5px] rounded-[6px]"
+              style={{
+                background: palette.accentSoft,
+                color: palette.accent,
+                fontSize: 9.5,
+              }}
+            >
               {card.route}
             </div>
           </button>
@@ -1335,10 +1395,7 @@ const EatsSection: React.FC<{
         heading={section.heading}
         className="text-[22px] md:text-[34px] ctl-h-light"
       />
-      <div
-        className="ctl-scroll flex md:grid md:grid-cols-5 gap-[12px] md:gap-[16px] mt-[14px] md:mt-[24px] overflow-x-auto md:overflow-visible pb-[4px]"
-        style={{ scrollSnapType: "x mandatory" }}
-      >
+      <div className="ctl-scroll ctl-rail flex md:grid md:grid-cols-5 gap-[12px] md:gap-[16px] mt-[14px] md:mt-[24px] overflow-x-auto md:overflow-visible pt-[4px] pb-[10px]">
         {section.cards.map((card, i) => {
           const hrefId = drawerIdFromHref(card.href);
           const item =
@@ -1374,19 +1431,16 @@ const EatsSection: React.FC<{
               else if (card.prompt) onSelectPrompt(card.prompt);
             }}
             aria-pressed={selectable ? selected : undefined}
-            className="ctl-card text-left rounded-[18px] overflow-hidden cursor-pointer w-[218px] md:w-auto shrink-0 md:shrink flex flex-col"
+            className="ctl-card text-left rounded-[18px] overflow-hidden cursor-pointer w-[224px] md:w-auto shrink-0 md:shrink flex flex-col"
             style={{
-              scrollSnapAlign: "start",
-              background: selected
-                ? "rgba(247,231,0,0.10)"
-                : "rgba(255,255,255,0.04)",
-              border: selected
-                ? "1px solid rgba(247,231,0,0.55)"
-                : "1px solid rgba(255,255,255,0.08)",
+              ...DARK_CARD,
+              ...(selected
+                ? { border: "1px solid rgba(31,138,90,0.45)" }
+                : {}),
             }}
           >
           <div
-            className="relative h-[124px] md:h-[150px] overflow-hidden"
+            className="relative h-[132px] md:h-[150px] overflow-hidden"
             style={{ background: "rgba(255,255,255,0.04)" }}
           >
             <SkeletonImage
@@ -1395,7 +1449,7 @@ const EatsSection: React.FC<{
               objectPosition={card.objectPosition}
             />
           </div>
-          <div className="flex flex-col flex-1 px-[15px] py-[13px] md:py-[15px]">
+          <div className="flex flex-col flex-1 px-[16px] py-[16px]">
             <div className="flex items-baseline justify-between gap-[8px]">
               <span
                 className="text-[14.5px] font-bold"
@@ -1406,7 +1460,7 @@ const EatsSection: React.FC<{
               {card.city && (
                 <span
                   className="ctl-mono shrink-0"
-                  style={{ color: YELLOW, fontSize: 9.5 }}
+                  style={{ color: "#ffe5d1", fontSize: 9.5 }}
                 >
                   {card.city}
                 </span>
@@ -1414,15 +1468,16 @@ const EatsSection: React.FC<{
             </div>
             {card.line && (
               <div
-                className="text-[12.5px] leading-[1.45] mt-[5px]"
+                className="text-[12.5px] leading-[1.5] mt-[8px] flex-1"
                 style={{ color: FAINT }}
               >
                 {card.line}
               </div>
             )}
             {(card.rating || card.reviews) && (
-              <div className="ctl-mono mt-[9px]" style={{ fontSize: 9.5 }}>
-                {card.rating ? `★ ${card.rating}` : ""}
+              <div className="ctl-mono mt-[14px]" style={{ fontSize: 9.5 }}>
+                <span style={{ color: "#f5a623" }}>★</span>{" "}
+                {card.rating ? `${card.rating}` : ""}
                 {card.rating && card.reviews ? " · " : ""}
                 {card.reviews ? `${card.reviews} reviews` : ""}
               </div>
@@ -1438,35 +1493,14 @@ const EatsSection: React.FC<{
                       }
                     : undefined
                 }
-                className="block w-full text-center rounded-full text-[12.5px] px-[12px] py-[10px]"
-                style={{
-                  marginTop: "auto",
-                  fontWeight: selectable ? 700 : 600,
-                  ...(selectable
-                    ? selected
-                      ? {
-                          background: INK,
-                          color: YELLOW,
-                          border: "1px solid rgba(247,231,0,0.55)",
-                        }
-                      : {
-                          background: YELLOW,
-                          color: INK,
-                          border: "none",
-                          boxShadow: "0 6px 16px -8px rgba(247,231,0,0.6)",
-                        }
-                    : {
-                        background: "rgba(247,231,0,0.14)",
-                        color: YELLOW,
-                        border: "1px solid rgba(247,231,0,0.32)",
-                      }),
-                }}
+                className="block w-full text-center rounded-full text-[12.5px] font-semibold px-[12px] py-[10px] mt-[12px]"
+                style={
+                  selectable
+                    ? addCtaStyle(selected, true)
+                    : addCtaStyle(false, true)
+                }
               >
-                {selectable
-                  ? selected
-                    ? "Added ✓"
-                    : "+ Add"
-                  : section.ctaLabel}
+                {selectable ? addCtaLabel(selected) : section.ctaLabel}
               </span>
             )}
           </div>
@@ -1513,10 +1547,7 @@ const VisaSection: React.FC<{
         </p>
       )}
       <div className="ctl-mono mt-[16px] md:mt-[20px]">Visa fee by country</div>
-      <div
-        className="ctl-scroll flex gap-[12px] overflow-x-auto md:overflow-visible pt-[10px] pb-[6px]"
-        style={{ scrollSnapType: "x mandatory" }}
-      >
+      <div className="ctl-scroll ctl-rail flex gap-[12px] overflow-x-auto md:overflow-visible pt-[10px] pb-[6px]">
       {section.cards.map((card: CinematicVisaCard, i) => {
         const inner = (
           <>
@@ -1556,11 +1587,7 @@ const VisaSection: React.FC<{
         );
         const cls =
           "shrink-0 w-[158px] h-[168px] box-border flex flex-col rounded-[18px] p-[16px] cursor-pointer no-underline";
-        const st: React.CSSProperties = {
-          scrollSnapAlign: "start",
-          background: "rgba(255,255,255,0.04)",
-          border: "1px solid rgba(255,255,255,0.08)",
-        };
+        const st: React.CSSProperties = { ...DARK_CARD };
         return card.href ? (
           <a
             key={`visa-${i}`}
@@ -1656,10 +1683,10 @@ const FeatureCtaCard: React.FC<{
         )}
       </div>
       <span
-        className="shrink-0 rounded-full px-[16px] py-[10px] text-[12.5px] font-bold whitespace-nowrap"
-        style={{ background: YELLOW, color: INK }}
+        className="shrink-0 rounded-full px-[16px] py-[10px] text-[12.5px] font-semibold whitespace-nowrap"
+        style={addCtaStyle(false, true)}
       >
-        Add pass →
+        + Add
       </span>
     </button>
   );
@@ -1775,93 +1802,6 @@ const FeatureSection: React.FC<{
   </section>
 );
 
-// ── Steps (dark section — "Sketch it. I'll finish it.") ─────────────────────
-const StepsSection: React.FC<{
-  section: Extract<CinematicSection, { type: "steps" }>;
-  onSelectPrompt: (p: string) => void;
-}> = ({ section, onSelectPrompt }) => {
-  const router = useRouter();
-  const cta = section.cta;
-  return (
-    <section
-      className="mt-[38px] md:mt-[64px] relative overflow-hidden"
-      style={{ background: DARK }}
-    >
-      <div
-        className="absolute pointer-events-none"
-        style={{
-          top: -80,
-          right: -80,
-          width: 320,
-          height: 320,
-          background: "radial-gradient(circle, rgba(247,231,0,0.08), transparent 70%)",
-        }}
-      />
-      <Container className="py-[32px] md:py-[56px]">
-        <Heading
-          heading={section.heading}
-          className="text-[22px] md:text-[34px] ctl-h-light"
-        />
-        <div className="flex flex-col md:flex-row md:gap-[32px] gap-[14px] mt-[22px] md:mt-[32px]">
-          {section.steps.map((st, i) => (
-            <div key={`step-${i}`} className="flex items-center gap-[14px] md:flex-1">
-              <div
-                className="w-[26px] h-[26px] shrink-0 rounded-full flex items-center justify-center"
-                style={{
-                  background: YELLOW,
-                  color: INK,
-                  fontFamily: "'Instrument Serif', serif",
-                  fontStyle: "italic",
-                  fontSize: 14,
-                }}
-              >
-                {st.n}
-              </div>
-              <div>
-                <span className="text-[14px] font-bold" style={{ color: PAPER }}>
-                  {st.title}
-                </span>
-                {st.sub && (
-                  <span className="ctl-serif text-[14px]" style={{ color: FAINT }}>
-                    {" "}
-                    {st.sub}
-                  </span>
-                )}
-                {st.meta && (
-                  <div className="ctl-mono mt-[2px]" style={{ fontSize: 9 }}>
-                    {st.meta}
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-        {cta && (
-          <button
-            type="button"
-            onClick={() => {
-              if (cta.prompt) onSelectPrompt(cta.prompt);
-              else if (cta.href) router.push(cta.href);
-            }}
-            className="ctl-press mt-[24px] md:mt-[32px] w-full md:w-auto md:px-[40px] rounded-full border-none cursor-pointer px-[14px] py-[14px] text-[15px] font-bold"
-            style={{ background: YELLOW, color: INK, boxShadow: "0 8px 20px -10px rgba(247,231,0,0.3)" }}
-          >
-            {cta.label} →
-          </button>
-        )}
-        {section.note && (
-          <div
-            className="ctl-mono text-center md:text-left mt-[12px]"
-            style={{ fontSize: 9 }}
-          >
-            {section.note}
-          </div>
-        )}
-      </Container>
-    </section>
-  );
-};
-
 // ── Ask-Kaira strip ("Docked composer") ─────────────────────────────────────
 // A single, shared design used on every theme page (matches the theme mockup):
 // a paper-tinted, blurred bar pinned to the bottom of the viewport with a white
@@ -1878,9 +1818,12 @@ const AskKairaStrip: React.FC<{
   // /chat and opens the themed mini-form there. Falls back to seeding
   // bar.buildPrompt when omitted.
   onBuild?: () => void;
-}> = ({ bar, onSelectPrompt, onBuild }) => {
+  // Kaira's avatar for the round chat button at the end of the action row.
+  avatar?: string;
+}> = ({ bar, onSelectPrompt, onBuild, avatar }) => {
   const router = useRouter();
   const selection = useThemeSelection();
+  const palette = usePalette();
   const [show, setShow] = React.useState(false);
   const [expanded, setExpanded] = React.useState(true);
   React.useEffect(() => {
@@ -1910,9 +1853,13 @@ const AskKairaStrip: React.FC<{
     else router.push("/chat");
   };
 
+  // Nothing saved yet → the bar is a plain invitation to start a chat, with a
+  // mono line above explaining how the "+ Add" pills feed it. Once something is
+  // saved it becomes "Build trip · N".
   const buildLabel = hasSelection
     ? `${bar.buildCta ?? "Build trip"} · ${count}`
-    : bar.buildCta ?? "Build trip";
+    : "Start planning";
+  const emptyHint = "Nothing added yet · tap + on anything above";
 
   // Human label for a saved item's kind (singular). Used for the row tag and
   // the per-type summary chips (e.g. "poi" → "place", "do" → "activity").
@@ -1967,50 +1914,51 @@ const AskKairaStrip: React.FC<{
       {/* One centered column so every piece aligns on desktop; full-width under
           560px on mobile — identical design on both. */}
       <div className="mx-auto" style={{ maxWidth: 560 }}>
-        {/* Dark saved-list panel (toggled by the summary bar's chevron). */}
+        {/* Saved-list panel (toggled by the summary bar's chevron) — a white
+            tray whose rows carry the theme wash so the list reads as part of
+            the trip being built rather than a generic cart. */}
         {listOpen && (
           <div
             style={{
-              background: INK,
-              borderRadius: 20,
-              padding: 14,
+              ...cardChrome(),
+              borderRadius: 18,
+              padding: "16px 16px 14px",
               marginBottom: 10,
-              boxShadow: "0 18px 40px -18px rgba(11,18,32,0.5)",
+              boxShadow: "0 -16px 44px -16px rgba(11,18,32,0.28)",
             }}
           >
-            <div className="flex items-center justify-between mb-[10px]">
-              <span className="ctl-mono" style={{ fontSize: 11, color: PAPER }}>
+            <div className="flex items-center justify-between mb-[12px]">
+              <span className="ctl-mono" style={{ fontSize: 9.5, color: INK }}>
                 Your list · {count} {count === 1 ? "item" : "items"}
               </span>
               <button
                 type="button"
                 onClick={() => selection?.clear()}
-                className="ctl-mono border-none cursor-pointer bg-transparent"
-                style={{ fontSize: 10, color: FAINT }}
+                className="ctl-mono border-none cursor-pointer bg-transparent p-0"
+                style={{ fontSize: 9.5, color: FAINT }}
               >
                 Clear all
               </button>
             </div>
             <div
-              className="ctl-scroll flex flex-col gap-[8px]"
+              className="ctl-scroll flex flex-col gap-[7px]"
               style={{ maxHeight: 224, overflowY: "auto" }}
             >
               {items.map((it) => (
                 <div
                   key={it.id ?? `${it.kind}:${it.label}`}
-                  className="flex items-center gap-[12px]"
+                  className="flex items-center gap-[10px]"
                   style={{
-                    background: "rgba(255,255,255,0.045)",
-                    border: "1px solid rgba(255,255,255,0.06)",
-                    borderRadius: 14,
-                    padding: "12px 12px 12px 14px",
+                    background: palette.accentSoft,
+                    borderRadius: 12,
+                    padding: "10px 10px 10px 13px",
                   }}
                 >
                   <span
                     className="ctl-mono shrink-0"
                     style={{
-                      fontSize: 9.5,
-                      color: FAINT,
+                      fontSize: 8.5,
+                      color: palette.accent,
                       whiteSpace: "nowrap",
                     }}
                   >
@@ -2018,7 +1966,7 @@ const AskKairaStrip: React.FC<{
                   </span>
                   <span
                     className="flex-1 min-w-0 truncate"
-                    style={{ color: PAPER, fontWeight: 700, fontSize: 14.5 }}
+                    style={{ color: INK, fontWeight: 500, fontSize: 12.5 }}
                     title={it.label || it.short}
                   >
                     {it.label || it.short}
@@ -2027,13 +1975,14 @@ const AskKairaStrip: React.FC<{
                     type="button"
                     aria-label={`Remove ${it.label}`}
                     onClick={() => selection?.toggle(it)}
-                    className="ctl-press shrink-0 flex items-center justify-center rounded-full border-none cursor-pointer"
+                    className="ctl-press shrink-0 flex items-center justify-center rounded-full cursor-pointer p-0"
                     style={{
-                      width: 28,
-                      height: 28,
-                      background: "rgba(255,255,255,0.08)",
-                      color: FAINT,
-                      fontSize: 15,
+                      width: 22,
+                      height: 22,
+                      background: "#ffffff",
+                      border: `1px solid ${BORDER}`,
+                      color: MUTED,
+                      fontSize: 13,
                       lineHeight: 1,
                     }}
                   >
@@ -2045,32 +1994,35 @@ const AskKairaStrip: React.FC<{
           </div>
         )}
 
-        {/* White summary bar — dark bag + yellow count badge, a "N saved" chip,
-            and a chevron that expands/collapses the dark list. */}
-        {hasSelection && (
-          <button
+        {/* White summary bar — an accent bag with a count badge, one chip per
+            saved type, and a chevron that expands/collapses the list. Shown
+            empty too, where it carries the "tap +" hint instead. */}
+        <button
             type="button"
-            onClick={() => setExpanded((v) => !v)}
-            aria-expanded={expanded}
-            className="w-full flex items-center gap-[12px] bg-white cursor-pointer"
+            onClick={hasSelection ? () => setExpanded((v) => !v) : undefined}
+            disabled={!hasSelection}
+            aria-expanded={hasSelection ? expanded : undefined}
+            className={`w-full flex items-center gap-[10px] ${
+              hasSelection ? "cursor-pointer" : "cursor-default"
+            }`}
             style={{
-              border: `1px solid ${BORDER}`,
+              ...cardChrome(),
               borderRadius: 999,
-              padding: "8px 14px 8px 8px",
+              padding: "8px 14px 8px 9px",
               marginBottom: 10,
               boxShadow: "0 8px 20px -10px rgba(11,18,32,0.15)",
             }}
           >
             <span
               className="relative shrink-0 flex items-center justify-center rounded-full"
-              style={{ width: 38, height: 38, background: INK }}
+              style={{ width: 32, height: 32, background: palette.accent }}
             >
               <svg
-                width="18"
-                height="18"
+                width="15"
+                height="15"
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke={YELLOW}
+                stroke={palette.accentOn}
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -2079,112 +2031,137 @@ const AskKairaStrip: React.FC<{
                 <path d="M3 6h18" />
                 <path d="M16 10a4 4 0 0 1-8 0" />
               </svg>
-              <span
-                className="absolute flex items-center justify-center rounded-full"
-                style={{
-                  top: -4,
-                  right: -4,
-                  minWidth: 18,
-                  height: 18,
-                  padding: "0 4px",
-                  background: YELLOW,
-                  color: INK,
-                  fontSize: 10.5,
-                  fontWeight: 700,
-                  border: "2px solid #fff",
-                }}
-              >
-                {count}
-              </span>
-            </span>
-            {/* One chip per selected type, e.g. "3 experiences · 2 places". */}
-            <div
-              className="ctl-scroll flex-1 min-w-0 flex items-center gap-[6px]"
-              style={{ overflowX: "auto" }}
-            >
-              {kindCounts.map(([k, n]) => (
+              {hasSelection && (
                 <span
-                  key={k}
-                  className="shrink-0"
+                  className="ctl-mono absolute flex items-center justify-center rounded-full"
                   style={{
-                    background: SAND,
-                    borderRadius: 999,
-                    padding: "6px 12px",
-                    fontSize: 11,
-                    color: MUTED,
+                    top: -3,
+                    right: -4,
+                    minWidth: 16,
+                    height: 16,
+                    padding: "0 4px",
+                    background: INK,
+                    color: "#ffffff",
+                    fontSize: 9,
                     fontWeight: 600,
-                    whiteSpace: "nowrap",
+                    border: "1.5px solid #fff",
+                    letterSpacing: 0,
                   }}
                 >
-                  {n} {pluralize(k, n)}
+                  {count}
                 </span>
-              ))}
-            </div>
-            <span
-              className="shrink-0 flex items-center"
-              style={{
-                color: FAINT,
-                transform: expanded ? "rotate(180deg)" : "none",
-                transition: "transform .2s ease",
-              }}
-            >
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke={FAINT}
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M6 9l6 6 6-6" />
-              </svg>
+              )}
             </span>
+            {/* One chip per selected type, e.g. "3 experiences · 2 places". */}
+            {hasSelection ? (
+              <div
+                className="ctl-scroll flex-1 min-w-0 flex items-center gap-[5px]"
+                style={{ overflowX: "auto" }}
+              >
+                {kindCounts.map(([k, n]) => (
+                  <span
+                    key={k}
+                    className="ctl-mono shrink-0"
+                    style={{
+                      background: palette.accentSoft,
+                      borderRadius: 6,
+                      padding: "4px 8px",
+                      fontSize: 8.5,
+                      color: palette.accent,
+                      fontWeight: 600,
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {n} {pluralize(k, n)}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <span
+                className="ctl-mono flex-1 min-w-0 text-left truncate"
+                style={{ fontSize: 9 }}
+              >
+                {emptyHint}
+              </span>
+            )}
+            {hasSelection && (
+              <span
+                className="shrink-0 flex items-center"
+                style={{
+                  color: FAINT,
+                  transform: expanded ? "rotate(180deg)" : "none",
+                  transition: "transform .2s ease",
+                }}
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke={FAINT}
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M6 9l6 6 6-6" />
+                </svg>
+              </span>
+            )}
           </button>
-        )}
 
-        {/* Action row — yellow primary (Build) + a round chat button. */}
-        <div className="flex items-center gap-[10px]">
+        {/* Action row — the accent-filled Build button (with a slow sheen so it
+            stays alive without animating colour) + Kaira's avatar into chat. */}
+        <div className="flex items-center gap-[8px]">
           <button
             type="button"
             onClick={doBuild}
-            className="ctl-press flex-1 rounded-full border-none cursor-pointer"
+            className="ctl-press flex-1 min-w-0 relative overflow-hidden rounded-full border-none cursor-pointer"
             style={{
-              background: YELLOW,
-              color: INK,
-              padding: 15,
-              fontSize: 15,
+              background: palette.accent,
+              color: palette.accentOn,
+              padding: "14px 12px",
+              fontSize: 14,
               fontWeight: 700,
-              boxShadow: "0 8px 20px -10px rgba(247,231,0,0.55)",
+              boxShadow: `0 8px 20px -10px ${palette.accent}`,
             }}
           >
+            <span aria-hidden className="ctl-sheen" />
             {buildLabel} →
           </button>
           <button
             type="button"
             aria-label={bar.cta ?? "Ask Kaira"}
             onClick={openChat}
-            className="ctl-press shrink-0 flex items-center justify-center rounded-full bg-white cursor-pointer"
-            style={{
-              width: 54,
-              height: 54,
-              border: `1px solid ${BORDER}`,
-              boxShadow: "0 8px 20px -10px rgba(11,18,32,0.15)",
-            }}
+            className="ctl-press relative shrink-0 rounded-full border-none cursor-pointer p-0 bg-transparent"
+            style={{ width: 48, height: 48 }}
           >
-            <svg
-              width="22"
-              height="22"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke={INK}
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 8.5-8.5 8.38 8.38 0 0 1 8.5 8.5z" />
-            </svg>
+            <img
+              src={avatar ?? "/KairaInsta.jpg"}
+              alt=""
+              width={48}
+              height={48}
+              className="block rounded-full"
+              style={{
+                width: 48,
+                height: 48,
+                objectFit: "cover",
+                border: "2px solid #ffffff",
+                boxShadow: "0 8px 20px -8px rgba(11,18,32,0.35)",
+              }}
+            />
+            <span
+              aria-hidden
+              className="absolute rounded-full"
+              style={{
+                bottom: 1,
+                right: 1,
+                width: 10,
+                height: 10,
+                background: "#1f8a5a",
+                border: "2px solid #ffffff",
+                animation: "ctlPulseRing 2s infinite",
+              }}
+            />
           </button>
         </div>
       </div>
@@ -2252,12 +2229,19 @@ const CinematicThemeLanding: React.FC<CinematicThemeLandingProps> = ({
     ? optimizedMediaUrl(lcpImage, { width: 640 })
     : undefined;
 
+  const palette = React.useMemo(
+    () => resolvePalette(config.theme),
+    [config.theme],
+  );
+
   return (
+  <PaletteContext.Provider value={palette}>
   <ThemeSelectionProvider value={selection ?? null}>
   <div
     className={`ctl-root ${
       config.askBar ? "pb-[104px] md:pb-[108px]" : "pb-[32px] md:pb-0"
     }`}
+    style={{ background: palette.page }}
   >
     {lcpPreloadHref && (
       <Head>
@@ -2323,8 +2307,6 @@ const CinematicThemeLanding: React.FC<CinematicThemeLandingProps> = ({
               onSelectActivity={onSelectActivity}
             />
           );
-        case "steps":
-          return <StepsSection key={key} section={section} onSelectPrompt={onSelectPrompt} />;
         case "gradient":
         default:
           return <GradientSection key={key} section={section} onSelectPrompt={onSelectPrompt} />;
@@ -2336,10 +2318,12 @@ const CinematicThemeLanding: React.FC<CinematicThemeLandingProps> = ({
         bar={config.askBar}
         onSelectPrompt={onSelectPrompt}
         onBuild={onBuild}
+        avatar={config.hero.kairaImage}
       />
     )}
   </div>
   </ThemeSelectionProvider>
+  </PaletteContext.Provider>
   );
 };
 
@@ -2357,7 +2341,6 @@ export {
   EatsSection,
   VisaSection,
   FeatureSection,
-  StepsSection,
   AskKairaStrip,
   PromptCard,
   TripCard,

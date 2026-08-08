@@ -124,6 +124,13 @@ const PROMPTS = {
 };
 
 const hokkaidoConfig: CinematicThemeConfig = {
+  // Hokkaido snow blue — carries every CTA, the saved state and the docked bar.
+  theme: {
+    accent: "#3d6b8f",
+    accentSoft: "#e4eef5",
+    page: "#f7fafb",
+    heroTint: "#ecf4f9",
+  },
   header: {
     title: "Hokkaido powder & Sapporo",
     subtitle: "Theme · Japan · Dec – Mar",
@@ -657,22 +664,6 @@ const hokkaidoConfig: CinematicThemeConfig = {
           href: "/theme/edinburgh-hogmanay",
         },
       ],
-    },
-    // ── How it works ──
-    {
-      type: "steps",
-      heading: {
-        eyebrow: "No markups · pay only for what you book",
-        lead: "Sketch it. I'll",
-        accent: "finish it.",
-      },
-      steps: [
-        { n: "1", title: "Tell me your dates", sub: "and your ski level." },
-        { n: "2", title: "I shape the route", sub: "powder, rail, onsens." },
-        { n: "3", title: "You book", sub: "only what you love." },
-      ],
-      cta: { label: "Start planning", prompt: PROMPTS.powderCity },
-      note: "10,000+ trips · rated 4.9 across all of them",
     },
   ],
   askBar: {
