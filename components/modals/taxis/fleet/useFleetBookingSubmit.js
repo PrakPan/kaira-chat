@@ -10,7 +10,7 @@ import {
 } from "../../../../store/actions/transferBookingsStore";
 
 /**
- * Book a mixed fleet: one POST, one TransferBooking, several cabs.
+ * Book several taxis at once: one POST, one TransferBooking, several cabs.
  *
  * Mirrors the flow in taxi-searched/sectionone/Route.js — warning pre-flight, booking POST,
  * redux update, payment refresh — rather than extracting it. Route.js also owns a warning
@@ -20,7 +20,8 @@ import {
  *
  * The ONLY wire difference from a single-cab booking is `vehicles` in place of
  * `result_index`. The backend branches on `vehicles` first and composes the selection into
- * one quote, so everything downstream of that is the ordinary code path.
+ * one quote, so everything downstream of that is the ordinary code path. It validates
+ * nothing about seats or car count - the customer's selection is taken as given.
  */
 export const useFleetBookingSubmit = ({
   itineraryId,
@@ -43,7 +44,7 @@ export const useFleetBookingSubmit = ({
   const notifyError = (error, fallback) => {
     // The API layer wraps 4xx as {success: false, errors: [{message: [...]}]}, but the view
     // layer emits a bare {message: "..."} for its own guards. Read both before giving up,
-    // otherwise a real explanation ("seats 8 of 10") shows as a generic failure.
+    // otherwise a real explanation shows as a generic failure.
     const data = error?.response?.data;
     const message =
       data?.errors?.[0]?.message?.[0] ||

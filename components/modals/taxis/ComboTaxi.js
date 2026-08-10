@@ -10,7 +10,13 @@ import SectionOne from "./SectionOne";
 import LoadingLottie from "../../ui/LoadingLottie";
 import { ItineraryUpdateLoader } from "../../revamp/common/components/loader";
 import TaxiSearched from "./taxi-searched/Index";
-import TaxiFleetSection from "./fleet/TaxiFleetSection";
+import SelectedTaxisBar from "./fleet/SelectedTaxisBar";
+import {
+  TaxiSelectionProvider,
+  useTaxiSelectionState,
+} from "./fleet/TaxiSelectionContext";
+import { useFleetBookingSubmit } from "./fleet/useFleetBookingSubmit";
+import { currencySymbols } from "../../../data/currencySymbols";
 import Drawer from "../../ui/Drawer";
 import { openNotification } from "../../../store/actions/notification";
 import Skeleton from "./Skeleton";
@@ -75,6 +81,8 @@ const ComboTaxi = (props) => {
   const [moreLoadingState, setMoreLoadingState] = useState(false);
   const dispatch = useDispatch();
   const currency = useSelector(state=>state.currency);
+  // Same fallback chain the single-taxi card uses, so both paths post to the same itinerary.
+  const reduxItineraryId = useSelector((state) => state.ItineraryId);
 
   // Load More (Mozio progressive polling): poll once more. The backend accumulates
   // server-side and returns the FULL set each time, so REPLACE quotes (not append).
@@ -120,12 +128,21 @@ const ComboTaxi = (props) => {
   };
   
 
-  // Mixed-fleet block, present only when the search fell back to multiple vehicles.
+  // How the search described the party. `multi_vehicle_needed` is true only when no single
+  // vehicle seats it, and that alone turns on multi-select.
   const [fleet, setFleet] = useState(null);
   const [fleetSource, setFleetSource] = useState(null);
-  // Set while ANY option on this screen is being added — the fleet block or a convoy card.
-  // Keeps the loader on the one option the user committed to and greys out the rest.
+  // Set while a single-taxi card is committing, so the rest of the screen freezes.
   const [addingKey, setAddingKey] = useState(null);
+
+  // A combo LEG commits through bookings/transfer/, which has no field for a vehicle list,
+  // so several taxis are only offered on the direct-booking path.
+  const taxiSelection = useTaxiSelectionState({
+    fleet: props?.combo ? null : fleet,
+    quotes,
+    source: fleetSource,
+    busy: !!addingKey,
+  });
 
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
   const [selectedDate, setSelectedDate] = useState(
@@ -534,6 +551,32 @@ const ComboTaxi = (props) => {
     setSelectedTaxiIndex(null);
   };
 
+  const { submit: submitFleet, loading: submittingFleet } = useFleetBookingSubmit({
+    itineraryId: props?.itinerary_id || reduxItineraryId,
+    selectedBooking: props.selectedBooking,
+    token: props.token,
+    origin_itinerary_city_id: props?.origin_itinerary_city_id,
+    destination_itinerary_city_id: props?.destination_itinerary_city_id,
+    edge: props?.edge,
+    booking_id: props?.booking_id,
+    getPaymentHandler: props.getPaymentHandler,
+    setHideBookingModal: props.setHideTaxiModal,
+  });
+
+  const handleAddSelectedTaxis = async (vehicles) => {
+    if (!vehicles?.length) return;
+    if (props.handleTaxiSelect) {
+      props.handleTaxiSelect({ trace_id: traceId, vehicles });
+      return;
+    }
+    await submitFleet({ source: fleetSource, trace_id: traceId, vehicles });
+  };
+
+  const currencySymbol =
+    (fleet?.currency && currencySymbols?.[fleet.currency]) ||
+    (currency?.currency && currencySymbols?.[currency.currency]) ||
+    "₹";
+
   const fetchDataWithNewDate = (newDate) => {
     setSelectedDate(newDate);
     const updatedProps = {
@@ -552,6 +595,7 @@ const ComboTaxi = (props) => {
           displayText="Finding best transfers for you"
           zIndex={1505}
         />
+        <TaxiSelectionProvider value={taxiSelection}>
         <div>
           <GridContainer style={{ clear: "right" }}>
             <ContentContainer style={{ position: "relative" }}>
@@ -607,29 +651,11 @@ const ComboTaxi = (props) => {
 
               {!noResults && !error && !updateBookingState ? (
                 <OptionsContainer id="options">
-                  {/* A combo LEG commits through bookings/transfer/, which has no field for
-                      a vehicle list, so the picker only appears on the direct-booking path. */}
-                  {fleet && !props?.combo ? (
-                    <TaxiFleetSection
-                      fleet={fleet}
-                      source={fleetSource}
-                      traceId={traceId}
-                      handleTaxiSelect={props.handleTaxiSelect}
-                      booking_id={props?.booking_id}
-                      origin_itinerary_city_id={props?.origin_itinerary_city_id}
-                      destination_itinerary_city_id={
-                        props?.destination_itinerary_city_id
-                      }
-                      edge={props?.edge}
-                      selectedBooking={props.selectedBooking}
-                      getPaymentHandler={props.getPaymentHandler}
-                      setHideBookingModal={props.setHideTaxiModal}
-                      token={props.token}
-                      externalBusy={!!addingKey && addingKey !== "fleet"}
-                      onBusyChange={(busy) =>
-                        setAddingKey(busy ? "fleet" : null)
-                      }
-                    />
+                  {taxiSelection.enabled ? (
+                    <div className="rounded-2xl border-sm border-solid border-[#f2e6a8] bg-[#fffdf0] px-3 py-2 mt-md ttw-type-small text-[#6b5600]">
+                      No single taxi seats {fleet?.pax} — add as many as you need
+                      and we will book them together.
+                    </div>
                   ) : null}
                   <div >
                     {quotes.map((quote, index) => (
@@ -744,7 +770,17 @@ const ComboTaxi = (props) => {
               ) : null}
             </ContentContainer>
           </GridContainer>
+
+          {/* Pinned to the bottom of the scroll area: the quote list is long, and having
+              picked a taxi near the end of it you should not have to scroll further to
+              find the total. */}
+          <SelectedTaxisBar
+            symbol={currencySymbol}
+            submitting={submittingFleet}
+            onSubmit={handleAddSelectedTaxis}
+          />
         </div>
+        </TaxiSelectionProvider>
 
         {props?.mercury ? (
           <TransferEditDrawer

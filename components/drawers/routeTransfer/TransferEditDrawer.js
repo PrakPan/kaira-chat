@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import ReactDOM from "react-dom";
 import { FaX } from "react-icons/fa6";
 import { connect, useDispatch, useSelector } from "react-redux";
@@ -54,8 +54,13 @@ import {
   VehicleCountBadge,
   getFleetManifest,
 } from "../../modals/taxis/MultiVehicleInfo";
-import FleetPicker from "../../modals/taxis/fleet/FleetPicker";
-import { describeSelection } from "../../modals/taxis/fleet/fleetSelection";
+import QuantityStepper from "../../modals/taxis/fleet/QuantityStepper";
+import {
+  describeSelection,
+  setQuantity as setQuantityIn,
+  summarizeSelection,
+  toVehiclesPayload,
+} from "../../modals/taxis/fleet/fleetSelection";
 import {
   MdDirectionsBoat,
   MdDirectionsBus,
@@ -5497,6 +5502,88 @@ const RadioButton = ({ name, label, transferType, handleTransferType }) => {
   );
 };
 
+/**
+ * Picking several cabs for one multicity/roundtrip suggestion.
+ *
+ * Same rule as the taxi search drawer: below a party that overflows every vehicle, the rows
+ * stay radio buttons and one cab is chosen. Above it they become quantity steppers, and the
+ * drawer's own action bar at the bottom commits whatever is picked as ONE booking.
+ *
+ * The two suggestion blocks quote in different shapes - roundtrip rows carry
+ * `transfer_details`, multicity rows carry `taxi_category`/`price` - so the pool is
+ * normalised here rather than teaching the selection maths about both.
+ */
+const useSuggestionFleet = ({ pricing, data, suggestionIndex, onFleetChoice, setSelectedCab }) => {
+  const [quantities, setQuantities] = useState({});
+
+  const enabled =
+    Boolean(data?.fleet?.multi_vehicle_needed) &&
+    (!data?.source || data.source === "Self");
+
+  const candidates = useMemo(
+    () =>
+      (pricing || []).map((quote) => ({
+        result_index: quote?.result_index,
+        taxi_category: quote?.taxi_category || quote?.transfer_details || {},
+        price:
+          quote?.price?.total != null
+            ? quote.price
+            : { total: quote?.transfer_details?.total },
+      })),
+    [pricing],
+  );
+
+  const summary = useMemo(
+    () => summarizeSelection(quantities, candidates),
+    [quantities, candidates],
+  );
+
+  const setQuantity = (resultIndex, next) => {
+    const updated = setQuantityIn(quantities, resultIndex, next);
+    setQuantities(updated);
+
+    const vehicles = toVehiclesPayload(updated, candidates);
+    // A fleet and the single-cab radio are mutually exclusive; the action bar commits
+    // whichever is set, so one must clear the other.
+    setSelectedCab?.(null);
+    onFleetChoice?.(
+      vehicles.length
+        ? {
+            suggestionIndex,
+            vehicles,
+            label: describeSelection(summarizeSelection(updated, candidates)),
+          }
+        : null,
+    );
+  };
+
+  return { enabled, quantities, summary, setQuantity, pax: Number(data?.fleet?.pax) || 0 };
+};
+
+/** The running selection, stated where the rows are - the commit is the drawer's own bar. */
+const SuggestionFleetSummary = ({ summary, pax, symbol }) => {
+  if (!summary?.vehicles) return null;
+  const shortfall = pax > 0 ? Math.max(pax - summary.seats, 0) : 0;
+  return (
+    <div className="sticky bottom-0 z-10 mt-2 rounded-xl border-sm border-solid border-[#f2e6a8] bg-[#fffdf0] px-3 py-2 flex items-center justify-between gap-3 flex-wrap">
+      <div className="min-w-0">
+        <div className="ttw-type-body font-600 text-[#0b1220] truncate">
+          {describeSelection(summary)}
+        </div>
+        <div className="ttw-type-small text-[#6b5600]">
+          {summary.vehicles} {summary.vehicles === 1 ? "taxi" : "taxis"} ·{" "}
+          {summary.seats} seats
+          {shortfall ? ` · ${shortfall} of ${pax} travellers without a seat` : ""}
+        </div>
+      </div>
+      <span className="ttw-type-body font-mono text-[#0b1220] whitespace-nowrap">
+        {symbol}
+        {getIndianPrice(Math.ceil(summary.total))}
+      </span>
+    </div>
+  );
+};
+
 const RoundTripSuggestion = ({
   onFleetChoice,
   roundTripSuggestions,
@@ -5529,6 +5616,14 @@ const RoundTripSuggestion = ({
     });
     setPricing(pricing);
   }, [roundTripSuggestions]);
+
+  const suggestionFleet = useSuggestionFleet({
+    pricing,
+    data: roundTripSuggestions?.data,
+    suggestionIndex: 1,
+    onFleetChoice,
+    setSelectedCab,
+  });
 
   const handleSelectCab = (e) => {
     setSelectError(false);
@@ -5646,6 +5741,24 @@ const RoundTripSuggestion = ({
                     className="w-full flex flex-row items-start gap-2"
                   >
                     <div>
+                      {suggestionFleet.enabled ? (
+                        <QuantityStepper
+                          size="sm"
+                          value={Number(
+                            suggestionFleet.quantities[
+                              String(price?.result_index)
+                            ] || 0,
+                          )}
+                          label={
+                            price?.transfer_details?.model_name ||
+                            price?.transfer_details?.type ||
+                            "taxi"
+                          }
+                          onChange={(next) =>
+                            suggestionFleet.setQuantity(price?.result_index, next)
+                          }
+                        />
+                      ) : (
                       <div
                         id={price?.result_index}
                         onClick={handleSelectCab}
@@ -5664,6 +5777,7 @@ const RoundTripSuggestion = ({
                             ></div>
                           )}
                       </div>
+                      )}
                     </div>
 
                     <div className="flex flex-col items-start gap-1">
@@ -5725,25 +5839,12 @@ const RoundTripSuggestion = ({
           </div>
         </div>
 
-        {/* Mixed fleet: several DIFFERENT cabs for this trip, chosen together. Absent unless
-            the search fell back to multiple vehicles, so single-cab trips are unaffected. */}
-        <FleetPicker
-          fleet={roundTripSuggestions?.data?.fleet}
-          source={roundTripSuggestions?.data?.source}
+        <SuggestionFleetSummary
+          summary={suggestionFleet.summary}
+          pax={suggestionFleet.pax}
           symbol={
             currency?.currency ? currencySymbols?.[currency?.currency] : "\u20b9"
           }
-          ctaLabel="Use these vehicles"
-          onAdd={(vehicles, summary) => {
-            // Selecting a fleet clears the single-cab radio: the drawer commits one
-            // or the other, never both.
-            setSelectedCab(null);
-            onFleetChoice?.({
-              suggestionIndex: 1,
-              vehicles,
-              label: describeSelection(summary),
-            });
-          }}
         />
 
         {/* <div
@@ -5792,6 +5893,14 @@ const MultiCityTripSuggestion = ({
     });
     setPricing(pricing);
   }, [multiCitySuggestions]);
+
+  const suggestionFleet = useSuggestionFleet({
+    pricing,
+    data: multiCitySuggestions?.data,
+    suggestionIndex: 0,
+    onFleetChoice,
+    setSelectedCab,
+  });
 
   const handleSelectCab = (cab) => {
     setSelectError(false);
@@ -5912,6 +6021,24 @@ const MultiCityTripSuggestion = ({
                 className="w-full flex flex-row items-start gap-2"
               >
                 <div>
+                  {suggestionFleet.enabled ? (
+                    <QuantityStepper
+                      size="sm"
+                      value={Number(
+                        suggestionFleet.quantities[
+                          String(price?.result_index)
+                        ] || 0,
+                      )}
+                      label={
+                        price?.taxi_category?.model_name ||
+                        price?.taxi_category?.type ||
+                        "taxi"
+                      }
+                      onChange={(next) =>
+                        suggestionFleet.setQuantity(price?.result_index, next)
+                      }
+                    />
+                  ) : (
                   <div
                     id={price?.result_index}
                     onClick={() => handleSelectCab(price)}
@@ -5930,6 +6057,7 @@ const MultiCityTripSuggestion = ({
                         ></div>
                       )}
                   </div>
+                  )}
                 </div>
 
                 <div className="flex flex-col items-start gap-1">
@@ -5986,25 +6114,12 @@ const MultiCityTripSuggestion = ({
           </div>
         </div>
 
-        {/* Mixed fleet: several DIFFERENT cabs for this trip, chosen together. Absent unless
-            the search fell back to multiple vehicles, so single-cab trips are unaffected. */}
-        <FleetPicker
-          fleet={multiCitySuggestions?.data?.fleet}
-          source={multiCitySuggestions?.data?.source}
+        <SuggestionFleetSummary
+          summary={suggestionFleet.summary}
+          pax={suggestionFleet.pax}
           symbol={
             currency?.currency ? currencySymbols?.[currency?.currency] : "\u20b9"
           }
-          ctaLabel="Use these vehicles"
-          onAdd={(vehicles, summary) => {
-            // Selecting a fleet clears the single-cab radio: the drawer commits one
-            // or the other, never both.
-            setSelectedCab(null);
-            onFleetChoice?.({
-              suggestionIndex: 0,
-              vehicles,
-              label: describeSelection(summary),
-            });
-          }}
         />
 
         {/* <div

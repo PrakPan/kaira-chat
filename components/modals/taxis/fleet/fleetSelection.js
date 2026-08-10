@@ -1,22 +1,23 @@
 /**
- * Selection maths for a mixed taxi fleet.
+ * Selection maths for a multi-taxi booking.
  *
- * Search only offers a fleet when no single cab seats the group. On that path the response
- * carries an extra `data.fleet` block: `candidates` (every single-cab quote, before the
- * capacity filter dropped them) and `suggestions` (server-ranked mixed combinations).
+ * Search returns every vehicle it can price, one quote per vehicle at that vehicle's own
+ * price, whatever the party size. `data.fleet.multi_vehicle_needed` says whether any single
+ * one of them seats the group; when it does not, the cards grow quantity steppers and the
+ * customer builds their own combination out of `data.quotes`.
  *
  * A selection is `{ [String(result_index)]: quantity }`. Keying on result_index rather than
- * on a list position matters: Load More replaces the candidate list wholesale, so positions
- * are not stable across polls. The backend also matches on `str(result_index)`, so every id
- * is coerced to a string on the way in and out.
+ * on a list position matters: Load More replaces the quote list wholesale, so positions are
+ * not stable across polls. The backend also matches on `str(result_index)`, so every id is
+ * coerced to a string on the way in and out.
  *
- * Everything here is pure — no React, no network — so the search modal and the multicity
- * drawer can share one definition of "what did the user pick and is it bookable".
+ * Nothing here checks the selection against the party size, and there is no ceiling on the
+ * number of cars — the backend dropped both. A group of 10 taking one 6-seater is a choice
+ * made in front of the seat counts, not a mistake to be corrected.
+ *
+ * Everything is pure — no React, no network — so the search modal, the pickup/drop drawer and
+ * the multicity drawer share one definition of "what did the customer pick".
  */
-
-// Mirrors MAX_VEHICLES_PER_FLEET in mercury's itinerary/constants.py. The response carries
-// its own `max_vehicles`; this is only the floor for a payload that predates it.
-export const MAX_FLEET_VEHICLES_FALLBACK = 4;
 
 export const candidateKey = (candidate) => String(candidate?.result_index ?? "");
 
@@ -37,15 +38,6 @@ const totalOf = (candidate) => {
   return Number.isFinite(total) ? total : 0;
 };
 
-/** Seed a selection from a server suggestion's `members`. */
-export const selectionFromMembers = (members) =>
-  (members || []).reduce((selection, member) => {
-    const key = String(member?.result_index ?? "");
-    const quantity = toCount(member?.quantity);
-    if (key && quantity) selection[key] = quantity;
-    return selection;
-  }, {});
-
 /** Immutable quantity set. Setting 0 removes the key so `countVehicles` stays honest. */
 export const setQuantity = (selection, resultIndex, quantity) => {
   const key = String(resultIndex ?? "");
@@ -60,8 +52,24 @@ export const countVehicles = (selection) =>
   Object.values(selection || {}).reduce((sum, qty) => sum + toCount(qty), 0);
 
 /**
+ * Drop any quantity whose quote is no longer on offer.
+ *
+ * Load More re-issues the whole quote list, and a re-search replaces it outright. Carrying a
+ * stale result_index forward would post an id the backend rejects, losing the rest of the
+ * selection to an error message that appears nowhere near the picker.
+ */
+export const pruneSelection = (selection, candidates) => {
+  const live = new Set((candidates || []).map(candidateKey));
+  const next = {};
+  Object.entries(selection || {}).forEach(([key, quantity]) => {
+    if (live.has(key) && toCount(quantity)) next[key] = toCount(quantity);
+  });
+  return next;
+};
+
+/**
  * Request shape for the booking call: `[{result_index, quantity}]`, quantities > 0 only.
- * Ordered by the candidate list so the payload is stable between renders.
+ * Ordered by the quote list so the payload is stable between renders.
  */
 export const toVehiclesPayload = (selection, candidates) =>
   (candidates || [])
@@ -72,7 +80,7 @@ export const toVehiclesPayload = (selection, candidates) =>
     .filter((entry) => entry.result_index && entry.quantity > 0);
 
 /**
- * What the user has picked, in the numbers they need to see before committing.
+ * What the customer has picked, in the numbers they need to see before committing.
  *
  * `seats`, `bags` and `total` are summed the same way the backend does, so the figure on
  * screen is the figure that will be billed rather than an estimate.
@@ -84,6 +92,7 @@ export const summarizeSelection = (selection, candidates) => {
       if (!quantity) return null;
       const unitTotal = totalOf(candidate);
       return {
+        key: candidateKey(candidate),
         candidate,
         quantity,
         unitTotal,
@@ -109,44 +118,23 @@ export const summarizeSelection = (selection, candidates) => {
 };
 
 /**
- * The same three refusals the server makes, checked before dispatch.
+ * The only refusal left: a supplier that cannot honour more than one cab.
  *
- * These are pre-empted rather than round-tripped because the only error surface in this app
- * is a global toast that appears nowhere near the picker — the user would lose their whole
- * selection to a message they might not connect to it.
+ * Gozo's hold books exactly one and cannot release it; Amadeus and WelcomePickups bind each
+ * quote to the passenger count sent upstream. The backend refuses these too — this is here so
+ * the message lands on the picker rather than in a toast across the screen from it.
  */
 export const validateSelection = (summary, fleet, source) => {
   if (source && source !== "Self") {
     return {
       ok: false,
-      reason: "Mixed vehicles are only available on our own fleet.",
+      reason: "Several taxis can only be booked on our own fleet.",
     };
   }
   if (!summary || summary.vehicles === 0) {
-    return { ok: false, reason: "Select at least one vehicle." };
-  }
-  const max = toCount(fleet?.max_vehicles) || MAX_FLEET_VEHICLES_FALLBACK;
-  if (summary.vehicles > max) {
-    return {
-      ok: false,
-      reason: `A single booking can hold at most ${max} vehicles.`,
-    };
-  }
-  const pax = toCount(fleet?.pax);
-  if (pax && summary.seats < pax) {
-    const short = pax - summary.seats;
-    return {
-      ok: false,
-      reason: `Seats ${summary.seats} of ${pax} — add room for ${short} more.`,
-    };
+    return { ok: false, reason: "Select at least one taxi." };
   }
   return { ok: true, reason: null };
-};
-
-/** Headroom left before the cap, for capping a stepper's "+" button. */
-export const remainingCapacity = (selection, fleet) => {
-  const max = toCount(fleet?.max_vehicles) || MAX_FLEET_VEHICLES_FALLBACK;
-  return Math.max(max - countVehicles(selection), 0);
 };
 
 /** "1 × Toyota Innova + 1 × Maruti Dzire" for a selection, matching the server's label. */
