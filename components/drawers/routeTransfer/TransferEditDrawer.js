@@ -104,6 +104,56 @@ const buildChildAges = (count, ages) => {
   });
 };
 
+const AIRPORT_PLACE_RE = /\b(airport|terminal|airstrip|aerodrome)\b/i;
+
+// `pickup_drop` suggestions come back named after the route they describe
+// ("Taxi from <origin> to <destination>") — never as the words "pickup"/"drop" —
+// so the direction has to be derived. The hub side of the trip is authoritative:
+// a pickup starts at the airport hub and a drop ends there, the same convention
+// PickupDropDrawer builds its search payload with. Returns null when nothing in
+// the suggestion settles it, leaving the caller to fall back to response order.
+const resolveAirportSuggestionKind = (sugg) => {
+  if (!sugg) return null;
+  const data = sugg?.data || {};
+
+  // 1) An explicit direction, whenever the API sends one.
+  const explicit = String(data?.airport_type || sugg?.airport_type || "").toLowerCase();
+  if (explicit === "pickup" || explicit === "drop") return explicit;
+  if (data?.is_airport_pickup || sugg?.is_airport_pickup) return "pickup";
+  if (data?.is_airport_drop || sugg?.is_airport_drop) return "drop";
+
+  // 2) Which end of the trip is the airport — by hub id first, then by address.
+  const trip = Array.isArray(data?.trips) ? data.trips[0] : null;
+  if (trip) {
+    const originHub = !!trip?.origin?.hub_id;
+    const destinationHub = !!trip?.destination?.hub_id;
+    if (originHub !== destinationHub) return originHub ? "pickup" : "drop";
+
+    const originIsAirport = AIRPORT_PLACE_RE.test(trip?.origin?.address || "");
+    const destinationIsAirport = AIRPORT_PLACE_RE.test(
+      trip?.destination?.address || "",
+    );
+    if (originIsAirport !== destinationIsAirport) {
+      return originIsAirport ? "pickup" : "drop";
+    }
+  }
+
+  // 3) Last resort: read the route name, splitting "from <origin> to <dest>".
+  const name = typeof sugg?.name === "string" ? sugg.name : "";
+  if (/pick\s*-?\s*up/i.test(name)) return "pickup";
+  if (/\bdrop(\s*-?\s*off)?\b/i.test(name)) return "drop";
+  const split = name.search(/\s+to\s+/i);
+  if (split > -1) {
+    const fromPart = name.slice(0, split);
+    const toPart = name.slice(split);
+    const fromIsAirport = AIRPORT_PLACE_RE.test(fromPart);
+    const toIsAirport = AIRPORT_PLACE_RE.test(toPart);
+    if (fromIsAirport !== toIsAirport) return fromIsAirport ? "pickup" : "drop";
+  }
+
+  return null;
+};
+
 const ALL_ABOARD_PAGE_SIZE = 5;
 
 // AllAboard search results are paginated by the API, which returns a
@@ -2210,17 +2260,29 @@ const TransferEditDrawer = (props) => {
                 {multicityTab === "airport" &&
                   Array.isArray(airportSuggestions) &&
                   (() => {
-                    const isPickup = (s) =>
-                      typeof s?.name === "string" &&
-                      s.name.toLowerCase().includes("pickup");
-                    const pickup = airportSuggestions.find(isPickup);
-                    const drop = airportSuggestions.find((s) => !isPickup(s));
+                    const kinds = airportSuggestions.map(
+                      resolveAirportSuggestionKind,
+                    );
+                    let pickup = airportSuggestions.find(
+                      (s, i) => kinds[i] === "pickup",
+                    );
+                    let drop = airportSuggestions.find(
+                      (s, i) => kinds[i] === "drop",
+                    );
+                    // Whatever the classifier couldn't settle fills the slots
+                    // still empty, in response order — the search returns the
+                    // pickup leg first.
+                    airportSuggestions.forEach((s, i) => {
+                      if (kinds[i]) return;
+                      if (!pickup) pickup = s;
+                      else if (!drop) drop = s;
+                    });
                     const ordered = [
                       { sugg: pickup, isPickup: true, existing: existingAirportPickup },
                       { sugg: drop, isPickup: false, existing: existingAirportDrop },
                     ].filter((x) => x.sugg || x.existing);
-                    return ordered.map(({ sugg, isPickup: pk, existing }, idx) => (
-                      <div key={idx} className="w-full">
+                    return ordered.map(({ sugg, isPickup: pk, existing }) => (
+                      <div key={pk ? "pickup" : "drop"} className="w-full">
                         {existing ? (
                           <BookedAirportCard
                             booking={existing}
