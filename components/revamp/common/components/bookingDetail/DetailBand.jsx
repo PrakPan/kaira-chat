@@ -73,9 +73,16 @@ export default function DetailBand({
 
       {kicker || summary ? (
         <div className="flex items-baseline justify-between gap-3 mt-2.5">
-          <span className="ttw-type-status text-white/55 truncate">{kicker}</span>
+          <span className="ttw-type-status text-white/55 truncate min-w-0">
+            {kicker}
+          </span>
           {summary ? (
-            <span className="ttw-type-status text-white shrink-0 tracking-[0.09em]">
+            // Usually a short measure ("0-1 HOURS · 35 KMS") that should never
+            // break, so it does not shrink — but a multi-city package puts its
+            // fleet label here ("3 SERVICES · 1 X TOYOTA CAMRY OR SIMILAR + …"),
+            // which on one line is wider than a phone. The cap lets only that
+            // case wrap.
+            <span className="ttw-type-status text-white shrink-0 max-w-[60%] text-right break-words tracking-[0.09em]">
               {summary}
             </span>
           ) : null}

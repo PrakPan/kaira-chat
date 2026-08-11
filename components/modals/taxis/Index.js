@@ -10,6 +10,13 @@ import SectionOne from "./SectionOne";
 import LoadingLottie from "../../ui/LoadingLottie";
 import { ItineraryUpdateLoader } from "../../revamp/common/components/loader";
 import TaxiSearched from "./taxi-searched/Index";
+import SelectedTaxisBar from "./fleet/SelectedTaxisBar";
+import {
+  TaxiSelectionProvider,
+  useTaxiSelectionState,
+} from "./fleet/TaxiSelectionContext";
+import { useFleetBookingSubmit } from "./fleet/useFleetBookingSubmit";
+import { currencySymbols } from "../../../data/currencySymbols";
 import Drawer from "../../ui/Drawer";
 import SearchLoaderOverlay from "../../ui/SearchLoaderOverlay";
 import { openNotification } from "../../../store/actions/notification";
@@ -45,7 +52,27 @@ const Booking = (props) => {
   // Progressive polling (Mozio): trace_id to re-poll with, and whether more results are coming.
   const [traceId, setTraceId] = useState(null);
   const [moreLoadingState, setMoreLoadingState] = useState(false);
+  // How the search described the party: `multi_vehicle_needed` is true only when no single
+  // vehicle seats it, and that is the one thing that turns on multi-select.
+  const [fleet, setFleet] = useState(null);
+  const [fleetSource, setFleetSource] = useState(null);
+  // Set while a single-taxi card is committing, so the rest of the screen freezes.
+  const [addingKey, setAddingKey] = useState(null);
+  const [quotes, setQuotes] = useState([]);
    const {number_of_adults,number_of_children,number_of_infants} = useSelector(state => state.Itinerary);
+  const currency = useSelector((state) => state.currency);
+  // Same fallback chain the single-taxi card uses, so both paths post to the same itinerary.
+  const reduxItineraryId = useSelector((state) => state.ItineraryId);
+
+  // Owns "which taxis has the customer lined up", shared with the cards through context —
+  // `optionsJSX` freezes the elements it builds, and context reaches past that where a prop
+  // could not.
+  const taxiSelection = useTaxiSelectionState({
+    fleet,
+    quotes,
+    source: fleetSource,
+    busy: !!addingKey,
+  });
  
  // console.log("OCity,D",props?.oCityData,props?.dCityData);
 
@@ -77,6 +104,7 @@ const Booking = (props) => {
           source: resData.data?.source,
         }}
         handleTaxiSelect={props.handleTaxiSelect}
+        onBusyChange={(busy) => setAddingKey(busy ? "quote" : null)}
       ></TaxiSearched>
     ));
   };
@@ -92,6 +120,10 @@ const Booking = (props) => {
     setMoreLoadingState(false);
     setTraceId(null);
     setOptionsJSX([]);
+    setQuotes([]);
+    setFleet(null);
+    setFleetSource(null);
+    taxiSelection.clear();
 
     {props?.mercury && 
       fetchTransferMode
@@ -154,11 +186,19 @@ const Booking = (props) => {
           // still coming (hasNext), keep the Load More affordance instead.
           setNoResults(cards.length === 0 && !hasNext);
           setOptionsJSX(cards);
+          // The cards are frozen React elements; the selection maths needs the underlying
+          // quotes, so the raw list is kept beside them and updated with them.
+          setQuotes(res.data?.data?.quotes || []);
+          setFleet(res.data?.data?.fleet || null);
+          setFleetSource(res.data?.data?.source || null);
         } else {
           setNoResults(true);
           setViewMoreStatus(false);
           setTraceId(null);
           setOptionsJSX([]);
+          setQuotes([]);
+          setFleet(null);
+          setFleetSource(null);
         }
         setLoading(false);
       })
@@ -194,9 +234,15 @@ const Booking = (props) => {
           setViewMoreStatus(!!hasNext);
           if (res.data.trace_id) setTraceId(res.data.trace_id);
           const cards = buildTaxiCards(res.data);
+          // A load-more poll may carry no fleet block; don't let it wipe the one we have.
+          if (res.data?.data?.fleet) {
+            setFleet(res.data.data.fleet);
+            setFleetSource(res.data.data.source || null);
+          }
           if (cards.length) {
             setNoResults(false);
             setOptionsJSX(cards);
+            setQuotes(res.data?.data?.quotes || []);
           } else if (!hasNext) {
             setNoResults(true);
           }
@@ -277,6 +323,36 @@ const Booking = (props) => {
     setShowTransferEditDrawer(true);
   };
 
+  const { submit: submitFleet, loading: submittingFleet } = useFleetBookingSubmit({
+    itineraryId: props?.itinerary_id || reduxItineraryId,
+    selectedBooking: props.selectedBooking,
+    token: props.token,
+    airportBooking: props?.airportBooking,
+    cityId: props?.cityId,
+    origin_itinerary_city_id: props?.origin_itinerary_city_id,
+    destination_itinerary_city_id: props?.destination_itinerary_city_id,
+    edge: props?.edge,
+    booking_id: props?.booking_id,
+    getPaymentHandler: props.getPaymentHandler,
+    setHideBookingModal: props.setHideBookingModal,
+  });
+
+  const handleAddSelectedTaxis = async (vehicles) => {
+    if (!vehicles?.length) return;
+    if (props.handleTaxiSelect) {
+      // Selection mode: hand the choice back instead of booking, mirroring what a
+      // single-taxi card does with {trace_id, result_index}.
+      props.handleTaxiSelect({ trace_id: traceId, vehicles });
+      return;
+    }
+    await submitFleet({ source: fleetSource, trace_id: traceId, vehicles });
+  };
+
+  const currencySymbol =
+    (fleet?.currency && currencySymbols?.[fleet.currency]) ||
+    (currency?.currency && currencySymbols?.[currency.currency]) ||
+    "₹";
+
   if (props.token)
     return (
       <Drawer
@@ -290,6 +366,12 @@ const Booking = (props) => {
         mobileWidth={"100%"}
         width="50%"
       >
+        {/* Column, not two stacked blocks: the results pane used to be a flat 100vh sitting
+            BELOW the header, so its last header-height worth of pixels fell outside the
+            panel. Anything pinned to the bottom of that pane - the selected-taxis bar -
+            would have been pinned off-screen. */}
+        <TaxiSelectionProvider value={taxiSelection}>
+        <div className="flex flex-col h-full">
         <SectionOne
           selectedBooking={props.selectedBooking}
           setHideTaxiModal={props.setHideTaxiModal}
@@ -300,7 +382,7 @@ const Booking = (props) => {
           setIsMercury={setIsMercury}
         ></SectionOne>
 
-        <div className="overflow-y-scroll h-screen px-6 max-ph:px-4">
+        <div className="flex-1 min-h-0 overflow-y-scroll px-6 max-ph:px-4">
           <div style={{ clear: "right" }}>
             <ContentContainer style={{ position: "relative" }}>
               {updateBookingState ? (
@@ -316,7 +398,19 @@ const Booking = (props) => {
 
               {!noResults && !error && !updateBookingState ? (
                 <OptionsContainer id="options">
-                  <div style={{ clear: "right" }}>
+                  {/* One taxi per card, at that taxi's own price, whatever the party size.
+                      When no single vehicle seats the group the cards grow quantity
+                      steppers and SelectedTaxisBar below commits them as one booking. */}
+                  {taxiSelection.enabled ? (
+                    <div className="rounded-2xl border-sm border-solid border-[#f2e6a8] bg-[#fffdf0] px-3 py-2 mt-md ttw-type-small text-[#6b5600]">
+                      No single taxi seats {fleet?.pax} — add as many as you need
+                      and we will book them together.
+                    </div>
+                  ) : null}
+                  <div
+                    style={{ clear: "right" }}
+                    className={addingKey ? "pointer-events-none" : ""}
+                  >
                     {optionsJSX.length
                       ? optionsJSX
                       : moreOptionsJSX.length
@@ -393,7 +487,18 @@ const Booking = (props) => {
               ) : null}
             </ContentContainer>
           </div>
+
+          {/* Pinned to the bottom of the scroll area: the quote list is long, and having
+              picked a taxi near the end of it you should not have to scroll further to
+              find the total. */}
+          <SelectedTaxisBar
+            symbol={currencySymbol}
+            submitting={submittingFleet}
+            onSubmit={handleAddSelectedTaxis}
+          />
         </div>
+        </div>
+        </TaxiSelectionProvider>
 
         {props?.mercury ? <TransferEditDrawer
           itinerary_id={props?.itinerary_id}

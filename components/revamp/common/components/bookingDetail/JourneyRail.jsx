@@ -92,9 +92,11 @@ function Block({ node, accent }) {
       ) : null}
       {node.icon ? <span className="flex items-center shrink-0">{node.icon}</span> : null}
 
+      {/* A carrier name is a supplier string ("Toyota Mini Van or similar"), so
+          it wraps inside the block rather than stretching it. */}
       {node.name ? (
         <span
-          className="ttw-type-small font-600 leading-none"
+          className="ttw-type-small font-600 leading-tight min-w-0 break-words"
           style={{ color: tone ? tone.fg : "#0b1220" }}
         >
           {node.name}
@@ -103,7 +105,7 @@ function Block({ node, accent }) {
 
       {node.meta ? (
         <span
-          className="font-mono text-[11px] leading-none tabular-nums"
+          className="font-mono text-[11px] leading-tight tabular-nums min-w-0 break-words"
           style={{ color: tone ? tone.fg : "#445069" }}
         >
           {node.meta}
@@ -127,7 +129,9 @@ function Heading({ node, isMid, stamp }) {
           ) : null}
           {node.title ? (
             <h4
-              className={`mb-0 text-[#0b1220] font-600 tracking-[-0.015em] ${
+              // Titles are supplier strings — terminal names, hotel addresses —
+              // and an unbroken one would otherwise widen the whole drawer.
+              className={`mb-0 text-[#0b1220] font-600 tracking-[-0.015em] break-words ${
                 isMid ? "text-[14px]" : "text-[15px]"
               }`}
             >
@@ -158,7 +162,7 @@ function Heading({ node, isMid, stamp }) {
 
       {node.tag ? (
         <span
-          className="inline-block mt-[7px] font-mono text-[10.5px] rounded-[5px] px-2 py-0.5"
+          className="inline-block max-w-full break-words mt-[7px] font-mono text-[10.5px] rounded-[5px] px-2 py-0.5"
           style={
             node.tagTone === "warn"
               ? { background: "#fff3d1", color: "#8a6100" }

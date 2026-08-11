@@ -42,6 +42,8 @@ const Section = (props) => {
             cityId={props?.cityId}
             handleAirportTaxiSelect={props?.handleAirportTaxiSelect}
             bookingLoad={props?.bookingLoad}
+            disabled={props?.disabled}
+            onBusyChange={props?.onBusyChange}
              handleTaxiDeselect={props?.handleTaxiDeselect}
           ></Route>
         {/* </TaxiCard> */}

@@ -10,7 +10,12 @@ import React from "react";
 export default function DrawerShell({ band, footer, children }) {
   return (
     <div className="h-screen bg-white flex flex-col overflow-hidden">
-      <div className="flex-1 overflow-y-auto">
+      {/* `overflow-y-auto` alone computes overflow-x to `auto` as well, so any
+          single over-wide string turned the whole drawer into a sideways
+          scroller on a phone — the band scrolled out of frame with it. Sections
+          wrap their own supplier text; this is the backstop that keeps one
+          missed case from moving the entire drawer. */}
+      <div className="flex-1 overflow-y-auto overflow-x-hidden">
         {band}
         <div className="pt-1 pb-2">{children}</div>
       </div>
