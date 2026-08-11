@@ -49,6 +49,8 @@ const Booking = (props) => {
     ></ComboSection>
       :
       <SectionOne
+        disabled={props?.disabled}
+        onBusyChange={props?.onBusyChange}
         setHideBookingModal={props.setHideBookingModal}
          handleTaxiDeselect={props?.handleTaxiDeselect}
         _updateTaxiBookingHandler={props._updateTaxiBookingHandler}

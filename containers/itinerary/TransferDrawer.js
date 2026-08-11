@@ -8,6 +8,7 @@ import DetailError from "../../components/revamp/common/components/bookingDetail
 import DetailSection from "../../components/revamp/common/components/bookingDetail/DetailSection";
 import DrawerShell from "../../components/revamp/common/components/bookingDetail/DrawerShell";
 import FactChips from "../../components/revamp/common/components/bookingDetail/FactChips";
+import FleetVehicles from "../../components/revamp/common/components/bookingDetail/FleetVehicles";
 import JourneyRail from "../../components/revamp/common/components/bookingDetail/JourneyRail";
 import VehiclePhoto from "../../components/revamp/common/components/bookingDetail/VehiclePhoto";
 import { getModeAccent } from "../../components/revamp/common/components/bookingDetail/modeAccent";
@@ -26,10 +27,10 @@ import { useRouter } from "next/router";
 import { useHandleClose } from "../../hooks/useHandleClose";
 import { getDateDifferenceInDays } from "../../helper/DateUtils";
 import { getTransferBookingPath } from "../../helper/transferBookingPath";
-import { currencySymbols } from "../../data/currencySymbols";
 import {
+  getFleetLabel,
+  getFleetManifest,
   getVehicleCount,
-  resolvePerVehicleTotal,
 } from "../../components/modals/taxis/MultiVehicleInfo";
 import { useAnalytics } from "../../hooks/useAnalytics";
 
@@ -89,7 +90,6 @@ const TransferDrawer = ({
   const { drawer, bookingId, oItineraryCity, dItineraryCity, drawerType } =
     router?.query;
 
-  const currency = useSelector((state) => state.currency);
   const transferBookingsMap = useSelector(
     (state) => state?.TransferBookings?.transferBookings,
   );
@@ -401,25 +401,14 @@ const TransferDrawer = ({
         : origin || destination || null;
     })();
 
-    // A convoy booking covers several cabs and prices them as one figure, so the
-    // leg has to say how many and what one of them costs. Ported from the
-    // accordion this rail replaced, where it sat under the leg's total.
+    // A convoy booking covers several cabs, so the leg has to say how many.
+    // What they cost is the cart's to state, not this drawer's.
     const vehicleCount = getVehicleCount(child);
-    const perVehicleTotal =
-      vehicleCount > 1 ? resolvePerVehicleTotal(child, child?.price, vehicleCount) : null;
-    const symbol = currency?.currency
-      ? currencySymbols?.[currency?.currency]
-      : "₹";
     const convoyTag =
       vehicleCount > 1
-        ? [
-            `${vehicleCount} taxis`,
-            perVehicleTotal
-              ? `${symbol}${Math.ceil(perVehicleTotal).toLocaleString("en-IN")} per taxi`
-              : null,
-          ]
-            .filter(Boolean)
-            .join(" · ")
+        ? // Naming the cabs beats counting them once they differ: "2 taxis"
+          // is true but says nothing about what the group actually gets.
+          getFleetLabel(child) || `${vehicleCount} taxis`
         : null;
 
     return {
@@ -497,15 +486,25 @@ const TransferDrawer = ({
     (!!cityTaxiChange ||
       (data?.transfer_type != "sightseeing" && drawer != "SightSeeing"));
 
-  // A multi-city taxi combo is the one shape where the legs share a vehicle, so
-  // the drawer leads with the car and the legs are its inclusions.
+  // A multi-city taxi combo is the one shape where the legs share their vehicles,
+  // so the drawer leads with the car (or cars) and the legs are its inclusions.
   //
   // Gated on there actually being a vehicle rather than on `booking_type`: a
   // combo reports that as "taxi", "Taxi" or a comma-joined list of its legs'
   // types depending on how it was built, and the old equality check against
   // "taxi" silently dropped the vehicle card on most of them.
   const comboVehicle = data?.children?.map(legVehicle).find(Boolean) || null;
-  const isMulticityTaxi = data?.combo_type === "multicity" && !!comboVehicle;
+
+  // The real composition, when the package rides in more than one kind of car. `comboVehicle`
+  // is only the largest member on that shape, so it names one car and stays silent about the
+  // rest — which is exactly the claim "the car, throughout" would be making.
+  const comboFleet =
+    getFleetManifest(data) ||
+    (data?.children || []).map((child) => getFleetManifest(child)).find(Boolean) ||
+    null;
+
+  const isMulticityTaxi =
+    data?.combo_type === "multicity" && (!!comboVehicle || !!comboFleet);
   const comboAccent = getModeAccent(
     isMulticityTaxi ? "Taxi" : data?.booking_type,
   );
@@ -538,8 +537,21 @@ const TransferDrawer = ({
     .filter(Boolean)
     .join(" · ");
 
+  // "1 car" is only true of a single-vehicle booking. Read the real count off the parent, or
+  // off the first leg that carries one.
+  const comboVehicleCount = Math.max(
+    getVehicleCount(data),
+    ...(data?.children || []).map((child) => getVehicleCount(child)),
+    1,
+  );
+  const comboFleetLabel =
+    getFleetLabel(data) ||
+    (data?.children || []).map((child) => getFleetLabel(child)).find(Boolean);
   const comboSummary = isMulticityTaxi
-    ? `${comboLegs.length} services · 1 car`
+    ? `${comboLegs.length} services · ${
+        comboFleetLabel ||
+        `${comboVehicleCount} ${comboVehicleCount === 1 ? "car" : "cars"}`
+      }`
     : `${comboLegs.length} ${comboLegs.length === 1 ? "leg" : "legs"}`;
 
   // The legs, as rail nodes that open in place. `expandedIndexes` still drives
@@ -668,24 +680,60 @@ const TransferDrawer = ({
             />
           }
         >
-          {/* Every service in a multi-city taxi package rides in the same car,
-              so the vehicle is stated once, above the services it covers. */}
+          {/* Every service in a multi-city taxi package rides in the same
+              vehicles, so they are stated once, above the services they cover. */}
           {isMulticityTaxi && (
-            <DetailSection label="The car, throughout" className="pt-3">
-              <VehiclePhoto
-                image={comboVehicle?.image}
-                alt={comboVehicle?.type}
-                mode="Taxi"
-              />
-              <FactChips
-                facts={[
-                  { label: "Class", value: comboVehicle?.type },
-                  { label: "Model", value: comboVehicle?.model_name },
-                  { label: "Fuel", value: comboVehicle?.fuel_type },
-                  { label: "Seats", value: comboVehicle?.seating_capacity },
-                  { label: "Bags", value: comboVehicle?.bag_capacity },
-                ]}
-              />
+            <DetailSection
+              label={
+                comboFleet?.is_mixed ? "The cars, throughout" : "The car, throughout"
+              }
+              className="pt-3"
+            >
+              {comboFleet?.is_mixed ? (
+                <>
+                  <FleetVehicles vehicles={comboFleet.vehicles} />
+                  {/* The fleet label is already the band's summary line, so the
+                      chips carry the totals the cards above cannot state. */}
+                  <FactChips
+                    facts={[
+                      {
+                        label: "Taxis",
+                        value: comboVehicleCount > 1 ? comboVehicleCount : null,
+                      },
+                      { label: "Total seats", value: comboFleet.seats },
+                      { label: "Total bags", value: comboFleet.bags },
+                    ]}
+                  />
+                </>
+              ) : (
+                <>
+                  <VehiclePhoto
+                    image={comboVehicle?.image}
+                    alt={comboVehicle?.type}
+                    mode="Taxi"
+                  />
+                  <FactChips
+                    facts={[
+                      { label: "Class", value: comboVehicle?.type },
+                      { label: "Model", value: comboVehicle?.model_name },
+                      { label: "Fuel", value: comboVehicle?.fuel_type },
+                      {
+                        label:
+                          comboVehicleCount > 1 ? "Seats / taxi" : "Seats",
+                        value: comboVehicle?.seating_capacity,
+                      },
+                      {
+                        label: comboVehicleCount > 1 ? "Bags / taxi" : "Bags",
+                        value: comboVehicle?.bag_capacity,
+                      },
+                      {
+                        label: "Taxis",
+                        value: comboVehicleCount > 1 ? comboVehicleCount : null,
+                      },
+                    ]}
+                  />
+                </>
+              )}
             </DetailSection>
           )}
 

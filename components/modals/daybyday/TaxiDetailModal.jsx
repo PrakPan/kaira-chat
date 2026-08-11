@@ -5,6 +5,7 @@ import DetailError from "../../revamp/common/components/bookingDetail/DetailErro
 import DetailSection from "../../revamp/common/components/bookingDetail/DetailSection";
 import DrawerShell from "../../revamp/common/components/bookingDetail/DrawerShell";
 import FactChips from "../../revamp/common/components/bookingDetail/FactChips";
+import FleetVehicles from "../../revamp/common/components/bookingDetail/FleetVehicles";
 import JourneyRail from "../../revamp/common/components/bookingDetail/JourneyRail";
 import PolicyNote from "../../revamp/common/components/bookingDetail/PolicyNote";
 import VehiclePhoto from "../../revamp/common/components/bookingDetail/VehiclePhoto";
@@ -19,6 +20,7 @@ import {
 } from "../../revamp/common/components/bookingDetail/format";
 import ComboTaxi from "../taxis/ComboTaxi";
 import {
+  getFleetManifest,
   getVehicleCount,
   MultiVehicleNote,
   VehicleCountBadge,
@@ -97,6 +99,10 @@ const TaxiDetailModal = ({
   // Both shapes of the quote carry the same vehicle facts under different keys.
   const vehicle =
     transfer_details?.quote?.taxi_category || transfer_details?.quote?.vehicle;
+
+  // When the cabs differ, `vehicle` is only the largest of them — everything derived from it
+  // describes one car and misstates the rest.
+  const fleet = getFleetManifest(data);
 
   // A sightseeing package is sold by the day from a single pickup point, so it
   // has no drop address — its rail counts days rather than tracing a route.
@@ -243,47 +249,93 @@ const TaxiDetailModal = ({
         />
       </DetailSection>
 
-      {vehicle && (
+      {(vehicle || fleet) && (
         <DetailSection
           label="Vehicle"
+          // Count, not the fleet label: the note and the per-cab cards directly
+          // below both spell the composition out, and a 60-character label in a
+          // header opposite the word "Vehicle" is three cramped lines on a phone.
           right={<VehicleCountBadge count={vehicleCount} />}
         >
           {/* A convoy prices and describes one cab, so say so before the specs
               below are read as covering the whole group. */}
-          <MultiVehicleNote count={vehicleCount} className="mx-4 mb-4">
-            This booking includes {vehicleCount} taxis
-            {travellerCount > 0
-              ? ` for your ${travellerCount} traveller${travellerCount > 1 ? "s" : ""}`
-              : ""}
-            {vehicle?.seating_capacity
-              ? ` — one ${vehicle.seating_capacity}-seater cannot fit everyone`
-              : ""}
-            . The details below describe a single taxi.
+          <MultiVehicleNote
+            count={vehicleCount}
+            fleet={fleet}
+            className="mx-4 mb-4"
+          >
+            {fleet?.is_mixed ? (
+              <>
+                This booking includes {fleet.label}
+                {travellerCount > 0
+                  ? ` for your ${travellerCount} traveller${travellerCount > 1 ? "s" : ""}`
+                  : ""}
+                {fleet.seats ? ` — ${fleet.seats} seats in total` : ""}. Each
+                vehicle is listed below.
+              </>
+            ) : (
+              <>
+                This booking includes {vehicleCount} taxis
+                {travellerCount > 0
+                  ? ` for your ${travellerCount} traveller${travellerCount > 1 ? "s" : ""}`
+                  : ""}
+                {vehicle?.seating_capacity
+                  ? ` — one ${vehicle.seating_capacity}-seater cannot fit everyone`
+                  : ""}
+                . The details below describe a single taxi.
+              </>
+            )}
           </MultiVehicleNote>
 
-          <VehiclePhoto image={vehicle?.image} alt={vehicle?.type} mode="Taxi" />
+          {/* One hero photo of the largest cab would misrepresent a mixed fleet,
+              so every cab gets the same full write-up instead. */}
+          {fleet?.is_mixed ? (
+            <FleetVehicles vehicles={fleet.vehicles} />
+          ) : (
+            <VehiclePhoto
+              image={vehicle?.image}
+              alt={vehicle?.type}
+              mode="Taxi"
+            />
+          )}
+
           <FactChips
-            facts={[
-              { label: "Class", value: vehicle?.type },
-              { label: "Model", value: vehicle?.model_name },
-              { label: "Fuel", value: vehicle?.fuel_type },
-              {
-                label: vehicleCount > 1 ? "Seats / taxi" : "Seats",
-                value: vehicle?.seating_capacity,
-              },
-              {
-                label: vehicleCount > 1 ? "Bags / taxi" : "Bags",
-                value: vehicle?.bag_capacity,
-              },
-              { label: "Taxis", value: vehicleCount > 1 ? vehicleCount : null },
-              {
-                label: "Total seats",
-                value:
-                  vehicleCount > 1 && vehicle?.seating_capacity
-                    ? vehicle.seating_capacity * vehicleCount
-                    : null,
-              },
-            ]}
+            facts={
+              fleet?.is_mixed
+                ? // The fleet label is already the badge and the note above, and
+                  // the cards name each cab — what is left to add is the totals.
+                  [
+                    { label: "Taxis", value: vehicleCount },
+                    { label: "Total seats", value: fleet.seats },
+                    { label: "Total bags", value: fleet.bags },
+                  ]
+                : [
+                    { label: "Class", value: vehicle?.type },
+                    { label: "Model", value: vehicle?.model_name },
+                    { label: "Fuel", value: vehicle?.fuel_type },
+                    {
+                      label: vehicleCount > 1 ? "Seats / taxi" : "Seats",
+                      value: vehicle?.seating_capacity,
+                    },
+                    {
+                      label: vehicleCount > 1 ? "Bags / taxi" : "Bags",
+                      value: vehicle?.bag_capacity,
+                    },
+                    {
+                      label: "Taxis",
+                      value: vehicleCount > 1 ? vehicleCount : null,
+                    },
+                    {
+                      // Lead capacity x count, which only holds when the cabs
+                      // are identical. getFleetSeats covers the mixed case.
+                      label: "Total seats",
+                      value:
+                        vehicleCount > 1 && vehicle?.seating_capacity
+                          ? vehicle.seating_capacity * vehicleCount
+                          : null,
+                    },
+                  ]
+            }
           />
         </DetailSection>
       )}

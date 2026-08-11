@@ -15,7 +15,14 @@ import { resolveImageUrl } from "../../../../../helper/imageUrl";
  * reliably inside a drawer that mounts after the page has loaded. Same choice
  * the redesigned taxi search card makes.
  */
-export default function VehiclePhoto({ image, alt, mode = "Taxi" }) {
+export default function VehiclePhoto({
+  image,
+  alt,
+  mode = "Taxi",
+  // The drawer's own gutter, by default. A photo nested inside a card — one per
+  // cab of a mixed fleet — sits on that card's narrower gutter instead.
+  className = "mx-4 mb-4",
+}) {
   const [failed, setFailed] = useState(false);
 
   const accent = getModeAccent(mode);
@@ -25,7 +32,7 @@ export default function VehiclePhoto({ image, alt, mode = "Taxi" }) {
 
   return (
     <div
-      className="flex items-center justify-center mx-4 mb-4 rounded-xl h-[128px]"
+      className={`flex items-center justify-center rounded-xl h-[128px] ${className}`}
       style={{
         background: `radial-gradient(120% 110% at 50% 22%, ${accent.soft} 0%, ${accent.wash} 52%, #ffffff 100%)`,
       }}

@@ -1449,7 +1449,11 @@ useEffect(() => {
         is_drop: transferData.transferType === "drop",
         source: transferData?.source,
         trace_id: transferData?.traceId,
-        result_index: transferData?.selectedQuote?.result_index,
+        // A mixed fleet names its cabs in `vehicles` instead of picking one
+        // `result_index`; the backend branches on `vehicles` first.
+        ...(transferData?.vehicles?.length
+          ? { vehicles: transferData.vehicles }
+          : { result_index: transferData?.selectedQuote?.result_index }),
         booking_id: transferData?.booking_id,
       };
 

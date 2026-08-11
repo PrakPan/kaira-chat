@@ -888,7 +888,11 @@ const ActivityDetails = (props) => {
             </>
           )}
 
-          {props.data?.cost ? (
+          {/* Cost belongs to the browse view, where it is what the traveller is
+              deciding on. Once the activity is booked this drawer describes what
+              was booked and the cart is the one place that states what it costs —
+              a second figure here has no way to agree with the cart's total. */}
+          {props.showBookingDetail ? null : props.data?.cost ? (
             <div className="flex flex-row">
               Cost: <span className="font-semibold px-1">₹</span>
               {props.data.cost}

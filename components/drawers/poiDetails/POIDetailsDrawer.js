@@ -227,6 +227,9 @@ const POIDetailsDrawer = (props) => {
                 <ActivityDetails
                   version={props?.version}
                   itineraryDrawer={props.itineraryDrawer}
+                  // Viewing an activity that is already booked, rather than one
+                  // being picked — the detail view states no price.
+                  showBookingDetail={props?.showBookingDetail}
                   data={data}
                   handleCloseDrawer={props.handleCloseDrawer}
                   dayIndex={props?.dayIndex}

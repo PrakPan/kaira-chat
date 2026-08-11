@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import ReactDOM from "react-dom";
 import { FaX } from "react-icons/fa6";
 import { connect, useDispatch, useSelector } from "react-redux";
@@ -52,7 +52,15 @@ import {
   PerTaxiPrice,
   resolvePerVehicleTotal,
   VehicleCountBadge,
+  getFleetManifest,
 } from "../../modals/taxis/MultiVehicleInfo";
+import QuantityStepper from "../../modals/taxis/fleet/QuantityStepper";
+import {
+  describeSelection,
+  setQuantity as setQuantityIn,
+  summarizeSelection,
+  toVehiclesPayload,
+} from "../../modals/taxis/fleet/fleetSelection";
 import {
   MdDirectionsBoat,
   MdDirectionsBus,
@@ -391,6 +399,9 @@ const TransferEditDrawer = (props) => {
   const [loadingMultiCity, setLoadingMultiCity] = useState(false);
   const [updatingTransfer, setUpdatingTransfer] = useState(false);
   const [selectedCab, setSelectedCab] = useState(null);
+  // A mixed fleet chosen instead of a single cab: {suggestionIndex, vehicles, label}.
+  // Mutually exclusive with selectedCab — the drawer commits one or the other.
+  const [fleetChoice, setFleetChoice] = useState(null);
   const [multicityRoundtripTraceId, setMulticityRoundtripTraceId] =
     useState(null);
   const [selectedTripType, setSelectedTripType] = useState(null);
@@ -1136,7 +1147,15 @@ const TransferEditDrawer = (props) => {
     });
   };
 
-  const handleMultiCitySelect = (trace_id, result_index, quote_index) => {
+  /**
+   * @param {string}  trace_id
+   * @param {number}  result_index  index of the SUGGESTION (roundtrip vs multicity), always required
+   * @param {string}  quote_index   the chosen cab's result_index — single-vehicle path
+   * @param {{result_index: string, quantity: number}[]} [vehicles]
+   *        a mixed fleet, which REPLACES quote_index. The backend composes the selection
+   *        into one quote, so everything past this call is the ordinary code path.
+   */
+  const handleMultiCitySelect = (trace_id, result_index, quote_index, vehicles) => {
     const access_token = localStorage.getItem("access_token");
     if (!props.token) {
       setShowLoginModal(true);
@@ -1148,7 +1167,7 @@ const TransferEditDrawer = (props) => {
     const data = {
       trace_id,
       result_index,
-      quote_index,
+      ...(vehicles?.length ? { vehicles } : { quote_index }),
     };
 
     axiosMulticityRoundTripInstance
@@ -1230,7 +1249,11 @@ const TransferEditDrawer = (props) => {
         is_drop: transferData.transferType === "drop",
         source: transferData?.source,
         trace_id: transferData?.traceId,
-        result_index: transferData?.selectedQuote?.result_index,
+        // A mixed fleet names its cabs in `vehicles` instead of picking one
+        // `result_index`; the backend branches on `vehicles` first.
+        ...(transferData?.vehicles?.length
+          ? { vehicles: transferData.vehicles }
+          : { result_index: transferData?.selectedQuote?.result_index }),
         booking_id: transferData?.booking_id,
       };
 
@@ -2083,6 +2106,7 @@ const TransferEditDrawer = (props) => {
                         </div>
                       )}
                       <MultiCityTripSuggestion
+                        onFleetChoice={setFleetChoice}
                         handleRoundTripSelect={handleMultiCitySelect}
                         multiCitySuggestions={sugg}
                         selectedCab={selectedCab}
@@ -2227,6 +2251,7 @@ const TransferEditDrawer = (props) => {
                     .map((sugg, idx) => (
                       <div key={idx} className="w-full">
                         <MultiCityTripSuggestion
+                          onFleetChoice={setFleetChoice}
                           handleRoundTripSelect={handleMultiCitySelect}
                           multiCitySuggestions={sugg}
                           selectedCab={selectedCab}
@@ -2246,6 +2271,7 @@ const TransferEditDrawer = (props) => {
                   !Array.isArray(roundTripSuggestions) && (
                     <div className="w-full">
                       <RoundTripSuggestion
+                        onFleetChoice={setFleetChoice}
                         handleRoundTripSelect={handleMultiCitySelect}
                         roundTripSuggestions={roundTripSuggestions}
                         selectedCab={selectedCab}
@@ -2393,13 +2419,24 @@ const TransferEditDrawer = (props) => {
               multicityTab === "sightseeing" &&
               !!existingSightseeingBooking &&
               !sightseeingChanging;
-            const isDisabled = !selectedCab || updatingTransfer;
+            const isDisabled = (!selectedCab && !fleetChoice) || updatingTransfer;
 
             return (
               <div className="w-full bg-[#fafaf5] border-t border-[#ececec] z-10 md:relative md:border-0 md:bg-transparent">
                 <div className="flex justify-end items-end px-1 py-3 md:p-0">
                   <button
                     onClick={() => {
+                      // A fleet replaces the single-cab choice; the top-level
+                      // result_index still names the SUGGESTION either way.
+                      if (fleetChoice?.vehicles?.length) {
+                        handleMultiCitySelect(
+                          multicityRoundtripTraceId,
+                          fleetChoice.suggestionIndex,
+                          undefined,
+                          fleetChoice.vehicles,
+                        );
+                        return;
+                      }
                       const suggestionIndex =
                         selectedCab?.suggestion_result_index ??
                         (selectedTripType === "roundtrip" ? 1 : 0);
@@ -5527,7 +5564,90 @@ const RadioButton = ({ name, label, transferType, handleTransferType }) => {
   );
 };
 
+/**
+ * Picking several cabs for one multicity/roundtrip suggestion.
+ *
+ * Same rule as the taxi search drawer: below a party that overflows every vehicle, the rows
+ * stay radio buttons and one cab is chosen. Above it they become quantity steppers, and the
+ * drawer's own action bar at the bottom commits whatever is picked as ONE booking.
+ *
+ * The two suggestion blocks quote in different shapes - roundtrip rows carry
+ * `transfer_details`, multicity rows carry `taxi_category`/`price` - so the pool is
+ * normalised here rather than teaching the selection maths about both.
+ */
+const useSuggestionFleet = ({ pricing, data, suggestionIndex, onFleetChoice, setSelectedCab }) => {
+  const [quantities, setQuantities] = useState({});
+
+  const enabled =
+    Boolean(data?.fleet?.multi_vehicle_needed) &&
+    (!data?.source || data.source === "Self");
+
+  const candidates = useMemo(
+    () =>
+      (pricing || []).map((quote) => ({
+        result_index: quote?.result_index,
+        taxi_category: quote?.taxi_category || quote?.transfer_details || {},
+        price:
+          quote?.price?.total != null
+            ? quote.price
+            : { total: quote?.transfer_details?.total },
+      })),
+    [pricing],
+  );
+
+  const summary = useMemo(
+    () => summarizeSelection(quantities, candidates),
+    [quantities, candidates],
+  );
+
+  const setQuantity = (resultIndex, next) => {
+    const updated = setQuantityIn(quantities, resultIndex, next);
+    setQuantities(updated);
+
+    const vehicles = toVehiclesPayload(updated, candidates);
+    // A fleet and the single-cab radio are mutually exclusive; the action bar commits
+    // whichever is set, so one must clear the other.
+    setSelectedCab?.(null);
+    onFleetChoice?.(
+      vehicles.length
+        ? {
+            suggestionIndex,
+            vehicles,
+            label: describeSelection(summarizeSelection(updated, candidates)),
+          }
+        : null,
+    );
+  };
+
+  return { enabled, quantities, summary, setQuantity, pax: Number(data?.fleet?.pax) || 0 };
+};
+
+/** The running selection, stated where the rows are - the commit is the drawer's own bar. */
+const SuggestionFleetSummary = ({ summary, pax, symbol }) => {
+  if (!summary?.vehicles) return null;
+  const shortfall = pax > 0 ? Math.max(pax - summary.seats, 0) : 0;
+  return (
+    <div className="sticky bottom-0 z-10 mt-2 rounded-xl border-sm border-solid border-[#f2e6a8] bg-[#fffdf0] px-3 py-2 flex items-center justify-between gap-3 flex-wrap">
+      <div className="min-w-0">
+        <div className="ttw-type-body font-600 text-[#0b1220] truncate">
+          {describeSelection(summary)}
+        </div>
+        <div className="ttw-type-small text-[#6b5600]">
+          {summary.vehicles} {summary.vehicles === 1 ? "taxi" : "taxis"} ·{" "}
+          {summary.seats} seats
+          {shortfall ? ` · ${shortfall} of ${pax} travellers without a seat` : ""}
+        </div>
+      </div>
+      <span className="ttw-type-body font-mono text-[#0b1220] whitespace-nowrap">
+        {symbol}
+        {getIndianPrice(Math.ceil(summary.total))}
+      </span>
+    </div>
+  );
+};
+
 const RoundTripSuggestion = ({
+  onFleetChoice,
   roundTripSuggestions,
   handleRoundTripSelect,
   selectedCab,
@@ -5559,10 +5679,21 @@ const RoundTripSuggestion = ({
     setPricing(pricing);
   }, [roundTripSuggestions]);
 
+  const suggestionFleet = useSuggestionFleet({
+    pricing,
+    data: roundTripSuggestions?.data,
+    suggestionIndex: 1,
+    onFleetChoice,
+    setSelectedCab,
+  });
+
   const handleSelectCab = (e) => {
     setSelectError(false);
     // Clear multicity selection and set trip type to roundtrip
     setSelectedTripType("roundtrip");
+    // A single cab and a fleet are mutually exclusive; the action bar commits whichever
+    // is set, so leaving a stale fleet here would book something the radio doesn't show.
+    onFleetChoice?.(null);
     setSelectedCab({
       ...pricing.find((p) => p.result_index == e.target.id),
       tripType: "roundtrip",
@@ -5660,6 +5791,7 @@ const RoundTripSuggestion = ({
                   // >1 only when no single cab seats the group; the price shown
                   // is then the convoy total, not what one cab costs.
                   const vehicleCount = getVehicleCount(price);
+                  const fleet = getFleetManifest(price);
                   const perVehicleTotal = resolvePerVehicleTotal(
                     price,
                     price?.transfer_details?.total,
@@ -5671,6 +5803,24 @@ const RoundTripSuggestion = ({
                     className="w-full flex flex-row items-start gap-2"
                   >
                     <div>
+                      {suggestionFleet.enabled ? (
+                        <QuantityStepper
+                          size="sm"
+                          value={Number(
+                            suggestionFleet.quantities[
+                              String(price?.result_index)
+                            ] || 0,
+                          )}
+                          label={
+                            price?.transfer_details?.model_name ||
+                            price?.transfer_details?.type ||
+                            "taxi"
+                          }
+                          onChange={(next) =>
+                            suggestionFleet.setQuantity(price?.result_index, next)
+                          }
+                        />
+                      ) : (
                       <div
                         id={price?.result_index}
                         onClick={handleSelectCab}
@@ -5689,6 +5839,7 @@ const RoundTripSuggestion = ({
                             ></div>
                           )}
                       </div>
+                      )}
                     </div>
 
                     <div className="flex flex-col items-start gap-1">
@@ -5732,7 +5883,8 @@ const RoundTripSuggestion = ({
                           {price?.transfer_details?.fuel_type
                             ? ` Fuel Type ${price.transfer_details?.fuel_type}`
                             : null}
-                          {vehicleCount > 1 ? " (per taxi)" : null}
+                          {/* Only honest when the cabs are identical. */}
+              {vehicleCount > 1 && !fleet?.is_mixed ? " (per taxi)" : null}
                         </div>
                       )}
                       <MultiVehicleNote
@@ -5748,6 +5900,14 @@ const RoundTripSuggestion = ({
               : "No Cabs Available"}
           </div>
         </div>
+
+        <SuggestionFleetSummary
+          summary={suggestionFleet.summary}
+          pax={suggestionFleet.pax}
+          symbol={
+            currency?.currency ? currencySymbols?.[currency?.currency] : "\u20b9"
+          }
+        />
 
         {/* <div
           className="flex mt-2 flex-row gap-2 items-end justify-end cursor-pointer place-self-end"
@@ -5766,6 +5926,7 @@ const RoundTripSuggestion = ({
 };
 
 const MultiCityTripSuggestion = ({
+  onFleetChoice,
   multiCitySuggestions,
   handleRoundTripSelect,
   selectedCab,
@@ -5795,10 +5956,20 @@ const MultiCityTripSuggestion = ({
     setPricing(pricing);
   }, [multiCitySuggestions]);
 
+  const suggestionFleet = useSuggestionFleet({
+    pricing,
+    data: multiCitySuggestions?.data,
+    suggestionIndex: 0,
+    onFleetChoice,
+    setSelectedCab,
+  });
+
   const handleSelectCab = (cab) => {
     setSelectError(false);
     // Clear roundtrip selection and set trip type to multicity
     setSelectedTripType("multicity");
+    // Mutually exclusive with a fleet choice — see the roundtrip handler.
+    onFleetChoice?.(null);
     setSelectedCab({
       ...cab,
       tripType: "multicity",
@@ -5898,6 +6069,9 @@ const MultiCityTripSuggestion = ({
               // >1 only when no single cab seats the group; price.total is then
               // the convoy total, with the one-cab figure in per_vehicle_total.
               const vehicleCount = getVehicleCount(price);
+              // Search quotes never carry a manifest; kept so the guard below
+              // reads the same in every one of these blocks.
+              const fleet = getFleetManifest(price);
               const perVehicleTotal = resolvePerVehicleTotal(
                 price,
                 price?.price?.total,
@@ -5909,6 +6083,24 @@ const MultiCityTripSuggestion = ({
                 className="w-full flex flex-row items-start gap-2"
               >
                 <div>
+                  {suggestionFleet.enabled ? (
+                    <QuantityStepper
+                      size="sm"
+                      value={Number(
+                        suggestionFleet.quantities[
+                          String(price?.result_index)
+                        ] || 0,
+                      )}
+                      label={
+                        price?.taxi_category?.model_name ||
+                        price?.taxi_category?.type ||
+                        "taxi"
+                      }
+                      onChange={(next) =>
+                        suggestionFleet.setQuantity(price?.result_index, next)
+                      }
+                    />
+                  ) : (
                   <div
                     id={price?.result_index}
                     onClick={() => handleSelectCab(price)}
@@ -5927,6 +6119,7 @@ const MultiCityTripSuggestion = ({
                         ></div>
                       )}
                   </div>
+                  )}
                 </div>
 
                 <div className="flex flex-col items-start gap-1">
@@ -5968,7 +6161,8 @@ const MultiCityTripSuggestion = ({
                       {price?.taxi_category?.fuel_type
                         ? ` Fuel Type: ${price.taxi_category?.fuel_type}`
                         : null}
-                      {vehicleCount > 1 ? " (per taxi)" : null}
+                      {/* Only honest when the cabs are identical. */}
+              {vehicleCount > 1 && !fleet?.is_mixed ? " (per taxi)" : null}
                     </div>
                   )}
                   <MultiVehicleNote
@@ -5981,6 +6175,14 @@ const MultiCityTripSuggestion = ({
             })}
           </div>
         </div>
+
+        <SuggestionFleetSummary
+          summary={suggestionFleet.summary}
+          pax={suggestionFleet.pax}
+          symbol={
+            currency?.currency ? currencySymbols?.[currency?.currency] : "\u20b9"
+          }
+        />
 
         {/* <div
           className="flex mt-2 flex-row gap-2 items-end justify-end cursor-pointer place-self-end"
@@ -6011,6 +6213,7 @@ const BookedSightseeingCard = ({ booking, onClick }) => {
     (booking?.number_of_infants || 0);
   // >1 when the group did not fit in one cab, so the booking covers a convoy.
   const vehicleCount = getVehicleCount(booking);
+  const fleet = getFleetManifest(booking);
   const perVehicleTotal = resolvePerVehicleTotal(booking, total, vehicleCount);
 
   const dayCount = (() => {
@@ -6067,7 +6270,7 @@ const BookedSightseeingCard = ({ booking, onClick }) => {
             <div className="flex flex-row items-start justify-between gap-2">
               <div className="ttw-type-body font-medium">{displayName}</div>
               <div className="flex flex-wrap items-center justify-end gap-1">
-                <VehicleCountBadge count={vehicleCount} />
+                <VehicleCountBadge count={vehicleCount} label={fleet?.label} />
                 <span className="shrink-0 ttw-type-small font-600 px-2 py-[2px] rounded-full bg-[#e7f5ee] text-[#1f8a5a] whitespace-nowrap">
                   Added to Itinerary
                 </span>
@@ -6088,7 +6291,9 @@ const BookedSightseeingCard = ({ booking, onClick }) => {
 
         <div className="flex flex-col gap-1">
           <div className="text-[#445069] ttw-type-body font-normal">
-            {cab?.model_name || cab?.type || "Cab"}
+            {/* `cab` is the LARGEST vehicle only — naming it beside the fleet's grand
+                total would attribute every rupee to one car. */}
+            {fleet?.label || cab?.model_name || cab?.type || "Cab"}
             {total != null && Number.isFinite(Number(total)) ? (
               <>
                 :{" "}
@@ -6116,7 +6321,8 @@ const BookedSightseeingCard = ({ booking, onClick }) => {
                 ? `${cab.bigBagCapaCity} Big Bag Capacity | `
                 : null}
               {cab?.fuel_type ? `Fuel Type: ${cab.fuel_type}` : null}
-              {vehicleCount > 1 ? " (per taxi)" : null}
+              {/* Only honest when the cabs are identical. */}
+              {vehicleCount > 1 && !fleet?.is_mixed ? " (per taxi)" : null}
             </div>
           )}
           {pax > 0 && (
@@ -6151,6 +6357,9 @@ const BookedAirportCard = ({ booking, isPickup, onViewDetail, onChange }) => {
     (booking?.number_of_infants || 0);
   // >1 when the group did not fit in one cab, so the booking covers a convoy.
   const vehicleCount = getVehicleCount(booking);
+  // Non-null only when the cabs differ; drives the label and suppresses the
+  // per-taxi framing, which describes the largest cab only.
+  const fleet = getFleetManifest(booking);
   const perVehicleTotal = resolvePerVehicleTotal(booking, total, vehicleCount);
 
   const fromName =
@@ -6254,7 +6463,8 @@ const BookedAirportCard = ({ booking, isPickup, onViewDetail, onChange }) => {
                   ? `${cab.bigBagCapaCity} Big Bag Capacity | `
                   : null}
                 {cab?.fuel_type ? `Fuel Type: ${cab.fuel_type}` : null}
-                {vehicleCount > 1 ? " (per taxi)" : null}
+                {/* Only honest when the cabs are identical. */}
+              {vehicleCount > 1 && !fleet?.is_mixed ? " (per taxi)" : null}
               </div>
             )}
             {pax > 0 && (
@@ -6273,7 +6483,7 @@ const BookedAirportCard = ({ booking, isPickup, onViewDetail, onChange }) => {
           </div>
 
           <div className="flex flex-col items-end gap-2 shrink-0">
-            <VehicleCountBadge count={vehicleCount} />
+            <VehicleCountBadge count={vehicleCount} label={fleet?.label} />
             <span className="ttw-type-small font-600 px-2 py-[2px] rounded-full bg-[#e7f5ee] text-[#1f8a5a] whitespace-nowrap">
               Added to Itinerary
             </span>
