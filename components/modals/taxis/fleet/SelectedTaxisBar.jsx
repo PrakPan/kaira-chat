@@ -44,10 +44,10 @@ const SelectedTaxisBar = ({ symbol = "₹", submitting = false, onSubmit, ctaLab
               return (
                 <div
                   key={line.key}
-                  className="flex items-center justify-between gap-3 py-2"
+                  className="flex items-center justify-between gap-3 py-2 max-ph:flex-col max-ph:items-stretch max-ph:gap-1"
                 >
                   <div className="min-w-0 flex-1">
-                    <div className="text-sm font-500 text-[#0b1220] truncate">
+                    <div className="text-sm font-500 text-[#0b1220] break-words">
                       {category.model_name || category.type || "Taxi"}
                     </div>
                     <div className="ttw-type-small text-[#445069] flex flex-wrap items-center gap-x-2">
@@ -69,25 +69,30 @@ const SelectedTaxisBar = ({ symbol = "₹", submitting = false, onSubmit, ctaLab
                     </div>
                   </div>
 
-                  <span className="ttw-type-small font-mono text-[#0b1220] whitespace-nowrap">
-                    {symbol}
-                    {getIndianPrice(Math.ceil(line.lineTotal))}
-                  </span>
+                  <div className="flex items-center gap-3 shrink-0 max-ph:w-full max-ph:justify-between">
+                    <span className="ttw-type-small font-mono text-[#0b1220] whitespace-nowrap">
+                      {symbol}
+                      {getIndianPrice(Math.ceil(line.lineTotal))}
+                    </span>
 
-                  <QuantityStepper
-                    size="sm"
-                    value={line.quantity}
-                    disabled={submitting || busy}
-                    label={category.model_name || category.type || "taxi"}
-                    onChange={(next) => setQuantity(line.key, next)}
-                  />
+                    <QuantityStepper
+                      size="sm"
+                      value={line.quantity}
+                      disabled={submitting || busy}
+                      label={category.model_name || category.type || "taxi"}
+                      onChange={(next) => setQuantity(line.key, next)}
+                    />
+                  </div>
                 </div>
               );
             })}
           </div>
         ) : null}
 
-        <div className="flex items-center justify-between gap-3 flex-wrap px-3 py-2.5">
+        {/* Phone gets rows, not columns. The CTA carries a full sentence and the class it
+            uses is nowrap + fit-content, so squeezed into a single row beside the summary
+            and the total it simply ran off the right edge of the card. */}
+        <div className="flex items-center justify-between gap-3 flex-wrap px-3 py-2.5 max-ph:flex-col max-ph:items-stretch max-ph:gap-2">
           <div className="min-w-0 flex-1">
             <button
               type="button"
@@ -97,7 +102,9 @@ const SelectedTaxisBar = ({ symbol = "₹", submitting = false, onSubmit, ctaLab
               {summary.vehicles} {summary.vehicles === 1 ? "taxi" : "taxis"} added
               {expanded ? " · Hide" : " · View"}
             </button>
-            <div className="ttw-type-small text-[#445069] truncate">
+            {/* Wraps rather than truncates: the seat shortfall is the one line that tells
+                you the party does not fit, and an ellipsis is where it always got cut. */}
+            <div className="ttw-type-small text-[#445069]">
               {summary.seats} {summary.seats === 1 ? "seat" : "seats"}
               {summary.bags ? ` · ${summary.bags} bags` : ""}
               {seatShortfall
@@ -106,27 +113,31 @@ const SelectedTaxisBar = ({ symbol = "₹", submitting = false, onSubmit, ctaLab
             </div>
           </div>
 
-          <div className="flex items-center gap-3 shrink-0">
-            <button
-              type="button"
-              disabled={submitting || busy}
-              onClick={clear}
-              className="ttw-type-small text-[#445069] underline disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              Clear
-            </button>
-            <span className="text-lg font-mono text-[#0b1220] whitespace-nowrap">
-              {symbol}
-              {getIndianPrice(Math.ceil(summary.total))}
-            </span>
+          <div className="flex items-center gap-3 shrink-0 max-ph:w-full max-ph:flex-wrap max-ph:justify-between">
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                disabled={submitting || busy}
+                onClick={clear}
+                className="ttw-type-small text-[#445069] underline disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                Clear
+              </button>
+              <span className="text-lg font-mono text-[#0b1220] whitespace-nowrap">
+                {symbol}
+                {getIndianPrice(Math.ceil(summary.total))}
+              </span>
+            </div>
             {submitting ? (
-              <PulseLoader size={8} speedMultiplier={0.6} color="#111" />
+              <span className="flex items-center justify-center max-ph:w-full max-ph:py-2">
+                <PulseLoader size={8} speedMultiplier={0.6} color="#111" />
+              </span>
             ) : (
               <button
                 type="button"
                 disabled={disabled}
                 onClick={() => onSubmit?.(vehicles, summary)}
-                className="ttw-btn-fill-yellow whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+                className="ttw-btn-fill-yellow !whitespace-normal text-center max-ph:!w-full disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {ctaLabel ||
                   `Add ${summary.vehicles} ${
