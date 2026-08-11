@@ -73,6 +73,9 @@ export interface ThemeSelectedItemLike {
 export interface ThemeIntakeFormProps {
   form: ThemeForm;
   items?: ThemeSelectedItemLike[];
+  // Free text the reader typed into the theme page's docked ask-bar before
+  // hitting "Build trip". Shown back to them and sent with the submission.
+  note?: string;
   onSubmit: (submission: ThemeFormSubmission, composedText: string) => void;
 }
 
@@ -86,6 +89,7 @@ const mono: React.CSSProperties = {
 const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
   form,
   items = [],
+  note,
   onSubmit,
 }) => {
   // First date window + first pax preset are pre-selected so the reader can
@@ -113,6 +117,8 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
   const accentOn = pagePalette?.accentOn ?? NEUTRAL.accentOn;
 
   const win = form.dateWindows[winIdx] ?? form.dateWindows[0];
+
+  const trimmedNote = (note ?? "").trim();
 
   // De-dupe saved items (a place can be reachable from more than one section).
   const uniqueItems: ThemeSelectedItemLike[] = React.useMemo(() => {
@@ -163,6 +169,7 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
       pax,
       items: dedupedItems.length ? dedupedItems : undefined,
       prompts: selectedPrompts.length ? selectedPrompts : undefined,
+      note: trimmedNote || undefined,
     };
 
     // Include the window's blurb so the message reads with the chosen
@@ -179,10 +186,14 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
     const promptLine = selectedPrompts.length
       ? `\n• Also: ${selectedPrompts.join("; ")}`
       : "";
+    // The reader's own words go on their own line, ahead of the canned chips,
+    // so they read as the brief rather than one more toggle.
+    const noteLine = trimmedNote ? `\n• In my words: ${trimmedNote}` : "";
     const composed =
       `Here are my ${form.display} trip details:\n` +
       `• When: ${win.label} (${dates[0]} to ${dates[1]})${routeLine}\n` +
       `• Travellers: ${pax}` +
+      noteLine +
       promptLine +
       savedLine;
 
@@ -192,6 +203,28 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
 
   return (
     <div style={{ width: "100%" }}>
+      {/* What they typed into the theme page's ask-bar, echoed so it's clear it
+          survived the jump and will be sent with the form. */}
+      {trimmedNote && (
+        <div
+          style={{
+            marginBottom: 10,
+            marginLeft: 10,
+            background: accentSoft,
+            borderLeft: `2px solid ${accent}`,
+            borderRadius: "4px 12px 12px 4px",
+            padding: "9px 12px",
+          }}
+        >
+          <div style={{ ...mono, color: accent, fontSize: 8.5, marginBottom: 3 }}>
+            You asked
+          </div>
+          <div style={{ fontSize: 12.5, lineHeight: 1.45, color: INK }}>
+            {trimmedNote}
+          </div>
+        </div>
+      )}
+
       {/* What the reader saved on the theme page, shown back as accent tags so
           the handoff is visible rather than implied. Same treatment as the
           page's own saved-list chips. */}

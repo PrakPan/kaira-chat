@@ -95,19 +95,21 @@ export const setPendingSeedMeta = (meta) => {
   if (!ss) return;
   const items = Array.isArray(meta?.items) ? meta.items.filter(Boolean) : [];
   const slug = meta?.slug || "";
-  if (!slug && items.length === 0) {
+  // Free text typed into a theme page's docked ask-bar before "Build trip".
+  const note = typeof meta?.note === "string" ? meta.note.trim() : "";
+  if (!slug && items.length === 0 && !note) {
     ss.removeItem(SEED_META_KEY);
     return;
   }
   try {
-    ss.setItem(SEED_META_KEY, JSON.stringify({ items, slug }));
+    ss.setItem(SEED_META_KEY, JSON.stringify({ items, slug, note }));
   } catch {
     /* noop */
   }
 };
 
 /** Read-once counterpart to setPendingSeedMeta. Returns `null` when nothing
- *  was stashed, else `{ items, slug }`. */
+ *  was stashed, else `{ items, slug, note }`. */
 export const takePendingSeedMeta = () => {
   const ss = safeSession();
   if (!ss) return null;
@@ -119,6 +121,7 @@ export const takePendingSeedMeta = () => {
     return {
       items: Array.isArray(parsed?.items) ? parsed.items : [],
       slug: typeof parsed?.slug === "string" ? parsed.slug : "",
+      note: typeof parsed?.note === "string" ? parsed.note : "",
     };
   } catch {
     return null;

@@ -60,9 +60,11 @@ const laplandForm: ThemeForm = {
       fareNote: "Cheapest of the season; longer daylight.",
     },
   ],
+  // Panel hero on /chat — a husky sled team on a snowy forest trail.
+  // Self-hosted so it can't drift or 404; see public/theme-heroes/README.md
+  // for the source and licence, and for the size to re-encode to.
   hero: {
-    image:
-      "https://d31aoa0ehgvjdi.cloudfront.net/media/website/lapland-2026/Rovaniemi.png",
+    image: "/theme-heroes/lapland.jpg",
     title: "Lapland",
     subtext: "Santa's own town, husky trails, and the aurora over a glass roof.",
     tag: "Arctic · Nov – Mar",

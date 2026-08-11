@@ -239,6 +239,8 @@ loginMandatory?: boolean;
  *  first /chatkit request only; omitted when empty. */
 themeItems?: ThemeSelectedItem[];
 themeSlug?: string;
+// Free text typed into the theme page's ask-bar before "Build trip".
+themeNote?: string;
 /** Themed theme-page mini-form config (date windows + pax presets). When set
  *  together with `startThemedForm`, a themed 2-section form card is injected
  *  into the chat on mount instead of the 4-step intake. Nothing fires to
@@ -470,14 +472,17 @@ const ChatPanelStyles = () => (
       0%,100% { opacity: 1; transform: scale(1); }
       50% { opacity: 0.5; transform: scale(0.7); }
     }
+    /* The composer floats rather than sitting in a ruled tray: no top border,
+       and the separation from the thread comes entirely from the pill's own
+       drop shadow (see MessageInputBox .kp-row). Padding is a touch roomier
+       than the ruled version so the shadow has somewhere to fall. */
     .kp-composer-wrap {
-  padding: 12px 20px;
-  border-top: 1px solid #ececec;
+  padding: 14px 20px 16px;
   background: #fff;
 }
 @media (max-width: 768px) {
   .kp-composer-wrap {
-    padding: 8px 12px 10px;
+    padding: 10px 12px 12px;
   }
 }
     /* ── Itinerary progress card (chat) ─────────────────────────────────── */
@@ -749,6 +754,7 @@ onLoginSuccess,
 loginMandatory,
 themeItems,
 themeSlug,
+themeNote,
 themeForm,
 startThemedForm = false,
 onViewItinerary,
@@ -4276,6 +4282,7 @@ const handleShowLogin = useCallback(() => {
                     <ThemeIntakeForm
                       form={themeFormRef.current}
                       items={themeItems}
+                      note={themeNote}
                       onSubmit={handleThemedFormSubmit}
                     />
                   </div>

@@ -51,8 +51,11 @@ const greeceIslandsForm: ThemeForm = {
       fareNote: "Sep shoulder ideal; Crete adds a domestic flight.",
     },
   ],
+  // Panel hero on /chat — blue domes above the Santorini caldera.
+  // Self-hosted so it can't drift or 404; see public/theme-heroes/README.md
+  // for the source and licence, and for the size to re-encode to.
   hero: {
-    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Santorini.jpg",
+    image: "/theme-heroes/greece-islands-done-right.jpg",
     title: "Greek islands",
     subtext: "Athens, a caldera sunset, and the Cyclades by ferry.",
     tag: "Greece · May – Oct",

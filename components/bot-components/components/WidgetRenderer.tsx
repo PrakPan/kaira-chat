@@ -4099,13 +4099,49 @@ function RouteActionButtons({
 
   // Primary CTA fill. A themed thread paints it in the theme's accent with
   // on-accent (white) text; everything else keeps the brand yellow on ink.
-  const confirmSkin: React.CSSProperties = accent
-    ? {
-        border: `1px solid ${accent.bg}`,
-        background: accent.bg,
-        color: accent.fg,
-      }
-    : { border: "1px solid #07213a", background: "#f7e700", color: "#000" };
+  // `relative`/`hidden` are for the sheen below, which is clipped to the pill.
+  const confirmSkin: React.CSSProperties = {
+    position: "relative",
+    overflow: "hidden",
+    ...(accent
+      ? {
+          border: `1px solid ${accent.bg}`,
+          background: accent.bg,
+          color: accent.fg,
+        }
+      : { border: "1px solid #07213a", background: "#f7e700", color: "#000" }),
+  };
+
+  // The same slow highlight sweep the theme pages' "Start planning" CTA carries
+  // (.ctl-sheen / ctlBarShimmer in CinematicThemeLanding), so confirming a
+  // route reads as the same kind of live primary action. The gradient is
+  // white-on-accent, which also works over the default yellow.
+  const confirmSheen = (
+    <>
+      <style
+        dangerouslySetInnerHTML={{
+          __html:
+            "@keyframes rtSheen{0%{transform:translateX(-100%) skewX(-18deg)}55%,100%{transform:translateX(100%) skewX(-18deg)}}" +
+            "@media (prefers-reduced-motion:reduce){.rt-sheen{animation:none!important;opacity:0}}",
+        }}
+      />
+      <span
+        aria-hidden
+        className="rt-sheen"
+        style={{
+          position: "absolute",
+          inset: 0,
+          pointerEvents: "none",
+          backgroundImage:
+            "linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent)",
+          backgroundSize: "64px 100%",
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "left center",
+          animation: "rtSheen 3s cubic-bezier(.4,0,.2,1) infinite",
+        }}
+      />
+    </>
+  );
 
   // `currentColor` so the arrow follows the label through both skins.
   const confirmArrow = (
@@ -4179,6 +4215,7 @@ function RouteActionButtons({
             onClick={handleConfirmClick}
             style={{ ...base, flex: "3 1 0", ...confirmSkin }}
           >
+            {confirmSheen}
             {token ? "Confirm Route" : "Confirm Route & Sign In"}
             {confirmArrow}
           </button>
@@ -4193,7 +4230,8 @@ function RouteActionButtons({
             onClick={handleConfirmClick}
             style={{ ...base, ...confirmSkin, width: "100%", fontSize: 13 }}
           >
-            Confirm route — price it
+            {confirmSheen}
+            Confirm route –– price it
             {confirmArrow}
           </button>
 

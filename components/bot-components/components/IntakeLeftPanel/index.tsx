@@ -55,13 +55,23 @@ const CDN_HOST = /d31aoa0ehgvjdi\.cloudfront\.net/;
 // sized/blurred variants via `optimizedMediaUrl` (see the CDN branch below).
 const CDN_SUPPORTS_RESIZE = true;
 
-// Match the request to what's actually painted: the panel is ~640px wide, so a
-// DPR-capped render is sharp without shipping a 2000px file. Falls back to a
-// safe default during SSR.
+// Match the request to what's actually painted. The panel is only ~640px wide
+// but it is FULL HEIGHT, and the hero is `object-cover` — so a landscape source
+// is scaled to match the panel's height and cropped horizontally, not scaled to
+// its width. Sizing off 640px alone under-samples the image roughly 2× on a
+// laptop, which is why the hero looked soft however good the source was.
+//
+// Budget from the height instead: a 3:2 landscape covering a viewport-tall box
+// needs ~1.5 × that height in source width. Capped so we never ship an absurd
+// file for one hero, and DPR-capped at 2.
+const HERO_LANDSCAPE_RATIO = 1.5;
+const HERO_MAX_W = 1800;
 function heroWidth(): number {
-  if (typeof window === "undefined") return 1280;
+  if (typeof window === "undefined") return 1440;
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  return Math.min(1600, Math.round(640 * dpr));
+  const h = window.innerHeight || 900;
+  const needed = Math.max(640, h * HERO_LANDSCAPE_RATIO);
+  return Math.min(HERO_MAX_W, Math.round(needed * dpr));
 }
 
 // Set/replace query params on a URL.

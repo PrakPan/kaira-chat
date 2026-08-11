@@ -63,9 +63,11 @@ const northernLightsForm: ThemeForm = {
       fareNote: "One-stop DEL/BOM→ARN; March cheapest.",
     },
   ],
+  // Panel hero on /chat — green aurora over a frosted Finnish treeline.
+  // Self-hosted so it can't drift or 404; see public/theme-heroes/README.md
+  // for the source and licence, and for the size to re-encode to.
   hero: {
-    image:
-      "https://d31aoa0ehgvjdi.cloudfront.net/media/website/northern-lights-2026/Abisko Under The Lights.jpg",
+    image: "/theme-heroes/northern-lights.jpg",
     title: "Northern lights",
     subtext: "Glass roofs, husky trails, and a sky that comes alive.",
     tag: "Arctic · Sep – Mar",

@@ -1926,62 +1926,77 @@ const FeatureSection: React.FC<{
 
 // ── Ask-Kaira strip ("Docked composer") ─────────────────────────────────────
 // A single, shared design used on every theme page (matches the theme mockup):
-// a paper-tinted, blurred bar pinned to the bottom of the viewport with a white
-// pill inside — the placeholder question on the left, a dark "Ask Kaira" button
-// on the right. Identical on mobile and desktop; the pill just caps its width
-// and centers on wider screens. Hidden until the reader scrolls past half the
-// first viewport (same reveal as the site-wide <Banner/>). The button seeds the
-// bar's prompt into a fresh /chat session via `onSelectPrompt`.
+// a bar pinned to the bottom of the viewport carrying the saved-items bag, a
+// free-text field, the build CTA and Kaira's avatar. Desktop floats it as one
+// pill; mobile stacks it. Present from first paint — the reader shouldn't have
+// to scroll to discover how to start.
+//
+// The field is a real composer: whatever is typed either goes straight to
+// /chat as the opening message (Enter / the send arrow) or rides along into the
+// themed mini-form as a note (the build CTA), so it is never dropped.
 const AskKairaStrip: React.FC<{
   bar: CinematicAskBar;
   onSelectPrompt: (p: string) => void;
   // "Build this itinerary" action. When provided, the build button (and the
   // selection popup) call this instead of seeding a prompt — the page routes to
   // /chat and opens the themed mini-form there. Falls back to seeding
-  // bar.buildPrompt when omitted.
-  onBuild?: () => void;
+  // bar.buildPrompt when omitted. `note` is whatever the reader typed in the
+  // bar; it travels with the handoff and lands in the form's submission.
+  onBuild?: (note?: string) => void;
   // Kaira's avatar for the round chat button at the end of the action row.
   avatar?: string;
 }> = ({ bar, onSelectPrompt, onBuild, avatar }) => {
   const router = useRouter();
   const selection = useThemeSelection();
   const palette = usePalette();
-  const [show, setShow] = React.useState(false);
   const [expanded, setExpanded] = React.useState(true);
-  React.useEffect(() => {
-    const onScroll = () =>
-      setShow(window.pageYOffset > window.innerHeight / 2);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  const [draft, setDraft] = React.useState("");
 
   const items = selection?.items ?? [];
   const count = items.length;
   const hasSelection = count > 0;
 
-  // Keep the bar mounted once the reader has saved something, even above the
-  // scroll threshold — the tray must stay reachable to review/build.
-  if (!show && !hasSelection) return null;
+  const trimmedDraft = draft.trim();
+  const hasDraft = trimmedDraft.length > 0;
 
+  // The bar has exactly one submit: "Start planning" / "Build trip · N".
+  // Anything typed into the field rides along with it — as the themed form's
+  // note when the page supplies onBuild, otherwise as the opening chat message.
+  // Either way the page's onSelectPrompt / openThemeForm attaches the saved
+  // items and the theme slug, so the request carries the full context.
   const doBuild = () => {
-    if (onBuild) onBuild();
+    if (onBuild) onBuild(hasDraft ? trimmedDraft : undefined);
+    else if (hasDraft) onSelectPrompt(trimmedDraft);
     else if (bar.buildPrompt) onSelectPrompt(bar.buildPrompt);
     else router.push("/chat");
   };
 
+  // Kaira's avatar — the "just ask" shortcut. With something typed it opens the
+  // chat on those words instead of the theme's canned opener, so the field is
+  // never a dead end here either.
   const openChat = () => {
+    if (hasDraft) {
+      onSelectPrompt(trimmedDraft);
+      return;
+    }
     if (bar.prompt) onSelectPrompt(bar.prompt);
     else router.push("/chat");
   };
 
-  // Nothing saved yet → the bar is a plain invitation to start a chat, with a
-  // mono line above explaining how the "+ Add" pills feed it. Once something is
-  // saved it becomes "Build trip · N".
+  // Enter submits the bar, same as pressing the CTA — there is no separate
+  // send affordance to reach for.
+  const onDraftKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      doBuild();
+    }
+  };
+
+  // Nothing saved yet → the bar is a plain invitation to start planning. Once
+  // something is saved it becomes "Build trip · N".
   const buildLabel = hasSelection
     ? `${bar.buildCta ?? "Build trip"} · ${count}`
     : "Start planning";
-  const emptyHint = "Nothing added yet · tap + on anything above";
 
   // Human label for a saved item's kind (singular). Used for the row tag and
   // the per-type summary chips (e.g. "poi" → "place", "do" → "activity").
@@ -2228,38 +2243,47 @@ const AskKairaStrip: React.FC<{
             )}
           </button>
 
-          {hasSelection ? (
-            <>
-              <div className="flex gap-[6px] overflow-hidden">
-                {kindCounts.map(([k, n]) => (
-                  <span
-                    key={k}
-                    className="ctl-mono"
-                    style={{
-                      background: palette.accentSoft,
-                      color: palette.accent,
-                      padding: "6px 11px",
-                      borderRadius: 999,
-                      fontSize: 9,
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    {n} {pluralize(k, n)}
-                  </span>
-                ))}
-              </div>
-              <span className="flex-1" />
-            </>
-          ) : (
-            <button
-              type="button"
-              onClick={openChat}
-              className="flex-1 min-w-0 truncate text-left border-none cursor-pointer bg-transparent p-0"
-              style={{ fontSize: 13.5, color: FAINT }}
+          {/* Count chips yield to the field rather than pushing it out: with
+              three or four saved kinds they would otherwise eat the whole
+              720px pill and squeeze the input past its min-width, spilling the
+              CTA and avatar outside the rounded edge. */}
+          {hasSelection && (
+            <div
+              className="min-w-0 flex gap-[6px] overflow-hidden"
+              style={{ flex: "0 1 auto" }}
             >
-              {bar.placeholder}
-            </button>
+              {kindCounts.map(([k, n]) => (
+                <span
+                  key={k}
+                  className="ctl-mono"
+                  style={{
+                    background: palette.accentSoft,
+                    color: palette.accent,
+                    padding: "6px 11px",
+                    borderRadius: 999,
+                    fontSize: 9,
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {n} {pluralize(k, n)}
+                </span>
+              ))}
+            </div>
           )}
+
+          {/* Free-text field — Enter submits the bar, same as the CTA. */}
+          <input
+            type="text"
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={onDraftKeyDown}
+            placeholder={bar.placeholder}
+            aria-label={bar.placeholder}
+            className="flex-1 border-none outline-none bg-transparent"
+            // Floor rather than min-w-0: the field keeps a usable width and the
+            // chips beside it give way instead.
+            style={{ fontSize: 13.5, color: INK, minWidth: 90 }}
+          />
 
           <button
             type="button"
@@ -2314,16 +2338,16 @@ const AskKairaStrip: React.FC<{
         {listOpen && <div style={{ marginBottom: 10 }}>{savedTray}</div>}
 
         {/* White summary bar — an accent bag with a count badge, one chip per
-            saved type, and a chevron that expands/collapses the list. Shown
-            empty too, where it carries the "tap +" hint instead. */}
+            saved type, and a chevron that expands/collapses the list. Only
+            once something is saved: with an empty list it said nothing the
+            field below doesn't say better, and the phone bar can't afford a
+            row that carries no action. */}
+        {hasSelection && (
         <button
             type="button"
-            onClick={hasSelection ? () => setExpanded((v) => !v) : undefined}
-            disabled={!hasSelection}
-            aria-expanded={hasSelection ? expanded : undefined}
-            className={`w-full flex items-center gap-[10px] ${
-              hasSelection ? "cursor-pointer" : "cursor-default"
-            }`}
+            onClick={() => setExpanded((v) => !v)}
+            aria-expanded={expanded}
+            className="w-full flex items-center gap-[10px] cursor-pointer"
             style={{
               ...cardChrome(),
               borderRadius: 999,
@@ -2350,83 +2374,97 @@ const AskKairaStrip: React.FC<{
                 <path d="M3 6h18" />
                 <path d="M16 10a4 4 0 0 1-8 0" />
               </svg>
-              {hasSelection && (
-                <span
-                  className="ctl-mono absolute flex items-center justify-center rounded-full"
-                  style={{
-                    top: -3,
-                    right: -4,
-                    minWidth: 16,
-                    height: 16,
-                    padding: "0 4px",
-                    background: INK,
-                    color: "#ffffff",
-                    fontSize: 9,
-                    fontWeight: 600,
-                    border: "1.5px solid #fff",
-                    letterSpacing: 0,
-                  }}
-                >
-                  {count}
-                </span>
-              )}
-            </span>
-            {/* One chip per selected type, e.g. "3 experiences · 2 places". */}
-            {hasSelection ? (
-              <div
-                className="ctl-scroll flex-1 min-w-0 flex items-center gap-[5px]"
-                style={{ overflowX: "auto" }}
-              >
-                {kindCounts.map(([k, n]) => (
-                  <span
-                    key={k}
-                    className="ctl-mono shrink-0"
-                    style={{
-                      background: palette.accentSoft,
-                      borderRadius: 6,
-                      padding: "4px 8px",
-                      fontSize: 8.5,
-                      color: palette.accent,
-                      fontWeight: 600,
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    {n} {pluralize(k, n)}
-                  </span>
-                ))}
-              </div>
-            ) : (
               <span
-                className="ctl-mono flex-1 min-w-0 text-left truncate"
-                style={{ fontSize: 9 }}
-              >
-                {emptyHint}
-              </span>
-            )}
-            {hasSelection && (
-              <span
-                className="shrink-0 flex items-center"
+                className="ctl-mono absolute flex items-center justify-center rounded-full"
                 style={{
-                  color: FAINT,
-                  transform: expanded ? "rotate(180deg)" : "none",
-                  transition: "transform .2s ease",
+                  top: -3,
+                  right: -4,
+                  minWidth: 16,
+                  height: 16,
+                  padding: "0 4px",
+                  background: INK,
+                  color: "#ffffff",
+                  fontSize: 9,
+                  fontWeight: 600,
+                  border: "1.5px solid #fff",
+                  letterSpacing: 0,
                 }}
               >
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke={FAINT}
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M6 9l6 6 6-6" />
-                </svg>
+                {count}
               </span>
-            )}
+            </span>
+            {/* One chip per selected type, e.g. "3 experiences · 2 places". */}
+            <div
+              className="ctl-scroll flex-1 min-w-0 flex items-center gap-[5px]"
+              style={{ overflowX: "auto" }}
+            >
+              {kindCounts.map(([k, n]) => (
+                <span
+                  key={k}
+                  className="ctl-mono shrink-0"
+                  style={{
+                    background: palette.accentSoft,
+                    borderRadius: 6,
+                    padding: "4px 8px",
+                    fontSize: 8.5,
+                    color: palette.accent,
+                    fontWeight: 600,
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {n} {pluralize(k, n)}
+                </span>
+              ))}
+            </div>
+            <span
+              className="shrink-0 flex items-center"
+              style={{
+                color: FAINT,
+                transform: expanded ? "rotate(180deg)" : "none",
+                transition: "transform .2s ease",
+              }}
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke={FAINT}
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </span>
           </button>
+        )}
+
+        {/* Free-text field — the phone's own composer row. Whatever is typed
+            goes out with the CTA below (Enter does the same); there is no
+            separate send button. */}
+        <div
+          className="flex items-center"
+          style={{
+            ...cardChrome(),
+            borderRadius: 999,
+            padding: "4px 16px",
+            marginBottom: 10,
+            boxShadow: "0 8px 20px -10px rgba(11,18,32,0.15)",
+          }}
+        >
+          <input
+            type="text"
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={onDraftKeyDown}
+            placeholder={bar.placeholder}
+            aria-label={bar.placeholder}
+            className="flex-1 min-w-0 border-none outline-none bg-transparent"
+            // 16px keeps iOS from zooming the page on focus.
+            style={{ fontSize: 16, color: INK, padding: "9px 0" }}
+          />
+        </div>
 
         {/* Action row — the accent-filled Build button (with a slow sheen so it
             stays alive without animating colour) + Kaira's avatar into chat. */}
@@ -2501,7 +2539,9 @@ export interface CinematicThemeLandingProps {
   selection?: ThemeSelectionValue;
   // "Build this itinerary" action (from the selection popup). When provided,
   // routes to /chat and opens the themed mini-form rather than auto-seeding.
-  onBuild?: () => void;
+  // `note` is whatever the reader typed into the ask-bar, forwarded so the
+  // form's submission carries it.
+  onBuild?: (note?: string) => void;
 }
 
 const CinematicThemeLanding: React.FC<CinematicThemeLandingProps> = ({
@@ -2551,8 +2591,15 @@ const CinematicThemeLanding: React.FC<CinematicThemeLandingProps> = ({
   <PaletteContext.Provider value={palette}>
   <ThemeSelectionProvider value={selection ?? null}>
   <div
+    // The phone bar gains a third row (the saved-items summary) once something
+    // is saved, so the gutter under the page has to grow with it or the last
+    // section sits behind the bar. Desktop is one fixed-height pill either way.
     className={`ctl-root ${
-      config.askBar ? "pb-[104px] md:pb-[108px]" : "pb-[32px] md:pb-0"
+      config.askBar
+        ? selection?.count
+          ? "pb-[164px] md:pb-[108px]"
+          : "pb-[104px] md:pb-[108px]"
+        : "pb-[32px] md:pb-0"
     }`}
     style={{ background: palette.page }}
   >

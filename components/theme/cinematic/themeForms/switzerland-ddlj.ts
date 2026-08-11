@@ -50,9 +50,11 @@ const switzerlandDdljForm: ThemeForm = {
       fareNote: "Autumn shoulder; good fares.",
     },
   ],
+  // Panel hero on /chat — the green Lauterbrunnen valley under the Bernese Alps.
+  // Self-hosted so it can't drift or 404; see public/theme-heroes/README.md
+  // for the source and licence, and for the size to re-encode to.
   hero: {
-    image:
-      "https://d31aoa0ehgvjdi.cloudfront.net/media/website/filmy-getaways-2026/DDLJ.png",
+    image: "/theme-heroes/switzerland-ddlj.jpg",
     title: "Switzerland, cinematic",
     subtext: "Slow trains, misty valleys, and café mornings — the DDLJ way.",
     tag: "Switzerland",

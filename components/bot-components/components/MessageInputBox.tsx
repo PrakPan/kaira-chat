@@ -492,6 +492,34 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
         .kp-send:hover { transform: translateX(2px); }
         .kp-send:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
         .kp-send svg { width: 11px; height: 11px; }
+
+        /* Sheen — the same slow highlight sweep the theme pages' "Start
+           planning" CTA carries (.ctl-sheen / ctlBarShimmer in
+           CinematicThemeLanding), so an armed Send reads as the same kind of
+           live primary action. Runs only while the button is enabled; the
+           outlined "nothing to send yet" state stays flat. */
+        .kp-send { position: relative; overflow: hidden; }
+        .kp-sheen {
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          opacity: 0;
+          background-image: linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent);
+          background-size: 64px 100%;
+          background-repeat: no-repeat;
+          background-position: left center;
+        }
+        .kp-send:not(:disabled) .kp-sheen {
+          opacity: 1;
+          animation: kpSheen 3s cubic-bezier(.4,0,.2,1) infinite;
+        }
+        @keyframes kpSheen {
+          0% { transform: translateX(-100%) skewX(-18deg); }
+          55%, 100% { transform: translateX(100%) skewX(-18deg); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .kp-send:not(:disabled) .kp-sheen { animation: none; opacity: 0; }
+        }
         .kp-stop {
           margin-left: auto;
           height: 30px;
@@ -518,114 +546,122 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
         }
         .kp-send-plane { display: none; }
 
-        /* The phone pill wrapper is inert on desktop — .kp-field and .kp-foot
-           stay direct children of the bordered card, exactly as before. */
+        /* Defaults for the welcome-screen hero input, which keeps the two-row
+           bordered card: the pill wrapper is inert and the "+" is hidden, so
+           .kp-field and .kp-foot stay direct children of the card. */
         .kp-row { display: contents; }
         .kp-plus-wrap { display: none; }
 
-        /* ── Phone composer ────────────────────────────────────────────────
+        /* ── Chat composer ─────────────────────────────────────────────────
            One rounded pill holding, left to right: a "+" button, the field,
-           and a "Send" pill (Kaira mock). The outer .kp-chat-input keeps NO
-           border, radius or padding of its own — .kp-composer-wrap
-           (ChatKitPanel) already draws the bar's top rule and insets it, so
-           duplicating either here stacks a second line above the composer.
-           The chrome moves onto .kp-row instead.
+           and a "Send" pill (Kaira mock). Same shape at every width — phone
+           and desktop are identical.
+
+           The outer .kp-chat-input keeps NO border, radius or padding of its
+           own; the chrome moves onto .kp-row, which floats as a lifted pill
+           over the thread. .kp-composer-wrap (ChatKitPanel) supplies the
+           surrounding inset.
 
            Scoped to .kp-composer-wrap on purpose. This component is also the
            welcome screen's hero input (.cws-input-wrap), which has no bar
            around it — there the bordered card IS the composer, so it keeps the
-           desktop treatment at every width.
+           two-row treatment.
 
            Attachments (drag-and-drop, or the "+" menu) keep a full-width row
            above the pill when present. */
-        @media (max-width: 768px) {
-          .kp-composer-wrap .kp-chat-input {
-            display: flex;
-            flex-direction: column;
-            gap: 7px;
-            border: 0 !important;
-            border-radius: 0 !important;
-            padding: 0 !important;
-            background: transparent !important;
-            box-shadow: none !important;
-          }
-          .kp-composer-wrap .kp-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border: 1px solid #dcdfe5;
-            border-radius: 999px;
-            background: #fff;
-            padding: 7px 8px 7px 7px;
-            transition: border-color 0.15s;
-          }
-          .kp-composer-wrap .kp-chat-input:focus-within .kp-row { border-color: #0b1220; }
-          .kp-composer-wrap .kp-field { flex: 1; min-width: 0; }
-          .kp-composer-wrap .kp-foot {
-            flex: 0 0 auto;
-            border-top: 0;
-            margin-top: 0;
-            padding-top: 0;
-            gap: 0;
-          }
-          /* The inline attach/mic move into the "+" menu. The mic comes back
-             on its own while recording — it is the only way to stop. */
-          .kp-composer-wrap .kp-attach { display: none !important; }
-          .kp-composer-wrap .kp-mic { display: none !important; }
-          .kp-composer-wrap .kp-mic.is-dictating { display: inline-flex !important; }
-
-          .kp-composer-wrap .kp-plus-wrap {
-            display: block;
-            position: relative;
-            flex: 0 0 auto;
-          }
-          .kp-composer-wrap .kp-plus {
-            width: 30px;
-            height: 30px;
-            display: grid;
-            place-items: center;
-            padding: 0;
-            border: 1px solid #dcdfe5;
-            border-radius: 50%;
-            background: #fff;
-            color: #0b1220;
-            cursor: pointer;
-            transition: background 0.15s, border-color 0.15s;
-          }
-          .kp-composer-wrap .kp-plus[aria-expanded="true"] {
-            background: #0b1220;
-            border-color: #0b1220;
-            color: #fff;
-          }
-          .kp-composer-wrap .kp-plus svg { width: 15px; height: 15px; }
-
-          .kp-composer-wrap .kp-send,
-          .kp-composer-wrap .kp-stop {
-            height: auto;
-            padding: 7px 14px;
-            border-radius: 999px;
-            font-size: 11.5px;
-            font-weight: 700;
-            gap: 0;
-          }
-          /* Nothing typed yet → the mock's outlined pill, inactive. The moment
-             there is something to send it fills in black with white text. */
-          .kp-composer-wrap .kp-send {
-            background: #fff;
-            color: #0b1220;
-            border: 1.5px solid #0b1220;
-          }
-          .kp-composer-wrap .kp-send:disabled { opacity: 1; }
-          .kp-composer-wrap .kp-send:not(:disabled) {
-            background: #0b1220;
-            color: #fff;
-          }
-          .kp-composer-wrap .kp-send:hover { transform: none; }
-          .kp-composer-wrap .kp-stop { border: 1.5px solid #1c1917; }
-          .kp-composer-wrap .kp-send-arrow,
-          .kp-composer-wrap .kp-send-plane { display: none; }
-          .kp-composer-wrap .kp-stop svg { width: 12px; height: 12px; margin-right: 5px; }
+        .kp-composer-wrap .kp-chat-input {
+          display: flex;
+          flex-direction: column;
+          gap: 7px;
+          border: 0 !important;
+          border-radius: 0 !important;
+          padding: 0 !important;
+          background: transparent !important;
+          box-shadow: none !important;
         }
+        .kp-composer-wrap .kp-row {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          border: 1px solid #dcdfe5;
+          border-radius: 999px;
+          background: #fff;
+          padding: 7px 8px 7px 7px;
+          /* Lifts the pill off the thread — with the bar's top rule gone this
+             shadow is what separates composer from conversation. */
+          box-shadow: 0 10px 28px -14px rgba(11,18,32,0.28);
+          transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .kp-composer-wrap .kp-chat-input:focus-within .kp-row {
+          border-color: #0b1220;
+          box-shadow: 0 12px 32px -14px rgba(11,18,32,0.34);
+        }
+        .kp-composer-wrap .kp-field { flex: 1; min-width: 0; }
+        .kp-composer-wrap .kp-foot {
+          flex: 0 0 auto;
+          border-top: 0;
+          margin-top: 0;
+          padding-top: 0;
+          gap: 0;
+        }
+        /* The inline attach/mic move into the "+" menu. The mic comes back
+           on its own while recording — it is the only way to stop. */
+        .kp-composer-wrap .kp-attach { display: none !important; }
+        .kp-composer-wrap .kp-mic { display: none !important; }
+        .kp-composer-wrap .kp-mic.is-dictating { display: inline-flex !important; }
+
+        .kp-composer-wrap .kp-plus-wrap {
+          display: block;
+          position: relative;
+          flex: 0 0 auto;
+        }
+        .kp-composer-wrap .kp-plus {
+          width: 30px;
+          height: 30px;
+          display: grid;
+          place-items: center;
+          padding: 0;
+          border: 1px solid #dcdfe5;
+          border-radius: 50%;
+          background: #fff;
+          color: #0b1220;
+          cursor: pointer;
+          transition: background 0.15s, border-color 0.15s;
+        }
+        .kp-composer-wrap .kp-plus:hover { background: #fafaf5; }
+        .kp-composer-wrap .kp-plus[aria-expanded="true"] {
+          background: #0b1220;
+          border-color: #0b1220;
+          color: #fff;
+        }
+        .kp-composer-wrap .kp-plus svg { width: 15px; height: 15px; }
+
+        .kp-composer-wrap .kp-send,
+        .kp-composer-wrap .kp-stop {
+          height: auto;
+          padding: 7px 14px;
+          border-radius: 999px;
+          font-size: 11.5px;
+          font-weight: 700;
+          gap: 0;
+        }
+        /* Nothing typed yet → the mock's outlined pill, inactive. The moment
+           there is something to send it fills in black with white text. */
+        .kp-composer-wrap .kp-send {
+          background: #fff;
+          color: #0b1220;
+          border: 1.5px solid #0b1220;
+        }
+        .kp-composer-wrap .kp-send:disabled { opacity: 1; }
+        .kp-composer-wrap .kp-send:not(:disabled) {
+          background: #0b1220;
+          color: #fff;
+        }
+        .kp-composer-wrap .kp-send:hover { transform: none; }
+        .kp-composer-wrap .kp-stop { border: 1.5px solid #1c1917; }
+        .kp-composer-wrap .kp-send-arrow,
+        .kp-composer-wrap .kp-send-plane { display: none; }
+        .kp-composer-wrap .kp-stop svg { width: 12px; height: 12px; margin-right: 5px; }
 
         /* "+" menu — a small card floated above the button. */
         .kp-plus-menu {
@@ -714,12 +750,13 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
         </div>
       )}
 
-      {/* On a phone this is the pill; on desktop it's `display: contents` so
-          the field and the action row stay direct children of the card. */}
+      {/* The composer pill. On the welcome-screen hero this is
+          `display: contents`, so the field and the action row stay direct
+          children of that surface's bordered card. */}
       <div className="kp-row">
 
-      {/* Phone-only "+" — opens the attach/voice menu that the inline
-          paperclip and mic buttons provide on desktop. */}
+      {/* "+" — opens the attach/voice menu. It replaces the inline paperclip
+          and mic, which are hidden inside the pill. */}
       {showAttach && (
         <span className="kp-plus-wrap" ref={plusWrapRef}>
           <button
@@ -851,10 +888,10 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
         )}
       </div>
 
-      {/* Footer action row — mirrors .chat-input-foot. On a phone this collapses
-          into the pill itself (see the mobile block in kp-chat-input's
-          stylesheet): attach and mic move into the "+" menu, and only the Send
-          pill stays beside the input. */}
+      {/* Footer action row — mirrors .chat-input-foot. Inside the chat composer
+          this collapses into the pill itself (see the .kp-composer-wrap block
+          in kp-chat-input's stylesheet): attach and mic move into the "+"
+          menu, and only the Send pill stays beside the input. */}
       <div className="kp-foot">
         {/* Left: attach */}
         {showAttach ? (
@@ -902,13 +939,14 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
             title="Send"
             className="kp-send"
           >
+            <span aria-hidden className="kp-sheen" />
             <span className="kp-btn-label">Send</span>
             <svg className="kp-send-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M5 12h14" />
               <path d="m12 5 7 7-7 7" />
             </svg>
-            {/* Phone-only glyph — the round button carries a paper plane
-                rather than the desktop pill's "Send →". */}
+            {/* Kept for the round-button variant; hidden in both surfaces
+                today, which show the "Send" label instead. */}
             <svg className="kp-send-plane" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M22 2 11 13" />
               <path d="M22 2 15 22l-4-9-9-4z" />

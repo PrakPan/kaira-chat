@@ -686,7 +686,8 @@ const HokkaidoPowderThemePage = ({
     seedChat(prompt, { items: selection.items, slug: THEME_SLUG });
   // "Build this itinerary" — open the themed mini-form on /chat (no auto-send);
   // the saved items ride along and are sent to /chatkit only on form submit.
-  const handleBuild = () => openThemeForm(THEME_SLUG, selection.items);
+  const handleBuild = (note?: string) =>
+    openThemeForm(THEME_SLUG, selection.items, note);
   // Read-only activity drawer (opened from the Activities cards + the JR Pass CTA).
   const [activityDrawer, setActivityDrawer] = useState<{
     show: boolean;

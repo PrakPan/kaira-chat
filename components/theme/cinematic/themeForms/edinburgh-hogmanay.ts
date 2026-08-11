@@ -53,9 +53,11 @@ const edinburghHogmanayForm: ThemeForm = {
       fareNote: "LHR in / GLA out open-jaw; book early.",
     },
   ],
+  // Panel hero on /chat — fireworks bursting over Edinburgh Castle.
+  // Self-hosted so it can't drift or 404; see public/theme-heroes/README.md
+  // for the source and licence, and for the size to re-encode to.
   hero: {
-    image:
-      "https://images.unsplash.com/photo-1506377585622-bedcbb027afc?w=1200",
+    image: "/theme-heroes/edinburgh-hogmanay.jpg",
     title: "Edinburgh Hogmanay",
     subtext: "The world's biggest New Year — torchlit, fireworks over the castle.",
     tag: "Scotland · 29 Dec – 2 Jan",

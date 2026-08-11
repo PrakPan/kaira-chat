@@ -388,6 +388,10 @@ export default function BotApp({
     undefined,
   );
   const [themeSlug, setThemeSlug] = useState<string | undefined>(undefined);
+  // Free text the reader typed into a theme page's docked ask-bar before
+  // hitting "Build trip" — handed to the themed mini-form so its submission
+  // carries it (see ThemeIntakeForm's `note`).
+  const [themeNote, setThemeNote] = useState<string | undefined>(undefined);
   // Themed theme-page mini-form (date windows + pax). When a theme page's
   // "Build this itinerary" routes to /chat?themeForm=<slug>, we resolve the
   // config and flag ChatKitPanel to inject the 2-section form (no auto-send).
@@ -2906,6 +2910,7 @@ export default function BotApp({
     setStartThemedForm(false);
     setThemeForm(null);
     setThemeItems(undefined);
+    setThemeNote(undefined);
     setThemeSlug(undefined);
     setSeedActive(false);
     dispatch(resetIntakeForm());
@@ -3005,6 +3010,7 @@ export default function BotApp({
         setThemeItems(seedMeta.items);
       }
       if (seedMeta.slug) setThemeSlug(seedMeta.slug);
+      if (seedMeta.note) setThemeNote(seedMeta.note);
     }
 
     // "Build this itinerary" from a theme page routes here with `?themeForm=<slug>`.
@@ -3260,6 +3266,7 @@ export default function BotApp({
     loginMandatory: router.query.login === "false" ? false : undefined,
     themeItems,
     themeSlug,
+    themeNote,
     themeForm,
     startThemedForm,
     onViewItinerary: handleViewItinerary,

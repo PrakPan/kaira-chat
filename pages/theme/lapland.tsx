@@ -577,7 +577,8 @@ const LaplandThemePage = ({ checkAuthState }: { checkAuthState: () => void }) =>
   const openThemeForm = useOpenThemeForm();
   const handleSelectPrompt = (prompt: string) =>
     seedChat(prompt, { items: selection.items, slug: THEME_SLUG });
-  const handleBuild = () => openThemeForm(THEME_SLUG, selection.items);
+  const handleBuild = (note?: string) =>
+    openThemeForm(THEME_SLUG, selection.items, note);
   // Read-only activity details drawer (opened from the "Worth the cold" list).
   const [activityDrawer, setActivityDrawer] = useState<{
     show: boolean;

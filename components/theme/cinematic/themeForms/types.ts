@@ -59,4 +59,8 @@ export interface ThemeFormSubmission {
   items?: Array<{ kind?: string; label?: string; short?: string; id?: string }>;
   // Quick-reply chips the reader toggled on in the form (seed_prompts).
   prompts?: string[];
+  // Free text the reader typed into the theme page's docked ask-bar before
+  // hitting "Build trip". Kept separate from `prompts` — those are canned
+  // chips, this is the reader's own words.
+  note?: string;
 }

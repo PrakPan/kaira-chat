@@ -42,12 +42,20 @@ export function useSeedChat() {
 // seeding an auto-sent prompt. The saved items + slug ride along via
 // setPendingSeedMeta; /chat resolves the form by slug (?themeForm=) and injects
 // it. Nothing fires to /chatkit until the reader submits the form.
+//
+// `note` is free text the reader typed into the docked ask-bar before hitting
+// build. It travels with the handoff and is folded into the form's submission
+// so the request carries it rather than dropping it at the route change.
 export function useOpenThemeForm() {
   const router = useRouter();
 
   return useCallback(
-    (slug: string, items?: CinematicSelectableItem[]) => {
-      setPendingSeedMeta({ items: items ?? [], slug: slug || "" });
+    (slug: string, items?: CinematicSelectableItem[], note?: string) => {
+      setPendingSeedMeta({
+        items: items ?? [],
+        slug: slug || "",
+        note: note ?? "",
+      });
       router.push(`/chat?themeForm=${encodeURIComponent(slug)}`);
     },
     [router],

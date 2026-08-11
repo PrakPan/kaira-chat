@@ -396,7 +396,8 @@ const FilmyGetawaysThemePage = ({
   const openThemeForm = useOpenThemeForm();
   const handleSelectPrompt = (prompt: string) =>
     seedChat(prompt, { items: selection.items, slug: THEME_SLUG });
-  const handleBuild = () => openThemeForm(THEME_SLUG, selection.items);
+  const handleBuild = (note?: string) =>
+    openThemeForm(THEME_SLUG, selection.items, note);
 
   useEffect(() => {
     checkAuthState();

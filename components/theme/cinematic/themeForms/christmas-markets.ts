@@ -61,9 +61,11 @@ const christmasMarketsForm: ThemeForm = {
       fareNote: "Short NYE hit; PRG in / VIE out.",
     },
   ],
+  // Panel hero on /chat — a lit carousel and stalls on a half-timbered market square at night.
+  // Self-hosted so it can't drift or 404; see public/theme-heroes/README.md
+  // for the source and licence, and for the size to re-encode to.
   hero: {
-    image:
-      "https://images.unsplash.com/photo-1512389142860-9c449e58a543?w=1200",
+    image: "/theme-heroes/christmas-markets.jpg",
     title: "Christmas markets",
     subtext: "Glühwein, lantern-lit squares, and New Year's Eve across Europe.",
     tag: "Europe · Nov – Jan",

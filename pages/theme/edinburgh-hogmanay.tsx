@@ -570,7 +570,8 @@ const EdinburghHogmanayThemePage = ({
   const openThemeForm = useOpenThemeForm();
   const handleSelectPrompt = (prompt: string) =>
     seedChat(prompt, { items: selection.items, slug: THEME_SLUG });
-  const handleBuild = () => openThemeForm(THEME_SLUG, selection.items);
+  const handleBuild = (note?: string) =>
+    openThemeForm(THEME_SLUG, selection.items, note);
   // Read-only activity details drawer (opened from the "Which ticket you
   // actually need" cards).
   const [activityDrawer, setActivityDrawer] = useState<{
