@@ -12,6 +12,8 @@ import christmasMarketsForm from "./christmas-markets";
 import edinburghHogmanayForm from "./edinburgh-hogmanay";
 import northernLightsForm from "./northern-lights";
 import greeceIslandsForm from "./greece-islands-done-right";
+import honeymoonForm from "./honeymoon";
+import thailandBachelorForm from "./thailand-bachelor";
 
 const FORMS: ThemeForm[] = [
   hokkaidoPowderForm,
@@ -21,6 +23,8 @@ const FORMS: ThemeForm[] = [
   edinburghHogmanayForm,
   northernLightsForm,
   greeceIslandsForm,
+  honeymoonForm,
+  thailandBachelorForm,
 ];
 
 const THEME_FORMS: Record<string, ThemeForm> = Object.fromEntries(

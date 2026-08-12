@@ -39,6 +39,13 @@ export const THEME_PALETTES: Record<string, CinematicThemePalette> = {
     page: "#f7fafb",
     heroTint: "#ecf4f9",
   },
+  // /theme/honeymoon — a warm rose that reads romantic without going pink.
+  honeymoon: {
+    accent: "#a8556b",
+    accentSoft: "#f8ebef",
+    page: "#fbf7f7",
+    heroTint: "#fbe9e6",
+  },
   lapland: {
     accent: "#3d4f7a",
     accentSoft: "#eef2fb",
@@ -50,6 +57,13 @@ export const THEME_PALETTES: Record<string, CinematicThemePalette> = {
     accentSoft: "#e6edf4",
     page: "#f7f9fb",
     heroTint: "#e9f1f4",
+  },
+  // /theme/thailand-bachelor — Andaman turquoise.
+  "thailand-bachelor": {
+    accent: "#0d7f8f",
+    accentSoft: "#e2f2f4",
+    page: "#f7fbfb",
+    heroTint: "#e6f3f2",
   },
   // /theme/filmy-getaways — its form slug is the route it builds.
   "switzerland-ddlj": {
@@ -75,9 +89,11 @@ const THEME_PAGE_PATHS: Record<string, string> = {
   "edinburgh-hogmanay": "/theme/edinburgh-hogmanay",
   "greece-islands-done-right": "/theme/greece-islands-done-right",
   "hokkaido-powder": "/theme/hokkaido-powder",
+  honeymoon: "/theme/honeymoon",
   lapland: "/theme/lapland",
   "northern-lights": "/theme/northern-lights",
   "switzerland-ddlj": "/theme/filmy-getaways",
+  "thailand-bachelor": "/theme/thailand-bachelor",
 };
 
 /** Landing-page path for a theme slug, or `null` when the slug isn't a theme

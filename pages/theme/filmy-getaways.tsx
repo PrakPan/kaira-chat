@@ -108,11 +108,14 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
   },
   sections: [
     // ── Bollywood ──
+    // A film isn't a bookable element — each card is a whole trip request, so
+    // it carries "Create plan" and seeds its prompt rather than "+ Add"-ing to
+    // the tray. (A `selectable` card with no activityId toggles the saved list
+    // on click and never fires its prompt — see PromptCard.)
     {
       type: "cards",
+      ctaLabel: "Create plan →",
       heading: { lead: "Bollywood scenes you never", accent: "forgot" },
-      selectable: true,
-      itemKind: "scene",
       cards: [
         {
           image: `${IMAGE_BASE}/DDLJ.png`,
@@ -162,12 +165,11 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
         },
       ],
     },
-    // ── Hollywood ──
+    // ── Hollywood ── (same contract as the Bollywood row above)
     {
       type: "cards",
+      ctaLabel: "Create plan →",
       heading: { lead: "Hollywood said go.", accent: "We agree." },
-      selectable: true,
-      itemKind: "scene",
       cards: [
         {
           image:
