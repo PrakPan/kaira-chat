@@ -14,6 +14,10 @@ import type {
   ThemeFormSubmission,
 } from "../../../theme/cinematic/themeForms/types";
 import { getThemePalette } from "../../../theme/cinematic/palettes";
+// The same range picker the main intake form uses, so "pick exact dates" here
+// looks and behaves exactly like the calendar readers already know.
+import Calendar from "../IntakeForm/ui/Calendar";
+import { formatShort, nightsBetween } from "../IntakeForm/intakePrompt";
 
 const INK = "#0b1220";
 const MUTED = "#445069";
@@ -51,6 +55,21 @@ const slugify = (value: string): string =>
 /** True when the chosen window's route already covers this city. Compared on
  *  token boundaries so "vienna" hits "prague_vienna_budapest" but "wien" does
  *  not hit "wienerwald", and multi-word cities ("st_moritz") still match. */
+/** Drops the night count from a window label, wherever it sits between the
+ *  "·" separators — the count is only true of the window's own range, so once
+ *  the reader picks exact dates it would contradict them:
+ *    "The Last Hurrah · 6N"            → "The Last Hurrah"
+ *    "Central Loop · 10N · incl. NYE"  → "Central Loop · incl. NYE"
+ *    "10 nights · May–Oct"             → "May–Oct"
+ *  A label with no count (e.g. "10–19 Jan") comes back untouched, and a label
+ *  that is *only* a count falls back to the original rather than empty. */
+const routeTitle = (label: string): string =>
+  label
+    .split("·")
+    .map((part) => part.trim())
+    .filter((part) => part && !/^\d+\s*(N|nights?)$/i.test(part))
+    .join(" · ") || label;
+
 const routeCovers = (skeleton: string, label: string): boolean => {
   const route = slugify(skeleton);
   const city = slugify(label);
@@ -97,8 +116,9 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
   const [winIdx, setWinIdx] = React.useState(0);
   const [pax, setPax] = React.useState(form.paxPresets[0] ?? "");
   const [exactOpen, setExactOpen] = React.useState(false);
-  const [fromDate, setFromDate] = React.useState("");
-  const [toDate, setToDate] = React.useState("");
+  // ISO date-only strings ("YYYY-MM-DD"), or null — the shape Calendar emits.
+  const [fromDate, setFromDate] = React.useState<string | null>(null);
+  const [toDate, setToDate] = React.useState<string | null>(null);
   const [submitted, setSubmitted] = React.useState(false);
   // Selected quick-reply chips — toggled on/off and sent with the submission in
   // one go when the reader hits the CTA (not sent immediately on tap).
@@ -117,6 +137,20 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
   const accentOn = pagePalette?.accentOn ?? NEUTRAL.accentOn;
 
   const win = form.dateWindows[winIdx] ?? form.dateWindows[0];
+
+  // The reader's own dates win over the window's default range once BOTH ends
+  // are picked. The route (window + skeleton) is unaffected — they've changed
+  // the length of the trip, not which trip it is.
+  const useExact = exactOpen && !!fromDate && !!toDate;
+  const dates: [string, string] = useExact
+    ? [fromDate as string, toDate as string]
+    : [win?.range[0] ?? "", win?.range[1] ?? ""];
+  // Always derived from `dates`, so an exact-date pick can never be sent
+  // alongside the window's stored `nights` (e.g. 9 picked nights on a "· 6N"
+  // route). The window's own value is only a fallback for a malformed range.
+  const nights = useExact
+    ? nightsBetween(dates[0], dates[1])
+    : (nightsBetween(dates[0], dates[1]) || win?.nights || 0);
 
   const trimmedNote = (note ?? "").trim();
 
@@ -156,16 +190,14 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
 
   const submit = () => {
     if (submitted || !win) return;
-    const useExact = exactOpen && fromDate && toDate;
-    const dates: [string, string] = useExact
-      ? [fromDate, toDate]
-      : [win.range[0], win.range[1]];
 
     const submission: ThemeFormSubmission = {
       slug: form.slug,
       window: win.key,
       skeleton: win.skeleton,
       dates,
+      nights,
+      exactDates: useExact || undefined,
       pax,
       items: dedupedItems.length ? dedupedItems : undefined,
       prompts: selectedPrompts.length ? selectedPrompts : undefined,
@@ -175,6 +207,16 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
     // Include the window's blurb so the message reads with the chosen
     // route/length (e.g. "Rhine Run · 8N — Strasbourg → Cologne → Amsterdam").
     const routeLine = win.blurb ? ` — ${win.blurb}` : "";
+    // With exact dates the length comes from the calendar, so the route is
+    // named WITHOUT its stored night count and the dates get their own line —
+    // otherwise the message would read "The Last Hurrah · 6N" over a 9-night
+    // range and the two would contradict each other.
+    const whenLines = useExact
+      ? `• When: ${formatShort(dates[0])} to ${formatShort(dates[1])} · ${nights} ${
+          nights === 1 ? "night" : "nights"
+        } (my exact dates — use these, not the window's usual length)\n` +
+        `• Plan: ${routeTitle(win.label)}${routeLine}\n`
+      : `• When: ${win.label} (${dates[0]} to ${dates[1]})${routeLine}\n`;
     const savedLine = dedupedItems.length
       ? ` Build it around the ${dedupedItems.length} ${
           dedupedItems.length === 1 ? "place" : "places"
@@ -191,7 +233,7 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
     const noteLine = trimmedNote ? `\n• In my words: ${trimmedNote}` : "";
     const composed =
       `Here are my ${form.display} trip details:\n` +
-      `• When: ${win.label} (${dates[0]} to ${dates[1]})${routeLine}\n` +
+      whenLines +
       `• Travellers: ${pax}` +
       noteLine +
       promptLine +
@@ -306,7 +348,11 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
           {form.dateWindows.map((w, i) => {
-            const on = i === winIdx && !exactOpen;
+            // Stays selected while the calendar is open: exact dates change the
+            // trip's LENGTH, not which route is sent — `skeleton` still comes
+            // from this window, so hiding the selection misrepresented the
+            // payload. The badge below marks whose dates are in play.
+            const on = i === winIdx;
             return (
               <button
                 key={w.key}
@@ -402,54 +448,88 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
           </button>
         )}
         {exactOpen && (
-          <div
-            style={{
-              display: "flex",
-              gap: 10,
-              background: SAND,
-              borderRadius: 14,
-              padding: "11px 13px",
-              marginTop: 10,
-            }}
-          >
-            <label style={{ flex: 1, minWidth: 0 }}>
-              <span style={{ ...mono, display: "block", color: FAINT, fontSize: 8.5 }}>
-                Depart
+          <div style={{ marginTop: 10 }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                marginBottom: 7,
+              }}
+            >
+              <span style={{ ...mono, color: FAINT, fontSize: 8.5 }}>
+                Exact dates
               </span>
-              <input
-                type="date"
-                value={fromDate}
-                onChange={(e) => setFromDate(e.target.value)}
-                style={{
-                  width: "100%",
-                  marginTop: 5,
-                  border: "none",
-                  background: "none",
-                  fontSize: 12,
-                  color: INK,
-                  padding: 0,
+              <button
+                type="button"
+                onClick={() => {
+                  setExactOpen(false);
+                  setFromDate(null);
+                  setToDate(null);
                 }}
-              />
-            </label>
-            <label style={{ flex: 1, minWidth: 0 }}>
-              <span style={{ ...mono, display: "block", color: FAINT, fontSize: 8.5 }}>
-                Return
-              </span>
-              <input
-                type="date"
-                value={toDate}
-                onChange={(e) => setToDate(e.target.value)}
                 style={{
-                  width: "100%",
-                  marginTop: 5,
-                  border: "none",
+                  marginLeft: "auto",
                   background: "none",
-                  fontSize: 12,
-                  color: INK,
+                  border: "none",
+                  color: MUTED,
+                  fontSize: 10.5,
+                  fontWeight: 600,
+                  cursor: "pointer",
                   padding: 0,
+                  textDecoration: "underline",
+                  textUnderlineOffset: 3,
                 }}
-              />
-            </label>
+              >
+                Use a suggested route
+              </button>
+            </div>
+            <Calendar
+              startDate={fromDate}
+              endDate={toDate}
+              onChange={(start, end) => {
+                setFromDate(start);
+                setToDate(end);
+              }}
+            />
+            {/* Exactly what will be sent. The route is still the one ticked
+                above; only the length is now the reader's. Until both ends are
+                picked the window's own range still applies, and this says so. */}
+            <div
+              style={{
+                marginTop: 8,
+                background: useExact ? accentSoft : SAND,
+                border: `1px solid ${useExact ? accent : BORDER}`,
+                borderRadius: 12,
+                padding: "9px 11px",
+              }}
+            >
+              <div
+                style={{
+                  ...mono,
+                  color: useExact ? accent : FAINT,
+                  fontSize: 8.5,
+                  marginBottom: 3,
+                }}
+              >
+                {useExact ? "Sending your dates" : "Pick both ends"}
+              </div>
+              <div style={{ fontSize: 12, lineHeight: 1.45, color: INK }}>
+                {useExact ? (
+                  <>
+                    <strong>
+                      {nights} {nights === 1 ? "night" : "nights"}
+                    </strong>{" "}
+                    · {formatShort(dates[0])} to {formatShort(dates[1])} ·{" "}
+                    {routeTitle(win.label)}
+                  </>
+                ) : (
+                  <>
+                    Until then I&apos;ll use {win.label}
+                    {win.nights ? ` (${win.nights} nights)` : ""}.
+                  </>
+                )}
+              </div>
+            </div>
           </div>
         )}
 

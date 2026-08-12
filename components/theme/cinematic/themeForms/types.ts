@@ -55,6 +55,13 @@ export interface ThemeFormSubmission {
   window: string; // chosen date_windows[].key
   skeleton: string; // chosen date_windows[].skeleton (routing key)
   dates: [string, string]; // [start, end] — from the window, or exact-date picks
+  // Trip length in nights, always derived from `dates`. When the reader picks
+  // exact dates this is THEIR length, not the window's stored `nights` — the
+  // route is still the skeleton, but the duration is whatever they chose.
+  nights: number;
+  // True when `dates`/`nights` came from the reader's own calendar picks rather
+  // than the chosen window's default range.
+  exactDates?: boolean;
   pax: string; // chosen pax preset
   items?: Array<{ kind?: string; label?: string; short?: string; id?: string }>;
   // Quick-reply chips the reader toggled on in the form (seed_prompts).
