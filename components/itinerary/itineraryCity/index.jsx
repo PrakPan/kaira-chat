@@ -272,6 +272,16 @@ const ItineraryCity = (props) => {
         ...(transferData?.vehicles?.length
           ? { vehicles: transferData.vehicles }
           : { result_index: transferData?.selectedQuote?.result_index }),
+        // Optional supplier extras ticked on the result card (Mozio only). They ride up on
+        // the selected quote, and mercury re-prices the booking through Mozio to include
+        // them - omitting them here would book the taxi without the child seat the
+        // traveller asked for. Absent unless something was ticked.
+        ...(transferData?.selectedQuote?.optional_amenities?.length
+          ? {
+              optional_amenities:
+                transferData.selectedQuote.optional_amenities,
+            }
+          : {}),
         booking_id: transferData?.booking_id,
       };
       const response = await axios.post(

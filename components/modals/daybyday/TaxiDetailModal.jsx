@@ -104,6 +104,15 @@ const TaxiDetailModal = ({
   // describes one car and misstates the rest.
   const fleet = getFleetManifest(data);
 
+  // Optional extras the traveller actually PAID for (Mozio child seats, meet & greet, wifi,
+  // ...). Mercury prunes the quote's amenity list down to the purchased set when it saves
+  // the booking, so whatever is here was bought — the provider's full menu is not stored.
+  // Their cost is already inside the booking total, which is why the section below states
+  // what was bought rather than repeating a price.
+  const purchasedExtras = (transfer_details?.quote?.amenities || []).filter(
+    (item) => item && item.key,
+  );
+
   // A sightseeing package is sold by the day from a single pickup point, so it
   // has no drop address — its rail counts days rather than tracing a route.
   const isSightseeing = transfer_type === "sightseeing";
@@ -339,6 +348,30 @@ const TaxiDetailModal = ({
           />
         </DetailSection>
       )}
+
+      {/* What was added on top of the fare. Rendered only when something was bought, so
+          every non-Mozio taxi (and every Mozio taxi booked without extras) is unchanged.
+          No prices here on purpose: their cost is already inside the booking total shown
+          above, and repeating it per line invites reading them as an extra charge still
+          to come. What is useful at this point is WHAT was bought, hence the description. */}
+      {purchasedExtras.length ? (
+        <DetailSection label="Extras">
+          <div className="flex flex-col gap-2 px-4 pb-4">
+            {purchasedExtras.map((item) => (
+              <div key={item.key}>
+                <div className="text-[12.5px] font-600 text-[#0b1220]">
+                  {item.name || item.key}
+                </div>
+                {item.description ? (
+                  <div className="text-[11.5px] leading-snug text-[#8a93a6]">
+                    {item.description}
+                  </div>
+                ) : null}
+              </div>
+            ))}
+          </div>
+        </DetailSection>
+      ) : null}
 
       <PolicyNote html={data?.cancellation_policy} />
       <PolicyNote html={data?.cancellation_policies} />

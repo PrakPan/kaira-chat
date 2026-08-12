@@ -19,6 +19,7 @@ import {
   VehicleCountBadge,
 } from "../../../components/modals/taxis/MultiVehicleInfo";
 import { useAnalytics } from "../../../hooks/useAnalytics";
+import DriverDetails from "../../../components/itinerary/DriverDetails";
 import { setCloneItineraryDrawer } from "../../../store/actions/cloneItinerary";
 import { useDispatch } from "react-redux";
 
@@ -538,6 +539,14 @@ const TransferBooking = ({
                               </>
                             )}
                           </div>
+
+                          {/* Who is picking them up. Renders itself only for a Mozio taxi
+                              that already has a reservation, and fetches nothing until the
+                              traveller opens it - see components/itinerary/DriverDetails.
+                              No token prop here: this component destructures its props and
+                              carries none, so the service falls back to the stored
+                              access_token, same as the booking POST in the taxi cards. */}
+                          <DriverDetails booking={booking} />
                         </div>
                       </>
                     </div>
