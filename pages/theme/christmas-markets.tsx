@@ -508,31 +508,31 @@ const christmasMarketsConfig: CinematicThemeConfig = {
         "The €90 fee is the standard Schengen adult application fee. One visa lets you cross freely between all the countries on your route.",
     },
     // ── Read this first ──
-    {
-      type: "list",
-      compact: true,
-      heading: { lead: "Read this", accent: "first" },
-      rows: [
-        {
-          emoji: "🧣",
-          gradient: "linear-gradient(150deg, #16324f, #3d4f7a)",
-          name: "It's cold, but it's dry cold",
-          line: "Layers, gloves, waterproof boots. The Glühwein helps.",
-        },
-        {
-          emoji: "🚆",
-          gradient: "linear-gradient(150deg, #1f8a5a, #f0e9d6 200%)",
-          name: "Rail beats flying between cities",
-          line: "City-centre to city-centre, and you keep the festive views.",
-        },
-        {
-          emoji: "🗓️",
-          gradient: "linear-gradient(150deg, #b84034, #f0e9d6 190%)",
-          name: "Check the closing dates",
-          line: "Markets wind down around the 23rd — build the route around it.",
-        },
-      ],
-    },
+    // {
+    //   type: "list",
+    //   compact: true,
+    //   heading: { lead: "Read this", accent: "first" },
+    //   rows: [
+    //     {
+    //       emoji: "🧣",
+    //       gradient: "linear-gradient(150deg, #16324f, #3d4f7a)",
+    //       name: "It's cold, but it's dry cold",
+    //       line: "Layers, gloves, waterproof boots. The Glühwein helps.",
+    //     },
+    //     {
+    //       emoji: "🚆",
+    //       gradient: "linear-gradient(150deg, #1f8a5a, #f0e9d6 200%)",
+    //       name: "Rail beats flying between cities",
+    //       line: "City-centre to city-centre, and you keep the festive views.",
+    //     },
+    //     {
+    //       emoji: "🗓️",
+    //       gradient: "linear-gradient(150deg, #b84034, #f0e9d6 190%)",
+    //       name: "Check the closing dates",
+    //       line: "Markets wind down around the 23rd — build the route around it.",
+    //     },
+    //   ],
+    // },
     // ── Stories — real Google reviews; each opens the traveller's itinerary ──
     // Review links (for reference):
     //   Naveen — https://share.google/zOTQwy9G4uBLbnddL

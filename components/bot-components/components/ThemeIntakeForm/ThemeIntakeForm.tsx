@@ -14,6 +14,7 @@ import type {
   ThemeFormSubmission,
 } from "../../../theme/cinematic/themeForms/types";
 import { getThemePalette } from "../../../theme/cinematic/palettes";
+import { composeSelectionText } from "../../../theme/cinematic/selectionText";
 // The same range picker the main intake form uses, so "pick exact dates" here
 // looks and behaves exactly like the calendar readers already know.
 import Calendar from "../IntakeForm/ui/Calendar";
@@ -217,14 +218,17 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
         } (my exact dates — use these, not the window's usual length)\n` +
         `• Plan: ${routeTitle(win.label)}${routeLine}\n`
       : `• When: ${win.label} (${dates[0]} to ${dates[1]})${routeLine}\n`;
-    const savedLine = dedupedItems.length
-      ? ` Build it around the ${dedupedItems.length} ${
-          dedupedItems.length === 1 ? "place" : "places"
-        } I saved: ${dedupedItems
-          .map((i) => i.short || i.label)
-          .filter(Boolean)
-          .join(", ")}.`
-      : "";
+    // The picks travel as text — the request body has no `items` field — so
+    // this line is the only place they reach the backend. Same wording as the
+    // plain-seed hand-off (see selectionText), including each pick's kind so
+    // "Phi Phi Islands (activity)" can't be read as a city stop.
+    const savedText = composeSelectionText(
+      dedupedItems,
+      `Build it around the ${dedupedItems.length} ${
+        dedupedItems.length === 1 ? "pick" : "picks"
+      } I saved on the page:`,
+    );
+    const savedLine = savedText ? `\n• ${savedText}` : "";
     const promptLine = selectedPrompts.length
       ? `\n• Also: ${selectedPrompts.join("; ")}`
       : "";

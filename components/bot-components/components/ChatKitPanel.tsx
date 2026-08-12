@@ -1837,8 +1837,6 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
     sessionId: sessionIdRef.current,
     onSessionCreated: handleSessionCreated,
     loginMandatory,
-    themeItems,
-    themeSlug,
   });
 
   // ── Context chips for the intake notes step ────────────────────────────────
@@ -2843,7 +2841,7 @@ const sendMessage = useCallback(
     text: string,
     attachmentIds?: string[],
     attachmentMeta?: MessageAttachment[],
-    opts?: { formSubmitted?: boolean; intakePayload?: Record<string, unknown> },
+    opts?: { formSubmitted?: boolean },
   ) => {
     setQuickReplies([]);
     setQuickReplyShimmer(false);
@@ -2935,7 +2933,6 @@ const sendMessage = useCallback(
       interrupt: inQuickReplyPhaseRef.current,
       formSubmitted: opts?.formSubmitted,
       contextPrefix: intakeContextPrefix,
-      intakePayload: opts?.intakePayload,
     });
   },
   [rawSendMessage],
@@ -2954,15 +2951,14 @@ const handleIntakeComplete = useCallback(
 );
 
 // ── Themed mini-form completion ──────────────────────────────────────────────
-// Send the readable summary as the user message AND the structured payload
-// (slug/window/skeleton/dates/pax/items) as `intake` on the request body, so the
-// backend routes off the structured data. First fire to /chatkit for this flow.
+// Same contract as the intake form: the composed summary IS the payload. The
+// request body stays the standard /chatkit shape (no `intake` object, no
+// top-level `items`), so everything the reader chose — route, dates, nights,
+// travellers, and the picks they saved on the page — has to be readable in
+// `composed`. ThemeIntakeForm builds it that way; see its `submit()`.
 const handleThemedFormSubmit = useCallback(
-  (submission: ThemeFormSubmission, composed: string) => {
-    sendMessage(composed, undefined, undefined, {
-      formSubmitted: true,
-      intakePayload: submission as unknown as Record<string, unknown>,
-    });
+  (_submission: ThemeFormSubmission, composed: string) => {
+    sendMessage(composed, undefined, undefined, { formSubmitted: true });
   },
   [sendMessage],
 );

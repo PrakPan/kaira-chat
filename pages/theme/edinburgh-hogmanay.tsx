@@ -391,41 +391,41 @@ const edinburghHogmanayConfig: CinematicThemeConfig = {
         "Rooms and tickets move together. A bed inside the cordon with no Street Party ticket is a wasted trip; the reverse means a 2am walk to Leith. I hold both or neither.",
     },
     // ── Read this first (light, compact) ──
-    {
-      type: "list",
-      compact: true,
-      heading: {
-        eyebrow: "The four things people get wrong",
-        lead: "Read this",
-        accent: "first",
-      },
-      rows: [
-        {
-          emoji: "❄️",
-          gradient: "linear-gradient(150deg, #16324f, #3d4f7a)",
-          name: "It's cold, wet and windy",
-          line: "Layers, waterproofs, real shoes. The energy makes up for it.",
-        },
-        {
-          emoji: "🎇",
-          gradient: "linear-gradient(150deg, #3d2b52, #b84034 170%)",
-          name: "The Bells isn't the whole thing",
-          line: "Four days of events — midnight is just one of them.",
-        },
-        {
-          emoji: "⏳",
-          gradient: "linear-gradient(150deg, #b84034, #f0e9d6 190%)",
-          name: "Everything is a queue",
-          line: "Tickets, rooms and flights sell in a set order. Book early.",
-        },
-        {
-          emoji: "🌅",
-          gradient: "linear-gradient(150deg, #1a2436, #445069)",
-          name: "Jan 1 the city is quiet",
-          line: "First-footing and a slow recovery — plan a gentle day.",
-        },
-      ],
-    },
+    // {
+    //   type: "list",
+    //   compact: true,
+    //   heading: {
+    //     eyebrow: "The four things people get wrong",
+    //     lead: "Read this",
+    //     accent: "first",
+    //   },
+    //   rows: [
+    //     {
+    //       emoji: "❄️",
+    //       gradient: "linear-gradient(150deg, #16324f, #3d4f7a)",
+    //       name: "It's cold, wet and windy",
+    //       line: "Layers, waterproofs, real shoes. The energy makes up for it.",
+    //     },
+    //     {
+    //       emoji: "🎇",
+    //       gradient: "linear-gradient(150deg, #3d2b52, #b84034 170%)",
+    //       name: "The Bells isn't the whole thing",
+    //       line: "Four days of events — midnight is just one of them.",
+    //     },
+    //     {
+    //       emoji: "⏳",
+    //       gradient: "linear-gradient(150deg, #b84034, #f0e9d6 190%)",
+    //       name: "Everything is a queue",
+    //       line: "Tickets, rooms and flights sell in a set order. Book early.",
+    //     },
+    //     {
+    //       emoji: "🌅",
+    //       gradient: "linear-gradient(150deg, #1a2436, #445069)",
+    //       name: "Jan 1 the city is quiet",
+    //       line: "First-footing and a slow recovery — plan a gentle day.",
+    //     },
+    //   ],
+    // },
     // ── Stories ──
     {
       type: "stories",

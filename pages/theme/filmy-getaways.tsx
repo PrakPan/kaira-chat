@@ -85,7 +85,7 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
     // Desktop-only Kaira polaroid collage — each polaroid opens its destination.
     images: [
       {
-        image: `${IMAGE_BASE}/DDLJ.png`,
+        image: `${IMAGE_BASE}/DDLJ2.png`,
         caption: "Switzerland, DDLJ",
         href: "/europe/switzerland",
       },
@@ -118,7 +118,7 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
       heading: { lead: "Bollywood scenes you never", accent: "forgot" },
       cards: [
         {
-          image: `${IMAGE_BASE}/DDLJ.png`,
+          image: `${IMAGE_BASE}/DDLJ2.png`,
           name: "DDLJ, the Switzerland dream",
           line: "Trains, Alps, and romance.",
           tag: "Switzerland",

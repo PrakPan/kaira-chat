@@ -5,9 +5,12 @@
 // memory + sessionStorage, survives the route change and a hard reload of
 // /chat) and also passed as `?seed=` so a cold /chat load can still pick it up.
 //
-// A theme page may also pass structured context — the items the reader saved on
-// the page and a `slug` naming the theme. That rides along via setPendingSeedMeta
-// and is forwarded verbatim in the first /chatkit request body (see useChat.ts).
+// A theme page may also pass the items the reader saved and a `slug` naming the
+// theme. The /chatkit request body has no structured `items` field — it is the
+// same shape every other chat surface sends — so the saved picks are folded
+// into the seed TEXT here (see selectionText). The meta still rides along via
+// setPendingSeedMeta, but only for in-app use: the mini-form's chips, the
+// widget theme, and the mobile close button's way back to the theme page.
 
 import { useCallback } from "react";
 import { useRouter } from "next/router";
@@ -16,6 +19,7 @@ import {
   setPendingSeedMeta,
 } from "../../../services/heroChatHandoff";
 import type { CinematicSelectableItem } from "./types";
+import { composeSelectionText } from "./selectionText";
 
 export interface SeedChatMeta {
   items?: CinematicSelectableItem[];
@@ -27,7 +31,11 @@ export function useSeedChat() {
 
   return useCallback(
     (prompt: string, meta?: SeedChatMeta) => {
-      const seed = (prompt || "").trim();
+      // The saved picks are appended to the prompt itself — the request body
+      // carries no `items`, so the text is the only place they survive.
+      const selection = composeSelectionText(meta?.items);
+      const base = (prompt || "").trim();
+      const seed = selection ? `${base}\n\n${selection}`.trim() : base;
       if (seed) setPendingSeed(seed);
       // Always write (setPendingSeedMeta clears itself when empty) so a plain
       // seed after a themed one never inherits a stale selection.

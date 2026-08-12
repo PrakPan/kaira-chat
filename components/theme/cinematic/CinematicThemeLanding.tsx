@@ -2337,23 +2337,22 @@ const AskKairaStrip: React.FC<{
             the trip being built rather than a generic cart. */}
         {listOpen && <div style={{ marginBottom: 10 }}>{savedTray}</div>}
 
-        {/* White summary bar — an accent bag with a count badge, one chip per
-            saved type, and a chevron that expands/collapses the list. Only
-            once something is saved: with an empty list it said nothing the
-            field below doesn't say better, and the phone bar can't afford a
-            row that carries no action. */}
-        {hasSelection && (
+        {/* Summary bar — always present (matches the mockup): an accent bag,
+            one chip per saved type, and a chevron. With nothing saved it reads
+            "NOTHING ADDED YET · TAP + ON ANYTHING ABOVE"; the bag badge and the
+            expand chevron only appear once something is saved. */}
         <button
             type="button"
-            onClick={() => setExpanded((v) => !v)}
-            aria-expanded={expanded}
-            className="w-full flex items-center gap-[10px] cursor-pointer"
+            onClick={() => hasSelection && setExpanded((v) => !v)}
+            aria-expanded={hasSelection ? expanded : undefined}
+            className="w-full flex items-center gap-[10px]"
             style={{
               ...cardChrome(),
               borderRadius: 999,
               padding: "8px 14px 8px 9px",
               marginBottom: 10,
               boxShadow: "0 8px 20px -10px rgba(11,18,32,0.15)",
+              cursor: hasSelection ? "pointer" : "default",
             }}
           >
             <span
@@ -2374,52 +2373,64 @@ const AskKairaStrip: React.FC<{
                 <path d="M3 6h18" />
                 <path d="M16 10a4 4 0 0 1-8 0" />
               </svg>
-              <span
-                className="ctl-mono absolute flex items-center justify-center rounded-full"
-                style={{
-                  top: -3,
-                  right: -4,
-                  minWidth: 16,
-                  height: 16,
-                  padding: "0 4px",
-                  background: INK,
-                  color: "#ffffff",
-                  fontSize: 9,
-                  fontWeight: 600,
-                  border: "1.5px solid #fff",
-                  letterSpacing: 0,
-                }}
-              >
-                {count}
-              </span>
-            </span>
-            {/* One chip per selected type, e.g. "3 experiences · 2 places". */}
-            <div
-              className="ctl-scroll flex-1 min-w-0 flex items-center gap-[5px]"
-              style={{ overflowX: "auto" }}
-            >
-              {kindCounts.map(([k, n]) => (
+              {count > 0 && (
                 <span
-                  key={k}
-                  className="ctl-mono shrink-0"
+                  className="ctl-mono absolute flex items-center justify-center rounded-full"
                   style={{
-                    background: palette.accentSoft,
-                    borderRadius: 6,
-                    padding: "4px 8px",
-                    fontSize: 8.5,
-                    color: palette.accent,
+                    top: -3,
+                    right: -4,
+                    minWidth: 16,
+                    height: 16,
+                    padding: "0 4px",
+                    background: INK,
+                    color: "#ffffff",
+                    fontSize: 9,
                     fontWeight: 600,
-                    whiteSpace: "nowrap",
+                    border: "1.5px solid #fff",
+                    letterSpacing: 0,
                   }}
                 >
-                  {n} {pluralize(k, n)}
+                  {count}
                 </span>
-              ))}
-            </div>
+              )}
+            </span>
+            {hasSelection ? (
+              // One chip per selected type, e.g. "3 experiences · 2 places".
+              <div
+                className="ctl-scroll flex-1 min-w-0 flex items-center gap-[5px]"
+                style={{ overflowX: "auto" }}
+              >
+                {kindCounts.map(([k, n]) => (
+                  <span
+                    key={k}
+                    className="ctl-mono shrink-0"
+                    style={{
+                      background: palette.accentSoft,
+                      borderRadius: 6,
+                      padding: "4px 8px",
+                      fontSize: 8.5,
+                      color: palette.accent,
+                      fontWeight: 600,
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {n} {pluralize(k, n)}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <span
+                className="ctl-mono flex-1 min-w-0 truncate"
+                style={{ fontSize: 9, color: FAINT, letterSpacing: "0.12em" }}
+              >
+                Nothing added yet · tap + on anything above
+              </span>
+            )}
             <span
               className="shrink-0 flex items-center"
               style={{
                 color: FAINT,
+                opacity: hasSelection ? 1 : 0.5,
                 transform: expanded ? "rotate(180deg)" : "none",
                 transition: "transform .2s ease",
               }}
@@ -2438,33 +2449,6 @@ const AskKairaStrip: React.FC<{
               </svg>
             </span>
           </button>
-        )}
-
-        {/* Free-text field — the phone's own composer row. Whatever is typed
-            goes out with the CTA below (Enter does the same); there is no
-            separate send button. */}
-        <div
-          className="flex items-center"
-          style={{
-            ...cardChrome(),
-            borderRadius: 999,
-            padding: "4px 16px",
-            marginBottom: 10,
-            boxShadow: "0 8px 20px -10px rgba(11,18,32,0.15)",
-          }}
-        >
-          <input
-            type="text"
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            onKeyDown={onDraftKeyDown}
-            placeholder={bar.placeholder}
-            aria-label={bar.placeholder}
-            className="flex-1 min-w-0 border-none outline-none bg-transparent"
-            // 16px keeps iOS from zooming the page on focus.
-            style={{ fontSize: 16, color: INK, padding: "9px 0" }}
-          />
-        </div>
 
         {/* Action row — the accent-filled Build button (with a slow sheen so it
             stays alive without animating colour) + Kaira's avatar into chat. */}
