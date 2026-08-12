@@ -24,6 +24,12 @@ import axiossearchinstance, {
   gmapsAutocomplete,
 } from "../../services/search/searchsuggest";
 import axiosTaxiSearch from "../../services/bookings/TaxiSearch";
+import SelectedTaxisBar from "../../components/modals/taxis/fleet/SelectedTaxisBar";
+import {
+  TaxiSelectionProvider,
+  useTaxiSelectionState,
+} from "../../components/modals/taxis/fleet/TaxiSelectionContext";
+import { currencySymbols } from "../../data/currencySymbols";
 import Skeleton from "../../components/modals/taxis/Skeleton";
 import OfflineQuoteEmptyState from "../../components/ui/OfflineQuoteEmptyState";
 import { useRouter } from "next/router";
@@ -80,6 +86,12 @@ const PickupDropDrawer = ({
   const [hasMoreQuotes, setHasMoreQuotes] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [source, setSource] = useState(null);
+  // How the search described the party. `multi_vehicle_needed` is true only when no single
+  // vehicle seats it, and that alone turns on multi-select.
+  const [fleet, setFleet] = useState(null);
+  // Which option is being added. Keeps the loader on the committed one and freezes the rest.
+  const [addingKey, setAddingKey] = useState(null);
+  const [submittingFleet, setSubmittingFleet] = useState(false);
   const [hubSuggestions, setHubSuggestions] = useState([]);
   const [isLoadingHubs, setIsLoadingHubs] = useState(false);
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
@@ -868,6 +880,7 @@ const getStationName = () => {
           setSource(res?.data.data?.source);
           setTraceId(res.data?.trace_id);
           setTransferQuotes(res.data.data.quotes);
+          setFleet(res.data.data?.fleet || null);
           // `next` (Mozio progressive polling) may sit top-level or inside data.
           setHasMoreQuotes(!!(res.data?.next ?? res.data.data?.next));
         } else {
@@ -905,6 +918,7 @@ const getStationName = () => {
         if (res.data?.success) {
           setHasMoreQuotes(!!(res.data?.next ?? res.data.data?.next));
           if (res.data?.trace_id) setTraceId(res.data.trace_id);
+          if (res.data?.data?.fleet) setFleet(res.data.data.fleet);
           const quotes = res.data?.data?.quotes;
           if (quotes && quotes.length) setTransferQuotes(quotes);
         } else {
@@ -948,10 +962,20 @@ const getStationName = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (selectedQuote) => {
-    if (!selectedQuote) return;
+  // Owns "which taxis has the customer lined up", shared with the result cards through
+  // context so a card can both read its own quantity and write back to it.
+  const taxiSelection = useTaxiSelectionState({
+    fleet,
+    quotes: transferQuotes,
+    source,
+    busy: !!addingKey,
+  });
+
+  const handleSubmit = async (selectedQuote, vehicles) => {
+    if (!selectedQuote && !vehicles?.length) return;
 
     const submissionData = {
+      vehicles,
       ...formData,
       transferType,
       bookingMode,
@@ -966,6 +990,20 @@ const getStationName = () => {
 
     await onSubmit(submissionData);
   };
+
+  // The floating bar's commit: one POST, one booking, several cars. `handleSubmit` already
+  // branches on `vehicles`, so this is the ordinary airport path with a list instead of one
+  // quote.
+  const handleAddSelectedTaxis = async (vehicles) => {
+    if (!vehicles?.length) return;
+    setSubmittingFleet(true);
+    try {
+      await handleSubmit(null, vehicles);
+    } finally {
+      setSubmittingFleet(false);
+    }
+  };
+
 
   const handleInputChange = (field, value) => {
     setFormData((prev) => {
@@ -1219,6 +1257,7 @@ const getTitle = () => {
       mobileWidth="100%"
       width={"50%"}
     >
+      <TaxiSelectionProvider value={taxiSelection}>
       <div className="overflow-y-scroll h-screen px-6 max-ph:px-4">
         {/* Header */}
         <div className="py-4 bg-[#fafafa] z-[900] flex flex-row items-center gap-3 pb-2 sticky top-0">
@@ -1528,6 +1567,13 @@ const getTitle = () => {
             </div>
           ) : null}
 
+          {taxiSelection.enabled ? (
+            <div className="rounded-2xl border-sm border-solid border-[#f2e6a8] bg-[#fffdf0] px-3 py-2 mb-3 ttw-type-small text-[#6b5600]">
+              No single taxi seats {fleet?.pax} — add as many as you need and we
+              will book them together.
+            </div>
+          ) : null}
+
           {transferQuotes.length > 0 && (
             <div className="space-y-3">
               {transferQuotes.map((quote, index) => (
@@ -1541,6 +1587,10 @@ const getTitle = () => {
                   key={quote.result_index || index}
                   data={quote}
                   handleAirportTaxiSelect={handleSubmit}
+                  disabled={!!addingKey && addingKey !== `quote-${index}`}
+                  onBusyChange={(busy) =>
+                    setAddingKey(busy ? `quote-${index}` : null)
+                  }
                   combo={false}
                   selectedBooking={selectedBooking}
                   getPaymentHandler={getPaymentHandler}
@@ -1571,7 +1621,21 @@ const getTitle = () => {
             </button>
           ) : null}
         </div>
+
+        {/* Pinned to the bottom of the scroll area: the quote list is long, and having
+            picked a taxi near the end of it you should not have to scroll further to
+            find the total. */}
+        <SelectedTaxisBar
+          symbol={
+            (fleet?.currency && currencySymbols?.[fleet.currency]) ||
+            (currency?.currency && currencySymbols?.[currency.currency]) ||
+            "\u20b9"
+          }
+          submitting={submittingFleet}
+          onSubmit={handleAddSelectedTaxis}
+        />
       </div>
+      </TaxiSelectionProvider>
       <SearchLoaderOverlay
         isVisible={isOpen && isLoadingQuotes && !transferQuotes?.length}
         displayText="Finding best transfers for you"

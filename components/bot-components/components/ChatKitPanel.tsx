@@ -60,6 +60,8 @@ import OtpCard from "./IntakeForm/OtpCard";
 import { parseFormFields, parseShowIntakeForm, parseIntakeFormWidgetId, isIntakeFormWidgetId, composePartialIntakeContext } from "./IntakeForm/intakePrompt";
 import { TOTAL_STEPS } from "./IntakeForm/constants";
 import { parseShowPricingForm, parsePricingFormWidgetId, parsePricingCardCopy, isPricingFormWidgetId } from "./PricingForm/pricingPrompt";
+import ReleaseItineraryCta from "./ReleaseItineraryCta";
+import { isStaffEmail } from "../../../utils/staffUser";
 
 const PAGINATION_SCROLL_THRESHOLD = 80;
 const CHATKIT = CHATKIT_HOST;
@@ -916,8 +918,7 @@ startEmptyIntake = false,
       (!!reduxUserName &&
         !!ownerName &&
         reduxUserName.trim().toLowerCase() === ownerName.toLowerCase()));
-  const isStaffUser =
-    !!reduxEmail && reduxEmail.toLowerCase().endsWith("@thetarzanway.com");
+  const isStaffUser = isStaffEmail(reduxEmail);
 
   // True when a logged-in, non-staff user is viewing another person's
   // itinerary — block the composer and quick replies in that case.
@@ -4167,6 +4168,17 @@ const handleShowLogin = useCallback(() => {
             </span>
           </div>
         </div>
+        {/* Staff-only: release the itinerary to the customer. Sits at the right
+            corner of Kaira's header — `.kp-header-info` is flex:1, so a trailing
+            child lands there without extra layout. Desktop only: `!isMobile`
+            keeps it off phones entirely (no mount, no GET), where this row is
+            already carrying the menu. */}
+        {isStaffUser && !isMobile && (
+          <ReleaseItineraryCta
+            itineraryId={localItineraryId}
+            className="max-ph:hidden"
+          />
+        )}
         {mobileMenu && <div className="md:hidden flex-shrink-0">{mobileMenu}</div>}
         {/* <button
           onClick={() => setShowControls((v) => !v)}

@@ -24,13 +24,8 @@ import { updateFlightBookingWarning } from "../../../../../services/bookings/Upd
 import { useAnalytics } from "../../../../../hooks/useAnalytics";
 import { currencySymbols } from "../../../../../data/currencySymbols";
 import { MdOutlineLuggage } from "react-icons/md";
-import {
-  getVehicleCount,
-  MultiVehicleNote,
-  PerTaxiPrice,
-  resolvePerVehicleTotal,
-  VehicleCountBadge,
-} from "../../MultiVehicleInfo";
+import { useTaxiSelection } from "../../fleet/TaxiSelectionContext";
+import QuantityStepper from "../../fleet/QuantityStepper";
 
 
 const Container = styled.div`
@@ -103,7 +98,13 @@ const TaxiHeading = styled.p`
 
 const Section = (props) => {
   let isPageWide = media("(min-width: 768px)");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoadingState] = useState(false);
+  // Mirrors this card's spinner up to the list, which greys out every other option while
+  // one is being added.
+  const setLoading = (value) => {
+    setLoadingState(value);
+    props?.onBusyChange?.(value);
+  };
   const dispatch = useDispatch();
   const itineraryId = useSelector((state) => state.ItineraryId);
   const [showWarningModal, setShowWarningModal] = useState(false);
@@ -324,17 +325,18 @@ const Section = (props) => {
   if (props.data?.taxi_category?.bag_capacity)
     bagCapacity += props.data.taxi_category.bag_capacity;
 
-  // >1 only when no single cab seats the group; then price.total is the convoy
-  // total and per_vehicle_total is what one cab costs.
-  const vehicleCount = getVehicleCount(props.data);
-  const perVehicleTotal = resolvePerVehicleTotal(
-    props.data,
-    props.data?.price?.total,
-    vehicleCount,
-  );
   const currencySymbol = currency?.currency
     ? currencySymbols?.[currency?.currency]
     : "₹";
+
+  // Every quote is one taxi at one taxi's price. When no single vehicle seats the party the
+  // drawer turns on multi-select: this card's button becomes a quantity stepper and the
+  // floating bar at the bottom of the drawer commits everything picked, in one booking.
+  // Null outside such a drawer, so the card is unchanged everywhere else.
+  const selectionContext = useTaxiSelection();
+  const resultIndex = String(props.data?.result_index ?? "");
+  const multiSelect = Boolean(selectionContext?.enabled) && !!resultIndex;
+  const quantity = Number(selectionContext?.selection?.[resultIndex] || 0);
 
 
   if (props.data)
@@ -425,7 +427,11 @@ const Section = (props) => {
                   "One-way Taxi"
                 )}
               </span>
-              <VehicleCountBadge count={vehicleCount} />
+              {quantity > 0 ? (
+                <span className="shrink-0 ttw-type-small font-600 px-2 py-[2px] rounded-full bg-[#fff6cc] text-[#6b5600] whitespace-nowrap">
+                  {quantity} added
+                </span>
+              ) : null}
             </div>
 
             {<div className="text-sm font-400 leading-lg-md text-[#445069]">{props.data?.taxi_category?.type}</div>}
@@ -444,15 +450,10 @@ const Section = (props) => {
                       {bagCapacity} Luggage bags
                     </span>
                   )}
-                  {vehicleCount > 1 && (
+                  {multiSelect && (
                     <span className="whitespace-nowrap">(per taxi)</span>
                   )}
                 </div>
-                <MultiVehicleNote
-                  count={vehicleCount}
-                  seatingCapacity={props.data?.taxi_category?.seating_capacity}
-                  className="mt-1"
-                />
                 <div>
                   {/* <Accordion
                     borderRadius="0.5rem"
@@ -507,14 +508,34 @@ const Section = (props) => {
               <span className="text-lg font-mono text-[#0b1220] 2xl-md">
                 {currencySymbol + getIndianPrice(Math.ceil(props.data.price.total))}
               </span>
-              <PerTaxiPrice
-                count={vehicleCount}
-                perVehicleTotal={perVehicleTotal}
-                symbol={currencySymbol}
-              />
+              {multiSelect && quantity > 1 ? (
+                <span className="ttw-type-small text-[#445069] whitespace-nowrap">
+                  {currencySymbol}
+                  {getIndianPrice(
+                    Math.ceil(Number(props.data.price.total) * quantity),
+                  )}{" "}
+                  for {quantity}
+                </span>
+              ) : null}
             </div>
             <div className="flex items-end justify-center">
-              {loading ? (
+              {multiSelect ? (
+                // The commit lives in the floating bar: this leg is one booking however
+                // many cars it holds, so committing per card would just replace the
+                // previous one.
+                <QuantityStepper
+                  value={quantity}
+                  disabled={selectionContext?.busy}
+                  label={
+                    props.data?.taxi_category?.model_name ||
+                    props.data?.taxi_category?.type ||
+                    "taxi"
+                  }
+                  onChange={(next) =>
+                    selectionContext?.setQuantity(resultIndex, next)
+                  }
+                />
+              ) : loading ? (
                 <PulseLoader size={8} speedMultiplier={0.6} color="#111" />
               ) : props?.isSelected ? (
                 <div className="flex items-center gap-1">
@@ -522,10 +543,17 @@ const Section = (props) => {
                 </div>
               ) : (
                 <div
-                  className="flex items-center gap-1 cursor-pointer"
-                  onClick={handleUpdate}
+                  className={`flex items-center gap-1 ${
+                    props?.disabled ? "cursor-not-allowed" : "cursor-pointer"
+                  }`}
+                  onClick={props?.disabled ? undefined : handleUpdate}
                 >
-                  <button className="ttw-btn-fill-yellow max-ph:w-full">Add to Itinerary</button>
+                  <button
+                    disabled={props?.disabled}
+                    className="ttw-btn-fill-yellow max-ph:w-full disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Add to Itinerary
+                  </button>
                 </div>
               )}
             </div>
