@@ -1955,7 +1955,7 @@ const Details = (props) => {
 
   const _startRazorpayHandler = (data, paymentType) => {
     let razorpayOptions = {
-      key: "rzp_live_t1AzJZflHj0jWg",
+      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY,
       amount: data.amount * 100 || data?.discounted_cost * 100,
       name: "The Tarzan Way Payment Portal",
       description: "Payment for your itinerary",
