@@ -12,9 +12,16 @@ import { useEffect, useState } from "react";
 import Layout from "../../components/Layout";
 import * as authaction from "../../store/actions/auth";
 import CinematicThemeLanding from "../../components/theme/cinematic/CinematicThemeLanding";
-import { useSeedChat } from "../../components/theme/cinematic/useSeedChat";
+import {
+  useSeedChat,
+  useOpenThemeForm,
+} from "../../components/theme/cinematic/useSeedChat";
+import { useThemeSelectionState } from "../../components/theme/cinematic/ThemeSelection";
 import ActivityDetailsDrawer from "../../components/drawers/activityDetails/ActivityDetailsDrawer";
 import type { CinematicThemeConfig } from "../../components/theme/cinematic/types";
+import { THEME_PALETTES } from "../../components/theme/cinematic/palettes";
+
+const THEME_SLUG = "lapland";
 
 // ── Dummy prompts (one per clickable card) ──────────────────────────────────
 const PROMPTS = {
@@ -101,6 +108,8 @@ const IMG = {
 };
 
 const laplandConfig: CinematicThemeConfig = {
+  // Arctic indigo — carries every CTA, the saved state and the docked bar.
+  theme: THEME_PALETTES["lapland"],
   header: {
     title: "Lapland",
     subtitle: "Theme · Dec – Mar",
@@ -174,6 +183,8 @@ const laplandConfig: CinematicThemeConfig = {
     {
       type: "list",
       heading: { lead: "Where you'd", accent: "sleep" },
+      selectable: true,
+      itemKind: "base",
       rows: [
         {
           name: "Rovaniemi",
@@ -221,6 +232,7 @@ const laplandConfig: CinematicThemeConfig = {
     // ── Which Lapland is yours? ──
     {
       type: "trips",
+      ctaLabel: "Create plan →",
       heading: { lead: "Which Lapland is", accent: "yours?" },
       cards: [
         {
@@ -305,6 +317,8 @@ const laplandConfig: CinematicThemeConfig = {
     {
       type: "list",
       compact: true,
+      selectable: true,
+      itemKind: "activity",
       heading: { lead: "Worth", accent: "the cold" },
       rows: [
         {
@@ -537,27 +551,12 @@ const laplandConfig: CinematicThemeConfig = {
       ],
       footerCta: { label: "View all destinations", href: "/destinations" },
     },
-    // ── How it works ──
-    {
-      type: "steps",
-      heading: {
-        eyebrow: "No markups · pay only for what you book",
-        lead: "Sketch it. I'll",
-        accent: "finish it.",
-      },
-      steps: [
-        { n: "1", title: "Tell me", sub: "where", meta: "~30 sec" },
-        { n: "2", title: "I plan it", sub: "all", meta: "~90 sec · you watch it build" },
-        { n: "3", title: "Book in", sub: "one tap", meta: "holds, tickets, tables — handled" },
-      ],
-      cta: { label: "Start planning", prompt: PROMPTS.hero },
-      note: "10,000+ trips · rated 4.9 across all of them",
-    },
   ],
   askBar: {
     placeholder: "Ask me about Lapland…",
     cta: "Ask Kaira",
     prompt: PROMPTS.ask,
+    buildCta: "Build trip",
   },
 };
 
@@ -574,6 +573,12 @@ const defaultActivityDate = () => {
 
 const LaplandThemePage = ({ checkAuthState }: { checkAuthState: () => void }) => {
   const seedChat = useSeedChat();
+  const selection = useThemeSelectionState();
+  const openThemeForm = useOpenThemeForm();
+  const handleSelectPrompt = (prompt: string) =>
+    seedChat(prompt, { items: selection.items, slug: THEME_SLUG });
+  const handleBuild = (note?: string) =>
+    openThemeForm(THEME_SLUG, selection.items, note);
   // Read-only activity details drawer (opened from the "Worth the cold" list).
   const [activityDrawer, setActivityDrawer] = useState<{
     show: boolean;
@@ -669,8 +674,10 @@ const LaplandThemePage = ({ checkAuthState }: { checkAuthState: () => void }) =>
       </Head>
       <CinematicThemeLanding
         config={laplandConfig}
-        onSelectPrompt={seedChat}
+        onSelectPrompt={handleSelectPrompt}
         onSelectActivity={openActivity}
+        selection={selection}
+        onBuild={handleBuild}
       />
       {/* Read-only activity details — no Add/Remove CTA on this marketing page */}
       <ActivityDetailsDrawer

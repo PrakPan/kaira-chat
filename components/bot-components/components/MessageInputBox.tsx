@@ -280,11 +280,16 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const dictateRef = useRef<any>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const plusWrapRef = useRef<HTMLSpanElement>(null);
 
   // Tracks what the user manually typed (base for appending transcript)
   const [trackTyped, setTrackTyped] = useState("");
   const [isDragOver, setIsDragOver] = useState(false);
   const dragCounterRef = useRef(0);
+  // Phone-only "+" menu (attach a file / start dictation) and the recording
+  // flag that brings the inline mic back while dictation runs.
+  const [plusOpen, setPlusOpen] = useState(false);
+  const [isDictating, setIsDictating] = useState(false);
 
   const [placeholderIdx, setPlaceholderIdx] = useState(0);
   const [fadingOut, setFadingOut] = useState(false);
@@ -352,12 +357,37 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
 
   // ── File selection ──────────────────────────────────────────────────────
   const handleAttachClick = useCallback(() => {
+    setPlusOpen(false);
     if (requireAuth) {
       onAuthRequired?.();
       return;
     }
     fileInputRef.current?.click();
   }, [requireAuth, onAuthRequired]);
+
+  const handleDictateClick = useCallback(() => {
+    setPlusOpen(false);
+    dictateRef.current?.start?.();
+  }, []);
+
+  // Dismiss the "+" menu on an outside tap or Escape.
+  useEffect(() => {
+    if (!plusOpen) return;
+    const onPointer = (e: MouseEvent | TouchEvent) => {
+      if (!plusWrapRef.current?.contains(e.target as Node)) setPlusOpen(false);
+    };
+    const onEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setPlusOpen(false);
+    };
+    document.addEventListener("mousedown", onPointer);
+    document.addEventListener("touchstart", onPointer);
+    document.addEventListener("keydown", onEsc);
+    return () => {
+      document.removeEventListener("mousedown", onPointer);
+      document.removeEventListener("touchstart", onPointer);
+      document.removeEventListener("keydown", onEsc);
+    };
+  }, [plusOpen]);
 
   const handleFileInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -462,6 +492,34 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
         .kp-send:hover { transform: translateX(2px); }
         .kp-send:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
         .kp-send svg { width: 11px; height: 11px; }
+
+        /* Sheen — the same slow highlight sweep the theme pages' "Start
+           planning" CTA carries (.ctl-sheen / ctlBarShimmer in
+           CinematicThemeLanding), so an armed Send reads as the same kind of
+           live primary action. Runs only while the button is enabled; the
+           outlined "nothing to send yet" state stays flat. */
+        .kp-send { position: relative; overflow: hidden; }
+        .kp-sheen {
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          opacity: 0;
+          background-image: linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent);
+          background-size: 64px 100%;
+          background-repeat: no-repeat;
+          background-position: left center;
+        }
+        .kp-send:not(:disabled) .kp-sheen {
+          opacity: 1;
+          animation: kpSheen 3s cubic-bezier(.4,0,.2,1) infinite;
+        }
+        @keyframes kpSheen {
+          0% { transform: translateX(-100%) skewX(-18deg); }
+          55%, 100% { transform: translateX(100%) skewX(-18deg); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .kp-send:not(:disabled) .kp-sheen { animation: none; opacity: 0; }
+        }
         .kp-stop {
           margin-left: auto;
           height: 30px;
@@ -478,6 +536,169 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
           font-size: 12px;
           font-weight: 700;
         }
+        .kp-foot {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          margin-top: 6px;
+          padding-top: 6px;
+          border-top: 1px solid #f4f3ec;
+        }
+        .kp-send-plane { display: none; }
+
+        /* Defaults for the welcome-screen hero input, which keeps the two-row
+           bordered card: the pill wrapper is inert and the "+" is hidden, so
+           .kp-field and .kp-foot stay direct children of the card. */
+        .kp-row { display: contents; }
+        .kp-plus-wrap { display: none; }
+
+        /* ── Chat composer ─────────────────────────────────────────────────
+           One rounded pill holding, left to right: a "+" button, the field,
+           and a "Send" pill (Kaira mock). Same shape at every width — phone
+           and desktop are identical.
+
+           The outer .kp-chat-input keeps NO border, radius or padding of its
+           own; the chrome moves onto .kp-row, which floats as a lifted pill
+           over the thread. .kp-composer-wrap (ChatKitPanel) supplies the
+           surrounding inset.
+
+           Scoped to .kp-composer-wrap on purpose. This component is also the
+           welcome screen's hero input (.cws-input-wrap), which has no bar
+           around it — there the bordered card IS the composer, so it keeps the
+           two-row treatment.
+
+           Attachments (drag-and-drop, or the "+" menu) keep a full-width row
+           above the pill when present. */
+        .kp-composer-wrap .kp-chat-input {
+          display: flex;
+          flex-direction: column;
+          gap: 7px;
+          border: 0 !important;
+          border-radius: 0 !important;
+          padding: 0 !important;
+          background: transparent !important;
+          box-shadow: none !important;
+        }
+        .kp-composer-wrap .kp-row {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          border: 1px solid #dcdfe5;
+          border-radius: 999px;
+          background: #fff;
+          padding: 7px 8px 7px 7px;
+          /* Lifts the pill off the thread — with the bar's top rule gone this
+             shadow is what separates composer from conversation. */
+          box-shadow: 0 10px 28px -14px rgba(11,18,32,0.28);
+          transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .kp-composer-wrap .kp-chat-input:focus-within .kp-row {
+          border-color: #0b1220;
+          box-shadow: 0 12px 32px -14px rgba(11,18,32,0.34);
+        }
+        .kp-composer-wrap .kp-field { flex: 1; min-width: 0; }
+        .kp-composer-wrap .kp-foot {
+          flex: 0 0 auto;
+          border-top: 0;
+          margin-top: 0;
+          padding-top: 0;
+          gap: 0;
+        }
+        /* The inline attach/mic move into the "+" menu. The mic comes back
+           on its own while recording — it is the only way to stop. */
+        .kp-composer-wrap .kp-attach { display: none !important; }
+        .kp-composer-wrap .kp-mic { display: none !important; }
+        .kp-composer-wrap .kp-mic.is-dictating { display: inline-flex !important; }
+
+        .kp-composer-wrap .kp-plus-wrap {
+          display: block;
+          position: relative;
+          flex: 0 0 auto;
+        }
+        .kp-composer-wrap .kp-plus {
+          width: 30px;
+          height: 30px;
+          display: grid;
+          place-items: center;
+          padding: 0;
+          border: 1px solid #dcdfe5;
+          border-radius: 50%;
+          background: #fff;
+          color: #0b1220;
+          cursor: pointer;
+          transition: background 0.15s, border-color 0.15s;
+        }
+        .kp-composer-wrap .kp-plus:hover { background: #fafaf5; }
+        .kp-composer-wrap .kp-plus[aria-expanded="true"] {
+          background: #0b1220;
+          border-color: #0b1220;
+          color: #fff;
+        }
+        .kp-composer-wrap .kp-plus svg { width: 15px; height: 15px; }
+
+        .kp-composer-wrap .kp-send,
+        .kp-composer-wrap .kp-stop {
+          height: auto;
+          padding: 7px 14px;
+          border-radius: 999px;
+          font-size: 11.5px;
+          font-weight: 700;
+          gap: 0;
+        }
+        /* Nothing typed yet → the mock's outlined pill, inactive. The moment
+           there is something to send it fills in black with white text. */
+        .kp-composer-wrap .kp-send {
+          background: #fff;
+          color: #0b1220;
+          border: 1.5px solid #0b1220;
+        }
+        .kp-composer-wrap .kp-send:disabled { opacity: 1; }
+        .kp-composer-wrap .kp-send:not(:disabled) {
+          background: #0b1220;
+          color: #fff;
+        }
+        .kp-composer-wrap .kp-send:hover { transform: none; }
+        .kp-composer-wrap .kp-stop { border: 1.5px solid #1c1917; }
+        .kp-composer-wrap .kp-send-arrow,
+        .kp-composer-wrap .kp-send-plane { display: none; }
+        .kp-composer-wrap .kp-stop svg { width: 12px; height: 12px; margin-right: 5px; }
+
+        /* "+" menu — a small card floated above the button. */
+        .kp-plus-menu {
+          position: absolute;
+          bottom: calc(100% + 10px);
+          left: 0;
+          z-index: 30;
+          min-width: 186px;
+          padding: 6px;
+          background: #fff;
+          border: 1px solid #dcdfe5;
+          border-radius: 14px;
+          box-shadow: 0 18px 44px -18px rgba(11,18,32,0.35);
+          animation: kpPlusIn 0.14s cubic-bezier(.2,.7,.3,1);
+        }
+        @keyframes kpPlusIn {
+          from { opacity: 0; transform: translateY(6px); }
+          to   { opacity: 1; transform: none; }
+        }
+        .kp-plus-item {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          width: 100%;
+          padding: 9px 10px;
+          border: 0;
+          background: none;
+          border-radius: 10px;
+          font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+          font-size: 12.5px;
+          font-weight: 600;
+          color: #0b1220;
+          text-align: left;
+          cursor: pointer;
+        }
+        .kp-plus-item:hover { background: #fafaf5; }
+        .kp-plus-item svg { width: 15px; height: 15px; flex: 0 0 15px; color: #8a93a6; }
       ` }} />
 
       {/* Hidden file input */}
@@ -492,6 +713,7 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
       {/* Drag-over overlay hint */}
       {isDragOver && (
         <div
+          className="kp-drop"
           style={{
             textAlign: "center",
             padding: "6px 0",
@@ -507,6 +729,7 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
       {/* Attachment cards */}
       {attachments.length > 0 && (
         <div
+          className="kp-attachments"
           style={{
             display: "flex",
             gap: 8,
@@ -527,8 +750,62 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
         </div>
       )}
 
+      {/* The composer pill. On the welcome-screen hero this is
+          `display: contents`, so the field and the action row stay direct
+          children of that surface's bordered card. */}
+      <div className="kp-row">
+
+      {/* "+" — opens the attach/voice menu. It replaces the inline paperclip
+          and mic, which are hidden inside the pill. */}
+      {showAttach && (
+        <span className="kp-plus-wrap" ref={plusWrapRef}>
+          <button
+            type="button"
+            className="kp-plus"
+            aria-haspopup="menu"
+            aria-expanded={plusOpen}
+            aria-label="Add attachment or voice"
+            title="Add"
+            onClick={() => setPlusOpen((v) => !v)}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
+              <path d="M12 5v14" />
+              <path d="M5 12h14" />
+            </svg>
+          </button>
+
+          {plusOpen && (
+            <div className="kp-plus-menu" role="menu">
+              <button
+                type="button"
+                role="menuitem"
+                className="kp-plus-item"
+                onClick={handleAttachClick}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+                </svg>
+                Attach files
+              </button>
+              <button
+                type="button"
+                role="menuitem"
+                className="kp-plus-item"
+                onClick={handleDictateClick}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="9" y="2" width="6" height="12" rx="3" />
+                  <path d="M19 10a7 7 0 0 1-14 0M12 19v3" />
+                </svg>
+                Voice message
+              </button>
+            </div>
+          )}
+        </span>
+      )}
+
       {/* Textarea + animated placeholder */}
-      <div style={{ position: "relative" }}>
+      <div className="kp-field" style={{ position: "relative" }}>
         <style dangerouslySetInnerHTML={{ __html: `
           @keyframes slideUpIn {
             from { opacity: 0; transform: translateY(10px); }
@@ -563,7 +840,14 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
             fontSize: 16,
             color: "#0b1220",
             lineHeight: "22px",
-            minHeight: 24,
+            // `block` kills the inline-block baseline gap: as an inline element
+            // the textarea sits on a line box that reserves descender space
+            // below it, so .kp-field measured ~5px taller than the text and the
+            // phone pill's align-items:center pushed the caret visibly high.
+            display: "block",
+            // Match lineHeight exactly so a single row is 22px tall and the
+            // centered placeholder overlay lands on the same baseline.
+            minHeight: 22,
             maxHeight: 120,
             border: "none",
             padding: 0,
@@ -575,11 +859,18 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
         {!value && (
           <span
             key={placeholderIdx}
-            className={fadingOut ? "ph-slide-out" : "ph-slide-in"}
+            className={`kp-ph ${fadingOut ? "ph-slide-out" : "ph-slide-in"}`}
             style={{
               position: "absolute",
+              // Stretched top-to-bottom and centered rather than pinned to the
+              // top, so the hint sits on the caret's line whatever height the
+              // field resolves to.
               top: 0,
+              bottom: 0,
               left: 0,
+              right: 0,
+              display: "flex",
+              alignItems: "center",
               pointerEvents: "none",
               userSelect: "none",
               fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
@@ -597,23 +888,17 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
         )}
       </div>
 
-      {/* Footer action row — mirrors .chat-input-foot */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 4,
-          marginTop: 6,
-          paddingTop: 6,
-          borderTop: "1px solid #f4f3ec",
-        }}
-      >
+      {/* Footer action row — mirrors .chat-input-foot. Inside the chat composer
+          this collapses into the pill itself (see the .kp-composer-wrap block
+          in kp-chat-input's stylesheet): attach and mic move into the "+"
+          menu, and only the Send pill stays beside the input. */}
+      <div className="kp-foot">
         {/* Left: attach */}
         {showAttach ? (
           <button
             type="button"
             onClick={handleAttachClick}
-            className="kp-icon-btn"
+            className="kp-icon-btn kp-attach"
             title="Attach"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -623,14 +908,17 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
         ) : null}
 
         {/* Mic (Dictate) */}
-        <Dictate
-          ref={dictateRef}
-          stopDictation={stopDictation}
-          onTranscriptChange={handleTranscriptChange}
-          disabled={disabled || isStreaming}
-          requireAuth={requireAuth}
-          onAuthRequired={onAuthRequired}
-        />
+        <span className={`kp-mic${isDictating ? " is-dictating" : ""}`}>
+          <Dictate
+            ref={dictateRef}
+            stopDictation={stopDictation}
+            onTranscriptChange={handleTranscriptChange}
+            onListeningChange={setIsDictating}
+            disabled={disabled || isStreaming}
+            requireAuth={requireAuth}
+            onAuthRequired={onAuthRequired}
+          />
+        </span>
 
         {/* Right: send/stop pill */}
         {isStreaming ? (
@@ -641,7 +929,7 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
             className="kp-stop"
           >
             <StopIcon />
-            Stop
+            <span className="kp-btn-label">Stop</span>
           </button>
         ) : (
           <button
@@ -651,13 +939,21 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
             title="Send"
             className="kp-send"
           >
-            Send
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <span aria-hidden className="kp-sheen" />
+            <span className="kp-btn-label">Send</span>
+            <svg className="kp-send-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M5 12h14" />
               <path d="m12 5 7 7-7 7" />
             </svg>
+            {/* Kept for the round-button variant; hidden in both surfaces
+                today, which show the "Send" label instead. */}
+            <svg className="kp-send-plane" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M22 2 11 13" />
+              <path d="M22 2 15 22l-4-9-9-4z" />
+            </svg>
           </button>
         )}
+      </div>
       </div>
     </div>
   );

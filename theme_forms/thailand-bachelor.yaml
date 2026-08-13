@@ -1,0 +1,99 @@
+# theme_forms/thailand-bachelor.yaml
+#
+# Mini-form spec for /theme/thailand-bachelor. The frontend mirror of this file
+# lives at components/theme/cinematic/themeForms/thailand-bachelor.ts and must
+# stay 1:1 with it.
+#
+# The "date window" here is the ROUTE. A bachelor/bachelorette group picks the
+# bases first and bends the dates around the villa.
+#
+# Route ranking is from live booking data (mercury, Thailand trips with 6+
+# adults, all-time):
+#   Phuket only ................. 58 trips  (avg 5 nights, avg 12 pax)  ← one-base
+#   Phuket ↔ Krabi .............. 46 trips  (avg 5–6 nights, avg 8 pax) ← most-picked multi-city
+#   Bangkok ↔ Phuket ............ 35 trips  (avg 6 nights, avg 8 pax)
+#   Bangkok ↔ Pattaya ........... 65 trips  (avg 5 nights) — party-strip, not the villa crowd
+# Phuket → Krabi is therefore the MOST PICKED window for a two-base send-off;
+# the one-base Phuket weekender is the biggest single-base pick.
+
+slug: thailand-bachelor
+display: Thailand bachelor & bachelorette
+tagline: >-
+  The last big one before the wedding. Tell me the headcount and I'll hold a
+  villa, stagger the transfers, and keep the boats private.
+voice: >-
+  Dry and unbothered. Talks villas over hotel rooms, Bangla Road, longtails,
+  dry days, and getting ten people onto one boat without a group chat meltdown.
+
+copy:
+  dates_title: Which send-off is yours?
+  dates_sub: Thailand runs year round. Pick the bases, I'll bend the dates.
+  pax_title: How many of you?
+  pax_sub: So I can size the villa and the boat, not eight hotel rooms.
+  footer: That's the whole form. The page already told me it's the bachelor trip.
+  cta: Draft the send-off →
+
+date_windows:
+  - key: phuket_krabi
+    label: The Last Hurrah · 6N
+    range: ["2026-11-07", "2026-11-13"]
+    nights: 6
+    blurb: Phuket → Krabi, beach clubs then longtails
+    tag: MOST PICKED
+    skeleton: phuket_krabi
+    fare_note: >-
+      The most-booked two-base group route (46 trips, avg 8 pax). HKT in / KBV
+      out, one ferry between. Nov–Feb is the flat-sea window.
+
+  - key: bangkok_phuket
+    label: City Meets Beach · 7N
+    range: ["2026-12-05", "2026-12-12"]
+    nights: 7
+    blurb: Bangkok → Phuket, rooftops then beach clubs
+    tag: CITY + BEACH
+    skeleton: bangkok_phuket
+    fare_note: >-
+      BKK in / HKT out, one domestic flight. Easiest route when the group lands
+      in waves — Bangkok absorbs staggered arrivals.
+
+  - key: krabi_samui
+    label: Private Paradise · 8N
+    range: ["2027-01-09", "2027-01-17"]
+    nights: 8
+    blurb: Krabi → Koh Samui, private villas both ends
+    tag: VILLA HEAVY
+    skeleton: krabi_koh_samui
+    fare_note: >-
+      KBV in / USM out, one flight between. Samui seas stay calmer than the
+      Andaman side. Jan villas for 8+ book four months ahead.
+
+  - key: phuket_one_base
+    label: The One-Base Weekender · 5N
+    range: ["2026-10-30", "2026-11-04"]
+    nights: 5
+    blurb: One villa in Phuket, boats out and back daily
+    tag: NOBODY MOVES
+    skeleton: phuket_one_base
+    fare_note: >-
+      The biggest single-base group pick (58 trips, avg 12 pax). Nobody changes
+      hotels; minimal logistics for a large group.
+
+pax_presets:
+  - Group of 6
+  - Group of 8
+  - Group of 10
+  - 12 or more
+
+allow_exact_dates: true
+
+seed_prompts:
+  - Make it one base, no moving
+  - Add a private boat day
+  - Check my dates against dry days
+  - Keep it under ₹1 lakh a head
+
+hero:
+  image: https://images.thetarzanway.com/media/activities/176782413521073794364929199219.webp
+  title: Thailand bachelor & bachelorette
+  subtext: Villas, longtails, beach clubs — and a plan that survives ten people.
+  tag: Thailand · year round

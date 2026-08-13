@@ -12,16 +12,22 @@ import { useRouter } from "next/router";
 import Layout from "../../components/Layout";
 import * as authaction from "../../store/actions/auth";
 import CinematicThemeLanding from "../../components/theme/cinematic/CinematicThemeLanding";
-import { useSeedChat } from "../../components/theme/cinematic/useSeedChat";
+import {
+  useSeedChat,
+  useOpenThemeForm,
+} from "../../components/theme/cinematic/useSeedChat";
+import { useThemeSelectionState } from "../../components/theme/cinematic/ThemeSelection";
 import ActivityDetailsDrawer from "../../components/drawers/activityDetails/ActivityDetailsDrawer";
 import CityDetailsDrawer from "../../components/drawers/cityDetails/CityDetailsDrawer";
 import POIDetailsDrawer from "../../components/drawers/poiDetails/POIDetailsDrawer";
 import type { CinematicThemeConfig } from "../../components/theme/cinematic/types";
+import { THEME_PALETTES } from "../../components/theme/cinematic/palettes";
 
 const U = "https://images.unsplash.com";
 const VISA = "https://visa.thetarzanway.com/country";
 const CHAT = "https://thetarzanway.com/chat";
 const PAGE = "/theme/christmas-markets";
+const THEME_SLUG = "christmas-markets";
 
 // Catalog activity ids for the "Experiences I'd actually book" cards (from the
 // Mercury BE links) — each opens the read-only activity details drawer.
@@ -149,6 +155,8 @@ const PROMPTS = {
 };
 
 const christmasMarketsConfig: CinematicThemeConfig = {
+  // Market green — carries every CTA, the saved state and the docked bar.
+  theme: THEME_PALETTES["christmas-markets"],
   header: {
     title: "Christmas markets & NYE",
     subtitle: "Theme · Europe · multi-city",
@@ -193,6 +201,7 @@ const christmasMarketsConfig: CinematicThemeConfig = {
     // ── Routes ──
     {
       type: "cards",
+      ctaLabel: "Create plan →",
       heading: {
         eyebrow: "Multi-city · swipe",
         lead: "Three ways to",
@@ -223,9 +232,11 @@ const christmasMarketsConfig: CinematicThemeConfig = {
         },
       ],
     },
-    // ── Experiences (each opens the activity details drawer) ──
+    // ── Experiences (card click opens the drawer; "+ Add" saves to the trip) ──
     {
       type: "cards",
+      selectable: true,
+      itemKind: "activity",
       heading: { lead: "Experiences I'd", accent: "actually book" },
       cards: [
         {
@@ -262,6 +273,7 @@ const christmasMarketsConfig: CinematicThemeConfig = {
           line: "Behind the scenes with the Lipizzaner horses.",
           tag: "Vienna",
           activityId: ACTIVITY.spanishRiding,
+          objectPosition: "center 90%"
         },
         {
           image: IMG.expCanalCruise,
@@ -273,8 +285,15 @@ const christmasMarketsConfig: CinematicThemeConfig = {
       ],
     },
     // ── Markets — tap a city to open its city details (all its tours) ──
+    // Saveable: "+ Add" puts the city in the trip, the card body still opens
+    // the city page for its tours/activities. These are also the cities the
+    // mini-form's route picks from, so any that the chosen route already
+    // covers are dropped before the submission reaches /chatkit (see
+    // ThemeIntakeForm's route de-dupe) rather than being sent twice.
     {
       type: "list",
+      selectable: true,
+      itemKind: "city",
       heading: {
         lead: "Which square is",
         accent: "worth the stop",
@@ -319,6 +338,7 @@ const christmasMarketsConfig: CinematicThemeConfig = {
     // ── Trips ──
     {
       type: "trips",
+      ctaLabel: "Create plan →",
       heading: {
         lead: "Which December is",
         accent: "yours?",
@@ -358,6 +378,8 @@ const christmasMarketsConfig: CinematicThemeConfig = {
     // ── Where to come in from the cold (dark) ──
     {
       type: "eats",
+      selectable: true,
+      itemKind: "cafe",
       heading: { lead: "Where to", accent: "come in from the cold" },
       cards: [
         {
@@ -487,31 +509,31 @@ const christmasMarketsConfig: CinematicThemeConfig = {
         "The €90 fee is the standard Schengen adult application fee. One visa lets you cross freely between all the countries on your route.",
     },
     // ── Read this first ──
-    {
-      type: "list",
-      compact: true,
-      heading: { lead: "Read this", accent: "first" },
-      rows: [
-        {
-          emoji: "🧣",
-          gradient: "linear-gradient(150deg, #16324f, #3d4f7a)",
-          name: "It's cold, but it's dry cold",
-          line: "Layers, gloves, waterproof boots. The Glühwein helps.",
-        },
-        {
-          emoji: "🚆",
-          gradient: "linear-gradient(150deg, #1f8a5a, #f0e9d6 200%)",
-          name: "Rail beats flying between cities",
-          line: "City-centre to city-centre, and you keep the festive views.",
-        },
-        {
-          emoji: "🗓️",
-          gradient: "linear-gradient(150deg, #b84034, #f0e9d6 190%)",
-          name: "Check the closing dates",
-          line: "Markets wind down around the 23rd — build the route around it.",
-        },
-      ],
-    },
+    // {
+    //   type: "list",
+    //   compact: true,
+    //   heading: { lead: "Read this", accent: "first" },
+    //   rows: [
+    //     {
+    //       emoji: "🧣",
+    //       gradient: "linear-gradient(150deg, #16324f, #3d4f7a)",
+    //       name: "It's cold, but it's dry cold",
+    //       line: "Layers, gloves, waterproof boots. The Glühwein helps.",
+    //     },
+    //     {
+    //       emoji: "🚆",
+    //       gradient: "linear-gradient(150deg, #1f8a5a, #f0e9d6 200%)",
+    //       name: "Rail beats flying between cities",
+    //       line: "City-centre to city-centre, and you keep the festive views.",
+    //     },
+    //     {
+    //       emoji: "🗓️",
+    //       gradient: "linear-gradient(150deg, #b84034, #f0e9d6 190%)",
+    //       name: "Check the closing dates",
+    //       line: "Markets wind down around the 23rd — build the route around it.",
+    //     },
+    //   ],
+    // },
     // ── Stories — real Google reviews; each opens the traveller's itinerary ──
     // Review links (for reference):
     //   Naveen — https://share.google/zOTQwy9G4uBLbnddL
@@ -634,27 +656,12 @@ const christmasMarketsConfig: CinematicThemeConfig = {
         },
       ],
     },
-    // ── How it works ──
-    {
-      type: "steps",
-      heading: {
-        eyebrow: "No markups · pay only for what you book",
-        lead: "Sketch it. I'll",
-        accent: "finish it.",
-      },
-      steps: [
-        { n: "1", title: "Tell me your dates", sub: "and rough idea." },
-        { n: "2", title: "I draft the route", sub: "markets, rail, stays." },
-        { n: "3", title: "You book", sub: "only what you love." },
-      ],
-      cta: { label: "Start planning", prompt: PROMPTS.hero },
-      note: "10,000+ trips · rated 4.9 across all of them",
-    },
   ],
   askBar: {
     placeholder: "Ask me about the markets…",
     cta: "Ask Kaira",
     prompt: PROMPTS.askBar,
+    buildCta: "Build trip",
   },
 };
 
@@ -675,6 +682,12 @@ const ChristmasMarketsThemePage = ({
   checkAuthState: () => void;
 }) => {
   const seedChat = useSeedChat();
+  const selection = useThemeSelectionState();
+  const openThemeForm = useOpenThemeForm();
+  const handleSelectPrompt = (prompt: string) =>
+    seedChat(prompt, { items: selection.items, slug: THEME_SLUG });
+  const handleBuild = (note?: string) =>
+    openThemeForm(THEME_SLUG, selection.items, note);
   const router = useRouter();
   // City / restaurant detail drawers are driven by URL query params so the
   // shared card components can open them with a plain href.
@@ -780,8 +793,10 @@ const ChristmasMarketsThemePage = ({
       </Head>
       <CinematicThemeLanding
         config={christmasMarketsConfig}
-        onSelectPrompt={seedChat}
+        onSelectPrompt={handleSelectPrompt}
         onSelectActivity={openActivity}
+        selection={selection}
+        onBuild={handleBuild}
       />
       {/* Read-only activity details — no Add/Remove CTA on this marketing page */}
       <ActivityDetailsDrawer

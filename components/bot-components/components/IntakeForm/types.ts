@@ -56,6 +56,14 @@ export interface IntakeFormState {
   /** True while the `/chatkit/context-chips` request is in flight — the notes
    *  step shows shimmer chips until it resolves. */
   noteHintsLoading: boolean;
+  /** Left-panel hero (image + copy) for the themed mini-form flow. Set when a
+   *  theme page's "Build trip" opens /chat; null on the normal intake flow. */
+  themeHero?: {
+    image: string;
+    title?: string;
+    subtext?: string;
+    tag?: string;
+  } | null;
 }
 
 /** Tolerant contract for the backend `form_fields` client effect. Every key is

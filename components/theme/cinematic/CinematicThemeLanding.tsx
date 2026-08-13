@@ -45,7 +45,13 @@ import type {
   CinematicFeatureCta,
   CinematicHeroConfig,
   CinematicAskBar,
+  CinematicThemePalette,
 } from "./types";
+import {
+  ThemeSelectionProvider,
+  useThemeSelection,
+  type ThemeSelectionValue,
+} from "./ThemeSelection";
 
 // ── Palette ──────────────────────────────────────────────────────────────
 const INK = "#0b1220";
@@ -58,6 +64,116 @@ const DARK = "#0a1020";
 const RED = "#b84034";
 const SAND = "#f4f3ec";
 
+// Pull a catalog element id out of a drawer href (e.g. "?restaurant_id=abc",
+// "?city_id=xyz") so a saved element carries its id in the /chatkit request.
+const drawerIdFromHref = (href?: string): string | undefined => {
+  const m = href?.match(/[?&][a-z_]*id=([^&]+)/i);
+  return m ? decodeURIComponent(m[1]) : undefined;
+};
+
+// ── Theme palette ──────────────────────────────────────────────────────────
+// Every card, CTA and the docked bar read their action colour from here rather
+// than hard-coding the brand yellow, so one page can be Hokkaido blue and the
+// next Hogmanay purple with no layout change. A page opts in via
+// `config.theme`; pages that don't fall back to the neutral ink treatment.
+type ResolvedPalette = Required<CinematicThemePalette>;
+
+const DEFAULT_PALETTE: ResolvedPalette = {
+  accent: INK,
+  accentSoft: SAND,
+  accentOn: "#ffffff",
+  page: PAPER,
+  heroTint: "transparent",
+};
+
+const PaletteContext = React.createContext<ResolvedPalette>(DEFAULT_PALETTE);
+const usePalette = (): ResolvedPalette => React.useContext(PaletteContext);
+
+const resolvePalette = (theme?: CinematicThemePalette): ResolvedPalette => ({
+  ...DEFAULT_PALETTE,
+  ...(theme
+    ? {
+        accent: theme.accent,
+        accentSoft: theme.accentSoft,
+        ...(theme.accentOn ? { accentOn: theme.accentOn } : {}),
+        ...(theme.page ? { page: theme.page } : {}),
+        ...(theme.heroTint ? { heroTint: theme.heroTint } : {}),
+      }
+    : {}),
+});
+
+// ── Card chrome ────────────────────────────────────────────────────────────
+// The new card look: a white tile with a hairline border and an 18px radius
+// that lifts on hover (the lift/shadow itself lives on .ctl-card). Sand-toned
+// sections use a slightly warmer line so the border still reads against them.
+const cardChrome = (onSand?: boolean): React.CSSProperties => ({
+  background: "#ffffff",
+  border: `1px solid ${onSand ? "#e6e3d6" : BORDER}`,
+});
+
+const DARK_CARD: React.CSSProperties = {
+  background: "rgba(255,255,255,0.04)",
+  border: "1px solid rgba(255,255,255,0.08)",
+};
+
+// The mono badge that floats over a card image (city, nights, "2h from
+// Sapporo"): frosted white on light cards so it reads over any photo.
+const IMAGE_BADGE: React.CSSProperties = {
+  background: "rgba(255,255,255,0.94)",
+  backdropFilter: "blur(10px)",
+  WebkitBackdropFilter: "blur(10px)",
+  color: INK,
+  fontSize: 9.5,
+  pointerEvents: "none",
+};
+
+// ── Selection CTA ──────────────────────────────────────────────────────────
+// One shared treatment for every "+ Add" / "✓ Added" pill on the page. Resting
+// state is the accent's pale wash; the saved state fills with the accent so a
+// scan of the page shows exactly what's in the trip. Dark sections (the
+// restaurant/feature scrollers on midnight) keep the same shape on a
+// translucent-white / green pair, since the accent doesn't hold up there.
+const addCtaStyle = (
+  palette: ResolvedPalette,
+  selected: boolean,
+  dark?: boolean,
+): React.CSSProperties => {
+  if (dark)
+    return selected
+      ? {
+          background: "rgba(31,138,90,0.18)",
+          color: "#4fbf87",
+          border: "1px solid rgba(31,138,90,0.45)",
+        }
+      : {
+          background: "rgba(255,255,255,0.08)",
+          color: PAPER,
+          border: "1px solid rgba(255,255,255,0.16)",
+        };
+  return selected
+    ? {
+        background: palette.accent,
+        color: palette.accentOn,
+        border: `1px solid ${palette.accent}`,
+      }
+    : {
+        background: palette.accentSoft,
+        color: palette.accent,
+        border: "1px solid transparent",
+      };
+};
+
+const addCtaLabel = (selected: boolean) => (selected ? "✓ Added" : "+ Add");
+
+// Primary card action ("Create this plan →", "Book this itinerary →") — an
+// accent-filled pill that spans the card foot.
+const primaryCtaStyle = (palette: ResolvedPalette): React.CSSProperties => ({
+  background: palette.accent,
+  color: palette.accentOn,
+  border: "none",
+  boxShadow: `0 8px 20px -12px ${palette.accent}`,
+});
+
 // ── Scoped styles ──────────────────────────────────────────────────────────
 const CinematicStyles = () => (
   <style
@@ -69,12 +185,50 @@ const CinematicStyles = () => (
       .ctl-h { font-family: 'Inter', sans-serif; font-weight: 800; letter-spacing: -0.03em; color: ${INK}; margin: 0; }
       .ctl-h-light { color: ${PAPER}; }
       .ctl-h-yellow { color: ${YELLOW}; }
-      .ctl-card { transition: transform .25s cubic-bezier(.2,.7,.3,1); }
-      .ctl-card:hover { transform: translateY(-2px); }
+      .ctl-card { transition: transform .25s cubic-bezier(.2,.7,.3,1), box-shadow .25s cubic-bezier(.2,.7,.3,1); }
+      .ctl-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px -10px rgba(11,18,32,0.15); }
       .ctl-press { transition: transform .15s cubic-bezier(.2,.7,.3,1); }
       .ctl-press:hover { transform: translateY(-1px); }
       .ctl-scroll { scrollbar-width: none; -ms-overflow-style: none; }
       .ctl-scroll::-webkit-scrollbar { display: none; }
+      /* Snapping carousels: a card scrolled to always lands flush with the
+         section's left gutter rather than the viewport edge. */
+      .ctl-rail { scroll-snap-type: x mandatory; scroll-padding-left: 0; }
+      .ctl-rail > * { scroll-snap-align: start; }
+      /* Destinations / "Other themes" tiles. On a phone they read as small
+         cards (photo on top, label beneath). From md up the mockup switches to
+         a photo tile with the label burned into the bottom of the image over a
+         scrim, so the same markup is re-laid-out rather than duplicated. The
+         overrides need !important because the base card sets colour and
+         padding inline. */
+      .ctl-tile-scrim { display: none; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, rgba(11,18,32,0) 30%, rgba(11,18,32,0.78) 100%); }
+      @media (min-width: 768px) {
+        .ctl-tile { position: relative; height: 120px; border-radius: 14px !important; border-color: transparent !important; }
+        .ctl-tile-media { position: absolute; inset: 0; height: 100% !important; }
+        .ctl-tile-scrim { display: block; }
+        .ctl-tile-body { position: absolute; left: 13px; right: 13px; bottom: 11px; padding: 0 !important; }
+        .ctl-tile-name { color: ${PAPER} !important; font-size: 15px !important; font-weight: 800 !important; min-height: 0 !important; }
+        .ctl-tile-meta { color: rgba(250,250,245,0.75) !important; margin-top: 2px !important; font-size: 8.5px !important; }
+      }
+
+      /* Docked-bar build button — a slow highlight sweep so the primary action
+         stays alive without animating colour. The sweeping layer is the full
+         width of the button (the band itself is painted as a no-repeat
+         background), so translating it ±100% crosses the whole button at any
+         width — a fixed pixel/percent travel would stall halfway on desktop. */
+      .ctl-sheen { position: absolute; inset: 0; pointer-events: none; background-image: linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent); background-size: 64px 100%; background-repeat: no-repeat; background-position: left center; animation: ctlBarShimmer 3s cubic-bezier(.4,0,.2,1) infinite; }
+      @keyframes ctlBarShimmer { 0% { transform: translateX(-100%) skewX(-18deg); } 55%, 100% { transform: translateX(100%) skewX(-18deg); } }
+      @keyframes ctlPulseRing { 0% { box-shadow: 0 0 0 0 rgba(31,138,90,0.4); } 70% { box-shadow: 0 0 0 6px rgba(31,138,90,0); } 100% { box-shadow: 0 0 0 0 rgba(31,138,90,0); } }
+      /* Docked bar breakpoint. The phone bar is the full-bleed stack; from 768
+         up it's replaced by the floating pill (the Lapland desktop mockup).
+         Written by hand rather than with md:/hidden utilities so the two can
+         never both resolve to none — they're strict complements. */
+      .ctl-bar-desk { display: none; }
+      .ctl-bar-mob { display: block; }
+      @media (min-width: 768px) {
+        .ctl-bar-desk { display: block; }
+        .ctl-bar-mob { display: none; }
+      }
       .ctl-root input { font-family: inherit; }
       .ctl-root input::placeholder { color: #b8becc; opacity: 1; }
       .ctl-skeleton { position: absolute; inset: 0; background: linear-gradient(90deg, #e7e9ee 25%, #f2f3f6 37%, #e7e9ee 63%); background-size: 400% 100%; animation: ctlShimmer 1.4s ease infinite; }
@@ -225,6 +379,7 @@ const CinematicHero: React.FC<{
   onSelectPrompt: (p: string) => void;
 }> = ({ hero, onSelectPrompt }) => {
   const router = useRouter();
+  const palette = usePalette();
   // Controlled composer: send the typed text (falling back to the example
   // prompt when empty) on Send click or Enter.
   const [composerText, setComposerText] = React.useState("");
@@ -245,6 +400,13 @@ const CinematicHero: React.FC<{
     { bottom: -8, right: 12, rotate: -5 },
   ];
   return (
+    <div
+      // The theme's wash, faded out over the top of the page. Sits behind the
+      // hero only; every section below keeps the plain page background.
+      style={{
+        background: `linear-gradient(180deg, ${palette.heroTint} 0%, rgba(250,250,245,0) 78%)`,
+      }}
+    >
     <Container className="pt-[24px] md:pt-[48px]">
       <div className="md:grid md:grid-cols-[1.05fr_1fr] md:gap-[48px] md:items-center">
         {/* Copy + composer */}
@@ -364,6 +526,7 @@ const CinematicHero: React.FC<{
         )}
       </div>
     </Container>
+    </div>
   );
 };
 
@@ -376,20 +539,71 @@ const PromptCard: React.FC<{
   ctaLabel?: string;
   ctaTone?: "solid" | "dark";
   priority?: boolean;
-}> = ({ card, onSelectPrompt, onSelectActivity, ctaLabel, ctaTone, priority }) => (
+  // Section opted the whole row into "+ Add" selection; derive the item from
+  // the card unless it carries an explicit one.
+  sectionSelectable?: boolean;
+  itemKind?: string;
+  // The card sits on a sand-toned band, so it needs the warmer hairline.
+  onSand?: boolean;
+}> = ({
+  card,
+  onSelectPrompt,
+  onSelectActivity,
+  ctaLabel,
+  ctaTone,
+  priority,
+  sectionSelectable,
+  itemKind,
+  onSand,
+}) => {
+  const selection = useThemeSelection();
+  const palette = usePalette();
+  // The saved item: an explicit card.item wins; else derive from the card when
+  // the section is selectable. An activity card carries its catalog id so the
+  // element id rides along in the request.
+  const item =
+    card.item ??
+    (sectionSelectable
+      ? {
+          kind: itemKind ?? "poi",
+          label: card.name,
+          short: card.tag ?? card.name,
+          ...(card.activityId ? { id: card.activityId } : {}),
+        }
+      : undefined);
+  const selectable = !!(item && selection);
+  const selected = selectable ? selection!.isSelected(item!) : false;
+  // Element cards (an activity drawer) keep opening the drawer on body click —
+  // the "+ Add" CTA does the saving. Non-element selectable cards toggle on
+  // body click as before.
+  const isElement = selectable && !!card.activityId;
+  const toggle = () => item && selection && selection.toggle(item);
+  return (
   <button
     type="button"
     onClick={() => {
+      if (isElement) {
+        onSelectActivity?.(card.activityId!, card.activitySource);
+        return;
+      }
+      if (item && selection) {
+        selection.toggle(item);
+        return;
+      }
       if (card.activityId && onSelectActivity)
         onSelectActivity(card.activityId, card.activitySource);
       else if (card.prompt) onSelectPrompt(card.prompt);
     }}
-    className="ctl-card group flex flex-col text-left bg-white rounded-[18px] md:rounded-[22px] overflow-hidden cursor-pointer w-[220px] md:w-auto shrink-0 md:shrink"
-    style={{ scrollSnapAlign: "start" }}
+    aria-pressed={selectable ? selected : undefined}
+    className="ctl-card group flex flex-col text-left rounded-[18px] overflow-hidden cursor-pointer w-[262px] md:w-auto shrink-0 md:shrink"
+    style={{
+      ...cardChrome(onSand),
+      ...(selected ? { borderColor: palette.accent } : {}),
+    }}
   >
     <div
-      className="relative h-[130px] md:h-[200px] overflow-hidden"
-      style={{ background: "#eef0f4" }}
+      className="relative h-[148px] md:h-[160px] overflow-hidden"
+      style={{ background: SAND }}
     >
       <SkeletonImage
         src={card.image}
@@ -401,55 +615,59 @@ const PromptCard: React.FC<{
       />
       {card.tag && (
         <div
-          className="ctl-mono absolute top-[10px] left-[10px] md:top-[12px] md:left-[12px] px-[8px] py-[3px] rounded-[6px]"
-          style={{
-            background: YELLOW,
-            color: INK,
-            transform: "rotate(-1.5deg)",
-            fontSize: 9,
-            pointerEvents: "none",
-          }}
+          className="ctl-mono absolute top-[10px] left-[10px] px-[8px] py-[3px] rounded-[6px]"
+          style={IMAGE_BADGE}
         >
           {card.tag}
         </div>
       )}
     </div>
-    <div className="flex flex-col flex-1 px-[14px] py-[12px] md:px-[18px] md:py-[16px]">
+    <div className="flex flex-col flex-1 px-[17px] py-[16px] md:px-[18px] md:py-[17px]">
       <div
-        className="text-[14px] md:text-[17px] font-bold"
+        className="text-[15px] md:text-[16.5px] font-bold leading-[1.3]"
         style={{ color: INK, letterSpacing: "-0.01em" }}
       >
         {card.name}
       </div>
       {card.line && (
         <div
-          className="text-[12.5px] md:text-[13.5px] leading-[1.45] mt-[2px] md:mt-[4px]"
+          className="text-[12.5px] md:text-[13.5px] leading-[1.5] mt-[8px] flex-1"
           style={{ color: MUTED }}
         >
           {card.line}
         </div>
       )}
-      {ctaLabel && (
-        <div className="mt-auto pt-[12px] md:pt-[14px]">
+      {(ctaLabel || selectable) && (
+        <div className="mt-auto pt-[14px]">
           <span
-            className="block w-full text-center rounded-full text-[13px] md:text-[13.5px] font-bold px-[14px] py-[11px]"
-            style={
-              ctaTone === "dark"
-                ? { background: INK, color: YELLOW }
-                : {
-                    background: YELLOW,
-                    color: INK,
-                    boxShadow: "0 6px 16px -8px rgba(247,231,0,0.6)",
+            role={selectable ? "button" : undefined}
+            onClick={
+              selectable
+                ? (e) => {
+                    // The Add CTA saves the item; on element cards this stops the
+                    // click from reaching the card body (which opens the drawer).
+                    e.stopPropagation();
+                    toggle();
                   }
+                : undefined
+            }
+            className="block w-full text-center rounded-full text-[12.5px] md:text-[13px] font-bold px-[14px] py-[10px]"
+            style={
+              selectable
+                ? addCtaStyle(palette, selected)
+                : ctaTone === "dark"
+                  ? { background: INK, color: PAPER, border: "none" }
+                  : primaryCtaStyle(palette)
             }
           >
-            {ctaLabel}
+            {selectable ? addCtaLabel(selected) : ctaLabel}
           </span>
         </div>
       )}
     </div>
   </button>
-);
+  );
+};
 
 const CardsSection: React.FC<{
   section: Extract<CinematicSection, { type: "cards" }>;
@@ -474,10 +692,7 @@ const CardsSection: React.FC<{
           </div>
         )}
       </div>
-      <div
-        className="ctl-scroll flex md:grid md:grid-cols-3 gap-[12px] md:gap-[16px] mt-[12px] md:mt-[24px] overflow-x-auto md:overflow-visible pb-[4px]"
-        style={{ scrollSnapType: "x mandatory" }}
-      >
+      <div className="ctl-scroll ctl-rail flex md:grid md:grid-cols-3 gap-[12px] md:gap-[20px] mt-[12px] md:mt-[24px] overflow-x-auto md:overflow-visible pt-[4px] pb-[10px]">
         {section.cards.map((card, i) => (
           <PromptCard
             key={`card-${i}`}
@@ -486,6 +701,9 @@ const CardsSection: React.FC<{
             onSelectActivity={onSelectActivity}
             ctaLabel={section.ctaLabel}
             ctaTone={section.ctaTone}
+            sectionSelectable={section.selectable}
+            itemKind={section.itemKind}
+            onSand={section.tone === "sand"}
             priority={first && i === 0}
           />
         ))}
@@ -503,6 +721,7 @@ const TripCard: React.FC<{
   ctaLabel?: string;
 }> = ({ card, onSelectPrompt, ctaLabel }) => {
   const router = useRouter();
+  const palette = usePalette();
   const act = () => {
     if (card.href) router.push(card.href);
     else if (card.prompt) onSelectPrompt(card.prompt);
@@ -511,12 +730,17 @@ const TripCard: React.FC<{
   <button
     type="button"
     onClick={act}
-    className="ctl-card text-left bg-white rounded-[18px] overflow-hidden flex flex-col cursor-pointer"
+    className="ctl-card text-left rounded-[18px] overflow-hidden flex flex-col h-full cursor-pointer"
+    style={cardChrome()}
   >
-    <div className="flex gap-[12px] md:gap-[16px] p-[12px] md:p-[16px]">
+    {/* Everything above the CTA lives in one flexible block so the button
+        always lands on the card's bottom edge — cards in the same grid row
+        stretch to equal height, and their CTAs line up regardless of how long
+        the copy is or whether the card carries an urgency notice. */}
+    <div className="flex gap-[15px] md:gap-[16px] p-[16px] flex-1">
       <div
-        className="relative w-[78px] h-[78px] md:w-[96px] md:h-[96px] shrink-0 rounded-[12px] md:rounded-[14px] overflow-hidden flex items-center justify-center text-[30px]"
-        style={{ background: card.gradient ?? "#eef0f4" }}
+        className="relative w-[104px] h-[104px] md:w-[112px] md:h-[112px] shrink-0 rounded-[14px] overflow-hidden flex items-center justify-center text-[30px]"
+        style={{ background: card.gradient ?? SAND }}
       >
         {card.image ? (
           <SkeletonImage
@@ -555,33 +779,29 @@ const TripCard: React.FC<{
             )}
           </div>
         )}
+        {card.urgent && (
+          <div className="flex items-start gap-[8px] mt-[10px]">
+            <span
+              className="w-[6px] h-[6px] rounded-full shrink-0 mt-[4px]"
+              style={{ background: RED }}
+            />
+            <span
+              className="ctl-mono"
+              style={{ color: RED, fontSize: 9.5, lineHeight: 1.4 }}
+            >
+              {card.urgent}
+            </span>
+          </div>
+        )}
       </div>
     </div>
     {ctaLabel && (
-      <div className="px-[12px] md:px-[16px] pb-[12px] md:pb-[16px]">
+      <div className="px-[16px] pb-[16px]">
         <span
-          className="block w-full text-center rounded-full text-[13px] font-bold px-[14px] py-[12px]"
-          style={{
-            background: YELLOW,
-            color: INK,
-            boxShadow: "0 6px 16px -8px rgba(247,231,0,0.6)",
-          }}
+          className="block w-full text-center rounded-full text-[13px] font-semibold px-[14px] py-[11px]"
+          style={primaryCtaStyle(palette)}
         >
           {ctaLabel}
-        </span>
-      </div>
-    )}
-    {card.urgent && (
-      <div
-        className="flex items-center gap-[8px] px-[14px] py-[8px] mt-auto"
-        style={{ background: "#f4f3ec" }}
-      >
-        <span
-          className="w-[6px] h-[6px] rounded-full shrink-0"
-          style={{ background: RED }}
-        />
-        <span className="ctl-mono" style={{ color: RED, fontSize: 8.5 }}>
-          {card.urgent}
         </span>
       </div>
     )}
@@ -615,7 +835,9 @@ const GradientCard: React.FC<{
   card: CinematicGradientCard;
   onSelectPrompt: (p: string) => void;
   compact?: boolean; // destinations: shorter tile + no name min-height
-}> = ({ card, onSelectPrompt, compact }) => {
+  // Beyond the paired columns' 4-tile desktop grid — stays in the phone list.
+  hideOnDesktop?: boolean;
+}> = ({ card, onSelectPrompt, compact, hideOnDesktop }) => {
   const router = useRouter();
   const act = () => {
     if (card.prompt) onSelectPrompt(card.prompt);
@@ -625,18 +847,16 @@ const GradientCard: React.FC<{
     <button
       type="button"
       onClick={act}
-      className={`ctl-card text-left bg-white overflow-hidden cursor-pointer ${
+      className={`ctl-card ctl-tile text-left overflow-hidden cursor-pointer ${
         compact
           ? "rounded-[14px]"
-          : "rounded-[18px] w-[152px] md:w-auto shrink-0 md:shrink"
-      }`}
-      style={{ scrollSnapAlign: "start" }}
+          : "rounded-[18px] w-[160px] md:w-auto shrink-0 md:shrink"
+      } ${hideOnDesktop ? "md:hidden" : ""}`}
+      style={cardChrome(true)}
     >
       <div
-        className={`relative overflow-hidden flex items-center justify-center ${
-          compact
-            ? "h-[68px] md:h-[84px] text-[26px] md:text-[30px]"
-            : "h-[92px] md:h-[104px] text-[30px] md:text-[32px]"
+        className={`ctl-tile-media relative overflow-hidden flex items-center justify-center ${
+          compact ? "h-[90px] text-[26px]" : "h-[100px] text-[30px]"
         }`}
         style={{ background: card.gradient }}
       >
@@ -646,17 +866,10 @@ const GradientCard: React.FC<{
           card.emoji
         )}
       </div>
-      <div
-        className={
-          compact
-            ? "px-[11px] py-[9px] md:px-[14px] md:py-[14px]"
-            : "px-[12px] py-[10px] md:px-[15px] md:py-[15px]"
-        }
-      >
+      <span className="ctl-tile-scrim" aria-hidden />
+      <div className="ctl-tile-body relative px-[14px] pt-[12px] pb-[14px]">
         <div
-          className={`font-bold leading-[1.25] ${
-            compact ? "text-[12.5px] md:text-[13.5px]" : "text-[13px] md:text-[14px]"
-          }`}
+          className="ctl-tile-name text-[13px] font-bold leading-[1.25]"
           style={{
             color: INK,
             letterSpacing: "-0.01em",
@@ -667,8 +880,8 @@ const GradientCard: React.FC<{
         </div>
         {card.meta && (
           <div
-            className="ctl-mono"
-            style={{ fontSize: 8.5, marginTop: compact ? 3 : 5 }}
+            className="ctl-tile-meta ctl-mono"
+            style={{ fontSize: 9.5, marginTop: 5 }}
           >
             {card.meta}
           </div>
@@ -678,55 +891,95 @@ const GradientCard: React.FC<{
   );
 };
 
+// Heading + tiles, no section chrome. Standalone it fills the width; paired it
+// fills one half of the desktop row (see GradientPairSection).
+//
+// `desktopLimit` trims the grid to the first N tiles from md up — paired
+// columns show a 2×2 of four, per the mockup — while the phone scroller keeps
+// every tile. The extras are hidden rather than dropped so the mobile list
+// stays complete from the same markup.
+const GradientColumn: React.FC<{
+  section: Extract<CinematicSection, { type: "gradient" }>;
+  onSelectPrompt: (p: string) => void;
+  desktopCols?: number;
+  desktopLimit?: number;
+}> = ({ section, onSelectPrompt, desktopCols, desktopLimit }) => {
+  const cols = desktopCols ?? section.columns ?? 6;
+  const compact = !!section.mobileGrid;
+  return (
+    <div className="min-w-0">
+      <div className="flex items-end justify-between gap-[16px]">
+        <Heading heading={section.heading} className="text-[22px] md:text-[28px]" />
+        {section.cta && (
+          <div className="max-ph:hidden">
+            <SectionCta cta={section.cta} onSelectPrompt={onSelectPrompt} />
+          </div>
+        )}
+      </div>
+      {/* Desktop column count injected per-section; mobile is scroll or 2-up grid */}
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `@media (min-width:768px){ .ctl-grad-${cols}{ display:grid; grid-template-columns:repeat(${cols},minmax(0,1fr)); } }`,
+        }}
+      />
+      <div
+        className={`ctl-scroll ctl-grad-${cols} mt-[14px] md:mt-[18px] gap-[12px] md:gap-[14px] ${
+          section.mobileGrid
+            ? "grid grid-cols-2"
+            : "ctl-rail flex overflow-x-auto pt-[4px] pb-[8px]"
+        }`}
+      >
+        {section.cards.map((card, i) => (
+          <GradientCard
+            key={`grad-${i}`}
+            card={card}
+            onSelectPrompt={onSelectPrompt}
+            compact={compact}
+            hideOnDesktop={desktopLimit != null && i >= desktopLimit}
+          />
+        ))}
+      </div>
+      {/* `footerCta` ("View all destinations →") is intentionally not rendered
+          — the tiles already link through, and the button read as a dead end
+          under the grid. Kept on the type so a page can still declare one. */}
+    </div>
+  );
+};
+
 const GradientSection: React.FC<{
   section: Extract<CinematicSection, { type: "gradient" }>;
   onSelectPrompt: (p: string) => void;
-}> = ({ section, onSelectPrompt }) => {
-  const cols = section.columns ?? 6;
-  const compact = !!section.mobileGrid;
-  return (
-    <section className="pt-[30px] md:pt-[56px]">
-      <Container>
-        <div className="flex items-end justify-between gap-[16px]">
-          <Heading heading={section.heading} className="text-[22px] md:text-[34px]" />
-          {section.cta && (
-            <div className="max-ph:hidden">
-              <SectionCta cta={section.cta} onSelectPrompt={onSelectPrompt} />
-            </div>
-          )}
-        </div>
-        {/* Desktop column count injected per-section; mobile is scroll or 2-up grid */}
-        <style
-          dangerouslySetInnerHTML={{
-            __html: `@media (min-width:768px){ .ctl-grad-${cols}{ display:grid; grid-template-columns:repeat(${cols},minmax(0,1fr)); } }`,
-          }}
-        />
-        <div
-          className={`ctl-scroll ctl-grad-${cols} mt-[14px] md:mt-[24px] gap-[10px] md:gap-[14px] ${
-            section.mobileGrid
-              ? "grid grid-cols-2"
-              : "flex overflow-x-auto pb-[4px]"
-          }`}
-          style={{
-            scrollSnapType: section.mobileGrid ? undefined : "x mandatory",
-          }}
-        >
-          {section.cards.map((card, i) => (
-            <GradientCard
-              key={`grad-${i}`}
-              card={card}
-              onSelectPrompt={onSelectPrompt}
-              compact={compact}
-            />
-          ))}
-        </div>
-        {/* {section.footerCta && (
-          <FooterButton cta={section.footerCta} onSelectPrompt={onSelectPrompt} />
-        )} */}
-      </Container>
-    </section>
-  );
-};
+}> = ({ section, onSelectPrompt }) => (
+  <section className="pt-[30px] md:pt-[56px]">
+    <Container>
+      <GradientColumn section={section} onSelectPrompt={onSelectPrompt} />
+    </Container>
+  </section>
+);
+
+// "The destinations" + "Other themes" as the mockup pairs them: stacked on a
+// phone, two half-width columns of four tiles from md up.
+const GradientPairSection: React.FC<{
+  left: Extract<CinematicSection, { type: "gradient" }>;
+  right: Extract<CinematicSection, { type: "gradient" }>;
+  onSelectPrompt: (p: string) => void;
+}> = ({ left, right, onSelectPrompt }) => (
+  <section className="pt-[30px] md:pt-[72px]">
+    <Container>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-[30px] md:gap-[48px] items-start">
+        {[left, right].map((section, i) => (
+          <GradientColumn
+            key={`grad-col-${i}`}
+            section={section}
+            onSelectPrompt={onSelectPrompt}
+            desktopCols={2}
+            desktopLimit={4}
+          />
+        ))}
+      </div>
+    </Container>
+  </section>
+);
 
 // Full-width outline button under a grid (e.g. "View all destinations →").
 const FooterButton: React.FC<{
@@ -759,39 +1012,33 @@ const PillarCard: React.FC<{
   <button
     type="button"
     onClick={() => onSelectPrompt(card.prompt)}
-    className="ctl-card text-left bg-white rounded-[22px] overflow-hidden cursor-pointer w-[236px] md:w-auto shrink-0 md:shrink flex flex-col"
-    style={{ scrollSnapAlign: "start" }}
+    className="ctl-card text-left rounded-[18px] overflow-hidden cursor-pointer w-[262px] md:w-auto shrink-0 md:shrink flex flex-col"
+    style={cardChrome()}
   >
     <div
-      className="relative h-[128px] md:h-[160px] flex items-center justify-center text-[42px]"
+      className="relative h-[148px] md:h-[160px] flex items-center justify-center text-[42px]"
       style={{ background: card.gradient }}
     >
       {card.image ? <SkeletonImage src={card.image} alt={card.name} /> : card.emoji}
       {card.window && (
         <div
           className="ctl-mono absolute top-[10px] left-[10px] px-[8px] py-[3px] rounded-[6px]"
-          style={{
-            background: "rgba(10,16,32,0.8)",
-            color: PAPER,
-            backdropFilter: "blur(10px)",
-            fontSize: 8.5,
-            pointerEvents: "none",
-          }}
+          style={IMAGE_BADGE}
         >
           {card.window}
         </div>
       )}
     </div>
-    <div className="px-[16px] py-[14px]">
+    <div className="px-[17px] py-[17px]">
       <div
-        className="text-[16px] md:text-[17px] font-bold"
+        className="text-[15px] md:text-[16.5px] font-bold leading-[1.3]"
         style={{ color: INK, letterSpacing: "-0.01em" }}
       >
         {card.name}
       </div>
       {card.line && (
         <div
-          className="text-[13px] leading-[1.5] mt-[3px]"
+          className="text-[12.5px] md:text-[13.5px] leading-[1.5] mt-[8px]"
           style={{ color: MUTED }}
         >
           {card.line}
@@ -815,10 +1062,7 @@ const PillarsSection: React.FC<{
           </div>
         )}
       </div>
-      <div
-        className="ctl-scroll flex md:grid md:grid-cols-3 gap-[12px] md:gap-[16px] mt-[14px] md:mt-[24px] overflow-x-auto md:overflow-visible pb-[4px]"
-        style={{ scrollSnapType: "x mandatory" }}
-      >
+      <div className="ctl-scroll ctl-rail flex md:grid md:grid-cols-3 gap-[12px] md:gap-[20px] mt-[14px] md:mt-[24px] overflow-x-auto md:overflow-visible pt-[4px] pb-[10px]">
         {section.cards.map((card, i) => (
           <PillarCard key={`pillar-${i}`} card={card} onSelectPrompt={onSelectPrompt} />
         ))}
@@ -833,9 +1077,38 @@ const ListRow: React.FC<{
   compact?: boolean;
   onSelectPrompt: (p: string) => void;
   onSelectActivity?: (activityId: string, source?: string) => void;
-}> = ({ row, compact, onSelectPrompt, onSelectActivity }) => {
+  sectionSelectable?: boolean;
+  itemKind?: string;
+}> = ({ row, compact, onSelectPrompt, onSelectActivity, sectionSelectable, itemKind }) => {
   const router = useRouter();
+  const selection = useThemeSelection();
+  const palette = usePalette();
+  const elementId = row.activityId ?? drawerIdFromHref(row.href);
+  const item = sectionSelectable
+    ? {
+        kind: itemKind ?? "poi",
+        label: row.name,
+        short: row.name,
+        ...(elementId ? { id: elementId } : {}),
+      }
+    : undefined;
+  const selectable = !!(item && selection);
+  const selected = selectable ? selection!.isSelected(item!) : false;
+  // An element row (activity drawer or a drawer href) keeps opening the drawer
+  // on body click; the "+ Add" pill saves it.
+  const isElement = selectable && !!(row.activityId || row.href);
+  const toggle = () => item && selection && selection.toggle(item);
   const act = () => {
+    if (isElement) {
+      if (row.activityId && onSelectActivity)
+        onSelectActivity(row.activityId, row.activitySource);
+      else if (row.href) router.push(row.href);
+      return;
+    }
+    if (item && selection) {
+      selection.toggle(item);
+      return;
+    }
     if (row.activityId && onSelectActivity)
       onSelectActivity(row.activityId, row.activitySource);
     else if (row.prompt) onSelectPrompt(row.prompt);
@@ -845,10 +1118,14 @@ const ListRow: React.FC<{
     <button
       type="button"
       onClick={act}
-      className={`ctl-press w-full text-left flex items-center gap-[12px] md:gap-[14px] bg-white cursor-pointer ${
-        compact ? "rounded-[14px] p-[11px] md:p-[12px]" : "rounded-[18px] p-[12px] md:p-[14px]"
+      aria-pressed={selectable ? selected : undefined}
+      className={`ctl-card w-full text-left flex items-center gap-[12px] md:gap-[14px] cursor-pointer ${
+        compact ? "rounded-[14px] p-[11px] md:p-[12px]" : "rounded-[18px] p-[14px] md:p-[16px]"
       }`}
-      style={{ border: `1px solid ${BORDER}` }}
+      style={{
+        ...cardChrome(),
+        ...(selected ? { borderColor: palette.accent } : {}),
+      }}
     >
       <div
         className={`relative overflow-hidden shrink-0 flex items-center justify-center ${
@@ -901,9 +1178,23 @@ const ListRow: React.FC<{
           </div>
         )}
       </div>
-      <span className="shrink-0 text-[14px]" style={{ color: FAINT }}>
-        →
-      </span>
+      {selectable ? (
+        <span
+          role="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            toggle();
+          }}
+          className="shrink-0 rounded-full text-[12px] font-bold"
+          style={{ ...addCtaStyle(palette, selected), padding: "8px 14px" }}
+        >
+          {addCtaLabel(selected)}
+        </span>
+      ) : (
+        <span className="shrink-0 text-[14px]" style={{ color: FAINT }}>
+          →
+        </span>
+      )}
     </button>
   );
 };
@@ -930,6 +1221,8 @@ const ListSection: React.FC<{
             compact={section.compact}
             onSelectPrompt={onSelectPrompt}
             onSelectActivity={onSelectActivity}
+            sectionSelectable={section.selectable}
+            itemKind={section.itemKind}
           />
         ))}
       </div>
@@ -1102,11 +1395,12 @@ const StoriesSection: React.FC<{
   onSelectPrompt: (p: string) => void;
 }> = ({ section, onSelectPrompt }) => {
   const router = useRouter();
+  const palette = usePalette();
   return (
   <section className="pt-[34px] md:pt-[56px]">
     <Container>
       <Heading heading={section.heading} className="text-[22px] md:text-[34px]" />
-      <div className="ctl-scroll flex md:grid md:grid-cols-3 gap-[10px] md:gap-[16px] mt-[16px] md:mt-[24px] overflow-x-auto md:overflow-visible pb-[4px]">
+      <div className="ctl-scroll ctl-rail flex md:grid md:grid-cols-3 gap-[12px] md:gap-[20px] mt-[16px] md:mt-[24px] overflow-x-auto md:overflow-visible pt-[4px] pb-[10px]">
         {section.cards.map((card: CinematicStoryCard, i) => (
           <button
             key={`story-${i}`}
@@ -1116,25 +1410,73 @@ const StoriesSection: React.FC<{
               if (card.href) router.push(card.href);
               else if (card.prompt) onSelectPrompt(card.prompt);
             }}
-            className="ctl-card text-left bg-white rounded-[14px] p-[14px] md:p-[18px] w-[208px] md:w-auto shrink-0 md:shrink cursor-pointer"
-            style={{ border: `1px solid ${BORDER}` }}
+            className="ctl-card flex flex-col text-left rounded-[18px] p-[17px] md:p-[20px] w-[262px] md:w-auto shrink-0 md:shrink cursor-pointer"
+            style={cardChrome()}
           >
-            <div className="flex items-baseline justify-between">
-              <span className="ctl-mono" style={{ color: "#f5a623", fontSize: 11 }}>
-                ★ {card.rating}
+            {/* Reviewer row — initial disc, who they are and when they went.
+                The score renders as filled stars; the number itself rides in
+                the aria-label so the row stays purely visual. */}
+            <div className="flex items-center gap-[11px]">
+              <span
+                className="shrink-0 flex items-center justify-center rounded-full"
+                style={{
+                  width: 38,
+                  height: 38,
+                  background: palette.accent,
+                  color: palette.accentOn,
+                  fontSize: 15,
+                  fontWeight: 700,
+                }}
+              >
+                {card.name.trim().charAt(0).toUpperCase()}
               </span>
-              <span className="ctl-mono" style={{ fontSize: 9 }}>
-                {card.type}
-              </span>
+              <div className="flex-1 min-w-0">
+                <div
+                  className="text-[13.5px] md:text-[14px] font-bold leading-[1.3]"
+                  style={{ color: INK }}
+                >
+                  {card.name}
+                </div>
+                <div className="ctl-mono mt-[2px]" style={{ fontSize: 8.5 }}>
+                  {card.when ?? card.type}
+                </div>
+              </div>
             </div>
             <div
-              className="text-[13px] md:text-[14.5px] font-semibold mt-[8px] leading-[1.4]"
-              style={{ color: INK }}
+              aria-label={`Rated ${card.rating} out of 5`}
+              className="mt-[11px]"
+              style={{ color: "#f5a623", fontSize: 13, letterSpacing: 2 }}
             >
-              {card.name}
+              {"★".repeat(
+                Math.min(5, Math.max(1, Math.round(Number(card.rating) || 5))),
+              )}
             </div>
-            <div className="text-[12px] md:text-[13px] mt-[2px]" style={{ color: MUTED }}>
-              {card.route}
+            {card.quote && (
+              <div
+                className="text-[13px] md:text-[13.5px] leading-[1.55] mt-[8px] flex-1"
+                style={{ color: MUTED }}
+              >
+                &ldquo;{card.quote}&rdquo;
+              </div>
+            )}
+            <div className="flex items-center gap-[10px] mt-[14px]">
+              <span
+                className="ctl-mono min-w-0 truncate px-[9px] py-[5px] rounded-[6px]"
+                style={{
+                  background: palette.accentSoft,
+                  color: palette.accent,
+                  fontSize: 9,
+                }}
+              >
+                {card.route}
+              </span>
+              <span className="flex-1" />
+              <span
+                className="shrink-0 text-[12.5px] font-bold whitespace-nowrap"
+                style={{ color: INK }}
+              >
+                See itinerary →
+              </span>
             </div>
           </button>
         ))}
@@ -1152,6 +1494,8 @@ const EatsSection: React.FC<{
   onSelectPrompt: (p: string) => void;
 }> = ({ section, onSelectPrompt }) => {
   const router = useRouter();
+  const selection = useThemeSelection();
+  const palette = usePalette();
   return (
   <section
     className="mt-[34px] md:mt-[56px] relative overflow-hidden"
@@ -1172,27 +1516,52 @@ const EatsSection: React.FC<{
         heading={section.heading}
         className="text-[22px] md:text-[34px] ctl-h-light"
       />
-      <div
-        className="ctl-scroll flex md:grid md:grid-cols-5 gap-[12px] md:gap-[16px] mt-[14px] md:mt-[24px] overflow-x-auto md:overflow-visible pb-[4px]"
-        style={{ scrollSnapType: "x mandatory" }}
-      >
-        {section.cards.map((card, i) => (
+      <div className="ctl-scroll ctl-rail flex md:grid md:grid-cols-5 gap-[12px] md:gap-[16px] mt-[14px] md:mt-[24px] overflow-x-auto md:overflow-visible pt-[4px] pb-[10px]">
+        {section.cards.map((card, i) => {
+          const hrefId = drawerIdFromHref(card.href);
+          const item =
+            card.item ??
+            (section.selectable
+              ? {
+                  kind: section.itemKind ?? "restaurant",
+                  label: card.name,
+                  short: card.name,
+                  ...(hrefId ? { id: hrefId } : {}),
+                }
+              : undefined);
+          const selectable = !!(item && selection);
+          const selected = selectable ? selection!.isSelected(item!) : false;
+          // A restaurant card with a drawer href keeps opening the drawer on
+          // body click; the "+ Add" CTA saves it.
+          const isElement = selectable && !!card.href;
+          const toggle = () => item && selection && selection.toggle(item);
+          return (
           <button
             key={`eat-${i}`}
             type="button"
             onClick={() => {
+              if (isElement) {
+                router.push(card.href!);
+                return;
+              }
+              if (item && selection) {
+                selection.toggle(item);
+                return;
+              }
               if (card.href) router.push(card.href);
               else if (card.prompt) onSelectPrompt(card.prompt);
             }}
-            className="ctl-card text-left rounded-[18px] overflow-hidden cursor-pointer w-[218px] md:w-auto shrink-0 md:shrink flex flex-col"
+            aria-pressed={selectable ? selected : undefined}
+            className="ctl-card text-left rounded-[18px] overflow-hidden cursor-pointer w-[224px] md:w-auto shrink-0 md:shrink flex flex-col"
             style={{
-              scrollSnapAlign: "start",
-              background: "rgba(255,255,255,0.04)",
-              border: "1px solid rgba(255,255,255,0.08)",
+              ...DARK_CARD,
+              ...(selected
+                ? { border: "1px solid rgba(31,138,90,0.45)" }
+                : {}),
             }}
           >
           <div
-            className="relative h-[124px] md:h-[150px] overflow-hidden"
+            className="relative h-[132px] md:h-[150px] overflow-hidden"
             style={{ background: "rgba(255,255,255,0.04)" }}
           >
             <SkeletonImage
@@ -1201,7 +1570,7 @@ const EatsSection: React.FC<{
               objectPosition={card.objectPosition}
             />
           </div>
-          <div className="flex flex-col flex-1 px-[15px] py-[13px] md:py-[15px]">
+          <div className="flex flex-col flex-1 px-[16px] py-[16px]">
             <div className="flex items-baseline justify-between gap-[8px]">
               <span
                 className="text-[14.5px] font-bold"
@@ -1212,7 +1581,7 @@ const EatsSection: React.FC<{
               {card.city && (
                 <span
                   className="ctl-mono shrink-0"
-                  style={{ color: YELLOW, fontSize: 9.5 }}
+                  style={{ color: "#ffe5d1", fontSize: 9.5 }}
                 >
                   {card.city}
                 </span>
@@ -1220,35 +1589,45 @@ const EatsSection: React.FC<{
             </div>
             {card.line && (
               <div
-                className="text-[12.5px] leading-[1.45] mt-[5px]"
+                className="text-[12.5px] leading-[1.5] mt-[8px] flex-1"
                 style={{ color: FAINT }}
               >
                 {card.line}
               </div>
             )}
             {(card.rating || card.reviews) && (
-              <div className="ctl-mono mt-[9px]" style={{ fontSize: 9.5 }}>
-                {card.rating ? `★ ${card.rating}` : ""}
+              <div className="ctl-mono mt-[14px]" style={{ fontSize: 9.5 }}>
+                <span style={{ color: "#f5a623" }}>★</span>{" "}
+                {card.rating ? `${card.rating}` : ""}
                 {card.rating && card.reviews ? " · " : ""}
                 {card.reviews ? `${card.reviews} reviews` : ""}
               </div>
             )}
-            {section.ctaLabel && (
+            {(section.ctaLabel || selectable) && (
               <span
-                className="block w-full text-center rounded-full text-[12.5px] font-semibold px-[12px] py-[10px]"
-                style={{
-                  marginTop: "auto",
-                  background: "rgba(247,231,0,0.14)",
-                  color: YELLOW,
-                  border: "1px solid rgba(247,231,0,0.32)",
-                }}
+                role={selectable ? "button" : undefined}
+                onClick={
+                  selectable
+                    ? (e) => {
+                        e.stopPropagation();
+                        toggle();
+                      }
+                    : undefined
+                }
+                className="block w-full text-center rounded-full text-[12.5px] font-semibold px-[12px] py-[10px] mt-[12px]"
+                style={
+                  selectable
+                    ? addCtaStyle(palette, selected, true)
+                    : addCtaStyle(palette, false, true)
+                }
               >
-                {section.ctaLabel}
+                {selectable ? addCtaLabel(selected) : section.ctaLabel}
               </span>
             )}
           </div>
         </button>
-      ))}
+          );
+        })}
       </div>
     </Container>
   </section>
@@ -1289,10 +1668,7 @@ const VisaSection: React.FC<{
         </p>
       )}
       <div className="ctl-mono mt-[16px] md:mt-[20px]">Visa fee by country</div>
-      <div
-        className="ctl-scroll flex gap-[12px] overflow-x-auto md:overflow-visible pt-[10px] pb-[6px]"
-        style={{ scrollSnapType: "x mandatory" }}
-      >
+      <div className="ctl-scroll ctl-rail flex gap-[12px] overflow-x-auto md:overflow-visible pt-[10px] pb-[6px]">
       {section.cards.map((card: CinematicVisaCard, i) => {
         const inner = (
           <>
@@ -1332,11 +1708,7 @@ const VisaSection: React.FC<{
         );
         const cls =
           "shrink-0 w-[158px] h-[168px] box-border flex flex-col rounded-[18px] p-[16px] cursor-pointer no-underline";
-        const st: React.CSSProperties = {
-          scrollSnapAlign: "start",
-          background: "rgba(255,255,255,0.04)",
-          border: "1px solid rgba(255,255,255,0.08)",
-        };
+        const st: React.CSSProperties = { ...DARK_CARD };
         return card.href ? (
           <a
             key={`visa-${i}`}
@@ -1405,6 +1777,7 @@ const FeatureCtaCard: React.FC<{
   onSelectActivity?: (activityId: string, source?: string) => void;
 }> = ({ cta, onSelectPrompt, onSelectActivity }) => {
   const router = useRouter();
+  const palette = usePalette();
   const act = () => {
     if (cta.activityId && onSelectActivity)
       onSelectActivity(cta.activityId, cta.activitySource);
@@ -1432,10 +1805,10 @@ const FeatureCtaCard: React.FC<{
         )}
       </div>
       <span
-        className="shrink-0 rounded-full px-[16px] py-[10px] text-[12.5px] font-bold whitespace-nowrap"
-        style={{ background: YELLOW, color: INK }}
+        className="shrink-0 rounded-full px-[16px] py-[10px] text-[12.5px] font-semibold whitespace-nowrap"
+        style={addCtaStyle(palette, false, true)}
       >
-        Add pass →
+        + Add
       </span>
     </button>
   );
@@ -1551,165 +1924,564 @@ const FeatureSection: React.FC<{
   </section>
 );
 
-// ── Steps (dark section — "Sketch it. I'll finish it.") ─────────────────────
-const StepsSection: React.FC<{
-  section: Extract<CinematicSection, { type: "steps" }>;
-  onSelectPrompt: (p: string) => void;
-}> = ({ section, onSelectPrompt }) => {
-  const router = useRouter();
-  const cta = section.cta;
-  return (
-    <section
-      className="mt-[38px] md:mt-[64px] relative overflow-hidden"
-      style={{ background: DARK }}
-    >
-      <div
-        className="absolute pointer-events-none"
-        style={{
-          top: -80,
-          right: -80,
-          width: 320,
-          height: 320,
-          background: "radial-gradient(circle, rgba(247,231,0,0.08), transparent 70%)",
-        }}
-      />
-      <Container className="py-[32px] md:py-[56px]">
-        <Heading
-          heading={section.heading}
-          className="text-[22px] md:text-[34px] ctl-h-light"
-        />
-        <div className="flex flex-col md:flex-row md:gap-[32px] gap-[14px] mt-[22px] md:mt-[32px]">
-          {section.steps.map((st, i) => (
-            <div key={`step-${i}`} className="flex items-center gap-[14px] md:flex-1">
-              <div
-                className="w-[26px] h-[26px] shrink-0 rounded-full flex items-center justify-center"
-                style={{
-                  background: YELLOW,
-                  color: INK,
-                  fontFamily: "'Instrument Serif', serif",
-                  fontStyle: "italic",
-                  fontSize: 14,
-                }}
-              >
-                {st.n}
-              </div>
-              <div>
-                <span className="text-[14px] font-bold" style={{ color: PAPER }}>
-                  {st.title}
-                </span>
-                {st.sub && (
-                  <span className="ctl-serif text-[14px]" style={{ color: FAINT }}>
-                    {" "}
-                    {st.sub}
-                  </span>
-                )}
-                {st.meta && (
-                  <div className="ctl-mono mt-[2px]" style={{ fontSize: 9 }}>
-                    {st.meta}
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-        {cta && (
-          <button
-            type="button"
-            onClick={() => {
-              if (cta.prompt) onSelectPrompt(cta.prompt);
-              else if (cta.href) router.push(cta.href);
-            }}
-            className="ctl-press mt-[24px] md:mt-[32px] w-full md:w-auto md:px-[40px] rounded-full border-none cursor-pointer px-[14px] py-[14px] text-[15px] font-bold"
-            style={{ background: YELLOW, color: INK, boxShadow: "0 8px 20px -10px rgba(247,231,0,0.3)" }}
-          >
-            {cta.label} →
-          </button>
-        )}
-        {section.note && (
-          <div
-            className="ctl-mono text-center md:text-left mt-[12px]"
-            style={{ fontSize: 9 }}
-          >
-            {section.note}
-          </div>
-        )}
-      </Container>
-    </section>
-  );
-};
-
 // ── Ask-Kaira strip ("Docked composer") ─────────────────────────────────────
 // A single, shared design used on every theme page (matches the theme mockup):
-// a paper-tinted, blurred bar pinned to the bottom of the viewport with a white
-// pill inside — the placeholder question on the left, a dark "Ask Kaira" button
-// on the right. Identical on mobile and desktop; the pill just caps its width
-// and centers on wider screens. Hidden until the reader scrolls past half the
-// first viewport (same reveal as the site-wide <Banner/>). The button seeds the
-// bar's prompt into a fresh /chat session via `onSelectPrompt`.
+// a bar pinned to the bottom of the viewport carrying the saved-items bag, a
+// free-text field, the build CTA and Kaira's avatar. Desktop floats it as one
+// pill; mobile stacks it. Present from first paint — the reader shouldn't have
+// to scroll to discover how to start.
+//
+// The field is a real composer: whatever is typed either goes straight to
+// /chat as the opening message (Enter / the send arrow) or rides along into the
+// themed mini-form as a note (the build CTA), so it is never dropped.
 const AskKairaStrip: React.FC<{
   bar: CinematicAskBar;
   onSelectPrompt: (p: string) => void;
-}> = ({ bar, onSelectPrompt }) => {
+  // "Build this itinerary" action. When provided, the build button (and the
+  // selection popup) call this instead of seeding a prompt — the page routes to
+  // /chat and opens the themed mini-form there. Falls back to seeding
+  // bar.buildPrompt when omitted. `note` is whatever the reader typed in the
+  // bar; it travels with the handoff and lands in the form's submission.
+  onBuild?: (note?: string) => void;
+  // Kaira's avatar for the round chat button at the end of the action row.
+  avatar?: string;
+}> = ({ bar, onSelectPrompt, onBuild, avatar }) => {
   const router = useRouter();
-  const [show, setShow] = React.useState(false);
-  React.useEffect(() => {
-    const onScroll = () =>
-      setShow(window.pageYOffset > window.innerHeight / 2);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  const selection = useThemeSelection();
+  const palette = usePalette();
+  const [expanded, setExpanded] = React.useState(true);
+  const [draft, setDraft] = React.useState("");
 
-  if (!show) return null;
+  const items = selection?.items ?? [];
+  const count = items.length;
+  const hasSelection = count > 0;
 
-  const go = () => {
+  const trimmedDraft = draft.trim();
+  const hasDraft = trimmedDraft.length > 0;
+
+  // The bar has exactly one submit: "Start planning" / "Build trip · N".
+  // Anything typed into the field rides along with it — as the themed form's
+  // note when the page supplies onBuild, otherwise as the opening chat message.
+  // Either way the page's onSelectPrompt / openThemeForm attaches the saved
+  // items and the theme slug, so the request carries the full context.
+  const doBuild = () => {
+    if (onBuild) onBuild(hasDraft ? trimmedDraft : undefined);
+    else if (hasDraft) onSelectPrompt(trimmedDraft);
+    else if (bar.buildPrompt) onSelectPrompt(bar.buildPrompt);
+    else router.push("/chat");
+  };
+
+  // Kaira's avatar — the "just ask" shortcut. With something typed it opens the
+  // chat on those words instead of the theme's canned opener, so the field is
+  // never a dead end here either.
+  const openChat = () => {
+    if (hasDraft) {
+      onSelectPrompt(trimmedDraft);
+      return;
+    }
     if (bar.prompt) onSelectPrompt(bar.prompt);
     else router.push("/chat");
   };
 
-  return (
+  // Enter submits the bar, same as pressing the CTA — there is no separate
+  // send affordance to reach for.
+  const onDraftKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      doBuild();
+    }
+  };
+
+  // Nothing saved yet → the bar is a plain invitation to start planning. Once
+  // something is saved it becomes "Build trip · N".
+  const buildLabel = hasSelection
+    ? `${bar.buildCta ?? "Build trip"} · ${count}`
+    : "Start planning";
+
+  // Human label for a saved item's kind (singular). Used for the row tag and
+  // the per-type summary chips (e.g. "poi" → "place", "do" → "activity").
+  const KIND_LABEL: Record<string, string> = {
+    poi: "place",
+    place: "place",
+    do: "activity",
+    activity: "activity",
+    experience: "experience",
+    restaurant: "restaurant",
+    cafe: "café",
+    city: "city",
+    base: "base",
+    ticket: "ticket",
+    scene: "scene",
+  };
+  const kindName = (kind?: string) =>
+    KIND_LABEL[(kind || "poi").toLowerCase()] ?? (kind || "place").toLowerCase();
+  const pluralize = (word: string, n: number) => {
+    if (n === 1) return word;
+    if (word.endsWith("y")) return `${word.slice(0, -1)}ies`;
+    if (word.endsWith("s")) return word;
+    return `${word}s`;
+  };
+
+  // Group the selection by kind for the summary chips (e.g. "3 experiences",
+  // "2 places"), preserving first-seen order.
+  const kindCounts: Array<[string, number]> = [];
+  const seenKinds: Record<string, number> = {};
+  items.forEach((it) => {
+    const k = kindName(it.kind);
+    if (seenKinds[k] === undefined) {
+      seenKinds[k] = kindCounts.length;
+      kindCounts.push([k, 0]);
+    }
+    kindCounts[seenKinds[k]][1] += 1;
+  });
+
+  const listOpen = hasSelection && expanded;
+
+  // Shared pieces between the phone bar and the desktop pill.
+  const bagIcon = (size: number) => (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke={palette.accentOn}
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+      <path d="M3 6h18" />
+      <path d="M16 10a4 4 0 0 1-8 0" />
+    </svg>
+  );
+
+  const kairaAvatar = (size: number) => (
+    <>
+      <img
+        src={avatar ?? "/KairaInsta.jpg"}
+        alt=""
+        width={size}
+        height={size}
+        className="block rounded-full"
+        style={{
+          width: size,
+          height: size,
+          objectFit: "cover",
+          border: "2px solid #ffffff",
+          boxShadow: "0 8px 20px -8px rgba(11,18,32,0.35)",
+        }}
+      />
+      <span
+        aria-hidden
+        className="absolute rounded-full"
+        style={{
+          bottom: 1,
+          right: 1,
+          width: 10,
+          height: 10,
+          background: "#1f8a5a",
+          border: "2px solid #ffffff",
+          animation: "ctlPulseRing 2s infinite",
+        }}
+      />
+    </>
+  );
+
+  // The saved-list tray. Same card on both breakpoints; only its width and the
+  // gutter around it differ, so the caller passes the wrapper style.
+  const savedTray = (
     <div
-      className="fixed left-0 right-0 bottom-0 z-[998]"
+      style={{
+        ...cardChrome(),
+        borderRadius: 18,
+        padding: "16px 16px 14px",
+        boxShadow: "0 -16px 44px -16px rgba(11,18,32,0.28)",
+      }}
+    >
+      <div className="flex items-center justify-between mb-[12px]">
+        <span className="ctl-mono" style={{ fontSize: 9.5, color: INK }}>
+          Your list · {count} {count === 1 ? "item" : "items"}
+        </span>
+        <button
+          type="button"
+          onClick={() => selection?.clear()}
+          className="ctl-mono border-none cursor-pointer bg-transparent p-0"
+          style={{ fontSize: 9.5, color: FAINT }}
+        >
+          Clear all
+        </button>
+      </div>
+      <div
+        className="ctl-scroll flex flex-col gap-[7px]"
+        style={{ maxHeight: 224, overflowY: "auto" }}
+      >
+        {items.map((it) => (
+          <div
+            key={it.id ?? `${it.kind}:${it.label}`}
+            className="flex items-center gap-[10px]"
+            style={{
+              background: palette.accentSoft,
+              borderRadius: 12,
+              padding: "10px 10px 10px 13px",
+            }}
+          >
+            <span
+              className="ctl-mono shrink-0"
+              style={{
+                fontSize: 8.5,
+                color: palette.accent,
+                whiteSpace: "nowrap",
+              }}
+            >
+              {kindName(it.kind).toUpperCase()}
+            </span>
+            <span
+              className="flex-1 min-w-0 truncate"
+              style={{ color: INK, fontWeight: 500, fontSize: 12.5 }}
+              title={it.label || it.short}
+            >
+              {it.label || it.short}
+            </span>
+            <button
+              type="button"
+              aria-label={`Remove ${it.label}`}
+              onClick={() => selection?.toggle(it)}
+              className="ctl-press shrink-0 flex items-center justify-center rounded-full cursor-pointer p-0"
+              style={{
+                width: 22,
+                height: 22,
+                background: "#ffffff",
+                border: `1px solid ${BORDER}`,
+                color: MUTED,
+                fontSize: 13,
+                lineHeight: 1,
+              }}
+            >
+              ×
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  // ── Desktop: one floating pill ──────────────────────────────────────────
+  // The wide-screen mockup drops the full-bleed bar entirely — bag + count
+  // chips + build CTA + Kaira sit on a single 720px pill floating clear of the
+  // page, with the saved tray as a narrower card above it.
+  const desktopBar = (
+    <div
+      className="ctl-bar-desk fixed left-0 right-0 bottom-0 z-[998]"
+      style={{ pointerEvents: "none" }}
+    >
+      {listOpen && (
+        <div
+          style={{
+            pointerEvents: "auto",
+            width: 560,
+            maxWidth: "92%",
+            margin: "0 auto 10px",
+          }}
+        >
+          {savedTray}
+        </div>
+      )}
+      <div
+        style={{
+          pointerEvents: "auto",
+          width: 720,
+          maxWidth: "92%",
+          margin: "0 auto",
+          paddingBottom: 18,
+        }}
+      >
+        <div
+          className="flex items-center gap-[12px]"
+          style={{
+            background: "rgba(250,250,245,0.92)",
+            backdropFilter: "blur(16px)",
+            WebkitBackdropFilter: "blur(16px)",
+            border: `1px solid ${BORDER}`,
+            borderRadius: 999,
+            padding: 10,
+            boxShadow: "0 18px 44px -18px rgba(11,18,32,0.35)",
+          }}
+        >
+          {/* Bag — toggles the saved tray. */}
+          <button
+            type="button"
+            onClick={hasSelection ? () => setExpanded((v) => !v) : doBuild}
+            aria-expanded={hasSelection ? expanded : undefined}
+            aria-label={hasSelection ? "Your list" : buildLabel}
+            className="relative shrink-0 border-none cursor-pointer p-0 bg-transparent"
+            style={{ width: 46, height: 46 }}
+          >
+            <span
+              className="flex items-center justify-center rounded-full"
+              style={{ width: 46, height: 46, background: palette.accent }}
+            >
+              {bagIcon(18)}
+            </span>
+            {hasSelection && (
+              <span
+                className="ctl-mono absolute flex items-center justify-center rounded-full"
+                style={{
+                  top: -3,
+                  right: -4,
+                  minWidth: 17,
+                  height: 17,
+                  padding: "0 4px",
+                  background: INK,
+                  color: "#ffffff",
+                  fontSize: 9.5,
+                  border: "1.5px solid #ffffff",
+                  letterSpacing: 0,
+                }}
+              >
+                {count}
+              </span>
+            )}
+          </button>
+
+          {/* Count chips yield to the field rather than pushing it out: with
+              three or four saved kinds they would otherwise eat the whole
+              720px pill and squeeze the input past its min-width, spilling the
+              CTA and avatar outside the rounded edge. */}
+          {hasSelection && (
+            <div
+              className="min-w-0 flex gap-[6px] overflow-hidden"
+              style={{ flex: "0 1 auto" }}
+            >
+              {kindCounts.map(([k, n]) => (
+                <span
+                  key={k}
+                  className="ctl-mono"
+                  style={{
+                    background: palette.accentSoft,
+                    color: palette.accent,
+                    padding: "6px 11px",
+                    borderRadius: 999,
+                    fontSize: 9,
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {n} {pluralize(k, n)}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {/* Free-text field — Enter submits the bar, same as the CTA. */}
+          <input
+            type="text"
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={onDraftKeyDown}
+            placeholder={bar.placeholder}
+            aria-label={bar.placeholder}
+            className="flex-1 border-none outline-none bg-transparent"
+            // Floor rather than min-w-0: the field keeps a usable width and the
+            // chips beside it give way instead.
+            style={{ fontSize: 13.5, color: INK, minWidth: 90 }}
+          />
+
+          <button
+            type="button"
+            onClick={doBuild}
+            className="ctl-press shrink-0 relative overflow-hidden flex items-center justify-center rounded-full border-none cursor-pointer"
+            style={{
+              background: palette.accent,
+              color: palette.accentOn,
+              padding: "14px 24px",
+              minWidth: 190,
+              fontSize: 14,
+              fontWeight: 700,
+              boxShadow: `0 8px 20px -10px ${palette.accent}`,
+            }}
+          >
+            <span aria-hidden className="ctl-sheen" />
+            {buildLabel} →
+          </button>
+
+          <button
+            type="button"
+            aria-label={bar.cta ?? "Ask Kaira"}
+            onClick={openChat}
+            className="ctl-press relative shrink-0 rounded-full border-none cursor-pointer p-0 bg-transparent"
+            style={{ width: 46, height: 46 }}
+          >
+            {kairaAvatar(46)}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <>
+    {desktopBar}
+    <div
+      className="ctl-bar-mob fixed left-0 right-0 bottom-0 z-[998]"
       style={{
         padding: "10px 14px calc(14px + env(safe-area-inset-bottom))",
-        background: "rgba(250,250,245,0.88)",
+        background: "rgba(250,250,245,0.9)",
         backdropFilter: "blur(16px)",
         WebkitBackdropFilter: "blur(16px)",
         borderTop: `1px solid ${BORDER}`,
       }}
     >
-      <div
-        className="mx-auto flex items-center gap-[12px] bg-white"
-        style={{
-          maxWidth: 560,
-          border: `1px solid ${BORDER}`,
-          borderRadius: 999,
-          padding: "8px 8px 8px 16px",
-          boxShadow: "0 8px 20px -10px rgba(11,18,32,0.15)",
-        }}
-      >
-        <span
-          className="flex-1 min-w-0 truncate"
-          style={{ fontSize: 13.5, color: "#b8becc" }}
-        >
-          {bar.placeholder}
-        </span>
+      {/* One centered column so every piece aligns; full-width under 560px. */}
+      <div className="mx-auto" style={{ maxWidth: 560 }}>
+        {/* Saved-list panel (toggled by the summary bar's chevron) — a white
+            tray whose rows carry the theme wash so the list reads as part of
+            the trip being built rather than a generic cart. */}
+        {listOpen && <div style={{ marginBottom: 10 }}>{savedTray}</div>}
+
+        {/* Summary bar — always present (matches the mockup): an accent bag,
+            one chip per saved type, and a chevron. With nothing saved it reads
+            "NOTHING ADDED YET · TAP + ON ANYTHING ABOVE"; the bag badge and the
+            expand chevron only appear once something is saved. */}
         <button
-          type="button"
-          onClick={go}
-          className="shrink-0 whitespace-nowrap rounded-full border-none cursor-pointer"
-          style={{
-            background: INK,
-            color: PAPER,
-            padding: "8px 15px",
-            fontSize: 12.5,
-            fontWeight: 600,
-          }}
-        >
-          {bar.cta ?? "Ask Kaira"}
-        </button>
+            type="button"
+            onClick={() => hasSelection && setExpanded((v) => !v)}
+            aria-expanded={hasSelection ? expanded : undefined}
+            className="w-full flex items-center gap-[10px]"
+            style={{
+              ...cardChrome(),
+              borderRadius: 999,
+              padding: "8px 14px 8px 9px",
+              marginBottom: 10,
+              boxShadow: "0 8px 20px -10px rgba(11,18,32,0.15)",
+              cursor: hasSelection ? "pointer" : "default",
+            }}
+          >
+            <span
+              className="relative shrink-0 flex items-center justify-center rounded-full"
+              style={{ width: 32, height: 32, background: palette.accent }}
+            >
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke={palette.accentOn}
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                <path d="M3 6h18" />
+                <path d="M16 10a4 4 0 0 1-8 0" />
+              </svg>
+              {count > 0 && (
+                <span
+                  className="ctl-mono absolute flex items-center justify-center rounded-full"
+                  style={{
+                    top: -3,
+                    right: -4,
+                    minWidth: 16,
+                    height: 16,
+                    padding: "0 4px",
+                    background: INK,
+                    color: "#ffffff",
+                    fontSize: 9,
+                    fontWeight: 600,
+                    border: "1.5px solid #fff",
+                    letterSpacing: 0,
+                  }}
+                >
+                  {count}
+                </span>
+              )}
+            </span>
+            {hasSelection ? (
+              // One chip per selected type, e.g. "3 experiences · 2 places".
+              <div
+                className="ctl-scroll flex-1 min-w-0 flex items-center gap-[5px]"
+                style={{ overflowX: "auto" }}
+              >
+                {kindCounts.map(([k, n]) => (
+                  <span
+                    key={k}
+                    className="ctl-mono shrink-0"
+                    style={{
+                      background: palette.accentSoft,
+                      borderRadius: 6,
+                      padding: "4px 8px",
+                      fontSize: 8.5,
+                      color: palette.accent,
+                      fontWeight: 600,
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {n} {pluralize(k, n)}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <span
+                className="ctl-mono flex-1 min-w-0 truncate"
+                style={{ fontSize: 9, color: FAINT, letterSpacing: "0.12em" }}
+              >
+                Nothing added yet · tap + on anything above
+              </span>
+            )}
+            <span
+              className="shrink-0 flex items-center"
+              style={{
+                color: FAINT,
+                opacity: hasSelection ? 1 : 0.5,
+                transform: expanded ? "rotate(180deg)" : "none",
+                transition: "transform .2s ease",
+              }}
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke={FAINT}
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </span>
+          </button>
+
+        {/* Action row — the accent-filled Build button (with a slow sheen so it
+            stays alive without animating colour) + Kaira's avatar into chat. */}
+        <div className="flex items-center gap-[8px]">
+          <button
+            type="button"
+            onClick={doBuild}
+            className="ctl-press flex-1 min-w-0 relative overflow-hidden rounded-full border-none cursor-pointer"
+            style={{
+              background: palette.accent,
+              color: palette.accentOn,
+              padding: "14px 12px",
+              fontSize: 14,
+              fontWeight: 700,
+              boxShadow: `0 8px 20px -10px ${palette.accent}`,
+            }}
+          >
+            <span aria-hidden className="ctl-sheen" />
+            {buildLabel} →
+          </button>
+          <button
+            type="button"
+            aria-label={bar.cta ?? "Ask Kaira"}
+            onClick={openChat}
+            className="ctl-press relative shrink-0 rounded-full border-none cursor-pointer p-0 bg-transparent"
+            style={{ width: 48, height: 48 }}
+          >
+            {kairaAvatar(48)}
+          </button>
+        </div>
       </div>
     </div>
+    </>
   );
 };
 
@@ -1744,12 +2516,24 @@ export interface CinematicThemeLandingProps {
   // Opens the read-only activity details drawer for a catalog activity id.
   // Used by `list` rows that carry an `activityId` (e.g. "Worth the cold").
   onSelectActivity?: (activityId: string, source?: string) => void;
+  // Opt-in "save items off the page" selection (see useThemeSelectionState).
+  // When provided, cards carrying an `item` toggle it in/out of the selection
+  // on click instead of seeding, and the docked ask-bar shows the selection
+  // popup + "Build this itinerary" CTA. Omit for a plain seed-only theme page.
+  selection?: ThemeSelectionValue;
+  // "Build this itinerary" action (from the selection popup). When provided,
+  // routes to /chat and opens the themed mini-form rather than auto-seeding.
+  // `note` is whatever the reader typed into the ask-bar, forwarded so the
+  // form's submission carries it.
+  onBuild?: (note?: string) => void;
 }
 
 const CinematicThemeLanding: React.FC<CinematicThemeLandingProps> = ({
   config,
   onSelectPrompt,
   onSelectActivity,
+  selection,
+  onBuild,
 }) => {
   // Preload the LCP image: the first card of the first section (the hero
   // collage is desktop-only, so on mobile that card is the largest paint).
@@ -1763,11 +2547,45 @@ const CinematicThemeLanding: React.FC<CinematicThemeLandingProps> = ({
     ? optimizedMediaUrl(lcpImage, { width: 640 })
     : undefined;
 
+  const palette = React.useMemo(
+    () => resolvePalette(config.theme),
+    [config.theme],
+  );
+
+  // "The destinations" and "Other themes" share a desktop row in the mockup.
+  // They stay separate entries in the config — the pairing is purely
+  // presentational, so it's derived here from adjacency rather than pushed onto
+  // every page.
+  //
+  // Resolved in one left-to-right pass so a section can only be consumed once:
+  // with three gradients in a row the first two pair and the third renders on
+  // its own, rather than the third being swallowed by an already-paired second.
+  const pairedWithNext = React.useMemo(() => {
+    const paired = new Set<number>();
+    const sections = config.sections;
+    for (let i = 0; i < sections.length - 1; i++) {
+      if (paired.has(i - 1)) continue; // already the tail of the previous pair
+      if (sections[i].type === "gradient" && sections[i + 1].type === "gradient")
+        paired.add(i);
+    }
+    return paired;
+  }, [config.sections]);
+
   return (
+  <PaletteContext.Provider value={palette}>
+  <ThemeSelectionProvider value={selection ?? null}>
   <div
+    // The phone bar gains a third row (the saved-items summary) once something
+    // is saved, so the gutter under the page has to grow with it or the last
+    // section sits behind the bar. Desktop is one fixed-height pill either way.
     className={`ctl-root ${
-      config.askBar ? "pb-[104px] md:pb-[108px]" : "pb-[32px] md:pb-0"
+      config.askBar
+        ? selection?.count
+          ? "pb-[164px] md:pb-[108px]"
+          : "pb-[104px] md:pb-[108px]"
+        : "pb-[32px] md:pb-0"
     }`}
+    style={{ background: palette.page }}
   >
     {lcpPreloadHref && (
       <Head>
@@ -1790,6 +2608,21 @@ const CinematicThemeLanding: React.FC<CinematicThemeLandingProps> = ({
 
     {config.sections.map((section, i) => {
       const key = `sec-${i}`;
+      // Tail of a pair — already rendered by its partner.
+      if (pairedWithNext.has(i - 1)) return null;
+      if (pairedWithNext.has(i)) {
+        const next = config.sections[i + 1];
+        if (section.type === "gradient" && next.type === "gradient")
+          return (
+            <GradientPairSection
+              key={key}
+              left={section}
+              right={next}
+              onSelectPrompt={onSelectPrompt}
+            />
+          );
+      }
+
       switch (section.type) {
         case "cards":
           return (
@@ -1833,8 +2666,6 @@ const CinematicThemeLanding: React.FC<CinematicThemeLandingProps> = ({
               onSelectActivity={onSelectActivity}
             />
           );
-        case "steps":
-          return <StepsSection key={key} section={section} onSelectPrompt={onSelectPrompt} />;
         case "gradient":
         default:
           return <GradientSection key={key} section={section} onSelectPrompt={onSelectPrompt} />;
@@ -1842,9 +2673,16 @@ const CinematicThemeLanding: React.FC<CinematicThemeLandingProps> = ({
     })}
 
     {config.askBar && (
-      <AskKairaStrip bar={config.askBar} onSelectPrompt={onSelectPrompt} />
+      <AskKairaStrip
+        bar={config.askBar}
+        onSelectPrompt={onSelectPrompt}
+        onBuild={onBuild}
+        avatar={config.hero.kairaImage}
+      />
     )}
   </div>
+  </ThemeSelectionProvider>
+  </PaletteContext.Provider>
   );
 };
 
@@ -1861,8 +2699,8 @@ export {
   StoriesSection,
   EatsSection,
   VisaSection,
+  GradientPairSection,
   FeatureSection,
-  StepsSection,
   AskKairaStrip,
   PromptCard,
   TripCard,

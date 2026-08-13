@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback, useMemo } from "react"
 import { optimizedMediaUrl } from "../../../lib/mediaImage";
 import { useRouter } from "next/router";
 import axios from "axios";
-import { useChat, generateSessionId, getPlatform, type UserLocationData, type MessageAttachment, Message } from "../hooks/useChat";
+import { useChat, generateSessionId, getPlatform, type UserLocationData, type MessageAttachment, type ThemeSelectedItem, Message } from "../hooks/useChat";
 import { MessageBubble, isButtonOnlyWidget, ItineraryCloneCta } from "./MessageBubble";
 import { MessageInputBox } from "./MessageInputBox";
 import { CHATKIT_API_DOMAIN_KEY as CHATKIT_DOMAIN_KEY } from "../lib/chatkitConfig";
@@ -48,6 +48,12 @@ import BotLoginModal from "./BotLoginModal";
 import { updateIntakeForm } from "../../../store/actions/intakeForm";
 import { updatePricingForm } from "../../../store/actions/pricingForm";
 import IntakeFormCard from "./IntakeForm";
+import ThemeIntakeForm from "./ThemeIntakeForm/ThemeIntakeForm";
+import { WidgetThemeProvider } from "./WidgetRenderer";
+import type {
+  ThemeForm,
+  ThemeFormSubmission,
+} from "../../theme/cinematic/themeForms/types";
 import type { IntakeFormState } from "./IntakeForm/types";
 import PricingFormCard from "./PricingForm";
 import OtpCard from "./IntakeForm/OtpCard";
@@ -104,6 +110,20 @@ const SingleChips = styled.button`
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+
+  /* Phone — the Kaira mock's chips: a hairline white pill in ink text, sitting
+     directly above the composer pill it feeds. */
+  @media (max-width: 768px) {
+    border-radius: 999px;
+    padding: 8px 13px;
+    border: 1px solid #dcdfe5;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 11.5px;
+    color: #0b1220;
+    &:hover {
+      border-color: #dcdfe5;
+    }
   }
 `;
 
@@ -216,6 +236,19 @@ onLoginSuccess?: () => void | Promise<void>;
  *  /chatkit request (threads.create). When undefined, the field is omitted
  *  from the body. Subsequent messages never include it. */
 loginMandatory?: boolean;
+/** Theme-page hand-off (see heroChatHandoff): the items the reader saved on a
+ *  /theme landing and the theme slug. Forwarded as `items` / `slug` on the very
+ *  first /chatkit request only; omitted when empty. */
+themeItems?: ThemeSelectedItem[];
+themeSlug?: string;
+// Free text typed into the theme page's ask-bar before "Build trip".
+themeNote?: string;
+/** Themed theme-page mini-form config (date windows + pax presets). When set
+ *  together with `startThemedForm`, a themed 2-section form card is injected
+ *  into the chat on mount instead of the 4-step intake. Nothing fires to
+ *  /chatkit until the reader submits it. */
+themeForm?: ThemeForm | null;
+startThemedForm?: boolean;
 /** Mobile-only: invoked when the user taps the "View Itinerary" CTA rendered
  *  below the composer in P2 mode (or once a display_itinerary effect has fired
  *  in this thread). Used by BotApp to switch the mobile tab to the itinerary
@@ -382,6 +415,26 @@ const ChatPanelStyles = () => (
       background: #fff;
       flex-shrink: 0;
     }
+    /* Phone: the bar collapses out of the column as the reader scrolls down
+       (see headerHidden), handing its ~62px to the thread. max-height rather
+       than display:none so it animates and so the natural height still wins
+       when open. */
+    @media (max-width: 768px) {
+      .kp-header {
+        overflow: hidden;
+        max-height: 140px;
+        transition: max-height 0.24s cubic-bezier(.2,.7,.3,1),
+                    padding 0.24s cubic-bezier(.2,.7,.3,1),
+                    opacity 0.16s ease;
+      }
+      .kp-header.is-hidden {
+        max-height: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+        opacity: 0;
+        border-bottom-color: transparent;
+      }
+    }
     .kp-header-ava {
       position: relative;
       width: 38px; height: 38px;
@@ -421,14 +474,17 @@ const ChatPanelStyles = () => (
       0%,100% { opacity: 1; transform: scale(1); }
       50% { opacity: 0.5; transform: scale(0.7); }
     }
+    /* The composer floats rather than sitting in a ruled tray: no top border,
+       and the separation from the thread comes entirely from the pill's own
+       drop shadow (see MessageInputBox .kp-row). Padding is a touch roomier
+       than the ruled version so the shadow has somewhere to fall. */
     .kp-composer-wrap {
-  padding: 12px 20px;
-  border-top: 1px solid #ececec;
+  padding: 14px 20px 16px;
   background: #fff;
 }
 @media (max-width: 768px) {
   .kp-composer-wrap {
-    padding: 8px 12px 10px;
+    padding: 10px 12px 12px;
   }
 }
     /* ── Itinerary progress card (chat) ─────────────────────────────────── */
@@ -698,6 +754,11 @@ mobileMenu,
 isPanelVisible = true,
 onLoginSuccess,
 loginMandatory,
+themeItems,
+themeSlug,
+themeNote,
+themeForm,
+startThemedForm = false,
 onViewItinerary,
 onTripMetaUpdate,
 onIntakeFormStart,
@@ -728,6 +789,11 @@ startEmptyIntake = false,
   // Guards the in-chat intake form so the `form_fields` effect injects the card
   // only once per session even if the effect re-emits across stream chunks.
   const intakeFormInjectedRef = useRef(false);
+  // Themed theme-page mini-form: keep the config in a ref so the render/submit
+  // callbacks read the latest without re-subscribing, and a one-shot inject guard.
+  const themeFormRef = useRef<ThemeForm | null>(themeForm ?? null);
+  themeFormRef.current = themeForm ?? null;
+  const themedFormInjectedRef = useRef(false);
   // Same one-shot guard for the in-chat pricing form card.
   const pricingFormInjectedRef = useRef(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
@@ -1468,6 +1534,10 @@ startEmptyIntake = false,
   // auto-scroll effect only fires when this is true, so the transcript won't
   // yank away from a user who's scrolled up to read earlier messages.
   const isAtBottomRef = useRef(true);
+  // Phone-only: the top bar collapses while the reader scrolls down the thread
+  // and slides back in on an upward scroll or at the top of the list. The
+  // collapse itself is CSS and media-scoped, so this flag is inert on desktop.
+  const [headerHidden, setHeaderHidden] = useState(false);
   // True between a thread restore and the moment we've actually parked the
   // scroll container at the bottom. Widgets/images in restored threads finish
   // laying out asynchronously, so a single smooth scroll lands mid-thread —
@@ -1676,6 +1746,15 @@ const handleSessionCreated = useCallback((ourSessionId: string) => {
   if (alreadyInUrl) {
     hasUpdatedUrl.current = true;
     bindChatFunnelScope(alreadyInUrl[1]);
+    return;
+  }
+
+  // The first response resolves asynchronously. If the user pressed browser
+  // back (or otherwise navigated off the /chat surface) while it was in flight,
+  // do NOT push /chat/{id} — that would hijack whatever page they're now on.
+  // Only claim the URL when we're still on the bare /chat surface.
+  const path = window.location.pathname;
+  if (path !== "/chat" && path !== "/chat/") {
     return;
   }
 
@@ -1913,6 +1992,42 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
     // Run once on mount when the flag is set.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [startEmptyIntake]);
+
+  // ── Themed theme-page mini-form on /chat?themeForm=<slug> ─────────────────
+  // A theme page's "Build this itinerary" routes here with the theme slug. We
+  // inject Kaira's opener (the theme's tagline) + the themed 2-section form
+  // card. Nothing is sent to /chatkit until the reader submits the form. Mirrors
+  // the empty-intake injection above but uses its own one-shot guard so the two
+  // never collide.
+  useEffect(() => {
+    if (!startThemedForm) return;
+    if (themedFormInjectedRef.current) return;
+    const form = themeFormRef.current;
+    if (!form) return;
+    themedFormInjectedRef.current = true;
+    suppressIntakeAutoScrollRef.current = true;
+    // Kaira's opener (the theme tagline) rides as a normal assistant bubble so
+    // it gets her avatar + styling like every other message; the form card
+    // follows it.
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: `theme-greeting-${sessionIdRef.current}`,
+        role: "assistant",
+        content: form.tagline,
+        timestamp: new Date(),
+      },
+      {
+        id: `theme-form-${sessionIdRef.current}`,
+        role: "assistant",
+        content: "",
+        timestamp: new Date(),
+        type: "theme_form",
+      },
+    ]);
+    onIntakeFormStart?.();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [startThemedForm]);
 
   // Quick replies stream in on the tail of the response, after the answer is
   // fully rendered but while the SSE connection is still open (so `isStreaming`
@@ -2835,6 +2950,19 @@ const handleIntakeComplete = useCallback(
   [sendMessage],
 );
 
+// ── Themed mini-form completion ──────────────────────────────────────────────
+// Same contract as the intake form: the composed summary IS the payload. The
+// request body stays the standard /chatkit shape (no `intake` object, no
+// top-level `items`), so everything the reader chose — route, dates, nights,
+// travellers, and the picks they saved on the page — has to be readable in
+// `composed`. ThemeIntakeForm builds it that way; see its `submit()`.
+const handleThemedFormSubmit = useCallback(
+  (_submission: ThemeFormSubmission, composed: string) => {
+    sendMessage(composed, undefined, undefined, { formSubmitted: true });
+  },
+  [sendMessage],
+);
+
 
 // ── Pricing form completion ──────────────────────────────────────────────────
 // Same contract as the intake form: send the composed final-details message
@@ -2907,17 +3035,31 @@ const handleLoginCardSkip = useCallback(() => {
   useEffect(() => {
     const c = messagesScrollRef.current;
     if (!c) return;
+    // Same gesture stream drives the phone header's auto-hide: reading forward
+    // collapses it for the extra rows, reading back brings it in. Deliberately
+    // hung off the user's gesture rather than the `scroll` event, so the
+    // auto-scroll that follows every streamed token doesn't hide the header
+    // (and with it the "typing…" status) on its own.
     const onWheel = (e: WheelEvent) => {
       if (e.deltaY < 0) isAtBottomRef.current = false;
+      if (e.deltaY > 4) setHeaderHidden(true);
+      else if (e.deltaY < -4) setHeaderHidden(false);
     };
     let touchStartY = 0;
+    let lastTouchY = 0;
     const onTouchStart = (e: TouchEvent) => {
       touchStartY = e.touches[0]?.clientY ?? 0;
+      lastTouchY = touchStartY;
     };
     const onTouchMove = (e: TouchEvent) => {
       const y = e.touches[0]?.clientY ?? 0;
       // Finger dragging downward → content scrolls up → user is reading above.
       if (y - touchStartY > 5) isAtBottomRef.current = false;
+      // Per-move delta (not the whole-gesture one above) so a long drag can
+      // flip the header back mid-swipe.
+      if (lastTouchY - y > 4) setHeaderHidden(true);
+      else if (y - lastTouchY > 4) setHeaderHidden(false);
+      lastTouchY = y;
     };
     c.addEventListener("wheel", onWheel, { passive: true });
     c.addEventListener("touchstart", onTouchStart, { passive: true });
@@ -3718,6 +3860,11 @@ useEffect(() => {
     if (!c) return;
     const distanceFromBottom = c.scrollHeight - c.scrollTop - c.clientHeight;
     isAtBottomRef.current = distanceFromBottom < 80;
+    // Back at the top of the thread (or nothing to scroll) → the header is
+    // always shown, whichever way the last gesture went.
+    if (c.scrollTop <= 8 || c.scrollHeight - c.clientHeight < 120) {
+      setHeaderHidden(false);
+    }
     if (c.scrollTop <= PAGINATION_SCROLL_THRESHOLD) {
       fetchOlderMessages();
     }
@@ -3974,6 +4121,9 @@ const handleShowLogin = useCallback(() => {
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
+    // Hands the theme slug to every widget in the thread, so a route card's
+    // primary CTA can paint in the theme page's accent (see useWidgetAccent).
+    <WidgetThemeProvider value={themeSlug}>
     <div
       className={`kp-root flex flex-col h-full min-h-0 bg-white max-h-[100dvh] border-[0.5px] border-l-[#e5e5e5] overflow-x-hidden`}
       style={{
@@ -3984,7 +4134,7 @@ const handleShowLogin = useCallback(() => {
     >
       <ChatPanelStyles />
       {/* ── Top bar — mirrors chat-active-v2.html .chat-header ──────────── */}
-      <div className="kp-header">
+      <div className={`kp-header${headerHidden ? " is-hidden" : ""}`}>
         <div className="kp-header-ava">
           <img src="/KairaInsta.png" alt="Kaira" />
           <span className="kp-dot" />
@@ -4125,6 +4275,25 @@ const handleShowLogin = useCallback(() => {
                       (msg.intakeSnapshot as IntakeFormState | undefined) ?? null
                     }
                   />
+                );
+              }
+              if (msg.type === "theme_form" && themeFormRef.current) {
+                // Match the regular intake card's container: indent it into the
+                // message column on desktop (not stuck to the left gutter) and
+                // cap the width; full-width on mobile.
+                return (
+                  <div
+                    key={msg.id}
+                    className="ml-10 mb-4 w-[calc(100%-40px)] max-ph:ml-0 max-ph:w-auto"
+                    style={{ maxWidth: 480, paddingTop: 4, paddingBottom: 8 }}
+                  >
+                    <ThemeIntakeForm
+                      form={themeFormRef.current}
+                      items={themeItems}
+                      note={themeNote}
+                      onSubmit={handleThemedFormSubmit}
+                    />
+                  </div>
                 );
               }
               if (msg.type === "pricing_form") {
@@ -4763,16 +4932,16 @@ const handleShowLogin = useCallback(() => {
       {quickReplyShimmer &&
         quickReplies.length === 0 &&
         !isComposerLocked && (
-          <div className="flex-shrink-0 px-[0.25rem] md:!px-6 pt-2 pb-1">
+          <div className="flex-shrink-0 px-3 md:!px-6 pt-2 pb-0 md:pb-1">
             <div className="mx-auto">
               <div
-                className="flex gap-2 overflow-hidden pb-1"
+                className="flex gap-[6px] md:gap-2 overflow-hidden pb-[10px] md:pb-1"
                 style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
               >
                 {Array.from({ length: 10 }).map((_, idx) => (
                   <div
                     key={idx}
-                    className="flex-shrink-0 rounded-[6px]"
+                    className="flex-shrink-0 rounded-full md:rounded-[6px]"
                     style={{
                       width: 96,
                       height: 33,
@@ -4793,10 +4962,10 @@ const handleShowLogin = useCallback(() => {
       {/* ── Quick reply chips ─────────────────────────────────────────────── */}
       {/* Hidden while itinerary creation is in progress — no quick replies/CTAs allowed */}
       {(quickReplies.length > 0 || quickReplyLoading) && !isComposerLocked && !isForeignItinerary && !loginBlocked && !promptLoginBlocked && (
-        <div className="flex-shrink-0 px-[0.25rem] md:!px-6 pt-2 pb-1">
+        <div className="flex-shrink-0 px-3 md:!px-6 pt-2 pb-0 md:pb-1">
           <div className="mx-auto">
             <div
-              className="flex gap-2 overflow-x-auto pb-1"
+              className="flex gap-[6px] md:gap-2 overflow-x-auto pb-[10px] md:pb-1"
               style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             >
               {quickReplyLoading
@@ -5347,6 +5516,7 @@ const handleShowLogin = useCallback(() => {
         onHide={() => setEsimDrawer({ show: false })}
       />
     </div>
+    </WidgetThemeProvider>
   );
 }
 

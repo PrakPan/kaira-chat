@@ -9,6 +9,7 @@ import { openNotification } from "../../../store/actions/notification";
 import { FaTaxi, FaWhatsapp } from "react-icons/fa";
 import useMediaQuery from "../../media";
 import BotLoginModal from "./BotLoginModal";
+import { getThemePalette } from "../../theme/cinematic/palettes";
 
 // ─── Widget environment context ───────────────────────────────────────────────
 // Carries ambient data (e.g. botMode) down to individual cards without
@@ -19,6 +20,24 @@ interface WidgetEnv {
 const WidgetEnvContext = createContext<WidgetEnv>({});
 function useWidgetEnv() {
   return useContext(WidgetEnvContext);
+}
+
+// ─── Theme context ────────────────────────────────────────────────────────────
+// The slug of the theme page this thread came from (e.g. "christmas-markets"),
+// set once by ChatKitPanel. Cards that carry a primary CTA read the theme's
+// accent through it so the chat keeps the colour of the page the reader
+// arrived from. Unset (a plain /chat session) → the default brand treatment.
+const WidgetThemeContext = createContext<string | undefined>(undefined);
+export const WidgetThemeProvider = WidgetThemeContext.Provider;
+
+/** Accent fill + on-accent text for the active theme, or `null` for the
+ *  default (brand-yellow) treatment. */
+function useWidgetAccent(): { bg: string; fg: string } | null {
+  const slug = useContext(WidgetThemeContext);
+  const palette = getThemePalette(slug);
+  return palette
+    ? { bg: palette.accent, fg: palette.accentOn ?? "#ffffff" }
+    : null;
 }
 
 // Shallow Redux selector for the Itinerary slice. Cards use this to enrich
@@ -3991,11 +4010,16 @@ function resolveCityCountry(itinerary: any, cityName: string): string {
 }
 
 // Estimated-cost + CTA block — the cream "confirm" island under the timeline.
-// Wraps the cost card, the "range moves…" note, and the paired CTAs: "Modify"
-// (secondary) sends a prompt straight into the chat, while "Confirm Route &
-// Sign In" opens the sign-in popup first (or, if already logged in, confirms the
-// route directly). Both flows resolve to the same "Confirm this route" turn so
-// Kaira picks up from where the user left off.
+// Wraps the cost card, the "range moves…" note, and the CTAs. "Modify" sends a
+// prompt straight into the chat; "Confirm Route" opens the sign-in popup first
+// (or, if already logged in, confirms the route directly). Both flows resolve
+// to the same "Confirm this route" turn so Kaira picks up from where the user
+// left off.
+//
+// Desktop pairs the two as side-by-side buttons. On a phone that row is too
+// cramped for the logged-out copy, so it becomes one full-width primary —
+// "Confirm route — price it →" regardless of auth state — with "Modify this
+// route" as a small text link underneath. Behaviour is identical either way.
 function RouteActionButtons({
   label,
   amount,
@@ -4013,6 +4037,13 @@ function RouteActionButtons({
       "",
   );
   const [showLogin, setShowLogin] = useState(false);
+   const isDesktop = useMediaQuery("(min-width:430px)");
+  // Layout switch for the CTA row (see the note above the component). Phrased
+  // as min-width so the phone layout is what renders before the query resolves
+  // — same mobile-first default the rest of this file uses.
+  const isWide = useMediaQuery("(min-width:768px)");
+  // Theme accent when the thread came from a theme page; null → brand yellow.
+  const accent = useWidgetAccent();
   // Which sign-in prompt is pending and what to replay once auth succeeds. Both
   // "Modify" and "Confirm Route" gate behind login for logged-out users; they
   // differ only in the popup copy and the chat prompt sent on a successful
@@ -4053,7 +4084,7 @@ function RouteActionButtons({
     padding: "11px 14px",
     borderRadius: 9999,
     fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-    fontSize: 13,
+    fontSize: isDesktop ? 13 : 11,
     fontWeight: 600,
     cursor: "pointer",
     opacity: 1,
@@ -4065,6 +4096,71 @@ function RouteActionButtons({
     lineHeight: "18px",
     transition: "background 0.15s ease, border-color 0.15s ease",
   };
+
+  // Primary CTA fill. A themed thread paints it in the theme's accent with
+  // on-accent (white) text; everything else keeps the brand yellow on ink.
+  // `relative`/`hidden` are for the sheen below, which is clipped to the pill.
+  const confirmSkin: React.CSSProperties = {
+    position: "relative",
+    overflow: "hidden",
+    ...(accent
+      ? {
+          border: `1px solid ${accent.bg}`,
+          background: accent.bg,
+          color: accent.fg,
+        }
+      : { border: "1px solid #07213a", background: "#f7e700", color: "#000" }),
+  };
+
+  // The same slow highlight sweep the theme pages' "Start planning" CTA carries
+  // (.ctl-sheen / ctlBarShimmer in CinematicThemeLanding), so confirming a
+  // route reads as the same kind of live primary action. The gradient is
+  // white-on-accent, which also works over the default yellow.
+  const confirmSheen = (
+    <>
+      <style
+        dangerouslySetInnerHTML={{
+          __html:
+            "@keyframes rtSheen{0%{transform:translateX(-100%) skewX(-18deg)}55%,100%{transform:translateX(100%) skewX(-18deg)}}" +
+            "@media (prefers-reduced-motion:reduce){.rt-sheen{animation:none!important;opacity:0}}",
+        }}
+      />
+      <span
+        aria-hidden
+        className="rt-sheen"
+        style={{
+          position: "absolute",
+          inset: 0,
+          pointerEvents: "none",
+          backgroundImage:
+            "linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent)",
+          backgroundSize: "64px 100%",
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "left center",
+          animation: "rtSheen 3s cubic-bezier(.4,0,.2,1) infinite",
+        }}
+      />
+    </>
+  );
+
+  // `currentColor` so the arrow follows the label through both skins.
+  const confirmArrow = (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+      style={{ flexShrink: 0 }}
+    >
+      <line x1="5" y1="12" x2="19" y2="12" />
+      <polyline points="12 5 19 12 12 19" />
+    </svg>
+  );
 
   return (
     <div style={{ marginTop: 14 }}>
@@ -4097,50 +4193,72 @@ function RouteActionButtons({
         </span>
       </div>
 
-      <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
-        <button
-          type="button"
-          onClick={handleModifyClick}
-          style={{
-            ...base,
-            flex: "2 1 0",
-            border: "1px solid #07213a",
-            background: "#ffffff",
-            color: "#07213a",
-          }}
-        >
-          Modify
-        </button>
+      {isWide ? (
+        <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
+          <button
+            type="button"
+            onClick={handleModifyClick}
+            style={{
+              ...base,
+              flex: "2 1 0",
+              border: "1px solid #07213a",
+              background: "#ffffff",
+              color: "#07213a",
 
-        <button
-          type="button"
-          onClick={handleConfirmClick}
-          style={{
-            ...base,
-            flex: "3 1 0",
-            border: "1px solid #07213a",
-            background: "#f7e700",
-            color: "#000",
-          }}
-        >
-          {token ? "Confirm Route" : "Confirm Route & Sign In"}
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#000"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden
-            style={{ flexShrink: 0 }}
+            }}
           >
-            <line x1="5" y1="12" x2="19" y2="12" />
-            <polyline points="12 5 19 12 12 19" />
-          </svg>
-        </button>
-      </div>
+            Modify
+          </button>
+
+          <button
+            type="button"
+            onClick={handleConfirmClick}
+            style={{ ...base, flex: "3 1 0", ...confirmSkin }}
+          >
+            {confirmSheen}
+            {token ? "Confirm Route" : "Confirm Route & Sign In"}
+            {confirmArrow}
+          </button>
+        </div>
+      ) : (
+        <div style={{ marginTop: 12 }}>
+          {/* One decision on a phone: price it. The auth gate is unchanged —
+              logged-out users still get the sign-in popup first — it just
+              isn't spelled out in the label. */}
+          <button
+            type="button"
+            onClick={handleConfirmClick}
+            style={{ ...base, ...confirmSkin, width: "100%", fontSize: 13 }}
+          >
+            {confirmSheen}
+            Confirm route –– price it
+            {confirmArrow}
+          </button>
+
+          <button
+            type="button"
+            onClick={handleModifyClick}
+            style={{
+              display: "block",
+              width: "100%",
+              marginTop: 9,
+              padding: 0,
+              border: 0,
+              background: "none",
+              fontFamily:
+                "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+              fontSize: 11.5,
+              fontWeight: 600,
+              color: "#6B7280",
+              textDecoration: "underline",
+              textUnderlineOffset: 3,
+              cursor: "pointer",
+            }}
+          >
+            Modify this route
+          </button>
+        </div>
+      )}
 
       <BotLoginModal
         show={showLogin}

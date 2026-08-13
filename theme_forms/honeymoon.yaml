@@ -1,0 +1,98 @@
+# theme_forms/honeymoon.yaml
+#
+# Mini-form spec for /theme/honeymoon. The frontend mirror of this file lives at
+# components/theme/cinematic/themeForms/honeymoon.ts and must stay 1:1 with it.
+#
+# The "date window" here is the ROUTE — a honeymoon is picked by shape, not by a
+# season, so each window is a destination pairing with an indicative set of dates.
+#
+# Route ranking is from live booking data (mercury, couples travelling as 2
+# adults on an international trip, all-time):
+#   Indonesia / Bali .......... 1,927 trips  (Ubud alone 805, avg 8 nights)
+#   Maldives .................... 425 trips  (Male / Maafushi, avg 5–6 nights)
+#   Greece ...................... 354 trips  (Athens · Santorini · Mykonos, avg 7–8 nights)
+#   Seychelles .................. 101 trips  (avg 8 nights)
+# Bali is therefore the MOST PICKED window; the Maldives villa is second and is
+# the one couples ask for by name.
+
+slug: honeymoon
+display: Honeymoon
+tagline: >-
+  The first trip as us. Tell me the shape you want — overwater and nowhere to be,
+  or two islands and two moods — and I'll build the rest.
+voice: >-
+  Warm and unhurried. Talks overwater villas, floating breakfasts, caldera
+  sunsets, slow mornings. Never gushes; never rushes the couple.
+
+copy:
+  dates_title: Which honeymoon is yours?
+  dates_sub: Every one of these is year-round. Pick the shape, I'll fit the dates.
+  pax_title: Just the two of you?
+  pax_sub: So I can size the villa and the transfers.
+  footer: That's the whole form. The page already told me it's a honeymoon.
+  cta: Draft our honeymoon →
+
+date_windows:
+  - key: bali_slow
+    label: Slow Bali · 7N
+    range: ["2026-10-10", "2026-10-17"]
+    nights: 7
+    blurb: Uluwatu → Seminyak → Ubud, cliffs then rice terraces
+    tag: MOST PICKED
+    skeleton: uluwatu_seminyak_ubud
+    fare_note: >-
+      The most-booked honeymoon we run (1,927 couple trips). DEL/BOM→DPS via one
+      stop; single arrival and departure airport.
+
+  - key: maldives_overwater
+    label: Overwater & Endless Blue · 6N
+    range: ["2026-11-14", "2026-11-20"]
+    nights: 6
+    blurb: One atoll, one overwater villa, nowhere to be
+    tag: MOST PRIVATE
+    skeleton: maldives_one_island
+    fare_note: >-
+      Direct DEL/BOM→MLE, then a seaplane or speedboat each way. Dec–Mar villas
+      go six months out; visa-free for Indian passports.
+
+  - key: bali_santorini
+    label: Two Islands, Two Moods · 7N
+    range: ["2026-09-12", "2026-09-19"]
+    nights: 7
+    blurb: Bali → Santorini, jungle quiet then caldera sunsets
+    tag: TWO MOODS
+    skeleton: bali_santorini
+    fare_note: >-
+      Long connection between the two; needs an Indonesia e-Visa and a Schengen
+      sticker. Sept is the quiet-transition sweet spot in both.
+
+  - key: santorini_athens
+    label: Ruins by Day, Wine by Night · 8N
+    range: ["2026-09-26", "2026-10-04"]
+    nights: 8
+    blurb: Santorini → Athens, sunsets then ancient streets
+    tag: RUINS & WINE
+    skeleton: santorini_athens
+    fare_note: >-
+      JTR in / ATH out, ferry or the short hop between. Schengen only — file 20+
+      days ahead.
+
+pax_presets:
+  - Just us 2
+  - Us 2 + a stopover
+  - Us 2, all-inclusive
+  - Us 2, two islands
+
+allow_exact_dates: true
+
+seed_prompts:
+  - Make it more private
+  - Add a private candlelit dinner
+  - Keep it to one island
+  - What does this cost, honestly?
+
+hero:
+  image: https://d31aoa0ehgvjdi.cloudfront.net/media/website/honeymoon-theme-2026/Maldives%20%E2%80%94%20The%20Overwater%20Villa%20Fantasy.jpg
+  title: Honeymoon
+  subtext: Overwater villas, caldera sunsets, and mornings with nothing in them.
+  tag: Overseas · year round

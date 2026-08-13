@@ -226,7 +226,7 @@ const NewFooter = () => {
   return (
     <Container className="font-inter">
       <Inner>
-        <NewsletterBanner>
+        {/* <NewsletterBanner>
           <div>
             <h3>
               Good vibes & <span>great deals,</span>
@@ -237,7 +237,7 @@ const NewFooter = () => {
             <input type="email" placeholder="you@example.com" required />
             <button type="submit">Subscribe</button>
           </NewsletterForm>
-        </NewsletterBanner>
+        </NewsletterBanner> */}
 
         <Grid>
           <Brand>

@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { getAdParams, getLandingPage } from "../../../helper/adAttribution";
 import { isIntakeFormWidgetId } from "../components/IntakeForm/intakePrompt";
 import { isPricingFormWidgetId } from "../components/PricingForm/pricingPrompt";
@@ -28,7 +28,13 @@ export interface Message {
   content: string;
   timestamp: Date;
   isStreaming?: boolean;
-  type?: "text" | "widget" | "intake_form" | "pricing_form" | "login_card";
+  type?:
+    | "text"
+    | "widget"
+    | "intake_form"
+    | "pricing_form"
+    | "login_card"
+    | "theme_form";
   widgetItem?: {
     id: string;
     widget: Record<string, unknown>;
@@ -79,6 +85,19 @@ export interface UserLocationData {
 export interface ClientEffect {
   name: string;
   data: Record<string, unknown>;
+}
+
+/** An item the user saved on a theme page. Used for in-app rendering only (the
+ *  themed mini-form's chips) — it is NOT part of the /chatkit request body,
+ *  which carries the same shape as every other chat surface. The saved picks
+ *  reach the backend inside the message text; see
+ *  components/theme/cinematic/selectionText.ts. Mirrors the theme layer's
+ *  CinematicSelectableItem. */
+export interface ThemeSelectedItem {
+  kind?: string;
+  label?: string;
+  short?: string;
+  id?: string;
 }
 
 interface UseChatOptions {
@@ -575,6 +594,17 @@ export function useChat({
     abortControllerRef.current = null;
   }, []);
 
+  // Abort any in-flight /chatkit request when the panel unmounts (e.g. the user
+  // pressed browser back mid-stream), so the request doesn't keep running — and
+  // its callbacks fire — against a page the user has already left.
+  useEffect(
+    () => () => {
+      abortControllerRef.current?.abort();
+      abortControllerRef.current = null;
+    },
+    [],
+  );
+
   // Stable headers builder — reads from refs, never stale
   const buildHeaders = useCallback((): Record<string, string> => ({
     "Content-Type": "application/json",
@@ -803,7 +833,11 @@ export function useChat({
       content: string,
       attachmentIds?: string[],
       attachments?: MessageAttachment[],
-      opts?: { interrupt?: boolean; formSubmitted?: boolean; contextPrefix?: string },
+      opts?: {
+        interrupt?: boolean;
+        formSubmitted?: boolean;
+        contextPrefix?: string;
+      },
     ) => {
       const trimmed = content.trim();
       if (!trimmed && (!attachmentIds || attachmentIds.length === 0)) return;
@@ -881,7 +915,10 @@ export function useChat({
 
       const body = threadIdRef.current
         ? buildSubsequentMessageBody(contentForBackend, { threadId: threadIdRef.current, ...commonOpts })
-        : buildFirstMessageBody(contentForBackend, { ...commonOpts, loginMandatory: loginMandatoryRef.current });
+        : buildFirstMessageBody(contentForBackend, {
+            ...commonOpts,
+            loginMandatory: loginMandatoryRef.current,
+          });
 
       // Flag intake-form submissions so the backend knows this message came
       // from the structured form rather than free-text chat.

@@ -114,7 +114,7 @@ export async function getStaticPaths() {
       `${MERCURY_HOST}/api/v1/geos/search/all/?type=Country`
     );
     const data = res.data;
-    for (var i = 0; i < data?.length; i++) {
+    for (var i = 0; i < 1; i++) {
       const pathArr = data[i].path.split("/");
       var [continentSlug, countrySlug] = pathArr;
       paths.push({

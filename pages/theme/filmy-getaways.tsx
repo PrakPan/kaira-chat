@@ -11,8 +11,16 @@ import { useEffect } from "react";
 import Layout from "../../components/Layout";
 import * as authaction from "../../store/actions/auth";
 import CinematicThemeLanding from "../../components/theme/cinematic/CinematicThemeLanding";
-import { useSeedChat } from "../../components/theme/cinematic/useSeedChat";
+import {
+  useSeedChat,
+  useOpenThemeForm,
+} from "../../components/theme/cinematic/useSeedChat";
+import { useThemeSelectionState } from "../../components/theme/cinematic/ThemeSelection";
 import type { CinematicThemeConfig } from "../../components/theme/cinematic/types";
+import { THEME_PALETTES } from "../../components/theme/cinematic/palettes";
+
+// The themed mini-form + /chatkit slug for this page (Switzerland DDLJ route).
+const THEME_SLUG = "switzerland-ddlj";
 
 const CDN = "https://d31aoa0ehgvjdi.cloudfront.net";
 const IMAGE_BASE = `${CDN}/media/website/filmy-getaways-2026`;
@@ -56,6 +64,8 @@ const PROMPTS = {
 };
 
 const filmyGetawaysConfig: CinematicThemeConfig = {
+  // Cinema red — carries every CTA, the saved state and the docked bar.
+  theme: THEME_PALETTES["switzerland-ddlj"],
   header: {
     title: "Filmy getaways",
     subtitle: "Theme · Bollywood + Hollywood",
@@ -75,7 +85,7 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
     // Desktop-only Kaira polaroid collage — each polaroid opens its destination.
     images: [
       {
-        image: `${IMAGE_BASE}/DDLJ.png`,
+        image: `${IMAGE_BASE}/DDLJ2.png`,
         caption: "Switzerland, DDLJ",
         href: "/europe/switzerland",
       },
@@ -98,12 +108,17 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
   },
   sections: [
     // ── Bollywood ──
+    // A film isn't a bookable element — each card is a whole trip request, so
+    // it carries "Create plan" and seeds its prompt rather than "+ Add"-ing to
+    // the tray. (A `selectable` card with no activityId toggles the saved list
+    // on click and never fires its prompt — see PromptCard.)
     {
       type: "cards",
+      ctaLabel: "Create plan →",
       heading: { lead: "Bollywood scenes you never", accent: "forgot" },
       cards: [
         {
-          image: `${IMAGE_BASE}/DDLJ.png`,
+          image: `${IMAGE_BASE}/DDLJ2.png`,
           name: "DDLJ, the Switzerland dream",
           line: "Trains, Alps, and romance.",
           tag: "Switzerland",
@@ -150,9 +165,10 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
         },
       ],
     },
-    // ── Hollywood ──
+    // ── Hollywood ── (same contract as the Bollywood row above)
     {
       type: "cards",
+      ctaLabel: "Create plan →",
       heading: { lead: "Hollywood said go.", accent: "We agree." },
       cards: [
         {
@@ -202,6 +218,7 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
     // ── Step into the scene ──
     {
       type: "trips",
+      ctaLabel: "Create plan →",
       heading: {
         lead: "Step into",
         accent: "the scene",
@@ -367,6 +384,7 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
     placeholder: "Which film location should I actually visit?",
     cta: "Ask Kaira",
     prompt: PROMPTS.whichFilmLocation,
+    buildCta: "Build trip",
   },
 };
 
@@ -376,6 +394,12 @@ const FilmyGetawaysThemePage = ({
   checkAuthState: () => void;
 }) => {
   const seedChat = useSeedChat();
+  const selection = useThemeSelectionState();
+  const openThemeForm = useOpenThemeForm();
+  const handleSelectPrompt = (prompt: string) =>
+    seedChat(prompt, { items: selection.items, slug: THEME_SLUG });
+  const handleBuild = (note?: string) =>
+    openThemeForm(THEME_SLUG, selection.items, note);
 
   useEffect(() => {
     checkAuthState();
@@ -455,7 +479,12 @@ const FilmyGetawaysThemePage = ({
           }}
         />
       </Head>
-      <CinematicThemeLanding config={filmyGetawaysConfig} onSelectPrompt={seedChat} />
+      <CinematicThemeLanding
+        config={filmyGetawaysConfig}
+        onSelectPrompt={handleSelectPrompt}
+        selection={selection}
+        onBuild={handleBuild}
+      />
     </Layout>
   );
 };

@@ -13,9 +13,16 @@ import { useEffect, useState } from "react";
 import Layout from "../../components/Layout";
 import * as authaction from "../../store/actions/auth";
 import CinematicThemeLanding from "../../components/theme/cinematic/CinematicThemeLanding";
-import { useSeedChat } from "../../components/theme/cinematic/useSeedChat";
+import {
+  useSeedChat,
+  useOpenThemeForm,
+} from "../../components/theme/cinematic/useSeedChat";
+import { useThemeSelectionState } from "../../components/theme/cinematic/ThemeSelection";
 import ActivityDetailsDrawer from "../../components/drawers/activityDetails/ActivityDetailsDrawer";
 import type { CinematicThemeConfig } from "../../components/theme/cinematic/types";
+import { THEME_PALETTES } from "../../components/theme/cinematic/palettes";
+
+const THEME_SLUG = "edinburgh-hogmanay";
 
 const IMG =
   "https://d31aoa0ehgvjdi.cloudfront.net/media/website/edinburgh-hogmanay-2026";
@@ -129,6 +136,8 @@ const PROMPTS = {
 };
 
 const edinburghHogmanayConfig: CinematicThemeConfig = {
+  // Hogmanay purple — carries every CTA, the saved state and the docked bar.
+  theme: THEME_PALETTES["edinburgh-hogmanay"],
   header: {
     title: "Edinburgh Hogmanay",
     subtitle: "Theme · 29 Dec – 2 Jan",
@@ -198,6 +207,8 @@ const edinburghHogmanayConfig: CinematicThemeConfig = {
     // until their own activities are published on the site.
     {
       type: "cards",
+      selectable: true,
+      itemKind: "ticket",
       heading: { lead: "Which ticket you", accent: "actually need" },
       cards: [
         {
@@ -264,6 +275,7 @@ const edinburghHogmanayConfig: CinematicThemeConfig = {
     // ── Trips — "Which new year is yours?" (open existing itineraries) ──
     {
       type: "trips",
+      ctaLabel: "Create plan →",
       heading: {
         lead: "Which new year is",
         accent: "yours?",
@@ -307,6 +319,8 @@ const edinburghHogmanayConfig: CinematicThemeConfig = {
     // ── Daylight — "What to do with the daylight" (seed prompts) ──
     {
       type: "cards",
+      selectable: true,
+      itemKind: "do",
       heading: { lead: "What to do with", accent: "the daylight" },
       cards: [
         {
@@ -377,41 +391,41 @@ const edinburghHogmanayConfig: CinematicThemeConfig = {
         "Rooms and tickets move together. A bed inside the cordon with no Street Party ticket is a wasted trip; the reverse means a 2am walk to Leith. I hold both or neither.",
     },
     // ── Read this first (light, compact) ──
-    {
-      type: "list",
-      compact: true,
-      heading: {
-        eyebrow: "The four things people get wrong",
-        lead: "Read this",
-        accent: "first",
-      },
-      rows: [
-        {
-          emoji: "❄️",
-          gradient: "linear-gradient(150deg, #16324f, #3d4f7a)",
-          name: "It's cold, wet and windy",
-          line: "Layers, waterproofs, real shoes. The energy makes up for it.",
-        },
-        {
-          emoji: "🎇",
-          gradient: "linear-gradient(150deg, #3d2b52, #b84034 170%)",
-          name: "The Bells isn't the whole thing",
-          line: "Four days of events — midnight is just one of them.",
-        },
-        {
-          emoji: "⏳",
-          gradient: "linear-gradient(150deg, #b84034, #f0e9d6 190%)",
-          name: "Everything is a queue",
-          line: "Tickets, rooms and flights sell in a set order. Book early.",
-        },
-        {
-          emoji: "🌅",
-          gradient: "linear-gradient(150deg, #1a2436, #445069)",
-          name: "Jan 1 the city is quiet",
-          line: "First-footing and a slow recovery — plan a gentle day.",
-        },
-      ],
-    },
+    // {
+    //   type: "list",
+    //   compact: true,
+    //   heading: {
+    //     eyebrow: "The four things people get wrong",
+    //     lead: "Read this",
+    //     accent: "first",
+    //   },
+    //   rows: [
+    //     {
+    //       emoji: "❄️",
+    //       gradient: "linear-gradient(150deg, #16324f, #3d4f7a)",
+    //       name: "It's cold, wet and windy",
+    //       line: "Layers, waterproofs, real shoes. The energy makes up for it.",
+    //     },
+    //     {
+    //       emoji: "🎇",
+    //       gradient: "linear-gradient(150deg, #3d2b52, #b84034 170%)",
+    //       name: "The Bells isn't the whole thing",
+    //       line: "Four days of events — midnight is just one of them.",
+    //     },
+    //     {
+    //       emoji: "⏳",
+    //       gradient: "linear-gradient(150deg, #b84034, #f0e9d6 190%)",
+    //       name: "Everything is a queue",
+    //       line: "Tickets, rooms and flights sell in a set order. Book early.",
+    //     },
+    //     {
+    //       emoji: "🌅",
+    //       gradient: "linear-gradient(150deg, #1a2436, #445069)",
+    //       name: "Jan 1 the city is quiet",
+    //       line: "First-footing and a slow recovery — plan a gentle day.",
+    //     },
+    //   ],
+    // },
     // ── Stories ──
     {
       type: "stories",
@@ -526,27 +540,12 @@ const edinburghHogmanayConfig: CinematicThemeConfig = {
       ],
       footerCta: { label: "View all destinations", href: "/europe" },
     },
-    // ── How it works (dark) ──
-    {
-      type: "steps",
-      heading: {
-        eyebrow: "No markups · pay only for what you book",
-        lead: "Sketch it. I'll",
-        accent: "finish it.",
-      },
-      steps: [
-        { n: "1", title: "Tell me your dates", sub: "and who's coming." },
-        { n: "2", title: "I lock tickets + rooms", sub: "in the right order." },
-        { n: "3", title: "You book", sub: "only what you love." },
-      ],
-      cta: { label: "Start planning", prompt: PROMPTS.ultimate },
-      note: "10,000+ trips · rated 4.9 across all of them",
-    },
   ],
   askBar: {
     placeholder: "Ask me about Hogmanay…",
     cta: "Ask Kaira",
     prompt: PROMPTS.askBar,
+    buildCta: "Build trip",
   },
 };
 
@@ -567,6 +566,12 @@ const EdinburghHogmanayThemePage = ({
   checkAuthState: () => void;
 }) => {
   const seedChat = useSeedChat();
+  const selection = useThemeSelectionState();
+  const openThemeForm = useOpenThemeForm();
+  const handleSelectPrompt = (prompt: string) =>
+    seedChat(prompt, { items: selection.items, slug: THEME_SLUG });
+  const handleBuild = (note?: string) =>
+    openThemeForm(THEME_SLUG, selection.items, note);
   // Read-only activity details drawer (opened from the "Which ticket you
   // actually need" cards).
   const [activityDrawer, setActivityDrawer] = useState<{
@@ -665,8 +670,10 @@ const EdinburghHogmanayThemePage = ({
       </Head>
       <CinematicThemeLanding
         config={edinburghHogmanayConfig}
-        onSelectPrompt={seedChat}
+        onSelectPrompt={handleSelectPrompt}
         onSelectActivity={openActivity}
+        selection={selection}
+        onBuild={handleBuild}
       />
       {/* Read-only activity details — no Add/Remove CTA on this marketing page */}
       <ActivityDetailsDrawer
