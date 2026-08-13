@@ -568,41 +568,41 @@ const thailandBachelorConfig: CinematicThemeConfig = {
         "Visa-on-arrival still exists — 15 days, ฿2,000 cash each, and a queue. Fine for a long weekend, wrong for eight people. Everyone also needs the free digital arrival card within 72 hours of landing; we send that link.",
     },
     // ── Read this first ──
-    {
-      type: "list",
-      compact: true,
-      heading: {
-        eyebrow: "The four things groups get wrong",
-        lead: "Read this",
-        accent: "first",
-      },
-      rows: [
-        {
-          emoji: "🏠",
-          gradient: "linear-gradient(150deg, #0d7f8f, #e2f2f4 190%)",
-          name: "A villa beats eight hotel rooms",
-          line: "Cheaper per head, one address for every transfer, and somewhere to be at 3am that isn't a bar.",
-        },
-        {
-          emoji: "🚫",
-          gradient: "linear-gradient(150deg, #b84034, #f0e9d6 190%)",
-          name: "Some days are legally dry",
-          line: "Alcohol sales stop nationwide on a few Buddhist holidays and election days. We check your dates against the list.",
-        },
-        {
-          emoji: "🛵",
-          gradient: "linear-gradient(150deg, #16324f, #3d4f7a)",
-          name: "Don't rent the scooters",
-          line: "The jet-ski and scooter damage scam is real and it targets exactly your group. Private drivers cost less than the argument.",
-        },
-        {
-          emoji: "✈️",
-          gradient: "linear-gradient(150deg, #17724a, #f0e9d6 200%)",
-          name: "Everyone lands at a different hour",
-          line: "Ten people on six flights is the actual hard part. We stagger the transfers and hold the villa from the earliest arrival.",
-        },
-      ],
-    },
+    // {
+    //   type: "list",
+    //   compact: true,
+    //   heading: {
+    //     eyebrow: "The four things groups get wrong",
+    //     lead: "Read this",
+    //     accent: "first",
+    //   },
+    //   rows: [
+    //     {
+    //       emoji: "🏠",
+    //       gradient: "linear-gradient(150deg, #0d7f8f, #e2f2f4 190%)",
+    //       name: "A villa beats eight hotel rooms",
+    //       line: "Cheaper per head, one address for every transfer, and somewhere to be at 3am that isn't a bar.",
+    //     },
+    //     {
+    //       emoji: "🚫",
+    //       gradient: "linear-gradient(150deg, #b84034, #f0e9d6 190%)",
+    //       name: "Some days are legally dry",
+    //       line: "Alcohol sales stop nationwide on a few Buddhist holidays and election days. We check your dates against the list.",
+    //     },
+    //     {
+    //       emoji: "🛵",
+    //       gradient: "linear-gradient(150deg, #16324f, #3d4f7a)",
+    //       name: "Don't rent the scooters",
+    //       line: "The jet-ski and scooter damage scam is real and it targets exactly your group. Private drivers cost less than the argument.",
+    //     },
+    //     {
+    //       emoji: "✈️",
+    //       gradient: "linear-gradient(150deg, #17724a, #f0e9d6 200%)",
+    //       name: "Everyone lands at a different hour",
+    //       line: "Ten people on six flights is the actual hard part. We stagger the transfers and hold the villa from the earliest arrival.",
+    //     },
+    //   ],
+    // },
     // ── Stories — each opens the group's actual itinerary ──
     {
       type: "stories",

@@ -466,41 +466,41 @@ const honeymoonConfig: CinematicThemeConfig = {
         "Greece is a Schengen sticker — file it at least twenty days out. The Bali e-Visa lands in a few days. Nothing here needs an embassy queue on your side.",
     },
     // ── Read this first ──
-    {
-      type: "list",
-      compact: true,
-      heading: {
-        eyebrow: "The four things couples get wrong",
-        lead: "Read this",
-        accent: "first",
-      },
-      rows: [
-        {
-          emoji: "💗",
-          gradient: "linear-gradient(150deg, #a8556b, #f8ebef 190%)",
-          name: 'Say "honeymoon" when you book',
-          line: "The upgrade, the fruit basket, the private dinner — only if it's flagged in advance. We confirm it in writing.",
-        },
-        {
-          emoji: "🗓️",
-          gradient: "linear-gradient(150deg, #16324f, #2f6f9e 160%)",
-          name: "The good overwater villas go first",
-          line: "December to March is booked out six months ahead for the villas actually worth photographing.",
-        },
-        {
-          emoji: "🐟",
-          gradient: "linear-gradient(150deg, #17724a, #f0e9d6 200%)",
-          name: "Time it to the manta rays if you care",
-          line: "Maldives manta season is May to November on the western atolls. Everything else is easier to move.",
-        },
-        {
-          emoji: "🏝️",
-          gradient: "linear-gradient(150deg, #1a2436, #3d4f7a)",
-          name: "Two islands beat one past a week",
-          line: "Seven-plus nights on one resort gets quiet fast. One island to unwind, one to explore.",
-        },
-      ],
-    },
+    // {
+    //   type: "list",
+    //   compact: true,
+    //   heading: {
+    //     eyebrow: "The four things couples get wrong",
+    //     lead: "Read this",
+    //     accent: "first",
+    //   },
+    //   rows: [
+    //     {
+    //       emoji: "💗",
+    //       gradient: "linear-gradient(150deg, #a8556b, #f8ebef 190%)",
+    //       name: 'Say "honeymoon" when you book',
+    //       line: "The upgrade, the fruit basket, the private dinner — only if it's flagged in advance. We confirm it in writing.",
+    //     },
+    //     {
+    //       emoji: "🗓️",
+    //       gradient: "linear-gradient(150deg, #16324f, #2f6f9e 160%)",
+    //       name: "The good overwater villas go first",
+    //       line: "December to March is booked out six months ahead for the villas actually worth photographing.",
+    //     },
+    //     {
+    //       emoji: "🐟",
+    //       gradient: "linear-gradient(150deg, #17724a, #f0e9d6 200%)",
+    //       name: "Time it to the manta rays if you care",
+    //       line: "Maldives manta season is May to November on the western atolls. Everything else is easier to move.",
+    //     },
+    //     {
+    //       emoji: "🏝️",
+    //       gradient: "linear-gradient(150deg, #1a2436, #3d4f7a)",
+    //       name: "Two islands beat one past a week",
+    //       line: "Seven-plus nights on one resort gets quiet fast. One island to unwind, one to explore.",
+    //     },
+    //   ],
+    // },
     // ── Stories — each opens the traveller's actual itinerary ──
     {
       type: "stories",
