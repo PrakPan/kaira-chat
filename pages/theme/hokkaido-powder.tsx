@@ -233,6 +233,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           line: "The historic port, then the night view from Mt. Hakodate.",
           tag: "Hakodate",
           activityId: ACTIVITY.hakodateRopeway,
+          objectPosition: "center 50%",
         },
         {
           image: IMG.actAsahiyamaFurano,
@@ -342,6 +343,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           tag: "Sapporo",
           prompt: PROMPTS.beerMuseum,
           item: { kind: "poi", label: "Sapporo Beer Museum", short: "Sapporo Beer Museum" },
+          objectPosition: "center 20%"
         },
         {
           image: IMG.poiNijoMarket,
@@ -350,6 +352,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           tag: "Sapporo",
           prompt: PROMPTS.nijoMarket,
           item: { kind: "poi", label: "Nijo Fish Market", short: "Nijo Fish Market" },
+          objectPosition: "center 60%"
         },
         {
           image: IMG.poiTanukikoji,
@@ -358,6 +361,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           tag: "Sapporo",
           prompt: PROMPTS.tanukikoji,
           item: { kind: "poi", label: "Tanukikoji Arcade", short: "Tanukikoji Arcade" },
+          objectPosition: "center 20%"
         },
         {
           image: IMG.poiHokkaidoShrine,
@@ -366,6 +370,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           tag: "Sapporo",
           prompt: PROMPTS.hokkaidoShrine,
           item: { kind: "poi", label: "Hokkaidō Shrine", short: "Hokkaidō Shrine" },
+          objectPosition: "center 40%"
         },
         {
           image: IMG.poiKanemori,
@@ -374,6 +379,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
           tag: "Hakodate",
           prompt: PROMPTS.kanemori,
           item: { kind: "poi", label: "Kanemori Red Brick Warehouse", short: "Kanemori Warehouse" },
+          objectPosition: "center 40%"
         },
         {
           image: IMG.poiGoryokaku,
