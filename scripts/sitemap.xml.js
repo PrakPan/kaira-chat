@@ -6,7 +6,7 @@ require('dotenv').config();
 // long tail is excluded here (and carries <meta robots noindex,follow> in-page).
 const { isDestinationIndexable } = require("../lib/seo/indexableDestinations");
 
-const PROD_BASE_URL = "https://dev.thetarzanway.com";
+const PROD_BASE_URL = "https://thetarzanway.com";
 const NOW = new Date().toISOString();
 
 // Child sitemaps written under public/ and referenced from the sitemap index at
@@ -68,7 +68,8 @@ const getStaticThemeSlugs = () => {
 
 const generateSitemap = async () => {
   const BASE_URL =
-    process.env.NEXT_PUBLIC_MERCURY_HOST || "https://mercury.tarzanway.com";
+    // process.env.NEXT_PUBLIC_MERCURY_HOST || 
+    "https://mercury.tarzanway.com";
 
   // Fetch continents list
   const continents = await axios.get(
