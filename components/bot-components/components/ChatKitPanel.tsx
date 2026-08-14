@@ -474,7 +474,7 @@ const ChatPanelStyles = () => (
        drop shadow (see MessageInputBox .kp-row). Padding is a touch roomier
        than the ruled version so the shadow has somewhere to fall. */
     .kp-composer-wrap {
-  padding: 14px 20px 16px;
+  padding: 10px 10px 10px;
   background: #fff;
 }
 @media (max-width: 768px) {
@@ -4930,7 +4930,7 @@ const handleShowLogin = useCallback(() => {
           <div className="flex-shrink-0 px-3 md:!px-6 pt-2 pb-0 md:pb-1">
             <div className="mx-auto">
               <div
-                className="flex gap-[6px] md:gap-2 overflow-hidden pb-[10px] md:pb-1"
+                className="flex gap-[6px] md:gap-2 overflow-hidden md:pb-1"
                 style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
               >
                 {Array.from({ length: 10 }).map((_, idx) => (
@@ -4960,7 +4960,7 @@ const handleShowLogin = useCallback(() => {
         <div className="flex-shrink-0 px-3 md:!px-6 pt-2 pb-0 md:pb-1">
           <div className="mx-auto">
             <div
-              className="flex gap-[6px] md:gap-2 overflow-x-auto pb-[10px] md:pb-1"
+              className="flex gap-[6px] md:gap-2 overflow-x-auto md:pb-1"
               style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             >
               {quickReplyLoading

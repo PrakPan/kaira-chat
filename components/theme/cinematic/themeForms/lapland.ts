@@ -1,5 +1,9 @@
 // components/theme/cinematic/themeForms/lapland.ts
-// Mini-form render data for /theme/lapland. Mirrors theme_forms/lapland.yaml.
+//
+// Mini-form render data for /theme/lapland. Month-first (see season.ts): the
+// page's own line is that Lapland is four different winters, which is exactly a
+// season of months rather than four stored date ranges. Christmas week is the
+// one fixed thing, so that route is anchored to the 22nd.
 
 import type { ThemeForm } from "./types";
 
@@ -12,52 +16,76 @@ const laplandForm: ThemeForm = {
   copy: {
     datesTitle: "When are you going?",
     datesSub: "Lapland is four different winters. Christmas week is the busiest.",
-    paxTitle: "And how many of you?",
-    paxSub: "So I can size the cabins and the sleigh rides.",
     footer: "That's the whole form. The page already told me it's Lapland.",
     cta: "Draft my route →",
   },
-  dateWindows: [
+  season: [
     {
-      key: "first_snow",
-      label: "Nov – early Dec",
-      range: ["2026-11-20", "2026-11-25"],
-      nights: 5,
-      blurb: "First snow, no crowds",
+      month: 11,
+      label: "First snow",
       tag: "QUIET",
-      skeleton: "aurora_glass",
-      fareNote: "Pre-Christmas lull — cheapest fares + cabins.",
+      line: "Snow down, nobody there yet. Cheapest cabins of the winter.",
     },
     {
-      key: "christmas_week",
-      label: "20 – 31 Dec",
-      range: ["2026-12-22", "2026-12-28"],
-      nights: 6,
-      blurb: "Christmas in Santa's own town",
+      month: 12,
+      label: "Christmas",
       tag: "PEAK",
-      skeleton: "santa_town",
-      fareNote: "Most competitive week — book months ahead.",
+      line: "Santa's own town in its own month. The week books months ahead.",
     },
     {
-      key: "deep_winter",
-      label: "3 – 10 Jan",
-      range: ["2027-01-03", "2027-01-10"],
-      nights: 7,
-      blurb: "Deepest snow, darkest sky — Santa without the crowds",
+      month: 1,
+      label: "Deep winter",
       tag: "BEST AURORA",
-      skeleton: "nordic_slow",
-      fareNote:
-        "Sweet spot: post-Christmas calm, strong aurora, softer prices.",
+      line: "Darkest skies, deepest snow, and the crowds gone home.",
     },
     {
-      key: "light_returns",
-      label: "March",
-      range: ["2027-03-08", "2027-03-13"],
-      nights: 5,
-      blurb: "Light returns — long days, snow still deep",
+      month: 2,
+      label: "Coldest and clearest",
+      tag: "STRONG SKY",
+      line: "Hard frost, long dark nights, and the most reliable aurora odds.",
+    },
+    {
+      month: 3,
+      label: "Light returns",
       tag: "CHEAPEST",
+      line: "Snow still deep but the days are long again. Best value of the season.",
+    },
+  ],
+  // Shapes, not seasons — the month above already says what the winter is like,
+  // so all three run the whole way through and the reader gets a real choice in
+  // every month rather than a single pre-decided option. Nights match what
+  // Finnish trips actually run at in our bookings (8.7–10.8 on average, with
+  // the short Santa and aurora breaks at 5–7).
+  routes: [
+    {
+      key: "santa_town",
+      label: "Santa's own town",
+      blurb: "Rovaniemi, reindeer, and the man himself",
+      tag: "FAMILY PICK",
+      nights: 6,
+      skeleton: "santa_town",
+      // Only fires when December is the chosen month; in January or March the
+      // same trip simply departs mid-month, which is the quiet way to do it.
+      anchor: { month: 12, day: 22, note: "Christmas in Rovaniemi" },
+      fareNote: "Christmas week is the most competitive — book months ahead.",
+    },
+    {
+      key: "aurora_glass",
+      label: "Glass roof & husky trails",
+      blurb: "Sleep under the sky, run a sled team by day",
+      tag: "MOST PICKED",
+      nights: 5,
       skeleton: "aurora_glass",
-      fareNote: "Cheapest of the season; longer daylight.",
+      fareNote: "Glass igloos are the first thing to sell out in any month.",
+    },
+    {
+      key: "nordic_slow",
+      label: "The slow Arctic week",
+      blurb: "Helsinki first, then north with nothing rushed",
+      tag: "SEE MORE",
+      nights: 7,
+      skeleton: "nordic_slow",
+      fareNote: "Finnair DEL⇄HEL direct, then the overnight train or a hop north.",
     },
   ],
   // Panel hero on /chat — a husky sled team on a snowy forest trail.
@@ -69,7 +97,6 @@ const laplandForm: ThemeForm = {
     subtext: "Santa's own town, husky trails, and the aurora over a glass roof.",
     tag: "Arctic · Nov – Mar",
   },
-  paxPresets: ["Family of 4", "Just us 2", "Friends of 4", "Group of 6"],
   allowExactDates: true,
   seedPrompts: [
     "Add a glass igloo night",

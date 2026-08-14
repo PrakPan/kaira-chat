@@ -621,7 +621,7 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
           display: grid;
           place-items: center;
           padding: 0;
-          border: 1px solid #dcdfe5;
+          // border: 1px solid #dcdfe5;
           border-radius: 50%;
           background: #fff;
           color: #0b1220;

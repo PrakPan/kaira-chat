@@ -30,6 +30,7 @@ import type {
 import {
   resolveSeason,
   routeDates,
+  toIso,
   type ResolvedMonth,
 } from "../../../theme/cinematic/themeForms/season";
 import { getThemePalette } from "../../../theme/cinematic/palettes";
@@ -230,6 +231,20 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
   const nights = useExact
     ? nightsBetween(dates[0], dates[1])
     : nightsBetween(dates[0], dates[1]) || planNights;
+
+  // Where the exact-date picker opens. Never the current month: by the time
+  // someone reaches this form most of it is already behind them (open it in
+  // mid-August and half the grid is struck through), so the floor is the 1st of
+  // next month. Above that floor it opens on the month the suggested departure
+  // actually falls in — a reader who picked "Dec '26" lands on December rather
+  // than paging forward from September to find their own trip.
+  const calendarInitialMonth = React.useMemo(() => {
+    const now = new Date();
+    // Day 1 of next month; the month index rolls the year over on its own.
+    const nextMonth = toIso(new Date(now.getFullYear(), now.getMonth() + 1, 1));
+    // Date-only ISO sorts chronologically as a plain string.
+    return planDates[0] && planDates[0] > nextMonth ? planDates[0] : nextMonth;
+  }, [planDates]);
 
   const trimmedNote = (note ?? "").trim();
 
@@ -623,6 +638,7 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
           <Calendar
             startDate={fromDate}
             endDate={toDate}
+            initialMonth={calendarInitialMonth}
             onChange={(start, end) => {
               setFromDate(start);
               setToDate(end);

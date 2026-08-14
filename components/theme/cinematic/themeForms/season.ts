@@ -28,13 +28,15 @@ const MONTH_LONG = [
 
 // How many month chips the strip will ever show. A year-round theme would
 // otherwise render twelve, which is exactly the scrolling the form is trying to
-// avoid; six is two comfortable rows on a small phone.
-const MAX_MONTHS = 6;
+// avoid; four is one comfortable row on a small phone and still spans a whole
+// season for the themes that have one.
+const MAX_MONTHS = 4;
 
-// Nobody is booking an international trip that leaves the day after tomorrow,
-// so the current month only stays on the strip while it still has this much
-// room left, and a generated departure never lands sooner than this.
-const MIN_LEAD_DAYS = 14;
+// The soonest a generated departure may fall. Long-haul from India needs visa
+// time (New Zealand alone runs ~40 days) and fares that haven't spiked, so
+// three weeks is the floor — and a month with less than that left in it drops
+// off the strip entirely rather than being offered as a near-impossible option.
+const MIN_LEAD_DAYS = 21;
 
 /** A season month pinned to a real year, with the routes that run in it. */
 export interface ResolvedMonth {
