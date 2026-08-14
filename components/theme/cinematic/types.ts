@@ -348,7 +348,10 @@ export type CinematicSection =
 export interface CinematicHeroImage {
   image: string;
   caption?: string; // serif italic caption under the polaroid
-  href?: string; // optional navigation on click
+  /** @deprecated Ignored. The hero polaroids are decorative — they no longer
+   *  navigate, so the hero has exactly one call to action. Existing configs may
+   *  still carry this; it has no effect. */
+  href?: string;
 }
 
 export interface CinematicHeroConfig {

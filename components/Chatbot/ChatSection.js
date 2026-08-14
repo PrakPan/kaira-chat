@@ -54,24 +54,27 @@ const UserBubble = styled.div`
 
 // Quick reply chips — exact match from ChatKitPanel SingleChips
 const SingleChips = styled.button`
-  border-radius: 6px;
-  padding: 8px 12px;
-  border: 1px solid #e0e0e0;
-  font-family: Montserrat;
+  border-radius: 999px;
+  padding: 8px 13px;
+  border: 1px solid #dcdfe5;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   font-weight: 500;
-  font-size: 12px;
+  font-size: 11.5px;
   background: #fff;
-  color: #6e757a;
+  color: #0b1220;
   white-space: nowrap;
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s;
   flex-shrink: 0;
-  &:hover {
-    border-color: #1889ed;
-  }
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+  @media (hover: hover) {
+    &:hover:not(:disabled) {
+      background: #fafaf5;
+      border-color: #c9ced8;
+    }
   }
 `;
 

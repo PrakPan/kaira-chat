@@ -5,6 +5,7 @@
 // and stays in sync across the route change.
 
 import type { ThemeForm } from "./types";
+import australiaNewZealandForm from "./australia-newzealand";
 import hokkaidoPowderForm from "./hokkaido-powder";
 import switzerlandDdljForm from "./switzerland-ddlj";
 import laplandForm from "./lapland";
@@ -16,6 +17,7 @@ import honeymoonForm from "./honeymoon";
 import thailandBachelorForm from "./thailand-bachelor";
 
 const FORMS: ThemeForm[] = [
+  australiaNewZealandForm,
   hokkaidoPowderForm,
   switzerlandDdljForm,
   laplandForm,

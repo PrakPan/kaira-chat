@@ -13,43 +13,85 @@ const hokkaidoPowderForm: ThemeForm = {
   voice: "Ski-savvy and unhurried. Talks snow quality and season tradeoffs.",
   copy: {
     datesTitle: "When are you going?",
-    datesSub: "The season splits into three completely different months.",
-    paxTitle: "And how many of you?",
-    paxSub: "So I can size the rooms and the transfers.",
+    datesSub: "Pick a month — the season reads differently in each one.",
     footer:
       "That's the whole form. The page already told me where, what vibe, and what you want to do.",
     cta: "Draft my route →",
   },
-  dateWindows: [
+  // Month numbers only — no years. The form resolves each to its next
+  // occurrence, so this stays correct forever (see season.ts). Matches the
+  // page's own "When to actually go" section and its "Dec – Mar" header.
+  season: [
     {
-      key: "jan",
-      label: "10–19 Jan",
-      range: ["2027-01-10", "2027-01-19"],
-      nights: 9,
-      blurb: "Japanuary · deepest snow of the year",
+      month: 12,
+      label: "First snow",
+      tag: "QUIET",
+      line: "Resorts opening, thin crowds, fares still soft.",
+    },
+    {
+      month: 1,
+      label: "Deepest powder",
       tag: "BEST SNOW",
-      skeleton: "jan_powder",
-      fareNote: "Post-New-Year lull; DEL/BOM→NRT fares soften.",
+      line: "Japanuary — the driest snow of the year, and the coldest.",
     },
     {
-      key: "feb",
-      label: "4–12 Feb",
-      range: ["2027-02-04", "2027-02-12"],
-      nights: 8,
-      blurb: "Snow Festival week · busiest in Sapporo",
+      month: 2,
+      label: "Snow Festival",
       tag: "FESTIVAL",
-      skeleton: "feb_festival",
-      fareNote: "Festival demand; book onward early.",
+      line: "Giant ice sculptures in Sapporo. Busiest week of the winter.",
     },
     {
-      key: "mar",
-      label: "8–16 Mar",
-      range: ["2027-03-08", "2027-03-16"],
-      nights: 8,
-      blurb: "Spring corn · bluebird days, fewer people",
+      month: 3,
+      label: "Spring corn",
       tag: "CHEAPEST",
-      skeleton: "mar_value",
-      fareNote: "Shoulder; cheapest of the season.",
+      line: "Bluebird days, softer snow, the fewest people on the hill.",
+    },
+  ],
+  // Trip shapes, each tagged with the months it runs in. Lengths are the ones
+  // that actually sell: Hokkaido trips in our own bookings average 9–14 nights,
+  // with Sapporo held ~3 nights, Niseko ~2.5 and Hakodate ~2.
+  routes: [
+    {
+      key: "powder_city",
+      label: "Powder and the city",
+      blurb: "Sapporo + Niseko — ski days, city nights",
+      tag: "MOST PICKED",
+      nights: 9,
+      skeleton: "sapporo_niseko",
+      fareNote: "Post-New-Year lull is the cheapest window for this one.",
+    },
+    {
+      key: "undersea_run",
+      label: "The undersea run",
+      blurb: "Tokyo → Hakodate → Sapporo, all by train",
+      tag: "BY RAIL",
+      nights: 11,
+      skeleton: "tokyo_hakodate_sapporo",
+      fareNote: "One JR Pass covers the Seikan Tunnel run both ways.",
+    },
+    {
+      key: "snow_festival",
+      label: "Snow Festival week",
+      blurb: "Sapporo · Otaru · Noboribetsu, timed to the sculptures",
+      tag: "FESTIVAL",
+      nights: 8,
+      skeleton: "sapporo_otaru_noboribetsu",
+      // The festival runs the first full week of February, so this route only
+      // shows for February and lands on the real dates of whichever year the
+      // reader is booking.
+      months: [2],
+      anchor: { month: 2, day: 4, note: "Sapporo Snow Festival week" },
+      fareNote: "Festival demand — book Sapporo stays early.",
+    },
+    {
+      key: "first_tracks",
+      label: "First tracks & onsen",
+      blurb: "Sapporo · Niseko · Noboribetsu at a slower pace",
+      tag: "QUIET",
+      nights: 7,
+      skeleton: "sapporo_niseko_noboribetsu",
+      months: [12, 3],
+      fareNote: "Shoulder months — quietest slopes and the best value.",
     },
   ],
   // Panel hero on /chat — a skier through deep powder in snow-laden trees.
@@ -61,7 +103,6 @@ const hokkaidoPowderForm: ThemeForm = {
     subtext: "The lightest powder on earth, onsens, and a train beneath the sea.",
     tag: "Japan · Dec – Mar",
   },
-  paxPresets: ["Just us 2", "3", "Family of 4", "Group of 6"],
   allowExactDates: true,
   seedPrompts: [
     "Ski-in ski-out in Niseko",

@@ -115,7 +115,15 @@ export function whenSummary(state: IntakeFormState): string {
 // ── Compose the message we send to Kaira on "Done" ────────────────────────────
 
 // Friendly, labelled traveller summary (e.g. "Friends — 2 adults, 1 child").
-function travellersLabel(state: IntakeFormState): string {
+// Takes the four fields it actually reads rather than the whole slice, so the
+// themed mini-form — which keeps its who/pax in local state, not Redux — can
+// word its message identically instead of growing a second version of this.
+export function travellersLabel(state: {
+  who?: string;
+  adults?: number;
+  children?: number;
+  infants?: number;
+}): string {
   const who = state.who || "Just me";
   if (who === "Just me") return "Just me";
   if (who === "Couple") return "Couple (2 adults)";

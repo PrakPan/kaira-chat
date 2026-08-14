@@ -723,10 +723,17 @@ export default function BotApp({
   // `finalized_status`/`itinerary_status` are set EARLY (synchronously from
   // the status endpoint in restoreItineraryDirectly), so prefer those and
   // fall back to the Itinerary.status heuristic for older code paths.
-  const itineraryIsComplete =
+  // "This thread has a real itinerary behind it" — a saved id, not one of the
+  // two placeholders the panel uses while one is still being built. Weaker than
+  // `itineraryIsComplete` below, which additionally waits for a SUCCESS status:
+  // this only asks whether there is something at /itinerary/{id} to open.
+  const hasItinerary =
     !!activeItineraryId &&
     activeItineraryId !== "skeleton" &&
-    activeItineraryId !== "draft" &&
+    activeItineraryId !== "draft";
+
+  const itineraryIsComplete =
+    hasItinerary &&
     (finalizedStatus === "SUCCESS" ||
       itineraryStatus === "SUCCESS" ||
       (!!(
@@ -2860,10 +2867,19 @@ export default function BotApp({
     [dispatch],
   );
 
-  // Mobile chat header's close button. A thread that started on a theme page
-  // goes straight back to that page; a plain /chat session falls back to the
-  // previous history entry (and the homepage when /chat was opened cold).
+  // Mobile chat header's close button. Once the thread has produced an
+  // itinerary that's the thing to close INTO — the reader came here to build a
+  // trip, and the trip now exists at its own URL. That wins over the theme page
+  // even for a thread that started on one, because going back to the marketing
+  // page would throw away what they just made. Failing that, a thread that
+  // started on a theme page goes straight back to that page; a plain /chat
+  // session falls back to the previous history entry (and the homepage when
+  // /chat was opened cold).
   const handleCloseChat = () => {
+    if (hasItinerary) {
+      router.push(`/itinerary/${activeItineraryId}`);
+      return;
+    }
     const themePath = getThemePagePath(themeSlug);
     if (themePath) {
       router.push(themePath);
@@ -4401,11 +4417,7 @@ Start Location: ${details.startLocation}`;
                       onNewChat={handleNewChat}
                       onThreadSelect={handleThreadSelect}
                       activeThreadId={activeThreadId}
-                      isComplete={
-                        activeItineraryId !== "skeleton" &&
-                        activeItineraryId !== "draft" &&
-                        !!activeItineraryId
-                      }
+                      isComplete={hasItinerary}
                       onLoginSuccess={attachUserToItinerary}
                       onClose={handleCloseChat}
                     />
@@ -4435,11 +4447,7 @@ Start Location: ${details.startLocation}`;
                         onNewChat={handleNewChat}
                         onThreadSelect={handleThreadSelect}
                         activeThreadId={activeThreadId}
-                        isComplete={
-                          activeItineraryId !== "skeleton" &&
-                          activeItineraryId !== "draft" &&
-                          !!activeItineraryId
-                        }
+                        isComplete={hasItinerary}
                         onLoginSuccess={attachUserToItinerary}
                         onClose={handleCloseChat}
                       />
@@ -5413,7 +5421,9 @@ export const MobileHeaderMenu = React.memo(
           </div>
           )}
 
-          {/* Close — black circle back to the theme page this chat started on. */}
+          {/* Close — black circle out to whatever this chat produced: the
+              itinerary if there is one, else the theme page it started on.
+              See handleCloseChat. */}
           {onClose && (
             <button
               onClick={onClose}
