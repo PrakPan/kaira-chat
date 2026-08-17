@@ -22,8 +22,12 @@ import {
   useSeedChat,
   useOpenThemeForm,
 } from "../../components/theme/cinematic/useSeedChat";
+import {
+  promptIntakeMap,
+  type ThemePromptIntent,
+} from "../../components/theme/cinematic/themeIntake";
 import { useThemeSelectionState } from "../../components/theme/cinematic/ThemeSelection";
-import ActivityDetailsDrawer from "../../components/drawers/activityDetails/ActivityDetailsDrawer";
+// import ActivityDetailsDrawer from "../../components/drawers/activityDetails/ActivityDetailsDrawer";
 import type { CinematicThemeConfig } from "../../components/theme/cinematic/types";
 import { THEME_PALETTES } from "../../components/theme/cinematic/palettes";
 
@@ -119,48 +123,76 @@ const VISA_HOME = "https://visa.thetarzanway.com/";
 const PROMPTS = {
   // Hero chips (verbatim from the brief)
   boxingDayNye:
-    "We are 2 travellers, and our dates are flexible. Plan a trip to Australia around the Boxing Day Test in Melbourne and New Year's Eve in Sydney. Include the best cricket experience, Melbourne highlights, then travel to Sydney for the harbour fireworks, beaches, food and summer experiences. Keep the itinerary comfortable and include enough time to enjoy both cities.",
+    "We are 2 travellers going for 10 nights in December, and our dates are flexible. Plan a trip to Australia around the Boxing Day Test in Melbourne and New Year's Eve in Sydney. Include the best cricket experience, Melbourne highlights, then travel to Sydney for the harbour fireworks, beaches, food and summer experiences. Keep the itinerary comfortable and include enough time to enjoy both cities.",
   summerSydney:
-    "We are 2 travellers, and our dates are flexible. Plan a summer trip to Sydney with a focus on New Year's Eve, beaches, harbour views and outdoor experiences. Include the Sydney NYE fireworks, Bondi and other great coastal spots, local food, scenic walks and fun summer activities. Keep the pace relaxed with plenty of free time.",
+    "We are 2 travellers going for 7 nights in December, and our dates are flexible. Plan a summer trip to Sydney with a focus on New Year's Eve, beaches, harbour views and outdoor experiences. Include the Sydney NYE fireworks, Bondi and other great coastal spots, local food, scenic walks and fun summer activities. Keep the pace relaxed with plenty of free time.",
   ausNz:
-    "We are 2 travellers, and our dates are flexible. Plan a combined Australia and New Zealand summer trip. Include Sydney and Melbourne with their best summer experiences, then continue to New Zealand for mountains, lakes, scenic drives and adventure. Create a balanced itinerary that covers the highlights without feeling rushed.",
+    "We are 2 travellers going for 14 nights in December, and our dates are flexible. Plan a combined Australia and New Zealand summer trip. Include Sydney and Melbourne with their best summer experiences, then continue to New Zealand for mountains, lakes, scenic drives and adventure. Create a balanced itinerary that covers the highlights without feeling rushed.",
   greatOceanRoad:
-    "We are 2 travellers, and our dates are flexible. Plan a trip around the Great Ocean Road in Australia, starting from Melbourne. Include scenic coastal drives, the Twelve Apostles, beaches, wildlife, charming coastal towns and beautiful viewpoints. Add a few Melbourne experiences before or after the drive, and keep enough time for spontaneous stops along the way.",
+    "We are 2 travellers going for 9 nights in December, and our dates are flexible. Plan a trip around the Great Ocean Road in Australia, starting from Melbourne. Include scenic coastal drives, the Twelve Apostles, beaches, wildlife, charming coastal towns and beautiful viewpoints. Add a few Melbourne experiences before or after the drive, and keep enough time for spontaneous stops along the way.",
   // "Pick a shape" routes (verbatim)
   bigDouble:
-    "We are 2 travellers, and our travel dates are flexible. Plan a 10-night Australia trip around the Boxing Day Test in Melbourne and New Year's Eve in Sydney. Include the best experiences in both cities, the cricket match, Sydney Harbour fireworks, beaches, food and summer activities. Keep the itinerary comfortable and well-paced.",
+    "We are 2 travellers, and our travel dates in December are flexible. Plan a 10-night Australia trip around the Boxing Day Test in Melbourne and New Year's Eve in Sydney. Include the best experiences in both cities, the cricket match, Sydney Harbour fireworks, beaches, food and summer activities. Keep the itinerary comfortable and well-paced.",
   doubleSouthIsland:
-    "We are 2 travellers, and our travel dates are flexible. Plan a 14-night trip starting with the Boxing Day Test in Melbourne, followed by New Year's Eve in Sydney, and then continue to Queenstown and New Zealand's South Island. Include cricket, Sydney fireworks, scenic drives, mountains, lakes, adventure activities and beautiful viewpoints, while keeping enough downtime to enjoy the trip.",
+    "We are 2 travellers, and our travel dates in December are flexible. Plan a 14-night trip starting with the Boxing Day Test in Melbourne, followed by New Year's Eve in Sydney, and then continue to Queenstown and New Zealand's South Island. Include cricket, Sydney fireworks, scenic drives, mountains, lakes, adventure activities and beautiful viewpoints, while keeping enough downtime to enjoy the trip.",
   sydneyNyeCoast:
-    "We are 2 travellers, and our travel dates are flexible. Plan a 9-night Australia trip focused on New Year's Eve in Sydney and a Great Ocean Road road trip. Include Sydney's harbour fireworks, beaches, coastal experiences and food, followed by a scenic drive from Melbourne along the Great Ocean Road with the Twelve Apostles, wildlife and coastal towns. Keep the pace relaxed and leave room for spontaneous stops.",
+    "We are 2 travellers, and our travel dates in December are flexible. Plan a 9-night Australia trip focused on New Year's Eve in Sydney and a Great Ocean Road road trip. Include Sydney's harbour fireworks, beaches, coastal experiences and food, followed by a scenic drive from Melbourne along the Great Ocean Road with the Twelve Apostles, wildlife and coastal towns. Keep the pace relaxed and leave room for spontaneous stops.",
   // Boxing Day Test feature
   boxingDayTicket:
-    "I want to be at the Boxing Day Test at the MCG in Melbourne. Tell me how Day 1 tickets work, what they cost, where to sit for a first-timer, and how early we need to book — then build the Melbourne leg of my trip around the 26th of December.",
+    "On our 10-night December trip for two, I want to be at the Boxing Day Test at the MCG in Melbourne. Tell me how Day 1 tickets work, what they cost, where to sit for a first-timer, and how early we need to book — then build the Melbourne leg of my trip around the 26th of December.",
   // Where to stand at midnight (POIs)
   mrsMacquaries:
-    "Tell me about watching the Sydney New Year's Eve fireworks from Mrs Macquarie's Point — how early to arrive, whether it's ticketed, what to carry, and what the view is like. Add it to my Sydney plan.",
+    "On our 10-night December trip for two, tell me about watching the Sydney New Year's Eve fireworks from Mrs Macquarie's Point — how early to arrive, whether it's ticketed, what to carry, and what the view is like. Add it to my Sydney plan.",
   midnightCruise:
-    "Tell me about watching the Sydney New Year's Eve fireworks from a boat on the harbour — what the cruises include, what they cost, and how far ahead they sell out. Add a midnight harbour cruise to my Sydney plan.",
+    "On our 10-night December trip for two, tell me about watching the Sydney New Year's Eve fireworks from a boat on the harbour — what the cruises include, what they cost, and how far ahead they sell out. Add a midnight harbour cruise to my Sydney plan.",
   tarongaLawns:
-    "Tell me about watching the Sydney New Year's Eve fireworks from the Taronga Zoo lawns — the view back across the harbour, what's included, and whether it suits families. Add it to my Sydney plan.",
+    "On our 10-night December trip for two, tell me about watching the Sydney New Year's Eve fireworks from the Taronga Zoo lawns — the view back across the harbour, what's included, and whether it suits families. Add it to my Sydney plan.",
   // Restaurants
   quay:
-    "Tell me about Quay in Sydney — the harbour-front fine dining and its famous tasting menu — and add a special dinner there to my Sydney plan.",
+    "On our 10-night December trip for two, tell me about Quay in Sydney — the harbour-front fine dining and its famous tasting menu — and add a special dinner there to my Sydney plan.",
   mrWong:
-    "Tell me about Mr Wong in Sydney and its modern Cantonese cooking, and add a long dinner there to my plan.",
+    "On our 10-night December trip for two, tell me about Mr Wong in Sydney and its modern Cantonese cooking, and add a long dinner there to my plan.",
   rouleGalette:
-    "Tell me about Roule Galette in Melbourne and its French galettes and crêpes, and work a relaxed lunch there into my Melbourne days.",
+    "On our 10-night December trip for two, tell me about Roule Galette in Melbourne and its French galettes and crêpes, and work a relaxed lunch there into my Melbourne days.",
   fergburger:
-    "Tell me about Fergburger in Queenstown — the queue, the burgers, and when to go — and add it to my New Zealand plan.",
+    "On our 10-night December trip for two, tell me about Fergburger in Queenstown — the queue, the burgers, and when to go — and add it to my New Zealand plan.",
   // Ask bar
   askBar:
-    "Which southern-summer trip should I do — the Boxing Day Test and Sydney NYE double, the same double extended into New Zealand's South Island, or Sydney NYE with a Great Ocean Road drive? Compare the pace, the cost and the fixed dates, then build the full itinerary for the one you recommend.",
+    "Which southern-summer trip should we do in December, travelling as a couple — the Boxing Day Test and Sydney NYE double, the same double extended into New Zealand's South Island, or Sydney NYE with a Great Ocean Road drive? Compare the pace, the cost and the fixed dates, then build the full itinerary for the one you recommend.",
   // "Build this itinerary" — sent when the reader has saved places on the page.
   // The saved items ride along in the /chatkit request; this brief tells Kaira
   // to shape the trip around them.
   buildItinerary:
-    "We are 2 travellers, and our travel dates are flexible. Build my complete Australia and New Zealand summer itinerary around the places I've saved on this page — fit them into the right cities with the cricket, the fireworks, the coast and the mountains at a comfortable pace, then price it.",
+    "We are 2 travellers going for 10 nights in December, and our travel dates are flexible. Build my complete Australia and New Zealand summer itinerary around the places I've saved on this page — fit them into the right cities with the cricket, the fireworks, the coast and the mountains at a comfortable pace, then price it.",
 };
+
+// What each prompt above states about the trip, sent as `intake` keys (month /
+// nights / pax) rather than left for the backend to read out of the sentence.
+// Keyed by prompt text via promptIntakeMap, so a card only carries its prompt
+// and the facts follow. Every month is December: the whole theme hangs off two
+// fixed dates — the Boxing Day Test on the 26th and Sydney's NYE fireworks.
+//
+// `askBar` deliberately carries no `nights`: it asks Kaira to compare a 9, a 10
+// and a 14-night shape, so pinning one length would answer it for her.
+const PROMPT_FACTS = promptIntakeMap(PROMPTS, {
+  boxingDayNye: { nights: 10, month: 12, who: "Couple" },
+  summerSydney: { nights: 7, month: 12, who: "Couple" },
+  ausNz: { nights: 14, month: 12, who: "Couple" },
+  greatOceanRoad: { nights: 9, month: 12, who: "Couple" },
+  bigDouble: { nights: 10, month: 12, who: "Couple" },
+  doubleSouthIsland: { nights: 14, month: 12, who: "Couple" },
+  sydneyNyeCoast: { nights: 9, month: 12, who: "Couple" },
+  boxingDayTicket: { nights: 10, month: 12, who: "Couple" },
+  mrsMacquaries: { nights: 10, month: 12, who: "Couple" },
+  midnightCruise: { nights: 10, month: 12, who: "Couple" },
+  tarongaLawns: { nights: 10, month: 12, who: "Couple" },
+  quay: { nights: 10, month: 12, who: "Couple" },
+  mrWong: { nights: 10, month: 12, who: "Couple" },
+  rouleGalette: { nights: 10, month: 12, who: "Couple" },
+  fergburger: { nights: 10, month: 12, who: "Couple" },
+  askBar: { month: 12, who: "Couple" },
+  buildItinerary: { nights: 10, month: 12, who: "Couple" },
+});
 
 const australiaNewZealandConfig: CinematicThemeConfig = {
   // Harbour blue — carries every CTA, the saved state and the docked bar.
@@ -717,29 +749,34 @@ const AustraliaNewZealandThemePage = ({
   const selection = useThemeSelectionState();
   const openThemeForm = useOpenThemeForm();
   // Every seed from this page carries the current selection + theme slug.
-  const handleSelectPrompt = (prompt: string) =>
-    seedChat(prompt, { items: selection.items, slug: THEME_SLUG });
+  const handleSelectPrompt = (prompt: string, intent?: ThemePromptIntent) =>
+    seedChat(prompt, {
+      items: selection.items,
+      slug: THEME_SLUG,
+      intent,
+      facts: PROMPT_FACTS[prompt],
+    });
   // "Build this itinerary" — open the themed mini-form on /chat (no auto-send);
   // the saved items ride along and are sent to /chatkit only on form submit.
   const handleBuild = (note?: string) =>
     openThemeForm(THEME_SLUG, selection.items, note);
   // Read-only activity drawer (opened from the activity cards).
-  const [activityDrawer, setActivityDrawer] = useState<{
-    show: boolean;
-    activityId?: string;
-    source?: string;
-    date?: string;
-  }>({ show: false });
+  // const [activityDrawer, setActivityDrawer] = useState<{
+    // show: boolean;
+    // activityId?: string;
+    // source?: string;
+    // date?: string;
+  // }>({ show: false });
 
-  const openActivity = (activityId: string, source?: string) =>
-    setActivityDrawer({
-      show: true,
-      activityId,
-      source,
-      date: defaultActivityDate(),
-    });
-  const closeActivity = () =>
-    setActivityDrawer((prev) => ({ ...prev, show: false }));
+  // const openActivity = (activityId: string, source?: string) =>
+    // setActivityDrawer({
+      // show: true,
+      // activityId,
+      // source,
+      // date: defaultActivityDate(),
+    // });
+  // const closeActivity = () =>
+    // setActivityDrawer((prev) => ({ ...prev, show: false }));
 
   useEffect(() => {
     checkAuthState();
@@ -822,11 +859,14 @@ const AustraliaNewZealandThemePage = ({
       <CinematicThemeLanding
         config={australiaNewZealandConfig}
         onSelectPrompt={handleSelectPrompt}
-        onSelectActivity={openActivity}
         selection={selection}
         onBuild={handleBuild}
       />
-      {/* Read-only activity details — no Add/Remove CTA on this marketing page */}
+      {/* Detail drawers are retired on this page — a click anywhere on a
+          card adds or removes it, so nothing opens a drawer. Uncomment to
+          restore (and pass `onSelectActivity` to <CinematicThemeLanding>).
+
+      Read-only activity details — no Add/Remove CTA on this marketing page
       <ActivityDetailsDrawer
         show={activityDrawer.show}
         activityId={activityDrawer.activityId}
@@ -836,19 +876,20 @@ const AustraliaNewZealandThemePage = ({
         handleCloseDrawer={closeActivity}
         setShowDrawer={closeActivity}
       />
+      */}
     </Layout>
   );
 };
 
 // A sensible default start date for the read-only activity drawer — ~60 days
 // out, in DD/MM/YYYY (the format the detail endpoint expects).
-const defaultActivityDate = () => {
-  const d = new Date();
-  d.setDate(d.getDate() + 60);
-  const dd = String(d.getDate()).padStart(2, "0");
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  return `${dd}/${mm}/${d.getFullYear()}`;
-};
+// const defaultActivityDate = () => {
+  // const d = new Date();
+  // d.setDate(d.getDate() + 60);
+  // const dd = String(d.getDate()).padStart(2, "0");
+  // const mm = String(d.getMonth() + 1).padStart(2, "0");
+  // return `${dd}/${mm}/${d.getFullYear()}`;
+// };
 
 const mapDispatchToProps = (dispatch: any) => ({
   checkAuthState: () => dispatch(authaction.checkAuthState()),

@@ -42,6 +42,37 @@ export interface CinematicSelectableItem {
   id?: string;
 }
 
+// What a prompt states about the trip it asks for. A card whose copy reads
+// "10 nights in the Cyclades in May for a couple" declares those three facts
+// here, and they travel to /chatkit as `intake` keys (month / nights / pax)
+// instead of being left for the backend to parse out of the sentence — the
+// same keys the themed mini-form submits.
+//
+// Declared next to the page's PROMPTS map via promptIntakeMap() so the numbers
+// and the sentence stating them are edited together. Every field is optional
+// and an absent one is simply not sent, so a prompt that names no month has no
+// `month` key rather than a blank one.
+export interface CinematicPromptIntake {
+  /** Month the prompt is written for, 1–12. Resolved forward to its next
+   *  bookable occurrence when the prompt fires, so a config never goes stale. */
+  month?: number;
+  /** Nights the prompt asks for. Together with `month` this also produces the
+   *  `dates` range, on the same mid-month departure the mini-form uses. */
+  nights?: number;
+  /** Who the prompt is for — one of the intake form's WHO_OPTIONS values:
+   *  "Just me" | "Couple" | "Family" | "Friends" | "Parents / seniors".
+   *  Anchors the pax group; without it no traveller keys are sent. */
+  who?: string;
+  /** Defaults to 1 for "Just me" and 2 otherwise, matching the form. */
+  adults?: number;
+  children?: number;
+  infants?: number;
+  /** The theme form's route this prompt maps onto, when it maps onto one —
+   *  `window` is the route key, `skeleton` its routing key. */
+  window?: string;
+  skeleton?: string;
+}
+
 // Image card used by the Bollywood / Hollywood style rows.
 export interface CinematicPromptCard {
   image: string;
@@ -231,6 +262,11 @@ export interface CinematicFeatureCta {
   activityId?: string;
   activitySource?: string;
   prompt?: string;
+  // What the card's "+ Add" pill saves. Omit it and the `title` names the item
+  // (carrying `activityId` as its catalog id), which is what the JR Pass and
+  // long-tail-charter cards rely on — the pill has always said "+ Add", and now
+  // that the detail drawer is retired it does exactly that.
+  item?: CinematicSelectableItem;
 }
 
 // Discriminated union of the section blocks a page can stack. Order in the
@@ -348,9 +384,15 @@ export type CinematicSection =
 export interface CinematicHeroImage {
   image: string;
   caption?: string; // serif italic caption under the polaroid
-  /** @deprecated Ignored. The hero polaroids are decorative — they no longer
-   *  navigate, so the hero has exactly one call to action. Existing configs may
-   *  still carry this; it has no effect. */
+  // The scene this polaroid saves. When the page supplies a selection handler,
+  // clicking the polaroid toggles this item in and out of the trip (a green
+  // tick marks it saved). Omit it and the caption names the scene instead, so
+  // an existing config becomes selectable without being rewritten; a polaroid
+  // with neither stays purely decorative.
+  item?: CinematicSelectableItem;
+  /** @deprecated Ignored. The hero polaroids no longer navigate — they save
+   *  the scene they show. Existing configs may still carry this; it has no
+   *  effect. */
   href?: string;
 }
 

@@ -52,6 +52,13 @@ import {
   useThemeSelection,
   type ThemeSelectionValue,
 } from "./ThemeSelection";
+import type { ThemePromptIntent } from "./themeIntake";
+
+// Every prompt this surface fires reports WHERE it came from, so the page can
+// build the `intake` payload for the /chatkit request rather than sending bare
+// free text (see themeIntake.ts). The intent is optional on the signature so a
+// caller that ignores it still typechecks.
+type SelectPrompt = (prompt: string, intent?: ThemePromptIntent) => void;
 
 // ── Palette ──────────────────────────────────────────────────────────────
 const INK = "#0b1220";
@@ -63,6 +70,9 @@ const PAPER = "#fafaf5";
 const DARK = "#0a1020";
 const RED = "#b84034";
 const SAND = "#f4f3ec";
+// The one "saved" green on the page — Kaira's online dot, the dark sections'
+// added state, and the tick on a saved hero polaroid all read from it.
+const GREEN = "#1f8a5a";
 
 // Pull a catalog element id out of a drawer href (e.g. "?restaurant_id=abc",
 // "?city_id=xyz") so a saved element carries its id in the /chatkit request.
@@ -238,11 +248,18 @@ const CinematicStyles = () => (
       .ctl-kairawrap { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px 0; min-height: 440px; }
       .ctl-kaira { width: 180px; height: 180px; border-radius: 50%; overflow: hidden; box-shadow: 0 16px 40px rgba(11,18,32,0.2); border: 6px solid ${PAPER}; z-index: 2; }
       .ctl-kaira img { width: 100%; height: 100%; object-fit: cover; }
-      /* Decorative only — the polaroids used to navigate on click, which put a
-         second, unlabelled destination behind the hero's own CTAs. They now
-         just sit there and lift on hover. */
-      .ctl-polaroid { position: absolute; width: 148px; background: #fff; padding: 8px 8px 26px; box-shadow: 0 12px 28px -8px rgba(11,18,32,0.25); border-radius: 4px; z-index: 3; transition: transform .3s cubic-bezier(.2,.7,.3,1); }
+      /* The polaroids save the scene they show: clicking one adds it to the
+         trip and marks it with a green tick, clicking again removes it. (They
+         used to navigate, which put a second, unlabelled destination behind
+         the hero's own CTAs.) A page with no selection handler leaves them as
+         plain, decorative tiles that lift on hover. */
+      .ctl-polaroid { position: absolute; width: 148px; background: #fff; padding: 8px 8px 26px; box-shadow: 0 12px 28px -8px rgba(11,18,32,0.25); border-radius: 4px; z-index: 3; transition: transform .3s cubic-bezier(.2,.7,.3,1), box-shadow .25s ease; }
       .ctl-polaroid:hover { transform: translateY(-4px) rotate(0deg) !important; z-index: 5; }
+      /* Button reset — a selectable polaroid is a real button, but it has to
+         keep the tile's own box exactly. */
+      .ctl-polaroid-btn { border: none; font: inherit; color: inherit; text-align: inherit; cursor: pointer; display: block; }
+      .ctl-polaroid-saved { box-shadow: 0 0 0 2px ${GREEN}, 0 12px 28px -8px rgba(11,18,32,0.25); }
+      .ctl-polaroid-tick { position: absolute; top: -9px; right: -9px; width: 25px; height: 25px; border-radius: 50%; background: ${GREEN}; color: #fff; font-size: 13px; font-weight: 700; line-height: 21px; text-align: center; border: 2px solid #fff; box-shadow: 0 4px 10px -4px rgba(11,18,32,0.45); z-index: 6; }
       .ctl-polaroid-img { position: relative; overflow: hidden; width: 100%; aspect-ratio: 1 / 1; border-radius: 2px; }
       .ctl-polaroid-cap { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 12px; color: ${INK}; text-align: center; margin-top: 8px; line-height: 1.2; }
       .ctl-kaira-name { text-align: center; margin-top: 16px; z-index: 4; }
@@ -358,14 +375,15 @@ const Heading: React.FC<{
 // ── Section CTA (pill button — retained for future pages; unused by filmy) ──
 const SectionCta: React.FC<{
   cta: CinematicSectionCta;
-  onSelectPrompt: (p: string) => void;
+  onSelectPrompt: SelectPrompt;
 }> = ({ cta, onSelectPrompt }) => {
   const router = useRouter();
   return (
     <button
       type="button"
       onClick={() => {
-        if (cta.prompt) onSelectPrompt(cta.prompt);
+        if (cta.prompt)
+          onSelectPrompt(cta.prompt, { source: "cta", label: cta.label });
         else if (cta.href) router.push(cta.href);
       }}
       className="ctl-press shrink-0 rounded-full bg-white px-[18px] py-[10px] text-[13px] font-semibold cursor-pointer"
@@ -379,15 +397,21 @@ const SectionCta: React.FC<{
 // ── Hero ───────────────────────────────────────────────────────────────────
 const CinematicHero: React.FC<{
   hero: CinematicHeroConfig;
-  onSelectPrompt: (p: string) => void;
+  onSelectPrompt: SelectPrompt;
 }> = ({ hero, onSelectPrompt }) => {
   const palette = usePalette();
+  // The hero collage is a selection surface too — each polaroid saves the
+  // scene it shows (see the polaroid block below).
+  const selection = useThemeSelection();
   // Controlled composer: send the typed text (falling back to the example
-  // prompt when empty) on Send click or Enter.
+  // prompt when empty) on Send click or Enter. Typed words go out as the
+  // intake's `note`; the fallback example prompt is ours, so it goes out as a
+  // canned prompt instead — hence the `typed` flag rather than one fixed intent.
   const [composerText, setComposerText] = React.useState("");
   const submitComposer = () => {
-    const value = composerText.trim() || hero.prompt || "";
-    if (value) onSelectPrompt(value);
+    const typedValue = composerText.trim();
+    const value = typedValue || hero.prompt || "";
+    if (value) onSelectPrompt(value, { source: "hero", typed: !!typedValue });
   };
   const polaroidPos: Array<{
     top?: number;
@@ -474,7 +498,12 @@ const CinematicHero: React.FC<{
                 <button
                   key={`hero-chip-${i}`}
                   type="button"
-                  onClick={() => onSelectPrompt(chip.prompt)}
+                  onClick={() =>
+                    onSelectPrompt(chip.prompt, {
+                      source: "hero",
+                      label: chip.label,
+                    })
+                  }
                   className="ctl-press bg-white rounded-full px-[12px] py-[7px] md:px-[16px] md:py-[9px] text-[11.5px] md:text-[13px] font-medium cursor-pointer"
                   style={{ color: MUTED }}
                 >
@@ -491,24 +520,71 @@ const CinematicHero: React.FC<{
             <div className="ctl-kairawrap">
               {hero.images.slice(0, 4).map((img, i) => {
                 const pos = polaroidPos[i];
-                return (
-                  <div
-                    key={`polaroid-${i}`}
-                    className="ctl-polaroid"
-                    style={{
-                      top: pos.top,
-                      left: pos.left,
-                      right: pos.right,
-                      bottom: pos.bottom,
-                      transform: `rotate(${pos.rotate}deg)`,
-                    }}
-                  >
+                // What this polaroid saves. An explicit `item` wins; otherwise
+                // the caption names the scene, which every existing config
+                // already carries — so the collage becomes selectable without
+                // any page being rewritten.
+                const item =
+                  img.item ??
+                  (img.caption
+                    ? {
+                        kind: "scene",
+                        label: img.caption,
+                        short: img.caption,
+                      }
+                    : undefined);
+                const selectable = !!(item && selection);
+                const selected = selectable
+                  ? selection!.isSelected(item!)
+                  : false;
+                const style: React.CSSProperties = {
+                  top: pos.top,
+                  left: pos.left,
+                  right: pos.right,
+                  bottom: pos.bottom,
+                  transform: `rotate(${pos.rotate}deg)`,
+                };
+                const inner = (
+                  <>
                     <div className="ctl-polaroid-img">
                       <SkeletonImage src={img.image} alt={img.caption ?? ""} />
                     </div>
                     {img.caption && (
                       <div className="ctl-polaroid-cap">{img.caption}</div>
                     )}
+                    {selected && (
+                      <span className="ctl-polaroid-tick" aria-hidden>
+                        ✓
+                      </span>
+                    )}
+                  </>
+                );
+                // Decorative unless the page is running a selection — a tile
+                // that can't save anything shouldn't advertise itself as a
+                // button.
+                return selectable ? (
+                  <button
+                    key={`polaroid-${i}`}
+                    type="button"
+                    onClick={() => selection!.toggle(item!)}
+                    aria-pressed={selected}
+                    aria-label={`${selected ? "Remove" : "Add"} ${
+                      img.caption ?? "this scene"
+                    }`}
+                    className={`ctl-polaroid ctl-polaroid-btn${
+                      selected ? " ctl-polaroid-saved" : ""
+                    }`}
+                    style={style}
+                  >
+                    {inner}
+                  </button>
+                ) : (
+                  <div
+                    key={`polaroid-${i}`}
+                    className="ctl-polaroid"
+                    style={style}
+                  >
+                    {inner}
                   </div>
                 );
               })}
@@ -535,7 +611,7 @@ const CinematicHero: React.FC<{
 // Mobile: 220px wide, 130px image. Desktop: fills a 3-col grid cell, 200px image.
 const PromptCard: React.FC<{
   card: CinematicPromptCard;
-  onSelectPrompt: (p: string) => void;
+  onSelectPrompt: SelectPrompt;
   onSelectActivity?: (activityId: string, source?: string) => void;
   ctaLabel?: string;
   ctaTone?: "solid" | "dark";
@@ -574,26 +650,23 @@ const PromptCard: React.FC<{
       : undefined);
   const selectable = !!(item && selection);
   const selected = selectable ? selection!.isSelected(item!) : false;
-  // Element cards (an activity drawer) keep opening the drawer on body click —
-  // the "+ Add" CTA does the saving. Non-element selectable cards toggle on
-  // body click as before.
-  const isElement = selectable && !!card.activityId;
   const toggle = () => item && selection && selection.toggle(item);
   return (
   <button
     type="button"
+    // A click anywhere on a selectable card adds or removes it. The detail
+    // drawers these cards used to open are retired on the theme pages, so
+    // saving is the only thing a body click can usefully do — and the "+ Add"
+    // pill and the card now agree instead of doing two different things.
     onClick={() => {
-      if (isElement) {
-        onSelectActivity?.(card.activityId!, card.activitySource);
-        return;
-      }
       if (item && selection) {
         selection.toggle(item);
         return;
       }
       if (card.activityId && onSelectActivity)
         onSelectActivity(card.activityId, card.activitySource);
-      else if (card.prompt) onSelectPrompt(card.prompt);
+      else if (card.prompt)
+        onSelectPrompt(card.prompt, { source: "card", label: card.name });
     }}
     aria-pressed={selectable ? selected : undefined}
     className="ctl-card group flex flex-col text-left rounded-[18px] overflow-hidden cursor-pointer w-[262px] md:w-auto shrink-0 md:shrink"
@@ -672,7 +745,7 @@ const PromptCard: React.FC<{
 
 const CardsSection: React.FC<{
   section: Extract<CinematicSection, { type: "cards" }>;
-  onSelectPrompt: (p: string) => void;
+  onSelectPrompt: SelectPrompt;
   onSelectActivity?: (activityId: string, source?: string) => void;
   // True for the first section on the page — its first card is the LCP image
   // on mobile (the hero collage is desktop-only), so it loads eagerly.
@@ -718,14 +791,15 @@ const CardsSection: React.FC<{
 // Desktop: 3-col grid, 96px thumb, price + nights stacked.
 const TripCard: React.FC<{
   card: CinematicTripCard;
-  onSelectPrompt: (p: string) => void;
+  onSelectPrompt: SelectPrompt;
   ctaLabel?: string;
 }> = ({ card, onSelectPrompt, ctaLabel }) => {
   const router = useRouter();
   const palette = usePalette();
   const act = () => {
     if (card.href) router.push(card.href);
-    else if (card.prompt) onSelectPrompt(card.prompt);
+    else if (card.prompt)
+      onSelectPrompt(card.prompt, { source: "card", label: card.name });
   };
   return (
   <button
@@ -812,7 +886,7 @@ const TripCard: React.FC<{
 
 const TripsSection: React.FC<{
   section: Extract<CinematicSection, { type: "trips" }>;
-  onSelectPrompt: (p: string) => void;
+  onSelectPrompt: SelectPrompt;
 }> = ({ section, onSelectPrompt }) => (
   <section className="pt-[30px] md:pt-[56px]">
     <Container>
@@ -834,14 +908,15 @@ const TripsSection: React.FC<{
 // ── Gradient tile (Other themes / Destinations) ────────────────────────────
 const GradientCard: React.FC<{
   card: CinematicGradientCard;
-  onSelectPrompt: (p: string) => void;
+  onSelectPrompt: SelectPrompt;
   compact?: boolean; // destinations: shorter tile + no name min-height
   // Beyond the paired columns' 4-tile desktop grid — stays in the phone list.
   hideOnDesktop?: boolean;
 }> = ({ card, onSelectPrompt, compact, hideOnDesktop }) => {
   const router = useRouter();
   const act = () => {
-    if (card.prompt) onSelectPrompt(card.prompt);
+    if (card.prompt)
+      onSelectPrompt(card.prompt, { source: "card", label: card.name });
     else if (card.href) router.push(card.href);
   };
   return (
@@ -901,7 +976,7 @@ const GradientCard: React.FC<{
 // stays complete from the same markup.
 const GradientColumn: React.FC<{
   section: Extract<CinematicSection, { type: "gradient" }>;
-  onSelectPrompt: (p: string) => void;
+  onSelectPrompt: SelectPrompt;
   desktopCols?: number;
   desktopLimit?: number;
 }> = ({ section, onSelectPrompt, desktopCols, desktopLimit }) => {
@@ -949,7 +1024,7 @@ const GradientColumn: React.FC<{
 
 const GradientSection: React.FC<{
   section: Extract<CinematicSection, { type: "gradient" }>;
-  onSelectPrompt: (p: string) => void;
+  onSelectPrompt: SelectPrompt;
 }> = ({ section, onSelectPrompt }) => (
   <section className="pt-[30px] md:pt-[56px]">
     <Container>
@@ -963,7 +1038,7 @@ const GradientSection: React.FC<{
 const GradientPairSection: React.FC<{
   left: Extract<CinematicSection, { type: "gradient" }>;
   right: Extract<CinematicSection, { type: "gradient" }>;
-  onSelectPrompt: (p: string) => void;
+  onSelectPrompt: SelectPrompt;
 }> = ({ left, right, onSelectPrompt }) => (
   <section className="pt-[30px] md:pt-[72px]">
     <Container>
@@ -985,14 +1060,15 @@ const GradientPairSection: React.FC<{
 // Full-width outline button under a grid (e.g. "View all destinations →").
 const FooterButton: React.FC<{
   cta: CinematicSectionCta;
-  onSelectPrompt: (p: string) => void;
+  onSelectPrompt: SelectPrompt;
 }> = ({ cta, onSelectPrompt }) => {
   const router = useRouter();
   return (
     <button
       type="button"
       onClick={() => {
-        if (cta.prompt) onSelectPrompt(cta.prompt);
+        if (cta.prompt)
+          onSelectPrompt(cta.prompt, { source: "cta", label: cta.label });
         else if (cta.href) router.push(cta.href);
       }}
       className="ctl-press mt-[12px] md:mt-[20px] w-full md:w-auto md:mx-auto md:block bg-white rounded-full px-[24px] py-[13px] text-[14px] font-bold cursor-pointer"
@@ -1008,11 +1084,13 @@ const FooterButton: React.FC<{
 // 236px wide horizontal scroller. Desktop: fills a 3-col grid cell.
 const PillarCard: React.FC<{
   card: CinematicPillarCard;
-  onSelectPrompt: (p: string) => void;
+  onSelectPrompt: SelectPrompt;
 }> = ({ card, onSelectPrompt }) => (
   <button
     type="button"
-    onClick={() => onSelectPrompt(card.prompt)}
+    onClick={() =>
+      onSelectPrompt(card.prompt, { source: "card", label: card.name })
+    }
     className="ctl-card text-left rounded-[18px] overflow-hidden cursor-pointer w-[262px] md:w-auto shrink-0 md:shrink flex flex-col"
     style={cardChrome()}
   >
@@ -1051,7 +1129,7 @@ const PillarCard: React.FC<{
 
 const PillarsSection: React.FC<{
   section: Extract<CinematicSection, { type: "pillars" }>;
-  onSelectPrompt: (p: string) => void;
+  onSelectPrompt: SelectPrompt;
 }> = ({ section, onSelectPrompt }) => (
   <section className="pt-[30px] md:pt-[56px]">
     <Container>
@@ -1076,7 +1154,7 @@ const PillarsSection: React.FC<{
 const ListRow: React.FC<{
   row: CinematicListRow;
   compact?: boolean;
-  onSelectPrompt: (p: string) => void;
+  onSelectPrompt: SelectPrompt;
   onSelectActivity?: (activityId: string, source?: string) => void;
   sectionSelectable?: boolean;
   itemKind?: string;
@@ -1095,24 +1173,19 @@ const ListRow: React.FC<{
     : undefined;
   const selectable = !!(item && selection);
   const selected = selectable ? selection!.isSelected(item!) : false;
-  // An element row (activity drawer or a drawer href) keeps opening the drawer
-  // on body click; the "+ Add" pill saves it.
-  const isElement = selectable && !!(row.activityId || row.href);
   const toggle = () => item && selection && selection.toggle(item);
+  // Saving wins over everything: the drawer this row used to open (by activity
+  // id or a `?city_id=` href) is retired on the theme pages, so a body click
+  // adds or removes the row instead of navigating.
   const act = () => {
-    if (isElement) {
-      if (row.activityId && onSelectActivity)
-        onSelectActivity(row.activityId, row.activitySource);
-      else if (row.href) router.push(row.href);
-      return;
-    }
     if (item && selection) {
       selection.toggle(item);
       return;
     }
     if (row.activityId && onSelectActivity)
       onSelectActivity(row.activityId, row.activitySource);
-    else if (row.prompt) onSelectPrompt(row.prompt);
+    else if (row.prompt)
+      onSelectPrompt(row.prompt, { source: "card", label: row.name });
     else if (row.href) router.push(row.href);
   };
   return (
@@ -1202,7 +1275,7 @@ const ListRow: React.FC<{
 
 const ListSection: React.FC<{
   section: Extract<CinematicSection, { type: "list" }>;
-  onSelectPrompt: (p: string) => void;
+  onSelectPrompt: SelectPrompt;
   onSelectActivity?: (activityId: string, source?: string) => void;
 }> = ({ section, onSelectPrompt, onSelectActivity }) => (
   <section className="pt-[32px] md:pt-[56px] pb-[16px] md:pb-[32px]">
@@ -1234,7 +1307,7 @@ const ListSection: React.FC<{
 // ── Checklist (dark section — "The Santa bit, done properly") ───────────────
 const ChecklistSection: React.FC<{
   section: Extract<CinematicSection, { type: "checklist" }>;
-  onSelectPrompt: (p: string) => void;
+  onSelectPrompt: SelectPrompt;
 }> = ({ section, onSelectPrompt }) => {
   const router = useRouter();
   return (
@@ -1260,7 +1333,8 @@ const ChecklistSection: React.FC<{
         <div className="grid grid-cols-1 md:grid-cols-2 gap-[8px] md:gap-[12px] mt-[16px] md:mt-[24px]">
           {section.rows.map((row, i) => {
             const act = () => {
-              if (row.prompt) onSelectPrompt(row.prompt);
+              if (row.prompt)
+                onSelectPrompt(row.prompt, { source: "card", label: row.name });
               else if (row.href) router.push(row.href);
             };
             const clickable = !!(row.prompt || row.href);
@@ -1393,7 +1467,7 @@ const MonthsSection: React.FC<{
 // ── Stories ("People who went") ─────────────────────────────────────────────
 const StoriesSection: React.FC<{
   section: Extract<CinematicSection, { type: "stories" }>;
-  onSelectPrompt: (p: string) => void;
+  onSelectPrompt: SelectPrompt;
 }> = ({ section, onSelectPrompt }) => {
   const router = useRouter();
   const palette = usePalette();
@@ -1409,7 +1483,13 @@ const StoriesSection: React.FC<{
             onClick={() => {
               // A traveller's real itinerary (/chat/{id}) opens; otherwise seed.
               if (card.href) router.push(card.href);
-              else if (card.prompt) onSelectPrompt(card.prompt);
+              // The card's own "name" is the reviewer's, so the route they took
+              // is the label that identifies what was tapped.
+              else if (card.prompt)
+                onSelectPrompt(card.prompt, {
+                  source: "card",
+                  label: card.route,
+                });
             }}
             className="ctl-card flex flex-col text-left rounded-[18px] p-[17px] md:p-[20px] w-[262px] md:w-auto shrink-0 md:shrink cursor-pointer"
             style={cardChrome()}
@@ -1492,7 +1572,7 @@ const StoriesSection: React.FC<{
 // a line, and a rating. Clicking seeds the card's prompt.
 const EatsSection: React.FC<{
   section: Extract<CinematicSection, { type: "eats" }>;
-  onSelectPrompt: (p: string) => void;
+  onSelectPrompt: SelectPrompt;
 }> = ({ section, onSelectPrompt }) => {
   const router = useRouter();
   const selection = useThemeSelection();
@@ -1532,25 +1612,24 @@ const EatsSection: React.FC<{
               : undefined);
           const selectable = !!(item && selection);
           const selected = selectable ? selection!.isSelected(item!) : false;
-          // A restaurant card with a drawer href keeps opening the drawer on
-          // body click; the "+ Add" CTA saves it.
-          const isElement = selectable && !!card.href;
           const toggle = () => item && selection && selection.toggle(item);
           return (
           <button
             key={`eat-${i}`}
             type="button"
+            // The restaurant drawer behind `card.href` is retired on the theme
+            // pages, so a body click saves the card rather than navigating.
             onClick={() => {
-              if (isElement) {
-                router.push(card.href!);
-                return;
-              }
               if (item && selection) {
                 selection.toggle(item);
                 return;
               }
               if (card.href) router.push(card.href);
-              else if (card.prompt) onSelectPrompt(card.prompt);
+              else if (card.prompt)
+                onSelectPrompt(card.prompt, {
+                  source: "card",
+                  label: card.name,
+                });
             }}
             aria-pressed={selectable ? selected : undefined}
             className="ctl-card text-left rounded-[18px] overflow-hidden cursor-pointer w-[224px] md:w-auto shrink-0 md:shrink flex flex-col"
@@ -1774,25 +1853,51 @@ const VisaSection: React.FC<{
 // read-only activity drawer (e.g. the JR Pass) or seeds a prompt.
 const FeatureCtaCard: React.FC<{
   cta: CinematicFeatureCta;
-  onSelectPrompt: (p: string) => void;
+  onSelectPrompt: SelectPrompt;
   onSelectActivity?: (activityId: string, source?: string) => void;
 }> = ({ cta, onSelectPrompt, onSelectActivity }) => {
   const router = useRouter();
+  const selection = useThemeSelection();
   const palette = usePalette();
+  // This card has always worn a "+ Add" pill; with the drawer retired it now
+  // does what the pill says. An explicit `item` wins, else the card's own title
+  // names what gets saved (and its activity id rides along when it has one).
+  const item =
+    cta.item ??
+    (cta.title
+      ? {
+          kind: "ticket",
+          label: cta.title,
+          short: cta.title,
+          ...(cta.activityId ? { id: cta.activityId } : {}),
+        }
+      : undefined);
+  const selectable = !!(item && selection);
+  const selected = selectable ? selection!.isSelected(item!) : false;
   const act = () => {
+    if (item && selection) {
+      selection.toggle(item);
+      return;
+    }
     if (cta.activityId && onSelectActivity)
       onSelectActivity(cta.activityId, cta.activitySource);
-    else if (cta.prompt) onSelectPrompt(cta.prompt);
+    else if (cta.prompt)
+      onSelectPrompt(cta.prompt, { source: "cta", label: cta.title });
     else router.push("/chat");
   };
   return (
     <button
       type="button"
       onClick={act}
+      aria-pressed={selectable ? selected : undefined}
       className="ctl-press w-full text-left flex items-center gap-[14px] rounded-[18px] px-[18px] py-[17px] mt-[12px] cursor-pointer"
       style={{
-        background: "rgba(247,231,0,0.10)",
-        border: "1px solid rgba(247,231,0,0.28)",
+        background: selected
+          ? "rgba(31,138,90,0.14)"
+          : "rgba(247,231,0,0.10)",
+        border: `1px solid ${
+          selected ? "rgba(31,138,90,0.45)" : "rgba(247,231,0,0.28)"
+        }`,
       }}
     >
       <div className="flex-1 min-w-0">
@@ -1807,9 +1912,9 @@ const FeatureCtaCard: React.FC<{
       </div>
       <span
         className="shrink-0 rounded-full px-[16px] py-[10px] text-[12.5px] font-semibold whitespace-nowrap"
-        style={addCtaStyle(palette, false, true)}
+        style={addCtaStyle(palette, selected, true)}
       >
-        + Add
+        {addCtaLabel(selected)}
       </span>
     </button>
   );
@@ -1817,7 +1922,7 @@ const FeatureCtaCard: React.FC<{
 
 const FeatureSection: React.FC<{
   section: Extract<CinematicSection, { type: "feature" }>;
-  onSelectPrompt: (p: string) => void;
+  onSelectPrompt: SelectPrompt;
   onSelectActivity?: (activityId: string, source?: string) => void;
 }> = ({ section, onSelectPrompt, onSelectActivity }) => (
   <section
@@ -1932,17 +2037,28 @@ const FeatureSection: React.FC<{
 // pill; mobile stacks it. Present from first paint — the reader shouldn't have
 // to scroll to discover how to start.
 //
-// The field is a real composer: whatever is typed either goes straight to
-// /chat as the opening message (Enter / the send arrow) or rides along into the
-// themed mini-form as a note (the build CTA), so it is never dropped.
+// The bar takes exactly one brief at a time, and which one decides where the
+// reader lands:
+//
+//   • Typed something → it goes straight to /chat as the opening message, in
+//     the same `intake` request shape everything else on the page uses. The
+//     themed mini-form is deliberately skipped: it would discard what they just
+//     wrote and ask them the same questions back.
+//   • Saved a list, or neither → the themed mini-form opens on /chat, which is
+//     where month / route / travellers actually get picked.
+//
+// The two can never be live together. Saving anything clears the field and
+// locks it (see the effect below), so a draft in hand means there is no list,
+// and a list means there is no draft.
 const AskKairaStrip: React.FC<{
   bar: CinematicAskBar;
-  onSelectPrompt: (p: string) => void;
+  onSelectPrompt: SelectPrompt;
   // "Build this itinerary" action. When provided, the build button (and the
   // selection popup) call this instead of seeding a prompt — the page routes to
   // /chat and opens the themed mini-form there. Falls back to seeding
-  // bar.buildPrompt when omitted. `note` is whatever the reader typed in the
-  // bar; it travels with the handoff and lands in the form's submission.
+  // bar.buildPrompt when omitted. The `note` parameter is left on the signature
+  // for callers that still pass one, but this bar no longer sends it: typed
+  // text now opens the chat directly rather than riding into the form.
   onBuild?: (note?: string) => void;
   // Kaira's avatar for the round chat button at the end of the action row.
   avatar?: string;
@@ -1960,15 +2076,28 @@ const AskKairaStrip: React.FC<{
   const trimmedDraft = draft.trim();
   const hasDraft = trimmedDraft.length > 0;
 
-  // The bar has exactly one submit: "Start planning" / "Build trip · N".
-  // Anything typed into the field rides along with it — as the themed form's
-  // note when the page supplies onBuild, otherwise as the opening chat message.
-  // Either way the page's onSelectPrompt / openThemeForm attaches the saved
-  // items and the theme slug, so the request carries the full context.
+  // One brief at a time. The moment anything is saved the field empties and
+  // goes disabled, so a half-typed sentence can't sit behind a "Build trip · 4"
+  // button quietly doing nothing. Keyed on the flip, not on `count`, so
+  // saving a fifth item doesn't re-run it.
+  React.useEffect(() => {
+    if (hasSelection) setDraft("");
+  }, [hasSelection]);
+
+  // The bar's single submit. A draft wins and goes straight to chat; with
+  // nothing typed this is "Build trip · N" over a saved list or a bare
+  // "Start planning", and both open the themed mini-form.
   const doBuild = () => {
-    if (onBuild) onBuild(hasDraft ? trimmedDraft : undefined);
-    else if (hasDraft) onSelectPrompt(trimmedDraft);
-    else if (bar.buildPrompt) onSelectPrompt(bar.buildPrompt);
+    if (hasDraft) {
+      onSelectPrompt(trimmedDraft, { source: "ask_bar", typed: true });
+      return;
+    }
+    if (onBuild) onBuild();
+    else if (bar.buildPrompt)
+      onSelectPrompt(bar.buildPrompt, {
+        source: "ask_bar",
+        label: bar.buildCta,
+      });
     else router.push("/chat");
   };
 
@@ -1977,10 +2106,11 @@ const AskKairaStrip: React.FC<{
   // never a dead end here either.
   const openChat = () => {
     if (hasDraft) {
-      onSelectPrompt(trimmedDraft);
+      onSelectPrompt(trimmedDraft, { source: "ask_bar", typed: true });
       return;
     }
-    if (bar.prompt) onSelectPrompt(bar.prompt);
+    if (bar.prompt)
+      onSelectPrompt(bar.prompt, { source: "ask_bar", label: bar.cta });
     else router.push("/chat");
   };
 
@@ -1993,11 +2123,14 @@ const AskKairaStrip: React.FC<{
     }
   };
 
-  // Nothing saved yet → the bar is a plain invitation to start planning. Once
-  // something is saved it becomes "Build trip · N".
-  const buildLabel = hasSelection
-    ? `${bar.buildCta ?? "Build trip"} · ${count}`
-    : "Start planning";
+  // The label has to say which of the two things the button will do, because
+  // they end somewhere different: a typed brief opens the chat on those words,
+  // the other two open the themed form.
+  const buildLabel = hasDraft
+    ? "Send"
+    : hasSelection
+      ? `${bar.buildCta ?? "Build trip"} · ${count}`
+      : "Start planning";
 
   // Human label for a saved item's kind (singular). Used for the row tag and
   // the per-type summary chips (e.g. "poi" → "place", "do" → "activity").
@@ -2272,18 +2405,34 @@ const AskKairaStrip: React.FC<{
             </div>
           )}
 
-          {/* Free-text field — Enter submits the bar, same as the CTA. */}
+          {/* Free-text field — Enter submits the bar, same as the CTA. Locked
+              while a list is saved: that list IS the brief, and the themed form
+              is about to ask the rest. The placeholder says so rather than
+              leaving a dead input with no explanation. */}
           <input
             type="text"
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={onDraftKeyDown}
-            placeholder={bar.placeholder}
+            disabled={hasSelection}
+            placeholder={
+              hasSelection ? "Building around your saved list" : bar.placeholder
+            }
             aria-label={bar.placeholder}
+            title={
+              hasSelection
+                ? "Clear your saved list to type a brief instead"
+                : undefined
+            }
             className="flex-1 border-none outline-none bg-transparent"
             // Floor rather than min-w-0: the field keeps a usable width and the
             // chips beside it give way instead.
-            style={{ fontSize: 13.5, color: INK, minWidth: 90 }}
+            style={{
+              fontSize: 13.5,
+              color: INK,
+              minWidth: 90,
+              cursor: hasSelection ? "not-allowed" : "text",
+            }}
           />
 
           <button
@@ -2513,7 +2662,11 @@ const CompactHeader: React.FC<{ title: string; subtitle?: string }> = ({
 // ── Orchestrator ───────────────────────────────────────────────────────────
 export interface CinematicThemeLandingProps {
   config: CinematicThemeConfig;
-  onSelectPrompt: (prompt: string) => void;
+  // Fires a prompt at /chat. The second argument reports which surface fired it
+  // (hero composer, ask bar, a card, a CTA) and whether the text is the
+  // reader's own — the page turns that into the request's `intake` payload, so
+  // pass it straight through to useSeedChat rather than dropping it.
+  onSelectPrompt: SelectPrompt;
   // Opens the read-only activity details drawer for a catalog activity id.
   // Used by `list` rows that carry an `activityId` (e.g. "Worth the cold").
   onSelectActivity?: (activityId: string, source?: string) => void;

@@ -8,7 +8,8 @@
 import Head from "next/head";
 import { connect } from "react-redux";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
+// Retired with the drawers below — nothing on the page routes any more.
+// import { useRouter } from "next/router";
 import Layout from "../../components/Layout";
 import * as authaction from "../../store/actions/auth";
 import CinematicThemeLanding from "../../components/theme/cinematic/CinematicThemeLanding";
@@ -16,10 +17,14 @@ import {
   useSeedChat,
   useOpenThemeForm,
 } from "../../components/theme/cinematic/useSeedChat";
+import {
+  promptIntakeMap,
+  type ThemePromptIntent,
+} from "../../components/theme/cinematic/themeIntake";
 import { useThemeSelectionState } from "../../components/theme/cinematic/ThemeSelection";
-import ActivityDetailsDrawer from "../../components/drawers/activityDetails/ActivityDetailsDrawer";
-import CityDetailsDrawer from "../../components/drawers/cityDetails/CityDetailsDrawer";
-import POIDetailsDrawer from "../../components/drawers/poiDetails/POIDetailsDrawer";
+// import ActivityDetailsDrawer from "../../components/drawers/activityDetails/ActivityDetailsDrawer";
+// import CityDetailsDrawer from "../../components/drawers/cityDetails/CityDetailsDrawer";
+// import POIDetailsDrawer from "../../components/drawers/poiDetails/POIDetailsDrawer";
 import type { CinematicThemeConfig } from "../../components/theme/cinematic/types";
 import { THEME_PALETTES } from "../../components/theme/cinematic/palettes";
 
@@ -109,50 +114,77 @@ const THEME_IMG = {
 // ── Prompts ─────────────────────────────────────────────────────────────────
 const PROMPTS = {
   hero:
-    "We are 2 travellers and our dates are flexible in December. Plan a European Christmas markets trip built around the most magical squares — mulled wine, festive lights, and a New Year's Eve finish. Recommend the best market cities for the dates, string them into one smooth multi-city route with rail between them, and balance iconic markets with quieter local ones.",
+    "We are 2 travellers and our dates are flexible in December, over 9 nights. Plan a European Christmas markets trip built around the most magical squares — mulled wine, festive lights, and a New Year's Eve finish. Recommend the best market cities for the dates, string them into one smooth multi-city route with rail between them, and balance iconic markets with quieter local ones.",
   // Routes
   alpineClassic:
     "We are 2 travellers with flexible December dates. Plan a 9-night Alpine Christmas markets route through Munich, Salzburg and Vienna. Prioritise the great market squares, cosy cafés, a day in the mountains, and a New Year's Eve in Vienna. Include rail between cities and a relaxed, festive pace.",
   rhineRun:
-    "We are 2 travellers with flexible December dates. Plan a Christmas markets trip along the Rhine — Strasbourg, Cologne and Amsterdam. Focus on the oldest and prettiest markets, riverside lights, and easy rail hops. Balance the famous markets with local squares and slow festive mornings.",
+    "We are 2 travellers with flexible December dates. Plan an 8-night Christmas markets trip along the Rhine — Strasbourg, Cologne and Amsterdam. Focus on the oldest and prettiest markets, riverside lights, and easy rail hops. Balance the famous markets with local squares and slow festive mornings.",
   centralLoop:
-    "We are 2 travellers with flexible December dates. Plan a Central Europe Christmas loop through Prague, Vienna and Budapest with a New Year's Eve celebration. Prioritise old-town markets, thermal baths, festive food, and scenic rail between the cities.",
+    "We are 2 travellers with flexible December dates. Plan a 10-night Central Europe Christmas loop through Prague, Vienna and Budapest with a New Year's Eve celebration. Prioritise old-town markets, thermal baths, festive food, and scenic rail between the cities.",
   // Chips / misc
   viennaNye:
-    "We are 2 travellers. Plan a New Year's Eve in Vienna around the Silvesterpfad street party, midnight fireworks by the Rathaus, and a festive dinner. Add the best Christmas markets to see in the days before.",
+    "We are 2 travellers. Plan 5 nights in Vienna over New Year in December, around the Silvesterpfad street party, midnight fireworks by the Rathaus, and a festive dinner. Add the best Christmas markets to see in the days before.",
   gluhweinCrawl:
-    "We are 2 travellers. Plan a self-guided Glühwein and Christmas market crawl through the best squares of one European city, with the collectible mug stalls, food to try, and the prettiest lit streets.",
+    "We are 2 travellers with 3 nights in December. Plan a self-guided Glühwein and Christmas market crawl through the best squares of one European city, with the collectible mug stalls, food to try, and the prettiest lit streets.",
   // Markets — "show all the activities/tours in this city"
   activitiesVienna:
-    "We are 2 travellers visiting Vienna for the Christmas markets. Show me all the tours and activities worth doing in Vienna in December — market walks, the Schönbrunn and Spanish Riding School experiences, coffeehouse culture, and New Year's Eve options — and add the best ones to my plan.",
+    "We are 2 travellers spending 3 of our December nights in Vienna for the Christmas markets. Show me all the tours and activities worth doing in Vienna in December — market walks, the Schönbrunn and Spanish Riding School experiences, coffeehouse culture, and New Year's Eve options — and add the best ones to my plan.",
   activitiesPrague:
-    "We are 2 travellers visiting Prague for the Christmas markets. Show me all the tours and activities worth doing in Prague in December — Old Town and Castle tours, the Night Watchman walk, festive food, and river views — and add the best ones to my plan.",
+    "We are 2 travellers spending 3 of our December nights in Prague for the Christmas markets. Show me all the tours and activities worth doing in Prague in December — Old Town and Castle tours, the Night Watchman walk, festive food, and river views — and add the best ones to my plan.",
   activitiesDresden:
-    "We are 2 travellers visiting Dresden for the Striezelmarkt. Show me all the tours and activities worth doing in Dresden in December — the old town, the Frauenkirche, festive food and Stollen — and add the best ones to my plan.",
+    "We are 2 travellers spending 2 of our December nights in Dresden for the Striezelmarkt. Show me all the tours and activities worth doing in Dresden in December — the old town, the Frauenkirche, festive food and Stollen — and add the best ones to my plan.",
   activitiesStrasbourg:
-    "We are 2 travellers visiting Strasbourg for the Christmas markets. Show me all the tours and activities worth doing in Strasbourg in December — the cathedral market, Petite France, Alsace wine and food — and add the best ones to my plan.",
+    "We are 2 travellers spending 3 of our December nights in Strasbourg for the Christmas markets. Show me all the tours and activities worth doing in Strasbourg in December — the cathedral market, Petite France, Alsace wine and food — and add the best ones to my plan.",
   // Where to come in from the cold (restaurants)
   eatCafeCentral:
-    "Tell me about Café Central in Vienna — the grand coffeehouse — and whether it's worth a stop on my Christmas markets trip. Add it to my Vienna plan.",
+    "Tell me about Café Central in Vienna — the grand coffeehouse — and whether it's worth a stop on our 9-night Christmas markets trip in December for two. Add it to my Vienna plan.",
   eatCafeLouvre:
-    "Tell me about Café Louvre in Prague and whether it's worth a stop for coffee and cake on my Christmas markets trip. Add it to my Prague plan.",
+    "Tell me about Café Louvre in Prague and whether it's worth a stop for coffee and cake on our 9-night Christmas markets trip in December for two. Add it to my Prague plan.",
   eatPfund:
-    "Tell me about Pfunds Molkerei (Gebrüder Pfund) in Dresden — the beautiful old dairy shop — and work a visit into my Dresden Christmas markets day.",
+    "Tell me about Pfunds Molkerei (Gebrüder Pfund) in Dresden — the beautiful old dairy shop — and work a visit into our 9-night Christmas markets trip in December for two.",
   eatWinkel:
-    "Tell me about Winkel 43 in Amsterdam and its famous apple pie, and add a warm-up stop there to my Amsterdam Christmas plan.",
+    "Tell me about Winkel 43 in Amsterdam and its famous apple pie, and add a warm-up stop there to our 9-night Christmas markets trip in December for two.",
   eatCambrinus:
-    "Tell me about Cambrinus and its Belgian beer and comfort food, and add a cosy indoor stop to my festive plan.",
+    "Tell me about Cambrinus and its Belgian beer and comfort food, and add a cosy indoor stop to our 9-night Christmas markets trip in December for two.",
   // Trips
   tripFestive:
-    "We are 2 travellers. Build the classic festive markets trip — Munich, Salzburg and Vienna over 9 nights with rail and flights from Delhi included. Prioritise the great markets and a Vienna New Year's Eve.",
+    "We are 2 travellers. Build the classic festive markets trip — Munich, Salzburg and Vienna over 9 nights in December, with rail and flights from Delhi included. Prioritise the great markets and a Vienna New Year's Eve.",
   tripNye:
-    "We are a group of 4. Build a New Year's Eve city break in Central Europe — Prague and Vienna over 6 nights — with the best midnight celebration and festive markets, flights from Delhi included.",
+    "We are a group of 4. Build a New Year's Eve city break in Central Europe — Prague and Vienna over 6 nights in December — with the best midnight celebration and festive markets, flights from Delhi included.",
   tripSlow:
-    "We are 2 travellers. Build a slow, cosy Christmas markets trip along the Rhine — Strasbourg, Cologne and Amsterdam over 8 nights — with plenty of café time and easy rail, flights from Delhi included.",
+    "We are 2 travellers. Build a slow, cosy Christmas markets trip along the Rhine — Strasbourg, Cologne and Amsterdam over 8 nights in December — with plenty of café time and easy rail, flights from Delhi included.",
   // Ask Kaira
   askBar:
-    "Which European Christmas market trip should I do first — the Alpine classic (Munich, Salzburg, Vienna), the Rhine run (Strasbourg, Cologne, Amsterdam), or the Central Europe loop with a Vienna New Year's Eve? Compare the atmosphere, cost, and dates, then build the ideal itinerary for the one you recommend.",
+    "Which European Christmas market trip should we do first, over 9 nights in December for two — the Alpine classic (Munich, Salzburg, Vienna), the Rhine run (Strasbourg, Cologne, Amsterdam), or the Central Europe loop with a Vienna New Year's Eve? Compare the atmosphere, cost, and dates, then build the ideal itinerary for the one you recommend.",
 };
+
+// What each prompt above states about the trip, sent as `intake` keys (month /
+// nights / pax) rather than left for the backend to read out of the sentence.
+// Keyed by prompt text via promptIntakeMap, so a card only carries its prompt
+// and the facts follow. Every month here is December — the markets run late Nov
+// to the first days of January, and the New Year routes are the point.
+const PROMPT_FACTS = promptIntakeMap(PROMPTS, {
+  hero: { nights: 9, month: 12, who: "Couple" },
+  alpineClassic: { nights: 9, month: 12, who: "Couple" },
+  rhineRun: { nights: 8, month: 12, who: "Couple" },
+  centralLoop: { nights: 10, month: 12, who: "Couple" },
+  viennaNye: { nights: 5, month: 12, who: "Couple" },
+  gluhweinCrawl: { nights: 3, month: 12, who: "Couple" },
+  activitiesVienna: { nights: 3, month: 12, who: "Couple" },
+  activitiesPrague: { nights: 3, month: 12, who: "Couple" },
+  activitiesDresden: { nights: 2, month: 12, who: "Couple" },
+  activitiesStrasbourg: { nights: 3, month: 12, who: "Couple" },
+  eatCafeCentral: { nights: 9, month: 12, who: "Couple" },
+  eatCafeLouvre: { nights: 9, month: 12, who: "Couple" },
+  eatPfund: { nights: 9, month: 12, who: "Couple" },
+  eatWinkel: { nights: 9, month: 12, who: "Couple" },
+  eatCambrinus: { nights: 9, month: 12, who: "Couple" },
+  tripFestive: { nights: 9, month: 12, who: "Couple" },
+  tripNye: { nights: 6, month: 12, who: "Friends", adults: 4 },
+  tripSlow: { nights: 8, month: 12, who: "Couple" },
+  askBar: { nights: 9, month: 12, who: "Couple" },
+});
 
 const christmasMarketsConfig: CinematicThemeConfig = {
   // Market green — carries every CTA, the saved state and the docked bar.
@@ -668,13 +700,13 @@ const christmasMarketsConfig: CinematicThemeConfig = {
 // A sensible default start date for the read-only activity drawer — ~60 days
 // out, in DD/MM/YYYY (the format the detail endpoint expects). The drawer only
 // shows details/indicative pricing here; the visitor picks real dates in chat.
-const defaultActivityDate = () => {
-  const d = new Date();
-  d.setDate(d.getDate() + 60);
-  const dd = String(d.getDate()).padStart(2, "0");
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  return `${dd}/${mm}/${d.getFullYear()}`;
-};
+// const defaultActivityDate = () => {
+  // const d = new Date();
+  // d.setDate(d.getDate() + 60);
+  // const dd = String(d.getDate()).padStart(2, "0");
+  // const mm = String(d.getMonth() + 1).padStart(2, "0");
+  // return `${dd}/${mm}/${d.getFullYear()}`;
+// };
 
 const ChristmasMarketsThemePage = ({
   checkAuthState,
@@ -684,34 +716,39 @@ const ChristmasMarketsThemePage = ({
   const seedChat = useSeedChat();
   const selection = useThemeSelectionState();
   const openThemeForm = useOpenThemeForm();
-  const handleSelectPrompt = (prompt: string) =>
-    seedChat(prompt, { items: selection.items, slug: THEME_SLUG });
+  const handleSelectPrompt = (prompt: string, intent?: ThemePromptIntent) =>
+    seedChat(prompt, {
+      items: selection.items,
+      slug: THEME_SLUG,
+      intent,
+      facts: PROMPT_FACTS[prompt],
+    });
   const handleBuild = (note?: string) =>
     openThemeForm(THEME_SLUG, selection.items, note);
-  const router = useRouter();
+  // const router = useRouter();
   // City / restaurant detail drawers are driven by URL query params so the
   // shared card components can open them with a plain href.
-  const cityId = router.query.city_id as string | undefined;
-  const restaurantId = router.query.restaurant_id as string | undefined;
-  const closeQueryDrawer = () =>
-    router.push({ pathname: PAGE }, undefined, { shallow: true });
+  // const cityId = router.query.city_id as string | undefined;
+  // const restaurantId = router.query.restaurant_id as string | undefined;
+  // const closeQueryDrawer = () =>
+    // router.push({ pathname: PAGE }, undefined, { shallow: true });
   // Read-only activity details drawer (opened from the "Experiences" cards).
-  const [activityDrawer, setActivityDrawer] = useState<{
-    show: boolean;
-    activityId?: string;
-    source?: string;
-    date?: string;
-  }>({ show: false });
+  // const [activityDrawer, setActivityDrawer] = useState<{
+    // show: boolean;
+    // activityId?: string;
+    // source?: string;
+    // date?: string;
+  // }>({ show: false });
 
-  const openActivity = (activityId: string, source?: string) =>
-    setActivityDrawer({
-      show: true,
-      activityId,
-      source,
-      date: defaultActivityDate(),
-    });
-  const closeActivity = () =>
-    setActivityDrawer((prev) => ({ ...prev, show: false }));
+  // const openActivity = (activityId: string, source?: string) =>
+    // setActivityDrawer({
+      // show: true,
+      // activityId,
+      // source,
+      // date: defaultActivityDate(),
+    // });
+  // const closeActivity = () =>
+    // setActivityDrawer((prev) => ({ ...prev, show: false }));
 
   useEffect(() => {
     checkAuthState();
@@ -794,11 +831,14 @@ const ChristmasMarketsThemePage = ({
       <CinematicThemeLanding
         config={christmasMarketsConfig}
         onSelectPrompt={handleSelectPrompt}
-        onSelectActivity={openActivity}
         selection={selection}
         onBuild={handleBuild}
       />
-      {/* Read-only activity details — no Add/Remove CTA on this marketing page */}
+      {/* Detail drawers are retired on this page — a click anywhere on a
+          card adds or removes it, so nothing opens a drawer. Uncomment to
+          restore (and pass `onSelectActivity` to <CinematicThemeLanding>).
+
+      Read-only activity details — no Add/Remove CTA on this marketing page
       <ActivityDetailsDrawer
         show={activityDrawer.show}
         activityId={activityDrawer.activityId}
@@ -808,9 +848,9 @@ const ChristmasMarketsThemePage = ({
         handleCloseDrawer={closeActivity}
         setShowDrawer={closeActivity}
       />
-      {/* City details (all tours/activities in a city) — driven by ?city_id */}
+      City details (all tours/activities in a city) — driven by ?city_id
       {cityId && <CityDetailsDrawer show handleCloseDrawer={closeQueryDrawer} />}
-      {/* Restaurant details — driven by ?restaurant_id */}
+      Restaurant details — driven by ?restaurant_id
       {restaurantId && (
         <POIDetailsDrawer
           show
@@ -820,6 +860,7 @@ const ChristmasMarketsThemePage = ({
           removeChange
         />
       )}
+      */}
     </Layout>
   );
 };

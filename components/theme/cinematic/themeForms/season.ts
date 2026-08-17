@@ -172,6 +172,58 @@ export function routeDates(
   return [toIso(start), toIso(addDays(start, route.nights))];
 }
 
+/** A bare month number pinned to a real year, with no routes attached. */
+export interface ResolvedMonthStub {
+  key: string; // "2027-01"
+  year: number;
+  month: number; // 1–12
+  long: string; // "January 2027"
+}
+
+/**
+ * The next bookable occurrence of a bare month number.
+ *
+ * Same rule the season strip uses, minus the route filtering: a month whose
+ * last day is already inside the booking lead time rolls to next year, so a
+ * config that says "February" reads as Feb '27 in August '26 and can never
+ * point at a February that has been and gone. Returns null for a nonsense
+ * month, so callers can simply omit the key.
+ */
+export function resolveMonthForward(
+  month: number,
+  from: Date = startOfToday(),
+): ResolvedMonthStub | null {
+  if (!Number.isInteger(month) || month < 1 || month > 12) return null;
+  const earliest = addDays(from, MIN_LEAD_DAYS);
+  let year = from.getFullYear();
+  // Last day of that month this year; if it's already too close, take next year.
+  if (new Date(year, month, 0) < earliest) year += 1;
+  return {
+    key: `${year}-${String(month).padStart(2, "0")}`,
+    year,
+    month,
+    long: `${MONTH_LONG[month - 1]} ${year}`,
+  };
+}
+
+/**
+ * A departure window inside a resolved month for a trip of `nights`.
+ *
+ * The routeless counterpart to routeDates: same mid-month Saturday departure
+ * and the same lead-time push-out, so dates generated for a theme-page prompt
+ * line up with the ones the mini-form would produce for the same month.
+ */
+export function monthDates(
+  month: ResolvedMonthStub,
+  nights: number,
+  from: Date = startOfToday(),
+): [string, string] {
+  let start = secondSaturday(month.year, month.month);
+  const earliest = addDays(from, MIN_LEAD_DAYS);
+  if (start < earliest) start = nextWeekday(earliest, 6);
+  return [toIso(start), toIso(addDays(start, Math.max(0, nights)))];
+}
+
 /** The first Saturday on or after the 8th — the middle-ish of the month. */
 function secondSaturday(year: number, month: number): Date {
   return nextWeekday(new Date(year, month - 1, 8), 6);

@@ -10,7 +10,8 @@
 import Head from "next/head";
 import { connect } from "react-redux";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
+// Retired with the drawers below — nothing on the page routes any more.
+// import { useRouter } from "next/router";
 import Layout from "../../components/Layout";
 import * as authaction from "../../store/actions/auth";
 import CinematicThemeLanding from "../../components/theme/cinematic/CinematicThemeLanding";
@@ -18,9 +19,13 @@ import {
   useSeedChat,
   useOpenThemeForm,
 } from "../../components/theme/cinematic/useSeedChat";
+import {
+  promptIntakeMap,
+  type ThemePromptIntent,
+} from "../../components/theme/cinematic/themeIntake";
 import { useThemeSelectionState } from "../../components/theme/cinematic/ThemeSelection";
-import ActivityDetailsDrawer from "../../components/drawers/activityDetails/ActivityDetailsDrawer";
-import POIDetailsDrawer from "../../components/drawers/poiDetails/POIDetailsDrawer";
+// import ActivityDetailsDrawer from "../../components/drawers/activityDetails/ActivityDetailsDrawer";
+// import POIDetailsDrawer from "../../components/drawers/poiDetails/POIDetailsDrawer";
 import type { CinematicThemeConfig } from "../../components/theme/cinematic/types";
 import { THEME_PALETTES } from "../../components/theme/cinematic/palettes";
 
@@ -122,34 +127,57 @@ const THEME_IMG = {
 // ── Prompts ─────────────────────────────────────────────────────────────────
 const PROMPTS = {
   hero:
-    "We are 8 friends planning a bachelor/bachelorette trip to Thailand, and our travel dates are flexible. Help us pick the right bases, then build one itinerary around a private pool villa, island days, beach clubs and nightlife — with enough downtime that the trip never feels rushed. Keep the group together and the transfers handled.",
+    "We are 8 friends planning a bachelor/bachelorette trip to Thailand over 6 nights in January, and our travel dates are flexible. Help us pick the right bases, then build one itinerary around a private pool villa, island days, beach clubs and nightlife — with enough downtime that the trip never feels rushed. Keep the group together and the transfers handled.",
   // Chips
   villaWeekend:
-    "We are 8 friends, and our travel dates are flexible. We want a bachelor/bachelorette trip centered around a private pool villa. Include beach clubs, villa parties, island hopping, great food, nightlife, and enough downtime to enjoy the villa together.",
+    "We are 8 friends going for 6 nights in January, and our travel dates are flexible. We want a bachelor/bachelorette trip centered around a private pool villa. Include beach clubs, villa parties, island hopping, great food, nightlife, and enough downtime to enjoy the villa together.",
   phuketParty:
-    "We are 8 friends, and our travel dates are flexible. We want an energetic bachelor/bachelorette trip in Phuket. Prioritize beach clubs, nightlife, island tours, water sports, rooftop bars, great restaurants, and memorable group experiences.",
+    "We are 8 friends going for 6 nights in February, and our travel dates are flexible. We want an energetic bachelor/bachelorette trip in Phuket. Prioritize beach clubs, nightlife, island tours, water sports, rooftop bars, great restaurants, and memorable group experiences.",
   krabiEscape:
-    "We are 8 friends, and our travel dates are flexible. We want a relaxed bachelor/bachelorette trip in Krabi. Include beautiful beaches, island hopping, private boat trips, scenic viewpoints, beach cafés, sunset dinners, and a luxury villa.",
+    "We are 8 friends going for 6 nights in February, and our travel dates are flexible. We want a relaxed bachelor/bachelorette trip in Krabi. Include beautiful beaches, island hopping, private boat trips, scenic viewpoints, beach cafés, sunset dinners, and a luxury villa.",
   partyRecovery:
-    "We are 8 friends, and our travel dates are flexible. We want the perfect balance of nightlife and downtime. Combine beach clubs, bars, and parties with pool days, cafés, island tours, and recovery time so the trip never feels rushed.",
+    "We are 8 friends going for 7 nights in January, and our travel dates are flexible. We want the perfect balance of nightlife and downtime. Combine beach clubs, bars, and parties with pool days, cafés, island tours, and recovery time so the trip never feels rushed.",
   // Routes — "Pick your crew's vibe"
   lastHurrah:
-    "We are 8 friends, and our travel dates are flexible. We want a 6-night bachelor/bachelorette trip combining Phuket and Krabi. Start with Phuket's beach clubs, nightlife, rooftop bars, and lively atmosphere before slowing down in Krabi with island hopping, private boat trips, scenic beaches, sunset dinners, and a luxury pool villa. Balance party nights with relaxed beach days.",
+    "We are 8 friends, and our travel dates in January are flexible. We want a 6-night bachelor/bachelorette trip combining Phuket and Krabi. Start with Phuket's beach clubs, nightlife, rooftop bars, and lively atmosphere before slowing down in Krabi with island hopping, private boat trips, scenic beaches, sunset dinners, and a luxury pool villa. Balance party nights with relaxed beach days.",
   cityMeetsBeach:
-    "We are 8 friends, and our travel dates are flexible. We want a 7-night Thailand bachelor/bachelorette itinerary starting in Bangkok before heading to Phuket. Include rooftop bars, nightlife, shopping, local food, luxury stays, beach clubs, island tours, water activities, and enough downtime to enjoy the trip together. Create the perfect balance of city energy and island relaxation.",
+    "We are 8 friends, and our travel dates in January are flexible. We want a 7-night Thailand bachelor/bachelorette itinerary starting in Bangkok before heading to Phuket. Include rooftop bars, nightlife, shopping, local food, luxury stays, beach clubs, island tours, water activities, and enough downtime to enjoy the trip together. Create the perfect balance of city energy and island relaxation.",
   privateParadise:
-    "We are 8 friends, and our travel dates are flexible. We want an 8-night bachelor/bachelorette trip through Krabi and Koh Samui. Prioritize luxury private villas, beach clubs, sunset cruises, island hopping, lively nightlife, great restaurants, spa experiences, and memorable group activities. Keep the itinerary relaxed during the day and vibrant in the evenings, with plenty of time to enjoy the villa together.",
+    "We are 8 friends, and our travel dates in February are flexible. We want an 8-night bachelor/bachelorette trip through Krabi and Koh Samui. Prioritize luxury private villas, beach clubs, sunset cruises, island hopping, lively nightlife, great restaurants, spa experiences, and memorable group activities. Keep the itinerary relaxed during the day and vibrant in the evenings, with plenty of time to enjoy the villa together.",
   // Trips
   tripPhuketVilla:
-    "We are 8 friends. Build the Phuket villa and boats trip — 6 nights, one private pool villa in Bang Tao, three island days and two nights out, with transfers held for the whole group and flights from Delhi included.",
+    "We are 8 friends. Build the Phuket villa and boats trip — 6 nights in January, one private pool villa in Bang Tao, three island days and two nights out, with transfers held for the whole group and flights from Delhi included.",
   tripKrabiBangkok:
-    "We are 6 friends. Build the Krabi slow, Bangkok loud trip — 7 nights: four of longtails and cliff bars in Krabi, then three of rooftops and Yaowarat in Bangkok, with a spa afternoon on the last day and flights from Delhi included.",
+    "We are 6 friends. Build the Krabi slow, Bangkok loud trip — 7 nights in January: four of longtails and cliff bars in Krabi, then three of rooftops and Yaowarat in Bangkok, with a spa afternoon on the last day and flights from Delhi included.",
   tripOneBase:
-    "We are 10 friends. Build the one-base weekender — 5 nights, nobody changes hotels: one villa in Phuket, boats out and back daily, minimal logistics, flights from Delhi included.",
+    "We are 10 friends. Build the one-base weekender — 5 nights in February, nobody changes hotels: one villa in Phuket, boats out and back daily, minimal logistics, flights from Delhi included.",
   // Ask Kaira
   askBar:
-    "Which Thailand send-off should we do — Phuket and Krabi over 6 nights, Bangkok and Phuket over 7, or Krabi and Koh Samui over 8? Compare the nightlife, the villas, the cost per head and the boat days, then build the ideal itinerary for the one you recommend.",
+    "Which Thailand send-off should we do in January, for 8 of us — Phuket and Krabi over 6 nights, Bangkok and Phuket over 7, or Krabi and Koh Samui over 8? Compare the nightlife, the villas, the cost per head and the boat days, then build the ideal itinerary for the one you recommend.",
 };
+
+// What each prompt above states about the trip, sent as `intake` keys (month /
+// nights / pax) rather than left for the backend to read out of the sentence.
+// Keyed by prompt text via promptIntakeMap, so a card only carries its prompt
+// and the facts follow. Months sit in the Andaman dry season (Jan–Feb), which
+// is when a group trip here is actually worth booking.
+//
+// `askBar` deliberately carries no `nights`: it asks Kaira to compare 6, 7 and
+// 8-night send-offs, so pinning one length would answer the question for her.
+const PROMPT_FACTS = promptIntakeMap(PROMPTS, {
+  hero: { nights: 6, month: 1, who: "Friends", adults: 8 },
+  villaWeekend: { nights: 6, month: 1, who: "Friends", adults: 8 },
+  phuketParty: { nights: 6, month: 2, who: "Friends", adults: 8 },
+  krabiEscape: { nights: 6, month: 2, who: "Friends", adults: 8 },
+  partyRecovery: { nights: 7, month: 1, who: "Friends", adults: 8 },
+  lastHurrah: { nights: 6, month: 1, who: "Friends", adults: 8 },
+  cityMeetsBeach: { nights: 7, month: 1, who: "Friends", adults: 8 },
+  privateParadise: { nights: 8, month: 2, who: "Friends", adults: 8 },
+  tripPhuketVilla: { nights: 6, month: 1, who: "Friends", adults: 8 },
+  tripKrabiBangkok: { nights: 7, month: 1, who: "Friends", adults: 6 },
+  tripOneBase: { nights: 5, month: 2, who: "Friends", adults: 10 },
+  askBar: { month: 1, who: "Friends", adults: 8 },
+});
 
 const thailandBachelorConfig: CinematicThemeConfig = {
   // Andaman turquoise — carries every CTA, the saved state and the docked bar.
@@ -749,13 +777,13 @@ const thailandBachelorConfig: CinematicThemeConfig = {
 // A sensible default start date for the read-only activity drawer — ~60 days
 // out, in DD/MM/YYYY (the format the detail endpoint expects). The drawer only
 // shows details/indicative pricing here; the visitor picks real dates in chat.
-const defaultActivityDate = () => {
-  const d = new Date();
-  d.setDate(d.getDate() + 60);
-  const dd = String(d.getDate()).padStart(2, "0");
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  return `${dd}/${mm}/${d.getFullYear()}`;
-};
+// const defaultActivityDate = () => {
+  // const d = new Date();
+  // d.setDate(d.getDate() + 60);
+  // const dd = String(d.getDate()).padStart(2, "0");
+  // const mm = String(d.getMonth() + 1).padStart(2, "0");
+  // return `${dd}/${mm}/${d.getFullYear()}`;
+// };
 
 const ThailandBachelorThemePage = ({
   checkAuthState,
@@ -765,34 +793,39 @@ const ThailandBachelorThemePage = ({
   const seedChat = useSeedChat();
   const selection = useThemeSelectionState();
   const openThemeForm = useOpenThemeForm();
-  const handleSelectPrompt = (prompt: string) =>
-    seedChat(prompt, { items: selection.items, slug: THEME_SLUG });
+  const handleSelectPrompt = (prompt: string, intent?: ThemePromptIntent) =>
+    seedChat(prompt, {
+      items: selection.items,
+      slug: THEME_SLUG,
+      intent,
+      facts: PROMPT_FACTS[prompt],
+    });
   const handleBuild = (note?: string) =>
     openThemeForm(THEME_SLUG, selection.items, note);
-  const router = useRouter();
+  // const router = useRouter();
   // POI / restaurant detail drawers are driven by URL query params so the
   // shared card components can open them with a plain href.
-  const poiId = router.query.poi_id as string | undefined;
-  const restaurantId = router.query.restaurant_id as string | undefined;
-  const closeQueryDrawer = () =>
-    router.push({ pathname: PAGE }, undefined, { shallow: true });
+  // const poiId = router.query.poi_id as string | undefined;
+  // const restaurantId = router.query.restaurant_id as string | undefined;
+  // const closeQueryDrawer = () =>
+    // router.push({ pathname: PAGE }, undefined, { shallow: true });
   // Read-only activity details drawer (opened from the experience/island cards).
-  const [activityDrawer, setActivityDrawer] = useState<{
-    show: boolean;
-    activityId?: string;
-    source?: string;
-    date?: string;
-  }>({ show: false });
+  // const [activityDrawer, setActivityDrawer] = useState<{
+    // show: boolean;
+    // activityId?: string;
+    // source?: string;
+    // date?: string;
+  // }>({ show: false });
 
-  const openActivity = (activityId: string, source?: string) =>
-    setActivityDrawer({
-      show: true,
-      activityId,
-      source,
-      date: defaultActivityDate(),
-    });
-  const closeActivity = () =>
-    setActivityDrawer((prev) => ({ ...prev, show: false }));
+  // const openActivity = (activityId: string, source?: string) =>
+    // setActivityDrawer({
+      // show: true,
+      // activityId,
+      // source,
+      // date: defaultActivityDate(),
+    // });
+  // const closeActivity = () =>
+    // setActivityDrawer((prev) => ({ ...prev, show: false }));
 
   useEffect(() => {
     checkAuthState();
@@ -875,11 +908,14 @@ const ThailandBachelorThemePage = ({
       <CinematicThemeLanding
         config={thailandBachelorConfig}
         onSelectPrompt={handleSelectPrompt}
-        onSelectActivity={openActivity}
         selection={selection}
         onBuild={handleBuild}
       />
-      {/* Read-only activity details — no Add/Remove CTA on this marketing page */}
+      {/* Detail drawers are retired on this page — a click anywhere on a
+          card adds or removes it, so nothing opens a drawer. Uncomment to
+          restore (and pass `onSelectActivity` to <CinematicThemeLanding>).
+
+      Read-only activity details — no Add/Remove CTA on this marketing page
       <ActivityDetailsDrawer
         show={activityDrawer.show}
         activityId={activityDrawer.activityId}
@@ -889,7 +925,7 @@ const ThailandBachelorThemePage = ({
         handleCloseDrawer={closeActivity}
         setShowDrawer={closeActivity}
       />
-      {/* POI details — driven by ?poi_id */}
+      POI details — driven by ?poi_id
       {poiId && (
         <POIDetailsDrawer
           show
@@ -899,7 +935,7 @@ const ThailandBachelorThemePage = ({
           removeChange
         />
       )}
-      {/* Restaurant details — driven by ?restaurant_id */}
+      Restaurant details — driven by ?restaurant_id
       {restaurantId && (
         <POIDetailsDrawer
           show
@@ -909,6 +945,7 @@ const ThailandBachelorThemePage = ({
           removeChange
         />
       )}
+      */}
     </Layout>
   );
 };

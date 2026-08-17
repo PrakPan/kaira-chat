@@ -16,6 +16,10 @@ import {
   useSeedChat,
   useOpenThemeForm,
 } from "../../components/theme/cinematic/useSeedChat";
+import {
+  promptIntakeMap,
+  type ThemePromptIntent,
+} from "../../components/theme/cinematic/themeIntake";
 import { useThemeSelectionState } from "../../components/theme/cinematic/ThemeSelection";
 import type { CinematicThemeConfig } from "../../components/theme/cinematic/types";
 import { THEME_PALETTES } from "../../components/theme/cinematic/palettes";
@@ -26,29 +30,48 @@ const img = (name: string) => `${CDN}/${name}`;
 
 const PROMPTS = {
   santorini:
-    "I'm planning an 11-day Greece trip and can dedicate 3 nights to Santorini. Tell me honestly if it's worth the cost and crowds, or if another island offers a better experience. Then build the best itinerary based on your recommendation.",
+    "I'm planning a 10-night Greece trip in September for the two of us, and can dedicate 3 nights to Santorini. Tell me honestly if it's worth the cost and crowds, or if another island offers a better experience. Then build the best itinerary based on your recommendation.",
   budget:
-    "Plan an 8-day Greece trip for ₹1.8 lakh per person, including flights from India. Show what's realistically possible, which islands offer the best value, and create a complete itinerary with stays, transport, and daily experiences.",
+    "Plan a 7-night Greece trip in May for two travellers at ₹1.8 lakh per person, including flights from India. Show what's realistically possible, which islands offer the best value, and create a complete itinerary with stays, transport, and daily experiences.",
   tenDay:
-    "Create a seamless 10-day Greece itinerary with Athens and the best island combination. Prioritize smooth connections, minimal travel time, and a relaxed pace, then map out the trip day by day.",
+    "Create a seamless 10-night Greece itinerary in September for two of us, with Athens and the best island combination. Prioritize smooth connections, minimal travel time, and a relaxed pace, then map out the trip day by day.",
   romantic:
-    "Design an 11–12 day Greece trip for a couple focused on romance, sunsets, great food, beautiful hotels, and slow travel. Recommend the ideal route, best islands, and a complete day-by-day itinerary.",
+    "Design an 11-night Greece trip in September for a couple, focused on romance, sunsets, great food, beautiful hotels, and slow travel. Recommend the ideal route, best islands, and a complete day-by-day itinerary.",
   // Greece themes — shapes (create a plan)
   classicIslands:
-    "Plan the perfect 10-day Greek islands trip with Santorini, Crete, and one more island. Recommend the best route, ferry connections, day-by-day itinerary, and realistic mid-range costs.",
+    "Plan the perfect 10-night Greek islands trip in June for two travellers, with Santorini, Crete, and one more island. Recommend the best route, ferry connections, day-by-day itinerary, and realistic mid-range costs.",
   withKids:
-    "Build a family-friendly 10-day Greece itinerary with the best islands, beaches, ancient sites, and travel pace for children aged 8–13. Include accommodation advice, daily plans, and costs.",
+    "Build a family-friendly 10-night Greece itinerary in June for 2 adults and 2 children aged 8–13, with the best islands, beaches, ancient sites, and a travel pace that suits them. Include accommodation advice, daily plans, and costs.",
   honeymoon:
-    "Design an 11-day Greece honeymoon combining iconic Santorini with a quieter romantic island. Include luxury stays, special experiences, dining recommendations, and a complete itinerary.",
+    "Design an 11-night Greece honeymoon in September for the two of us, combining iconic Santorini with a quieter romantic island. Include luxury stays, special experiences, dining recommendations, and a complete itinerary.",
   budgetTheme:
-    "Plan a 7-day Greece trip under ₹1.8 lakh per person including flights. Recommend the best-value destinations, realistic hotels, transport, and a complete day-by-day itinerary.",
+    "Plan a 7-night Greece trip in May for two travellers, under ₹1.8 lakh per person including flights. Recommend the best-value destinations, realistic hotels, transport, and a complete day-by-day itinerary.",
   mainland:
-    "Create a 10-day mainland Greece itinerary focused on Athens, Delphi, Meteora, Mycenae, Epidaurus, and Nafplio. Include transport, daily plans, and the key stories behind each site.",
+    "Create a 10-night mainland Greece itinerary in October for two of us, focused on Athens, Delphi, Meteora, Mycenae, Epidaurus, and Nafplio. Include transport, daily plans, and the key stories behind each site.",
   build:
-    "We are 2 travellers, and our travel dates are flexible. Build my complete Greece itinerary around the islands and experiences I've saved on this page — route Athens and the Cyclades with smooth ferry connections at a relaxed pace, then price it.",
+    "We are 2 travellers going for 9 nights in September, and our dates are flexible. Build my complete Greece itinerary around the islands and experiences I've saved on this page — route Athens and the Cyclades with smooth ferry connections at a relaxed pace, then price it.",
   ask:
-    "Which Greece trip should I do — the classic Santorini + Mykonos run, a slower Cyclades hop with Naxos, or add Crete? Compare the pace, the ferries, the cost, and the best month, then build the full itinerary for the one you recommend.",
+    "Which Greece trip should I do for 9 nights in September as a couple — the classic Santorini + Mykonos run, a slower Cyclades hop with Naxos, or add Crete? Compare the pace, the ferries and the cost, tell me if another month suits it better, then build the full itinerary for the one you recommend.",
 };
+
+// What each prompt above states about the trip, sent as `intake` keys (month /
+// nights / pax) rather than left for the backend to read out of the sentence.
+// Keyed by prompt text via promptIntakeMap, so a card only has to carry its
+// prompt and the facts follow. Greek ferry season is May–Oct, so every month
+// here sits inside it.
+const PROMPT_FACTS = promptIntakeMap(PROMPTS, {
+  santorini: { nights: 10, month: 9, who: "Couple" },
+  budget: { nights: 7, month: 5, who: "Couple" },
+  tenDay: { nights: 10, month: 9, who: "Couple" },
+  romantic: { nights: 11, month: 9, who: "Couple" },
+  classicIslands: { nights: 10, month: 6, who: "Couple" },
+  withKids: { nights: 10, month: 6, who: "Family", adults: 2, children: 2 },
+  honeymoon: { nights: 11, month: 9, who: "Couple" },
+  budgetTheme: { nights: 7, month: 5, who: "Couple" },
+  mainland: { nights: 10, month: 10, who: "Couple" },
+  build: { nights: 9, month: 9, who: "Couple" },
+  ask: { nights: 9, month: 9, who: "Couple" },
+});
 
 const greeceConfig: CinematicThemeConfig = {
   // Aegean blue — carries every CTA, the saved state and the docked bar.
@@ -289,8 +312,13 @@ const GreeceIslandsThemePage = ({
   const seedChat = useSeedChat();
   const selection = useThemeSelectionState();
   const openThemeForm = useOpenThemeForm();
-  const handleSelectPrompt = (prompt: string) =>
-    seedChat(prompt, { items: selection.items, slug: THEME_SLUG });
+  const handleSelectPrompt = (prompt: string, intent?: ThemePromptIntent) =>
+    seedChat(prompt, {
+      items: selection.items,
+      slug: THEME_SLUG,
+      intent,
+      facts: PROMPT_FACTS[prompt],
+    });
   const handleBuild = (note?: string) =>
     openThemeForm(THEME_SLUG, selection.items, note);
 

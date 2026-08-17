@@ -6,7 +6,7 @@ import React, {
   useMemo,
 } from "react";
 import { optimizedMediaUrl } from "../../lib/mediaImage";
-import { ChatKitPanel } from "./components/ChatKitPanel";
+import { ChatKitPanel, type ChatSendFn } from "./components/ChatKitPanel";
 import MapView from "./components/MapView";
 import Sidebar from "./components/Sidebar";
 import { getUserAvatarColor, getUserInitial } from "./utils/avatarColor";
@@ -392,6 +392,14 @@ export default function BotApp({
   // hitting "Build trip" — handed to the themed mini-form so its submission
   // carries it (see ThemeIntakeForm's `note`).
   const [themeNote, setThemeNote] = useState<string | undefined>(undefined);
+  // Structured `intake` payload built by the theme page when it fired the seed
+  // (see components/theme/cinematic/themeIntake.ts) — slug, source, the
+  // reader's words or the canned prompt, and the saved items. Forwarded to
+  // ChatKitPanel so the seeded first /chatkit request uses the same request
+  // shape as the themed mini-form's submission instead of bare free text.
+  const [themeIntake, setThemeIntake] = useState<
+    Record<string, unknown> | undefined
+  >(undefined);
   // Themed theme-page mini-form (date windows + pax). When a theme page's
   // "Build this itinerary" routes to /chat?themeForm=<slug>, we resolve the
   // config and flag ChatKitPanel to inject the 2-section form (no auto-send).
@@ -413,7 +421,10 @@ export default function BotApp({
   const hasConsumedHeroHandoffRef = useRef(false);
   const [activeTravellerStory, setActiveTravellerStory] =
     useState<TravellerStory | null>(null);
-  const sendMessageRef = useRef<((msg: string) => void) | null>(null);
+  // Widened past `(msg: string)`: a theme-page prompt has to reach the panel's
+  // sendMessage with its `intake` opts (see executePromptSelect), so the ref
+  // carries the panel's full signature rather than just the text.
+  const sendMessageRef = useRef<ChatSendFn | null>(null);
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -524,7 +535,7 @@ export default function BotApp({
   const currentItineraryRef = useRef<any>(null);
   const [skeletonCities, setSkeletonCities] = useState<any[]>([]);
   const skeletonCitiesRef = useRef<any[]>([]);
-  const chatSendMessageRef = useRef<((msg: string) => void) | null>(null);
+  const chatSendMessageRef = useRef<ChatSendFn | null>(null);
 
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [isItineraryCompleting, setIsItineraryCompleting] = useState(false);
@@ -2982,11 +2993,25 @@ export default function BotApp({
   // Keep the popstate handler's ref pointing at the latest handleNewChat.
   handleNewChatRef.current = handleNewChat;
 
-  const executePromptSelect = (prompt: string, attachmentIds?: string[]) => {
+  const executePromptSelect = (
+    prompt: string,
+    attachmentIds?: string[],
+    // A prompt seeded from a theme page carries that page's structured `intake`
+    // (see theme/cinematic/themeIntake.ts). It has to ride BOTH branches below:
+    // the live-panel branch bypasses `initialPrompt` entirely, so passing it
+    // only as a prop would silently drop the payload whenever the chat was
+    // already mounted — which is exactly what happened before.
+    intakePayload?: Record<string, unknown>,
+  ) => {
     // chatSendMessageRef is set by both desktop and mobile ChatKitPanel onSendReady
     const sendFn = sendMessageRef.current ?? chatSendMessageRef.current;
     if (isChatActive && sendFn) {
-      sendFn(prompt);
+      sendFn(
+        prompt,
+        undefined,
+        undefined,
+        intakePayload ? { formSubmitted: true, intakePayload } : undefined,
+      );
     } else {
       setInitialPrompt(prompt);
       setInitialAttachmentIds(attachmentIds);
@@ -3027,6 +3052,10 @@ export default function BotApp({
       }
       if (seedMeta.slug) setThemeSlug(seedMeta.slug);
       if (seedMeta.note) setThemeNote(seedMeta.note);
+      // Present only on the seed path (a card/hero/ask-bar prompt). The "Build
+      // trip" route carries none — its intake is composed by the mini-form on
+      // submit instead.
+      if (seedMeta.intake) setThemeIntake(seedMeta.intake);
     }
 
     // "Build this itinerary" from a theme page routes here with `?themeForm=<slug>`.
@@ -3095,7 +3124,11 @@ export default function BotApp({
       // funnels through `handlePromptSelect`, which sets `initialPrompt`
       // and flips `isChatActive`. ChatKitPanel's `initialPrompt` effect
       // sends it as the first message after location is ready.
-      handlePromptSelect(seed);
+      //
+      // The theme page's `intake` is handed over directly rather than read back
+      // off `themeIntake` state — the setState above hasn't landed yet, and the
+      // live-panel branch inside executePromptSelect sends synchronously.
+      handlePromptSelect(seed, undefined, seedMeta?.intake ?? undefined);
     }
 
     // Drop the seed from the URL once consumed so a refresh doesn't replay it.
@@ -3152,12 +3185,16 @@ export default function BotApp({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.isReady]);
 
-  const handlePromptSelect = (prompt: string, attachmentIds?: string[]) => {
+  const handlePromptSelect = (
+    prompt: string,
+    attachmentIds?: string[],
+    intakePayload?: Record<string, unknown>,
+  ) => {
     // The first prompt is allowed through without an upfront login modal so the
     // in-chat intake form can render immediately; authentication is collected
     // later via the inline OTP card when the user submits the form (or via the
     // backend `prompt_login` effect if it gates a specific action).
-    executePromptSelect(prompt, attachmentIds);
+    executePromptSelect(prompt, attachmentIds, intakePayload);
   };
 
   // Open the traveller-story detail view inside ChatKitPanel without pushing a
@@ -3283,6 +3320,7 @@ export default function BotApp({
     themeItems,
     themeSlug,
     themeNote,
+    themeIntake,
     themeForm,
     startThemedForm,
     onViewItinerary: handleViewItinerary,

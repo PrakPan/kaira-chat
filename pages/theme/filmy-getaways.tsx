@@ -15,6 +15,10 @@ import {
   useSeedChat,
   useOpenThemeForm,
 } from "../../components/theme/cinematic/useSeedChat";
+import {
+  promptIntakeMap,
+  type ThemePromptIntent,
+} from "../../components/theme/cinematic/themeIntake";
 import { useThemeSelectionState } from "../../components/theme/cinematic/ThemeSelection";
 import type { CinematicThemeConfig } from "../../components/theme/cinematic/types";
 import { THEME_PALETTES } from "../../components/theme/cinematic/palettes";
@@ -29,39 +33,67 @@ const IMAGE_BASE = `${CDN}/media/website/filmy-getaways-2026`;
 const PROMPTS = {
   // Bollywood
   ddlj:
-    "We are 2 travellers, and our travel dates are flexible. Create a romantic Switzerland itinerary inspired by the feeling of Dilwale Dulhania Le Jayenge. Prioritize scenic train journeys, charming alpine villages, breathtaking mountain landscapes, lakeside towns, cozy cafés, slow mornings, and unforgettable viewpoints. The itinerary should feel relaxed, cinematic, and immersive rather than rushed, balancing iconic Swiss experiences with hidden gems.",
+    "We are 2 travellers going for 7 nights in June, and our travel dates are flexible. Create a romantic Switzerland itinerary inspired by the feeling of Dilwale Dulhania Le Jayenge. Prioritize scenic train journeys, charming alpine villages, breathtaking mountain landscapes, lakeside towns, cozy cafés, slow mornings, and unforgettable viewpoints. The itinerary should feel relaxed, cinematic, and immersive rather than rushed, balancing iconic Swiss experiences with hidden gems.",
   znmd:
-    "We are 2 travellers, and our travel dates are flexible. Plan a Spain road trip inspired by Zindagi Na Milegi Dobara. Design the journey around friendship, freedom, adventure, and unforgettable experiences rather than simply covering cities. Prioritize scenic drives, coastal towns, authentic Spanish culture, lively nightlife, beautiful sunsets, local food experiences, and meaningful moments. Balance iconic highlights with offbeat recommendations to create a journey that feels spontaneous yet well-paced.",
+    "We are 2 travellers going for 10 nights in September, and our travel dates are flexible. Plan a Spain road trip inspired by Zindagi Na Milegi Dobara. Design the journey around friendship, freedom, adventure, and unforgettable experiences rather than simply covering cities. Prioritize scenic drives, coastal towns, authentic Spanish culture, lively nightlife, beautiful sunsets, local food experiences, and meaningful moments. Balance iconic highlights with offbeat recommendations to create a journey that feels spontaneous yet well-paced.",
   yjhd:
-    "We are 2 travellers, and our travel dates are flexible. Create a Himalayan adventure inspired by Yeh Jawaani Hai Deewani. Balance adventure, friendships, peaceful mountain moments, and cozy cafés. Recommend the best Himalayan destinations for the season instead of limiting the itinerary to one state. Include scenic drives, breathtaking viewpoints, optional treks, local experiences, adventure activities, bonfire evenings, stargazing opportunities, and hidden cafés while keeping the pace relaxed and memorable.",
+    "We are 2 travellers going for 7 nights in May, and our travel dates are flexible. Create a Himalayan adventure inspired by Yeh Jawaani Hai Deewani. Balance adventure, friendships, peaceful mountain moments, and cozy cafés. Recommend the best Himalayan destinations for the season instead of limiting the itinerary to one state. Include scenic drives, breathtaking viewpoints, optional treks, local experiences, adventure activities, bonfire evenings, stargazing opportunities, and hidden cafés while keeping the pace relaxed and memorable.",
   dilChahtaHai:
-    "We are 2 travellers, and our travel dates are flexible. Build a Goa getaway inspired by Dil Chahta Hai. Focus on unforgettable moments with friends, beach sunsets, scenic drives, lively cafés, hidden beaches, water activities, local food, nightlife, and relaxed afternoons rather than simply covering tourist attractions. Blend iconic experiences with lesser-known gems to create the perfect mix of fun and downtime.",
+    "We are 2 travellers going for 5 nights in November, and our travel dates are flexible. Build a Goa getaway inspired by Dil Chahta Hai. Focus on unforgettable moments with friends, beach sunsets, scenic drives, lively cafés, hidden beaches, water activities, local food, nightlife, and relaxed afternoons rather than simply covering tourist attractions. Blend iconic experiences with lesser-known gems to create the perfect mix of fun and downtime.",
   jabWeMet:
-    "We are 2 travellers, and our travel dates are flexible. Create a mountain escape inspired by Jab We Met. Prioritize charming hill towns, scenic road journeys, cozy cafés, colorful local markets, peaceful viewpoints, authentic cultural experiences, and comfortable stays. Let the itinerary capture the joy of spontaneous travel and slow exploration instead of rushing between destinations.",
+    "We are 2 travellers going for 6 nights in April, and our travel dates are flexible. Create a mountain escape inspired by Jab We Met. Prioritize charming hill towns, scenic road journeys, cozy cafés, colorful local markets, peaceful viewpoints, authentic cultural experiences, and comfortable stays. Let the itinerary capture the joy of spontaneous travel and slow exploration instead of rushing between destinations.",
   tamasha:
-    "We are 2 travellers, and our travel dates are flexible. Design a Corsica escape inspired by Tamasha. Focus on scenic coastal drives, charming villages, beautiful beaches, local cafés, Mediterranean culture, hidden viewpoints, and slow travel experiences that encourage exploration and self-discovery. Balance relaxation with unique local experiences to create a journey that feels both refreshing and meaningful.",
+    "We are 2 travellers going for 7 nights in June, and our travel dates are flexible. Design a Corsica escape inspired by Tamasha. Focus on scenic coastal drives, charming villages, beautiful beaches, local cafés, Mediterranean culture, hidden viewpoints, and slow travel experiences that encourage exploration and self-discovery. Balance relaxation with unique local experiences to create a journey that feels both refreshing and meaningful.",
   // Hollywood
   midnightInParis:
-    "We are 2 travellers, and our travel dates are flexible. Create a Paris itinerary inspired by the timeless charm of Midnight in Paris. Prioritize atmospheric cafés, charming neighborhoods, bookstores, art museums, riverside walks, jazz bars, evening strolls, local bakeries, and authentic Parisian experiences. Balance iconic landmarks with hidden gems to create a slow, romantic, and immersive journey.",
+    "We are 2 travellers going for 5 nights in September, and our travel dates are flexible. Create a Paris itinerary inspired by the timeless charm of Midnight in Paris. Prioritize atmospheric cafés, charming neighborhoods, bookstores, art museums, riverside walks, jazz bars, evening strolls, local bakeries, and authentic Parisian experiences. Balance iconic landmarks with hidden gems to create a slow, romantic, and immersive journey.",
   eatPrayLove:
-    "We are 2 travellers, and our travel dates are flexible. Plan a Bali escape inspired by Eat Pray Love. Design the journey around wellness, mindfulness, cultural immersion, beautiful nature, hidden cafés, temples, waterfalls, beach sunsets, yoga experiences, spa treatments, and slow travel. Prioritize meaningful local experiences over simply visiting popular tourist attractions.",
+    "We are 2 travellers going for 8 nights in July, and our travel dates are flexible. Plan a Bali escape inspired by Eat Pray Love. Design the journey around wellness, mindfulness, cultural immersion, beautiful nature, hidden cafés, temples, waterfalls, beach sunsets, yoga experiences, spa treatments, and slow travel. Prioritize meaningful local experiences over simply visiting popular tourist attractions.",
   mammaMia:
-    "We are 2 travellers, and our travel dates are flexible. Create a Greek island itinerary inspired by Mamma Mia!. Prioritize charming whitewashed villages, crystal-clear beaches, local tavernas, boat trips, coastal walks, hidden viewpoints, island hopping, and spectacular sunsets. The journey should feel joyful, picturesque, and relaxed while blending iconic highlights with authentic island experiences.",
+    "We are 2 travellers going for 8 nights in June, and our travel dates are flexible. Create a Greek island itinerary inspired by Mamma Mia!. Prioritize charming whitewashed villages, crystal-clear beaches, local tavernas, boat trips, coastal walks, hidden viewpoints, island hopping, and spectacular sunsets. The journey should feel joyful, picturesque, and relaxed while blending iconic highlights with authentic island experiences.",
   harryPotter:
-    "We are 2 travellers, and our travel dates are flexible. Create a Scotland itinerary inspired by the magical landscapes associated with Harry Potter. Focus on historic castles, scenic rail journeys, misty Highlands, charming villages, dramatic landscapes, ancient streets, cozy pubs, and iconic viewpoints. Capture a sense of wonder and adventure rather than simply visiting filming locations.",
+    "We are 2 travellers going for 7 nights in August, and our travel dates are flexible. Create a Scotland itinerary inspired by the magical landscapes associated with Harry Potter. Focus on historic castles, scenic rail journeys, misty Highlands, charming villages, dramatic landscapes, ancient streets, cozy pubs, and iconic viewpoints. Capture a sense of wonder and adventure rather than simply visiting filming locations.",
   lordOfTheRings:
-    "We are 2 travellers, and our travel dates are flexible. Design a New Zealand adventure inspired by the epic landscapes of The Lord of the Rings. Prioritize breathtaking mountain scenery, pristine lakes, scenic drives, hiking opportunities, charming towns, and immersive nature experiences. Create a journey that feels cinematic, adventurous, and balanced, with a mix of iconic sights and hidden natural gems.",
+    "We are 2 travellers going for 12 nights in February, and our travel dates are flexible. Design a New Zealand adventure inspired by the epic landscapes of The Lord of the Rings. Prioritize breathtaking mountain scenery, pristine lakes, scenic drives, hiking opportunities, charming towns, and immersive nature experiences. Create a journey that feels cinematic, adventurous, and balanced, with a mix of iconic sights and hidden natural gems.",
   // Step into the scene
   romanticEscape:
-    "We are 2 travellers, and our travel dates are flexible. Create a romantic itinerary designed around meaningful experiences rather than packed sightseeing. Prioritize beautiful stays, scenic viewpoints, sunset experiences, charming cafés, intimate dining, leisurely walks, hidden gems, and memorable moments. Balance iconic attractions with peaceful experiences to create a slow, cinematic, and deeply romantic journey.",
+    "We are 2 travellers going for 7 nights in October, and our travel dates are flexible. Create a romantic itinerary designed around meaningful experiences rather than packed sightseeing. Prioritize beautiful stays, scenic viewpoints, sunset experiences, charming cafés, intimate dining, leisurely walks, hidden gems, and memorable moments. Balance iconic attractions with peaceful experiences to create a slow, cinematic, and deeply romantic journey.",
   friendsWhoTravelFar:
-    "We are 2 travellers, and our travel dates are flexible. Create a fun-filled group itinerary focused on shared experiences, adventure, scenic road journeys, lively cafés, nightlife, local food, unique activities, and unforgettable moments with friends. Prioritize flexibility, memorable experiences, and a balance of excitement and downtime over simply covering tourist attractions.",
+    "We are 4 friends going for 7 nights in October, and our travel dates are flexible. Create a fun-filled group itinerary focused on shared experiences, adventure, scenic road journeys, lively cafés, nightlife, local food, unique activities, and unforgettable moments with friends. Prioritize flexibility, memorable experiences, and a balance of excitement and downtime over simply covering tourist attractions.",
   soloTrip:
-    "We are 2 travellers, and our travel dates are flexible. Create a solo travel itinerary focused on self-discovery, flexibility, safety, and immersive local experiences. Prioritize walkable neighborhoods, cafés, cultural experiences, scenic viewpoints, peaceful moments, hidden gems, and opportunities to connect with the destination. Maintain a relaxed pace that encourages exploration while leaving room for spontaneity.",
+    "I'm travelling solo for 6 nights in October, and my travel dates are flexible. Create a solo travel itinerary focused on self-discovery, flexibility, safety, and immersive local experiences. Prioritize walkable neighborhoods, cafés, cultural experiences, scenic viewpoints, peaceful moments, hidden gems, and opportunities to connect with the destination. Maintain a relaxed pace that encourages exploration while leaving room for spontaneity.",
   // Ask Kaira
   whichFilmLocation:
-    "Which iconic film-inspired trip should I do first — DDLJ Switzerland, ZNMD Spain, Eat Pray Love Bali, or Mamma Mia Greece? Compare the experience, cost, and atmosphere, then build the ideal itinerary for the one you recommend.",
+    "Which iconic film-inspired trip should we do first, travelling as a couple — DDLJ Switzerland, ZNMD Spain, Eat Pray Love Bali, or Mamma Mia Greece? Compare the experience, cost, and atmosphere, then build the ideal itinerary for the one you recommend.",
 };
+
+// What each prompt above states about the trip, sent as `intake` keys (month /
+// nights / pax) rather than left for the backend to read out of the sentence.
+// Keyed by prompt text via promptIntakeMap, so a card only carries its prompt
+// and the facts follow. Each film sends you somewhere different, so the month
+// follows the destination rather than the theme — February for a New Zealand
+// summer, June for the Alps and the Aegean, November for Goa.
+//
+// `whichFilmLocation` carries neither `nights` nor `month`: it asks Kaira to
+// choose between four countries whose seasons don't overlap, so committing to
+// either would answer the question for her.
+const PROMPT_FACTS = promptIntakeMap(PROMPTS, {
+  ddlj: { nights: 7, month: 6, who: "Couple" },
+  znmd: { nights: 10, month: 9, who: "Couple" },
+  yjhd: { nights: 7, month: 5, who: "Couple" },
+  dilChahtaHai: { nights: 5, month: 11, who: "Couple" },
+  jabWeMet: { nights: 6, month: 4, who: "Couple" },
+  tamasha: { nights: 7, month: 6, who: "Couple" },
+  midnightInParis: { nights: 5, month: 9, who: "Couple" },
+  eatPrayLove: { nights: 8, month: 7, who: "Couple" },
+  mammaMia: { nights: 8, month: 6, who: "Couple" },
+  harryPotter: { nights: 7, month: 8, who: "Couple" },
+  lordOfTheRings: { nights: 12, month: 2, who: "Couple" },
+  romanticEscape: { nights: 7, month: 10, who: "Couple" },
+  friendsWhoTravelFar: { nights: 7, month: 10, who: "Friends", adults: 4 },
+  soloTrip: { nights: 6, month: 10, who: "Just me" },
+  whichFilmLocation: { who: "Couple" },
+});
 
 const filmyGetawaysConfig: CinematicThemeConfig = {
   // Cinema red — carries every CTA, the saved state and the docked bar.
@@ -396,8 +428,13 @@ const FilmyGetawaysThemePage = ({
   const seedChat = useSeedChat();
   const selection = useThemeSelectionState();
   const openThemeForm = useOpenThemeForm();
-  const handleSelectPrompt = (prompt: string) =>
-    seedChat(prompt, { items: selection.items, slug: THEME_SLUG });
+  const handleSelectPrompt = (prompt: string, intent?: ThemePromptIntent) =>
+    seedChat(prompt, {
+      items: selection.items,
+      slug: THEME_SLUG,
+      intent,
+      facts: PROMPT_FACTS[prompt],
+    });
   const handleBuild = (note?: string) =>
     openThemeForm(THEME_SLUG, selection.items, note);
 

@@ -165,6 +165,17 @@ export interface RouteEndpoints {
   end_city: CityEndpoint | null;
 }
 
+/** The panel's own sendMessage, as handed to the host via `onSendReady`. The
+ *  host needs the whole signature, not just the text: a prompt seeded from a
+ *  theme page rides along as `intakePayload` (+ `formSubmitted`) so it reaches
+ *  /chatkit in the themed mini-form's request shape. */
+export type ChatSendFn = (
+  text: string,
+  attachmentIds?: string[],
+  attachmentMeta?: MessageAttachment[],
+  opts?: { formSubmitted?: boolean; intakePayload?: Record<string, unknown> },
+) => void;
+
 interface ChatKitPanelProps {
   onLocationReceived: (locationData: { data: Location[] }) => void;
   onRouteReceived: (routeData: { data: Location[] }) => void;
@@ -194,7 +205,7 @@ interface ChatKitPanelProps {
    *  `initialFiles` so the user can review the hero seed + uploaded
    *  attachment before sending the first message. */
   initialInputText?: string | null;
-  onSendReady?: (sendFn: (message: string) => void) => void;
+  onSendReady?: (sendFn: ChatSendFn) => void;
   onItineraryCompletionStart?: (itineraryId: string) => void;
 onItineraryCompletionDone?: (itineraryId: string, summary?: string) => void;
 onItineraryRefresh?: (itineraryId: string) => void;
@@ -238,6 +249,13 @@ themeItems?: ThemeSelectedItem[];
 themeSlug?: string;
 // Free text typed into the theme page's ask-bar before "Build trip".
 themeNote?: string;
+/** Structured `intake` payload composed by the theme page when it seeded this
+ *  chat — slug, which surface fired it, the reader's words or the canned prompt
+ *  behind the card, and the saved items (see theme/cinematic/themeIntake.ts).
+ *  Sent as `intake` on the seeded first /chatkit request, so a hero / ask-bar /
+ *  card send uses the same request shape as the themed mini-form's submission.
+ *  Absent on the "Build trip" route, where the form composes its own. */
+themeIntake?: Record<string, unknown>;
 /** Themed theme-page mini-form config (date windows + pax presets). When set
  *  together with `startThemedForm`, a themed 2-section form card is injected
  *  into the chat on mount instead of the 4-step intake. Nothing fires to
@@ -752,6 +770,7 @@ loginMandatory,
 themeItems,
 themeSlug,
 themeNote,
+themeIntake,
 themeForm,
 startThemedForm = false,
 onViewItinerary,
@@ -789,6 +808,11 @@ startEmptyIntake = false,
   const themeFormRef = useRef<ThemeForm | null>(themeForm ?? null);
   themeFormRef.current = themeForm ?? null;
   const themedFormInjectedRef = useRef(false);
+  // The theme page's `intake` payload for the seeded first message. Held in a
+  // ref so the initialPrompt effect reads the current value without listing it
+  // as a dependency (the effect is one-shot and guarded by hasProcessedInitial).
+  const themeIntakeRef = useRef<Record<string, unknown> | undefined>(themeIntake);
+  themeIntakeRef.current = themeIntake;
   // Same one-shot guard for the in-chat pricing form card.
   const pricingFormInjectedRef = useRef(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
@@ -3278,7 +3302,20 @@ useEffect(() => {
       return;
     }
     hasProcessedInitial.current = true;
-    sendMessage(initialPrompt, initialAttachmentIds);
+    // A prompt seeded from a theme page carries that page's structured `intake`
+    // (slug, source, whatever the prompt states about month/nights/pax, the
+    // saved items), so hero / ask-bar / card sends land on /chatkit in the same
+    // request shape as the themed mini-form's submission — `form_submitted` at
+    // the root and the context under `intake`. Undefined for every other seed —
+    // the homepage hero, a restored thread — which sends exactly as before.
+    sendMessage(
+      initialPrompt,
+      initialAttachmentIds,
+      undefined,
+      themeIntakeRef.current
+        ? { formSubmitted: true, intakePayload: themeIntakeRef.current }
+        : undefined,
+    );
     onInitialPromptConsumed?.();
   }
 }, [initialPrompt, initialPromptRequiresLogin, isLoggedIn, initialAttachmentIds, locationReady, sendMessage, onInitialPromptConsumed]);
