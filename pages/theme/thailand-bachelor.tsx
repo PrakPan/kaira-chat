@@ -74,6 +74,7 @@ const RESTAURANT = {
 // Catalog imagery straight from Mercury, so a card and the drawer it opens
 // always show the same photo.
 const M = "https://images.thetarzanway.com/media";
+const CDN = "https://d31aoa0ehgvjdi.cloudfront.net";
 const IMG = {
   // Activities
   yona: `${M}/activities/176782413521073794364929199219.webp`,
@@ -104,9 +105,12 @@ const IMG = {
   yaowarat: `${M}/restaurant/169083180374274635314941406250.jpeg`,
   // Destinations / trips
   phuket: `${M}/pois/168301605450005459785461425781.jpeg`,
+  thelasthurrah: `${CDN}/media/website/thailand-theme-2026/TheLastHurrah.png`,
+  citymeetsbeach: `${CDN}/media/website/thailand-theme-2026/CityMeetsBeach.png`,
+  privateparadise: `${CDN}/media/website/thailand-theme-2026/PrivateParadise.png`,
 };
 // Other-theme page images (reused from each theme page's hero/first card).
-const CDN = "https://d31aoa0ehgvjdi.cloudfront.net";
+
 const HM = `${CDN}/media/website/honeymoon-theme-2026`;
 const THEME_IMG = {
   honeymoon: `${HM}/Maldives%20%E2%80%94%20The%20Overwater%20Villa%20Fantasy.jpg`,
@@ -187,25 +191,28 @@ const thailandBachelorConfig: CinematicThemeConfig = {
       },
       cards: [
         {
-          image: IMG.phiPhi,
+          image: IMG.thelasthurrah,
           name: "The Last Hurrah",
           line: "Phuket → Krabi · 2 bases · 1 ferry",
           tag: "6 nights",
           prompt: PROMPTS.lastHurrah,
+          objectPosition: "center 50%"
         },
         {
-          image: IMG.iconsiam,
+          image: IMG.citymeetsbeach,
           name: "City Meets Beach",
           line: "Bangkok → Phuket · 2 cities · 1 flight",
           tag: "7 nights",
           prompt: PROMPTS.cityMeetsBeach,
+          objectPosition: "center 50%",
         },
         {
-          image: IMG.sevenIslandSunset,
+          image: IMG.privateparadise,
           name: "Private Paradise",
           line: "Krabi → Koh Samui · 2 islands · 1 flight",
           tag: "8 nights",
           prompt: PROMPTS.privateParadise,
+          objectPosition: "center 60%",
         },
       ],
     },

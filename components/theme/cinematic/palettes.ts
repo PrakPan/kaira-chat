@@ -15,6 +15,13 @@
 import type { CinematicThemePalette } from "./types";
 
 export const THEME_PALETTES: Record<string, CinematicThemePalette> = {
+  // /theme/australia-newzealand — harbour blue, the colour of a Sydney summer.
+  "australia-newzealand": {
+    accent: "#1a6f8f",
+    accentSoft: "#e2f0f5",
+    page: "#f7fbfc",
+    heroTint: "#e8f4f7",
+  },
   "christmas-markets": {
     accent: "#1f6b4a",
     accentSoft: "#eef4ea",
@@ -85,6 +92,7 @@ export const getThemePalette = (
 // builds the switzerland-ddlj route). Used by the chat's mobile close button to
 // send the reader back where they started.
 const THEME_PAGE_PATHS: Record<string, string> = {
+  "australia-newzealand": "/theme/australia-newzealand",
   "christmas-markets": "/theme/christmas-markets",
   "edinburgh-hogmanay": "/theme/edinburgh-hogmanay",
   "greece-islands-done-right": "/theme/greece-islands-done-right",

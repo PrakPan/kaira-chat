@@ -91,38 +91,33 @@ const LoginButton = styled.button`
   font-weight: 600;
 `;
 
+// The Kaira mock's chip: a hairline white pill in ink text, sitting directly
+// above the composer pill it feeds. This used to be a phone-only override on a
+// squarer grey Montserrat chip; desktop now gets the same pill, so the quick
+// replies read as one control across breakpoints instead of two designs.
 const SingleChips = styled.button`
-  border-radius: 6px;
-  padding: 8px 12px;
-  border: 1px solid #e0e0e0;
-  font-family: Montserrat;
+  border-radius: 999px;
+  padding: 8px 13px;
+  border: 1px solid #dcdfe5;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   font-weight: 500;
-  font-size: 12px;
+  font-size: 11.5px;
   background: #fff;
-  color: #6E757A;
+  color: #0b1220;
   white-space: nowrap;
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s;
-  &:hover {
-    // background: #f0f7ff;
-    border-color: #1889ed;
-  }
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
   }
 
-  /* Phone — the Kaira mock's chips: a hairline white pill in ink text, sitting
-     directly above the composer pill it feeds. */
-  @media (max-width: 768px) {
-    border-radius: 999px;
-    padding: 8px 13px;
-    border: 1px solid #dcdfe5;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 11.5px;
-    color: #0b1220;
-    &:hover {
-      border-color: #dcdfe5;
+  /* Pointer devices only — a phone has no hover state to give, and tying this
+     to a width breakpoint is what split the two designs in the first place. */
+  @media (hover: hover) {
+    &:hover:not(:disabled) {
+      background: #fafaf5;
+      border-color: #c9ced8;
     }
   }
 `;
@@ -136,8 +131,8 @@ const QuickReplyShimmerChip: React.FC<{ width: string }> = ({ width }) => (
     aria-hidden="true"
     style={{
       width,
-      height: 32,
-      borderRadius: 6,
+      height: 33,
+      borderRadius: 999,
       border: "1px solid #f3f4f6",
       background:
         "linear-gradient(90deg, #f9fafb 0%, #f3f4f6 50%, #f9fafb 100%)",
@@ -479,7 +474,7 @@ const ChatPanelStyles = () => (
        drop shadow (see MessageInputBox .kp-row). Padding is a touch roomier
        than the ruled version so the shadow has somewhere to fall. */
     .kp-composer-wrap {
-  padding: 14px 20px 16px;
+  padding: 10px 10px 10px;
   background: #fff;
 }
 @media (max-width: 768px) {
@@ -2955,8 +2950,10 @@ const handleIntakeComplete = useCallback(
 
 // ── Themed mini-form completion ──────────────────────────────────────────────
 // Send the readable summary as the user message AND the structured payload
-// (slug/window/skeleton/dates/pax/items) as `intake` on the request body, so the
-// backend routes off the structured data. First fire to /chatkit for this flow.
+// (slug/window/skeleton/month/dates/pax/items) as `intake` on the request body,
+// so the backend routes off the structured data. First fire to /chatkit for this
+// flow. The composed text stays fully readable on its own — the backend may read
+// either — but `intake` is what the routing is meant to key off.
 const handleThemedFormSubmit = useCallback(
   (submission: ThemeFormSubmission, composed: string) => {
     sendMessage(composed, undefined, undefined, {
@@ -4939,13 +4936,13 @@ const handleShowLogin = useCallback(() => {
           <div className="flex-shrink-0 px-3 md:!px-6 pt-2 pb-0 md:pb-1">
             <div className="mx-auto">
               <div
-                className="flex gap-[6px] md:gap-2 overflow-hidden pb-[10px] md:pb-1"
+                className="flex gap-[6px] md:gap-2 overflow-hidden md:pb-1"
                 style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
               >
                 {Array.from({ length: 10 }).map((_, idx) => (
                   <div
                     key={idx}
-                    className="flex-shrink-0 rounded-full md:rounded-[6px]"
+                    className="flex-shrink-0 rounded-full"
                     style={{
                       width: 96,
                       height: 33,
@@ -4969,7 +4966,7 @@ const handleShowLogin = useCallback(() => {
         <div className="flex-shrink-0 px-3 md:!px-6 pt-2 pb-0 md:pb-1">
           <div className="mx-auto">
             <div
-              className="flex gap-[6px] md:gap-2 overflow-x-auto pb-[10px] md:pb-1"
+              className="flex gap-[6px] md:gap-2 overflow-x-auto md:pb-1"
               style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             >
               {quickReplyLoading

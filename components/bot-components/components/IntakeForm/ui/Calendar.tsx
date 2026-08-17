@@ -6,6 +6,11 @@ interface CalendarProps {
   startDate: string | null; // ISO
   endDate: string | null; // ISO
   onChange: (startIso: string | null, endIso: string | null) => void;
+  /** ISO date whose month the picker opens on when nothing is picked yet.
+   *  Defaults to the current month. A picked `startDate` always wins, so this
+   *  only decides where a fresh picker lands — opt-in, because the main intake
+   *  form wants today's month and the themed form doesn't. */
+  initialMonth?: string | null;
 }
 
 function startOfToday(): Date {
@@ -16,12 +21,17 @@ function startOfToday(): Date {
 
 /** Range date-picker that emits ISO date strings. Ports the mockup's range
  *  selection behaviour (tap start, then end; tap start again to clear). */
-const Calendar: React.FC<CalendarProps> = ({ startDate, endDate, onChange }) => {
+const Calendar: React.FC<CalendarProps> = ({
+  startDate,
+  endDate,
+  onChange,
+  initialMonth,
+}) => {
   const today = startOfToday();
   const start = isoToDate(startDate);
   const end = isoToDate(endDate);
   const [view, setView] = useState(() => {
-    const base = start ?? today;
+    const base = start ?? isoToDate(initialMonth ?? null) ?? today;
     return { y: base.getFullYear(), m: base.getMonth() };
   });
   // Date currently under the cursor — used to preview the range (start → hover)

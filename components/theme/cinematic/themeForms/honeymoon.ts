@@ -1,9 +1,15 @@
 // components/theme/cinematic/themeForms/honeymoon.ts
-// Mini-form render data for /theme/honeymoon. Mirrors theme_forms/honeymoon.yaml.
-// Here the "date window" is the ROUTE — a honeymoon is picked by shape, not by a
-// season. Window order and the MOST PICKED tag come from live booking data
-// (couples travelling as 2 adults, international): Bali 1,927 trips, Maldives
-// 425, Greece 354, Seychelles 101.
+//
+// Mini-form render data for /theme/honeymoon. Month-first (see season.ts). A
+// honeymoon isn't tied to a season the way a ski trip is — the wedding sets the
+// date — so every month is in season and the month notes carry what actually
+// differs. What the month DOES decide is which shapes are on: the two Santorini
+// routes only run May–Oct, because the caldera hotels and the ferries shut for
+// the winter and offering them in January would be selling a closed island.
+//
+// Route order and the MOST PICKED tag come from live booking data (couples
+// travelling as 2 adults, international): Bali 1,927 trips, Maldives 425,
+// Greece 354, Seychelles 101.
 
 import type { ThemeForm } from "./types";
 
@@ -15,55 +21,126 @@ const honeymoonForm: ThemeForm = {
   voice:
     "Warm and unhurried. Talks overwater villas, floating breakfasts, caldera sunsets, slow mornings.",
   copy: {
-    datesTitle: "Which honeymoon is yours?",
-    datesSub: "Every one of these is year-round. Pick the shape, I'll fit the dates.",
-    paxTitle: "Just the two of you?",
-    paxSub: "So I can size the villa and the transfers.",
+    datesTitle: "When are you going?",
+    datesSub: "Pick the month the wedding leaves you — I'll show what's good then.",
     footer: "That's the whole form. The page already told me it's a honeymoon.",
     cta: "Draft our honeymoon →",
   },
-  dateWindows: [
+  season: [
+    {
+      month: 1,
+      label: "Dry and bright",
+      tag: "MALDIVES BEST",
+      line: "The Maldives at its clearest. Bali between the rains.",
+    },
+    {
+      month: 2,
+      label: "Peak Indian Ocean",
+      tag: "CLEAREST",
+      line: "Best Maldives weather of the year — and a Valentine's premium on villas.",
+    },
+    {
+      month: 3,
+      label: "Calm seas",
+      tag: "EASY",
+      line: "Dry, clear and still across the Indian Ocean.",
+    },
+    {
+      month: 4,
+      label: "End of the dry",
+      tag: "GOOD VALUE",
+      line: "Last of the Maldives dry season; Bali warming up and quiet.",
+    },
+    {
+      month: 5,
+      label: "Bali's month",
+      tag: "MOST BOOKED",
+      line: "Our busiest Bali month. Greece opens up and is still empty.",
+    },
+    {
+      month: 6,
+      label: "Long days",
+      tag: "GREECE OPENS",
+      line: "Bali dry season, Greek islands warm with the crowds not yet in.",
+    },
+    {
+      month: 7,
+      label: "High summer",
+      tag: "PEAK",
+      line: "Busy everywhere. Villas and flights need booking well ahead.",
+    },
+    {
+      month: 8,
+      label: "Driest Bali",
+      tag: "BUSIEST",
+      line: "Bali at its driest; Greece hot, bright and full.",
+    },
+    {
+      month: 9,
+      label: "The sweet spot",
+      tag: "BEST VALUE",
+      line: "Greece warm and emptying, Bali still dry, prices coming down.",
+    },
+    {
+      month: 10,
+      label: "Soft shoulder",
+      tag: "QUIET",
+      line: "Warmest sea in Greece, green Bali, and the last of the ferries.",
+    },
+    {
+      month: 11,
+      label: "Indian Ocean turns",
+      tag: "MALDIVES OPENS",
+      line: "The Maldives dries out as the Greek islands close for winter.",
+    },
+    {
+      month: 12,
+      label: "Peak season",
+      tag: "PRICIEST",
+      line: "Peak Maldives and peak Bali — the most-booked month, and the dearest.",
+    },
+  ],
+  routes: [
     {
       key: "bali_slow",
-      label: "Slow Bali · 7N",
-      range: ["2026-10-10", "2026-10-17"],
-      nights: 7,
+      label: "Slow Bali",
       blurb: "Uluwatu → Seminyak → Ubud, cliffs then rice terraces",
       tag: "MOST PICKED",
+      nights: 7,
       skeleton: "uluwatu_seminyak_ubud",
       fareNote:
         "The most-booked honeymoon we run (1,927 couple trips). One stop to DPS; single in/out airport.",
     },
     {
       key: "maldives_overwater",
-      label: "Overwater & Endless Blue · 6N",
-      range: ["2026-11-14", "2026-11-20"],
-      nights: 6,
+      label: "Overwater & endless blue",
       blurb: "One atoll, one overwater villa, nowhere to be",
       tag: "MOST PRIVATE",
+      nights: 6,
       skeleton: "maldives_one_island",
       fareNote:
         "Direct DEL/BOM→MLE, seaplane each way. Dec–Mar villas go six months out; visa-free.",
     },
     {
       key: "bali_santorini",
-      label: "Two Islands, Two Moods · 7N",
-      range: ["2026-09-12", "2026-09-19"],
-      nights: 7,
+      label: "Two islands, two moods",
       blurb: "Bali → Santorini, jungle quiet then caldera sunsets",
       tag: "TWO MOODS",
+      nights: 7,
       skeleton: "bali_santorini",
+      // Santorini's hotels and ferries close over winter.
+      months: [5, 6, 7, 8, 9, 10],
       fareNote:
         "Needs an Indonesia e-Visa and a Schengen sticker. Sept is quiet in both.",
     },
     {
       key: "santorini_athens",
-      label: "Ruins by Day, Wine by Night · 8N",
-      range: ["2026-09-26", "2026-10-04"],
-      nights: 8,
+      label: "Ruins by day, wine by night",
       blurb: "Santorini → Athens, sunsets then ancient streets",
       tag: "RUINS & WINE",
+      nights: 8,
       skeleton: "santorini_athens",
+      months: [5, 6, 7, 8, 9, 10],
       fareNote: "JTR in / ATH out. Schengen only — file 20+ days ahead.",
     },
   ],
@@ -75,7 +152,6 @@ const honeymoonForm: ThemeForm = {
     subtext: "Overwater villas, caldera sunsets, and mornings with nothing in them.",
     tag: "Overseas · year round",
   },
-  paxPresets: ["Just us 2", "Us 2 + a stopover", "Us 2, all-inclusive", "Us 2, two islands"],
   allowExactDates: true,
   seedPrompts: [
     "Make it more private",

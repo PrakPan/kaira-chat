@@ -26,6 +26,7 @@ import { currencySymbols } from "../../../../../data/currencySymbols";
 import { MdOutlineLuggage } from "react-icons/md";
 import { useTaxiSelection } from "../../fleet/TaxiSelectionContext";
 import QuantityStepper from "../../fleet/QuantityStepper";
+import AmenitySelector from "./AmenitySelector";
 
 
 const Container = styled.div`
@@ -114,6 +115,12 @@ const Section = (props) => {
   const [isProcessingBooking, setIsProcessingBooking] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [open, setOpen] = useState(false);
+  // Optional extras (child seats, meet & greet, ...) ticked on THIS card. Only Mozio quotes
+  // offer any, so this stays empty - and absent from every payload below - for every other
+  // supplier. Card-local state: each result card owns its own selection, which is also why
+  // it survives the pre-built `optionsJSX` cards in modals/taxis/Index.js (the frozen
+  // closures are a props problem, not a state problem).
+  const [selectedAmenities, setSelectedAmenities] = useState([]);
   const currency = useSelector(state=>state.currency);
   const {intercity} = useSelector(state=>state.TransferBookings).transferBookings
    const {
@@ -147,10 +154,17 @@ const Section = (props) => {
   const handleUpdate = async () => {
 
     setIsChecked(true);
+    // Omitted entirely when nothing was ticked, so a supplier that has no amenities sends
+    // exactly the payload it always did.
+    const amenityPayload = selectedAmenities.length
+      ? { optional_amenities: selectedAmenities }
+      : {};
+
     if (props.handleTaxiSelect) {
       props.handleTaxiSelect({
         trace_id: props.data.trace_id,
         result_index: props.data.result_index,
+        ...amenityPayload,
       });
       return;
     }
@@ -158,7 +172,10 @@ const Section = (props) => {
     setLoading(true);
 
     if (props?.handleAirportTaxiSelect) {
-      await props.handleAirportTaxiSelect(props.data);
+      // The airport path hands the whole quote upward and the payload is built by the
+      // caller (three of them, all reading `selectedQuote`), so the selection rides on the
+      // quote object rather than as a separate argument no caller would know to forward.
+      await props.handleAirportTaxiSelect({ ...props.data, ...amenityPayload });
       setLoading(false);
       return;
     }
@@ -171,6 +188,7 @@ const Section = (props) => {
       source_itinerary_city: props?.origin_itinerary_city_id,
       destination_itinerary_city: props?.destination_itinerary_city_id,
       edge: props?.edge,
+      ...amenityPayload,
     };
 
     setIsProcessingWarning(true);
@@ -559,6 +577,20 @@ const Section = (props) => {
             </div>
           </div>
         </div>
+
+        {/* Supplier extras for this quote. Renders nothing unless the quote carries an
+            `amenities` array (Mozio only today). Hidden in the multi-select fleet drawer:
+            a fleet is one booking of several cars and no fleet supplier offers amenities,
+            so there is nothing to attach a per-car extra to. */}
+        {!multiSelect ? (
+          <AmenitySelector
+            amenities={props.data?.amenities}
+            selected={selectedAmenities}
+            onChange={setSelectedAmenities}
+            currencySymbol={currencySymbol}
+            disabled={loading || props?.disabled || props?.isSelected}
+          />
+        ) : null}
       </div>
     );
   else return null;

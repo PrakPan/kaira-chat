@@ -273,6 +273,7 @@ const christmasMarketsConfig: CinematicThemeConfig = {
           line: "Behind the scenes with the Lipizzaner horses.",
           tag: "Vienna",
           activityId: ACTIVITY.spanishRiding,
+          objectPosition: "center 90%"
         },
         {
           image: IMG.expCanalCruise,

@@ -238,7 +238,10 @@ const CinematicStyles = () => (
       .ctl-kairawrap { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px 0; min-height: 440px; }
       .ctl-kaira { width: 180px; height: 180px; border-radius: 50%; overflow: hidden; box-shadow: 0 16px 40px rgba(11,18,32,0.2); border: 6px solid ${PAPER}; z-index: 2; }
       .ctl-kaira img { width: 100%; height: 100%; object-fit: cover; }
-      .ctl-polaroid { position: absolute; width: 148px; background: #fff; padding: 8px 8px 26px; box-shadow: 0 12px 28px -8px rgba(11,18,32,0.25); border-radius: 4px; z-index: 3; transition: transform .3s cubic-bezier(.2,.7,.3,1); cursor: pointer; }
+      /* Decorative only — the polaroids used to navigate on click, which put a
+         second, unlabelled destination behind the hero's own CTAs. They now
+         just sit there and lift on hover. */
+      .ctl-polaroid { position: absolute; width: 148px; background: #fff; padding: 8px 8px 26px; box-shadow: 0 12px 28px -8px rgba(11,18,32,0.25); border-radius: 4px; z-index: 3; transition: transform .3s cubic-bezier(.2,.7,.3,1); }
       .ctl-polaroid:hover { transform: translateY(-4px) rotate(0deg) !important; z-index: 5; }
       .ctl-polaroid-img { position: relative; overflow: hidden; width: 100%; aspect-ratio: 1 / 1; border-radius: 2px; }
       .ctl-polaroid-cap { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 12px; color: ${INK}; text-align: center; margin-top: 8px; line-height: 1.2; }
@@ -378,7 +381,6 @@ const CinematicHero: React.FC<{
   hero: CinematicHeroConfig;
   onSelectPrompt: (p: string) => void;
 }> = ({ hero, onSelectPrompt }) => {
-  const router = useRouter();
   const palette = usePalette();
   // Controlled composer: send the typed text (falling back to the example
   // prompt when empty) on Send click or Enter.
@@ -500,7 +502,6 @@ const CinematicHero: React.FC<{
                       bottom: pos.bottom,
                       transform: `rotate(${pos.rotate}deg)`,
                     }}
-                    onClick={() => img.href && router.push(img.href)}
                   >
                     <div className="ctl-polaroid-img">
                       <SkeletonImage src={img.image} alt={img.caption ?? ""} />
