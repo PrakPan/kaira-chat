@@ -124,7 +124,7 @@ const PROMPTS = {
     "We are 2 travellers with flexible December dates. Plan a 10-night Central Europe Christmas loop through Prague, Vienna and Budapest with Christmas Day and a New Year's Eve celebration. Prioritise old-town markets, thermal baths, festive food, and scenic rail between the cities.",
   // Chips / misc
   viennaNye:
-    "We are 2 travellers. Plan 7 nights in Vienna across Christmas and New Year in December — Christmas Day in the city, then the Silvesterpfad street party, midnight fireworks by the Rathaus, and a festive dinner. Add the best Christmas markets to see in the days before.",
+    "We are 2 travellers. Plan 9 nights in Vienna across Christmas and New Year in December — Christmas Day in the city, then the Silvesterpfad street party, midnight fireworks by the Rathaus, and a festive dinner. Add the best Christmas markets to see in the days before.",
   gluhweinCrawl:
     "We are 2 travellers with 3 nights over Christmas in December. Plan a self-guided Glühwein and Christmas market crawl through the best squares of one European city, with the collectible mug stalls, food to try, and the prettiest lit streets.",
   // Markets — "show all the activities/tours in this city"
@@ -151,7 +151,7 @@ const PROMPTS = {
   tripFestive:
     "We are 2 travellers. Build the classic festive markets trip — Munich, Salzburg and Vienna over 9 nights across Christmas and New Year in December, with rail and flights from Delhi included. Prioritise the great markets, Christmas Day itself, and a Vienna New Year's Eve.",
   tripNye:
-    "We are a group of 4. Build a Christmas and New Year's Eve city break in Central Europe — Prague and Vienna over 7 nights in December — with Christmas Day, the best midnight celebration and festive markets, flights from Delhi included.",
+    "We are a group of 4. Build a Christmas and New Year's Eve city break in Central Europe — Prague and Vienna over 9 nights in December — with Christmas Day, the best midnight celebration and festive markets, flights from Delhi included.",
   tripSlow:
     "We are 2 travellers. Build a slow, cosy Christmas markets trip along the Rhine — Strasbourg, Cologne and Amsterdam over 8 nights across Christmas in December — with plenty of café time and easy rail, flights from Delhi included.",
   // Ask Kaira
@@ -165,18 +165,25 @@ const PROMPTS = {
 // its prompt and the facts follow.
 //
 // Every window on this page is built around Christmas and contains the 25th —
-// `day` is the start, and it is chosen so the 25th always falls inside `day` +
-// `nights`. The ones whose prompt also promises New Year's Eve have to span the
-// 25th AND the 31st, which is a seven-night floor: that is why the Vienna New
-// Year chip and the midnight trip are 7N rather than the 5N and 6N they were.
-// Without an anchor these would all leave on the mid-month Saturday and finish
+// `day` is the start, chosen so the 25th always falls inside `day` + `nights`.
+// Without an anchor these would leave on the mid-month Saturday and be home
 // before Christmas Eve.
+//
+// Two rules shape the December ones:
+//   • Nothing STARTS on the 25th. Landing on Christmas Day means flying on it
+//     and missing the run-up, so the anchored trips leave on Christmas Eve.
+//   • Nothing ENDS on 1 January. Checking out the morning after the fireworks
+//     is a poor last day, so the New Year trips run to the 2nd.
+// Together those put the floor at nine nights from the 24th for anything that
+// promises both Christmas Day and New Year's Eve — the 25th and the 31st are
+// six days apart, and the 2nd is two beyond that. That is why the Vienna New
+// Year chip and the midnight trip are 9N rather than the 5N and 6N they were.
 const PROMPT_FACTS = promptIntakeMap(PROMPTS, {
-  hero: { nights: 9, month: 12, day: 23, who: "Couple" },
-  alpineClassic: { nights: 9, month: 12, day: 23, who: "Couple" },
+  hero: { nights: 9, month: 12, day: 24, who: "Couple" },
+  alpineClassic: { nights: 9, month: 12, day: 24, who: "Couple" },
   rhineRun: { nights: 8, month: 12, day: 21, who: "Couple" },
   centralLoop: { nights: 10, month: 12, day: 23, who: "Couple" },
-  viennaNye: { nights: 7, month: 12, day: 25, who: "Couple" },
+  viennaNye: { nights: 9, month: 12, day: 24, who: "Couple" },
   gluhweinCrawl: { nights: 3, month: 12, day: 24, who: "Couple" },
   activitiesVienna: { nights: 3, month: 12, day: 24, who: "Couple" },
   activitiesPrague: { nights: 3, month: 12, day: 24, who: "Couple" },
@@ -187,10 +194,10 @@ const PROMPT_FACTS = promptIntakeMap(PROMPTS, {
   eatPfund: { nights: 9, month: 12, day: 21, who: "Couple" },
   eatWinkel: { nights: 9, month: 12, day: 21, who: "Couple" },
   eatCambrinus: { nights: 9, month: 12, day: 21, who: "Couple" },
-  tripFestive: { nights: 9, month: 12, day: 23, who: "Couple" },
-  tripNye: { nights: 7, month: 12, day: 25, who: "Friends", adults: 4 },
+  tripFestive: { nights: 9, month: 12, day: 24, who: "Couple" },
+  tripNye: { nights: 9, month: 12, day: 24, who: "Friends", adults: 4 },
   tripSlow: { nights: 8, month: 12, day: 21, who: "Couple" },
-  askBar: { nights: 9, month: 12, day: 23, who: "Couple" },
+  askBar: { nights: 9, month: 12, day: 24, who: "Couple" },
 });
 
 const christmasMarketsConfig: CinematicThemeConfig = {
@@ -395,11 +402,11 @@ const christmasMarketsConfig: CinematicThemeConfig = {
         },
         {
           image: IMG.tripMidnight,
-          tag: "Christmas + NYE · group · 7N",
+          tag: "Christmas + NYE · group · 9N",
           name: "The midnight trip",
           line: "Prague to a Vienna New Year's Eve.",
           price: "₹2,45,000 / person",
-          nights: "7 nights",
+          nights: "9 nights",
           urgent: "NYE stays sell out by early November",
           prompt: PROMPTS.tripNye,
         },

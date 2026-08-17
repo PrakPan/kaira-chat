@@ -66,9 +66,9 @@ const christmasMarketsForm: ThemeForm = {
       nights: 9,
       skeleton: "munich_salzburg_vienna",
       months: [11, 12],
-      // 23 Dec – 1 Jan: the last Munich market days, Christmas in Salzburg,
-      // New Year's Eve in Vienna.
-      anchor: { month: 12, day: 23, note: "Christmas, then New Year in Vienna" },
+      // 24 Dec – 2 Jan: Christmas in Salzburg, New Year's Eve in Vienna, and a
+      // last day on the 2nd rather than a flight out on New Year's morning.
+      anchor: { month: 12, day: 24, note: "Christmas, then New Year in Vienna" },
       fareNote: "Early-Dec sweet spot; MUC in / VIE out.",
     },
     {
@@ -89,12 +89,13 @@ const christmasMarketsForm: ThemeForm = {
       label: "Midnight Trip",
       blurb: "Prague → Vienna, Christmas Day and the Bells",
       tag: "XMAS + NYE",
-      // Six nights could not hold both the 25th and the 31st — they are six
-      // days apart, so seven is the floor for a trip that promises each.
-      nights: 7,
+      // Nine is the floor here: leave on Christmas Eve rather than landing on
+      // the 25th, hold the 31st six days later, and finish on the 2nd instead
+      // of checking out the morning after the fireworks.
+      nights: 9,
       skeleton: "prague_vienna",
       months: [12],
-      anchor: { month: 12, day: 25, note: "Christmas Day, then New Year's Eve" },
+      anchor: { month: 12, day: 24, note: "Christmas Eve in, then the Bells" },
       fareNote: "Christmas + NYE hit; PRG in / VIE out.",
     },
   ],
