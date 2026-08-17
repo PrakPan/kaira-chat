@@ -56,8 +56,17 @@ export interface CinematicPromptIntake {
   /** Month the prompt is written for, 1–12. Resolved forward to its next
    *  bookable occurrence when the prompt fires, so a config never goes stale. */
   month?: number;
+  /** Day of that month the trip must START on, for a prompt built around a
+   *  fixed date — a Hogmanay street party, the Boxing Day Test, a New Year's
+   *  Eve finish, a festival week. Set it whenever the prompt names an event,
+   *  and pick the day so `nights` actually COVERS that event: a nine-night
+   *  "New Year's Eve finish" needs to start on the 26th, not mid-month, or the
+   *  dates end before the 31st. Without it the trip leaves mid-month, which is
+   *  right for a prompt with no date in it. */
+  day?: number;
   /** Nights the prompt asks for. Together with `month` this also produces the
-   *  `dates` range, on the same mid-month departure the mini-form uses. */
+   *  `dates` range, running from `day` when one is set and from the mini-form's
+   *  mid-month departure otherwise. */
   nights?: number;
   /** Who the prompt is for — one of the intake form's WHO_OPTIONS values:
    *  "Just me" | "Couple" | "Family" | "Friends" | "Parents / seniors".

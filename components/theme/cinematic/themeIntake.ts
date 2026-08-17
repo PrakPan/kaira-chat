@@ -122,9 +122,12 @@ export function buildSeedIntake(
 
   // A bare month number resolves forward to its next bookable occurrence, the
   // same way the mini-form's season strip does, so a config written once never
-  // starts offering a month that has already passed.
+  // starts offering a month that has already passed. A prompt pinned to a fixed
+  // date (`day`) resolves against that date rather than the month as a whole.
   const month =
-    facts?.month != null ? resolveMonthForward(facts.month) : null;
+    facts?.month != null
+      ? resolveMonthForward(facts.month, undefined, facts.day)
+      : null;
   if (month) {
     intake.month = month.key;
     intake.monthLabel = month.long;
@@ -135,8 +138,10 @@ export function buildSeedIntake(
 
   // Dates need both halves — a month to sit in and a length to run for. With
   // only one of them we send that one and leave `dates` out rather than
-  // inventing the other.
-  if (month && intake.nights) intake.dates = monthDates(month, intake.nights);
+  // inventing the other. `day` anchors the departure so an event the prompt
+  // names actually falls inside the range.
+  if (month && intake.nights)
+    intake.dates = monthDates(month, intake.nights, undefined, facts?.day);
 
   // Travellers. `who` is the anchor: without it a prompt hasn't said who it's
   // for, and the whole pax group is omitted.

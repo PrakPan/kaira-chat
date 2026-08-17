@@ -178,13 +178,13 @@ const PROMPTS = {
 // compare three shapes AND name the best month, so committing to either would
 // answer the question for her.
 const PROMPT_FACTS = promptIntakeMap(PROMPTS, {
-  snowFestivalPowder: { nights: 9, month: 2, who: "Couple" },
+  snowFestivalPowder: { nights: 9, month: 2, day: 4, who: "Couple" },
   underseaShinkansen: { nights: 11, month: 2, who: "Couple" },
-  sapporoWinter: { nights: 8, month: 2, who: "Couple" },
+  sapporoWinter: { nights: 8, month: 2, day: 4, who: "Couple" },
   skiOnsen: { nights: 9, month: 1, who: "Couple" },
   powderCity: { nights: 9, month: 1, who: "Couple" },
   underseaRun: { nights: 11, month: 2, who: "Couple" },
-  snowFestivalWeek: { nights: 8, month: 2, who: "Couple" },
+  snowFestivalWeek: { nights: 8, month: 2, day: 4, who: "Couple" },
   niseko: { nights: 9, month: 1, who: "Couple" },
   okura: { nights: 9, month: 2, who: "Couple" },
   takino: { nights: 9, month: 2, who: "Family", adults: 2, children: 2 },

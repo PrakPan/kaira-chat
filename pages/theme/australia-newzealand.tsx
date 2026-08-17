@@ -155,7 +155,7 @@ const PROMPTS = {
   rouleGalette:
     "On our 10-night December trip for two, tell me about Roule Galette in Melbourne and its French galettes and crêpes, and work a relaxed lunch there into my Melbourne days.",
   fergburger:
-    "On our 10-night December trip for two, tell me about Fergburger in Queenstown — the queue, the burgers, and when to go — and add it to my New Zealand plan.",
+    "On our 14-night December trip for two, tell me about Fergburger in Queenstown — the queue, the burgers, and when to go — and add it to my New Zealand plan.",
   // Ask bar
   askBar:
     "Which southern-summer trip should we do in December, travelling as a couple — the Boxing Day Test and Sydney NYE double, the same double extended into New Zealand's South Island, or Sydney NYE with a Great Ocean Road drive? Compare the pace, the cost and the fixed dates, then build the full itinerary for the one you recommend.",
@@ -175,23 +175,23 @@ const PROMPTS = {
 // `askBar` deliberately carries no `nights`: it asks Kaira to compare a 9, a 10
 // and a 14-night shape, so pinning one length would answer it for her.
 const PROMPT_FACTS = promptIntakeMap(PROMPTS, {
-  boxingDayNye: { nights: 10, month: 12, who: "Couple" },
-  summerSydney: { nights: 7, month: 12, who: "Couple" },
-  ausNz: { nights: 14, month: 12, who: "Couple" },
+  boxingDayNye: { nights: 10, month: 12, day: 24, who: "Couple" },
+  summerSydney: { nights: 7, month: 12, day: 28, who: "Couple" },
+  ausNz: { nights: 14, month: 12, day: 24, who: "Couple" },
   greatOceanRoad: { nights: 9, month: 12, who: "Couple" },
-  bigDouble: { nights: 10, month: 12, who: "Couple" },
-  doubleSouthIsland: { nights: 14, month: 12, who: "Couple" },
-  sydneyNyeCoast: { nights: 9, month: 12, who: "Couple" },
-  boxingDayTicket: { nights: 10, month: 12, who: "Couple" },
-  mrsMacquaries: { nights: 10, month: 12, who: "Couple" },
-  midnightCruise: { nights: 10, month: 12, who: "Couple" },
-  tarongaLawns: { nights: 10, month: 12, who: "Couple" },
-  quay: { nights: 10, month: 12, who: "Couple" },
-  mrWong: { nights: 10, month: 12, who: "Couple" },
-  rouleGalette: { nights: 10, month: 12, who: "Couple" },
-  fergburger: { nights: 10, month: 12, who: "Couple" },
+  bigDouble: { nights: 10, month: 12, day: 24, who: "Couple" },
+  doubleSouthIsland: { nights: 14, month: 12, day: 24, who: "Couple" },
+  sydneyNyeCoast: { nights: 9, month: 12, day: 28, who: "Couple" },
+  boxingDayTicket: { nights: 10, month: 12, day: 24, who: "Couple" },
+  mrsMacquaries: { nights: 10, month: 12, day: 24, who: "Couple" },
+  midnightCruise: { nights: 10, month: 12, day: 24, who: "Couple" },
+  tarongaLawns: { nights: 10, month: 12, day: 24, who: "Couple" },
+  quay: { nights: 10, month: 12, day: 24, who: "Couple" },
+  mrWong: { nights: 10, month: 12, day: 24, who: "Couple" },
+  rouleGalette: { nights: 10, month: 12, day: 24, who: "Couple" },
+  fergburger: { nights: 14, month: 12, day: 24, who: "Couple" },
   askBar: { month: 12, who: "Couple" },
-  buildItinerary: { nights: 10, month: 12, who: "Couple" },
+  buildItinerary: { nights: 10, month: 12, day: 24, who: "Couple" },
 });
 
 const australiaNewZealandConfig: CinematicThemeConfig = {

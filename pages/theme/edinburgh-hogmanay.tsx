@@ -148,18 +148,18 @@ const PROMPTS = {
 // `askBar` deliberately carries no `nights`: it asks Kaira to compare a four-
 // night festival run against longer plans, so pinning a length would answer it.
 const PROMPT_FACTS = promptIntakeMap(PROMPTS, {
-  scottishTraditions: { nights: 5, month: 12, who: "Couple" },
-  edinburghLondon: { nights: 8, month: 12, who: "Couple" },
-  ultimate: { nights: 7, month: 12, who: "Couple" },
-  castlesWhisky: { nights: 7, month: 12, who: "Couple" },
-  progLondon: { nights: 8, month: 12, who: "Couple" },
-  progTorchlight: { nights: 4, month: 12, who: "Couple" },
-  progStreetParty: { nights: 4, month: 12, who: "Couple" },
-  progLoonyDook: { nights: 5, month: 12, who: "Couple" },
-  arthursSeat: { nights: 7, month: 12, who: "Couple" },
-  edinburghCastle: { nights: 7, month: 12, who: "Couple" },
-  lochNessGlencoe: { nights: 7, month: 12, who: "Couple" },
-  speyside: { nights: 7, month: 12, who: "Couple" },
+  scottishTraditions: { nights: 5, month: 12, day: 29, who: "Couple" },
+  edinburghLondon: { nights: 8, month: 12, day: 29, who: "Couple" },
+  ultimate: { nights: 7, month: 12, day: 28, who: "Couple" },
+  castlesWhisky: { nights: 7, month: 12, day: 28, who: "Couple" },
+  progLondon: { nights: 8, month: 12, day: 29, who: "Couple" },
+  progTorchlight: { nights: 4, month: 12, day: 29, who: "Couple" },
+  progStreetParty: { nights: 4, month: 12, day: 29, who: "Couple" },
+  progLoonyDook: { nights: 5, month: 12, day: 29, who: "Couple" },
+  arthursSeat: { nights: 7, month: 12, day: 28, who: "Couple" },
+  edinburghCastle: { nights: 7, month: 12, day: 28, who: "Couple" },
+  lochNessGlencoe: { nights: 7, month: 12, day: 28, who: "Couple" },
+  speyside: { nights: 7, month: 12, day: 28, who: "Couple" },
   askBar: { month: 12, who: "Couple" },
 });
 

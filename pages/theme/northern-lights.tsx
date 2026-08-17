@@ -84,7 +84,7 @@ const PROMPT_FACTS = promptIntakeMap(PROMPTS, {
   iceland: { nights: 6, month: 2, who: "Couple" },
   secretSeason: { nights: 5, month: 9, who: "Couple" },
   honeymoon: { nights: 7, month: 2, who: "Couple" },
-  family: { nights: 6, month: 12, who: "Family", adults: 2, children: 2 },
+  family: { nights: 6, month: 12, day: 20, who: "Family", adults: 2, children: 2 },
   solo: { nights: 6, month: 2, who: "Just me" },
   active: { nights: 7, month: 3, who: "Couple" },
   longWeekend: { nights: 4, month: 2, who: "Couple" },

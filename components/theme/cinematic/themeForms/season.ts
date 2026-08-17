@@ -188,16 +188,26 @@ export interface ResolvedMonthStub {
  * config that says "February" reads as Feb '27 in August '26 and can never
  * point at a February that has been and gone. Returns null for a nonsense
  * month, so callers can simply omit the key.
+ *
+ * `day` is for a prompt pinned to a fixed date — Hogmanay, the Boxing Day Test,
+ * a New Year's Eve finish. Then it's THAT DATE, not merely some part of the
+ * month, that has to clear the lead time: asked on 10 December, a trip built
+ * around the 26th resolves to next December rather than to a date three weeks
+ * out that nobody can book.
  */
 export function resolveMonthForward(
   month: number,
   from: Date = startOfToday(),
+  day?: number,
 ): ResolvedMonthStub | null {
   if (!Number.isInteger(month) || month < 1 || month > 12) return null;
   const earliest = addDays(from, MIN_LEAD_DAYS);
   let year = from.getFullYear();
-  // Last day of that month this year; if it's already too close, take next year.
-  if (new Date(year, month, 0) < earliest) year += 1;
+  const tooClose = day
+    ? new Date(year, month - 1, day) < earliest
+    : // No fixed day — any part of the month still being reachable is enough.
+      new Date(year, month, 0) < earliest;
+  if (tooClose) year += 1;
   return {
     key: `${year}-${String(month).padStart(2, "0")}`,
     year,
@@ -212,15 +222,27 @@ export function resolveMonthForward(
  * The routeless counterpart to routeDates: same mid-month Saturday departure
  * and the same lead-time push-out, so dates generated for a theme-page prompt
  * line up with the ones the mini-form would produce for the same month.
+ *
+ * `day` overrides that departure for a prompt built around a fixed date. It is
+ * left exactly where the config put it — the whole point of naming the 26th is
+ * that the trip starts on the 26th — and the end simply runs `nights` past it,
+ * rolling into the next month or year on its own. That is what lets a nine-night
+ * "New Year's Eve finish" actually contain the 31st instead of ending on the
+ * 21st, which is what the generic mid-month departure produced.
  */
 export function monthDates(
   month: ResolvedMonthStub,
   nights: number,
   from: Date = startOfToday(),
+  day?: number,
 ): [string, string] {
-  let start = secondSaturday(month.year, month.month);
-  const earliest = addDays(from, MIN_LEAD_DAYS);
-  if (start < earliest) start = nextWeekday(earliest, 6);
+  let start = day
+    ? new Date(month.year, month.month - 1, day)
+    : secondSaturday(month.year, month.month);
+  if (!day) {
+    const earliest = addDays(from, MIN_LEAD_DAYS);
+    if (start < earliest) start = nextWeekday(earliest, 6);
+  }
   return [toIso(start), toIso(addDays(start, Math.max(0, nights)))];
 }
 
