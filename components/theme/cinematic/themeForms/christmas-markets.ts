@@ -32,11 +32,18 @@ const christmasMarketsForm: ThemeForm = {
       month: 12,
       label: "The full thing",
       tag: "PEAK",
-      line: "Every square lit, plus New Year's Eve. Book stays months ahead.",
+      line: "Every square lit, Christmas Day itself, then New Year's Eve. Book stays months ahead.",
     },
   ],
   // Nights track what these trips actually run at: Austria, Czechia, Hungary,
   // Germany and the Netherlands all average 9–11 nights in our own bookings.
+  //
+  // Every December departure is anchored so the 25th falls INSIDE the trip —
+  // the same rule the page's prompts follow, so picking "Alpine Classic" in the
+  // form and tapping the Alpine card on the page produce the same dates. Left
+  // unanchored, December would leave on the second Saturday (the 12th) and a
+  // nine-night trip would be home before Christmas Eve. November is untouched:
+  // it's the quiet markets month, with no fixed date to hit.
   routes: [
     {
       key: "rhine_run",
@@ -45,9 +52,10 @@ const christmasMarketsForm: ThemeForm = {
       tag: "CLASSIC",
       nights: 8,
       skeleton: "strasbourg_cologne_amsterdam",
-      // The Rhine markets close on 23 December, so this one is a November /
-      // early-December trip only.
       months: [11, 12],
+      // The Rhine markets close on 23 December, so the December run starts on
+      // the 21st: the last market days, then Christmas itself.
+      anchor: { month: 12, day: 21, note: "Last market days, then Christmas" },
       fareNote: "Lufthansa DEL/BOM→FRA direct; out of AMS.",
     },
     {
@@ -58,6 +66,9 @@ const christmasMarketsForm: ThemeForm = {
       nights: 9,
       skeleton: "munich_salzburg_vienna",
       months: [11, 12],
+      // 23 Dec – 1 Jan: the last Munich market days, Christmas in Salzburg,
+      // New Year's Eve in Vienna.
+      anchor: { month: 12, day: 23, note: "Christmas, then New Year in Vienna" },
       fareNote: "Early-Dec sweet spot; MUC in / VIE out.",
     },
     {
@@ -68,20 +79,23 @@ const christmasMarketsForm: ThemeForm = {
       nights: 10,
       skeleton: "prague_vienna_budapest",
       months: [12],
-      // Starts on the 27th so the 10 nights carry through New Year's Eve.
-      anchor: { month: 12, day: 27, note: "New Year's Eve in a grand square" },
+      // Was the 27th, which started after Christmas. From the 23rd the ten
+      // nights hold both the 25th and the Bells on the 31st.
+      anchor: { month: 12, day: 23, note: "Christmas, then the Bells" },
       fareNote: "NYE run; PRG in / BUD out. Peak week, book early.",
     },
     {
       key: "midnight_nye",
       label: "Midnight Trip",
-      blurb: "Prague → Vienna, just the Bells and the best two squares",
-      tag: "NYE SHORT",
-      nights: 6,
+      blurb: "Prague → Vienna, Christmas Day and the Bells",
+      tag: "XMAS + NYE",
+      // Six nights could not hold both the 25th and the 31st — they are six
+      // days apart, so seven is the floor for a trip that promises each.
+      nights: 7,
       skeleton: "prague_vienna",
       months: [12],
-      anchor: { month: 12, day: 28, note: "New Year's Eve" },
-      fareNote: "Short NYE hit; PRG in / VIE out.",
+      anchor: { month: 12, day: 25, note: "Christmas Day, then New Year's Eve" },
+      fareNote: "Christmas + NYE hit; PRG in / VIE out.",
     },
   ],
   // Panel hero on /chat — a lit carousel and stalls on a half-timbered market square at night.

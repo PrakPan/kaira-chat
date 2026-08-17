@@ -5,9 +5,9 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
 
 const nextConfig = {
   distDir: process.env.BUILD_DIR || ".next",
-  // output: "export",
-  // trailingSlash: true,
-  // skipTrailingSlashRedirect: true,
+  output: "export",
+  trailingSlash: true,
+  skipTrailingSlashRedirect: true,
 
   images: {
     // Route every <Image> through our Serverless Image Handler so our own media
