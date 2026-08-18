@@ -485,7 +485,11 @@ const CinematicHero: React.FC<{
               type="button"
               onClick={submitComposer}
               className="shrink-0 rounded-full border-none cursor-pointer px-[15px] py-[8px] md:px-[20px] md:py-[10px] text-[12.5px] md:text-[14px] font-semibold"
-              style={{ background: INK, color: PAPER }}
+              // The hero's primary action, so it takes the accent like every
+              // other CTA on the page. It used to hard-code INK, which left it
+              // black on a themed page while the docked bar beside it and the
+              // card CTAs below it were all in the theme colour.
+              style={{ background: palette.accent, color: palette.accentOn }}
             >
               Send →
             </button>
