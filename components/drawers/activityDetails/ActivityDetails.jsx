@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { useState } from "react";
 import media from "../../media";
 import ImageLoader from "../../ImageLoader";
+import ImageGrid, { buildGalleryImages } from "../common/ImageGrid";
 import SkeletonCard from "../../ui/SkeletonCard";
 import CheckboxFormComponent from "../../../components/FormComponents/CheckboxFormComponent";
 import { getIndianPrice } from "../../../services/getIndianPrice";
@@ -481,6 +482,64 @@ export default function ActivityDetails(props) {
     </>
   );
 
+  // Hero + extra images, rendered as the POI drawers' mosaic when the activity
+  // has extras (the detail API returns `extra_images` alongside `image`).
+  const galleryImages = buildGalleryImages(props.data);
+
+  // Duration / popularity badges sit over the first (largest) image. On the
+  // mosaic that tile is only a third of the drawer wide, so the pills stack in
+  // one bottom-left column instead of straddling the full width.
+  const renderHeroBadges = (compact) => (
+    <>
+      {/* gradient scrim keeps the bottom badge legible over any image */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/55 to-transparent" />
+
+      {compact ? (
+        <div className="absolute bottom-2 left-2 flex flex-col items-start gap-1.5">
+          {props.data?.is_very_popular ? (
+            <div className="flex flex-row items-center gap-1 whitespace-nowrap rounded-full bg-[#f7e700] px-2 py-[3px] text-[10px] font-bold uppercase tracking-[0.05em] text-[#0b1220] shadow-sm">
+              <FaStar size={9} />
+              Very Popular
+            </div>
+          ) : null}
+
+          {props.data?.ideal_duration_number ? (
+            <div className="flex flex-row items-center gap-1 whitespace-nowrap rounded-full bg-black/55 px-2 py-[3px] text-white backdrop-blur">
+              <IoTimeOutline size={12} />
+              <div className="font-mono text-[10px] uppercase tracking-[0.04em]">
+                {props.data.ideal_duration_number}{" "}
+                {props.data.ideal_duration_number > 1
+                  ? props.data?.ideal_duration_unit?.toLowerCase()
+                  : props.data?.ideal_duration_unit?.toLowerCase()?.slice(0, -1)}
+              </div>
+            </div>
+          ) : null}
+        </div>
+      ) : (
+        <>
+          {props.data?.is_very_popular ? (
+            <div className="absolute bottom-3 right-3 flex flex-row items-center gap-1.5 whitespace-nowrap rounded-full bg-[#f7e700] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.06em] text-[#0b1220] shadow-sm">
+              <FaStar size={11} />
+              Very Popular
+            </div>
+          ) : null}
+
+          {props.data?.ideal_duration_number ? (
+            <div className="absolute bottom-3 left-3 flex flex-row items-center gap-1.5 whitespace-nowrap rounded-full bg-black/55 px-3 py-1.5 text-white backdrop-blur">
+              <IoTimeOutline size={14} />
+              <div className="font-mono text-[11px] uppercase tracking-[0.05em]">
+                {props.data.ideal_duration_number}{" "}
+                {props.data.ideal_duration_number > 1
+                  ? props.data?.ideal_duration_unit?.toLowerCase()
+                  : props.data?.ideal_duration_unit?.toLowerCase()?.slice(0, -1)}
+              </div>
+            </div>
+          ) : null}
+        </>
+      )}
+    </>
+  );
+
   return (
     <div className="h-[100vh] overflow-y-auto bg-[#fafaf5] font-sans">
       {/* Sticky header — back action stays reachable while scrolling */}
@@ -516,72 +575,60 @@ export default function ActivityDetails(props) {
             props.updateAmenities && "opacity-50"
           }`}
         >
-          <div className="relative h-[200px] md:h-[320px] w-full overflow-hidden rounded-2xl">
-            <div
-              className="h-full w-full"
-              style={{ display: imageLoaded ? "block" : "none" }}
-            >
-              <ImageLoader
-                borderRadius="16px"
-                marginTop="0"
-                widthMobile="100%"
-                width="100%"
-                height="100%"
-                url={
-                  props.data?.image && !imageFail
-                    ? props.data.image
-                    : "media/icons/bookings/notfounds/noroom.png"
-                }
-                dimensionsMobile={{ width: 500, height: 295 }}
-                dimensions={{ width: 468, height: 295 }}
-                onload={() => {
-                  setTimeout(() => {
+          {galleryImages.length > 1 ? (
+            /* Same extra-images mosaic the POI drawers render, hero first. */
+            <ImageGrid
+              images={galleryImages}
+              className="h-[240px] md:h-[320px]"
+              overlay={renderHeroBadges(true)}
+              altPrefix={props.data?.display_name || props.data?.name || "Activity"}
+            />
+          ) : (
+            <div className="relative h-[200px] md:h-[320px] w-full overflow-hidden rounded-2xl">
+              <div
+                className="h-full w-full"
+                style={{ display: imageLoaded ? "block" : "none" }}
+              >
+                <ImageLoader
+                  borderRadius="16px"
+                  marginTop="0"
+                  widthMobile="100%"
+                  width="100%"
+                  height="100%"
+                  url={
+                    props.data?.image && !imageFail
+                      ? props.data.image
+                      : "media/icons/bookings/notfounds/noroom.png"
+                  }
+                  dimensionsMobile={{ width: 500, height: 295 }}
+                  dimensions={{ width: 468, height: 295 }}
+                  onload={() => {
+                    setTimeout(() => {
+                      setImageLoaded(true);
+                    }, 1000);
+                  }}
+                  onfail={() => {
+                    setImageFail(true);
                     setImageLoaded(true);
-                  }, 1000);
+                  }}
+                  noLazy
+                ></ImageLoader>
+
+                {renderHeroBadges(false)}
+              </div>
+
+              <div
+                style={{
+                  display: !imageLoaded ? "block" : "none",
                 }}
-                onfail={() => {
-                  setImageFail(true);
-                  setImageLoaded(true);
-                }}
-                noLazy
-              ></ImageLoader>
-
-              {/* gradient scrim keeps the bottom badge legible over any image */}
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/55 to-transparent" />
-
-              {props.data?.is_very_popular ? (
-                <div className="absolute bottom-3 right-3 flex flex-row items-center gap-1.5 rounded-full bg-[#f7e700] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.06em] text-[#0b1220] shadow-sm">
-                  <FaStar size={11} />
-                  Very Popular
-                </div>
-              ) : null}
-
-              {props.data?.ideal_duration_number ? (
-                <div className="absolute bottom-3 left-3 flex flex-row items-center gap-1.5 rounded-full bg-black/55 px-3 py-1.5 text-white backdrop-blur">
-                  <IoTimeOutline size={14} />
-                  <div className="font-mono text-[11px] uppercase tracking-[0.05em]">
-                    {props.data.ideal_duration_number}{" "}
-                    {props.data.ideal_duration_number > 1
-                      ? props.data?.ideal_duration_unit?.toLowerCase()
-                      : props.data?.ideal_duration_unit
-                          ?.toLowerCase()
-                          ?.slice(0, -1)}
-                  </div>
-                </div>
-              ) : null}
+              >
+                <SkeletonCard
+                  width={"100%"}
+                  height={isPageWide ? "320px" : "200px"}
+                />
+              </div>
             </div>
-
-            <div
-              style={{
-                display: !imageLoaded ? "block" : "none",
-              }}
-            >
-              <SkeletonCard
-                width={"100%"}
-                height={isPageWide ? "320px" : "200px"}
-              />
-            </div>
-          </div>
+          )}
 
           <div className="flex flex-col gap-5">
             <div className="flex flex-col gap-1.5">
