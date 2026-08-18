@@ -72,6 +72,14 @@ export const THEME_PALETTES: Record<string, CinematicThemePalette> = {
     page: "#f7fbfb",
     heroTint: "#e6f3f2",
   },
+  // /theme/thailand-bali-offbeat — jungle green, off the Andaman turquoise so
+  // the two Thailand themes don't read as the same page.
+  "thailand-bali-offbeat": {
+    accent: "#0e7a55",
+    accentSoft: "#e2f2ea",
+    page: "#f6faf7",
+    heroTint: "#dff0e6",
+  },
   // /theme/filmy-getaways.
   "filmy-getaways": {
     accent: "#a03352",
@@ -106,6 +114,7 @@ const THEME_PAGE_PATHS: Record<string, string> = {
   // or those readers lose their way back to the page.
   "switzerland-ddlj": "/theme/filmy-getaways",
   "thailand-bachelor": "/theme/thailand-bachelor",
+  "thailand-bali-offbeat": "/theme/thailand-bali-offbeat",
 };
 
 /** Landing-page path for a theme slug, or `null` when the slug isn't a theme
