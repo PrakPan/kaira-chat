@@ -24,7 +24,7 @@ import type { CinematicThemeConfig } from "../../components/theme/cinematic/type
 import { THEME_PALETTES } from "../../components/theme/cinematic/palettes";
 
 // The themed mini-form + /chatkit slug for this page (Switzerland DDLJ route).
-const THEME_SLUG = "switzerland-ddlj";
+const THEME_SLUG = "filmy-getaways";
 
 const CDN = "https://d31aoa0ehgvjdi.cloudfront.net";
 const IMAGE_BASE = `${CDN}/media/website/filmy-getaways-2026`;
@@ -97,7 +97,7 @@ const PROMPT_FACTS = promptIntakeMap(PROMPTS, {
 
 const filmyGetawaysConfig: CinematicThemeConfig = {
   // Cinema red — carries every CTA, the saved state and the docked bar.
-  theme: THEME_PALETTES["switzerland-ddlj"],
+  theme: THEME_PALETTES[THEME_SLUG],
   header: {
     title: "Filmy getaways",
     subtitle: "Theme · Bollywood + Hollywood",

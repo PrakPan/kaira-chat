@@ -9,7 +9,7 @@
 import type { ThemeForm } from "./types";
 
 const switzerlandDdljForm: ThemeForm = {
-  slug: "switzerland-ddlj",
+  slug: "filmy-getaways",
   display: "Switzerland · Cinematic Romance",
   tagline: "A DDLJ-style Swiss escape — slow trains, misty valleys, café mornings.",
   voice: "Cinematic and unhurried. Frames the trip like film scenes.",

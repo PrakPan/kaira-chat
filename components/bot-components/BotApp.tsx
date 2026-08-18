@@ -246,9 +246,21 @@ const BackToItineraryBar = ({
 
 function transformDraftToItinerary(draft: any) {
   const routes = draft?.routes ?? [];
-  const cities = routes.map((route: any) => {
+  const cities = routes.map((route: any, index: number) => {
     const cityName = route.city?.name ?? "unknown";
-    const cityId = route.city?.id || `draft-city-${route.city?.name}`;
+    // One id per LEG, not per city. A trip can visit the same place twice
+    // (Sapporo → Niseko → Sapporo) and the draft payload only carries the GEO
+    // city id, which repeats — the canonical API's per-leg `itinerary_city_id`
+    // doesn't exist yet at this stage. Everything downstream keys off this id:
+    // the React key in DaybyDay, the per-city hotel filter, and the transfer
+    // map below. Sharing one id made both Sapporo cards match both Sapporo
+    // stays, so each listed the other's hotel alongside its own.
+    //
+    // `city.id` just below keeps the plain geo id for anything that needs to
+    // know *which city* this is rather than *which stay*.
+    const cityId = route.city?.id
+      ? `${route.city.id}-${index}`
+      : `draft-city-${route.city?.name}-${index}`;
     return {
       id: cityId,
       city: {
@@ -288,18 +300,26 @@ function transformDraftToItinerary(draft: any) {
           }),
         ),
       })),
-      hotels: route.hotels
-        ? [
-            {
-              id: route.hotels.id || `draft-hotel-${cityId}`,
-              name: route.hotels.name,
-              star_category: null,
-              images: [],
-              rating: route?.hotels?.star_category ?? null,
-              itinerary_city_id: cityId,
-            },
-          ]
-        : [],
+      // `route.hotels` is normally a single object, but normalise so an array
+      // works too. Reading `.name` straight off an array yields undefined,
+      // which the draftStays builder below reads as "no hotel" and turns into a
+      // placeholder — so a city with two hotels rendered with NO hotel row at
+      // all rather than two. The `-${hIdx}` on the fallback id matters as well:
+      // two unnamed hotels in one city would otherwise share a key in
+      // ItineraryCity's multiHotelStays.map.
+      hotels: (Array.isArray(route.hotels)
+        ? route.hotels
+        : route.hotels
+          ? [route.hotels]
+          : []
+      ).map((hotel: any, hIdx: number) => ({
+        id: hotel?.id || `draft-hotel-${cityId}-${hIdx}`,
+        name: hotel?.name,
+        star_category: null,
+        images: [],
+        rating: hotel?.star_category ?? null,
+        itinerary_city_id: cityId,
+      })),
       activities: [],
       transfers: { sightseeing: [], airport: [] },
     };
@@ -1749,10 +1769,13 @@ export default function BotApp({
         !data?.routes
       ) {
         const intercity: Record<string, any> = {};
-        const nameToId: Record<string, string> = {};
-        for (const c of currentItineraryRef.current?.cities ?? []) {
-          if (c.city?.name && c.id) nameToId[c.city.name] = String(c.id);
-        }
+        // Leg ids in route order. This used to be a name → id map, which a
+        // return trip breaks: "Sapporo" appears twice and collapses to a single
+        // entry, so both Sapporo legs produced the same transfer key. Transfers
+        // arrive in route order, so position is the reliable pairing.
+        const cityIds: string[] = (
+          currentItineraryRef.current?.cities ?? []
+        ).map((c: any) => String(c.id));
         const bookingTypeFromLeg = (leg: string) => {
           const l = leg.toLowerCase();
           if (l.includes("flight")) return "Flight";
@@ -1780,23 +1803,30 @@ export default function BotApp({
             is_draft: true,
           };
         };
+        // Transfer i joins city i → city i+1, which is exactly the key DaybyDay
+        // builds (`city.id + ":" + nextCity.id`).
         (data.transfers ?? []).forEach((t: any, idx: number) => {
-          const fromId = nameToId[t.from_city] || `draft-city-${t.from_city}`;
-          const toId = nameToId[t.to_city] || `draft-city-${t.to_city}`;
+          const fromId = cityIds[idx] ?? `draft-city-${t.from_city}`;
+          const toId = cityIds[idx + 1] ?? `draft-city-${t.to_city}`;
           upsertTransfer(`${fromId}:${toId}`, t, idx);
         });
+        // Home → first city and last city → home. The city side has to be the
+        // leg id (what DaybyDay looks up as `cities[0].id` / `cities[last].id`),
+        // not the server's geo `to_city_id` / `from_city_id`; the home side
+        // stays the gmaps place id the server sends.
         const st = data.start_transfer;
-        if (st?.from_itinerary_city_id && st?.to_city_id) {
+        if (st?.from_itinerary_city_id && cityIds[0]) {
           upsertTransfer(
-            `${st.from_itinerary_city_id}:${st.to_city_id}`,
+            `${st.from_itinerary_city_id}:${cityIds[0]}`,
             st,
             "start",
           );
         }
         const et = data.end_transfer;
-        if (et?.from_city_id && et?.to_itinerary_city_id) {
+        const lastCityId = cityIds[cityIds.length - 1];
+        if (et?.to_itinerary_city_id && lastCityId) {
           upsertTransfer(
-            `${et.from_city_id}:${et.to_itinerary_city_id}`,
+            `${lastCityId}:${et.to_itinerary_city_id}`,
             et,
             "end",
           );
