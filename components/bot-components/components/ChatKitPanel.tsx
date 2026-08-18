@@ -2563,7 +2563,16 @@ case "load_route_on_map": {
   break;
 }
 case "itinerary_completion_process_completed": {
-  const completedId = data.itinerary_id as string;
+  // THE polling trigger. The backend emits this once the completion chain is
+  // actually registered, so `/status/` has real task states to report by the
+  // time we ask. onItineraryCompletionDone sets the real itinerary id and turns
+  // polling on (see BotApp's handleItineraryCompletionDone).
+  //
+  // `summary` is optional — the current payload is { itinerary_id, session_id }
+  // — and falls back to the session id, which the backend sends alongside and
+  // which matches the itinerary id on this route.
+  const completedId =
+    (data.itinerary_id as string) || (data.session_id as string) || "";
   const summary = (data.summary as string) ?? "";
   if (completedId) {
     onItineraryCompletionDone?.(completedId, summary);
@@ -2585,11 +2594,18 @@ case "refresh_itinerary": {
 
 case "start_itinerary_completion_process": {
   const startId = data.itinerary_id as string;
+  // UI only: skeleton itinerary + PENDING statuses + the completing shimmer.
+  // It deliberately does NOT start status polling.
+  //
+  // This effect only announces that completion is ABOUT to run, and the backend
+  // emits it at different points depending on the turn — mid-stream on a
+  // route-confirm (before the pricing step has even run) and at the end on a
+  // pricing-form submit. Polling on it meant the first `/status/` call could
+  // land before the celery chain was registered, come back FAILURE on every
+  // task, and bounce the reader to /thank-you with a finished itinerary on
+  // screen. `itinerary_completion_process_completed` is the effect that means
+  // the chain is actually queued, so that is what starts polling now.
   onItineraryCompletionStart?.(startId ?? "pending");
-  // The itinerary ID arrives with this effect — set up polling with the real ID
-  if (startId) {
-    onItineraryCompletionDone?.(startId);
-  }
   // Server kicks off completion only after the user has confirmed their
   // itinerary, so this is a reliable trigger for chat_itinerary_confirmed
   // even when the explicit `itinerary.lock` effect doesn't arrive.
