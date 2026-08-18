@@ -24,6 +24,14 @@ export interface MessageAttachment {
 
 export interface Message {
   id: string;
+  /** Stable React key. `id` is swapped mid-stream for the server's real
+   *  message id (see onAssistantMessageId's adopt paths), and a list keyed on
+   *  `id` treats that rename as a different element — React unmounts the bubble
+   *  and mounts a new one, so it visibly disappears and re-enters with its
+   *  entry animation. Keying on this instead keeps the same element across the
+   *  rename. Absent on messages restored from history, which never rename;
+   *  callers fall back to `id`. */
+  clientKey?: string;
   role: "user" | "assistant";
   content: string;
   timestamp: Date;
@@ -536,6 +544,28 @@ function applyProgressStep(
   return [...steps, { text: incoming.text, done: incoming.done }];
 }
 
+/**
+ * Close the trailing progress step.
+ *
+ * A `progress_update` always arrives with `done: false`, and applyProgressStep
+ * only marks a step done when the NEXT one lands — so the last step of any run
+ * is left open. ProgressLoader spins until every step is done, so the moment a
+ * message stops being the progress target its trailing step has to be closed
+ * here or that bubble's loader never stops.
+ *
+ * This used to live inline in the stream's `finally`, which meant it only ever
+ * ran for whichever message was current when the stream ended. A message
+ * superseded mid-turn (the backend emits a second assistant_message after the
+ * itinerary summary) was marked `isStreaming: false` with its last step still
+ * open, and sat there spinning on "Pulling it all together…" forever.
+ */
+function finalizeProgress(steps: ProgressStep[] = []): ProgressStep[] {
+  if (steps.length === 0) return steps;
+  const last = steps[steps.length - 1];
+  if (last.done) return steps;
+  return [...steps.slice(0, -1), { ...last, done: true }];
+}
+
 function applyTaskAdded(tasks: ThinkingTask[], index: number, content: string): ThinkingTask[] {
   const next = [...tasks];
   next[index] = { content, done: false };
@@ -667,6 +697,7 @@ export function useChat({
         ...prev,
         {
           id: assistantMsgId,
+          clientKey: assistantMsgId,
           role: "assistant",
           content: "",
           timestamp: new Date(),
@@ -744,9 +775,20 @@ export function useChat({
             const prevId = currentAssistantId;
             currentAssistantId = realId;
             setMessages((prev) => [
-              ...prev.map((m) => (m.id === prevId ? { ...m, isStreaming: false } : m)),
+              // Superseded mid-turn — see the note on the same branch in
+              // sendMessage: the trailing progress step has to be closed here.
+              ...prev.map((m) =>
+                m.id === prevId
+                  ? {
+                      ...m,
+                      isStreaming: false,
+                      progressSteps: finalizeProgress(m.progressSteps),
+                    }
+                  : m,
+              ),
               {
                 id: realId,
+                clientKey: realId,
                 role: "assistant",
                 content: "",
                 timestamp: new Date(),
@@ -828,12 +870,11 @@ export function useChat({
         setMessages((prev) =>
           prev.map((m) => {
             if (m.id !== currentAssistantId) return m;
-            const steps = m.progressSteps ?? [];
-            const finalSteps =
-              steps.length > 0 && !steps[steps.length - 1].done
-                ? [...steps.slice(0, -1), { ...steps[steps.length - 1], done: true }]
-                : steps;
-            return { ...m, isStreaming: false, progressSteps: finalSteps };
+            return {
+              ...m,
+              isStreaming: false,
+              progressSteps: finalizeProgress(m.progressSteps),
+            };
           })
         );
         setIsStreaming(false);
@@ -886,6 +927,7 @@ export function useChat({
         ...stripTrailingErrorPair(prev),
         {
           id: userMsgId,
+          clientKey: userMsgId,
           role: "user",
           content: trimmed,
           timestamp: new Date(),
@@ -897,6 +939,7 @@ export function useChat({
         },
         {
           id: assistantMsgId,
+          clientKey: assistantMsgId,
           role: "assistant",
           content: "",
           timestamp: new Date(),
@@ -982,6 +1025,55 @@ export function useChat({
 
         let firstToken = false;
 
+        // ── Progress routing across a message boundary ────────────────────────
+        // The backend can close an assistant message and then keep emitting
+        // progress for the NEXT one (the itinerary summary lands, then three
+        // more updates run while pricing is queued, then the "locked in"
+        // message opens). Those updates belong to the message that is coming,
+        // not the answer the reader has already finished reading.
+        //
+        // `currentAssistantDone` records that `thread.item.done` closed the
+        // current message. The next progress/thought then opens a streaming
+        // placeholder — which is what puts a live loader on screen during the
+        // gap — and `pendingPlaceholderId` lets the real assistant_message
+        // ADOPT that placeholder instead of stacking an empty bubble on top.
+        let currentAssistantDone = false;
+        let pendingPlaceholderId: string | null = null;
+        let placeholderSeq = 0;
+
+        /** The bubble progress belongs to right now, opening the next one if
+         *  the current message has already been closed. */
+        const progressTarget = (): string => {
+          if (!currentAssistantDone) return currentAssistantId;
+          const placeholderId = `${assistantMsgId}-next-${++placeholderSeq}`;
+          const prevId = currentAssistantId;
+          currentAssistantId = placeholderId;
+          pendingPlaceholderId = placeholderId;
+          currentAssistantDone = false;
+          setMessages((prev) => [
+            ...prev.map((m) =>
+              m.id === prevId
+                ? {
+                    ...m,
+                    isStreaming: false,
+                    progressSteps: finalizeProgress(m.progressSteps),
+                  }
+                : m,
+            ),
+            {
+              id: placeholderId,
+              clientKey: placeholderId,
+              role: "assistant" as const,
+              content: "",
+              timestamp: new Date(),
+              isStreaming: true,
+              progressSteps: [],
+              thinkingTasks: [],
+            },
+          ]);
+          return placeholderId;
+        };
+
         await readStream(
           response,
           {
@@ -1003,13 +1095,20 @@ export function useChat({
             },
             onThreadId: handleThreadId,
             onAssistantMessageId: (realId, isNewItem) => {
-              if (realId === currentAssistantId) return;
+              if (realId === currentAssistantId) {
+                // `thread.item.done` for the message we're on. Remember that it
+                // is closed so any progress that follows opens the next bubble
+                // rather than landing under a finished answer.
+                if (!isNewItem) currentAssistantDone = true;
+                return;
+              }
               if (!assistantIdClaimed) {
                 // First real id of this turn → adopt it onto the placeholder so
                 // text deltas + feedback correlate to the real message id.
                 const oldId = currentAssistantId;
                 currentAssistantId = realId;
                 assistantIdClaimed = true;
+                currentAssistantDone = false;
                 setMessages((prev) =>
                   prev.map((m) => (m.id === oldId ? { ...m, id: realId } : m))
                 );
@@ -1024,12 +1123,39 @@ export function useChat({
               // is dropped at render time). Only the `added` event opens it;
               // the matching `done` is a no-op so we don't duplicate.
               if (!isNewItem) return;
+              // Progress arriving after the previous message closed already
+              // opened a placeholder for THIS message — adopt it (keeping the
+              // steps that ran while the reader waited) instead of stacking a
+              // second, empty bubble on top of it.
+              if (pendingPlaceholderId) {
+                const oldId = pendingPlaceholderId;
+                pendingPlaceholderId = null;
+                currentAssistantId = realId;
+                currentAssistantDone = false;
+                setMessages((prev) =>
+                  prev.map((m) => (m.id === oldId ? { ...m, id: realId } : m)),
+                );
+                return;
+              }
               const prevId = currentAssistantId;
               currentAssistantId = realId;
+              currentAssistantDone = false;
               setMessages((prev) => [
-                ...prev.map((m) => (m.id === prevId ? { ...m, isStreaming: false } : m)),
+                // Superseded mid-turn: close its trailing progress step too, or the
+                // loader on this bubble spins forever (the stream's `finally` only
+                // ever finalizes whichever message is current when it ends).
+                ...prev.map((m) =>
+                  m.id === prevId
+                    ? {
+                        ...m,
+                        isStreaming: false,
+                        progressSteps: finalizeProgress(m.progressSteps),
+                      }
+                    : m,
+                ),
                 {
                   id: realId,
+                  clientKey: realId,
                   role: "assistant" as const,
                   content: "",
                   timestamp: new Date(),
@@ -1065,7 +1191,10 @@ export function useChat({
               ]);
             },
             onProgress: (step) => {
-              const targetId = currentAssistantId; // capture — see onTextChunk note
+              // progressTarget() opens the next bubble when the current message
+              // has already been closed — see its definition above. Capture the
+              // id NOW, per the onTextChunk note.
+              const targetId = progressTarget();
               setMessages((prev) =>
                 prev.map((m) =>
                   m.id !== targetId
@@ -1075,7 +1204,9 @@ export function useChat({
               );
             },
             onWorkflowTaskAdded: (index, content) => {
-              const targetId = currentAssistantId; // capture — see onTextChunk note
+              // Same boundary rule as onProgress: a thought that arrives after
+              // the message closed belongs to the next one.
+              const targetId = progressTarget();
               setMessages((prev) =>
                 prev.map((m) =>
                   m.id !== targetId
@@ -1132,12 +1263,11 @@ export function useChat({
         setMessages((prev) =>
           prev.map((m) => {
             if (m.id !== currentAssistantId) return m;
-            const steps = m.progressSteps ?? [];
-            const finalSteps =
-              steps.length > 0 && !steps[steps.length - 1].done
-                ? [...steps.slice(0, -1), { ...steps[steps.length - 1], done: true }]
-                : steps;
-            return { ...m, isStreaming: false, progressSteps: finalSteps };
+            return {
+              ...m,
+              isStreaming: false,
+              progressSteps: finalizeProgress(m.progressSteps),
+            };
           })
         );
         // Only the most recent stream owns the global streaming flag. If a send

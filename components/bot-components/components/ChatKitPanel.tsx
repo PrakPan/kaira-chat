@@ -4416,7 +4416,10 @@ const handleShowLogin = useCallback(() => {
 
               return (
               <MessageBubble
-                key={msg.id}
+                // Keyed on clientKey, not id: `id` is renamed mid-stream to the
+                // server's real message id, and keying on it remounts the bubble
+                // — it vanishes and replays its entry animation mid-turn.
+                key={msg.clientKey ?? msg.id}
                 message={msg}
                 entities={entities}
                 widgetDisabled={

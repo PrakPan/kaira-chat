@@ -270,6 +270,16 @@ const ItineraryContainer = (props) => {
   const [showSettings, setShowSettings] = useState(false);
 
   // ── ALL useRef AFTER useState ─────────────────────────────────────────────
+  // ── All-FAILURE retry budget ──────────────────────────────────────────────
+  // Counts consecutive status reads where EVERY celery task came back FAILURE.
+  // The backend can announce completion (`start_itinerary_completion_process`)
+  // before the chain is actually registered, and in that window the endpoint
+  // answers FAILURE across the board — not because the trip failed, but because
+  // nothing has been queued yet. Acting on the first such read strands the user
+  // on /thank-you with a perfectly good itinerary still on screen, so the
+  // reading is held and re-polled until the budget runs out.
+  const ALL_FAILURE_RETRIES = 3;
+  const allFailureCountRef = useRef(0);
   const itinerarySuccessRef = useRef(false);
   const pricingSuccessRef = useRef(false);
   const transfersSuccessRef = useRef(false);
@@ -771,6 +781,33 @@ const fetchStatus = async () => {
     dispatch(setItineraryStatus("version", res.data?.version || null));
     setConsecutiveErrors(0);
 
+    // ── 1b. Hold an all-FAILURE reading before believing it ──────────────────
+    // Every task reporting FAILURE at once is the signature of a chain that
+    // hasn't been queued yet, not of a trip that failed — a real failure lands
+    // on one or two tasks while the others are still PENDING/SUCCESS. Until the
+    // retry budget is spent, such a read is dropped on the floor: no status
+    // reaches redux (a FAILURE there flips the panel to a failed state) and no
+    // redirect fires. Polling continues, so the moment the backend catches up
+    // the next read resolves normally and the counter resets.
+    const TASK_KEYS = ["ITINERARY", "TRANSFERS", "PRICING", "HOTELS"];
+    const allFailure =
+      TASK_KEYS.every((key) => status?.[key] === "FAILURE");
+
+    if (allFailure) {
+      allFailureCountRef.current += 1;
+      if (allFailureCountRef.current <= ALL_FAILURE_RETRIES) {
+        console.warn(
+          `[status] all tasks FAILURE — retry ${allFailureCountRef.current}/${ALL_FAILURE_RETRIES} before accepting it`,
+        );
+        setPolling(true);
+        return;
+      }
+      // Budget spent and it still reads all-FAILURE: treat it as real and let
+      // it fall through to the dispatch + /thank-you redirect below.
+    } else {
+      allFailureCountRef.current = 0;
+    }
+
     // ── 2. Immediately dispatch real statuses so fetchItinerary sees them ────
     // Note: hotels_status SUCCESS is deferred to getAllStays() so the UI doesn't
     // render the "loaded" branch while state.Stays is still empty (the gap
@@ -992,6 +1029,7 @@ useEffect(() => {
   const thisInstance = ++instanceIdRef.current;
 
   // Reset refs
+  allFailureCountRef.current = 0;
   itinerarySuccessRef.current = false;
   pricingSuccessRef.current = false;
   transfersSuccessRef.current = false;
