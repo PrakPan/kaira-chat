@@ -272,7 +272,7 @@ const ItineraryContainer = (props) => {
   // ── ALL useRef AFTER useState ─────────────────────────────────────────────
   // ── All-FAILURE retry budget ──────────────────────────────────────────────
   // Counts consecutive status reads where EVERY celery task came back FAILURE.
-  // The backend can announce completion (`start_itinerary_completion_process`)
+  // The backend can announce completion (`itinerary_completion_process_started`)
   // before the chain is actually registered, and in that window the endpoint
   // answers FAILURE across the board — not because the trip failed, but because
   // nothing has been queued yet. Acting on the first such read strands the user

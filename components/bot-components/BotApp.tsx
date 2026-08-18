@@ -6,7 +6,11 @@ import React, {
   useMemo,
 } from "react";
 import { optimizedMediaUrl } from "../../lib/mediaImage";
-import { ChatKitPanel, type ChatSendFn } from "./components/ChatKitPanel";
+import {
+  ChatKitPanel,
+  COMPLETION_STARTED_EFFECTS,
+  type ChatSendFn,
+} from "./components/ChatKitPanel";
 import MapView from "./components/MapView";
 import Sidebar from "./components/Sidebar";
 import { getUserAvatarColor, getUserInitial } from "./utils/avatarColor";
@@ -2193,7 +2197,9 @@ export default function BotApp({
         // start/end cities onto Redux (phantom P1 pins that flicker until the
         // canonical fetch arrives).
         for (const effect of itineraryEffects) {
-          if (effect.name === "start_itinerary_completion_process") {
+          // Both spellings — threads stored before the backend rename replay
+          // the old name here (see COMPLETION_STARTED_EFFECTS).
+          if (COMPLETION_STARTED_EFFECTS.includes(effect.name)) {
             startedIdFromEffects =
               (effect.data?.itinerary_id as string) ?? null;
           } else if (effect.name === "itinerary_completion_process_completed") {
@@ -2436,7 +2442,7 @@ export default function BotApp({
         const hasAnyItineraryEffect = itineraryEffects.some((e) =>
           [
             "display_itinerary",
-            "start_itinerary_completion_process",
+            ...COMPLETION_STARTED_EFFECTS,
             "itinerary_completion_process_completed",
           ].includes(e.name),
         );

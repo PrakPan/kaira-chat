@@ -165,6 +165,19 @@ export interface RouteEndpoints {
   end_city: CityEndpoint | null;
 }
 
+/** Effect names meaning "the completion process has been announced".
+ *
+ *  The backend renamed `start_itinerary_completion_process` to
+ *  `itinerary_completion_process_started`, so both are accepted: the live
+ *  stream can carry either during the deploy, and — more importantly —
+ *  threads already stored carry the OLD name in their persisted
+ *  `itinerary_effects`, which loadThread replays on every restore. Dropping
+ *  the old name would break restore for every existing thread. */
+export const COMPLETION_STARTED_EFFECTS = [
+  "itinerary_completion_process_started",
+  "start_itinerary_completion_process",
+] as const;
+
 /** The panel's own sendMessage, as handed to the host via `onSendReady`. The
  *  host needs the whole signature, not just the text: a prompt seeded from a
  *  theme page rides along as `intakePayload` (+ `formSubmitted`) so it reaches
@@ -2592,7 +2605,10 @@ case "refresh_itinerary": {
   break;
 }
 
-case "start_itinerary_completion_process": {
+// Renamed by the backend; the old name is kept so the panel works either side
+// of the deploy (see COMPLETION_STARTED_EFFECTS).
+case "start_itinerary_completion_process":
+case "itinerary_completion_process_started": {
   const startId = data.itinerary_id as string;
   // UI only: skeleton itinerary + PENDING statuses + the completing shimmer.
   // It deliberately does NOT start status polling.

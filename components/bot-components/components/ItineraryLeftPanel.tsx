@@ -34,7 +34,7 @@ const EMBEDDED_CSS = `
 // ─── Panel mode type ──────────────────────────────────────────────────────────
 export type ItineraryPanelMode =
   | "map"       // default — MapView + ViewToggle
-  | "shimmer"   // start_itinerary_completion_process fired
+  | "shimmer"   // itinerary_completion_process_started fired
   | "itinerary" // chat-generated itinerary data
   | "full";     // itinerary_completion_process_completed — full ItineraryContainer
 
