@@ -7,7 +7,7 @@
 import type { ThemeForm } from "./types";
 import australiaNewZealandForm from "./australia-newzealand";
 import hokkaidoPowderForm from "./hokkaido-powder";
-import switzerlandDdljForm from "./switzerland-ddlj";
+import filmyGetawaysForm from "./filmy-getaways";
 import laplandForm from "./lapland";
 import christmasMarketsForm from "./christmas-markets";
 import edinburghHogmanayForm from "./edinburgh-hogmanay";
@@ -19,7 +19,7 @@ import thailandBachelorForm from "./thailand-bachelor";
 const FORMS: ThemeForm[] = [
   australiaNewZealandForm,
   hokkaidoPowderForm,
-  switzerlandDdljForm,
+  filmyGetawaysForm,
   laplandForm,
   christmasMarketsForm,
   edinburghHogmanayForm,
