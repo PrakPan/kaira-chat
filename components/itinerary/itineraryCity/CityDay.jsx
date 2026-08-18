@@ -29,7 +29,10 @@ const TIME_ORDER = ["Morning", "Afternoon", "Evening", "Night"];
 //    • element_type "recommendation" + restaurants array → treat as "restaurant"
 //  New format:  element_type is already one of activity | poi | restaurant | recommendation
 //
-const resolveElementType = (item) => {
+// Exported so the mobile itinerary view-model (lib/tripViewModel.js) can
+// classify slab elements with the exact same rules instead of switching on
+// `element_type` directly — doing that mis-reads old-format POIs as activities.
+export const resolveElementType = (item) => {
   if (!item) return null;
 
   // Old format: activity element that is actually a POI (self-exploration)
@@ -61,7 +64,7 @@ const getItemName = (item) => {
 };
 
 // ─── Helper: get image URL ────────────────────────────────────────────────────
-const getItemImage = (item) => {
+export const getItemImage = (item) => {
   // For old-format restaurants stored under restaurants[0]
   let icon = item?.icon || item?.restaurants?.[0]?.icon;
   // Handle array-type icon fields (some API responses return an array)
@@ -73,7 +76,7 @@ const getItemImage = (item) => {
 };
 
 // ─── Helper: derive time-of-day label ─────────────────────────────────────────
-const getTimeOfDay = (timeString) => {
+export const getTimeOfDay = (timeString) => {
   if (!timeString) return null;
 
   const normalized = timeString.trim().toLowerCase();
@@ -157,7 +160,7 @@ const getDisplayTime = (item) => {
 };
 
 // ─── Helper: pretty-print ideal_duration (e.g. 1 → "1h", 1.5 → "1h 30m") ──────
-const getDurationLabel = (item) => {
+export const getDurationLabel = (item) => {
   const d = item?.ideal_duration;
   if (d == null || isNaN(Number(d))) return null;
   const num = Number(d);
@@ -173,7 +176,7 @@ const getDurationLabel = (item) => {
 // Priority: `agent_tags` first (curation signal from the agent). Fall back to
 // `tags` only when no agent_tags were returned. Capped at 2 — the v4 HTML
 // recommendation is "1 curation + 1 status + duration" per row.
-const getDisplayTags = (item) => {
+export const getDisplayTags = (item) => {
   const pick = (arr) =>
     (Array.isArray(arr) ? arr : [])
       .map((t) => (typeof t === "string" ? t.trim() : ""))

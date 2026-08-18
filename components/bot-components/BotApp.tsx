@@ -38,6 +38,18 @@ import {
 import { getThemePagePath } from "../theme/cinematic/palettes";
 import ItineraryContainer from "../../containers/itinerary/ItineraryContainer";
 import ItineraryLegend from "../itinerary/itineraryCity/ItineraryLegend";
+import MobileItinerary from "../revamp/mobileItinerary/MobileItinerary";
+import kairaPrompts from "../revamp/mobileItinerary/kairaPrompts";
+import TripHeaderLive from "../revamp/mobileItinerary/TripHeaderLive";
+import CartSheet from "../revamp/mobileItinerary/sheets/CartSheet";
+
+// Height of the trip header (logo row + leg-nav row). The Kaira sheet stops
+// just under it so the trip stays visible behind the conversation.
+const TRIP_HEADER_HEIGHT = 84;
+
+// What the standing ask-Kaira pill says when the user opens the conversation
+// without pointing at anything in particular.
+const KAIRA_OPEN_ENDED_PROMPT = kairaPrompts.openEnded();
 import type {
   Location,
   ItineraryData,
@@ -648,6 +660,7 @@ export default function BotApp({
     window.history.pushState({}, "", url.toString());
   }, [activeItineraryId, fetchPaymentData]);
   const closePaymentDrawer = React.useCallback(() => {
+    setAutoStartPayment(false);
     setShowPaymentDrawer(false);
     const url = new URL(window.location.href);
     url.searchParams.delete("drawer");
@@ -3269,7 +3282,12 @@ export default function BotApp({
     themeNote,
     themeForm,
     startThemedForm,
-    onViewItinerary: handleViewItinerary,
+    // The yellow "View Itinerary" strip under the composer is how the chat TAB
+    // gets you back to the trip. Once Kaira is a sheet over the itinerary that
+    // strip is redundant — the trip is already visible behind her, and the
+    // scrim and the close button both dismiss — so it is withheld there.
+    onViewItinerary:
+      isMobile && activeItineraryId ? undefined : handleViewItinerary,
     onIntakeFormStart: () => setIntakeActive(true),
     initialFiles,
     initialInputText,
@@ -3466,6 +3484,25 @@ Start Location: ${details.startLocation}`;
     else setViewMode("bookings");
   }, [isMobile]);
 
+  // Settings needs to know whether the trip has hotels before it can decide
+  // which pax editor to show (rooms vs travellers), so the modal opens only
+  // after that lookup settles — success or not. Hoisted out of the MobileLayout
+  // prop so the new "More" sheet and the header menu open the same thing.
+  const handleMobileSettings = useCallback(() => {
+    if (!authToken) {
+      setShowSettingsLoginPrompt(true);
+      return;
+    }
+    if (!activeItineraryId) return;
+    axios
+      .get(
+        `${MERCURY_HOST}/api/v1/itinerary/${activeItineraryId}/bookings/hotels/?fields=no_of_hotels`,
+      )
+      .then((res) => setIsHotelsPresent(res.data.no_of_hotels > 0))
+      .catch(() => setIsHotelsPresent(false))
+      .finally(() => setShowSettings(true));
+  }, [authToken, activeItineraryId]);
+
   const handleBackToItinerary = useCallback(() => {
     if (isMobile) mobileTabSwitchRef.current?.("itinerary");
     else setViewMode("itinerary");
@@ -3594,6 +3631,60 @@ Start Location: ${details.startLocation}`;
   // where it is mounted. Hoisted because the bar now appears in three places —
   // the desktop itinerary panel, the desktop map view, and MobileLayout — and
   // they must stay in lockstep.
+  // The design's "Review & pay" summary. It sits IN FRONT of the old payment
+  // drawer (NewSummaryContainers/NewBookingSlide), which stays mounted and
+  // untouched — it still owns coupons, traveller details and the gateway.
+  const [showCartSheet, setShowCartSheet] = React.useState(false);
+  const [autoStartPayment, setAutoStartPayment] = React.useState(false);
+  const [isRepricing, setIsRepricing] = React.useState(false);
+
+  // Reprice, mirroring the cart drawer's flow (NewBookingSlide.handleRepriceBookings).
+  //
+  // Two things are deliberately NOT copied from it. It reads `router.query.id`,
+  // which on /chat/<id> is the CHAT SESSION id, not the itinerary — so the
+  // itinerary id is passed explicitly here. And its failure path is what
+  // restores the four PENDING statuses; without that the pricing skeleton and
+  // the chat composer stay locked forever, so the catch below is load-bearing.
+  const handleReprice = React.useCallback(async () => {
+    const itinId = activeItineraryId;
+    if (!itinId || isRepricing) return;
+    setIsRepricing(true);
+    dispatch(setItineraryStatus("itinerary_status", "PENDING"));
+    dispatch(setItineraryStatus("hotels_status", "PENDING"));
+    dispatch(setItineraryStatus("transfers_status", "PENDING"));
+    dispatch(setItineraryStatus("pricing_status", "PENDING"));
+    dispatch(setItineraryStatus("is_polling", true));
+    try {
+      const token = localStorage.getItem("access_token") || authToken;
+      await axios.get(
+        `${MERCURY_HOST}/api/v1/itinerary/${itinId}/reprice/bookings`,
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+    } catch (e) {
+      console.error("Failed to reprice itinerary", e);
+    } finally {
+      // Whether it succeeded or failed, the four PENDING statuses above have to
+      // be replaced by the server's real ones and `is_polling` released, or the
+      // pricing skeleton and the chat composer stay stuck.
+      dispatch(setItineraryStatus("is_polling", false));
+      try {
+        const { axiosGetItineraryStatus } =
+          await import("../../services/itinerary/daybyday/preview");
+        const statusRes = await axiosGetItineraryStatus.get(`${itinId}/status/`);
+        const st = statusRes.data?.celery;
+        dispatch(setItineraryStatus("itinerary_status", st?.ITINERARY || "SUCCESS"));
+        dispatch(setItineraryStatus("hotels_status", st?.HOTELS || "SUCCESS"));
+        dispatch(setItineraryStatus("transfers_status", st?.TRANSFERS || "SUCCESS"));
+        dispatch(setItineraryStatus("pricing_status", st?.PRICING || "SUCCESS"));
+      } catch (e) {
+        console.error("Failed to refresh itinerary status after reprice", e);
+      }
+      await fetchPaymentData(itinId);
+      setIsRepricing(false);
+    }
+  }, [activeItineraryId, authToken, isRepricing, dispatch]);
+
+
   const ctaBarProps = {
     activeItineraryId,
     showItineraryShimmer,
@@ -3615,6 +3706,7 @@ Start Location: ${details.startLocation}`;
       chatSendMessageRef.current?.("Yes, I confirm the Itinerary");
       if (isMobile) mobileTabSwitchRef.current?.("chat");
     },
+    onReviewPay: () => setShowCartSheet(true),
     onViewCart: () => {
       if (!authToken) {
         setShowApiLoginPrompt(true);
@@ -3658,6 +3750,54 @@ Start Location: ${details.startLocation}`;
       fetchPaymentData(activeItineraryId);
     },
   };
+
+  // ── Mobile itinerary (new) ───────────────────────────────────────────────
+  // A separate tree, not a variant of itineraryPanel: the phone presents the
+  // trip as a package (one total, no per-row prices) and routes every change
+  // through Kaira, which is a different information model from the desktop
+  // panel — expressing both in one component would mean a `fromChat`-style flag
+  // on every row.
+  //
+  // ItineraryContainer still renders underneath in a display:none wrapper. It
+  // is the ONLY producer of the Itinerary / Stays / TransferBookings / Cart /
+  // ItineraryStatus slices that this tree, the CTA bar price and countCartItems
+  // all read, so unmounting it would blank the whole mobile chrome — not just
+  // the body. The wrapper is unconditional on purpose: toggling it would
+  // remount the container, which re-dispatches five *_status → "PENDING" plus
+  // setStays([]), flashing the page empty.
+  const mobileItineraryPanel = (
+    <>
+      <div style={{ display: "none" }} aria-hidden>
+        {itineraryContainerNode}
+      </div>
+      <CartSheet
+        open={showCartSheet}
+        onClose={() => setShowCartSheet(false)}
+        onPay={() => {
+          // Straight to the gateway: the drawer still mounts (it owns the
+          // traveller-details gate and the Razorpay handshake) but fires its own
+          // handlePayNow immediately instead of stopping on the cart screen.
+          setShowCartSheet(false);
+          setAutoStartPayment(true);
+          ctaBarProps.onViewCart();
+        }}
+        onApplyCoupon={() => {
+          setShowCartSheet(false);
+          setAutoStartPayment(false);
+          ctaBarProps.onViewCart();
+        }}
+        onReprice={handleReprice}
+        isRepricing={isRepricing}
+      />
+      <MobileItinerary
+        askKaira={handleItineraryContainerSendMessage}
+        onViewMap={handleViewMap}
+        onShare={() => setShowShare(true)}
+        onSettings={handleMobileSettings}
+        isBusy={pricingStatus === "PENDING"}
+      />
+    </>
+  );
 
   // Desktop keeps the gate so viewMode can swap map ↔ itinerary.
   const itineraryPanel = (
@@ -4431,42 +4571,57 @@ Start Location: ${details.startLocation}`;
                     startEmptyIntake={startEmptyIntake}
                     isPanelVisible={mobilePanel === "chat"}
                     mobileMenu={
-                      <MobileHeaderMenu
-                        onNewChat={handleNewChat}
-                        onThreadSelect={handleThreadSelect}
-                        activeThreadId={activeThreadId}
-                        isComplete={
-                          activeItineraryId !== "skeleton" &&
-                          activeItineraryId !== "draft" &&
-                          !!activeItineraryId
-                        }
-                        onLoginSuccess={attachUserToItinerary}
-                        onClose={handleCloseChat}
-                      />
+                      // Once Kaira is a sheet over the trip, her header carries
+                      // one control: close. History and new-trip belong to the
+                      // app chrome, not to a sheet you opened to change one
+                      // booking — and a second icon here reads as a second exit.
+                      activeItineraryId ? (
+                        <button
+                          type="button"
+                          onClick={handleViewItinerary}
+                          aria-label="Close chat"
+                          style={{
+                            border: "1px solid #dcdfe5",
+                            background: "#ffffff",
+                            borderRadius: 999,
+                            boxShadow: "none",
+                            width: 24,
+                            height: 24,
+                            color: "#6b7280",
+                            fontSize: 12,
+                            lineHeight: 1,
+                            padding: 0,
+                          }}
+                          className="flex flex-none items-center justify-center"
+                        >
+                          ×
+                        </button>
+                      ) : (
+                        <MobileHeaderMenu
+                          onNewChat={handleNewChat}
+                          onThreadSelect={handleThreadSelect}
+                          activeThreadId={activeThreadId}
+                          isComplete={
+                            activeItineraryId !== "skeleton" &&
+                            activeItineraryId !== "draft" &&
+                            !!activeItineraryId
+                          }
+                          onLoginSuccess={attachUserToItinerary}
+                          onClose={handleCloseChat}
+                        />
+                      )
                     }
                   />
                 )}
               </div>
             </div>
           }
-          itineraryContent={isMobile ? itineraryPanel : null}
+          itineraryContent={isMobile ? mobileItineraryPanel : null}
+          onAskKaira={handleItineraryContainerSendMessage}
           mobileEffectPopup={mobileEffectPopup}
           onDismissMobileEffectPopup={() => setMobileEffectPopup(null)}
           bottomCTABarProps={{ ...ctaBarProps, viewMode }}
-          onSettingsClick={() => {
-            if (!authToken) {
-              setShowSettingsLoginPrompt(true);
-              return;
-            }
-            if (!activeItineraryId) return;
-            axios
-              .get(
-                `${MERCURY_HOST}/api/v1/itinerary/${activeItineraryId}/bookings/hotels/?fields=no_of_hotels`,
-              )
-              .then((res) => setIsHotelsPresent(res.data.no_of_hotels > 0))
-              .catch(() => setIsHotelsPresent(false))
-              .finally(() => setShowSettings(true));
-          }}
+          onSettingsClick={handleMobileSettings}
           onLoginSuccess={attachUserToItinerary}
         />
       </div>
@@ -4629,6 +4784,7 @@ Start Location: ${details.startLocation}`;
             social_title={itineraryRedux?.social_title}
             social_description={itineraryRedux?.social_description}
             openPaymentDrawer={true}
+            autoStartPayment={autoStartPayment}
           />
         </div>
       )}
@@ -4664,6 +4820,18 @@ interface BottomCTABarProps {
   // percentage can't express this — the panel is 50% of what's left after the
   // (collapsible) sidebar. Undefined on mobile, where `w-full` is correct.
   barStyle?: React.CSSProperties;
+  /**
+   * "mobileItinerary" swaps ONLY the final priced row for the package-priced
+   * footer the mobile itinerary uses: bookings + one total on the left, "Review
+   * & pay" on the right, with the standing ask-Kaira pill stacked above it.
+   * Every other state (draft/confirm, cart error, pricing loader) is shared, so
+   * they keep working untouched.
+   */
+  variant?: "default" | "mobileItinerary";
+  /** Opens the design's "Review & pay" sheet. Falls back to onViewCart. */
+  onReviewPay?: () => void;
+  /** Opens the chat with a message — renders the ask-Kaira pill in the footer. */
+  onAskKaira?: (message: string) => void;
 }
 
 /**
@@ -4803,6 +4971,9 @@ const BottomCTABar = React.memo(
     onViewBookings,
     notes,
     barStyle,
+    variant = "default",
+    onAskKaira,
+    onReviewPay,
   }: BottomCTABarProps) => {
     if (
       !["itinerary", "bookings"].includes(viewMode) ||
@@ -4846,12 +5017,18 @@ const BottomCTABar = React.memo(
     if (!hasFreshPricing) {
       // Only show the pricing loader when there's a rolling display_text to
       // surface as a step. Notes are intentionally not rendered as steps.
-      if (!loaderDisplayText) return null;
+      //
+      // The mobile itinerary is the exception. Its footer is the page's floor —
+      // it carries the only price and the only way to pay — so returning null
+      // deletes it mid-update and the trip reads as broken rather than busy.
+      // A reprice in particular emits no display_text at all, which is exactly
+      // when the user most needs to see that something is happening.
+      if (!loaderDisplayText && variant !== "mobileItinerary") return null;
       // Stepped progress card rendered in the bottom bar space (same place
       // the cart row sits), replacing the old centered overlay.
       return (
         <ItineraryStepsLoader
-          displayText={loaderDisplayText}
+          displayText={loaderDisplayText || "Updating your itinerary…"}
           barStyle={barStyle}
         />
       );
@@ -4919,6 +5096,81 @@ const BottomCTABar = React.memo(
           </svg>
         </button>
       ) : null;
+
+    // ── Mobile itinerary footer ──────────────────────────────────────────────
+    // The trip is one package, so the foot of the page carries one amount and
+    // one action. The ask-Kaira pill sits in the same cream slab rather than
+    // floating separately: changing something and paying for it are the two
+    // things you can do from here, and they read as one surface.
+    if (variant === "mobileItinerary") {
+      const bookingsLine = [
+        countCartItems > 0
+          ? `${countCartItems} BOOKING${countCartItems === 1 ? "" : "S"}`
+          : null,
+        cost !== null ? "COUPONS LIVE" : null,
+      ]
+        .filter(Boolean)
+        .join(" · ");
+
+      return (
+        <div
+          data-bottom-cta-bar
+          data-itinerary-cta-bar
+          style={barStyle}
+          className="z-20 fixed bottom-0 w-full flex-shrink-0 border-t border-[#f1e9dc] bg-[#fffaf5] px-[14px] pb-[13px] pt-[9px] flex flex-col gap-[9px]"
+        >
+          {onAskKaira && (
+            <button
+              type="button"
+              onClick={() => onAskKaira(KAIRA_OPEN_ENDED_PROMPT)}
+              style={{ border: "1px solid #dcdfe5", borderRadius: 999, background: "#ffffff", boxShadow: "none" }}
+              className="flex w-full items-center gap-[10px] px-[14px] py-[10px] text-left"
+            >
+              <img
+                src="/KairaInsta.png"
+                alt=""
+                aria-hidden
+                className="h-[22px] w-[22px] flex-none rounded-full object-cover"
+                // Bare `img {}` rules in styles.css/bootstrap apply globally and
+                // knock an <img> out of alignment as a flex child — see the
+                // BrandLockup centring fix. Pinned inline so it can't drift.
+                style={{ margin: 0, maxWidth: "none", display: "block" }}
+              />
+              <span className="min-w-0 flex-1 truncate text-[12px] text-[#8a93a6]">
+                Ask Kaira to change something…
+              </span>
+            </button>
+          )}
+
+          <div className="flex items-center justify-between gap-[12px]">
+            <div className="min-w-0">
+              {bookingsLine ? (
+                <div className="truncate font-mono text-[8.5px] uppercase tracking-[0.08em] text-[#8a93a6]">
+                  {bookingsLine}
+                </div>
+              ) : null}
+              {cost !== null ? (
+                <div className="mt-[2px] whitespace-nowrap font-sans text-[15.5px] font-[800] leading-tight tracking-[-0.02em] text-[#0b1220]">
+                  {currencySymbol}
+                  {formatCurrencyValue(Math.round(cost), currency?.currency)}
+                </div>
+              ) : (
+                <div className="mt-[2px] text-[12px] italic text-[#6E757A]">
+                  Calculating price…
+                </div>
+              )}
+            </div>
+            <button
+              onClick={onReviewPay || onViewCart}
+              style={{ border: "none", borderRadius: 10, background: "#F7E700", boxShadow: "none" }}
+              className="flex-none whitespace-nowrap px-[18px] py-[12px] text-[13.5px] font-inter font-[800] text-[#0b1220]"
+            >
+              Review &amp; pay
+            </button>
+          </div>
+        </div>
+      );
+    }
 
     // px-[24px], not px-4: bootstrap.min.css is imported after Tailwind and its
     // `.px-4` is `1.5rem !important`, so a Tailwind `px-*` override at the same
@@ -5518,6 +5770,8 @@ interface MobileLayoutProps {
   onLoginSuccess?: () => void | Promise<void>;
   /** Collapse the expanded trip-details card when the itinerary pane scrolls. */
   onItineraryScrolled?: (scrolledAway: boolean, isDown: boolean) => void;
+  /** Opens the chat with a message — powers the standing ask-Kaira pill. */
+  onAskKaira?: (message: string) => void;
 }
 
 const MobileLayout = React.memo(
@@ -5547,6 +5801,7 @@ const MobileLayout = React.memo(
     onSettingsClick,
     onLoginSuccess,
     onItineraryScrolled,
+    onAskKaira,
   }: MobileLayoutProps) => {
     // On a sessionId refresh, BotApp seeds `mobilePanel` to "itinerary" (same
     // signal desktop uses for its viewMode default). Honour it here so an
@@ -5559,6 +5814,11 @@ const MobileLayout = React.memo(
     const hasUnread = (useSelector as any)(
       (s: any) => !!s.chatState?.unreadMessages,
     );
+
+    // Kaira takes the whole screen while there is no trip yet — that IS the
+    // page. Once an itinerary exists she becomes a sheet over it, so a change
+    // request never costs the user sight of what they're changing.
+    const chatAsSheet = !!hasItineraryActivity;
     const dispatchLayout = useDispatch();
     const [showChatBanner, setShowChatBanner] = React.useState(true);
 
@@ -5685,7 +5945,12 @@ const MobileLayout = React.memo(
     // transform (see the header markup below).
     const [navHidden, setNavHidden] = React.useState(false);
 
-    const headerVisible = activeTab !== "chat";
+    // The itinerary supplies its own header — a trip card with the logo, the
+    // trip name and "More" — so the app navbar would be a second, near-identical
+    // strip stacked on top of it. Kept everywhere else.
+    const itineraryOwnsHeader =
+      !!onAskKaira && (activeTab === "itinerary" || activeTab === "map");
+    const headerVisible = activeTab !== "chat" && !itineraryOwnsHeader;
 
     // Held in a ref so the scroll listener below never re-registers on it.
     const onItineraryScrolledRef = React.useRef(onItineraryScrolled);
@@ -5768,7 +6033,14 @@ const MobileLayout = React.memo(
     // a stale guess leaves a dead white strip between the pane and the bar.
     const [ctaBarHeight, setCtaBarHeight] = React.useState(0);
     React.useEffect(() => {
-      const el = document.querySelector("[data-bottom-cta-bar]");
+      // Two bars carry [data-bottom-cta-bar] at once — the map pane keeps its
+      // own copy mounted (opacity-toggled) and precedes this pane in the DOM,
+      // so a bare first-match query measures the MAP's bar. Prefer the
+      // itinerary footer whenever it is mounted; it is the taller of the two
+      // and the one this pane actually has to clear.
+      const el =
+        document.querySelector("[data-itinerary-cta-bar]") ||
+        document.querySelector("[data-bottom-cta-bar]");
       if (!el) {
         setCtaBarHeight(0);
         return undefined;
@@ -5815,8 +6087,11 @@ const MobileLayout = React.memo(
           </div>
         )}
 
-        {/* ── Chat tab: the one persistent way back into the trip ── */}
-        {hasItineraryActivity && activeTab === "chat" && (
+        {/* ── Chat tab: the one persistent way back into the trip ──
+            Only needed when chat owns the whole screen. As a sheet the trip is
+            visible behind it and the scrim dismisses, so this bar would be a
+            second, redundant way out. ── */}
+        {hasItineraryActivity && !chatAsSheet && activeTab === "chat" && (
           <button
             type="button"
             onClick={() => handleTabClick("itinerary")}
@@ -5842,16 +6117,66 @@ const MobileLayout = React.memo(
 
         {/* ── Content area — full remaining height ── */}
         <div className="flex-1 min-h-0 overflow-hidden relative bg-white">
-          {/* CHAT view */}
+          {/* ── CHAT view ──────────────────────────────────────────────────
+              Once there's a trip on screen, Kaira answers in a sheet that
+              slides up OVER the itinerary rather than replacing it: a change
+              only makes sense against the thing being changed, and swapping the
+              whole screen out costs the user that context on every request.
+
+              The pane itself is never unmounted or re-parented — only its
+              geometry changes. ChatKitPanel owns the thread and aborts its
+              in-flight stream on unmount, so remounting it into a sheet would
+              cut off whatever Kaira was mid-way through saying. */}
+          {chatAsSheet && activeTab === "chat" && (
+            <button
+              type="button"
+              aria-label="Close chat"
+              onClick={() => handleTabClick("itinerary")}
+              className="absolute inset-0 z-[3] border-0 bg-[rgba(11,18,32,0.22)] p-0"
+            />
+          )}
           <div
-            className="absolute inset-0"
-            style={{
-              opacity: activeTab === "chat" ? 1 : 0,
-              pointerEvents: activeTab === "chat" ? "auto" : "none",
-              zIndex: activeTab === "chat" ? 2 : 1,
-            }}
+            className={
+              chatAsSheet
+                ? "absolute inset-x-0 bottom-0 flex flex-col overflow-hidden rounded-t-[20px] border-t border-[#dcdfe5] bg-white shadow-[0_-12px_40px_-16px_rgba(11,18,32,0.35)] transition-transform duration-300 ease-out motion-reduce:transition-none"
+                : "absolute inset-0"
+            }
+            style={
+              chatAsSheet
+                ? {
+                    // Stops just under the trip header rather than at a fixed
+                    // 74%: the conversation is the whole job once it is open,
+                    // and the header stays visible so the trip is still there
+                    // to come back to.
+                    top: TRIP_HEADER_HEIGHT,
+                    zIndex: 4,
+                    // Slide, don't fade: the sheet has to read as arriving from
+                    // the bottom over the trip, and a translated pane keeps the
+                    // chat mounted (and its stream alive) while off-screen.
+                    transform:
+                      activeTab === "chat" ? "translateY(0)" : "translateY(100%)",
+                    pointerEvents: activeTab === "chat" ? "auto" : "none",
+                    visibility: activeTab === "chat" ? "visible" : "hidden",
+                  }
+                : {
+                    opacity: activeTab === "chat" ? 1 : 0,
+                    pointerEvents: activeTab === "chat" ? "auto" : "none",
+                    zIndex: activeTab === "chat" ? 2 : 1,
+                  }
+            }
           >
-            {chatContent}
+            {/* Grab handle — the design's cue that this is a sheet you can
+                dismiss, not a tab you navigated to. */}
+            {chatAsSheet && (
+              <div className="flex-none pt-[9px]" aria-hidden>
+                <div className="mx-auto h-[4px] w-[40px] rounded-full bg-[#dcdfe5]" />
+              </div>
+            )}
+            {chatAsSheet ? (
+              <div className="min-h-0 flex-1">{chatContent}</div>
+            ) : (
+              chatContent
+            )}
           </div>
 
           {/* MAP view */}
@@ -5864,14 +6189,31 @@ const MobileLayout = React.memo(
               zIndex: activeTab === "map" ? 2 : 1,
             }}
           >
+            {onAskKaira && (
+              <TripHeaderLive
+                sticky={false}
+                mapActive
+                onViewMap={() => handleTabClick("itinerary")}
+              />
+            )}
             <div className="relative flex-1 min-h-0 flex flex-col">
               {mapContent}
             </div>
-            {/* View Cart bar on map tab */}
+            {/* Cart bar on map tab — same package-priced footer the itinerary
+                uses, so switching tabs doesn't change what the foot of the
+                screen means. */}
             {bottomCTABarProps && hasItineraryActivity && (
-              <BottomCTABar {...bottomCTABarProps} viewMode="itinerary" />
+              <BottomCTABar
+                {...bottomCTABarProps}
+                viewMode="itinerary"
+                variant={onAskKaira ? "mobileItinerary" : "default"}
+                onAskKaira={onAskKaira}
+              />
             )}
-            {/* Way back out of the map — centered, just above the cart bar. */}
+            {/* Way back out of the map — centered, just above the cart bar.
+                Kept under the new mobile UI too: the header's "Map" chip does
+                toggle back, but that is a discovery, not an exit. This is the
+                obvious one, and losing it strands the user on the map. */}
             {hasItineraryActivity && (
               <BackToItineraryBar
                 onClick={() => handleTabClick("itinerary")}
@@ -5893,7 +6235,9 @@ const MobileLayout = React.memo(
               className="absolute inset-x-0 top-0 overflow-y-auto bg-white"
               style={{
                 // Full height (the spacer below reserves the navbar's row inside
-                // the scroll flow); end where the fixed CTA bar begins.
+                // the scroll flow); end where the fixed CTA bar begins. The
+                // ask-Kaira pill lives inside that bar, so its height is already
+                // in the measurement.
                 bottom: ctaBarHeight,
                 // Momentum scrolling; keep the scroll from chaining into the
                 // surface behind it; and hard-clip horizontal overflow so a
@@ -5904,9 +6248,13 @@ const MobileLayout = React.memo(
                 overscrollBehavior: "contain",
                 overflowX: "hidden",
                 willChange: "scroll-position",
+                // Stays lit under the chat sheet — that's the whole point of the
+                // sheet — but never takes a tap through it.
                 opacity: ["itinerary", "routes", "bookings"].includes(activeTab)
                   ? 1
-                  : 0,
+                  : chatAsSheet && activeTab === "chat"
+                    ? 1
+                    : 0,
                 pointerEvents: ["itinerary", "routes", "bookings"].includes(
                   activeTab,
                 )
@@ -5942,7 +6290,19 @@ const MobileLayout = React.memo(
             hasItineraryActivity &&
             ["itinerary", "routes", "bookings"].includes(activeTab) && (
               <>
-                <BottomCTABar {...bottomCTABarProps} viewMode="itinerary" />
+                <BottomCTABar
+                  {...bottomCTABarProps}
+                  viewMode="itinerary"
+                  // The package-priced footer belongs to the itinerary itself.
+                  // Routes/bookings keep the standard bar — they are lists of
+                  // line items, where the old chrome still reads correctly.
+                  variant={
+                    onAskKaira && activeTab === "itinerary"
+                      ? "mobileItinerary"
+                      : "default"
+                  }
+                  onAskKaira={activeTab === "itinerary" ? onAskKaira : undefined}
+                />
                 {["routes", "bookings"].includes(activeTab) && (
                   <BackToItineraryBar
                     onClick={() => handleTabClick("itinerary")}
@@ -5953,8 +6313,12 @@ const MobileLayout = React.memo(
             )}
         </div>
 
-        {/* ── Floating Kaira icon + chat banner — on itinerary/routes/bookings views ── */}
+        {/* ── Floating Kaira icon + chat banner — on itinerary/routes/bookings views ──
+            Suppressed on the new itinerary, where the footer's ask-Kaira pill is
+            the way in. Two floating invitations to the same conversation, one
+            covering the trip, is one too many. ── */}
         {hasItineraryActivity &&
+          !itineraryOwnsHeader &&
           ["itinerary", "routes", "bookings"].includes(activeTab) && (
             <div
               className="fixed z-[100] flex flex-col items-end gap-2"
@@ -6067,8 +6431,12 @@ const MobileLayout = React.memo(
           </div>
         )}
 
-        {/* ── Floating Kaira icon + chat banner on map tab ── */}
-        {hasItineraryActivity && activeTab === "map" && (
+        {/* ── Floating Kaira icon + chat banner on map tab ──
+            Suppressed under the new mobile UI for the same reason as on the
+            itinerary: the footer's ask-Kaira pill is the way in, and a floating
+            avatar plus a yellow banner on top of the map covers the very thing
+            the tab exists to show. ── */}
+        {hasItineraryActivity && !onAskKaira && activeTab === "map" && (
           <div
             className="fixed z-[100] flex flex-col items-end gap-2"
             style={{ bottom: 70, right: 16 }}

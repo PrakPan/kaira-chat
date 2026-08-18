@@ -1536,6 +1536,29 @@ const Details = (props) => {
     }
   }, [props?.openPaymentDrawer]);
 
+  // Opt-in: jump straight to the gateway instead of stopping on the cart.
+  //
+  // The new "Review & pay" sheet already showed the user what they are buying,
+  // so landing them on this drawer again is one browse too many. Firing the
+  // drawer's own handlePayNow means every gate still applies — the traveller
+  // -details drawer still intercepts, an expired price still blocks — rather
+  // than a second checkout path that has to be kept in sync with this one.
+  //
+  // Guarded so it fires once per open: re-firing would POST /payment/initiate/
+  // again and mint a second order.
+  const autoPayFiredRef = useRef(false);
+  useEffect(() => {
+    if (!props?.autoStartPayment) {
+      autoPayFiredRef.current = false;
+      return;
+    }
+    if (autoPayFiredRef.current) return;
+    if (!Cart?.id || !showDetailedPayment) return;
+    if (calculateFilteredTotal() === 0) return;
+    autoPayFiredRef.current = true;
+    handlePayNow("full");
+  }, [props?.autoStartPayment, Cart?.id, showDetailedPayment]);
+
   useEffect(() => {
     if (Cart?.summary) {
       const initialSelections = {};
