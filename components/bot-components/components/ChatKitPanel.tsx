@@ -5093,7 +5093,10 @@ const handleShowLogin = useCallback(() => {
                 ? "Just tell me anything you're planning…"
                 : "Ask me anything"
             }
-            showAttach={!isComposerLocked && !loginBlocked && !promptLoginBlocked}
+            // Stays mounted while the composer is locked: MessageInputBox
+            // renders the "+" inert in that state, so the pill keeps its full
+            // shape instead of collapsing to a lone placeholder.
+            showAttach
             onFilesSelected={handleFilesSelected}
             attachments={attachments}
             onRemoveAttachment={handleRemoveAttachment}

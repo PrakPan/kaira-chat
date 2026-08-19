@@ -320,6 +320,10 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
   }, [value]);
 
   const hasUploadedAttachments = attachments.some((a) => a.status === "uploaded");
+  // Nothing in the composer accepts input. The chrome ("+", Send) stays on
+  // screen so the pill keeps its full shape — see the disabled-state CSS —
+  // it just reads as inert and takes no clicks.
+  const isLocked = disabled || isStreaming;
   const canSend =
     (value.trim().length > 0 || hasUploadedAttachments) && !isStreaming && !disabled;
 
@@ -358,17 +362,24 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
   // ── File selection ──────────────────────────────────────────────────────
   const handleAttachClick = useCallback(() => {
     setPlusOpen(false);
+    if (isLocked) return;
     if (requireAuth) {
       onAuthRequired?.();
       return;
     }
     fileInputRef.current?.click();
-  }, [requireAuth, onAuthRequired]);
+  }, [isLocked, requireAuth, onAuthRequired]);
 
   const handleDictateClick = useCallback(() => {
     setPlusOpen(false);
+    if (isLocked) return;
     dictateRef.current?.start?.();
-  }, []);
+  }, [isLocked]);
+
+  // A menu left open when the composer locks would float over inert chrome.
+  useEffect(() => {
+    if (isLocked) setPlusOpen(false);
+  }, [isLocked]);
 
   // Dismiss the "+" menu on an outside tap or Escape.
   useEffect(() => {
@@ -472,6 +483,8 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
         }
         .kp-icon-btn:hover { color: #0b1220; background: #fafaf5; }
         .kp-icon-btn svg { width: 15px; height: 15px; }
+        .kp-icon-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .kp-icon-btn:disabled:hover { color: #8a93a6; background: transparent; }
         .kp-send {
           margin-left: auto;
           height: 30px;
@@ -621,20 +634,24 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
           display: grid;
           place-items: center;
           padding: 0;
-          // border: 1px solid #dcdfe5;
+          /* No ring — the glyph sits bare in the pill. The zero border is
+             explicit because a button carries a UA border otherwise. The 50%
+             radius stays for the filled hover/open state. */
+          border: 0;
           border-radius: 50%;
           background: #fff;
           color: #0b1220;
           cursor: pointer;
-          transition: background 0.15s, border-color 0.15s;
+          transition: background 0.15s;
         }
         .kp-composer-wrap .kp-plus:hover { background: #fafaf5; }
         .kp-composer-wrap .kp-plus[aria-expanded="true"] {
           background: #0b1220;
-          border-color: #0b1220;
           color: #fff;
         }
         .kp-composer-wrap .kp-plus svg { width: 15px; height: 15px; }
+        .kp-composer-wrap .kp-plus:disabled,
+        .kp-composer-wrap .kp-plus:disabled:hover { background: #fff; }
 
         .kp-composer-wrap .kp-send,
         .kp-composer-wrap .kp-stop {
@@ -659,6 +676,20 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
         }
         .kp-composer-wrap .kp-send:hover { transform: none; }
         .kp-composer-wrap .kp-stop { border: 1.5px solid #1c1917; }
+
+        /* ── Locked composer ──────────────────────────────────────────────
+           While the box is disabled (itinerary building, login required, a
+           foreign itinerary) the "+" and Send stay mounted rather than the
+           pill collapsing to a bare placeholder — a composer with no actions
+           reads as broken. Both dim and refuse clicks instead. The empty-input
+           Send is a different state and keeps its full-strength outline: it is
+           inactive, not locked. */
+        .kp-plus:disabled,
+        .kp-send.is-locked:disabled {
+          opacity: 0.4;
+          cursor: not-allowed;
+        }
+        .kp-composer-wrap .kp-send.is-locked:disabled { opacity: 0.4; }
         .kp-composer-wrap .kp-send-arrow,
         .kp-composer-wrap .kp-send-plane { display: none; }
         .kp-composer-wrap .kp-stop svg { width: 12px; height: 12px; margin-right: 5px; }
@@ -766,6 +797,7 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
             aria-expanded={plusOpen}
             aria-label="Add attachment or voice"
             title="Add"
+            disabled={isLocked}
             onClick={() => setPlusOpen((v) => !v)}
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
@@ -898,6 +930,7 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
           <button
             type="button"
             onClick={handleAttachClick}
+            disabled={isLocked}
             className="kp-icon-btn kp-attach"
             title="Attach"
           >
@@ -936,8 +969,8 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
             type="button"
             onClick={handleSubmitInternal}
             disabled={!canSend}
-            title="Send"
-            className="kp-send"
+            title={disabled ? "Unavailable right now" : "Send"}
+            className={`kp-send${disabled ? " is-locked" : ""}`}
           >
             <span aria-hidden className="kp-sheen" />
             <span className="kp-btn-label">Send</span>
