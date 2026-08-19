@@ -25,6 +25,7 @@ import { useAnalytics } from "../../../../../hooks/useAnalytics";
 import { currencySymbols } from "../../../../../data/currencySymbols";
 import { MdOutlineLuggage } from "react-icons/md";
 import { useTaxiSelection } from "../../fleet/TaxiSelectionContext";
+import { TaxiTypeGlyph } from "../../../../../helper/taxiTypeGlyph";
 import QuantityStepper from "../../fleet/QuantityStepper";
 import AmenitySelector from "./AmenitySelector";
 
@@ -121,6 +122,11 @@ const Section = (props) => {
   // it survives the pre-built `optionsJSX` cards in modals/taxis/Index.js (the frozen
   // closures are a props problem, not a state problem).
   const [selectedAmenities, setSelectedAmenities] = useState([]);
+  // The photo URL that 404'd, so the tile falls back to the class silhouette
+  // rather than collapsing and knocking the card out of line. Held as the URL
+  // and not a flag: a poll that re-prices this card with a different vehicle
+  // deserves another go at its photo.
+  const [failedImage, setFailedImage] = useState(null);
   const currency = useSelector(state=>state.currency);
   const {intercity} = useSelector(state=>state.TransferBookings).transferBookings
    const {
@@ -411,20 +417,27 @@ const Section = (props) => {
 
         <div className="flex justify-between items-center gap-3 max-ph:flex-col max-ph:items-stretch max-ph:gap-3">
           <div className="flex gap-3 items-center flex-1 min-w-0 max-ph:items-start">
-            {props.data?.taxi_category?.image ? (
-              <div className="flex-none w-[76px] h-[52px] max-ph:w-[64px] max-ph:h-[46px] rounded-lg bg-[#f4f3ec] flex items-center justify-center overflow-hidden">
+            {/* Always a tile: a quote with no photo of its car still has a class,
+                and hiding the tile for those made the list ragged and dropped the
+                one size cue the customer compares cars on. */}
+            <div className="flex-none w-[76px] h-[52px] max-ph:w-[64px] max-ph:h-[46px] rounded-lg bg-[#f4f3ec] flex items-center justify-center overflow-hidden">
+              {props.data?.taxi_category?.image &&
+              failedImage !== props.data.taxi_category.image ? (
                 <img
                   src={optimizedMediaUrl(props.data.taxi_category.image, { width: 400 })}
                   alt={props.data?.taxi_category?.type || "Taxi"}
                   className="object-contain w-full h-full"
                   style={{ margin: 0, maxWidth: "none" }}
-                  onError={(e) => {
-                    if (e.currentTarget.parentElement)
-                      e.currentTarget.parentElement.style.display = "none";
-                  }}
+                  onError={() => setFailedImage(props.data.taxi_category.image)}
                 />
-              </div>
-            ) : null}
+              ) : (
+                <TaxiTypeGlyph
+                  type={props.data?.taxi_category?.type}
+                  modelName={props.data?.taxi_category?.model_name}
+                  size={46}
+                />
+              )}
+            </div>
             <div className="flex-1 min-w-0">
             <div className="flex flex-wrap items-center gap-2 w-100">
               <span className="text-md font-600 leading-xl text-[#0b1220] ">

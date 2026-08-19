@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { TransportIconFetcher } from "../../../helper/TransportIconFetcher";
+import { TaxiTypeGlyph } from "../../../helper/taxiTypeGlyph";
 import ImageLoader from "../../../components/ImageLoader";
 import useMediaQuery from "../../../components/media";
 import media from "../../../components/media";
@@ -339,14 +340,13 @@ const TransferBooking = ({
                                       // onfail={handleTransferImageFailed}
                                     />
                                   ) : (
-                                    <div className="bg-[#D9D9D9] mr-[0.8rem] rounded-[11px] p-[10px]">
-                                      <TransportIconFetcher
-                                        TransportMode={booking?.booking_type}
-                                        Instyle={{
-                                          fontSize: "2.75rem",
-                                        }}
-                                        classname={" h-[34px] w-[34px]"}
-                                        color="#000000"
+                                    <div className="bg-[#f4f3ec] mr-[0.8rem] rounded-[11px] p-[10px] grid place-items-center">
+                                      <TaxiTypeGlyph
+                                        type={booking?.transfer_details?.quote?.taxi_category?.type}
+                                        modelName={
+                                          booking?.transfer_details?.quote?.taxi_category?.model_name
+                                        }
+                                        size={44}
                                       />
                                     </div>
                                   )}
@@ -679,21 +679,36 @@ const TransferBooking = ({
                         <div className="flex flex-row items-center justify-between gap-1 w-full">
                           <div className="grid place-items-center lg:min-w-[6rem] min-w-[4rem] max-w-[4rem]  lg:min-h-[6rem] min-h-[4rem] rounded-2xl">
                             {book?.booking_type === "Taxi" ? (
-                              <ImageLoader
-                                className="object-contain border rounded-[11px]"
-                                url={
-                                  book?.transfer_details?.quote?.taxi_category
-                                    ?.image
-                                }
-                                leftalign
-                                noLazy
-                                height={
-                                  book?.image?.includes("gozo")
-                                    ? "3rem"
-                                    : "4rem"
-                                }
-                                // onfail={handleTransferImageFailed}
-                              />
+                              <>
+                                {book?.transfer_details?.quote?.taxi_category
+                                  ?.image ? (
+                                  <ImageLoader
+                                    className="object-contain border rounded-[11px]"
+                                    url={
+                                      book?.transfer_details?.quote?.taxi_category
+                                        ?.image
+                                    }
+                                    leftalign
+                                    noLazy
+                                    height={
+                                      book?.image?.includes("gozo")
+                                        ? "3rem"
+                                        : "4rem"
+                                    }
+                                    // onfail={handleTransferImageFailed}
+                                  />
+                                ) : (
+                                  <div className="bg-[#f4f3ec] mr-[0.8rem] rounded-[11px] p-[10px] grid place-items-center">
+                                    <TaxiTypeGlyph
+                                      type={book?.transfer_details?.quote?.taxi_category?.type}
+                                      modelName={
+                                        book?.transfer_details?.quote?.taxi_category?.model_name
+                                      }
+                                      size={44}
+                                    />
+                                  </div>
+                                )}
+                              </>
                             ) : (
                               <div className="bg-[#D9D9D9] mr-[0.8rem] rounded-[11px] p-[10px]">
                                 <TransportIconFetcher

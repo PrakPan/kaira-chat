@@ -15,6 +15,7 @@ import { BsPeopleFill } from "react-icons/bs";
 import { MERCURY_HOST } from "../../../services/constants";
 import axios from "axios";
 import { FaPen } from "react-icons/fa";
+import { TaxiTypeGlyph } from "../../../helper/taxiTypeGlyph";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 
 const CitySummary = (props) => {
@@ -526,20 +527,36 @@ const CitySummary = (props) => {
                       </div>
 
                       <div className="w-[50px] h-[50px] flex items-center justify-center ">
-                        <ImageLoader
-                          borderRadius="5px"
-                          style={{
-                            width: "48px",
-                            height: "48px",
-                            objectFit: "contain",
-                            cursor: "pointer",
-                            margin: "auto",
-                            // display: "block",
-                          }}
-                          url={
-                            item?.transfer_details?.quote?.taxi_category?.image
-                          }
-                        />
+                        {item?.transfer_details?.quote?.taxi_category?.image ? (
+                          <ImageLoader
+                            borderRadius="5px"
+                            style={{
+                              width: "48px",
+                              height: "48px",
+                              objectFit: "contain",
+                              cursor: "pointer",
+                              margin: "auto",
+                              // display: "block",
+                            }}
+                            url={
+                              item?.transfer_details?.quote?.taxi_category?.image
+                            }
+                          />
+                        ) : (
+                          // ImageLoader answers a missing key with a transparent
+                          // pixel, which left this row with a 48px hole. The class
+                          // silhouette fills it and says which car was booked.
+                          <TaxiTypeGlyph
+                            type={
+                              item?.transfer_details?.quote?.taxi_category?.type
+                            }
+                            modelName={
+                              item?.transfer_details?.quote?.taxi_category
+                                ?.model_name
+                            }
+                            size={44}
+                          />
+                        )}
                       </div>
 
                       <div>
