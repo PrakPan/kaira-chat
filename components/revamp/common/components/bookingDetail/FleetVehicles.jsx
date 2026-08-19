@@ -51,6 +51,8 @@ export default function FleetVehicles({
             <VehiclePhoto
               image={category?.image}
               alt={vehicleName(category)}
+              vehicleType={category?.type}
+              modelName={category?.model_name}
               mode={mode}
               className="mx-3 mb-3"
             />

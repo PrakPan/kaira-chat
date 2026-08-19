@@ -304,6 +304,8 @@ const TaxiDetailModal = ({
             <VehiclePhoto
               image={vehicle?.image}
               alt={vehicle?.type}
+              vehicleType={vehicle?.type}
+              modelName={vehicle?.model_name}
               mode="Taxi"
             />
           )}

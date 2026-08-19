@@ -297,6 +297,8 @@ const VehicleDetailModal = ({
             <VehiclePhoto
               image={vehicle.image}
               alt={vehicleName || vehicle?.type}
+              vehicleType={vehicle?.type}
+              modelName={vehicle?.model_name}
               mode={accentKey}
             />
           ) : null}
