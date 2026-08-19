@@ -602,7 +602,10 @@ const ItineraryCity = (props) => {
         query: {
           drawer: "addCityTaxi",
           itinerary_city_id: props?.city?.id,
-          ...(itineraryDaybyDay?.destination_type === "Domestic"
+          // The itinerary detail API's `multicity_taxi` marker decides whether
+          // the drawer has a Multicity tab at all; only pre-select it when it
+          // does, otherwise the drawer opens on Pickup/Drop.
+          ...(itineraryDaybyDay?.multicity_taxi === true
             ? { taxiTab: "multicity" }
             : {}),
         },

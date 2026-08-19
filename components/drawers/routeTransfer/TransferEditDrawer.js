@@ -359,14 +359,26 @@ const TransferEditDrawer = (props) => {
   const [multiCitySuggestions, setMultiCitySuggestions] = useState(null);
   const [sightseeingSuggestions, setSightseeingSuggestions] = useState(null);
   const [airportSuggestions, setAirportSuggestions] = useState(null);
+  // Itinerary-level marker from the detail API. When it is false this
+  // itinerary has no multi-city taxi product, so the tab is dropped entirely
+  // and the drawer opens on Pickup/Drop; when true, Multicity is the tab the
+  // drawer lands on. Changing an existing multi-city combo (`drawerType=multicity`
+  // in the URL) keeps the tab regardless, so that booking stays editable.
+  const multicityTaxiEnabled = useSelector(
+    (state) => state?.Itinerary?.multicity_taxi === true,
+  );
+  const showMulticityTab = multicityTaxiEnabled || drawerType === "multicity";
   const [multicityTab, setMulticityTab] = useState(() => {
+    const isAllowed = (tab) =>
+      ["sightseeing", "airport", "multicity"].includes(tab) &&
+      (tab !== "multicity" || showMulticityTab);
     const initial = props?.initialTab;
-    if (["sightseeing", "airport", "multicity"].includes(initial)) return initial;
-    if (["sightseeing", "airport", "multicity"].includes(taxiTab)) return taxiTab;
+    if (isAllowed(initial)) return initial;
+    if (isAllowed(taxiTab)) return taxiTab;
     // `drawerType=multicity` in the URL is only set when changing an existing
     // multi-city combo booking, so open on the Multicity tab.
     if (drawerType === "multicity") return "multicity";
-    return "sightseeing";
+    return showMulticityTab ? "multicity" : "airport";
   });
   const [tabLoaded, setTabLoaded] = useState({
     sightseeing: false,
@@ -494,6 +506,15 @@ const TransferEditDrawer = (props) => {
     if (!sugg) return;
     fetchRoutes({ suggestionType: sugg });
   }, [showDrawer, multicityTab]);
+
+  // The marker lives in redux, which can hydrate after this drawer mounts. If
+  // it resolves to false while Multicity is the selected tab, the pill is no
+  // longer rendered — drop back to Pickup/Drop so the body matches the tabs.
+  useEffect(() => {
+    if (!showMulticityTab && multicityTab === "multicity") {
+      setMulticityTab("airport");
+    }
+  }, [showMulticityTab, multicityTab]);
 
   // Reset per-tab cache when the drawer closes so reopening fetches fresh.
   useEffect(() => {
@@ -1416,7 +1437,9 @@ const TransferEditDrawer = (props) => {
                 {[
                   { id: "sightseeing", label: "Sightseeing" },
                   { id: "airport", label: "Pickup/Drop" },
-                  { id: "multicity", label: "Multicity" },
+                  ...(showMulticityTab
+                    ? [{ id: "multicity", label: "Multicity" }]
+                    : []),
                 ].map((tab) => {
                   const isActive = multicityTab === tab.id;
                   return (
