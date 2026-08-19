@@ -94,7 +94,9 @@ const BotLoginModal: React.FC<BotLoginModalProps> = (props) => {
   // over a measurement that's simply still on its way.
   const measuredRef = useRef(false);
   const probeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const updateRef = useRef<(() => void) | null>(null);
   const blurTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const sheetRef = useRef<HTMLDivElement>(null);
   const scrollBodyRef = useRef<HTMLDivElement>(null);
 
   // Drag-to-close for the mobile bottom sheet
@@ -131,19 +133,31 @@ const BotLoginModal: React.FC<BotLoginModalProps> = (props) => {
   useEffect(() => {
     if (!props.show || typeof window === "undefined") return;
     const vv = window.visualViewport;
+    const rawInset = () =>
+      vv ? Math.max(0, window.innerHeight - vv.height - vv.offsetTop) : 0;
     let base = window.innerHeight;
+    let baseInset = rawInset();
 
     const update = () => {
       const h = window.innerHeight;
       // Nothing focused ⇒ no keyboard ⇒ whatever we measure now is the
-      // keyboard-free height (this also re-syncs after a rotate or after the
-      // browser chrome collapses).
-      if (!focusedRef.current) base = h;
-      const inset = vv ? Math.max(0, h - vv.height - vv.offsetTop) : 0;
+      // keyboard-free resting state (this also re-syncs after a rotate or after
+      // the browser chrome collapses).
+      if (!focusedRef.current) {
+        base = h;
+        baseInset = rawInset();
+      }
+      // Only the *change* since that resting state can be a keyboard. Several
+      // in-app browsers report a permanent gap between `innerHeight` and the
+      // visual viewport (their own chrome), and reading that as a keyboard both
+      // shifts the sheet at rest and — much worse — convinces us we have a
+      // working measurement when we have nothing, which is what kept the
+      // fallback below from ever engaging.
+      const inset = Math.max(0, rawInset() - baseInset);
       // A real signal is either of: the visual viewport shrank under us, or the
       // browser resized the window to make room for the keyboard (in which case
       // `bottom: 0` is already above it and there's nothing for us to do).
-      measuredRef.current = inset > 0 || base - h > 80;
+      measuredRef.current = inset > 80 || base - h > 80;
       if (measuredRef.current) {
         clearProbe();
         setKeyboardOverlay(false);
@@ -153,6 +167,10 @@ const BotLoginModal: React.FC<BotLoginModalProps> = (props) => {
       setBaseHeight(base);
     };
 
+    // Re-measuring is otherwise purely event-driven, and the keyboard closing
+    // is exactly the case where some browsers send no event at all — so the
+    // blur path calls this directly to re-take the resting baseline.
+    updateRef.current = update;
     update();
     vv?.addEventListener("resize", update);
     vv?.addEventListener("scroll", update);
@@ -174,20 +192,24 @@ const BotLoginModal: React.FC<BotLoginModalProps> = (props) => {
     [],
   );
 
-  // Bring the focused field back into view *inside the sheet's own scroller*.
-  // We never call `input.scrollIntoView()`: the sheet header (yellow strip +
-  // drag handle + title) is pinned outside the scroll container, and the native
-  // scroll can drag the whole document — moving `scrollTop` by hand keeps the
-  // effect contained. The extra headroom keeps the field's CTA (Send OTP /
-  // Continue) on screen with it, not just the input itself.
+  // Bring the focused field high up *inside the sheet's own scroller*. We never
+  // call `input.scrollIntoView()`: the sheet header (yellow strip + drag handle
+  // + title) is pinned outside the scroll container, and the native scroll can
+  // drag the whole document — moving `scrollTop` by hand keeps the effect
+  // contained. Aiming for the top quarter rather than "just barely visible"
+  // leaves the field on screen even when the assumed keyboard height below
+  // undershoots the real one, and keeps its CTA (Send OTP / Continue) with it.
   const revealFocusedField = useCallback(() => {
     const box = scrollBodyRef.current;
     const el = typeof document !== "undefined" ? document.activeElement : null;
     if (!box || !(el instanceof HTMLElement) || !box.contains(el)) return;
     const boxRect = box.getBoundingClientRect();
     const elRect = el.getBoundingClientRect();
-    const below = elRect.bottom + 92 - boxRect.bottom;
-    if (below > 0) box.scrollTop += below;
+    const target = boxRect.top + boxRect.height * 0.25;
+    // Only ever scroll the field *up* — pushing it down would bury it under the
+    // keyboard we're trying to clear.
+    const by = Math.min(elRect.top - target, box.scrollHeight - box.clientHeight - box.scrollTop);
+    if (by > 0) box.scrollTop += by;
     else if (elRect.top < boxRect.top) box.scrollTop -= boxRect.top - elRect.top + 12;
   }, []);
 
@@ -197,10 +219,16 @@ const BotLoginModal: React.FC<BotLoginModalProps> = (props) => {
   // after it, this browser is never going to tell us (Android in-app WebViews),
   // so switch to the assumed-height fallback. Any real measurement that lands
   // later wins — `update()` above clears the flag.
-  const handleFieldFocus = useCallback(
-    (e: React.FocusEvent) => {
+  // Bound natively on `document` rather than through React's onFocus/onBlur:
+  // the sheet is portaled out of the React root, and focusin/focusout on the
+  // document is the one delivery path that can't be affected by that.
+  useEffect(() => {
+    if (!props.show || isPageWide || typeof document === "undefined") return;
+
+    const onFocusIn = (e: FocusEvent) => {
       const el = e.target as HTMLElement | null;
-      if (!el || !/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)) return;
+      if (!el || !sheetRef.current?.contains(el)) return;
+      if (!/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)) return;
       if (blurTimer.current) clearTimeout(blurTimer.current);
       focusedRef.current = true;
       clearProbe();
@@ -216,21 +244,28 @@ const BotLoginModal: React.FC<BotLoginModalProps> = (props) => {
       // Re-run once the sheet has finished lifting/resizing around the keyboard.
       requestAnimationFrame(revealFocusedField);
       setTimeout(revealFocusedField, 320);
-    },
-    [clearProbe, revealFocusedField],
-  );
+    };
 
-  const handleFieldBlur = useCallback(() => {
-    clearProbe();
-    if (blurTimer.current) clearTimeout(blurTimer.current);
-    // Focus hops between fields (phone → the auto-focused OTP box), and blur
-    // lands before the next focus — wait a beat so the sheet doesn't drop and
-    // re-lift in between.
-    blurTimer.current = setTimeout(() => {
-      focusedRef.current = false;
-      setKeyboardOverlay(false);
-    }, 150);
-  }, [clearProbe]);
+    const onFocusOut = () => {
+      clearProbe();
+      if (blurTimer.current) clearTimeout(blurTimer.current);
+      // Focus hops between fields (phone → the auto-focused OTP box), and blur
+      // lands before the next focus — wait a beat so the sheet doesn't drop and
+      // re-lift in between.
+      blurTimer.current = setTimeout(() => {
+        focusedRef.current = false;
+        setKeyboardOverlay(false);
+        updateRef.current?.();
+      }, 150);
+    };
+
+    document.addEventListener("focusin", onFocusIn);
+    document.addEventListener("focusout", onFocusOut);
+    return () => {
+      document.removeEventListener("focusin", onFocusIn);
+      document.removeEventListener("focusout", onFocusOut);
+    };
+  }, [props.show, isPageWide, clearProbe, revealFocusedField]);
 
   // The fallback caps the sheet's height as it lifts, which can leave the
   // focused field below the fold of the (now shorter) scroller.
@@ -350,11 +385,18 @@ const BotLoginModal: React.FC<BotLoginModalProps> = (props) => {
       Math.max(ASSUMED_KEYBOARD_MIN, (baseHeight ?? 0) * ASSUMED_KEYBOARD_RATIO),
     ),
   );
-  const assumeKeyboard = !isPageWide && keyboardOverlay && keyboardInset === 0;
+  const assumeKeyboard = !isPageWide && keyboardOverlay;
   const liftBy = assumeKeyboard ? assumedKeyboard : keyboardInset;
+  // Height of the strip left above the assumed keyboard. The sheet takes all of
+  // it rather than just capping at it: pinned to the top of the screen, a short
+  // card (the OTP step) can't come to rest right on the guessed keyboard line,
+  // where a keyboard even slightly taller than assumed would swallow it.
+  const assumedRoom = baseHeight
+    ? Math.max(240, baseHeight - assumedKeyboard)
+    : null;
   const sheetMaxHeight =
-    assumeKeyboard && baseHeight
-      ? `${Math.max(240, baseHeight - assumedKeyboard)}px`
+    assumeKeyboard && assumedRoom
+      ? `${assumedRoom}px`
       : viewportHeight
         ? `${viewportHeight}px`
         : "92vh";
@@ -478,9 +520,8 @@ const BotLoginModal: React.FC<BotLoginModalProps> = (props) => {
           }}
         >
           <div
+            ref={sheetRef}
             onClick={(e) => e.stopPropagation()}
-            onFocus={handleFieldFocus}
-            onBlur={handleFieldBlur}
             style={{
               position: "relative",
               display: "flex",
@@ -491,6 +532,9 @@ const BotLoginModal: React.FC<BotLoginModalProps> = (props) => {
               // read as a card, not a clipped sheet.
               borderRadius: assumeKeyboard ? 20 : "20px 20px 0 0",
               maxHeight: sheetMaxHeight,
+              ...(assumeKeyboard && assumedRoom
+                ? { height: `${assumedRoom}px` }
+                : null),
               // Clip to the rounded top (so the yellow strip curves with the
               // edge). The yellow strip + drag handle stay pinned; the card
               // body below scrolls internally, so keyboard focus-scroll can
