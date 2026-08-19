@@ -9,7 +9,7 @@ import "../containers/itinerary/typography.css";
 import "../styles/kaira-sidebar.css";
 import { useRouter } from "next/router";
 import * as ga from "../services/ga/Index";
-import { FACEBOOK_PIXEL_ID, GOOGLE_CLIENT_ID, JUPITER_HOST } from "../services/constants";
+import { GOOGLE_CLIENT_ID, JUPITER_HOST } from "../services/constants";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import dynamic from "next/dynamic";
 import Head from "next/head";
@@ -209,35 +209,27 @@ function MyApp({ Component, pageProps }) {
         />
       </Head>
 
-      {/* Google Analytics */}
-      <Script
-        src="https://www.googletagmanager.com/gtag/js?id=G-EV1KHKN8VV"
-        strategy="afterInteractive"
-      />
-      <Script strategy="afterInteractive">
-        {`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', 'G-EV1KHKN8VV');
-        `}
-      </Script>
+      {/* ---------- Google Analytics 4 & Facebook Pixel ----------
+          Both are loaded by the GTM container (GTM-5C5GGGV) in _document.js,
+          NOT here. Verified against live production: window.google_tag_manager
+          contains "G-EV1KHKN8VV" and fbq reports pixel "611867085917762" even
+          though neither id appears anywhere in the served HTML — the only
+          possible source is the container itself. The GA4 loader also carries
+          GTM's own cache-buster (gtag/js?id=G-EV1KHKN8VV&cx=c&gtm=...).
 
-      {/* Facebook Pixel */}
-      <Script strategy="afterInteractive">
-        {`
-          !function(f,b,e,v,n,t,s)
-          {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-          n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-          if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-          n.queue=[];t=b.createElement(e);t.async=!0;
-          t.src=v;s=b.getElementsByTagName(e)[0];
-          s.parentNode.insertBefore(t,s)}
-          (window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
-          fbq('init', '${FACEBOOK_PIXEL_ID}');
-          fbq('track', 'PageView');
-        `}
-      </Script>
+          A gtag <Script> and an inline fbq snippet used to sit here as well.
+          They named the SAME GA4 property and the SAME pixel id that the
+          container already fires (NEXT_PUBLIC_FACEBOOK_PIXEL_ID is byte-for-byte
+          611867085917762), so once deployed they would have loaded gtag.js and
+          fbevents.js a second time each — ~290 KiB of duplicate transfer plus
+          duplicate long tasks — and risked double-counting PageView.
+
+          GTM stays the single owner of both tags. Add or change them in the
+          container UI, not here. Note that window.gtag and window.dataLayer are
+          still defined (by the Google Ads block in _document.js), and the
+          route-change handler above keeps calling fbq("track","PageView") for
+          client-side navigations only — GTM's own PageView covers the initial
+          load, so the two do not overlap. */}
 
       {/* Jupiter Analytics is loaded by <JupyterAnalytics /> below (which pulls
           /jupyter-partytown.js and owns window.JupiterAnalytics). There used to

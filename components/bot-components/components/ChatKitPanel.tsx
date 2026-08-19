@@ -3723,9 +3723,23 @@ useEffect(() => {
   // status="Draft" itinerary and clobber the real P2 data that the
   // ItineraryContainer fetches for the finalized trip — which is what made
   // P1 start-city pins resurface on P2 reloads.
-  const threadIsCompleted = itineraryEffects.some(
-    (e: any) => e?.name === "itinerary_completion_process_completed" && e?.data?.itinerary_id,
-  );
+  //
+  // Two independent signals, because neither alone covers it: the completion
+  // effect is only in the thread when the trip finalized *in this thread* (a
+  // trip finalized in an earlier thread, or still mid-celery, carries none),
+  // and botMode only reads "p2" once BotApp's restore has resolved the status
+  // API. Either one means the draft-shaped replay must be skipped.
+  //
+  // botMode is deliberately not added to this effect's dep array: the effect is
+  // fire-once per restoredThread (appliedRestoredThreadRef) and BotApp always
+  // resolves the stage — restoreItineraryDirectly, which applies p2 — before it
+  // calls setRestoredThread, so the prop is already settled when this runs.
+  // Adding it would only re-arm the mid-stream re-run this effect guards against.
+  const threadIsCompleted =
+    botMode === "p2" ||
+    itineraryEffects.some(
+      (e: any) => e?.name === "itinerary_completion_process_completed" && e?.data?.itinerary_id,
+    );
 
   let latestEndpointEffect: { name: string; data: Record<string, unknown> } | null = null;
   let restoredHasDisplayItinerary = false;

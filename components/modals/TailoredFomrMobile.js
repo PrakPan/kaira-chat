@@ -1,13 +1,16 @@
 import React, { useEffect } from "react";
 import { useRouter } from "next/router";
-import Modal from "../ui/Modal";
-import media from "../media";
-import TailoredForm from "../tailoredform/Index";
-import NewTrip from "../../containers/new-trip";
-import BotApp from "../bot-components/BotApp";
+
+// NOTE: the imports for the commented-out fallback below (Modal, media,
+// TailoredForm, NewTrip, BotApp) were removed deliberately. This component
+// returns null and only redirects, so those imports were dead — but they are
+// static, so webpack still pulled their whole closure (BotApp -> ChatKitPanel
+// -> TransferEditDrawer -> ItineraryContainer -> newitinerary, 603 modules /
+// ~5.9 MB of source) into the shared chunk that EVERY marketing page loads.
+// If the fallback is ever restored, re-add the imports as dynamic() so the
+// chat/itinerary tree stays out of the homepage bundle.
 
 const TailoredFormMobileModal = (props) => {
-  let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
 
   // New behaviour: every "Plan with Kaira" CTA that opened this modal now routes

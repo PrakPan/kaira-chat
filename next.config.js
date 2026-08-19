@@ -55,7 +55,10 @@ const nextConfig = {
   },
 
   experimental: {
-    nextScriptWorkers: true,
+    // nextScriptWorkers (Partytown) removed: nothing used strategy="worker",
+    // and the two competing `partytown` configs meant the worker library never
+    // loaded in production anyway. The flag only added a copy of the Partytown
+    // lib to the export. See the note in pages/_document.js.
     forceSwcTransforms: true,
     instrumentationHook: true,
     // Tree-shake barrel imports so a `import { X } from "@mui/material"` pulls

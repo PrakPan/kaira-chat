@@ -1101,3 +1101,52 @@ a.termsnavunderlinelink {
   border-radius: 12px;
   scroll-margin-top: 16px;
 }
+
+/* ── Nav desktop/mobile split ────────────────────────────────────────────────
+   These deliberately live in globals rather than NavigationMenu.module.scss.
+   BotApp is loaded with `dynamic(..., { ssr: false })`, so the nav paints as
+   soon as its JS chunk lands while the SCSS module arrives afterwards as a
+   separate async <link>. Inside that window every `styles.*` class is inert,
+   which rendered BOTH brand lockups and the desktop menu alongside the mobile
+   avatar at once (worst on slow connections / in-app browsers). globals.css is
+   a render-blocking <link> in <head>, so these always apply.
+
+   Written as "hide past a breakpoint" instead of a `hidden`/`:flex` pair
+   because a global `.hidden { display: none !important }` outranks any
+   responsive `md:flex` and would pin the element hidden at every width.
+
+   Breakpoints are the exact complements of what the JSX/module already use:
+   767.98 pairs with Tailwind `md:hidden` (min-width 768) on the mobile block,
+   and 1023.98 pairs with `lg` (min-width 1024) for the lockups. Matching to
+   the sub-pixel matters — at a flat 768px both sides matched and the nav lost
+   its profile control entirely. */
+/* Generic desktop-only hide. Use this instead of Tailwind's `hidden md:block`
+   / `hidden md:flex`: a global `.hidden { display: none !important }` ships in
+   this app's CSS and outranks every responsive `md:*` utility, so that pairing
+   pins the element hidden at EVERY width. Verified in-browser. */
+@media (max-width: 767.98px) {
+  .ttw-desktop-only { display: none !important; }
+}
+@media (max-width: 1023.98px) {
+  .ttw-nav-lockup-full { display: none !important; }
+}
+@media (min-width: 1024px) {
+  .ttw-nav-lockup-mark { display: none !important; }
+}
+
+/* The mobile overlay and sidebar are rendered unconditionally by
+   NavigationMenu.jsx and hidden solely by NavigationMenu.module.scss. While
+   that module chunk is still loading (see the note above), the sidebar dropped
+   a ~65px block — a third brand lockup, a close "×" and a "Get Started" button
+   — straight into the page flow beneath the nav. The overlay is harmless on its
+   own (its `position: fixed` lives in the same missing rule, so it collapses to
+   0px), but it is covered here for the same reason.
+
+   Intentionally NOT !important: the module already hides both with
+   `display: none !important`, so this is strictly weaker and cannot change the
+   loaded-CSS behaviour. It also leaves room for the GSAP inline styles in
+   useMobileMenu to win if those rules are ever relaxed. */
+.ttw-nav-mobile-overlay,
+.ttw-nav-mobile-sidebar {
+  display: none;
+}

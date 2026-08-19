@@ -1,7 +1,6 @@
 import Document, { Html, Head, Main, NextScript } from "next/document";
 import styled, { ServerStyleSheet } from "styled-components";
 import { CONTENT_SERVER_HOST, GOOGLE_ANALTICS_ID } from "../services/constants";
-import { Partytown } from "@builder.io/partytown/react";
 
 const Container = styled.div`
   margin-right: -0.6rem;
@@ -102,12 +101,29 @@ export default class MyDocument extends Document {
               map components via loadGoogleMaps() (utils/loadGoogleMaps). */}
 
 
-          {/* ---------- Partytown ---------- */}
-          {/* Clarity is intentionally NOT forwarded through Partytown — its
-              session-replay recorder must observe the real DOM on the main
-              thread. Under Partytown its internals get proxied as primitives
-              and it throws "Cannot create property '__clrSId' on string". */}
-          <Partytown debug={false} forward={["gtag", "mixpanel"]} />
+          {/* ---------- Partytown: REMOVED (it never worked) ----------
+              <Partytown forward={["gtag","mixpanel"]} /> used to sit here, with
+              experimental.nextScriptWorkers in next.config.js.
+
+              It never executed a single script in production. Two different
+              `partytown = {...}` globals were being written under the same
+              script id "partytown-config": this component's, and the one in
+              components/JupyterAnalytics.jsx (forward: ['JupiterAnalytics',
+              'JUPITER_CONFIG'], no `lib`). next/script dedupes by id, so the
+              two collided and the worker library was never fetched.
+
+              Verified on live production: 0 network requests for partytown.js,
+              document.querySelector('script[src*=partytown]') === null. The one
+              script assigned to it (the Freshworks widget below) therefore
+              never ran, and neither did mixpanel — a script tagged
+              type="text/partytown" with no Partytown library is inert.
+
+              So this was pure cost: the inline bootstrap plus a copy of the
+              Partytown lib emitted into the export, buying nothing, while
+              silently disabling whatever was handed to it. Anything genuinely
+              worth moving off the main thread should go into the GTM container
+              or use next/script strategy="worker" — which needs a single,
+              uncontested partytown config. */}
 
           {/* ---------- Google Tag Manager ---------- */}
           {isProduction && cleanGTMId && (
@@ -153,17 +169,28 @@ gtag('config', 'AW-738037519');
             </>
           )}
 
-          {/* ---------- Partytown Scripts ---------- */}
+          {/* ---------- Third-party widgets ---------- */}
           {isProduction && (
             <>
-              <script
-                type="text/partytown"
-                src="//in.fw-cdn.com/30401267/225580.js"
-                chat="false"
-              ></script>
+              {/* Freshworks chat widget — LEFT DISABLED ON PURPOSE.
 
-              {/* Clarity runs on the main thread (no type="text/partytown") so
-                  its recorder can observe the real DOM. */}
+                  This was tagged type="text/partytown", which meant it never
+                  executed: confirmed on live production, in.fw-cdn.com is not
+                  requested at all. Removing Partytown (above) would have
+                  silently switched this widget ON for the first time, so it is
+                  commented out instead to keep behaviour identical.
+
+                  The site already runs Kaira and the CRMOne widget, so turning
+                  a third chat surface on is a product decision, not a
+                  performance one. To enable it, uncomment — as a plain deferred
+                  script it will run on the main thread and cost ~1 more
+                  third-party connection:
+
+                  <script defer src="//in.fw-cdn.com/30401267/225580.js" chat="false" />
+              */}
+
+              {/* Clarity runs on the main thread so its recorder can observe
+                  the real DOM. */}
               <script
                 dangerouslySetInnerHTML={{
                   __html: `(function(c,l,a,r,i,t,y){

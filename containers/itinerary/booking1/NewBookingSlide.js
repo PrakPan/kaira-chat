@@ -358,6 +358,15 @@ const LivePriceTimer = ({ priceValidUntil, lockInAmount = 2000 }) => {
   const Itinerary = useSelector((state) => state.Itinerary);
 
   const isItineraryInFuture = () => {
+    // Redux seeds `Itinerary` with a `{ name, images }` placeholder that has no
+    // `start_date`, so before the detail API lands this built an Invalid Date
+    // and returned false — "dates are in the past" — which is what flashed the
+    // past-dates / prices-expired states on open. Not-loaded-yet is not an
+    // expired trip. `start_date` is the readiness signal rather than `id`
+    // because it is the field this function actually needs, and it is the same
+    // object that renders the visible "Dates: …" line, so it is always present
+    // by the time any of this matters.
+    if (!Itinerary?.start_date) return true;
     const startDate = new Date(Itinerary.start_date);
     const currentDate = new Date();
     currentDate.setHours(0, 0, 0, 0);
@@ -1059,19 +1068,6 @@ const ItineraryInclusions = ({
     }));
   };
 
-  const updateCartBooking = async () => {
-    try {
-      setBookingLoading(true);
-      const response = await updateCartPricing.get(`/${ItineraryId}/cart/`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-    } catch (error) {
-      console.error("Error fetching coupons:", error);
-    } finally {
-      setBookingLoading(false);
-    }
-  };
-
   const formatDate = (dateStr) => {
     if (!dateStr) return "";
     const date = new Date(dateStr);
@@ -1345,10 +1341,15 @@ const ItineraryInclusions = ({
                               ""
                             : childFlight?.transfer_details?.destination
                                 ?.city_name || "";
-                          const childName = childFlight?.name ||
-                            originCity && destinationCity
+                          // Parenthesised deliberately: without it the `||`
+                          // binds tighter than `?:`, so the condition became
+                          // `name || (origin && destination)` and the name
+                          // fallback could never win.
+                          const childName =
+                            childFlight?.name ||
+                            (originCity && destinationCity
                               ? `${originCity} → ${destinationCity}`
-                              :  "Flight Leg";
+                              : "Flight Leg");
 
                           return (
                             <div
@@ -1358,7 +1359,7 @@ const ItineraryInclusions = ({
                           
                               <div className="flex-1 min-w-0">
                                 <div className="text-sm font-400 leading-md text-black">
-                                  {childFlight?.name || childName}
+                                  {childName}
                                 </div>
                                 <div className="flex flex-wrap items-center gap-2 mt-0.5">
                                   {childFlight?.check_in && (
@@ -1788,7 +1789,7 @@ const Details = (props) => {
       );
 
       if (response.data) {
-        setItinerary(response.data);
+        dispatch(setItinerary(response.data));
         fetchItineraryStatus();
         dispatch(
           openNotification({
@@ -2382,6 +2383,15 @@ const Details = (props) => {
   };
 
   const isItineraryInFuture = () => {
+    // Redux seeds `Itinerary` with a `{ name, images }` placeholder that has no
+    // `start_date`, so before the detail API lands this built an Invalid Date
+    // and returned false — "dates are in the past" — which is what flashed the
+    // past-dates / prices-expired states on open. Not-loaded-yet is not an
+    // expired trip. `start_date` is the readiness signal rather than `id`
+    // because it is the field this function actually needs, and it is the same
+    // object that renders the visible "Dates: …" line, so it is always present
+    // by the time any of this matters.
+    if (!Itinerary?.start_date) return true;
     const startDate = new Date(Itinerary.start_date);
     const currentDate = new Date();
     currentDate.setHours(0, 0, 0, 0);
@@ -2394,9 +2404,14 @@ const Details = (props) => {
       sale.payment_type === "full_payment" && sale.status === "Completed",
   );
 
+  // `Cart` starts as null in Redux, so the `!price_valid_until` arm used to
+  // report "expired" for the whole window before the cart API resolved. Gate on
+  // the cart actually being present first.
   const hasPlanExpired =
-    !Cart?.price_valid_until ||
-    new Date(Cart.price_valid_until.replace(" ", "T")).getTime() <= Date.now();
+    !!Cart &&
+    (!Cart?.price_valid_until ||
+      new Date(Cart.price_valid_until.replace(" ", "T")).getTime() <=
+        Date.now());
 
   // The two states that surface the "Reprice Itinerary" CTA. On mobile these
   // move out of the top of the cart and into a fixed bottom bar.
@@ -2601,9 +2616,11 @@ const Details = (props) => {
                     </div>
                   ) : !isItineraryInFuture() && areAnyInclusionsPaid() ? (
                     // Expired banner shows at the top on desktop only. On phones
-                    // it moves to a fixed bottom bar (portaled below).
-                    isPageWide ? (
-                    <GetInTouchContainer>
+                    // it moves to a fixed bottom bar (portaled below). Gated with
+                    // a CSS breakpoint, not `isPageWide` — the JS media hook
+                    // reports false on the first paint, so desktop used to render
+                    // a blank gap here before the banner popped in.
+                    <GetInTouchContainer className="ttw-desktop-only">
                       <div>
                         <div className="bg-white rounded-lg">
                           <div className="mb-2">
@@ -2682,14 +2699,13 @@ const Details = (props) => {
                         </div>
                       </Button> */}
                     </GetInTouchContainer>
-                    ) : null
                   ) : hasPlanExpired &&
                     isItineraryInFuture() &&
                     pricing_status == "SUCCESS" ? (
                     // Refresh prices section — desktop only; phones use the
-                    // fixed bottom bar (portaled below).
-                    isPageWide ? (
-                    <div>
+                    // fixed bottom bar (portaled below). CSS breakpoint rather
+                    // than `isPageWide`, same first-paint reason as above.
+                    <div className="ttw-desktop-only">
                       <div className="bg-white rounded-lg">
                         <div className="mb-2">
                           <div className="mb-lg">
@@ -2731,7 +2747,6 @@ const Details = (props) => {
                         <hr />
                       </div>
                     </div>
-                    ) : null
                   ) : (
                     <div>
                       <div className="flex justify-between items-start gap-2">
@@ -2950,16 +2965,20 @@ const Details = (props) => {
                           Please select at least one inclusion to proceed
                         </div>
                       </>
-                    ) : isPageWide ? (
+                    ) : (
                       // Desktop: static button in the pricing column. Phones get
-                      // a fixed bottom bar (portaled below).
-                      <PaymentButton
-                        amount={calculateFilteredTotal()}
-                        isLoading={paymentLoading}
-                        paymentType={"full"}
-                        onClick={() => handlePayNow("full")}
-                      />
-                    ) : null}
+                      // a fixed bottom bar (portaled below). CSS breakpoint, not
+                      // `isPageWide` — that reported false on the first paint, so
+                      // desktop briefly rendered no Proceed-to-Pay button at all.
+                      <div className="ttw-desktop-only">
+                        <PaymentButton
+                          amount={calculateFilteredTotal()}
+                          isLoading={paymentLoading}
+                          paymentType={"full"}
+                          onClick={() => handlePayNow("full")}
+                        />
+                      </div>
+                    )}
 
                     {/* WhatsApp Button */}
                     {/* Help Section */}
@@ -3139,8 +3158,7 @@ const Details = (props) => {
               `position: fixed` resolves against the viewport — the Drawer's
               slide animation leaves a `transform` on its container, which would
               otherwise trap a fixed child inside the scrolling drawer. */}
-          {!isPageWide &&
-            !anyOverlayOpen &&
+          {!anyOverlayOpen &&
             typeof document !== "undefined" &&
             (() => {
               const showPayBar =
@@ -3156,7 +3174,7 @@ const Details = (props) => {
 
               return ReactDOM.createPortal(
                 <div
-                  className="fixed bottom-0 left-0 right-0 bg-white px-4 pt-3 pb-4 shadow-[0_-2px_12px_rgba(0,0,0,0.08)]"
+                  className="fixed bottom-0 left-0 right-0 md:hidden bg-white px-4 pt-3 pb-4 shadow-[0_-2px_12px_rgba(0,0,0,0.08)]"
                   style={{ zIndex: 1650 }}
                 >
                   {showRepriceExpired ? (

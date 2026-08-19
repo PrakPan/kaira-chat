@@ -596,6 +596,13 @@ export default function BotApp({
   const finalizedStatus = useSelector(
     (state: any) => state.ItineraryStatus?.finalized_status,
   );
+  // Same rationale as botModeRef below: callbacks captured by the in-flight
+  // restore chain (restoreLatestThread → loadThread → handleItineraryReceived)
+  // keep the finalizedStatus from the render that started the restore, so the
+  // "SUCCESS" that restoreItineraryDirectly dispatches mid-flight is invisible
+  // to them. Read the ref, not the selector value, from those callbacks.
+  const finalizedStatusRef = useRef<string | undefined>(undefined);
+  finalizedStatusRef.current = finalizedStatus;
   const itineraryStatus = useSelector(
     (state: any) => state.ItineraryStatus?.itinerary_status,
   );
@@ -1698,7 +1705,19 @@ export default function BotApp({
       // post-refresh poll just resolved, hiding Routes/Bookings tabs and
       // flipping the itinerary panel back to P1 styling. The canonical fetch
       // in ItineraryContainer is the source of truth for P2 data.
-      if (botMode === "p2") return;
+      //
+      // Read botModeRef, NOT the botMode state. The restore chain
+      // (mount effect → restoreLatestThread → loadThread → this callback) is a
+      // single fire-and-forget async run that holds the callback identities
+      // from the render it started on — where botMode is still "p1". The
+      // applyBotMode("p2") that restoreItineraryDirectly performs mid-flight
+      // re-renders and builds a *new* handleItineraryReceived, but the running
+      // chain keeps calling the old one, so a state read here is permanently
+      // stale for the whole restore and this guard never fires. That let
+      // loadThread's replay stamp a status:"Draft" itinerary + activeItineraryId
+      // "draft" over a live P2 trip (and disable polling, so nothing corrected
+      // it). Same fix already applied to the viewMode branches in loadThread.
+      if (botModeRef.current === "p2") return;
 
       if (data?.shimmer) {
         dispatch(setItineraryStatus("itinerary_status", "PENDING"));
@@ -1937,9 +1956,13 @@ export default function BotApp({
       dispatch(setItineraryStatus("finalized_status", "PENDING"));
 
       // botMode === "p2" was checked at the top of this callback and caused an
-      // early return, so it can't be true here.
+      // early return, so it can't be true here. finalizedStatus is read from
+      // the ref for the same stale-closure reason as that guard — the selector
+      // value would still say "PENDING" during a restore that has already
+      // resolved the trip as finalized, and downgrade it to "draft" below.
       const isAlreadyCompleted =
-        finalizedStatus === "SUCCESS" || itineraryCreatedInSessionRef.current;
+        finalizedStatusRef.current === "SUCCESS" ||
+        itineraryCreatedInSessionRef.current;
 
       if (!isAlreadyCompleted) {
         setActiveItineraryId("draft");
@@ -1948,13 +1971,18 @@ export default function BotApp({
       setViewMode("itinerary");
       setMobilePanel("map");
     },
+    // botMode / finalizedStatus are deliberately NOT deps — both are read from
+    // refs above precisely because this callback outlives the render that
+    // captured it (see the botModeRef guard at the top). Keeping them here
+    // would also churn this callback's identity, which cascades into
+    // loadThread → restoreLatestThread → the mount/popstate effects and into
+    // ChatKitPanel's restoredThread effect, where a re-run mid-stream is the
+    // documented hazard it guards against with appliedRestoredThreadRef.
     [
       revealLeftPanel,
       dispatch,
       buildSkeletonItinerary,
       activeItineraryId,
-      finalizedStatus,
-      botMode,
       userLocation,
     ],
   );
@@ -2180,6 +2208,36 @@ export default function BotApp({
           safeSetSessionItem(`chatkit_session_${target}`, threadSessionId);
           setActiveChatSessionId(threadSessionId);
         }
+
+        // ── Resolve the stage BEFORE setRestoredThread commits ──────────────
+        // That commit is what fires ChatKitPanel's restored-thread effect, and
+        // that effect decides off botMode whether to replay the draft-shaped
+        // display_itinerary. Both existing callers settle botMode first —
+        // restoreLatestThread runs restoreItineraryDirectly on stage P2, and
+        // handleThreadSelect does the same whenever the thread row carried a
+        // session_id — so they pass a resolved `knownStage` (a string, or null
+        // for "resolved to nothing").
+        //
+        // `undefined` means the caller could NOT resolve it: the row carried
+        // neither session_id nor filter_session_id, so handleThreadSelect
+        // skipped restoreItineraryDirectly entirely. Only in that case is the
+        // session id first known here, derived from the get_by_id response —
+        // so run the same restore the caller would have run, before the commit.
+        // Left unresolved, botMode would still be "p1" at commit time and a P2
+        // trip would get painted as a draft by that replay.
+        let resolvedStage: string | null = knownStage ?? null;
+        if (knownStage === undefined && threadSessionId) {
+          try {
+            resolvedStage = await restoreItineraryDirectly(threadSessionId);
+          } catch (err) {
+            console.warn(
+              "[loadThread] late restoreItineraryDirectly failed, continuing unresolved:",
+              err,
+            );
+            resolvedStage = null;
+          }
+        }
+
         setRestoredThread(data);
         // Thread-level customer_name (P1/draft stage has no itinerary in redux
         // yet) feeds the chat avatar's customer-initial fallback. Only overwrite
@@ -2271,7 +2329,7 @@ export default function BotApp({
           if (hasDisplayItinerary || hasCompletedEffectInLoop) {
             mobileTabSwitchRef.current?.("itinerary");
           }
-        } else if (knownStage === "P2") {
+        } else if (resolvedStage === "P2") {
           // Stage P2 per the status API, but this thread carries no
           // display_itinerary / completion effect to restore from (so
           // restoredItineraryId is null). An itinerary still exists —
@@ -2319,7 +2377,7 @@ export default function BotApp({
         // handleTabClick("chat") also runs setViewMode("map"), so firing it
         // here would clobber the itinerary view and strand a P2 refresh on the
         // map (the very bug this avoids).
-        if (!restoredItineraryId && knownStage !== "P2") {
+        if (!restoredItineraryId && resolvedStage !== "P2") {
           mobileTabSwitchRef.current?.("chat");
         }
 
@@ -2335,7 +2393,25 @@ export default function BotApp({
               `/${restoredItineraryId}/status/`,
             );
             const status = statusRes.data?.celery;
-            const stage = statusRes.data?.stage;
+            // `resolvedStage === "P2"` is sticky. The stage was already
+            // resolved from /{sid}/status/ — by the caller, or by the late
+            // restore above — and when it said P2 that ALSO
+            // ran restoreItineraryDirectly: canonical trip hydrated, botMode
+            // flipped to p2, polling on. session_id and itinerary_id are the
+            // same identifier (the clone flow re-keys the session to the new
+            // itinerary id), so this second call hits the same record: a
+            // disagreement is replica lag or an absent `stage` key, never a
+            // genuinely-P1 trip. Without the pin, that flake fell into the
+            // `else` below and half-undid the hydration — botMode back to p1,
+            // activeItineraryId "draft", polling off — stranding a live P2 trip
+            // on the P1 UI with nothing left to correct it. It also stops this
+            // call from undoing the fromTailored path, where
+            // restoreItineraryDirectly deliberately reports "P2" while the
+            // backend still says P1 during the celery build.
+            const stage =
+              resolvedStage === "P2"
+                ? "P2"
+                : (statusRes.data?.stage ?? resolvedStage);
             if (status) {
               if (stage === "P2") {
                 dispatch(
@@ -2391,10 +2467,12 @@ export default function BotApp({
                   setIsItineraryCompleting(true);
                 }
               } else {
-                // Stage P1 (or missing) — chatkit-only path. No itinerary
-                // dispatches; the thread's effects already drive P1 visuals.
-                // Skip enabling itinerary polling below — ItineraryContainer
-                // would otherwise poll and redirect to /thank-you on FAILURE.
+                // Stage P1 (or missing, with no P2 already established by the
+                // caller — see the sticky resolution above) — chatkit-only
+                // path. No itinerary dispatches; the thread's effects already
+                // drive P1 visuals. Skip enabling itinerary polling below —
+                // ItineraryContainer would otherwise poll and redirect to
+                // /thank-you on FAILURE.
                 stageIsP1 = true;
                 applyBotMode("p1");
                 setItineraryId("");
@@ -2765,7 +2843,12 @@ export default function BotApp({
       setShowItineraryShimmer(false);
       setIsItineraryCompleting(false);
       itineraryCreatedInSessionRef.current = false;
-      setBotMode("p1");
+      // applyBotMode, not setBotMode — this was the one site in the file that
+      // moved the state without the ref, leaving botModeRef stuck on "p2" after
+      // a back/forward into a P1 session. Everything that reads botModeRef
+      // (loadThread's view branches, handleItineraryReceived's P2 guard) would
+      // then treat the P1 session as P2 and suppress its own panel.
+      applyBotMode("p1");
       setItineraryId("");
       setViewMode("map");
       setHasBotResponded(false);
@@ -2791,7 +2874,7 @@ export default function BotApp({
 
     window.addEventListener("popstate", onPopState);
     return () => window.removeEventListener("popstate", onPopState);
-  }, [restoreLatestThread, dispatch]);
+  }, [restoreLatestThread, dispatch, applyBotMode]);
 
   const handleThreadSelect = useCallback(
     async (
@@ -2867,16 +2950,23 @@ export default function BotApp({
       // canonical itinerary fetch immediately, instead of waiting for
       // loadThread → threads.get_by_id → status check serially. Skipped when
       // the thread row didn't carry a session_id; loadThread will derive it
-      // from the get_by_id response in that case.
-      let stageFromRestore: string | null = null;
+      // from the get_by_id response and run this same restore itself.
+      //
+      // Stays `undefined` when that skip happens — loadThread treats undefined
+      // as "stage unresolved, resolve it yourself before committing the thread"
+      // and null as "resolved to nothing". Do NOT initialise this to null: that
+      // would tell loadThread the stage was already settled and leave botMode
+      // on "p1" while ChatKitPanel replayed a P2 trip's draft effects.
+      let stageFromRestore: string | null | undefined;
       if (knownSessionId) {
         try {
           stageFromRestore = await restoreItineraryDirectly(knownSessionId);
         } catch (err) {
           console.warn(
-            "[handleThreadSelect] restoreItineraryDirectly failed, falling back to loadThread-only:",
+            "[handleThreadSelect] restoreItineraryDirectly failed, letting loadThread resolve the stage:",
             err,
           );
+          stageFromRestore = undefined;
         }
       }
 

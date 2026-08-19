@@ -21,9 +21,14 @@ import * as logout from "../../../store/actions/logout";
 import axios from "axios";
 import { MERCURY_HOST } from "../../../services/constants";
 import setHotLocationSearch from "../../../store/actions/hotLocationSearch";
-import Login from "../../modals/Login";
-import TailoredFormMobileModal from "../../modals/TailoredFomrMobile";
 import BotLoginModal from "../../bot-components/components/BotLoginModal";
+
+// `Login` and `TailoredFormMobileModal` used to be imported here. Neither was
+// rendered — BotLoginModal (below) is the live login modal, and the
+// TailoredFormMobileModal JSX has been commented out since "Plan with Kaira"
+// started routing to /chat?intake=1. Both imports were static, so they still
+// dragged their full closure into the shared chunk on every page that renders
+// the nav. If either is reinstated, load it with next/dynamic.
 
 const NavigationMenu = (props) => {
   const {
@@ -163,13 +168,42 @@ const NavigationMenu = (props) => {
         <Link href="/" className={"hover-pointer " + styles.logo} aria-label="The Tarzan Way — home">
           {/* Desktop shows the full lockup (mark + wordmark + tagline); mobile
               shows only the mark, so the wordmark can't overflow the row and
-              force a horizontal scroll. Exactly one is ever visible. */}
-          <BrandLockup size={38} variant="light" className={styles.logoFull} />
-          <BrandLockup size={30} variant="light" markOnly className={styles.logoMark} />
+              force a horizontal scroll. Exactly one is ever visible.
+
+              The Tailwind classes duplicate what the SCSS module already does,
+              on purpose. BotApp is `dynamic(..., { ssr: false })`, so this
+              component paints as soon as its JS chunk lands while
+              NavigationMenu.module.scss is still in flight as a separate async
+              <link>. In that window every `styles.*` class is inert and BOTH
+              lockups rendered. Tailwind ships in the global stylesheet in
+              <head>, so it is always applied.
+
+              The `ttw-nav-*` classes are defined in styles/globals.css — see
+              the block there for why they're global and why the breakpoints
+              carry the .98. */}
+          <BrandLockup
+            size={38}
+            variant="light"
+            className={`${styles.logoFull} ttw-nav-lockup-full`}
+          />
+          <BrandLockup
+            size={30}
+            variant="light"
+            markOnly
+            className={`${styles.logoMark} ttw-nav-lockup-mark`}
+          />
         </Link>
         {pathname!="/new-trip"&& <SearchInput />}
         {/* Desktop Menu */}
-        <ul className={styles.menuList} role="menubar">
+        {/* Mirrors the module's own max-width rule — see the lockup note above
+            for why it is duplicated in Tailwind. Without it the desktop menu
+            rendered alongside the mobile avatar until the async module
+            stylesheet arrived. 767.98px so it stays the exact complement of the
+            `md:hidden` on the mobile block below. */}
+        <ul
+          className={`${styles.menuList} ttw-desktop-only`}
+          role="menubar"
+        >
           {/* <li className="mr-4"></li>
           {desktopMenuItems}
           <li></li> */}
@@ -247,7 +281,7 @@ const NavigationMenu = (props) => {
       {/* Mobile Sidebar Overlay */}
       <div
         ref={overlayRef}
-        className={styles.mobileOverlay}
+        className={`${styles.mobileOverlay} ttw-nav-mobile-overlay`}
         onClick={toggleMobileMenu}
         role="button"
         tabIndex={-1}
@@ -258,7 +292,7 @@ const NavigationMenu = (props) => {
       {/* Mobile Sidebar */}
       <div
         ref={sidebarRef}
-        className={styles.mobileSidebar}
+        className={`${styles.mobileSidebar} ttw-nav-mobile-sidebar`}
         role="dialog"
         aria-modal="true"
         aria-label="Mobile navigation menu"
