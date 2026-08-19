@@ -7,7 +7,7 @@
 import type { ThemeForm } from "./types";
 import australiaNewZealandForm from "./australia-newzealand";
 import hokkaidoPowderForm from "./hokkaido-powder";
-import switzerlandDdljForm from "./switzerland-ddlj";
+import filmyGetawaysForm from "./filmy-getaways";
 import laplandForm from "./lapland";
 import christmasMarketsForm from "./christmas-markets";
 import edinburghHogmanayForm from "./edinburgh-hogmanay";
@@ -15,11 +15,12 @@ import northernLightsForm from "./northern-lights";
 import greeceIslandsForm from "./greece-islands-done-right";
 import honeymoonForm from "./honeymoon";
 import thailandBachelorForm from "./thailand-bachelor";
+import thailandBaliOffbeatForm from "./thailand-bali-offbeat";
 
 const FORMS: ThemeForm[] = [
   australiaNewZealandForm,
   hokkaidoPowderForm,
-  switzerlandDdljForm,
+  filmyGetawaysForm,
   laplandForm,
   christmasMarketsForm,
   edinburghHogmanayForm,
@@ -27,6 +28,7 @@ const FORMS: ThemeForm[] = [
   greeceIslandsForm,
   honeymoonForm,
   thailandBachelorForm,
+  thailandBaliOffbeatForm,
 ];
 
 const THEME_FORMS: Record<string, ThemeForm> = Object.fromEntries(

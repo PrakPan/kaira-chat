@@ -155,23 +155,39 @@ function MyApp({ Component, pageProps }) {
     // sent as `landing_page` when a chat is later initiated from /chat.
     captureLandingPage();
 
+    // Read the LIVE URL rather than the `router` snapshot this effect closed
+    // over. `MyApp` has getInitialProps, so Next marks the router ready on the
+    // very first client render — while `router.query` is still `{}` — and this
+    // effect never re-runs (both of its deps are stable). A snapshot-based diff
+    // therefore saw an empty query on every later navigation and "restored" the
+    // params onto the LANDING page's pathname: clicking through to /chat from
+    // an ad URL bounced straight back to the theme page, then looped.
     const persistAdParams = () => {
       const stored = captureAdParams();
 
       // Add-only: never overwrite a param already present in the URL. This
       // protects overloaded keys like `source` (e.g. `?source=tailored`).
-      const missing = {};
-      Object.entries(stored).forEach(([key, value]) => {
-        if (router.query[key] === undefined) missing[key] = value;
-      });
-
-      if (Object.keys(missing).length > 0) {
-        router.replace(
-          { pathname: router.pathname, query: { ...router.query, ...missing } },
-          undefined,
-          { shallow: true },
+      const search = window.location.search;
+      const present = new URLSearchParams(search);
+      const missing = Object.entries(stored)
+        .filter(([key]) => !present.has(key))
+        .map(
+          ([key, value]) =>
+            `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
         );
-      }
+
+      if (missing.length === 0) return;
+
+      // Append to the raw query string instead of re-serialising it, so params
+      // already on the URL (notably /chat's long `?seed=` prompt) keep their
+      // exact encoding. Same route + shallow, so nothing re-fetches.
+      const url =
+        window.location.pathname +
+        search +
+        (search ? "&" : "?") +
+        missing.join("&") +
+        window.location.hash;
+      router.replace(url, undefined, { shallow: true });
     };
 
     persistAdParams();

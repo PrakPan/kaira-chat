@@ -72,8 +72,16 @@ export const THEME_PALETTES: Record<string, CinematicThemePalette> = {
     page: "#f7fbfb",
     heroTint: "#e6f3f2",
   },
-  // /theme/filmy-getaways — its form slug is the route it builds.
-  "switzerland-ddlj": {
+  // /theme/thailand-bali-offbeat — jungle green, off the Andaman turquoise so
+  // the two Thailand themes don't read as the same page.
+  "thailand-bali-offbeat": {
+    accent: "#0e7a55",
+    accentSoft: "#e2f2ea",
+    page: "#f6faf7",
+    heroTint: "#dff0e6",
+  },
+  // /theme/filmy-getaways.
+  "filmy-getaways": {
     accent: "#a03352",
     accentSoft: "#f8e5ec",
     page: "#fbf5f7",
@@ -87,10 +95,9 @@ export const getThemePalette = (
   slug?: string | null,
 ): CinematicThemePalette | null => (slug && THEME_PALETTES[slug]) || null;
 
-// The page each slug came from. Mostly `/theme/<slug>`, but the mapping is
-// explicit because a page's route and its form slug can differ (filmy-getaways
-// builds the switzerland-ddlj route). Used by the chat's mobile close button to
-// send the reader back where they started.
+// The page each slug came from. Mostly `/theme/<slug>`; the mapping stays
+// explicit so a renamed slug can keep its old spelling as an alias. Used by the
+// chat's mobile close button to send the reader back where they started.
 const THEME_PAGE_PATHS: Record<string, string> = {
   "australia-newzealand": "/theme/australia-newzealand",
   "christmas-markets": "/theme/christmas-markets",
@@ -100,8 +107,14 @@ const THEME_PAGE_PATHS: Record<string, string> = {
   honeymoon: "/theme/honeymoon",
   lapland: "/theme/lapland",
   "northern-lights": "/theme/northern-lights",
+  "filmy-getaways": "/theme/filmy-getaways",
+  // Legacy slug: the filmy page used to identify itself as "switzerland-ddlj".
+  // Threads created before the rename still carry it, and the mobile close
+  // button resolves the path from the thread's stored slug — so keep the alias
+  // or those readers lose their way back to the page.
   "switzerland-ddlj": "/theme/filmy-getaways",
   "thailand-bachelor": "/theme/thailand-bachelor",
+  "thailand-bali-offbeat": "/theme/thailand-bali-offbeat",
 };
 
 /** Landing-page path for a theme slug, or `null` when the slug isn't a theme
