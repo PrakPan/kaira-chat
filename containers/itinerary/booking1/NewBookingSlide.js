@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { replaceUrl, pushUrlDetached } from "../../../helper/historyUrl";
 import styled from "styled-components";
 import { RiArrowDropDownLine, RiWhatsappFill } from "react-icons/ri";
 import Button from "../../../components/ui/button/Index";
@@ -1723,7 +1724,7 @@ const Details = (props) => {
     if (typeof window !== "undefined" && window.location.pathname.startsWith("/chat/")) {
       const url = new URL(window.location.href);
       url.searchParams.delete("drawer");
-      window.history.pushState({}, "", url.toString());
+      pushUrlDetached(url.toString());
     } else {
       router.push(
         { pathname: `/itinerary/${router.query.id}` },
@@ -1820,7 +1821,7 @@ const Details = (props) => {
         if (typeof window !== "undefined") {
           const url = new URL(window.location.href);
           url.searchParams.delete("drawer");
-          window.history.replaceState({}, "", url.toString());
+          replaceUrl(url.toString());
         }
       }
     } catch (error) {
@@ -2335,7 +2336,7 @@ const Details = (props) => {
     if (typeof window !== "undefined" && window.location.pathname.startsWith("/chat/")) {
       const url = new URL(window.location.href);
       url.searchParams.set("drawer", "payment");
-      window.history.pushState({}, "", url.toString());
+      pushUrlDetached(url.toString());
     } else {
       router.push(
         {

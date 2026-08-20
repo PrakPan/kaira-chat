@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { replaceUrl } from "../../../../../helper/historyUrl";
 import { optimizedMediaUrl } from "../../../../../lib/mediaImage";
 import styled from "styled-components";
 import media from "../../../../media";
@@ -300,7 +301,7 @@ const Section = (props) => {
           url.searchParams.delete(param);
         });
 
-        window.history.replaceState({}, '', url.toString());
+        replaceUrl(url.toString());
         setTimeout(() => {
           window.location.reload();
         }, 200);

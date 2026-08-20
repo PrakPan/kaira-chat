@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback, useMemo } from "react"
 import { optimizedMediaUrl } from "../../../lib/mediaImage";
 import { useRouter } from "next/router";
 import axios from "axios";
-import { useChat, generateSessionId, getPlatform, type UserLocationData, type MessageAttachment, type ThemeSelectedItem, Message } from "../hooks/useChat";
+import { useChat, generateSessionId, getPlatform, resolveRestoredTranscript, type UserLocationData, type MessageAttachment, type ThemeSelectedItem, Message } from "../hooks/useChat";
 import { MessageBubble, isButtonOnlyWidget, ItineraryCloneCta } from "./MessageBubble";
 import { MessageInputBox } from "./MessageInputBox";
 import { CHATKIT_API_DOMAIN_KEY as CHATKIT_DOMAIN_KEY } from "../lib/chatkitConfig";
@@ -62,6 +62,7 @@ import { TOTAL_STEPS } from "./IntakeForm/constants";
 import { parseShowPricingForm, parsePricingFormWidgetId, parsePricingCardCopy, isPricingFormWidgetId } from "./PricingForm/pricingPrompt";
 import ReleaseItineraryCta from "./ReleaseItineraryCta";
 import { isStaffEmail } from "../../../utils/staffUser";
+import { pushUrlDetached } from "../../../helper/historyUrl";
 
 const PAGINATION_SCROLL_THRESHOLD = 80;
 const CHATKIT = CHATKIT_HOST;
@@ -1792,7 +1793,7 @@ const handleSessionCreated = useCallback((ourSessionId: string) => {
 
   hasUpdatedUrl.current = true;
   const target = `/chat/${ourSessionId}`;
-  window.history.pushState({}, "", target);
+  pushUrlDetached(target);
   // The funnel scope is derived from this URL segment, which didn't exist when
   // chat_itinerary_started fired. Rebind so the rest of the funnel is recorded
   // against the same run instead of looking un-started and re-firing.
@@ -2174,7 +2175,7 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
         typeof window !== "undefined" &&
         window.location.pathname !== target
       ) {
-        window.history.pushState({}, "", target);
+        pushUrlDetached(target);
       }
       onItineraryCompletionStart?.("pending");
       onItineraryCompletionDone?.(newId);
@@ -3572,10 +3573,18 @@ useEffect(() => {
   // which would otherwise re-run the body mid-stream and call setMessages(restored)
   // on top of a placeholder + streaming text — wiping the in-flight message.
   if (appliedRestoredThreadRef.current === restoredThread) return;
-  // Also skip if a stream is active — restoring the previous transcript on top
-  // of the live placeholder is never what we want.
-  if (isStreaming) return;
   appliedRestoredThreadRef.current = restoredThread;
+
+  // Whether a turn was in flight at the moment this payload landed. It used to
+  // be an early `if (isStreaming) return;` that did NOT mark the payload
+  // consumed, so the effect simply re-ran when the stream ended (isStreaming is
+  // a dep) and called setMessages(restored) on top of the finished turn —
+  // replacing the answer the reader had just watched arrive with a snapshot
+  // taken before they sent anything. Marking it consumed above and carrying the
+  // flag down to the setMessages call keeps the side effects below (effect
+  // replay, thread id, pagination cursors, quick replies) while making the
+  // transcript write itself conditional.
+  const streamingWhenReceived = isStreaming;
 
   // A thread the user chose to continue without login carries a root-level
   // `login_opted_out: true`. Mirror it into the ref (resetting to false for
@@ -3814,7 +3823,9 @@ useEffect(() => {
     // added on refresh: in P1 (chat-only stage) a logged-out viewer may keep
     // chatting anonymously, so the composer stays open and the backend re-emits
     // `prompt_login` if/when an action genuinely needs an account.
-    setMessages(restored);
+    setMessages((prev) =>
+      resolveRestoredTranscript(restored, prev, streamingWhenReceived),
+    );
     // Land at the bottom of the restored transcript. Widgets and images lay
     // out asynchronously, so the scrollable height keeps growing for a beat
     // after setMessages — a single rAF snap leaves the user mid-thread.
@@ -3875,7 +3886,13 @@ useEffect(() => {
   if (qrEffect?.data?.quick_replies) {
     setQuickReplies(qrEffect.data.quick_replies.map((r: string) => ({ label: r })));
   }
-}, [restoredThread, isStreaming, parseThreadItems, onRouteReceived, onLocationReceived, onItineraryReceived, indexTransfersForLookup, emitEndpointsFromEffect, dispatch, onIntakeFormStart]);
+// `isStreaming` is read above but deliberately NOT a dep. The effect is
+// fire-once per restoredThread (appliedRestoredThreadRef), so the only run that
+// reads it is the one right after the payload commits — where the value is
+// already current. Listing it only re-invoked the effect on every stream
+// start/stop, which is exactly the mid-stream re-run this guards against.
+// eslint-disable-next-line react-hooks/exhaustive-deps
+}, [restoredThread, parseThreadItems, onRouteReceived, onLocationReceived, onItineraryReceived, indexTransfersForLookup, emitEndpointsFromEffect, dispatch, onIntakeFormStart]);
 
   // ── Pagination: fetch older messages ──────────────────────────────────────
   const fetchOlderMessages = useCallback(async () => {
@@ -4879,7 +4896,7 @@ const handleShowLogin = useCallback(() => {
                       url.searchParams.set("itinerary_city_id", itineraryCityId);
                     }
                     url.searchParams.set("taxiTab", initialTab);
-                    window.history.pushState({}, "", url.toString());
+                    pushUrlDetached(url.toString());
                     return;
                   }
 
@@ -5584,7 +5601,7 @@ const handleShowLogin = useCallback(() => {
               url.searchParams.delete("drawer");
               url.searchParams.delete("itinerary_city_id");
               url.searchParams.delete("taxiTab");
-              window.history.pushState({}, "", url.toString());
+              pushUrlDetached(url.toString());
             }
           }}
         />
