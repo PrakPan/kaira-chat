@@ -35,31 +35,32 @@ const IMAGE_BASE = `${CDN}/media/website/filmy-getaways-2026`;
 // Each film prompt states the nights and month its route brief skeleton is
 // built for, so the sentence and the `intake` facts below can't disagree. The
 // month follows the film's own season, not the theme's: Goa in November, the
-// Greek islands in June, New Zealand in February — none of those windows
-// overlap, and half of them genuinely shut off-season.
+// Greek islands in September, New Zealand in February — none of those windows
+// overlap, and half of them genuinely shut off-season. Every one sits in the
+// Sep–Mar booking window, so none of them resolves to a date already gone.
 const PROMPTS = {
   // Bollywood
   ddlj:
-    "We are 2 travellers going for 7 nights in June, and our travel dates are flexible. Create a romantic Switzerland itinerary inspired by the feeling of Dilwale Dulhania Le Jayenge. Prioritize scenic train journeys, charming alpine villages, breathtaking mountain landscapes, lakeside towns, cozy cafés, slow mornings, and unforgettable viewpoints. Keep the whole route on Swiss rail. The itinerary should feel relaxed, cinematic, and immersive rather than rushed, balancing iconic Swiss experiences with hidden gems.",
+    "We are 2 travellers going for 7 nights in September, and our travel dates are flexible. Create a romantic Switzerland itinerary inspired by the feeling of Dilwale Dulhania Le Jayenge. Prioritize scenic train journeys, charming alpine villages, breathtaking mountain landscapes, lakeside towns, cozy cafés, slow mornings, and unforgettable viewpoints. Keep the whole route on Swiss rail. The itinerary should feel relaxed, cinematic, and immersive rather than rushed, balancing iconic Swiss experiences with hidden gems.",
   znmd:
     "We are 2 travellers going for 10 nights in September, and our travel dates are flexible. Plan a Spain road trip inspired by Zindagi Na Milegi Dobara. Design the journey around friendship, freedom, adventure, and unforgettable experiences rather than simply covering cities. Prioritize scenic drives, coastal towns, authentic Spanish culture, lively nightlife, beautiful sunsets, local food experiences, and meaningful moments. Keep the coastal stretch self-driven — the drive is the film. Balance iconic highlights with offbeat recommendations to create a journey that feels spontaneous yet well-paced.",
   yjhd:
-    "We are 2 travellers going for 8 nights in May, and our travel dates are flexible. Create a Yeh Jawaani Hai Deewani journey that runs from the Himalayas down to Rajasthan — the trek half first, the palace half second. Balance adventure, friendships, peaceful mountain moments, and cozy cafés up in the hills, then finish among lakes, courtyards and palace evenings. Include scenic drives, breathtaking viewpoints, optional treks, adventure activities, bonfire evenings, stargazing opportunities, and hidden cafés while keeping the pace relaxed and memorable.",
+    "We are 2 travellers going for 8 nights in October, and our travel dates are flexible. Create a Yeh Jawaani Hai Deewani journey that runs from the Himalayas down to Rajasthan — the trek half first, the palace half second. Balance adventure, friendships, peaceful mountain moments, and cozy cafés up in the hills, then finish among lakes, courtyards and palace evenings. Include scenic drives, breathtaking viewpoints, optional treks, adventure activities, bonfire evenings, stargazing opportunities, and hidden cafés while keeping the pace relaxed and memorable.",
   dilChahtaHai:
     "We are 2 travellers going for 6 nights in November, and our travel dates are flexible. Build a Dil Chahta Hai trip that opens in Mumbai and runs down to Goa, splitting the beach time between the loud north and the quiet south. Focus on unforgettable moments with friends, beach sunsets, scenic drives, lively cafés, hidden beaches, water activities, local food, nightlife, and long, relaxed afternoons rather than simply covering tourist attractions. Blend iconic experiences with lesser-known gems to create the perfect mix of fun and downtime.",
   jabWeMet:
-    "We are 2 travellers going for 7 nights in April, and our travel dates are flexible. Create a Jab We Met hill-town escape through Himachal, arriving the filmy way on the Kalka–Shimla toy train. Prioritize charming hill towns, scenic road journeys, cozy cafés, colorful local markets, peaceful viewpoints, authentic cultural experiences, and comfortable stays. Let the itinerary capture the joy of spontaneous travel and slow exploration instead of rushing between destinations.",
+    "We are 2 travellers going for 7 nights in December, and our travel dates are flexible. Create a Jab We Met hill-town escape through Himachal, arriving the filmy way on the Kalka–Shimla toy train. Prioritize charming hill towns, scenic road journeys, cozy cafés, colorful local markets, peaceful viewpoints, authentic cultural experiences, and comfortable stays. Let the itinerary capture the joy of spontaneous travel and slow exploration instead of rushing between destinations.",
   tamasha:
-    "We are 2 travellers going for 8 nights in June, and our travel dates are flexible. Design a Corsica escape inspired by Tamasha. Focus on scenic coastal drives, charming villages, beautiful beaches, local cafés, Mediterranean culture, hidden viewpoints, and slow travel experiences that encourage exploration and self-discovery. The island is car-only, so plan the moves as drives. Balance relaxation with unique local experiences to create a journey that feels both refreshing and meaningful.",
+    "We are 2 travellers going for 8 nights in September, and our travel dates are flexible. Design a Corsica escape inspired by Tamasha. Focus on scenic coastal drives, charming villages, beautiful beaches, local cafés, Mediterranean culture, hidden viewpoints, and slow travel experiences that encourage exploration and self-discovery. The island is car-only, so plan the moves as drives. Balance relaxation with unique local experiences to create a journey that feels both refreshing and meaningful.",
   // Hollywood
   midnightInParis:
     "We are 2 travellers going for 6 nights in September, and our travel dates are flexible. Create a Paris itinerary inspired by the timeless charm of Midnight in Paris. Prioritize atmospheric cafés, charming neighborhoods, bookstores, art museums, riverside walks, jazz bars, evening strolls, local bakeries, and authentic Parisian experiences. Keep it to Paris — anything outside the city should be a day trip, not a second base. Balance iconic landmarks with hidden gems to create a slow, romantic, and immersive journey.",
   eatPrayLove:
     "We are 2 travellers going for 12 nights in September, and our travel dates are flexible. Plan an Eat Pray Love journey across Italy and Bali, in that order — Italy first, then the Bali half. Design it around food, wellness, mindfulness, cultural immersion, beautiful nature, hidden cafés, temples, waterfalls, beach sunsets, yoga experiences, spa treatments, and slow travel. Prioritize meaningful local experiences over simply visiting popular tourist attractions.",
   mammaMia:
-    "We are 2 travellers going for 8 nights in June, and our travel dates are flexible. Create a Greek island itinerary inspired by Mamma Mia!. Prioritize charming whitewashed villages, crystal-clear beaches, local tavernas, boat trips, coastal walks, hidden viewpoints, island hopping, and spectacular sunsets. Give the quieter chapel island the longest block. The journey should feel joyful, picturesque, and relaxed while blending iconic highlights with authentic island experiences.",
+    "We are 2 travellers going for 8 nights in September, and our travel dates are flexible. Create a Greek island itinerary inspired by Mamma Mia!. Prioritize charming whitewashed villages, crystal-clear beaches, local tavernas, boat trips, coastal walks, hidden viewpoints, island hopping, and spectacular sunsets. Give the quieter chapel island the longest block. The journey should feel joyful, picturesque, and relaxed while blending iconic highlights with authentic island experiences.",
   harryPotter:
-    "We are 2 travellers going for 8 nights in August, and our travel dates are flexible. Create a Scotland itinerary inspired by the magical landscapes associated with Harry Potter. Focus on historic castles, scenic rail journeys, misty Highlands, charming villages, dramatic landscapes, ancient streets, cozy pubs, and iconic viewpoints. Include the Glenfinnan steam train and flag how far ahead it needs booking. Capture a sense of wonder and adventure rather than simply visiting filming locations.",
+    "We are 2 travellers going for 8 nights in October, and our travel dates are flexible. Create a Scotland itinerary inspired by the magical landscapes associated with Harry Potter. Focus on historic castles, scenic rail journeys, misty Highlands, charming villages, dramatic landscapes, ancient streets, cozy pubs, and iconic viewpoints. Include the Glenfinnan steam train and flag how far ahead it needs booking. Capture a sense of wonder and adventure rather than simply visiting filming locations.",
   lordOfTheRings:
     "We are 2 travellers going for 10 nights in February, and our travel dates are flexible. Design a New Zealand adventure inspired by the epic landscapes of The Lord of the Rings. Prioritize breathtaking mountain scenery, pristine lakes, scenic drives, hiking opportunities, charming towns, and immersive nature experiences. Give the South Island the longest block. Create a journey that feels cinematic, adventurous, and balanced, with a mix of iconic sights and hidden natural gems.",
   // Step into the scene
@@ -79,7 +80,7 @@ const PROMPTS = {
 // Keyed by prompt text via promptIntakeMap, so a card only carries its prompt
 // and the facts follow. Each film sends you somewhere different, so the month
 // follows the destination rather than the theme — February for a New Zealand
-// summer, June for the Alps and the Aegean, November for Goa.
+// summer, September for the Alps and the Aegean, November for Goa.
 //
 // The eleven films also carry `window` / `skeleton`: one route brief skeleton
 // per film, the same keys the mini-form's routes send (themeForms/
@@ -96,7 +97,7 @@ const PROMPTS = {
 const PROMPT_FACTS = promptIntakeMap(PROMPTS, {
   ddlj: {
     nights: 7,
-    month: 6,
+    month: 9,
     who: "Couple",
     window: "switzerland_ddlj",
     skeleton: "switzerland_ddlj",
@@ -110,7 +111,7 @@ const PROMPT_FACTS = promptIntakeMap(PROMPTS, {
   },
   yjhd: {
     nights: 8,
-    month: 5,
+    month: 10,
     who: "Couple",
     window: "yjhd_india",
     skeleton: "yjhd_india",
@@ -124,14 +125,14 @@ const PROMPT_FACTS = promptIntakeMap(PROMPTS, {
   },
   jabWeMet: {
     nights: 7,
-    month: 4,
+    month: 12,
     who: "Couple",
     window: "jabwemet_hills",
     skeleton: "jabwemet_hills",
   },
   tamasha: {
     nights: 8,
-    month: 6,
+    month: 9,
     who: "Couple",
     window: "tamasha_corsica",
     skeleton: "tamasha_corsica",
@@ -152,14 +153,14 @@ const PROMPT_FACTS = promptIntakeMap(PROMPTS, {
   },
   mammaMia: {
     nights: 8,
-    month: 6,
+    month: 9,
     who: "Couple",
     window: "mammamia_greece",
     skeleton: "mammamia_greece",
   },
   harryPotter: {
     nights: 8,
-    month: 8,
+    month: 10,
     who: "Couple",
     window: "harrypotter_scotland",
     skeleton: "harrypotter_scotland",

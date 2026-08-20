@@ -89,7 +89,7 @@ const PROMPTS = {
   maldivesVilla:
     "We are 2 travellers (a couple) going for 6 nights in November, and our travel dates are flexible. We want a romantic Maldives honeymoon centered around an overwater villa. Prioritize privacy, crystal-clear lagoons, floating breakfasts, snorkeling, sunset cruises, candlelight dinners, spa experiences, and slow mornings with plenty of time to simply relax together.",
   baliSantoriniChip:
-    "We are 2 travellers (a couple) going for 7 nights in June, and our travel dates are flexible. We want a honeymoon combining Bali and Santorini. Include private pool villas, wellness experiences, waterfalls, rice terraces, cafés, and beach clubs in Bali before continuing to Santorini for caldera sunsets, boutique cave hotels, wine tastings, scenic walks, and romantic dinners. Balance adventure with relaxation.",
+    "We are 2 travellers (a couple) going for 7 nights in September, and our travel dates are flexible. We want a honeymoon combining Bali and Santorini. Include private pool villas, wellness experiences, waterfalls, rice terraces, cafés, and beach clubs in Bali before continuing to Santorini for caldera sunsets, boutique cave hotels, wine tastings, scenic walks, and romantic dinners. Balance adventure with relaxation.",
   quietPrivate:
     "We are 2 travellers (a couple) going for 7 nights in November, and our travel dates are flexible. We want a peaceful honeymoon focused on privacy and uninterrupted time together. Prioritize secluded luxury stays, beautiful beaches, private pools, spa treatments, scenic viewpoints, sunset experiences, intimate dining, and slow travel. Keep the itinerary relaxed with minimal hotel changes and plenty of free time.",
   allInclusive:
@@ -98,23 +98,23 @@ const PROMPTS = {
   overwater:
     "We are 2 travellers (a couple), and our travel dates in November are flexible. We want a 6-night honeymoon in the Maldives centered around a luxury overwater villa. Prioritize privacy, turquoise lagoons, snorkeling, sunset cruises, candlelight dinners, spa experiences, floating breakfasts, and slow mornings with plenty of downtime. Create a romantic itinerary focused on relaxation, luxury, and unforgettable moments rather than sightseeing.",
   twoIslands:
-    "We are 2 travellers (a couple), and our travel dates in June are flexible. We want a 7-night honeymoon combining Bali and Santorini. Begin with Bali's tropical jungles, wellness experiences, waterfalls, private pool villas, and peaceful cafés before continuing to Santorini for whitewashed villages, caldera sunsets, wine tastings, romantic dinners, and boutique cave hotels. Balance relaxation, romance, and iconic experiences at a comfortable pace.",
+    "We are 2 travellers (a couple), and our travel dates in September are flexible. We want a 7-night honeymoon combining Bali and Santorini. Begin with Bali's tropical jungles, wellness experiences, waterfalls, private pool villas, and peaceful cafés before continuing to Santorini for whitewashed villages, caldera sunsets, wine tastings, romantic dinners, and boutique cave hotels. Balance relaxation, romance, and iconic experiences at a comfortable pace.",
   ruinsAndWine:
     "We are 2 travellers (a couple), and our travel dates in September are flexible. We want an 8-night romantic honeymoon through Santorini and Athens. Prioritize breathtaking sunsets, boutique cave hotels, scenic coastal walks, wine tastings, private sailing experiences, charming cafés, and romantic dinners in Santorini before exploring Athens' ancient landmarks, hidden neighborhoods, rooftop restaurants, and authentic Greek culture. Keep the itinerary relaxed with plenty of time to enjoy each destination together.",
   // Which island is yours
   islandMaldives:
     "We are 2 travellers (a couple) going for 6 nights in November, and our travel dates are flexible. We want a romantic Maldives honeymoon focused on privacy and luxury. Prioritize an overwater villa, crystal-clear lagoons, floating breakfasts, snorkeling, sunset cruises, candlelight dinners, spa experiences, and uninterrupted time together. Build a slow-paced itinerary with minimal movement and maximum relaxation.",
   islandBali:
-    "We are 2 travellers (a couple) going for 7 nights in July, and our travel dates are flexible. We want a romantic Bali honeymoon combining Uluwatu, Seminyak, and Ubud. Prioritize private pool villas, waterfalls, temples, beach clubs, scenic cafés, spa treatments, rice terraces, sunset dinners, and meaningful local experiences. Balance relaxation with exploration while keeping the pace comfortable.",
+    "We are 2 travellers (a couple) going for 7 nights in September, and our travel dates are flexible. We want a romantic Bali honeymoon combining Uluwatu, Seminyak, and Ubud. Prioritize private pool villas, waterfalls, temples, beach clubs, scenic cafés, spa treatments, rice terraces, sunset dinners, and meaningful local experiences. Balance relaxation with exploration while keeping the pace comfortable.",
   islandSantorini:
     "We are 2 travellers (a couple) going for 6 nights in September, and our travel dates are flexible. We want a Santorini honeymoon built around romance and breathtaking sunsets. Include a caldera-view cave hotel, Oia and Fira, private sailing, wine tastings, seaside dinners, charming cafés, scenic coastal walks, and hidden viewpoints. Prioritize slow travel, beautiful stays, and unforgettable moments together.",
   islandSeychelles:
-    "We are 2 travellers (a couple) going for 7 nights in April, and our travel dates are flexible. We want a peaceful Seychelles honeymoon with secluded beaches and luxury island experiences. Prioritize boutique beachfront resorts, granite boulder beaches, island hopping, snorkeling, sunset cruises, nature trails, Creole cuisine, and private beach picnics. Keep the itinerary relaxed with plenty of free time to enjoy the islands at an unhurried pace.",
+    "We are 2 travellers (a couple) going for 7 nights in October, and our travel dates are flexible. We want a peaceful Seychelles honeymoon with secluded beaches and luxury island experiences. Prioritize boutique beachfront resorts, granite boulder beaches, island hopping, snorkeling, sunset cruises, nature trails, Creole cuisine, and private beach picnics. Keep the itinerary relaxed with plenty of free time to enjoy the islands at an unhurried pace.",
   // Trips
   tripMaldives:
     "We are 2 travellers (a couple). Build the Maldives overwater escape — 6 nights in November, one resort, one overwater villa, seaplane transfers both ways, with flights from Delhi included. Add a floating breakfast, a sunset cruise and one private dinner.",
   tripBali:
-    "We are 2 travellers (a couple). Build the slow Bali honeymoon — 7 nights in July across Uluwatu, Seminyak and Ubud with private pool villas, a spa day, waterfalls and rice terraces, and flights from Delhi included. Keep the mornings free.",
+    "We are 2 travellers (a couple). Build the slow Bali honeymoon — 7 nights in September across Uluwatu, Seminyak and Ubud with private pool villas, a spa day, waterfalls and rice terraces, and flights from Delhi included. Keep the mornings free.",
   tripGreece:
     "We are 2 travellers (a couple). Build the Santorini and Athens honeymoon — 8 nights in September, a caldera-view cave hotel, private sailing, wine tastings, and the Athens ruins and rooftops, with flights from Delhi included.",
   // Evenings
@@ -129,26 +129,28 @@ const PROMPTS = {
 // nights / pax) rather than left for the backend to read out of the sentence.
 // Keyed by prompt text via promptIntakeMap, so a card only carries its prompt
 // and the facts follow. The month follows the destination rather than the
-// theme — November for the Maldives dry season, June/July for Bali, September
-// for the Greek islands, April for Seychelles.
+// theme — November for the Maldives dry season, September for Bali's dry
+// season and for the Greek islands, October for the Seychelles inter-monsoon
+// calm. All of them sit in the Sep–Mar window, so none resolves to a month
+// that has already gone.
 //
 // `askBar` deliberately carries no `nights`: it asks Kaira to compare a 6, a 7
 // and an 8-night honeymoon, so pinning one length would answer it for her.
 const PROMPT_FACTS = promptIntakeMap(PROMPTS, {
   hero: { nights: 7, month: 11, who: "Couple" },
   maldivesVilla: { nights: 6, month: 11, who: "Couple" },
-  baliSantoriniChip: { nights: 7, month: 6, who: "Couple" },
+  baliSantoriniChip: { nights: 7, month: 9, who: "Couple" },
   quietPrivate: { nights: 7, month: 11, who: "Couple" },
   allInclusive: { nights: 6, month: 11, who: "Couple" },
   overwater: { nights: 6, month: 11, who: "Couple" },
-  twoIslands: { nights: 7, month: 6, who: "Couple" },
+  twoIslands: { nights: 7, month: 9, who: "Couple" },
   ruinsAndWine: { nights: 8, month: 9, who: "Couple" },
   islandMaldives: { nights: 6, month: 11, who: "Couple" },
-  islandBali: { nights: 7, month: 7, who: "Couple" },
+  islandBali: { nights: 7, month: 9, who: "Couple" },
   islandSantorini: { nights: 6, month: 9, who: "Couple" },
-  islandSeychelles: { nights: 7, month: 4, who: "Couple" },
+  islandSeychelles: { nights: 7, month: 10, who: "Couple" },
   tripMaldives: { nights: 6, month: 11, who: "Couple" },
-  tripBali: { nights: 7, month: 7, who: "Couple" },
+  tripBali: { nights: 7, month: 9, who: "Couple" },
   tripGreece: { nights: 8, month: 9, who: "Couple" },
   privateDinner: { nights: 7, month: 11, who: "Couple" },
   askBar: { month: 11, who: "Couple" },
