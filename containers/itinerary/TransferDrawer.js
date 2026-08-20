@@ -86,6 +86,23 @@ const TransferDrawer = ({
     }
   };
   const isCombo = data?.children && data?.children.length > 0;
+
+  // Which detail body can actually describe this booking.
+  //
+  // The `booking_type` prop is what the mount that opened the drawer knows from
+  // context, and every sightseeing mount says "Taxi" — but a city's sightseeing
+  // slot also holds self-booked trains, buses, ferries and rental cars, and
+  // those were being read as taxis: no route, no stations, no class, a car
+  // glyph on a train. Once the booking itself has loaded, it is the authority
+  // on what it is; the prop only stands in while the fetch is in flight (and it
+  // is still what addresses the endpoint, since the type is unknown until the
+  // response arrives). Lowercased on the way out, because the type reaches the
+  // drawers as "Taxi", "taxi" or "Self-Drive" depending on where it was built.
+  const resolvedType = String(
+    data?.booking_type || data?.transfer_details?.mode || booking_type || "",
+  )
+    .trim()
+    .toLowerCase();
   const [isDrawerOpen, setIsDrawerOpen] = useState(show);
   const { drawer, bookingId, oItineraryCity, dItineraryCity, drawerType } =
     router?.query;
@@ -160,6 +177,24 @@ const TransferDrawer = ({
 
     return { tab, cityId };
   })();
+
+  // Whether the detail body may offer "Change Transfer" at all.
+  //
+  // Intra-city transfers used to have no change flow, hence the blanket
+  // `isIntracity` suppression. Sightseeing and airport pickup/drop now do (the
+  // tabbed "Add Taxi" drawer). Sightseeing has no other route, so it shows the
+  // CTA only where that drawer can actually open; airport keeps its
+  // PickupDropDrawer fallback and so stays exactly as visible as before.
+  //
+  // The gate is stated once and handed to whichever body renders the booking:
+  // a sightseeing slot holds trains and ferries as well as taxis, and the two
+  // bodies offering different answers for the same booking is a bug waiting to
+  // be filed.
+  const noChange = cityTaxiChange
+    ? false
+    : data?.transfer_type === "sightseeing"
+      ? true
+      : isIntracity;
 
   // The cart opens this drawer with no leg city ids, but every change flow the
   // itinerary mounts is keyed by them. The intercity bucket is keyed
@@ -581,7 +616,7 @@ const TransferDrawer = ({
     >
       {!isCombo ? (
         <>
-          {booking_type === "Flight" ? (
+          {resolvedType === "flight" ? (
             loading ? (
               <FlightDetailLoader />
             ) : (
@@ -601,7 +636,7 @@ const TransferDrawer = ({
             )
           ) : loading ? (
             <VehicleDetailLoader />
-          ) : booking_type === "Taxi" ? (
+          ) : resolvedType === "taxi" ? (
             <TaxiDetailModal
               data={data}
               handleDelete={handleDelete}
@@ -621,19 +656,7 @@ const TransferDrawer = ({
               origin_itinerary_city_id={origin_itinerary_city_id}
               destination_itinerary_city_id={destination_itinerary_city_id}
               handleClose={handleClose}
-              // Intra-city taxis used to have no change flow at all, hence the
-              // blanket `isIntracity` suppression. Sightseeing and airport
-              // pickup/drop now do (the tabbed "Add Taxi" drawer). Sightseeing
-              // has no other route, so it shows the CTA only where that drawer
-              // can actually open; airport keeps its PickupDropDrawer fallback
-              // and so stays exactly as visible as before.
-              noChange={
-                cityTaxiChange
-                  ? false
-                  : data?.transfer_type === "sightseeing"
-                    ? true
-                    : isIntracity
-              }
+              noChange={noChange}
               error={error}
               // isAirport={isAirport}
               setIsTransferDrawerOpen={setIsTransferDrawerOpen}
@@ -645,6 +668,7 @@ const TransferDrawer = ({
               handleDelete={handleDelete}
               loading={loading}
               handleClose={handleClose}
+              noChange={noChange}
               error={error}
               handleEditRoute={handleEditRoute}
             />

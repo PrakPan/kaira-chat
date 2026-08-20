@@ -13,6 +13,7 @@ import { MdOutlineDownhillSkiing } from "react-icons/md";
 import { setCloneItineraryDrawer } from "../../../store/actions/cloneItinerary";
 import { FaTaxi } from "react-icons/fa6";
 import { IoBagCheckOutline } from "react-icons/io5";
+import { getModeAccent } from "../../revamp/common/components/bookingDetail/modeAccent";
 import { getDate } from "../../../helper/ConvertDateFormat";
 import ActivityDetailsDrawer from "../../drawers/activityDetails/ActivityDetailsDrawer";
 
@@ -21,6 +22,28 @@ import ActivityDetailsDrawer from "../../drawers/activityDetails/ActivityDetails
 const imgUrlEndPoint = "https://d31aoa0ehgvjdi.cloudfront.net/";
 
 const TIME_ORDER = ["Morning", "Afternoon", "Evening", "Night"];
+
+// ─── Helper: what a city's sightseeing booking rides ──────────────────────────
+// The slot is not taxi-only: a self-booked train, bus, ferry or rental car is
+// filed under the same intra-city sightseeing bucket, and calling one of those
+// a taxi on the day card is simply wrong. Anything unrecognised reads as
+// "transfer" rather than guessing.
+const SIGHTSEEING_MODE_WORDS = {
+  taxi: "taxi",
+  train: "train",
+  bus: "bus",
+  ferry: "ferry",
+  carferry: "ferry",
+  tram: "tram",
+  flight: "flight",
+  rental: "rental car",
+  "self-drive": "self-drive car",
+  "self drive": "self-drive car",
+};
+
+const sightseeingModeWord = (bookingType) =>
+  SIGHTSEEING_MODE_WORDS[String(bookingType || "").trim().toLowerCase()] ||
+  "transfer";
 
 // ─── Helper: resolve canonical element type (handles old + new API formats) ───
 //
@@ -951,63 +974,87 @@ useEffect(() => {
   // pricing has settled — same gate the city header applies to its own actions.
   const canAddActivity = !isDraft && finalized_status !== "PENDING";
 
-  // This day's sightseeing-taxi chips. Rendered into the heading row alongside
-  // "Add activity" when that button exists, so the two share one line instead
-  // of the taxi taking a line of its own; otherwise (Draft, where there is no
-  // button) it falls back to its original standalone row.
+  // This day's sightseeing chips, rendered on their own row under the day
+  // summary — see the call site for why they no longer share the heading's line.
+  //
+  // A city's sightseeing slot is not taxi-only — ops file self-booked trains,
+  // buses, ferries and rental cars into it too. A taxi is generic enough that
+  // "Sightseeing taxi included" says everything the day needs to know, but
+  // anything else is a specific service the ops team named ("Train from Nam
+  // Cheong to Hong Kong Sheung Wan"), and that name is the useful line. The
+  // colour stays the slot's green either way; it says "sightseeing", not "taxi".
   const renderTaxiChips = (className) =>
     matchingIntracityBookings && matchingIntracityBookings.length > 0 ? (
       <div className={className}>
-        {matchingIntracityBookings.map((taxi) => (
-          <button
-            key={taxi.id}
-            onClick={() => {
-              trackTaxiCardClicked?.(
-                router.query.id,
-                taxi.id,
-                "day_by_day_collapse",
-              );
-              router.push(
-                {
-                  pathname: window.location.pathname,
-                  query: {
-                    ...(router.query.id ? { id: router.query.id } : {}),
-                    drawer: "SightSeeing",
-                    bookingId: taxi.id,
-                    itinerary_city_id: props?.itinerary_city_id,
+        {matchingIntracityBookings.map((taxi) => {
+          const modeWord = sightseeingModeWord(taxi?.booking_type);
+          const isTaxi = modeWord === "taxi";
+          // The taxi keeps the glyph the day cards have always given it; every
+          // other mode borrows the icon its detail drawer already uses.
+          const ModeIcon = isTaxi ? FaTaxi : getModeAccent(taxi?.booking_type).Icon;
+          // An unnamed booking still has to say something, hence the fallback.
+          const label = isTaxi
+            ? "Sightseeing taxi included"
+            : taxi?.name || `Sightseeing ${modeWord} included`;
+
+          return (
+            <button
+              key={taxi.id}
+              onClick={() => {
+                trackTaxiCardClicked?.(
+                  router.query.id,
+                  taxi.id,
+                  "day_by_day_collapse",
+                );
+                router.push(
+                  {
+                    pathname: window.location.pathname,
+                    query: {
+                      ...(router.query.id ? { id: router.query.id } : {}),
+                      drawer: "SightSeeing",
+                      bookingId: taxi.id,
+                      itinerary_city_id: props?.itinerary_city_id,
+                    },
                   },
-                },
-                undefined,
-                { scroll: false, shallow: true },
-              );
-            }}
-            className="group inline-flex items-center gap-1.5 cursor-pointer transition-opacity hover:opacity-80"
-          >
-            <span
-              className="inline-flex items-center justify-center rounded-full shrink-0"
-              style={{
-                width: "18px",
-                height: "18px",
-                background: "#DFF3E7",
+                  undefined,
+                  { scroll: false, shallow: true },
+                );
               }}
+              title={label}
+              // `min-w-0` + `max-w-full`: a booking name is supplier text of
+              // any length, and without them the chip's intrinsic width sets a
+              // floor for its row rather than fitting inside it.
+              className="group inline-flex items-center gap-1.5 min-w-0 max-w-full cursor-pointer transition-opacity hover:opacity-80"
             >
-              <FaTaxi style={{ fontSize: "10px", color: "#1F8A5A" }} />
-            </span>
-            <span
-              style={{
-                fontFamily:
-                  "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-                fontSize: "12.5px",
-                fontWeight: 500,
-                color: "#1F8A5A",
-                lineHeight: 1.2,
-              }}
-              className="group-hover:underline"
-            >
-              Sightseeing taxi included
-            </span>
-          </button>
-        ))}
+              <span
+                className="inline-flex items-center justify-center rounded-full shrink-0"
+                style={{
+                  width: "18px",
+                  height: "18px",
+                  background: "#DFF3E7",
+                }}
+              >
+                <ModeIcon style={{ fontSize: "10px", color: "#1F8A5A" }} />
+              </span>
+              <span
+                style={{
+                  fontFamily:
+                    "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+                  fontSize: "12.5px",
+                  fontWeight: 500,
+                  color: "#1F8A5A",
+                  lineHeight: 1.2,
+                }}
+                // Ellipsised rather than wrapped: two chips share this row, and
+                // the full name is one tap away in the drawer (and on the title
+                // attribute above).
+                className="group-hover:underline truncate min-w-0"
+              >
+                {label}
+              </span>
+            </button>
+          );
+        })}
       </div>
     ) : null;
 
@@ -1078,9 +1125,10 @@ useEffect(() => {
               nudged down to share the number's baseline. Only shown when the API
               sends day_summary; otherwise the content reads as before.
 
-              "Add activity" sits at the right end of that heading row. On mobile
-              the heading lives beside the day number in COL 1 instead, so only
-              the button renders here — landing directly under the heading.
+              "Add activity" sits at the right end of that heading row, above
+              this day's sightseeing chips. On mobile the heading lives beside
+              the day number in COL 1 instead, so only the button renders here —
+              landing directly under the heading.
 
               The row carries no `sm:mt-[14px]` even though the old <h3> did: it
               sat alongside `m-0`, whose Bootstrap `margin:0!important` beat it,
@@ -1088,12 +1136,12 @@ useEffect(() => {
               would push the heading 14px off the "01". */}
           {(props.day?.day_summary || canAddActivity) && (
             // `flex-1` on the heading (rather than justify-between) does the
-            // spacing: with three children justify-between would strand the
-            // taxi in the middle of the row on desktop.
-            <div className="flex items-center gap-3 mb-3 sm:pt-4">
+            // spacing, and the row wraps so a narrow column drops the button
+            // below the title instead of crushing it.
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mb-3 sm:pt-4">
               {props.day?.day_summary ? (
                 <h3
-                  className="ttw-type-h4 text-[#0B1220] m-0 leading-[0.9] break-words flex-1 min-w-0 max-sm:hidden"
+                  className="ttw-type-h4 text-[#0B1220] m-0 leading-[0.9] break-words flex-1 min-w-0 sm:min-w-[12rem] max-sm:hidden"
                   style={{ fontWeight: 500 }}
                 >
                   {renderDaySummary(props.day.day_summary)}
@@ -1101,18 +1149,6 @@ useEffect(() => {
               ) : (
                 <span className="flex-1 max-sm:hidden" />
               )}
-
-              {/* Sightseeing taxi shares this line with the button rather than
-                  taking a row of its own. DOM order puts it before the button
-                  so desktop keeps the button pinned to the far right, in line
-                  with the city header's pills. Below 640px — the same point the
-                  heading moves out to COL 1 — the order swaps and `ml-auto`
-                  throws the taxi to the right edge, leaving the button holding
-                  the left. */}
-              {canAddActivity &&
-                renderTaxiChips(
-                  "flex flex-row items-center gap-x-3 gap-y-1 flex-wrap min-w-0 max-sm:order-2 max-sm:ml-auto",
-                )}
 
               {/* Styled to match the city header's Change hotel / Add taxi
                   pills exactly, at both sizes — hence `max-ph` (768px) for the
@@ -1131,7 +1167,11 @@ useEffect(() => {
                 <button
                   type="button"
                   onClick={handleAddActivityForDay}
-                  className="flex items-center justify-center gap-1 shrink-0 rounded-full border-[1px] border-[#E3E2DD] bg-white font-semibold text-[#2c2f34] whitespace-nowrap px-3.5 py-[8px] text-[12.5px] max-ph:px-[9px] max-ph:py-[5px] max-ph:text-[10px] max-sm:order-1"
+                  // `sm:ml-auto` pins the button to the row's right corner, in
+                  // line with the city header's pills, whether it shares the
+                  // title's line or wraps under it. Mobile has no title in this
+                  // column, so the button simply leads its row.
+                  className="flex items-center justify-center gap-1 shrink-0 sm:ml-auto rounded-full border-[1px] border-[#E3E2DD] bg-white font-semibold text-[#2c2f34] whitespace-nowrap px-3.5 py-[8px] text-[12.5px] max-ph:px-[9px] max-ph:py-[5px] max-ph:text-[10px]"
                 >
                   <PlusCircleIcon
                     id={`day_act_ic_${props?.itinerary_city_id}_${props?.index}`}
@@ -1142,10 +1182,18 @@ useEffect(() => {
             </div>
           )}
 
-          {/* Draft only: no Add activity button to share a line with, so
-              the taxi keeps its original standalone row. */}
-          {!canAddActivity &&
-            renderTaxiChips("flex flex-row gap-xs flex-wrap mb-3")}
+          {/* This day's sightseeing services, on a row of their own under the
+              summary. They used to share the heading's line with "Add
+              activity", which held while the chip was always the same 25
+              characters ("Sightseeing taxi included"); a chip naming a booking
+              is supplier text of any length, and on a narrow column — the chat
+              pane open beside the itinerary — it took the row and left the
+              day's title one letter wide. A row of their own is the one
+              arrangement that holds at every column width, which no viewport
+              breakpoint can decide for us here. */}
+          {renderTaxiChips(
+            "flex flex-row items-center gap-x-3 gap-y-1 flex-wrap min-w-0 max-w-full mb-3",
+          )}
 
           {elements.length > 0 ? (
             hasAnyTime ? (

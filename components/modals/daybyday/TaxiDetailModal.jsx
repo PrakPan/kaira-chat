@@ -15,8 +15,9 @@ import {
   arrivalOffsetLabel,
   dayOffset,
   formatDateTime,
+  packageDayNodes,
   paxLabel,
-  railStamp,
+  perDayFigure,
 } from "../../revamp/common/components/bookingDetail/format";
 import ComboTaxi from "../taxis/ComboTaxi";
 import {
@@ -119,6 +120,12 @@ const TaxiDetailModal = ({
   const hasRoute = !!(originName && destinationName);
   const dayCount = Math.max(1, dayOffset(check_in, check_out) + 1);
 
+  // A package's allowance is quoted as "80 kms per day" / "8 hours per day",
+  // and every slot below already says so — in the chip's label, or in the word
+  // after the day count — so the supplier's suffix comes off first.
+  const perDayDistance = isSightseeing ? perDayFigure(distance) : distance;
+  const perDayDuration = isSightseeing ? perDayFigure(durationText) : durationText;
+
   const modeLabel = is_airport_pickup
     ? "Airport pickup"
     : is_airport_drop
@@ -142,7 +149,7 @@ const TaxiDetailModal = ({
   // What the band states in one line: a route leg is summarised by how far and
   // how long, a day package by how many days it runs for.
   const summary = isSightseeing
-    ? `${dayCount} ${dayCount === 1 ? "day" : "days"}${durationText ? ` · ${durationText} daily` : ""}`
+    ? `${dayCount} ${dayCount === 1 ? "day" : "days"}${perDayDuration ? ` · ${perDayDuration} daily` : ""}`
     : [durationText, distance].filter(Boolean).join(" · ");
 
   const kicker = isSightseeing
@@ -152,17 +159,12 @@ const TaxiDetailModal = ({
   const nodes = (() => {
     // Sightseeing: one node per day at the traveller's disposal.
     if (isSightseeing && !hasRoute) {
-      return Array.from({ length: dayCount }, (_, i) => {
-        const stamp = railStamp(check_in, i);
-        return {
-          kind: "day",
-          key: `day-${i}`,
-          time: `Day ${i + 1}`,
-          date: stamp.date,
-          title: "At your disposal",
-          subtitle: [durationText, distance].filter(Boolean).join(" · ") || null,
-          tag: i === 0 && originName ? `Pickup: ${originName}` : null,
-        };
+      return packageDayNodes({
+        start: check_in,
+        days: dayCount,
+        meta:
+          [perDayDuration, perDayDistance].filter(Boolean).join(" · ") || null,
+        pickup: originName,
       });
     }
 
@@ -188,8 +190,14 @@ const TaxiDetailModal = ({
         date: arrival?.shortDate,
         title: trip?.destination?.city_name || destinationName || "Drop",
         subtitle: trip?.destination?.city_name ? destinationName : null,
-        tag: arrivalOffsetLabel(dayOffset(check_in, check_out)),
-        tagTone: "warn",
+        // A package spans days by design — the car is at the traveller's
+        // disposal for each of them, which is why its distance and duration are
+        // quoted per day — so its last date is not a late arrival. Warning that
+        // a car booked in Munnar "arrives 3 days later" in Munnar reads as
+        // something having gone wrong.
+        tag: isSightseeing
+          ? null
+          : arrivalOffsetLabel(dayOffset(check_in, check_out)),
       },
     ];
   })();
@@ -251,9 +259,9 @@ const TaxiDetailModal = ({
               value: paxLabel(number_of_adults, number_of_children),
             },
             isSightseeing
-              ? { label: "Per day", value: distance }
+              ? { label: "Per day", value: perDayDistance }
               : { label: "Distance", value: distance },
-            isSightseeing ? { label: "Hours", value: durationText } : null,
+            isSightseeing ? { label: "Hours", value: perDayDuration } : null,
           ].filter(Boolean)}
         />
       </DetailSection>
