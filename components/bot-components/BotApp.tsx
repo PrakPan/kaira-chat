@@ -88,6 +88,7 @@ import {
   getChatFunnelScope,
 } from "../../services/analyticsFunnel";
 import Login from "../modals/Login";
+import { replaceUrl, pushUrlDetached } from "../../helper/historyUrl";
 import { FiCalendar } from "react-icons/fi";
 import { tr } from "date-fns/locale";
 import {
@@ -687,13 +688,13 @@ export default function BotApp({
     setShowPaymentDrawer(true);
     const url = new URL(window.location.href);
     url.searchParams.set("drawer", "payment");
-    window.history.pushState({}, "", url.toString());
+    pushUrlDetached(url.toString());
   }, [activeItineraryId, fetchPaymentData]);
   const closePaymentDrawer = React.useCallback(() => {
     setShowPaymentDrawer(false);
     const url = new URL(window.location.href);
     url.searchParams.delete("drawer");
-    window.history.pushState({}, "", url.toString());
+    pushUrlDetached(url.toString());
   }, []);
 
   // When drawer is open (e.g. after refresh with ?drawer=payment) and the itinerary ID
@@ -2203,7 +2204,7 @@ export default function BotApp({
             window.location.pathname !== target &&
             window.location.pathname.startsWith("/chat")
           ) {
-            window.history.pushState({}, "", target);
+            pushUrlDetached(target);
           }
           safeSetSessionItem(`chatkit_session_${target}`, threadSessionId);
           setActiveChatSessionId(threadSessionId);
@@ -2893,7 +2894,7 @@ export default function BotApp({
       if (knownSessionId) {
         const target = `/chat/${knownSessionId}`;
         if (window.location.pathname !== target) {
-          window.history.pushState({}, "", target);
+          pushUrlDetached(target);
         }
         safeSetSessionItem(`chatkit_session_${target}`, knownSessionId);
         setActiveChatSessionId(knownSessionId);
@@ -2932,7 +2933,7 @@ export default function BotApp({
       setShowPaymentDrawer(false);
       const cleanUrl = new URL(window.location.href);
       cleanUrl.searchParams.delete("drawer");
-      window.history.replaceState({}, "", cleanUrl.toString());
+      replaceUrl(cleanUrl.toString());
 
       dispatch(setItinerary({}));
       dispatch(setCart({}));
@@ -3084,7 +3085,7 @@ export default function BotApp({
     setShowPaymentDrawer(false);
     const cleanUrl2 = new URL(window.location.href);
     cleanUrl2.searchParams.delete("drawer");
-    window.history.replaceState({}, "", cleanUrl2.toString());
+    replaceUrl(cleanUrl2.toString());
 
     dispatch(setItinerary({}));
     dispatch(setCart({}));
@@ -3103,7 +3104,7 @@ export default function BotApp({
       : "/chat";
     if (currentPath !== targetPath) {
       setActiveChatSessionId(undefined);
-      window.history.pushState({}, "", targetPath);
+      pushUrlDetached(targetPath);
     }
 
     // Non-theme /chat: the fresh surface defaults to the in-chat intake form
@@ -3212,7 +3213,7 @@ export default function BotApp({
         try {
           const url = new URL(window.location.href);
           url.searchParams.delete("themeForm");
-          window.history.replaceState({}, "", url.toString());
+          replaceUrl(url.toString());
         } catch {
           /* noop */
         }
@@ -3262,7 +3263,7 @@ export default function BotApp({
       try {
         const url = new URL(window.location.href);
         url.searchParams.delete("seed");
-        window.history.replaceState({}, "", url.toString());
+        replaceUrl(url.toString());
       } catch {
         /* noop */
       }
@@ -3303,7 +3304,7 @@ export default function BotApp({
         const url = new URL(window.location.href);
         url.searchParams.delete("intake");
         url.searchParams.delete("destination");
-        window.history.replaceState({}, "", url.toString());
+        replaceUrl(url.toString());
       } catch {
         /* noop */
       }

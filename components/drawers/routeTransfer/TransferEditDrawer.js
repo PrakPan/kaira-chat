@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import { replaceUrl } from "../../../helper/historyUrl";
 import ReactDOM from "react-dom";
 import { FaX } from "react-icons/fa6";
 import { connect, useDispatch, useSelector } from "react-redux";
@@ -3953,7 +3954,7 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
           url.searchParams.delete(param);
         });
 
-        window.history.replaceState({}, "", url.toString());
+        replaceUrl(url.toString());
         setTimeout(() => {
           window.location.reload();
         }, 200);
@@ -7726,7 +7727,7 @@ const toggleTransferDetails = (priceOptionId) => {
             url.searchParams.delete(param);
           });
 
-          window.history.replaceState({}, "", url.toString());
+          replaceUrl(url.toString());
           setTimeout(() => {
             window.location.reload();
           }, 200);

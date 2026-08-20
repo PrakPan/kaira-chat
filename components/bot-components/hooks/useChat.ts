@@ -383,6 +383,38 @@ interface SseHandlers {
    * collapsing it onto the first would strand the first message's text.
    */
   onAssistantMessageId?: (id: string, isNewItem: boolean) => void;
+  /**
+   * Fired on `thread.item.done` for an assistant_message that carries text,
+   * with the message's COMPLETE reply as the server stored it.
+   *
+   * The rendered bubble is otherwise built purely by accumulating
+   * `content_part.text_delta` events. When those deltas don't reach us — a
+   * buffering in-app-browser proxy coalescing frames, a dropped intermediate
+   * frame, a partial line lost at the end of the body — the bubble stays empty
+   * and MessageBubble drops it as an empty husk, so the reader sees their own
+   * message with no reply at all while the backend holds the full text. The
+   * terminal `done` item is the authoritative copy of that text; reconciling
+   * against it makes the transcript self-healing regardless of what happened to
+   * the deltas.
+   */
+  onAssistantMessageDone?: (id: string, text: string) => void;
+}
+
+/** Pull the reply text out of a thread item's `content` array. */
+function extractItemText(item: Record<string, unknown> | undefined): string {
+  const parts = item?.content;
+  if (!Array.isArray(parts)) return "";
+  for (const part of parts) {
+    if (
+      part &&
+      typeof part === "object" &&
+      (part as any).type === "output_text" &&
+      typeof (part as any).text === "string"
+    ) {
+      return (part as any).text;
+    }
+  }
+  return "";
 }
 
 function parseSseLine(raw: string, handlers: SseHandlers) {
@@ -459,6 +491,13 @@ function parseSseLine(raw: string, handlers: SseHandlers) {
     }
     if (item?.type === "assistant_message" && typeof item.id === "string") {
       handlers.onAssistantMessageId?.(item.id, false);
+      // Reconcile against the server's own copy of the reply. Order matters:
+      // onAssistantMessageId may have just queued a rename of the streaming
+      // placeholder onto `item.id`, and React applies queued updaters in the
+      // order they were queued — so by the time this one runs the bubble is
+      // already keyed on the real id.
+      const finalText = extractItemText(item);
+      if (finalText) handlers.onAssistantMessageDone?.(item.id, finalText);
       return;
     }
     return;
@@ -495,18 +534,46 @@ async function readStream(
   if (!reader) throw new Error("No response body");
   const decoder = new TextDecoder();
   let buffer = "";
+
+  // The space after `data:` is optional in the SSE grammar. Matching only
+  // "data: " meant a producer (or a proxy that rewrites framing) emitting
+  // "data:{...}" had every one of its events silently ignored.
+  const dispatchLine = (line: string) => {
+    const t = line.trim();
+    if (!t.startsWith("data:")) return;
+    parseSseLine(t.slice(5).trimStart(), handlers);
+  };
+
+  const drain = (chunk: string) => {
+    buffer += chunk;
+    const lines = buffer.split("\n");
+    // The text after the last newline may be half an event — hold it back
+    // until the rest arrives (or until the flush below, at end of body).
+    buffer = lines.pop() ?? "";
+    for (const line of lines) dispatchLine(line);
+  };
+
   try {
+    let completed = false;
     while (true) {
       if (signal?.aborted) break;
       const { done, value } = await reader.read();
-      if (done) break;
-      buffer += decoder.decode(value, { stream: true });
-      const lines = buffer.split("\n");
-      buffer = lines.pop() ?? "";
-      for (const line of lines) {
-        const t = line.trim();
-        if (t.startsWith("data: ")) parseSseLine(t.slice(6), handlers);
+      if (done) {
+        completed = true;
+        break;
       }
+      drain(decoder.decode(value, { stream: true }));
+    }
+    // Body ended. Flush the decoder's own pending bytes, then the final line —
+    // which `drain` is still holding back because a body that doesn't end in a
+    // newline leaves its last event stranded in `buffer`. That last event is
+    // usually the assistant message's `thread.item.done`, i.e. the reply
+    // itself, so dropping it emptied the bubble.
+    if (completed) {
+      drain(decoder.decode());
+      const tail = buffer;
+      buffer = "";
+      dispatchLine(tail);
     }
   } finally {
     reader.cancel().catch(() => {});
@@ -580,6 +647,46 @@ function applyTaskUpdated(tasks: ThinkingTask[], index: number, content: string)
 
 function applyWorkflowDone(tasks: ThinkingTask[]): ThinkingTask[] {
   return tasks.map((t) => ({ ...t, done: true }));
+}
+
+/**
+ * Fold the server's authoritative reply text into the message it belongs to.
+ *
+ * Never shortens what is already on screen: if every delta arrived this is a
+ * no-op (the two strings match), and if the stream was truncated or the deltas
+ * never landed it fills the gap. The length guard means a `done` payload that
+ * is somehow abridged can't wipe text the reader has already seen.
+ */
+function applyFinalText(messages: Message[], id: string, text: string): Message[] {
+  let changed = false;
+  const next = messages.map((m) => {
+    if (m.id !== id || m.content === text || text.length < m.content.length) return m;
+    changed = true;
+    return { ...m, content: text };
+  });
+  return changed ? next : messages;
+}
+
+/**
+ * Decide what a restored thread payload should do to the transcript on screen.
+ *
+ * `restored` is a snapshot of the thread as of the moment threads.get_by_id
+ * resolved. `live` is what the panel is currently showing.
+ *
+ * When nothing was streaming, the snapshot IS the transcript and replaces it
+ * wholesale — a thread switch has to drop the previous thread's messages, so
+ * merging would be wrong. When a turn was in flight, the snapshot predates what
+ * the reader is watching, so it may only fill a panel that has nothing in it
+ * (a reload whose auto-sent prompt beat the restore) and must never overwrite
+ * live content.
+ */
+export function resolveRestoredTranscript(
+  restored: Message[],
+  live: Message[],
+  streamingWhenReceived: boolean,
+): Message[] {
+  if (!streamingWhenReceived) return restored;
+  return live.length > 0 ? live : restored;
 }
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
@@ -687,6 +794,29 @@ export function useChat({
     ) => {
       if (!threadIdRef.current) return;
 
+      // A widget CTA opens a streamed turn exactly like a text send, so it has
+      // to take part in the same bookkeeping. It previously did neither of the
+      // two things sendMessage does, and both hurt:
+      //
+      //  · No streamSeqRef bump, and a `finally` that cleared isStreaming
+      //    unconditionally. Whichever of two overlapping turns finished first
+      //    unlocked the composer and dropped the "Kaira is working…" state out
+      //    from under the one still running — the stream looked stopped while
+      //    text was still arriving.
+      //  · No AbortController registered on abortControllerRef, so neither
+      //    cancelStream() (the Stop button, and the interrupt at the head of
+      //    every send) nor the unmount cleanup could reach it. It ran on past
+      //    the turn that replaced it, writing into a message list it no longer
+      //    owned, and kept running after the panel was gone.
+      //
+      // Aborting the previous turn here matches sendMessage: a CTA fired during
+      // the quick-reply tail is a new turn and should end the old one, not race
+      // it.
+      cancelStream();
+      const seq = ++streamSeqRef.current;
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
+
       const assistantMsgId = `assistant-${Date.now()}`;
       let currentAssistantId = assistantMsgId;
       // Whether the streaming placeholder has adopted a real server-assigned
@@ -734,6 +864,7 @@ export function useChat({
           method: "POST",
           headers: buildHeaders(),
           body: JSON.stringify(body),
+          signal: controller.signal,
         });
         if (!response.ok) throw new Error(`${response.status}`);
 
@@ -797,6 +928,9 @@ export function useChat({
                 thinkingTasks: [],
               },
             ]);
+          },
+          onAssistantMessageDone: (realId, text) => {
+            setMessages((prev) => applyFinalText(prev, realId, text));
           },
           onEffect: (effect) => onEffect?.(effect),
           onWidget: (item) => {
@@ -863,9 +997,12 @@ export function useChat({
               )
             );
           },
-        });
+        }, controller.signal);
       } catch (err) {
-        console.error("[sendWidgetAction]", err);
+        // A newer turn preempting this one is routine, not an error.
+        if (!(err instanceof Error && err.name === "AbortError")) {
+          console.error("[sendWidgetAction]", err);
+        }
       } finally {
         setMessages((prev) =>
           prev.map((m) => {
@@ -877,10 +1014,16 @@ export function useChat({
             };
           })
         );
-        setIsStreaming(false);
+        // Only the most recent turn owns the global streaming flag — same guard
+        // as sendMessage. Without it a preempted widget action cleared the flag
+        // out from under the turn that replaced it.
+        if (streamSeqRef.current === seq) {
+          setIsStreaming(false);
+          abortControllerRef.current = null;
+        }
       }
     },
-    [apiUrl, domainKey, model, botMode, itineraryId, locationReady, userLocation, onEffect, buildHeaders, handleThreadId]
+    [apiUrl, domainKey, model, botMode, itineraryId, locationReady, userLocation, onEffect, buildHeaders, handleThreadId, cancelStream]
   );
 
   // ─── sendMessage ──────────────────────────────────────────────────────────
@@ -1164,6 +1307,9 @@ export function useChat({
                   thinkingTasks: [],
                 },
               ]);
+            },
+            onAssistantMessageDone: (realId, text) => {
+              setMessages((prev) => applyFinalText(prev, realId, text));
             },
             onEffect: (effect) => onEffect?.(effect),
             onWidget: (item) => {

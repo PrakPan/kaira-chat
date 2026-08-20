@@ -22,6 +22,7 @@ import { changeUserLocation } from "../store/actions/userLocation";
 import { usePathname } from "next/navigation";
 import JupyterAnalytics from "../components/JupyterAnalytics";
 import { captureAdParams, captureLandingPage } from "../helper/adAttribution";
+import { replaceUrl } from "../helper/historyUrl";
 
 // Polyfill for requestIdleCallback (Safari compatibility)
 if (typeof window !== "undefined" && !window.requestIdleCallback) {
@@ -180,14 +181,28 @@ function MyApp({ Component, pageProps }) {
 
       // Append to the raw query string instead of re-serialising it, so params
       // already on the URL (notably /chat's long `?seed=` prompt) keep their
-      // exact encoding. Same route + shallow, so nothing re-fetches.
+      // exact encoding.
       const url =
         window.location.pathname +
         search +
         (search ? "&" : "?") +
         missing.join("&") +
         window.location.hash;
-      router.replace(url, undefined, { shallow: true });
+
+      // Rewrite the address bar directly rather than via `router.replace`.
+      // This runs FROM `routeChangeComplete`, so a router call here starts a
+      // second navigation before the first has settled — and BotApp strips
+      // `intake` / `destination` / `seed` / `themeForm` off the /chat URL with
+      // its own history writes in the same tick. That put up to four history
+      // writes into the first moments of /chat in a non-deterministic order,
+      // which is what made the bounce intermittent and webview-specific.
+      //
+      // Nothing reads these params off the URL: both consumers
+      // (useChat's buildSourceFields, slideOneActions) take them from
+      // sessionStorage via getAdParams() and only let URL values override. So
+      // the router never needed to know — this is purely so the params stay
+      // visible in the address bar.
+      replaceUrl(url);
     };
 
     persistAdParams();
