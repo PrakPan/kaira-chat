@@ -32,20 +32,20 @@ const PROMPTS = {
   santorini:
     "I'm planning a 10-night Greece trip in September for the two of us, and can dedicate 3 nights to Santorini. Tell me honestly if it's worth the cost and crowds, or if another island offers a better experience. Then build the best itinerary based on your recommendation.",
   budget:
-    "Plan a 7-night Greece trip in May for two travellers at ₹1.8 lakh per person, including flights from India. Show what's realistically possible, which islands offer the best value, and create a complete itinerary with stays, transport, and daily experiences.",
+    "Plan a 7-night Greece trip in October for two travellers at ₹1.8 lakh per person, including flights from India. Show what's realistically possible, which islands offer the best value, and create a complete itinerary with stays, transport, and daily experiences.",
   tenDay:
     "Create a seamless 10-night Greece itinerary in September for two of us, with Athens and the best island combination. Prioritize smooth connections, minimal travel time, and a relaxed pace, then map out the trip day by day.",
   romantic:
     "Design an 11-night Greece trip in September for a couple, focused on romance, sunsets, great food, beautiful hotels, and slow travel. Recommend the ideal route, best islands, and a complete day-by-day itinerary.",
   // Greece themes — shapes (create a plan)
   classicIslands:
-    "Plan the perfect 10-night Greek islands trip in June for two travellers, with Santorini, Crete, and one more island. Recommend the best route, ferry connections, day-by-day itinerary, and realistic mid-range costs.",
+    "Plan the perfect 10-night Greek islands trip in September for two travellers, with Santorini, Crete, and one more island. Recommend the best route, ferry connections, day-by-day itinerary, and realistic mid-range costs.",
   withKids:
-    "Build a family-friendly 10-night Greece itinerary in June for 2 adults and 2 children aged 8–13, with the best islands, beaches, ancient sites, and a travel pace that suits them. Include accommodation advice, daily plans, and costs.",
+    "Build a family-friendly 10-night Greece itinerary in September for 2 adults and 2 children aged 8–13, with the best islands, beaches, ancient sites, and a travel pace that suits them. Include accommodation advice, daily plans, and costs.",
   honeymoon:
     "Design an 11-night Greece honeymoon in September for the two of us, combining iconic Santorini with a quieter romantic island. Include luxury stays, special experiences, dining recommendations, and a complete itinerary.",
   budgetTheme:
-    "Plan a 7-night Greece trip in May for two travellers, under ₹1.8 lakh per person including flights. Recommend the best-value destinations, realistic hotels, transport, and a complete day-by-day itinerary.",
+    "Plan a 7-night Greece trip in October for two travellers, under ₹1.8 lakh per person including flights. Recommend the best-value destinations, realistic hotels, transport, and a complete day-by-day itinerary.",
   mainland:
     "Create a 10-night mainland Greece itinerary in October for two of us, focused on Athens, Delphi, Meteora, Mycenae, Epidaurus, and Nafplio. Include transport, daily plans, and the key stories behind each site.",
   build:
@@ -57,17 +57,19 @@ const PROMPTS = {
 // What each prompt above states about the trip, sent as `intake` keys (month /
 // nights / pax) rather than left for the backend to read out of the sentence.
 // Keyed by prompt text via promptIntakeMap, so a card only has to carry its
-// prompt and the facts follow. Greek ferry season is May–Oct, so every month
-// here sits inside it.
+// prompt and the facts follow. Greek ferry season is May–Oct, and these all
+// sit in its Sep–Oct tail — the part of the season still ahead of us, so no
+// card resolves to a month that has already gone. The two budget prompts take
+// October: the cheapest month that is still inside the ferry season.
 const PROMPT_FACTS = promptIntakeMap(PROMPTS, {
   santorini: { nights: 10, month: 9, who: "Couple" },
-  budget: { nights: 7, month: 5, who: "Couple" },
+  budget: { nights: 7, month: 10, who: "Couple" },
   tenDay: { nights: 10, month: 9, who: "Couple" },
   romantic: { nights: 11, month: 9, who: "Couple" },
-  classicIslands: { nights: 10, month: 6, who: "Couple" },
-  withKids: { nights: 10, month: 6, who: "Family", adults: 2, children: 2 },
+  classicIslands: { nights: 10, month: 9, who: "Couple" },
+  withKids: { nights: 10, month: 9, who: "Family", adults: 2, children: 2 },
   honeymoon: { nights: 11, month: 9, who: "Couple" },
-  budgetTheme: { nights: 7, month: 5, who: "Couple" },
+  budgetTheme: { nights: 7, month: 10, who: "Couple" },
   mainland: { nights: 10, month: 10, who: "Couple" },
   build: { nights: 9, month: 9, who: "Couple" },
   ask: { nights: 9, month: 9, who: "Couple" },
@@ -81,7 +83,7 @@ const greeceConfig: CinematicThemeConfig = {
     eyebrow: "ATHENS · A CALDERA SUNSET · THE CYCLADES BY FERRY",
     heading: { lead: "Greece, the islands", accent: "done right" },
     lede: "Greece is a big decision. Let's make it an easy one. Tell me how many islands and how many of you, and I'll route Athens and the Cyclades so no day is wasted on a ferry.",
-    placeholder: "Try: Athens, Santorini and Naxos, 9 nights in May",
+    placeholder: "Try: Athens, Santorini and Naxos, 9 nights in September",
     prompt: PROMPTS.tenDay,
     chips: [
       { label: "Is Santorini worth the hype?", prompt: PROMPTS.santorini },

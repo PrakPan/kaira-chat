@@ -3289,6 +3289,7 @@ const ROUTE_DOT_FALLBACK = "#8a93a6";
 
 interface ParsedRouteStop {
   city: string;
+  country: string;     // ISO code the backend prints beside the city ("IN")
   nights: string;      // "1N" / "3N" (empty for departure/return endpoints)
   secondary: string;   // one-liner description, or "Departure" / "Return"
   dotColor: string;
@@ -3361,6 +3362,7 @@ function parseRouteEntries(children: WidgetNode[]): ParsedRouteStop[] {
     // A stop: first plain Text = city, "| 1N" = nights, secondary/xs = one-liner
     // (or the "Departure"/"Return" label on endpoints).
     let city = "";
+    let country = "";
     let nights = "";
     let secondary = "";
     for (const c of kids) {
@@ -3369,6 +3371,14 @@ function parseRouteEntries(children: WidgetNode[]): ParsedRouteStop[] {
       if (!v) continue;
       if (/^\|/.test(v)) {
         nights = v.replace(/^\|\s*/, "");
+      } else if (c.color === "tertiary" && /^[A-Z]{2,3}$/.test(v)) {
+        // The ISO code the backend prints between the city and the nights
+        // ("Panaji" · "IN" · "| 1N"). It is xs like the one-liner, so without
+        // this branch it falls into the `secondary` catch-all below and gets
+        // glued onto the front of the description ("IN Portuguese lanes, …").
+        // Matched on tertiary + a 2–3 letter all-caps value so a tertiary Text
+        // carrying real prose still reads as a one-liner.
+        country = v;
       } else if (c.color === "secondary" || c.size === "xs") {
         secondary = secondary ? `${secondary} ${v}` : v;
       } else if (!city) {
@@ -3380,6 +3390,7 @@ function parseRouteEntries(children: WidgetNode[]): ParsedRouteStop[] {
 
     stops.push({
       city,
+      country,
       nights,
       secondary,
       dotColor: dotColor ?? ROUTE_DOT_FALLBACK,
@@ -3622,6 +3633,19 @@ function RouteTimeline({ stops }: { stops: ParsedRouteStop[] }) {
                 >
                   {s.city}
                 </span>
+                {/* {s.country && (
+                  <span
+                    style={{
+                      fontSize: 10,
+                      fontWeight: 600,
+                      letterSpacing: "0.08em",
+                      color: "#9aa2ad",
+                      marginLeft: -3,
+                    }}
+                  >
+                    {s.country}
+                  </span>
+                )} */}
                 {s.nights && <NightsPill nights={s.nights} />}
                 {s.isEndpoint && s.secondary && (
                   <span

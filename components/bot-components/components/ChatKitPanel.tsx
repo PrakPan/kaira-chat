@@ -501,10 +501,9 @@ const ChatPanelStyles = () => (
       0%,100% { opacity: 1; transform: scale(1); }
       50% { opacity: 0.5; transform: scale(0.7); }
     }
-    /* The composer floats rather than sitting in a ruled tray: no top border,
-       and the separation from the thread comes entirely from the pill's own
-       drop shadow (see MessageInputBox .kp-row). Padding is a touch roomier
-       than the ruled version so the shadow has somewhere to fall. */
+    /* The composer sits in an unruled tray: no top border, no drop shadow on
+       the pill (see MessageInputBox .kp-row) — the padding and the pill's own
+       outline are all that separate it from the thread. */
     .kp-composer-wrap {
   padding: 10px 10px 10px;
   background: #fff;

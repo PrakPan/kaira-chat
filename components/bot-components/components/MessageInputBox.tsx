@@ -600,14 +600,10 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
           border-radius: 999px;
           background: #fff;
           padding: 7px 8px 7px 7px;
-          /* Lifts the pill off the thread — with the bar's top rule gone this
-             shadow is what separates composer from conversation. */
-          box-shadow: 0 10px 28px -14px rgba(11,18,32,0.28);
-          transition: border-color 0.15s, box-shadow 0.15s;
+          transition: border-color 0.15s;
         }
         .kp-composer-wrap .kp-chat-input:focus-within .kp-row {
           border-color: #0b1220;
-          box-shadow: 0 12px 32px -14px rgba(11,18,32,0.34);
         }
         .kp-composer-wrap .kp-field { flex: 1; min-width: 0; }
         .kp-composer-wrap .kp-foot {
