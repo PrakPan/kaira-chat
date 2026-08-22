@@ -199,6 +199,8 @@ const Details = (props) => {
           resetRef={props?.resetRef}
           setActiveTab={props?.setActiveTab}
           fromChat={props.fromChat}
+          chatRouteTab={props.chatRouteTab}
+          routeTabActive={props.routeTabActive}
         >
           {/* {isDesktop ? (
             <RoutesMap
