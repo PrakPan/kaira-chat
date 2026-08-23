@@ -460,7 +460,13 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   onMobileChatSwitch,
 }) => {
   const dispatch = useDispatch();
-  const [isMobile, setIsMobile] = useState(false);
+  // Seeded from the real viewport instead of `false`, so the first render is
+  // already the right layout. Safe because this only renders inside BotApp,
+  // which is `dynamic(..., { ssr: false })` and never server-rendered. Not a
+  // pattern for SSR'd components — see the note in hooks/useMedia.js.
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== "undefined" && window.innerWidth < 768,
+  );
   const [details, setDetails] = useState<ConfirmationDetails>({
     startDate: "",
     adults: 1,

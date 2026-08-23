@@ -833,7 +833,16 @@ startEmptyIntake = false,
   const [pendingMessage, setPendingMessage] = useState<string | null>(null);
   const [postLoginLoading, setPostLoginLoading] = useState(false);
   const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
-  const [isMobile, setIsMobile] = useState(false);
+  // Seeded from the real viewport instead of `false`. Safe because this panel
+  // only ever renders inside BotApp, which is `dynamic(..., { ssr: false })`,
+  // so it is never server-rendered and there is no SSR markup to mismatch.
+  // Starting at `false` made the first client render the DESKTOP branch even on
+  // a phone, so desktop-only chrome (e.g. the `!isMobile` staff block below)
+  // painted once and then disappeared. Not a pattern for SSR'd components —
+  // see the note on `useMediaQuery` in hooks/useMedia.js.
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== "undefined" && window.innerWidth < 768,
+  );
   // True once any display_itinerary effect has fired in this thread (live
   // stream or replayed from restoredThread.itinerary_effects). Drives the
   // mobile "View Itinerary" CTA below the composer alongside botMode === "p2".

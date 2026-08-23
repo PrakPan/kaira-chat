@@ -608,12 +608,24 @@ export default function BotApp({
     (state: any) => state.ItineraryStatus?.itinerary_status,
   );
   const currency = useSelector((state: any) => state.currency);
-  const [isMobile, setIsMobile] = useState(false);
-  // `isMobile` starts false (SSR has no viewport) and only resolves to the real
-  // value after the breakpoint effect measures the window on mount. Handoffs
-  // that pick a ChatKitPanel instance by `isMobile` (the hero seed consumer
-  // below) must wait for this so they don't act against the desktop panel and
-  // then have it torn down when `isMobile` flips — see the seed effect.
+  // Seeded from the real viewport instead of `false`. That is safe *here*
+  // specifically because BotApp is `dynamic(..., { ssr: false })` (see
+  // BotAppClient) — it is never server-rendered, so there is no SSR markup for
+  // a viewport-dependent first render to disagree with.
+  //
+  // It used to start `false`, which meant the very first client render was
+  // always the DESKTOP layout, including on phones: desktop-only chrome painted
+  // once and then vanished a moment later when the effect below corrected the
+  // flag. Do NOT copy this pattern into a server-rendered component — there the
+  // lazy read would be a hydration mismatch, and the fix is a CSS breakpoint
+  // (see the note on `useMediaQuery` in hooks/useMedia.js).
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== "undefined" && window.innerWidth < 768,
+  );
+  // Still flipped by the breakpoint effect on mount rather than seeded true.
+  // Handoffs that pick a ChatKitPanel instance by `isMobile` (the hero seed
+  // consumer below) wait on this, and keeping its timing unchanged keeps that
+  // sequencing exactly as it was — see the seed effect.
   const [viewportMeasured, setViewportMeasured] = useState(false);
   // Mobile effect popup — shown for 10s when focus_route / itinerary effects fire
   const [mobileEffectPopup, setMobileEffectPopup] = useState<{

@@ -30,6 +30,7 @@ import type { CinematicThemeConfig } from "../../components/theme/cinematic/type
 import { THEME_PALETTES } from "../../components/theme/cinematic/palettes";
 
 const VISA = "https://visa.thetarzanway.com/country";
+const VISA_HOME = "https://visa.thetarzanway.com/";
 const CHAT = "https://thetarzanway.com/chat";
 const PAGE = "/theme/thailand-bachelor";
 const THEME_SLUG = "thailand-bachelor";
@@ -593,12 +594,42 @@ const thailandBachelorConfig: CinematicThemeConfig = {
           fee: "₹4,700",
           href: `${VISA}/thailand-visa-online`,
         },
+        {
+          country: "Indonesia",
+          cities: "e-Visa · Bali, if the group extends",
+          href: `${VISA}/indonesia-visa-online`,
+        },
+        {
+          country: "Vietnam",
+          cities: "e-Visa · Da Nang and Hoi An",
+          href: VISA_HOME,
+        },
+        {
+          country: "Singapore",
+          cities: "A night either side of the flight",
+          href: VISA_HOME,
+        },
+        {
+          country: "Maldives",
+          cities: "Free on arrival · a quiet few days after",
+          href: VISA_HOME,
+        },
+        {
+          country: "Japan",
+          cities: "The long-haul upgrade on the same route",
+          href: VISA_HOME,
+        },
       ],
       facts: [
         { label: "Processing", value: "5 – 10 days" },
         { label: "Stay", value: "Up to 60d" },
         { label: "Entry", value: "Single" },
+        { label: "Arrival card", value: "Free · 72h" },
       ],
+      cta: {
+        label: "Start my Thailand visa →",
+        href: `${VISA}/thailand-visa-online`,
+      },
       note:
         "Visa-on-arrival still exists — 15 days, ฿2,000 cash each, and a queue. Fine for a long weekend, wrong for eight people. Everyone also needs the free digital arrival card within 72 hours of landing; we send that link.",
     },
@@ -650,7 +681,6 @@ const thailandBachelorConfig: CinematicThemeConfig = {
           when: "January 2026 · Phuket",
           quote:
             "Eight of us, six flights, one villa. Every transfer was waiting and the Phi Phi boat was ours alone — no sharing with forty strangers. She also warned us one night was dry, which saved the plan.",
-          route: "See their itinerary →",
           href: `${CHAT}/ed0b5d1f-9ec7-4e57-9962-8cc640e6689c`,
         },
         {
@@ -660,7 +690,6 @@ const thailandBachelorConfig: CinematicThemeConfig = {
           when: "February 2026 · Krabi",
           quote:
             "We wanted loud without being messy. Longtail sunset in Krabi, then two nights of rooftops in Bangkok. The 7-island trip with the plankton is the thing everyone still talks about.",
-          route: "See their itinerary →",
           href: `${CHAT}/b9b67de2-2a74-4c56-88fe-106fa725679a`,
         },
         {
@@ -670,7 +699,6 @@ const thailandBachelorConfig: CinematicThemeConfig = {
           when: "November 2025 · Phuket",
           quote:
             "Twelve people is a nightmare and she made it boring in the best way. One base, boats out daily, nobody lost. The e-Visa paperwork was done for all of us in one go.",
-          route: "See their itinerary →",
           href: `${CHAT}/24796b88-2b91-4dd1-832b-7ab3281d3cce`,
         },
       ],

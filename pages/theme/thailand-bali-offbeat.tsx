@@ -32,6 +32,7 @@ import type { CinematicThemeConfig } from "../../components/theme/cinematic/type
 import { THEME_PALETTES } from "../../components/theme/cinematic/palettes";
 
 const VISA = "https://visa.thetarzanway.com/country";
+const VISA_HOME = "https://visa.thetarzanway.com/";
 const SITE = "https://thetarzanway.com";
 const PAGE = "/theme/thailand-bali-offbeat";
 const THEME_SLUG = "thailand-bali-offbeat";
@@ -628,12 +629,34 @@ const thailandBaliOffbeatConfig: CinematicThemeConfig = {
           fee: "₹3,600",
           href: `${VISA}/indonesia-visa-online`,
         },
+        {
+          country: "Vietnam",
+          cities: "e-Visa · the other offbeat coast",
+          href: VISA_HOME,
+        },
+        {
+          country: "Singapore",
+          cities: "A stopover between the two",
+          href: VISA_HOME,
+        },
+        {
+          country: "Maldives",
+          cities: "Free on arrival · a quiet few days after",
+          href: VISA_HOME,
+        },
+        {
+          country: "Japan",
+          cities: "The long-haul upgrade on the same route",
+          href: VISA_HOME,
+        },
       ],
       facts: [
         { label: "Processing", value: "1 – 10 days" },
         { label: "Stay", value: "60d / 30d" },
         { label: "Proof", value: "Return ticket" },
+        { label: "Entry", value: "Single · both" },
       ],
+      cta: { label: "Start my visas →", href: VISA_HOME },
       note:
         "Both are single-entry, so the order of the two countries matters if you were thinking of hopping back. Thailand also needs the free digital arrival card within 72 hours of landing — we send that link with the visa.",
     },
@@ -679,7 +702,6 @@ const thailandBaliOffbeatConfig: CinematicThemeConfig = {
           when: "June 2024 · Koh Samui, Krabi, Phuket",
           quote:
             "Nine nights built around Krabi's islands and Koh Samui, with Phuket only as the way in and out.",
-          route: "See their itinerary →",
           href: `${SITE}/chat/d0feea73-5208-402c-81f6-c2215e912157`,
         },
         {
@@ -689,7 +711,6 @@ const thailandBaliOffbeatConfig: CinematicThemeConfig = {
           when: "July 2024 · Ubud",
           quote:
             "A week entirely in Ubud — waterfalls, rice terraces and temples, no south-Bali beach clubs.",
-          route: "See their itinerary →",
           href: `${SITE}/chat/1d73f1c3-a43a-4c56-afc2-23eedb88d7e6`,
         },
         {
@@ -699,7 +720,6 @@ const thailandBaliOffbeatConfig: CinematicThemeConfig = {
           when: "January 2024 · Krabi, Phuket",
           quote:
             "Four nights done on a budget, with the boat days prioritised over the hotels.",
-          route: "See their itinerary →",
           href: `${SITE}/itinerary/40ed8592-d6fb-460e-9c22-a5422af6e68b`,
         },
       ],

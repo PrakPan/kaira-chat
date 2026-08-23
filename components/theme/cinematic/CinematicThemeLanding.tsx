@@ -791,8 +791,16 @@ const CardsSection: React.FC<{
 );
 
 // ── Trip card ("Step into the scene") ──────────────────────────────────────
-// Mobile: full-width stacked rows, 78px thumb, price + nights inline.
-// Desktop: 3-col grid, 96px thumb, price + nights stacked.
+// Mobile: full-width stacked rows, 104px thumb. Desktop: 3-col grid, 112px
+// thumb. The price sits above the length in both.
+// A trip card states its length twice — in the top tag ("Couple · 12N") and
+// again under the price ("12 nights · Krabi + Bali"). The tag keeps who the
+// trip is for, the price block keeps how long it runs. Only a trailing "· 12N"
+// is taken, so tags that never name a length ("The full festival", "10+") and
+// the audience half of longer ones ("Family · ages 6+ · 8N") survive intact.
+const tagWithoutNights = (tag: string) =>
+  tag.replace(/\s*·\s*\d+\s*N\s*$/i, "").trim() || tag;
+
 const TripCard: React.FC<{
   card: CinematicTripCard;
   onSelectPrompt: SelectPrompt;
@@ -832,7 +840,11 @@ const TripCard: React.FC<{
         )}
       </div>
       <div className="flex-1 min-w-0">
-        {card.tag && <div className="ctl-mono" style={{ fontSize: 9 }}>{card.tag}</div>}
+        {card.tag && (
+          <div className="ctl-mono" style={{ fontSize: 9 }}>
+            {tagWithoutNights(card.tag)}
+          </div>
+        )}
         <div
           className="text-[14.5px] md:text-[16px] font-bold mt-[2px]"
           style={{ color: INK, letterSpacing: "-0.01em" }}
@@ -844,17 +856,35 @@ const TripCard: React.FC<{
             {card.line}
           </div>
         )}
+        {/* Price block. A priced card reads as a packaged trip: a rule closes
+            the copy off, then the price in bold on its own line with the
+            length under it. Cards that carry no price (their length is the
+            only meta) keep the plain mono line, with no rule to imply a
+            commercial block that isn't there. */}
         {(card.price || card.nights) && (
-          <div className="flex md:flex-col gap-[10px] md:gap-[2px] mt-[6px] md:mt-[10px]">
+          <div
+            className={`mt-[10px] md:mt-[14px] ${
+              card.price ? "pt-[10px] md:pt-[12px]" : ""
+            }`}
+            style={
+              card.price ? { borderTop: `1px solid ${BORDER}` } : undefined
+            }
+          >
             {card.price && (
-              <span className="ctl-mono" style={{ color: INK, fontSize: 10.5 }}>
+              <div
+                className="ctl-mono"
+                style={{ color: INK, fontSize: 14, fontWeight: 700 }}
+              >
                 {card.price}
-              </span>
+              </div>
             )}
             {card.nights && (
-              <span className="ctl-mono" style={{ fontSize: 10 }}>
+              <div
+                className={`ctl-mono ${card.price ? "mt-[5px]" : ""}`}
+                style={{ fontSize: 10 }}
+              >
                 {card.nights}
-              </span>
+              </div>
             )}
           </div>
         )}
@@ -1488,11 +1518,12 @@ const StoriesSection: React.FC<{
               // A traveller's real itinerary (/chat/{id}) opens; otherwise seed.
               if (card.href) router.push(card.href);
               // The card's own "name" is the reviewer's, so the route they took
-              // is the label that identifies what was tapped.
+              // is the label that identifies what was tapped — falling back to
+              // the name on cards that carry no route.
               else if (card.prompt)
                 onSelectPrompt(card.prompt, {
                   source: "card",
-                  label: card.route,
+                  label: card.route ?? card.name,
                 });
             }}
             className="ctl-card flex flex-col text-left rounded-[18px] p-[17px] md:p-[20px] w-[262px] md:w-auto shrink-0 md:shrink cursor-pointer"
@@ -1536,25 +1567,38 @@ const StoriesSection: React.FC<{
                 Math.min(5, Math.max(1, Math.round(Number(card.rating) || 5))),
               )}
             </div>
-            {card.quote && (
+            {/* Card body. A real review is quoted; an itinerary summary is
+                not — the quote marks are what make the line a testimonial, so
+                only `quote` gets them. A card with neither keeps the bare
+                header + route it has always had. */}
+            {(card.quote || card.summary) && (
               <div
                 className="text-[13px] md:text-[13.5px] leading-[1.55] mt-[8px] flex-1"
                 style={{ color: MUTED }}
               >
-                &ldquo;{card.quote}&rdquo;
+                {card.quote ? (
+                  <>&ldquo;{card.quote}&rdquo;</>
+                ) : (
+                  card.summary
+                )}
               </div>
             )}
+            {/* Foot of the card: the trip in a pill on the left, the CTA on
+                the right. The pill is skipped when the card has no `route`,
+                which is how a card avoids printing the CTA twice. */}
             <div className="flex items-center gap-[10px] mt-[14px]">
-              <span
-                className="ctl-mono min-w-0 truncate px-[9px] py-[5px] rounded-[6px]"
-                style={{
-                  background: palette.accentSoft,
-                  color: palette.accent,
-                  fontSize: 9,
-                }}
-              >
-                {card.route}
-              </span>
+              {card.route && (
+                <span
+                  className="ctl-mono min-w-0 truncate px-[9px] py-[5px] rounded-[6px]"
+                  style={{
+                    background: palette.accentSoft,
+                    color: palette.accent,
+                    fontSize: 9,
+                  }}
+                >
+                  {card.route}
+                </span>
+              )}
               <span className="flex-1" />
               <span
                 className="shrink-0 text-[12.5px] font-bold whitespace-nowrap"
@@ -1718,139 +1762,200 @@ const EatsSection: React.FC<{
   );
 };
 
-// ── Visa (dark — "Your visa, handled") ──────────────────────────────────────
-// Intro copy, a scroller of country fee cards (each links to its visa page),
-// and a row of fact chips.
+// ── Visa (light — "Your visa, handled") ─────────────────────────────────────
+// One white card split in two from md up: the heading, intro and a 2×2 grid of
+// facts on the left; the country cards and the primary CTA on the right. On a
+// phone it collapses to a single column and the countries become a horizontal
+// carousel — the rail the dark version used.
+//
+// Every colour that isn't ink comes from the page's own palette: fact tiles
+// take `accentSoft`, their labels and every CTA take `accent`/`accentOn`, so a
+// teal page and a purple one share this layout without either hard-coding a
+// colour.
 const VisaSection: React.FC<{
   section: Extract<CinematicSection, { type: "visa" }>;
-}> = ({ section }) => (
-  <section
-    className="mt-[34px] md:mt-[56px] relative overflow-hidden"
-    style={{ background: DARK }}
-  >
-    <div
-      className="absolute pointer-events-none"
-      style={{
-        top: -80,
-        right: -80,
-        width: 320,
-        height: 320,
-        background: "radial-gradient(circle, rgba(247,231,0,0.08), transparent 70%)",
-      }}
-    />
-    <Container className="pt-[30px] md:pt-[52px]">
-      <Heading
-        heading={section.heading}
-        className="text-[22px] md:text-[34px] ctl-h-light"
-      />
-      {section.intro && (
-        <p
-          className="text-[13.5px] md:text-[15px] leading-[1.55] mt-[10px] md:mt-[14px] max-w-[560px]"
-          style={{ color: FAINT }}
+}> = ({ section }) => {
+  const palette = usePalette();
+  const facts = section.facts ?? [];
+  // These lists are as long as the trip makes them — one country for Hokkaido,
+  // five for the Christmas markets — so the grid is sized from the count rather
+  // than assuming four. A lone card takes the full column instead of leaving a
+  // hole beside it, and an odd last card spans both tracks so a 3- or 5-country
+  // page doesn't end on a half-empty row either.
+  const cols = (n: number) => (n === 1 ? "md:grid-cols-1" : "md:grid-cols-2");
+  const spanLast = (n: number, i: number) =>
+    n > 1 && n % 2 === 1 && i === n - 1 ? "md:col-span-2" : "";
+  const ctaStyle: React.CSSProperties = {
+    background: palette.accent,
+    color: palette.accentOn,
+  };
+  return (
+    <section className="pt-[30px] md:pt-[56px]">
+      <Container>
+        <div
+          // items-stretch (not start) so the right column runs the full height
+          // of the left one and its CTA can sit on the bottom edge, rather than
+          // both columns ending wherever their own content does.
+          className="rounded-[20px] md:rounded-[28px] p-[18px] md:p-[40px] lg:p-[48px] grid gap-[24px] md:gap-[40px] md:grid-cols-2 items-stretch"
+          style={{
+            ...cardChrome(),
+            boxShadow: "0 8px 20px -16px rgba(11,18,32,0.14)",
+          }}
         >
-          {section.intro}
-        </p>
-      )}
-      <div className="ctl-mono mt-[16px] md:mt-[20px]">Visa fee by country</div>
-      <div className="ctl-scroll ctl-rail flex gap-[12px] overflow-x-auto md:overflow-visible pt-[10px] pb-[6px]">
-      {section.cards.map((card: CinematicVisaCard, i) => {
-        const inner = (
-          <>
-            <div className="flex-1">
-              <div
-                className="text-[15px] font-bold leading-[1.25]"
-                style={{ color: PAPER, letterSpacing: "-0.01em" }}
+          {/* ── Left: heading, intro, facts ── */}
+          {/* min-w-0: a grid item defaults to min-width:auto, so the scroll
+              rails inside these columns push the whole card wider than a phone
+              instead of scrolling within it. */}
+          <div className="min-w-0 flex flex-col">
+            <Heading
+              heading={section.heading}
+              className="text-[24px] md:text-[40px]"
+            />
+            {section.intro && (
+              <p
+                className="text-[13.5px] md:text-[15px] leading-[1.6] mt-[11px] md:mt-[14px] mb-[20px] md:mb-[28px] max-w-[46ch]"
+                style={{ color: MUTED }}
               >
-                {card.country}
+                {section.intro}
+              </p>
+            )}
+            {facts.length > 0 && (
+              // Carousel on phones, 2×2 from md. Stacked two-up on a 375px
+              // screen these tiles are ~140px wide, which wraps "Schengen
+              // short-stay" onto three lines and makes the block taller than
+              // everything around it; on a rail they keep a readable width and
+              // the section stays one screen tall.
+              <div
+                className={`ctl-scroll ctl-rail flex gap-[10px] overflow-x-auto md:grid md:gap-[12px] md:overflow-visible ${cols(
+                  facts.length,
+                )}`}
+              >
+                {facts.map((f, i) => (
+                  <div
+                    key={`fact-${i}`}
+                    className={`flex-[1_0_160px] md:flex-none box-border rounded-[14px] md:rounded-[18px] p-[14px] md:p-[22px] ${spanLast(
+                      facts.length,
+                      i,
+                    )}`}
+                    style={{ background: palette.accentSoft }}
+                  >
+                    <div
+                      className="ctl-mono"
+                      style={{ fontSize: 9, color: palette.accent }}
+                    >
+                      {f.label}
+                    </div>
+                    <div
+                      className="font-extrabold text-[14px] md:text-[22px] mt-[6px] md:mt-[9px] leading-[1.2]"
+                      style={{ color: INK, letterSpacing: "-0.03em" }}
+                    >
+                      {f.value}
+                    </div>
+                  </div>
+                ))}
               </div>
-              {card.cities && (
-                <div
-                  className="ctl-mono mt-[7px]"
-                  style={{ fontSize: 9, lineHeight: 1.5 }}
-                >
-                  {card.cities}
-                </div>
-              )}
-            </div>
-            <div
-              className="pt-[13px]"
-              style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}
-            >
-              {card.fee && (
-                <div
-                  className="ctl-mono"
-                  style={{ color: YELLOW, fontSize: 15, fontWeight: 600 }}
-                >
-                  {card.fee}
-                </div>
-              )}
-              <div className="ctl-mono mt-[4px]" style={{ fontSize: 9 }}>
-                per person
+            )}
+            {section.note && (
+              <div
+                className="mt-[16px] md:mt-[20px] text-[12px] md:text-[13px] leading-[1.55]"
+                style={{ color: FAINT }}
+              >
+                {section.note}
               </div>
-            </div>
-          </>
-        );
-        const cls =
-          "shrink-0 w-[158px] h-[168px] box-border flex flex-col rounded-[18px] p-[16px] cursor-pointer no-underline";
-        const st: React.CSSProperties = { ...DARK_CARD };
-        return card.href ? (
-          <a
-            key={`visa-${i}`}
-            href={card.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={cls}
-            style={st}
-          >
-            {inner}
-          </a>
-        ) : (
-          <div key={`visa-${i}`} className={cls} style={st}>
-            {inner}
+            )}
           </div>
-        );
-      })}
-      </div>
-    </Container>
-    {section.facts && section.facts.length > 0 && (
-      <Container className="pb-[30px] md:pb-[52px]">
-        <div className="flex gap-[8px] mt-[18px]">
-          {section.facts.map((f, i) => (
+
+          {/* ── Right: countries, primary CTA ── */}
+          {/* justify-between so the CTA settles on the bottom edge of the card,
+              level with the end of the left column, instead of floating right
+              under a short country list. */}
+          <div className="min-w-0 flex flex-col gap-[12px] md:justify-between">
+            {/* Carousel on phones, a grid from md — sized by the count, so
+                Thailand's single card fills the column rather than sitting in
+                one half of a 2-up grid with a hole beside it. */}
             <div
-              key={`fact-${i}`}
-              className="flex-1 rounded-[14px] px-[13px] py-[12px]"
-              style={{
-                border: "1px solid rgba(255,255,255,0.08)",
-                background: "rgba(247,231,0,0.10)",
-              }}
+              className={`ctl-scroll ctl-rail flex gap-[10px] overflow-x-auto md:grid md:gap-[12px] md:overflow-visible ${cols(
+                section.cards.length,
+              )}`}
             >
-              <div
-                className="ctl-mono text-center"
-                style={{ fontSize: 9 }}
-              >
-                {f.label}
-              </div>
-              <div
-                className="text-[13px] font-semibold text-center mt-[4px] leading-[1.25]"
-                style={{ color: PAPER }}
-              >
-                {f.value}
-              </div>
+              {section.cards.map((card: CinematicVisaCard, i) => (
+                <div
+                  key={`visa-${i}`}
+                  // flex basis rather than a fixed width: five countries hold
+                  // 210px each and scroll, while a page with a single visa
+                  // grows that card to the full width instead of leaving dead
+                  // space beside it. Ignored once the grid takes over.
+                  className={`flex-[1_0_210px] md:flex-none box-border flex flex-col rounded-[16px] p-[14px] md:p-[18px] ${spanLast(
+                    section.cards.length,
+                    i,
+                  )}`}
+                  style={{ background: SAND }}
+                >
+                  <div className="flex items-baseline justify-between gap-[8px]">
+                    <span
+                      className="text-[14.5px] font-bold leading-[1.25]"
+                      style={{ color: INK }}
+                    >
+                      {card.country}
+                    </span>
+                    {card.fee && (
+                      <span
+                        className="ctl-mono shrink-0"
+                        style={{
+                          fontSize: 14,
+                          fontWeight: 600,
+                          color: INK,
+                          letterSpacing: "0.02em",
+                        }}
+                      >
+                        {card.fee}
+                      </span>
+                    )}
+                  </div>
+                  {card.cities && (
+                    <div
+                      className="ctl-mono mt-[4px]"
+                      style={{ fontSize: 9, lineHeight: 1.5 }}
+                    >
+                      {card.cities}
+                    </div>
+                  )}
+                  {card.href && (
+                    <a
+                      href={card.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block box-border text-center mt-[14px] md:mt-[16px] rounded-full py-[9px] px-[10px] text-[12px] font-bold no-underline"
+                      style={ctaStyle}
+                    >
+                      Check visa →
+                    </a>
+                  )}
+                </div>
+              ))}
             </div>
-          ))}
+
+            {section.cta && (
+              <a
+                href={section.cta.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center box-border text-center rounded-full py-[14px] md:py-[15px] px-[16px] text-[13.5px] md:text-[14.5px] font-bold no-underline"
+                style={{
+                  ...ctaStyle,
+                  boxShadow: "0 8px 20px -10px rgba(11,18,32,0.3)",
+                }}
+              >
+                {section.cta.label}
+              </a>
+            )}
+
+          </div>
         </div>
-        {section.note && (
-          <div
-            className="rounded-[14px] px-[14px] md:px-[18px] py-[11px] md:py-[14px] mt-[12px] text-[12px] md:text-[13.5px] leading-[1.5]"
-            style={{ background: "rgba(255,255,255,0.04)", color: FAINT }}
-          >
-            {section.note}
-          </div>
-        )}
       </Container>
-    )}
-  </section>
-);
+    </section>
+  );
+};
 
 // ── Feature (dark — "A bullet train under the ocean floor") ─────────────────
 // Highlighted fact rows, a 3-up stat grid, and a yellow CTA card that opens the
