@@ -608,12 +608,24 @@ export default function BotApp({
     (state: any) => state.ItineraryStatus?.itinerary_status,
   );
   const currency = useSelector((state: any) => state.currency);
-  const [isMobile, setIsMobile] = useState(false);
-  // `isMobile` starts false (SSR has no viewport) and only resolves to the real
-  // value after the breakpoint effect measures the window on mount. Handoffs
-  // that pick a ChatKitPanel instance by `isMobile` (the hero seed consumer
-  // below) must wait for this so they don't act against the desktop panel and
-  // then have it torn down when `isMobile` flips — see the seed effect.
+  // Seeded from the real viewport instead of `false`. That is safe *here*
+  // specifically because BotApp is `dynamic(..., { ssr: false })` (see
+  // BotAppClient) — it is never server-rendered, so there is no SSR markup for
+  // a viewport-dependent first render to disagree with.
+  //
+  // It used to start `false`, which meant the very first client render was
+  // always the DESKTOP layout, including on phones: desktop-only chrome painted
+  // once and then vanished a moment later when the effect below corrected the
+  // flag. Do NOT copy this pattern into a server-rendered component — there the
+  // lazy read would be a hydration mismatch, and the fix is a CSS breakpoint
+  // (see the note on `useMediaQuery` in hooks/useMedia.js).
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== "undefined" && window.innerWidth < 768,
+  );
+  // Still flipped by the breakpoint effect on mount rather than seeded true.
+  // Handoffs that pick a ChatKitPanel instance by `isMobile` (the hero seed
+  // consumer below) wait on this, and keeping its timing unchanged keeps that
+  // sequencing exactly as it was — see the seed effect.
   const [viewportMeasured, setViewportMeasured] = useState(false);
   // Mobile effect popup — shown for 10s when focus_route / itinerary effects fire
   const [mobileEffectPopup, setMobileEffectPopup] = useState<{
@@ -3652,6 +3664,19 @@ Start Location: ${details.startLocation}`;
     else setViewMode("itinerary");
   }, [isMobile]);
 
+  // RouteEditSection fires this the moment an Update Route save is accepted and
+  // status polling begins. The route the traveller is looking at is about to be
+  // replaced, and the recompute is narrated by the itinerary's own status
+  // loader in the bottom bar — so send them to the surface being rebuilt rather
+  // than leaving them on a stale list behind a blocking spinner.
+  useEffect(() => {
+    if (typeof window === "undefined") return undefined;
+    const onRouteUpdateStarted = () => handleBackToItinerary();
+    window.addEventListener("route-update-started", onRouteUpdateStarted);
+    return () =>
+      window.removeEventListener("route-update-started", onRouteUpdateStarted);
+  }, [handleBackToItinerary]);
+
   // How tall the stack of fixed bottom bars is, so the "Back to itinerary" pill
   // can sit just above the topmost of them and never cover an actionable
   // control. Two kinds of bars live down there: the cart bar (always) and the
@@ -5937,25 +5962,53 @@ const MobileLayout = React.memo(
       setNavHidden(false);
     }, [activeTab]);
 
+    // Only one bar owns the bottom of the screen. Opening the Route tab's
+    // editor puts its own "Update Route" bar there for the whole session, and
+    // the cart bar stands down until the edit is saved or abandoned. Stacking
+    // can't arbitrate this on its own — the route bar is portalled to <body>
+    // and would simply cover the cart bar, leaving two bars' worth of chrome
+    // stacked at the foot. RouteEditSection owns the flag (whether its editor
+    // is open is state nothing up here can see) and publishes it to the store.
+    // No activeTab reset needed — the gate below already requires the Route
+    // tab, and the flag stays truthful while the user is elsewhere.
+    const routeBarShown = (useSelector as any)(
+      (s: any) => !!s.ItineraryStatus?.route_bar_active,
+    );
+    const showCartBar = !(activeTab === "routes" && routeBarShown);
+
     // The scroll pane ends where the fixed CTA bar begins. Measure the bar
     // rather than assume a height — it swaps between a one-line confirm button,
     // the steps loader and the two-line cart row, each a different height, and
     // a stale guess leaves a dead white strip between the pane and the bar.
     const [ctaBarHeight, setCtaBarHeight] = React.useState(0);
     React.useEffect(() => {
-      const el = document.querySelector("[data-bottom-cta-bar]");
-      if (!el) {
+      // Measure whichever bar is down there — the cart bar or the Route tab's.
+      // Both can be in the DOM at once (the Route tab stays mounted behind the
+      // itinerary tab, just display:none'd), so take the tallest that actually
+      // renders; a hidden copy measures 0.
+      const els = Array.from(
+        document.querySelectorAll(
+          "[data-bottom-cta-bar],[data-route-action-bar]",
+        ),
+      ) as HTMLElement[];
+      if (!els.length) {
         setCtaBarHeight(0);
         return undefined;
       }
-      const measure = () => setCtaBarHeight(el.getBoundingClientRect().height);
+      const measure = () =>
+        setCtaBarHeight(
+          els.reduce(
+            (h, el) => Math.max(h, el.getBoundingClientRect().height),
+            0,
+          ),
+        );
       measure();
       const ro = new ResizeObserver(measure);
-      ro.observe(el);
+      els.forEach((el) => ro.observe(el));
       return () => ro.disconnect();
       // bottomCTABarProps carries cart/pricingStatus, so it changes whenever the
       // bar swaps variants and this re-queries the (newly mounted) element.
-    }, [bottomCTABarProps, hasItineraryActivity, activeTab]);
+    }, [bottomCTABarProps, hasItineraryActivity, activeTab, routeBarShown]);
 
     return (
       <div className="flex flex-col h-full overflow-hidden relative">
@@ -6117,7 +6170,9 @@ const MobileLayout = React.memo(
             hasItineraryActivity &&
             ["itinerary", "routes", "bookings"].includes(activeTab) && (
               <>
-                <BottomCTABar {...bottomCTABarProps} viewMode="itinerary" />
+                {showCartBar && (
+                  <BottomCTABar {...bottomCTABarProps} viewMode="itinerary" />
+                )}
                 {["routes", "bookings"].includes(activeTab) && (
                   <BackToItineraryBar
                     onClick={() => handleTabClick("itinerary")}

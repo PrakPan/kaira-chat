@@ -691,6 +691,15 @@ Start Location: ${details.startLocation}`;
     <Breif
       mercuryItinerary={props?.mercuryItinerary}
       loadbookings={props?.loadbookings}
+      // Chat's Route tab opens on a read-only route preview with an Edit
+      // toggle; the standalone itinerary page's brief keeps its always-on
+      // editor. (`fromChat` can't carry this — the non-chat Breif above is
+      // the one that passes fromChat={true}.)
+      chatRouteTab={true}
+      // The wrapper below hides this tab with display:none, but the route's
+      // action bar is portalled to <body> and escapes that — it needs the
+      // tab's visibility as data.
+      routeTabActive={activeTab === "Route"}
       plan={props.plan}
       routesData={RoutesData}
       transfersData={TransfersData}

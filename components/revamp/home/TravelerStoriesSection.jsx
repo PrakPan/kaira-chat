@@ -1,7 +1,6 @@
 import { useRouter } from "next/router";
 import StoryCard from "./StoryCard";
 import MobileCardCarousel from "./MobileCardCarousel";
-import useMediaQuery from "../../../hooks/useMedia";
 import styles from "./TravelerStoriesSection.module.scss";
 
 /*
@@ -102,7 +101,6 @@ const DEFAULT_STORIES = [
 
 const TravelerStoriesSection = ({ stories = DEFAULT_STORIES, total = 2140 }) => {
   const router = useRouter();
-  const isMobile = useMediaQuery("(max-width: 640px)");
 
   const renderCard = (s) => (
     <StoryCard
@@ -142,13 +140,14 @@ const TravelerStoriesSection = ({ stories = DEFAULT_STORIES, total = 2140 }) => 
           </a> */}
         </div>
 
-        {isMobile ? (
-          <MobileCardCarousel
-            items={stories.map((s) => ({ key: s.id, node: renderCard(s) }))}
-          />
-        ) : (
-          <div className={styles.grid}>{stories.map(renderCard)}</div>
-        )}
+        {/* Both layouts ship; CSS picks one at 640px. See globals.css. */}
+        <MobileCardCarousel
+          className="ttw-narrow-only"
+          items={stories.map((s) => ({ key: s.id, node: renderCard(s) }))}
+        />
+        <div className={`${styles.grid} ttw-wide-only`}>
+          {stories.map(renderCard)}
+        </div>
       </div>
     </section>
   );

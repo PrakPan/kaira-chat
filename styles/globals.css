@@ -1134,6 +1134,32 @@ a.termsnavunderlinelink {
   .ttw-nav-lockup-mark { display: none !important; }
 }
 
+/* Card-rail / card-grid swap for the homepage sections, at the same 640px
+   boundary the sections' SCSS modules use.
+
+   These exist because the swap used to be made in JS, with
+   `useMediaQuery("(max-width: 640px)")`. That hook seeds its state to `false`
+   and only corrects itself in an effect, so the server and the first client
+   render both emitted the DESKTOP grid — which on a phone stacks into a very
+   tall column. Hydration then swapped in the rail and the homepage collapsed
+   from 15966px to 12131px.
+
+   That is fine on a fast browser, where hydration beats the user's thumb. In
+   Meta's in-app webview it takes seconds, and anything scrolled past the
+   post-collapse maximum (11319px) gets clamped by the browser to the new
+   bottom — landing the user on the footer. Deciding in CSS instead means the
+   very first paint already has the final height, so there is nothing to clamp.
+
+   640.02 is the exact complement of the modules' `max-width: 640px`; matching
+   to the sub-pixel matters, or both sides apply at exactly 640px and the
+   section shows two layouts at once. */
+@media (max-width: 640px) {
+  .ttw-wide-only { display: none !important; }
+}
+@media (min-width: 640.02px) {
+  .ttw-narrow-only { display: none !important; }
+}
+
 /* The mobile overlay and sidebar are rendered unconditionally by
    NavigationMenu.jsx and hidden solely by NavigationMenu.module.scss. While
    that module chunk is still loading (see the note above), the sidebar dropped

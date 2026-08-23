@@ -105,6 +105,7 @@ const ACTIVITY = {
 };
 
 const VISA_JAPAN = "https://visa.thetarzanway.com/country/japan-visa-online";
+const VISA_HOME = "https://visa.thetarzanway.com/";
 
 // ── Prompts ─────────────────────────────────────────────────────────────────
 const PROMPTS = {
@@ -586,12 +587,39 @@ const hokkaidoConfig: CinematicThemeConfig = {
           fee: "₹4,300",
           href: VISA_JAPAN,
         },
+        {
+          country: "Singapore",
+          cities: "The usual stopover on the way north",
+          href: VISA_HOME,
+        },
+        {
+          country: "Vietnam",
+          cities: "e-Visa · pair it with the flight home",
+          href: VISA_HOME,
+        },
+        {
+          country: "Thailand",
+          cities: "Tourist e-Visa · a warm week after the snow",
+          href: VISA_HOME,
+        },
+        {
+          country: "Switzerland",
+          cities: "The other powder, if Japan is booked out",
+          href: VISA_HOME,
+        },
+        {
+          country: "Finland",
+          cities: "Lapland · snow and the lights",
+          href: VISA_HOME,
+        },
       ],
       facts: [
         { label: "Type", value: "Tourist sticker" },
         { label: "Embassy fee", value: "₹3,300" },
         { label: "Our fee", value: "₹1,000" },
+        { label: "We handle", value: "Appointment + file" },
       ],
+      cta: { label: "Start my Japan visa →", href: VISA_JAPAN },
       note:
         "Applied through the Japanese embassy. We book the appointment, assemble the file, and hand it back to you ready to travel.",
     },
@@ -636,26 +664,38 @@ const hokkaidoConfig: CinematicThemeConfig = {
       type: "stories",
       heading: { eyebrow: "Came back · rated it", lead: "People who", accent: "went" },
       cards: [
+        // These used to link three Japan trips with no Hokkaido winter in them
+        // (a September Tokyo–Kyoto run, an April loop, a June one). They now
+        // point at plans that actually spend their nights up north, so the
+        // summary and the itinerary behind each card agree. `summary` renders
+        // unquoted — no review text is on file for these travellers, so
+        // nothing is presented as something they said.
         {
           rating: "5.0",
           type: "Couple",
-          name: "Rohan Mehta",
-          route: "See the full itinerary →",
-          href: "/itinerary/f4ebf208-8d91-42f8-a482-4edb84455fe4",
+          name: "Armaan",
+          when: "Couple · Sapporo + Niseko",
+          summary:
+            "A full powder week in Niseko with two nights in Sapporo at either end. One mountain base, no hopping around.",
+          href: "/chat/caade3a1-c62b-4b00-ac3f-5131f418c4bd",
         },
         {
           rating: "5.0",
-          type: "Solo",
-          name: "Priya",
-          route: "See the plan →",
-          href: "/chat/c534d49c-fe0d-420f-9350-b88aadc921cb",
+          type: "Couple",
+          name: "Darshan",
+          when: "Couple · Tokyo, Kyoto, Hokkaido",
+          summary:
+            "Tokyo and Kyoto first, then north — three nights in Sapporo and two in Niseko, with the snow saved for the end.",
+          href: "/chat/1df81e37-17dd-4463-83e8-c22143359d33",
         },
         {
           rating: "4.9",
-          type: "Family",
-          name: "Arjun & family",
-          route: "See the full itinerary →",
-          href: "/itinerary/7504ac55-cfc1-4f7b-92c3-5198273d3835",
+          type: "Group of 10",
+          name: "Maharshi",
+          when: "Group of 10 · Tokyo to Sapporo",
+          summary:
+            "Ten of them moving as one group. Two nights in Tokyo, two in an Obanazawa onsen town, then three in Sapporo.",
+          href: "/chat/bd4a3e4b-581a-485e-b163-1f802d745a82",
         },
       ],
     },

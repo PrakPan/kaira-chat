@@ -30,6 +30,7 @@ import { THEME_PALETTES } from "../../components/theme/cinematic/palettes";
 
 const U = "https://images.unsplash.com";
 const VISA = "https://visa.thetarzanway.com/country";
+const VISA_HOME = "https://visa.thetarzanway.com/";
 const CHAT = "https://thetarzanway.com/chat";
 const PAGE = "/theme/christmas-markets";
 const THEME_SLUG = "christmas-markets";
@@ -147,13 +148,8 @@ const PROMPTS = {
     "Tell me about Winkel 43 in Amsterdam and its famous apple pie, and add a warm-up stop there to our 9-night Christmas markets trip in December for two.",
   eatCambrinus:
     "Tell me about Cambrinus and its Belgian beer and comfort food, and add a cosy indoor stop to our 9-night Christmas markets trip in December for two.",
-  // Trips
-  tripFestive:
-    "We are 2 travellers. Build the classic festive markets trip — Munich, Salzburg and Vienna over 9 nights across Christmas and New Year in December, with rail and flights from Delhi included. Prioritise the great markets, Christmas Day itself, and a Vienna New Year's Eve.",
-  tripNye:
-    "We are a group of 4. Build a Christmas and New Year's Eve city break in Central Europe — Prague and Vienna over 9 nights in December — with Christmas Day, the best midnight celebration and festive markets, flights from Delhi included.",
-  tripSlow:
-    "We are 2 travellers. Build a slow, cosy Christmas markets trip along the Rhine — Strasbourg, Cologne and Amsterdam over 8 nights across Christmas in December — with plenty of café time and easy rail, flights from Delhi included.",
+  // The "Which December is yours?" trips carry no prompt — each card opens a
+  // finished itinerary at /chat/{id} instead of seeding a fresh session.
   // Ask Kaira
   askBar:
     "Which European Christmas market trip should we do first, over 9 nights across Christmas and New Year in December for two — the Alpine classic (Munich, Salzburg, Vienna), the Rhine run (Strasbourg, Cologne, Amsterdam), or the Central Europe loop with a Vienna New Year's Eve? Compare the atmosphere, cost, and dates, then build the ideal itinerary for the one you recommend.",
@@ -177,7 +173,7 @@ const PROMPTS = {
 // Together those put the floor at nine nights from the 24th for anything that
 // promises both Christmas Day and New Year's Eve — the 25th and the 31st are
 // six days apart, and the 2nd is two beyond that. That is why the Vienna New
-// Year chip and the midnight trip are 9N rather than the 5N and 6N they were.
+// Year chip is 9N rather than the 5N it was.
 const PROMPT_FACTS = promptIntakeMap(PROMPTS, {
   hero: { nights: 9, month: 12, day: 24, who: "Couple" },
   alpineClassic: { nights: 9, month: 12, day: 24, who: "Couple" },
@@ -194,9 +190,6 @@ const PROMPT_FACTS = promptIntakeMap(PROMPTS, {
   eatPfund: { nights: 9, month: 12, day: 21, who: "Couple" },
   eatWinkel: { nights: 9, month: 12, day: 21, who: "Couple" },
   eatCambrinus: { nights: 9, month: 12, day: 21, who: "Couple" },
-  tripFestive: { nights: 9, month: 12, day: 24, who: "Couple" },
-  tripNye: { nights: 9, month: 12, day: 24, who: "Friends", adults: 4 },
-  tripSlow: { nights: 8, month: 12, day: 21, who: "Couple" },
   askBar: { nights: 9, month: 12, day: 24, who: "Couple" },
 });
 
@@ -381,43 +374,44 @@ const christmasMarketsConfig: CinematicThemeConfig = {
         },
       ],
     },
-    // ── Trips ──
+    // ── Trips — three finished itineraries, not prompts. Each card opens the
+    // real plan at /chat/{itinerary_id}, so the nights live in the tag and the
+    // card carries no "Create plan" CTA.
+    //
+    // Prices are each itinerary's own `per_person_total_cost`, rounded the way
+    // the itinerary page rounds it, so the number on the card is the number the
+    // visitor lands on. Re-check them whenever the plans are re-priced. ──
     {
       type: "trips",
-      ctaLabel: "Create plan →",
       heading: {
         lead: "Which December is",
         accent: "yours?",
-        note: "Priced from Delhi · flights and rail included",
       },
       cards: [
         {
-          image: IMG.tripFestive,
-          tag: "Markets · classic · 9N",
-          name: "The festive classic",
-          line: "Munich, Salzburg, Vienna — the great squares.",
-          price: "₹2,95,000 / person",
-          nights: "9 nights",
-          prompt: PROMPTS.tripFestive,
+          image: IMG.tripMidnight,
+          tag: "Couple · 9N",
+          name: "Markets, then NYE in Vienna",
+          line: "Salzburg and Prague squares, finishing with the Silvesterpfad and a waltz you'll fake convincingly.",
+          price: "₹1,91,389 / person",
+          urgent: "NYE week — Vienna rooms 80% gone by September",
+          href: `${CHAT}/8495d68b-5430-4e4a-979c-a270d80d8fa3`,
         },
         {
-          image: IMG.tripMidnight,
-          tag: "Christmas + NYE · group · 9N",
-          name: "The midnight trip",
-          line: "Prague to a Vienna New Year's Eve.",
-          price: "₹2,45,000 / person",
-          nights: "9 nights",
-          urgent: "NYE stays sell out by early November",
-          prompt: PROMPTS.tripNye,
+          image: IMG.marketDresden,
+          tag: "Family · ages 6+ · 8N",
+          name: "The gingerbread route",
+          line: "Dresden and Berlin. Short train hops, early nights, a lot of gingerbread.",
+          price: "₹3,38,139 / person",
+          href: `${CHAT}/3ffa5b92-af47-401b-aff8-e56af6c38c05`,
         },
         {
           image: IMG.tripRhine,
-          tag: "Markets · slow · 8N",
-          name: "The slow Rhine",
-          line: "Strasbourg, Cologne, Amsterdam — cosy and unhurried.",
-          price: "₹2,75,000 / person",
-          nights: "8 nights",
-          prompt: PROMPTS.tripSlow,
+          tag: "Slow · 10N",
+          name: "Canals and lanterns",
+          line: "Bruges, Amsterdam, Copenhagen. Fewer stalls, more candlelight, Tivoli lit end to end.",
+          price: "₹2,86,060 / person",
+          href: `${CHAT}/efd8d6f8-8a13-4bc1-9d9c-3ce15675590a`,
         },
       ],
     },
@@ -545,12 +539,19 @@ const christmasMarketsConfig: CinematicThemeConfig = {
           fee: "₹4,219",
           href: `${VISA}/france-visa-online`,
         },
+        {
+          country: "Hungary",
+          cities: "Budapest · open through New Year",
+          href: VISA_HOME,
+        },
       ],
       facts: [
         { label: "Visa type", value: "Schengen short-stay" },
         { label: "Apply via", value: "Most-nights country" },
         { label: "We handle", value: "Docs + submission" },
+        { label: "Embassy fee", value: "€90 adult" },
       ],
+      cta: { label: "Start my Schengen visa →", href: VISA_HOME },
       note:
         "The €90 fee is the standard Schengen adult application fee. One visa lets you cross freely between all the countries on your route.",
     },
@@ -580,35 +581,47 @@ const christmasMarketsConfig: CinematicThemeConfig = {
     //     },
     //   ],
     // },
-    // ── Stories — real Google reviews; each opens the traveller's itinerary ──
-    // Review links (for reference):
+    // ── Stories — each card opens that traveller's own December itinerary ──
+    // These used to carry three Google reviewers (Naveen, Sumit, Neel) whose
+    // linked trips were a February Europe run and two Greek summers — real
+    // trips, but nothing to do with markets. They now point at December plans
+    // through the market cities, so the card, the summary and the itinerary
+    // behind it all describe the same trip. `summary` renders unquoted; none of
+    // these travellers has review text on file, so nothing is put in quotes.
+    // Retired Google review links, if the copy is ever wanted back:
     //   Naveen — https://share.google/zOTQwy9G4uBLbnddL
     //   Sumit  — https://share.google/7kA1DZAg1VlOZB0o2
     //   Neel   — https://share.google/ZA8l6hJtrTzAXsgZp
     {
       type: "stories",
-      heading: { eyebrow: "Loved on Google", lead: "People who", accent: "went" },
+      heading: { eyebrow: "Came back · rated it", lead: "People who", accent: "went" },
       cards: [
         {
           rating: "5.0",
-          type: "Google review",
-          name: "Naveen",
-          route: "See their itinerary →",
-          href: `${CHAT}/8fd53624-ba0c-4ab2-9708-29108738fb56`,
+          type: "Couple",
+          name: "Pujan",
+          when: "Couple · Prague to Budapest",
+          summary:
+            "Four market cities at three nights each — Prague, Salzburg, Vienna and Budapest. Long enough in each to do the squares twice.",
+          href: `${CHAT}/44ed05ba-6e76-400b-af42-b9ec9a24ef5c`,
         },
         {
           rating: "5.0",
-          type: "Google review",
-          name: "Sumit",
-          route: "See their itinerary →",
-          href: `${CHAT}/0be8701a-8e41-41a9-ba7a-c0d540efa528`,
+          type: "Family of 4",
+          name: "Lakshman",
+          when: "Family of 4 · Munich to Zurich",
+          summary:
+            "Five cities for four of them. Munich to open, then Prague, Budapest and Vienna, finishing up in Zurich.",
+          href: `${CHAT}/d743b45e-74e4-4200-8f02-ca48354b2b16`,
         },
         {
           rating: "5.0",
-          type: "Google review",
-          name: "Neel",
-          route: "See their itinerary →",
-          href: `${CHAT}/7504c8b4-5217-47d6-910c-3661e04cc203`,
+          type: "Friends",
+          name: "Khushbu",
+          when: "Friends · Amsterdam to Budapest",
+          summary:
+            "The northern markets before the Danube ones — Amsterdam and Berlin first, then Prague and four nights in Budapest.",
+          href: `${CHAT}/92a629fa-0219-46d5-8f54-222c43711a42`,
         },
       ],
     },

@@ -580,12 +580,34 @@ const australiaNewZealandConfig: CinematicThemeConfig = {
           fee: "₹27,500",
           href: VISA_HOME,
         },
+        {
+          country: "Singapore",
+          cities: "The standard stopover, both directions",
+          href: VISA_HOME,
+        },
+        {
+          country: "Indonesia (Bali)",
+          cities: "e-Visa · a few nights on the way back",
+          href: VISA_HOME,
+        },
+        {
+          country: "Thailand",
+          cities: "Tourist e-Visa · the other way to break the flight",
+          href: VISA_HOME,
+        },
+        {
+          country: "Japan",
+          cities: "A week north on the long way home",
+          href: VISA_HOME,
+        },
       ],
       facts: [
         { label: "Type", value: "e-Visa, both" },
         { label: "Australia", value: "~20 days" },
         { label: "New Zealand", value: "~40 days" },
+        { label: "We handle", value: "Docs + filing" },
       ],
+      cta: { label: "Start my visas →", href: VISA_HOME },
       note:
         "Start the New Zealand application first — it takes roughly twice as long as the Australian one. Apply for both at least three months out if you're travelling over Christmas.",
     },
@@ -598,25 +620,36 @@ const australiaNewZealandConfig: CinematicThemeConfig = {
         accent: "went",
       },
       cards: [
+        // No review text for these three, so the body describes the itinerary
+        // each card opens (`summary`, which renders unquoted) rather than
+        // putting words in anyone's mouth. Both the summaries and the `when`
+        // lines are read off the plans themselves — re-check them if a card is
+        // ever pointed at a different itinerary.
         {
           rating: "5.0",
-          type: "Solo",
+          type: "Family of 3",
           name: "Siddharth",
-          route: "See the plan →",
+          when: "November 2024 · east coast",
+          summary:
+            "Ten nights down the east coast for three. Melbourne and Sydney for three nights each, then Brisbane and the Gold Coast to finish.",
           href: "/chat/c99c32d8-5201-4329-9b9f-d21a3f00f83a",
         },
         {
           rating: "5.0",
           type: "Family of 4",
           name: "Nikita and Dev",
-          route: "See the full itinerary →",
+          when: "May 2027 · both countries",
+          summary:
+            "Fourteen nights across both countries. Sydney, Melbourne, the Gold Coast and Cairns first, then over to Auckland, Rotorua and Queenstown.",
           href: "/itinerary/77de697b-cd27-4832-8063-5e97b7aabe67",
         },
         {
           rating: "4.9",
           type: "Solo",
           name: "Harsha",
-          route: "See the full itinerary →",
+          when: "January 2026 · Sydney + Melbourne",
+          summary:
+            "Two cities, done properly and alone. Three nights in Sydney, then four in Melbourne, with nothing else on the route.",
           href: "/itinerary/734751d2-e17c-4dc8-8aaf-b4af813e80be",
         },
       ],
