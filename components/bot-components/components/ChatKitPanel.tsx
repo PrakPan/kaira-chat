@@ -501,10 +501,9 @@ const ChatPanelStyles = () => (
       0%,100% { opacity: 1; transform: scale(1); }
       50% { opacity: 0.5; transform: scale(0.7); }
     }
-    /* The composer floats rather than sitting in a ruled tray: no top border,
-       and the separation from the thread comes entirely from the pill's own
-       drop shadow (see MessageInputBox .kp-row). Padding is a touch roomier
-       than the ruled version so the shadow has somewhere to fall. */
+    /* The composer sits in an unruled tray: no top border, no drop shadow on
+       the pill (see MessageInputBox .kp-row) — the padding and the pill's own
+       outline are all that separate it from the thread. */
     .kp-composer-wrap {
   padding: 10px 10px 10px;
   background: #fff;
@@ -834,7 +833,16 @@ startEmptyIntake = false,
   const [pendingMessage, setPendingMessage] = useState<string | null>(null);
   const [postLoginLoading, setPostLoginLoading] = useState(false);
   const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
-  const [isMobile, setIsMobile] = useState(false);
+  // Seeded from the real viewport instead of `false`. Safe because this panel
+  // only ever renders inside BotApp, which is `dynamic(..., { ssr: false })`,
+  // so it is never server-rendered and there is no SSR markup to mismatch.
+  // Starting at `false` made the first client render the DESKTOP branch even on
+  // a phone, so desktop-only chrome (e.g. the `!isMobile` staff block below)
+  // painted once and then disappeared. Not a pattern for SSR'd components —
+  // see the note on `useMediaQuery` in hooks/useMedia.js.
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== "undefined" && window.innerWidth < 768,
+  );
   // True once any display_itinerary effect has fired in this thread (live
   // stream or replayed from restoredThread.itinerary_effects). Drives the
   // mobile "View Itinerary" CTA below the composer alongside botMode === "p2".

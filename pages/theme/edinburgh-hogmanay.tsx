@@ -324,7 +324,8 @@ const edinburghHogmanayConfig: CinematicThemeConfig = {
           name: "New Year's the Highland way",
           line: "The Bells in the city, then north into the snow.",
           nights: "NYE + Highland drive",
-          href: `${CHAT}/a57add01-f613-4c99-a24b-aa2528ddc2ea`,
+          // Edinburgh 4N → Inverness 3N — the one that actually goes north.
+          href: `${CHAT}/796881b5-9dc0-4860-820c-52d26c0d6782`,
         },
         {
           image: PIC.theCalmer,
@@ -332,7 +333,7 @@ const edinburghHogmanayConfig: CinematicThemeConfig = {
           name: "The calmer Hogmanay",
           line: "All the magic, minus the 75,000-strong crowd.",
           nights: "No street party",
-          href: `${CHAT}/796881b5-9dc0-4860-820c-52d26c0d6782`,
+          href: `${CHAT}/a57add01-f613-4c99-a24b-aa2528ddc2ea`,
         },
         {
           image: PIC.edinburghLondon2,
@@ -340,7 +341,7 @@ const edinburghHogmanayConfig: CinematicThemeConfig = {
           name: "Edinburgh + London",
           line: "New Year up north, then south by train.",
           nights: "Two cities",
-          prompt: PROMPTS.edinburghLondon,
+          href: `${CHAT}/05157102-2653-42e9-8308-31e610be58d8`,
         },
       ],
     },

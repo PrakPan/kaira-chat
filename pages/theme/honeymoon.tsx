@@ -26,6 +26,7 @@ import type { CinematicThemeConfig } from "../../components/theme/cinematic/type
 import { THEME_PALETTES } from "../../components/theme/cinematic/palettes";
 
 const VISA = "https://visa.thetarzanway.com/country";
+const VISA_HOME = "https://visa.thetarzanway.com/";
 const CHAT = "https://thetarzanway.com/chat";
 const THEME_SLUG = "honeymoon";
 
@@ -89,7 +90,7 @@ const PROMPTS = {
   maldivesVilla:
     "We are 2 travellers (a couple) going for 6 nights in November, and our travel dates are flexible. We want a romantic Maldives honeymoon centered around an overwater villa. Prioritize privacy, crystal-clear lagoons, floating breakfasts, snorkeling, sunset cruises, candlelight dinners, spa experiences, and slow mornings with plenty of time to simply relax together.",
   baliSantoriniChip:
-    "We are 2 travellers (a couple) going for 7 nights in June, and our travel dates are flexible. We want a honeymoon combining Bali and Santorini. Include private pool villas, wellness experiences, waterfalls, rice terraces, cafés, and beach clubs in Bali before continuing to Santorini for caldera sunsets, boutique cave hotels, wine tastings, scenic walks, and romantic dinners. Balance adventure with relaxation.",
+    "We are 2 travellers (a couple) going for 7 nights in September, and our travel dates are flexible. We want a honeymoon combining Bali and Santorini. Include private pool villas, wellness experiences, waterfalls, rice terraces, cafés, and beach clubs in Bali before continuing to Santorini for caldera sunsets, boutique cave hotels, wine tastings, scenic walks, and romantic dinners. Balance adventure with relaxation.",
   quietPrivate:
     "We are 2 travellers (a couple) going for 7 nights in November, and our travel dates are flexible. We want a peaceful honeymoon focused on privacy and uninterrupted time together. Prioritize secluded luxury stays, beautiful beaches, private pools, spa treatments, scenic viewpoints, sunset experiences, intimate dining, and slow travel. Keep the itinerary relaxed with minimal hotel changes and plenty of free time.",
   allInclusive:
@@ -98,25 +99,20 @@ const PROMPTS = {
   overwater:
     "We are 2 travellers (a couple), and our travel dates in November are flexible. We want a 6-night honeymoon in the Maldives centered around a luxury overwater villa. Prioritize privacy, turquoise lagoons, snorkeling, sunset cruises, candlelight dinners, spa experiences, floating breakfasts, and slow mornings with plenty of downtime. Create a romantic itinerary focused on relaxation, luxury, and unforgettable moments rather than sightseeing.",
   twoIslands:
-    "We are 2 travellers (a couple), and our travel dates in June are flexible. We want a 7-night honeymoon combining Bali and Santorini. Begin with Bali's tropical jungles, wellness experiences, waterfalls, private pool villas, and peaceful cafés before continuing to Santorini for whitewashed villages, caldera sunsets, wine tastings, romantic dinners, and boutique cave hotels. Balance relaxation, romance, and iconic experiences at a comfortable pace.",
+    "We are 2 travellers (a couple), and our travel dates in September are flexible. We want a 7-night honeymoon combining Bali and Santorini. Begin with Bali's tropical jungles, wellness experiences, waterfalls, private pool villas, and peaceful cafés before continuing to Santorini for whitewashed villages, caldera sunsets, wine tastings, romantic dinners, and boutique cave hotels. Balance relaxation, romance, and iconic experiences at a comfortable pace.",
   ruinsAndWine:
     "We are 2 travellers (a couple), and our travel dates in September are flexible. We want an 8-night romantic honeymoon through Santorini and Athens. Prioritize breathtaking sunsets, boutique cave hotels, scenic coastal walks, wine tastings, private sailing experiences, charming cafés, and romantic dinners in Santorini before exploring Athens' ancient landmarks, hidden neighborhoods, rooftop restaurants, and authentic Greek culture. Keep the itinerary relaxed with plenty of time to enjoy each destination together.",
   // Which island is yours
   islandMaldives:
     "We are 2 travellers (a couple) going for 6 nights in November, and our travel dates are flexible. We want a romantic Maldives honeymoon focused on privacy and luxury. Prioritize an overwater villa, crystal-clear lagoons, floating breakfasts, snorkeling, sunset cruises, candlelight dinners, spa experiences, and uninterrupted time together. Build a slow-paced itinerary with minimal movement and maximum relaxation.",
   islandBali:
-    "We are 2 travellers (a couple) going for 7 nights in July, and our travel dates are flexible. We want a romantic Bali honeymoon combining Uluwatu, Seminyak, and Ubud. Prioritize private pool villas, waterfalls, temples, beach clubs, scenic cafés, spa treatments, rice terraces, sunset dinners, and meaningful local experiences. Balance relaxation with exploration while keeping the pace comfortable.",
+    "We are 2 travellers (a couple) going for 7 nights in September, and our travel dates are flexible. We want a romantic Bali honeymoon combining Uluwatu, Seminyak, and Ubud. Prioritize private pool villas, waterfalls, temples, beach clubs, scenic cafés, spa treatments, rice terraces, sunset dinners, and meaningful local experiences. Balance relaxation with exploration while keeping the pace comfortable.",
   islandSantorini:
     "We are 2 travellers (a couple) going for 6 nights in September, and our travel dates are flexible. We want a Santorini honeymoon built around romance and breathtaking sunsets. Include a caldera-view cave hotel, Oia and Fira, private sailing, wine tastings, seaside dinners, charming cafés, scenic coastal walks, and hidden viewpoints. Prioritize slow travel, beautiful stays, and unforgettable moments together.",
   islandSeychelles:
-    "We are 2 travellers (a couple) going for 7 nights in April, and our travel dates are flexible. We want a peaceful Seychelles honeymoon with secluded beaches and luxury island experiences. Prioritize boutique beachfront resorts, granite boulder beaches, island hopping, snorkeling, sunset cruises, nature trails, Creole cuisine, and private beach picnics. Keep the itinerary relaxed with plenty of free time to enjoy the islands at an unhurried pace.",
-  // Trips
-  tripMaldives:
-    "We are 2 travellers (a couple). Build the Maldives overwater escape — 6 nights in November, one resort, one overwater villa, seaplane transfers both ways, with flights from Delhi included. Add a floating breakfast, a sunset cruise and one private dinner.",
-  tripBali:
-    "We are 2 travellers (a couple). Build the slow Bali honeymoon — 7 nights in July across Uluwatu, Seminyak and Ubud with private pool villas, a spa day, waterfalls and rice terraces, and flights from Delhi included. Keep the mornings free.",
-  tripGreece:
-    "We are 2 travellers (a couple). Build the Santorini and Athens honeymoon — 8 nights in September, a caldera-view cave hotel, private sailing, wine tastings, and the Athens ruins and rooftops, with flights from Delhi included.",
+    "We are 2 travellers (a couple) going for 7 nights in October, and our travel dates are flexible. We want a peaceful Seychelles honeymoon with secluded beaches and luxury island experiences. Prioritize boutique beachfront resorts, granite boulder beaches, island hopping, snorkeling, sunset cruises, nature trails, Creole cuisine, and private beach picnics. Keep the itinerary relaxed with plenty of free time to enjoy the islands at an unhurried pace.",
+  // The "Which honeymoon is yours?" trips carry no prompt — each card opens a
+  // finished itinerary at /chat/{id} instead of seeding a fresh session.
   // Evenings
   privateDinner:
     "We are 2 travellers on our 7-night honeymoon in November. Set up a private candlelit dinner for us — beach or cliffside — and tell me which destination does it best, what it costs, and how far ahead it has to be booked.",
@@ -129,27 +125,26 @@ const PROMPTS = {
 // nights / pax) rather than left for the backend to read out of the sentence.
 // Keyed by prompt text via promptIntakeMap, so a card only carries its prompt
 // and the facts follow. The month follows the destination rather than the
-// theme — November for the Maldives dry season, June/July for Bali, September
-// for the Greek islands, April for Seychelles.
+// theme — November for the Maldives dry season, September for Bali's dry
+// season and for the Greek islands, October for the Seychelles inter-monsoon
+// calm. All of them sit in the Sep–Mar window, so none resolves to a month
+// that has already gone.
 //
 // `askBar` deliberately carries no `nights`: it asks Kaira to compare a 6, a 7
 // and an 8-night honeymoon, so pinning one length would answer it for her.
 const PROMPT_FACTS = promptIntakeMap(PROMPTS, {
   hero: { nights: 7, month: 11, who: "Couple" },
   maldivesVilla: { nights: 6, month: 11, who: "Couple" },
-  baliSantoriniChip: { nights: 7, month: 6, who: "Couple" },
+  baliSantoriniChip: { nights: 7, month: 9, who: "Couple" },
   quietPrivate: { nights: 7, month: 11, who: "Couple" },
   allInclusive: { nights: 6, month: 11, who: "Couple" },
   overwater: { nights: 6, month: 11, who: "Couple" },
-  twoIslands: { nights: 7, month: 6, who: "Couple" },
+  twoIslands: { nights: 7, month: 9, who: "Couple" },
   ruinsAndWine: { nights: 8, month: 9, who: "Couple" },
   islandMaldives: { nights: 6, month: 11, who: "Couple" },
-  islandBali: { nights: 7, month: 7, who: "Couple" },
+  islandBali: { nights: 7, month: 9, who: "Couple" },
   islandSantorini: { nights: 6, month: 9, who: "Couple" },
-  islandSeychelles: { nights: 7, month: 4, who: "Couple" },
-  tripMaldives: { nights: 6, month: 11, who: "Couple" },
-  tripBali: { nights: 7, month: 7, who: "Couple" },
-  tripGreece: { nights: 8, month: 9, who: "Couple" },
+  islandSeychelles: { nights: 7, month: 10, who: "Couple" },
   privateDinner: { nights: 7, month: 11, who: "Couple" },
   askBar: { month: 11, who: "Couple" },
 });
@@ -391,43 +386,52 @@ const honeymoonConfig: CinematicThemeConfig = {
         },
       ],
     },
-    // ── Trips ──
+    // ── Trips — three finished itineraries, not prompts. Each card opens the
+    // real plan at /chat/{itinerary_id}.
+    //
+    // Copy, nights and prices all come from the itinerary itself: the route is
+    // its city stops in order, and the price is `per_person_discounted_cost`
+    // rounded the way the itinerary page rounds it, so the number on the card
+    // is the number the visitor lands on. Re-check whenever they're re-priced.
+    //
+    // The section note no longer claims "flights included" — the Bali plan
+    // carries no flight booking (ferry and taxis only), unlike the other two. ──
     {
       type: "trips",
       ctaLabel: "Book this itinerary →",
       heading: {
         lead: "Which honeymoon is",
         accent: "yours?",
-        note: "Priced from Delhi · flights and transfers included",
+        note: "Tap a plan to open the full itinerary",
       },
       cards: [
         {
           image: IMG.maldives,
-          tag: "Couple · 6N",
-          name: "Maldives overwater escape",
-          line: "One resort, one overwater villa, seaplane transfer both ways. Nothing else to plan.",
-          price: "₹2,45,000 / person",
-          nights: "6 nights · Maldives",
+          tag: "Couple · 3N",
+          name: "The Maldives long weekend",
+          line: "One lagoon resort, a speedboat from Male, and three nights with nothing scheduled.",
+          price: "₹90,744 / person",
+          nights: "3 nights · Maldives",
           urgent: "Dec – Feb villas book out six months ahead",
-          prompt: PROMPTS.tripMaldives,
+          href: `${CHAT}/1f212379-86d2-4588-8d6c-938148467026`,
         },
         {
           image: IMG.bali,
           tag: "Couple · 7N",
           name: "Slow Bali honeymoon",
-          line: "Four nights of cliffside quiet in Uluwatu, then Ubud, markets and slow mornings.",
-          price: "₹1,88,525 / person",
+          line: "Three nights in the Ubud valley, two on Nusa Penida's cliffs, two on the Seminyak sand.",
+          price: "₹55,333 / person",
           nights: "7 nights · Bali",
-          prompt: PROMPTS.tripBali,
+          href: `${CHAT}/a8802c37-7a27-4724-8213-4a6246e242f5`,
         },
         {
           image: IMG.greece,
           tag: "Couple · 8N",
-          name: "Santorini and Athens",
-          line: "Five nights of caldera views, then ruins and rooftop dinners in Athens.",
-          price: "₹2,02,000 / person",
+          name: "Athens, Mykonos and Santorini",
+          line: "Two nights of ruins, two on Mykonos, then three over the Santorini caldera.",
+          price: "₹2,79,011 / person",
           nights: "8 nights · Greece",
-          prompt: PROMPTS.tripGreece,
+          href: `${CHAT}/cedadafb-03af-47f1-992c-169a88af12e6`,
         },
       ],
     },
@@ -474,7 +478,7 @@ const honeymoonConfig: CinematicThemeConfig = {
         {
           country: "Maldives",
           cities: "Male · any atoll",
-          fee: "₹0 · free on arrival",
+          fee: "₹0 Free",
           href: "https://visa.thetarzanway.com",
         },
         {
@@ -489,12 +493,29 @@ const honeymoonConfig: CinematicThemeConfig = {
           fee: "₹5,250",
           href: `${VISA}/greece-visa-online`,
         },
+        {
+          country: "Seychelles",
+          cities: "Mahé · Praslin · La Digue",
+          href: VISA_HOME,
+        },
+        {
+          country: "Italy",
+          cities: "Amalfi · Lake Como",
+          href: VISA_HOME,
+        },
+        {
+          country: "Switzerland",
+          cities: "Interlaken · Zermatt",
+          href: VISA_HOME,
+        },
       ],
       facts: [
         { label: "Fastest", value: "Maldives · 0d" },
         { label: "Slowest", value: "Greece · 15d" },
         { label: "We handle", value: "Docs + submission" },
+        { label: "Embassy queue", value: "None for you" },
       ],
+      cta: { label: "Start my visas →", href: VISA_HOME },
       note:
         "Greece is a Schengen sticker — file it at least twenty days out. The Bali e-Visa lands in a few days. Nothing here needs an embassy queue on your side.",
     },
@@ -535,6 +556,11 @@ const honeymoonConfig: CinematicThemeConfig = {
     //   ],
     // },
     // ── Stories — each opens the traveller's actual itinerary ──
+    // Link by the full 36-char itinerary uuid, never by the indexed slug: the
+    // bot reads the session id off the path with /\/chat\/([a-f0-9-]{36})/
+    // (BotApp `sessionIdFromUrl`), so a slug — even the real one, ending in the
+    // itinerary's last uuid segment — matches nothing and the trip never loads.
+    // The slug form belongs to /trips/{type}/{slug} instead.
     {
       type: "stories",
       heading: { eyebrow: "Loved on Google", lead: "Couples who", accent: "went" },
@@ -546,8 +572,7 @@ const honeymoonConfig: CinematicThemeConfig = {
           when: "3 nights · Maldives",
           quote:
             "A weekend was enough. One resort, no itinerary to manage, and the review speaks for itself.",
-          route: "See their itinerary →",
-          href: `${CHAT}/3-nights-weekend-romantic-getaway-to-maldives-70de4ba72ec8`,
+          href: `${CHAT}/4a6d08ea-bb48-4497-a276-70de4ba72ec8`,
         },
         {
           rating: "4.9",
@@ -556,8 +581,7 @@ const honeymoonConfig: CinematicThemeConfig = {
           when: "1 week · Bali",
           quote:
             "Cliffs, sunsets, and a plan that left room to change our minds most days.",
-          route: "See their itinerary →",
-          href: `${CHAT}/1-week-romantic-getaway-to-bali-23eedb88d7e6`,
+          href: `${CHAT}/1d73f1c3-a43a-4c56-afc2-23eedb88d7e6`,
         },
         {
           rating: "4.4",
@@ -566,8 +590,7 @@ const honeymoonConfig: CinematicThemeConfig = {
           when: "5 nights · Greece",
           quote:
             "Santorini looked exactly like the version we'd saved on Pinterest for two years. Better, actually.",
-          route: "See their itinerary →",
-          href: `${CHAT}/5-nights-romantic-getaway-to-greece-fe17b0eac6ce`,
+          href: `${CHAT}/d6dc9ff5-7865-4dc6-934f-fe17b0eac6ce`,
         },
       ],
     },

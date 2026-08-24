@@ -182,10 +182,20 @@ export interface CinematicStoryCard {
   rating: string;
   type: string;
   name: string;
-  route: string;
-  // What they actually said. Rendered as the card's body when present; without
-  // it the card is just the header + route, which still reads fine.
+  // The trip in a few words — "Street Party + Highlands", "6 nights ·
+  // Christmas week" — shown as a pill at the foot of the card. It is NOT a
+  // call to action: the card already ends in a "See itinerary →" CTA, so a
+  // route that restates it ("See their itinerary →") just prints the same
+  // button twice. Omit it and the card shows the CTA alone.
+  route?: string;
+  // What they actually said. Rendered as the card's body when present, wrapped
+  // in quote marks — so only ever real review text, never a paraphrase.
   quote?: string;
+  // Two or three lines describing the itinerary the card opens, for travellers
+  // whose review text we don't have. Fills the same body slot as `quote` but
+  // renders unquoted, because it is our description of the trip rather than
+  // anything the traveller said. `quote` wins if a card somehow carries both.
+  summary?: string;
   // When they travelled, e.g. "February 2026 · Niseko". Falls back to `type`.
   when?: string;
   prompt?: string;
@@ -370,13 +380,19 @@ export type CinematicSection =
       itemKind?: string;
     }
   | {
-      // Dark "Your visa, handled" section — intro, country fee cards, fact chips.
+      // "Your visa, handled" — one white card split in two: the heading, intro
+      // and a 2×2 grid of facts on the left, the country cards (each with its
+      // own "Check visa →") plus the primary CTA on the right.
       type: "visa";
       heading: CinematicHeading;
       intro?: string;
       cards: CinematicVisaCard[];
+      // Rendered as a 2×2 grid, so four reads best; three leaves a hole and
+      // five wraps to an uneven third row.
       facts?: CinematicVisaFact[];
-      note?: ReactNode; // callout under the fact chips
+      // Primary CTA under the country cards ("Start my Schengen visa →").
+      cta?: { label: string; href: string };
+      note?: ReactNode; // closing line under the facts
     }
   | {
       // Dark editorial feature block (e.g. the undersea Shinkansen): a couple of
