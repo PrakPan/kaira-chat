@@ -11,12 +11,13 @@ import styles from "./KairaLovingSection.module.scss";
 
 const DEFAULT_QUOTE = (
   <>
-    &ldquo;Shoulder season is real.{" "}
-    <span className={styles.quoteHl}>April in Japan</span> before the Golden
-    Week rush, or{" "}
-    <span className={styles.quoteHl}>Vietnam&apos;s dry-season tail</span>.
-    Cheaper flights, emptier temples, better photos. Here&apos;s what I&apos;d
-    pick if I had ten days off right now.&rdquo;
+    &ldquo;September is one of those sweet spots.{" "}
+    <span className={styles.quoteHl}>
+      Japan is starting to ease into autumn
+    </span>
+    , while <span className={styles.quoteHl}>Bali is still sunny</span>, warm
+    and easy to explore. If I had ten days off right now, these are the two
+    trips I&apos;d pick.&rdquo;
   </>
 );
 
@@ -25,27 +26,27 @@ const DEFAULT_PICKS = [
     tag: "Kaira's pick · this month",
     title: (
       <>
-        Japan, the <span className="ttwSerif">shoulder-season</span> way
+        Japan, before <span className="ttwSerif">autumn arrives</span>
       </>
     ),
     blurb:
-      "Kyoto's last petals, Kanazawa in the quiet, a ryokan night near Hakone. 9 days, around ₹1.6L per person.",
+      "Tokyo's neighbourhoods, Kyoto's temples, Hakone's hot springs and a slower side of Japan before the autumn crowds arrive. 9 days, around ₹1.6L per person.",
     img: "https://images.unsplash.com/photo-1522383225653-ed111181a951?w=400&q=80&auto=format",
-    seed: "Japan shoulder season, 9 days",
-    itinerary_id: "c6377b28-8132-4027-a1c0-9ba584dcf0d8"
+    seed: "Japan before autumn, 9 days",
+    itinerary_id: "5d8f479d-ef11-4c42-bc0c-0a3ee207183e"
   },
   {
     tag: "Kaira's pick · this month",
     title: (
       <>
-        Vietnam, the <span className="ttwSerif">dry-tail</span> run
+        Bali, <span className="ttwSerif">sunny days &amp; slow stays</span>
       </>
     ),
     blurb:
-      "Hoi An before peak heat, a sleeper train north, pho and coffee the way Anh makes them. 8 days, ₹68K per person.",
-    img: "https://images.unsplash.com/photo-1555921015-5532091f6026?w=400&q=80&auto=format",
-    seed: "Vietnam dry tail end, 8 days",
-     itinerary_id: "5d8f479d-ef11-4c42-bc0c-0a3ee207183e"
+      "Ubud's rice terraces, East Bali's quieter coast, beach sunsets and a few days doing absolutely nothing. 8 days, around ₹68K per person.",
+    img: "https://images.unsplash.com/photo-1573790387438-4da905039392?w=400&q=80&auto=format",
+    seed: "Bali sunny and slow, 8 days",
+    itinerary_id: "87337984-6e2a-4b87-8d52-7aa7b4753b5c"
   },
 ];
 
