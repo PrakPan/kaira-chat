@@ -16,6 +16,7 @@ import { useRouter } from "next/router";
 import { dateFormat } from "../../../../helper/DateUtils";
 import { getStars } from "../../../itinerary/itineraryCity/SlabElement";
 import ScrollableMenuTabs from "../../../ScrollableMenuTabs";
+import HotelPolicy from "../../HotelPolicy";
 
 const svgIcons = {
   "loaction": <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 10 14" fill="none">
@@ -1157,6 +1158,12 @@ const HotelBookingDetails = (props) => {
                   {viewMoreFacilites && <div className="text-sm underline font-500 leading-lg cursor-pointer text-[#0b1220]" onClick={() => calculateVisibleFacilites(props?.data?.facilities, false)}> Show Less</div>}
                 </div>
               </>}
+
+              <HotelPolicy
+                metapolicy={props?.data?.metapolicy}
+                extraInfo={props?.data?.metapolicy_extra_info}
+                currency={props?.data?.currency}
+              />
 
               <hr className="my-lg border-[#ececec]" />
             </div>

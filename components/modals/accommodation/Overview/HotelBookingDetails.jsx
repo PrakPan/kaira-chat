@@ -27,6 +27,7 @@ import POIDetailsSkeleton from "../../ViewHotelDetails/Skeleton";
 import Drawer from "../../../ui/Drawer";
 import { Navigation } from "../../../NewNavigation";
 import ScrollableMenuTabs from "../../../ScrollableMenuTabs";
+import HotelPolicy from "../../HotelPolicy";
 
 const svgIcons = {
   "loaction": <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 10 14" fill="none">
@@ -1282,6 +1283,15 @@ const HotelBookingDetails = (props) => {
                           {viewMoreFacilites && <div className="ttw-type-small font-500 underline cursor-pointer text-[#0b1220]" onClick={() => calculateVisibleFacilites(data?.hotel_details?.facilities || [], false)}> Show Less</div>}
                         </div>
                       </>}
+
+                      <HotelPolicy
+                        metapolicy={data?.hotel_details?.metapolicy}
+                        extraInfo={data?.hotel_details?.metapolicy_extra_info}
+                        currency={data?.hotel_details?.currency}
+                        headingClassName="ttw-type-body font-600 text-[#0b1220]"
+                        labelClassName="ttw-type-small font-600 text-[#0b1220]"
+                        valueClassName="ttw-type-small text-[#445069]"
+                      />
 
                       <hr className="my-lg border-[#ececec]" />
                     </div>
