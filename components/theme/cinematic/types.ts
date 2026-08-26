@@ -288,9 +288,18 @@ export interface CinematicFeatureCta {
   item?: CinematicSelectableItem;
 }
 
+// Numbered row in a `steps` section ("Sketch it. I'll finish it."): the
+// ordinal in a yellow disc, then what happens at that step.
+export interface CinematicStepRow {
+  n: string; // "01"
+  title: string;
+  line?: string;
+}
+
 // Discriminated union of the section blocks a page can stack. Order in the
-// config array is the render order.
-export type CinematicSection =
+// config array is the render order. Every block also accepts the options in
+// CinematicSectionOptions below — see CinematicSection.
+type CinematicSectionBlock =
   | {
       type: "cards";
       heading: CinematicHeading;
@@ -403,7 +412,39 @@ export type CinematicSection =
       rows?: CinematicFeatureRow[];
       stats?: CinematicFeatureStat[];
       cta?: CinematicFeatureCta;
+    }
+  | {
+      // Dark closing block ("Sketch it. I'll finish it."): the heading and the
+      // page's primary CTA on one row, then a numbered 3-up of what happens
+      // after the reader taps it.
+      type: "steps";
+      heading: CinematicHeading;
+      rows: CinematicStepRow[];
+      // Yellow pill beside the heading — seeds `prompt`, or navigates `href`.
+      cta?: CinematicSectionCta;
+      // Mono reassurance under the CTA, e.g. "10,000+ trips · rated 4.9".
+      ctaNote?: string;
     };
+
+// Options every section accepts, whatever its own shape.
+export interface CinematicSectionOptions {
+  /** Hide this whole block below 640px — the shared `.ttw-wide-only`
+   *  breakpoint in globals.css — and keep it from there up. Decided in CSS
+   *  rather than JS on purpose: a `useMediaQuery` swap renders the section on
+   *  the server, then drops it at hydration, and the page shortens under the
+   *  reader's thumb. */
+  desktopOnly?: boolean;
+}
+
+// A block plus the shared options. Distributed member by member so
+// `Extract<CinematicSection, { type: "cards" }>` still resolves to one member;
+// a plain `CinematicSectionBlock & CinematicSectionOptions` would not, because
+// the intersection is no longer a naked union for the conditional to walk.
+type WithSectionOptions<T> = T extends unknown
+  ? T & CinematicSectionOptions
+  : never;
+
+export type CinematicSection = WithSectionOptions<CinematicSectionBlock>;
 
 // Film image shown as a rotated polaroid in the desktop hero collage.
 export interface CinematicHeroImage {

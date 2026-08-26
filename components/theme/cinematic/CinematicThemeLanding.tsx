@@ -2139,6 +2139,111 @@ const FeatureSection: React.FC<{
   </section>
 );
 
+// ── Steps (dark — "Sketch it. I'll finish it.") ─────────────────────────────
+// The closing block: the heading and the page's primary CTA share a row from md
+// up (stacked on a phone), then a hairline and a numbered 3-up of what happens
+// once the reader taps it. Deliberately the last thing on the page — everything
+// above it is a way in, and this says what happens after.
+const StepsSection: React.FC<{
+  section: Extract<CinematicSection, { type: "steps" }>;
+  onSelectPrompt: SelectPrompt;
+}> = ({ section, onSelectPrompt }) => {
+  const router = useRouter();
+  const cta = section.cta;
+  return (
+    <section
+      className="mt-[34px] md:mt-[56px] relative overflow-hidden"
+      style={{ background: DARK }}
+    >
+      <div
+        className="absolute pointer-events-none"
+        style={{
+          top: -100,
+          right: 60,
+          width: 420,
+          height: 420,
+          background:
+            "radial-gradient(circle, rgba(247,231,0,0.08), transparent 70%)",
+        }}
+      />
+      <Container className="py-[36px] md:py-[60px] relative">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-[20px] md:gap-[64px]">
+          <Heading
+            heading={section.heading}
+            className="text-[24px] md:text-[40px] ctl-h-light"
+          />
+          {cta && (
+            <div className="flex flex-col items-start md:items-end gap-[10px] shrink-0">
+              <button
+                type="button"
+                onClick={() => {
+                  if (cta.prompt)
+                    onSelectPrompt(cta.prompt, {
+                      source: "cta",
+                      label: cta.label,
+                    });
+                  else if (cta.href) router.push(cta.href);
+                }}
+                className="ctl-press rounded-full px-[26px] py-[14px] md:px-[34px] md:py-[16px] text-[14.5px] md:text-[16px] font-bold whitespace-nowrap cursor-pointer"
+                style={{
+                  background: YELLOW,
+                  color: INK,
+                  border: "none",
+                  boxShadow: "0 8px 20px -10px rgba(247,231,0,0.3)",
+                }}
+              >
+                {cta.label}
+              </button>
+              {section.ctaNote && (
+                <div className="ctl-mono">{section.ctaNote}</div>
+              )}
+            </div>
+          )}
+        </div>
+        <div
+          className="grid md:grid-cols-3 gap-[18px] md:gap-[24px] mt-[26px] md:mt-[48px] pt-[24px] md:pt-[40px]"
+          style={{ borderTop: "1px solid rgba(255,255,255,0.1)" }}
+        >
+          {section.rows.map((row, i) => (
+            <div key={`step-${i}`} className="flex items-start gap-[14px]">
+              <div
+                className="ctl-mono shrink-0 flex items-center justify-center rounded-full"
+                style={{
+                  width: 30,
+                  height: 30,
+                  background: "rgba(247,231,0,0.16)",
+                  border: "1px solid rgba(247,231,0,0.35)",
+                  color: YELLOW,
+                  fontSize: 11,
+                  fontWeight: 600,
+                }}
+              >
+                {row.n}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div
+                  className="text-[14.5px] md:text-[15.5px] font-bold"
+                  style={{ color: PAPER }}
+                >
+                  {row.title}
+                </div>
+                {row.line && (
+                  <div
+                    className="text-[12.5px] md:text-[13px] leading-[1.55] mt-[6px]"
+                    style={{ color: FAINT }}
+                  >
+                    {row.line}
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </Container>
+    </section>
+  );
+};
+
 // ── Ask-Kaira strip ("Docked composer") ─────────────────────────────────────
 // A single, shared design used on every theme page (matches the theme mockup):
 // a bar pinned to the bottom of the viewport carrying the saved-items bag, a
@@ -2873,65 +2978,94 @@ const CinematicThemeLanding: React.FC<CinematicThemeLandingProps> = ({
       const key = `sec-${i}`;
       // Tail of a pair — already rendered by its partner.
       if (pairedWithNext.has(i - 1)) return null;
+      // A `desktopOnly` section still renders and still ships in the HTML — it
+      // is hidden by the shared `.ttw-wide-only` rule below 640px. Hiding it in
+      // CSS rather than by not rendering it keeps the server HTML and the first
+      // client render identical, so the page never changes height at hydration.
+      const wrap = (node: React.ReactNode) =>
+        section.desktopOnly ? (
+          <div key={key} className="ttw-wide-only">
+            {node}
+          </div>
+        ) : (
+          node
+        );
+
       if (pairedWithNext.has(i)) {
         const next = config.sections[i + 1];
         if (section.type === "gradient" && next.type === "gradient")
-          return (
+          return wrap(
             <GradientPairSection
               key={key}
               left={section}
               right={next}
               onSelectPrompt={onSelectPrompt}
-            />
+            />,
           );
       }
 
       switch (section.type) {
         case "cards":
-          return (
+          return wrap(
             <CardsSection
               key={key}
               section={section}
               onSelectPrompt={onSelectPrompt}
               onSelectActivity={onSelectActivity}
               first={i === 0}
-            />
+            />,
           );
         case "trips":
-          return <TripsSection key={key} section={section} onSelectPrompt={onSelectPrompt} />;
+          return wrap(
+            <TripsSection key={key} section={section} onSelectPrompt={onSelectPrompt} />,
+          );
         case "pillars":
-          return <PillarsSection key={key} section={section} onSelectPrompt={onSelectPrompt} />;
+          return wrap(
+            <PillarsSection key={key} section={section} onSelectPrompt={onSelectPrompt} />,
+          );
         case "list":
-          return (
+          return wrap(
             <ListSection
               key={key}
               section={section}
               onSelectPrompt={onSelectPrompt}
               onSelectActivity={onSelectActivity}
-            />
+            />,
           );
         case "checklist":
-          return <ChecklistSection key={key} section={section} onSelectPrompt={onSelectPrompt} />;
+          return wrap(
+            <ChecklistSection key={key} section={section} onSelectPrompt={onSelectPrompt} />,
+          );
         case "months":
-          return <MonthsSection key={key} section={section} />;
+          return wrap(<MonthsSection key={key} section={section} />);
         case "stories":
-          return <StoriesSection key={key} section={section} onSelectPrompt={onSelectPrompt} />;
+          return wrap(
+            <StoriesSection key={key} section={section} onSelectPrompt={onSelectPrompt} />,
+          );
         case "eats":
-          return <EatsSection key={key} section={section} onSelectPrompt={onSelectPrompt} />;
+          return wrap(
+            <EatsSection key={key} section={section} onSelectPrompt={onSelectPrompt} />,
+          );
         case "visa":
-          return <VisaSection key={key} section={section} />;
+          return wrap(<VisaSection key={key} section={section} />);
         case "feature":
-          return (
+          return wrap(
             <FeatureSection
               key={key}
               section={section}
               onSelectPrompt={onSelectPrompt}
               onSelectActivity={onSelectActivity}
-            />
+            />,
+          );
+        case "steps":
+          return wrap(
+            <StepsSection key={key} section={section} onSelectPrompt={onSelectPrompt} />,
           );
         case "gradient":
         default:
-          return <GradientSection key={key} section={section} onSelectPrompt={onSelectPrompt} />;
+          return wrap(
+            <GradientSection key={key} section={section} onSelectPrompt={onSelectPrompt} />,
+          );
       }
     })}
 
@@ -2964,6 +3098,7 @@ export {
   VisaSection,
   GradientPairSection,
   FeatureSection,
+  StepsSection,
   AskKairaStrip,
   PromptCard,
   TripCard,
