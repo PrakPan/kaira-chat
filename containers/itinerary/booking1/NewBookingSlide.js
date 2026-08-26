@@ -931,9 +931,16 @@ const PriceDetails = ({
         ) : null}
 
         <div className="border-t-sm border-text-disabled pt-2 mt-2">
-          <div className="flex justify-between font-semibold text-md font-500 leading-xl">
-            <span>Total Amount</span>
-            <span>
+          <div className="flex justify-between items-start">
+            <div className="flex flex-col">
+              <span className="font-semibold text-md font-500 leading-xl">
+                Total Amount
+              </span>
+              <span className="text-xs font-400 leading-sm text-text-spacegrey">
+                Inclusive of all taxes
+              </span>
+            </div>
+            <span className="font-semibold text-md font-500 leading-xl">
               {" "}
               {currencySymbols?.[currency]
                 ? currencySymbols?.[currency]
