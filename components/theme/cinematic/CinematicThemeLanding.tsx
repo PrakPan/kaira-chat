@@ -122,6 +122,15 @@ const cardChrome = (onSand?: boolean): React.CSSProperties => ({
   border: `1px solid ${onSand ? "#e6e3d6" : BORDER}`,
 });
 
+// The mockup's scroller cards carry a warmer hairline than the grid ones and a
+// low gold lift under them, so a rail reads as a row of things you push along
+// rather than a block of tiles. Only sections that opt into `rail` get it.
+const railCardChrome: React.CSSProperties = {
+  background: "#ffffff",
+  border: "1px solid #f0dfc0",
+  boxShadow: "0 8px 20px -14px rgba(184,140,20,0.35)",
+};
+
 const DARK_CARD: React.CSSProperties = {
   background: "rgba(255,255,255,0.04)",
   border: "1px solid rgba(255,255,255,0.08)",
@@ -716,7 +725,11 @@ const PromptCard: React.FC<{
       inRail ? "md:w-[288px]" : "md:w-auto md:shrink"
     }`}
     style={{
-      ...(onDark ? DARK_CARD : cardChrome(onSand)),
+      ...(onDark
+        ? DARK_CARD
+        : inRail
+          ? railCardChrome
+          : cardChrome(onSand)),
       ...(selected ? { borderColor: palette.accent } : {}),
     }}
   >

@@ -84,15 +84,28 @@ export const THEME_PALETTES: Record<string, CinematicThemePalette> = {
   // its own. `accent` is the shared ink rather than a pure #000 so the CTAs
   // match the ink buttons the mockup already draws on the film and experience
   // rails, and so black type on a card and a black button read as one family.
-  // Everything else is a neutral step off it: a grey wash for the resting
-  // "+ Add" pills and the fact tiles, a near-white page, a grey hero fade.
-  // The yellow in the ink panels is the site's, not the theme's, so it stays.
+  //
+  // Every value is lifted straight off the mockup rather than mixed by eye:
+  //   accent      the ink on its "Create plan" / "Book this plan" buttons
+  //   accentOn    --paper, the label on those buttons
+  //   page        the root div's own #fbf7f5 (a shade warmer than --paper)
+  //   heroTint    the top stop of the hero's peach gradient
+  //   accentSoft  the pale teal behind its visa fact tiles and plan chips
+  //
+  // The mockup's other colours are the design system's shared tokens, which the
+  // landing component already carries at the same values — --ink #0b1220,
+  // --ink-3 #445069, --ink-4 #8a93a6, --line #ececec, --paper #fafaf5,
+  // --paper-2 #f4f3ec, --yellow #f7e700, --green #1f8a5a, --red #b84034,
+  // --midnight #0a1020 — so nothing there needs overriding. (The mockup paints
+  // its three ink panels #0e1424 rather than the --midnight token they should
+  // use; that is a slip in the mockup, and four points of near-black either way
+  // is not visible, so the token wins.)
   "filmy-getaways": {
     accent: "#0b1220",
-    accentSoft: "#eceef1",
+    accentSoft: "#e8f4f3",
     accentOn: "#fafaf5",
-    page: "#fafafa",
-    heroTint: "#e9eaee",
+    page: "#fbf7f5",
+    heroTint: "#f6e2da",
   },
 };
 

@@ -15,7 +15,7 @@ export default {
   TRAVEL_SUPPORT: "/travel-support/",
   TRAVEL_GUIDE: "/travel-guide",
   EXPERIENCES: "/experiences/",
-  WHATSAPP: "https://wa.me/917827441548",
+  WHATSAPP: "https://wa.me/918448687703",
   //some more
 
   supplier_thetarzanway: {

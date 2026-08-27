@@ -1679,7 +1679,7 @@ export const EditDestinations = (props) => {
             className="flex shrink-0 items-center gap-[5px] text-[14px] max-ph:text-[13px] font-inter font-semibold text-[#1D6FE0] cursor-pointer whitespace-nowrap"
           >
             <MdOutlineEdit size={15} />
-            Edit Destinations
+            Change route
           </button>
         )}
       </div>
