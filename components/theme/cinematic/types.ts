@@ -118,6 +118,9 @@ export interface CinematicTripCard {
   price?: string;
   nights?: string;
   urgent?: string; // red urgency banner across the card footer
+  // What the price covers, as short mono chips ("Flights", "Rail pass",
+  // "Stays"). Rendered by the stacked layout only.
+  includes?: string[];
   objectPosition?: string; // cover-crop focal point (defaults to center)
   prompt?: string;
   // When set, clicking navigates here (e.g. an existing itinerary at
@@ -223,13 +226,23 @@ export interface CinematicEatCard {
   item?: CinematicSelectableItem;
 }
 
-// Dark visa country card ("Your visa, handled"): the country, the cities it
-// covers, and the fee. Clicking opens the country's visa page (`href`).
+// Visa country card ("Your visa, handled"): the country, the cities it covers,
+// and the fee. Clicking saves the visa to the trip, the same as every other
+// "+ Add" element on the page. `href` is the fallback for a page that never
+// opted into selection — there the card stays a link to the country's visa
+// page.
 export interface CinematicVisaCard {
   country: string;
   cities?: string;
   fee?: string; // e.g. "€90"
   href?: string;
+  // A sentence of context, shown only on a page with one or two countries —
+  // there the card owns most of a column, and a bare name and fee floating in
+  // that much space reads like the section failed to load. Write what the
+  // reader can't get from the fee: what the entry rule costs them in planning,
+  // or what we do with the file. Ignored on a three-plus grid, which has no
+  // room for it.
+  line?: string;
 }
 
 // Small fact chip under the visa cards (label + value).
@@ -305,9 +318,19 @@ type CinematicSectionBlock =
       heading: CinematicHeading;
       cta?: CinematicSectionCta;
       cards: CinematicPromptCard[];
-      // Section background: "paper" (default) or "sand" (a warm neutral band,
-      // used to group sections like the Hokkaido "Which mountain is yours").
-      tone?: "paper" | "sand";
+      // Section background: "paper" (default), "sand" (a warm neutral band,
+      // used to group sections like the Hokkaido "Which mountain is yours"), or
+      // "dark" — the mockup's inset ink panel with a yellow heading and a
+      // yellow-filled CTA, for a short row that has to stop the scroll.
+      tone?: "paper" | "sand" | "dark";
+      // Paragraph under the heading. The dark panel is the only tone that reads
+      // with one; the light rows carry their explanation on the cards.
+      intro?: string;
+      // Keep the horizontal rail at every breakpoint instead of switching to a
+      // 3-up grid from md. For the mockup's "Pick a film" and "Experiences
+      // worth booking" scrollers, where eleven cards in a grid become four
+      // stacked rows and stop reading as a set of options.
+      rail?: boolean;
       // When set, each card shows a pill CTA at its foot with this label
       // (e.g. "Create this plan →"). Clicking anywhere on the card still fires
       // the card action; the label is a visual affordance. Omit to keep the
@@ -322,6 +345,9 @@ type CinematicSectionBlock =
       // `item`. `itemKind` sets the category tag shown in the saved list.
       selectable?: boolean;
       itemKind?: string;
+      // Noun for the resting Add pill: "activity" renders "+ Add activity".
+      // Ignored unless `selectable` is set; the saved state stays "✓ Added".
+      addNoun?: string;
     }
   | {
       type: "trips";
@@ -329,6 +355,14 @@ type CinematicSectionBlock =
       cards: CinematicTripCard[];
       // Full-width yellow CTA under each trip (e.g. "Book this itinerary →").
       ctaLabel?: string;
+      // "row" (default) is the side-thumbnail card every other theme page
+      // ships. "stacked" is the mockup's packaged-product card: cover photo on
+      // top, included-in chips, a ruled price line and an ink CTA.
+      layout?: "row" | "stacked";
+      // "band" lays the section on a full-bleed wash of the page's accentSoft,
+      // which is how the mockup separates the priced plans from the free
+      // browsing above and below them.
+      tone?: "paper" | "band";
     }
   | {
       type: "gradient";
@@ -375,6 +409,8 @@ type CinematicSectionBlock =
       type: "stories";
       heading: CinematicHeading;
       cards: CinematicStoryCard[];
+      // Mono badge on the far end of the heading row, e.g. "★ 4.9".
+      badge?: string;
     }
   | {
       // Dark "Where to eat" scroller ("Where to come in from the cold").
@@ -383,24 +419,50 @@ type CinematicSectionBlock =
       cards: CinematicEatCard[];
       // Optional pill CTA at the foot of each card (e.g. "Add restaurant →").
       ctaLabel?: string;
+      // Keep the horizontal rail at every breakpoint instead of falling into a
+      // 5-up grid from md — the mockup's "Where to eat" scroller, which stays
+      // one row however many tables are on it.
+      rail?: boolean;
       // When true, every card becomes an "+ Add" save-toggle (see the `cards`
       // section note). `itemKind` defaults to "restaurant" here.
       selectable?: boolean;
       itemKind?: string;
+      // Noun for the resting Add pill: "table" renders "+ Add table" instead of
+      // a bare "+ Add", which is what a restaurant card wants when the tray is
+      // a long way further down the page. Ignored unless `selectable` is set;
+      // the saved state stays the shared "✓ Added".
+      addNoun?: string;
     }
   | {
       // "Your visa, handled" — one white card split in two: the heading, intro
-      // and a 2×2 grid of facts on the left, the country cards (each with its
-      // own "Check visa →") plus the primary CTA on the right.
+      // and a 2×2 grid of facts on the left, the country cards (each a
+      // "+ Add visa" save-toggle) on the right.
       type: "visa";
       heading: CinematicHeading;
       intro?: string;
+      // Only the countries THIS theme's trips actually cross — a Hokkaido page
+      // lists Japan, not the six other places someone might fly to instead.
+      // The right column sizes itself from the count (one or two go full-width
+      // and taller, three or more fall into two tracks), so a short, honest
+      // list costs nothing in layout.
       cards: CinematicVisaCard[];
       // Rendered as a 2×2 grid, so four reads best; three leaves a hole and
       // five wraps to an uneven third row.
       facts?: CinematicVisaFact[];
-      // Primary CTA under the country cards ("Start my Schengen visa →").
-      cta?: { label: string; href: string };
+      // The mockup's closing block under the country cards: a primary CTA, and
+      // beneath it a callback strip for the reader who can't work out which
+      // country to apply through — the one question a grid of countries can't
+      // answer. Opt-in, and deliberately NOT the older `cta` key: five pages
+      // still carry a `cta` from before that button was removed, and reviving
+      // it here would put it back on all of them.
+      footer?: {
+        cta?: { label: string; href: string };
+        callback?: {
+          title: string;
+          line?: string;
+          cta: { label: string; href: string };
+        };
+      };
       note?: ReactNode; // closing line under the facts
     }
   | {
@@ -514,6 +576,10 @@ export interface CinematicThemeConfig {
   // Theme colours. Omit for the neutral ink/yellow default.
   theme?: CinematicThemePalette;
   hero: CinematicHeroConfig;
+  // Content measure for every section, e.g. "1440px". Defaults to the shared
+  // 1240px. Set per page rather than globally so widening one theme can't
+  // reflow the other ten.
+  maxWidth?: string;
   sections: CinematicSection[];
   askBar?: CinematicAskBar;
 }

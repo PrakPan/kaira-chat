@@ -80,12 +80,19 @@ export const THEME_PALETTES: Record<string, CinematicThemePalette> = {
     page: "#f6faf7",
     heroTint: "#dff0e6",
   },
-  // /theme/filmy-getaways.
+  // /theme/filmy-getaways — black and white, the only theme with no colour of
+  // its own. `accent` is the shared ink rather than a pure #000 so the CTAs
+  // match the ink buttons the mockup already draws on the film and experience
+  // rails, and so black type on a card and a black button read as one family.
+  // Everything else is a neutral step off it: a grey wash for the resting
+  // "+ Add" pills and the fact tiles, a near-white page, a grey hero fade.
+  // The yellow in the ink panels is the site's, not the theme's, so it stays.
   "filmy-getaways": {
-    accent: "#a03352",
-    accentSoft: "#f8e5ec",
-    page: "#fbf5f7",
-    heroTint: "#f8e5ec",
+    accent: "#0b1220",
+    accentSoft: "#eceef1",
+    accentOn: "#fafaf5",
+    page: "#fafafa",
+    heroTint: "#e9eaee",
   },
 };
 

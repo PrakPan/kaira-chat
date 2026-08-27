@@ -474,6 +474,9 @@ const honeymoonConfig: CinematicThemeConfig = {
       heading: { lead: "Your visas,", accent: "handled" },
       intro:
         "The Maldives waives the visa entirely for Indian passports — 30 days on arrival, no paperwork. Bali and Greece are where the actual filing happens, and we do both for you before you fly.",
+      // The four islands this page actually sends people to. Italy and
+      // Switzerland used to sit here too — lovely honeymoons, but not the ones
+      // on this page.
       cards: [
         {
           country: "Maldives",
@@ -498,16 +501,6 @@ const honeymoonConfig: CinematicThemeConfig = {
           cities: "Mahé · Praslin · La Digue",
           href: VISA_HOME,
         },
-        {
-          country: "Italy",
-          cities: "Amalfi · Lake Como",
-          href: VISA_HOME,
-        },
-        {
-          country: "Switzerland",
-          cities: "Interlaken · Zermatt",
-          href: VISA_HOME,
-        },
       ],
       facts: [
         { label: "Fastest", value: "Maldives · 0d" },
@@ -515,7 +508,6 @@ const honeymoonConfig: CinematicThemeConfig = {
         { label: "We handle", value: "Docs + submission" },
         { label: "Embassy queue", value: "None for you" },
       ],
-      cta: { label: "Start my visas →", href: VISA_HOME },
       note:
         "Greece is a Schengen sticker — file it at least twenty days out. The Bali e-Visa lands in a few days. Nothing here needs an embassy queue on your side.",
     },
