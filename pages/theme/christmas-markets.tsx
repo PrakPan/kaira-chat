@@ -551,7 +551,6 @@ const christmasMarketsConfig: CinematicThemeConfig = {
         { label: "We handle", value: "Docs + submission" },
         { label: "Embassy fee", value: "€90 adult" },
       ],
-      cta: { label: "Start my Schengen visa →", href: VISA_HOME },
       note:
         "The €90 fee is the standard Schengen adult application fee. One visa lets you cross freely between all the countries on your route.",
     },

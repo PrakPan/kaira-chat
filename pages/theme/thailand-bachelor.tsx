@@ -30,7 +30,6 @@ import type { CinematicThemeConfig } from "../../components/theme/cinematic/type
 import { THEME_PALETTES } from "../../components/theme/cinematic/palettes";
 
 const VISA = "https://visa.thetarzanway.com/country";
-const VISA_HOME = "https://visa.thetarzanway.com/";
 const CHAT = "https://thetarzanway.com/chat";
 const PAGE = "/theme/thailand-bachelor";
 const THEME_SLUG = "thailand-bachelor";
@@ -587,37 +586,17 @@ const thailandBachelorConfig: CinematicThemeConfig = {
       heading: { lead: "Your visa,", accent: "handled" },
       intro:
         "Thailand ended visa-free entry for Indian passports. For a group, the e-Visa is the only sane route — one file per person, done before you fly, no cash counter at 2am.",
+      // Every night on this page is in Thailand, so that's the whole list. The
+      // extensions and stopovers it used to carry (Indonesia, Vietnam,
+      // Singapore, Maldives, Japan) were for trips this page isn't selling.
       cards: [
         {
           country: "Thailand",
           cities: "Tourist e-Visa · 60 days · applied before you fly",
           fee: "₹4,700",
+          line:
+            "One file per person — which is the whole problem with a group. Send the passports together and we run them as a batch, so you find out about the one bad photo now rather than the week before you fly.",
           href: `${VISA}/thailand-visa-online`,
-        },
-        {
-          country: "Indonesia",
-          cities: "e-Visa · Bali, if the group extends",
-          href: `${VISA}/indonesia-visa-online`,
-        },
-        {
-          country: "Vietnam",
-          cities: "e-Visa · Da Nang and Hoi An",
-          href: VISA_HOME,
-        },
-        {
-          country: "Singapore",
-          cities: "A night either side of the flight",
-          href: VISA_HOME,
-        },
-        {
-          country: "Maldives",
-          cities: "Free on arrival · a quiet few days after",
-          href: VISA_HOME,
-        },
-        {
-          country: "Japan",
-          cities: "The long-haul upgrade on the same route",
-          href: VISA_HOME,
         },
       ],
       facts: [
@@ -626,10 +605,6 @@ const thailandBachelorConfig: CinematicThemeConfig = {
         { label: "Entry", value: "Single" },
         { label: "Arrival card", value: "Free · 72h" },
       ],
-      cta: {
-        label: "Start my Thailand visa →",
-        href: `${VISA}/thailand-visa-online`,
-      },
       note:
         "Visa-on-arrival still exists — 15 days, ฿2,000 cash each, and a queue. Fine for a long weekend, wrong for eight people. Everyone also needs the free digital arrival card within 72 hours of landing; we send that link.",
     },

@@ -42,6 +42,7 @@ import type {
   CinematicStoryCard,
   CinematicEatCard,
   CinematicVisaCard,
+  CinematicSelectableItem,
   CinematicFeatureCta,
   CinematicHeroConfig,
   CinematicAskBar,
@@ -121,9 +122,29 @@ const cardChrome = (onSand?: boolean): React.CSSProperties => ({
   border: `1px solid ${onSand ? "#e6e3d6" : BORDER}`,
 });
 
+// The mockup's scroller cards carry a warmer hairline than the grid ones and a
+// low gold lift under them, so a rail reads as a row of things you push along
+// rather than a block of tiles. Only sections that opt into `rail` get it.
+const railCardChrome: React.CSSProperties = {
+  background: "#ffffff",
+  border: "1px solid #f0dfc0",
+  boxShadow: "0 8px 20px -14px rgba(184,140,20,0.35)",
+};
+
 const DARK_CARD: React.CSSProperties = {
   background: "rgba(255,255,255,0.04)",
   border: "1px solid rgba(255,255,255,0.08)",
+};
+
+// The mono badge over a card image on a DARK card — the frosted white one
+// below disappears against an ink panel, so this inverts it.
+const IMAGE_BADGE_DARK: React.CSSProperties = {
+  background: "rgba(11,18,32,0.82)",
+  backdropFilter: "blur(10px)",
+  WebkitBackdropFilter: "blur(10px)",
+  color: PAPER,
+  fontSize: 9.5,
+  pointerEvents: "none",
 };
 
 // The mono badge that floats over a card image (city, nights, "2h from
@@ -173,7 +194,10 @@ const addCtaStyle = (
       };
 };
 
-const addCtaLabel = (selected: boolean) => (selected ? "✓ Added" : "+ Add");
+// "+ Add" by default; pass a noun where the card needs to say what it adds
+// ("+ Add visa" on the country cards, which sit far from the rest of the tray).
+const addCtaLabel = (selected: boolean, noun?: string) =>
+  selected ? "✓ Added" : noun ? `+ Add ${noun}` : "+ Add";
 
 // Primary card action ("Create this plan →", "Book this itinerary →") — an
 // accent-filled pill that spans the card foot.
@@ -195,6 +219,11 @@ const CinematicStyles = () => (
       .ctl-h { font-family: 'Inter', sans-serif; font-weight: 800; letter-spacing: -0.03em; color: ${INK}; margin: 0; }
       .ctl-h-light { color: ${PAPER}; }
       .ctl-h-yellow { color: ${YELLOW}; }
+      .ctl-eyebrow-yellow { color: ${YELLOW}; }
+      /* Shared measure for every section. The gutter stays put; only the cap
+         moves, so a wider page gains content width rather than losing padding. */
+      .ctl-container { max-width: var(--ctl-container, 1240px); padding-left: 20px; padding-right: 20px; }
+      @media (min-width: 768px) { .ctl-container { padding-left: 28px; padding-right: 28px; } }
       .ctl-card { transition: transform .25s cubic-bezier(.2,.7,.3,1), box-shadow .25s cubic-bezier(.2,.7,.3,1); }
       .ctl-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px -10px rgba(11,18,32,0.15); }
       .ctl-press { transition: transform .15s cubic-bezier(.2,.7,.3,1); }
@@ -273,13 +302,14 @@ const CinematicStyles = () => (
 
 // ── Layout container — every section shares this so headings and card rows
 // line up to the same left edge on all breakpoints (20px mobile / 28px md). ──
+// The cap is a CSS variable rather than a literal so one page can run wider
+// than the shared 1240 without every other theme page moving with it — see
+// `maxWidth` on CinematicThemeConfig, which sets --ctl-container on .ctl-root.
 const Container: React.FC<{ children: React.ReactNode; className?: string }> = ({
   children,
   className,
 }) => (
-  <div
-    className={`w-full max-w-[1240px] mx-auto px-[20px] md:px-[28px] ${className ?? ""}`}
-  >
+  <div className={`w-full ctl-container mx-auto ${className ?? ""}`}>
     {children}
   </div>
 );
@@ -356,9 +386,16 @@ const SkeletonImage: React.FC<{
 const Heading: React.FC<{
   heading: CinematicHeading;
   className?: string;
-}> = ({ heading, className }) => (
+  // Recolours the mono eyebrow — the ink panel takes a yellow one, where the
+  // default faint grey all but disappears.
+  eyebrowClassName?: string;
+}> = ({ heading, className, eyebrowClassName }) => (
   <div>
-    {heading.eyebrow && <div className="ctl-mono mb-[4px]">{heading.eyebrow}</div>}
+    {heading.eyebrow && (
+      <div className={`ctl-mono mb-[4px] ${eyebrowClassName ?? ""}`}>
+        {heading.eyebrow}
+      </div>
+    )}
     <h2 className={`ctl-h ${className ?? ""}`}>
       {heading.lead}
       {heading.accent ? (
@@ -624,8 +661,16 @@ const PromptCard: React.FC<{
   // the card unless it carries an explicit one.
   sectionSelectable?: boolean;
   itemKind?: string;
+  // Noun for the resting Add pill — "activity" renders "+ Add activity".
+  addNoun?: string;
   // The card sits on a sand-toned band, so it needs the warmer hairline.
   onSand?: boolean;
+  // The card sits on the ink panel: translucent chrome, light type, an inverted
+  // image badge and a yellow CTA, since the accent fill vanishes against ink.
+  onDark?: boolean;
+  // The section keeps its rail from md up, so the card holds a fixed width
+  // there instead of stretching to a grid track.
+  inRail?: boolean;
 }> = ({
   card,
   onSelectPrompt,
@@ -635,7 +680,10 @@ const PromptCard: React.FC<{
   priority,
   sectionSelectable,
   itemKind,
+  addNoun,
   onSand,
+  onDark,
+  inRail,
 }) => {
   const selection = useThemeSelection();
   const palette = usePalette();
@@ -673,15 +721,23 @@ const PromptCard: React.FC<{
         onSelectPrompt(card.prompt, { source: "card", label: card.name });
     }}
     aria-pressed={selectable ? selected : undefined}
-    className="ctl-card group flex flex-col text-left rounded-[18px] overflow-hidden cursor-pointer w-[262px] md:w-auto shrink-0 md:shrink"
+    className={`ctl-card group flex flex-col text-left rounded-[18px] overflow-hidden cursor-pointer w-[262px] shrink-0 ${
+      inRail ? "md:w-[288px]" : "md:w-auto md:shrink"
+    }`}
     style={{
-      ...cardChrome(onSand),
+      ...(onDark
+        ? DARK_CARD
+        : inRail
+          ? railCardChrome
+          : cardChrome(onSand)),
       ...(selected ? { borderColor: palette.accent } : {}),
     }}
   >
     <div
-      className="relative h-[148px] md:h-[160px] overflow-hidden"
-      style={{ background: SAND }}
+      className={`relative overflow-hidden ${
+        onDark ? "h-[176px] md:h-[220px]" : "h-[148px] md:h-[160px]"
+      }`}
+      style={{ background: onDark ? "rgba(255,255,255,0.04)" : SAND }}
     >
       <SkeletonImage
         src={card.image}
@@ -694,23 +750,29 @@ const PromptCard: React.FC<{
       {card.tag && (
         <div
           className="ctl-mono absolute top-[10px] left-[10px] px-[8px] py-[3px] rounded-[6px]"
-          style={IMAGE_BADGE}
+          style={onDark ? IMAGE_BADGE_DARK : IMAGE_BADGE}
         >
           {card.tag}
         </div>
       )}
     </div>
-    <div className="flex flex-col flex-1 px-[17px] py-[16px] md:px-[18px] md:py-[17px]">
+    <div
+      className={`flex flex-col flex-1 px-[17px] py-[16px] ${
+        onDark ? "md:px-[22px] md:py-[22px]" : "md:px-[18px] md:py-[17px]"
+      }`}
+    >
       <div
-        className="text-[15px] md:text-[16.5px] font-bold leading-[1.3]"
-        style={{ color: INK, letterSpacing: "-0.01em" }}
+        className={`font-bold leading-[1.3] ${
+          onDark ? "text-[16px] md:text-[18px]" : "text-[15px] md:text-[16.5px]"
+        }`}
+        style={{ color: onDark ? PAPER : INK, letterSpacing: "-0.01em" }}
       >
         {card.name}
       </div>
       {card.line && (
         <div
           className="text-[12.5px] md:text-[13.5px] leading-[1.5] mt-[8px] flex-1"
-          style={{ color: MUTED }}
+          style={{ color: onDark ? FAINT : MUTED }}
         >
           {card.line}
         </div>
@@ -732,13 +794,15 @@ const PromptCard: React.FC<{
             className="block w-full text-center rounded-full text-[12.5px] md:text-[13px] font-bold px-[14px] py-[10px]"
             style={
               selectable
-                ? addCtaStyle(palette, selected)
-                : ctaTone === "dark"
-                  ? { background: INK, color: PAPER, border: "none" }
-                  : primaryCtaStyle(palette)
+                ? addCtaStyle(palette, selected, onDark)
+                : onDark
+                  ? { background: YELLOW, color: INK, border: "none" }
+                  : ctaTone === "dark"
+                    ? { background: INK, color: PAPER, border: "none" }
+                    : primaryCtaStyle(palette)
             }
           >
-            {selectable ? addCtaLabel(selected) : ctaLabel}
+            {selectable ? addCtaLabel(selected, addNoun) : ctaLabel}
           </span>
         </div>
       )}
@@ -754,41 +818,114 @@ const CardsSection: React.FC<{
   // True for the first section on the page — its first card is the LCP image
   // on mobile (the hero collage is desktop-only), so it loads eagerly.
   first?: boolean;
-}> = ({ section, onSelectPrompt, onSelectActivity, first }) => (
-  <section
-    className={`pt-[30px] md:pt-[56px] ${
-      section.tone === "sand" ? "pb-[30px] md:pb-[52px]" : ""
-    }`}
-    style={section.tone === "sand" ? { background: SAND } : undefined}
-  >
-    <Container>
-      <div className="flex items-end justify-between gap-[16px]">
-        <Heading heading={section.heading} className="text-[22px] md:text-[34px]" />
-        {section.cta && (
-          <div className="max-ph:hidden">
-            <SectionCta cta={section.cta} onSelectPrompt={onSelectPrompt} />
-          </div>
+}> = ({ section, onSelectPrompt, onSelectActivity, first }) => {
+  const onDark = section.tone === "dark";
+  // `rail` keeps the horizontal scroller at every width. Without it the row
+  // becomes a 3-up grid from md, which is right for a five-card row and wrong
+  // for an eleven-card one — that stacks into four full-height bands and stops
+  // reading as a set of options you scan across.
+  const rail = !!section.rail;
+  const cards = (
+    <div
+      className={`ctl-scroll ctl-rail flex gap-[12px] overflow-x-auto pt-[4px] pb-[10px] ${
+        rail
+          ? "md:gap-[16px] mt-[12px] md:mt-[22px]"
+          : `md:grid md:gap-[20px] mt-[12px] md:mt-[24px] md:overflow-visible ${
+              // The ink panel is a 2-up in the mockup, and it holds two cards.
+              // Three tracks would leave a third of the panel empty beside them.
+              onDark ? "md:grid-cols-2" : "md:grid-cols-3"
+            }`
+      }`}
+    >
+      {section.cards.map((card, i) => (
+        <PromptCard
+          key={`card-${i}`}
+          card={card}
+          onSelectPrompt={onSelectPrompt}
+          onSelectActivity={onSelectActivity}
+          ctaLabel={section.ctaLabel}
+          ctaTone={section.ctaTone}
+          sectionSelectable={section.selectable}
+          itemKind={section.itemKind}
+          addNoun={section.addNoun}
+          onSand={section.tone === "sand"}
+          onDark={onDark}
+          inRail={rail}
+          priority={first && i === 0}
+        />
+      ))}
+    </div>
+  );
+
+  const header = (
+    <div className="flex items-end justify-between gap-[16px]">
+      <div className="max-w-[620px]">
+        <Heading
+          heading={section.heading}
+          className={`text-[22px] md:text-[34px] ${onDark ? "ctl-h-yellow" : ""}`}
+          eyebrowClassName={onDark ? "ctl-eyebrow-yellow" : undefined}
+        />
+        {section.intro && (
+          <p
+            className="text-[13.5px] md:text-[15px] leading-[1.6] mt-[12px] md:mt-[14px]"
+            style={{ color: FAINT }}
+          >
+            {section.intro}
+          </p>
         )}
       </div>
-      <div className="ctl-scroll ctl-rail flex md:grid md:grid-cols-3 gap-[12px] md:gap-[20px] mt-[12px] md:mt-[24px] overflow-x-auto md:overflow-visible pt-[4px] pb-[10px]">
-        {section.cards.map((card, i) => (
-          <PromptCard
-            key={`card-${i}`}
-            card={card}
-            onSelectPrompt={onSelectPrompt}
-            onSelectActivity={onSelectActivity}
-            ctaLabel={section.ctaLabel}
-            ctaTone={section.ctaTone}
-            sectionSelectable={section.selectable}
-            itemKind={section.itemKind}
-            onSand={section.tone === "sand"}
-            priority={first && i === 0}
-          />
-        ))}
-      </div>
-    </Container>
-  </section>
-);
+      {section.cta && (
+        <div className="max-ph:hidden">
+          <SectionCta cta={section.cta} onSelectPrompt={onSelectPrompt} />
+        </div>
+      )}
+    </div>
+  );
+
+  // The ink tone is an inset panel rather than a full-bleed band: it sits
+  // inside the page gutter with its own radius, so the paper still frames it.
+  if (onDark)
+    return (
+      <section className="pt-[30px] md:pt-[56px]">
+        <Container>
+          <div
+            className="relative overflow-hidden rounded-[20px] md:rounded-[28px] px-[18px] py-[30px] md:px-[48px] md:py-[56px]"
+            style={{ background: DARK }}
+          >
+            <div
+              className="absolute pointer-events-none"
+              style={{
+                top: -120,
+                right: -60,
+                width: 460,
+                height: 460,
+                background:
+                  "radial-gradient(circle, rgba(247,231,0,0.12), transparent 70%)",
+              }}
+            />
+            <div className="relative">
+              {header}
+              {cards}
+            </div>
+          </div>
+        </Container>
+      </section>
+    );
+
+  return (
+    <section
+      className={`pt-[30px] md:pt-[56px] ${
+        section.tone === "sand" ? "pb-[30px] md:pb-[52px]" : ""
+      }`}
+      style={section.tone === "sand" ? { background: SAND } : undefined}
+    >
+      <Container>
+        {header}
+        {cards}
+      </Container>
+    </section>
+  );
+};
 
 // ── Trip card ("Step into the scene") ──────────────────────────────────────
 // Mobile: full-width stacked rows, 104px thumb. Desktop: 3-col grid, 112px
@@ -800,6 +937,151 @@ const CardsSection: React.FC<{
 // the audience half of longer ones ("Family · ages 6+ · 8N") survive intact.
 const tagWithoutNights = (tag: string) =>
   tag.replace(/\s*·\s*\d+\s*N\s*$/i, "").trim() || tag;
+
+// A packaged price is written either as "₹2,95,000" or "₹2,95,000 / person".
+// The stacked card prints the unit itself, in mono, so a price that already
+// carries one is split rather than left to say it twice.
+const PER_PERSON = /\s*[/·]\s*(per\s+)?person\s*$/i;
+const splitPrice = (price: string) => ({
+  amount: price.replace(PER_PERSON, "").trim(),
+  unit: PER_PERSON.test(price) ? "/ person" : undefined,
+});
+
+// The mockup's packaged-trip card: cover photo on top, then the meta, the
+// what's-included chips, a ruled price line and the CTA. Distinct from the
+// default row card (side thumbnail) because it is selling a fixed product
+// rather than offering a shape to start from.
+const StackedTripCard: React.FC<{
+  card: CinematicTripCard;
+  onSelectPrompt: SelectPrompt;
+  ctaLabel?: string;
+}> = ({ card, onSelectPrompt, ctaLabel }) => {
+  const router = useRouter();
+  const palette = usePalette();
+  const price = card.price ? splitPrice(card.price) : null;
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        if (card.href) router.push(card.href);
+        else if (card.prompt)
+          onSelectPrompt(card.prompt, { source: "card", label: card.name });
+      }}
+      className="ctl-card text-left rounded-[18px] overflow-hidden flex flex-col h-full cursor-pointer w-[272px] md:w-auto shrink-0 md:shrink"
+      style={cardChrome()}
+    >
+      <div
+        className="relative h-[150px] md:h-[168px] overflow-hidden"
+        style={{ background: SAND }}
+      >
+        {card.image ? (
+          <SkeletonImage
+            src={card.image}
+            alt={card.name}
+            objectPosition={card.objectPosition}
+          />
+        ) : (
+          <span
+            className="absolute inset-0 flex items-center justify-center text-[34px]"
+            style={{ background: card.gradient ?? SAND }}
+          >
+            {card.emoji}
+          </span>
+        )}
+        {card.tag && (
+          <div
+            className="ctl-mono absolute top-[10px] left-[10px] px-[8px] py-[3px] rounded-[6px]"
+            style={IMAGE_BADGE}
+          >
+            {tagWithoutNights(card.tag)}
+          </div>
+        )}
+      </div>
+      <div className="flex flex-col flex-1 px-[17px] py-[16px] md:px-[20px] md:py-[20px]">
+        {card.nights && (
+          <div className="ctl-mono" style={{ fontSize: 9.5 }}>
+            {card.nights}
+          </div>
+        )}
+        <div
+          className="text-[15.5px] md:text-[17px] font-bold mt-[8px] leading-[1.25]"
+          style={{ color: INK, letterSpacing: "-0.02em" }}
+        >
+          {card.name}
+        </div>
+        {card.line && (
+          <div
+            className="text-[12.5px] md:text-[13px] leading-[1.5] mt-[8px] flex-1"
+            style={{ color: MUTED }}
+          >
+            {card.line}
+          </div>
+        )}
+        {card.includes && card.includes.length > 0 && (
+          <div className="flex flex-wrap gap-[6px] mt-[14px]">
+            {card.includes.map((inc, i) => (
+              <span
+                key={`inc-${i}`}
+                className="ctl-mono px-[9px] py-[5px] rounded-[6px]"
+                style={{
+                  background: palette.accentSoft,
+                  color: palette.accent,
+                  fontSize: 8.5,
+                  fontWeight: 600,
+                }}
+              >
+                {inc}
+              </span>
+            ))}
+          </div>
+        )}
+        {price && (
+          <div
+            className="flex items-baseline gap-[8px] mt-[16px] pt-[14px] md:pt-[16px]"
+            style={{ borderTop: `1px solid ${BORDER}` }}
+          >
+            <span className="ctl-mono" style={{ fontSize: 9 }}>
+              From
+            </span>
+            <span
+              className="ctl-h text-[18px] md:text-[20px]"
+              style={{ letterSpacing: "-0.03em" }}
+            >
+              {price.amount}
+            </span>
+            {price.unit && (
+              <span className="ctl-mono" style={{ fontSize: 9 }}>
+                {price.unit}
+              </span>
+            )}
+          </div>
+        )}
+        {ctaLabel && (
+          <span
+            className="block w-full text-center rounded-full text-[13px] font-bold px-[14px] py-[12px] mt-[14px]"
+            style={{ background: INK, color: PAPER, border: "none" }}
+          >
+            {ctaLabel}
+          </span>
+        )}
+        {card.urgent && (
+          <div className="flex items-start gap-[7px] mt-[10px]">
+            <span
+              className="w-[6px] h-[6px] rounded-full shrink-0 mt-[4px]"
+              style={{ background: RED }}
+            />
+            <span
+              className="ctl-mono"
+              style={{ color: RED, fontSize: 9, lineHeight: 1.4 }}
+            >
+              {card.urgent}
+            </span>
+          </div>
+        )}
+      </div>
+    </button>
+  );
+};
 
 const TripCard: React.FC<{
   card: CinematicTripCard;
@@ -921,23 +1203,46 @@ const TripCard: React.FC<{
 const TripsSection: React.FC<{
   section: Extract<CinematicSection, { type: "trips" }>;
   onSelectPrompt: SelectPrompt;
-}> = ({ section, onSelectPrompt }) => (
-  <section className="pt-[30px] md:pt-[56px]">
-    <Container>
-      <Heading heading={section.heading} className="text-[22px] md:text-[34px]" />
-      <div className="flex flex-col md:grid md:grid-cols-3 gap-[10px] md:gap-[16px] mt-[14px] md:mt-[24px]">
-        {section.cards.map((card, i) => (
-          <TripCard
-            key={`trip-${i}`}
-            card={card}
-            onSelectPrompt={onSelectPrompt}
-            ctaLabel={section.ctaLabel}
-          />
-        ))}
-      </div>
-    </Container>
-  </section>
-);
+}> = ({ section, onSelectPrompt }) => {
+  const palette = usePalette();
+  const stacked = section.layout === "stacked";
+  const band = section.tone === "band";
+  return (
+    <section
+      className={`pt-[30px] md:pt-[56px] ${band ? "pb-[30px] md:pb-[56px] md:mt-[56px]" : ""}`}
+      style={band ? { background: palette.accentSoft } : undefined}
+    >
+      <Container>
+        <Heading heading={section.heading} className="text-[22px] md:text-[34px]" />
+        <div
+          className={`gap-[10px] md:gap-[16px] mt-[14px] md:mt-[24px] ${
+            stacked
+              ? "ctl-scroll ctl-rail flex overflow-x-auto md:grid md:grid-cols-3 md:overflow-visible pt-[4px] pb-[10px]"
+              : "flex flex-col md:grid md:grid-cols-3"
+          }`}
+        >
+          {section.cards.map((card, i) =>
+            stacked ? (
+              <StackedTripCard
+                key={`trip-${i}`}
+                card={card}
+                onSelectPrompt={onSelectPrompt}
+                ctaLabel={section.ctaLabel}
+              />
+            ) : (
+              <TripCard
+                key={`trip-${i}`}
+                card={card}
+                onSelectPrompt={onSelectPrompt}
+                ctaLabel={section.ctaLabel}
+              />
+            ),
+          )}
+        </div>
+      </Container>
+    </section>
+  );
+};
 
 // ── Gradient tile (Other themes / Destinations) ────────────────────────────
 const GradientCard: React.FC<{
@@ -1508,7 +1813,14 @@ const StoriesSection: React.FC<{
   return (
   <section className="pt-[34px] md:pt-[56px]">
     <Container>
-      <Heading heading={section.heading} className="text-[22px] md:text-[34px]" />
+      <div className="flex items-baseline justify-between gap-[12px]">
+        <Heading heading={section.heading} className="text-[22px] md:text-[34px]" />
+        {section.badge && (
+          <span className="ctl-mono shrink-0 whitespace-nowrap">
+            {section.badge}
+          </span>
+        )}
+      </div>
       <div className="ctl-scroll ctl-rail flex md:grid md:grid-cols-3 gap-[12px] md:gap-[20px] mt-[16px] md:mt-[24px] overflow-x-auto md:overflow-visible pt-[4px] pb-[10px]">
         {section.cards.map((card: CinematicStoryCard, i) => (
           <button
@@ -1645,7 +1957,11 @@ const EatsSection: React.FC<{
         heading={section.heading}
         className="text-[22px] md:text-[34px] ctl-h-light"
       />
-      <div className="ctl-scroll ctl-rail flex md:grid md:grid-cols-5 gap-[12px] md:gap-[16px] mt-[14px] md:mt-[24px] overflow-x-auto md:overflow-visible pt-[4px] pb-[10px]">
+      <div
+        className={`ctl-scroll ctl-rail flex gap-[12px] md:gap-[16px] mt-[14px] md:mt-[24px] overflow-x-auto pt-[4px] pb-[10px] ${
+          section.rail ? "" : "md:grid md:grid-cols-5 md:overflow-visible"
+        }`}
+      >
         {section.cards.map((card, i) => {
           const hrefId = drawerIdFromHref(card.href);
           const item =
@@ -1680,7 +1996,9 @@ const EatsSection: React.FC<{
                 });
             }}
             aria-pressed={selectable ? selected : undefined}
-            className="ctl-card text-left rounded-[18px] overflow-hidden cursor-pointer w-[224px] md:w-auto shrink-0 md:shrink flex flex-col"
+            className={`ctl-card text-left rounded-[18px] overflow-hidden cursor-pointer w-[224px] shrink-0 flex flex-col ${
+              section.rail ? "md:w-[252px]" : "md:w-auto md:shrink"
+            }`}
             style={{
               ...DARK_CARD,
               ...(selected
@@ -1749,7 +2067,9 @@ const EatsSection: React.FC<{
                     : addCtaStyle(palette, false, true)
                 }
               >
-                {selectable ? addCtaLabel(selected) : section.ctaLabel}
+                {selectable
+                  ? addCtaLabel(selected, section.addNoun)
+                  : section.ctaLabel}
               </span>
             )}
           </div>
@@ -1764,19 +2084,33 @@ const EatsSection: React.FC<{
 
 // ── Visa (light — "Your visa, handled") ─────────────────────────────────────
 // One white card split in two from md up: the heading, intro and a 2×2 grid of
-// facts on the left; the country cards and the primary CTA on the right. On a
-// phone it collapses to a single column and the countries become a horizontal
-// carousel — the rail the dark version used.
+// facts on the left; the country cards on the right. On a phone it collapses to
+// a single column and a long country list becomes a horizontal carousel — the
+// rail the dark version used.
+//
+// The countries listed are the theme's OWN — the ones its trips actually cross
+// — so the list is short by design, and the layout is sized from the count
+// rather than assuming a full 2×2: one or two countries take the whole column
+// width, three or more fall into two tracks, and `md:flex-1` + `auto-rows-fr`
+// hand the column's height to the rows so the cards always finish level with
+// the facts beside them instead of trailing off halfway down.
+//
+// Each card is a "+ Add visa" save-toggle like every other element on the page,
+// so a visa joins the trip in the tray instead of sending the reader off-site
+// mid-scroll — which is also why there's no "Start my visa" CTA under the list.
 //
 // Every colour that isn't ink comes from the page's own palette: fact tiles
-// take `accentSoft`, their labels and every CTA take `accent`/`accentOn`, so a
-// teal page and a purple one share this layout without either hard-coding a
-// colour.
+// take `accentSoft`, their labels and every Add pill take `accent`/`accentOn`,
+// so a teal page and a purple one share this layout without either hard-coding
+// a colour.
 const VisaSection: React.FC<{
   section: Extract<CinematicSection, { type: "visa" }>;
 }> = ({ section }) => {
   const palette = usePalette();
+  const selection = useThemeSelection();
   const facts = section.facts ?? [];
+  const cards = section.cards ?? [];
+  const count = cards.length;
   // These lists are as long as the trip makes them — one country for Hokkaido,
   // five for the Christmas markets — so the grid is sized from the count rather
   // than assuming four. A lone card takes the full column instead of leaving a
@@ -1785,6 +2119,42 @@ const VisaSection: React.FC<{
   const cols = (n: number) => (n === 1 ? "md:grid-cols-1" : "md:grid-cols-2");
   const spanLast = (n: number, i: number) =>
     n > 1 && n % 2 === 1 && i === n - 1 ? "md:col-span-2" : "";
+  // One or two countries get the full column width and a roomier card — a
+  // 210px chip marooned in half of a two-track grid reads like something
+  // failed to load. They also stack on the phone rather than becoming a rail
+  // there's nothing to scroll through.
+  const roomy = count > 0 && count <= 2;
+  const solo = count === 1;
+  // Type scales with how much column each card owns. A lone visa is the only
+  // thing in its half of the panel, so it's set like a heading and carries a
+  // supporting line; a pair splits the column and takes a step down; three or
+  // more stay compact chips with no room for prose.
+  const scale = solo
+    ? {
+        pad: "p-[18px] md:p-[28px]",
+        radius: "rounded-[18px]",
+        country: "text-[20px] md:text-[26px]",
+        fee: 20,
+        cities: 10,
+        line: "text-[13.5px] md:text-[15px]",
+      }
+    : roomy
+      ? {
+          pad: "p-[16px] md:p-[22px]",
+          radius: "rounded-[18px]",
+          country: "text-[16px] md:text-[20px]",
+          fee: 17,
+          cities: 10,
+          line: "text-[13px] md:text-[14px]",
+        }
+      : {
+          pad: "p-[14px] md:p-[18px]",
+          radius: "rounded-[16px]",
+          country: "text-[14.5px]",
+          fee: 14,
+          cities: 9,
+          line: "",
+        };
   const ctaStyle: React.CSSProperties = {
     background: palette.accent,
     color: palette.accentOn,
@@ -1794,9 +2164,11 @@ const VisaSection: React.FC<{
       <Container>
         <div
           // items-stretch (not start) so the right column runs the full height
-          // of the left one and its CTA can sit on the bottom edge, rather than
-          // both columns ending wherever their own content does.
-          className="rounded-[20px] md:rounded-[28px] p-[18px] md:p-[40px] lg:p-[48px] grid gap-[24px] md:gap-[40px] md:grid-cols-2 items-stretch"
+          // of the left one and its cards can share that height between them,
+          // rather than both columns ending wherever their own content does.
+          className={`rounded-[20px] md:rounded-[28px] p-[18px] md:p-[40px] lg:p-[48px] grid gap-[24px] md:gap-[40px] items-stretch ${
+            count > 0 ? "md:grid-cols-2" : ""
+          }`}
           style={{
             ...cardChrome(),
             boxShadow: "0 8px 20px -16px rgba(11,18,32,0.14)",
@@ -1865,92 +2237,241 @@ const VisaSection: React.FC<{
             )}
           </div>
 
-          {/* ── Right: countries, primary CTA ── */}
-          {/* justify-between so the CTA settles on the bottom edge of the card,
-              level with the end of the left column, instead of floating right
-              under a short country list. */}
-          <div className="min-w-0 flex flex-col gap-[12px] md:justify-between">
-            {/* Carousel on phones, a grid from md — sized by the count, so
-                Thailand's single card fills the column rather than sitting in
-                one half of a 2-up grid with a hole beside it. */}
+          {/* ── Right: the theme's own countries ── */}
+          {count > 0 && (
             <div
-              className={`ctl-scroll ctl-rail flex gap-[10px] overflow-x-auto md:grid md:gap-[12px] md:overflow-visible ${cols(
-                section.cards.length,
-              )}`}
+              // One or two cards keep their own height and sit centred against
+              // the facts — stretching them to a 440px column was all air. From
+              // three up the rows share the column height instead (auto-rows-fr
+              // below), because that many cards genuinely fill it.
+              className={`min-w-0 flex flex-col ${
+                roomy ? "md:justify-center" : ""
+              }`}
             >
-              {section.cards.map((card: CinematicVisaCard, i) => (
-                <div
-                  key={`visa-${i}`}
+              {/* Stacked at every width for one or two countries; a two-track
+                  grid from md for three or more, with the phone rail only where
+                  the list is long enough to be worth scrolling. */}
+              <div
+                className={
+                  roomy
+                    ? "grid grid-cols-1 gap-[12px] md:gap-[16px]"
+                    : `ctl-scroll ctl-rail flex gap-[10px] overflow-x-auto md:grid md:gap-[12px] md:overflow-visible md:flex-1 md:auto-rows-fr ${cols(
+                        count,
+                      )}`
+                }
+              >
+                {cards.map((card: CinematicVisaCard, i) => {
+                  // Saved like any other element on the page — kind "visa", so
+                  // the tray tags the row VISA and the brief reads "Switzerland
+                  // (visa)" alongside the places and the restaurants.
+                  const item: CinematicSelectableItem = {
+                    kind: "visa",
+                    label: card.country,
+                    short: card.country,
+                  };
+                  const selectable = !!selection;
+                  const selected = selectable
+                    ? selection!.isSelected(item)
+                    : false;
                   // flex basis rather than a fixed width: five countries hold
-                  // 210px each and scroll, while a page with a single visa
-                  // grows that card to the full width instead of leaving dead
-                  // space beside it. Ignored once the grid takes over.
-                  className={`flex-[1_0_210px] md:flex-none box-border flex flex-col rounded-[16px] p-[14px] md:p-[18px] ${spanLast(
-                    section.cards.length,
-                    i,
-                  )}`}
-                  style={{ background: SAND }}
-                >
-                  <div className="flex items-baseline justify-between gap-[8px]">
-                    <span
-                      className="text-[14.5px] font-bold leading-[1.25]"
-                      style={{ color: INK }}
+                  // 210px each and scroll, while a shorter list grows to the
+                  // full column instead of leaving dead space beside it.
+                  // Ignored once the grid takes over.
+                  const cardClass = roomy
+                    ? `box-border flex flex-col ${scale.radius} ${scale.pad}`
+                    : `flex-[1_0_210px] md:flex-none box-border flex flex-col ${
+                        scale.radius
+                      } ${scale.pad} ${spanLast(count, i)}`;
+                  const cardStyle: React.CSSProperties = {
+                    // No fill: the cards sit on the white panel behind a
+                    // hairline, like every other card on the page. The line
+                    // turns accent once the visa is saved.
+                    ...cardChrome(),
+                    ...(selected ? { borderColor: palette.accent } : {}),
+                  };
+                  const inner = (
+                    <>
+                      <div className="flex items-baseline justify-between gap-[8px]">
+                        <span
+                          className={`font-bold leading-[1.2] ${scale.country}`}
+                          style={{ color: INK, letterSpacing: "-0.02em" }}
+                        >
+                          {card.country}
+                        </span>
+                        {card.fee && (
+                          <span
+                            className="ctl-mono shrink-0"
+                            style={{
+                              fontSize: scale.fee,
+                              fontWeight: 600,
+                              color: INK,
+                              letterSpacing: "0.02em",
+                            }}
+                          >
+                            {card.fee}
+                          </span>
+                        )}
+                      </div>
+                      {card.cities && (
+                        <div
+                          className="ctl-mono mt-[4px]"
+                          style={{ fontSize: scale.cities, lineHeight: 1.5 }}
+                        >
+                          {card.cities}
+                        </div>
+                      )}
+                      {/* The supporting line only renders where there's room
+                          for it — one or two countries leave the card most of
+                          a column to fill, and a bare name + fee floating in
+                          that much space is what made the block read empty.
+                          Three or more are chips; they have no room and the
+                          pages don't write one. */}
+                      {card.line && scale.line && (
+                        <p
+                          className={`leading-[1.6] mt-[10px] md:mt-[12px] ${scale.line}`}
+                          style={{ color: MUTED }}
+                        >
+                          {card.line}
+                        </p>
+                      )}
+                      {/* mt-auto: on a card taller than its text the pill sits
+                          on the bottom edge rather than floating mid-card with
+                          a hole beneath it.
+
+                          The pill always takes the card's width. Short lists
+                          used to cap it at 300px so it couldn't read as a
+                          banner, but that left a stub of a button under
+                          full-width copy — and every other Add pill on the page
+                          spans its card, so the cap made the visa cards the
+                          odd ones out. Only the padding and type size change
+                          with the count now (see `scale`). */}
+                      <div className="mt-auto pt-[14px] md:pt-[18px]">
+                        <span
+                          className={`block box-border w-full text-center rounded-full font-bold ${
+                            roomy
+                              ? "py-[11px] px-[12px] text-[13px]"
+                              : "py-[9px] px-[10px] text-[12px]"
+                          }`}
+                          style={
+                            selectable
+                              ? addCtaStyle(palette, selected)
+                              : ctaStyle
+                          }
+                        >
+                          {selectable
+                            ? addCtaLabel(selected, "visa")
+                            : "Check visa →"}
+                        </span>
+                      </div>
+                    </>
+                  );
+                  // With a selection on the page the whole card is the toggle,
+                  // pill included — one target, one outcome. A page that never
+                  // opted into selection keeps the old behaviour: the card is
+                  // the link to that country's visa page.
+                  return selectable ? (
+                    <button
+                      key={`visa-${i}`}
+                      type="button"
+                      onClick={() => selection!.toggle(item)}
+                      aria-pressed={selected}
+                      className={`ctl-card text-left cursor-pointer ${cardClass}`}
+                      style={cardStyle}
                     >
-                      {card.country}
-                    </span>
-                    {card.fee && (
-                      <span
-                        className="ctl-mono shrink-0"
-                        style={{
-                          fontSize: 14,
-                          fontWeight: 600,
-                          color: INK,
-                          letterSpacing: "0.02em",
-                        }}
-                      >
-                        {card.fee}
-                      </span>
-                    )}
-                  </div>
-                  {card.cities && (
-                    <div
-                      className="ctl-mono mt-[4px]"
-                      style={{ fontSize: 9, lineHeight: 1.5 }}
-                    >
-                      {card.cities}
-                    </div>
-                  )}
-                  {card.href && (
+                      {inner}
+                    </button>
+                  ) : (
                     <a
+                      key={`visa-${i}`}
                       href={card.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="block box-border text-center mt-[14px] md:mt-[16px] rounded-full py-[9px] px-[10px] text-[12px] font-bold no-underline"
-                      style={ctaStyle}
+                      className={`ctl-card no-underline ${cardClass}`}
+                      style={cardStyle}
                     >
-                      Check visa →
+                      {inner}
+                    </a>
+                  );
+                })}
+              </div>
+              {section.footer && (
+                <div className="mt-[14px] md:mt-[18px] flex flex-col gap-[12px]">
+                  {section.footer.cta && (
+                    <a
+                      href={section.footer.cta.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="ctl-press block w-full text-center rounded-full no-underline px-[16px] py-[14px] md:py-[15px] text-[13.5px] md:text-[14.5px] font-bold"
+                      style={{
+                        background: INK,
+                        color: PAPER,
+                        boxShadow: "0 8px 20px -10px rgba(11,18,32,0.3)",
+                      }}
+                    >
+                      {section.footer.cta.label}
                     </a>
                   )}
+                  {section.footer.callback && (
+                    <div
+                      className="flex items-center gap-[12px] rounded-[16px] px-[14px] py-[13px] md:px-[18px] md:py-[16px]"
+                      style={{ background: SAND }}
+                    >
+                      <span
+                        className="shrink-0 flex items-center justify-center rounded-full"
+                        style={{
+                          width: 36,
+                          height: 36,
+                          background: "#ffffff",
+                          color: INK,
+                        }}
+                      >
+                        <svg
+                          width="17"
+                          height="17"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          aria-hidden
+                        >
+                          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                        </svg>
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <div
+                          className="text-[12.5px] md:text-[13px] font-bold leading-[1.35]"
+                          style={{ color: INK }}
+                        >
+                          {section.footer.callback.title}
+                        </div>
+                        {section.footer.callback.line && (
+                          <div
+                            className="text-[11px] md:text-[11.5px] mt-[2px] leading-[1.4]"
+                            style={{ color: MUTED }}
+                          >
+                            {section.footer.callback.line}
+                          </div>
+                        )}
+                      </div>
+                      <a
+                        href={section.footer.callback.cta.href}
+                        className="ctl-press shrink-0 rounded-full no-underline whitespace-nowrap px-[14px] py-[9px] md:px-[16px] md:py-[10px] text-[12px] md:text-[13px] font-semibold"
+                        style={{
+                          background: "#ffffff",
+                          color: INK,
+                          border: "1px solid #d7dbe0",
+                        }}
+                      >
+                        {section.footer.callback.cta.label}
+                      </a>
+                    </div>
+                  )}
                 </div>
-              ))}
+              )}
             </div>
-
-            {section.cta && (
-              <a
-                href={section.cta.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center box-border text-center rounded-full py-[14px] md:py-[15px] px-[16px] text-[13.5px] md:text-[14.5px] font-bold no-underline"
-                style={{
-                  ...ctaStyle,
-                  boxShadow: "0 8px 20px -10px rgba(11,18,32,0.3)",
-                }}
-              >
-                {section.cta.label}
-              </a>
-            )}
-
-          </div>
+          )}
         </div>
       </Container>
     </section>
@@ -2138,6 +2659,111 @@ const FeatureSection: React.FC<{
     </Container>
   </section>
 );
+
+// ── Steps (dark — "Sketch it. I'll finish it.") ─────────────────────────────
+// The closing block: the heading and the page's primary CTA share a row from md
+// up (stacked on a phone), then a hairline and a numbered 3-up of what happens
+// once the reader taps it. Deliberately the last thing on the page — everything
+// above it is a way in, and this says what happens after.
+const StepsSection: React.FC<{
+  section: Extract<CinematicSection, { type: "steps" }>;
+  onSelectPrompt: SelectPrompt;
+}> = ({ section, onSelectPrompt }) => {
+  const router = useRouter();
+  const cta = section.cta;
+  return (
+    <section
+      className="mt-[34px] md:mt-[56px] relative overflow-hidden"
+      style={{ background: DARK }}
+    >
+      <div
+        className="absolute pointer-events-none"
+        style={{
+          top: -100,
+          right: 60,
+          width: 420,
+          height: 420,
+          background:
+            "radial-gradient(circle, rgba(247,231,0,0.08), transparent 70%)",
+        }}
+      />
+      <Container className="py-[36px] md:py-[60px] relative">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-[20px] md:gap-[64px]">
+          <Heading
+            heading={section.heading}
+            className="text-[24px] md:text-[40px] ctl-h-light"
+          />
+          {cta && (
+            <div className="flex flex-col items-start md:items-end gap-[10px] shrink-0">
+              <button
+                type="button"
+                onClick={() => {
+                  if (cta.prompt)
+                    onSelectPrompt(cta.prompt, {
+                      source: "cta",
+                      label: cta.label,
+                    });
+                  else if (cta.href) router.push(cta.href);
+                }}
+                className="ctl-press rounded-full px-[26px] py-[14px] md:px-[34px] md:py-[16px] text-[14.5px] md:text-[16px] font-bold whitespace-nowrap cursor-pointer"
+                style={{
+                  background: YELLOW,
+                  color: INK,
+                  border: "none",
+                  boxShadow: "0 8px 20px -10px rgba(247,231,0,0.3)",
+                }}
+              >
+                {cta.label}
+              </button>
+              {section.ctaNote && (
+                <div className="ctl-mono">{section.ctaNote}</div>
+              )}
+            </div>
+          )}
+        </div>
+        <div
+          className="grid md:grid-cols-3 gap-[18px] md:gap-[24px] mt-[26px] md:mt-[48px] pt-[24px] md:pt-[40px]"
+          style={{ borderTop: "1px solid rgba(255,255,255,0.1)" }}
+        >
+          {section.rows.map((row, i) => (
+            <div key={`step-${i}`} className="flex items-start gap-[14px]">
+              <div
+                className="ctl-mono shrink-0 flex items-center justify-center rounded-full"
+                style={{
+                  width: 30,
+                  height: 30,
+                  background: "rgba(247,231,0,0.16)",
+                  border: "1px solid rgba(247,231,0,0.35)",
+                  color: YELLOW,
+                  fontSize: 11,
+                  fontWeight: 600,
+                }}
+              >
+                {row.n}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div
+                  className="text-[14.5px] md:text-[15.5px] font-bold"
+                  style={{ color: PAPER }}
+                >
+                  {row.title}
+                </div>
+                {row.line && (
+                  <div
+                    className="text-[12.5px] md:text-[13px] leading-[1.55] mt-[6px]"
+                    style={{ color: FAINT }}
+                  >
+                    {row.line}
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </Container>
+    </section>
+  );
+};
 
 // ── Ask-Kaira strip ("Docked composer") ─────────────────────────────────────
 // A single, shared design used on every theme page (matches the theme mockup):
@@ -2848,7 +3474,12 @@ const CinematicThemeLanding: React.FC<CinematicThemeLandingProps> = ({
           : "pb-[104px] md:pb-[108px]"
         : "pb-[32px] md:pb-0"
     }`}
-    style={{ background: palette.page }}
+    style={
+      {
+        background: palette.page,
+        ...(config.maxWidth ? { "--ctl-container": config.maxWidth } : {}),
+      } as React.CSSProperties
+    }
   >
     {lcpPreloadHref && (
       <Head>
@@ -2873,65 +3504,94 @@ const CinematicThemeLanding: React.FC<CinematicThemeLandingProps> = ({
       const key = `sec-${i}`;
       // Tail of a pair — already rendered by its partner.
       if (pairedWithNext.has(i - 1)) return null;
+      // A `desktopOnly` section still renders and still ships in the HTML — it
+      // is hidden by the shared `.ttw-wide-only` rule below 640px. Hiding it in
+      // CSS rather than by not rendering it keeps the server HTML and the first
+      // client render identical, so the page never changes height at hydration.
+      const wrap = (node: React.ReactNode) =>
+        section.desktopOnly ? (
+          <div key={key} className="ttw-wide-only">
+            {node}
+          </div>
+        ) : (
+          node
+        );
+
       if (pairedWithNext.has(i)) {
         const next = config.sections[i + 1];
         if (section.type === "gradient" && next.type === "gradient")
-          return (
+          return wrap(
             <GradientPairSection
               key={key}
               left={section}
               right={next}
               onSelectPrompt={onSelectPrompt}
-            />
+            />,
           );
       }
 
       switch (section.type) {
         case "cards":
-          return (
+          return wrap(
             <CardsSection
               key={key}
               section={section}
               onSelectPrompt={onSelectPrompt}
               onSelectActivity={onSelectActivity}
               first={i === 0}
-            />
+            />,
           );
         case "trips":
-          return <TripsSection key={key} section={section} onSelectPrompt={onSelectPrompt} />;
+          return wrap(
+            <TripsSection key={key} section={section} onSelectPrompt={onSelectPrompt} />,
+          );
         case "pillars":
-          return <PillarsSection key={key} section={section} onSelectPrompt={onSelectPrompt} />;
+          return wrap(
+            <PillarsSection key={key} section={section} onSelectPrompt={onSelectPrompt} />,
+          );
         case "list":
-          return (
+          return wrap(
             <ListSection
               key={key}
               section={section}
               onSelectPrompt={onSelectPrompt}
               onSelectActivity={onSelectActivity}
-            />
+            />,
           );
         case "checklist":
-          return <ChecklistSection key={key} section={section} onSelectPrompt={onSelectPrompt} />;
+          return wrap(
+            <ChecklistSection key={key} section={section} onSelectPrompt={onSelectPrompt} />,
+          );
         case "months":
-          return <MonthsSection key={key} section={section} />;
+          return wrap(<MonthsSection key={key} section={section} />);
         case "stories":
-          return <StoriesSection key={key} section={section} onSelectPrompt={onSelectPrompt} />;
+          return wrap(
+            <StoriesSection key={key} section={section} onSelectPrompt={onSelectPrompt} />,
+          );
         case "eats":
-          return <EatsSection key={key} section={section} onSelectPrompt={onSelectPrompt} />;
+          return wrap(
+            <EatsSection key={key} section={section} onSelectPrompt={onSelectPrompt} />,
+          );
         case "visa":
-          return <VisaSection key={key} section={section} />;
+          return wrap(<VisaSection key={key} section={section} />);
         case "feature":
-          return (
+          return wrap(
             <FeatureSection
               key={key}
               section={section}
               onSelectPrompt={onSelectPrompt}
               onSelectActivity={onSelectActivity}
-            />
+            />,
+          );
+        case "steps":
+          return wrap(
+            <StepsSection key={key} section={section} onSelectPrompt={onSelectPrompt} />,
           );
         case "gradient":
         default:
-          return <GradientSection key={key} section={section} onSelectPrompt={onSelectPrompt} />;
+          return wrap(
+            <GradientSection key={key} section={section} onSelectPrompt={onSelectPrompt} />,
+          );
       }
     })}
 
@@ -2964,6 +3624,7 @@ export {
   VisaSection,
   GradientPairSection,
   FeatureSection,
+  StepsSection,
   AskKairaStrip,
   PromptCard,
   TripCard,

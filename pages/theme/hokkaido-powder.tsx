@@ -105,7 +105,6 @@ const ACTIVITY = {
 };
 
 const VISA_JAPAN = "https://visa.thetarzanway.com/country/japan-visa-online";
-const VISA_HOME = "https://visa.thetarzanway.com/";
 
 // ── Prompts ─────────────────────────────────────────────────────────────────
 const PROMPTS = {
@@ -580,37 +579,18 @@ const hokkaidoConfig: CinematicThemeConfig = {
       },
       intro:
         "We prep the paperwork, check every document and submit for you. No embassy queues, no guesswork on the bank statements.",
+      // This trip crosses one border, so the list is one country. The stopover
+      // and consolation-prize visas that used to pad it out (Singapore,
+      // Vietnam, Thailand, Switzerland, Finland) belonged to trips this page
+      // isn't selling.
       cards: [
         {
           country: "Japan",
           cities: "Sticker · single entry · up to 90 days",
           fee: "₹4,300",
+          line:
+            "Single entry, so the whole trip has to sit inside one stay — Tokyo, the run north and every day on the mountain. Start it about six weeks out: February slots go to whoever books them first, and everyone chasing this snow wants the same fortnight.",
           href: VISA_JAPAN,
-        },
-        {
-          country: "Singapore",
-          cities: "The usual stopover on the way north",
-          href: VISA_HOME,
-        },
-        {
-          country: "Vietnam",
-          cities: "e-Visa · pair it with the flight home",
-          href: VISA_HOME,
-        },
-        {
-          country: "Thailand",
-          cities: "Tourist e-Visa · a warm week after the snow",
-          href: VISA_HOME,
-        },
-        {
-          country: "Switzerland",
-          cities: "The other powder, if Japan is booked out",
-          href: VISA_HOME,
-        },
-        {
-          country: "Finland",
-          cities: "Lapland · snow and the lights",
-          href: VISA_HOME,
         },
       ],
       facts: [
@@ -619,7 +599,6 @@ const hokkaidoConfig: CinematicThemeConfig = {
         { label: "Our fee", value: "₹1,000" },
         { label: "We handle", value: "Appointment + file" },
       ],
-      cta: { label: "Start my Japan visa →", href: VISA_JAPAN },
       note:
         "Applied through the Japanese embassy. We book the appointment, assemble the file, and hand it back to you ready to travel.",
     },

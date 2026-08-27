@@ -38,7 +38,6 @@ import PricingSkeleton from "../../../components/itinerary/Skeleton/PricingSkele
 import Drawer from "../../../components/ui/Drawer";
 import PassengerDetails from "../../../components/modals/passenger-details/PassengerDetails";
 import AddTravellerDetails from "../../../components/modals/passenger-details/AddTravellerDetails";
-import { FaCheckCircle } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
 import { PulseLoader } from "react-spinners";
 import { SocialShare } from "./SocialShare";
@@ -601,19 +600,23 @@ const PaymentFailed = ({ onClickButton, loading }) => {
   );
 };
 
-const PaymentSuccess = ({ amount, onDownloadInvoice, loading }) => {
+const PaymentSuccess = ({ amount, onGetInTouch, loading, travellerSummary }) => {
   const { currency } = useSelector((state) => state.currency);
   return (
     <div className="bg-white px-2 rounded-lg">
-      <div className="mb-2">
-        <div className="mb-lg">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="64"
-            height="64"
-            viewBox="0 0 64 64"
-            fill="none"
-          >
+      {/* The tick, the copy and the traveller block share one row, so the
+          right-hand column starts level with the tick rather than with the
+          heading below it. */}
+      <div className="mb-2 flex justify-between max-ph:flex-col">
+        <div>
+          <div className="mb-lg">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="64"
+              height="64"
+              viewBox="0 0 64 64"
+              fill="none"
+            >
             <path
               fill-rule="evenodd"
               clip-rule="evenodd"
@@ -623,20 +626,23 @@ const PaymentSuccess = ({ amount, onDownloadInvoice, loading }) => {
             63.4385C30.0094 63.8137 30.9741 64 32 64C33.0259 64 33.9906 63.8111 34.8889 63.4385C35.7847 63.066 36.5962 62.5121 37.321 61.7772L40.9321 58.1303C41.3813 57.6786 41.8738 57.3392 42.3996 57.1197C42.9355 56.8977 43.5225 56.7879 44.1553 56.7905L49.2875 56.816C50.3185 56.8211 51.2858 56.6374 52.1815 56.2699C53.0875 55.8973 53.9041 55.3486 54.6264 54.6264C55.3486 53.9042 55.8973 53.0849 56.2699 52.1815C56.6374 51.2858 56.8211 50.3185 56.816 49.2875L56.7905 44.1553C56.7854 43.5199 56.8977 42.9355 57.1197 42.3996C57.3366 41.8713 57.6735 41.3813 58.1303 40.9321L61.7772 37.321C62.5096 36.5962 63.066 35.7821 63.4385 34.8889C63.8137 33.9906 64 33.0259 64 32C64 30.9741 63.8111 30.0094 63.4385 29.1111C63.066 28.2153 62.5121 27.4038 61.7772 26.679L58.1303 23.0679C57.6786 22.6187 57.3392 22.1262 57.1197 21.6004C56.8977 21.0645 56.7879 20.4775 56.7905 19.8446L56.816 14.7125C56.8211 13.6815 56.6374 12.7142 56.2699 11.8185C55.8973 10.9125 55.3486 10.0959 54.6264 9.37362C53.9041 8.65137 53.0849 8.10271 52.1815 7.73012C51.2858 7.36263 50.3185 7.17888 49.2875 7.18399L44.1553 7.20951C43.5199 7.21461 42.9329 7.10232 42.3996 6.88029C41.8713 6.66337 41.3813 6.3265 40.9321 5.86967L37.321 2.22284C36.5962 1.4904 35.7821 0.934032 34.8889 0.561444C33.9906 0.186294 33.0259 0 32 0C30.9741 0 30.0094 0.188849 29.1111 0.561444C28.2153 0.934039 27.4038 1.48785 26.679 2.22284L23.0679 5.86967C22.6187 6.32138 22.1262 6.66078 21.6004 6.88029C21.0645 7.10232 20.4775 7.21206 19.8446 7.20951L14.7125 7.18399C13.6815 7.17888 12.7142 7.36263 11.8185 7.73012C10.9125 8.10272 10.0959 8.65144 9.37362 9.37362C8.65138 10.0959 8.10272 10.9151 7.73013 11.8185C7.36264 12.7142 7.17889 13.6815 7.18399 14.7125L7.20951 19.8446C7.21462 20.4801 7.10233 21.0671 6.8803 21.6004C6.66338 22.1287 6.32651 22.6187 5.86968 23.0679L2.22284 26.679C1.49041 27.4038 0.934039 28.2179 0.56145 29.1111C0.186301 30.0094 0 30.9741 0 32C0 33.0259 0.188849 33.9906 0.56145 34.8889C0.934045 35.7847 1.48786 36.5962 2.22284 37.321L5.86968 40.9321C6.32139 41.3813 6.66078 41.8738 6.8803 42.3996C7.10232 42.9355 7.21206 43.5225 7.20951 44.1553ZM45.2118 24.9053L28.9095 41.2076C28.3226 41.7945 27.3757 41.7945 26.7888 41.2076L18.7987 33.2175C18.2117 32.6305 18.2117 31.6837 18.7987 31.0967C19.3857 30.5097 20.3325 30.5097 20.9194 31.0967L27.8505 38.0278L43.0912 22.7871C43.6781 22.2002 44.625 22.2002 45.2119 22.7871C45.7989 23.3741 45.7989 24.3209 45.2119 24.9079L45.2118 24.9053Z"
               fill="#5CBA66"
             />
-          </svg>
-        </div>
-        <div className="flex justify-between max-ph:flex-col">
-          <div>
-            <h2 className="text-lg font-600 leading-xl">
-              All set—your payment was successful.
-            </h2>
-            <p className="text-md font-400 leading-xl text-text-spacegrey mb-zero max-ph:mb-md">
-              Your full payment of{" "}
-              {currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}
-              {formatCurrencyValue(amount, currency)} has been received. No pending
-              balance.
-            </p>
+            </svg>
           </div>
+          <h2 className="text-lg font-600 leading-xl">
+            All set—your payment was successful.
+          </h2>
+          <p className="text-md font-400 leading-xl text-text-spacegrey mb-zero max-ph:mb-md">
+            Your full payment of{" "}
+            {currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}
+            {formatCurrencyValue(amount, currency)} has been received. No pending
+            balance.
+          </p>
+        </div>
+        {/* The traveller block rides at the top of this column — this row is
+            where the cart header would have been — with the Get in touch
+            button below it. */}
+        <div className="flex flex-col items-end gap-sm shrink-0 max-ph:w-full max-ph:items-start">
+          {travellerSummary}
           <GetInTouchContainer>
             <Button
               color="#fff"
@@ -646,7 +652,7 @@ const PaymentSuccess = ({ amount, onDownloadInvoice, loading }) => {
               borderRadius="6px"
               bgColor="#07213A"
               padding="6px 30px"
-              onclick={onDownloadInvoice}
+              onclick={onGetInTouch}
             >
               <div
                 style={{
@@ -930,17 +936,25 @@ const PriceDetails = ({
           </div>
         ) : null}
 
+        {/* Nothing left to pay: without this the summary reads
+            "cost − coupon … Total ₹0", which doesn't add up. Show what was
+            actually collected so the arithmetic closes. */}
+        {numericTotalPayable === 0 && Cart?.amount_paid > 0 && (
+          <div className="flex justify-between text-sm font-400 leading-md mb-sm">
+            <span>Amount Paid</span>
+            <span>
+              {currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}
+              {formatCurrencyValue(Cart?.amount_paid, currency)}
+            </span>
+          </div>
+        )}
+
         <div className="border-t-sm border-text-disabled pt-2 mt-2">
-          <div className="flex justify-between items-start">
-            <div className="flex flex-col">
-              <span className="font-semibold text-md font-500 leading-xl">
-                Total Amount
-              </span>
-              <span className="text-xs font-400 leading-sm text-text-spacegrey">
-                Inclusive of all taxes
-              </span>
-            </div>
-            <span className="font-semibold text-md font-500 leading-xl">
+          <div className="flex justify-between font-semibold text-md font-500 leading-xl">
+            <span>
+              {numericTotalPayable === 0 ? "Total Payable" : "Total Amount"}
+            </span>
+            <span>
               {" "}
               {currencySymbols?.[currency]
                 ? currencySymbols?.[currency]
@@ -1460,6 +1474,68 @@ const Details = (props) => {
   // `travellers` array alone can't reflect, so prefer this flag over inspecting
   // the travellers list.
   const travellerDetailsVerified = !!Cart?.traveler_details_verified;
+
+  // "4 Adults, 2 Children, 1 Infant" — the itinerary's pax, zero groups left
+  // out entirely. `pax` is seeded once from the itinerary prop, which hasn't
+  // arrived yet when the drawer is opened straight from a URL, so fall back to
+  // the itinerary in Redux rather than rendering "undefined Adults".
+  const travellerCountLabel = () => {
+    const adults =
+      pax || props.itinerary?.number_of_adults || Itinerary?.number_of_adults || 0;
+    const children =
+      props.itinerary?.number_of_children || Itinerary?.number_of_children || 0;
+    const infants =
+      props.itinerary?.number_of_infants || Itinerary?.number_of_infants || 0;
+    const parts = [];
+    if (adults) parts.push(`${adults} ${pluralDetector("Adult", adults)}`);
+    if (children)
+      parts.push(`${children} ${children > 1 ? "Children" : "Child"}`);
+    if (infants) parts.push(`${infants} ${pluralDetector("Infant", infants)}`);
+    return parts.join(", ");
+  };
+
+  // The traveller block that sits in the top-right of the cart header, shared
+  // with the paid-state banner (which replaces that header entirely).
+  // `rowOnMobile` is for the paid banner: its column stacks under the copy on
+  // phones, where a narrow right-aligned tower reads as stray text. There the
+  // block spans the width instead — name and count on the left, the link on
+  // the right — matching the cart header's own layout.
+  const renderTravellerSummary = ({ leadName, rowOnMobile } = {}) => {
+    const countLabel = travellerCountLabel();
+    return (
+      <div
+        className={`flex flex-col items-end gap-xxs shrink-0 mt-1 ${
+          rowOnMobile
+            ? "max-ph:w-full max-ph:flex-row max-ph:items-start max-ph:justify-between max-ph:gap-2"
+            : ""
+        }`}
+      >
+        <div
+          className={`flex flex-col items-end gap-xxs ${
+            rowOnMobile ? "max-ph:items-start max-ph:text-left" : ""
+          }`}
+        >
+          {leadName ? (
+            <span className="text-sm-md font-400 leading-lg">{leadName}</span>
+          ) : null}
+          {countLabel ? (
+            <span className="text-xs font-400 leading-md text-text-spacegrey">
+              Travellers: {countLabel}
+            </span>
+          ) : null}
+        </div>
+        <span
+          className="text-xs text-blue underline cursor-pointer shrink-0"
+          onClick={() => setTravellerDetailsOpen(true)}
+        >
+          {travellerDetailsVerified
+            ? "Edit traveller details"
+            : "Add traveller details"}
+        </span>
+      </div>
+    );
+  };
+
   const [selectedPaymentOption, setSelectedPaymentOption] = useState("full");
 
   const [selectedOption, setSelectedOption] = useState("full");
@@ -1558,6 +1634,32 @@ const Details = (props) => {
       setSelectedInclusions(initialSelections);
     }
   }, [Cart?.summary]);
+
+  // The coupon UI mirrors the cart. These three pieces of state were only
+  // seeded in `useState`, which runs while `Cart` is still null in Redux, so
+  // any reload lost them: the breakdown showed "Coupon Discount ₹0" and the
+  // coupon row offered to apply a coupon that was already on the itinerary.
+  // (CouponModal patched `appliedCoupon` alone, and only for COUPON_APPLIED —
+  // a coupon already spent on a payment, COUPON_USED_TO_PAY, stayed invisible.)
+  // The cart carries the coupon's id; the human code set by handleApplyCoupon
+  // in this session is kept when we already have it.
+  useEffect(() => {
+    const usage = Cart?.coupon_usage || null;
+    setCouponUsageData(usage);
+    setCouponSavedAmount(usage?.discount || 0);
+    setAppliedCoupon((prev) => (usage ? prev || usage.id : null));
+  }, [Cart?.coupon_usage]);
+
+  // `pax` is seeded in useState from the itinerary prop, which is empty when
+  // the cart is opened straight from a URL — it then stayed undefined for the
+  // whole session (nothing else calls setPax any more), so everything reading
+  // it, the traveller count and the registration/verification modals included,
+  // got `undefined`. Follow the itinerary instead of sampling it once.
+  useEffect(() => {
+    const adults =
+      props?.itinerary?.number_of_adults || Itinerary?.number_of_adults;
+    if (adults) setPax(adults);
+  }, [props?.itinerary?.number_of_adults, Itinerary?.number_of_adults]);
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -2390,6 +2492,12 @@ const Details = (props) => {
     return anyPaid;
   };
 
+  // A zero total means two very different things: the trip is already paid for,
+  // or the user has unticked every inclusion. Only the second one is something
+  // they can act on, so only that one gets the "select an inclusion" nudge.
+  const areAnyInclusionsSelected = () =>
+    Object.values(selectedInclusions).some(Boolean);
+
   const isItineraryInFuture = () => {
     // Redux seeds `Itinerary` with a `{ name, images }` placeholder that has no
     // `start_date`, so before the detail API lands this built an Invalid Date
@@ -2581,9 +2689,18 @@ const Details = (props) => {
                   {Cart?.total_payable_amount == 0 &&
                   areAllInclusionsPaid() &&
                   Cart?.discounted_cost > 0 ? (
+                    // The banner replaces the cart header, so the name and the
+                    // traveller block move inside it rather than disappearing
+                    // on exactly the itineraries where people check who is on
+                    // the booking.
                     <PaymentSuccess
                       amount={Cart?.discounted_cost}
-                      onDownloadInvoice={() => {}}
+                      onGetInTouch={handleGetInTouch}
+                      loading={props?.loading}
+                      travellerSummary={renderTravellerSummary({
+                        leadName: Itinerary?.customer_name || "",
+                        rowOnMobile: true,
+                      })}
                     />
                   ) : !isItineraryInFuture() && !areAnyInclusionsPaid() ? (
                     // Update dates section
@@ -2759,16 +2876,8 @@ const Details = (props) => {
                     <div>
                       <div className="flex justify-between items-start gap-2">
                         <div className="flex-1">
-                          <div className="flex flex-wrap items-center gap-sm mb-xs">
-                            <div className="text-sm-md font-400 leading-lg">
-                              {Itinerary?.customer_name || ""}
-                            </div>
-                            {travellerDetailsVerified && (
-                              <div className="flex items-center gap-1 text-green-600 text-xs">
-                                <FaCheckCircle />
-                                <span>Traveller details verified</span>
-                              </div>
-                            )}
+                          <div className="text-sm-md font-400 leading-lg mb-xs">
+                            {Itinerary?.customer_name || ""}
                           </div>
 
                           <div className="flex flex-row gap-xs text-sm font-400 leading-md flex-wrap">
@@ -2788,35 +2897,9 @@ const Details = (props) => {
                             </div>
                             <div className="border-r-sm border-text-disabled"></div>
                             <div>Trip: {props.trip_name}</div>
-                            <div className="border-r-sm border-text-disabled"></div>
-                            <div>
-                              Travellers: {pax} {pluralDetector("Adult", pax)}
-                              {props.itinerary?.number_of_children ? (
-                                <span>
-                                  , {props.itinerary?.number_of_children}{" "}
-                                  Children
-                                </span>
-                              ) : null}
-                              {props.itinerary?.number_of_infants ? (
-                                <span>
-                                  , {props.itinerary?.number_of_infants}{" "}
-                                  {pluralDetector(
-                                    "Infant",
-                                    props.itinerary?.number_of_infants
-                                  )}
-                                </span>
-                              ) : null}
-                            </div>
                           </div>
                         </div>
-                        <span
-                          className="text-xs text-blue underline cursor-pointer shrink-0 mt-1"
-                          onClick={() => setTravellerDetailsOpen(true)}
-                        >
-                          {travellerDetailsVerified
-                            ? "Edit traveller details"
-                            : "Add traveller details"}
-                        </span>
+                        {renderTravellerSummary()}
                       </div>
                     </div>
                   )}
@@ -2896,7 +2979,7 @@ const Details = (props) => {
                           : Cart?.total_cost
                       }
                       lockInCost={0}
-                      couponDiscount={appliedCoupon ? -couponSavedAmount : 0}
+                      couponDiscount={-(couponSavedAmount || 0)}
                       surchargesTaxes={Cart?.surcharges_and_taxes || 0}
                       totalPayable={calculateFilteredTotal()}
                       selectedPaymentOption={selectedPaymentOption}
@@ -2969,9 +3052,12 @@ const Details = (props) => {
                           </Button>
                         </GetInTouchContainer>
 
-                        <div className="text-center text-sm text-amber-600 mt-3 p-2 bg-amber-50 rounded">
-                          Please select at least one inclusion to proceed
-                        </div>
+                        {!areAnyInclusionsSelected() &&
+                          !areAnyInclusionsPaid() && (
+                            <div className="text-center text-sm text-amber-600 mt-3 p-2 bg-amber-50 rounded">
+                              Please select at least one inclusion to proceed
+                            </div>
+                          )}
                       </>
                     ) : (
                       // Desktop: static button in the pricing column. Phones get
