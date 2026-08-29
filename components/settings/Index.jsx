@@ -20,7 +20,11 @@ const parseDateString = (dateString) => {
 };
 
 
-const Settings = ({setShowSettings, isHotelsPresent, handleApply, maxAdults=false, maxRooms=false}) => {
+// The modal is opened both as a general "change anything" editor and for one
+// specific reason — a trip whose travel dates have gone. `heading` swaps the
+// three pieces of the title without losing its serif-italic middle word, and
+// `subheading` the line under it; both fall back to the general copy.
+const Settings = ({setShowSettings, isHotelsPresent, handleApply, maxAdults=false, maxRooms=false, heading, subheading}) => {
   const dispatch = useDispatch();
   const itinerary = useSelector(state => state.Itinerary);
   const isDomestic = itinerary?.destination_type === "Domestic";
@@ -251,7 +255,7 @@ const handleUpdate = () => {
                 color: "#0B1220",
               }}
             >
-              Update your{" "}
+              {heading?.lead ?? "Update your"}{" "}
               <em
                 style={{
                   fontFamily: "'Instrument Serif', 'Times New Roman', serif",
@@ -260,12 +264,13 @@ const handleUpdate = () => {
                   letterSpacing: "-0.015em",
                 }}
               >
-                trip
+                {heading?.emphasis ?? "trip"}
               </em>{" "}
-              preferences
+              {heading?.trail ?? "preferences"}
             </div>
             <p style={{ fontSize: 13, color: "#5C5A55", marginTop: 4 }}>
-              Adjust dates, travellers and inclusions — I'll reprice it for you.
+              {subheading ??
+                "Adjust dates, travellers and inclusions — I'll reprice it for you."}
             </p>
           </div>
 
@@ -347,7 +352,8 @@ const handleUpdate = () => {
         </div>
       </div> */}
 
-      <div className={`${isDesktop ? "flex justify-between w-full" : "w-full"}`}>
+      {/* Buttons lays its own row out at both breakpoints now. */}
+      <div className="w-full">
         <Buttons
           handleCancel={handleCancel}
           handleUpdate={handleUpdate}

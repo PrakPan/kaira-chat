@@ -802,6 +802,11 @@ export default function BotApp({
 
   const [showShare, setShowShare] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  // Why the Settings modal was opened, when it was opened for one specific
+  // reason rather than "change anything". Only the copy at the top of the modal
+  // reads it — the form itself is the same either way. Set on every open (null
+  // from the gear) so a reason can never carry over into the next one.
+  const [settingsReason, setSettingsReason] = useState<string | null>(null);
   const [showSettingsLoginPrompt, setShowSettingsLoginPrompt] = useState(false);
   // Mobile: the compact trip strip collapses the traveller/date/social meta
   // behind a chevron. Desktop always shows the full header.
@@ -944,7 +949,10 @@ export default function BotApp({
       },
     );
     const onUnauthorized = () => setShowApiLoginPrompt(true);
-    const onOpenSettings = () => setShowSettings(true);
+    const onOpenSettings = (e: Event) => {
+      setSettingsReason((e as CustomEvent)?.detail?.reason ?? null);
+      setShowSettings(true);
+    };
     if (typeof window !== "undefined") {
       window.addEventListener("api:unauthorized", onUnauthorized);
       window.addEventListener("open-itinerary-settings", onOpenSettings);
@@ -4151,7 +4159,12 @@ Start Location: ${details.startLocation}`;
                           setIsHotelsPresent(res.data.no_of_hotels > 0),
                         )
                         .catch(() => setIsHotelsPresent(false))
-                        .finally(() => setShowSettings(true));
+                        .finally(() => {
+                      // Opened from the gear — no particular reason, so the
+                      // modal keeps its general heading.
+                      setSettingsReason(null);
+                      setShowSettings(true);
+                    });
                     }}
                   >
                     <Image src="/settings.svg" height={18} width={18} alt="Settings" />
@@ -4253,7 +4266,12 @@ Start Location: ${details.startLocation}`;
                       setIsHotelsPresent(res.data.no_of_hotels > 0),
                     )
                     .catch(() => setIsHotelsPresent(false))
-                    .finally(() => setShowSettings(true));
+                    .finally(() => {
+                      // Opened from the gear — no particular reason, so the
+                      // modal keeps its general heading.
+                      setSettingsReason(null);
+                      setShowSettings(true);
+                    });
                 }}
               >
                 <Image
@@ -4663,7 +4681,12 @@ Start Location: ${details.startLocation}`;
               )
               .then((res) => setIsHotelsPresent(res.data.no_of_hotels > 0))
               .catch(() => setIsHotelsPresent(false))
-              .finally(() => setShowSettings(true));
+              .finally(() => {
+                      // Opened from the gear — no particular reason, so the
+                      // modal keeps its general heading.
+                      setSettingsReason(null);
+                      setShowSettings(true);
+                    });
           }}
           onLoginSuccess={attachUserToItinerary}
         />
@@ -4712,6 +4735,17 @@ Start Location: ${details.startLocation}`;
           if (activeItineraryId) handleItineraryRefresh(activeItineraryId);
           return response;
         };
+        // Opened from the Route tab's blocked action bar: the traveller came
+        // here to fix one thing, so the modal names it instead of offering
+        // "preferences" and leaving them to find the date picker.
+        const pastDates = settingsReason === "past-dates";
+        const settingsCopy = pastDates
+          ? {
+              heading: { lead: "Update your", emphasis: "travel", trail: "dates" },
+              subheading:
+                "Your trip dates have passed — pick new ones and I'll re-plan the trip.",
+            }
+          : {};
         return isMobile ? (
           <BottomModal
             show={true}
@@ -4729,6 +4763,7 @@ Start Location: ${details.startLocation}`;
               handleApply={settingsHandleApply}
               maxAdults={true}
               maxRooms={true}
+              {...settingsCopy}
             />
           </BottomModal>
         ) : (
@@ -4739,6 +4774,7 @@ Start Location: ${details.startLocation}`;
               handleApply={settingsHandleApply}
               maxAdults={true}
               maxRooms={true}
+              {...settingsCopy}
             />
           </ModalWithBackdrop>
         );
