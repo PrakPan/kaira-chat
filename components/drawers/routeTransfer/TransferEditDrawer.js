@@ -1564,6 +1564,15 @@ const TransferEditDrawer = (props) => {
                 ? airportSuggestions
                 : multiCitySuggestions;
             const currentTabError = tabErrors[currentTab] || transfersError;
+            // A booked pickup/drop still has to be reachable — it is the only
+            // way to its View Detail / Change actions — so the airport tab
+            // keeps rendering its cards even when the search behind the
+            // remaining side failed or came back empty.
+            if (
+              currentTab === "airport" &&
+              (existingAirportPickup || existingAirportDrop)
+            )
+              return false;
             return currentTabError && currentTabSuggestions === null;
           })() ? (
           <div className="w-full flex justify-center py-10 px-4">
@@ -2317,25 +2326,39 @@ const TransferEditDrawer = (props) => {
                     </div>
                   )}
 
-                {/* Airport pickup/drop suggestions */}
+                {/* Airport pickup/drop: a booked card per side that has one,
+                    a search card per side that doesn't. The suggestions can be
+                    absent entirely — nothing left to search for once both
+                    sides are booked — and the booked cards still belong here. */}
                 {multicityTab === "airport" &&
-                  Array.isArray(airportSuggestions) &&
+                  (Array.isArray(airportSuggestions) ||
+                    existingAirportPickup ||
+                    existingAirportDrop) &&
                   (() => {
-                    const kinds = airportSuggestions.map(
+                    const suggestions = Array.isArray(airportSuggestions)
+                      ? airportSuggestions
+                      : [];
+                    const kinds = suggestions.map(
                       resolveAirportSuggestionKind,
                     );
-                    let pickup = airportSuggestions.find(
+                    let pickup = suggestions.find(
                       (s, i) => kinds[i] === "pickup",
                     );
-                    let drop = airportSuggestions.find(
+                    let drop = suggestions.find(
                       (s, i) => kinds[i] === "drop",
                     );
                     // Whatever the classifier couldn't settle fills the slots
                     // still empty, in response order — the search returns the
-                    // pickup leg first.
-                    airportSuggestions.forEach((s, i) => {
+                    // pickup leg first. A booked side renders its booking
+                    // rather than a search card, so it is the last slot an
+                    // unclassified suggestion should land in: filling it first
+                    // would swallow the suggestion and leave the side that
+                    // still needs one with nothing to search from.
+                    suggestions.forEach((s, i) => {
                       if (kinds[i]) return;
-                      if (!pickup) pickup = s;
+                      if (!pickup && !existingAirportPickup) pickup = s;
+                      else if (!drop && !existingAirportDrop) drop = s;
+                      else if (!pickup) pickup = s;
                       else if (!drop) drop = s;
                     });
                     const ordered = [
