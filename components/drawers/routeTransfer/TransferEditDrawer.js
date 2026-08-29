@@ -45,7 +45,6 @@ import {
 } from "react-icons/im";
 import ComboFlight from "../../modals/flights/ComboFlight";
 import ComboTaxi from "../../modals/taxis/ComboTaxi";
-import { QuoteTerms } from "../../modals/taxis/VendorCharges";
 import {
   getVehicleCount,
   hasMultiVehicleQuote,
@@ -56,7 +55,6 @@ import {
   VehicleCountBadge,
   getFleetManifest,
 } from "../../modals/taxis/MultiVehicleInfo";
-import QuantityStepper from "../../modals/taxis/fleet/QuantityStepper";
 import {
   describeSelection,
   setQuantity as setQuantityIn,
@@ -96,6 +94,9 @@ import SkeletonCard from "../../ui/SkeletonCard";
 import { is } from "date-fns/locale";
 import PickupDropDrawer from "../../../containers/itinerary/PickupDropDrawer";
 import OfflineQuoteCTA from "../../ui/OfflineQuoteCTA";
+import SuggestionQuoteCard, {
+  SuggestionHeader,
+} from "./SuggestionQuoteCard";
 
 const FONT_SANS = "'Inter', -apple-system, BlinkMacSystemFont, sans-serif";
 const FONT_SERIF = "'Instrument Serif', 'Times New Roman', serif";
@@ -165,6 +166,33 @@ const resolveAirportSuggestionKind = (sugg) => {
 };
 
 const ALL_ABOARD_PAGE_SIZE = 5;
+
+// A stable empty array: the suggestion blocks read `data.trips`/`data.quotes`
+// straight off the payload, and a fresh `[]` per render would restart every
+// memo hanging off them.
+const EMPTY_LIST = [];
+
+/**
+ * A search falls back to a convoy only when no single cab seats the party. The
+ * result cards then swap their CTA for a quantity stepper and the drawer's own
+ * action bar commits the lot as ONE booking — see `useSuggestionFleet`. Only our
+ * own fleet can be composed that way; a third-party source quotes whole cars.
+ */
+const suggestionNeedsFleet = (data) =>
+  Boolean(data?.fleet?.multi_vehicle_needed) &&
+  (!data?.source || data.source === "Self");
+
+/**
+ * Whether this quote is the one the drawer has just booked. A suggestion is
+ * addressed by two indices — which route plan, then which cab within it — and
+ * both come back loosely typed, so compare them loosely and never let a pair of
+ * undefineds match.
+ */
+const isCommittedQuote = (committed, suggestionIndex, quote) =>
+  !!committed &&
+  committed.suggestionIndex == suggestionIndex &&
+  quote?.result_index != null &&
+  committed.quoteIndex == quote.result_index;
 
 // AllAboard search results are paginated by the API, which returns a
 // `pagination: { offset, limit, next_offset, has_more, total_journeys }` block
@@ -416,6 +444,10 @@ const TransferEditDrawer = (props) => {
   // A mixed fleet chosen instead of a single cab: {suggestionIndex, vehicles, label}.
   // Mutually exclusive with selectedCab — the drawer commits one or the other.
   const [fleetChoice, setFleetChoice] = useState(null);
+  // Which quote the last successful commit booked — {suggestionIndex, quoteIndex}.
+  // Each result card now commits on its own, so this is what tells the list which
+  // one is in the itinerary; a failed commit leaves it untouched on purpose.
+  const [committedQuote, setCommittedQuote] = useState(null);
   const [multicityRoundtripTraceId, setMulticityRoundtripTraceId] =
     useState(null);
   const [selectedTripType, setSelectedTripType] = useState(null);
@@ -523,8 +555,15 @@ const TransferEditDrawer = (props) => {
     if (!showDrawer) {
       setTabLoaded({ sightseeing: false, airport: false, multicity: false });
       setTabErrors({ sightseeing: null, airport: null, multicity: null });
+      setCommittedQuote(null);
     }
   }, [showDrawer]);
+
+  // The booked-quote marker addresses a quote by its index in one search's
+  // results, so it means nothing against another tab's list.
+  useEffect(() => {
+    setCommittedQuote(null);
+  }, [multicityTab]);
 
   // Refetch sightseeing suggestions when the sightseeing date filters change.
   const isFirstSightseeingDateRun = useRef(true);
@@ -728,6 +767,28 @@ const TransferEditDrawer = (props) => {
     !!existingSightseeingBooking &&
     (sightseeingStartDate !== existingBookingStart ||
       sightseeingEndDate !== existingBookingEnd);
+
+  // Whether the tab on screen is quoting a convoy, which is the one commit the
+  // cards can't make on their own.
+  const multicityFleetMode = useMemo(() => {
+    const active =
+      multicityTab === "multicity"
+        ? multiCitySuggestions
+        : multicityTab === "sightseeing"
+          ? roundTripSuggestions
+          : null;
+    const list = Array.isArray(active) ? active : active ? [active] : EMPTY_LIST;
+    return list.some((sugg) => suggestionNeedsFleet(sugg?.data));
+  }, [multicityTab, multiCitySuggestions, roundTripSuggestions]);
+
+  // Every result card commits on its own now, so the CTA has to say what the
+  // click does. "Add to Itinerary" unless a transfer of this kind is already in
+  // the itinerary, where the same click replaces it.
+  const suggestionCtaLabel =
+    (multicityTab === "sightseeing" && !!existingSightseeingBooking) ||
+    (multicityTab === "multicity" && drawerType === "multicity")
+      ? "Update Transfer"
+      : "Add to Itinerary";
 
   // Default sightseeing date filters: prefer existing booking's dates if one
   // is already added, otherwise fall back to the city's first / last day.
@@ -1209,6 +1270,13 @@ const TransferEditDrawer = (props) => {
             type: "success",
           });
         }
+        // Only a fleet has no single quote to point at; every other commit
+        // marks its own card as booked.
+        setCommittedQuote(
+          vehicles?.length
+            ? null
+            : { suggestionIndex: result_index, quoteIndex: quote_index },
+        );
         dispatch(setTransfersBookings(response?.data?.data));
         if(props?.getPaymentHandler){
         props?.getPaymentHandler();
@@ -2132,22 +2200,16 @@ const TransferEditDrawer = (props) => {
                   Array.isArray(multiCitySuggestions) &&
                   multiCitySuggestions.map((sugg, idx) => (
                     <div key={sugg?.result_index ?? idx} className="w-full">
-                      {sugg?.data?.duration?.text && (
-                        <div className="px-1 pb-1 ttw-type-body-strong text-[#445069] flex items-center gap-2">
-                          <span>{sugg.name}</span>
-                          <span className="ttw-type-small text-[#8a93a6] bg-[#f4f3ec] rounded px-2 py-0.5">
-                            {sugg.data.duration.text}
-                          </span>
-                        </div>
-                      )}
                       <MultiCityTripSuggestion
                         onFleetChoice={setFleetChoice}
                         handleRoundTripSelect={handleMultiCitySelect}
                         multiCitySuggestions={sugg}
-                        selectedCab={selectedCab}
                         setSelectedCab={setSelectedCab}
-                        selectedTripType={selectedTripType}
                         setSelectedTripType={setSelectedTripType}
+                        traceId={multicityRoundtripTraceId}
+                        committedQuote={committedQuote}
+                        updating={updatingTransfer}
+                        ctaLabel={suggestionCtaLabel}
                       />
                     </div>
                   ))}
@@ -2289,10 +2351,12 @@ const TransferEditDrawer = (props) => {
                           onFleetChoice={setFleetChoice}
                           handleRoundTripSelect={handleMultiCitySelect}
                           multiCitySuggestions={sugg}
-                          selectedCab={selectedCab}
                           setSelectedCab={setSelectedCab}
-                          selectedTripType={selectedTripType}
                           setSelectedTripType={setSelectedTripType}
+                          traceId={multicityRoundtripTraceId}
+                          committedQuote={committedQuote}
+                          updating={updatingTransfer}
+                          ctaLabel={suggestionCtaLabel}
                         />
                       </div>
                     ))}
@@ -2309,10 +2373,12 @@ const TransferEditDrawer = (props) => {
                         onFleetChoice={setFleetChoice}
                         handleRoundTripSelect={handleMultiCitySelect}
                         roundTripSuggestions={roundTripSuggestions}
-                        selectedCab={selectedCab}
                         setSelectedCab={setSelectedCab}
-                        selectedTripType={selectedTripType}
                         setSelectedTripType={setSelectedTripType}
+                        traceId={multicityRoundtripTraceId}
+                        committedQuote={committedQuote}
+                        updating={updatingTransfer}
+                        ctaLabel={suggestionCtaLabel}
                       />
                     </div>
                   )}
@@ -2438,6 +2504,12 @@ const TransferEditDrawer = (props) => {
               (!!roundTripSuggestions || !!existingSightseeingBooking))) &&
           !transfersError &&
           (() => {
+            // Every result card now carries its own CTA, so the only thing left
+            // for this bar to commit is a convoy — several cabs picked with the
+            // steppers, which is ONE booking and therefore cannot be committed
+            // from any single card. Outside that case the bar is dead weight.
+            if (!multicityFleetMode) return null;
+
             // While dates match the existing booking we have nothing to submit
             // (the user hasn't picked a different cab and hasn't changed the
             // date range), so skip the action bar entirely.
@@ -5613,9 +5685,7 @@ const RadioButton = ({ name, label, transferType, handleTransferType }) => {
 const useSuggestionFleet = ({ pricing, data, suggestionIndex, onFleetChoice, setSelectedCab }) => {
   const [quantities, setQuantities] = useState({});
 
-  const enabled =
-    Boolean(data?.fleet?.multi_vehicle_needed) &&
-    (!data?.source || data.source === "Self");
+  const enabled = suggestionNeedsFleet(data);
 
   const candidates = useMemo(
     () =>
@@ -5681,294 +5751,140 @@ const SuggestionFleetSummary = ({ summary, pax, symbol }) => {
   );
 };
 
+/**
+ * One suggestion — a route plan priced in several vehicle classes.
+ *
+ * The route is stated once as a header and every priced cab is its own card with
+ * its own photo, facts, price and "Add to Itinerary" button, so a customer
+ * comparing cabs here is looking at the same list shape the taxi search shows.
+ *
+ * `RoundTripSuggestion` reads the legacy `transfer_details` quote shape;
+ * `MultiCityTripSuggestion` below reads the `taxi_category`/`price` shape mercury
+ * sends. Everything else about the two is identical.
+ *
+ * The exception is a party no single cab seats: `useSuggestionFleet` turns each
+ * card's CTA into a quantity stepper and the drawer's own action bar commits the
+ * whole convoy as ONE booking — committing per card would only replace the
+ * previous car.
+ */
 const RoundTripSuggestion = ({
   onFleetChoice,
   roundTripSuggestions,
   handleRoundTripSelect,
-  selectedCab,
   setSelectedCab,
-  selectedTripType,
   setSelectedTripType,
+  traceId,
+  committedQuote,
+  updating,
+  ctaLabel = "Add to Itinerary",
 }) => {
-  const [selectError, setSelectError] = useState(null);
-  const [routes, setRoutes] = useState([]);
-  const [pricing, setPricing] = useState([]);
-  const [viewDetails, setViewDetails] = useState([
-    ...Array(roundTripSuggestions.length).fill(false),
-  ]);
-  const isDesktop = useMediaQuery("(min-width:768px)");
+  const [pendingQuote, setPendingQuote] = useState(null);
   const currency = useSelector((state) => state.currency);
+  const currencySymbol = currency?.currency
+    ? currencySymbols?.[currency?.currency]
+    : "\u20b9";
 
-  useEffect(() => {
-    const routes = [];
-    const pricing = [];
+  const routes = roundTripSuggestions?.data?.trips || EMPTY_LIST;
+  const pricing = roundTripSuggestions?.data?.quotes || EMPTY_LIST;
 
-    roundTripSuggestions?.data?.trips?.forEach((route) => {
-      routes.push(route);
-    });
-    setRoutes(routes);
-
-    roundTripSuggestions?.data?.quotes?.forEach((quote) => {
-      pricing.push(quote);
-    });
-    setPricing(pricing);
-  }, [roundTripSuggestions]);
+  // The commit names the SUGGESTION here and the quote separately; the legacy
+  // payload this component reads has always been suggestion 1.
+  const suggestionIndex = roundTripSuggestions?.result_index ?? 1;
 
   const suggestionFleet = useSuggestionFleet({
     pricing,
     data: roundTripSuggestions?.data,
-    suggestionIndex: 1,
+    suggestionIndex,
     onFleetChoice,
     setSelectedCab,
   });
 
-  const handleSelectCab = (e) => {
-    setSelectError(false);
-    // Clear multicity selection and set trip type to roundtrip
-    setSelectedTripType("roundtrip");
-    // A single cab and a fleet are mutually exclusive; the action bar commits whichever
-    // is set, so leaving a stale fleet here would book something the radio doesn't show.
-    onFleetChoice?.(null);
-    setSelectedCab({
-      ...pricing.find((p) => p.result_index == e.target.id),
-      tripType: "roundtrip",
-      suggestion_result_index: roundTripSuggestions?.result_index,
-    });
-  };
+  // The drawer owns the request; once it settles this card's spinner is done,
+  // whichever way it went.
+  useEffect(() => {
+    if (!updating) setPendingQuote(null);
+  }, [updating]);
 
-  const handleSelect = () => {
-    if (selectedCab && selectedTripType === "roundtrip") {
-      // Pass result_index as 1 for roundtrip
-      handleRoundTripSelect(
-        roundTripSuggestions?.trace_id,
-        1,
-        selectedCab.result_index,
-      );
-    } else {
-      setSelectError(true);
-    }
+  const handleAdd = (quote) => {
+    // A single cab and a fleet are mutually exclusive — the drawer commits
+    // whichever is set, so picking one has to clear the other.
+    onFleetChoice?.(null);
+    setSelectedTripType?.("roundtrip");
+    setSelectedCab?.({
+      ...quote,
+      tripType: "roundtrip",
+      suggestion_result_index: suggestionIndex,
+    });
+    setPendingQuote(quote?.result_index);
+    handleRoundTripSelect(
+      traceId || roundTripSuggestions?.trace_id,
+      suggestionIndex,
+      quote?.result_index,
+    );
   };
 
   return (
-    <div
-      className={`w-full flex flex-row gap-2 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm border-x-2 border-t-2 border-b-4 ${
- selectedTripType === "roundtrip" ? "border-[#f7e700] bg-[#fffde7]" : ""
- }`}
-    >
-      {isDesktop && (
-        <div
-          className={`w-[80px] h-[70px] px-2 bg-[#f4f3ec] rounded-xl flex items-center justify-center`}
-        >
-          <TransfersIcon
-            TransportMode={"Taxi"}
-            Instyle={{
-              fontSize: "3rem",
-              color: "black",
-            }}
-            classname={{ width: 80, height: 75 }}
-          />
-        </div>
-      )}
+    <div className="w-full flex flex-col gap-sm">
+      <SuggestionHeader
+        title={roundTripSuggestions?.name}
+        distance={
+          roundTripSuggestions?.data?.distance?.value ??
+          roundTripSuggestions?.distance?.value
+        }
+        duration={
+          roundTripSuggestions?.data?.duration?.text ??
+          roundTripSuggestions?.duration?.text
+        }
+        routes={routes}
+      />
 
-      <div className="w-full flex flex-col gap-3">
-        <div className="flex flex-row gap-2">
-          {!isDesktop && (
-            <div
-              className={`w-[60px] h-[60px] px-2 bg-[#f4f3ec] rounded-xl flex items-center justify-center`}
-            >
-              <TransfersIcon
-                TransportMode={"Taxi"}
-                Instyle={{
-                  fontSize: "3rem",
-                  color: "black",
-                }}
-                classname={{ width: 80, height: 75 }}
+      <div className="flex flex-col gap-sm">
+        {pricing?.length ? (
+          pricing.map((quote, i) => {
+            // >1 only when no single cab seats the group; the price shown is
+            // then the convoy total, not what one cab costs.
+            const vehicleCount = getVehicleCount(quote);
+            const total = quote?.transfer_details?.total;
+            return (
+              <SuggestionQuoteCard
+                key={`quote-${quote?.result_index ?? i}`}
+                quote={quote}
+                currencySymbol={currencySymbol}
+                total={total}
+                vehicleCount={vehicleCount}
+                perVehicleTotal={resolvePerVehicleTotal(
+                  quote,
+                  total,
+                  vehicleCount,
+                )}
+                isMixedFleet={Boolean(getFleetManifest(quote)?.is_mixed)}
+                added={isCommittedQuote(committedQuote, suggestionIndex, quote)}
+                busy={!!updating && pendingQuote == quote?.result_index}
+                disabled={!!updating}
+                ctaLabel={ctaLabel}
+                onAdd={() => handleAdd(quote)}
+                fleetMode={suggestionFleet.enabled}
+                quantity={Number(
+                  suggestionFleet.quantities[String(quote?.result_index)] || 0,
+                )}
+                onQuantityChange={(next) =>
+                  suggestionFleet.setQuantity(quote?.result_index, next)
+                }
               />
-            </div>
-          )}
-          <div className="flex flex-col gap-1">
-            <div className="ttw-type-body font-medium">
-              {roundTripSuggestions?.name}
-            </div>
-            <div className="text-[#445069] ttw-type-body font-normal">
-              Distance: {roundTripSuggestions?.distance?.value} Kms
-            </div>
+            );
+          })
+        ) : (
+          <div className="ttw-type-body text-[#445069] px-1">
+            No cabs available for this route.
           </div>
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <div className="ttw-type-body font-semibold">Routes</div>
-          <div className="flex flex-col gap-1">
-            {routes.map((route, i) => (
-              <div
-                key={`route-${i}`}
-                className="flex flex-row items-center gap-2"
-              >
-                <div className="w-1 h-1 bg-black rounded-full"></div>
-                <div className="ttw-type-body font-normal">{route?.name}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <div className="flex flex-row items-center gap-2">
-            <div className="ttw-type-body font-semibold">Available Cabs</div>
-            {selectError && (
-              <div className="bg-[#CD2026] ttw-type-small md:ttw-type-body lg:ttw-type-body text-white py-1 px-2 rounded-lg text-center animate-popOut">
-                Please choose one cab
-              </div>
-            )}
-          </div>
-          <div className="flex flex-col gap-4">
-            {pricing?.length > 0
-              ? pricing.map((price, i) => {
-                  // >1 only when no single cab seats the group; the price shown
-                  // is then the convoy total, not what one cab costs.
-                  const vehicleCount = getVehicleCount(price);
-                  const fleet = getFleetManifest(price);
-                  const perVehicleTotal = resolvePerVehicleTotal(
-                    price,
-                    price?.transfer_details?.total,
-                    vehicleCount,
-                  );
-                  return (
-                  <div
-                    key={`price-${i}`}
-                    className="w-full flex flex-row items-start gap-2"
-                  >
-                    <div>
-                      {suggestionFleet.enabled ? (
-                        <QuantityStepper
-                          size="sm"
-                          value={Number(
-                            suggestionFleet.quantities[
-                              String(price?.result_index)
-                            ] || 0,
-                          )}
-                          label={
-                            price?.transfer_details?.model_name ||
-                            price?.transfer_details?.type ||
-                            "taxi"
-                          }
-                          onChange={(next) =>
-                            suggestionFleet.setQuantity(price?.result_index, next)
-                          }
-                        />
-                      ) : (
-                      <div
-                        id={price?.result_index}
-                        onClick={handleSelectCab}
-                        className={`w-5 h-5 flex items-center justify-center rounded-full border-2 cursor-pointer ${
- selectedCab?.result_index == price?.result_index &&
- selectedTripType === "roundtrip"
- ? "border-black"
- : "border-[#ececec]"
- } `}
-                      >
-                        {selectedCab?.result_index == price?.result_index &&
-                          selectedTripType === "roundtrip" && (
-                            <div
-                              id={price?.result_index}
-                              className="w-3 h-3 bg-black rounded-full"
-                            ></div>
-                          )}
-                      </div>
-                      )}
-                    </div>
-
-                    <div className="flex flex-col items-start gap-1">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <div className="text-[#445069] ttw-type-body font-normal">
-                          {price.transfer_details?.model_name ||
-                            price.transfer_details?.type}
-                          :{" "}
-                          <span className="font-700 text-[#0b1220]">
-                            {currency?.currency
-                              ? currencySymbols?.[currency?.currency]
-                              : "₹"}
-                            {getIndianPrice(
-                              Math.floor(price?.transfer_details?.total),
-                            )}
-                          </span>
-                        </div>
-                        <PerTaxiPrice
-                          count={vehicleCount}
-                          perVehicleTotal={perVehicleTotal}
-                          symbol={
-                            currency?.currency
-                              ? currencySymbols?.[currency?.currency]
-                              : "₹"
-                          }
-                        />
-                        <VehicleCountBadge count={vehicleCount} />
-                      </div>
-                      {(viewDetails[i] || true) && (
-                        <div className="ttw-type-body">
-                          <span className="font-semibold">Facilities: </span>
-                          {price?.transfer_details?.seating_capacity
-                            ? `${price.transfer_details.seating_capacity} Seats | `
-                            : null}
-                          {price?.transfer_details?.bag_capacity
-                            ? `${price.cab.bagCapacity} Bags | `
-                            : null}
-                          {price?.cab?.bigBagCapaCity
-                            ? `${price.cab.bigBagCapaCity} Big Bag Capacity | `
-                            : null}
-                          {price?.transfer_details?.fuel_type
-                            ? ` Fuel Type ${price.transfer_details?.fuel_type}`
-                            : null}
-                          {/* Only honest when the cabs are identical. */}
-              {vehicleCount > 1 && !fleet?.is_mixed ? " (per taxi)" : null}
-                        </div>
-                      )}
-                      <MultiVehicleNote
-                        count={vehicleCount}
-                        seatingCapacity={
-                          price?.transfer_details?.seating_capacity
-                        }
-                      />
-                      {/* What this cab's fare covers and how it cancels. These rows
-                          quote in the legacy `transfer_details` shape, which QuoteTerms
-                          resolves alongside the others — a source that states neither
-                          leaves the row exactly as it was. */}
-                      <QuoteTerms
-                        quote={price}
-                        currencySymbol={
-                          currency?.currency
-                            ? currencySymbols?.[currency?.currency]
-                            : "\u20b9"
-                        }
-                        includedItems
-                      />
-                    </div>
-                  </div>
-                  );
-                })
-              : "No Cabs Available"}
-          </div>
-        </div>
-
-        <SuggestionFleetSummary
-          summary={suggestionFleet.summary}
-          pax={suggestionFleet.pax}
-          symbol={
-            currency?.currency ? currencySymbols?.[currency?.currency] : "\u20b9"
-          }
-        />
-
-        {/* <div
-          className="flex mt-2 flex-row gap-2 items-end justify-end cursor-pointer place-self-end"
-        >
-          <CheckboxFormComponent
-            checked={selectedTripType === 'roundtrip' && selectedCab}
-            className="mb-1"
-          />
-          <label className="text-center cursor-pointer">
-            {selectedTripType === 'roundtrip' && selectedCab ? "Selected" : "Select"}
-          </label>
-        </div> */}
+        )}
       </div>
+
+      <SuggestionFleetSummary
+        summary={suggestionFleet.summary}
+        pax={suggestionFleet.pax}
+        symbol={currencySymbol}
+      />
     </div>
   );
 };
@@ -5977,287 +5893,108 @@ const MultiCityTripSuggestion = ({
   onFleetChoice,
   multiCitySuggestions,
   handleRoundTripSelect,
-  selectedCab,
   setSelectedCab,
-  selectedTripType,
   setSelectedTripType,
+  traceId,
+  committedQuote,
+  updating,
+  ctaLabel = "Add to Itinerary",
 }) => {
-  const [selectError, setSelectError] = useState(null);
-  const [routes, setRoutes] = useState([]);
-  const [pricing, setPricing] = useState([]);
-  const [viewDetails, setViewDetails] = useState([
-    ...Array(multiCitySuggestions?.data?.length).fill(false),
-  ]);
-  const isDesktop = useMediaQuery("(min-width:768px)");
+  const [pendingQuote, setPendingQuote] = useState(null);
   const currency = useSelector((state) => state.currency);
+  const currencySymbol = currency?.currency
+    ? currencySymbols?.[currency?.currency]
+    : "\u20b9";
 
-  useEffect(() => {
-    const routes = [];
-    const pricing = [];
-    multiCitySuggestions?.data?.trips?.forEach((route) => {
-      routes.push(route);
-    });
-    setRoutes(routes);
-    multiCitySuggestions?.data?.quotes?.forEach((quote) => {
-      pricing.push(quote);
-    });
-    setPricing(pricing);
-  }, [multiCitySuggestions]);
+  const routes = multiCitySuggestions?.data?.trips || EMPTY_LIST;
+  const pricing = multiCitySuggestions?.data?.quotes || EMPTY_LIST;
+
+  const suggestionIndex = multiCitySuggestions?.result_index ?? 0;
 
   const suggestionFleet = useSuggestionFleet({
     pricing,
     data: multiCitySuggestions?.data,
-    suggestionIndex: 0,
+    suggestionIndex,
     onFleetChoice,
     setSelectedCab,
   });
 
-  const handleSelectCab = (cab) => {
-    setSelectError(false);
-    // Clear roundtrip selection and set trip type to multicity
-    setSelectedTripType("multicity");
-    // Mutually exclusive with a fleet choice — see the roundtrip handler.
-    onFleetChoice?.(null);
-    setSelectedCab({
-      ...cab,
-      tripType: "multicity",
-      suggestion_result_index: multiCitySuggestions?.result_index,
-    });
-  };
+  useEffect(() => {
+    if (!updating) setPendingQuote(null);
+  }, [updating]);
 
-  const handleSelect = () => {
-    if (selectedCab && selectedTripType === "multicity") {
-      // Pass result_index as 0 for multicity
-      handleRoundTripSelect(
-        multiCitySuggestions?.trace_id,
-        0,
-        selectedCab.result_index,
-      );
-    } else {
-      setSelectError(true);
-    }
+  const handleAdd = (quote) => {
+    onFleetChoice?.(null);
+    setSelectedTripType?.("multicity");
+    setSelectedCab?.({
+      ...quote,
+      tripType: "multicity",
+      suggestion_result_index: suggestionIndex,
+    });
+    setPendingQuote(quote?.result_index);
+    handleRoundTripSelect(
+      traceId || multiCitySuggestions?.trace_id,
+      suggestionIndex,
+      quote?.result_index,
+    );
   };
 
   return (
-    <div
-      className={`w-full flex flex-row gap-2 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm border-x-2 border-t-2 border-b-4 ${
- selectedTripType === "multicity" ? "border-[#f7e700] bg-[#fffde7]" : ""
- }`}
-    >
-      {isDesktop && (
-        <div
-          className={`w-[80px] h-[70px] px-2 bg-[#f4f3ec] rounded-xl flex items-center justify-center`}
-        >
-          <TransfersIcon
-            TransportMode={"Taxi"}
-            Instyle={{
-              fontSize: "3rem",
-              color: "black",
-            }}
-            classname={{ width: 80, height: 75 }}
-          />
-        </div>
-      )}
+    <div className="w-full flex flex-col gap-sm">
+      <SuggestionHeader
+        title={multiCitySuggestions?.name}
+        distance={multiCitySuggestions?.data?.distance?.value}
+        duration={multiCitySuggestions?.data?.duration?.text}
+        routes={routes}
+      />
 
-      <div className="w-full flex flex-col gap-3">
-        <div className="flex flex-row gap-2">
-          {!isDesktop && (
-            <div
-              className={`w-[60px] h-[60px] px-2 bg-[#f4f3ec] rounded-xl flex items-center justify-center`}
-            >
-              <TransfersIcon
-                TransportMode={"Taxi"}
-                Instyle={{
-                  fontSize: "3rem",
-                  color: "black",
-                }}
-                classname={{ width: 80, height: 75 }}
+      <div className="flex flex-col gap-sm">
+        {pricing?.length ? (
+          pricing.map((quote, i) => {
+            // >1 only when no single cab seats the group; price.total is then
+            // the convoy total, with the one-cab figure in per_vehicle_total.
+            const vehicleCount = getVehicleCount(quote);
+            const total = quote?.price?.total;
+            return (
+              <SuggestionQuoteCard
+                key={`quote-${quote?.result_index ?? i}`}
+                quote={quote}
+                currencySymbol={currencySymbol}
+                total={total}
+                vehicleCount={vehicleCount}
+                perVehicleTotal={resolvePerVehicleTotal(
+                  quote,
+                  total,
+                  vehicleCount,
+                )}
+                isMixedFleet={Boolean(getFleetManifest(quote)?.is_mixed)}
+                added={isCommittedQuote(committedQuote, suggestionIndex, quote)}
+                busy={!!updating && pendingQuote == quote?.result_index}
+                disabled={!!updating}
+                ctaLabel={ctaLabel}
+                onAdd={() => handleAdd(quote)}
+                fleetMode={suggestionFleet.enabled}
+                quantity={Number(
+                  suggestionFleet.quantities[String(quote?.result_index)] || 0,
+                )}
+                onQuantityChange={(next) =>
+                  suggestionFleet.setQuantity(quote?.result_index, next)
+                }
               />
-            </div>
-          )}
-          <div className="flex flex-col gap-1">
-            <div className="ttw-type-body font-medium">
-              {multiCitySuggestions?.name}
-            </div>
-            <div className="text-[#445069] ttw-type-body font-normal">
-              Distance: {multiCitySuggestions?.data?.distance?.value} Kms
-            </div>
-            <div className="text-[#445069] ttw-type-body font-normal">
-              Duration: {multiCitySuggestions?.data?.duration?.text}
-            </div>
+            );
+          })
+        ) : (
+          <div className="ttw-type-body text-[#445069] px-1">
+            No cabs available for this route.
           </div>
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <div className="ttw-type-body font-semibold">Routes</div>
-          <div className="flex flex-col gap-1">
-            {routes.map((route, i) => (
-              <div
-                key={`route-${i}`}
-                className="flex flex-row items-center gap-2"
-              >
-                <div className="w-1 h-1 bg-black rounded-full"></div>
-                <div className="ttw-type-body font-normal">{route?.name}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <div className="flex flex-row items-center gap-2">
-            <div className="ttw-type-body font-semibold">Available Cabs</div>
-            {selectError && (
-              <div className="bg-[#CD2026] ttw-type-small md:ttw-type-body lg:ttw-type-body text-white py-1 px-2 rounded-lg text-center animate-popOut">
-                Please choose one cab
-              </div>
-            )}
-          </div>
-          <div className="flex flex-col gap-4">
-            {pricing.map((price, i) => {
-              // >1 only when no single cab seats the group; price.total is then
-              // the convoy total, with the one-cab figure in per_vehicle_total.
-              const vehicleCount = getVehicleCount(price);
-              // Search quotes never carry a manifest; kept so the guard below
-              // reads the same in every one of these blocks.
-              const fleet = getFleetManifest(price);
-              const perVehicleTotal = resolvePerVehicleTotal(
-                price,
-                price?.price?.total,
-                vehicleCount,
-              );
-              return (
-              <div
-                key={`price-${i}`}
-                className="w-full flex flex-row items-start gap-2"
-              >
-                <div>
-                  {suggestionFleet.enabled ? (
-                    <QuantityStepper
-                      size="sm"
-                      value={Number(
-                        suggestionFleet.quantities[
-                          String(price?.result_index)
-                        ] || 0,
-                      )}
-                      label={
-                        price?.taxi_category?.model_name ||
-                        price?.taxi_category?.type ||
-                        "taxi"
-                      }
-                      onChange={(next) =>
-                        suggestionFleet.setQuantity(price?.result_index, next)
-                      }
-                    />
-                  ) : (
-                  <div
-                    id={price?.result_index}
-                    onClick={() => handleSelectCab(price)}
-                    className={`w-5 h-5 flex items-center justify-center rounded-full border-2 cursor-pointer ${
- selectedCab?.result_index == price?.result_index &&
- selectedTripType === "multicity"
- ? "border-black"
- : "border-[#ececec]"
- } `}
-                  >
-                    {selectedCab?.result_index == price?.result_index &&
-                      selectedTripType === "multicity" && (
-                        <div
-                          id={price?.result_index}
-                          className="w-3 h-3 bg-black rounded-full"
-                        ></div>
-                      )}
-                  </div>
-                  )}
-                </div>
-
-                <div className="flex flex-col items-start gap-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <div className="text-[#445069] ttw-type-body font-normal">
-                      {price?.taxi_category?.model_name ||
-                        price?.taxi_category?.type}
-                      :{" "}
-                      <span className="font-700 text-[#0b1220]">
-                        {currency?.currency
-                          ? currencySymbols?.[currency?.currency]
-                          : "₹"}
-                        {getIndianPrice(Math.floor(price?.price?.total))}
-                      </span>
-                    </div>
-                    <PerTaxiPrice
-                      count={vehicleCount}
-                      perVehicleTotal={perVehicleTotal}
-                      symbol={
-                        currency?.currency
-                          ? currencySymbols?.[currency?.currency]
-                          : "₹"
-                      }
-                    />
-                    <VehicleCountBadge count={vehicleCount} />
-                  </div>
-                  {(viewDetails[i] || true) && (
-                    <div className="ttw-type-body">
-                      <span className="font-semibold">Facilities: </span>
-                      {price?.taxi_category?.seating_capacity
-                        ? `${price.taxi_category.seating_capacity} Seats | `
-                        : null}
-                      {price?.taxi_category?.bag_capacity
-                        ? `${price.taxi_category.bag_capacity} Bags | `
-                        : null}
-                      {price?.taxi_category?.bigBagCapaCity
-                        ? `${price.taxi_category.bigBagCapaCity} Big Bag Capacity | `
-                        : null}
-                      {price?.taxi_category?.fuel_type
-                        ? ` Fuel Type: ${price.taxi_category?.fuel_type}`
-                        : null}
-                      {/* Only honest when the cabs are identical. */}
-              {vehicleCount > 1 && !fleet?.is_mixed ? " (per taxi)" : null}
-                    </div>
-                  )}
-                  <MultiVehicleNote
-                    count={vehicleCount}
-                    seatingCapacity={price?.taxi_category?.seating_capacity}
-                  />
-                  {/* What this cab's fare covers and how it cancels, per the supplier.
-                      A multi-city or round-trip chain is exactly where tolls and state
-                      tax are usually charged on actuals at the kerb, so the card that
-                      omits them is the one that misleads. There is no AmenitySelector
-                      on this card, so included items are stated here too. */}
-                  <QuoteTerms
-                    quote={price}
-                    currencySymbol={
-                      currency?.currency
-                        ? currencySymbols?.[currency?.currency]
-                        : "\u20b9"
-                    }
-                    includedItems
-                  />
-                </div>
-              </div>
-              );
-            })}
-          </div>
-        </div>
-
-        <SuggestionFleetSummary
-          summary={suggestionFleet.summary}
-          pax={suggestionFleet.pax}
-          symbol={
-            currency?.currency ? currencySymbols?.[currency?.currency] : "\u20b9"
-          }
-        />
-
-        {/* <div
-          className="flex mt-2 flex-row gap-2 items-end justify-end cursor-pointer place-self-end"
-        >
-          <CheckboxFormComponent
-            checked={selectedTripType === 'multicity' && selectedCab}
-            className="mb-1"
-          />
-          <label className="text-center cursor-pointer">
-            {selectedTripType === 'multicity' && selectedCab ? "Selected" : "Select"}
-          </label>
-        </div> */}
+        )}
       </div>
+
+      <SuggestionFleetSummary
+        summary={suggestionFleet.summary}
+        pax={suggestionFleet.pax}
+        symbol={currencySymbol}
+      />
     </div>
   );
 };
