@@ -3896,7 +3896,18 @@ Start Location: ${details.startLocation}`;
           sticky element is this wrapper (not the card) so its white background
           fills the card's mx/mt gutters — otherwise the timeline would show
           through them while scrolling underneath. */}
-      <div className="max-ph:sticky max-ph:top-0 max-ph:z-30 max-ph:bg-white">
+      {/* Hidden inside the phone's route sheet: the sheet has its own "Your
+          route" header, and the trip card underneath it — title, dates, the
+          route strip with its own Change button, the Kaira Protected badge —
+          repeats the itinerary the traveller just came from. The sheet opens on
+          the Route section itself. Desktop keeps the card in every view: there
+          it is the panel's header, not a sheet's second one. */}
+      <div
+        className="max-ph:sticky max-ph:top-0 max-ph:z-30 max-ph:bg-white"
+        style={
+          isMobile && viewMode === "routes" ? { display: "none" } : undefined
+        }
+      >
       {/* Arbitrary px values, not px-3/py-3: bootstrap's `.px-3`/`.py-3` are
           `1rem !important` and land after Tailwind, so they silently overrode
           every padding this card asked for (`md:px-[22px]`, `max-ph:px-[12px]`,
@@ -4732,7 +4743,24 @@ Start Location: ${details.startLocation}`;
           // Re-poll status + canonical fetch instead of trusting the edit response,
           // which lacks day-by-day, hotels, transfers, pricing and would clobber
           // status:"Finalized" (hiding Routes/Bookings tabs).
-          if (activeItineraryId) handleItineraryRefresh(activeItineraryId);
+          //
+          // Guarded because the modal closes on this promise: the save is done
+          // the moment the POST above returns, and a throw from the refresh —
+          // which only rebuilds this page's own state — would otherwise keep the
+          // sheet open under an error message about a save the server accepted.
+          try {
+            if (activeItineraryId) handleItineraryRefresh(activeItineraryId);
+            // Saved from the Route view — on a phone, the route sheet standing
+            // over the itinerary. The route behind it is about to be rebuilt
+            // around the new dates, so hand the traveller back to the itinerary:
+            // the surface being rebuilt, and the one whose status loader narrates
+            // it. Same landing an accepted Update Route gives them. Left alone
+            // when Settings was opened from anywhere else — a save from the
+            // itinerary or bookings shouldn't move anyone.
+            if (viewMode === "routes") handleBackToItinerary();
+          } catch (err) {
+            console.error("[BotApp] itinerary refresh after settings edit:", err);
+          }
           return response;
         };
         // Opened from the Route tab's blocked action bar: the traveller came
@@ -5921,7 +5949,16 @@ const MobileLayout = React.memo(
     // transform (see the header markup below).
     const [navHidden, setNavHidden] = React.useState(false);
 
-    const headerVisible = activeTab !== "chat";
+    // On a phone the Route tab is presented as a full-screen bottom sheet
+    // rather than another tab body: "Change Route" is a detour from the
+    // itinerary, and a sheet says "you'll be handed back" in a way a tab swap
+    // doesn't. It reuses this pane rather than rendering its own — moving
+    // `itineraryContent` into a new container would remount the single
+    // ItineraryContainer instance and every poll and timer inside it.
+    const routeSheet = activeTab === "routes";
+    // The navbar stays out of the way while the sheet is up; the sheet has its
+    // own header with the close button.
+    const headerVisible = activeTab !== "chat" && !routeSheet;
 
     // Held in a ref so the scroll listener below never re-registers on it.
     const onItineraryScrolledRef = React.useRef(onItineraryScrolled);
@@ -6154,7 +6191,14 @@ const MobileLayout = React.memo(
               // padding the pane by its height: padding is scrollable, so it
               // forced a scrollbar even when the content fit. Shrinking the pane
               // cannot.
-              className="absolute inset-x-0 top-0 overflow-y-auto bg-white"
+              className={`overflow-y-auto bg-white ${
+                routeSheet
+                  // No rounded top and no inset: the sheet covers the screen
+                  // edge to edge, so nothing behind it shows through a corner
+                  // or a sliver at the top.
+                  ? "fixed inset-0 ttw-sheet-up"
+                  : "absolute inset-x-0 top-0"
+              }`}
               style={{
                 // Full height (the spacer below reserves the navbar's row inside
                 // the scroll flow); end where the fixed CTA bar begins.
@@ -6176,9 +6220,14 @@ const MobileLayout = React.memo(
                 )
                   ? "auto"
                   : "none",
-                zIndex: ["itinerary", "routes", "bookings"].includes(activeTab)
-                  ? 2
-                  : 1,
+                // 20 as a sheet so it covers the page chrome it is standing in
+                // front of, but stays under the portalled Update Route bar
+                // (z-30) that acts as its footer.
+                zIndex: routeSheet
+                  ? 20
+                  : ["itinerary", "routes", "bookings"].includes(activeTab)
+                    ? 2
+                    : 1,
               }}
             >
               {/* Scrolling spacer the height of the absolute navbar. The navbar
@@ -6188,6 +6237,29 @@ const MobileLayout = React.memo(
                   once the spacer scrolls past. */}
               {headerVisible && (
                 <div style={{ height: headerHeight }} aria-hidden />
+              )}
+              {routeSheet && (
+                // Sticky, not fixed: it lives inside the scroller, and a fixed
+                // child of a -webkit-overflow-scrolling:touch pane is placed
+                // against the scrolled content on iOS.
+                <div className="sticky top-0 z-40 flex items-center justify-between gap-3 bg-white px-[18px] py-[16px] border-b border-slate-100 rounded-t-[20px]">
+                  {/* Same weight and tracking as the "Route" heading directly
+                      below it, so the sheet's chrome doesn't outweigh the
+                      content it is introducing. */}
+                  <span className="font-inter text-[19px] font-bold leading-none tracking-[-0.3px] text-[#0B1220]">
+                    Your route
+                  </span>
+                  <button
+                    type="button"
+                    aria-label="Close route"
+                    onClick={() => handleTabClick("itinerary")}
+                    className="flex h-[24px] w-[24px] shrink-0 items-center justify-center rounded-full bg-[#0b1220] text-white"
+                  >
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+                      <path d="M18 6 6 18M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
               )}
               {itineraryContent}
             </div>
@@ -6220,7 +6292,10 @@ const MobileLayout = React.memo(
         </div>
 
         {/* ── Floating Kaira icon + chat banner — on itinerary/routes/bookings views ── */}
+        {/* Not over the route sheet — it floats at z-100 and would cover the
+            sheet's own CTA. */}
         {hasItineraryActivity &&
+          !routeSheet &&
           ["itinerary", "routes", "bookings"].includes(activeTab) && (
             <div
               className="fixed z-[100] flex flex-col items-end gap-2"
