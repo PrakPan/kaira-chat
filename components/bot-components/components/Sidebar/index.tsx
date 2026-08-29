@@ -60,7 +60,14 @@ const SidebarTooltip: React.FC<{
   label: string;
   children: React.ReactNode;
   disabled?: boolean;
-}> = ({ label, children, disabled }) => {
+  /** Wrapper classes. Defaults to the collapsed rail's centred icon slot. */
+  className?: string;
+}> = ({
+  label,
+  children,
+  disabled,
+  className = "w-full flex items-center justify-center",
+}) => {
   const [visible, setVisible] = useState(false);
   const [pos, setPos] = useState({ top: 0, left: 0 });
   const ref = useRef<HTMLDivElement>(null);
@@ -81,7 +88,7 @@ const SidebarTooltip: React.FC<{
     <>
       <div
         ref={ref}
-        className="w-full flex items-center justify-center"
+        className={className}
         onMouseEnter={show}
         onMouseLeave={hide}
         onClick={hide}
@@ -230,14 +237,16 @@ const ChatHistoryList: React.FC<{
 // ── Footer (my trips · profile · log out) ─────────────────────────────────────
 const SidebarFooter: React.FC<{
   isCollapsed: boolean;
+  /** Hoisted to <Sidebar>: the rail and the panel each mount a footer, so the
+      count is fetched once above and shared rather than requested twice. */
+  tripsCount: number | null;
   onLoginSuccess?: () => void | Promise<void>;
-}> = ({ isCollapsed, onLoginSuccess }) => {
+}> = ({ isCollapsed, tripsCount, onLoginSuccess }) => {
   const dispatch = useDispatch();
   const token = useSelector((state: any) => state.auth?.token);
   const name = useSelector((state: any) => state.auth?.name);
   const image = useSelector((state: any) => state.auth?.image);
   const [showLogin, setShowLogin] = useState(false);
-  const tripsCount = useTripsCount();
   const [localImg, setLocalImg] = useState<string | null>(
     typeof window !== "undefined" ? localStorage.getItem("user_image") : null,
   );
@@ -462,6 +471,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   const [hasMoreThreads, setHasMoreThreads] = useState(false);
   const userId = useSelector((state: any) => state.auth?.id);
   const isLoggedIn = !!userId;
+  const tripsCount = useTripsCount();
 
   const THREADS_PAGE_SIZE = 20;
 
@@ -537,6 +547,120 @@ const Sidebar: React.FC<SidebarProps> = ({
     if (isCollapsed) onToggle?.();
   };
 
+  // The rail (76px) and the panel (288px) are two stacked layers, each frozen
+  // at its own final width, cross-faded on toggle while <aside> animates
+  // between the two widths.
+  //
+  // They can't share one tree: laying the expanded content out inside the
+  // animating width meant that for the whole 300ms it was measured against a
+  // box that was still ~76px — labels wrapped, history rows squeezed to a
+  // couple of characters, and every frame re-flowed as the box grew, which is
+  // what made the open/close judder. A fixed-width layer only gets clipped by
+  // the rail's `overflow: hidden`, which costs no layout at all.
+  const railLayer = (
+    <>
+      {/* Expand */}
+      <div className="flex justify-center pb-3">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggle?.();
+          }}
+          className="kaira-collapse-btn is-standalone"
+          aria-label="Expand sidebar"
+        >
+          <ChevronIcon direction="right" size={18} />
+        </button>
+      </div>
+
+      {/* New chat */}
+      <div className="flex justify-center pb-3">
+        <SidebarTooltip label="New chat">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onNewChat?.();
+            }}
+            className="kaira-newchat-icon-btn"
+            aria-label="New chat"
+          >
+            <PlusIcon size={18} />
+          </button>
+        </SidebarTooltip>
+      </div>
+
+      {/* Recent chats — only when signed in. Logged out there's no history to
+          show, so a spacer holds the footer at the bottom instead. */}
+      {!isLoggedIn ? (
+        <div className="flex-1" />
+      ) : (
+        <div className="flex-1 flex flex-col items-center pt-0.5">
+          <SidebarTooltip label="Recent chats">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggle?.();
+              }}
+              className="kaira-icon-btn is-boxed"
+              aria-label="Recent chats"
+            >
+              <HistoryIcon size={18} />
+            </button>
+          </SidebarTooltip>
+        </div>
+      )}
+
+      <div className="kaira-footer is-collapsed">
+        <SidebarFooter
+          isCollapsed
+          tripsCount={tripsCount}
+          onLoginSuccess={onLoginSuccess}
+        />
+      </div>
+    </>
+  );
+
+  const panelLayer = (
+    <>
+      {/* New chat */}
+      <div className="px-3.5 pb-3">
+        <button onClick={onNewChat} className="kaira-newchat-btn">
+          <PlusIcon size={17} className="kaira-nc-icon" />
+          New chat
+        </button>
+      </div>
+
+      {/* Recent chats — see the rail's note on the logged-out spacer. */}
+      {!isLoggedIn ? (
+        <div className="flex-1" />
+      ) : (
+        <>
+          <div className="kaira-hist-header">
+            <HistoryIcon size={13} />
+            <span className="kaira-mono">Recent chats</span>
+          </div>
+          <ChatHistoryList
+            threads={threads}
+            activeThreadId={activeThreadId}
+            onThreadSelect={onThreadSelect}
+            loading={loading}
+            hasMore={hasMoreThreads}
+            loadingMore={loadingMore}
+            onLoadMore={handleLoadMoreThreads}
+          />
+        </>
+      )}
+
+      <div className="kaira-footer">
+        <SidebarFooter
+          isCollapsed={false}
+          tripsCount={tripsCount}
+          onLoginSuccess={onLoginSuccess}
+        />
+      </div>
+    </>
+  );
+
   return (
     <>
       {!isCollapsed && (
@@ -545,137 +669,71 @@ const Sidebar: React.FC<SidebarProps> = ({
 
       <aside
         onClick={handleRailClick}
-        className={`kaira-scope kaira-sidebar absolute left-0 top-0 h-full flex flex-col overflow-hidden z-[160] flex-shrink-0 transition-all duration-300 ease-in-out${
+        className={`kaira-scope kaira-sidebar absolute left-0 top-0 h-full flex flex-col overflow-hidden z-[160] flex-shrink-0${
           isCollapsed ? " is-collapsed" : ""
         }`}
         style={{
           width: isCollapsed ? SIDEBAR_WIDTH_COLLAPSED : SIDEBAR_WIDTH_EXPANDED,
         }}
       >
-        {/* Logo */}
-        <div className={`kaira-logo-row${isCollapsed ? " is-collapsed" : ""}`}>
-          {isCollapsed ? (
-            <SidebarTooltip label="The Tarzan Way">
-              <div
-                className="flex items-center justify-center cursor-pointer"
+        {/* Brand — one instance, above both layers, so it is never faded or
+            remounted mid-toggle. The rail and the panel each used to draw the
+            same mark, and cross-fading the two copies dropped their shared
+            pixels to near-zero opacity for a moment, which read as the logo
+            reloading. Held still, the row just clips the wordmark while
+            collapsed and uncovers it as the rail opens. */}
+        <div className="kaira-logo-row">
+          <SidebarTooltip
+            label="The Tarzan Way"
+            disabled={!isCollapsed}
+            className="kaira-brand-hit"
+          >
+            <span className="kaira-brand-clip">
+              <BrandLockup
+                size={LOGO_HEIGHT.DESKTOP}
+                variant="light"
+                className="kaira-brand"
                 onClick={(e) => {
                   e.stopPropagation();
                   router.push("/");
                 }}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/logo/ttw-mark.svg"
-                  height={LOGO_HEIGHT.DESKTOP}
-                  width={LOGO_HEIGHT.DESKTOP}
-                  alt="The Tarzan Way"
-                />
-              </div>
-            </SidebarTooltip>
-          ) : (
-            <>
-              <div
-                className="flex items-center overflow-hidden cursor-pointer min-w-0"
-                onClick={() => router.push("/")}
-              >
-                <BrandLockup size={LOGO_HEIGHT.DESKTOP} variant="light" />
-              </div>
-              <button
-                onClick={onToggle}
-                className="kaira-collapse-btn ml-auto"
-                aria-label="Collapse sidebar"
-              >
-                <ChevronIcon direction="left" size={15} />
-              </button>
-            </>
-          )}
+              />
+            </span>
+          </SidebarTooltip>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggle?.();
+            }}
+            className={`kaira-collapse-btn kaira-logo-collapse${
+              isCollapsed ? "" : " is-visible"
+            }`}
+            aria-label="Collapse sidebar"
+            aria-hidden={isCollapsed}
+            tabIndex={isCollapsed ? -1 : 0}
+          >
+            <ChevronIcon direction="left" size={15} />
+          </button>
         </div>
 
-        {/* Expand */}
-        {isCollapsed && (
-          <div className="flex justify-center pb-3">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onToggle?.();
-              }}
-              className="kaira-collapse-btn is-standalone"
-              aria-label="Expand sidebar"
-            >
-              <ChevronIcon direction="right" size={18} />
-            </button>
+        {/* Everything under the brand swaps layout, so it cross-fades.
+            The inactive layer is `visibility: hidden` once faded out, which
+            also takes it out of the tab order — no hidden focus stops. */}
+        <div className="kaira-sidebar-stage">
+          <div
+            className={`kaira-sidebar-layer${isCollapsed ? " is-active" : ""}`}
+            style={{ width: SIDEBAR_WIDTH_COLLAPSED }}
+            aria-hidden={!isCollapsed}
+          >
+            {railLayer}
           </div>
-        )}
-
-        {/* New chat */}
-        {isCollapsed ? (
-          <div className="flex justify-center pb-3">
-            <SidebarTooltip label="New chat">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onNewChat?.();
-                }}
-                className="kaira-newchat-icon-btn"
-                aria-label="New chat"
-              >
-                <PlusIcon size={18} />
-              </button>
-            </SidebarTooltip>
+          <div
+            className={`kaira-sidebar-layer${isCollapsed ? "" : " is-active"}`}
+            style={{ width: SIDEBAR_WIDTH_EXPANDED }}
+            aria-hidden={isCollapsed}
+          >
+            {panelLayer}
           </div>
-        ) : (
-          <div className="px-3.5 pb-3">
-            <button onClick={onNewChat} className="kaira-newchat-btn">
-              <PlusIcon size={17} className="kaira-nc-icon" />
-              New chat
-            </button>
-          </div>
-        )}
-
-        {/* Recent chats — only when signed in. Logged out there's no history
-            to show, so we drop the section and let a spacer hold the footer at
-            the bottom (the list/icon block is what normally grows to fill). */}
-        {!isLoggedIn ? (
-          <div className="flex-1" />
-        ) : isCollapsed ? (
-          <div className="flex-1 flex flex-col items-center pt-0.5">
-            <SidebarTooltip label="Recent chats">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onToggle?.();
-                }}
-                className="kaira-icon-btn is-boxed"
-                aria-label="Recent chats"
-              >
-                <HistoryIcon size={18} />
-              </button>
-            </SidebarTooltip>
-          </div>
-        ) : (
-          <>
-            <div className="kaira-hist-header">
-              <HistoryIcon size={13} />
-              <span className="kaira-mono">Recent chats</span>
-            </div>
-            <ChatHistoryList
-              threads={threads}
-              activeThreadId={activeThreadId}
-              onThreadSelect={onThreadSelect}
-              loading={loading}
-              hasMore={hasMoreThreads}
-              loadingMore={loadingMore}
-              onLoadMore={handleLoadMoreThreads}
-            />
-          </>
-        )}
-
-        {/* Footer */}
-        <div className={`kaira-footer${isCollapsed ? " is-collapsed" : ""}`}>
-          <SidebarFooter
-            isCollapsed={isCollapsed}
-            onLoginSuccess={onLoginSuccess}
-          />
         </div>
       </aside>
 

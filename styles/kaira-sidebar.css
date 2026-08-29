@@ -43,13 +43,71 @@
 }
 
 /* ── Desktop rail ──────────────────────────────────────────────────────── */
+/* Only `width` transitions. Tailwind's `transition-all` used to sit on the
+   element, which also ran the border and every inherited paint property
+   through the same 300ms — extra work per frame for no visible gain. */
 .kaira-sidebar {
   border-right: 1px solid var(--k-line);
+  transition: width 0.3s var(--k-ease-out);
 }
 
 /* Collapsed, the whole rail is a click target that opens it. */
 .kaira-sidebar.is-collapsed {
   cursor: pointer;
+}
+
+/* The collapsed rail and the expanded panel are two stacked layers, each
+   pinned to its own final width (76 / 288) by the component. Holding those
+   widths fixed is what makes the toggle smooth: content laid out inside the
+   *animating* width re-flowed on every frame — labels wrapped, history rows
+   squeezed down to a character or two and then sprang back out as the rail
+   grew. At a fixed width the layer is only clipped by the rail's
+   `overflow: hidden`, so there is no layout work mid-animation at all.
+
+   Cross-fade rather than swap: the outgoing layer fades out quickly while the
+   incoming one fades in just behind it, so neither layout ever pops in at
+   full strength on top of the other. The brand row is deliberately NOT part of
+   this — see .kaira-brand-hit. */
+.kaira-scope .kaira-sidebar-stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+.kaira-scope .kaira-sidebar-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  /* Stay visible for the fade, then drop out of the tab / a11y tree. */
+  transition:
+    opacity 0.12s var(--k-ease-out),
+    visibility 0s linear 0.12s;
+}
+
+.kaira-scope .kaira-sidebar-layer.is-active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition:
+    opacity 0.2s var(--k-ease-out) 0.07s,
+    visibility 0s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kaira-sidebar,
+  .kaira-scope .kaira-sidebar-layer,
+  .kaira-scope .kaira-sidebar-layer.is-active,
+  .kaira-scope .kaira-collapse-btn.kaira-logo-collapse,
+  .kaira-scope .kaira-collapse-btn.kaira-logo-collapse.is-visible {
+    transition-duration: 0.01ms;
+    transition-delay: 0s;
+  }
 }
 
 /* Mono eyebrow — dates, section labels */
@@ -62,19 +120,75 @@
 }
 
 /* ── Logo row ──────────────────────────────────────────────────────────── */
+/* Shared by both rail states — see .kaira-brand-hit. `relative` because the
+   collapse chevron is pinned to the row's right edge rather than laid out
+   beside a lockup whose width it would otherwise depend on. */
 .kaira-scope .kaira-logo-row {
   display: flex;
   align-items: center;
   flex: none;
+  position: relative;
   padding: 20px 18px 16px;
   border-bottom: 1px solid var(--k-line);
   margin-bottom: 12px;
   min-height: 71px;
 }
 
-.kaira-scope .kaira-logo-row.is-collapsed {
-  justify-content: center;
-  padding: 20px 0 16px;
+/* The brand is the one thing both rail states draw identically, so it lives
+   above the cross-fading layers and never changes opacity, position or
+   identity — it is only ever clipped (see .kaira-brand-clip). Cross-fading two
+   copies of the same mark dropped their shared pixels to near-zero opacity
+   mid-toggle, which read as the logo reloading. */
+.kaira-scope .kaira-brand-hit {
+  display: flex;
+  align-items: center;
+  flex: none;
+  /* Reclaims the row's right padding so the hover box ends on the rail edge:
+     the tooltip anchors off this box, and without it the brand's tooltip would
+     sit 18px left of every other tooltip on the rail. The clip below is what
+     hides the wordmark, so widening this one costs nothing. */
+  width: calc(100% + 18px);
+  margin-right: -18px;
+}
+
+/* The clip proper: the row's content box (40px collapsed — 76 rail less 2×18
+   padding), just wide enough for the 38px mark, so no sliver of the wordmark
+   leaks onto the rail. It widens with the rail and uncovers the rest. */
+.kaira-scope .kaira-brand-clip {
+  display: flex;
+  align-items: center;
+  width: calc(100% - 18px);
+  overflow: hidden;
+}
+
+/* Never shrinks: at rail width the lockup overflows and is clipped by the box
+   above, rather than squeezing the mark. */
+.kaira-scope .kaira-brand {
+  flex: none;
+  cursor: pointer;
+}
+
+/* Out of flow so the lockup beside it can overflow freely. Centred on the
+   row's content band (its padding, mirrored) so it sits level with the mark.
+   It rides the animating right edge, so it fades in late — by the time it is
+   visible the edge has all but arrived — and out immediately on collapse. */
+.kaira-scope .kaira-collapse-btn.kaira-logo-collapse {
+  position: absolute;
+  top: 20px;
+  bottom: 16px;
+  right: 18px;
+  margin: auto 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.1s var(--k-ease-out);
+}
+
+.kaira-scope .kaira-collapse-btn.kaira-logo-collapse.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transition:
+    opacity 0.15s var(--k-ease-out) 0.18s,
+    background var(--k-t-fast) var(--k-ease-out);
 }
 
 /* ── Collapse / expand chevron ─────────────────────────────────────────── */
