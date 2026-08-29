@@ -29,6 +29,7 @@ import { useTaxiSelection } from "../../fleet/TaxiSelectionContext";
 import { TaxiTypeGlyph } from "../../../../../helper/taxiTypeGlyph";
 import QuantityStepper from "../../fleet/QuantityStepper";
 import AmenitySelector from "./AmenitySelector";
+import { QuoteTerms } from "../../VendorCharges";
 
 
 const Container = styled.div`
@@ -591,6 +592,14 @@ const Section = (props) => {
             </div>
           </div>
         </div>
+
+        {/* What this fare already covers and how it cancels, per the supplier. Renders
+            nothing unless the quote states one or the other, so the sources that itemise
+            nothing leave the card exactly as it was. Shown in the fleet drawer too:
+            mercury sums the per-car charges into the composed quote, so the figures here
+            match the fleet total beside them. `included_items` is left to
+            AmenitySelector below, which owns the same list on the sources that send it. */}
+        <QuoteTerms quote={props.data} currencySymbol={currencySymbol} />
 
         {/* Supplier extras for this quote. Renders nothing unless the quote carries an
             `amenities` array (Mozio only today). Hidden in the multi-select fleet drawer:

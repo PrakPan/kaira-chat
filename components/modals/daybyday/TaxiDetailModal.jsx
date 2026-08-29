@@ -26,6 +26,12 @@ import {
   MultiVehicleNote,
   VehicleCountBadge,
 } from "../taxis/MultiVehicleInfo";
+import {
+  getCancellationPolicy,
+  getVendorCharges,
+  vendorChargeFacts,
+} from "../taxis/VendorCharges";
+import { currencySymbols } from "../../../data/currencySymbols";
 
 const TaxiDetailModal = ({
   data,
@@ -47,6 +53,7 @@ const TaxiDetailModal = ({
   isAirport,
   setIsTransferDrawerOpen,
   handleEditRoute,
+  hideVehicle,
 }) => {
   const [showTaxi, setShowTaxi] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -112,6 +119,20 @@ const TaxiDetailModal = ({
   // what was bought rather than repeating a price.
   const purchasedExtras = (transfer_details?.quote?.amenities || []).filter(
     (item) => item && item.key,
+  );
+
+  // Whether tolls and state tax are inside this fare or collected at the kerb, per the
+  // supplier. Empty for a source that does not itemise, and for anything booked before
+  // mercury started recording it — the section below is hidden in both cases rather
+  // than asserting "not included", which would be a worse lie than saying nothing.
+  const vendorCharges = getVendorCharges(data);
+  const fareIncludes = vendorChargeFacts(
+    vendorCharges,
+    // The block stamps its own currency, so prefer that over the booking's: an
+    // itinerary whose currency was switched after booking rewrites the booking but
+    // never the stored quote, and these amounts are still in the currency they were
+    // quoted in.
+    currencySymbols?.[vendorCharges?.currency || data?.currency] || "",
   );
 
   // A sightseeing package is sold by the day from a single pickup point, so it
@@ -266,7 +287,13 @@ const TaxiDetailModal = ({
         />
       </DetailSection>
 
-      {(vehicle || fleet) && (
+      {/* `hideVehicle` is set by a package drawer that has already put this exact car
+          at the top as "the car, throughout" — the legs of a multi-city chain share
+          their vehicles, so each of them repeating the same photo and the same five
+          chips pushes the leg's own detail off the screen. It is passed per leg and
+          only when the car really matches, so a leg that rides in something else
+          still describes it. */}
+      {(vehicle || fleet) && !hideVehicle && (
         <DetailSection
           label="Vehicle"
           // Count, not the fleet label: the note and the per-cab cards directly
@@ -383,8 +410,29 @@ const TaxiDetailModal = ({
         </DetailSection>
       ) : null}
 
-      <PolicyNote html={data?.cancellation_policy} />
-      <PolicyNote html={data?.cancellation_policies} />
+      {/* What the booked fare covers and how it cancels, as the supplier stated it at
+          the time of booking. The figures are the SUPPLIER's — they reconcile with the
+          taxi's own price, not with the booking total, which carries our service fee
+          and GST on top. Both disappear entirely when the supplier stated neither.
+
+          The policy is read through the resolver rather than off the booking's own
+          keys: only a handful of sources put it at the top level, and every Gozo taxi
+          carries it down on `transfer_details.quote.price`, where a flat lookup finds
+          nothing and silently renders no policy at all.
+
+          Both are withheld inside a combo rail. Every leg of a chain is sold on one
+          supplier's quote, so a leg answers these identically to its siblings, and
+          repeating the same three chips and the same page of policy under each service
+          buries the leg's own detail. The package drawer collects them across the legs
+          and states them once, below all of them — see `collectAcrossLegs` in
+          TransferDrawer, which also covers the case where the legs DON'T agree. */}
+      {!isEmbedded && fareIncludes.length ? (
+        <DetailSection label="Fare includes">
+          <FactChips facts={fareIncludes} />
+        </DetailSection>
+      ) : null}
+
+      {!isEmbedded ? <PolicyNote html={getCancellationPolicy(data)} /> : null}
     </>
   );
 

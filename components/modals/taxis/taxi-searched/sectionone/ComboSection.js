@@ -16,6 +16,7 @@ import { ImCheckboxChecked, ImCheckboxUnchecked } from "react-icons/im";
 import { FaCar } from "react-icons/fa";
 import { PiTaxiLight } from "react-icons/pi";
 import { currencySymbols } from "../../../../../data/currencySymbols";
+import { QuoteTerms } from "../../VendorCharges";
 import {
   getVehicleCount,
   MultiVehicleNote,
@@ -263,6 +264,17 @@ const ComboSection = (props) => {
               </div>
             </div>
           </div>
+
+          {/* What this chain's fare covers and how it cancels, per the supplier. Combo
+              quotes do not go through Route.js, so this card carries its own copy. On a
+              multi-day chain the answer is usually "tolls & state tax charged on
+              actuals", which is exactly the case that caused the confusion. There is no
+              AmenitySelector on this card, so included items are stated here. */}
+          <QuoteTerms
+            quote={props.data}
+            currencySymbol={currencySymbol}
+            includedItems
+          />
 
         </DetailsContainer>
       </TaxiCard>

@@ -10,11 +10,14 @@ import DrawerShell from "../../components/revamp/common/components/bookingDetail
 import FactChips from "../../components/revamp/common/components/bookingDetail/FactChips";
 import FleetVehicles from "../../components/revamp/common/components/bookingDetail/FleetVehicles";
 import JourneyRail from "../../components/revamp/common/components/bookingDetail/JourneyRail";
+import PolicyNote from "../../components/revamp/common/components/bookingDetail/PolicyNote";
 import VehiclePhoto from "../../components/revamp/common/components/bookingDetail/VehiclePhoto";
 import { getModeAccent } from "../../components/revamp/common/components/bookingDetail/modeAccent";
 import {
   formatDateTime,
   legVehicle,
+  packageTotals,
+  paxLabel,
 } from "../../components/revamp/common/components/bookingDetail/format";
 import FlightDetailLoader from "../../components/modals/daybyday/FlightDetailLoader";
 import VehicleDetailModal from "../../components/modals/daybyday/VehicleModal";
@@ -32,6 +35,12 @@ import {
   getFleetManifest,
   getVehicleCount,
 } from "../../components/modals/taxis/MultiVehicleInfo";
+import {
+  getCancellationPolicy,
+  getVendorCharges,
+  vendorChargeFacts,
+} from "../../components/modals/taxis/VendorCharges";
+import { currencySymbols } from "../../data/currencySymbols";
 import { useAnalytics } from "../../hooks/useAnalytics";
 
 const TransferDrawer = ({
@@ -488,6 +497,10 @@ const TransferDrawer = ({
             data={child}
             handleDelete={null}
             isEmbedded
+            // Only when the drawer has already shown THIS car above the legs.
+            hideVehicle={
+              !!comboVehicleKey && vehicleKey(child) === comboVehicleKey
+            }
             handleEditRoute={handleEditRoute}
           />
         );
@@ -540,6 +553,40 @@ const TransferDrawer = ({
 
   const isMulticityTaxi =
     data?.combo_type === "multicity" && (!!comboVehicle || !!comboFleet);
+
+  /**
+   * What a leg rides in, as a comparable key.
+   *
+   * "The car, throughout" is a claim about the legs, and it is built from the FIRST
+   * of them that names a vehicle — so it is only true of the legs whose car actually
+   * matches. Comparing the specs the drawer displays, rather than trusting the
+   * heading, is what lets a leg with a different car keep its own vehicle card
+   * instead of being silently covered by someone else's.
+   */
+  const vehicleKey = (booking) => {
+    const manifest = getFleetManifest(booking);
+    if (manifest?.is_mixed) return `fleet:${manifest.label || ""}`;
+    const car = legVehicle(booking);
+    if (!car) return null;
+    return [
+      car.type,
+      car.model_name,
+      car.fuel_type,
+      car.seating_capacity,
+      car.bag_capacity,
+      getVehicleCount(booking) || 1,
+    ]
+      .map((part) => part ?? "")
+      .join("|");
+  };
+
+  // The car the section above is describing. Read off `data.children` in their
+  // stored order, exactly as `comboVehicle` is a few lines up — not off the sorted
+  // `comboLegs`, whose first entry can be a different leg, and which is not declared
+  // until below this anyway.
+  const comboVehicleKey = isMulticityTaxi
+    ? (data?.children || []).map(vehicleKey).find(Boolean) || null
+    : null;
   const comboAccent = getModeAccent(
     isMulticityTaxi ? "Taxi" : data?.booking_type,
   );
@@ -589,6 +636,39 @@ const TransferDrawer = ({
       }`
     : `${comboLegs.length} ${comboLegs.length === 1 ? "leg" : "legs"}`;
 
+  // What the whole package comes to — how far it drives and how many days it
+  // runs for. A multi-city or round-trip taxi is sold on exactly those two
+  // figures (the search card quotes both), but the parent booking carries
+  // neither: mercury stores distance per leg and nothing at all on the combo,
+  // so they are added up from the legs here. See `packageTotals` for why a
+  // sightseeing leg's "80 kms per day" cannot simply join the sum.
+  const comboTotals = packageTotals(comboLegs);
+  const comboDistanceLabel =
+    comboTotals.km !== null
+      ? // "+" when only some legs quoted a distance: the sum is then a floor,
+        // not the trip's real length, and stating it flat would understate it.
+        `${comboTotals.km.toLocaleString("en-IN")} kms${comboTotals.partial ? "+" : ""}`
+      : null;
+  const comboDaysLabel = comboTotals.days
+    ? `${comboTotals.days} ${comboTotals.days === 1 ? "day" : "days"}`
+    : null;
+
+  // Who the package was priced for. Read off the parent, falling back to the
+  // first leg that names anyone — the combo is built from its legs and older
+  // ones were saved without the pax copied up.
+  const comboPaxLabel =
+    paxLabel(data?.number_of_adults, data?.number_of_children) ||
+    comboLegs
+      .map((leg) => paxLabel(leg?.number_of_adults, leg?.number_of_children))
+      .find(Boolean) ||
+    null;
+
+  // Only the drawer's first section pads away from the band, and the totals
+  // take that job whenever they are there to state.
+  const showComboTotals =
+    data?.combo_type === "multicity" &&
+    !!(comboPaxLabel || comboDaysLabel || comboDistanceLabel);
+
   // The legs, as rail nodes that open in place. `expandedIndexes` still drives
   // which is open, so the leg-resolution logic above is untouched.
   const railNodes = comboLegs.map((child, index) => {
@@ -601,6 +681,68 @@ const TransferDrawer = ({
       detail: open ? renderLegDetail(child, node.legType) : null,
     };
   });
+
+  // The parent, then each leg under its rail title — the order the drawer reads in.
+  const comboSources = [{ title: null, booking: data }].concat(
+    comboLegs.map((leg, index) => ({
+      title: railNodes[index]?.title,
+      booking: leg,
+    })),
+  );
+
+  /**
+   * One entry per DISTINCT answer across the package, each remembering which legs
+   * gave it.
+   *
+   * A combo is one booking per leg under the hood, and every leg of a chain is sold
+   * on one supplier's quote — so asking each of them what the fare covers and how it
+   * cancels returns the same answer three times over. Collapsing on the answer
+   * itself, rather than assuming they always agree, keeps the honest case honest:
+   * a package whose legs really were sold on different terms still states each set
+   * and names the services it governs.
+   *
+   * The parent is asked first, for the shapes where mercury lifts these onto the
+   * combo itself instead of leaving them on the legs.
+   */
+  const collectAcrossLegs = (read, identify) => {
+    const groups = [];
+    comboSources.forEach(({ title, booking }) => {
+      const value = read(booking);
+      if (!value) return;
+      const id = identify(value);
+      const seen = groups.find((group) => group.id === id);
+      if (seen) seen.titles.push(title);
+      else groups.push({ id, value, titles: [title] });
+    });
+    return groups;
+  };
+
+  // What the package's fare covers, and how it cancels — stated once, below the
+  // legs, instead of repeating the same chips and the same policy inside every
+  // service. TaxiDetailModal drops both when embedded for exactly this reason.
+  const comboFareIncludes = collectAcrossLegs(
+    (booking) => {
+      const charges = getVendorCharges(booking);
+      // The charges block stamps its own currency; these amounts were quoted in it
+      // and are not restated when an itinerary's display currency changes.
+      const facts = vendorChargeFacts(
+        charges,
+        currencySymbols?.[charges?.currency || booking?.currency] || "",
+      );
+      return facts.length ? facts : null;
+    },
+    (facts) => facts.map((fact) => fact.value).join("|"),
+  );
+  const comboPolicies = collectAcrossLegs(getCancellationPolicy, (html) => html);
+
+  // A single answer needs no qualifier; several are only tellable apart by the legs
+  // they govern. One that came off the parent has no leg name to give, so it keeps
+  // the bare label rather than trailing an empty dash.
+  const sectionLabel = (base, group, groups) => {
+    if (groups.length === 1) return base;
+    const named = group.titles.filter(Boolean);
+    return named.length ? `${base} — ${named.join(", ")}` : base;
+  };
 
   return (
     <Drawer
@@ -704,6 +846,24 @@ const TransferDrawer = ({
             />
           }
         >
+          {/* What the package amounts to, stated once for the whole thing: who
+              it carries, how long it runs, how far it drives. The last two led
+              the search card the package was chosen from and then vanished once
+              it was booked, leaving the drawer to describe a three-day, 900 km
+              trip as "3 services". Distance drops out on its own for a package
+              whose legs quote none — a multi-city flight combo, say. */}
+          {showComboTotals && (
+            <DetailSection label="Package" className="pt-4" divider={false}>
+              <FactChips
+                facts={[
+                  { label: "Travellers", value: comboPaxLabel },
+                  { label: "Days", value: comboDaysLabel },
+                  { label: "Total distance", value: comboDistanceLabel },
+                ]}
+              />
+            </DetailSection>
+          )}
+
           {/* Every service in a multi-city taxi package rides in the same
               vehicles, so they are stated once, above the services they cover. */}
           {isMulticityTaxi && (
@@ -711,7 +871,7 @@ const TransferDrawer = ({
               label={
                 comboFleet?.is_mixed ? "The cars, throughout" : "The car, throughout"
               }
-              className="pt-3"
+              className={showComboTotals ? "" : "pt-3"}
             >
               {comboFleet?.is_mixed ? (
                 <>
@@ -767,10 +927,27 @@ const TransferDrawer = ({
                 ? `${comboLegs.length} services included`
                 : `${comboLegs.length} ${comboLegs.length === 1 ? "leg" : "legs"}`
             }
-            className={isMulticityTaxi ? "" : "pt-3"}
+            className={showComboTotals || isMulticityTaxi ? "" : "pt-3"}
           >
             <JourneyRail nodes={railNodes} accent={comboAccent} compact />
           </DetailSection>
+
+          {comboFareIncludes.map((group, index) => (
+            <DetailSection
+              key={`combo-fare-${index}`}
+              label={sectionLabel("Fare includes", group, comboFareIncludes)}
+            >
+              <FactChips facts={group.value} />
+            </DetailSection>
+          ))}
+
+          {comboPolicies.map((group, index) => (
+            <PolicyNote
+              key={`combo-policy-${index}`}
+              html={group.value}
+              title={sectionLabel("Cancellation", group, comboPolicies)}
+            />
+          ))}
         </DrawerShell>
       )}
     </Drawer>

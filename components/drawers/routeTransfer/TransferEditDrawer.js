@@ -45,6 +45,7 @@ import {
 } from "react-icons/im";
 import ComboFlight from "../../modals/flights/ComboFlight";
 import ComboTaxi from "../../modals/taxis/ComboTaxi";
+import { QuoteTerms } from "../../modals/taxis/VendorCharges";
 import {
   getVehicleCount,
   hasMultiVehicleQuote,
@@ -5927,6 +5928,19 @@ const RoundTripSuggestion = ({
                           price?.transfer_details?.seating_capacity
                         }
                       />
+                      {/* What this cab's fare covers and how it cancels. These rows
+                          quote in the legacy `transfer_details` shape, which QuoteTerms
+                          resolves alongside the others — a source that states neither
+                          leaves the row exactly as it was. */}
+                      <QuoteTerms
+                        quote={price}
+                        currencySymbol={
+                          currency?.currency
+                            ? currencySymbols?.[currency?.currency]
+                            : "\u20b9"
+                        }
+                        includedItems
+                      />
                     </div>
                   </div>
                   );
@@ -6202,6 +6216,20 @@ const MultiCityTripSuggestion = ({
                   <MultiVehicleNote
                     count={vehicleCount}
                     seatingCapacity={price?.taxi_category?.seating_capacity}
+                  />
+                  {/* What this cab's fare covers and how it cancels, per the supplier.
+                      A multi-city or round-trip chain is exactly where tolls and state
+                      tax are usually charged on actuals at the kerb, so the card that
+                      omits them is the one that misleads. There is no AmenitySelector
+                      on this card, so included items are stated here too. */}
+                  <QuoteTerms
+                    quote={price}
+                    currencySymbol={
+                      currency?.currency
+                        ? currencySymbols?.[currency?.currency]
+                        : "\u20b9"
+                    }
+                    includedItems
                   />
                 </div>
               </div>

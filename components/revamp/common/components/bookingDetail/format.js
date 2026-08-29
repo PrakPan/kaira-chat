@@ -252,3 +252,77 @@ export const packageDayNodes = ({
       tag: index === 0 && pickup ? `Pickup: ${pickup}` : null,
     };
   });
+
+/**
+ * A quoted distance in kilometres, whichever way the supplier expressed it.
+ *
+ * Almost every quote sends `{text, unit: "km", value}`, but a handful of older
+ * ones send a bare number — and `text` is prose ("361 kms", "80 kms per day"),
+ * so it is the wrong thing to add up. Only the numeric side is read here; the
+ * unit is honoured so a metre figure does not get summed as kilometres.
+ */
+export const distanceKm = (distance) => {
+  const value = typeof distance === "number" ? distance : distance?.value;
+  if (typeof value !== "number" || Number.isNaN(value)) return null;
+  const unit = String(
+    typeof distance === "number" ? "km" : distance?.unit || "km",
+  ).toLowerCase();
+  if (unit === "m" || unit.startsWith("met")) return value / 1000;
+  return value;
+};
+
+/**
+ * How many calendar days a booking covers, counting both ends — a leg that
+ * starts and ends on the same date is one day, not zero.
+ */
+export const spanDays = (from, to) =>
+  Math.max(1, dayOffset(from, to || from) + 1);
+
+/**
+ * How far one leg of a package actually runs, in kilometres.
+ *
+ * A point-to-point leg quotes the distance it covers. A sightseeing leg quotes
+ * an ALLOWANCE PER DAY ("80 kms per day") for however many days the car is at
+ * the traveller's disposal — so its figure only becomes a distance once it is
+ * multiplied by that span. Summing the raw `distance.value` off every leg,
+ * which is the obvious thing to do, counts a three-day package as a single
+ * 80 km hop.
+ */
+export const legDistanceKm = (leg) => {
+  const km = distanceKm(leg?.transfer_details?.distance);
+  if (km === null) return null;
+  return leg?.transfer_type === "sightseeing"
+    ? km * spanDays(leg?.check_in, leg?.check_out)
+    : km;
+};
+
+/**
+ * What a multi-leg package adds up to: the road distance across all of its
+ * legs, and the calendar days it spans.
+ *
+ * `km` is null rather than 0 when no leg quoted a distance — a package whose
+ * supplier itemised nothing should say nothing, not claim "0 kms". `partial`
+ * flags the mixed case, where some legs carried a figure and others did not,
+ * so the caller can label the total as at-least rather than exact.
+ */
+export const packageTotals = (legs) => {
+  const list = (legs || []).filter(Boolean);
+  const distances = list.map(legDistanceKm);
+  const quoted = distances.filter((km) => km !== null);
+
+  const starts = list.map((leg) => leg?.check_in).filter(Boolean);
+  const ends = list.map((leg) => leg?.check_out || leg?.check_in).filter(Boolean);
+
+  return {
+    km: quoted.length ? Math.round(quoted.reduce((sum, km) => sum + km, 0)) : null,
+    partial: quoted.length > 0 && quoted.length < list.length,
+    days: starts.length
+      ? spanDays(
+          starts.reduce((a, b) => (new Date(a) <= new Date(b) ? a : b)),
+          ends.length
+            ? ends.reduce((a, b) => (new Date(a) >= new Date(b) ? a : b))
+            : null,
+        )
+      : null,
+  };
+};
