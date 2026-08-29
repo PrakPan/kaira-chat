@@ -72,6 +72,15 @@ export const THEME_PALETTES: Record<string, CinematicThemePalette> = {
     page: "#f7fbfb",
     heroTint: "#e6f3f2",
   },
+  // /asia/thailand — the country page. A deeper Andaman teal than the bachelor
+  // theme's, so the country page reads as the parent of the two Thailand themes
+  // rather than a third one alongside them.
+  thailand: {
+    accent: "#0b6b78",
+    accentSoft: "#e0f0f2",
+    page: "#f8fbfa",
+    heroTint: "#e4f2f0",
+  },
   // /theme/thailand-bali-offbeat — jungle green, off the Andaman turquoise so
   // the two Thailand themes don't read as the same page.
   "thailand-bali-offbeat": {
@@ -135,6 +144,9 @@ const THEME_PAGE_PATHS: Record<string, string> = {
   "switzerland-ddlj": "/theme/filmy-getaways",
   "thailand-bachelor": "/theme/thailand-bachelor",
   "thailand-bali-offbeat": "/theme/thailand-bali-offbeat",
+  // The one entry that isn't under /theme — Thailand's country page runs the
+  // same cinematic surface, so a reader who came from it gets sent back there.
+  thailand: "/asia/thailand",
 };
 
 /** Landing-page path for a theme slug, or `null` when the slug isn't a theme
