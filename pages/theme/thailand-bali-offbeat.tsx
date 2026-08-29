@@ -32,7 +32,6 @@ import type { CinematicThemeConfig } from "../../components/theme/cinematic/type
 import { THEME_PALETTES } from "../../components/theme/cinematic/palettes";
 
 const VISA = "https://visa.thetarzanway.com/country";
-const VISA_HOME = "https://visa.thetarzanway.com/";
 const SITE = "https://thetarzanway.com";
 const PAGE = "/theme/thailand-bali-offbeat";
 const THEME_SLUG = "thailand-bali-offbeat";
@@ -616,38 +615,25 @@ const thailandBaliOffbeatConfig: CinematicThemeConfig = {
       heading: { lead: "Your visas,", accent: "handled" },
       intro:
         "Two countries, two applications, one handler. Indonesia's e-Visa is quick and comes through in a day; Thailand's tourist e-Visa is applied for before you fly. We prep both files, check every document, and submit for you.",
+      // The two countries in the title, and nothing else — the stopovers and
+      // upgrades that used to pad this list (Vietnam, Singapore, Maldives,
+      // Japan) were for trips this page isn't selling.
       cards: [
         {
           country: "Thailand",
           cities: "Tourist e-Visa · 60 days · applied before you fly",
           fee: "₹4,700",
+          line:
+            "Single entry, which quietly settles the shape of the trip: whichever country you land in first is the one you can't come back to without applying again. It's why the route runs one way rather than hopping.",
           href: `${VISA}/thailand-visa-online`,
         },
         {
           country: "Indonesia",
           cities: "e-Visa · 30 days · single entry, extendable once",
           fee: "₹3,600",
+          line:
+            "Comes through in about a day, and extends once on the ground. This is the half of the trip that can stretch — if the Sidemen valley does its job, you extend rather than re-plan.",
           href: `${VISA}/indonesia-visa-online`,
-        },
-        {
-          country: "Vietnam",
-          cities: "e-Visa · the other offbeat coast",
-          href: VISA_HOME,
-        },
-        {
-          country: "Singapore",
-          cities: "A stopover between the two",
-          href: VISA_HOME,
-        },
-        {
-          country: "Maldives",
-          cities: "Free on arrival · a quiet few days after",
-          href: VISA_HOME,
-        },
-        {
-          country: "Japan",
-          cities: "The long-haul upgrade on the same route",
-          href: VISA_HOME,
         },
       ],
       facts: [
@@ -656,7 +642,6 @@ const thailandBaliOffbeatConfig: CinematicThemeConfig = {
         { label: "Proof", value: "Return ticket" },
         { label: "Entry", value: "Single · both" },
       ],
-      cta: { label: "Start my visas →", href: VISA_HOME },
       note:
         "Both are single-entry, so the order of the two countries matters if you were thinking of hopping back. Thailand also needs the free digital arrival card within 72 hours of landing — we send that link with the visa.",
     },

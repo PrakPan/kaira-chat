@@ -38,7 +38,6 @@ import PricingSkeleton from "../../../components/itinerary/Skeleton/PricingSkele
 import Drawer from "../../../components/ui/Drawer";
 import PassengerDetails from "../../../components/modals/passenger-details/PassengerDetails";
 import AddTravellerDetails from "../../../components/modals/passenger-details/AddTravellerDetails";
-import { FaCheckCircle } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
 import { PulseLoader } from "react-spinners";
 import { SocialShare } from "./SocialShare";
@@ -75,9 +74,7 @@ import { currencySymbols } from "../../../data/currencySymbols";
 import { resetChatSession } from "../../../store/actions/chatState";
 import VisaSearchDrawer from "../../../components/drawers/visaDetails/VisaSearchDrawer";
 import EsimPackagesDrawer from "../../../components/drawers/esimDetails/EsimPackagesDrawer";
-import CartBookingDetail, {
-  getBookingDetailType,
-} from "./CartBookingDetail";
+import CartBookingDetail, { getBookingDetailType } from "./CartBookingDetail";
 import {
   addAncillaryBooking,
   removeAncillaryBooking,
@@ -313,7 +310,9 @@ const CouponModal = ({
         ) : availableCoupons?.length > 0 ? (
           <>
             <div>
-              <h3 className="font-semibold text-base mb-4">Available Coupons</h3>
+              <h3 className="font-semibold text-base mb-4">
+                Available Coupons
+              </h3>
               <div className="space-y-4">
                 {applicableCoupons.length > 0 ? (
                   applicableCoupons.map((coupon, index) =>
@@ -601,42 +600,54 @@ const PaymentFailed = ({ onClickButton, loading }) => {
   );
 };
 
-const PaymentSuccess = ({ amount, onDownloadInvoice, loading }) => {
+const PaymentSuccess = ({
+  amount,
+  onGetInTouch,
+  loading,
+  travellerSummary,
+}) => {
   const { currency } = useSelector((state) => state.currency);
   return (
     <div className="bg-white px-2 rounded-lg">
-      <div className="mb-2">
-        <div className="mb-lg">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="64"
-            height="64"
-            viewBox="0 0 64 64"
-            fill="none"
-          >
-            <path
-              fill-rule="evenodd"
-              clip-rule="evenodd"
-              d="M7.20951 44.1553L7.18399 49.2875C7.17889 50.3185 7.36264 51.2858 7.73013 52.1815C8.10272 53.0875 8.65144 53.9041 
+      {/* The tick, the copy and the traveller block share one row, so the
+          right-hand column starts level with the tick rather than with the
+          heading below it. */}
+      <div className="mb-2 flex justify-between max-ph:flex-col">
+        <div>
+          <div className="mb-lg">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="64"
+              height="64"
+              viewBox="0 0 64 64"
+              fill="none"
+            >
+              <path
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M7.20951 44.1553L7.18399 49.2875C7.17889 50.3185 7.36264 51.2858 7.73013 52.1815C8.10272 53.0875 8.65144 53.9041 
             9.37362 54.6264C10.0958 55.3486 10.9151 55.8973 11.8185 56.2699C12.7142 56.6374 13.6815 56.8211 14.7125 56.816L19.8446 56.7905C20.4801 56.7854 
             21.0645 56.8977 21.6004 57.1197C22.1287 57.3366 22.6187 57.6735 23.0679 58.1303L26.679 61.7772C27.4038 62.5096 28.2179 63.066 29.1111 
             63.4385C30.0094 63.8137 30.9741 64 32 64C33.0259 64 33.9906 63.8111 34.8889 63.4385C35.7847 63.066 36.5962 62.5121 37.321 61.7772L40.9321 58.1303C41.3813 57.6786 41.8738 57.3392 42.3996 57.1197C42.9355 56.8977 43.5225 56.7879 44.1553 56.7905L49.2875 56.816C50.3185 56.8211 51.2858 56.6374 52.1815 56.2699C53.0875 55.8973 53.9041 55.3486 54.6264 54.6264C55.3486 53.9042 55.8973 53.0849 56.2699 52.1815C56.6374 51.2858 56.8211 50.3185 56.816 49.2875L56.7905 44.1553C56.7854 43.5199 56.8977 42.9355 57.1197 42.3996C57.3366 41.8713 57.6735 41.3813 58.1303 40.9321L61.7772 37.321C62.5096 36.5962 63.066 35.7821 63.4385 34.8889C63.8137 33.9906 64 33.0259 64 32C64 30.9741 63.8111 30.0094 63.4385 29.1111C63.066 28.2153 62.5121 27.4038 61.7772 26.679L58.1303 23.0679C57.6786 22.6187 57.3392 22.1262 57.1197 21.6004C56.8977 21.0645 56.7879 20.4775 56.7905 19.8446L56.816 14.7125C56.8211 13.6815 56.6374 12.7142 56.2699 11.8185C55.8973 10.9125 55.3486 10.0959 54.6264 9.37362C53.9041 8.65137 53.0849 8.10271 52.1815 7.73012C51.2858 7.36263 50.3185 7.17888 49.2875 7.18399L44.1553 7.20951C43.5199 7.21461 42.9329 7.10232 42.3996 6.88029C41.8713 6.66337 41.3813 6.3265 40.9321 5.86967L37.321 2.22284C36.5962 1.4904 35.7821 0.934032 34.8889 0.561444C33.9906 0.186294 33.0259 0 32 0C30.9741 0 30.0094 0.188849 29.1111 0.561444C28.2153 0.934039 27.4038 1.48785 26.679 2.22284L23.0679 5.86967C22.6187 6.32138 22.1262 6.66078 21.6004 6.88029C21.0645 7.10232 20.4775 7.21206 19.8446 7.20951L14.7125 7.18399C13.6815 7.17888 12.7142 7.36263 11.8185 7.73012C10.9125 8.10272 10.0959 8.65144 9.37362 9.37362C8.65138 10.0959 8.10272 10.9151 7.73013 11.8185C7.36264 12.7142 7.17889 13.6815 7.18399 14.7125L7.20951 19.8446C7.21462 20.4801 7.10233 21.0671 6.8803 21.6004C6.66338 22.1287 6.32651 22.6187 5.86968 23.0679L2.22284 26.679C1.49041 27.4038 0.934039 28.2179 0.56145 29.1111C0.186301 30.0094 0 30.9741 0 32C0 33.0259 0.188849 33.9906 0.56145 34.8889C0.934045 35.7847 1.48786 36.5962 2.22284 37.321L5.86968 40.9321C6.32139 41.3813 6.66078 41.8738 6.8803 42.3996C7.10232 42.9355 7.21206 43.5225 7.20951 44.1553ZM45.2118 24.9053L28.9095 41.2076C28.3226 41.7945 27.3757 41.7945 26.7888 41.2076L18.7987 33.2175C18.2117 32.6305 18.2117 31.6837 18.7987 31.0967C19.3857 30.5097 20.3325 30.5097 20.9194 31.0967L27.8505 38.0278L43.0912 22.7871C43.6781 22.2002 44.625 22.2002 45.2119 22.7871C45.7989 23.3741 45.7989 24.3209 45.2119 24.9079L45.2118 24.9053Z"
-              fill="#5CBA66"
-            />
-          </svg>
-        </div>
-        <div className="flex justify-between max-ph:flex-col">
-          <div>
-            <h2 className="text-lg font-600 leading-xl">
-              All set—your payment was successful.
-            </h2>
-            <p className="text-md font-400 leading-xl text-text-spacegrey mb-zero max-ph:mb-md">
-              Your full payment of{" "}
-              {currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}
-              {formatCurrencyValue(amount, currency)} has been received. No pending
-              balance.
-            </p>
+                fill="#5CBA66"
+              />
+            </svg>
           </div>
+          <h2 className="text-lg font-600 leading-xl">
+            All set—your payment was successful.
+          </h2>
+          <p className="text-md font-400 leading-xl text-text-spacegrey mb-zero max-ph:mb-md">
+            Your full payment of{" "}
+            {currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}
+            {formatCurrencyValue(amount, currency)} has been received. No
+            pending balance.
+          </p>
+        </div>
+        {/* The traveller block rides at the top of this column — this row is
+            where the cart header would have been — with the Get in touch
+            button below it. */}
+        <div className="flex flex-col items-end gap-sm shrink-0 max-ph:w-full max-ph:items-start">
+          {travellerSummary}
           <GetInTouchContainer>
             <Button
               color="#fff"
@@ -646,7 +657,7 @@ const PaymentSuccess = ({ amount, onDownloadInvoice, loading }) => {
               borderRadius="6px"
               bgColor="#07213A"
               padding="6px 30px"
-              onclick={onDownloadInvoice}
+              onclick={onGetInTouch}
             >
               <div
                 style={{
@@ -703,7 +714,8 @@ const CouponSection = ({
           setAvailableCount(applicableCoupons.length);
           setMaxDiscount(
             applicableCoupons.reduce(
-              (max, coupon) => Math.max(max, Number(coupon?.discount_value) || 0),
+              (max, coupon) =>
+                Math.max(max, Number(coupon?.discount_value) || 0),
               0,
             ),
           );
@@ -895,15 +907,15 @@ const PriceDetails = ({
           )
         } */}
 
-       
-          {Cart?.taxation_policy == "TCS" && <div className="flex justify-between text-sm font-400 leading-md mb-sm">
+        {Cart?.taxation_policy == "TCS" && (
+          <div className="flex justify-between text-sm font-400 leading-md mb-sm">
             <span>GST</span>
             <span>
               {currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}
               {formatCurrencyValue(Cart?.gst, currency)}
             </span>
-          </div>}
-      
+          </div>
+        )}
 
         {Cart?.taxation_policy == "TCS" && (
           <div className="flex justify-between text-sm font-400 leading-md mb-sm">
@@ -924,23 +936,37 @@ const PriceDetails = ({
                   ? "-" +
                     currencySymbols?.[currency] +
                     formatCurrencyValue(Math.abs(couponDiscount), currency)
-                  : "-₹" + formatCurrencyValue(Math.abs(couponDiscount), currency)
+                  : "-₹" +
+                    formatCurrencyValue(Math.abs(couponDiscount), currency)
                 : `${currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}0`}
             </span>
           </div>
         ) : null}
 
+        {/* Nothing left to pay: without this the summary reads
+            "cost − coupon … Total ₹0", which doesn't add up. Show what was
+            actually collected so the arithmetic closes. */}
+        {numericTotalPayable === 0 && Cart?.amount_paid > 0 && (
+          <div className="flex justify-between text-sm font-400 leading-md mb-sm">
+            <span>Amount Paid</span>
+            <span>
+              {currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}
+              {formatCurrencyValue(Cart?.amount_paid, currency)}
+            </span>
+          </div>
+        )}
+
         <div className="border-t-sm border-text-disabled pt-2 mt-2">
-          <div className="flex justify-between items-start">
+          <div className="flex justify-between font-semibold text-md font-500 leading-xl">
             <div className="flex flex-col">
-              <span className="font-semibold text-md font-500 leading-xl">
-                Total Amount
+              <span>
+                {numericTotalPayable === 0 ? "Total Payable" : "Total Amount"}
               </span>
               <span className="text-xs font-400 leading-sm text-text-spacegrey">
                 Inclusive of all taxes
               </span>
             </div>
-            <span className="font-semibold text-md font-500 leading-xl">
+            <span>
               {" "}
               {currencySymbols?.[currency]
                 ? currencySymbols?.[currency]
@@ -1002,21 +1028,26 @@ const ItineraryInclusions = ({
     Transfers: true,
     Flights: true,
     Activities: true,
-     "Activities & Ancillaries": true,
+    "Activities & Ancillaries": true,
   });
   const { currency } = useSelector((state) => state.currency);
   const TransferBookings = useSelector(
     (state) => state.TransferBookings?.transferBookings,
   );
 
-  // Find children flights for a combo (roundtrip) booking from TransferBookings store
- const getChildrenFlights = (parentBookingId) => {
-  if (!TransferBookings?.intercity) return [];
+  // The "reprice to add/remove" hint only helps while there is still something
+  // to pay. On a settled cart repricing changes nothing, so the hint points at
+  // a dead end — drop it and leave the checkbox plainly disabled.
+  const showRepriceTooltip = Cart?.total_payable_amount != 0;
 
-  return Object.values(TransferBookings.intercity).filter(
-    (booking) => booking?.parent === parentBookingId
-  );
-};
+  // Find children flights for a combo (roundtrip) booking from TransferBookings store
+  const getChildrenFlights = (parentBookingId) => {
+    if (!TransferBookings?.intercity) return [];
+
+    return Object.values(TransferBookings.intercity).filter(
+      (booking) => booking?.parent === parentBookingId,
+    );
+  };
 
   const categorizeBookings = () => {
     const categories = {
@@ -1131,7 +1162,9 @@ const ItineraryInclusions = ({
                   }  ml-[-16px] pl-md`}
                   style={{ borderColor: colors[index] }}
                 >
-                  <div className="text-sm-md leading-xl font-400">{category}</div>
+                  <div className="text-sm-md leading-xl font-400">
+                    {category}
+                  </div>
                   <div className="text-sm font-400 leading-md text-text-spacegrey">
                     {selectedCount} of {bookings.length} selected
                   </div>
@@ -1198,7 +1231,15 @@ const ItineraryInclusions = ({
                             >
                               {booking.detail.name}
                             </span>
-                            {booking?.detail?.booking_type === "Visa" ? <span className="ml-2 px-1.5 py-0.5 text-xs font-medium bg-purple-100  text-purple-800 rounded">Visa</span> : booking?.detail?.booking_type === "eSIM" ? <span className="ml-2 px-1.5 py-0.5 text-xs font-medium bg-green-100  text-green-800 rounded ">eSim</span> : null}
+                            {booking?.detail?.booking_type === "Visa" ? (
+                              <span className="ml-2 px-1.5 py-0.5 text-xs font-medium bg-purple-100  text-purple-800 rounded">
+                                Visa
+                              </span>
+                            ) : booking?.detail?.booking_type === "eSIM" ? (
+                              <span className="ml-2 px-1.5 py-0.5 text-xs font-medium bg-green-100  text-green-800 rounded ">
+                                eSim
+                              </span>
+                            ) : null}
                           </div>
                           {booking.status === "Paid" && (
                             <div className="inline-block bg-green-100 text-green-700 text-xs font-semibold px-2 py-0.5 rounded mb-1">
@@ -1209,12 +1250,15 @@ const ItineraryInclusions = ({
                           <div className="flex flex-wrap items-center gap-2">
                             <div className="flex items-center gap-1">
                               {/* <BsCalendar2 className="flex-shrink-0" /> */}
-                              {!isRoundTripFlight && <span className="text-sm font-400 leading-md text-text-spacegrey">
-                                {formatDate(booking.detail.check_in)}{" "}
-                                {category == "Stays"
-                                  ? "- " + formatDate(booking.detail.check_out)
-                                  : null}
-                              </span>}
+                              {!isRoundTripFlight && (
+                                <span className="text-sm font-400 leading-md text-text-spacegrey">
+                                  {formatDate(booking.detail.check_in)}{" "}
+                                  {category == "Stays"
+                                    ? "- " +
+                                      formatDate(booking.detail.check_out)
+                                    : null}
+                                </span>
+                              )}
                             </div>
 
                             {booking.detail.duration && (
@@ -1234,8 +1278,8 @@ const ItineraryInclusions = ({
                                   {/* <BsPeopleFill className="flex-shrink-0" /> */}
                                   <span className="text-sm font-400 leading-md text-text-spacegrey">
                                     {booking.detail.pax.number_of_adults +
-                                      (booking.detail?.pax?.number_of_children ||
-                                        0) +
+                                      (booking.detail?.pax
+                                        ?.number_of_children || 0) +
                                       (booking.detail?.pax?.number_of_infants ||
                                         0) >
                                     1
@@ -1280,7 +1324,11 @@ const ItineraryInclusions = ({
                               <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-yellow-400"></div>
                             </div>
                           ) : arePricesExpired ? (
-                            <div className="relative group cursor-pointer">
+                            <div
+                              className={`relative ${
+                                showRepriceTooltip ? "group cursor-pointer" : ""
+                              }`}
+                            >
                               <span className="relative mr-xl pointer-events-none">
                                 <label className="ttw-custom-greenCheckbox-label opacity-60">
                                   <input
@@ -1293,13 +1341,15 @@ const ItineraryInclusions = ({
                               </span>
 
                               {/* Tooltip */}
-                              <div
-                                className="absolute z-[999] bottom-full -left-20 -translate-x-1/2 mb-2
+                              {showRepriceTooltip && (
+                                <div
+                                  className="absolute z-[999] bottom-full -left-20 -translate-x-1/2 mb-2
                            hidden group-hover:!block whitespace-nowrap overflow-visible
                           bg-black text-white text-xs px-2 py-1 rounded cursor-pointer"
-                              >
-                                Reprice itinerary to add/remove this booking
-                              </div>
+                                >
+                                  Reprice itinerary to add/remove this booking
+                                </div>
+                              )}
                             </div>
                           ) : (
                             <span className="relative mr-xl">
@@ -1324,7 +1374,10 @@ const ItineraryInclusions = ({
                             {currencySymbols?.[currency]
                               ? currencySymbols?.[currency]
                               : "₹"}
-                            {formatCurrencyValue(booking.booking_cost, currency)}
+                            {formatCurrencyValue(
+                              booking.booking_cost,
+                              currency,
+                            )}
                           </div>
                         )}
                       </div>
@@ -1333,7 +1386,6 @@ const ItineraryInclusions = ({
                       {isRoundTripFlight &&
                         childrenFlights.length > 0 &&
                         childrenFlights.map((childFlight, childIndex) => {
-            
                           const originCity =
                             childFlight?.transfer_details?.items?.[0]
                               ?.segments?.[0]?.origin?.city_name ||
@@ -1364,7 +1416,6 @@ const ItineraryInclusions = ({
                               key={childFlight?.id || childIndex}
                               className="pl-8 pr-3 py-2 flex items-start gap-2 bg-gray-50/50 border-t border-gray-50"
                             >
-                          
                               <div className="flex-1 min-w-0">
                                 <div className="text-sm font-400 leading-md text-black">
                                   {childName}
@@ -1460,6 +1511,71 @@ const Details = (props) => {
   // `travellers` array alone can't reflect, so prefer this flag over inspecting
   // the travellers list.
   const travellerDetailsVerified = !!Cart?.traveler_details_verified;
+
+  // "4 Adults, 2 Children, 1 Infant" — the itinerary's pax, zero groups left
+  // out entirely. `pax` is seeded once from the itinerary prop, which hasn't
+  // arrived yet when the drawer is opened straight from a URL, so fall back to
+  // the itinerary in Redux rather than rendering "undefined Adults".
+  const travellerCountLabel = () => {
+    const adults =
+      pax ||
+      props.itinerary?.number_of_adults ||
+      Itinerary?.number_of_adults ||
+      0;
+    const children =
+      props.itinerary?.number_of_children || Itinerary?.number_of_children || 0;
+    const infants =
+      props.itinerary?.number_of_infants || Itinerary?.number_of_infants || 0;
+    const parts = [];
+    if (adults) parts.push(`${adults} ${pluralDetector("Adult", adults)}`);
+    if (children)
+      parts.push(`${children} ${children > 1 ? "Children" : "Child"}`);
+    if (infants) parts.push(`${infants} ${pluralDetector("Infant", infants)}`);
+    return parts.join(", ");
+  };
+
+  // The traveller block that sits in the top-right of the cart header, shared
+  // with the paid-state banner (which replaces that header entirely).
+  // `rowOnMobile` is for the paid banner: its column stacks under the copy on
+  // phones, where a narrow right-aligned tower reads as stray text. There the
+  // block spans the width instead — name and count on the left, the link on
+  // the right — matching the cart header's own layout.
+  const renderTravellerSummary = ({ leadName, rowOnMobile } = {}) => {
+    const countLabel = travellerCountLabel();
+    return (
+      <div
+        className={`flex flex-col items-end gap-xxs shrink-0 mt-1 ${
+          rowOnMobile
+            ? "max-ph:w-full max-ph:flex-row max-ph:items-start max-ph:justify-between max-ph:gap-2"
+            : ""
+        }`}
+      >
+        <div
+          className={`flex flex-col items-end gap-xxs ${
+            rowOnMobile ? "max-ph:items-start max-ph:text-left" : ""
+          }`}
+        >
+          {leadName ? (
+            <span className="text-sm-md font-400 leading-lg">{leadName}</span>
+          ) : null}
+          {countLabel ? (
+            <span className="text-xs font-400 leading-md text-text-spacegrey">
+              Travellers: {countLabel}
+            </span>
+          ) : null}
+        </div>
+        <span
+          className="text-xs text-blue underline cursor-pointer shrink-0"
+          onClick={() => setTravellerDetailsOpen(true)}
+        >
+          {travellerDetailsVerified
+            ? "Edit traveller details"
+            : "Add traveller details"}
+        </span>
+      </div>
+    );
+  };
+
   const [selectedPaymentOption, setSelectedPaymentOption] = useState("full");
 
   const [selectedOption, setSelectedOption] = useState("full");
@@ -1558,6 +1674,32 @@ const Details = (props) => {
       setSelectedInclusions(initialSelections);
     }
   }, [Cart?.summary]);
+
+  // The coupon UI mirrors the cart. These three pieces of state were only
+  // seeded in `useState`, which runs while `Cart` is still null in Redux, so
+  // any reload lost them: the breakdown showed "Coupon Discount ₹0" and the
+  // coupon row offered to apply a coupon that was already on the itinerary.
+  // (CouponModal patched `appliedCoupon` alone, and only for COUPON_APPLIED —
+  // a coupon already spent on a payment, COUPON_USED_TO_PAY, stayed invisible.)
+  // The cart carries the coupon's id; the human code set by handleApplyCoupon
+  // in this session is kept when we already have it.
+  useEffect(() => {
+    const usage = Cart?.coupon_usage || null;
+    setCouponUsageData(usage);
+    setCouponSavedAmount(usage?.discount || 0);
+    setAppliedCoupon((prev) => (usage ? prev || usage.id : null));
+  }, [Cart?.coupon_usage]);
+
+  // `pax` is seeded in useState from the itinerary prop, which is empty when
+  // the cart is opened straight from a URL — it then stayed undefined for the
+  // whole session (nothing else calls setPax any more), so everything reading
+  // it, the traveller count and the registration/verification modals included,
+  // got `undefined`. Follow the itinerary instead of sampling it once.
+  useEffect(() => {
+    const adults =
+      props?.itinerary?.number_of_adults || Itinerary?.number_of_adults;
+    if (adults) setPax(adults);
+  }, [props?.itinerary?.number_of_adults, Itinerary?.number_of_adults]);
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -1728,16 +1870,17 @@ const Details = (props) => {
     }
     setShowPaymentDrawer(false);
     setShowDetailedPayment(false);
-    if (typeof window !== "undefined" && window.location.pathname.startsWith("/chat/")) {
+    if (
+      typeof window !== "undefined" &&
+      window.location.pathname.startsWith("/chat/")
+    ) {
       const url = new URL(window.location.href);
       url.searchParams.delete("drawer");
       pushUrlDetached(url.toString());
     } else {
-      router.push(
-        { pathname: `/itinerary/${router.query.id}` },
-        undefined,
-        { scroll: false },
-      );
+      router.push({ pathname: `/itinerary/${router.query.id}` }, undefined, {
+        scroll: false,
+      });
     }
   };
 
@@ -1773,8 +1916,7 @@ const Details = (props) => {
   };
 
   const fetchItinerary = async () => {
-    if(props?.resetRef)
-    props?.resetRef();
+    if (props?.resetRef) props?.resetRef();
     // setWaitingForStatusUpdate(true);
     props.fetchData(true);
   };
@@ -1844,7 +1986,8 @@ const Details = (props) => {
       dispatch(
         openNotification({
           text:
-           error?.response?.data?.errors?.[0]?.message?.[0] || error?.response?.data?.message ||
+            error?.response?.data?.errors?.[0]?.message?.[0] ||
+            error?.response?.data?.message ||
             error.message ||
             "Failed to reprice itinerary",
           heading: "Error!",
@@ -1985,26 +2128,25 @@ const Details = (props) => {
           .post(
             `${MERCURY_HOST}/payment/verify/`,
             paymentGatewayService.prepareVerifyPayload(response, "Razorpay"),
-            { headers: { Authorization: `Bearer ${props.token}` } }
+            { headers: { Authorization: `Bearer ${props.token}` } },
           )
           .then((res) => {
-      setPaymentLoading(false);
+            setPaymentLoading(false);
 
-      // Set session completion based on payment type
-      if (paymentType === "full") {
-        setSessionPaymentCompleted(true);
-        setPaymentCompleted(true);
-        trackPaymentBookingConfirmed(router?.query?.id, Cart);
-      } else {
-        setLockInCompleted(true);
-        setSelectedPaymentOption("full");
-      }
+            // Set session completion based on payment type
+            if (paymentType === "full") {
+              setSessionPaymentCompleted(true);
+              setPaymentCompleted(true);
+              trackPaymentBookingConfirmed(router?.query?.id, Cart);
+            } else {
+              setLockInCompleted(true);
+              setSelectedPaymentOption("full");
+            }
 
-
-      props.getPaymentHandler();
+            props.getPaymentHandler();
           })
           .catch((err) => {
-      setPaymentLoading(false);
+            setPaymentLoading(false);
           });
       },
       prefill: {
@@ -2053,8 +2195,9 @@ const Details = (props) => {
           payment_type: "full_payment",
         },
         {
-        headers: { Authorization: `Bearer ${props.token}` },
-      });
+          headers: { Authorization: `Bearer ${props.token}` },
+        },
+      );
 
       if (response.data) {
         dispatch(setCart(response.data));
@@ -2119,8 +2262,8 @@ const Details = (props) => {
           payment_type: "lock_payment",
         },
         {
-        headers: { Authorization: `Bearer ${props.token}` },
-        }
+          headers: { Authorization: `Bearer ${props.token}` },
+        },
       );
 
       if (response.data) {
@@ -2129,7 +2272,7 @@ const Details = (props) => {
 
         const lockPaymentSale = response.data?.sales?.find(
           (sale) =>
-            sale.payment_type === "lock_payment" && sale.status === "Created"
+            sale.payment_type === "lock_payment" && sale.status === "Created",
         );
 
         if (!lockPaymentSale || !lockPaymentSale.orders?.[0]) {
@@ -2139,7 +2282,7 @@ const Details = (props) => {
               text: "Payment order not found. Please refresh and try again.",
               heading: "Error!",
               type: "error",
-            })
+            }),
           );
           return;
         }
@@ -2161,7 +2304,7 @@ const Details = (props) => {
             "Something went wrong",
           heading: "Error!",
           type: "error",
-        })
+        }),
       );
       setPaymentLoading(false);
       return;
@@ -2180,7 +2323,7 @@ const Details = (props) => {
           headers: {
             Authorization: `Bearer ${props.token}`,
           },
-        }
+        },
       )
       .then((res) => {
         setPaymentLoading(false);
@@ -2260,9 +2403,9 @@ const Details = (props) => {
       _lockInPaymentHandler(Cart?.id);
     } else if (label === "full") {
       _fullPaymentHandler(Cart?.id);
-      } else {
-        setShowVerification(true);
-      }
+    } else {
+      setShowVerification(true);
+    }
 
     // logEvent({
     //   action: "Button_Click",
@@ -2340,7 +2483,10 @@ const Details = (props) => {
     setShowDetailedPayment(true);
     setShowPaymentDrawer(true);
     // On the chat page (/chat/*) don't navigate away — just update the URL param
-    if (typeof window !== "undefined" && window.location.pathname.startsWith("/chat/")) {
+    if (
+      typeof window !== "undefined" &&
+      window.location.pathname.startsWith("/chat/")
+    ) {
       const url = new URL(window.location.href);
       url.searchParams.set("drawer", "payment");
       pushUrlDetached(url.toString());
@@ -2390,6 +2536,12 @@ const Details = (props) => {
     return anyPaid;
   };
 
+  // A zero total means two very different things: the trip is already paid for,
+  // or the user has unticked every inclusion. Only the second one is something
+  // they can act on, so only that one gets the "select an inclusion" nudge.
+  const areAnyInclusionsSelected = () =>
+    Object.values(selectedInclusions).some(Boolean);
+
   const isItineraryInFuture = () => {
     // Redux seeds `Itinerary` with a `{ name, images }` placeholder that has no
     // `start_date`, so before the detail API lands this built an Invalid Date
@@ -2426,6 +2578,37 @@ const Details = (props) => {
   const showRepriceExpired =
     (!isItineraryInFuture() && areAnyInclusionsPaid()) ||
     (hasPlanExpired && isItineraryInFuture() && pricing_status == "SUCCESS");
+
+  // Dates already gone by and nothing paid yet: the cart shows the "Update
+  // Itinerary Dates" block and the prices on screen are stale, so paying is a
+  // dead end. Every pay CTA is replaced by the same Update Dates action.
+  const showUpdateDates = !isItineraryInFuture() && !areAnyInclusionsPaid();
+
+  // The Update Dates action rendered as a full-width button, for the slots the
+  // Proceed-to-Pay button would otherwise occupy (desktop pricing column and
+  // the mobile bottom bar). Each instance owns its own calendar modal.
+  const renderUpdateDatesCta = () => (
+    <div className="w-full rounded-lg bg-[#07213A] text-md font-500 leading-xl flex items-center justify-center">
+      <UpdateItineraryDates
+        itinerary={props?.itinerary}
+        token={props?.token}
+        onUpdateSuccess={props.fetchData}
+        resetRef={props?.resetRef}
+        convertDFormat={convertDFormat}
+        showPhoneView={true}
+        handleCloseDrawer={handleCloseDrawer}
+        cartValue={true}
+        ctaClassName="w-full text-center px-6 py-2"
+      />
+    </div>
+  );
+
+  // …except when there is nothing left to pay. Repricing a fully-paid trip
+  // gains the user nothing, so the mobile bar offers "Get in touch" in place of
+  // the Reprice CTA. The in-flow Get in touch in the pricing column is hidden
+  // on phones in that case so the two don't double up.
+  const showMobileGetInTouch =
+    showRepriceExpired && calculateFilteredTotal() === 0;
 
   // Any expired/past state — used to suppress the expired price banners at the
   // top of the cart on phones (kept on desktop).
@@ -2505,8 +2688,11 @@ const Details = (props) => {
             <div className="row">
               <div className="col-12 col-sm-12 col-lg-12 col-md-12 mb-sm">
                 <div className="flex items-center w-100 justify-between">
-                  <div className="font-400 leading-xl-md flex items-center gap-1 cursor-pointer"  onClick={() => handleCloseDrawer()}>
-                    <MdArrowBackIosNew/> Back to Itinerary
+                  <div
+                    className="font-400 leading-xl-md flex items-center gap-1 cursor-pointer"
+                    onClick={() => handleCloseDrawer()}
+                  >
+                    <MdArrowBackIosNew /> Back to Itinerary
                   </div>
                   <div>
                     <IoMdClose
@@ -2525,10 +2711,10 @@ const Details = (props) => {
             {!(pricing_status === "PENDING" || props?.loadpricing) &&
               !(final_status == "Paid" || final_status == "Released") &&
               !hideMobileTopExpired && (
-              <div className="block md:hidden mb-2 -mx-[12px]">
-                <LivePriceTimer priceValidUntil={Cart?.price_valid_until} />
-              </div>
-            )}
+                <div className="block md:hidden mb-2 -mx-[12px]">
+                  <LivePriceTimer priceValidUntil={Cart?.price_valid_until} />
+                </div>
+              )}
 
             {/* Updated row with proper overflow handling.
                 On desktop the row is sized to the space left between its own
@@ -2539,7 +2725,11 @@ const Details = (props) => {
             <div
               ref={paymentRowRef}
               className="row py-md bg-text-white md:overflow-hidden"
-              style={isPageWide && paymentRowHeight ? { height: paymentRowHeight } : undefined}
+              style={
+                isPageWide && paymentRowHeight
+                  ? { height: paymentRowHeight }
+                  : undefined
+              }
             >
               {/* Left column - Scrollable content */}
               <div
@@ -2581,11 +2771,20 @@ const Details = (props) => {
                   {Cart?.total_payable_amount == 0 &&
                   areAllInclusionsPaid() &&
                   Cart?.discounted_cost > 0 ? (
+                    // The banner replaces the cart header, so the name and the
+                    // traveller block move inside it rather than disappearing
+                    // on exactly the itineraries where people check who is on
+                    // the booking.
                     <PaymentSuccess
                       amount={Cart?.discounted_cost}
-                      onDownloadInvoice={() => {}}
+                      onGetInTouch={handleGetInTouch}
+                      loading={props?.loading}
+                      travellerSummary={renderTravellerSummary({
+                        leadName: Itinerary?.customer_name || "",
+                        rowOnMobile: true,
+                      })}
                     />
-                  ) : !isItineraryInFuture() && !areAnyInclusionsPaid() ? (
+                  ) : showUpdateDates ? (
                     // Update dates section
                     <div>
                       <div className="bg-white rounded-lg">
@@ -2615,6 +2814,7 @@ const Details = (props) => {
                                 showPhoneView={true}
                                 handleCloseDrawer={handleCloseDrawer}
                                 cartValue={true}
+                                ctaClassName="max-ph:w-full text-center"
                               />
                             </div>
                           </div>
@@ -2759,16 +2959,8 @@ const Details = (props) => {
                     <div>
                       <div className="flex justify-between items-start gap-2">
                         <div className="flex-1">
-                          <div className="flex flex-wrap items-center gap-sm mb-xs">
-                            <div className="text-sm-md font-400 leading-lg">
-                              {Itinerary?.customer_name || ""}
-                            </div>
-                            {travellerDetailsVerified && (
-                              <div className="flex items-center gap-1 text-green-600 text-xs">
-                                <FaCheckCircle />
-                                <span>Traveller details verified</span>
-                              </div>
-                            )}
+                          <div className="text-sm-md font-400 leading-lg mb-xs">
+                            {Itinerary?.customer_name || ""}
                           </div>
 
                           <div className="flex flex-row gap-xs text-sm font-400 leading-md flex-wrap">
@@ -2788,35 +2980,9 @@ const Details = (props) => {
                             </div>
                             <div className="border-r-sm border-text-disabled"></div>
                             <div>Trip: {props.trip_name}</div>
-                            <div className="border-r-sm border-text-disabled"></div>
-                            <div>
-                              Travellers: {pax} {pluralDetector("Adult", pax)}
-                              {props.itinerary?.number_of_children ? (
-                                <span>
-                                  , {props.itinerary?.number_of_children}{" "}
-                                  Children
-                                </span>
-                              ) : null}
-                              {props.itinerary?.number_of_infants ? (
-                                <span>
-                                  , {props.itinerary?.number_of_infants}{" "}
-                                  {pluralDetector(
-                                    "Infant",
-                                    props.itinerary?.number_of_infants
-                                  )}
-                                </span>
-                              ) : null}
-                            </div>
                           </div>
                         </div>
-                        <span
-                          className="text-xs text-blue underline cursor-pointer shrink-0 mt-1"
-                          onClick={() => setTravellerDetailsOpen(true)}
-                        >
-                          {travellerDetailsVerified
-                            ? "Edit traveller details"
-                            : "Add traveller details"}
-                        </span>
+                        {renderTravellerSummary()}
                       </div>
                     </div>
                   )}
@@ -2834,11 +3000,14 @@ const Details = (props) => {
                       updatingInclusions={updatingInclusions}
                       defaultExpanded={
                         Cart?.sales?.some(
-                          (sale) => sale.status === "Completed"
+                          (sale) => sale.status === "Completed",
                         ) && Cart?.total_payable_amount !== 0
                       }
-                      arePricesExpired={(!isItineraryInFuture() && areAnyInclusionsPaid())|| (hasPlanExpired &&
-                    isItineraryInFuture()) || (!isItineraryInFuture())}
+                      arePricesExpired={
+                        (!isItineraryInFuture() && areAnyInclusionsPaid()) ||
+                        (hasPlanExpired && isItineraryInFuture()) ||
+                        !isItineraryInFuture()
+                      }
                     />
                   </div>
                 </div>
@@ -2896,7 +3065,7 @@ const Details = (props) => {
                           : Cart?.total_cost
                       }
                       lockInCost={0}
-                      couponDiscount={appliedCoupon ? -couponSavedAmount : 0}
+                      couponDiscount={-(couponSavedAmount || 0)}
                       surchargesTaxes={Cart?.surcharges_and_taxes || 0}
                       totalPayable={calculateFilteredTotal()}
                       selectedPaymentOption={selectedPaymentOption}
@@ -2925,13 +3094,28 @@ const Details = (props) => {
                     )}
 
                     {/* Payment Buttons */}
-                    {hasPlanExpired &&
-                    isItineraryInFuture() &&
-                    pricing_status == "SUCCESS" ? (
-                      <></>
+                    {/* Past dates first: nothing here can be paid for until the
+                        dates move, so that arm wins over every other CTA. Then
+                        nothing-left-to-pay: on a settled cart the expired-prices
+                        arm used to win and render nothing at all, so the column
+                        lost its Get in touch CTA on desktop while the mobile bar
+                        still offered one. */}
+                    {showUpdateDates ? (
+                      // The same CTA the left column offers, in the
+                      // Proceed-to-Pay slot. Phones get it in the fixed bottom
+                      // bar (portaled below) instead.
+                      <div className="ttw-desktop-only">
+                        {renderUpdateDatesCta()}
+                      </div>
                     ) : calculateFilteredTotal() === 0 ? (
                       <>
-                        <GetInTouchContainer>
+                        {/* Desktop-only whenever the mobile bottom bar is
+                            already carrying this same CTA. */}
+                        <GetInTouchContainer
+                          className={
+                            showMobileGetInTouch ? "ttw-desktop-only" : ""
+                          }
+                        >
                           <Button
                             color="white"
                             fontWeight="500"
@@ -2969,10 +3153,17 @@ const Details = (props) => {
                           </Button>
                         </GetInTouchContainer>
 
-                        <div className="text-center text-sm text-amber-600 mt-3 p-2 bg-amber-50 rounded">
-                          Please select at least one inclusion to proceed
-                        </div>
+                        {!areAnyInclusionsSelected() &&
+                          !areAnyInclusionsPaid() && (
+                            <div className="text-center text-sm text-amber-600 mt-3 p-2 bg-amber-50 rounded">
+                              Please select at least one inclusion to proceed
+                            </div>
+                          )}
                       </>
+                    ) : hasPlanExpired &&
+                      isItineraryInFuture() &&
+                      pricing_status == "SUCCESS" ? (
+                      <></>
                     ) : (
                       // Desktop: static button in the pricing column. Phones get
                       // a fixed bottom bar (portaled below). CSS breakpoint, not
@@ -3071,7 +3262,9 @@ const Details = (props) => {
                                 </div>
                                 <div className="text-left">
                                   <div className="text-[13px] font-600 text-[#01202B] flex items-center gap-1">
-                                    {hasVisa ? `${visaCount} Visa added` : "Add Visa"}
+                                    {hasVisa
+                                      ? `${visaCount} Visa added`
+                                      : "Add Visa"}
                                     {hasVisa && (
                                       <span className="inline-flex items-center justify-center w-[14px] h-[14px] rounded-full bg-[#22C55E] text-white text-[9px] font-700">
                                         ✓
@@ -3099,7 +3292,9 @@ const Details = (props) => {
                                 </div>
                                 <div className="text-left">
                                   <div className="text-[13px] font-600 text-[#01202B] flex items-center gap-1">
-                                    {hasEsim ? `${esimCount} eSIM added` : "Add eSIM"}
+                                    {hasEsim
+                                      ? `${esimCount} eSIM added`
+                                      : "Add eSIM"}
                                     {hasEsim && (
                                       <span className="inline-flex items-center justify-center w-[14px] h-[14px] rounded-full bg-[#22C55E] text-white text-[9px] font-700">
                                         ✓
@@ -3171,6 +3366,7 @@ const Details = (props) => {
             (() => {
               const showPayBar =
                 !showRepriceExpired &&
+                !showUpdateDates &&
                 !(
                   hasPlanExpired &&
                   isItineraryInFuture() &&
@@ -3178,17 +3374,61 @@ const Details = (props) => {
                 ) &&
                 calculateFilteredTotal() !== 0;
 
-              if (!showRepriceExpired && !showPayBar) return null;
+              if (!showRepriceExpired && !showUpdateDates && !showPayBar)
+                return null;
 
               return ReactDOM.createPortal(
                 <div
                   className="fixed bottom-0 left-0 right-0 md:hidden bg-white px-4 pt-3 pb-4 shadow-[0_-2px_12px_rgba(0,0,0,0.08)]"
                   style={{ zIndex: 1650 }}
                 >
-                  {showRepriceExpired ? (
+                  {showUpdateDates ? (
+                    renderUpdateDatesCta()
+                  ) : showMobileGetInTouch ? (
+                    <GetInTouchContainer>
+                      <Button
+                        color="white"
+                        fontWeight="500"
+                        fontSize="1rem"
+                        borderWidth="1px"
+                        width="100%"
+                        borderRadius="8px"
+                        bgColor="#07213A"
+                        padding="12px"
+                        onclick={handleGetInTouch}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            gap: "0.5rem",
+                            alignItems: "center",
+                          }}
+                        >
+                          <ImageLoader
+                            dimensions={{ height: 50, width: 50 }}
+                            dimensionsMobile={{ height: 50, width: 50 }}
+                            height={"20px"}
+                            width={"20px"}
+                            widthmobile={"20px"}
+                            leftalign
+                            url={"media/icons/login/customer-service.png"}
+                          />
+                          {props?.loading ? (
+                            <PulseLoader color="white" />
+                          ) : (
+                            <span>Get in touch!</span>
+                          )}
+                        </div>
+                      </Button>
+                    </GetInTouchContainer>
+                  ) : showRepriceExpired ? (
                     <>
                       <div className="flex items-center gap-2 mb-2 text-red-600">
-                        <TbClockExclamation size={18} className="flex-shrink-0" />
+                        <TbClockExclamation
+                          size={18}
+                          className="flex-shrink-0"
+                        />
                         <span className="text-sm font-500 leading-md">
                           Itinerary prices have expired.
                         </span>
@@ -3236,7 +3476,10 @@ const Details = (props) => {
               container, which would trap a fixed child. The drawer itself is
               the scroller, so bottom-0 sticks to its viewport edge. On mobile
               it stays in flow — a fixed pay bar already owns that strip. */}
-          <div ref={trustBarRef} className="md:sticky md:bottom-0 md:z-20 bg-white">
+          <div
+            ref={trustBarRef}
+            className="md:sticky md:bottom-0 md:z-20 bg-white"
+          >
             <TrustFactor />
           </div>
         </Drawer>
@@ -3339,7 +3582,7 @@ const Details = (props) => {
                 // `travellers` array in Redux is populated and the next
                 // proceed-to-pay call hits the payment API.
                 refreshItineraryDetails();
-                 props.getPaymentHandler?.();
+                props.getPaymentHandler?.();
               }}
             />
           </div>

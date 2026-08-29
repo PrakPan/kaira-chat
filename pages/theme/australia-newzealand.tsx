@@ -567,37 +567,24 @@ const australiaNewZealandConfig: CinematicThemeConfig = {
       },
       intro:
         "Both are online applications, and both are slow — New Zealand especially. We prep the paperwork, check every document and submit for you, so the processing clock starts as early as it can.",
+      // The two countries this trip actually crosses. The stopover visas that
+      // used to sit under them (Singapore, Bali, Thailand, Japan) were for
+      // trips this page isn't selling.
       cards: [
         {
           country: "Australia",
           cities: "e-Visa · multiple entry · 90 days a visit",
           fee: "₹13,900",
+          line:
+            "Filed online, but the document list is the long kind — funds, itinerary, insurance, the lot. We assemble it, check it against what the department actually asks for, and submit on your behalf.",
           href: VISA_HOME,
         },
         {
           country: "New Zealand",
           cities: "e-Visa · multiple entry · 90 days a visit",
           fee: "₹27,500",
-          href: VISA_HOME,
-        },
-        {
-          country: "Singapore",
-          cities: "The standard stopover, both directions",
-          href: VISA_HOME,
-        },
-        {
-          country: "Indonesia (Bali)",
-          cities: "e-Visa · a few nights on the way back",
-          href: VISA_HOME,
-        },
-        {
-          country: "Thailand",
-          cities: "Tourist e-Visa · the other way to break the flight",
-          href: VISA_HOME,
-        },
-        {
-          country: "Japan",
-          cities: "A week north on the long way home",
+          line:
+            "The slowest thing on this itinerary — slower than the flights, the Test tickets and the summer stays. It's the first file we open, and it's what decides how early the rest of the trip has to be booked.",
           href: VISA_HOME,
         },
       ],
@@ -607,7 +594,6 @@ const australiaNewZealandConfig: CinematicThemeConfig = {
         { label: "New Zealand", value: "~40 days" },
         { label: "We handle", value: "Docs + filing" },
       ],
-      cta: { label: "Start my visas →", href: VISA_HOME },
       note:
         "Start the New Zealand application first — it takes roughly twice as long as the Australian one. Apply for both at least three months out if you're travelling over Christmas.",
     },
