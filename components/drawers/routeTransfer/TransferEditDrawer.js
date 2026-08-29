@@ -6860,6 +6860,11 @@ const formatPriceWithComma = (price) => {
   });
 };
 
+// Trains never show the staff-only "Unverified prices" box: self_prices coming
+// back with a train search's 400 are dropped (standalone train drawer and a
+// train leg inside the combo drawer alike).
+const isTrainMode = (m) => String(m || "").toLowerCase() === "train";
+
 const OtherTransfer = ({
   getPaymentHandler,
   setShowOtherTrasfer,
@@ -7892,23 +7897,6 @@ const toggleTransferDetails = (priceOptionId) => {
     return transferKey ? loadingTransfers[transferKey] : false;
   };
 
-  const retryLoadTransfers = () => {
-    if (isBookingInProgress) return;
-
-    if (otherTransfer || Object.keys(dynamicTransferData).length > 0) {
-      setError(null);
-      const finalDate = departureDate || currentModeDepartureDate;
-      const finalTime = departureTime || currentModeDepartureTime;
-
-      if (finalDate && finalTime) {
-        const departureDateTime = `${finalDate}T${finalTime}:00`;
-        const transferToUse =
-          otherTransfer || Object.values(dynamicTransferData)[0];
-        loadTransfers(transferToUse, pax, departureDateTime);
-      }
-    }
-  };
-
   // Travellers a self_price entry's (total) amount is split across.
   const getSelfPriceTravellers = (data) =>
     (data?.number_of_adults || 0) +
@@ -7934,12 +7922,19 @@ const toggleTransferDetails = (priceOptionId) => {
     setPerPersonEdits((prev) => ({ ...prev, [priceOptionId]: value }));
   };
 
+  // self_price entries staff actually get to see/verify. Train prices are
+  // filtered out — by the drawer's mode and by each entry's own mode, so a
+  // train leg opened from the combo drawer is covered too.
+  const visibleSelfPrices = useMemo(() => {
+    if (!Array.isArray(selfPrices) || isTrainMode(mode)) return [];
+    return selfPrices.filter((entry) => !isTrainMode(entry?.data?.mode));
+  }, [selfPrices, mode]);
+
   // Collect EVERY self_price (per-person) for the verify call — adding any one
   // price to the itinerary marks all of these prices verified.
   const collectAllSelfPricesForVerify = () => {
-    if (!Array.isArray(selfPrices)) return [];
     const out = [];
-    selfPrices.forEach((entry) => {
+    visibleSelfPrices.forEach((entry) => {
       const data = entry?.data;
       if (!data) return;
       (Array.isArray(data.prices) ? data.prices : []).forEach((p, priceIdx) => {
@@ -8366,13 +8361,6 @@ const toggleTransferDetails = (priceOptionId) => {
             </div>
             <div className="ttw-type-small text-[#445069] mb-3">{error}</div>
             <div className="flex flex-col items-center gap-3">
-              <button
-                onClick={retryLoadTransfers}
-                className="bg-[#f7e700] border border-black text-black px-4 py-2 rounded-lg ttw-type-body-strong disabled:opacity-50"
-                disabled={isBookingInProgress}
-              >
-                Retry
-              </button>
               <OfflineQuoteCTA
                 itinerary_id={itinerary_id}
                 type={(mode || "").toLowerCase()}
@@ -8421,8 +8409,7 @@ const toggleTransferDetails = (priceOptionId) => {
           the price (so it becomes bookable) and then runs the booking flow. */}
       {isStaff &&
         !isCurrentTransferLoading() &&
-        Array.isArray(selfPrices) &&
-        selfPrices.length > 0 && (
+        visibleSelfPrices.length > 0 && (
           <div className="w-full flex justify-center px-4 pb-8">
             <div className="w-full max-w-[560px] rounded-3xl border border-[#f7e700] bg-[#fffde7] p-5">
               <div className="flex items-center gap-2 mb-2">
@@ -8438,7 +8425,7 @@ const toggleTransferDetails = (priceOptionId) => {
               </p>
 
               <div className="flex flex-col gap-3">
-                {selfPrices.map((entry, entryIdx) => {
+                {visibleSelfPrices.map((entry, entryIdx) => {
                   const data = entry?.data;
                   if (!data) return null;
                   const entryPrices = Array.isArray(data?.prices)
