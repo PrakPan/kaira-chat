@@ -14,6 +14,7 @@ import edinburghHogmanayForm from "./edinburgh-hogmanay";
 import northernLightsForm from "./northern-lights";
 import greeceIslandsForm from "./greece-islands-done-right";
 import honeymoonForm from "./honeymoon";
+import thailandForm from "./thailand";
 import thailandBachelorForm from "./thailand-bachelor";
 import thailandBaliOffbeatForm from "./thailand-bali-offbeat";
 
@@ -27,6 +28,7 @@ const FORMS: ThemeForm[] = [
   northernLightsForm,
   greeceIslandsForm,
   honeymoonForm,
+  thailandForm,
   thailandBachelorForm,
   thailandBaliOffbeatForm,
 ];

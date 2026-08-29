@@ -359,6 +359,11 @@ type CinematicSectionBlock =
       // ships. "stacked" is the mockup's packaged-product card: cover photo on
       // top, included-in chips, a ruled price line and an ink CTA.
       layout?: "row" | "stacked";
+      // Keep the horizontal rail at every breakpoint instead of falling into
+      // the 3-up grid from md. For a section carrying four or more plans, where
+      // the grid strands the fourth on a row of its own and the set stops
+      // reading as one shelf of options. `stacked` only.
+      rail?: boolean;
       // "band" lays the section on a full-bleed wash of the page's accentSoft,
       // which is how the mockup separates the priced plans from the free
       // browsing above and below them.
