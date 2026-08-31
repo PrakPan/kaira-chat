@@ -831,9 +831,13 @@ const CardsSection: React.FC<{
         rail
           ? "md:gap-[16px] mt-[12px] md:mt-[22px]"
           : `md:grid md:gap-[20px] mt-[12px] md:mt-[24px] md:overflow-visible ${
-              // The ink panel is a 2-up in the mockup, and it holds two cards.
-              // Three tracks would leave a third of the panel empty beside them.
-              onDark ? "md:grid-cols-2" : "md:grid-cols-3"
+              // The ink panel lays out to however many cards it holds rather
+              // than a fixed count: two cards want two tracks (three would
+              // leave a third of the panel empty beside them), three want
+              // three, or the row doesn't reach the panel's own edges.
+              onDark && section.cards.length === 2
+                ? "md:grid-cols-2"
+                : "md:grid-cols-3"
             }`
       }`}
     >
@@ -955,7 +959,10 @@ const StackedTripCard: React.FC<{
   card: CinematicTripCard;
   onSelectPrompt: SelectPrompt;
   ctaLabel?: string;
-}> = ({ card, onSelectPrompt, ctaLabel }) => {
+  // In a rail the card keeps a width of its own at every breakpoint; in the
+  // grid it hands sizing over to the column.
+  rail?: boolean;
+}> = ({ card, onSelectPrompt, ctaLabel, rail }) => {
   const router = useRouter();
   const palette = usePalette();
   const price = card.price ? splitPrice(card.price) : null;
@@ -967,7 +974,15 @@ const StackedTripCard: React.FC<{
         else if (card.prompt)
           onSelectPrompt(card.prompt, { source: "card", label: card.name });
       }}
-      className="ctl-card text-left rounded-[18px] overflow-hidden flex flex-col h-full cursor-pointer w-[272px] md:w-auto shrink-0 md:shrink"
+      // `self-stretch`, not `h-full`: in the rail these cards are flex items in
+      // an auto-height row, and a definite `height:100%` there resolves against
+      // an indefinite parent — it disables the stretch and every card falls back
+      // to its own content height, so a plan with a fourth include-chip ends up
+      // taller than the rest and the price lines stop lining up. Stretch works
+      // in the grid too, where it is already the default.
+      className={`ctl-card text-left rounded-[18px] overflow-hidden flex flex-col self-stretch cursor-pointer w-[272px] shrink-0 ${
+        rail ? "md:w-[300px]" : "md:w-auto md:shrink"
+      }`}
       style={cardChrome()}
     >
       <div
@@ -1206,6 +1221,9 @@ const TripsSection: React.FC<{
 }> = ({ section, onSelectPrompt }) => {
   const palette = usePalette();
   const stacked = section.layout === "stacked";
+  // `rail` keeps the mobile scroller at every breakpoint. Only the stacked
+  // layout has one to keep — the row layout is a stack of full-width cards.
+  const rail = stacked && !!section.rail;
   const band = section.tone === "band";
   return (
     <section
@@ -1217,7 +1235,9 @@ const TripsSection: React.FC<{
         <div
           className={`gap-[10px] md:gap-[16px] mt-[14px] md:mt-[24px] ${
             stacked
-              ? "ctl-scroll ctl-rail flex overflow-x-auto md:grid md:grid-cols-3 md:overflow-visible pt-[4px] pb-[10px]"
+              ? `ctl-scroll ctl-rail flex overflow-x-auto pt-[4px] pb-[10px] ${
+                  rail ? "" : "md:grid md:grid-cols-3 md:overflow-visible"
+                }`
               : "flex flex-col md:grid md:grid-cols-3"
           }`}
         >
@@ -1228,6 +1248,7 @@ const TripsSection: React.FC<{
                 card={card}
                 onSelectPrompt={onSelectPrompt}
                 ctaLabel={section.ctaLabel}
+                rail={rail}
               />
             ) : (
               <TripCard

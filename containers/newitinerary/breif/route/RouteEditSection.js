@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { IoMenu, IoLocationSharp, IoCar } from "react-icons/io5";
@@ -401,6 +401,21 @@ const RouteTransferRow = ({ leg, isEndpoint }) => (
   </div>
 );
 
+// The trip starts before today, phrased for the traveller — or null when it
+// doesn't. Its own function rather than a branch inside getDateError: the Route
+// tab has to answer this the moment it opens, before there are destinations to
+// validate, because the answer decides whether the route is editable at all.
+export function tripStartPassedError(startDate) {
+  if (!startDate || isNaN(Date.parse(startDate))) return null;
+  const start = new Date(startDate);
+  const today = new Date();
+  if (isSameDay(start, today) || start >= today) return null;
+  return {
+    title: "Trip dates have passed",
+    hint: `Starts ${format(start, "d MMM yyyy")} — update your dates`,
+  };
+}
+
 // Same rows as the editor, minus its controls, plus the transfers. Rendering
 // through <Destination> is what keeps the two states visually identical.
 export const RoutePreview = ({ destinations, transferBookings }) => (
@@ -526,9 +541,47 @@ const RouteEditSection = (props) => {
   const routeTabActive = props.routeTabActive !== false;
   const [isEditing, setIsEditing] = useState(false);
 
+  // A trip whose start date has already gone can't be re-planned around it —
+  // every save would fail on the same check — so the Route tab refuses the edit
+  // up front rather than letting the traveller reorder stops into a dead Update
+  // Route button. The bar carrying this message is up from the moment the tab
+  // opens, ahead of any edit, because it is the answer to "why can't I change
+  // this?" and it holds the one CTA that can unblock it. Chat only: the
+  // standalone itinerary page has neither the preview/edit toggle nor a bar to
+  // say it in.
+  const pastDatesError = useMemo(
+    () => (chatRouteTab ? tripStartPassedError(startDate) : null),
+    [chatRouteTab, startDate]
+  );
+
+  // The dates themselves live in the trip's Settings modal, several layers up
+  // in BotApp. Same window event OfflineQuoteCTA's "Update Dates" uses, with a
+  // reason attached so the modal opens on copy about the dates rather than its
+  // generic preferences heading.
+  const handleUpdateDates = () => {
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("open-itinerary-settings", {
+          detail: { reason: "past-dates" },
+        })
+      );
+    }
+
+    logEvent({
+      action: "Route Edit",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: "Update Dates",
+        event_action: "Update trip dates",
+      },
+    });
+  };
+
   // The "Update Route" bar owns the bottom of the screen for the whole editing
   // session — from the tap on Edit, greyed out, until the edit is saved or the
-  // tab is left. That is state no ancestor can observe, so announce it: BotApp
+  // tab is left; on a trip whose dates have passed it is there from the moment
+  // the tab opens. That is state no ancestor can observe, so announce it: BotApp
   // re-measures the stack its "Back to itinerary" pill sits above, and the
   // mobile layout hands the bottom slot over, hiding its own View Cart bar for
   // as long as `visible` holds so the two never stack.
@@ -545,9 +598,11 @@ const RouteEditSection = (props) => {
         );
       }
     };
-    announce(!!(chatRouteTab && routeTabActive && isEditing));
+    announce(
+      !!(chatRouteTab && routeTabActive && (isEditing || pastDatesError))
+    );
     return () => announce(false);
-  }, [isEditing, chatRouteTab, routeTabActive, dispatch]);
+  }, [isEditing, pastDatesError, chatRouteTab, routeTabActive, dispatch]);
 
   // The Update Route bar is `fixed`, so it can't inherit the itinerary panel's
   // box — and on desktop that panel's left edge moves with the (collapsible)
@@ -964,23 +1019,16 @@ const RouteEditSection = (props) => {
     // Returned as a title + hint pair, both short: the action bar shows them on
     // the same two lines its normal state uses, so raising a problem doesn't
     // change the bar's height or wrap a paragraph beside the button.
-    const today = new Date();
-
     if (!startDate || isNaN(Date.parse(startDate))) {
       return {
         title: "Trip dates missing",
         hint: "Update your travel dates to save",
       };
     }
-    const start = new Date(startDate);
-    if (!isSameDay(start, today) && start < today) {
-      return {
-        title: "Trip dates have passed",
-        hint: `Starts ${onDay(startDate)} — update your dates`,
-      };
-    }
+    const startPassed = tripStartPassedError(startDate);
+    if (startPassed) return startPassed;
 
-    let prevDate = start;
+    let prevDate = new Date(startDate);
 
     for (let i = 1; i < destinations.length - 1; i++) {
       const city = cityLabel(destinations[i]);
@@ -1311,6 +1359,7 @@ const handleRouteTabClick = (label) => {
               isEditing={isEditing}
               onToggleEdit={setIsEditing}
               canToggleEdit
+              editingBlocked={!!pastDatesError}
               // Withheld while the route has unsaved edits: the transfers were
               // planned for the saved order, so pinning them to a reordered
               // list would show legs that no longer exist. They come back once
@@ -1414,6 +1463,8 @@ const handleRouteTabClick = (label) => {
               barStyle={actionBarStyle}
               saving={loading}
               dateError={invalidDateError}
+              pastDatesError={pastDatesError}
+              onUpdateDates={handleUpdateDates}
             />
           </div>
         )}
@@ -1649,6 +1700,11 @@ export const EditDestinations = (props) => {
   // standalone itinerary page (which never passes `isEditing`) stays editable.
   const isEditing = props.isEditing !== false;
   const canToggleEdit = !!props.canToggleEdit;
+  // The route is frozen (its travel dates have passed), so the list stays the
+  // preview even once `isEditing` is on — that flag is what raises the action
+  // bar, and the bar is where the reason and the way out are written.
+  const editingBlocked = !!props.editingBlocked;
+  const showEditor = isEditing && !editingBlocked;
 
   return (
     // No bottom reserve: the Update Route bar is sticky and sits in flow, so it
@@ -1661,8 +1717,11 @@ export const EditDestinations = (props) => {
 
         {/* The route is read-only until asked otherwise. There is no "done"
             counterpart to Edit: the first change surfaces the Update Route bar,
-            and saving is what closes the editor. */}
-        {isEditing ? (
+            and saving is what closes the editor.
+            A blocked route offers neither: the action bar is already up saying
+            why, so a Change route button here would only be a tap that does
+            nothing. */}
+        {editingBlocked ? null : showEditor ? (
           <button
             type="button"
             onClick={handleAddDestination}
@@ -1685,7 +1744,7 @@ export const EditDestinations = (props) => {
       </div>
 
       {props.destinations.length ? (
-        isEditing ? (
+        showEditor ? (
           <DragDrop
             popUp={popUp}
             setPopUp={setPopUp}
@@ -3473,6 +3532,8 @@ export const ActionPanel = (props) => {
     barStyle,
     saving,
     dateError,
+    pastDatesError,
+    onUpdateDates,
   } = props;
   const isDesktop = useMediaQuery("(min-width:768px)");
   const router = useRouter();
@@ -3501,15 +3562,25 @@ export const ActionPanel = (props) => {
     // `routeTabActive` is load-bearing now that this is portalled: MenuV2 keeps
     // the Route tab mounted behind a display:none wrapper, and outside the tree
     // the bar would no longer be hidden along with it.
-    if (!isEditing || !routeTabActive || !portalHost) return null;
+    // Dates that have passed put the bar up without an edit — there is nothing
+    // to edit, and the bar is the only place that says so.
+    if ((!isEditing && !pastDatesError) || !routeTabActive || !portalHost)
+      return null;
 
     const isDirty = !!destinationChanges;
     // A date problem is only worth raising once there is something to save —
     // before that the traveller hasn't asked for anything yet. Once raised it
     // replaces the hint line and greys the CTA, so the button is never a click
     // that silently does nothing.
-    const blockedBy = isDirty ? dateError : null;
+    //
+    // Dates that have already passed are the exception: the route is frozen, so
+    // that message is the reason the bar is open at all and it leads rather than
+    // waits for an edit. It also keeps a live CTA — there is a next step here,
+    // it just isn't saving this route.
+    const datesPassed = !!pastDatesError;
+    const blockedBy = pastDatesError || (isDirty ? dateError : null);
     const canSave = isDirty && !blockedBy;
+    const ctaEnabled = datesPassed || canSave;
 
     const title = blockedBy
       ? blockedBy.title
@@ -3556,19 +3627,21 @@ export const ActionPanel = (props) => {
         </div>
         <button
           type="button"
-          onClick={handleSaveButton}
-          disabled={!canSave || saving}
+          onClick={datesPassed ? onUpdateDates : handleSaveButton}
+          disabled={!ctaEnabled || saving}
           aria-busy={saving}
           // Explicit colours rather than `disabled:` variants — the button is
           // also disabled while saving, and that state stays yellow.
           className={`flex h-[42px] md:h-[44px] w-full md:w-auto md:min-w-[148px] shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-[8px] px-5 font-inter text-[14px] md:text-[15px] font-bold transition-colors ${
-            canSave
+            ctaEnabled
               ? "bg-[#F7E700] text-black"
               : "bg-[#EDEDE7] text-[#9AA2AD] cursor-not-allowed"
           } ${saving ? "cursor-wait" : ""}`}
         >
           {saving ? (
             <PulseLoader size={7} color="#0B1220" speedMultiplier={0.8} />
+          ) : datesPassed ? (
+            "Update dates"
           ) : (
             "Update Route"
           )}
