@@ -1,5 +1,12 @@
-import React, { useState } from "react";
-import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
+import React, { useEffect, useState } from "react";
+import ReactDOM from "react-dom";
+import {
+  MdClose,
+  MdInfoOutline,
+  MdKeyboardArrowDown,
+  MdKeyboardArrowRight,
+  MdKeyboardArrowUp,
+} from "react-icons/md";
 import { getIndianPrice } from "../../../services/getIndianPrice";
 
 /**
@@ -318,6 +325,255 @@ export const QuoteTerms = ({
         includedItems={includedItems}
       />
       <CancellationNote html={policy} />
+    </div>
+  );
+};
+
+/* ------------------------------------------------------------- the phone sheet */
+
+/**
+ * The same facts, grouped into the sections a sheet can afford.
+ *
+ * The chip row says everything in one wrapped line because on a card that is all
+ * the room there is; six chips and a policy toggle under every cab is also what
+ * pushes a phone's list of quotes to three screens per suggestion. A sheet has a
+ * screen to itself, so the three tones become three headed groups — what the fare
+ * already covers, what the driver still collects at the kerb, and the rates that
+ * only start costing money if the day overruns.
+ */
+const sectionTerms = (charges, currencySymbol, includedItems) => {
+  const lines = summariseVendorCharges(charges, currencySymbol);
+  // Same opt-in as the chip row: the surfaces with an AmenitySelector already
+  // list these, the suggestion cards do not.
+  const items =
+    includedItems && Array.isArray(charges?.included_items)
+      ? charges.included_items.filter(Boolean)
+      : [];
+
+  return [
+    {
+      key: "included",
+      title: "What the fare covers",
+      tone: "included",
+      values: [
+        ...lines.filter((line) => line.tone === "included").map((line) => line.text),
+        ...items.map((item) => `${item} included`),
+      ],
+    },
+    {
+      key: "extra",
+      title: "Payable on the road",
+      tone: "extra",
+      values: lines.filter((line) => line.tone === "extra").map((line) => line.text),
+    },
+    {
+      key: "neutral",
+      title: "Rates & fees",
+      tone: "neutral",
+      values: lines.filter((line) => line.tone === "neutral").map((line) => line.text),
+    },
+  ].filter((section) => section.values.length);
+};
+
+/** The chips' tones as a bullet, since a full-width row needs no pill. */
+const DOT_COLORS = {
+  included: "#7d9b4e",
+  extra: "#c98a2e",
+  neutral: "#9aa0ac",
+};
+
+const SECTION_TITLE_CLASS =
+  "text-[11px] font-600 uppercase tracking-[0.06em] text-[#8a93a6]";
+
+/**
+ * Says only what is actually behind the row, so a quote that states terms but no
+ * policy does not promise one.
+ */
+const sheetTriggerLabel = (hasTerms, hasPolicy) => {
+  if (hasTerms && hasPolicy) return "Fare details & cancellation policy";
+  return hasPolicy ? "Cancellation policy" : "Fare details";
+};
+
+/**
+ * QuoteTerms for a phone: one tappable row on the card, everything else in a
+ * bottom sheet.
+ *
+ * Renders the trigger AND its sheet, so a card only has to drop it in beside the
+ * inline version and let the breakpoint pick — which is the whole arrangement:
+ * this is additive, and the desktop card still renders `QuoteTerms` unchanged.
+ * The sheet portals to `document.body` because the card sits inside a drawer
+ * with its own stacking context and `overflow`; z-1666 is the same layer the
+ * transfer drawer's own modal uses, i.e. above the 1501 drawer.
+ *
+ * The portal carries the same desktop-hiding class as the trigger: a sheet left
+ * open while a tablet is rotated past the breakpoint would otherwise outlive the
+ * only control that can close it.
+ */
+export const QuoteTermsSheet = ({
+  quote,
+  title,
+  subtitle,
+  currencySymbol = "\u20b9",
+  includedItems = false,
+  className = "",
+  mobileOnlyClass = "ph-up:hidden",
+}) => {
+  const [open, setOpen] = useState(false);
+  const charges = getVendorCharges(quote);
+  const policy = getCancellationPolicy(quote);
+  const sections = sectionTerms(charges, currencySymbol, includedItems);
+  const instructions = Array.isArray(charges?.instructions)
+    ? charges.instructions
+    : [];
+
+  useEffect(() => {
+    if (!open) return undefined;
+    const onKey = (event) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open]);
+
+  const hasTerms = sections.length > 0 || instructions.length > 0;
+  // Same contract as QuoteTerms: nothing at all when the supplier stated nothing,
+  // so the card's flex gap does not open around an empty row.
+  if (!hasTerms && !policy) return null;
+
+  const close = (event) => {
+    event?.preventDefault?.();
+    event?.stopPropagation?.();
+    setOpen(false);
+  };
+
+  const sheet = (
+    <div
+      className={`fixed inset-0 z-[1666] flex items-end justify-center ${mobileOnlyClass}`}
+      role="dialog"
+      aria-modal="true"
+    >
+      <div
+        className="absolute inset-0"
+        style={{ background: "rgba(11,18,32,0.45)" }}
+        onClick={close}
+      />
+
+      {/* A fixed 80% of the viewport rather than a content hug: these quotes state
+          anything from one line to a dozen, and a sheet that resized itself per cab
+          made the same control land in a different place on every card. */}
+      <div className="relative w-full h-[80vh] flex flex-col overflow-hidden rounded-t-[20px] bg-white ttw-sheet-up">
+        <div className="flex justify-center pt-2 pb-1 flex-none">
+          <span className="w-[44px] h-[4px] rounded-full bg-[#e0dccd]" />
+        </div>
+
+        <div className="flex items-start justify-between gap-3 px-4 pb-2 flex-none">
+          <div className="min-w-0">
+            <div className="text-md font-600 leading-xl text-[#0b1220] truncate">
+              {title || "Fare details"}
+            </div>
+            {subtitle ? (
+              <div className="text-[12px] leading-[1.4] text-[#445069]">
+                {subtitle}
+              </div>
+            ) : null}
+          </div>
+          <button
+            type="button"
+            aria-label="Close"
+            onClick={close}
+            className="flex-none flex items-center justify-center w-8 h-8 rounded-full bg-[#f4f3ec] border-0 p-0 cursor-pointer text-[#445069]"
+          >
+            <MdClose size={18} />
+          </button>
+        </div>
+
+        <div
+          className="flex-1 overflow-y-auto overscroll-contain px-4 pt-1 flex flex-col gap-4"
+          style={{
+            WebkitOverflowScrolling: "touch",
+            // The home indicator sits over the last line otherwise.
+            paddingBottom: "calc(24px + env(safe-area-inset-bottom))",
+          }}
+        >
+          {sections.map((section) => (
+            <div key={section.key} className="flex flex-col gap-1.5">
+              <div className={SECTION_TITLE_CLASS}>{section.title}</div>
+              {section.values.map((value) => (
+                <div
+                  key={value}
+                  className="flex items-start gap-2 text-[13px] leading-[1.5] text-[#0b1220]"
+                >
+                  <span
+                    className="w-[6px] h-[6px] rounded-full mt-[6px] flex-none"
+                    style={{ background: DOT_COLORS[section.tone] }}
+                  />
+                  <span>{value}</span>
+                </div>
+              ))}
+            </div>
+          ))}
+
+          {instructions.length ? (
+            <div className="flex flex-col gap-1.5">
+              <div className={SECTION_TITLE_CLASS}>Good to know</div>
+              {instructions.map((line) => (
+                <p
+                  key={line}
+                  className="text-[13px] leading-[1.5] text-[#445069] m-0"
+                >
+                  {line}
+                </p>
+              ))}
+            </div>
+          ) : null}
+
+          {policy ? (
+            <div className="flex flex-col gap-1.5">
+              <div className={SECTION_TITLE_CLASS}>Cancellation policy</div>
+              <div
+                className="ttw-policy-html text-[13px] leading-[1.55] text-[#445069] rounded-xl bg-[#faf9f4] px-3 py-2.5"
+                dangerouslySetInnerHTML={{ __html: policy }}
+              />
+            </div>
+          ) : null}
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className={className}>
+      <button
+        type="button"
+        aria-haspopup="dialog"
+        aria-expanded={open}
+        onClick={(event) => {
+          // These cards sit in lists where the row itself can be a select
+          // target; reading the terms must not also pick the cab.
+          event.preventDefault();
+          event.stopPropagation();
+          setOpen(true);
+        }}
+        className="w-full flex items-center justify-between gap-2 rounded-xl border-sm border-solid border-[#ececec] bg-[#faf9f4] px-3 py-2 text-left cursor-pointer"
+      >
+        <span className="flex items-center gap-1.5 text-[12px] leading-[1.4] text-[#445069]">
+          <MdInfoOutline
+            size={15}
+            className="text-[#8a93a6]"
+            style={{ flex: "none" }}
+          />
+          {sheetTriggerLabel(hasTerms, !!policy)}
+        </span>
+        <MdKeyboardArrowRight
+          size={18}
+          className="text-[#8a93a6]"
+          style={{ flex: "none" }}
+        />
+      </button>
+
+      {open && typeof document !== "undefined"
+        ? ReactDOM.createPortal(sheet, document.body)
+        : null}
     </div>
   );
 };

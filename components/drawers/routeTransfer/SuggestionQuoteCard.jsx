@@ -5,7 +5,7 @@ import { PulseLoader } from "react-spinners";
 import { getIndianPrice } from "../../../services/getIndianPrice";
 import { optimizedMediaUrl } from "../../../lib/mediaImage";
 import { TaxiTypeGlyph } from "../../../helper/taxiTypeGlyph";
-import { QuoteTerms } from "../../modals/taxis/VendorCharges";
+import { QuoteTerms, QuoteTermsSheet } from "../../modals/taxis/VendorCharges";
 import {
   MultiVehicleNote,
   PerTaxiPrice,
@@ -258,7 +258,7 @@ const SuggestionQuoteCard = ({
             <button
               type="button"
               disabled
-              className="ttw-btn-secondary-fill max-ph:w-full"
+              className="ttw-btn-secondary-fill max-ph:w-full max-ph:max-w-[172px]"
             >
               Added
             </button>
@@ -267,7 +267,12 @@ const SuggestionQuoteCard = ({
               type="button"
               onClick={onAdd}
               disabled={disabled}
-              className="ttw-btn-fill-yellow max-ph:w-full disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              // Capped rather than left at `w-full`: the phone row is
+              // price-left / CTA-right, and a button stretched across the
+              // remaining half of the card read as the card's own footer. The
+              // cap still lets it shrink on a narrow phone, which a fixed width
+              // would not — and the label is `white-space: nowrap`.
+              className="ttw-btn-fill-yellow max-ph:w-full max-ph:max-w-[172px] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               {ctaLabel}
             </button>
@@ -278,12 +283,37 @@ const SuggestionQuoteCard = ({
       {/* What this fare already covers and how it cancels, per the supplier. A
           multi-city chain is exactly where tolls and state tax get charged on
           actuals at the kerb, so the card that omits them is the misleading one.
-          Renders nothing when the quote states neither. */}
+          Renders nothing when the quote states neither.
+
+          Two renderings of the same facts, picked by CSS rather than by
+          useMediaQuery — which starts false on the server and would flash the
+          wrong branch through hydration on exactly the phones this is for. On a
+          desktop card the chips and the fold-out policy cost a couple of lines
+          under a wide row; on a phone the row is already stacked, and six chips
+          plus a policy toggle per cab turned a five-cab suggestion into three
+          screens of scrolling, so there the whole block collapses to one line
+          into a bottom sheet.
+
+          The two hidden-classes complement each other exactly: `max-ph` is
+          `max-width: 768px` and `ph-up` is its `min-width: 768.02px` twin (see
+          tailwind.config.js). Pairing `max-ph:hidden` with `md:hidden` instead
+          would hide BOTH halves at exactly 768px, where `md`'s min-width:768px
+          and `max-ph`'s max-width:768px overlap. */}
       <QuoteTerms
         quote={quote}
         currencySymbol={currencySymbol}
         includedItems
-        className="mt-xs"
+        className="mt-xs max-ph:hidden"
+      />
+      <QuoteTermsSheet
+        quote={quote}
+        currencySymbol={currencySymbol}
+        includedItems
+        title={category?.model_name || category?.type || "Taxi"}
+        subtitle={
+          category?.model_name && category?.type ? category.type : null
+        }
+        className="mt-sm ph-up:hidden"
       />
     </div>
   );

@@ -146,6 +146,14 @@ module.exports = {
         'max-xs': { max: '429px' },
         'max-sm': { max: '639px' },
         'max-ph': { max: '768px' },
+        // The exact complement of `max-ph`, for the pairs that must cover every
+        // width exactly once. `md` is NOT that complement: it is min-width 768px,
+        // so at exactly 768px both it and `max-ph` apply and a
+        // `max-ph:hidden` / `md:hidden` pair hides both halves at once.
+        // Arbitrary `min-[768.02px]` variants cannot be used here — Tailwind
+        // disables `min-*`/`max-*` whenever `screens` contains objects, as this
+        // one does, and silently emits nothing.
+        'ph-up': { min: '768.02px' },
       },
       height: {
         300: "300px",
