@@ -86,26 +86,41 @@ const PLAN = {
 const M = "https://images.thetarzanway.com/media";
 const CDN = "https://d31aoa0ehgvjdi.cloudfront.net";
 const A = (n: string) => `${M}/activities/${n}`;
-const C = (n: string) => `${M}/cities/${n}`;
+const C = (n: string) => `${M}/website/thailand-theme-2026/${n}`;
+const D = (n: string) => `${M}/cities/${n}`;
 const R = (n: string) => `${M}/restaurant/${n}`;
 
 const CITY = {
-  krabi: C("168553026172950124740600585938.jpeg"),
-  bangkok: C("168448437237569212913513183594.jpeg"),
-  chiangMai: C("168552963253565812110900878906.jpeg"),
-  phuket: C("168553054734559369087219238281.jpeg"),
-  phangan: A("176960849961945867538452148438.jpeg"),
-  pattaya: C("170800579665588593482971191406.jpg"),
-  samui: C("170800592286874032020568847656.jpg"),
-  chiangRai: C("173340008483138561248779296875.jpeg"),
-  koLipe: C("175102409787724852561950683594.jpeg"),
-  kohJum: C("177062215040751338005065917969.jpg"),
+  krabi: C("PickBaseKrabi.png"),
+  bangkok: C("PickBaseBangkok.png"),
+  chiangMai: C("PickBaseChiangMai.png"),
+  phuket: C("PickBasePhuket.png"),
+  phangan: C("PickBaseKohPhangan.png"),
+  pattaya: C("PickBasePattaya.png"),
+  samui: D("170800592286874032020568847656.jpg"),
+  chiangRai: D("173340008483138561248779296875.jpeg"),
+  koLipe: D("175102409787724852561950683594.jpeg"),
+  kohJum: D("177062215040751338005065917969.jpg"),
 };
+
+const PickAVibe = {
+  krabi: C("PickBaseKrabi.png"),
+  bangkok: C("PickBaseBangkok.png"),
+  chiangMai: C("PickVibe1.jpg"),
+  phuket: C("PickVibe3.png"),
+  phangan: C("PickBaseKohPhangan.png"),
+  pattaya: C("PickVibe4.png"),
+  samui: D("170800592286874032020568847656.jpg"),
+  chiangRai: D("173340008483138561248779296875.jpeg"),
+  koLipe: D("175102409787724852561950683594.jpeg"),
+  kohJum: C("PickVibe2.png"),
+  trek: C("PickVibe5.png")
+}
 
 const IMG = {
   // Yi Peng — the three ticketed releases
-  heritageLanterns: A("171328166610263037681579589844.jpg"),
-  heavenLanterns: A("171328171522720694541931152344.jpg"),
+  heritageLanterns: C("LanternFestival1.png"),
+  heavenLanterns: C("LanternFestival2.png"),
   skyFestival: A("174719880734959030151367187500.jpg"),
   // Experiences
   hong: A("175646581281492352485656738281.jpg"),
@@ -355,35 +370,35 @@ const thailandConfig: CinematicThemeConfig = {
       },
       cards: [
         {
-          image: CITY.chiangMai,
+          image: PickAVibe.chiangMai,
           name: "Lanterns and the north",
           line: "Chiang Mai · Chiang Rai · Bangkok — the festival, the temples, the markets.",
           tag: "6 nights · November",
           prompt: PROMPTS.lanternsNorth,
         },
         {
-          image: CITY.kohJum,
+          image: PickAVibe.kohJum,
           name: "Islands, slowly",
           line: "Krabi · Koh Lanta · Koh Jum — longtails, snorkelling, and days with nothing in them.",
           tag: "9 nights",
           prompt: PROMPTS.islandsSlowly,
         },
         {
-          image: CITY.phuket,
+          image: PickAVibe.phuket,
           name: "One city, one beach",
           line: "Bangkok · Phuket — the simplest first trip. Two bases, one internal flight.",
           tag: "5 nights · first time",
           prompt: PROMPTS.cityAndBeach,
         },
         {
-          image: CITY.pattaya,
+          image: PickAVibe.pattaya,
           name: "Loud week with friends",
           line: "Bangkok · Pattaya · Phuket — nightlife, beach clubs and island days, six of you.",
           tag: "7 nights · friends",
           prompt: PROMPTS.loudWeek,
         },
         {
-          image: IMG.trek,
+          image: PickAVibe.trek,
           name: "Kayaks, caves and cooking",
           line: "Krabi · Chiang Mai — half sea, half hills, hands-on the whole way.",
           tag: "8 nights · active",
