@@ -42,6 +42,13 @@ import MobileItinerary from "../revamp/mobileItinerary/MobileItinerary";
 import kairaPrompts from "../revamp/mobileItinerary/kairaPrompts";
 import TripHeaderLive from "../revamp/mobileItinerary/TripHeaderLive";
 import CartSheet from "../revamp/mobileItinerary/sheets/CartSheet";
+import AskKairaPill from "../revamp/mobileItinerary/AskKairaPill";
+import CartChip from "../revamp/mobileItinerary/CartChip";
+import TripChangeBar from "../revamp/mobileItinerary/TripChangeBar";
+import {
+  downloadItineraryPdf,
+  PdfAuthError,
+} from "../../services/itinerary/exportPdf";
 
 // Height of the trip header (logo row + leg-nav row). The Kaira sheet stops
 // just under it so the trip stays visible behind the conversation.
@@ -3244,6 +3251,106 @@ export default function BotApp({
     window.setTimeout(flashDay1, 120);
   }, [isMobile]);
 
+  // ── What Kaira just changed ────────────────────────────────────────────────
+  // Raised by ChatKitPanel's effect handler (see onTripChanged there) and read
+  // by two places: the footer's change bar, and the itinerary itself, which
+  // scrolls to the change and marks the day that moved.
+  //
+  // Gated on a trip that was ALREADY complete. The same effects fire while the
+  // itinerary is first being built, and "Kaira updated your trip" during the
+  // build is noise about something the user is already watching happen.
+  const [tripChange, setTripChange] = React.useState<{
+    label: string;
+    itineraryCityId: string | null;
+    dayIndex: number | null;
+    at: number;
+  } | null>(null);
+
+  const itineraryWasCompleteRef = React.useRef(false);
+  React.useEffect(() => {
+    itineraryWasCompleteRef.current = !!itineraryIsComplete;
+  }, [itineraryIsComplete]);
+
+  const handleTripChanged = React.useCallback(
+    (change: {
+      label: string;
+      itineraryCityId?: string | null;
+      dayIndex?: number | null;
+    }) => {
+      if (!itineraryWasCompleteRef.current) return;
+      setTripChange({
+        label: change.label,
+        itineraryCityId: change.itineraryCityId ?? null,
+        dayIndex: change.dayIndex ?? null,
+        // Timestamp so a second change to the SAME place still counts as new —
+        // the itinerary keys its scroll-to-the-change effect on this.
+        at: Date.now(),
+      });
+    },
+    [],
+  );
+
+  // A new thread is a different trip; the previous trip's change bar must not
+  // survive into it.
+  React.useEffect(() => {
+    setTripChange(null);
+  }, [activeItineraryId]);
+
+  // What the user was looking at when they asked. The mobile itinerary passes
+  // it with every request ("Da Nang stay · 3–5 Oct"), and Kaira's sheet shows
+  // it as a chip above the thread: a request sent from a row arrives in the
+  // chat as a bare sentence otherwise, and "change hotel in Da Nang" three
+  // messages later gives no clue which of the trip's rows started it.
+  const [chatContext, setChatContext] = React.useState<string | null>(null);
+
+  // ── Download the itinerary as PDF ──────────────────────────────────────────
+  // The design's More sheet lists it, and MoreSheet hides any row whose handler
+  // is missing — so without this wired the row simply wasn't there.
+  const [isDownloadingPdf, setIsDownloadingPdf] = React.useState(false);
+  const handleDownloadPdf = React.useCallback(async () => {
+    if (isDownloadingPdf || !activeItineraryId) return;
+    const token =
+      authToken ||
+      (typeof window !== "undefined"
+        ? localStorage.getItem("access_token")
+        : null);
+    // Gate before the request rather than after: a logged-out click would only
+    // come back 401, and the login prompt is the useful answer either way.
+    if (!token) {
+      setShowApiLoginPrompt(true);
+      return;
+    }
+    setIsDownloadingPdf(true);
+    try {
+      await downloadItineraryPdf(
+        activeItineraryId,
+        token,
+        itineraryRedux?.name || "itinerary",
+      );
+    } catch (err) {
+      if (err instanceof PdfAuthError) {
+        setShowApiLoginPrompt(true);
+      } else {
+        console.error("Could not download the itinerary PDF:", err);
+        dispatch(
+          openNotification({
+            type: "error",
+            heading: "Couldn't download",
+            text: "The PDF export didn't come through. Please try again.",
+          }),
+        );
+      }
+    } finally {
+      setIsDownloadingPdf(false);
+    }
+  }, [
+    activeItineraryId,
+    authToken,
+    dispatch,
+    isDownloadingPdf,
+    itineraryRedux?.name,
+  ]);
+
   const sharedChatKitProps = {
     onLocationReceived: handleLocationReceived,
     onNewQuery: handleNewQuery,
@@ -3255,6 +3362,9 @@ export default function BotApp({
     onItineraryCompletionStart: handleItineraryCompletionStart,
     onItineraryCompletionDone: handleItineraryCompletionDone,
     onItineraryRefresh: handleItineraryRefresh,
+    onTripChanged: handleTripChanged,
+    chatContext,
+    onClearChatContext: () => setChatContext(null),
     botMode,
     sessionId: activeChatSessionId,
     onSessionChange: setActiveChatSessionId,
@@ -3355,10 +3465,14 @@ Start Location: ${details.startLocation}`;
     return imgs;
   }, [itineraryRedux?.cities]);
 
-  const handleItineraryContainerSendMessage = useCallback((msg: string) => {
-    chatSendMessageRef.current?.(msg);
-    if (isMobile) mobileTabSwitchRef.current?.("chat");
-  }, [isMobile]);
+  const handleItineraryContainerSendMessage = useCallback(
+    (msg: string, contextLabel?: string | null) => {
+      setChatContext(contextLabel || null);
+      chatSendMessageRef.current?.(msg);
+      if (isMobile) mobileTabSwitchRef.current?.("chat");
+    },
+    [isMobile],
+  );
 
   const activeTab = useMemo(() => {
     if (viewMode === "bookings") return "Bookings";
@@ -3635,6 +3749,7 @@ Start Location: ${details.startLocation}`;
   // drawer (NewSummaryContainers/NewBookingSlide), which stays mounted and
   // untouched — it still owns coupons, traveller details and the gateway.
   const [showCartSheet, setShowCartSheet] = React.useState(false);
+
   const [autoStartPayment, setAutoStartPayment] = React.useState(false);
   const [isRepricing, setIsRepricing] = React.useState(false);
 
@@ -3685,6 +3800,31 @@ Start Location: ${details.startLocation}`;
   }, [activeItineraryId, authToken, isRepricing, dispatch]);
 
 
+  // Rotating example prompts for the footer's ask-Kaira pill, named after this
+  // trip's own cities. Derived here rather than inside the pill so the pill
+  // stays a dumb presentational component and BottomCTABar keeps its single
+  // props object.
+  // The one amount on the mobile surface, resolved once so the footer's chip
+  // and the copy of it in Kaira's sheet header can never disagree. Same
+  // per-person / total split BottomCTABar applies.
+  const chatCartTotal = React.useMemo(() => {
+    const perPerson = cart?.pay_only_for_one || cart?.show_per_person_cost;
+    const raw = perPerson
+      ? cart?.per_person_discounted_cost
+      : cart?.discounted_cost;
+    return Number.isFinite(raw) ? (raw as number) : null;
+  }, [cart]);
+
+  const kairaHints = React.useMemo(
+    () =>
+      kairaPrompts.hints(
+        (itineraryRedux?.cities || [])
+          .map((c: any) => c?.city?.name)
+          .filter(Boolean),
+      ),
+    [itineraryRedux?.cities],
+  );
+
   const ctaBarProps = {
     activeItineraryId,
     showItineraryShimmer,
@@ -3707,6 +3847,23 @@ Start Location: ${details.startLocation}`;
       if (isMobile) mobileTabSwitchRef.current?.("chat");
     },
     onReviewPay: () => setShowCartSheet(true),
+    kairaHints,
+    // The bar that says what Kaira just did, and offers the way back. Cleared
+    // on every action so it can't outlive the change it describes.
+    changeBar: tripChange
+      ? {
+          text: tripChange.label,
+          onUndo: () => {
+            setTripChange(null);
+            handleItineraryContainerSendMessage(kairaPrompts.undoLast());
+          },
+          onOpenChat: () => {
+            setTripChange(null);
+            if (isMobile) mobileTabSwitchRef.current?.("chat");
+          },
+          onDismiss: () => setTripChange(null),
+        }
+      : null,
     onViewCart: () => {
       if (!authToken) {
         setShowApiLoginPrompt(true);
@@ -3795,6 +3952,11 @@ Start Location: ${details.startLocation}`;
         onShare={() => setShowShare(true)}
         onSettings={handleMobileSettings}
         isBusy={pricingStatus === "PENDING"}
+        onDownloadPdf={handleDownloadPdf}
+        isDownloadingPdf={isDownloadingPdf}
+        // Where Kaira's last change landed, so the trip can scroll to it and
+        // badge the day that moved. The footer's bar reports the same event.
+        change={tripChange}
       />
     </>
   );
@@ -4570,32 +4732,62 @@ Start Location: ${details.startLocation}`;
                     onSendReady={handleSendMessageReady}
                     startEmptyIntake={startEmptyIntake}
                     isPanelVisible={mobilePanel === "chat"}
+                    // Same condition that turns the panel into a sheet: once
+                    // there is a trip, the header carries the total and the
+                    // collapse control and must not scroll away.
+                    pinHeader={!!activeItineraryId}
                     mobileMenu={
-                      // Once Kaira is a sheet over the trip, her header carries
-                      // one control: close. History and new-trip belong to the
-                      // app chrome, not to a sheet you opened to change one
-                      // booking — and a second icon here reads as a second exit.
+                      // Once Kaira is a sheet over the trip, her header
+                      // carries what the design puts there: the trip's one
+                      // price, and the way back down to it. History and
+                      // new-trip belong to the app chrome, not to a sheet you
+                      // opened to change one booking.
                       activeItineraryId ? (
-                        <button
-                          type="button"
-                          onClick={handleViewItinerary}
-                          aria-label="Close chat"
-                          style={{
-                            border: "1px solid #dcdfe5",
-                            background: "#ffffff",
-                            borderRadius: 999,
-                            boxShadow: "none",
-                            width: 24,
-                            height: 24,
-                            color: "#6b7280",
-                            fontSize: 12,
-                            lineHeight: 1,
-                            padding: 0,
-                          }}
-                          className="flex flex-none items-center justify-center"
-                        >
-                          ×
-                        </button>
+                        <div className="flex flex-none items-center gap-[7px]">
+                          <CartChip
+                            size="sm"
+                            count={countCartItems}
+                            total={
+                              chatCartTotal !== null
+                                ? `${currencySymbols[currency?.currency] || "₹"}${formatCurrencyValue(
+                                    Math.round(chatCartTotal),
+                                    currency?.currency,
+                                  )}`
+                                : null
+                            }
+                            onClick={() => setShowCartSheet(true)}
+                          />
+                          <button
+                            type="button"
+                            onClick={handleViewItinerary}
+                            aria-label="Close chat"
+                            style={{
+                              border: 0,
+                              background: "#0b1220",
+                              color: "#fafaf5",
+                              borderRadius: "50%",
+                              width: 28,
+                              height: 28,
+                              padding: 0,
+                              boxShadow: "none",
+                            }}
+                            className="grid flex-none place-items-center"
+                          >
+                            <svg
+                              width="13"
+                              height="13"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2.4"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              aria-hidden
+                            >
+                              <path d="M6 9l6 6 6-6" />
+                            </svg>
+                          </button>
+                        </div>
                       ) : (
                         <MobileHeaderMenu
                           onNewChat={handleNewChat}
@@ -4822,8 +5014,8 @@ interface BottomCTABarProps {
   barStyle?: React.CSSProperties;
   /**
    * "mobileItinerary" swaps ONLY the final priced row for the package-priced
-   * footer the mobile itinerary uses: bookings + one total on the left, "Review
-   * & pay" on the right, with the standing ask-Kaira pill stacked above it.
+   * footer the mobile itinerary uses: the rotating ask-Kaira pill and the ink
+   * cart chip carrying the trip's one total, side by side on a single row.
    * Every other state (draft/confirm, cart error, pricing loader) is shared, so
    * they keep working untouched.
    */
@@ -4832,6 +5024,21 @@ interface BottomCTABarProps {
   onReviewPay?: () => void;
   /** Opens the chat with a message — renders the ask-Kaira pill in the footer. */
   onAskKaira?: (message: string) => void;
+  /**
+   * Rotating example prompts for the ask-Kaira pill, templated on this trip's
+   * cities (see kairaPrompts.hints). Only read by the mobileItinerary variant.
+   */
+  kairaHints?: string[];
+  /**
+   * What Kaira just changed, shown as a bar above the ask-Kaira row. Null when
+   * nothing has changed since the last dismissal. mobileItinerary variant only.
+   */
+  changeBar?: {
+    text: string;
+    onUndo?: () => void;
+    onOpenChat?: () => void;
+    onDismiss?: () => void;
+  } | null;
 }
 
 /**
@@ -4974,6 +5181,8 @@ const BottomCTABar = React.memo(
     variant = "default",
     onAskKaira,
     onReviewPay,
+    kairaHints,
+    changeBar,
   }: BottomCTABarProps) => {
     if (
       !["itinerary", "bookings"].includes(viewMode) ||
@@ -5099,75 +5308,69 @@ const BottomCTABar = React.memo(
 
     // ── Mobile itinerary footer ──────────────────────────────────────────────
     // The trip is one package, so the foot of the page carries one amount and
-    // one action. The ask-Kaira pill sits in the same cream slab rather than
-    // floating separately: changing something and paying for it are the two
-    // things you can do from here, and they read as one surface.
+    // one action, on one row: the ask-Kaira pill (the only way to change
+    // anything here) and the ink cart chip (the only price, and the only way to
+    // pay). Side by side rather than stacked — they are the two things you can
+    // do from this surface, and the row says so in one glance.
     if (variant === "mobileItinerary") {
-      const bookingsLine = [
-        countCartItems > 0
-          ? `${countCartItems} BOOKING${countCartItems === 1 ? "" : "S"}`
-          : null,
-        cost !== null ? "COUPONS LIVE" : null,
-      ]
-        .filter(Boolean)
-        .join(" · ");
+      const totalStr =
+        cost !== null
+          ? `${currencySymbol}${formatCurrencyValue(Math.round(cost), currency?.currency)}`
+          : null;
 
       return (
         <div
           data-bottom-cta-bar
           data-itinerary-cta-bar
-          style={barStyle}
-          className="z-20 fixed bottom-0 w-full flex-shrink-0 border-t border-[#f1e9dc] bg-[#fffaf5] px-[14px] pb-[13px] pt-[9px] flex flex-col gap-[9px]"
+          style={{
+            ...barStyle,
+            // Paper, not white, and translucent — the trip scrolls under it
+            // rather than stopping at a hard edge.
+            background: "rgba(250,250,245,.94)",
+            backdropFilter: "blur(16px)",
+            WebkitBackdropFilter: "blur(16px)",
+          }}
+          className="z-20 fixed bottom-0 w-full flex-shrink-0 border-t border-[#ececec] px-[10px] pb-[14px] pt-[8px] flex flex-col gap-[8px]"
         >
-          {onAskKaira && (
-            <button
-              type="button"
-              onClick={() => onAskKaira(KAIRA_OPEN_ENDED_PROMPT)}
-              style={{ border: "1px solid #dcdfe5", borderRadius: 999, background: "#ffffff", boxShadow: "none" }}
-              className="flex w-full items-center gap-[10px] px-[14px] py-[10px] text-left"
-            >
-              <img
-                src="/KairaInsta.png"
-                alt=""
-                aria-hidden
-                className="h-[22px] w-[22px] flex-none rounded-full object-cover"
-                // Bare `img {}` rules in styles.css/bootstrap apply globally and
-                // knock an <img> out of alignment as a flex child — see the
-                // BrandLockup centring fix. Pinned inline so it can't drift.
-                style={{ margin: 0, maxWidth: "none", display: "block" }}
+          {changeBar ? (
+            <TripChangeBar
+              text={changeBar.text}
+              onUndo={changeBar.onUndo}
+              onOpenChat={changeBar.onOpenChat}
+              onDismiss={changeBar.onDismiss}
+            />
+          ) : null}
+          <div className="flex items-center gap-[8px]">
+            {onAskKaira && (
+              <AskKairaPill
+                hints={kairaHints}
+                onClick={() => onAskKaira(KAIRA_OPEN_ENDED_PROMPT)}
               />
-              <span className="min-w-0 flex-1 truncate text-[12px] text-[#8a93a6]">
-                Ask Kaira to change something…
-              </span>
-            </button>
-          )}
-
-          <div className="flex items-center justify-between gap-[12px]">
-            <div className="min-w-0">
-              {bookingsLine ? (
-                <div className="truncate font-mono text-[8.5px] uppercase tracking-[0.08em] text-[#8a93a6]">
-                  {bookingsLine}
-                </div>
-              ) : null}
-              {cost !== null ? (
-                <div className="mt-[2px] whitespace-nowrap font-sans text-[15.5px] font-[800] leading-tight tracking-[-0.02em] text-[#0b1220]">
-                  {currencySymbol}
-                  {formatCurrencyValue(Math.round(cost), currency?.currency)}
-                </div>
-              ) : (
-                <div className="mt-[2px] text-[12px] italic text-[#6E757A]">
-                  Calculating price…
-                </div>
-              )}
-            </div>
-            <button
+            )}
+            {/* Without the pill the chip would sit alone against the left edge;
+                the spacer keeps it on the right where it always lives. */}
+            {!onAskKaira && <div className="min-w-0 flex-1" />}
+            <CartChip
+              count={countCartItems}
+              total={totalStr}
+              label={
+                perPerson
+                  ? "PER PERSON"
+                  : cart?.is_estimated_price && cost !== null && cost > 0
+                    ? "ESTIMATED"
+                    : "TOTAL COST"
+              }
               onClick={onReviewPay || onViewCart}
-              style={{ border: "none", borderRadius: 10, background: "#F7E700", boxShadow: "none" }}
-              className="flex-none whitespace-nowrap px-[18px] py-[12px] text-[13.5px] font-inter font-[800] text-[#0b1220]"
-            >
-              Review &amp; pay
-            </button>
+            />
           </div>
+          {/* The price is the one number on this surface; when it isn't there
+              yet, say so rather than letting the chip's em-dash stand in for an
+              answer. */}
+          {totalStr === null && (
+            <div className="px-[8px] text-[11px] italic text-[#6E757A]">
+              Calculating price…
+            </div>
+          )}
         </div>
       );
     }
@@ -5819,6 +6022,10 @@ const MobileLayout = React.memo(
     // page. Once an itinerary exists she becomes a sheet over it, so a change
     // request never costs the user sight of what they're changing.
     const chatAsSheet = !!hasItineraryActivity;
+    // The one flag the whole open-chat gesture reads: the sheet's own position,
+    // the scrim's opacity and the trip's scale-back all derive from it, so they
+    // cannot fall out of step.
+    const chatSheetOpen = chatAsSheet && activeTab === "chat";
     const dispatchLayout = useDispatch();
     const [showChatBanner, setShowChatBanner] = React.useState(true);
 
@@ -6115,8 +6322,26 @@ const MobileLayout = React.memo(
           </button>
         )}
 
-        {/* ── Content area — full remaining height ── */}
-        <div className="flex-1 min-h-0 overflow-hidden relative bg-white">
+        {/* ── Content area — full remaining height ──
+            The GROUND behind the trip. Once the trip eases back to .93 with
+            rounded corners there is a visible margin around it, and the design
+            paints that margin `--midnight` (#0a1020) — the trip reads as a card
+            lifted off a dark surface, which is what makes the depth work.
+
+            Stated explicitly rather than left transparent: an unpainted ground
+            shows whatever ancestor happens to sit behind, so the colour in that
+            margin was decided by something several layers up rather than here.
+
+            White at rest, so nothing changes until the gesture starts, and the
+            two are cross-faded on the same curve as the scale-back so the
+            ground does not pop in under a trip that is still moving. */}
+        <div
+          className="flex-1 min-h-0 overflow-hidden relative motion-reduce:!transition-none"
+          style={{
+            backgroundColor: chatSheetOpen ? "#0a1020" : "#ffffff",
+            transition: "background-color .5s cubic-bezier(.2,.7,.3,1)",
+          }}
+        >
           {/* ── CHAT view ──────────────────────────────────────────────────
               Once there's a trip on screen, Kaira answers in a sheet that
               slides up OVER the itinerary rather than replacing it: a change
@@ -6127,18 +6352,28 @@ const MobileLayout = React.memo(
               geometry changes. ChatKitPanel owns the thread and aborts its
               in-flight stream on unmount, so remounting it into a sheet would
               cut off whatever Kaira was mid-way through saying. */}
-          {chatAsSheet && activeTab === "chat" && (
+          {/* Scrim. Kept MOUNTED so it can fade — mounting it on open meant it
+              appeared at full strength on the first frame while the sheet was
+              still travelling, which read as a flash rather than a dimming. */}
+          {chatAsSheet && (
             <button
               type="button"
               aria-label="Close chat"
               onClick={() => handleTabClick("itinerary")}
-              className="absolute inset-0 z-[3] border-0 bg-[rgba(11,18,32,0.22)] p-0"
+              tabIndex={chatSheetOpen ? 0 : -1}
+              aria-hidden={!chatSheetOpen}
+              className="absolute inset-0 z-[3] border-0 bg-[rgba(10,16,32,0.42)] p-0 motion-reduce:!transition-none"
+              style={{
+                opacity: chatSheetOpen ? 1 : 0,
+                pointerEvents: chatSheetOpen ? "auto" : "none",
+                transition: "opacity .45s cubic-bezier(.2,.7,.3,1)",
+              }}
             />
           )}
           <div
             className={
               chatAsSheet
-                ? "absolute inset-x-0 bottom-0 flex flex-col overflow-hidden rounded-t-[20px] border-t border-[#dcdfe5] bg-white shadow-[0_-12px_40px_-16px_rgba(11,18,32,0.35)] transition-transform duration-300 ease-out motion-reduce:transition-none"
+                ? "absolute inset-x-0 bottom-0 flex flex-col overflow-hidden rounded-t-[22px] border-t border-[#ececec] bg-[#fafaf5] shadow-[0_-18px_50px_-18px_rgba(11,18,32,0.4)] motion-reduce:!transition-none"
                 : "absolute inset-0"
             }
             style={
@@ -6153,10 +6388,23 @@ const MobileLayout = React.memo(
                     // Slide, don't fade: the sheet has to read as arriving from
                     // the bottom over the trip, and a translated pane keeps the
                     // chat mounted (and its stream alive) while off-screen.
-                    transform:
-                      activeTab === "chat" ? "translateY(0)" : "translateY(100%)",
-                    pointerEvents: activeTab === "chat" ? "auto" : "none",
-                    visibility: activeTab === "chat" ? "visible" : "hidden",
+                    transform: chatSheetOpen
+                      ? "translateY(0)"
+                      : "translateY(100%)",
+                    pointerEvents: chatSheetOpen ? "auto" : "none",
+                    visibility: chatSheetOpen ? "visible" : "hidden",
+                    // The design's curve, and its .55s — the sheet is a large
+                    // object and at 300ms it snaps rather than travels.
+                    //
+                    // `visibility` is stepped, not eased, so it needs the delay
+                    // applied in ONE direction only: held until the slide-out
+                    // finishes when closing (otherwise the sheet vanishes on
+                    // frame one and never appears to travel), and switched
+                    // immediately when opening (a delay there would keep it
+                    // hidden for the whole entrance).
+                    transition: chatSheetOpen
+                      ? "transform .55s cubic-bezier(.2,.7,.3,1), visibility 0s"
+                      : "transform .55s cubic-bezier(.2,.7,.3,1), visibility 0s linear .55s",
                   }
                 : {
                     opacity: activeTab === "chat" ? 1 : 0,
@@ -6169,16 +6417,64 @@ const MobileLayout = React.memo(
                 dismiss, not a tab you navigated to. */}
             {chatAsSheet && (
               <div className="flex-none pt-[9px]" aria-hidden>
-                <div className="mx-auto h-[4px] w-[40px] rounded-full bg-[#dcdfe5]" />
+                <div className="mx-auto h-[5px] w-[42px] rounded-full bg-[#cfd3da]" />
               </div>
             )}
             {chatAsSheet ? (
-              <div className="min-h-0 flex-1">{chatContent}</div>
+              // The thread fades in slightly AFTER the sheet starts moving
+              // (.15s), so the eye follows the panel travelling rather than a
+              // wall of text sliding with it. On the way out it goes at once —
+              // a delay there leaves text hanging over the trip.
+              <div
+                className="min-h-0 flex-1 motion-reduce:!transition-none"
+                style={{
+                  opacity: chatSheetOpen ? 1 : 0,
+                  transition: chatSheetOpen
+                    ? "opacity .22s linear .15s"
+                    : "opacity .12s linear",
+                }}
+              >
+                {chatContent}
+              </div>
             ) : (
               chatContent
             )}
           </div>
 
+          {/* ── The trip, as Kaira's backdrop ──────────────────────────────
+              Map, itinerary and the cart bar move as ONE object so the design's
+              open-chat gesture works: the whole trip eases back and its corners
+              round off, and Kaira's sheet rises in front of what is now clearly
+              a card behind glass. Scaling the panes separately would shear them
+              apart at the seams.
+
+              `transform: none` (not `scale(1)`) while closed is deliberate. A
+              transform makes an element the containing block for `position:
+              fixed` descendants, and the cart bar is fixed — so leaving an
+              identity transform on permanently would silently re-anchor it even
+              when nothing is animating. `none` interpolates as the identity
+              matrix, so the transition still runs both ways. */}
+          <div
+            className="absolute inset-0 motion-reduce:!transition-none"
+            style={{
+              transformOrigin: "50% 18%",
+              transform: chatSheetOpen ? "scale(.93) translateY(8px)" : "none",
+              borderRadius: chatSheetOpen ? 22 : 0,
+              overflow: chatSheetOpen ? "hidden" : "visible",
+              // The card is opaque in its own right. Its children happen to
+              // cover it today, but any gap between them (a short pane, a
+              // measured cart bar that has not settled) would let the midnight
+              // ground show THROUGH the trip rather than around it.
+              backgroundColor: "#ffffff",
+              transition:
+                "transform .5s cubic-bezier(.2,.7,.3,1), border-radius .5s cubic-bezier(.2,.7,.3,1)",
+              // Only while it matters. `will-change: transform` ALSO makes this
+              // the containing block for fixed descendants in Chrome, so
+              // leaving it on would re-anchor the fixed cart bar at rest — the
+              // very thing `transform: none` above is there to avoid.
+              willChange: chatSheetOpen ? "transform" : "auto",
+            }}
+          >
           {/* MAP view */}
           <div
             className="absolute inset-x-0 bottom-0 flex flex-col"
@@ -6311,6 +6607,8 @@ const MobileLayout = React.memo(
                 )}
               </>
             )}
+          </div>
+
         </div>
 
         {/* ── Floating Kaira icon + chat banner — on itinerary/routes/bookings views ──

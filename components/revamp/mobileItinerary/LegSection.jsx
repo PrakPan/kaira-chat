@@ -28,17 +28,52 @@ const Chevron = () => (
   </span>
 );
 
-/** Arrival into this city — flight, train, ferry, bus or car. */
+/**
+ * Arrival into this city — flight, train, ferry, bus or car, or a COMBO of
+ * them ("taxi to the airport, then fly").
+ *
+ * A combo shows one glyph per leg, chevron-separated. Showing only the first
+ * leg's icon is an active misstatement, not a simplification: a taxi glyph on
+ * a taxi+flight booking tells the traveller they are being driven the whole
+ * way to another city.
+ */
 function TravelRow({ travel, cityName, onOpen, onChange, disabled }) {
-  const ModeIcon = modeIconFor(travel.modeKey);
+  // De-duplicated by mode, in order: a taxi-flight-taxi combo is a plane
+  // journey with transfers either end, and drawing the car twice says nothing
+  // the first one didn't.
+  const glyphKeys = (() => {
+    if (!travel.segments || travel.segments.length < 2) return [travel.modeKey];
+    const seen = new Set();
+    const keys = [];
+    for (const seg of travel.segments) {
+      const k = seg.modeKey || null;
+      if (k && !seen.has(k)) {
+        seen.add(k);
+        keys.push(k);
+      }
+    }
+    return keys.length ? keys : [travel.modeKey];
+  })();
+
   return (
     <div
       style={T.travelRow}
       className="flex items-center gap-[12px] px-[14px] py-[13px]"
     >
-      {ModeIcon ? (
-        <ModeIcon size={20} color={TRAVEL_INK} className="flex-none" aria-hidden />
-      ) : null}
+      <span className="flex flex-none items-center gap-[3px]" aria-hidden>
+        {glyphKeys.map((key, i) => {
+          const ModeIcon = modeIconFor(key);
+          if (!ModeIcon) return null;
+          return (
+            <React.Fragment key={`${key}-${i}`}>
+              {i > 0 ? (
+                <span className="text-[9px] leading-none text-[#8fa8dd]">›</span>
+              ) : null}
+              <ModeIcon size={20} color={TRAVEL_INK} />
+            </React.Fragment>
+          );
+        })}
+      </span>
       <button
         type="button"
         onClick={onOpen}
@@ -137,7 +172,7 @@ function StayRow({ stay, showGap, gapMeta, cityName, onOpen, onChange, disabled 
 }
 
 /** A day, collapsed to what it costs you in attention: what's booked, what's loose. */
-function DayRow({ day, onOpen }) {
+function DayRow({ day, onOpen, changed }) {
   const freeParts = [
     day.freeIdeaCount ? `${day.freeIdeaCount} IDEAS` : null,
     day.mealCount ? `${day.mealCount} ${day.mealCount === 1 ? "MEAL" : "MEALS"}` : null,
@@ -157,17 +192,13 @@ function DayRow({ day, onOpen }) {
       style={T.dayRow}
       className="flex w-full items-center gap-[11px] px-[12px] py-[11px] text-left"
     >
-      {/* Fixed width so the title column stays aligned whether the date is
-          "1" or "28" — a ragged left edge down the day list reads as broken. */}
-      <span className="flex w-[26px] flex-none flex-col items-center gap-[3px]">
+      {/* The trip's day INDEX in serif, as the design draws it — "01", "02".
+          Fixed width so the title column stays aligned all the way down; a
+          ragged left edge on a list this long reads as broken. */}
+      <span className="flex w-[26px] flex-none items-center justify-center">
         <span className="ttw-type-serif text-[20px] leading-none text-[#0b1220]">
-          {day.dateDay || day.dayNumber}
+          {day.dayNumber}
         </span>
-        {day.dateMonth ? (
-          <span className="font-mono text-[8.5px] leading-none tracking-[0.06em] text-[#8a93a6]">
-            {day.dateMonth}
-          </span>
-        ) : null}
       </span>
       <div className="flex min-w-0 flex-1 flex-col gap-[5px]">
         <div className="truncate font-inter text-[12.5px] font-[700] text-[#0b1220]">
@@ -188,6 +219,22 @@ function DayRow({ day, onOpen }) {
           ) : null}
         </div>
       </div>
+      {/* The day Kaira just touched. On a scroll this long a change made in
+          the chat otherwise lands invisibly — the badge is what lets the user
+          confirm the thing they asked for happened HERE. */}
+      {changed ? (
+        <span
+          style={{
+            border: "1px solid #0b1220",
+            borderRadius: 3,
+            background: "#f7e700",
+            boxShadow: "none",
+          }}
+          className="flex-none px-[6px] py-[3px] font-mono text-[8px] tracking-[0.07em] text-[#0b1220]"
+        >
+          CHANGED
+        </span>
+      ) : null}
       <Chevron />
     </button>
   );
@@ -196,6 +243,8 @@ function DayRow({ day, onOpen }) {
 export default function LegSection({
   leg,
   disabled,
+  // The key of the day Kaira's last change landed on, or null.
+  changedDayKey = null,
   onChangeStay,
   onChangeTravel,
   onOpenTravel,
@@ -203,6 +252,7 @@ export default function LegSection({
   onOpenDay,
   onAddTaxi,
   onOpenExtra,
+  onChangeReturn,
 }) {
   return (
     <section id={leg.anchor} className="flex flex-col gap-[11px]">
@@ -268,7 +318,12 @@ export default function LegSection({
       {leg.days.length > 0 && (
         <div style={T.dayList}>
           {leg.days.map((day) => (
-            <DayRow key={day.key} day={day} onOpen={() => onOpenDay?.(leg, day)} />
+            <DayRow
+              key={day.key}
+              day={day}
+              changed={!!changedDayKey && day.key === changedDayKey}
+              onOpen={() => onOpenDay?.(leg, day)}
+            />
           ))}
           <button
             type="button"
@@ -284,6 +339,35 @@ export default function LegSection({
           </button>
         </div>
       )}
+
+      {/* ── Flying home ────────────────────────────────────────────────────
+          The return journey is folded onto the last stop by the view model,
+          but it is not part of that city — it is how the trip ENDS. The design
+          gives it its own block, with its own rule, after everything else. */}
+      {leg.outboundTravel ? (
+        <>
+          <div className="flex items-center gap-[8px] pt-[3px]">
+            <span className="flex-none font-mono text-[9px] tracking-[0.08em] text-[#8a93a6]">
+              {`FLY HOME${
+                leg.outboundTravel.destName
+                  ? ` · ${leg.outboundTravel.destName.toUpperCase()}`
+                  : ""
+              }`}
+            </span>
+            <div className="h-px flex-1 bg-[#e6e8ec]" />
+            <span className="flex-none font-mono text-[9px] tracking-[0.08em] text-[#8a93a6]">
+              {leg.outboundTravel.departLabel || ""}
+            </span>
+          </div>
+          <TravelRow
+            travel={leg.outboundTravel}
+            cityName={leg.outboundTravel.destName || leg.city}
+            disabled={disabled}
+            onOpen={() => onOpenTravel?.(leg, leg.outboundTravel)}
+            onChange={() => onChangeReturn?.(leg)}
+          />
+        </>
+      ) : null}
     </section>
   );
 }

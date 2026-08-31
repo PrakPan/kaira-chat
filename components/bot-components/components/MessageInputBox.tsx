@@ -663,6 +663,83 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
         .kp-composer-wrap .kp-send-plane { display: none; }
         .kp-composer-wrap .kp-stop svg { width: 12px; height: 12px; margin-right: 5px; }
 
+        /* ── Phone: the composer exactly as the design draws it ───────────
+           The desktop treatment is a wide pill ending in a "Send" LABEL. The
+           design's phone composer ends in a 34px INK DISC with a yellow arrow
+           — no word at all. That is not decoration: at this width the label
+           was eating roughly a fifth of the row, so the field it belongs to
+           had less room than the button describing it.
+
+           The send disc stays filled even when there is nothing to send. The
+           design has no outlined "armed/unarmed" state — the disc is the
+           anchor of the row, and having it switch between outline and fill on
+           every keystroke flickers the one fixed point at the bottom of the
+           screen. Disabled reads as opacity instead.
+
+           Stop keeps the same disc so the row does not change shape mid-turn;
+           only the glyph swaps. */
+        @media (max-width: 768px) {
+          .kp-composer-wrap .kp-row {
+            gap: 6px;
+            border: 1px solid #ececec;
+            padding: 5px 6px 5px 8px;
+            box-shadow: 0 8px 20px -10px rgba(11,18,32,0.15);
+          }
+          .kp-composer-wrap .kp-chat-input:focus-within .kp-row {
+            border-color: #dcdfe5;
+            box-shadow: 0 8px 20px -10px rgba(11,18,32,0.15);
+          }
+          /* A bare glyph, not a bordered button — the ring competed with the
+             send disc for the role of "the control on this row". */
+          .kp-composer-wrap .kp-plus {
+            border: 0;
+            background: none;
+            color: #8a93a6;
+          }
+          .kp-composer-wrap .kp-plus:hover { background: none; }
+          .kp-composer-wrap .kp-plus svg { width: 15px; height: 15px; }
+          .kp-composer-wrap .kp-field textarea,
+          .kp-composer-wrap .kp-field input {
+            font-size: 12.5px;
+            color: #0b1220;
+          }
+          .kp-composer-wrap .kp-send,
+          .kp-composer-wrap .kp-stop {
+            width: 34px;
+            height: 34px;
+            min-width: 34px;
+            padding: 0;
+            border: 0;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: #0b1220;
+            color: #f7e700;
+          }
+          .kp-composer-wrap .kp-send:not(:disabled) {
+            background: #0b1220;
+            color: #f7e700;
+          }
+          .kp-composer-wrap .kp-send:disabled {
+            background: #0b1220;
+            color: #f7e700;
+            opacity: 0.35;
+          }
+          /* The word goes; the arrow the desktop pill hides comes back. */
+          .kp-composer-wrap .kp-send .kp-btn-label,
+          .kp-composer-wrap .kp-stop .kp-btn-label { display: none; }
+          .kp-composer-wrap .kp-send-arrow {
+            display: block;
+            width: 14px;
+            height: 14px;
+          }
+          .kp-composer-wrap .kp-stop svg {
+            width: 12px;
+            height: 12px;
+            margin-right: 0;
+          }
+        }
+
         /* "+" menu — a small card floated above the button. */
         .kp-plus-menu {
           position: absolute;

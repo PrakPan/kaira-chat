@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import Sheet from "../../common/components/Sheet";
 import prompts from "../kairaPrompts";
 
@@ -39,13 +39,22 @@ export default function DaySheet({
 }) {
   const [filter, setFilter] = useState("all");
 
-  const items = useMemo(() => {
-    if (!day) return [];
-    const f = FILTERS.find((x) => x.key === filter) || FILTERS[0];
-    return day.items.filter(f.match);
-  }, [day, filter]);
+  // Same reason as DetailSheet: the sheet slot empties the moment this closes
+  // (or the moment an item opens the detail sheet in its place), and rendering
+  // null on that tick blanks the panel mid-slide.
+  const lastRef = useRef(null);
+  if (day && leg) lastRef.current = { day, leg };
+  const held = day && leg ? { day, leg } : lastRef.current;
+  const d = held?.day || null;
+  const l = held?.leg || null;
 
-  if (!day || !leg) return null;
+  const items = useMemo(() => {
+    if (!d) return [];
+    const f = FILTERS.find((x) => x.key === filter) || FILTERS[0];
+    return d.items.filter(f.match);
+  }, [d, filter]);
+
+  if (!d || !l) return null;
 
   return (
     <Sheet open={open} onClose={onClose} height="82dvh" zIndex={1600}>
@@ -54,15 +63,15 @@ export default function DaySheet({
         <div className="flex-none px-[14px]">
           <div className="flex items-start gap-[11px] pb-[11px]">
             <span className="ttw-type-serif flex-none text-[28px] leading-none text-[#0b1220]">
-              {day.dayNumber}
+              {d.dayNumber}
             </span>
             <div className="min-w-0 flex-1">
               <div className="text-[15.5px] font-[700] tracking-[-0.02em] text-[#0b1220]">
-                {day.title || "Free day"}
+                {d.title || "Free day"}
               </div>
               <div className="mt-[5px] font-mono text-[8.5px] tracking-[0.06em] text-[#8a93a6]">
-                {day.dateMeta} · {day.items.length} ITEM
-                {day.items.length === 1 ? "" : "S"}
+                {d.dateMeta} · {d.items.length} ITEM
+                {d.items.length === 1 ? "" : "S"}
               </div>
             </div>
             <button
@@ -178,7 +187,10 @@ export default function DaySheet({
               type="button"
               disabled={disabled}
               onClick={() => {
-                onAskKaira?.(prompts.addToDay(leg.city, day.dayLabel));
+                onAskKaira?.(
+                  prompts.addToDay(l.city, d.dayLabel),
+                  [d.dayLabel, l.city].filter(Boolean).join(" · "),
+                );
                 onClose?.();
               }}
               style={{

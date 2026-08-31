@@ -117,12 +117,13 @@ const SingleChips = styled.button`
   @media (max-width: 768px) {
     border-radius: 999px;
     padding: 8px 13px;
-    border: 1px solid #dcdfe5;
+    border: 1px solid #cfd3da;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 11.5px;
-    color: #0b1220;
+    font-weight: 600;
+    color: #445069;
     &:hover {
-      border-color: #dcdfe5;
+      border-color: #cfd3da;
     }
   }
 `;
@@ -203,6 +204,34 @@ interface ChatKitPanelProps {
   onItineraryCompletionStart?: (itineraryId: string) => void;
 onItineraryCompletionDone?: (itineraryId: string, summary?: string) => void;
 onItineraryRefresh?: (itineraryId: string) => void;
+/**
+ * Fired when one of Kaira's effects has actually CHANGED the trip (a booking
+ * removed, an edit applied, pax/dates updated) — not merely rendered
+ * something. The mobile itinerary uses it to raise its change bar and mark the
+ * day that moved, so it needs the location as well as the label.
+ *
+ * `itineraryCityId` / `dayIndex` are whatever the effect's payload carried;
+ * either may be absent, in which case the change is reported trip-wide.
+ */
+onTripChanged?: (change: {
+  label: string;
+  itineraryCityId?: string | null;
+  dayIndex?: number | null;
+}) => void;
+/** Mobile: what the user was looking at when they asked ("Da Nang stay ·
+ *  3–5 Oct"). Shown as a chip above the thread so a request fired from a row
+ *  in the itinerary still says which row it came from. */
+chatContext?: string | null;
+onClearChatContext?: () => void;
+/**
+ * Keep the header pinned instead of letting it auto-hide on scroll.
+ *
+ * The auto-hide exists for FULL-SCREEN chat, where the bar is pure chrome and
+ * its ~62px are better spent on messages. As a sheet over the trip the header
+ * is not chrome: it carries the trip total and the collapse control, which is
+ * the way back down. Hiding it strands the user in the sheet.
+ */
+pinHeader?: boolean;
 onLoadRouteOnMap?: () => void;
 restoredThread?: any;
 onInitialPromptConsumed?: () => void;
@@ -474,6 +503,59 @@ const ChatPanelStyles = () => (
       0%,100% { opacity: 1; transform: scale(1); }
       50% { opacity: 0.5; transform: scale(0.7); }
     }
+
+    /* ── Phone: Kaira as a sheet over the trip ────────────────────────────
+       On mobile this panel is not a page, it is a sheet that rises over the
+       itinerary — so it takes the itinerary's PAPER ground rather than white,
+       and the header compresses to the design's single line: a small ringed
+       avatar, her name, her state, and (injected by BotApp through the
+       mobileMenu slot) the trip total plus the way back down. */
+    @media (max-width: 768px) {
+      .kp-root { background: #fafaf5; }
+      .kp-header {
+        gap: 9px;
+        padding: 0 12px 8px;
+        background: transparent;
+      }
+      .kp-header-ava {
+        width: 28px; height: 28px;
+        border: 1.5px solid #f7e700;
+        box-shadow: none;
+      }
+      .kp-header-ava .kp-dot {
+        width: 8px; height: 8px;
+        bottom: -1px; right: -1px;
+        background: #1f8a5a;
+        border: 2px solid #fafaf5;
+      }
+      /* Name and state on ONE line — the sheet's header is a strip, and a
+         stacked two-line block here pushes the thread down for no gain. */
+      .kp-header-info {
+        display: flex;
+        align-items: baseline;
+        gap: 7px;
+        flex-wrap: nowrap;
+        overflow: hidden;
+      }
+      .kp-header-name {
+        font-size: 13px;
+        font-weight: 800;
+        flex: none;
+      }
+      .kp-header-status {
+        margin-top: 0;
+        min-width: 0;
+        font-family: 'JetBrains Mono', ui-monospace, monospace;
+        font-size: 8px;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .kp-composer-wrap { background: transparent; padding: 0 12px 14px; }
+    }
     /* The composer floats rather than sitting in a ruled tray: no top border,
        and the separation from the thread comes entirely from the pill's own
        drop shadow (see MessageInputBox .kp-row). Padding is a touch roomier
@@ -740,6 +822,10 @@ export function ChatKitPanel({
   onItineraryCompletionStart,
 onItineraryCompletionDone,
 onItineraryRefresh,
+onTripChanged,
+chatContext,
+onClearChatContext,
+pinHeader = false,
   onLoadRouteOnMap,
 restoredThread,
 onInitialPromptConsumed,
@@ -1538,6 +1624,10 @@ startEmptyIntake = false,
   // and slides back in on an upward scroll or at the top of the list. The
   // collapse itself is CSS and media-scoped, so this flag is inert on desktop.
   const [headerHidden, setHeaderHidden] = useState(false);
+  // Read inside the gesture listeners, which are registered once — a plain
+  // prop read there would close over the value at mount.
+  const pinHeaderRef = useRef(pinHeader);
+  pinHeaderRef.current = pinHeader;
   // True between a thread restore and the moment we've actually parked the
   // scroll container at the bottom. Widgets/images in restored threads finish
   // laying out asynchronously, so a single smooth scroll lands mid-thread —
@@ -2328,6 +2418,26 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
   const handleEffect = useCallback(
     ({ name, data }: { name: string; data: Record<string, unknown> }) => {
       console.log("[Effect triggered]", name, data);
+      // Each mutation branch in the switch below has actually CHANGED the trip.
+      // `reportChange` is what raises the mobile itinerary's change bar and marks
+      // the day that moved; the effect payload is the only place that location is
+      // known, so it is read here rather than diffed out of the store afterwards.
+      //
+      // Declared BEFORE the switch, not between its cases: a `const` sitting
+      // between two cases is scoped to the whole switch block but only
+      // initialised if control flows THROUGH it, so jumping straight to a later
+      // case would leave it in the temporal dead zone and throw on first use.
+      const reportChange = (label: string, payload?: Record<string, unknown>) =>
+        onTripChanged?.({
+          label,
+          itineraryCityId:
+            (payload?.itinerary_city_id as string | undefined) ?? null,
+          dayIndex:
+            typeof payload?.day_by_day_index === "number"
+              ? (payload.day_by_day_index as number)
+              : null,
+        });
+
       switch (name) {
         case "clear_map": {
           onClearMap?.(data);
@@ -2559,6 +2669,11 @@ case "refresh_itinerary": {
   // starts if we have a real id to poll against.
   const refreshId = (data.itinerary_id as string) || localItineraryId || "";
   onItineraryRefresh?.(refreshId);
+  // Kaira refreshes the itinerary after applying an edit, so this doubles as
+  // "something changed". It also fires while the trip is first being built —
+  // BotApp gates the change bar on an already-complete trip, so that pass is
+  // reported here and ignored there.
+  reportChange("Kaira updated your trip", data as Record<string, unknown>);
   break;
 }
 
@@ -2592,6 +2707,7 @@ case "shimmer_day_by_day": {
           dispatch(deletePoiFromItinerary(payload));
           const text = typeof data.message === "string" ? data.message : "POI removed from your itinerary.";
           dispatch(openNotification({ type: "success", heading: "Success!", text }));
+          reportChange("Kaira removed a place", payload);
           break;
         }
         case "delete_activity_from_itinerary": {
@@ -2603,6 +2719,7 @@ case "shimmer_day_by_day": {
           if (bookingId) dispatch(SetCallPaymentInfo(!callPaymentInfo));
           const text = typeof data.message === "string" ? data.message : "Activity removed from your itinerary.";
           dispatch(openNotification({ type: "success", heading: "Success!", text }));
+          reportChange("Kaira removed an activity", payload);
           break;
         }
         case "delete_restaurant_from_itinerary": {
@@ -2610,6 +2727,7 @@ case "shimmer_day_by_day": {
           dispatch(deleteRestaurantFromItinerary(payload));
           const text = typeof data.message === "string" ? data.message : "Restaurant removed from your itinerary.";
           dispatch(openNotification({ type: "success", heading: "Success!", text }));
+          reportChange("Kaira removed a restaurant", payload);
           break;
         }
         case "delete_hotel_from_itinerary": {
@@ -2623,6 +2741,7 @@ case "shimmer_day_by_day": {
           dispatch(SetCallPaymentInfo(!callPaymentInfo));
           const text = typeof data.message === "string" ? data.message : "Hotel removed from your itinerary.";
           dispatch(openNotification({ type: "success", heading: "Success!", text }));
+          reportChange("Kaira removed a stay", payload);
           break;
         }
         case "delete_transfer_from_itinerary": {
@@ -2632,6 +2751,7 @@ case "shimmer_day_by_day": {
           dispatch(SetCallPaymentInfo(!callPaymentInfo));
           const text = typeof data.message === "string" ? data.message : "Transfer removed from your itinerary.";
           dispatch(openNotification({ type: "success", heading: "Success!", text }));
+          reportChange("Kaira removed a transfer", payload);
           break;
         }
         case "delete_esim_from_itinerary":
@@ -2643,6 +2763,7 @@ case "shimmer_day_by_day": {
           dispatch(SetCallPaymentInfo(!callPaymentInfo));
           const text = typeof data.message === "string" ? data.message : `${kind} removed from your itinerary.`;
           dispatch(openNotification({ type: "success", heading: "Success!", text }));
+          reportChange(`Kaira removed your ${kind}`, payload);
           break;
         }
         case "quick_reply_shimmer": {
@@ -2688,12 +2809,14 @@ case "shimmer_day_by_day": {
           if (typeof data.no_of_infants === "number")
             meta.number_of_infants = data.no_of_infants;
           onTripMetaUpdate?.(meta);
+          reportChange("Kaira updated your travellers");
           break;
         }
         case "update_travel_date": {
           // Patch just the Date of Travelling on the current trip.
           if (typeof data.travel_date === "string") {
             onTripMetaUpdate?.({ travel_date: data.travel_date });
+            reportChange("Kaira updated your dates");
           }
           break;
         }
@@ -2701,7 +2824,7 @@ case "shimmer_day_by_day": {
           console.warn("[Effect] unhandled:", name);
       }
     },
-    [onLocationReceived, onNewQuery, onClearMap, onRouteReceived, onItineraryReceived, onTripMetaUpdate, input, indexTransfersForLookup, emitEndpointsFromEffect, dispatch, callPaymentInfo, setMessages, onIntakeFormStart],
+    [onLocationReceived, onNewQuery, onClearMap, onRouteReceived, onItineraryReceived, onTripMetaUpdate, onTripChanged, input, indexTransfersForLookup, emitEndpointsFromEffect, dispatch, callPaymentInfo, setMessages, onIntakeFormStart],
   );
 
   // Wire handleEffect into the ref so the stable onEffect wrapper picks it up
@@ -3042,6 +3165,7 @@ const handleLoginCardSkip = useCallback(() => {
     // (and with it the "typing…" status) on its own.
     const onWheel = (e: WheelEvent) => {
       if (e.deltaY < 0) isAtBottomRef.current = false;
+      if (pinHeaderRef.current) return;
       if (e.deltaY > 4) setHeaderHidden(true);
       else if (e.deltaY < -4) setHeaderHidden(false);
     };
@@ -3057,8 +3181,10 @@ const handleLoginCardSkip = useCallback(() => {
       if (y - touchStartY > 5) isAtBottomRef.current = false;
       // Per-move delta (not the whole-gesture one above) so a long drag can
       // flip the header back mid-swipe.
-      if (lastTouchY - y > 4) setHeaderHidden(true);
-      else if (y - lastTouchY > 4) setHeaderHidden(false);
+      if (!pinHeaderRef.current) {
+        if (lastTouchY - y > 4) setHeaderHidden(true);
+        else if (y - lastTouchY > 4) setHeaderHidden(false);
+      }
       lastTouchY = y;
     };
     c.addEventListener("wheel", onWheel, { passive: true });
@@ -4138,7 +4264,7 @@ const handleShowLogin = useCallback(() => {
     >
       <ChatPanelStyles />
       {/* ── Top bar — mirrors chat-active-v2.html .chat-header ──────────── */}
-      <div className={`kp-header${headerHidden ? " is-hidden" : ""}`}>
+      <div className={`kp-header${headerHidden && !pinHeader ? " is-hidden" : ""}`}>
         <div className="kp-header-ava">
           <img src="/KairaInsta.png" alt="Kaira" />
           <span className="kp-dot" />
@@ -4989,6 +5115,42 @@ const handleShowLogin = useCallback(() => {
           </div>
         </div>
       )}
+
+      {/* ── Context chip ─────────────────────────────────────────────────
+          What this request is about, when it came from a row in the trip
+          rather than from the composer. Mobile only: on desktop the itinerary
+          is on screen beside the chat, so the thing being changed never left
+          view and the chip would be restating what the user can see. */}
+      {chatContext && isMobile ? (
+        <div className="flex-shrink-0 px-[14px] pb-[8px] md:hidden">
+          <div
+            style={{
+              border: "1px solid #dcdfe5",
+              background: "#ffffff",
+              borderRadius: 999,
+              boxShadow: "none",
+            }}
+            className="inline-flex max-w-full items-center gap-[8px] px-[12px] py-[7px]"
+          >
+            <div
+              className="h-[14px] w-[14px] flex-none rounded-[4px] bg-[#e6e8ec]"
+              aria-hidden
+            />
+            <span className="min-w-0 truncate text-[11.5px] text-[#6b7280]">
+              About <strong className="text-[#0b1220]">{chatContext}</strong>
+            </span>
+            <button
+              type="button"
+              onClick={onClearChatContext}
+              aria-label="Clear context"
+              style={{ border: 0, background: "none", padding: 0 }}
+              className="flex-none text-[12px] leading-none text-[#8a93a6]"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      ) : null}
 
       {/* ── Composer ─────────────────────────────────────────────────────── */}
       {/* While the in-chat intake form is open on phone, drop the disabled

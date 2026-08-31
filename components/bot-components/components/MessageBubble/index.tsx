@@ -77,6 +77,34 @@ const MessageBubbleResponsiveStyles: React.FC = () => (
       }
       .msg.kaira .msg-avatar { left: 12px; }
       .msg.user  .msg-avatar { right: 12px; }
+
+      /* ── Bubbles, as the mobile design draws them ──────────────────────
+         Kaira's sheet is PAPER (#fafaf5), not white. Her bubble used to be
+         #fafaf5 too, which on the old white pane read as a tinted card and
+         on the sheet reads as nothing at all — same colour as the ground it
+         sits on. White with a hairline is what separates it, and it is what
+         the design specifies.
+
+         The asymmetric corner points at its author: 4px on the bottom-left
+         for Kaira, bottom-right for the user, so a glanced thread is
+         attributable without reading it. */
+      .msg.kaira .chat-md:not(.user),
+      .msg.kaira > div > div[class*="chat-md"]:not(.user) {
+        background: #ffffff !important;
+        border: 1px solid #ececec !important;
+        border-radius: 16px 16px 16px 4px !important;
+        padding: 10px 13px !important;
+        color: #0b1220;
+      }
+      .msg.user .chat-md.user {
+        background: #0b1220 !important;
+        border-radius: 16px 16px 4px 16px !important;
+        padding: 10px 14px !important;
+      }
+      .msg .chat-md {
+        font-size: 12.5px;
+        line-height: 1.5;
+      }
     }
   ` }} />
 );

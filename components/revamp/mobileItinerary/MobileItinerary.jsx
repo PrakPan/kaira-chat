@@ -1,8 +1,9 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { shallowEqual, useSelector } from "react-redux";
 
 import buildTripViewModel from "../../../lib/tripViewModel";
 import { formatMoney } from "../../../services/money";
+import { optimizedMediaUrl } from "../../../lib/mediaImage";
 import LegSection from "./LegSection";
 import DaySheet from "./sheets/DaySheet";
 import MoreSheet from "./sheets/MoreSheet";
@@ -45,6 +46,18 @@ const ShieldCheck = () => (
   </svg>
 );
 
+// The stay carries an image KEY (what ImageLoader takes), but the detail
+// sheet paints it as a CSS background and needs a URL. Same CDN base
+// ImageLoader defaults to, then resized — a hotel hero is a 54px thumbnail
+// here, and shipping the original is what the media resizer exists to avoid.
+const CDN = "https://d31aoa0ehgvjdi.cloudfront.net/";
+const imageUrlFromKey = (key) => {
+  if (!key || typeof key !== "string") return null;
+  return optimizedMediaUrl(key.startsWith("http") ? key : CDN + key, {
+    width: 160,
+  });
+};
+
 function Skeleton() {
   return (
     <div className="flex flex-col gap-[11px] px-[14px] pb-[18px] pt-[12px]">
@@ -72,6 +85,9 @@ export default function MobileItinerary({
   onDownloadPdf = undefined,
   isDownloadingPdf = false,
   isBusy = false,
+  // { label, itineraryCityId, dayIndex, at } — where Kaira's last change
+  // landed. Supplied by BotApp, which hears it from the chat's effect stream.
+  change = null,
 }) {
   // Select the raw slices, then derive once. Passing buildTripViewModel straight
   // to useSelector would defeat shallowEqual — it mints a fresh { gates, trip,
@@ -96,9 +112,40 @@ export default function MobileItinerary({
     [slices],
   );
 
-  const [daySheet, setDaySheet] = useState(null); // { leg, day }
-  const [moreOpen, setMoreOpen] = useState(false);
-  const [detailItem, setDetailItem] = useState(null);
+  // ONE sheet slot, exactly as the design models it (`sheet: 'day' | 'detail'
+  // | 'more'`). Opening a day item REPLACES the day sheet rather than stacking
+  // on top of it: two sheets deep, the one underneath is still showing its own
+  // header and close button, so there are two × buttons on screen and no way
+  // to tell which one dismisses what.
+  //
+  //   { type: "day",    leg, day }
+  //   { type: "detail", detail }
+  //   { type: "more" }
+  const [sheet, setSheet] = useState(null);
+
+  // Closing is per-sheet, and it MUST check that the sheet asking to close is
+  // still the one on screen.
+  //
+  // Drawer fires `onHide` 100ms AFTER its `show` goes false (Drawer.js — it
+  // waits out the slide). Swapping day → detail sets show=false on the day
+  // sheet, so 100ms later the DAY sheet's own onHide arrives — by which time
+  // the slot already holds the detail. An unguarded setSheet(null) there wipes
+  // the sheet that just opened, which is exactly "the day sheet closes and
+  // nothing opens".
+  //
+  // The functional updater is what makes the guard reliable: it reads the
+  // CURRENT slot at apply time, not the value captured when the callback was
+  // created.
+  const closeIf = useCallback(
+    (type) => () => setSheet((cur) => (cur?.type === type ? null : cur)),
+    [],
+  );
+  const closeDay = useMemo(() => closeIf("day"), [closeIf]);
+  const closeDetail = useMemo(() => closeIf("detail"), [closeIf]);
+  const closeMore = useMemo(() => closeIf("more"), [closeIf]);
+  const isDay = sheet?.type === "day";
+  const isDetail = sheet?.type === "detail";
+  const isMore = sheet?.type === "more";
   const rootRef = useRef(null);
 
   // Kaira can't act on two requests at once — a send made mid-stream is dropped
@@ -113,12 +160,13 @@ export default function MobileItinerary({
   // left open doesn't merely look wrong: it covers the very reply you just
   // asked for. Sheets are stacked (detail opens over day), so all of them go.
   const ask = useCallback(
-    (message) => {
+    (message, contextLabel) => {
       if (!message) return;
-      setDetailItem(null);
-      setDaySheet(null);
-      setMoreOpen(false);
-      askKaira?.(message);
+      setSheet(null);
+      // The second argument is what Kaira's sheet shows as its "About …" chip.
+      // A request fired from a row arrives in the chat as a bare sentence, and
+      // three messages later nothing says which row started it.
+      askKaira?.(message, contextLabel || null);
     },
     [askKaira],
   );
@@ -127,12 +175,26 @@ export default function MobileItinerary({
     (leg) =>
       ask(
         leg.stay ? prompts.changeStay(leg.city) : prompts.addStay(leg.city),
+        `${leg.city} stay · ${leg.datesLabel || ""}`.trim(),
       ),
     [ask],
   );
 
   const handleChangeTravel = useCallback(
-    (leg) => ask(prompts.changeTransfer(leg.city)),
+    (leg) =>
+      ask(
+        prompts.changeTransfer(leg.city),
+        leg.inboundTravel?.title || `Travel into ${leg.city}`,
+      ),
+    [ask],
+  );
+
+  const handleChangeReturn = useCallback(
+    (leg) =>
+      ask(
+        prompts.changeReturn(leg.outboundTravel?.destName || "home"),
+        leg.outboundTravel?.title || "Flight home",
+      ),
     [ask],
   );
 
@@ -142,27 +204,178 @@ export default function MobileItinerary({
         leg.extras.length > 0
           ? prompts.changeTaxi(leg.city)
           : prompts.addTaxi(leg.city),
+        `Taxi in ${leg.city}`,
       ),
     [ask],
   );
 
+  // ── Opening a row ──────────────────────────────────────────────────────────
+  // The design opens a DETAIL SHEET here, it does not ask Kaira. That
+  // distinction is the whole point: reading about a booking is something the
+  // app already knows the answer to, and routing it through the chat put a
+  // question in the conversation that the trip could answer itself — then made
+  // the user wait for a reply to read their own hotel's name back to them.
+  //
+  // CHANGING is still Kaira's, from the sheet's footer.
+
   const handleOpenStay = useCallback(
-    (leg) => leg.stay && ask(prompts.showDetails(leg.stay.name, leg.city)),
-    [ask],
+    (leg) => {
+      if (!leg.stay) return;
+      setSheet({ type: "detail", detail: {
+        kind: `STAY · ${String(leg.city).toUpperCase()}`,
+        contextLabel: `${leg.city} stay · ${leg.datesLabel || ""}`.trim(),
+        name: leg.stay.name,
+        meta: leg.stay.meta,
+        imageUrl: imageUrlFromKey(leg.stay.imageKey),
+        blurb:
+          "Where you sleep in this city. Check-in and check-out times are on your voucher.",
+        facts: [
+          { k: "CITY", v: leg.city },
+          { k: "DATES", v: leg.datesLabel },
+          {
+            k: "NIGHTS",
+            v: leg.nights ? String(leg.nights) : null,
+          },
+          { k: "STATUS", v: "Quoted, price held" },
+        ],
+        hasMap: true,
+        onOpenMap: onViewMap,
+        canChange: true,
+        changeLabel: "Change stay",
+        changeMessage: prompts.changeStay(leg.city),
+        },
+      });
+    },
+    [onViewMap],
   );
 
   const handleOpenTravel = useCallback(
-    (leg, travel) => ask(prompts.showDetails(travel.title, leg.city)),
-    [ask],
+    (leg, travel) =>
+      setSheet({ type: "detail", detail: {
+        kind: `${String(travel.modeLabel || "TRAVEL").toUpperCase()} · ${String(
+          leg.city,
+        ).toUpperCase()}`,
+        name: travel.title,
+        meta: travel.meta,
+        contextLabel: travel.title,
+        blurb: travel.isCombo
+          ? "One booking, several journeys — each leg is listed below."
+          : "How you get into this city.",
+        // Only meaningful on a combo; DetailSheet ignores a single-leg list.
+        segments: travel.segments,
+        facts: [
+          { k: "DEPARTS", v: travel.departLabel },
+          { k: "DURATION", v: travel.durationLabel },
+          { k: "MODE", v: travel.modeLabel },
+          { k: "STATUS", v: "Quoted, price held" },
+        ],
+        canChange: !travel.isDraftLeg,
+        changeLabel: "Change travel",
+        changeMessage: prompts.changeTransfer(leg.city),
+        },
+      }),
+    [],
   );
 
   const handleOpenExtra = useCallback(
-    (leg, extra) => ask(prompts.showDetails(extra.name, leg.city)),
-    [ask],
+    (leg, extra) =>
+      setSheet({ type: "detail", detail: {
+        kind: `TAXI · ${String(leg.city).toUpperCase()}`,
+        contextLabel: `Taxi in ${leg.city}`,
+        name: extra.name,
+        meta: extra.meta,
+        blurb: "A car booked for you inside this city.",
+        facts: [
+          { k: "CITY", v: leg.city },
+          { k: "STATUS", v: "Booked" },
+        ],
+        canChange: true,
+        changeLabel: "Change taxi",
+        changeMessage: prompts.changeTaxi(leg.city),
+        canRemove: true,
+        removeMessage: prompts.removeItem(extra.name, leg.city),
+        },
+      }),
+    [],
   );
 
+  // "Before you fly" — the visa/eSIM block, in the same sheet as everything
+  // else. Deliberately NOT the existing VisaDetailDrawer / EsimDetailDrawer:
+  // those quote a supplier price and offer to buy, and a price is the one thing
+  // that must never appear on a package surface.
+  const handleOpenAncillaries = useCallback(() => {
+    const { visaCount, esimCount } = ancillaries;
+    setSheet({ type: "detail", detail: {
+      kind: "BEFORE YOU FLY",
+      contextLabel: "Visa & eSIM",
+      name: [
+        visaCount ? `Visa × ${visaCount}` : null,
+        esimCount ? (esimCount === 1 ? "eSIM" : `eSIM × ${esimCount}`) : null,
+      ]
+        .filter(Boolean)
+        .join(" + "),
+      meta: "INCLUDED",
+      blurb: [
+        visaCount
+          ? `E-visa for ${visaCount} ${visaCount === 1 ? "passport" : "passports"}, applied for on your behalf.`
+          : null,
+        esimCount
+          ? `${esimCount === 1 ? "A data plan" : `${esimCount} data plans`} so you land connected.`
+          : null,
+      ]
+        .filter(Boolean)
+        .join(" "),
+      facts: [
+        { k: "VISA", v: visaCount ? `E-visa · ${visaCount} pax` : null },
+        {
+          k: "ESIM",
+          v: esimCount ? `${esimCount} ${esimCount === 1 ? "plan" : "plans"}` : null,
+        },
+        { k: "STATUS", v: "In your package" },
+      ],
+      canChange: true,
+      changeLabel: "Change",
+      changeMessage: prompts.changeAncillaries(),
+      },
+    });
+  }, [ancillaries]);
+
+  // A day item — opened from the day sheet, which knows the leg and day.
+  const handleOpenDayItem = useCallback((leg, day, item) => {
+    const booked = item.kind === "booked";
+    setSheet({ type: "detail", detail: {
+      kind:
+        item.kind === "booked"
+          ? "BOOKED ACTIVITY"
+          : item.kind === "food"
+            ? "RESTAURANT"
+            : "PLACE",
+      name: item.name,
+      meta: item.meta,
+      contextLabel: item.name,
+      imageUrl: item.imageUrl || null,
+      blurb: booked
+        ? "Tickets held for your group. Your guide meets you at the hotel."
+        : "A suggestion, not a booking — go if you feel like it.",
+      facts: [
+        { k: "WHEN", v: item.timeOfDay ? item.timeOfDay.toUpperCase() : day?.dayLabel },
+        { k: "TIME NEEDED", v: item.durationLabel ? item.durationLabel.toUpperCase() : null },
+        { k: "CATEGORY", v: item.category || null },
+        { k: "STATUS", v: booked ? "Tickets held" : "Suggestion" },
+      ],
+      status: booked ? "Tickets held" : "Included · nothing extra to pay",
+      hasMap: true,
+      canChange: booked,
+      changeLabel: "Change activity",
+      changeMessage: prompts.changeActivity(item.name, leg.city),
+      canRemove: true,
+      removeMessage: prompts.removeItem(item.name, leg.city),
+      },
+    });
+  }, []);
+
   const handleOpenDay = useCallback(
-    (leg, day) => setDaySheet({ leg, day }),
+    (leg, day) => setSheet({ type: "day", leg, day }),
     [],
   );
 
@@ -172,6 +385,41 @@ export default function MobileItinerary({
     const el = rootRef.current?.querySelector(`#${CSS.escape(anchor)}`);
     el?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, []);
+
+  // ── Where Kaira's last change landed ───────────────────────────────────────
+  // The effect payload names an itinerary_city_id and (sometimes) a
+  // day_by_day_index; resolve those to this surface's own anchor and day key so
+  // the trip can scroll to the change and badge the day that moved.
+  const changed = useMemo(() => {
+    if (!change) return { anchor: null, dayKey: null };
+    const leg = change.itineraryCityId
+      ? legs.find((l) => l.id === change.itineraryCityId)
+      : null;
+    if (!leg) return { anchor: null, dayKey: null };
+    const day =
+      typeof change.dayIndex === "number"
+        ? leg.days.find((d) => d.dayIndex === change.dayIndex)
+        : null;
+    return { anchor: leg.anchor, dayKey: day ? day.key : null };
+  }, [change, legs]);
+
+  // Scroll to it. Keyed on `change.at` rather than the anchor so a SECOND
+  // change to the same city still scrolls — two edits to Hanoi in a row
+  // resolve to the same anchor, and without the timestamp the effect would
+  // not re-run and the trip would sit still while the bar claimed something
+  // had moved.
+  const changeAt = change?.at ?? null;
+  useEffect(() => {
+    if (!changeAt || !changed.anchor) return undefined;
+    // After the sheet has closed and the itinerary has repainted with the new
+    // content — scrolling to a row that is about to change height lands in the
+    // wrong place.
+    const t = setTimeout(() => {
+      const el = rootRef.current?.querySelector(`#${CSS.escape(changed.anchor)}`);
+      el?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 320);
+    return () => clearTimeout(t);
+  }, [changeAt, changed.anchor]);
 
   const totalStr = useMemo(() => {
     if (trip.pricesHidden || trip.totalAmount == null) return null;
@@ -190,7 +438,9 @@ export default function MobileItinerary({
         paxLabel={trip.paxLabel}
         dateLabel={trip.dateLabel}
         legs={legs}
-        onOpenMore={() => (onOpenMore ? onOpenMore() : setMoreOpen(true))}
+        onOpenMore={() =>
+          onOpenMore ? onOpenMore() : setSheet({ type: "more" })
+        }
         onViewMap={onViewMap}
         onLegClick={scrollToLeg}
       />
@@ -245,6 +495,7 @@ export default function MobileItinerary({
             key={leg.id}
             leg={leg}
             disabled={disabled}
+            changedDayKey={changed.dayKey}
             onChangeStay={handleChangeStay}
             onChangeTravel={handleChangeTravel}
             onOpenTravel={handleOpenTravel}
@@ -252,6 +503,7 @@ export default function MobileItinerary({
             onOpenDay={handleOpenDay}
             onAddTaxi={handleAddTaxi}
             onOpenExtra={handleOpenExtra}
+            onChangeReturn={handleChangeReturn}
           />
         ))}
 
@@ -273,33 +525,44 @@ export default function MobileItinerary({
                   .join(" · ")}
               </div>
             </div>
+            {/* The row named two bookings and then refused to say anything more
+                about them. This opens what they actually cover — still with no
+                price, because they are inside the package. */}
+            <button
+              type="button"
+              onClick={handleOpenAncillaries}
+              style={{ border: 0, background: "none", padding: 0 }}
+              className="flex-none font-mono text-[8.5px] tracking-[0.06em] text-[#6b7280]"
+            >
+              VIEW ›
+            </button>
           </div>
         )}
       </div>
 
+      {/* One slot, one sheet. Opening an item from the day REPLACES it —
+          `isDay` goes false the moment `sheet.type` becomes "detail". */}
       <DaySheet
-        open={!!daySheet}
-        onClose={() => setDaySheet(null)}
-        leg={daySheet?.leg}
-        day={daySheet?.day}
+        open={isDay}
+        onClose={closeDay}
+        leg={sheet?.leg}
+        day={sheet?.day}
         disabled={disabled}
         onAskKaira={ask}
-        onOpenItem={(item) => setDetailItem(item)}
+        onOpenItem={(item) => handleOpenDayItem(sheet.leg, sheet.day, item)}
       />
 
       <DetailSheet
-        open={!!detailItem}
-        onClose={() => setDetailItem(null)}
-        leg={daySheet?.leg}
-        day={daySheet?.day}
-        item={detailItem}
+        open={isDetail}
+        onClose={closeDetail}
+        detail={sheet?.detail}
         disabled={disabled}
         onAskKaira={ask}
       />
 
       <MoreSheet
-        open={moreOpen}
-        onClose={() => setMoreOpen(false)}
+        open={isMore}
+        onClose={closeMore}
         onViewMap={onViewMap}
         onDownloadPdf={onDownloadPdf}
         onShare={onShare}
@@ -307,6 +570,7 @@ export default function MobileItinerary({
         isDownloadingPdf={isDownloadingPdf}
         onOpenChat={() => ask(prompts.openEnded())}
       />
+
     </div>
   );
 }
