@@ -1001,7 +1001,7 @@ export default function ActivityDetails(props) {
                       onClick={() => setSelectedPackage(packageItem)}
                     >
                       <div className="flex items-start justify-between w-full gap-3">
-                        <div className="flex items-start gap-3">
+                        <div className="flex min-w-0 items-start gap-3">
                           <div
                             className={`mt-0.5 w-5 h-5 shrink-0 rounded-full border-2 flex items-center justify-center ${
                               isSel
@@ -1013,16 +1013,10 @@ export default function ActivityDetails(props) {
                               <div className="w-2 h-2 rounded-full bg-[#0b1220]"></div>
                             )}
                           </div>
-                          <div className="flex flex-col gap-0.5">
-                            {props.data?.is_package && packageItem?.title ? (
+                          <div className="flex min-w-0 flex-col gap-0.5">
+                            {packageItem?.title ? (
                               <div className="font-medium text-[#0b1220]">
                                 {packageItem.title}
-                              </div>
-                            ) : null}
-                            {props.data?.is_package &&
-                            packageItem?.description ? (
-                              <div className="text-sm text-[#445069]">
-                                {packageItem.description}
                               </div>
                             ) : null}
                             {packageItem.pax_details?.adults ? (
@@ -1033,9 +1027,14 @@ export default function ActivityDetails(props) {
                                 people
                               </div>
                             ) : null}
+                            {packageItem?.description ? (
+                              <div className="text-sm leading-relaxed text-[#8a93a6]">
+                                {packageItem.description}
+                              </div>
+                            ) : null}
                           </div>
                         </div>
-                        <div className="text-right font-sans text-[18px] font-semibold text-[#0b1220]">
+                        <div className="shrink-0 whitespace-nowrap text-right font-sans text-[18px] font-semibold text-[#0b1220]">
                           {`${
                             currency?.currency
                               ? currencySymbols?.[currency?.currency]
