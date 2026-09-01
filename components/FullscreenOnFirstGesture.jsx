@@ -9,12 +9,14 @@ import { useEffect } from "react";
  * NOT grant activation — only a tap/click/keypress does — which is why this
  * listens for `click` rather than touch movement.
  *
- * WHERE IT ACTUALLY DOES SOMETHING: Android Chrome/Firefox and iPad Safari,
- * which hide the address bar and system bars outright. iPhone Safari does not
- * implement element fullscreen at all (only <video>), so `fullscreenEnabled`
- * is false there and this bails out silently — iPhone gets the edge-to-edge
- * viewport from `viewport-fit=cover` and nothing more. That is a platform
- * limit, not a bug here.
+ * WHERE IT ACTUALLY DOES SOMETHING: Android Chrome/Firefox, and iPad Safari
+ * (which adds an overlay exit button the page cannot suppress). Safari on
+ * iPHONE has never implemented the Fullscreen API for anything but <video> —
+ * still true as of Safari 26.6 — so `fullscreenEnabled` is false there and this
+ * bails out silently. Nothing in this file can change that; a page in an iPhone
+ * tab cannot hide the address bar, and no site does. The only chrome-free iPhone
+ * experience is the home-screen web app (see the apple-mobile-web-app-* tags in
+ * pages/_document.js), which the user has to install.
  *
  * ONCE, AND NEVER AGAINST THE USER: one attempt per browsing session. If the
  * user leaves fullscreen themselves — swipe-down, Esc, the back gesture — the
@@ -138,6 +140,25 @@ export default function FullscreenOnFirstGesture() {
       if (!fullscreenElement()) writeFlag(OPT_OUT_KEY, true);
     };
 
+    // A gesture that produced no fullscreen — a swipe the browser read as a
+    // scroll, a tap the page swallowed — must not burn the one attempt. Only a
+    // request that actually resolves counts; anything else re-arms, up to a
+    // small ceiling so a browser that always refuses is not asked forever.
+    const MAX_ATTEMPTS = 3;
+    let attempts = 0;
+
+    const attempt = () => {
+      detach();
+      attempts += 1;
+      requestAppFullscreen().then((entered) => {
+        if (entered || attempts >= MAX_ATTEMPTS) {
+          writeFlag(ATTEMPTED_KEY, true);
+          return;
+        }
+        if (!readFlag(OPT_OUT_KEY)) attach();
+      });
+    };
+
     const onFirstGesture = (event) => {
       // A tap that focuses a field is the one gesture to skip: fullscreen
       // resizes the viewport at the same moment the soft keyboard is opening,
@@ -154,21 +175,54 @@ export default function FullscreenOnFirstGesture() {
         return;
       }
 
-      detach();
-      writeFlag(ATTEMPTED_KEY, true);
-      requestAppFullscreen();
+      attempt();
+    };
+
+    // touchend as well as click, and a start position to measure against.
+    // WebKit does not bubble a `click` to the document from an element that is
+    // not inherently clickable and carries no handler or `cursor: pointer`, so
+    // on iPad — the one Safari that DOES have element fullscreen — a tap on
+    // plain page furniture can otherwise go unheard. A drag is not a tap and
+    // grants no activation, so a touch that travelled is ignored rather than
+    // spent.
+    let touchStart = null;
+    const TAP_SLOP = 10;
+
+    const onTouchStart = (event) => {
+      const t = event.touches && event.touches[0];
+      touchStart = t ? { x: t.clientX, y: t.clientY } : null;
+    };
+
+    const onTouchEnd = (event) => {
+      const t = event.changedTouches && event.changedTouches[0];
+      if (!touchStart || !t) return;
+      const moved =
+        Math.abs(t.clientX - touchStart.x) > TAP_SLOP ||
+        Math.abs(t.clientY - touchStart.y) > TAP_SLOP;
+      touchStart = null;
+      if (moved) return;
+      onFirstGesture(event);
     };
 
     // Capture phase, so the request is made while the activation is unspent
     // and before any handler can stopPropagation() the event away from us.
     const opts = { capture: true, passive: true };
+
+    const attach = () => {
+      document.addEventListener("click", onFirstGesture, opts);
+      document.addEventListener("keydown", onFirstGesture, opts);
+      document.addEventListener("touchstart", onTouchStart, opts);
+      document.addEventListener("touchend", onTouchEnd, opts);
+    };
+
     const detach = () => {
       document.removeEventListener("click", onFirstGesture, opts);
       document.removeEventListener("keydown", onFirstGesture, opts);
+      document.removeEventListener("touchstart", onTouchStart, opts);
+      document.removeEventListener("touchend", onTouchEnd, opts);
     };
 
-    document.addEventListener("click", onFirstGesture, opts);
-    document.addEventListener("keydown", onFirstGesture, opts);
+    attach();
     document.addEventListener("fullscreenchange", onChange);
     document.addEventListener("webkitfullscreenchange", onChange);
 
