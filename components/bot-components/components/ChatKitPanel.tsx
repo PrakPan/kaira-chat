@@ -566,7 +566,13 @@ const ChatPanelStyles = () => (
 }
 @media (max-width: 768px) {
   .kp-composer-wrap {
-    padding: 10px 12px 12px;
+    /* The composer is the bottom edge of the sheet, and with
+       viewport-fit=cover that edge runs under the home indicator. The inset
+       is ADDED to the 12px rather than replacing it — the 12px is the design's
+       breathing room, the inset is clearance from system chrome. It resolves to
+       0px in an ordinary portrait tab, where the browser's own bar already
+       occupies that strip, so this only grows when it needs to. */
+    padding: 10px 12px calc(12px + var(--safe-bottom, 0px));
   }
 }
     /* ── Itinerary progress card (chat) ─────────────────────────────────── */

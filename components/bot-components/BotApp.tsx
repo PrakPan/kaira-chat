@@ -4489,7 +4489,17 @@ Start Location: ${details.startLocation}`;
   return (
     <main
       className="flex flex-col h-dvh md:h-screen overflow-hidden bg-slate-100 dark:bg-slate-950"
-      style={{ fontFamily: "'Inter', sans-serif" }}
+      style={{
+        fontFamily: "'Inter', sans-serif",
+        // Side insets, not top/bottom. With `viewport-fit=cover` the shell
+        // paints edge to edge, and in landscape on a notched phone — which is
+        // where the app most often ends up once it goes fullscreen and the
+        // system bars are gone — the cutout eats into one side. The individual
+        // edge bars below own their own top/bottom insets, because those have
+        // to compose with the padding each bar already carries.
+        paddingLeft: "var(--safe-left, 0px)",
+        paddingRight: "var(--safe-right, 0px)",
+      }}
     >
       {/* ── Desktop layout ── */}
       <div className="max-ph:hidden md:flex flex-1 overflow-hidden min-h-0">
@@ -5356,8 +5366,19 @@ const BottomCTABar = React.memo(
             background: "rgba(250,250,245,.94)",
             backdropFilter: "blur(16px)",
             WebkitBackdropFilter: "blur(16px)",
+            // The bar is `fixed bottom-0`, so `viewport-fit=cover` puts it
+            // under the home indicator / gesture bar. Add the inset to its own
+            // 14px rather than replacing it: the padding is what keeps the
+            // buttons off the edge, the inset is what keeps them off the
+            // system chrome, and both are needed. The bar's height is measured
+            // with offsetHeight into `ctaBarHeight`, so the scroll pane above
+            // ends in the right place on its own. Left/right are here too
+            // because a fixed element ignores the shell's side padding.
+            paddingBottom: "calc(14px + var(--safe-bottom, 0px))",
+            paddingLeft: "calc(10px + var(--safe-left, 0px))",
+            paddingRight: "calc(10px + var(--safe-right, 0px))",
           }}
-          className="z-20 fixed bottom-0 w-full flex-shrink-0 border-t border-[#ececec] px-[10px] pb-[14px] pt-[8px] flex flex-col gap-[8px]"
+          className="z-20 fixed bottom-0 w-full flex-shrink-0 border-t border-[#ececec] pt-[8px] flex flex-col gap-[8px]"
         >
           {changeBar ? (
             <TripChangeBar
@@ -6384,6 +6405,13 @@ const MobileLayout = React.memo(
             // at rest and nothing moves when it slides away.
             className="absolute top-0 inset-x-0 z-40 bg-white transition-[transform,opacity] duration-300 ease-out motion-reduce:transition-none"
             style={{
+              // Clears the status bar / dynamic island when nothing else does:
+              // a home-screen launch, or a fullscreen session on a browser that
+              // keeps the status bar overlaid. 0px in a normal tab. Its height
+              // is measured into `headerHeight` (and mirrored by the scrolling
+              // spacer at the top of the pane), so growing here shifts the
+              // content down with it rather than under it.
+              paddingTop: "var(--safe-top, 0px)",
               transform: navHidden ? "translateY(-100%)" : "translateY(0)",
               opacity: navHidden ? 0 : 1,
               pointerEvents: navHidden ? "none" : "auto",

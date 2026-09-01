@@ -46,6 +46,15 @@ const ClarityInit = dynamic(() => import("../components/ClarityInit"), {
   ssr: false,
 });
 
+// Browser fullscreen on the user's first tap (Android Chrome/Firefox, iPad
+// Safari; a silent no-op on iPhone, which has no element fullscreen). Renders
+// nothing — it is an effect with a component's lifecycle. ssr:false keeps it
+// out of the server payload; it is not needed for first paint.
+const FullscreenOnFirstGesture = dynamic(
+  () => import("../components/FullscreenOnFirstGesture"),
+  { ssr: false },
+);
+
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
   const ref = useRef();
@@ -182,8 +191,19 @@ function MyApp({ Component, pageProps }) {
   return (
     <>
       <Head>
-        {/* The single viewport for the whole app (Next disallows it in _document). */}
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        {/* The single viewport for the whole app (Next disallows it in _document).
+
+            `viewport-fit=cover` lets the page paint edge to edge — under the
+            notch/dynamic island, under the home indicator, under a display
+            cutout in landscape. It is also what makes every
+            `env(safe-area-inset-*)` in this codebase resolve to something other
+            than 0 on iOS: without it those values are hard 0 and the padding
+            they guard silently does nothing. See the --safe-* tokens in
+            styles/globals.css for the tokens to pad with. */}
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, viewport-fit=cover"
+        />
         {/* Default title; per-page <title> tags override this via next/head
             deduplication, so every page ends up with exactly one title. */}
         <title>AI Trip Planner & Custom Travel Itineraries | The Tarzan Way</title>
@@ -236,6 +256,7 @@ function MyApp({ Component, pageProps }) {
       <div ref={ref}>
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
           <ClarityInit />
+          <FullscreenOnFirstGesture />
           <Theme>
             <JupyterAnalytics
               apiEndpoint={JUPITER_HOST}
