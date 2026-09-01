@@ -187,6 +187,13 @@ const TransfersContainer = (props) => {
     }
   }
 
+  // `props.transfers` comes from the route feed, which archived V1 itineraries
+  // no longer have — their transfers carry their own icon and booking_type, so
+  // fall back to those rather than rendering a mode-less card.
+  const transferModeAt = (i) =>
+    getTransportationType(props?.transfers?.[i]?.icon) ||
+    props?.transferBookings?.[i]?.booking_type;
+
   function NoOfNights(days) {
     if (days > 1) {
       return " Nights";
@@ -440,7 +447,9 @@ const TransfersContainer = (props) => {
           <PinSection
             transfersPin
             setCurrentPopup={false}
-            key={i + props.transferBookings[i]?.city}
+            // `i + booking.city` collapses to the same NaN for every pin when
+            // the bookings carry no city, which duplicates React keys.
+            key={props.transferBookings[i]?.id ?? i}
             // city={props?.transferBookings[i - 1]?.destination_city}
             city={props.transferBookings[i] && props.transferBookings[i].city}
             duration={
@@ -475,17 +484,15 @@ const TransfersContainer = (props) => {
                     booking={props?.transferBookings[i]}
                     heading={props?.transferBookings[i]?.booking_display_name}
                     index={i}
-                    icon={props?.transfers[i]?.icon}
-                    modes={getTransportationType(props?.transfers[i]?.icon)}
+                    icon={props?.transfers[i]?.icon || props?.transferBookings[i]?.icon}
+                    modes={transferModeAt(i)}
                     transferbookings={props.transferBookings}
                     _changeFlightHandler={_changeFlightHandler}
                     _changeTaxiHandler={_changeTaxiHandler}
                     setShowTaxiModal={props.setShowTaxiModal}
                     userSelected={props?.transferBookings[i]?.user_selected}
                     taxi_type={props?.transferBookings[i]?.taxi_type}
-                    transportMode={getTransportationType(
-                      props?.transfers[i]?.icon
-                    )}
+                    transportMode={transferModeAt(i)}
                     duration={props?.breif?.city_slabs[i]?.duration}
                   ></TransferModeContainer>
                 </div>
@@ -513,12 +520,13 @@ const TransfersContainer = (props) => {
                     index={i}
                     booking={props?.transferBookings[i]}
                     userSelected={props?.transferBookings[i]?.user_selected}
-                    modes={getTransportationType(props?.transfers[i]?.icon)}
-                    icon={props?.transferBookings[i]?.images?.image}
+                    modes={transferModeAt(i)}
+                    icon={
+                      props?.transferBookings[i]?.images?.image ||
+                      props?.transferBookings[i]?.icon
+                    }
                     taxi_type={props?.transferBookings[i]?.taxi_type}
-                    transportMode={getTransportationType(
-                      props?.transfers[i]?.icon
-                    )}
+                    transportMode={transferModeAt(i)}
                     duration={props?.breif?.city_slabs[i]?.duration}
                   ></TransferModeContainer>
                 )

@@ -8,6 +8,15 @@ export const MERCURY_HOST =
 export const JUPITER_HOST =
   process.env.NEXT_PUBLIC_JUPITER_HOST || "https://jupiter.tarzanway.com";
 
+// V1 itineraries no longer come from the supplier portal (which is being shut
+// down) — they were dumped to the `ttw-v1-itineraries-data` S3 bucket as one
+// JSON per itinerary and are read straight off CloudFront. Same reasoning as
+// the image handler: the edge serves the gzipped object (~4-5x smaller) and
+// caches it, so S3 sees almost no GETs.
+export const V1_ITINERARY_CDN =
+  process.env.NEXT_PUBLIC_V1_ITINERARY_CDN ||
+  "https://d1dnn1kn2tf4hu.cloudfront.net";
+
 export const CLIENT_ID = process.env.NEXT_PUBLIC_CLIENT_ID;
 
 export const CLIENT_SECRET = process.env.NEXT_PUBLIC_CLIENT_SECRET;
