@@ -33,10 +33,10 @@ export default function TripChangeBar({ text, onUndo, onOpenChat, onDismiss }) {
       aria-live="polite"
     >
       <div
-        className="h-[20px] w-[20px] flex-none rounded-full border-[1.5px] border-dashed border-[#6b7280]"
+        className="h-[22px] w-[22px] flex-none rounded-full border-[1.5px] border-dashed border-[#6b7280]"
         aria-hidden
       />
-      <span className="min-w-0 flex-1 truncate text-[11.5px] font-[600] text-[#0b1220]">
+      <span className="min-w-0 flex-1 truncate text-[12.5px] font-[600] text-[#0b1220]">
         {text}
       </span>
       {onUndo ? (
@@ -44,7 +44,7 @@ export default function TripChangeBar({ text, onUndo, onOpenChat, onDismiss }) {
           type="button"
           onClick={onUndo}
           style={{ border: 0, background: "none", padding: 0 }}
-          className="flex-none text-[11.5px] font-[700] text-[#6b7280]"
+          className="flex-none text-[12.5px] font-[700] text-[#6b7280]"
         >
           Undo
         </button>
@@ -54,7 +54,7 @@ export default function TripChangeBar({ text, onUndo, onOpenChat, onDismiss }) {
           type="button"
           onClick={onOpenChat}
           style={{ border: 0, background: "none", padding: 0 }}
-          className="flex-none font-mono text-[8px] tracking-[0.06em] text-[#8a93a6]"
+          className="flex-none font-mono text-[9.5px] tracking-[0.06em] text-[#8a93a6]"
         >
           CHAT ›
         </button>
@@ -65,7 +65,7 @@ export default function TripChangeBar({ text, onUndo, onOpenChat, onDismiss }) {
           onClick={onDismiss}
           aria-label="Dismiss"
           style={{ border: 0, background: "none", padding: 0 }}
-          className="flex-none text-[12px] leading-none text-[#b8becc]"
+          className="flex-none text-[13px] leading-none text-[#b8becc]"
         >
           ×
         </button>

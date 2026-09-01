@@ -70,7 +70,7 @@ export default function Sheet({
         // is given. Releasing `top` lets bottom + height actually anchor it.
         top: "auto",
         height,
-        maxHeight: "92dvh",
+        maxHeight: "95dvh",
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
         overflow: "hidden",

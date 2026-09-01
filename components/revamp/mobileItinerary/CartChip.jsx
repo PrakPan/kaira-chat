@@ -58,7 +58,7 @@ export default function CartChip({
         color: "#fafaf5",
         borderRadius: 999,
         padding: sm ? "0 11px" : "0 12px",
-        height: sm ? 34 : 40,
+        height: sm ? 36 : 42,
         boxShadow: sm ? "none" : "0 8px 20px -10px rgba(11,18,32,0.3)",
       }}
       className="inline-flex flex-none items-center gap-[9px] disabled:opacity-40"
@@ -67,7 +67,7 @@ export default function CartChip({
         className="relative grid place-items-center"
         style={{ padding: "2px 3px 0 0" }}
       >
-        <CartGlyph size={sm ? 14 : 15} />
+        <CartGlyph size={sm ? 15 : 16} />
         {count > 0 ? (
           <span
             aria-hidden
@@ -75,8 +75,8 @@ export default function CartChip({
               position: "absolute",
               top: -5,
               right: -5,
-              minWidth: 11,
-              height: 11,
+              minWidth: 13,
+              height: 13,
               borderRadius: 3,
               background: "#f7e700",
               color: "#0b1220",
@@ -86,7 +86,7 @@ export default function CartChip({
               // the glyph rather than smudging into it.
               boxShadow: "0 0 0 2px #0b1220",
             }}
-            className="grid place-items-center font-mono text-[7px] font-[800]"
+            className="grid place-items-center font-mono text-[9px] font-[800]"
           >
             {count}
           </span>
@@ -94,12 +94,12 @@ export default function CartChip({
       </span>
       <span className="flex flex-col items-start leading-none">
         <span
-          className="font-mono text-[6.5px] tracking-[0.1em]"
+          className="font-mono text-[9px] tracking-[0.1em]"
           style={{ color: "rgba(255,255,255,.6)" }}
         >
           {label}
         </span>
-        <span className="mt-[2px] whitespace-nowrap text-[10.5px] font-[800]">
+        <span className="mt-[2px] whitespace-nowrap text-[13px] font-[800]">
           {total || "—"}
         </span>
       </span>

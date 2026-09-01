@@ -260,7 +260,10 @@ const VehicleDetailModal = ({
 
   if (error) {
     return (
-      <DrawerShell band={<DetailBand mode={accentKey} onBack={handleClose} loading />}>
+      <DrawerShell
+        embedded={isEmbedded}
+        band={<DetailBand mode={accentKey} onBack={handleClose} loading />}
+      >
         <DetailError />
       </DrawerShell>
     );

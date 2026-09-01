@@ -19,18 +19,18 @@ function Row({ label, hint, onClick, disabled }) {
       onClick={onClick}
       disabled={disabled}
       style={{ ...T.card, borderRadius: 11 }}
-      className="flex w-full items-center gap-[11px] px-[13px] py-[12px] text-left disabled:opacity-40"
+      className="flex w-full items-center gap-[12px] px-[13px] py-[12px] text-left disabled:opacity-40"
     >
       <div className="h-[24px] w-[24px] flex-none rounded-[6px] bg-[#e6e8ec]" />
-      <span className="min-w-0 flex-1 truncate text-[12.5px] font-[600] text-[#0b1220]">
+      <span className="min-w-0 flex-1 truncate text-[13.5px] font-[600] text-[#0b1220]">
         {label}
       </span>
       {hint ? (
-        <span className="flex-none font-mono text-[8px] tracking-[0.06em] text-[#8a93a6]">
+        <span className="flex-none font-mono text-[9.5px] tracking-[0.06em] text-[#8a93a6]">
           {hint}
         </span>
       ) : (
-        <span className="flex-none text-[13px] leading-none text-[#b8becc]" aria-hidden>
+        <span className="flex-none text-[14px] leading-none text-[#b8becc]" aria-hidden>
           ›
         </span>
       )}

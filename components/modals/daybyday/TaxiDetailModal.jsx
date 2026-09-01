@@ -233,7 +233,10 @@ const TaxiDetailModal = ({
 
   if (error) {
     return (
-      <DrawerShell band={<DetailBand mode="Taxi" onBack={handleClose} loading />}>
+      <DrawerShell
+        embedded={isEmbedded}
+        band={<DetailBand mode="Taxi" onBack={handleClose} loading />}
+      >
         <DetailError />
       </DrawerShell>
     );

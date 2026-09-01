@@ -50,10 +50,6 @@ import {
   PdfAuthError,
 } from "../../services/itinerary/exportPdf";
 
-// Height of the trip header (logo row + leg-nav row). The Kaira sheet stops
-// just under it so the trip stays visible behind the conversation.
-const TRIP_HEADER_HEIGHT = 84;
-
 // The open-chat gesture. The sheet travels the full height of the pane so it
 // gets the longer of the two; the trip only eases back 7%.
 //
@@ -6550,11 +6546,19 @@ const MobileLayout = React.memo(
             style={
               chatAsSheet
                 ? {
-                    // Stops just under the trip header rather than at a fixed
-                    // 74%: the conversation is the whole job once it is open,
-                    // and the header stays visible so the trip is still there
-                    // to come back to.
-                    top: TRIP_HEADER_HEIGHT,
+                    // 95% of the viewport, the height every other sheet on
+                    // this surface opens to (day, detail, cart) — the
+                    // conversation is the whole job once it is open, and a
+                    // Kaira sheet that stopped somewhere else read as a
+                    // different kind of object than the ones it sits beside.
+                    //
+                    // Expressed as a top offset rather than a height because
+                    // this pane clips: a 95dvh box anchored to the bottom would
+                    // simply have its top cut off on any device where the pane
+                    // is shorter than that. `100%` here is the pane, so the
+                    // max() collapses to 0 in that case and the sheet fills
+                    // what there is instead of overflowing it.
+                    top: "max(0px, calc(100% - 95dvh))",
                     zIndex: 4,
                     // Slide, don't fade: the sheet has to read as arriving from
                     // the bottom over the trip, and a translated pane keeps the

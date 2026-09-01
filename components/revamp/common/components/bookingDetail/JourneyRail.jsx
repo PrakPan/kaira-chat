@@ -138,11 +138,6 @@ function Heading({ node, isMid, stamp }) {
               {node.title}
             </h4>
           ) : null}
-          {node.subtitle ? (
-            <p className="ttw-type-small text-[#445069] mt-0.5 mb-0 break-words">
-              {node.subtitle}
-            </p>
-          ) : null}
         </div>
 
         {node.status ? <StatusPill status={node.status} /> : null}
@@ -159,6 +154,19 @@ function Heading({ node, isMid, stamp }) {
           </span>
         ) : null}
       </div>
+
+      {/* Below the row, not inside its title column. The subtitle is the one
+          line here made of supplier addresses ("Đường Cao tốc Hà Nội - Ninh
+          Bình, Ninh Bình, Vietnam → Haiphong Airport"), and sharing a column
+          with the status pill and the expand chevron left it about half the
+          node's width — enough to break a two-place route over four lines. The
+          title stays beside the pill: it is short, and moving it would put the
+          pill on a line of its own. */}
+      {node.subtitle ? (
+        <p className="ttw-type-small text-[#445069] mt-0.5 mb-0 break-words">
+          {node.subtitle}
+        </p>
+      ) : null}
 
       {node.tag ? (
         <span

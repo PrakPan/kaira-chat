@@ -37,7 +37,7 @@ import TripHeader from "./TripHeader";
 // ─────────────────────────────────────────────────────────────────────────────
 
 const ShieldCheck = () => (
-  <svg width="24" height="30" viewBox="0 0 23 30" fill="none" className="flex-none" aria-hidden>
+  <svg width="26" height="33" viewBox="0 0 23 30" fill="none" className="flex-none" aria-hidden>
     <path
       d="M11.33 29.75L1.13 22.1A2.9 2.9 0 010 19.83V2.83A2.83 2.83 0 012.83 0h17a2.83 2.83 0 012.84 2.83v17a2.9 2.9 0 01-1.14 2.27l-10.2 7.65zm0-3.54l8.5-6.38V2.83H2.83v17l8.5 6.38zm-1.49-7.79l8-8-1.98-2.06-6.02 6.02-2.98-2.97-2.05 1.98 5.03 5.03z"
       fill="#AD5BE7"
@@ -53,10 +53,10 @@ const imageUrlFromKey = (key) => mediaUrlFromKey(key, 160);
 
 function Skeleton() {
   return (
-    <div className="flex flex-col gap-[11px] px-[14px] pb-[18px] pt-[12px]">
+    <div className="flex flex-col gap-[12px] px-[14px] pb-[18px] pt-[12px]">
       <div className="h-[112px] animate-pulse rounded-[18px] bg-[#f1f2f4]" />
       {[0, 1, 2].map((i) => (
-        <div key={i} className="flex flex-col gap-[11px]">
+        <div key={i} className="flex flex-col gap-[12px]">
           <div className="h-[10px] w-1/2 animate-pulse rounded bg-[#f1f2f4]" />
           <div className="h-[56px] animate-pulse rounded-[14px] bg-[#f1f2f4]" />
           <div className="h-[64px] animate-pulse rounded-[12px] bg-[#f1f2f4]" />
@@ -242,6 +242,12 @@ export default function MobileItinerary({
         name: leg.stay.name,
         meta: leg.stay.meta,
         imageUrl: imageUrlFromKey(leg.stay.imageKey),
+        // The real hotel — photos, rooms, facilities, location, cancellation —
+        // off /bookings/accommodation/<id>/, exactly as desktop reads it. The
+        // blurb and facts below stay as the fallback for a stay with no id.
+        live: leg.stay.bookingId
+          ? { kind: "stay", bookingId: leg.stay.bookingId }
+          : null,
         blurb:
           "Where you sleep in this city. Check-in and check-out times are on your voucher.",
         facts: [
@@ -273,6 +279,18 @@ export default function MobileItinerary({
         name: travel.title,
         meta: travel.meta,
         contextLabel: travel.title,
+        // A P1 draft leg is a statement about the route with no booking behind
+        // it — there is nothing to fetch, so it keeps the described fallback.
+        live: travel.bookingId
+          ? {
+              kind: "transfer",
+              bookingId: travel.bookingId,
+              bookingType: travel.bookingType,
+              combo: travel.isCombo,
+              isSightseeing: travel.transferType === "sightseeing",
+              title: travel.title,
+            }
+          : null,
         blurb: travel.isCombo
           ? "One booking, several journeys — each leg is listed below."
           : "How you get into this city.",
@@ -299,6 +317,16 @@ export default function MobileItinerary({
         contextLabel: `Taxi in ${leg.city}`,
         name: extra.name,
         meta: extra.meta,
+        live: extra.bookingId
+          ? {
+              kind: "transfer",
+              bookingId: extra.bookingId,
+              bookingType: extra.bookingType,
+              combo: extra.isCombo,
+              isSightseeing: extra.transferType === "sightseeing",
+              title: extra.name,
+            }
+          : null,
         blurb: "A car booked for you inside this city.",
         facts: [
           { k: "CITY", v: leg.city },
@@ -369,6 +397,20 @@ export default function MobileItinerary({
       meta: item.meta,
       contextLabel: item.name,
       imageUrl: item.imageUrl || null,
+      // An activity resolves through its booking, a POI or a restaurant
+      // through the geo record — `detailId` already carries whichever id that
+      // endpoint answers for.
+      live: item.detailId
+        ? {
+            kind: "element",
+            elementType: item.elementType,
+            id: item.detailId,
+            itineraryCityId: leg.id,
+            dayIndex: day?.dayIndex,
+            slabIndex: item.raw?.index,
+            name: item.name,
+          }
+        : null,
       blurb: booked
         ? "Tickets held for your group. Your guide meets you at the hotel."
         : "A suggestion, not a booking — go if you feel like it.",
@@ -460,19 +502,19 @@ export default function MobileItinerary({
         onLegClick={scrollToLeg}
       />
 
-      <div className="flex flex-col gap-[11px] px-[14px] pb-[18px] pt-[12px]">
+      <div className="flex flex-col gap-[12px] px-[14px] pb-[18px] pt-[12px]">
         {/* ── The one price on this surface ── */}
         <div style={T.tripCard}
-          className="flex flex-col gap-[12px] p-[16px]">
-          <div className="flex items-start justify-between gap-[10px]">
+          className="flex flex-col gap-[13px] p-[16px]">
+          <div className="flex items-start justify-between gap-[11px]">
             <div className="min-w-0">
-              <div className="font-mono text-[8.5px] tracking-[0.08em] text-[#8a93a6]">
+              <div className="font-mono text-[10px] tracking-[0.08em] text-[#8a93a6]">
                 {(trip.totalLabel || "TRIP TOTAL").toUpperCase()}
               </div>
-              <div className="mt-[3px] text-[23px] font-[800] tracking-[-0.03em] text-[#0b1220]">
+              <div className="mt-[3px] text-[25px] font-[800] tracking-[-0.03em] text-[#0b1220]">
                 {totalStr || "—"}
               </div>
-              <div className="mt-[3px] text-[11.5px] text-[#6b7280]">
+              <div className="mt-[3px] text-[12.5px] text-[#6b7280]">
                 {trip.bookingsCount > 0
                   ? `${trip.bookingsCount} booking${trip.bookingsCount === 1 ? "" : "s"} · price held today`
                   : "Pricing your trip…"}
@@ -482,13 +524,13 @@ export default function MobileItinerary({
           </div>
 
           {gapLeg ? (
-            <div className="flex items-center gap-[10px] border-t border-[#e6e8ec] pt-[11px]">
-              <div className="h-[20px] w-[20px] flex-none rounded-full border-[1.5px] border-[#8a93a6]" />
+            <div className="flex items-center gap-[11px] border-t border-[#e6e8ec] pt-[11px]">
+              <div className="h-[22px] w-[22px] flex-none rounded-full border-[1.5px] border-[#8a93a6]" />
               <div className="min-w-0 flex-1">
-                <div className="truncate text-[13px] font-[700] text-[#0b1220]">
+                <div className="truncate text-[14px] font-[700] text-[#0b1220]">
                   {gapLeg.city} has no stay
                 </div>
-                <div className="mt-[2px] truncate text-[11px] text-[#6b7280]">
+                <div className="mt-[2px] truncate text-[12px] text-[#6b7280]">
                   {gapLeg.stayGapMeta}
                 </div>
               </div>
@@ -497,7 +539,7 @@ export default function MobileItinerary({
                 onClick={() => handleChangeStay(gapLeg)}
                 disabled={disabled}
                 style={T.primaryPill}
-                className="flex-none px-[18px] py-[9px] text-[12.5px] font-[800] disabled:opacity-40"
+                className="flex-none px-[18px] py-[9px] text-[13.5px] font-[800] disabled:opacity-40"
               >
                 Fix
               </button>
@@ -526,13 +568,13 @@ export default function MobileItinerary({
 
         {(ancillaries.visaCount > 0 || ancillaries.esimCount > 0) && (
           <div style={T.card}
-            className="flex items-center gap-[10px] p-[12px]">
-            <div className="h-[26px] w-[26px] flex-none rounded-[6px] bg-[#e6e8ec]" />
+            className="flex items-center gap-[11px] p-[13px]">
+            <div className="h-[28px] w-[28px] flex-none rounded-[6px] bg-[#e6e8ec]" />
             <div className="min-w-0 flex-1">
-              <div className="text-[12.5px] font-[700] text-[#0b1220]">
+              <div className="text-[13.5px] font-[700] text-[#0b1220]">
                 Before you fly
               </div>
-              <div className="mt-[4px] truncate font-mono text-[8.5px] tracking-[0.06em] text-[#8a93a6]">
+              <div className="mt-[4px] truncate font-mono text-[10px] tracking-[0.06em] text-[#8a93a6]">
                 {[
                   ancillaries.visaCount ? `VISA × ${ancillaries.visaCount}` : null,
                   ancillaries.esimCount ? "ESIM" : null,
@@ -549,7 +591,7 @@ export default function MobileItinerary({
               type="button"
               onClick={handleOpenAncillaries}
               style={{ border: 0, background: "none", padding: 0 }}
-              className="flex-none font-mono text-[8.5px] tracking-[0.06em] text-[#6b7280]"
+              className="flex-none font-mono text-[10px] tracking-[0.06em] text-[#6b7280]"
             >
               VIEW ›
             </button>

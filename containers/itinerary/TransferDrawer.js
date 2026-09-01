@@ -63,6 +63,10 @@ const TransferDrawer = ({
   drawerZIndex,
   onClose,
   onChangeStart,
+  // Rendered inside a host that already owns the panel, its header and its
+  // action bar — the mobile itinerary's detail sheet. Only the detail BODY is
+  // contributed; no Drawer, no band, no footer.
+  embedded = false,
 }) => {
   const handleDrawerClose = useHandleClose();
   const dispatch = useDispatch();
@@ -567,18 +571,8 @@ const TransferDrawer = ({
     };
   });
 
-  return (
-    <Drawer
-      show={isDrawerOpen}
-      anchor={"right"}
-      backdrop
-      style={{ zIndex: drawerZIndex ?? 1501 }}
-      className=""
-      onHide={handleClose}
-      mobileWidth="100%"
-      width={"50%"}
-      bgColor="#ffffff"
-    >
+  const content = (
+    <>
       {!isCombo ? (
         <>
           {booking_type === "Flight" ? (
@@ -586,6 +580,7 @@ const TransferDrawer = ({
               <FlightDetailLoader />
             ) : (
               <FlightDetailModal
+                isEmbedded={embedded}
                 segments={data?.transfer_details?.items?.[0]?.segments}
                 fareRule={data?.transfer_details?.items?.[0]?.fare_rule?.[0]}
                 booking_id={data?.id}
@@ -603,6 +598,7 @@ const TransferDrawer = ({
             <VehicleDetailLoader />
           ) : booking_type === "Taxi" ? (
             <TaxiDetailModal
+              isEmbedded={embedded}
               data={data}
               handleDelete={handleDelete}
               loading={loading}
@@ -641,6 +637,7 @@ const TransferDrawer = ({
             />
           ) : (
             <VehicleDetailModal
+              isEmbedded={embedded}
               data={data}
               handleDelete={handleDelete}
               loading={loading}
@@ -652,6 +649,7 @@ const TransferDrawer = ({
         </>
       ) : error ? (
         <DrawerShell
+          embedded={embedded}
           band={
             <DetailBand mode={data?.booking_type} onBack={handleClose} loading />
           }
@@ -660,6 +658,7 @@ const TransferDrawer = ({
         </DrawerShell>
       ) : (
         <DrawerShell
+          embedded={embedded}
           band={
             <DetailBand
               mode={isMulticityTaxi ? "Taxi" : data.booking_type}
@@ -749,6 +748,26 @@ const TransferDrawer = ({
           </DetailSection>
         </DrawerShell>
       )}
+    </>
+  );
+
+  // The mobile detail sheet supplies the panel, the header and the action bar,
+  // so the drawer contributes its body and nothing else.
+  if (embedded) return <div className="flex flex-col">{content}</div>;
+
+  return (
+    <Drawer
+      show={isDrawerOpen}
+      anchor={"right"}
+      backdrop
+      style={{ zIndex: drawerZIndex ?? 1501 }}
+      className=""
+      onHide={handleClose}
+      mobileWidth="100%"
+      width={"50%"}
+      bgColor="#ffffff"
+    >
+      {content}
     </Drawer>
   );
 };

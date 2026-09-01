@@ -23,8 +23,8 @@ const ROTATE_MS = 3000;
 
 const Arrow = () => (
   <svg
-    width="13"
-    height="13"
+    width="14"
+    height="14"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
@@ -77,7 +77,7 @@ export default function AskKairaPill({ hints = [], onClick, disabled = false }) 
         src="/KairaInsta.png"
         alt=""
         aria-hidden
-        className="h-[26px] w-[26px] flex-none rounded-full object-cover"
+        className="h-[28px] w-[28px] flex-none rounded-full object-cover"
         // Bare `img {}` rules in styles.css / bootstrap apply globally and knock
         // an <img> out of alignment as a flex child — see the BrandLockup
         // centring fix. Pinned inline so it can't drift.
@@ -93,13 +93,13 @@ export default function AskKairaPill({ hints = [], onClick, disabled = false }) 
           read as a button whose name silently changes under the cursor. */}
       <span
         aria-live="polite"
-        className="min-w-0 flex-1 truncate text-[12.5px] text-[#8a93a6]"
+        className="min-w-0 flex-1 truncate text-[13.5px] text-[#8a93a6]"
       >
         {label}
       </span>
       <span
         style={{ background: "#0b1220", color: "#f7e700", borderRadius: "50%" }}
-        className="grid h-[30px] w-[30px] flex-none place-items-center"
+        className="grid h-[32px] w-[32px] flex-none place-items-center"
         aria-hidden
       >
         <Arrow />

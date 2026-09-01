@@ -57,19 +57,19 @@ export default function DaySheet({
   if (!d || !l) return null;
 
   return (
-    <Sheet open={open} onClose={onClose} height="82dvh" zIndex={1600}>
+    <Sheet open={open} onClose={onClose} height="95dvh" zIndex={1600}>
       <div className="flex h-full flex-col">
         {/* Header — day number first, per the design */}
         <div className="flex-none px-[14px]">
-          <div className="flex items-start gap-[11px] pb-[11px]">
-            <span className="ttw-type-serif flex-none text-[28px] leading-none text-[#0b1220]">
+          <div className="flex items-start gap-[12px] pb-[11px]">
+            <span className="ttw-type-serif flex-none text-[30px] leading-none text-[#0b1220]">
               {d.dayNumber}
             </span>
             <div className="min-w-0 flex-1">
-              <div className="text-[15.5px] font-[700] tracking-[-0.02em] text-[#0b1220]">
+              <div className="text-[16.5px] font-[700] tracking-[-0.02em] text-[#0b1220]">
                 {d.title || "Free day"}
               </div>
-              <div className="mt-[5px] font-mono text-[8.5px] tracking-[0.06em] text-[#8a93a6]">
+              <div className="mt-[5px] font-mono text-[10px] tracking-[0.06em] text-[#8a93a6]">
                 {d.dateMeta} · {d.items.length} ITEM
                 {d.items.length === 1 ? "" : "S"}
               </div>
@@ -83,10 +83,10 @@ export default function DaySheet({
                 background: "#ffffff",
                 borderRadius: 999,
                 boxShadow: "none",
-                width: 24,
-                height: 24,
+                width: 26,
+                height: 26,
                 color: "#6b7280",
-                fontSize: 12,
+                fontSize: 13,
                 lineHeight: 1,
                 padding: 0,
               }}
@@ -114,7 +114,7 @@ export default function DaySheet({
                     borderRadius: 999,
                     boxShadow: "none",
                   }}
-                  className={`flex-none whitespace-nowrap px-[12px] py-[7px] text-[11.5px] ${
+                  className={`flex-none whitespace-nowrap px-[12px] py-[7px] text-[12.5px] ${
                     active ? "text-white" : "text-[#6b7280]"
                   }`}
                 >
@@ -131,7 +131,7 @@ export default function DaySheet({
             {items.length === 0 ? (
               <div
                 style={{ border: "1px dashed #dcdfe5", borderRadius: 11, boxShadow: "none" }}
-                className="p-[18px] text-center text-[12px] text-[#8a93a6]"
+                className="p-[18px] text-center text-[13px] text-[#8a93a6]"
               >
                 Nothing here yet.
               </div>
@@ -147,10 +147,10 @@ export default function DaySheet({
                     borderRadius: 11,
                     boxShadow: "none",
                   }}
-                  className="flex w-full items-center gap-[10px] p-[10px] text-left"
+                  className="flex w-full items-center gap-[11px] p-[11px] text-left"
                 >
                   <div
-                    className="h-[46px] w-[46px] flex-none rounded-[9px] bg-[#eef0f4] bg-cover bg-center"
+                    className="h-[50px] w-[50px] flex-none rounded-[9px] bg-[#eef0f4] bg-cover bg-center"
                     style={
                       item.imageUrl
                         ? { backgroundImage: `url("${item.imageUrl}")` }
@@ -158,23 +158,23 @@ export default function DaySheet({
                     }
                   />
                   <div className="min-w-0 flex-1">
-                    <div className="truncate text-[12.5px] font-[700] text-[#0b1220]">
+                    <div className="truncate text-[13.5px] font-[700] text-[#0b1220]">
                       {item.name}
                     </div>
-                    <div className="mt-[4px] truncate font-mono text-[8.5px] tracking-[0.06em] text-[#8a93a6]">
+                    <div className="mt-[4px] truncate font-mono text-[10px] tracking-[0.06em] text-[#8a93a6]">
                       {item.meta || (item.kind === "booked" ? "BOOKED" : "ON YOUR OWN")}
                     </div>
                   </div>
                   {item.kind === "booked" && (
                     <span
                       style={{ border: "1px solid #0b1220", borderRadius: 3, boxShadow: "none" }}
-                      className="flex-none px-[6px] py-[3px] font-mono text-[8px] tracking-[0.07em] text-[#0b1220]"
+                      className="flex-none px-[6px] py-[3px] font-mono text-[9.5px] tracking-[0.07em] text-[#0b1220]"
                     >
                       BOOKED
                     </span>
                   )}
                   <span
-                    className="flex-none text-[13px] leading-none text-[#b8becc]"
+                    className="flex-none text-[14px] leading-none text-[#b8becc]"
                     aria-hidden
                   >
                     ›
@@ -199,7 +199,7 @@ export default function DaySheet({
                 borderRadius: 11,
                 boxShadow: "none",
               }}
-              className="w-full p-[12px] text-[12.5px] font-[600] text-[#6b7280] disabled:opacity-40"
+              className="w-full p-[13px] text-[13.5px] font-[600] text-[#6b7280] disabled:opacity-40"
             >
               + Ask Kaira to add something
             </button>

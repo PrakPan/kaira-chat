@@ -22,7 +22,7 @@ const modeIconFor = (modeKey) => getModeAccent(modeKey).Icon;
 
 
 const Chevron = () => (
-  <span className="flex-none text-[13px] leading-none text-[#b8becc]" aria-hidden>
+  <span className="flex-none text-[14px] leading-none text-[#b8becc]" aria-hidden>
     ›
   </span>
 );
@@ -57,7 +57,7 @@ function TravelRow({ travel, cityName, onOpen, onChange, disabled }) {
   return (
     <div
       style={T.travelRow}
-      className="flex items-center gap-[12px] px-[14px] py-[13px]"
+      className="flex items-center gap-[13px] px-[14px] py-[14px]"
     >
       <span className="flex flex-none items-center gap-[3px]" aria-hidden>
         {glyphKeys.map((key, i) => {
@@ -66,9 +66,9 @@ function TravelRow({ travel, cityName, onOpen, onChange, disabled }) {
           return (
             <React.Fragment key={`${key}-${i}`}>
               {i > 0 ? (
-                <span className="text-[9px] leading-none text-[#8fa8dd]">›</span>
+                <span className="text-[10.5px] leading-none text-[#8fa8dd]">›</span>
               ) : null}
-              <ModeIcon size={20} color={TRAVEL_INK} />
+              <ModeIcon size={22} color={TRAVEL_INK} />
             </React.Fragment>
           );
         })}
@@ -78,11 +78,11 @@ function TravelRow({ travel, cityName, onOpen, onChange, disabled }) {
         onClick={onOpen}
         className="min-w-0 flex-1 border-0 bg-transparent p-0 text-left"
       >
-        <div className="truncate font-inter text-[12.5px] font-[700] text-[#0b1220]">
+        <div className="truncate font-inter text-[13.5px] font-[700] text-[#0b1220]">
           {travel.title || cityName}
         </div>
         {travel.meta ? (
-          <div className="mt-[4px] truncate font-mono text-[8.5px] tracking-[0.06em] text-[#8a93a6]">
+          <div className="mt-[4px] truncate font-mono text-[10px] tracking-[0.06em] text-[#8a93a6]">
             {travel.meta}
           </div>
         ) : null}
@@ -93,7 +93,7 @@ function TravelRow({ travel, cityName, onOpen, onChange, disabled }) {
           onClick={onChange}
           disabled={disabled}
           style={T.pillOnTint}
-          className="flex-none px-[12px] py-[7px] font-mono text-[8.5px] font-[600] tracking-[0.06em] text-[#1a4fd6] disabled:opacity-40"
+          className="flex-none px-[12px] py-[7px] font-mono text-[10px] font-[600] tracking-[0.06em] text-[#1a4fd6] disabled:opacity-40"
         >
           CHANGE
         </button>
@@ -118,10 +118,10 @@ function TravelGapRow({ meta, onAdd, disabled }) {
       onClick={onAdd}
       disabled={disabled}
       style={T.travelGapRow}
-      className="flex w-full items-center gap-[12px] px-[14px] py-[13px] text-left disabled:opacity-40"
+      className="flex w-full items-center gap-[13px] px-[14px] py-[14px] text-left disabled:opacity-40"
     >
       <span className="flex flex-none items-center text-[#b67b10]" aria-hidden>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
           <path
             d="M12 4.5 2.8 20h18.4L12 4.5z"
             stroke="currentColor"
@@ -133,11 +133,11 @@ function TravelGapRow({ meta, onAdd, disabled }) {
         </svg>
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block truncate font-inter text-[12.5px] font-[700] text-[#5c4405]">
+        <span className="block truncate font-inter text-[13.5px] font-[700] text-[#5c4405]">
           No transfer added
         </span>
         {meta ? (
-          <span className="mt-[4px] block truncate font-mono text-[8.5px] tracking-[0.06em] text-[#9c7a22]">
+          <span className="mt-[4px] block truncate font-mono text-[10px] tracking-[0.06em] text-[#9c7a22]">
             {meta}
           </span>
         ) : null}
@@ -146,7 +146,7 @@ function TravelGapRow({ meta, onAdd, disabled }) {
           a button is invalid markup that Safari resolves by dropping one. */}
       <span
         style={T.pillOnAmber}
-        className="flex-none px-[12px] py-[7px] font-mono text-[8.5px] font-[600] tracking-[0.06em] text-[#b67b10]"
+        className="flex-none px-[12px] py-[7px] font-mono text-[10px] font-[600] tracking-[0.06em] text-[#b67b10]"
       >
         + ADD
       </span>
@@ -163,18 +163,18 @@ function StayRow({ stay, showGap, gapMeta, cityName, onOpen, onChange, disabled 
         onClick={onChange}
         disabled={disabled}
         style={T.dashed}
-        className="flex w-full items-center gap-[10px] p-[12px] text-left disabled:opacity-40"
+        className="flex w-full items-center gap-[11px] p-[13px] text-left disabled:opacity-40"
       >
-        <div className="h-[30px] w-[30px] flex-none rounded-[7px] border-[1.5px] border-dashed border-[#cfd3da]" />
+        <div className="h-[32px] w-[32px] flex-none rounded-[7px] border-[1.5px] border-dashed border-[#cfd3da]" />
         <div className="min-w-0 flex-1">
-          <div className="font-inter text-[12.5px] font-[700] text-[#0b1220]">
+          <div className="font-inter text-[13.5px] font-[700] text-[#0b1220]">
             Add a stay
           </div>
-          <div className="mt-[4px] truncate font-mono text-[8.5px] tracking-[0.06em] text-[#8a93a6]">
+          <div className="mt-[4px] truncate font-mono text-[10px] tracking-[0.06em] text-[#8a93a6]">
             {gapMeta || `IN ${cityName.toUpperCase()}`}
           </div>
         </div>
-        <span className="flex-none font-mono text-[8.5px] tracking-[0.06em] text-[#6b7280]">
+        <span className="flex-none font-mono text-[10px] tracking-[0.06em] text-[#6b7280]">
           ASK KAIRA ›
         </span>
       </button>
@@ -185,7 +185,7 @@ function StayRow({ stay, showGap, gapMeta, cityName, onOpen, onChange, disabled 
 
   return (
     <div style={T.card}
-      className="flex items-center gap-[10px] px-[12px] py-[11px]">
+      className="flex items-center gap-[11px] px-[12px] py-[12px]">
       {/* ── The hotel thumbnail ──────────────────────────────────────────
           A plain <img>, deliberately — NOT the shared <ImageLoader>, which
           could not load on this surface:
@@ -207,13 +207,13 @@ function StayRow({ stay, showGap, gapMeta, cityName, onOpen, onChange, disabled 
           The two inline resets are load-bearing: styles.css and Bootstrap both
           set bare `img {}` rules with margins and `max-width`, which otherwise
           push this out of the row. */}
-      <div className="h-[42px] w-[42px] flex-none overflow-hidden rounded-[10px] bg-[#eef0f4]">
+      <div className="h-[46px] w-[46px] flex-none overflow-hidden rounded-[10px] bg-[#eef0f4]">
         {stay.imageUrl ? (
           <img
             src={stay.imageUrl}
             alt=""
-            width={42}
-            height={42}
+            width={46}
+            height={46}
             loading="lazy"
             decoding="async"
             style={{
@@ -232,11 +232,11 @@ function StayRow({ stay, showGap, gapMeta, cityName, onOpen, onChange, disabled 
         onClick={onOpen}
         className="min-w-0 flex-1 border-0 bg-transparent p-0 text-left"
       >
-        <div className="truncate font-inter text-[12.5px] font-[700] text-[#0b1220]">
+        <div className="truncate font-inter text-[13.5px] font-[700] text-[#0b1220]">
           {stay.name}
         </div>
         {stay.meta ? (
-          <div className="mt-[4px] truncate font-mono text-[8.5px] tracking-[0.06em] text-[#8a93a6]">
+          <div className="mt-[4px] truncate font-mono text-[10px] tracking-[0.06em] text-[#8a93a6]">
             {stay.meta}
           </div>
         ) : null}
@@ -246,7 +246,7 @@ function StayRow({ stay, showGap, gapMeta, cityName, onOpen, onChange, disabled 
         onClick={onChange}
         disabled={disabled}
         style={T.pill}
-        className="flex-none px-[11px] py-[6px] font-mono text-[8.5px] tracking-[0.06em] text-[#6b7280] disabled:opacity-40"
+        className="flex-none px-[11px] py-[6px] font-mono text-[10px] tracking-[0.06em] text-[#6b7280] disabled:opacity-40"
       >
         CHANGE
       </button>
@@ -273,30 +273,30 @@ function DayRow({ day, onOpen, changed }) {
       type="button"
       onClick={onOpen}
       style={T.dayRow}
-      className="flex w-full items-center gap-[11px] px-[12px] py-[11px] text-left"
+      className="flex w-full items-center gap-[12px] px-[12px] py-[12px] text-left"
     >
       {/* The trip's day INDEX in serif, as the design draws it — "01", "02".
           Fixed width so the title column stays aligned all the way down; a
           ragged left edge on a list this long reads as broken. */}
-      <span className="flex w-[26px] flex-none items-center justify-center">
-        <span className="ttw-type-serif text-[20px] leading-none text-[#0b1220]">
+      <span className="flex w-[28px] flex-none items-center justify-center">
+        <span className="ttw-type-serif text-[21px] leading-none text-[#0b1220]">
           {day.dayNumber}
         </span>
       </span>
       <div className="flex min-w-0 flex-1 flex-col gap-[5px]">
-        <div className="truncate font-inter text-[12.5px] font-[700] text-[#0b1220]">
+        <div className="truncate font-inter text-[13.5px] font-[700] text-[#0b1220]">
           {day.title || "Free day"}
         </div>
         <div className="flex items-center gap-[7px]">
           {day.paidActivityCount > 0 && (
-            <span className="flex-none rounded-[4px] bg-[#f7e700] px-[8px] py-[4px] font-mono text-[8.5px] font-[600] tracking-[0.07em] text-[#0b1220]">
+            <span className="flex-none rounded-[4px] bg-[#f7e700] px-[8px] py-[4px] font-mono text-[10px] font-[600] tracking-[0.07em] text-[#0b1220]">
               {day.paidActivityCount === 1
                 ? "1 PAID ACTIVITY"
                 : `${day.paidActivityCount} PAID ACTIVITIES`}
             </span>
           )}
           {freeLabel ? (
-            <span className="truncate font-mono text-[8.5px] tracking-[0.06em] text-[#8a93a6]">
+            <span className="truncate font-mono text-[10px] tracking-[0.06em] text-[#8a93a6]">
               {freeLabel}
             </span>
           ) : null}
@@ -313,7 +313,7 @@ function DayRow({ day, onOpen, changed }) {
             background: "#f7e700",
             boxShadow: "none",
           }}
-          className="flex-none px-[6px] py-[3px] font-mono text-[8px] tracking-[0.07em] text-[#0b1220]"
+          className="flex-none px-[6px] py-[3px] font-mono text-[9.5px] tracking-[0.07em] text-[#0b1220]"
         >
           CHANGED
         </span>
@@ -340,14 +340,14 @@ export default function LegSection({
   onAddReturn,
 }) {
   return (
-    <section id={leg.anchor} className="flex flex-col gap-[11px]">
+    <section id={leg.anchor} className="flex flex-col gap-[12px]">
       {/* Eyebrow — leg number, city, dates */}
       <div className="flex items-center gap-[8px] pt-[3px]">
-        <span className="flex-none font-mono text-[9px] tracking-[0.08em] text-[#8a93a6]">
+        <span className="flex-none font-mono text-[10.5px] tracking-[0.08em] text-[#8a93a6]">
           {leg.eyebrow}
         </span>
         <div className="h-px flex-1 bg-[#e6e8ec]" />
-        <span className="flex-none font-mono text-[9px] tracking-[0.08em] text-[#8a93a6]">
+        <span className="flex-none font-mono text-[10.5px] tracking-[0.08em] text-[#8a93a6]">
           {leg.datesLabel}
         </span>
       </div>
@@ -382,25 +382,25 @@ export default function LegSection({
         <div
           key={x.bookingId || x.name}
           style={T.card}
-          className="flex items-center gap-[10px] px-[12px] py-[11px]"
+          className="flex items-center gap-[11px] px-[12px] py-[12px]"
         >
-          <div className="h-[26px] w-[26px] flex-none rounded-[6px] bg-[#e6e8ec]" />
+          <div className="h-[28px] w-[28px] flex-none rounded-[6px] bg-[#e6e8ec]" />
           <button
             type="button"
             onClick={() => onOpenExtra?.(leg, x)}
             className="min-w-0 flex-1 border-0 bg-transparent p-0 text-left"
           >
-            <div className="truncate font-inter text-[12.5px] font-[700] text-[#0b1220]">
+            <div className="truncate font-inter text-[13.5px] font-[700] text-[#0b1220]">
               {x.name}
             </div>
             {x.meta ? (
-              <div className="mt-[4px] truncate font-mono text-[8.5px] tracking-[0.06em] text-[#8a93a6]">
+              <div className="mt-[4px] truncate font-mono text-[10px] tracking-[0.06em] text-[#8a93a6]">
                 {x.meta}
               </div>
             ) : null}
           </button>
           <span style={T.tag}
-            className="flex-none px-[6px] py-[3px] font-mono text-[8px] tracking-[0.07em] text-[#0b1220]">
+            className="flex-none px-[6px] py-[3px] font-mono text-[9.5px] tracking-[0.07em] text-[#0b1220]">
             BOOKED
           </span>
         </div>
@@ -421,10 +421,10 @@ export default function LegSection({
             onClick={() => onAddTaxi?.(leg)}
             disabled={disabled}
             style={T.addRow}
-            className="flex w-full items-center gap-[8px] px-[12px] py-[10px] text-left disabled:opacity-40"
+            className="flex w-full items-center gap-[8px] px-[12px] py-[11px] text-left disabled:opacity-40"
           >
-            <span className="text-[13px] leading-none text-[#6b7280]">+</span>
-            <span className="font-inter text-[11.5px] font-[600] text-[#6b7280]">
+            <span className="text-[14px] leading-none text-[#6b7280]">+</span>
+            <span className="font-inter text-[12.5px] font-[600] text-[#6b7280]">
               Add taxi in {leg.city}
             </span>
           </button>
@@ -438,7 +438,7 @@ export default function LegSection({
       {leg.outboundTravel || leg.outboundGap ? (
         <>
           <div className="flex items-center gap-[8px] pt-[3px]">
-            <span className="flex-none font-mono text-[9px] tracking-[0.08em] text-[#8a93a6]">
+            <span className="flex-none font-mono text-[10.5px] tracking-[0.08em] text-[#8a93a6]">
               {`FLY HOME${
                 (leg.outboundTravel || leg.outboundGap).destName
                   ? ` · ${(leg.outboundTravel || leg.outboundGap).destName.toUpperCase()}`
@@ -446,7 +446,7 @@ export default function LegSection({
               }`}
             </span>
             <div className="h-px flex-1 bg-[#e6e8ec]" />
-            <span className="flex-none font-mono text-[9px] tracking-[0.08em] text-[#8a93a6]">
+            <span className="flex-none font-mono text-[10.5px] tracking-[0.08em] text-[#8a93a6]">
               {leg.outboundTravel?.departLabel || ""}
             </span>
           </div>

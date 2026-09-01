@@ -43,18 +43,18 @@ function Row({ label, count, amount }) {
   return (
     <div
       style={{ border: "1px solid #dcdfe5", borderRadius: 11, background: "#fff", boxShadow: "none" }}
-      className="flex items-center gap-[11px] p-[11px]"
+      className="flex items-center gap-[12px] p-[12px]"
     >
-      <div className="h-[26px] w-[26px] flex-none rounded-[6px] bg-[#e6e8ec]" />
+      <div className="h-[28px] w-[28px] flex-none rounded-[6px] bg-[#e6e8ec]" />
       <div className="min-w-0 flex-1">
-        <div className="truncate text-[12.5px] font-[700] text-[#0b1220]">{label}</div>
+        <div className="truncate text-[13.5px] font-[700] text-[#0b1220]">{label}</div>
         {count ? (
-          <div className="mt-[3px] font-mono text-[8px] tracking-[0.06em] text-[#8a93a6]">
+          <div className="mt-[3px] font-mono text-[9.5px] tracking-[0.06em] text-[#8a93a6]">
             {count}
           </div>
         ) : null}
       </div>
-      <div className="flex-none whitespace-nowrap text-[12.5px] font-[800] text-[#0b1220]">
+      <div className="flex-none whitespace-nowrap text-[13.5px] font-[800] text-[#0b1220]">
         {amount}
       </div>
     </div>
@@ -161,15 +161,15 @@ export default function CartSheet({
   if (!model) return null;
 
   return (
-    <Sheet open={open} onClose={onClose} height="86dvh" zIndex={1620}>
+    <Sheet open={open} onClose={onClose} height="95dvh" zIndex={1620}>
       <div className="flex h-full flex-col">
         <div className="flex-none px-[14px]">
-          <div className="flex items-center gap-[11px] border-b border-[#e6e8ec] pb-[11px]">
+          <div className="flex items-center gap-[12px] border-b border-[#e6e8ec] pb-[11px]">
             <div className="min-w-0 flex-1">
-              <div className="text-[15.5px] font-[800] tracking-[-0.02em] text-[#0b1220]">
+              <div className="text-[16.5px] font-[800] tracking-[-0.02em] text-[#0b1220]">
                 Review &amp; pay
               </div>
-              <div className="mt-[4px] font-mono text-[8.5px] tracking-[0.06em] text-[#8a93a6]">
+              <div className="mt-[4px] font-mono text-[10px] tracking-[0.06em] text-[#8a93a6]">
                 {model.bookings} BOOKING{model.bookings === 1 ? "" : "S"} ·{" "}
                 {/* Saying "PRICE HELD TODAY" while the hold has lapsed is a
                     claim the cart can no longer honour. */}
@@ -189,10 +189,10 @@ export default function CartSheet({
                 background: "#ffffff",
                 borderRadius: 999,
                 boxShadow: "none",
-                width: 24,
-                height: 24,
+                width: 26,
+                height: 26,
                 color: "#6b7280",
-                fontSize: 12,
+                fontSize: 13,
                 lineHeight: 1,
                 padding: 0,
               }}
@@ -204,7 +204,7 @@ export default function CartSheet({
         </div>
 
         <div className="min-h-0 flex-1 overflow-y-auto px-[14px] py-[12px]">
-          <div className="flex flex-col gap-[10px]">
+          <div className="flex flex-col gap-[11px]">
             {model.expired ? (
               <div
                 style={{
@@ -213,12 +213,12 @@ export default function CartSheet({
                   borderRadius: 11,
                   boxShadow: "none",
                 }}
-                className="flex flex-col gap-[3px] p-[11px]"
+                className="flex flex-col gap-[3px] p-[12px]"
               >
-                <div className="font-mono text-[8px] tracking-[0.07em] text-[#b84034]">
+                <div className="font-mono text-[9.5px] tracking-[0.07em] text-[#b84034]">
                   PRICES EXPIRED
                 </div>
-                <div className="text-[12px] leading-[1.45] text-[#0b1220]">
+                <div className="text-[13px] leading-[1.45] text-[#0b1220]">
                   These prices are no longer held. Reprice the itinerary to see
                   today&apos;s cost before paying.
                 </div>
@@ -235,9 +235,9 @@ export default function CartSheet({
 
             <div
               style={{ border: "1.5px dashed #cfd3da", borderRadius: 11, background: "#fff", boxShadow: "none" }}
-              className="flex items-center gap-[10px] p-[11px]"
+              className="flex items-center gap-[11px] p-[12px]"
             >
-              <div className="min-w-0 flex-1 text-[12px] text-[#6b7280]">
+              <div className="min-w-0 flex-1 text-[13px] text-[#6b7280]">
                 {model.coupon.text}
               </div>
               <button
@@ -249,7 +249,7 @@ export default function CartSheet({
                   borderRadius: 999,
                   boxShadow: "none",
                 }}
-                className="flex-none whitespace-nowrap px-[13px] py-[7px] text-[11.5px] font-[700] text-[#0b1220]"
+                className="flex-none whitespace-nowrap px-[13px] py-[7px] text-[12.5px] font-[700] text-[#0b1220]"
               >
                 {model.coupon.cta}
               </button>
@@ -258,12 +258,12 @@ export default function CartSheet({
         </div>
 
         <div className="flex-none border-t border-[#e6e8ec] px-[14px] pb-[14px] pt-[11px]">
-          <div className="flex items-center justify-between gap-[12px]">
+          <div className="flex items-center justify-between gap-[13px]">
             <div className="min-w-0">
-              <div className="font-mono text-[8px] tracking-[0.07em] text-[#8a93a6]">
+              <div className="font-mono text-[9.5px] tracking-[0.07em] text-[#8a93a6]">
                 {model.expired ? "PRICES EXPIRED" : "PAYABLE NOW"}
               </div>
-              <div className="mt-[2px] whitespace-nowrap text-[16px] font-[800] tracking-[-0.02em] text-[#0b1220]">
+              <div className="mt-[2px] whitespace-nowrap text-[17px] font-[800] tracking-[-0.02em] text-[#0b1220]">
                 {model.hidden ? "—" : model.payableLabel || "—"}
               </div>
             </div>
@@ -277,7 +277,7 @@ export default function CartSheet({
                 borderRadius: 10,
                 boxShadow: "0 8px 20px -10px rgba(247,231,0,0.55)",
               }}
-              className="flex-none whitespace-nowrap px-[20px] py-[12px] text-[13.5px] font-[800] text-[#0b1220] disabled:opacity-60"
+              className="flex-none whitespace-nowrap px-[20px] py-[12px] text-[14.5px] font-[800] text-[#0b1220] disabled:opacity-60"
             >
               {isRepricing
                 ? "Repricing…"

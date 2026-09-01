@@ -100,7 +100,7 @@ export const getTimeOfDay = (timeString) => {
 };
 
 // ─── Helper: get item ID for drawer navigation ────────────────────────────────
-const getItemId = (item, resolvedType) => {
+export const getItemId = (item, resolvedType) => {
   if (resolvedType === "activity") return item?.booking?.id || item?.id || item?.activity;
   if (resolvedType === "poi") return item?.poi || item?.id;
   if (resolvedType === "restaurant")
