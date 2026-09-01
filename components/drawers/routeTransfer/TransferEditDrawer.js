@@ -782,13 +782,17 @@ const TransferEditDrawer = (props) => {
   }, [multicityTab, multiCitySuggestions, roundTripSuggestions]);
 
   // Every result card commits on its own now, so the CTA has to say what the
-  // click does. "Add to Itinerary" unless a transfer of this kind is already in
-  // the itinerary, where the same click replaces it.
-  const suggestionCtaLabel =
+  // click does. "+ Add" unless a transfer of this kind is already in the
+  // itinerary, where the same click replaces it — the short label is what lets
+  // the price and the button share one row on a phone.
+  const suggestionReplaces =
     (multicityTab === "sightseeing" && !!existingSightseeingBooking) ||
-    (multicityTab === "multicity" && drawerType === "multicity")
-      ? "Update Transfer"
-      : "Add to Itinerary";
+    (multicityTab === "multicity" && drawerType === "multicity");
+  const suggestionCtaLabel = suggestionReplaces ? "Update" : "+ Add";
+  // The detail sheet's bar has a screen to itself, so it says the whole thing.
+  const suggestionDetailCtaLabel = suggestionReplaces
+    ? "Update Transfer"
+    : "Add to Itinerary";
 
   // Default sightseeing date filters: prefer existing booking's dates if one
   // is already added, otherwise fall back to the city's first / last day.
@@ -1415,7 +1419,10 @@ const TransferEditDrawer = (props) => {
       }}
     >
       <div
-        className={`relative px-xl max-ph:px-md bg-white z-[900] flex flex-col gap-xl pt-4 ${
+        // The phone had no bottom padding at all — only the `md:` values below —
+        // so the last result card ended flush against the bottom of the sheet,
+        // with the home indicator sitting on it. Desktop still takes its own.
+        className={`relative px-xl max-ph:px-md bg-white z-[900] flex flex-col gap-xl pt-4 pb-[calc(28px+env(safe-area-inset-bottom))] ${
  transfers[selectedTransferIndex]?.transfers?.length > 1
  ? "md:pb-0"
  : "md:pb-[30px]"
@@ -2219,6 +2226,7 @@ const TransferEditDrawer = (props) => {
                         committedQuote={committedQuote}
                         updating={updatingTransfer}
                         ctaLabel={suggestionCtaLabel}
+                        detailCtaLabel={suggestionDetailCtaLabel}
                       />
                     </div>
                   ))}
@@ -2366,6 +2374,7 @@ const TransferEditDrawer = (props) => {
                           committedQuote={committedQuote}
                           updating={updatingTransfer}
                           ctaLabel={suggestionCtaLabel}
+                          detailCtaLabel={suggestionDetailCtaLabel}
                         />
                       </div>
                     ))}
@@ -2388,6 +2397,7 @@ const TransferEditDrawer = (props) => {
                         committedQuote={committedQuote}
                         updating={updatingTransfer}
                         ctaLabel={suggestionCtaLabel}
+                        detailCtaLabel={suggestionDetailCtaLabel}
                       />
                     </div>
                   )}
@@ -5799,7 +5809,8 @@ const RoundTripSuggestion = ({
   traceId,
   committedQuote,
   updating,
-  ctaLabel = "Add to Itinerary",
+  ctaLabel = "+ Add",
+  detailCtaLabel = "Add to Itinerary",
 }) => {
   const [pendingQuote, setPendingQuote] = useState(null);
   const currency = useSelector((state) => state.currency);
@@ -5885,6 +5896,7 @@ const RoundTripSuggestion = ({
                 busy={!!updating && pendingQuote == quote?.result_index}
                 disabled={!!updating}
                 ctaLabel={ctaLabel}
+                detailCtaLabel={detailCtaLabel}
                 onAdd={() => handleAdd(quote)}
                 fleetMode={suggestionFleet.enabled}
                 quantity={Number(
@@ -5921,7 +5933,8 @@ const MultiCityTripSuggestion = ({
   traceId,
   committedQuote,
   updating,
-  ctaLabel = "Add to Itinerary",
+  ctaLabel = "+ Add",
+  detailCtaLabel = "Add to Itinerary",
 }) => {
   const [pendingQuote, setPendingQuote] = useState(null);
   const currency = useSelector((state) => state.currency);
@@ -5995,6 +6008,7 @@ const MultiCityTripSuggestion = ({
                 busy={!!updating && pendingQuote == quote?.result_index}
                 disabled={!!updating}
                 ctaLabel={ctaLabel}
+                detailCtaLabel={detailCtaLabel}
                 onAdd={() => handleAdd(quote)}
                 fleetMode={suggestionFleet.enabled}
                 quantity={Number(

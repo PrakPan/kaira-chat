@@ -382,7 +382,9 @@ const Booking = (props) => {
           setIsMercury={setIsMercury}
         ></SectionOne>
 
-        <div className="flex-1 min-h-0 overflow-y-scroll px-6 max-ph:px-4">
+        {/* The pane had no bottom padding, so the last result card ended flush
+            against the bottom of the drawer with the home indicator over it. */}
+        <div className="flex-1 min-h-0 overflow-y-scroll px-6 max-ph:px-4 pb-[calc(28px+env(safe-area-inset-bottom))]">
           <div style={{ clear: "right" }}>
             <ContentContainer style={{ position: "relative" }}>
               {updateBookingState ? (

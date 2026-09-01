@@ -1,17 +1,18 @@
 import React, { useState } from "react";
-import { MdOutlineLuggage } from "react-icons/md";
-import { PiGasPumpFill, PiUsersThreeFill } from "react-icons/pi";
 import { PulseLoader } from "react-spinners";
 import { getIndianPrice } from "../../../services/getIndianPrice";
 import { optimizedMediaUrl } from "../../../lib/mediaImage";
 import { TaxiTypeGlyph } from "../../../helper/taxiTypeGlyph";
-import { QuoteTerms, QuoteTermsSheet } from "../../modals/taxis/VendorCharges";
+import { QuoteTerms } from "../../modals/taxis/VendorCharges";
 import {
   MultiVehicleNote,
   PerTaxiPrice,
   VehicleCountBadge,
 } from "../../modals/taxis/MultiVehicleInfo";
 import QuantityStepper from "../../modals/taxis/fleet/QuantityStepper";
+import { QuoteDetailRow } from "../../modals/taxis/QuoteDetailSheet";
+import VehicleSpecs from "../../modals/taxis/VehicleSpecs";
+import { normalizeQuoteCategory, quoteTitle } from "../../modals/taxis/quoteShape";
 
 /**
  * The multicity / round-trip / sightseeing suggestion card, split in two.
@@ -34,23 +35,9 @@ import QuantityStepper from "../../modals/taxis/fleet/QuantityStepper";
  * previous car. `fleetMode` selects that behaviour.
  */
 
-/** Both quote shapes in one: multicity rows carry `taxi_category`/`price`, round-trip rows `transfer_details`. */
-export const normalizeQuoteCategory = (quote) =>
-  quote?.taxi_category || quote?.transfer_details || {};
-
-export const quoteTitle = (quote) => {
-  const category = normalizeQuoteCategory(quote);
-  return category?.model_name || category?.type || "Taxi";
-};
-
-/** One fact — seats, bags, fuel — drawn the same way in every card. */
-const Fact = ({ icon: Icon, children }) =>
-  children ? (
-    <span className="flex items-center gap-1 whitespace-nowrap">
-      <Icon size={15} className="text-[#8a93a6]" style={{ flex: "none" }} />
-      {children}
-    </span>
-  ) : null;
+/** Both quote shapes in one — re-exported from `quoteShape`, which the detail
+ *  sheet reads too and which this file cannot own without importing itself. */
+export { normalizeQuoteCategory, quoteTitle };
 
 /**
  * The supplier's photo of this class of cab, falling back to a silhouette of the
@@ -155,7 +142,11 @@ const SuggestionQuoteCard = ({
   added = false,
   busy = false,
   disabled = false,
-  ctaLabel = "Add to Itinerary",
+  ctaLabel = "+ Add",
+  // The same commit, spelled out for the detail sheet's pinned bar — a button
+  // sharing a card row with a price has room for two words, one with a screen
+  // to itself does not need to be that terse.
+  detailCtaLabel = "Add to Itinerary",
   onAdd,
   // Convoy mode: the stepper replaces the CTA and the drawer's bar commits.
   fleetMode = false,
@@ -163,8 +154,6 @@ const SuggestionQuoteCard = ({
   onQuantityChange,
 }) => {
   const category = normalizeQuoteCategory(quote);
-  const bags = category?.bag_capacity || category?.bagCapacity;
-  const bigBags = category?.bigBagCapaCity;
   // Only honest when the cabs are identical.
   const perTaxiFacts = vehicleCount > 1 && !isMixedFleet;
 
@@ -203,23 +192,7 @@ const SuggestionQuoteCard = ({
               </div>
             ) : null}
 
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 ttw-type-small text-[#445069]">
-              <Fact icon={PiUsersThreeFill}>
-                {category?.seating_capacity
-                  ? `${category.seating_capacity} seats`
-                  : null}
-              </Fact>
-              <Fact icon={MdOutlineLuggage}>
-                {bags ? `${bags} bags` : null}
-              </Fact>
-              <Fact icon={MdOutlineLuggage}>
-                {bigBags ? `${bigBags} big bags` : null}
-              </Fact>
-              <Fact icon={PiGasPumpFill}>
-                {category?.fuel_type ? category.fuel_type : null}
-              </Fact>
-              {perTaxiFacts ? <span>(per taxi)</span> : null}
-            </div>
+            <VehicleSpecs category={category} perTaxi={perTaxiFacts} />
 
             <MultiVehicleNote
               count={vehicleCount}
@@ -230,7 +203,10 @@ const SuggestionQuoteCard = ({
 
         <div className="flex flex-col items-end gap-2 flex-none max-ph:flex-row max-ph:items-center max-ph:justify-between max-ph:w-full">
           <div className="flex flex-col items-end max-ph:items-start">
-            <span className="text-lg font-mono text-[#0b1220]">
+            {/* One step down from `text-lg`: on a phone the price and the CTA
+                share a single row, and a 20px mono figure beside a compact
+                button read as the card's headline rather than its fare. */}
+            <span className="text-md font-600 font-mono text-[#0b1220]">
               {currencySymbol}
               {getIndianPrice(Math.ceil(Number(total) || 0))}
             </span>
@@ -258,7 +234,7 @@ const SuggestionQuoteCard = ({
             <button
               type="button"
               disabled
-              className="ttw-btn-secondary-fill max-ph:w-full max-ph:max-w-[172px]"
+              className="ttw-btn-secondary-fill"
             >
               Added
             </button>
@@ -267,12 +243,11 @@ const SuggestionQuoteCard = ({
               type="button"
               onClick={onAdd}
               disabled={disabled}
-              // Capped rather than left at `w-full`: the phone row is
-              // price-left / CTA-right, and a button stretched across the
-              // remaining half of the card read as the card's own footer. The
-              // cap still lets it shrink on a narrow phone, which a fixed width
-              // would not — and the label is `white-space: nowrap`.
-              className="ttw-btn-fill-yellow max-ph:w-full max-ph:max-w-[172px] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              // Sized to its label: the phone row is price-left / CTA-right,
+              // and a button stretched across the remaining half of the card
+              // read as the card's own footer — which is also why the label is
+              // "+ Add" rather than a sentence.
+              className="ttw-btn-fill-yellow px-5 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               {ctaLabel}
             </button>
@@ -285,14 +260,15 @@ const SuggestionQuoteCard = ({
           actuals at the kerb, so the card that omits them is the misleading one.
           Renders nothing when the quote states neither.
 
-          Two renderings of the same facts, picked by CSS rather than by
+          Two treatments of the same facts, picked by CSS rather than by
           useMediaQuery — which starts false on the server and would flash the
           wrong branch through hydration on exactly the phones this is for. On a
           desktop card the chips and the fold-out policy cost a couple of lines
-          under a wide row; on a phone the row is already stacked, and six chips
+          under a wide row. On a phone the row is already stacked, and six chips
           plus a policy toggle per cab turned a five-cab suggestion into three
-          screens of scrolling, so there the whole block collapses to one line
-          into a bottom sheet.
+          screens of scrolling — so there the card keeps one row that opens the
+          taxi's own detail sheet, which states the terms alongside the car they
+          belong to rather than on their own.
 
           The two hidden-classes complement each other exactly: `max-ph` is
           `max-width: 768px` and `ph-up` is its `min-width: 768.02px` twin (see
@@ -305,15 +281,25 @@ const SuggestionQuoteCard = ({
         includedItems
         className="mt-xs max-ph:hidden"
       />
-      <QuoteTermsSheet
+
+      {/* Always present on a phone, unlike the terms row it replaces: every cab
+          has a photo, a class and a set of specs to show, even the suppliers
+          that itemise no charges at all. */}
+      <QuoteDetailRow
         quote={quote}
         currencySymbol={currencySymbol}
-        includedItems
-        title={category?.model_name || category?.type || "Taxi"}
-        subtitle={
-          category?.model_name && category?.type ? category.type : null
-        }
-        className="mt-sm ph-up:hidden"
+        total={total}
+        vehicleCount={vehicleCount}
+        perVehicleTotal={perVehicleTotal}
+        isMixedFleet={isMixedFleet}
+        added={added}
+        busy={busy}
+        disabled={disabled}
+        ctaLabel={detailCtaLabel}
+        onAdd={onAdd}
+        fleetMode={fleetMode}
+        quantity={quantity}
+        onQuantityChange={onQuantityChange}
       />
     </div>
   );

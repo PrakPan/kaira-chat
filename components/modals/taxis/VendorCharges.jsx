@@ -341,7 +341,7 @@ export const QuoteTerms = ({
  * already covers, what the driver still collects at the kerb, and the rates that
  * only start costing money if the day overruns.
  */
-const sectionTerms = (charges, currencySymbol, includedItems) => {
+export const sectionTerms = (charges, currencySymbol, includedItems) => {
   const lines = summariseVendorCharges(charges, currencySymbol);
   // Same opt-in as the chip row: the surfaces with an AmenitySelector already
   // list these, the suggestion cards do not.
