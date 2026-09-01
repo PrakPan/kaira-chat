@@ -4261,7 +4261,7 @@ const handleShowLogin = useCallback(() => {
       // ever wanted — it is the divider against the itinerary on desktop — but
       // the top edge also drew a line inside Kaira's sheet on mobile, above her
       // name, where the design has a rule only UNDER the header row.
-      className={`kp-root flex flex-col h-full min-h-0 bg-white max-h-[100dvh] md:border-l-[0.5px] md:border-l-[#e5e5e5] overflow-x-hidden`}
+      className={`kp-root flex flex-col h-full min-h-0 bg-white max-h-app md:border-l-[0.5px] md:border-l-[#e5e5e5] overflow-x-hidden`}
       style={{
         fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
         WebkitFontSmoothing: "antialiased",

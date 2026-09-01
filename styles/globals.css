@@ -77,6 +77,49 @@
     margin-bottom: var(--safe-bottom);
 }
 
+/* ── Viewport-height token ─────────────────────────────────────────────────
+   The app shell is a fixed-height, non-scrolling column: everything anchored
+   to its foot — the chat composer, the cart bar — is only on screen if that
+   height matches the visible viewport exactly. `100dvh` is the right value
+   for that everywhere EXCEPT inside the Fullscreen API on Android Chrome,
+   where the viewport grows the moment the URL bar is dropped but the viewport
+   UNITS are not recomputed: `100dvh` keeps reporting the pre-fullscreen height
+   and the shell ends up sized to a browser bar that is no longer there. That
+   is what pushed the composer off the bottom of Kaira's sheet the first time a
+   tap opened the chat, since that same first tap is what triggers fullscreen
+   (see components/FullscreenOnFirstGesture.jsx).
+
+   So the token DEFAULTS to `100dvh` — no JS needed, correct on first paint,
+   and the behaviour every non-fullscreen browser (iPhone Safari included) has
+   today is unchanged. While fullscreen is actually engaged,
+   FullscreenOnFirstGesture overwrites it with the measured px height and
+   removes it again on exit, so the measured value is only ever trusted in the
+   one state where the unit is known to lie.
+
+   Use `.h-app` / `.max-h-app` (or the token) for anything that must be exactly
+   one viewport tall. Plain `dvh` is still fine for things that only need to be
+   roughly proportional. */
+:root {
+    --app-vh: 100dvh;
+}
+
+.h-app {
+    height: var(--app-vh, 100dvh);
+}
+
+.max-h-app {
+    max-height: var(--app-vh, 100dvh);
+}
+
+/* Desktop never goes fullscreen and has no retracting browser chrome, so the
+   shell takes the plain viewport there — this is the `md:h-screen` half of the
+   `h-dvh md:h-screen` pair this class replaced. */
+@media (min-width: 768px) {
+    .h-app {
+        height: 100vh;
+    }
+}
+
 html {
     scroll-behavior: auto !important;
     scrollbar-gutter: stable;

@@ -23,7 +23,14 @@ import { useEffect } from "react";
  * session is flagged and we do not drag them back in on their next tap.
  *
  * Escape hatches for QA: `?fullscreen=0` opts the session out, `?fullscreen=1`
- * clears the flags and re-arms.
+ * clears the flags and re-arms. (`?fullscreen=0` is also the quickest way to
+ * confirm a layout bug is fullscreen's doing: if the symptom goes with it, it
+ * is the viewport that changed, not the component.)
+ *
+ * ALSO OWNS `--app-vh` — see useFullscreenViewportHeight below. Entering
+ * fullscreen changes the viewport, and on Android Chrome it changes it without
+ * the viewport units noticing, so the height the app shell is built on has to
+ * be measured for as long as fullscreen is engaged.
  */
 
 const ATTEMPTED_KEY = "ttw:fullscreen-attempted";
@@ -104,7 +111,114 @@ export function exitAppFullscreen() {
   }
 }
 
+/**
+ * Pins `--app-vh` to the MEASURED viewport height while fullscreen is engaged.
+ *
+ * WHY: the shell is `h-app` — one viewport tall, `overflow: hidden`, nothing
+ * scrolls — so whatever sits at the foot of that column (Kaira's composer, the
+ * cart bar) is only reachable if the height is exactly right. `100dvh` is that
+ * value everywhere except inside the Fullscreen API on Android Chrome, which
+ * grows the viewport when it drops the URL bar without recomputing the viewport
+ * UNITS: `100dvh` keeps reporting the pre-fullscreen height, the shell stays
+ * sized to a bar that is gone, and the bottom of the chat sheet lands off
+ * screen. Since the FIRST TAP is what enters fullscreen, and on the itinerary
+ * that first tap is usually "Ask Kaira", the composer was missing on exactly
+ * the frame the chat opened.
+ *
+ * ONLY WHILE FULLSCREEN. Outside it the token is removed and the `:root`
+ * default (`100dvh`) applies again, so every browser that never enters
+ * fullscreen — iPhone Safari above all, which has no element fullscreen at all
+ * — keeps the behaviour it has today. A measured px height is worth trusting
+ * only in the one state where the unit is known to be wrong.
+ *
+ * The value comes from visualViewport where it exists, so the shell also
+ * shrinks for the on-screen keyboard and the composer rides above it rather
+ * than under it. Skipped while pinch-zoomed (`scale !== 1`), where
+ * visualViewport describes the zoom window rather than the layout.
+ */
+function useFullscreenViewportHeight() {
+  useEffect(() => {
+    const root = document.documentElement;
+    let raf = 0;
+    const timers = [];
+
+    const measure = () => {
+      const vv = window.visualViewport;
+      // Pinch-zoomed: visualViewport is the magnifier, not the layout.
+      const zoomed = vv && Math.abs(vv.scale - 1) > 0.01;
+      return vv && !zoomed ? vv.height : window.innerHeight;
+    };
+
+    const sync = () => {
+      if (!fullscreenElement()) {
+        root.style.removeProperty("--app-vh");
+        return;
+      }
+      const h = measure();
+      if (!h) return;
+      const next = `${Math.round(h)}px`;
+      // Writing an identical value still invalidates style on some engines;
+      // this runs on every resize/scroll tick, so guard it.
+      if (root.style.getPropertyValue("--app-vh") !== next) {
+        root.style.setProperty("--app-vh", next);
+      }
+    };
+
+    const schedule = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(sync);
+    };
+
+    // Entering fullscreen is animated and asynchronous: `fullscreenchange`
+    // fires before the viewport has settled at its new size, so one read there
+    // captures a mid-transition height. Re-measure across the transition and
+    // let the last one win. (`resize` normally lands too, but Chrome does not
+    // always emit one for the fullscreen grow itself.)
+    const resync = () => {
+      sync();
+      schedule();
+      while (timers.length) clearTimeout(timers.pop());
+      [120, 350, 700].forEach((ms) => timers.push(setTimeout(sync, ms)));
+    };
+
+    // Fullscreen can already be on at mount — a client-side route change
+    // remounts this without a fullscreenchange event of its own.
+    resync();
+
+    window.addEventListener("resize", schedule);
+    window.addEventListener("orientationchange", resync);
+    document.addEventListener("fullscreenchange", resync);
+    document.addEventListener("webkitfullscreenchange", resync);
+    const vv = window.visualViewport;
+    if (vv) {
+      vv.addEventListener("resize", schedule);
+      vv.addEventListener("scroll", schedule);
+    }
+
+    return () => {
+      cancelAnimationFrame(raf);
+      while (timers.length) clearTimeout(timers.pop());
+      window.removeEventListener("resize", schedule);
+      window.removeEventListener("orientationchange", resync);
+      document.removeEventListener("fullscreenchange", resync);
+      document.removeEventListener("webkitfullscreenchange", resync);
+      if (vv) {
+        vv.removeEventListener("resize", schedule);
+        vv.removeEventListener("scroll", schedule);
+      }
+      root.style.removeProperty("--app-vh");
+    };
+  }, []);
+}
+
 export default function FullscreenOnFirstGesture() {
+  // Always on, and deliberately ahead of the one-shot request effect below:
+  // that effect returns early in half a dozen states (opted out, already
+  // attempted, desktop), but the viewport still has to be measured correctly
+  // whenever the page is fullscreen — including a fullscreen session this
+  // mount did not start.
+  useFullscreenViewportHeight();
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const override = params.get("fullscreen");

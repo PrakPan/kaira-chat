@@ -28,7 +28,11 @@ export default function Sheet({
   title,
   subtitle,
   headerRight,
-  height = "82dvh",
+  // Sized off --app-vh rather than a bare `dvh`: inside fullscreen on Android
+  // the unit still reports the pre-fullscreen viewport, which leaves every
+  // sheet on this surface short of the height it asked for. Identical to
+  // `82dvh` everywhere else (see the token in styles/globals.css).
+  height = "calc(0.82 * var(--app-vh, 100dvh))",
   zIndex = 1600,
   children,
   footer,
@@ -70,7 +74,7 @@ export default function Sheet({
         // is given. Releasing `top` lets bottom + height actually anchor it.
         top: "auto",
         height,
-        maxHeight: "95dvh",
+        maxHeight: "calc(0.95 * var(--app-vh, 100dvh))",
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
         overflow: "hidden",

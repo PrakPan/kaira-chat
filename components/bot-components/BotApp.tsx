@@ -4484,7 +4484,13 @@ Start Location: ${details.startLocation}`;
 
   return (
     <main
-      className="flex flex-col h-dvh md:h-screen overflow-hidden bg-slate-100 dark:bg-slate-950"
+      // `h-app`, not `h-dvh md:h-screen`: same value on both, except inside
+      // fullscreen on Android Chrome, where `dvh` keeps reporting the height the
+      // viewport had before the URL bar was dropped. The shell then stays a
+      // browser-bar short of the screen and everything anchored to its foot —
+      // Kaira's composer above all — is pushed out of view. See the --app-vh
+      // token in styles/globals.css.
+      className="flex flex-col h-app overflow-hidden bg-slate-100 dark:bg-slate-950"
       style={{
         fontFamily: "'Inter', sans-serif",
         // Side insets, not top/bottom. With `viewport-fit=cover` the shell
@@ -6250,7 +6256,7 @@ const MobileLayout = React.memo(
     // that reflowed the pane every frame and read as a scroll glitch.)
     //
     // NOTE: window/document never scrolls on this page — <main> is
-    // `h-dvh overflow-hidden`, so a window scroll listener would never fire.
+    // `h-app overflow-hidden`, so a window scroll listener would never fire.
     // The real scroller is the itinerary/routes/bookings pane below, and the
     // two thresholds here only drive the trip card's condense/meta-collapse.
     const SCROLL_JITTER_PX = 6; // ignore sub-pixel / momentum noise
@@ -6558,7 +6564,11 @@ const MobileLayout = React.memo(
                     // is shorter than that. `100%` here is the pane, so the
                     // max() collapses to 0 in that case and the sheet fills
                     // what there is instead of overflowing it.
-                    top: "max(0px, calc(100% - 95dvh))",
+                    // --app-vh, not a bare 95dvh: in fullscreen on Android
+                    // the unit is stale and the sheet would be measured against
+                    // a viewport that no longer exists, hanging its composer
+                    // below the screen. The token IS `100dvh` everywhere else.
+                    top: "max(0px, calc(100% - 0.95 * var(--app-vh, 100dvh)))",
                     zIndex: 4,
                     // Slide, don't fade: the sheet has to read as arriving from
                     // the bottom over the trip, and a translated pane keeps the
