@@ -1,5 +1,4 @@
 import React from "react";
-import ImageLoader from "../../ImageLoader";
 import * as T from "./designTokens";
 import getModeAccent from "../common/components/bookingDetail/modeAccent";
 
@@ -103,6 +102,58 @@ function TravelRow({ travel, cityName, onOpen, onChange, disabled }) {
   );
 }
 
+/**
+ * The leg of the route with nothing booked on it.
+ *
+ * This is NOT the same thing as a row that hasn't loaded, and not the same
+ * thing as an optional extra the traveller skipped: the trip says it goes from
+ * one city to the next, and how is unanswered. So it takes the travel row's
+ * shape and says so plainly, rather than being left out — a leg that silently
+ * disappears reads as "handled", which is the one thing it isn't.
+ */
+function TravelGapRow({ meta, onAdd, disabled }) {
+  return (
+    <button
+      type="button"
+      onClick={onAdd}
+      disabled={disabled}
+      style={T.travelGapRow}
+      className="flex w-full items-center gap-[12px] px-[14px] py-[13px] text-left disabled:opacity-40"
+    >
+      <span className="flex flex-none items-center text-[#b67b10]" aria-hidden>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path
+            d="M12 4.5 2.8 20h18.4L12 4.5z"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinejoin="round"
+          />
+          <path d="M12 10v4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+          <circle cx="12" cy="17" r="1" fill="currentColor" />
+        </svg>
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block truncate font-inter text-[12.5px] font-[700] text-[#5c4405]">
+          No transfer added
+        </span>
+        {meta ? (
+          <span className="mt-[4px] block truncate font-mono text-[8.5px] tracking-[0.06em] text-[#9c7a22]">
+            {meta}
+          </span>
+        ) : null}
+      </span>
+      {/* A span, not a button: the whole row is the target, and a button inside
+          a button is invalid markup that Safari resolves by dropping one. */}
+      <span
+        style={T.pillOnAmber}
+        className="flex-none px-[12px] py-[7px] font-mono text-[8.5px] font-[600] tracking-[0.06em] text-[#b67b10]"
+      >
+        + ADD
+      </span>
+    </button>
+  );
+}
+
 /** Where you sleep — or the gap where a stay should be. */
 function StayRow({ stay, showGap, gapMeta, cityName, onOpen, onChange, disabled }) {
   if (showGap) {
@@ -135,12 +186,44 @@ function StayRow({ stay, showGap, gapMeta, cityName, onOpen, onChange, disabled 
   return (
     <div style={T.card}
       className="flex items-center gap-[10px] px-[12px] py-[11px]">
+      {/* ── The hotel thumbnail ──────────────────────────────────────────
+          A plain <img>, deliberately — NOT the shared <ImageLoader>, which
+          could not load on this surface:
+
+           • It wraps every image in react-lazyload, which listens for SCROLL
+             ON THE WINDOW. This page's scroller is a nested pane (the window
+             never scrolls), so after the one check it makes when it mounts,
+             nothing ever re-checks: a thumbnail below the fold stayed an empty
+             grey box no matter how far you scrolled.
+           • Its styled-components are declared INSIDE its render, so every
+             re-render is a new component type — React unmounts and remounts
+             the <img>, which is what made the ones that did load flicker and
+             re-fetch on every trip update.
+
+          None of that machinery buys anything for a 42px thumbnail. `loading`
+          is the native attribute, which — unlike the library — understands the
+          scroll container it is actually in.
+
+          The two inline resets are load-bearing: styles.css and Bootstrap both
+          set bare `img {}` rules with margins and `max-width`, which otherwise
+          push this out of the row. */}
       <div className="h-[42px] w-[42px] flex-none overflow-hidden rounded-[10px] bg-[#eef0f4]">
-        {stay.imageKey ? (
-          <ImageLoader
-            url={stay.imageKey}
-            dimensions={{ width: 84, height: 84 }}
+        {stay.imageUrl ? (
+          <img
+            src={stay.imageUrl}
             alt=""
+            width={42}
+            height={42}
+            loading="lazy"
+            decoding="async"
+            style={{
+              display: "block",
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              margin: 0,
+              maxWidth: "none",
+            }}
           />
         ) : null}
       </div>
@@ -247,12 +330,14 @@ export default function LegSection({
   changedDayKey = null,
   onChangeStay,
   onChangeTravel,
+  onAddTravel,
   onOpenTravel,
   onOpenStay,
   onOpenDay,
   onAddTaxi,
   onOpenExtra,
   onChangeReturn,
+  onAddReturn,
 }) {
   return (
     <section id={leg.anchor} className="flex flex-col gap-[11px]">
@@ -274,6 +359,12 @@ export default function LegSection({
           disabled={disabled}
           onOpen={() => onOpenTravel?.(leg, leg.inboundTravel)}
           onChange={() => onChangeTravel?.(leg)}
+        />
+      ) : leg.travelGap ? (
+        <TravelGapRow
+          meta={leg.travelGap.meta}
+          disabled={disabled}
+          onAdd={() => onAddTravel?.(leg)}
         />
       ) : null}
 
@@ -344,28 +435,36 @@ export default function LegSection({
           The return journey is folded onto the last stop by the view model,
           but it is not part of that city — it is how the trip ENDS. The design
           gives it its own block, with its own rule, after everything else. */}
-      {leg.outboundTravel ? (
+      {leg.outboundTravel || leg.outboundGap ? (
         <>
           <div className="flex items-center gap-[8px] pt-[3px]">
             <span className="flex-none font-mono text-[9px] tracking-[0.08em] text-[#8a93a6]">
               {`FLY HOME${
-                leg.outboundTravel.destName
-                  ? ` · ${leg.outboundTravel.destName.toUpperCase()}`
+                (leg.outboundTravel || leg.outboundGap).destName
+                  ? ` · ${(leg.outboundTravel || leg.outboundGap).destName.toUpperCase()}`
                   : ""
               }`}
             </span>
             <div className="h-px flex-1 bg-[#e6e8ec]" />
             <span className="flex-none font-mono text-[9px] tracking-[0.08em] text-[#8a93a6]">
-              {leg.outboundTravel.departLabel || ""}
+              {leg.outboundTravel?.departLabel || ""}
             </span>
           </div>
-          <TravelRow
-            travel={leg.outboundTravel}
-            cityName={leg.outboundTravel.destName || leg.city}
-            disabled={disabled}
-            onOpen={() => onOpenTravel?.(leg, leg.outboundTravel)}
-            onChange={() => onChangeReturn?.(leg)}
-          />
+          {leg.outboundTravel ? (
+            <TravelRow
+              travel={leg.outboundTravel}
+              cityName={leg.outboundTravel.destName || leg.city}
+              disabled={disabled}
+              onOpen={() => onOpenTravel?.(leg, leg.outboundTravel)}
+              onChange={() => onChangeReturn?.(leg)}
+            />
+          ) : (
+            <TravelGapRow
+              meta={leg.outboundGap.meta}
+              disabled={disabled}
+              onAdd={() => onAddReturn?.(leg)}
+            />
+          )}
         </>
       ) : null}
     </section>

@@ -1,9 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { shallowEqual, useSelector } from "react-redux";
 
-import buildTripViewModel from "../../../lib/tripViewModel";
+import buildTripViewModel, { mediaUrlFromKey } from "../../../lib/tripViewModel";
 import { formatMoney } from "../../../services/money";
-import { optimizedMediaUrl } from "../../../lib/mediaImage";
 import LegSection from "./LegSection";
 import DaySheet from "./sheets/DaySheet";
 import MoreSheet from "./sheets/MoreSheet";
@@ -46,17 +45,11 @@ const ShieldCheck = () => (
   </svg>
 );
 
-// The stay carries an image KEY (what ImageLoader takes), but the detail
-// sheet paints it as a CSS background and needs a URL. Same CDN base
-// ImageLoader defaults to, then resized — a hotel hero is a 54px thumbnail
-// here, and shipping the original is what the media resizer exists to avoid.
-const CDN = "https://d31aoa0ehgvjdi.cloudfront.net/";
-const imageUrlFromKey = (key) => {
-  if (!key || typeof key !== "string") return null;
-  return optimizedMediaUrl(key.startsWith("http") ? key : CDN + key, {
-    width: 160,
-  });
-};
+// The stay carries an image KEY, but the detail sheet paints it as a CSS
+// background and needs a URL — resized, because a hotel hero is a 54px
+// thumbnail here and shipping the original is what the media resizer exists to
+// avoid. The row's own (smaller) thumbnail URL comes off the view model.
+const imageUrlFromKey = (key) => mediaUrlFromKey(key, 160);
 
 function Skeleton() {
   return (
@@ -194,6 +187,28 @@ export default function MobileItinerary({
       ask(
         prompts.changeReturn(leg.outboundTravel?.destName || "home"),
         leg.outboundTravel?.title || "Flight home",
+      ),
+    [ask],
+  );
+
+  // ── The legs with nothing booked on them ───────────────────────────────────
+  // A route slot the trip claims and nothing fills. There is no detail sheet
+  // to open on a booking that doesn't exist, so unlike every other travel row
+  // these go straight to Kaira — the only party who can put something there.
+  const handleAddTravel = useCallback(
+    (leg) =>
+      ask(
+        prompts.addTransfer(leg.travelGap?.fromCity, leg.city),
+        `Travel into ${leg.city}`,
+      ),
+    [ask],
+  );
+
+  const handleAddReturn = useCallback(
+    (leg) =>
+      ask(
+        prompts.addTransfer(leg.city, leg.outboundGap?.destName || "home"),
+        `Travel home from ${leg.city}`,
       ),
     [ask],
   );
@@ -498,12 +513,14 @@ export default function MobileItinerary({
             changedDayKey={changed.dayKey}
             onChangeStay={handleChangeStay}
             onChangeTravel={handleChangeTravel}
+            onAddTravel={handleAddTravel}
             onOpenTravel={handleOpenTravel}
             onOpenStay={handleOpenStay}
             onOpenDay={handleOpenDay}
             onAddTaxi={handleAddTaxi}
             onOpenExtra={handleOpenExtra}
             onChangeReturn={handleChangeReturn}
+            onAddReturn={handleAddReturn}
           />
         ))}
 

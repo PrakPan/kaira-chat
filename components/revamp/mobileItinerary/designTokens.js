@@ -46,6 +46,29 @@ export const travelRow = {
   background: "#eff4fe",
 };
 
+/**
+ * The same row, with nothing in it — a leg of the route with no transfer
+ * booked. It keeps the travel row's SHAPE, because a missing transfer is a
+ * hole in the route rather than an extra you declined, and takes the amber the
+ * chat itinerary already uses for exactly this state (VerticalLayout's
+ * "No transfer added from … to …" card) so one condition reads the same on
+ * every surface.
+ */
+export const travelGapRow = {
+  ...flat,
+  border: "1px solid #f5dfa6",
+  borderRadius: 14,
+  background: "#fff7e6",
+};
+
+/** "ADD" on the amber row — the tinted row's white pill, hairlined in amber. */
+export const pillOnAmber = {
+  ...flat,
+  border: "1px solid #f0dbaa",
+  borderRadius: 999,
+  background: "#ffffff",
+};
+
 /** The day list is one bordered box; rows inside it are separated by hairlines. */
 export const dayList = {
   ...flat,

@@ -54,6 +54,20 @@ import {
 // just under it so the trip stays visible behind the conversation.
 const TRIP_HEADER_HEIGHT = 84;
 
+// The open-chat gesture. The sheet travels the full height of the pane so it
+// gets the longer of the two; the trip only eases back 7%.
+//
+// ONE curve, and only `transform` on it. Everything else the gesture changes —
+// the midnight ground, the trip's corner radius, the clip that goes with it —
+// is switched in a single step at the edges of the animation instead of being
+// interpolated: border-radius and background-color are not compositor
+// properties, so transitioning them repaints a full-screen layer on the main
+// thread every frame, and that repaint has to queue behind whatever the chat
+// is doing (rendering a thread, starting a stream). That was the stutter.
+const SHEET_SLIDE_MS = 550;
+const TRIP_LIFT_MS = 500;
+const GESTURE_EASE = "cubic-bezier(.2,.7,.3,1)";
+
 // What the standing ask-Kaira pill says when the user opens the conversation
 // without pointing at anything in particular.
 const KAIRA_OPEN_ENDED_PROMPT = kairaPrompts.openEnded();
@@ -3468,8 +3482,21 @@ Start Location: ${details.startLocation}`;
   const handleItineraryContainerSendMessage = useCallback(
     (msg: string, contextLabel?: string | null) => {
       setChatContext(contextLabel || null);
-      chatSendMessageRef.current?.(msg);
-      if (isMobile) mobileTabSwitchRef.current?.("chat");
+      if (!isMobile) {
+        chatSendMessageRef.current?.(msg);
+        return;
+      }
+      // Open first, send after. On mobile this opens a sheet over the trip —
+      // a half-second animation — and sending is the expensive half of the
+      // job: it re-renders the thread and starts a stream whose first tokens
+      // land while the sheet is still travelling. Doing both in one commit
+      // put all of that work in the animation's opening frames. Two frames of
+      // delay is imperceptible next to Kaira's own latency, and it hands the
+      // gesture a clean start.
+      mobileTabSwitchRef.current?.("chat");
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => chatSendMessageRef.current?.(msg));
+      });
     },
     [isMobile],
   );
@@ -6026,6 +6053,81 @@ const MobileLayout = React.memo(
     // the scrim's opacity and the trip's scale-back all derive from it, so they
     // cannot fall out of step.
     const chatSheetOpen = chatAsSheet && activeTab === "chat";
+
+    // ── The gesture, in two phases: state now, motion on the next frame ────
+    //
+    // `chatSheetOpen` flips inside the commit that switches the tab, and that
+    // commit is the expensive one on this screen: the chat pane renders its
+    // thread, BotApp re-renders around it, and (when the chat was opened by a
+    // "Change …" button) a message is already on its way to Kaira. Starting a
+    // half-second transition inside that commit means its first frames are
+    // spent waiting on layout, which is what read as the animation jumping.
+    //
+    // `sheetShown` is the same flag two painted frames later. The layer hints
+    // below go on in the FIRST commit, so by the time the transform changes
+    // the sheet and the trip are already on their own compositor layers and
+    // the whole animation runs off the main thread — it no longer matters what
+    // React does during it.
+    const [sheetShown, setSheetShown] = React.useState(chatSheetOpen);
+    // True from the first frame of the gesture to the last, in both
+    // directions. The properties that are NOT animated — the midnight ground,
+    // the corner radius, the clip, the layer hints — key off this, so they
+    // change only while the trip is at full size and covering the ground,
+    // where a step is invisible.
+    const [sheetLifted, setSheetLifted] = React.useState(chatSheetOpen);
+
+    // A P1 → P2 flip turns the full-screen chat INTO a sheet without the user
+    // touching anything, and there is no entrance to play there — the
+    // conversation is already on screen. Parking it off-screen for two frames
+    // first would be a blink, so that one case skips the deferral.
+    const prevChatAsSheetRef = React.useRef(chatAsSheet);
+
+    React.useEffect(() => {
+      const grewIntoSheet = chatAsSheet && !prevChatAsSheetRef.current;
+      prevChatAsSheetRef.current = chatAsSheet;
+      if (chatSheetOpen === sheetShown) return undefined;
+      // Opening: ground and corners first, motion after. Closing: they stay
+      // until the trip has landed (the effect below).
+      if (chatSheetOpen) setSheetLifted(true);
+      if (grewIntoSheet) {
+        setSheetShown(chatSheetOpen);
+        return undefined;
+      }
+      // Two frames, not one: the first lets the browser paint the commit that
+      // promoted the layers, the second starts the transition against it.
+      let inner = 0;
+      const outer = requestAnimationFrame(() => {
+        inner = requestAnimationFrame(() => setSheetShown(chatSheetOpen));
+      });
+      return () => {
+        cancelAnimationFrame(outer);
+        cancelAnimationFrame(inner);
+      };
+    }, [chatSheetOpen, sheetShown, chatAsSheet]);
+
+    React.useEffect(() => {
+      if (sheetShown || !sheetLifted) return undefined;
+      // The trip is back at scale 1 and covering the ground again — only now
+      // can the dark ground and the rounded corners go, unnoticed. Dropping
+      // them when the close STARTS would flash a white margin around a trip
+      // that is still small.
+      const t = setTimeout(() => setSheetLifted(false), SHEET_SLIDE_MS + 60);
+      return () => clearTimeout(t);
+    }, [sheetShown, sheetLifted]);
+
+    // ── What the trip pane is showing, which is not always the active tab ──
+    // With the sheet open the active tab is "chat", but the trip is still on
+    // screen behind it and has to keep rendering as whatever it was. Its cart
+    // bar was the exception: gated on `activeTab`, it unmounted the instant the
+    // chat opened. That cost two things at exactly the wrong moment — the bar
+    // popped out of the bottom of the card on frame one, and the scroll pane
+    // (which ends where the bar begins) grew by the bar's height and relaid
+    // out the whole itinerary underneath the animation.
+    const TRIP_TABS = ["itinerary", "routes", "bookings"];
+    const lastTripTabRef = React.useRef<MobileTab>("itinerary");
+    if (TRIP_TABS.includes(activeTab)) lastTripTabRef.current = activeTab;
+    const tripTab = chatSheetOpen ? lastTripTabRef.current : activeTab;
+
     const dispatchLayout = useDispatch();
     const [showChatBanner, setShowChatBanner] = React.useState(true);
 
@@ -6246,13 +6348,18 @@ const MobileLayout = React.memo(
       // itinerary footer whenever it is mounted; it is the taller of the two
       // and the one this pane actually has to clear.
       const el =
-        document.querySelector("[data-itinerary-cta-bar]") ||
-        document.querySelector("[data-bottom-cta-bar]");
+        document.querySelector<HTMLElement>("[data-itinerary-cta-bar]") ||
+        document.querySelector<HTMLElement>("[data-bottom-cta-bar]");
       if (!el) {
         setCtaBarHeight(0);
         return undefined;
       }
-      const measure = () => setCtaBarHeight(el.getBoundingClientRect().height);
+      // offsetHeight, not getBoundingClientRect().height: this bar lives inside
+      // the trip card, and while Kaira's sheet is open that card is scaled to
+      // .93 — a rect measured then comes back 7% short, and the pane above
+      // would resize by the difference the next time anything re-ran this (a
+      // cart update mid-conversation does). Layout height ignores transforms.
+      const measure = () => setCtaBarHeight(el.offsetHeight);
       measure();
       const ro = new ResizeObserver(measure);
       ro.observe(el);
@@ -6332,16 +6439,51 @@ const MobileLayout = React.memo(
             shows whatever ancestor happens to sit behind, so the colour in that
             margin was decided by something several layers up rather than here.
 
-            White at rest, so nothing changes until the gesture starts, and the
-            two are cross-faded on the same curve as the scale-back so the
-            ground does not pop in under a trip that is still moving. */}
+            White — permanently. The midnight is a separate layer below, faded
+            in on its own opacity (see MIDNIGHT below), because the trip's
+            corners are cut out of THIS colour and the two have to agree at
+            every frame of the animation, not just at its ends. */}
         <div
-          className="flex-1 min-h-0 overflow-hidden relative motion-reduce:!transition-none"
-          style={{
-            backgroundColor: chatSheetOpen ? "#0a1020" : "#ffffff",
-            transition: "background-color .5s cubic-bezier(.2,.7,.3,1)",
-          }}
+          className="flex-1 min-h-0 overflow-hidden relative"
+          style={{ backgroundColor: "#ffffff" }}
         >
+          {/* ── MIDNIGHT — the dark surface the trip is lifted off ──────────
+              Painted as its own layer under the trip rather than as the
+              ground's background-color, and revealed by fading THIS instead of
+              rounding the trip's corners.
+
+              The corners are the whole reason. `border-radius` is a paint
+              property: interpolating 0 → 22 forces the browser to re-rasterise
+              the trip — every card, every line of text, the cart bar — on the
+              main thread on every frame, competing with the chat rendering its
+              thread. Stepping it instead (the first attempt at this) removed
+              the cost but made the corners snap, which is its own glitch.
+
+              So the radius is now CONSTANT: the trip is always cut with 22px
+              corners, and at rest the white showing through them is the white
+              of this ground, which is why nothing is visible until the gesture
+              starts. What eases is this layer's opacity — a compositor
+              property, so it cannot be stalled by anything React is doing —
+              and because the corner cut-outs expose exactly the same two
+              layers as the margin around the trip, the corners and the margin
+              are the same colour at every instant on the way in and out.
+
+              Below the trip in paint order (first child, z-0) so the trip
+              still covers it completely at rest. The scrim above lies over
+              both, exactly as it did when this colour was the ground's
+              background — and its own colour IS `--midnight`, so the margin
+              still settles on the flat #0a1020 the design asks for. */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 motion-reduce:!transition-none"
+            style={{
+              zIndex: 0,
+              backgroundColor: "#0a1020",
+              opacity: sheetShown ? 1 : 0,
+              transition: `opacity ${TRIP_LIFT_MS}ms ${GESTURE_EASE}`,
+              willChange: sheetLifted ? "opacity" : "auto",
+            }}
+          />
           {/* ── CHAT view ──────────────────────────────────────────────────
               Once there's a trip on screen, Kaira answers in a sheet that
               slides up OVER the itinerary rather than replacing it: a change
@@ -6364,9 +6506,10 @@ const MobileLayout = React.memo(
               aria-hidden={!chatSheetOpen}
               className="absolute inset-0 z-[3] border-0 bg-[rgba(10,16,32,0.42)] p-0 motion-reduce:!transition-none"
               style={{
-                opacity: chatSheetOpen ? 1 : 0,
+                opacity: sheetShown ? 1 : 0,
                 pointerEvents: chatSheetOpen ? "auto" : "none",
-                transition: "opacity .45s cubic-bezier(.2,.7,.3,1)",
+                transition: `opacity .45s ${GESTURE_EASE}`,
+                willChange: sheetLifted ? "opacity" : "auto",
               }}
             />
           )}
@@ -6388,11 +6531,16 @@ const MobileLayout = React.memo(
                     // Slide, don't fade: the sheet has to read as arriving from
                     // the bottom over the trip, and a translated pane keeps the
                     // chat mounted (and its stream alive) while off-screen.
-                    transform: chatSheetOpen
-                      ? "translateY(0)"
-                      : "translateY(100%)",
+                    transform: sheetShown
+                      ? "translate3d(0,0,0)"
+                      : "translate3d(0,100%,0)",
                     pointerEvents: chatSheetOpen ? "auto" : "none",
-                    visibility: chatSheetOpen ? "visible" : "hidden",
+                    visibility: sheetShown || chatSheetOpen ? "visible" : "hidden",
+                    // Promoted for the whole gesture — set in the commit BEFORE
+                    // the transform moves, so the layer exists by the time the
+                    // slide starts and the thread rendering inside it cannot
+                    // stall the travel.
+                    willChange: sheetLifted ? "transform" : "auto",
                     // The design's curve, and its .55s — the sheet is a large
                     // object and at 300ms it snaps rather than travels.
                     //
@@ -6403,8 +6551,8 @@ const MobileLayout = React.memo(
                     // immediately when opening (a delay there would keep it
                     // hidden for the whole entrance).
                     transition: chatSheetOpen
-                      ? "transform .55s cubic-bezier(.2,.7,.3,1), visibility 0s"
-                      : "transform .55s cubic-bezier(.2,.7,.3,1), visibility 0s linear .55s",
+                      ? `transform ${SHEET_SLIDE_MS}ms ${GESTURE_EASE}, visibility 0s`
+                      : `transform ${SHEET_SLIDE_MS}ms ${GESTURE_EASE}, visibility 0s linear ${SHEET_SLIDE_MS}ms`,
                   }
                 : {
                     opacity: activeTab === "chat" ? 1 : 0,
@@ -6428,8 +6576,10 @@ const MobileLayout = React.memo(
               <div
                 className="min-h-0 flex-1 motion-reduce:!transition-none"
                 style={{
-                  opacity: chatSheetOpen ? 1 : 0,
-                  transition: chatSheetOpen
+                  // Keyed to the MOTION, not the tab: the delay is measured
+                  // from the frame the sheet actually starts travelling.
+                  opacity: sheetShown ? 1 : 0,
+                  transition: sheetShown
                     ? "opacity .22s linear .15s"
                     : "opacity .12s linear",
                 }}
@@ -6458,21 +6608,39 @@ const MobileLayout = React.memo(
             className="absolute inset-0 motion-reduce:!transition-none"
             style={{
               transformOrigin: "50% 18%",
-              transform: chatSheetOpen ? "scale(.93) translateY(8px)" : "none",
-              borderRadius: chatSheetOpen ? 22 : 0,
-              overflow: chatSheetOpen ? "hidden" : "visible",
+              transform: sheetShown
+                ? "scale(.93) translate3d(0,8px,0)"
+                : "none",
+              // CONSTANT — never animated, never stepped. The trip is always
+              // cut with the design's 22px corners; what makes them appear is
+              // the midnight layer fading in UNDER them (see MIDNIGHT above),
+              // which is an opacity and therefore free. Nothing about this
+              // element's paint changes mid-gesture, so the corners cannot lag
+              // the scale the way an interpolated radius does on a busy main
+              // thread — and cannot snap, the way a stepped one does.
+              borderRadius: 22,
+              // The clip, though, is only wanted while the corners are on
+              // show. At rest the trip is full-bleed and the only thing under
+              // its corners is white ground, so `visible` and `hidden` look
+              // identical there — and `visible` keeps this from being a scroll
+              // container, and keeps the fixed cart bar unambiguously outside
+              // its clip, for the 99% of the time no chat is open.
+              overflow: sheetLifted ? "hidden" : "visible",
               // The card is opaque in its own right. Its children happen to
               // cover it today, but any gap between them (a short pane, a
               // measured cart bar that has not settled) would let the midnight
               // ground show THROUGH the trip rather than around it.
               backgroundColor: "#ffffff",
-              transition:
-                "transform .5s cubic-bezier(.2,.7,.3,1), border-radius .5s cubic-bezier(.2,.7,.3,1)",
-              // Only while it matters. `will-change: transform` ALSO makes this
-              // the containing block for fixed descendants in Chrome, so
-              // leaving it on would re-anchor the fixed cart bar at rest — the
-              // very thing `transform: none` above is there to avoid.
-              willChange: chatSheetOpen ? "transform" : "auto",
+              // ONE animated property, and a compositor one — so a busy main
+              // thread can no longer drop frames out of this.
+              transition: `transform ${TRIP_LIFT_MS}ms ${GESTURE_EASE}`,
+              // On for the whole gesture, off at rest. `will-change: transform`
+              // ALSO makes this the containing block for fixed descendants in
+              // Chrome, so leaving it on would re-anchor the fixed cart bar at
+              // rest — the very thing `transform: none` above is there to
+              // avoid. Set one commit ahead of the transform (see `sheetLifted`)
+              // so the layer is already rastered when the scale-back begins.
+              willChange: sheetLifted ? "transform" : "auto",
             }}
           >
           {/* MAP view */}
@@ -6584,7 +6752,10 @@ const MobileLayout = React.memo(
               last card. */}
           {bottomCTABarProps &&
             hasItineraryActivity &&
-            ["itinerary", "routes", "bookings"].includes(activeTab) && (
+            // `tripTab`, not `activeTab`: the bar belongs to the trip behind the
+            // sheet and stays mounted while Kaira is open, so nothing about the
+            // card changes shape during the gesture.
+            TRIP_TABS.includes(tripTab) && (
               <>
                 <BottomCTABar
                   {...bottomCTABarProps}
@@ -6593,13 +6764,17 @@ const MobileLayout = React.memo(
                   // Routes/bookings keep the standard bar — they are lists of
                   // line items, where the old chrome still reads correctly.
                   variant={
-                    onAskKaira && activeTab === "itinerary"
+                    onAskKaira && tripTab === "itinerary"
                       ? "mobileItinerary"
                       : "default"
                   }
-                  onAskKaira={activeTab === "itinerary" ? onAskKaira : undefined}
+                  // Stays wired even under the sheet: the bar renders its
+                  // ask-Kaira pill only when this prop is present, so dropping
+                  // it would change the bar's height — and the pane measures
+                  // that height. The scrim above it takes the taps.
+                  onAskKaira={tripTab === "itinerary" ? onAskKaira : undefined}
                 />
-                {["routes", "bookings"].includes(activeTab) && (
+                {["routes", "bookings"].includes(tripTab) && (
                   <BackToItineraryBar
                     onClick={() => handleTabClick("itinerary")}
                     bottom={ctaBarHeight + 12}

@@ -19,7 +19,12 @@ const prompts = {
   // ── Transfers between cities ───────────────────────────────────────────────
   changeTransfer: (city) => `change transfer in ${city}`,
   changeReturn: (city) => `change my return flight to ${city}`,
-  addTransfer: (from, to) => `add a transfer from ${from} to ${to}`,
+  // The origin is whatever the trip was in before this leg — the previous
+  // city, or the trip's start city on leg 1. It can be missing (a first leg
+  // the itinerary never named an origin for), and "from undefined to Kochi" is
+  // worse than not saying it.
+  addTransfer: (from, to) =>
+    from ? `add a transfer from ${from} to ${to}` : `add a transfer to ${to}`,
 
   // ── Taxis within a city ────────────────────────────────────────────────────
   changeTaxi: (city) => `change the taxi in ${city}`,
