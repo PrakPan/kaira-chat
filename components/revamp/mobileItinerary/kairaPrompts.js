@@ -15,6 +15,7 @@ const prompts = {
   // ── Stays ──────────────────────────────────────────────────────────────────
   changeStay: (city) => `change hotel in ${city}`,
   addStay: (city) => `add a hotel in ${city}`,
+  removeStay: (city) => `remove the hotel in ${city} from my plan`,
 
   // ── Transfers between cities ───────────────────────────────────────────────
   changeTransfer: (city) => `change transfer in ${city}`,
@@ -25,6 +26,10 @@ const prompts = {
   // worse than not saying it.
   addTransfer: (from, to) =>
     from ? `add a transfer from ${from} to ${to}` : `add a transfer to ${to}`,
+  removeTransfer: (city) => `remove the transfer into ${city} from my plan`,
+  // The return leg is named by where it lands, like changeReturn — "remove the
+  // transfer into Hampi" is the wrong journey entirely on the way home.
+  removeReturn: (city) => `remove my return journey to ${city} from my plan`,
 
   // ── Taxis within a city ────────────────────────────────────────────────────
   changeTaxi: (city) => `change the taxi in ${city}`,
@@ -54,6 +59,9 @@ const prompts = {
     `Can you change ${name}${city ? ` in ${city}` : ""} to something else?`,
   openEnded: () => `I'd like to change something in my trip`,
   changeAncillaries: () => `change the visa and eSIM in my trip`,
+  // `what` is what the block actually holds — "visa", "eSIM" or "visa and
+  // eSIM". A trip with no visa should not be asked to drop one.
+  removeAncillaries: (what) => `remove the ${what} from my trip`,
   // The change bar's Undo. Phrased as a request because that is what it is:
   // nothing here can roll the trip back on its own, so it asks the one party
   // that can — see TripChangeBar.

@@ -50,6 +50,44 @@ const ShieldCheck = () => (
   </svg>
 );
 
+// The change CTA on a journey names the thing being changed — "Change Flight",
+// "Change Train" — rather than the category. "Change travel" reads identically
+// on every journey in the trip, so it never says which of them the button is
+// about to hand to Kaira.
+//
+// Keyed on the resolved mode key, so the word agrees with the glyph the row is
+// drawn with. A COMBO is deliberately excluded: "taxi, then fly" has no single
+// mode, and naming its leading leg would promise to change only the taxi.
+// Self-drive and the unrecognised-mode fallback keep the generic verb too.
+const TRANSFER_NOUNS = {
+  Flight: "Flight",
+  Train: "Train",
+  Bus: "Bus",
+  Ferry: "Ferry",
+  Taxi: "Taxi",
+};
+
+const transferChangeLabel = (modeKey, isCombo) => {
+  const noun = isCombo ? null : TRANSFER_NOUNS[getModeAccent(modeKey).key];
+  return noun ? `Change ${noun}` : "Change travel";
+};
+
+// The pane that actually scrolls belongs to the host (BotApp's MobileLayout),
+// not to anything this component renders — so it has to be found rather than
+// held. Nearest ancestor that both scrolls and has somewhere to scroll to.
+const scrollParentOf = (node) => {
+  for (let el = node?.parentElement; el; el = el.parentElement) {
+    const overflowY = window.getComputedStyle(el).overflowY;
+    if (
+      (overflowY === "auto" || overflowY === "scroll") &&
+      el.scrollHeight > el.clientHeight
+    ) {
+      return el;
+    }
+  }
+  return null;
+};
+
 // The stay carries an image KEY, but the detail sheet paints it as a CSS
 // background and needs a URL — resized, because a hotel hero is a 54px
 // thumbnail here and shipping the original is what the media resizer exists to
@@ -218,6 +256,9 @@ export default function MobileItinerary({
     [ask],
   );
 
+  // The add row only renders when the city HAS no taxi — a booked one takes the
+  // slot and carries its own CHANGE — so this is the add case. The change
+  // branch stays as the safety net for any caller that still routes here.
   const handleAddTaxi = useCallback(
     (leg) =>
       ask(
@@ -226,6 +267,15 @@ export default function MobileItinerary({
           : prompts.addTaxi(leg.city),
         `Taxi in ${leg.city}`,
       ),
+    [ask],
+  );
+
+  // CHANGE on the taxi row. Named by the booking rather than the city, so
+  // Kaira's "About …" chip says which car is being talked about on a leg that
+  // has more than one.
+  const handleChangeExtra = useCallback(
+    (leg, extra) =>
+      ask(prompts.changeTaxi(leg.city), extra?.name || `Taxi in ${leg.city}`),
     [ask],
   );
 
@@ -245,7 +295,7 @@ export default function MobileItinerary({
         kind: `STAY · ${String(leg.city).toUpperCase()}`,
         contextLabel: `${leg.city} stay · ${leg.datesLabel || ""}`.trim(),
         name: leg.stay.name,
-        meta: leg.stay.meta,
+        meta: leg.stay.detailMeta || leg.stay.meta,
         imageUrl: imageUrlFromKey(leg.stay.imageKey),
         // The real hotel — photos, rooms, facilities, location, cancellation —
         // off /bookings/accommodation/<id>/, exactly as desktop reads it. The
@@ -269,59 +319,75 @@ export default function MobileItinerary({
         canChange: true,
         changeLabel: "Change stay",
         changeMessage: prompts.changeStay(leg.city),
+        canRemove: true,
+        removeMessage: prompts.removeStay(leg.city),
         },
       });
     },
     [onViewMap],
   );
 
-  const handleOpenTravel = useCallback(
-    (leg, travel) =>
-      setSheet({ type: "detail", detail: {
-        kind: `${String(travel.modeLabel || "TRAVEL").toUpperCase()} · ${String(
-          leg.city,
-        ).toUpperCase()}`,
-        name: travel.title,
-        meta: travel.meta,
-        contextLabel: travel.title,
-        // A journey has no photo. It carries the same run of mode glyphs its
-        // row does — one for a plain transfer, "car › plane" for a combo — in
-        // the transfer blue this surface draws every journey in. Without it the
-        // header opened on an empty grey tile.
-        iconKeys: travel.glyphKeys?.length
-          ? travel.glyphKeys
-          : [travel.modeKey],
-        iconColor: "#1a4fd6",
-        // A P1 draft leg is a statement about the route with no booking behind
-        // it — there is nothing to fetch, so it keeps the described fallback.
-        live: travel.bookingId
-          ? {
-              kind: "transfer",
-              bookingId: travel.bookingId,
-              bookingType: travel.bookingType,
-              combo: travel.isCombo,
-              isSightseeing: travel.transferType === "sightseeing",
-              title: travel.title,
-            }
-          : null,
-        blurb: travel.isCombo
-          ? "One booking, several journeys — each leg is listed below."
-          : "How you get into this city.",
-        // Only meaningful on a combo; DetailSheet ignores a single-leg list.
-        segments: travel.segments,
-        facts: [
-          { k: "DEPARTS", v: travel.departLabel },
-          { k: "DURATION", v: travel.durationLabel },
-          { k: "MODE", v: travel.modeLabel },
-          { k: "STATUS", v: "Quoted, price held" },
-        ],
-        canChange: !travel.isDraftLeg,
-        changeLabel: "Change travel",
-        changeMessage: prompts.changeTransfer(leg.city),
-        },
-      }),
-    [],
-  );
+  const handleOpenTravel = useCallback((leg, travel) => {
+    // The same sheet opens for the arrival INTO a city and for the journey
+    // home, and Kaira needs to be told which: "change transfer in Hampi" is the
+    // wrong journey when the row is the flight OUT of Hampi. Identity rather
+    // than a field on the object — `destName` exists on the outbound leg but
+    // can be null, and null is not "this is an arrival".
+    const isReturn = travel === leg.outboundTravel;
+    const homeName = travel.destName || leg.city;
+
+    setSheet({ type: "detail", detail: {
+      kind: `${String(travel.modeLabel || "TRAVEL").toUpperCase()} · ${String(
+        leg.city,
+      ).toUpperCase()}`,
+      name: travel.title,
+      meta: travel.meta,
+      contextLabel: travel.title,
+      // A journey has no photo. It carries the same run of mode glyphs its
+      // row does — one for a plain transfer, "car › plane" for a combo — in
+      // the transfer blue this surface draws every journey in. Without it the
+      // header opened on an empty grey tile.
+      iconKeys: travel.glyphKeys?.length
+        ? travel.glyphKeys
+        : [travel.modeKey],
+      iconColor: "#1a4fd6",
+      // A P1 draft leg is a statement about the route with no booking behind
+      // it — there is nothing to fetch, so it keeps the described fallback.
+      live: travel.bookingId
+        ? {
+            kind: "transfer",
+            bookingId: travel.bookingId,
+            bookingType: travel.bookingType,
+            combo: travel.isCombo,
+            isSightseeing: travel.transferType === "sightseeing",
+            title: travel.title,
+          }
+        : null,
+      blurb: travel.isCombo
+        ? "One booking, several journeys — each leg is listed below."
+        : "How you get into this city.",
+      // Only meaningful on a combo; DetailSheet ignores a single-leg list.
+      segments: travel.segments,
+      facts: [
+        { k: "DEPARTS", v: travel.departLabel },
+        { k: "DURATION", v: travel.durationLabel },
+        { k: "MODE", v: travel.modeLabel },
+        { k: "STATUS", v: "Quoted, price held" },
+      ],
+      canChange: !travel.isDraftLeg,
+      changeLabel: transferChangeLabel(travel.modeKey, travel.isCombo),
+      changeMessage: isReturn
+        ? prompts.changeReturn(homeName)
+        : prompts.changeTransfer(leg.city),
+      // A P1 draft leg has no booking to drop — the row is a statement about
+      // the route, and the gap state below it already says so.
+      canRemove: !travel.isDraftLeg,
+      removeMessage: isReturn
+        ? prompts.removeReturn(homeName)
+        : prompts.removeTransfer(leg.city),
+      },
+    });
+  }, []);
 
   const handleOpenExtra = useCallback(
     (leg, extra) =>
@@ -350,7 +416,7 @@ export default function MobileItinerary({
           { k: "STATUS", v: "Booked" },
         ],
         canChange: true,
-        changeLabel: "Change taxi",
+        changeLabel: transferChangeLabel(extra.modeKey, extra.isCombo),
         changeMessage: prompts.changeTaxi(leg.city),
         canRemove: true,
         removeMessage: prompts.removeItem(extra.name, leg.city),
@@ -395,8 +461,21 @@ export default function MobileItinerary({
         items,
       },
       canChange: true,
-      changeLabel: "Change",
+      // Name what is being changed, the way a journey's CTA does. The block
+      // holds visas, eSIMs or both — a MIXED block keeps the bare verb, since
+      // the button hands the whole "before you fly" set to Kaira and "Change
+      // Visa" would promise to leave the eSIM alone.
+      changeLabel:
+        visaCount && esimCount
+          ? "Change"
+          : esimCount
+            ? "Change eSIM"
+            : "Change Visa",
       changeMessage: prompts.changeAncillaries(),
+      canRemove: true,
+      removeMessage: prompts.removeAncillaries(
+        visaCount && esimCount ? "visa and eSIM" : esimCount ? "eSIM" : "visa",
+      ),
       },
     });
   }, [ancillaries]);
@@ -438,7 +517,7 @@ export default function MobileItinerary({
         { k: "CATEGORY", v: item.category || null },
         { k: "STATUS", v: booked ? "Tickets held" : "Suggestion" },
       ],
-      status: booked ? "Tickets held" : "Included · nothing extra to pay",
+      status: booked ? "Tickets held" : "Included",
       hasMap: true,
       canChange: booked,
       changeLabel: "Change activity",
@@ -454,11 +533,42 @@ export default function MobileItinerary({
     [],
   );
 
-  // Jump to a leg without leaving the page — the pane above us is the scroller,
-  // so scroll the section into view rather than moving a scrollTop we don't own.
-  const scrollToLeg = useCallback((anchor) => {
-    const el = rootRef.current?.querySelector(`#${CSS.escape(anchor)}`);
-    el?.scrollIntoView({ behavior: "smooth", block: "start" });
+  // Jump to a leg without leaving the page.
+  //
+  // NOT `scrollIntoView`. That asks the browser to put the element at the top
+  // of the viewport whatever it takes, and it moves EVERY scrollable ancestor
+  // to get there — the pane, and then the document behind it. On the last leg,
+  // which has less than a screenful under it, there is no pane scroll left to
+  // give: the rest came out of the page, which slid the whole app up and left a
+  // band of empty white under the trip that no amount of scrolling put back.
+  //
+  // So the pane is moved directly, by hand, and the target is clamped to the
+  // scroll the pane actually has. Tapping the last city now lands as far down
+  // as the trip goes and stops there.
+  const scrollToAnchor = useCallback((anchor) => {
+    const root = rootRef.current;
+    const el = anchor ? root?.querySelector(`#${CSS.escape(anchor)}`) : null;
+    if (!el) return;
+
+    const pane = scrollParentOf(root);
+    if (!pane) {
+      // No scroller of our own to move — the host is laid out differently than
+      // we expect, and one imperfect scroll beats none.
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+
+    // Clear the sticky trip card, which would otherwise sit over the leg's own
+    // eyebrow the moment it arrived. It is this component's first child.
+    const stuck = root.firstElementChild?.offsetHeight || 0;
+    const top =
+      pane.scrollTop +
+      el.getBoundingClientRect().top -
+      pane.getBoundingClientRect().top -
+      stuck;
+    const max = Math.max(0, pane.scrollHeight - pane.clientHeight);
+
+    pane.scrollTo({ top: Math.min(Math.max(top, 0), max), behavior: "smooth" });
   }, []);
 
   // ── Where Kaira's last change landed ───────────────────────────────────────
@@ -489,12 +599,9 @@ export default function MobileItinerary({
     // After the sheet has closed and the itinerary has repainted with the new
     // content — scrolling to a row that is about to change height lands in the
     // wrong place.
-    const t = setTimeout(() => {
-      const el = rootRef.current?.querySelector(`#${CSS.escape(changed.anchor)}`);
-      el?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 320);
+    const t = setTimeout(() => scrollToAnchor(changed.anchor), 320);
     return () => clearTimeout(t);
-  }, [changeAt, changed.anchor]);
+  }, [changeAt, changed.anchor, scrollToAnchor]);
 
   const totalStr = useMemo(() => {
     if (trip.pricesHidden || trip.totalAmount == null) return null;
@@ -517,7 +624,7 @@ export default function MobileItinerary({
           onOpenMore ? onOpenMore() : setSheet({ type: "more" })
         }
         onViewMap={onViewMap}
-        onLegClick={scrollToLeg}
+        onLegClick={scrollToAnchor}
       />
 
       <div className="flex flex-col gap-[12px] px-[14px] pb-[18px] pt-[12px]">
@@ -579,6 +686,7 @@ export default function MobileItinerary({
             onOpenDay={handleOpenDay}
             onAddTaxi={handleAddTaxi}
             onOpenExtra={handleOpenExtra}
+            onChangeExtra={handleChangeExtra}
             onChangeReturn={handleChangeReturn}
             onAddReturn={handleAddReturn}
           />

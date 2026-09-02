@@ -83,6 +83,32 @@ function Segment({ seg, first }) {
   );
 }
 
+/**
+ * The header's meta line, with the star drawn at a size you can read.
+ *
+ * A stay's meta is "2★ · 1 ROOM · 2 NIGHTS", set in the same 10px mono as every
+ * other meta on the surface — and at that size, in a monospace face, the star
+ * is a speck rather than a rating. It is a GLYPH, not a letter, so it is scaled
+ * on its own instead of by raising the whole line, which would enlarge the
+ * transfer and activity metas that have no glyph in them.
+ */
+function Meta({ text }) {
+  const parts = String(text).split("★");
+  if (parts.length === 1) return text;
+
+  return parts.map((part, i) => (
+    // eslint-disable-next-line react/no-array-index-key
+    <React.Fragment key={i}>
+      {part}
+      {i < parts.length - 1 ? (
+        <span style={{ fontSize: 13, lineHeight: 1, verticalAlign: "-1.5px" }}>
+          ★
+        </span>
+      ) : null}
+    </React.Fragment>
+  ));
+}
+
 function Fact({ k, v }) {
   if (!v) return null;
   return (
@@ -178,7 +204,7 @@ export default function DetailSheet({
               </div>
               {d.meta ? (
                 <div className="mt-[5px] font-mono text-[10px] tracking-[0.06em] text-[#8a93a6]">
-                  {d.meta}
+                  <Meta text={d.meta} />
                 </div>
               ) : null}
             </div>
@@ -295,11 +321,14 @@ export default function DetailSheet({
         <div className="flex-none border-t border-[#e6e8ec] px-[14px] pb-[14px] pt-[11px]">
           <div className="flex items-center gap-[8px]">
             <div className="min-w-0 flex-1">
-              <div className="font-mono text-[9.5px] tracking-[0.07em] text-[#8a93a6]">
+              {/* Truncated, not wrapped: every sheet now carries BOTH a change
+                  and a remove button, and on a narrow phone a two-line status
+                  column is what pushes them off the row. */}
+              <div className="truncate font-mono text-[9.5px] tracking-[0.07em] text-[#8a93a6]">
                 {d.statusLabel || "IN YOUR PACKAGE"}
               </div>
-              <div className="mt-[3px] text-[13.5px] font-[700] text-[#0b1220]">
-                {d.status || "Included · nothing extra to pay"}
+              <div className="mt-[3px] truncate text-[13.5px] font-[700] text-[#0b1220]">
+                {d.status || "Included"}
               </div>
             </div>
             {d.canChange ? (

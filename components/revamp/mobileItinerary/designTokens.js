@@ -22,7 +22,7 @@ export const YELLOW = "#f7e700";
 
 const flat = { boxShadow: "none" };
 
-/** Bordered white card — stay row, extras, "before you fly". */
+/** Bordered white card — stay row, "before you fly". */
 export const card = {
   ...flat,
   border: `1px solid ${LINE}`,
@@ -92,6 +92,18 @@ export const addRow = {
   background: "#fbfbfa",
 };
 
+/**
+ * The in-city taxi, as the last row of the day list — the slot "Add taxi in …"
+ * occupies when there is none. It takes the ARRIVAL ROW's tint rather than the
+ * add row's off-white: a booked taxi is a journey, the same kind of thing as
+ * the transfer that got you into the city, and the tint is what says so. The
+ * day list clips it to the box's radius, so it needs none of its own.
+ */
+export const taxiRow = {
+  ...dayRow,
+  background: "#eff4fe",
+};
+
 /** Pill controls — leg-nav chips, "More", "Map", the ask-Kaira field. */
 export const pill = {
   ...flat,
@@ -131,11 +143,4 @@ export const dashed = {
   border: `1.5px dashed #cfd3da`,
   borderRadius: 12,
   background: "#ffffff",
-};
-
-/** BOOKED tag. */
-export const tag = {
-  ...flat,
-  border: `1px solid ${INK}`,
-  borderRadius: 3,
 };

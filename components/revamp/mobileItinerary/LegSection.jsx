@@ -313,6 +313,59 @@ function DayRow({ day, onOpen, changed }) {
   );
 }
 
+/**
+ * The city's taxi, as the last row of the day list.
+ *
+ * A booked intracity car is a JOURNEY, not an extra you bolted on, so it takes
+ * the arrival row's tint and glyph — the same blue every travel row on this
+ * surface is drawn in — rather than the white card with a BOOKED tag it used
+ * to get. It also earns a CHANGE, for the same reason every other booked row
+ * has one: "BOOKED" states a fact and then offers nothing to do about it.
+ *
+ * The glyph sits in a 28px slot so its title lines up with the day titles
+ * above, which are offset by the serif day number.
+ */
+function TaxiRow({ extra, onOpen, onChange, disabled }) {
+  const TaxiIcon = modeIconFor(extra.modeKey);
+
+  return (
+    <div
+      style={T.taxiRow}
+      className="flex w-full items-center gap-[12px] px-[12px] py-[11px]"
+    >
+      <span
+        className="flex w-[28px] flex-none items-center justify-center"
+        aria-hidden
+      >
+        {TaxiIcon ? <TaxiIcon size={19} color={TRAVEL_INK} /> : null}
+      </span>
+      <button
+        type="button"
+        onClick={onOpen}
+        className="min-w-0 flex-1 border-0 bg-transparent p-0 text-left"
+      >
+        <div className="truncate font-inter text-[13.5px] font-[700] text-[#0b1220]">
+          {extra.name}
+        </div>
+        {extra.meta ? (
+          <div className="mt-[4px] truncate font-mono text-[10px] tracking-[0.06em] text-[#8a93a6]">
+            {extra.meta}
+          </div>
+        ) : null}
+      </button>
+      <button
+        type="button"
+        onClick={onChange}
+        disabled={disabled}
+        style={T.pillOnTint}
+        className="flex-none px-[12px] py-[7px] font-mono text-[10px] font-[600] tracking-[0.06em] text-[#1a4fd6] disabled:opacity-40"
+      >
+        CHANGE
+      </button>
+    </div>
+  );
+}
+
 export default function LegSection({
   leg,
   disabled,
@@ -326,6 +379,7 @@ export default function LegSection({
   onOpenDay,
   onAddTaxi,
   onOpenExtra,
+  onChangeExtra,
   onChangeReturn,
   onAddReturn,
 }) {
@@ -368,50 +422,15 @@ export default function LegSection({
         onChange={() => onChangeStay?.(leg)}
       />
 
-      {leg.extras.map((x) => {
-        // An extra is a transfer — a sightseeing taxi, an airport run — so it
-        // takes the travel rows' glyph and colour rather than a blank tile. The
-        // tile stays (it is what keeps the title column aligned with the stay
-        // row above) and carries the travel tint instead of the placeholder
-        // grey, so an intracity taxi reads as the same kind of thing as the
-        // arrival that got the leg here.
-        const ExtraIcon = modeIconFor(x.modeKey);
-        return (
-        <div
-          key={x.bookingId || x.name}
-          style={T.card}
-          className="flex items-center gap-[11px] px-[12px] py-[12px]"
-        >
-          <span
-            className="flex h-[28px] w-[28px] flex-none items-center justify-center rounded-[6px]"
-            style={{ background: "#eff4fe" }}
-            aria-hidden
-          >
-            <ExtraIcon size={15} color={TRAVEL_INK} />
-          </span>
-          <button
-            type="button"
-            onClick={() => onOpenExtra?.(leg, x)}
-            className="min-w-0 flex-1 border-0 bg-transparent p-0 text-left"
-          >
-            <div className="truncate font-inter text-[13.5px] font-[700] text-[#0b1220]">
-              {x.name}
-            </div>
-            {x.meta ? (
-              <div className="mt-[4px] truncate font-mono text-[10px] tracking-[0.06em] text-[#8a93a6]">
-                {x.meta}
-              </div>
-            ) : null}
-          </button>
-          <span style={T.tag}
-            className="flex-none px-[6px] py-[3px] font-mono text-[9.5px] tracking-[0.07em] text-[#0b1220]">
-            BOOKED
-          </span>
-        </div>
-        );
-      })}
-
-      {leg.days.length > 0 && (
+      {/* The days, and under them the ONE taxi slot for this city.
+          `leg.extras` is intracity taxis — the sightseeing car, the day-hire —
+          which is exactly what "Add taxi in …" offers to book. So they are the
+          same slot in two states, and rendering the taxi as a card above the
+          list while the empty invitation sat below it asked the reader to work
+          out that the two were about the same thing.
+          The box renders for a leg with taxis but no days too — otherwise the
+          booking would have nowhere left to appear. */}
+      {(leg.days.length > 0 || leg.extras.length > 0) && (
         <div style={T.dayList}>
           {leg.days.map((day) => (
             <DayRow
@@ -421,18 +440,30 @@ export default function LegSection({
               onOpen={() => onOpenDay?.(leg, day)}
             />
           ))}
-          <button
-            type="button"
-            onClick={() => onAddTaxi?.(leg)}
-            disabled={disabled}
-            style={T.addRow}
-            className="flex w-full items-center gap-[8px] px-[12px] py-[11px] text-left disabled:opacity-40"
-          >
-            <span className="text-[14px] leading-none text-[#6b7280]">+</span>
-            <span className="font-inter text-[12.5px] font-[600] text-[#6b7280]">
-              Add taxi in {leg.city}
-            </span>
-          </button>
+          {leg.extras.length > 0 ? (
+            leg.extras.map((x) => (
+              <TaxiRow
+                key={x.bookingId || x.name}
+                extra={x}
+                disabled={disabled}
+                onOpen={() => onOpenExtra?.(leg, x)}
+                onChange={() => onChangeExtra?.(leg, x)}
+              />
+            ))
+          ) : (
+            <button
+              type="button"
+              onClick={() => onAddTaxi?.(leg)}
+              disabled={disabled}
+              style={T.addRow}
+              className="flex w-full items-center gap-[8px] px-[12px] py-[11px] text-left disabled:opacity-40"
+            >
+              <span className="text-[14px] leading-none text-[#6b7280]">+</span>
+              <span className="font-inter text-[12.5px] font-[600] text-[#6b7280]">
+                Add taxi in {leg.city}
+              </span>
+            </button>
+          )}
         </div>
       )}
 

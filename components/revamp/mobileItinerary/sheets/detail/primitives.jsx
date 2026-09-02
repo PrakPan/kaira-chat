@@ -1,4 +1,5 @@
 import React from "react";
+import ReactDOM from "react-dom";
 import styled from "styled-components";
 
 import DetailSection from "../../../common/components/bookingDetail/DetailSection";
@@ -27,42 +28,395 @@ export const mediaUrl = (key, width = 560) => {
   return optimizedMediaUrl(key.startsWith("http") ? key : CDN + key, { width });
 };
 
+// Inline reset for every <img> on this surface: styles.css and bootstrap both
+// carry unscoped `img {}` rules with margins and `max-width` that otherwise
+// squeeze anything laid out as a flex child.
+const IMG_RESET = { margin: 0, maxWidth: "none" };
+
 /**
- * The photos, as one sideways strip.
+ * The full-screen photo gallery — desktop's "Show all photos", on a phone.
+ *
+ * Portalled to #modal-portal rather than rendered where it is used: the sheet
+ * it opens from is a transformed, `overflow: hidden` panel, and a transform
+ * makes its subtree the containing block for `position: fixed` — an overlay
+ * declared inside the sheet would be positioned and clipped BY the sheet
+ * instead of covering the screen.
+ *
+ * Paging is CSS scroll-snap, not a carousel library: it is the browser's own
+ * horizontal swipe, works inside the nested scroller this surface lives in,
+ * and costs nothing to load.
+ */
+export function PhotoGallery({ images, alt, index = 0, onClose }) {
+  const list = (images || []).filter(Boolean);
+  const railRef = React.useRef(null);
+  const [current, setCurrent] = React.useState(index);
+
+  // Open ON the photo that was tapped. Left as a layout effect so the rail is
+  // already at the right slide on the first painted frame — animating there
+  // afterwards reads as the gallery scrolling on its own.
+  React.useLayoutEffect(() => {
+    const rail = railRef.current;
+    if (!rail) return;
+    rail.scrollLeft = index * rail.clientWidth;
+  }, [index]);
+
+  React.useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === "Escape") onClose?.();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  if (!list.length || typeof document === "undefined") return null;
+  const host = document.getElementById("modal-portal");
+  if (!host) return null;
+
+  return ReactDOM.createPortal(
+    <div
+      className="fixed inset-0 flex flex-col"
+      // Above the sheet (1600) and the cart bar, below nothing else on this
+      // surface — the gallery is the frontmost thing while it is open.
+      style={{ zIndex: 1900, background: "#0b1220" }}
+    >
+      <div className="flex flex-none items-center justify-between px-[14px] pt-[14px]">
+        <span className="font-mono text-[11px] tracking-[0.08em] text-[#c9cfda]">
+          {current + 1} / {list.length}
+        </span>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close gallery"
+          style={{
+            border: "none",
+            background: "rgba(255,255,255,0.14)",
+            borderRadius: 999,
+            boxShadow: "none",
+          }}
+          className="grid h-[32px] w-[32px] place-items-center text-[16px] leading-none text-white"
+        >
+          ✕
+        </button>
+      </div>
+
+      <div
+        ref={railRef}
+        onScroll={(e) => {
+          const el = e.currentTarget;
+          if (el.clientWidth) {
+            setCurrent(Math.round(el.scrollLeft / el.clientWidth));
+          }
+        }}
+        className="flex min-h-0 flex-1 snap-x snap-mandatory overflow-x-auto overflow-y-hidden"
+        style={{
+          scrollbarWidth: "none",
+          WebkitOverflowScrolling: "touch",
+          // Without this a swipe past the last photo chains into the sheet
+          // still open behind the overlay.
+          overscrollBehavior: "contain",
+        }}
+      >
+        {list.map((src, i) => (
+          <div
+            key={`${src}-${i}`}
+            className="flex h-full w-full flex-none snap-center items-center justify-center px-[10px]"
+          >
+            <img
+              src={src}
+              alt={alt ? `${alt} ${i + 1}` : ""}
+              loading={i === index ? "eager" : "lazy"}
+              decoding="async"
+              style={{
+                ...IMG_RESET,
+                maxWidth: "100%",
+                maxHeight: "100%",
+                objectFit: "contain",
+              }}
+            />
+          </div>
+        ))}
+      </div>
+
+      <div className="h-[24px] flex-none" />
+    </div>,
+    host,
+  );
+}
+
+/**
+ * The photos, as one sideways strip that opens the gallery.
  *
  * Not the desktop mosaic: a five-cell grid on a 360px phone gives every photo
  * about 90px, which is worse than showing three of them properly and letting
  * the thumb do the rest. The first card is wider because the first photo is
  * the one the traveller is actually looking at.
+ *
+ * Tapping any tile opens the same full-screen gallery desktop's "Show all
+ * photos" does — the strip is the trigger, not the whole of what there is to
+ * see. `full` carries the same photos at gallery resolution; without it the
+ * gallery would blow up 560px thumbnails to fill a screen.
  */
-export function Photos({ images, alt }) {
+export function Photos({ images, full, alt, limit = 10 }) {
   const list = (images || []).filter(Boolean);
+  const large = (full || []).filter(Boolean);
+  const [open, setOpen] = React.useState(null);
+  if (!list.length) return null;
+
+  const shown = list.slice(0, limit);
+  const hidden = list.length - shown.length;
+
+  return (
+    <>
+      <div
+        className="flex gap-[8px] overflow-x-auto px-4 pb-4"
+        style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}
+      >
+        {shown.map((src, i) => (
+          <button
+            key={`${src}-${i}`}
+            type="button"
+            onClick={() => setOpen(i)}
+            style={{ border: "none", background: "none", padding: 0 }}
+            className="relative flex-none overflow-hidden rounded-[11px]"
+          >
+            <img
+              src={src}
+              alt={alt ? `${alt} ${i + 1}` : ""}
+              loading="lazy"
+              decoding="async"
+              className="object-cover"
+              style={{
+                ...IMG_RESET,
+                display: "block",
+                width: i === 0 ? 250 : 142,
+                height: 142,
+                background: "#eef0f4",
+              }}
+            />
+            {/* The count sits on the LAST tile the strip draws, so a hotel with
+                thirty photos says so instead of ending in a silent cut. */}
+            {hidden > 0 && i === shown.length - 1 ? (
+              <span
+                className="absolute inset-0 grid place-items-center font-mono text-[13px] tracking-[0.06em] text-white"
+                style={{ background: "rgba(11,18,32,0.55)" }}
+              >
+                +{hidden}
+              </span>
+            ) : null}
+          </button>
+        ))}
+      </div>
+
+      {open !== null ? (
+        <PhotoGallery
+          images={large.length ? large : list}
+          alt={alt}
+          index={open}
+          onClose={() => setOpen(null)}
+        />
+      ) : null}
+    </>
+  );
+}
+
+// One tile of the mosaic. Module scope, not a closure declared during render:
+// a component built inside another is a new type every render, and React
+// unmounts and re-fetches the <img> it drew.
+function MosaicTile({ src, index, alt, height, showAll, onOpen }) {
+  return (
+    <button
+      type="button"
+      onClick={() => onOpen(index)}
+      style={{ border: "none", background: "none", padding: 0 }}
+      className="relative min-w-0 flex-1 overflow-hidden rounded-[11px]"
+    >
+      <img
+        src={src}
+        alt={alt ? `${alt} ${index + 1}` : ""}
+        loading={index === 0 ? "eager" : "lazy"}
+        decoding="async"
+        className="w-full object-cover"
+        style={{ ...IMG_RESET, display: "block", height, background: "#eef0f4" }}
+      />
+      {/* The hotel drawer's own affordance: underlined white text over a scrim
+          across the tile, not a pill. Spans, not buttons — this sits INSIDE the
+          tile's button, and a button within a button is markup Safari fixes by
+          dropping one.
+
+          The scrim is lighter than the drawer's 0.72 black. That one covers a
+          desktop tile several hundred pixels wide, where a photo can afford to
+          go dark; here it is one of two small tiles and the point is still to
+          show a photo. */}
+      {showAll ? (
+        <span
+          style={{ background: "rgba(11,18,32,0.38)" }}
+          className="absolute inset-0 grid place-items-center"
+        >
+          <span
+            style={{ borderBottom: "1px solid #ffffff" }}
+            className="whitespace-nowrap pb-[1px] text-[13px] font-[600] text-white"
+          >
+            Show all photos
+          </span>
+        </span>
+      ) : null}
+    </button>
+  );
+}
+
+/**
+ * The hotel's photos, as the mosaic the hotel drawer has always drawn on
+ * mobile: a hero, two tiles under it, and "Show all photos" over the last one.
+ *
+ * The sideways strip this replaced showed the same photos, but a strip has no
+ * end — nothing on it says how many there are or that tapping opens anything —
+ * so a traveller who did not think to swipe saw two and a half pictures of the
+ * hotel they are staying in. The mosaic states the set and gives it one
+ * labelled way in, which is the affordance the existing drawer already taught.
+ *
+ * `full` is the same photos at gallery resolution; see PhotoGallery.
+ */
+export function PhotoMosaic({ images, full, alt }) {
+  const list = (images || []).filter(Boolean);
+  const large = (full || []).filter(Boolean);
+  const [open, setOpen] = React.useState(null);
+  if (!list.length) return null;
+
+  // Up to two under the hero. One photo is a hero alone; two put the second
+  // across the full width rather than leaving a gap where a third would be.
+  const tiles = list.slice(1, 3);
+
+  return (
+    <>
+      <div className="flex flex-col gap-[8px] px-4 pb-4">
+        <div className="flex">
+          <MosaicTile
+            src={list[0]}
+            index={0}
+            alt={alt}
+            height={186}
+            onOpen={setOpen}
+          />
+        </div>
+        {tiles.length ? (
+          <div className="flex gap-[8px]">
+            {tiles.map((src, i) => (
+              <MosaicTile
+                key={`${src}-${i}`}
+                src={src}
+                index={i + 1}
+                alt={alt}
+                height={104}
+                showAll={i === tiles.length - 1}
+                onOpen={setOpen}
+              />
+            ))}
+          </div>
+        ) : null}
+      </div>
+
+      {open !== null ? (
+        <PhotoGallery
+          images={large.length ? large : list}
+          alt={alt}
+          index={open}
+          onClose={() => setOpen(null)}
+        />
+      ) : null}
+    </>
+  );
+}
+
+/**
+ * A carousel — one photo at a time, swiped, inside a card.
+ *
+ * The room card showed `images[0]` and dropped the rest, which is the one
+ * decision a traveller choosing between a garden view and a car park cannot
+ * make for themselves. Full-width snap slides rather than the strip above:
+ * inside a card there is no room to let a second photo peek, and a room's
+ * photos are alternatives to compare rather than a set to skim.
+ */
+export function PhotoCarousel({ images, full, alt, height = 138 }) {
+  const list = (images || []).filter(Boolean);
+  const large = (full || []).filter(Boolean);
+  const [current, setCurrent] = React.useState(0);
+  const [open, setOpen] = React.useState(null);
   if (!list.length) return null;
 
   return (
-    <div
-      className="flex gap-[8px] overflow-x-auto px-4 pb-4"
-      style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}
-    >
-      {list.slice(0, 10).map((src, i) => (
-        <img
-          key={`${src}-${i}`}
-          src={src}
-          alt={alt ? `${alt} ${i + 1}` : ""}
-          loading="lazy"
-          className="flex-none rounded-[11px] object-cover"
-          // `margin: 0` / `maxWidth: none` inline: styles.css and bootstrap both
-          // carry unscoped `img {}` rules that otherwise squeeze these.
-          style={{
-            margin: 0,
-            maxWidth: "none",
-            width: i === 0 ? 250 : 142,
-            height: 142,
-            background: "#eef0f4",
+    <>
+      <div className="relative">
+        <div
+          onScroll={(e) => {
+            const el = e.currentTarget;
+            if (el.clientWidth) {
+              setCurrent(Math.round(el.scrollLeft / el.clientWidth));
+            }
           }}
+          className="flex snap-x snap-mandatory overflow-x-auto"
+          style={{
+            scrollbarWidth: "none",
+            WebkitOverflowScrolling: "touch",
+            overscrollBehavior: "contain",
+          }}
+        >
+          {list.map((src, i) => (
+            <button
+              key={`${src}-${i}`}
+              type="button"
+              onClick={() => setOpen(i)}
+              style={{ border: "none", background: "none", padding: 0 }}
+              className="w-full flex-none snap-center"
+            >
+              <img
+                src={src}
+                alt={alt ? `${alt} ${i + 1}` : ""}
+                loading={i === 0 ? "eager" : "lazy"}
+                decoding="async"
+                className="w-full object-cover"
+                style={{ ...IMG_RESET, display: "block", height, background: "#eef0f4" }}
+              />
+            </button>
+          ))}
+        </div>
+
+        {/* Dots, and a count once there are more of them than dots can carry
+            without becoming a texture. */}
+        {list.length > 1 ? (
+          list.length <= 6 ? (
+            <div className="pointer-events-none absolute inset-x-0 bottom-[8px] flex items-center justify-center gap-[5px]">
+              {list.map((src, i) => (
+                <span
+                  key={`dot-${src}-${i}`}
+                  className="h-[5px] rounded-full transition-all"
+                  style={{
+                    width: i === current ? 14 : 5,
+                    background:
+                      i === current ? "#ffffff" : "rgba(255,255,255,0.55)",
+                  }}
+                />
+              ))}
+            </div>
+          ) : (
+            <span
+              className="pointer-events-none absolute bottom-[8px] right-[8px] rounded-full px-[8px] py-[3px] font-mono text-[10px] tracking-[0.06em] text-white"
+              style={{ background: "rgba(11,18,32,0.55)" }}
+            >
+              {current + 1} / {list.length}
+            </span>
+          )
+        ) : null}
+      </div>
+
+      {open !== null ? (
+        <PhotoGallery
+          images={large.length ? large : list}
+          alt={alt}
+          index={open}
+          onClose={() => setOpen(null)}
         />
-      ))}
-    </div>
+      ) : null}
+    </>
   );
 }
 

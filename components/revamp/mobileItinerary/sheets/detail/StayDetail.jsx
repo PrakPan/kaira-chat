@@ -1,5 +1,6 @@
 import React from "react";
 import { useRouter } from "next/router";
+import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 
 import PolicyNote from "../../../common/components/bookingDetail/PolicyNote";
 import { dateFormat } from "../../../../../helper/DateUtils";
@@ -14,7 +15,8 @@ import {
   DetailSkeleton,
   FactChips,
   MapLink,
-  Photos,
+  PhotoCarousel,
+  PhotoMosaic,
   Prose,
   mediaUrl,
 } from "./primitives";
@@ -149,8 +151,64 @@ function Description({ html, facilities }) {
   );
 }
 
+// Filled stars, and a half where the score has one — no empty stars: the count
+// of gold glyphs IS the reading, exactly as the hotel drawer draws it, down to
+// the brand yellow.
+function Stars({ value, size = 12 }) {
+  const n = Number(value);
+  if (!(n > 0)) return null;
+
+  const full = Math.floor(n);
+  const half = n > full;
+
+  return (
+    <span
+      className="inline-flex items-center gap-[2px] text-[#f7e700]"
+      style={{ verticalAlign: "-1px" }}
+      aria-hidden
+    >
+      {Array.from({ length: full }, (unused, i) => (
+        <FaStar key={`full-${i}`} size={size} />
+      ))}
+      {half ? <FaStarHalfAlt size={size} /> : null}
+    </span>
+  );
+}
+
+/**
+ * The hotel's guest rating — the one thing the sheet was not saying anywhere.
+ *
+ * Under the photos, where the hotel drawer puts it: the stars, the score, and
+ * how many reviews are behind it. A review count with no score is not a rating,
+ * so the block renders on `rating` alone; the count joins it when the payload
+ * carries one.
+ */
+function HotelRating({ rating, reviews }) {
+  const value = Number(rating);
+  if (!(value > 0)) return null;
+
+  const count = Number(reviews) > 0 ? Number(reviews) : null;
+
+  return (
+    <div className="flex items-center gap-[7px] px-4 pb-4">
+      <Stars value={value} size={12} />
+      <span className="text-[13px] font-[700] tabular-nums text-[#0b1220]">
+        {value.toFixed(1)}
+      </span>
+      {count ? (
+        <span className="font-mono text-[10px] tracking-[0.06em] text-[#8a93a6]">
+          {count.toLocaleString()} {count === 1 ? "REVIEW" : "REVIEWS"}
+        </span>
+      ) : null}
+    </div>
+  );
+}
+
 function Room({ rate, room }) {
-  const image = (room?.images || []).map((i) => i?.image).find(Boolean);
+  // Every photo the supplier sent, not just the first: which of two rooms
+  // faces the hills is exactly what the one image left the traveller unable to
+  // tell. The card's width is 560 at 2x; the gallery gets 1280.
+  const keys = (room?.images || []).map((i) => i?.image).filter(Boolean);
   const beds = (room?.beds || [])
     .map((b) => {
       if (!b?.type) return null;
@@ -171,20 +229,12 @@ function Room({ rate, room }) {
 
   return (
     <Card className="overflow-hidden">
-      {image ? (
-        <img
-          src={mediaUrl(image, 560)}
-          alt={room?.name || "Room"}
-          loading="lazy"
-          className="w-full object-cover"
-          style={{
-            margin: 0,
-            maxWidth: "none",
-            height: 138,
-            background: "#eef0f4",
-          }}
-        />
-      ) : null}
+      <PhotoCarousel
+        images={keys.map((key) => mediaUrl(key, 560))}
+        full={keys.map((key) => mediaUrl(key, 1280))}
+        alt={room?.name || "Room"}
+        height={138}
+      />
       <div className="flex flex-col gap-[7px] p-[12px]">
         <div className="text-[13.5px] font-[700] leading-[1.3] text-[#0b1220]">
           {room?.name || "Room"}
@@ -226,8 +276,11 @@ export default function StayDetail({ bookingId }) {
   if (error || !data) return <DetailFailed onRetry={retry} />;
 
   const hotel = data?.hotel_details || {};
-  const photos = (hotel.images || [])
-    .map((image) => mediaUrl(image?.image, 560))
+  // Two sizes of the same list: thumbnails for the strip, and the gallery
+  // resolution behind it — blowing a 560px thumbnail up to fill a phone screen
+  // is what makes a full-screen photo look worse than the strip it came from.
+  const photoKeys = (hotel.images || [])
+    .map((image) => image?.image)
     .filter(Boolean);
 
   const address = [hotel.addr1, hotel.addr2, hotel.city, hotel.country]
@@ -236,6 +289,18 @@ export default function StayDetail({ bookingId }) {
 
   const checkIn = hotel?.check_in || {};
   const checkOut = hotel?.check_out || {};
+  // "Sept 4, 2026 · 1 PM → Sept 7, 2026 · 11 AM". Joined rather than rendered
+  // as two ends, so a stay with only one known date still says something.
+  const stayWindow = [
+    [dateOnly(checkIn.date), timeOnly(checkIn.begin_time)]
+      .filter(Boolean)
+      .join(" · "),
+    [dateOnly(checkOut.date), timeOnly(checkOut.time)]
+      .filter(Boolean)
+      .join(" · "),
+  ]
+    .filter(Boolean)
+    .join(" → ");
   const guests = [
     data?.number_of_adults
       ? `${data.number_of_adults} adult${data.number_of_adults > 1 ? "s" : ""}`
@@ -259,16 +324,28 @@ export default function StayDetail({ bookingId }) {
 
   return (
     <div className="flex flex-col pb-[10px] pt-[12px]">
-      <Photos images={photos} alt={hotel?.name} />
+      <PhotoMosaic
+        images={photoKeys.map((key) => mediaUrl(key, 720))}
+        full={photoKeys.map((key) => mediaUrl(key, 1280))}
+        alt={hotel?.name}
+      />
+
+      <HotelRating
+        rating={data?.rating}
+        // The count hangs off the hotel record on some payloads and the booking
+        // on others — the accommodation drawer reads both, so this does too.
+        reviews={
+          hotel?.user_ratings_total ?? data?.user_ratings_total ?? null
+        }
+      />
 
       <FactChips
         className="px-4 pb-4"
         padded={false}
         facts={[
-          {
-            label: "Rating",
-            value: data?.rating ? `${data.rating}★` : null,
-          },
+          // No RATING chip: the stars above the photos already carry it, and
+          // the same score twice on one screen reads as two different numbers
+          // until you check.
           {
             label: "Class",
             value:
@@ -282,24 +359,13 @@ export default function StayDetail({ bookingId }) {
         ]}
       />
 
-      {checkIn?.date || checkOut?.date ? (
+      {stayWindow ? (
         <DetailSection label="Your stay">
-          <FactChips
-            facts={[
-              {
-                label: "Check in",
-                value: [dateOnly(checkIn.date), timeOnly(checkIn.begin_time)]
-                  .filter(Boolean)
-                  .join(" · "),
-              },
-              {
-                label: "Check out",
-                value: [dateOnly(checkOut.date), timeOnly(checkOut.time)]
-                  .filter(Boolean)
-                  .join(" · "),
-              },
-            ]}
-          />
+          {/* One label-less chip, not a "Check in" / "Check out" pair: the
+              section heading already says what this is, and two labelled chips
+              wrapped onto two lines at phone width — which read as two
+              unrelated facts rather than as one span of nights. */}
+          <FactChips facts={[{ value: stayWindow }]} />
         </DetailSection>
       ) : null}
 
