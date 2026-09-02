@@ -165,14 +165,6 @@ export default function DaySheet({
                       {item.meta || (item.kind === "booked" ? "BOOKED" : "ON YOUR OWN")}
                     </div>
                   </div>
-                  {item.kind === "booked" && (
-                    <span
-                      style={{ border: "1px solid #0b1220", borderRadius: 3, boxShadow: "none" }}
-                      className="flex-none px-[6px] py-[3px] font-mono text-[9.5px] tracking-[0.07em] text-[#0b1220]"
-                    >
-                      BOOKED
-                    </span>
-                  )}
                   <span
                     className="flex-none text-[14px] leading-none text-[#b8becc]"
                     aria-hidden

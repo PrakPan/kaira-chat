@@ -12,7 +12,7 @@ import {
   DetailSkeleton,
   FactChips,
   MapLink,
-  Photos,
+  PhotoGrid,
   Prose,
   mediaUrl,
 } from "./primitives";
@@ -178,7 +178,7 @@ export default function ElementDetail({ elementType, id, itineraryCityId }) {
 
   return (
     <div className="flex flex-col pb-[10px] pt-[12px]">
-      <Photos images={photos} alt={data.display_name || data.name} />
+      <PhotoGrid images={photos} alt={data.display_name || data.name} />
 
       <FactChips
         className="px-4 pb-4"

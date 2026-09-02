@@ -122,9 +122,8 @@ const SingleChips = styled.button`
     }
   }
 
-  /* Phone — the same pill, a touch heavier and quieter: on the sheet it sits on
-     the itinerary's paper ground rather than white, and the hairline needs the
-     extra weight to hold its edge there. */
+  /* Phone — the same pill, a touch heavier and quieter: a hairline that holds
+     its edge at arm's length on a small screen. */
   @media (max-width: 768px) {
     border: 1px solid #cfd3da;
     font-weight: 600;
@@ -541,12 +540,17 @@ const ChatPanelStyles = () => (
 
     /* ── Phone: Kaira as a sheet over the trip ────────────────────────────
        On mobile this panel is not a page, it is a sheet that rises over the
-       itinerary — so it takes the itinerary's PAPER ground rather than white,
-       and the header compresses to the design's single line: a small ringed
-       avatar, her name, her state, and (injected by BotApp through the
-       mobileMenu slot) the trip total plus the way back down. */
+       itinerary, and the header compresses to the design's single line: a
+       small ringed avatar, her name, her state, and (injected by BotApp
+       through the mobileMenu slot) the trip total plus the way back down.
+
+       The GROUND stays white, as on desktop. It was the itinerary's paper
+       (#fafaf5) — which is also the colour of Kaira's own bubble, so her
+       replies had no edge at all: the text sat straight on the sheet and the
+       bubble's corner, the one that points back at her avatar, was invisible.
+       Two surfaces of the same colour is one surface. */
     @media (max-width: 768px) {
-      .kp-root { background: #fafaf5; }
+      .kp-root { background: #ffffff; }
       .kp-header {
         gap: 9px;
         padding: 0 12px 8px;
@@ -561,7 +565,8 @@ const ChatPanelStyles = () => (
         width: 8px; height: 8px;
         bottom: -1px; right: -1px;
         background: #1f8a5a;
-        border: 2px solid #fafaf5;
+        /* Cut out of the ground it sits on — white, now that the sheet is. */
+        border: 2px solid #ffffff;
       }
       /* Name and state on ONE line — the sheet's header is a strip, and a
          stacked two-line block here pushes the thread down for no gain. */

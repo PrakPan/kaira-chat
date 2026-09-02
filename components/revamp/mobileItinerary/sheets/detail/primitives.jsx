@@ -327,6 +327,159 @@ export function PhotoMosaic({ images, full, alt }) {
   );
 }
 
+// Tile placement, copied area-for-area from the POI/activity drawers' own
+// mosaic (components/drawers/common/ImageGrid.jsx) so a place opened from the
+// day reads as the same object it does everywhere else in the app. Areas are
+// row-start / col-start / row-end / col-end on a 10x4 grid: one tall tile left,
+// one tall right, two stacked between them.
+const GRID_AREAS = {
+  1: ["1 / 1 / 5 / 11"],
+  2: ["1 / 1 / 5 / 6", "1 / 6 / 5 / 11"],
+  3: ["1 / 1 / 5 / 4", "1 / 4 / 5 / 7", "1 / 7 / 5 / 11"],
+  4: ["1 / 1 / 5 / 4", "1 / 8 / 5 / 11", "1 / 4 / 3 / 8", "3 / 4 / 5 / 8"],
+};
+
+function GridTile({ src, area, index, alt, showAll, onOpen }) {
+  return (
+    <button
+      type="button"
+      onClick={() => onOpen(index)}
+      style={{ border: "none", background: "none", padding: 0, gridArea: area }}
+      className="relative h-full w-full overflow-hidden rounded-[10px]"
+    >
+      <img
+        src={src}
+        alt={alt ? `${alt} ${index + 1}` : ""}
+        loading={index === 0 ? "eager" : "lazy"}
+        decoding="async"
+        className="h-full w-full object-cover"
+        style={{ ...IMG_RESET, display: "block", background: "#eef0f4" }}
+      />
+      {/* Same affordance the hotel mosaic uses — underlined white text over a
+          scrim — so "there are more of these" looks the same on both sheets.
+          A span, not a button: it is inside one. */}
+      {showAll ? (
+        <span
+          style={{ background: "rgba(11,18,32,0.42)" }}
+          className="absolute inset-0 grid place-items-center px-[4px]"
+        >
+          <span
+            style={{ borderBottom: "1px solid #ffffff" }}
+            className="pb-[1px] text-center text-[12px] font-[600] leading-[1.25] text-white"
+          >
+            Show all photos
+          </span>
+        </span>
+      ) : null}
+    </button>
+  );
+}
+
+/**
+ * A place's photos, as the mosaic the POI and activity drawers draw.
+ *
+ * Not the sideways strip: a place is looked at before it is read about, and
+ * four tiles seen at once say more about whether you want to go than three and
+ * a half you have to swipe through. Past four, the last tile carries the way
+ * into the full-screen gallery.
+ */
+export function PhotoGrid({ images, full, alt, height = 208 }) {
+  const list = (images || []).filter(Boolean);
+  const large = (full || []).filter(Boolean);
+  const [open, setOpen] = React.useState(null);
+  if (!list.length) return null;
+
+  const shown = list.slice(0, 4);
+  const areas = GRID_AREAS[shown.length];
+
+  return (
+    <>
+      <div className="px-4 pb-4">
+        <div
+          className="grid w-full gap-[6px]"
+          style={{
+            gridTemplateColumns: "repeat(10, 1fr)",
+            gridTemplateRows: "repeat(4, 1fr)",
+            height,
+          }}
+        >
+          {shown.map((src, i) => (
+            <GridTile
+              key={`${src}-${i}`}
+              src={src}
+              area={areas[i]}
+              index={i}
+              alt={alt}
+              showAll={list.length > shown.length && i === shown.length - 1}
+              onOpen={setOpen}
+            />
+          ))}
+        </div>
+      </div>
+
+      {open !== null ? (
+        <PhotoGallery
+          images={large.length ? large : list}
+          alt={alt}
+          index={open}
+          onClose={() => setOpen(null)}
+        />
+      ) : null}
+    </>
+  );
+}
+
+/**
+ * The carousel's page dots.
+ *
+ * ONE indicator for every carousel, however many photos it holds. This used to
+ * fall back to a "4 / 20" counter past six photos, on the grounds that twenty
+ * dots are a texture rather than an indicator — which is true, but the answer
+ * to that is not a second design. It is the phone's own answer: a WINDOW of at
+ * most seven dots that slides with you, its outermost dots shrunk to say the
+ * run continues past them. A five-photo room and a twenty-photo room now read
+ * as the same control.
+ */
+const DOT_WINDOW = 7;
+
+function Dots({ count, current }) {
+  if (count < 2) return null;
+
+  // Keep the active dot mid-window until the run's own ends are reached.
+  const start = Math.max(
+    0,
+    Math.min(current - (DOT_WINDOW >> 1), count - DOT_WINDOW),
+  );
+  const end = Math.min(count, start + DOT_WINDOW);
+  const shown = [];
+  for (let i = start; i < end; i += 1) shown.push(i);
+
+  return (
+    <div className="pointer-events-none absolute inset-x-0 bottom-[8px] flex items-center justify-center gap-[5px]">
+      {shown.map((i) => {
+        const active = i === current;
+        // An edge of the WINDOW that is not an edge of the run: the smaller
+        // dot is what says there are more photos beyond it.
+        const faded =
+          (i === start && start > 0) || (i === end - 1 && end < count);
+        const size = active ? 5 : faded ? 3 : 5;
+
+        return (
+          <span
+            key={`dot-${i}`}
+            className="rounded-full transition-all"
+            style={{
+              width: active ? 14 : size,
+              height: size,
+              background: active ? "#ffffff" : "rgba(255,255,255,0.55)",
+            }}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
 /**
  * A carousel — one photo at a time, swiped, inside a card.
  *
@@ -380,32 +533,7 @@ export function PhotoCarousel({ images, full, alt, height = 138 }) {
           ))}
         </div>
 
-        {/* Dots, and a count once there are more of them than dots can carry
-            without becoming a texture. */}
-        {list.length > 1 ? (
-          list.length <= 6 ? (
-            <div className="pointer-events-none absolute inset-x-0 bottom-[8px] flex items-center justify-center gap-[5px]">
-              {list.map((src, i) => (
-                <span
-                  key={`dot-${src}-${i}`}
-                  className="h-[5px] rounded-full transition-all"
-                  style={{
-                    width: i === current ? 14 : 5,
-                    background:
-                      i === current ? "#ffffff" : "rgba(255,255,255,0.55)",
-                  }}
-                />
-              ))}
-            </div>
-          ) : (
-            <span
-              className="pointer-events-none absolute bottom-[8px] right-[8px] rounded-full px-[8px] py-[3px] font-mono text-[10px] tracking-[0.06em] text-white"
-              style={{ background: "rgba(11,18,32,0.55)" }}
-            >
-              {current + 1} / {list.length}
-            </span>
-          )
-        ) : null}
+        <Dots count={list.length} current={current} />
       </div>
 
       {open !== null ? (

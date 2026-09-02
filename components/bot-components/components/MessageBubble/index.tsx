@@ -38,67 +38,45 @@ function useUserAvatarSrc(): string | null {
   return USER_IMAGE_CDN + candidate;
 }
 
-// Shared responsive rules for the message bubble. On phones the avatar
-// (Kaira on the left, user on the right) eats horizontal room in the flex
-// row — we lift it out of flow and re-pin it as a small floating badge
-// overlapping the bubble's top corner. Also tightens the bubble max-width
-// and adds a hint of horizontal padding so cards don't kiss the screen
-// edge. Desktop layout is unchanged.
-// `!important` is required because the avatar divs set sizing/display
-// inline, and we override `.msg.kaira` / `.msg.user` inline `maxWidth`.
+// Shared responsive rules for the message bubble.
+//
+// Phones keep DESKTOP'S row: the avatar in flow at the head of the flex row,
+// on the same line as whatever opens the turn — the "Thought for Xs" pill, or
+// the bubble itself. It was previously lifted out of flow and re-pinned as a
+// floating badge over the bubble's top-left corner, which bought the bubble
+// 40px of width and cost the turn its header: the icon sat on a line of its
+// own above the thought pill, reading as a separate message.
+//
+// Kaira's bubble keeps desktop's paper too (#fafaf5, set inline where the
+// bubble is rendered) rather than the white-with-a-hairline it used to take
+// here. That override existed because the sheet's ground WAS #fafaf5, and a
+// paper bubble on a paper ground has no edge — so the panel now stays white on
+// phones as well (see `.kp-root` in ChatKitPanel), and paper-on-white reads as
+// the soft card it does on desktop, corner and all.
+//
+// What is still phone-only: gutters so cards don't kiss the screen edge, the
+// smaller type scale, and the user bubble's dark fill — the top-right notch
+// that points at its author matches desktop.
 const MessageBubbleResponsiveStyles: React.FC = () => (
   <style dangerouslySetInnerHTML={{ __html: `
     @media (max-width: 767px) {
       .msg {
         position: relative;
-        padding-top: 14px;
         /* Keep bubbles off the screen edges on phones. */
         padding-left: 12px;
         padding-right: 12px;
       }
-      /* Bot bubble fills the row on mobile. The avatar is absolutely
-         positioned (below), so it floats above the bubble's top-left
-         corner without pushing the content. */
       .msg.kaira {
         max-width: 100% !important;
         width: 100%;
       }
       .msg.kaira > .chatWrapper,
       .msg.kaira > div:not(.msg-avatar) { flex: 1 1 auto; min-width: 0; }
-      .msg-avatar {
-        position: absolute !important;
-        top: 0 !important;
-        width: 24px !important;
-        height: 24px !important;
-        box-sizing: border-box !important;
-        z-index: 2;
-        border: 2px solid #fff !important;
-        box-shadow: 0 1px 4px rgba(11,18,32,0.18);
-      }
-      .msg.kaira .msg-avatar { left: 12px; }
-      .msg.user  .msg-avatar { right: 12px; }
-
-      /* ── Bubbles, as the mobile design draws them ──────────────────────
-         Kaira's sheet is PAPER (#fafaf5), not white. Her bubble used to be
-         #fafaf5 too, which on the old white pane read as a tinted card and
-         on the sheet reads as nothing at all — same colour as the ground it
-         sits on. White with a hairline is what separates it, and it is what
-         the design specifies.
-
-         The asymmetric corner points at its author: 4px on the bottom-left
-         for Kaira, bottom-right for the user, so a glanced thread is
-         attributable without reading it. */
-      .msg.kaira .chat-md:not(.user),
-      .msg.kaira > div > div[class*="chat-md"]:not(.user) {
-        background: #ffffff !important;
-        border: 1px solid #ececec !important;
-        border-radius: 16px 16px 16px 4px !important;
-        padding: 10px 13px !important;
-        color: #0b1220;
-      }
       .msg.user .chat-md.user {
         background: #0b1220 !important;
-        border-radius: 16px 16px 4px 16px !important;
+        /* TL TR BR BL — barely rounded at the top-right, where the tail
+           attaches. */
+        border-radius: 16px 3px 16px 16px !important;
         padding: 10px 14px !important;
       }
       .msg .chat-md {
@@ -1549,6 +1527,61 @@ const ChatMdStyles: React.FC = () => (
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }
+    /* ── The tail ───────────────────────────────────────────────────────
+       A chat app's bubble has a point on it, aimed at whoever said it. A
+       squared corner alone was too quiet to read as a direction, so the
+       bubble grows a small curved fin off that corner: up-LEFT for Kaira, at
+       her avatar, and up-RIGHT for the user, at theirs. Both avatars sit at the
+       top of their row (it is top-aligned, and an avatar is 30px against a
+       bubble of any height), which is why the tail is at the top and not,
+       as it started, at the bottom.
+
+       The wedge takes "background: inherit" rather than a colour, so it is
+       always the bubble's own fill — Kaira's paper, the user's ink, the
+       phone's slightly darker ink — with nothing to keep in sync.
+
+       Desktop and phone alike; there is no media query on this block. */
+    .chat-md.kaira, .chat-md.user { position: relative; }
+    .chat-md.kaira::before,
+    .chat-md.user::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      /* 5px out, 14px down: 3 of the 8 sit INSIDE the bubble, so the fin and
+         the bubble are one continuous shape with no join to see.
+
+         Taller than it is wide, deliberately. At 6x11 the curve was shallow
+         enough to read as a bump on the corner; stretching the same
+         quarter-ellipse over nearly three times its width makes it a steep,
+         tapering fin — sharper, without going back to a straight-edged
+         triangle. */
+      width: 8px;
+      height: 14px;
+      background: inherit;
+      pointer-events: none;
+    }
+    /* The curve is the whole point. A clip-path triangle gave the tail a
+       straight diagonal running into a hard point, which is what read as a
+       chipped corner rather than a tail — messaging apps draw a fin whose
+       underside CURVES back into the bubble.
+
+       So instead of clipping, the corner is rounded away: an elliptical
+       bottom radius the full size of the box carves a quarter-ellipse out of
+       the underside, leaving a fin that is widest where it meets the bubble's
+       top edge and tapers smoothly to nothing 14px down. The small radius on
+       the outer corner takes the needle off the tip. */
+    .chat-md.kaira::before {
+      left: -5px;
+      border-bottom-left-radius: 8px 14px;
+      /* 2px, not 4: enough to take the needle off the tip, not enough to
+         round it into a lobe. */
+      border-top-left-radius: 2px;
+    }
+    .chat-md.user::before {
+      right: -5px;
+      border-bottom-right-radius: 8px 14px;
+      border-top-right-radius: 2px;
+    }
     .chat-md p { margin: 0 0 6px; }
     .chat-md p:last-child { margin-bottom: 0; }
     .chat-md ul, .chat-md ol { margin: 6px 0; padding-left: 18px; }
@@ -1753,9 +1786,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
         }}
       >
         {/* Kaira avatar — same gradient ring + image as text replies, so
-            content widget messages read as part of the same turn. Hidden on
-            phones (see MessageBubbleResponsiveStyles) to give the widget
-            card full width. */}
+            content widget messages read as part of the same turn. */}
         <div
           aria-hidden
           className="msg-avatar"
@@ -1781,7 +1812,9 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
             style={{
               background: "#fafaf5",
               borderRadius: 16,
-              borderBottomLeftRadius: 5,
+              // The squared corner points at the AUTHOR: top-left, beside
+              // Kaira's avatar. See the note on the text bubble below.
+              borderTopLeftRadius: 2,
               padding: "11px 12px",
               wordBreak: "break-word",
               overflowWrap: "anywhere",
@@ -1887,7 +1920,9 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                 padding: "11px 15px",
                 background: "#0f1a2e",
                 borderRadius: 16,
-                borderBottomRightRadius: 5,
+                // Mirror of Kaira's, tail and all — the user's avatar sits
+                // top-right on this row (it is `row-reverse`).
+                borderTopRightRadius: 3,
                 wordBreak: "break-word",
                 overflowWrap: "anywhere",
               }}
@@ -2011,7 +2046,17 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
               padding: "11px 15px",
               background: "#fafaf5",
               borderRadius: 16,
-              borderBottomLeftRadius: 5,
+              // The squared corner is the bubble's tail, and a tail points at
+              // whoever said it. The avatars sit at the TOP of the row — it is
+              // top-aligned, and an avatar is 30px against a bubble of any
+              // height — so this is the top-left corner for Kaira and the
+              // top-right for the user (see the user branch).
+              //
+              // Barely rounded, so the tail (see .chat-md.kaira::before in
+              // ChatMdStyles) grows out of the corner rather than being stuck
+              // onto it — but not square, which under a small nib reads as a
+              // chopped corner.
+              borderTopLeftRadius: 3,
               willChange: "contents",
               transition: "opacity 0.1s ease",
               wordBreak: "break-word",
@@ -2248,7 +2293,8 @@ export const ItineraryCloneCta: React.FC<ItineraryCloneCtaProps> = ({
         minWidth: 0,
         overflow: "hidden",
         borderRadius: 16,
-        borderBottomLeftRadius: 5,
+        // Kaira's card, so Kaira's notch — top-left, at her avatar.
+        borderTopLeftRadius: 2,
         border: "1px solid #2C3360",
         background:
           "radial-gradient(120% 140% at 100% 0%, #232a4f 0%, #181D38 55%)",
