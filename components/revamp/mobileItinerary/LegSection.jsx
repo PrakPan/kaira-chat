@@ -378,13 +378,27 @@ export default function LegSection({
         onChange={() => onChangeStay?.(leg)}
       />
 
-      {leg.extras.map((x) => (
+      {leg.extras.map((x) => {
+        // An extra is a transfer — a sightseeing taxi, an airport run — so it
+        // takes the travel rows' glyph and colour rather than a blank tile. The
+        // tile stays (it is what keeps the title column aligned with the stay
+        // row above) and carries the travel tint instead of the placeholder
+        // grey, so an intracity taxi reads as the same kind of thing as the
+        // arrival that got the leg here.
+        const ExtraIcon = modeIconFor(x.modeKey);
+        return (
         <div
           key={x.bookingId || x.name}
           style={T.card}
           className="flex items-center gap-[11px] px-[12px] py-[12px]"
         >
-          <div className="h-[28px] w-[28px] flex-none rounded-[6px] bg-[#e6e8ec]" />
+          <span
+            className="flex h-[28px] w-[28px] flex-none items-center justify-center rounded-[6px]"
+            style={{ background: "#eff4fe" }}
+            aria-hidden
+          >
+            <ExtraIcon size={15} color={TRAVEL_INK} />
+          </span>
           <button
             type="button"
             onClick={() => onOpenExtra?.(leg, x)}
@@ -404,7 +418,8 @@ export default function LegSection({
             BOOKED
           </span>
         </div>
-      ))}
+        );
+      })}
 
       {leg.days.length > 0 && (
         <div style={T.dayList}>

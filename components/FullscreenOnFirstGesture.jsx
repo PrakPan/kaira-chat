@@ -22,10 +22,16 @@ import { useEffect } from "react";
  * user leaves fullscreen themselves — swipe-down, Esc, the back gesture — the
  * session is flagged and we do not drag them back in on their next tap.
  *
+ * NOT ON DEV HOSTS: localhost and LAN addresses are skipped outright, because
+ * that is where a desktop browser emulates a phone in the DevTools device
+ * toolbar — which passes every check here and makes the first click fullscreen
+ * the real window. See isDevHost below for what that then breaks.
+ *
  * Escape hatches for QA: `?fullscreen=0` opts the session out, `?fullscreen=1`
- * clears the flags and re-arms. (`?fullscreen=0` is also the quickest way to
- * confirm a layout bug is fullscreen's doing: if the symptom goes with it, it
- * is the viewport that changed, not the component.)
+ * clears the flags, re-arms, and overrides the dev-host skip (that is how you
+ * test this on a real phone against `npm run dev`). (`?fullscreen=0` is also
+ * the quickest way to confirm a layout bug is fullscreen's doing: if the
+ * symptom goes with it, it is the viewport that changed, not the component.)
  *
  * ALSO OWNS `--app-vh` — see useFullscreenViewportHeight below. Entering
  * fullscreen changes the viewport, and on Android Chrome it changes it without
@@ -69,6 +75,43 @@ const fullscreenSupported = () =>
       document.mozFullScreenEnabled ||
       document.msFullscreenEnabled,
   );
+
+/**
+ * A local or LAN development host.
+ *
+ * WHY THIS IS A GATE: a dev host is where a desktop browser spends its life
+ * pretending to be a phone. Chrome's DevTools device toolbar emulates
+ * `pointer: coarse`, touch and a mobile UA, so every check below passes and the
+ * FIRST CLICK in device mode throws the real browser window into fullscreen.
+ * That alone is a surprise mid-debugging, but the damage is downstream: from
+ * then on the shell's height is a MEASURED px value (see --app-vh below)
+ * instead of `100dvh`, and the emulated viewport DevTools paints does not have
+ * to agree with what that measurement returns. When it comes back larger, the
+ * shell overflows the viewport and the page starts scrolling — which is how the
+ * itinerary ends up shifted up with a blank strip under it.
+ *
+ * There is no honest feature test for "is this really a phone" — under
+ * emulation the UA, the pointer, the touch points and `screen` are all
+ * overridden — so this gates on the one thing emulation cannot fake: the host
+ * the page was served from. A real device pointed at a dev server opts back in
+ * with `?fullscreen=1`.
+ */
+const isDevHost = () => {
+  const h = window.location.hostname;
+  return (
+    h === "localhost" ||
+    h === "127.0.0.1" ||
+    h === "[::1]" ||
+    h === "::1" ||
+    h === "0.0.0.0" ||
+    h.endsWith(".local") ||
+    h.endsWith(".localhost") ||
+    // Private IPv4 ranges — a phone testing against `npm run dev` over the LAN.
+    /^10\./.test(h) ||
+    /^192\.168\./.test(h) ||
+    /^172\.(1[6-9]|2\d|3[01])\./.test(h)
+  );
+};
 
 /**
  * Enter fullscreen on <html>. Exported so a header control or a "watch this
@@ -229,6 +272,10 @@ export default function FullscreenOnFirstGesture() {
     }
 
     if (readFlag(OPT_OUT_KEY) || readFlag(ATTEMPTED_KEY)) return undefined;
+
+    // Never on a dev host unless explicitly asked for — see isDevHost above.
+    // `?fullscreen=1` is the way to test this on a real device over the LAN.
+    if (override !== "1" && isDevHost()) return undefined;
 
     // Touch devices only. A desktop browser yanked into fullscreen by a stray
     // click is hostile, and there is no address bar worth reclaiming there.

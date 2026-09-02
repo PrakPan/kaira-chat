@@ -13,7 +13,7 @@ import LiveDetailBody from "./LiveDetailBody";
 //  what keeps them from drifting apart.
 //
 //  Callers pass `detail`:
-//    { kind, name, meta, imageUrl, blurb, facts: [{k, v}],
+//    { kind, name, meta, imageUrl, Icon, iconColor, blurb, facts: [{k, v}],
 //      segments: [{modeLabel, modeKey, title, durationLabel}],
 //      policy, hasMap, statusLabel, status, contextLabel,
 //      live: { … }  ← see below,
@@ -21,12 +21,13 @@ import LiveDetailBody from "./LiveDetailBody";
 //      canRemove, removeLabel, removeMessage }
 //
 //  `live` names a booking that has a detail endpoint behind it — a transfer, a
-//  stay, a day element. When it is present the BODY is the real booking,
-//  fetched and rendered by the same components desktop uses (LiveDetailBody);
-//  the blurb/facts/map fallback below is what a row with nothing to fetch (the
-//  visa & eSIM block) still shows. The header and the footer are untouched
-//  either way — they are the same on every detail sheet by design, and the
-//  only thing that changes between them is what sits in between.
+//  stay, a day element, a visa or eSIM. When it is present the BODY is the real
+//  booking, fetched and rendered by LiveDetailBody off the same endpoints
+//  desktop reads; the blurb/facts/map fallback below is what a row with nothing
+//  to fetch shows instead (a POI the traveller has not booked, say). The header
+//  and the footer are untouched either way — they are the same on every detail
+//  sheet by design, and the only thing that changes between them is what sits
+//  in between.
 //
 //  NO PRICE ever appears here. Reading about a booking must not turn into an
 //  audit of a line item that isn't separately payable — the same rule that
@@ -123,14 +124,21 @@ export default function DetailSheet({
       <div className="flex h-full flex-col">
         <div className="flex-none px-[14px]">
           <div className="flex items-start gap-[12px] border-b border-[#e6e8ec] pb-[11px]">
+            {/* The photo, or — for the rows that never have one, a taxi and the
+                visa/eSIM block — the same glyph their row in the trip carries,
+                so opening one doesn't swap its identity for a blank tile. */}
             <div
-              className="h-[58px] w-[58px] flex-none rounded-[11px] bg-[#eef0f4] bg-cover bg-center"
+              className="flex h-[58px] w-[58px] flex-none items-center justify-center rounded-[11px] bg-[#eef0f4] bg-cover bg-center"
               style={
                 d.imageUrl
                   ? { backgroundImage: `url("${d.imageUrl}")` }
                   : undefined
               }
-            />
+            >
+              {!d.imageUrl && d.Icon ? (
+                <d.Icon size={22} color={d.iconColor || "#6b7280"} aria-hidden />
+              ) : null}
+            </div>
             <div className="min-w-0 flex-1">
               <div className="font-mono text-[9.5px] tracking-[0.08em] text-[#8a93a6]">
                 {d.kind}

@@ -3,6 +3,7 @@ import React from "react";
 import TransferDrawer from "../../../../containers/itinerary/TransferDrawer";
 import StayDetail from "./detail/StayDetail";
 import ElementDetail from "./detail/ElementDetail";
+import AncillaryDetail from "./detail/AncillaryDetail";
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  LiveDetailBody — the real booking, inside the mobile detail sheet.
@@ -30,11 +31,16 @@ import ElementDetail from "./detail/ElementDetail";
 //     header already names the thing and whose only action is Kaira. Same
 //     endpoints, same facts, laid out in this surface's design.
 //
+//   • VISA & eSIM likewise. The desktop drawers for those are built around
+//     picking and buying one — a price card and an "Add to Cart" — so they are
+//     no more reusable here than the hotel panel was.
+//
 //  `live` is built by MobileItinerary from the view model:
-//    { kind: "transfer", bookingId, bookingType, combo, isSightseeing, title }
-//    { kind: "stay",     bookingId }
-//    { kind: "element",  elementType: "activity"|"poi"|"restaurant",
-//                        id, itineraryCityId, dayIndex, slabIndex }
+//    { kind: "transfer",  bookingId, bookingType, combo, isSightseeing, title }
+//    { kind: "stay",      bookingId }
+//    { kind: "element",   elementType: "activity"|"poi"|"restaurant",
+//                         id, itineraryCityId, dayIndex, slabIndex }
+//    { kind: "ancillary", id, items: [{ id, type: "Visa"|"eSIM", name }] }
 // ─────────────────────────────────────────────────────────────────────────────
 
 const noop = () => {};
@@ -77,6 +83,27 @@ export default function LiveDetailBody({ live }) {
         id={live.id}
         itineraryCityId={live.itineraryCityId}
       />
+    );
+  }
+
+  // "Before you fly" is one ROW but can be several bookings — a visa and an
+  // eSIM, or a visa each for two passports. They stack, each fetched on its
+  // own, so one failing to load doesn't take the others down with it. The mono
+  // heading only appears when there is more than one to tell apart.
+  if (live.kind === "ancillary") {
+    const items = (live.items || []).filter((item) => item && item.id);
+    if (!items.length) return null;
+    return (
+      <>
+        {items.map((item) => (
+          <AncillaryDetail
+            key={item.id}
+            bookingId={item.id}
+            type={item.type}
+            heading={items.length > 1 ? (item.name || item.type) : null}
+          />
+        ))}
+      </>
     );
   }
 

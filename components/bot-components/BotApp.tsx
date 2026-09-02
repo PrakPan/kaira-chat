@@ -738,6 +738,33 @@ export default function BotApp({
   }, [itineraryRedux?.status]);
   const isV1 =
     useSelector((state: any) => state.ItineraryStatus?.version) === "v1";
+
+  // ── The document must never scroll under the shell ───────────────────────
+  // <main> below is `h-app overflow-hidden` — exactly one viewport tall, with
+  // the itinerary pane as the only scroller. But `--app-vh` (the height `h-app`
+  // resolves to) is a JS measurement whenever fullscreen is engaged, and a
+  // measurement taken against a viewport that is not the one being painted —
+  // a fullscreen transition sampled mid-flight, or a desktop browser emulating
+  // a phone in DevTools, where the first tap enters fullscreen — leaves <main>
+  // TALLER than the screen. The page then becomes scrollable, and the mobile
+  // itinerary's scrollIntoView (MobileItinerary scrolls to whatever Kaira just
+  // changed) scrolls the whole shell up: the trip clips off the top, a blank
+  // strip opens below it, and the cart bar stays behind because it is `fixed`
+  // to the viewport rather than to the shell.
+  //
+  // Locking the viewport bounds that failure to a few pixels of shell sitting
+  // off-screen instead of a page that visibly comes apart. See the
+  // `.app-shell-locked` rule in styles/globals.css.
+  //
+  // NOT for v1, which returns ItineraryContainer below instead of the shell —
+  // that is an ordinary long page and scrolls the window for a living.
+  useEffect(() => {
+    if (isV1) return undefined;
+    const root = document.documentElement;
+    root.classList.add("app-shell-locked");
+    return () => root.classList.remove("app-shell-locked");
+  }, [isV1]);
+
   const statusDisplayText = useSelector(
     (state: any) => state.ItineraryStatus?.display_text,
   );

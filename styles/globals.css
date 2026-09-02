@@ -120,6 +120,47 @@
     }
 }
 
+/* ── App-shell scroll lock ─────────────────────────────────────────────────
+   Set on <html> by the bot shell for as long as it is mounted (see the
+   `app-shell-locked` effect in components/bot-components/BotApp.tsx).
+
+   The shell is one viewport tall and `overflow: hidden` — the itinerary pane
+   inside it is the only scroller, and the DOCUMENT is never meant to scroll.
+   Nothing enforced that, though, and the shell's height comes from `--app-vh`,
+   which is a JS MEASUREMENT while fullscreen is engaged. Any measurement that
+   comes back taller than the painted viewport (a fullscreen transition sampled
+   mid-flight, a desktop browser emulating a phone in DevTools) makes <main>
+   overflow the viewport, and the page silently becomes scrollable. The next
+   scrollIntoView — the mobile itinerary fires one whenever Kaira moves
+   something — then drags the whole shell up: the trip clips off the top, a
+   blank strip opens where the shell's bottom edge used to be, and the cart bar
+   stays put because it is `fixed` to the viewport, not the shell.
+
+   Locking the viewport turns that class of bug back into what it should be:
+   at worst a few pixels of the shell sit off-screen, never a page that moves. */
+html.app-shell-locked {
+    /* Clips whatever the shell overflows by, so a bad height is a few pixels
+       off-screen rather than something you can reach. NOT sufficient on its
+       own: neither `hidden` nor `clip` on the root stops the viewport being
+       scrolled PROGRAMMATICALLY — window.scrollTo and scrollIntoView move it
+       exactly as before, and scrollIntoView is the call that shifts the shell
+       here. The body rule below is what actually removes the scroll. */
+    overflow: hidden;
+    overscroll-behavior: none;
+}
+
+/* Takes body out of flow, so the document's scrollable area is the viewport and
+   nothing — user gesture or script — has anywhere to scroll it to. Out-of-flow
+   boxes contribute no scrollable overflow, so an oversized <main> can no longer
+   lengthen the page.
+   `position`/`inset` only: components/ui/Drawer.js writes `body.style.overflow`
+   inline on every sheet open and close, and an inline style would win over any
+   overflow declared here. */
+html.app-shell-locked body {
+    position: fixed;
+    inset: 0;
+}
+
 html {
     scroll-behavior: auto !important;
     scrollbar-gutter: stable;

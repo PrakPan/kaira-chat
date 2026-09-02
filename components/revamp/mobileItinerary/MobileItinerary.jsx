@@ -1,5 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { shallowEqual, useSelector } from "react-redux";
+// Font Awesome, like the transfer glyphs in modeAccent.js — one icon family
+// across the surface, so a passport doesn't arrive drawn at a different weight
+// from the car two rows above it.
+import { FaPassport, FaSimCard } from "react-icons/fa";
 
 import buildTripViewModel, { mediaUrlFromKey } from "../../../lib/tripViewModel";
 import { formatMoney } from "../../../services/money";
@@ -10,6 +14,7 @@ import DetailSheet from "./sheets/DetailSheet";
 import prompts from "./kairaPrompts";
 import * as T from "./designTokens";
 import TripHeader from "./TripHeader";
+import getModeAccent from "../common/components/bookingDetail/modeAccent";
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  MobileItinerary — the whole trip on one scroll, on a phone.
@@ -317,6 +322,10 @@ export default function MobileItinerary({
         contextLabel: `Taxi in ${leg.city}`,
         name: extra.name,
         meta: extra.meta,
+        // A taxi has no photo. It carries the same mode glyph its row does,
+        // in the transfer blue this surface draws every journey in.
+        Icon: getModeAccent(extra.modeKey).Icon,
+        iconColor: "#1a4fd6",
         live: extra.bookingId
           ? {
               kind: "transfer",
@@ -343,39 +352,40 @@ export default function MobileItinerary({
   );
 
   // "Before you fly" — the visa/eSIM block, in the same sheet as everything
-  // else. Deliberately NOT the existing VisaDetailDrawer / EsimDetailDrawer:
-  // those quote a supplier price and offer to buy, and a price is the one thing
-  // that must never appear on a package surface.
+  // else, and now with the same BODY as everything else: the real bookings,
+  // fetched from /bookings/ancillary/<id>/ by AncillaryDetail. It used to
+  // describe itself out of the view model's tally alone ("A data plan so you
+  // land connected", ESIM · 1 plan), which said nothing the row above it had
+  // not already said.
+  //
+  // Deliberately NOT the existing VisaDetailDrawer / EsimDetailDrawer: those
+  // quote a supplier price and offer to buy, and a price is the one thing that
+  // must never appear on a package surface.
   const handleOpenAncillaries = useCallback(() => {
-    const { visaCount, esimCount } = ancillaries;
+    const { visaCount, esimCount, items } = ancillaries;
+    // One booking names itself in the header, the way a stay or a flight does.
+    // Several keep the summary line, and the sheet labels each body below it.
+    const only = items.length === 1 ? items[0] : null;
     setSheet({ type: "detail", detail: {
       kind: "BEFORE YOU FLY",
       contextLabel: "Visa & eSIM",
-      name: [
-        visaCount ? `Visa × ${visaCount}` : null,
-        esimCount ? (esimCount === 1 ? "eSIM" : `eSIM × ${esimCount}`) : null,
-      ]
-        .filter(Boolean)
-        .join(" + "),
+      name: only
+        ? only.name || only.type
+        : [
+            visaCount ? `Visa × ${visaCount}` : null,
+            esimCount ? (esimCount === 1 ? "eSIM" : `eSIM × ${esimCount}`) : null,
+          ]
+            .filter(Boolean)
+            .join(" + "),
       meta: "INCLUDED",
-      blurb: [
-        visaCount
-          ? `E-visa for ${visaCount} ${visaCount === 1 ? "passport" : "passports"}, applied for on your behalf.`
-          : null,
-        esimCount
-          ? `${esimCount === 1 ? "A data plan" : `${esimCount} data plans`} so you land connected.`
-          : null,
-      ]
-        .filter(Boolean)
-        .join(" "),
-      facts: [
-        { k: "VISA", v: visaCount ? `E-visa · ${visaCount} pax` : null },
-        {
-          k: "ESIM",
-          v: esimCount ? `${esimCount} ${esimCount === 1 ? "plan" : "plans"}` : null,
-        },
-        { k: "STATUS", v: "In your package" },
-      ],
+      Icon: visaCount > 0 ? FaPassport : FaSimCard,
+      live: {
+        kind: "ancillary",
+        // The sheet keys its body on this, so opening a different row refetches
+        // rather than painting the last booking under the new header.
+        id: items.map((item) => item.id).join("+"),
+        items,
+      },
       canChange: true,
       changeLabel: "Change",
       changeMessage: prompts.changeAncillaries(),
@@ -569,7 +579,21 @@ export default function MobileItinerary({
         {(ancillaries.visaCount > 0 || ancillaries.esimCount > 0) && (
           <div style={T.card}
             className="flex items-center gap-[11px] p-[13px]">
-            <div className="h-[28px] w-[28px] flex-none rounded-[6px] bg-[#e6e8ec]" />
+            {/* One row, and on a mixed trip two things behind it. The VISA wins
+                the glyph: it is the one that decides whether you board, and an
+                eSIM you can still buy at the airport. Neutral tile and grey
+                glyph, not the transfers' blue — nothing here is a journey. */}
+            <span
+              className="flex h-[28px] w-[28px] flex-none items-center justify-center rounded-[6px]"
+              style={{ background: "#eef0f4" }}
+              aria-hidden
+            >
+              {ancillaries.visaCount > 0 ? (
+                <FaPassport size={14} color="#6b7280" />
+              ) : (
+                <FaSimCard size={14} color="#6b7280" />
+              )}
+            </span>
             <div className="min-w-0 flex-1">
               <div className="text-[13.5px] font-[700] text-[#0b1220]">
                 Before you fly
