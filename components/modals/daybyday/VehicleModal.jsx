@@ -17,15 +17,17 @@ import {
 import { resolveImageUrl } from "../../../helper/imageUrl";
 import { optimizedMediaUrl } from "../../../lib/mediaImage";
 import {
-  addMinutesToDate,
   arrivalOffsetLabel,
   dayOffset,
+  durationMinutes,
   formatDateTime,
   formatMinutes,
   legEndpoints,
   legVehicle,
   legVehicleName,
+  packageDayNodes,
   paxLabel,
+  perDayFigure,
 } from "../../revamp/common/components/bookingDetail/format";
 
 /** An operator's logo, hard-constrained against the app's unscoped img rules. */
@@ -65,6 +67,7 @@ const VehicleDetailModal = ({
   isEmbedded,
   error,
   handleClose,
+  noChange,
   handleEditRoute,
 }) => {
   const [deleting, setDeleting] = useState(false);
@@ -79,6 +82,7 @@ const VehicleDetailModal = ({
     check_in,
     check_out,
     booking_type,
+    transfer_type,
     cancellation_policies,
     status,
   } = data;
@@ -116,9 +120,30 @@ const VehicleDetailModal = ({
     transfer_details?.start_datetime ||
     transfer_details?.gozo?.start_date;
   const depart = formatDateTime(departure);
-  const arrival = check_out
-    ? formatDateTime(check_out)
-    : addMinutesToDate(departure, transfer_details?.duration);
+
+  // Nearly half the rail and road bookings carry a `check_out` that is only a
+  // copy of `check_in` — the supplier never sent an arrival — and printing it
+  // gave the rail a leg that departed and arrived at the same minute. It is
+  // trusted only when it is actually later; failing that the leg's own duration
+  // says when it lands, and failing that the arrival simply goes unstamped.
+  const arrivesAt = (() => {
+    const start = departure ? new Date(departure) : null;
+    const startValid = start && !Number.isNaN(start.getTime());
+    const end = check_out ? new Date(check_out) : null;
+    const endValid = end && !Number.isNaN(end.getTime());
+
+    if (endValid && (!startValid || end > start)) return end;
+
+    const minutes = durationMinutes(transfer_details?.duration);
+    if (startValid && minutes) {
+      const derived = new Date(start);
+      derived.setMinutes(derived.getMinutes() + minutes);
+      return derived;
+    }
+
+    return endValid ? end : null;
+  })();
+  const arrival = arrivesAt ? formatDateTime(arrivesAt) : {};
 
   // `distance` is an object on the newer suppliers and a bare number on the
   // older ones; interpolating the object straight in printed "[object Object] km".
@@ -143,12 +168,57 @@ const VehicleDetailModal = ({
     formatMinutes(transfer_details?.results?.[0]?.duration);
 
   const { from, to, fromDetail, toDetail } = legEndpoints(data);
-  const arrivesLater = arrivalOffsetLabel(dayOffset(check_in, check_out));
+
+  // A city's sightseeing slot is not taxi-only: ops file self-booked trains,
+  // buses, ferries and rental cars into it too, and those arrive here rather
+  // than in the taxi drawer. Such a booking is sold by the day from a single
+  // pickup point, so — when it names no route to trace — its rail counts days
+  // the way the taxi drawer's does instead of drawing a line between two
+  // places. A sightseeing train that DOES name both ends (an intra-city hop
+  // between two stations) keeps the route rail: that route is the booking.
+  const isSightseeing = transfer_type === "sightseeing";
+  const hasRoute = !!(from && to && from !== to);
+  const isPackage = isSightseeing && !hasRoute;
+  const dayCount = Math.max(1, dayOffset(check_in, check_out) + 1);
+  const packageEnd = dayCount > 1 ? formatDateTime(check_out)?.date : null;
+  const packageSpan = [depart?.date, packageEnd].filter(Boolean).join(" – ");
+  // The quote's own "per day" suffix, dropped: everything below already says
+  // so, either in the chip's label or in the word after the day count.
+  const perDayDistance = isPackage ? perDayFigure(distance) : distance;
+  const perDayDuration = isPackage ? perDayFigure(totalDuration) : totalDuration;
+
+  // Whether the leg lands on a later date — measured against the same two
+  // stamps the rail is about to print, which on a segmented itinerary are the
+  // supplier's own and not the booking's.
+  //
+  // A package is exempt: it spans days by design, which is why its distance and
+  // duration are quoted per day, so its last date is not a late arrival — and
+  // on one that ends where it started, "arrives 3 days later" reads as
+  // something having gone wrong.
+  const arrivesLater = isSightseeing
+    ? null
+    : arrivalOffsetLabel(
+        dayOffset(
+          segments[0]?.departure_datetime || departure,
+          segments[segments.length - 1]?.arrival_datetime || arrivesAt,
+        ),
+      );
 
   // The rail is built from segments when the supplier sent them — a connection
   // becomes a mid-rail node rather than a nested card — and from the booking's
   // own two cities when it didn't.
   const nodes = (() => {
+    // A day package, whichever way it travels: one node per day.
+    if (isPackage) {
+      return packageDayNodes({
+        start: check_in,
+        days: dayCount,
+        meta:
+          [perDayDuration, perDayDistance].filter(Boolean).join(" · ") || null,
+        pickup: from,
+      });
+    }
+
     if (!segments.length) {
       return [
         {
@@ -270,14 +340,17 @@ const VehicleDetailModal = ({
   }
 
   const canChange =
-    !isEmbedded && !isSelfDrive && typeof handleEditRoute === "function";
+    !isEmbedded &&
+    !noChange &&
+    !isSelfDrive &&
+    typeof handleEditRoute === "function";
   const canDelete = !!handleDelete && type !== "combo";
 
   const body = (
     <>
       <JourneyRail nodes={nodes} accent={accent} />
 
-      <DetailSection label="Booking">
+      <DetailSection label={isPackage ? "Package" : "Booking"}>
         <FactChips
           facts={[
             {
@@ -285,8 +358,19 @@ const VehicleDetailModal = ({
               value: paxLabel(number_of_adults, number_of_children),
             },
             { label: "Class", value: travelClass },
-            { label: "Distance", value: distance },
-          ]}
+            // A package's figures are an allowance per day, not the length of a
+            // journey, so they are labelled as what they are — and the hours
+            // are worth stating, which on a routed leg the rail already does.
+            isPackage
+              ? { label: "Per day", value: perDayDistance }
+              : { label: "Distance", value: distance },
+            // How long it takes sits beside how far it goes, in both readings
+            // of the booking: a package's is its daily hours, a leg's is the
+            // journey.
+            isPackage
+              ? { label: "Hours", value: perDayDuration }
+              : { label: "Duration", value: totalDuration },
+          ].filter(Boolean)}
         />
       </DetailSection>
 
@@ -300,6 +384,8 @@ const VehicleDetailModal = ({
             <VehiclePhoto
               image={vehicle.image}
               alt={vehicleName || vehicle?.type}
+              vehicleType={vehicle?.type}
+              modelName={vehicle?.model_name}
               mode={accentKey}
             />
           ) : null}
@@ -349,8 +435,19 @@ const VehicleDetailModal = ({
         <DetailBand
           mode={accentKey}
           title={name}
-          kicker={[mode, depart?.date].filter(Boolean).join(" · ")}
-          summary={[totalDuration, distance].filter(Boolean).join(" · ")}
+          // A package runs across dates and a leg happens on one, so the band
+          // states whichever of the two this booking is — under the same mode
+          // that names it, since a sightseeing slot holds more than taxis.
+          kicker={[mode, isPackage ? packageSpan : depart?.date]
+            .filter(Boolean)
+            .join(" · ")}
+          summary={
+            isPackage
+              ? `${dayCount} ${dayCount === 1 ? "day" : "days"}${
+                  perDayDuration ? ` · ${perDayDuration} daily` : ""
+                }`
+              : [totalDuration, distance].filter(Boolean).join(" · ")
+          }
           status={status}
           onBack={handleClose}
           loading={loading}

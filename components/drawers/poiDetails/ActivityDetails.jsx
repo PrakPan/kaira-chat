@@ -24,6 +24,7 @@ import { IoFastFood, IoTicket, IoCheckmarkCircle, IoCloseCircle } from "react-ic
 import { MdTransferWithinAStation } from "react-icons/md";
 import { BiSolidCustomize } from "react-icons/bi";
 import ImageLoader from "../../ImageLoader";
+import ImageGrid, { buildGalleryImages } from "../common/ImageGrid";
 import SkeletonCard from "../../ui/SkeletonCard";
 import BackArrow from "../../ui/BackArrow";
 import { useAnalytics } from "../../../hooks/useAnalytics";
@@ -517,6 +518,39 @@ const ActivityDetails = (props) => {
       </span>
     );
 
+  // Hero + extra images, rendered as the POI drawers' mosaic when the booking's
+  // activity has extras (the booking API returns `extra_images` beside `image`).
+  const galleryImages = buildGalleryImages(props?.data);
+
+  const durationText = props.data?.ideal_duration_number
+    ? `${props.data.ideal_duration_number} ${
+        props.data.ideal_duration_number > 1
+          ? props.data?.ideal_duration_unit?.toLowerCase()
+          : props.data?.ideal_duration_unit?.toLowerCase()?.slice(0, -1)
+      }`
+    : null;
+
+  // Sits over the first (largest) image. On the mosaic that tile is only a
+  // third of the drawer wide, so the label is dropped for a clock glyph and the
+  // pill is kept on one line.
+  const renderDurationBadge = (compact) =>
+    durationText ? (
+      <div
+        className={`absolute bottom-1 left-2 flex flex-row items-center whitespace-nowrap rounded-full bg-[#0b1220] text-[#fafaf5] ${
+          compact ? "gap-1.5 px-2.5 py-[3px]" : "gap-2 px-[16px] py-[2px]"
+        }`}
+      >
+        {compact ? (
+          <FaClock size={11} />
+        ) : (
+          <div className="ttw-type-body">Approx Time:</div>
+        )}
+        <div className={compact ? "text-[11px] font-medium" : "ttw-type-body"}>
+          {durationText}
+        </div>
+      </div>
+    ) : null;
+
   return (
     <>
       {props?.data ? (
@@ -530,7 +564,17 @@ const ActivityDetails = (props) => {
           />
 
           <>
-            {props?.data?.image && (
+            {galleryImages.length > 1 ? (
+              /* Same extra-images mosaic the POI drawers render, hero first. */
+              <ImageGrid
+                images={galleryImages}
+                className="h-[240px] md:h-[300px] mt-[23px]"
+                overlay={renderDurationBadge(true)}
+                altPrefix={
+                  props?.data?.display_name || props?.data?.name || "Activity"
+                }
+              />
+            ) : props?.data?.image ? (
               <div>
                 {" "}
                 <div className="h-[180px] md:h-[300px] relative">
@@ -561,21 +605,7 @@ const ActivityDetails = (props) => {
                       noLazy
                     ></ImageLoader>
 
-                    {props.data?.ideal_duration_number ? (
-                      <div className="absolute bottom-1 left-2 bg-[#0b1220] text-[#fafaf5] px-[16px] py-[2px] rounded-full flex flex-row items-center gap-2">
-                        <div className="ttw-type-body">Approx Time:</div>
-                        <div className="ttw-type-body">
-                          {props.data.ideal_duration_number}{" "}
-                          {props.data.ideal_duration_number > 1
-                            ? props.data?.ideal_duration_unit?.toLowerCase()
-                            : props.data?.ideal_duration_unit
-                                ?.toLowerCase()
-                                ?.slice(0, -1)}
-                        </div>
-                      </div>
-                    ) : (
-                      <></>
-                    )}
+                    {renderDurationBadge(false)}
                   </div>
 
                   <div
@@ -633,7 +663,7 @@ const ActivityDetails = (props) => {
                   <SkeletonCard height={"100%"} />
                 </div> */}
               </div>
-            )}
+            ) : null}
           </>
           <div className="">
             {/* Name lives in the sticky BookingDetailHeader above. */}

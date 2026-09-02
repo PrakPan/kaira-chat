@@ -84,11 +84,13 @@ export const takePendingSeed = () => {
 };
 
 /**
- * Stash structured theme context (`{ items, slug }`) to hand off to /chat
- * alongside the seed prompt. `items` is the list the user selected on the
- * theme page; `slug` identifies the theme (e.g. "hokkaido-powder"). Passing a
- * falsy/empty value clears any previously-stored context so a later plain seed
- * doesn't inherit a stale selection.
+ * Stash structured theme context (`{ items, slug, note, intake }`) to hand off
+ * to /chat alongside the seed prompt. `items` is the list the user selected on
+ * the theme page; `slug` identifies the theme (e.g. "hokkaido-powder");
+ * `intake` is the structured payload sent as the first /chatkit request's
+ * `intake` field (see components/theme/cinematic/themeIntake.ts) and is stored
+ * verbatim. Passing a falsy/empty value clears any previously-stored context so
+ * a later plain seed doesn't inherit a stale selection.
  */
 export const setPendingSeedMeta = (meta) => {
   const ss = safeSession();
@@ -97,19 +99,25 @@ export const setPendingSeedMeta = (meta) => {
   const slug = meta?.slug || "";
   // Free text typed into a theme page's docked ask-bar before "Build trip".
   const note = typeof meta?.note === "string" ? meta.note.trim() : "";
-  if (!slug && items.length === 0 && !note) {
+  const intake =
+    meta?.intake && typeof meta.intake === "object" ? meta.intake : null;
+  if (!slug && items.length === 0 && !note && !intake) {
     ss.removeItem(SEED_META_KEY);
     return;
   }
   try {
-    ss.setItem(SEED_META_KEY, JSON.stringify({ items, slug, note }));
+    ss.setItem(
+      SEED_META_KEY,
+      JSON.stringify({ items, slug, note, ...(intake ? { intake } : {}) }),
+    );
   } catch {
     /* noop */
   }
 };
 
 /** Read-once counterpart to setPendingSeedMeta. Returns `null` when nothing
- *  was stashed, else `{ items, slug, note }`. */
+ *  was stashed, else `{ items, slug, note, intake }` (`intake` is `null` when
+ *  the handoff carried none — e.g. the "Build trip" form route). */
 export const takePendingSeedMeta = () => {
   const ss = safeSession();
   if (!ss) return null;
@@ -122,6 +130,10 @@ export const takePendingSeedMeta = () => {
       items: Array.isArray(parsed?.items) ? parsed.items : [],
       slug: typeof parsed?.slug === "string" ? parsed.slug : "",
       note: typeof parsed?.note === "string" ? parsed.note : "",
+      intake:
+        parsed?.intake && typeof parsed.intake === "object"
+          ? parsed.intake
+          : null,
     };
   } catch {
     return null;

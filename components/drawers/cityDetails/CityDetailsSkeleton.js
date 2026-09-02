@@ -1,46 +1,49 @@
 import styled from "styled-components";
-import media from "../../../components/media";
 import SkeletonCard from "../../ui/SkeletonCard";
 
-const CityDetailsSkeleton = (props) => {
-  const Container = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    padding: 16px;
-    width: 100vw;
-    @media screen and (min-width: 768px) {
-      width: 500px;
-    }
-  `;
-  const Title = styled.p`
-    font-weight: 800;
-    font-size: 20px;
-  `;
-  let isPageWide = media("(min-width: 768px)");
+// Same fluid rule as CityDetails' own Container: match the drawer rather than a
+// fixed 500px / 100vw, so the loading state doesn't sit narrow on a wide
+// desktop drawer or overflow a phone sideways before the data lands.
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+`;
 
+const Title = styled.p`
+  font-weight: 800;
+  font-size: 20px;
+`;
+
+const CityDetailsSkeleton = (props) => {
   return (
     <Container>
-      <SkeletonCard width={isPageWide ? "468px" : "100%"} height={"188px"} />
+      <SkeletonCard width={"100%"} height={"188px"} />
       <Title>{props.name}</Title>
-      <SkeletonCard height={"100px"} width={"325px"} />
+      {/* Deliberately short blocks stay short, but never wider than the drawer
+          — 325px overflows a 320px phone once the gutters are taken off. */}
+      <SkeletonCard height={"100px"} width={"min(325px, 100%)"} />
 
       <div>
-        <SkeletonCard width={"140px"} height={"20px"} mb={"10px"} />
-        <SkeletonCard width={isPageWide ? "468px" : "100%"} height={"84px"} />
+        <SkeletonCard width={"min(140px, 100%)"} height={"20px"} mb={"10px"} />
+        <SkeletonCard width={"100%"} height={"84px"} />
       </div>
 
       <div>
-        <SkeletonCard width={"200px"} height={"20px"} mb={"10px"} />
-        <SkeletonCard width={isPageWide ? "468px" : "100%"} height={"120px"} />
+        <SkeletonCard width={"min(200px, 100%)"} height={"20px"} mb={"10px"} />
+        <SkeletonCard width={"100%"} height={"120px"} />
       </div>
 
       <div>
-        <SkeletonCard width={"140px"} height={"20px"} mb={"10px"} />
-        <SkeletonCard width={isPageWide ? "468px" : "100%"} height={"100px"} />
+        <SkeletonCard width={"min(140px, 100%)"} height={"20px"} mb={"10px"} />
+        <SkeletonCard width={"100%"} height={"100px"} />
       </div>
 
-      <SkeletonCard width={isPageWide ? "468px" : "100%"} height={"150px"} />
+      <SkeletonCard width={"100%"} height={"150px"} />
     </Container>
   );
 };

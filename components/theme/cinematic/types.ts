@@ -42,6 +42,46 @@ export interface CinematicSelectableItem {
   id?: string;
 }
 
+// What a prompt states about the trip it asks for. A card whose copy reads
+// "10 nights in the Cyclades in May for a couple" declares those three facts
+// here, and they travel to /chatkit as `intake` keys (month / nights / pax)
+// instead of being left for the backend to parse out of the sentence — the
+// same keys the themed mini-form submits.
+//
+// Declared next to the page's PROMPTS map via promptIntakeMap() so the numbers
+// and the sentence stating them are edited together. Every field is optional
+// and an absent one is simply not sent, so a prompt that names no month has no
+// `month` key rather than a blank one.
+export interface CinematicPromptIntake {
+  /** Month the prompt is written for, 1–12. Resolved forward to its next
+   *  bookable occurrence when the prompt fires, so a config never goes stale. */
+  month?: number;
+  /** Day of that month the trip must START on, for a prompt built around a
+   *  fixed date — a Hogmanay street party, the Boxing Day Test, a New Year's
+   *  Eve finish, a festival week. Set it whenever the prompt names an event,
+   *  and pick the day so `nights` actually COVERS that event: a nine-night
+   *  "New Year's Eve finish" needs to start on the 26th, not mid-month, or the
+   *  dates end before the 31st. Without it the trip leaves mid-month, which is
+   *  right for a prompt with no date in it. */
+  day?: number;
+  /** Nights the prompt asks for. Together with `month` this also produces the
+   *  `dates` range, running from `day` when one is set and from the mini-form's
+   *  mid-month departure otherwise. */
+  nights?: number;
+  /** Who the prompt is for — one of the intake form's WHO_OPTIONS values:
+   *  "Just me" | "Couple" | "Family" | "Friends" | "Parents / seniors".
+   *  Anchors the pax group; without it no traveller keys are sent. */
+  who?: string;
+  /** Defaults to 1 for "Just me" and 2 otherwise, matching the form. */
+  adults?: number;
+  children?: number;
+  infants?: number;
+  /** The theme form's route this prompt maps onto, when it maps onto one —
+   *  `window` is the route key, `skeleton` its routing key. */
+  window?: string;
+  skeleton?: string;
+}
+
 // Image card used by the Bollywood / Hollywood style rows.
 export interface CinematicPromptCard {
   image: string;
@@ -78,6 +118,9 @@ export interface CinematicTripCard {
   price?: string;
   nights?: string;
   urgent?: string; // red urgency banner across the card footer
+  // What the price covers, as short mono chips ("Flights", "Rail pass",
+  // "Stays"). Rendered by the stacked layout only.
+  includes?: string[];
   objectPosition?: string; // cover-crop focal point (defaults to center)
   prompt?: string;
   // When set, clicking navigates here (e.g. an existing itinerary at
@@ -142,10 +185,20 @@ export interface CinematicStoryCard {
   rating: string;
   type: string;
   name: string;
-  route: string;
-  // What they actually said. Rendered as the card's body when present; without
-  // it the card is just the header + route, which still reads fine.
+  // The trip in a few words — "Street Party + Highlands", "6 nights ·
+  // Christmas week" — shown as a pill at the foot of the card. It is NOT a
+  // call to action: the card already ends in a "See itinerary →" CTA, so a
+  // route that restates it ("See their itinerary →") just prints the same
+  // button twice. Omit it and the card shows the CTA alone.
+  route?: string;
+  // What they actually said. Rendered as the card's body when present, wrapped
+  // in quote marks — so only ever real review text, never a paraphrase.
   quote?: string;
+  // Two or three lines describing the itinerary the card opens, for travellers
+  // whose review text we don't have. Fills the same body slot as `quote` but
+  // renders unquoted, because it is our description of the trip rather than
+  // anything the traveller said. `quote` wins if a card somehow carries both.
+  summary?: string;
   // When they travelled, e.g. "February 2026 · Niseko". Falls back to `type`.
   when?: string;
   prompt?: string;
@@ -173,13 +226,23 @@ export interface CinematicEatCard {
   item?: CinematicSelectableItem;
 }
 
-// Dark visa country card ("Your visa, handled"): the country, the cities it
-// covers, and the fee. Clicking opens the country's visa page (`href`).
+// Visa country card ("Your visa, handled"): the country, the cities it covers,
+// and the fee. Clicking saves the visa to the trip, the same as every other
+// "+ Add" element on the page. `href` is the fallback for a page that never
+// opted into selection — there the card stays a link to the country's visa
+// page.
 export interface CinematicVisaCard {
   country: string;
   cities?: string;
   fee?: string; // e.g. "€90"
   href?: string;
+  // A sentence of context, shown only on a page with one or two countries —
+  // there the card owns most of a column, and a bare name and fee floating in
+  // that much space reads like the section failed to load. Write what the
+  // reader can't get from the fee: what the entry rule costs them in planning,
+  // or what we do with the file. Ignored on a three-plus grid, which has no
+  // room for it.
+  line?: string;
 }
 
 // Small fact chip under the visa cards (label + value).
@@ -231,19 +294,43 @@ export interface CinematicFeatureCta {
   activityId?: string;
   activitySource?: string;
   prompt?: string;
+  // What the card's "+ Add" pill saves. Omit it and the `title` names the item
+  // (carrying `activityId` as its catalog id), which is what the JR Pass and
+  // long-tail-charter cards rely on — the pill has always said "+ Add", and now
+  // that the detail drawer is retired it does exactly that.
+  item?: CinematicSelectableItem;
+}
+
+// Numbered row in a `steps` section ("Sketch it. I'll finish it."): the
+// ordinal in a yellow disc, then what happens at that step.
+export interface CinematicStepRow {
+  n: string; // "01"
+  title: string;
+  line?: string;
 }
 
 // Discriminated union of the section blocks a page can stack. Order in the
-// config array is the render order.
-export type CinematicSection =
+// config array is the render order. Every block also accepts the options in
+// CinematicSectionOptions below — see CinematicSection.
+type CinematicSectionBlock =
   | {
       type: "cards";
       heading: CinematicHeading;
       cta?: CinematicSectionCta;
       cards: CinematicPromptCard[];
-      // Section background: "paper" (default) or "sand" (a warm neutral band,
-      // used to group sections like the Hokkaido "Which mountain is yours").
-      tone?: "paper" | "sand";
+      // Section background: "paper" (default), "sand" (a warm neutral band,
+      // used to group sections like the Hokkaido "Which mountain is yours"), or
+      // "dark" — the mockup's inset ink panel with a yellow heading and a
+      // yellow-filled CTA, for a short row that has to stop the scroll.
+      tone?: "paper" | "sand" | "dark";
+      // Paragraph under the heading. The dark panel is the only tone that reads
+      // with one; the light rows carry their explanation on the cards.
+      intro?: string;
+      // Keep the horizontal rail at every breakpoint instead of switching to a
+      // 3-up grid from md. For the mockup's "Pick a film" and "Experiences
+      // worth booking" scrollers, where eleven cards in a grid become four
+      // stacked rows and stop reading as a set of options.
+      rail?: boolean;
       // When set, each card shows a pill CTA at its foot with this label
       // (e.g. "Create this plan →"). Clicking anywhere on the card still fires
       // the card action; the label is a visual affordance. Omit to keep the
@@ -258,6 +345,9 @@ export type CinematicSection =
       // `item`. `itemKind` sets the category tag shown in the saved list.
       selectable?: boolean;
       itemKind?: string;
+      // Noun for the resting Add pill: "activity" renders "+ Add activity".
+      // Ignored unless `selectable` is set; the saved state stays "✓ Added".
+      addNoun?: string;
     }
   | {
       type: "trips";
@@ -265,6 +355,19 @@ export type CinematicSection =
       cards: CinematicTripCard[];
       // Full-width yellow CTA under each trip (e.g. "Book this itinerary →").
       ctaLabel?: string;
+      // "row" (default) is the side-thumbnail card every other theme page
+      // ships. "stacked" is the mockup's packaged-product card: cover photo on
+      // top, included-in chips, a ruled price line and an ink CTA.
+      layout?: "row" | "stacked";
+      // Keep the horizontal rail at every breakpoint instead of falling into
+      // the 3-up grid from md. For a section carrying four or more plans, where
+      // the grid strands the fourth on a row of its own and the set stops
+      // reading as one shelf of options. `stacked` only.
+      rail?: boolean;
+      // "band" lays the section on a full-bleed wash of the page's accentSoft,
+      // which is how the mockup separates the priced plans from the free
+      // browsing above and below them.
+      tone?: "paper" | "band";
     }
   | {
       type: "gradient";
@@ -311,6 +414,8 @@ export type CinematicSection =
       type: "stories";
       heading: CinematicHeading;
       cards: CinematicStoryCard[];
+      // Mono badge on the far end of the heading row, e.g. "★ 4.9".
+      badge?: string;
     }
   | {
       // Dark "Where to eat" scroller ("Where to come in from the cold").
@@ -319,19 +424,51 @@ export type CinematicSection =
       cards: CinematicEatCard[];
       // Optional pill CTA at the foot of each card (e.g. "Add restaurant →").
       ctaLabel?: string;
+      // Keep the horizontal rail at every breakpoint instead of falling into a
+      // 5-up grid from md — the mockup's "Where to eat" scroller, which stays
+      // one row however many tables are on it.
+      rail?: boolean;
       // When true, every card becomes an "+ Add" save-toggle (see the `cards`
       // section note). `itemKind` defaults to "restaurant" here.
       selectable?: boolean;
       itemKind?: string;
+      // Noun for the resting Add pill: "table" renders "+ Add table" instead of
+      // a bare "+ Add", which is what a restaurant card wants when the tray is
+      // a long way further down the page. Ignored unless `selectable` is set;
+      // the saved state stays the shared "✓ Added".
+      addNoun?: string;
     }
   | {
-      // Dark "Your visa, handled" section — intro, country fee cards, fact chips.
+      // "Your visa, handled" — one white card split in two: the heading, intro
+      // and a 2×2 grid of facts on the left, the country cards (each a
+      // "+ Add visa" save-toggle) on the right.
       type: "visa";
       heading: CinematicHeading;
       intro?: string;
+      // Only the countries THIS theme's trips actually cross — a Hokkaido page
+      // lists Japan, not the six other places someone might fly to instead.
+      // The right column sizes itself from the count (one or two go full-width
+      // and taller, three or more fall into two tracks), so a short, honest
+      // list costs nothing in layout.
       cards: CinematicVisaCard[];
+      // Rendered as a 2×2 grid, so four reads best; three leaves a hole and
+      // five wraps to an uneven third row.
       facts?: CinematicVisaFact[];
-      note?: ReactNode; // callout under the fact chips
+      // The mockup's closing block under the country cards: a primary CTA, and
+      // beneath it a callback strip for the reader who can't work out which
+      // country to apply through — the one question a grid of countries can't
+      // answer. Opt-in, and deliberately NOT the older `cta` key: five pages
+      // still carry a `cta` from before that button was removed, and reviving
+      // it here would put it back on all of them.
+      footer?: {
+        cta?: { label: string; href: string };
+        callback?: {
+          title: string;
+          line?: string;
+          cta: { label: string; href: string };
+        };
+      };
+      note?: ReactNode; // closing line under the facts
     }
   | {
       // Dark editorial feature block (e.g. the undersea Shinkansen): a couple of
@@ -342,13 +479,54 @@ export type CinematicSection =
       rows?: CinematicFeatureRow[];
       stats?: CinematicFeatureStat[];
       cta?: CinematicFeatureCta;
+    }
+  | {
+      // Dark closing block ("Sketch it. I'll finish it."): the heading and the
+      // page's primary CTA on one row, then a numbered 3-up of what happens
+      // after the reader taps it.
+      type: "steps";
+      heading: CinematicHeading;
+      rows: CinematicStepRow[];
+      // Yellow pill beside the heading — seeds `prompt`, or navigates `href`.
+      cta?: CinematicSectionCta;
+      // Mono reassurance under the CTA, e.g. "10,000+ trips · rated 4.9".
+      ctaNote?: string;
     };
+
+// Options every section accepts, whatever its own shape.
+export interface CinematicSectionOptions {
+  /** Hide this whole block below 640px — the shared `.ttw-wide-only`
+   *  breakpoint in globals.css — and keep it from there up. Decided in CSS
+   *  rather than JS on purpose: a `useMediaQuery` swap renders the section on
+   *  the server, then drops it at hydration, and the page shortens under the
+   *  reader's thumb. */
+  desktopOnly?: boolean;
+}
+
+// A block plus the shared options. Distributed member by member so
+// `Extract<CinematicSection, { type: "cards" }>` still resolves to one member;
+// a plain `CinematicSectionBlock & CinematicSectionOptions` would not, because
+// the intersection is no longer a naked union for the conditional to walk.
+type WithSectionOptions<T> = T extends unknown
+  ? T & CinematicSectionOptions
+  : never;
+
+export type CinematicSection = WithSectionOptions<CinematicSectionBlock>;
 
 // Film image shown as a rotated polaroid in the desktop hero collage.
 export interface CinematicHeroImage {
   image: string;
   caption?: string; // serif italic caption under the polaroid
-  href?: string; // optional navigation on click
+  // The scene this polaroid saves. When the page supplies a selection handler,
+  // clicking the polaroid toggles this item in and out of the trip (a green
+  // tick marks it saved). Omit it and the caption names the scene instead, so
+  // an existing config becomes selectable without being rewritten; a polaroid
+  // with neither stays purely decorative.
+  item?: CinematicSelectableItem;
+  /** @deprecated Ignored. The hero polaroids no longer navigate — they save
+   *  the scene they show. Existing configs may still carry this; it has no
+   *  effect. */
+  href?: string;
 }
 
 export interface CinematicHeroConfig {
@@ -403,6 +581,10 @@ export interface CinematicThemeConfig {
   // Theme colours. Omit for the neutral ink/yellow default.
   theme?: CinematicThemePalette;
   hero: CinematicHeroConfig;
+  // Content measure for every section, e.g. "1440px". Defaults to the shared
+  // 1240px. Set per page rather than globally so widening one theme can't
+  // reflow the other ten.
+  maxWidth?: string;
   sections: CinematicSection[];
   askBar?: CinematicAskBar;
 }

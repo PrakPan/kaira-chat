@@ -2,12 +2,14 @@
 //
 // Renders a theme page's saved selection as a line of plain English.
 //
-// The /chatkit request body carries NO structured `items` field — the request
-// format is the same one every other chat surface uses (see
-// buildFirstMessageBody in hooks/useChat.ts). So the picks a reader made on a
-// theme page travel in the message text and nowhere else: this module is the
-// single place that turns them into words, used by both hand-off paths (the
-// plain card seed in useSeedChat, and the themed mini-form's submission).
+// On this branch the picks ALSO travel structurally — the first /chatkit body
+// carries them as `items`/`intake.items` (see buildFirstMessageBody in
+// hooks/useChat.ts), so this module is not their only route to the backend. It
+// exists so the themed mini-form's message still READS complete on its own:
+// the summary a human sees names the picks rather than referring to a payload
+// they can't see. Used by the mini-form's submission only — the plain card
+// seed (useSeedChat) hands its items over structurally and leaves the seed
+// text alone.
 
 export interface SelectedItemLike {
   kind?: string;

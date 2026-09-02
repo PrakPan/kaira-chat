@@ -15,8 +15,9 @@ import {
   arrivalOffsetLabel,
   dayOffset,
   formatDateTime,
+  packageDayNodes,
   paxLabel,
-  railStamp,
+  perDayFigure,
 } from "../../revamp/common/components/bookingDetail/format";
 import ComboTaxi from "../taxis/ComboTaxi";
 import {
@@ -25,6 +26,12 @@ import {
   MultiVehicleNote,
   VehicleCountBadge,
 } from "../taxis/MultiVehicleInfo";
+import {
+  getCancellationPolicy,
+  getVendorCharges,
+  vendorChargeFacts,
+} from "../taxis/VendorCharges";
+import { currencySymbols } from "../../../data/currencySymbols";
 
 const TaxiDetailModal = ({
   data,
@@ -46,6 +53,7 @@ const TaxiDetailModal = ({
   isAirport,
   setIsTransferDrawerOpen,
   handleEditRoute,
+  hideVehicle,
 }) => {
   const [showTaxi, setShowTaxi] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -113,11 +121,31 @@ const TaxiDetailModal = ({
     (item) => item && item.key,
   );
 
+  // Whether tolls and state tax are inside this fare or collected at the kerb, per the
+  // supplier. Empty for a source that does not itemise, and for anything booked before
+  // mercury started recording it — the section below is hidden in both cases rather
+  // than asserting "not included", which would be a worse lie than saying nothing.
+  const vendorCharges = getVendorCharges(data);
+  const fareIncludes = vendorChargeFacts(
+    vendorCharges,
+    // The block stamps its own currency, so prefer that over the booking's: an
+    // itinerary whose currency was switched after booking rewrites the booking but
+    // never the stored quote, and these amounts are still in the currency they were
+    // quoted in.
+    currencySymbols?.[vendorCharges?.currency || data?.currency] || "",
+  );
+
   // A sightseeing package is sold by the day from a single pickup point, so it
   // has no drop address — its rail counts days rather than tracing a route.
   const isSightseeing = transfer_type === "sightseeing";
   const hasRoute = !!(originName && destinationName);
   const dayCount = Math.max(1, dayOffset(check_in, check_out) + 1);
+
+  // A package's allowance is quoted as "80 kms per day" / "8 hours per day",
+  // and every slot below already says so — in the chip's label, or in the word
+  // after the day count — so the supplier's suffix comes off first.
+  const perDayDistance = isSightseeing ? perDayFigure(distance) : distance;
+  const perDayDuration = isSightseeing ? perDayFigure(durationText) : durationText;
 
   const modeLabel = is_airport_pickup
     ? "Airport pickup"
@@ -142,7 +170,7 @@ const TaxiDetailModal = ({
   // What the band states in one line: a route leg is summarised by how far and
   // how long, a day package by how many days it runs for.
   const summary = isSightseeing
-    ? `${dayCount} ${dayCount === 1 ? "day" : "days"}${durationText ? ` · ${durationText} daily` : ""}`
+    ? `${dayCount} ${dayCount === 1 ? "day" : "days"}${perDayDuration ? ` · ${perDayDuration} daily` : ""}`
     : [durationText, distance].filter(Boolean).join(" · ");
 
   const kicker = isSightseeing
@@ -152,17 +180,12 @@ const TaxiDetailModal = ({
   const nodes = (() => {
     // Sightseeing: one node per day at the traveller's disposal.
     if (isSightseeing && !hasRoute) {
-      return Array.from({ length: dayCount }, (_, i) => {
-        const stamp = railStamp(check_in, i);
-        return {
-          kind: "day",
-          key: `day-${i}`,
-          time: `Day ${i + 1}`,
-          date: stamp.date,
-          title: "At your disposal",
-          subtitle: [durationText, distance].filter(Boolean).join(" · ") || null,
-          tag: i === 0 && originName ? `Pickup: ${originName}` : null,
-        };
+      return packageDayNodes({
+        start: check_in,
+        days: dayCount,
+        meta:
+          [perDayDuration, perDayDistance].filter(Boolean).join(" · ") || null,
+        pickup: originName,
       });
     }
 
@@ -188,8 +211,14 @@ const TaxiDetailModal = ({
         date: arrival?.shortDate,
         title: trip?.destination?.city_name || destinationName || "Drop",
         subtitle: trip?.destination?.city_name ? destinationName : null,
-        tag: arrivalOffsetLabel(dayOffset(check_in, check_out)),
-        tagTone: "warn",
+        // A package spans days by design — the car is at the traveller's
+        // disposal for each of them, which is why its distance and duration are
+        // quoted per day — so its last date is not a late arrival. Warning that
+        // a car booked in Munnar "arrives 3 days later" in Munnar reads as
+        // something having gone wrong.
+        tag: isSightseeing
+          ? null
+          : arrivalOffsetLabel(dayOffset(check_in, check_out)),
       },
     ];
   })();
@@ -254,14 +283,20 @@ const TaxiDetailModal = ({
               value: paxLabel(number_of_adults, number_of_children),
             },
             isSightseeing
-              ? { label: "Per day", value: distance }
+              ? { label: "Per day", value: perDayDistance }
               : { label: "Distance", value: distance },
-            isSightseeing ? { label: "Hours", value: durationText } : null,
+            isSightseeing ? { label: "Hours", value: perDayDuration } : null,
           ].filter(Boolean)}
         />
       </DetailSection>
 
-      {(vehicle || fleet) && (
+      {/* `hideVehicle` is set by a package drawer that has already put this exact car
+          at the top as "the car, throughout" — the legs of a multi-city chain share
+          their vehicles, so each of them repeating the same photo and the same five
+          chips pushes the leg's own detail off the screen. It is passed per leg and
+          only when the car really matches, so a leg that rides in something else
+          still describes it. */}
+      {(vehicle || fleet) && !hideVehicle && (
         <DetailSection
           label="Vehicle"
           // Count, not the fleet label: the note and the per-cab cards directly
@@ -307,6 +342,8 @@ const TaxiDetailModal = ({
             <VehiclePhoto
               image={vehicle?.image}
               alt={vehicle?.type}
+              vehicleType={vehicle?.type}
+              modelName={vehicle?.model_name}
               mode="Taxi"
             />
           )}
@@ -376,8 +413,29 @@ const TaxiDetailModal = ({
         </DetailSection>
       ) : null}
 
-      <PolicyNote html={data?.cancellation_policy} />
-      <PolicyNote html={data?.cancellation_policies} />
+      {/* What the booked fare covers and how it cancels, as the supplier stated it at
+          the time of booking. The figures are the SUPPLIER's — they reconcile with the
+          taxi's own price, not with the booking total, which carries our service fee
+          and GST on top. Both disappear entirely when the supplier stated neither.
+
+          The policy is read through the resolver rather than off the booking's own
+          keys: only a handful of sources put it at the top level, and every Gozo taxi
+          carries it down on `transfer_details.quote.price`, where a flat lookup finds
+          nothing and silently renders no policy at all.
+
+          Both are withheld inside a combo rail. Every leg of a chain is sold on one
+          supplier's quote, so a leg answers these identically to its siblings, and
+          repeating the same three chips and the same page of policy under each service
+          buries the leg's own detail. The package drawer collects them across the legs
+          and states them once, below all of them — see `collectAcrossLegs` in
+          TransferDrawer, which also covers the case where the legs DON'T agree. */}
+      {!isEmbedded && fareIncludes.length ? (
+        <DetailSection label="Fare includes">
+          <FactChips facts={fareIncludes} />
+        </DetailSection>
+      ) : null}
+
+      {!isEmbedded ? <PolicyNote html={getCancellationPolicy(data)} /> : null}
     </>
   );
 

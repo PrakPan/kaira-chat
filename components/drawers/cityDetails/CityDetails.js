@@ -1,7 +1,6 @@
 import React from "react";
 import { useState } from "react";
 import ImageLoader from "../../ImageLoader";
-import media from "../../media";
 import styled from "styled-components";
 import Text from "./Text";
 import WeatherWidget from "../../WeatherWidget/WeatherWidget";
@@ -63,15 +62,18 @@ const TextBold = styled.p`
   color: rgb(1, 32, 43);
 `;
 
+// The drawer is a percentage of the viewport on desktop and full-bleed on
+// mobile, so its content has to be fluid too. This used to be pinned at 500px
+// on desktop, which left a dead gap down the right of any wider drawer, and at
+// 100vw on mobile — where, sitting inside the drawer's own horizontal padding,
+// it was wider than its parent and scrolled the page sideways.
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  padding: 16px;
-  width: 100vw;
-  @media screen and (min-width: 768px) {
-    width: 500px;
-  }
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 `;
 
 const TimeStamp = styled.p`
@@ -92,7 +94,6 @@ const TimeStamp = styled.p`
 
 const CityDetails = (props) => {
   const [imageLoading, setImageLoading] = useState(true);
-  let isPageWide = media("(min-width: 768px)");
   function scrollToTargetAdjusted(id) {
     const element = document.getElementById(id);
     const headerOffset = 117;
@@ -116,8 +117,11 @@ const CityDetails = (props) => {
       )}
     </MapInfo>
   );
+  // Vertical padding only — the drawer's scroll wrapper already supplies the
+  // horizontal gutter (px-6 / px-4), and adding a second one here is what made
+  // the content sit narrower than the drawer it lives in.
   return (
-    <Container style={{ padding: "0.5rem 1rem" }}>
+    <Container style={{ padding: "0.5rem 0" }}>
       <div style={{ position: "relative" }}>
         <ImageLoader
           borderRadius="8px"
@@ -137,11 +141,7 @@ const CityDetails = (props) => {
           Ideal duration - {props.data.ideal_duration_days} days
         </TimeStamp>}
       </div>
-      {imageLoading && (
-        <div
-          style={{ width: isPageWide ? "468px" : "100%", height: "188px" }}
-        />
-      )}
+      {imageLoading && <div style={{ width: "100%", height: "188px" }} />}
       <Title>{props.data.name}</Title>
       {props.data.short_description && (
         <div>

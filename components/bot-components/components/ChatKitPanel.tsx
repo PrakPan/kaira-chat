@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback, useMemo } from "react"
 import { optimizedMediaUrl } from "../../../lib/mediaImage";
 import { useRouter } from "next/router";
 import axios from "axios";
-import { useChat, generateSessionId, getPlatform, type UserLocationData, type MessageAttachment, type ThemeSelectedItem, Message } from "../hooks/useChat";
+import { useChat, generateSessionId, getPlatform, resolveRestoredTranscript, type UserLocationData, type MessageAttachment, type ThemeSelectedItem, Message } from "../hooks/useChat";
 import { MessageBubble, isButtonOnlyWidget, ItineraryCloneCta } from "./MessageBubble";
 import { MessageInputBox } from "./MessageInputBox";
 import { CHATKIT_API_DOMAIN_KEY as CHATKIT_DOMAIN_KEY } from "../lib/chatkitConfig";
@@ -62,6 +62,7 @@ import { TOTAL_STEPS } from "./IntakeForm/constants";
 import { parseShowPricingForm, parsePricingFormWidgetId, parsePricingCardCopy, isPricingFormWidgetId } from "./PricingForm/pricingPrompt";
 import ReleaseItineraryCta from "./ReleaseItineraryCta";
 import { isStaffEmail } from "../../../utils/staffUser";
+import { pushUrlDetached } from "../../../helper/historyUrl";
 
 const PAGINATION_SCROLL_THRESHOLD = 80;
 const CHATKIT = CHATKIT_HOST;
@@ -91,40 +92,43 @@ const LoginButton = styled.button`
   font-weight: 600;
 `;
 
+// The Kaira mock's chip: a hairline white pill in ink text, sitting directly
+// above the composer pill it feeds. This used to be a phone-only override on a
+// squarer grey Montserrat chip; desktop now gets the same pill, so the quick
+// replies read as one control across breakpoints instead of two designs.
 const SingleChips = styled.button`
-  border-radius: 6px;
-  padding: 8px 12px;
-  border: 1px solid #e0e0e0;
-  font-family: Montserrat;
+  border-radius: 999px;
+  padding: 8px 13px;
+  border: 1px solid #dcdfe5;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   font-weight: 500;
-  font-size: 12px;
+  font-size: 11.5px;
   background: #fff;
-  color: #6E757A;
+  color: #0b1220;
   white-space: nowrap;
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s;
-  &:hover {
-    // background: #f0f7ff;
-    border-color: #1889ed;
-  }
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
   }
 
-  /* Phone — the Kaira mock's chips: a hairline white pill in ink text, sitting
-     directly above the composer pill it feeds. */
+  /* Pointer devices only — a phone has no hover state to give, and tying this
+     to a width breakpoint is what split the two designs in the first place. */
+  @media (hover: hover) {
+    &:hover:not(:disabled) {
+      background: #fafaf5;
+      border-color: #c9ced8;
+    }
+  }
+
+  /* Phone — the same pill, a touch heavier and quieter: on the sheet it sits on
+     the itinerary's paper ground rather than white, and the hairline needs the
+     extra weight to hold its edge there. */
   @media (max-width: 768px) {
-    border-radius: 999px;
-    padding: 8px 13px;
     border: 1px solid #cfd3da;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 11.5px;
     font-weight: 600;
     color: #445069;
-    &:hover {
-      border-color: #cfd3da;
-    }
   }
 `;
 
@@ -137,8 +141,8 @@ const QuickReplyShimmerChip: React.FC<{ width: string }> = ({ width }) => (
     aria-hidden="true"
     style={{
       width,
-      height: 32,
-      borderRadius: 6,
+      height: 33,
+      borderRadius: 999,
       border: "1px solid #f3f4f6",
       background:
         "linear-gradient(90deg, #f9fafb 0%, #f3f4f6 50%, #f9fafb 100%)",
@@ -171,6 +175,30 @@ export interface RouteEndpoints {
   end_city: CityEndpoint | null;
 }
 
+/** Effect names meaning "the completion process has been announced".
+ *
+ *  The backend renamed `start_itinerary_completion_process` to
+ *  `itinerary_completion_process_started`, so both are accepted: the live
+ *  stream can carry either during the deploy, and — more importantly —
+ *  threads already stored carry the OLD name in their persisted
+ *  `itinerary_effects`, which loadThread replays on every restore. Dropping
+ *  the old name would break restore for every existing thread. */
+export const COMPLETION_STARTED_EFFECTS = [
+  "itinerary_completion_process_started",
+  "start_itinerary_completion_process",
+] as const;
+
+/** The panel's own sendMessage, as handed to the host via `onSendReady`. The
+ *  host needs the whole signature, not just the text: a prompt seeded from a
+ *  theme page rides along as `intakePayload` (+ `formSubmitted`) so it reaches
+ *  /chatkit in the themed mini-form's request shape. */
+export type ChatSendFn = (
+  text: string,
+  attachmentIds?: string[],
+  attachmentMeta?: MessageAttachment[],
+  opts?: { formSubmitted?: boolean; intakePayload?: Record<string, unknown> },
+) => void;
+
 interface ChatKitPanelProps {
   onLocationReceived: (locationData: { data: Location[] }) => void;
   onRouteReceived: (routeData: { data: Location[] }) => void;
@@ -200,7 +228,7 @@ interface ChatKitPanelProps {
    *  `initialFiles` so the user can review the hero seed + uploaded
    *  attachment before sending the first message. */
   initialInputText?: string | null;
-  onSendReady?: (sendFn: (message: string) => void) => void;
+  onSendReady?: (sendFn: ChatSendFn) => void;
   onItineraryCompletionStart?: (itineraryId: string) => void;
 onItineraryCompletionDone?: (itineraryId: string, summary?: string) => void;
 onItineraryRefresh?: (itineraryId: string) => void;
@@ -272,6 +300,13 @@ themeItems?: ThemeSelectedItem[];
 themeSlug?: string;
 // Free text typed into the theme page's ask-bar before "Build trip".
 themeNote?: string;
+/** Structured `intake` payload composed by the theme page when it seeded this
+ *  chat — slug, which surface fired it, the reader's words or the canned prompt
+ *  behind the card, and the saved items (see theme/cinematic/themeIntake.ts).
+ *  Sent as `intake` on the seeded first /chatkit request, so a hero / ask-bar /
+ *  card send uses the same request shape as the themed mini-form's submission.
+ *  Absent on the "Build trip" route, where the form composes its own. */
+themeIntake?: Record<string, unknown>;
 /** Themed theme-page mini-form config (date windows + pax presets). When set
  *  together with `startThemedForm`, a themed 2-section form card is injected
  *  into the chat on mount instead of the 4-step intake. Nothing fires to
@@ -556,12 +591,11 @@ const ChatPanelStyles = () => (
       }
       .kp-composer-wrap { background: transparent; padding: 0 12px 14px; }
     }
-    /* The composer floats rather than sitting in a ruled tray: no top border,
-       and the separation from the thread comes entirely from the pill's own
-       drop shadow (see MessageInputBox .kp-row). Padding is a touch roomier
-       than the ruled version so the shadow has somewhere to fall. */
+    /* The composer sits in an unruled tray: no top border, no drop shadow on
+       the pill (see MessageInputBox .kp-row) — the padding and the pill's own
+       outline are all that separate it from the thread. */
     .kp-composer-wrap {
-  padding: 14px 20px 16px;
+  padding: 10px 10px 10px;
   background: #fff;
 }
 @media (max-width: 768px) {
@@ -849,6 +883,7 @@ loginMandatory,
 themeItems,
 themeSlug,
 themeNote,
+themeIntake,
 themeForm,
 startThemedForm = false,
 onViewItinerary,
@@ -886,6 +921,11 @@ startEmptyIntake = false,
   const themeFormRef = useRef<ThemeForm | null>(themeForm ?? null);
   themeFormRef.current = themeForm ?? null;
   const themedFormInjectedRef = useRef(false);
+  // The theme page's `intake` payload for the seeded first message. Held in a
+  // ref so the initialPrompt effect reads the current value without listing it
+  // as a dependency (the effect is one-shot and guarded by hasProcessedInitial).
+  const themeIntakeRef = useRef<Record<string, unknown> | undefined>(themeIntake);
+  themeIntakeRef.current = themeIntake;
   // Same one-shot guard for the in-chat pricing form card.
   const pricingFormInjectedRef = useRef(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
@@ -893,7 +933,16 @@ startEmptyIntake = false,
   const [pendingMessage, setPendingMessage] = useState<string | null>(null);
   const [postLoginLoading, setPostLoginLoading] = useState(false);
   const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
-  const [isMobile, setIsMobile] = useState(false);
+  // Seeded from the real viewport instead of `false`. Safe because this panel
+  // only ever renders inside BotApp, which is `dynamic(..., { ssr: false })`,
+  // so it is never server-rendered and there is no SSR markup to mismatch.
+  // Starting at `false` made the first client render the DESKTOP branch even on
+  // a phone, so desktop-only chrome (e.g. the `!isMobile` staff block below)
+  // painted once and then disappeared. Not a pattern for SSR'd components —
+  // see the note on `useMediaQuery` in hooks/useMedia.js.
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== "undefined" && window.innerWidth < 768,
+  );
   // True once any display_itinerary effect has fired in this thread (live
   // stream or replayed from restoredThread.itinerary_effects). Drives the
   // mobile "View Itinerary" CTA below the composer alongside botMode === "p2".
@@ -1856,7 +1905,7 @@ const handleSessionCreated = useCallback((ourSessionId: string) => {
 
   hasUpdatedUrl.current = true;
   const target = `/chat/${ourSessionId}`;
-  window.history.pushState({}, "", target);
+  pushUrlDetached(target);
   // The funnel scope is derived from this URL segment, which didn't exist when
   // chat_itinerary_started fired. Rebind so the rest of the funnel is recorded
   // against the same run instead of looking un-started and re-firing.
@@ -1933,6 +1982,8 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
     sessionId: sessionIdRef.current,
     onSessionCreated: handleSessionCreated,
     loginMandatory,
+    themeItems,
+    themeSlug,
   });
 
   // ── Context chips for the intake notes step ────────────────────────────────
@@ -2236,7 +2287,7 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
         typeof window !== "undefined" &&
         window.location.pathname !== target
       ) {
-        window.history.pushState({}, "", target);
+        pushUrlDetached(target);
       }
       onItineraryCompletionStart?.("pending");
       onItineraryCompletionDone?.(newId);
@@ -2658,7 +2709,16 @@ case "load_route_on_map": {
   break;
 }
 case "itinerary_completion_process_completed": {
-  const completedId = data.itinerary_id as string;
+  // THE polling trigger. The backend emits this once the completion chain is
+  // actually registered, so `/status/` has real task states to report by the
+  // time we ask. onItineraryCompletionDone sets the real itinerary id and turns
+  // polling on (see BotApp's handleItineraryCompletionDone).
+  //
+  // `summary` is optional — the current payload is { itinerary_id, session_id }
+  // — and falls back to the session id, which the backend sends alongside and
+  // which matches the itinerary id on this route.
+  const completedId =
+    (data.itinerary_id as string) || (data.session_id as string) || "";
   const summary = (data.summary as string) ?? "";
   if (completedId) {
     onItineraryCompletionDone?.(completedId, summary);
@@ -2683,13 +2743,23 @@ case "refresh_itinerary": {
   break;
 }
 
-case "start_itinerary_completion_process": {
+// Renamed by the backend; the old name is kept so the panel works either side
+// of the deploy (see COMPLETION_STARTED_EFFECTS).
+case "start_itinerary_completion_process":
+case "itinerary_completion_process_started": {
   const startId = data.itinerary_id as string;
+  // UI only: skeleton itinerary + PENDING statuses + the completing shimmer.
+  // It deliberately does NOT start status polling.
+  //
+  // This effect only announces that completion is ABOUT to run, and the backend
+  // emits it at different points depending on the turn — mid-stream on a
+  // route-confirm (before the pricing step has even run) and at the end on a
+  // pricing-form submit. Polling on it meant the first `/status/` call could
+  // land before the celery chain was registered, come back FAILURE on every
+  // task, and bounce the reader to /thank-you with a finished itinerary on
+  // screen. `itinerary_completion_process_completed` is the effect that means
+  // the chain is actually queued, so that is what starts polling now.
   onItineraryCompletionStart?.(startId ?? "pending");
-  // The itinerary ID arrives with this effect — set up polling with the real ID
-  if (startId) {
-    onItineraryCompletionDone?.(startId);
-  }
   // Server kicks off completion only after the user has confirmed their
   // itinerary, so this is a reliable trigger for chat_itinerary_confirmed
   // even when the explicit `itinerary.lock` effect doesn't arrive.
@@ -2970,7 +3040,7 @@ const sendMessage = useCallback(
     text: string,
     attachmentIds?: string[],
     attachmentMeta?: MessageAttachment[],
-    opts?: { formSubmitted?: boolean },
+    opts?: { formSubmitted?: boolean; intakePayload?: Record<string, unknown> },
   ) => {
     setQuickReplies([]);
     setQuickReplyShimmer(false);
@@ -3062,6 +3132,7 @@ const sendMessage = useCallback(
       interrupt: inQuickReplyPhaseRef.current,
       formSubmitted: opts?.formSubmitted,
       contextPrefix: intakeContextPrefix,
+      intakePayload: opts?.intakePayload,
     });
   },
   [rawSendMessage],
@@ -3080,14 +3151,17 @@ const handleIntakeComplete = useCallback(
 );
 
 // ── Themed mini-form completion ──────────────────────────────────────────────
-// Same contract as the intake form: the composed summary IS the payload. The
-// request body stays the standard /chatkit shape (no `intake` object, no
-// top-level `items`), so everything the reader chose — route, dates, nights,
-// travellers, and the picks they saved on the page — has to be readable in
-// `composed`. ThemeIntakeForm builds it that way; see its `submit()`.
+// Send the readable summary as the user message AND the structured payload
+// (slug/window/skeleton/month/dates/pax/items) as `intake` on the request body,
+// so the backend routes off the structured data. First fire to /chatkit for this
+// flow. The composed text stays fully readable on its own — the backend may read
+// either — but `intake` is what the routing is meant to key off.
 const handleThemedFormSubmit = useCallback(
-  (_submission: ThemeFormSubmission, composed: string) => {
-    sendMessage(composed, undefined, undefined, { formSubmitted: true });
+  (submission: ThemeFormSubmission, composed: string) => {
+    sendMessage(composed, undefined, undefined, {
+      formSubmitted: true,
+      intakePayload: submission as unknown as Record<string, unknown>,
+    });
   },
   [sendMessage],
 );
@@ -3409,7 +3483,20 @@ useEffect(() => {
       return;
     }
     hasProcessedInitial.current = true;
-    sendMessage(initialPrompt, initialAttachmentIds);
+    // A prompt seeded from a theme page carries that page's structured `intake`
+    // (slug, source, whatever the prompt states about month/nights/pax, the
+    // saved items), so hero / ask-bar / card sends land on /chatkit in the same
+    // request shape as the themed mini-form's submission — `form_submitted` at
+    // the root and the context under `intake`. Undefined for every other seed —
+    // the homepage hero, a restored thread — which sends exactly as before.
+    sendMessage(
+      initialPrompt,
+      initialAttachmentIds,
+      undefined,
+      themeIntakeRef.current
+        ? { formSubmitted: true, intakePayload: themeIntakeRef.current }
+        : undefined,
+    );
     onInitialPromptConsumed?.();
   }
 }, [initialPrompt, initialPromptRequiresLogin, isLoggedIn, initialAttachmentIds, locationReady, sendMessage, onInitialPromptConsumed]);
@@ -3634,10 +3721,18 @@ useEffect(() => {
   // which would otherwise re-run the body mid-stream and call setMessages(restored)
   // on top of a placeholder + streaming text — wiping the in-flight message.
   if (appliedRestoredThreadRef.current === restoredThread) return;
-  // Also skip if a stream is active — restoring the previous transcript on top
-  // of the live placeholder is never what we want.
-  if (isStreaming) return;
   appliedRestoredThreadRef.current = restoredThread;
+
+  // Whether a turn was in flight at the moment this payload landed. It used to
+  // be an early `if (isStreaming) return;` that did NOT mark the payload
+  // consumed, so the effect simply re-ran when the stream ended (isStreaming is
+  // a dep) and called setMessages(restored) on top of the finished turn —
+  // replacing the answer the reader had just watched arrive with a snapshot
+  // taken before they sent anything. Marking it consumed above and carrying the
+  // flag down to the setMessages call keeps the side effects below (effect
+  // replay, thread id, pagination cursors, quick replies) while making the
+  // transcript write itself conditional.
+  const streamingWhenReceived = isStreaming;
 
   // A thread the user chose to continue without login carries a root-level
   // `login_opted_out: true`. Mirror it into the ref (resetting to false for
@@ -3785,9 +3880,23 @@ useEffect(() => {
   // status="Draft" itinerary and clobber the real P2 data that the
   // ItineraryContainer fetches for the finalized trip — which is what made
   // P1 start-city pins resurface on P2 reloads.
-  const threadIsCompleted = itineraryEffects.some(
-    (e: any) => e?.name === "itinerary_completion_process_completed" && e?.data?.itinerary_id,
-  );
+  //
+  // Two independent signals, because neither alone covers it: the completion
+  // effect is only in the thread when the trip finalized *in this thread* (a
+  // trip finalized in an earlier thread, or still mid-celery, carries none),
+  // and botMode only reads "p2" once BotApp's restore has resolved the status
+  // API. Either one means the draft-shaped replay must be skipped.
+  //
+  // botMode is deliberately not added to this effect's dep array: the effect is
+  // fire-once per restoredThread (appliedRestoredThreadRef) and BotApp always
+  // resolves the stage — restoreItineraryDirectly, which applies p2 — before it
+  // calls setRestoredThread, so the prop is already settled when this runs.
+  // Adding it would only re-arm the mid-stream re-run this effect guards against.
+  const threadIsCompleted =
+    botMode === "p2" ||
+    itineraryEffects.some(
+      (e: any) => e?.name === "itinerary_completion_process_completed" && e?.data?.itinerary_id,
+    );
 
   let latestEndpointEffect: { name: string; data: Record<string, unknown> } | null = null;
   let restoredHasDisplayItinerary = false;
@@ -3862,7 +3971,9 @@ useEffect(() => {
     // added on refresh: in P1 (chat-only stage) a logged-out viewer may keep
     // chatting anonymously, so the composer stays open and the backend re-emits
     // `prompt_login` if/when an action genuinely needs an account.
-    setMessages(restored);
+    setMessages((prev) =>
+      resolveRestoredTranscript(restored, prev, streamingWhenReceived),
+    );
     // Land at the bottom of the restored transcript. Widgets and images lay
     // out asynchronously, so the scrollable height keeps growing for a beat
     // after setMessages — a single rAF snap leaves the user mid-thread.
@@ -3923,7 +4034,13 @@ useEffect(() => {
   if (qrEffect?.data?.quick_replies) {
     setQuickReplies(qrEffect.data.quick_replies.map((r: string) => ({ label: r })));
   }
-}, [restoredThread, isStreaming, parseThreadItems, onRouteReceived, onLocationReceived, onItineraryReceived, indexTransfersForLookup, emitEndpointsFromEffect, dispatch, onIntakeFormStart]);
+// `isStreaming` is read above but deliberately NOT a dep. The effect is
+// fire-once per restoredThread (appliedRestoredThreadRef), so the only run that
+// reads it is the one right after the payload commits — where the value is
+// already current. Listing it only re-invoked the effect on every stream
+// start/stop, which is exactly the mid-stream re-run this guards against.
+// eslint-disable-next-line react-hooks/exhaustive-deps
+}, [restoredThread, parseThreadItems, onRouteReceived, onLocationReceived, onItineraryReceived, indexTransfersForLookup, emitEndpointsFromEffect, dispatch, onIntakeFormStart]);
 
   // ── Pagination: fetch older messages ──────────────────────────────────────
   const fetchOlderMessages = useCallback(async () => {
@@ -4514,7 +4631,10 @@ const handleShowLogin = useCallback(() => {
 
               return (
               <MessageBubble
-                key={msg.id}
+                // Keyed on clientKey, not id: `id` is renamed mid-stream to the
+                // server's real message id, and keying on it remounts the bubble
+                // — it vanishes and replays its entry animation mid-turn.
+                key={msg.clientKey ?? msg.id}
                 message={msg}
                 entities={entities}
                 widgetDisabled={
@@ -4928,7 +5048,7 @@ const handleShowLogin = useCallback(() => {
                       url.searchParams.set("itinerary_city_id", itineraryCityId);
                     }
                     url.searchParams.set("taxiTab", initialTab);
-                    window.history.pushState({}, "", url.toString());
+                    pushUrlDetached(url.toString());
                     return;
                   }
 
@@ -5071,13 +5191,13 @@ const handleShowLogin = useCallback(() => {
           <div className="flex-shrink-0 px-3 md:!px-6 pt-2 pb-0 md:pb-1">
             <div className="mx-auto">
               <div
-                className="flex gap-[6px] md:gap-2 overflow-hidden pb-[10px] md:pb-1"
+                className="flex gap-[6px] md:gap-2 overflow-hidden md:pb-1"
                 style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
               >
                 {Array.from({ length: 10 }).map((_, idx) => (
                   <div
                     key={idx}
-                    className="flex-shrink-0 rounded-full md:rounded-[6px]"
+                    className="flex-shrink-0 rounded-full"
                     style={{
                       width: 96,
                       height: 33,
@@ -5101,7 +5221,7 @@ const handleShowLogin = useCallback(() => {
         <div className="flex-shrink-0 px-3 md:!px-6 pt-2 pb-0 md:pb-1">
           <div className="mx-auto">
             <div
-              className="flex gap-[6px] md:gap-2 overflow-x-auto pb-[10px] md:pb-1"
+              className="flex gap-[6px] md:gap-2 overflow-x-auto md:pb-1"
               style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             >
               {quickReplyLoading
@@ -5192,7 +5312,10 @@ const handleShowLogin = useCallback(() => {
                 ? "Just tell me anything you're planning…"
                 : "Ask me anything"
             }
-            showAttach={!isComposerLocked && !loginBlocked && !promptLoginBlocked}
+            // Stays mounted while the composer is locked: MessageInputBox
+            // renders the "+" inert in that state, so the pill keeps its full
+            // shape instead of collapsing to a lone placeholder.
+            showAttach
             onFilesSelected={handleFilesSelected}
             attachments={attachments}
             onRemoveAttachment={handleRemoveAttachment}
@@ -5666,7 +5789,7 @@ const handleShowLogin = useCallback(() => {
               url.searchParams.delete("drawer");
               url.searchParams.delete("itinerary_city_id");
               url.searchParams.delete("taxiTab");
-              window.history.pushState({}, "", url.toString());
+              pushUrlDetached(url.toString());
             }
           }}
         />

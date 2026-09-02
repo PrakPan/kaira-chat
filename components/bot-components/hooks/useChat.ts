@@ -24,6 +24,14 @@ export interface MessageAttachment {
 
 export interface Message {
   id: string;
+  /** Stable React key. `id` is swapped mid-stream for the server's real
+   *  message id (see onAssistantMessageId's adopt paths), and a list keyed on
+   *  `id` treats that rename as a different element — React unmounts the bubble
+   *  and mounts a new one, so it visibly disappears and re-enters with its
+   *  entry animation. Keying on this instead keeps the same element across the
+   *  rename. Absent on messages restored from history, which never rename;
+   *  callers fall back to `id`. */
+  clientKey?: string;
   role: "user" | "assistant";
   content: string;
   timestamp: Date;
@@ -87,12 +95,9 @@ export interface ClientEffect {
   data: Record<string, unknown>;
 }
 
-/** An item the user saved on a theme page. Used for in-app rendering only (the
- *  themed mini-form's chips) — it is NOT part of the /chatkit request body,
- *  which carries the same shape as every other chat surface. The saved picks
- *  reach the backend inside the message text; see
- *  components/theme/cinematic/selectionText.ts. Mirrors the theme layer's
- *  CinematicSelectableItem. */
+/** An item the user saved on a theme page, forwarded verbatim in the first
+ *  /chatkit request body's `items` field. Kept loose — the backend only reads
+ *  what it needs. Mirrors the theme layer's CinematicSelectableItem. */
 export interface ThemeSelectedItem {
   kind?: string;
   label?: string;
@@ -133,6 +138,14 @@ interface UseChatOptions {
    * from the body. Subsequent messages never include it.
    */
   loginMandatory?: boolean;
+  /**
+   * Theme-page context handed off from a /theme landing (see heroChatHandoff):
+   * the items the reader saved and a slug naming the theme. Both are forwarded
+   * on the very first /chatkit request (threads.create) as `items` / `slug`,
+   * and omitted when empty. Subsequent messages never include them.
+   */
+  themeItems?: ThemeSelectedItem[];
+  themeSlug?: string;
 }
 
 // ─── UUID helper ──────────────────────────────────────────────────────────────
@@ -229,6 +242,8 @@ function buildFirstMessageBody(
     sessionId: string;
     attachmentIds?: string[];
     loginMandatory?: boolean;
+    themeItems?: ThemeSelectedItem[];
+    themeSlug?: string;
   }
 ): Record<string, unknown> {
   const body: Record<string, unknown> = {
@@ -243,6 +258,9 @@ function buildFirstMessageBody(
   };
   if (opts.botMode === "p2" && opts.itineraryId) body.itinerary_id = opts.itineraryId;
   if (opts.loginMandatory !== undefined) body.login_mandatory = opts.loginMandatory;
+  // Theme-page hand-off: the saved items + theme slug (first request only).
+  if (opts.themeSlug) body.slug = opts.themeSlug;
+  if (opts.themeItems && opts.themeItems.length > 0) body.items = opts.themeItems;
   return body;
 }
 
@@ -365,6 +383,38 @@ interface SseHandlers {
    * collapsing it onto the first would strand the first message's text.
    */
   onAssistantMessageId?: (id: string, isNewItem: boolean) => void;
+  /**
+   * Fired on `thread.item.done` for an assistant_message that carries text,
+   * with the message's COMPLETE reply as the server stored it.
+   *
+   * The rendered bubble is otherwise built purely by accumulating
+   * `content_part.text_delta` events. When those deltas don't reach us — a
+   * buffering in-app-browser proxy coalescing frames, a dropped intermediate
+   * frame, a partial line lost at the end of the body — the bubble stays empty
+   * and MessageBubble drops it as an empty husk, so the reader sees their own
+   * message with no reply at all while the backend holds the full text. The
+   * terminal `done` item is the authoritative copy of that text; reconciling
+   * against it makes the transcript self-healing regardless of what happened to
+   * the deltas.
+   */
+  onAssistantMessageDone?: (id: string, text: string) => void;
+}
+
+/** Pull the reply text out of a thread item's `content` array. */
+function extractItemText(item: Record<string, unknown> | undefined): string {
+  const parts = item?.content;
+  if (!Array.isArray(parts)) return "";
+  for (const part of parts) {
+    if (
+      part &&
+      typeof part === "object" &&
+      (part as any).type === "output_text" &&
+      typeof (part as any).text === "string"
+    ) {
+      return (part as any).text;
+    }
+  }
+  return "";
 }
 
 function parseSseLine(raw: string, handlers: SseHandlers) {
@@ -441,6 +491,13 @@ function parseSseLine(raw: string, handlers: SseHandlers) {
     }
     if (item?.type === "assistant_message" && typeof item.id === "string") {
       handlers.onAssistantMessageId?.(item.id, false);
+      // Reconcile against the server's own copy of the reply. Order matters:
+      // onAssistantMessageId may have just queued a rename of the streaming
+      // placeholder onto `item.id`, and React applies queued updaters in the
+      // order they were queued — so by the time this one runs the bubble is
+      // already keyed on the real id.
+      const finalText = extractItemText(item);
+      if (finalText) handlers.onAssistantMessageDone?.(item.id, finalText);
       return;
     }
     return;
@@ -477,18 +534,46 @@ async function readStream(
   if (!reader) throw new Error("No response body");
   const decoder = new TextDecoder();
   let buffer = "";
+
+  // The space after `data:` is optional in the SSE grammar. Matching only
+  // "data: " meant a producer (or a proxy that rewrites framing) emitting
+  // "data:{...}" had every one of its events silently ignored.
+  const dispatchLine = (line: string) => {
+    const t = line.trim();
+    if (!t.startsWith("data:")) return;
+    parseSseLine(t.slice(5).trimStart(), handlers);
+  };
+
+  const drain = (chunk: string) => {
+    buffer += chunk;
+    const lines = buffer.split("\n");
+    // The text after the last newline may be half an event — hold it back
+    // until the rest arrives (or until the flush below, at end of body).
+    buffer = lines.pop() ?? "";
+    for (const line of lines) dispatchLine(line);
+  };
+
   try {
+    let completed = false;
     while (true) {
       if (signal?.aborted) break;
       const { done, value } = await reader.read();
-      if (done) break;
-      buffer += decoder.decode(value, { stream: true });
-      const lines = buffer.split("\n");
-      buffer = lines.pop() ?? "";
-      for (const line of lines) {
-        const t = line.trim();
-        if (t.startsWith("data: ")) parseSseLine(t.slice(6), handlers);
+      if (done) {
+        completed = true;
+        break;
       }
+      drain(decoder.decode(value, { stream: true }));
+    }
+    // Body ended. Flush the decoder's own pending bytes, then the final line —
+    // which `drain` is still holding back because a body that doesn't end in a
+    // newline leaves its last event stranded in `buffer`. That last event is
+    // usually the assistant message's `thread.item.done`, i.e. the reply
+    // itself, so dropping it emptied the bubble.
+    if (completed) {
+      drain(decoder.decode());
+      const tail = buffer;
+      buffer = "";
+      dispatchLine(tail);
     }
   } finally {
     reader.cancel().catch(() => {});
@@ -526,6 +611,28 @@ function applyProgressStep(
   return [...steps, { text: incoming.text, done: incoming.done }];
 }
 
+/**
+ * Close the trailing progress step.
+ *
+ * A `progress_update` always arrives with `done: false`, and applyProgressStep
+ * only marks a step done when the NEXT one lands — so the last step of any run
+ * is left open. ProgressLoader spins until every step is done, so the moment a
+ * message stops being the progress target its trailing step has to be closed
+ * here or that bubble's loader never stops.
+ *
+ * This used to live inline in the stream's `finally`, which meant it only ever
+ * ran for whichever message was current when the stream ended. A message
+ * superseded mid-turn (the backend emits a second assistant_message after the
+ * itinerary summary) was marked `isStreaming: false` with its last step still
+ * open, and sat there spinning on "Pulling it all together…" forever.
+ */
+function finalizeProgress(steps: ProgressStep[] = []): ProgressStep[] {
+  if (steps.length === 0) return steps;
+  const last = steps[steps.length - 1];
+  if (last.done) return steps;
+  return [...steps.slice(0, -1), { ...last, done: true }];
+}
+
 function applyTaskAdded(tasks: ThinkingTask[], index: number, content: string): ThinkingTask[] {
   const next = [...tasks];
   next[index] = { content, done: false };
@@ -540,6 +647,46 @@ function applyTaskUpdated(tasks: ThinkingTask[], index: number, content: string)
 
 function applyWorkflowDone(tasks: ThinkingTask[]): ThinkingTask[] {
   return tasks.map((t) => ({ ...t, done: true }));
+}
+
+/**
+ * Fold the server's authoritative reply text into the message it belongs to.
+ *
+ * Never shortens what is already on screen: if every delta arrived this is a
+ * no-op (the two strings match), and if the stream was truncated or the deltas
+ * never landed it fills the gap. The length guard means a `done` payload that
+ * is somehow abridged can't wipe text the reader has already seen.
+ */
+function applyFinalText(messages: Message[], id: string, text: string): Message[] {
+  let changed = false;
+  const next = messages.map((m) => {
+    if (m.id !== id || m.content === text || text.length < m.content.length) return m;
+    changed = true;
+    return { ...m, content: text };
+  });
+  return changed ? next : messages;
+}
+
+/**
+ * Decide what a restored thread payload should do to the transcript on screen.
+ *
+ * `restored` is a snapshot of the thread as of the moment threads.get_by_id
+ * resolved. `live` is what the panel is currently showing.
+ *
+ * When nothing was streaming, the snapshot IS the transcript and replaces it
+ * wholesale — a thread switch has to drop the previous thread's messages, so
+ * merging would be wrong. When a turn was in flight, the snapshot predates what
+ * the reader is watching, so it may only fill a panel that has nothing in it
+ * (a reload whose auto-sent prompt beat the restore) and must never overwrite
+ * live content.
+ */
+export function resolveRestoredTranscript(
+  restored: Message[],
+  live: Message[],
+  streamingWhenReceived: boolean,
+): Message[] {
+  if (!streamingWhenReceived) return restored;
+  return live.length > 0 ? live : restored;
 }
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
@@ -560,6 +707,8 @@ export function useChat({
   sessionId,
   onSessionCreated,
   loginMandatory,
+  themeItems,
+  themeSlug,
 }: UseChatOptions) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
@@ -588,6 +737,10 @@ export function useChat({
   onSessionCreatedRef.current = onSessionCreated;
   const loginMandatoryRef = useRef(loginMandatory);
   loginMandatoryRef.current = loginMandatory;
+  const themeItemsRef = useRef(themeItems);
+  themeItemsRef.current = themeItems;
+  const themeSlugRef = useRef(themeSlug);
+  themeSlugRef.current = themeSlug;
 
   const cancelStream = useCallback(() => {
     abortControllerRef.current?.abort();
@@ -641,6 +794,29 @@ export function useChat({
     ) => {
       if (!threadIdRef.current) return;
 
+      // A widget CTA opens a streamed turn exactly like a text send, so it has
+      // to take part in the same bookkeeping. It previously did neither of the
+      // two things sendMessage does, and both hurt:
+      //
+      //  · No streamSeqRef bump, and a `finally` that cleared isStreaming
+      //    unconditionally. Whichever of two overlapping turns finished first
+      //    unlocked the composer and dropped the "Kaira is working…" state out
+      //    from under the one still running — the stream looked stopped while
+      //    text was still arriving.
+      //  · No AbortController registered on abortControllerRef, so neither
+      //    cancelStream() (the Stop button, and the interrupt at the head of
+      //    every send) nor the unmount cleanup could reach it. It ran on past
+      //    the turn that replaced it, writing into a message list it no longer
+      //    owned, and kept running after the panel was gone.
+      //
+      // Aborting the previous turn here matches sendMessage: a CTA fired during
+      // the quick-reply tail is a new turn and should end the old one, not race
+      // it.
+      cancelStream();
+      const seq = ++streamSeqRef.current;
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
+
       const assistantMsgId = `assistant-${Date.now()}`;
       let currentAssistantId = assistantMsgId;
       // Whether the streaming placeholder has adopted a real server-assigned
@@ -651,6 +827,7 @@ export function useChat({
         ...prev,
         {
           id: assistantMsgId,
+          clientKey: assistantMsgId,
           role: "assistant",
           content: "",
           timestamp: new Date(),
@@ -687,6 +864,7 @@ export function useChat({
           method: "POST",
           headers: buildHeaders(),
           body: JSON.stringify(body),
+          signal: controller.signal,
         });
         if (!response.ok) throw new Error(`${response.status}`);
 
@@ -728,9 +906,20 @@ export function useChat({
             const prevId = currentAssistantId;
             currentAssistantId = realId;
             setMessages((prev) => [
-              ...prev.map((m) => (m.id === prevId ? { ...m, isStreaming: false } : m)),
+              // Superseded mid-turn — see the note on the same branch in
+              // sendMessage: the trailing progress step has to be closed here.
+              ...prev.map((m) =>
+                m.id === prevId
+                  ? {
+                      ...m,
+                      isStreaming: false,
+                      progressSteps: finalizeProgress(m.progressSteps),
+                    }
+                  : m,
+              ),
               {
                 id: realId,
+                clientKey: realId,
                 role: "assistant",
                 content: "",
                 timestamp: new Date(),
@@ -739,6 +928,9 @@ export function useChat({
                 thinkingTasks: [],
               },
             ]);
+          },
+          onAssistantMessageDone: (realId, text) => {
+            setMessages((prev) => applyFinalText(prev, realId, text));
           },
           onEffect: (effect) => onEffect?.(effect),
           onWidget: (item) => {
@@ -805,25 +997,33 @@ export function useChat({
               )
             );
           },
-        });
+        }, controller.signal);
       } catch (err) {
-        console.error("[sendWidgetAction]", err);
+        // A newer turn preempting this one is routine, not an error.
+        if (!(err instanceof Error && err.name === "AbortError")) {
+          console.error("[sendWidgetAction]", err);
+        }
       } finally {
         setMessages((prev) =>
           prev.map((m) => {
             if (m.id !== currentAssistantId) return m;
-            const steps = m.progressSteps ?? [];
-            const finalSteps =
-              steps.length > 0 && !steps[steps.length - 1].done
-                ? [...steps.slice(0, -1), { ...steps[steps.length - 1], done: true }]
-                : steps;
-            return { ...m, isStreaming: false, progressSteps: finalSteps };
+            return {
+              ...m,
+              isStreaming: false,
+              progressSteps: finalizeProgress(m.progressSteps),
+            };
           })
         );
-        setIsStreaming(false);
+        // Only the most recent turn owns the global streaming flag — same guard
+        // as sendMessage. Without it a preempted widget action cleared the flag
+        // out from under the turn that replaced it.
+        if (streamSeqRef.current === seq) {
+          setIsStreaming(false);
+          abortControllerRef.current = null;
+        }
       }
     },
-    [apiUrl, domainKey, model, botMode, itineraryId, locationReady, userLocation, onEffect, buildHeaders, handleThreadId]
+    [apiUrl, domainKey, model, botMode, itineraryId, locationReady, userLocation, onEffect, buildHeaders, handleThreadId, cancelStream]
   );
 
   // ─── sendMessage ──────────────────────────────────────────────────────────
@@ -837,6 +1037,10 @@ export function useChat({
         interrupt?: boolean;
         formSubmitted?: boolean;
         contextPrefix?: string;
+        // Structured theme mini-form submission (slug/window/skeleton/dates/pax/
+        // items). Attached to the first request body as `intake` — the backend
+        // reads it to pick the route instead of parsing free text.
+        intakePayload?: Record<string, unknown>;
       },
     ) => {
       const trimmed = content.trim();
@@ -866,6 +1070,7 @@ export function useChat({
         ...stripTrailingErrorPair(prev),
         {
           id: userMsgId,
+          clientKey: userMsgId,
           role: "user",
           content: trimmed,
           timestamp: new Date(),
@@ -877,6 +1082,7 @@ export function useChat({
         },
         {
           id: assistantMsgId,
+          clientKey: assistantMsgId,
           role: "assistant",
           content: "",
           timestamp: new Date(),
@@ -918,12 +1124,26 @@ export function useChat({
         : buildFirstMessageBody(contentForBackend, {
             ...commonOpts,
             loginMandatory: loginMandatoryRef.current,
+            themeItems: themeItemsRef.current,
+            themeSlug: themeSlugRef.current,
           });
 
       // Flag intake-form submissions so the backend knows this message came
       // from the structured form rather than free-text chat.
       if (opts?.formSubmitted) {
         (body as Record<string, unknown>).form_submitted = true;
+      }
+      // Structured theme mini-form payload (window/skeleton/dates/pax/items…) —
+      // sent as `intake` so the backend routes off it rather than the free text.
+      // The intake object already carries slug + items, so drop the duplicate
+      // top-level copies (added by buildFirstMessageBody from themeItems/themeSlug)
+      // to avoid sending the items array twice. The plain-seed flow, which has no
+      // intake payload, keeps the top-level slug/items.
+      if (opts?.intakePayload) {
+        const b = body as Record<string, unknown>;
+        b.intake = opts.intakePayload;
+        delete b.items;
+        delete b.slug;
       }
 
       console.log("[useChat] →", JSON.stringify(body, null, 2));
@@ -948,6 +1168,55 @@ export function useChat({
 
         let firstToken = false;
 
+        // ── Progress routing across a message boundary ────────────────────────
+        // The backend can close an assistant message and then keep emitting
+        // progress for the NEXT one (the itinerary summary lands, then three
+        // more updates run while pricing is queued, then the "locked in"
+        // message opens). Those updates belong to the message that is coming,
+        // not the answer the reader has already finished reading.
+        //
+        // `currentAssistantDone` records that `thread.item.done` closed the
+        // current message. The next progress/thought then opens a streaming
+        // placeholder — which is what puts a live loader on screen during the
+        // gap — and `pendingPlaceholderId` lets the real assistant_message
+        // ADOPT that placeholder instead of stacking an empty bubble on top.
+        let currentAssistantDone = false;
+        let pendingPlaceholderId: string | null = null;
+        let placeholderSeq = 0;
+
+        /** The bubble progress belongs to right now, opening the next one if
+         *  the current message has already been closed. */
+        const progressTarget = (): string => {
+          if (!currentAssistantDone) return currentAssistantId;
+          const placeholderId = `${assistantMsgId}-next-${++placeholderSeq}`;
+          const prevId = currentAssistantId;
+          currentAssistantId = placeholderId;
+          pendingPlaceholderId = placeholderId;
+          currentAssistantDone = false;
+          setMessages((prev) => [
+            ...prev.map((m) =>
+              m.id === prevId
+                ? {
+                    ...m,
+                    isStreaming: false,
+                    progressSteps: finalizeProgress(m.progressSteps),
+                  }
+                : m,
+            ),
+            {
+              id: placeholderId,
+              clientKey: placeholderId,
+              role: "assistant" as const,
+              content: "",
+              timestamp: new Date(),
+              isStreaming: true,
+              progressSteps: [],
+              thinkingTasks: [],
+            },
+          ]);
+          return placeholderId;
+        };
+
         await readStream(
           response,
           {
@@ -969,13 +1238,20 @@ export function useChat({
             },
             onThreadId: handleThreadId,
             onAssistantMessageId: (realId, isNewItem) => {
-              if (realId === currentAssistantId) return;
+              if (realId === currentAssistantId) {
+                // `thread.item.done` for the message we're on. Remember that it
+                // is closed so any progress that follows opens the next bubble
+                // rather than landing under a finished answer.
+                if (!isNewItem) currentAssistantDone = true;
+                return;
+              }
               if (!assistantIdClaimed) {
                 // First real id of this turn → adopt it onto the placeholder so
                 // text deltas + feedback correlate to the real message id.
                 const oldId = currentAssistantId;
                 currentAssistantId = realId;
                 assistantIdClaimed = true;
+                currentAssistantDone = false;
                 setMessages((prev) =>
                   prev.map((m) => (m.id === oldId ? { ...m, id: realId } : m))
                 );
@@ -990,12 +1266,39 @@ export function useChat({
               // is dropped at render time). Only the `added` event opens it;
               // the matching `done` is a no-op so we don't duplicate.
               if (!isNewItem) return;
+              // Progress arriving after the previous message closed already
+              // opened a placeholder for THIS message — adopt it (keeping the
+              // steps that ran while the reader waited) instead of stacking a
+              // second, empty bubble on top of it.
+              if (pendingPlaceholderId) {
+                const oldId = pendingPlaceholderId;
+                pendingPlaceholderId = null;
+                currentAssistantId = realId;
+                currentAssistantDone = false;
+                setMessages((prev) =>
+                  prev.map((m) => (m.id === oldId ? { ...m, id: realId } : m)),
+                );
+                return;
+              }
               const prevId = currentAssistantId;
               currentAssistantId = realId;
+              currentAssistantDone = false;
               setMessages((prev) => [
-                ...prev.map((m) => (m.id === prevId ? { ...m, isStreaming: false } : m)),
+                // Superseded mid-turn: close its trailing progress step too, or the
+                // loader on this bubble spins forever (the stream's `finally` only
+                // ever finalizes whichever message is current when it ends).
+                ...prev.map((m) =>
+                  m.id === prevId
+                    ? {
+                        ...m,
+                        isStreaming: false,
+                        progressSteps: finalizeProgress(m.progressSteps),
+                      }
+                    : m,
+                ),
                 {
                   id: realId,
+                  clientKey: realId,
                   role: "assistant" as const,
                   content: "",
                   timestamp: new Date(),
@@ -1004,6 +1307,9 @@ export function useChat({
                   thinkingTasks: [],
                 },
               ]);
+            },
+            onAssistantMessageDone: (realId, text) => {
+              setMessages((prev) => applyFinalText(prev, realId, text));
             },
             onEffect: (effect) => onEffect?.(effect),
             onWidget: (item) => {
@@ -1031,7 +1337,10 @@ export function useChat({
               ]);
             },
             onProgress: (step) => {
-              const targetId = currentAssistantId; // capture — see onTextChunk note
+              // progressTarget() opens the next bubble when the current message
+              // has already been closed — see its definition above. Capture the
+              // id NOW, per the onTextChunk note.
+              const targetId = progressTarget();
               setMessages((prev) =>
                 prev.map((m) =>
                   m.id !== targetId
@@ -1041,7 +1350,9 @@ export function useChat({
               );
             },
             onWorkflowTaskAdded: (index, content) => {
-              const targetId = currentAssistantId; // capture — see onTextChunk note
+              // Same boundary rule as onProgress: a thought that arrives after
+              // the message closed belongs to the next one.
+              const targetId = progressTarget();
               setMessages((prev) =>
                 prev.map((m) =>
                   m.id !== targetId
@@ -1098,12 +1409,11 @@ export function useChat({
         setMessages((prev) =>
           prev.map((m) => {
             if (m.id !== currentAssistantId) return m;
-            const steps = m.progressSteps ?? [];
-            const finalSteps =
-              steps.length > 0 && !steps[steps.length - 1].done
-                ? [...steps.slice(0, -1), { ...steps[steps.length - 1], done: true }]
-                : steps;
-            return { ...m, isStreaming: false, progressSteps: finalSteps };
+            return {
+              ...m,
+              isStreaming: false,
+              progressSteps: finalizeProgress(m.progressSteps),
+            };
           })
         );
         // Only the most recent stream owns the global streaming flag. If a send

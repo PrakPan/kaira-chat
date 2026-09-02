@@ -207,9 +207,19 @@ useEffect(() => {
   if (props.token) setShowLoginModal(false);
 }, [props.token]);
 
+  // Deep-link support for `?drawer=payment`, for the standalone itinerary page
+  // only. Inside the chat shell BotApp reads the very same param in its own
+  // `showPaymentDrawer` initialiser and mounts a second NewSummaryContainers —
+  // and since each one portals its own full-screen Drawer at z-index 1600, both
+  // firing produced two identical carts stacked on top of each other. BotApp
+  // owns the param there; this effect owns it everywhere else.
   useEffect(() => {
-    if(router.query?.drawer === "payment"){
-       handleFooterBannerMobile("View Inclusions");
+    if (props?.fromChat) return;
+    if (router.query?.drawer === "payment") {
+      // Set rather than toggle: handleFooterBannerMobile flips the current
+      // value, which is wrong for a deep link that should always open.
+      setShowFooterBannerMobile(true);
+      trackPaymentPageViewed(router?.query?.id);
     }
   }, []);
 
@@ -681,6 +691,15 @@ Start Location: ${details.startLocation}`;
     <Breif
       mercuryItinerary={props?.mercuryItinerary}
       loadbookings={props?.loadbookings}
+      // Chat's Route tab opens on a read-only route preview with an Edit
+      // toggle; the standalone itinerary page's brief keeps its always-on
+      // editor. (`fromChat` can't carry this — the non-chat Breif above is
+      // the one that passes fromChat={true}.)
+      chatRouteTab={true}
+      // The wrapper below hides this tab with display:none, but the route's
+      // action bar is portalled to <body> and escapes that — it needs the
+      // tab's visibility as data.
+      routeTabActive={activeTab === "Route"}
       plan={props.plan}
       routesData={RoutesData}
       transfersData={TransfersData}

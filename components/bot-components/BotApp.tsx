@@ -6,7 +6,11 @@ import React, {
   useMemo,
 } from "react";
 import { optimizedMediaUrl } from "../../lib/mediaImage";
-import { ChatKitPanel } from "./components/ChatKitPanel";
+import {
+  ChatKitPanel,
+  COMPLETION_STARTED_EFFECTS,
+  type ChatSendFn,
+} from "./components/ChatKitPanel";
 import MapView from "./components/MapView";
 import Sidebar from "./components/Sidebar";
 import { getUserAvatarColor, getUserInitial } from "./utils/avatarColor";
@@ -113,6 +117,7 @@ import {
   getChatFunnelScope,
 } from "../../services/analyticsFunnel";
 import Login from "../modals/Login";
+import { replaceUrl, pushUrlDetached } from "../../helper/historyUrl";
 import { FiCalendar } from "react-icons/fi";
 import { tr } from "date-fns/locale";
 import {
@@ -271,9 +276,21 @@ const BackToItineraryBar = ({
 
 function transformDraftToItinerary(draft: any) {
   const routes = draft?.routes ?? [];
-  const cities = routes.map((route: any) => {
+  const cities = routes.map((route: any, index: number) => {
     const cityName = route.city?.name ?? "unknown";
-    const cityId = route.city?.id || `draft-city-${route.city?.name}`;
+    // One id per LEG, not per city. A trip can visit the same place twice
+    // (Sapporo → Niseko → Sapporo) and the draft payload only carries the GEO
+    // city id, which repeats — the canonical API's per-leg `itinerary_city_id`
+    // doesn't exist yet at this stage. Everything downstream keys off this id:
+    // the React key in DaybyDay, the per-city hotel filter, and the transfer
+    // map below. Sharing one id made both Sapporo cards match both Sapporo
+    // stays, so each listed the other's hotel alongside its own.
+    //
+    // `city.id` just below keeps the plain geo id for anything that needs to
+    // know *which city* this is rather than *which stay*.
+    const cityId = route.city?.id
+      ? `${route.city.id}-${index}`
+      : `draft-city-${route.city?.name}-${index}`;
     return {
       id: cityId,
       city: {
@@ -313,18 +330,26 @@ function transformDraftToItinerary(draft: any) {
           }),
         ),
       })),
-      hotels: route.hotels
-        ? [
-            {
-              id: route.hotels.id || `draft-hotel-${cityId}`,
-              name: route.hotels.name,
-              star_category: null,
-              images: [],
-              rating: route?.hotels?.star_category ?? null,
-              itinerary_city_id: cityId,
-            },
-          ]
-        : [],
+      // `route.hotels` is normally a single object, but normalise so an array
+      // works too. Reading `.name` straight off an array yields undefined,
+      // which the draftStays builder below reads as "no hotel" and turns into a
+      // placeholder — so a city with two hotels rendered with NO hotel row at
+      // all rather than two. The `-${hIdx}` on the fallback id matters as well:
+      // two unnamed hotels in one city would otherwise share a key in
+      // ItineraryCity's multiHotelStays.map.
+      hotels: (Array.isArray(route.hotels)
+        ? route.hotels
+        : route.hotels
+          ? [route.hotels]
+          : []
+      ).map((hotel: any, hIdx: number) => ({
+        id: hotel?.id || `draft-hotel-${cityId}-${hIdx}`,
+        name: hotel?.name,
+        star_category: null,
+        images: [],
+        rating: hotel?.star_category ?? null,
+        itinerary_city_id: cityId,
+      })),
       activities: [],
       transfers: { sightseeing: [], airport: [] },
     };
@@ -421,6 +446,14 @@ export default function BotApp({
   // hitting "Build trip" — handed to the themed mini-form so its submission
   // carries it (see ThemeIntakeForm's `note`).
   const [themeNote, setThemeNote] = useState<string | undefined>(undefined);
+  // Structured `intake` payload built by the theme page when it fired the seed
+  // (see components/theme/cinematic/themeIntake.ts) — slug, source, the
+  // reader's words or the canned prompt, and the saved items. Forwarded to
+  // ChatKitPanel so the seeded first /chatkit request uses the same request
+  // shape as the themed mini-form's submission instead of bare free text.
+  const [themeIntake, setThemeIntake] = useState<
+    Record<string, unknown> | undefined
+  >(undefined);
   // Themed theme-page mini-form (date windows + pax). When a theme page's
   // "Build this itinerary" routes to /chat?themeForm=<slug>, we resolve the
   // config and flag ChatKitPanel to inject the 2-section form (no auto-send).
@@ -442,7 +475,10 @@ export default function BotApp({
   const hasConsumedHeroHandoffRef = useRef(false);
   const [activeTravellerStory, setActiveTravellerStory] =
     useState<TravellerStory | null>(null);
-  const sendMessageRef = useRef<((msg: string) => void) | null>(null);
+  // Widened past `(msg: string)`: a theme-page prompt has to reach the panel's
+  // sendMessage with its `intake` opts (see executePromptSelect), so the ref
+  // carries the panel's full signature rather than just the text.
+  const sendMessageRef = useRef<ChatSendFn | null>(null);
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -553,7 +589,7 @@ export default function BotApp({
   const currentItineraryRef = useRef<any>(null);
   const [skeletonCities, setSkeletonCities] = useState<any[]>([]);
   const skeletonCitiesRef = useRef<any[]>([]);
-  const chatSendMessageRef = useRef<((msg: string) => void) | null>(null);
+  const chatSendMessageRef = useRef<ChatSendFn | null>(null);
 
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [isItineraryCompleting, setIsItineraryCompleting] = useState(false);
@@ -590,16 +626,35 @@ export default function BotApp({
   const finalizedStatus = useSelector(
     (state: any) => state.ItineraryStatus?.finalized_status,
   );
+  // Same rationale as botModeRef below: callbacks captured by the in-flight
+  // restore chain (restoreLatestThread → loadThread → handleItineraryReceived)
+  // keep the finalizedStatus from the render that started the restore, so the
+  // "SUCCESS" that restoreItineraryDirectly dispatches mid-flight is invisible
+  // to them. Read the ref, not the selector value, from those callbacks.
+  const finalizedStatusRef = useRef<string | undefined>(undefined);
+  finalizedStatusRef.current = finalizedStatus;
   const itineraryStatus = useSelector(
     (state: any) => state.ItineraryStatus?.itinerary_status,
   );
   const currency = useSelector((state: any) => state.currency);
-  const [isMobile, setIsMobile] = useState(false);
-  // `isMobile` starts false (SSR has no viewport) and only resolves to the real
-  // value after the breakpoint effect measures the window on mount. Handoffs
-  // that pick a ChatKitPanel instance by `isMobile` (the hero seed consumer
-  // below) must wait for this so they don't act against the desktop panel and
-  // then have it torn down when `isMobile` flips — see the seed effect.
+  // Seeded from the real viewport instead of `false`. That is safe *here*
+  // specifically because BotApp is `dynamic(..., { ssr: false })` (see
+  // BotAppClient) — it is never server-rendered, so there is no SSR markup for
+  // a viewport-dependent first render to disagree with.
+  //
+  // It used to start `false`, which meant the very first client render was
+  // always the DESKTOP layout, including on phones: desktop-only chrome painted
+  // once and then vanished a moment later when the effect below corrected the
+  // flag. Do NOT copy this pattern into a server-rendered component — there the
+  // lazy read would be a hydration mismatch, and the fix is a CSS breakpoint
+  // (see the note on `useMediaQuery` in hooks/useMedia.js).
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== "undefined" && window.innerWidth < 768,
+  );
+  // Still flipped by the breakpoint effect on mount rather than seeded true.
+  // Handoffs that pick a ChatKitPanel instance by `isMobile` (the hero seed
+  // consumer below) wait on this, and keeping its timing unchanged keeps that
+  // sequencing exactly as it was — see the seed effect.
   const [viewportMeasured, setViewportMeasured] = useState(false);
   // Mobile effect popup — shown for 10s when focus_route / itinerary effects fire
   const [mobileEffectPopup, setMobileEffectPopup] = useState<{
@@ -674,14 +729,14 @@ export default function BotApp({
     setShowPaymentDrawer(true);
     const url = new URL(window.location.href);
     url.searchParams.set("drawer", "payment");
-    window.history.pushState({}, "", url.toString());
+    pushUrlDetached(url.toString());
   }, [activeItineraryId, fetchPaymentData]);
   const closePaymentDrawer = React.useCallback(() => {
     setAutoStartPayment(false);
     setShowPaymentDrawer(false);
     const url = new URL(window.location.href);
     url.searchParams.delete("drawer");
-    window.history.pushState({}, "", url.toString());
+    pushUrlDetached(url.toString());
   }, []);
 
   // When drawer is open (e.g. after refresh with ?drawer=payment) and the itinerary ID
@@ -780,10 +835,17 @@ export default function BotApp({
   // `finalized_status`/`itinerary_status` are set EARLY (synchronously from
   // the status endpoint in restoreItineraryDirectly), so prefer those and
   // fall back to the Itinerary.status heuristic for older code paths.
-  const itineraryIsComplete =
+  // "This thread has a real itinerary behind it" — a saved id, not one of the
+  // two placeholders the panel uses while one is still being built. Weaker than
+  // `itineraryIsComplete` below, which additionally waits for a SUCCESS status:
+  // this only asks whether there is something at /itinerary/{id} to open.
+  const hasItinerary =
     !!activeItineraryId &&
     activeItineraryId !== "skeleton" &&
-    activeItineraryId !== "draft" &&
+    activeItineraryId !== "draft";
+
+  const itineraryIsComplete =
+    hasItinerary &&
     (finalizedStatus === "SUCCESS" ||
       itineraryStatus === "SUCCESS" ||
       (!!(
@@ -797,6 +859,11 @@ export default function BotApp({
 
   const [showShare, setShowShare] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  // Why the Settings modal was opened, when it was opened for one specific
+  // reason rather than "change anything". Only the copy at the top of the modal
+  // reads it — the form itself is the same either way. Set on every open (null
+  // from the gear) so a reason can never carry over into the next one.
+  const [settingsReason, setSettingsReason] = useState<string | null>(null);
   const [showSettingsLoginPrompt, setShowSettingsLoginPrompt] = useState(false);
   // Mobile: the compact trip strip collapses the traveller/date/social meta
   // behind a chevron. Desktop always shows the full header.
@@ -939,7 +1006,10 @@ export default function BotApp({
       },
     );
     const onUnauthorized = () => setShowApiLoginPrompt(true);
-    const onOpenSettings = () => setShowSettings(true);
+    const onOpenSettings = (e: Event) => {
+      setSettingsReason((e as CustomEvent)?.detail?.reason ?? null);
+      setShowSettings(true);
+    };
     if (typeof window !== "undefined") {
       window.addEventListener("api:unauthorized", onUnauthorized);
       window.addEventListener("open-itinerary-settings", onOpenSettings);
@@ -1713,7 +1783,19 @@ export default function BotApp({
       // post-refresh poll just resolved, hiding Routes/Bookings tabs and
       // flipping the itinerary panel back to P1 styling. The canonical fetch
       // in ItineraryContainer is the source of truth for P2 data.
-      if (botMode === "p2") return;
+      //
+      // Read botModeRef, NOT the botMode state. The restore chain
+      // (mount effect → restoreLatestThread → loadThread → this callback) is a
+      // single fire-and-forget async run that holds the callback identities
+      // from the render it started on — where botMode is still "p1". The
+      // applyBotMode("p2") that restoreItineraryDirectly performs mid-flight
+      // re-renders and builds a *new* handleItineraryReceived, but the running
+      // chain keeps calling the old one, so a state read here is permanently
+      // stale for the whole restore and this guard never fires. That let
+      // loadThread's replay stamp a status:"Draft" itinerary + activeItineraryId
+      // "draft" over a live P2 trip (and disable polling, so nothing corrected
+      // it). Same fix already applied to the viewMode branches in loadThread.
+      if (botModeRef.current === "p2") return;
 
       if (data?.shimmer) {
         dispatch(setItineraryStatus("itinerary_status", "PENDING"));
@@ -1784,10 +1866,13 @@ export default function BotApp({
         !data?.routes
       ) {
         const intercity: Record<string, any> = {};
-        const nameToId: Record<string, string> = {};
-        for (const c of currentItineraryRef.current?.cities ?? []) {
-          if (c.city?.name && c.id) nameToId[c.city.name] = String(c.id);
-        }
+        // Leg ids in route order. This used to be a name → id map, which a
+        // return trip breaks: "Sapporo" appears twice and collapses to a single
+        // entry, so both Sapporo legs produced the same transfer key. Transfers
+        // arrive in route order, so position is the reliable pairing.
+        const cityIds: string[] = (
+          currentItineraryRef.current?.cities ?? []
+        ).map((c: any) => String(c.id));
         const bookingTypeFromLeg = (leg: string) => {
           const l = leg.toLowerCase();
           if (l.includes("flight")) return "Flight";
@@ -1815,23 +1900,30 @@ export default function BotApp({
             is_draft: true,
           };
         };
+        // Transfer i joins city i → city i+1, which is exactly the key DaybyDay
+        // builds (`city.id + ":" + nextCity.id`).
         (data.transfers ?? []).forEach((t: any, idx: number) => {
-          const fromId = nameToId[t.from_city] || `draft-city-${t.from_city}`;
-          const toId = nameToId[t.to_city] || `draft-city-${t.to_city}`;
+          const fromId = cityIds[idx] ?? `draft-city-${t.from_city}`;
+          const toId = cityIds[idx + 1] ?? `draft-city-${t.to_city}`;
           upsertTransfer(`${fromId}:${toId}`, t, idx);
         });
+        // Home → first city and last city → home. The city side has to be the
+        // leg id (what DaybyDay looks up as `cities[0].id` / `cities[last].id`),
+        // not the server's geo `to_city_id` / `from_city_id`; the home side
+        // stays the gmaps place id the server sends.
         const st = data.start_transfer;
-        if (st?.from_itinerary_city_id && st?.to_city_id) {
+        if (st?.from_itinerary_city_id && cityIds[0]) {
           upsertTransfer(
-            `${st.from_itinerary_city_id}:${st.to_city_id}`,
+            `${st.from_itinerary_city_id}:${cityIds[0]}`,
             st,
             "start",
           );
         }
         const et = data.end_transfer;
-        if (et?.from_city_id && et?.to_itinerary_city_id) {
+        const lastCityId = cityIds[cityIds.length - 1];
+        if (et?.to_itinerary_city_id && lastCityId) {
           upsertTransfer(
-            `${et.from_city_id}:${et.to_itinerary_city_id}`,
+            `${lastCityId}:${et.to_itinerary_city_id}`,
             et,
             "end",
           );
@@ -1942,9 +2034,13 @@ export default function BotApp({
       dispatch(setItineraryStatus("finalized_status", "PENDING"));
 
       // botMode === "p2" was checked at the top of this callback and caused an
-      // early return, so it can't be true here.
+      // early return, so it can't be true here. finalizedStatus is read from
+      // the ref for the same stale-closure reason as that guard — the selector
+      // value would still say "PENDING" during a restore that has already
+      // resolved the trip as finalized, and downgrade it to "draft" below.
       const isAlreadyCompleted =
-        finalizedStatus === "SUCCESS" || itineraryCreatedInSessionRef.current;
+        finalizedStatusRef.current === "SUCCESS" ||
+        itineraryCreatedInSessionRef.current;
 
       if (!isAlreadyCompleted) {
         setActiveItineraryId("draft");
@@ -1953,13 +2049,18 @@ export default function BotApp({
       setViewMode("itinerary");
       setMobilePanel("map");
     },
+    // botMode / finalizedStatus are deliberately NOT deps — both are read from
+    // refs above precisely because this callback outlives the render that
+    // captured it (see the botModeRef guard at the top). Keeping them here
+    // would also churn this callback's identity, which cascades into
+    // loadThread → restoreLatestThread → the mount/popstate effects and into
+    // ChatKitPanel's restoredThread effect, where a re-run mid-stream is the
+    // documented hazard it guards against with appliedRestoredThreadRef.
     [
       revealLeftPanel,
       dispatch,
       buildSkeletonItinerary,
       activeItineraryId,
-      finalizedStatus,
-      botMode,
       userLocation,
     ],
   );
@@ -2180,11 +2281,41 @@ export default function BotApp({
             window.location.pathname !== target &&
             window.location.pathname.startsWith("/chat")
           ) {
-            window.history.pushState({}, "", target);
+            pushUrlDetached(target);
           }
           safeSetSessionItem(`chatkit_session_${target}`, threadSessionId);
           setActiveChatSessionId(threadSessionId);
         }
+
+        // ── Resolve the stage BEFORE setRestoredThread commits ──────────────
+        // That commit is what fires ChatKitPanel's restored-thread effect, and
+        // that effect decides off botMode whether to replay the draft-shaped
+        // display_itinerary. Both existing callers settle botMode first —
+        // restoreLatestThread runs restoreItineraryDirectly on stage P2, and
+        // handleThreadSelect does the same whenever the thread row carried a
+        // session_id — so they pass a resolved `knownStage` (a string, or null
+        // for "resolved to nothing").
+        //
+        // `undefined` means the caller could NOT resolve it: the row carried
+        // neither session_id nor filter_session_id, so handleThreadSelect
+        // skipped restoreItineraryDirectly entirely. Only in that case is the
+        // session id first known here, derived from the get_by_id response —
+        // so run the same restore the caller would have run, before the commit.
+        // Left unresolved, botMode would still be "p1" at commit time and a P2
+        // trip would get painted as a draft by that replay.
+        let resolvedStage: string | null = knownStage ?? null;
+        if (knownStage === undefined && threadSessionId) {
+          try {
+            resolvedStage = await restoreItineraryDirectly(threadSessionId);
+          } catch (err) {
+            console.warn(
+              "[loadThread] late restoreItineraryDirectly failed, continuing unresolved:",
+              err,
+            );
+            resolvedStage = null;
+          }
+        }
+
         setRestoredThread(data);
         // Thread-level customer_name (P1/draft stage has no itinerary in redux
         // yet) feeds the chat avatar's customer-initial fallback. Only overwrite
@@ -2232,7 +2363,9 @@ export default function BotApp({
         // start/end cities onto Redux (phantom P1 pins that flicker until the
         // canonical fetch arrives).
         for (const effect of itineraryEffects) {
-          if (effect.name === "start_itinerary_completion_process") {
+          // Both spellings — threads stored before the backend rename replay
+          // the old name here (see COMPLETION_STARTED_EFFECTS).
+          if (COMPLETION_STARTED_EFFECTS.includes(effect.name)) {
             startedIdFromEffects =
               (effect.data?.itinerary_id as string) ?? null;
           } else if (effect.name === "itinerary_completion_process_completed") {
@@ -2274,7 +2407,7 @@ export default function BotApp({
           if (hasDisplayItinerary || hasCompletedEffectInLoop) {
             mobileTabSwitchRef.current?.("itinerary");
           }
-        } else if (knownStage === "P2") {
+        } else if (resolvedStage === "P2") {
           // Stage P2 per the status API, but this thread carries no
           // display_itinerary / completion effect to restore from (so
           // restoredItineraryId is null). An itinerary still exists —
@@ -2322,7 +2455,7 @@ export default function BotApp({
         // handleTabClick("chat") also runs setViewMode("map"), so firing it
         // here would clobber the itinerary view and strand a P2 refresh on the
         // map (the very bug this avoids).
-        if (!restoredItineraryId && knownStage !== "P2") {
+        if (!restoredItineraryId && resolvedStage !== "P2") {
           mobileTabSwitchRef.current?.("chat");
         }
 
@@ -2338,7 +2471,25 @@ export default function BotApp({
               `/${restoredItineraryId}/status/`,
             );
             const status = statusRes.data?.celery;
-            const stage = statusRes.data?.stage;
+            // `resolvedStage === "P2"` is sticky. The stage was already
+            // resolved from /{sid}/status/ — by the caller, or by the late
+            // restore above — and when it said P2 that ALSO
+            // ran restoreItineraryDirectly: canonical trip hydrated, botMode
+            // flipped to p2, polling on. session_id and itinerary_id are the
+            // same identifier (the clone flow re-keys the session to the new
+            // itinerary id), so this second call hits the same record: a
+            // disagreement is replica lag or an absent `stage` key, never a
+            // genuinely-P1 trip. Without the pin, that flake fell into the
+            // `else` below and half-undid the hydration — botMode back to p1,
+            // activeItineraryId "draft", polling off — stranding a live P2 trip
+            // on the P1 UI with nothing left to correct it. It also stops this
+            // call from undoing the fromTailored path, where
+            // restoreItineraryDirectly deliberately reports "P2" while the
+            // backend still says P1 during the celery build.
+            const stage =
+              resolvedStage === "P2"
+                ? "P2"
+                : (statusRes.data?.stage ?? resolvedStage);
             if (status) {
               if (stage === "P2") {
                 dispatch(
@@ -2394,10 +2545,12 @@ export default function BotApp({
                   setIsItineraryCompleting(true);
                 }
               } else {
-                // Stage P1 (or missing) — chatkit-only path. No itinerary
-                // dispatches; the thread's effects already drive P1 visuals.
-                // Skip enabling itinerary polling below — ItineraryContainer
-                // would otherwise poll and redirect to /thank-you on FAILURE.
+                // Stage P1 (or missing, with no P2 already established by the
+                // caller — see the sticky resolution above) — chatkit-only
+                // path. No itinerary dispatches; the thread's effects already
+                // drive P1 visuals. Skip enabling itinerary polling below —
+                // ItineraryContainer would otherwise poll and redirect to
+                // /thank-you on FAILURE.
                 stageIsP1 = true;
                 applyBotMode("p1");
                 setItineraryId("");
@@ -2475,7 +2628,7 @@ export default function BotApp({
         const hasAnyItineraryEffect = itineraryEffects.some((e) =>
           [
             "display_itinerary",
-            "start_itinerary_completion_process",
+            ...COMPLETION_STARTED_EFFECTS,
             "itinerary_completion_process_completed",
           ].includes(e.name),
         );
@@ -2768,7 +2921,12 @@ export default function BotApp({
       setShowItineraryShimmer(false);
       setIsItineraryCompleting(false);
       itineraryCreatedInSessionRef.current = false;
-      setBotMode("p1");
+      // applyBotMode, not setBotMode — this was the one site in the file that
+      // moved the state without the ref, leaving botModeRef stuck on "p2" after
+      // a back/forward into a P1 session. Everything that reads botModeRef
+      // (loadThread's view branches, handleItineraryReceived's P2 guard) would
+      // then treat the P1 session as P2 and suppress its own panel.
+      applyBotMode("p1");
       setItineraryId("");
       setViewMode("map");
       setHasBotResponded(false);
@@ -2794,7 +2952,7 @@ export default function BotApp({
 
     window.addEventListener("popstate", onPopState);
     return () => window.removeEventListener("popstate", onPopState);
-  }, [restoreLatestThread, dispatch]);
+  }, [restoreLatestThread, dispatch, applyBotMode]);
 
   const handleThreadSelect = useCallback(
     async (
@@ -2813,7 +2971,7 @@ export default function BotApp({
       if (knownSessionId) {
         const target = `/chat/${knownSessionId}`;
         if (window.location.pathname !== target) {
-          window.history.pushState({}, "", target);
+          pushUrlDetached(target);
         }
         safeSetSessionItem(`chatkit_session_${target}`, knownSessionId);
         setActiveChatSessionId(knownSessionId);
@@ -2852,7 +3010,7 @@ export default function BotApp({
       setShowPaymentDrawer(false);
       const cleanUrl = new URL(window.location.href);
       cleanUrl.searchParams.delete("drawer");
-      window.history.replaceState({}, "", cleanUrl.toString());
+      replaceUrl(cleanUrl.toString());
 
       dispatch(setItinerary({}));
       dispatch(setCart({}));
@@ -2870,16 +3028,23 @@ export default function BotApp({
       // canonical itinerary fetch immediately, instead of waiting for
       // loadThread → threads.get_by_id → status check serially. Skipped when
       // the thread row didn't carry a session_id; loadThread will derive it
-      // from the get_by_id response in that case.
-      let stageFromRestore: string | null = null;
+      // from the get_by_id response and run this same restore itself.
+      //
+      // Stays `undefined` when that skip happens — loadThread treats undefined
+      // as "stage unresolved, resolve it yourself before committing the thread"
+      // and null as "resolved to nothing". Do NOT initialise this to null: that
+      // would tell loadThread the stage was already settled and leave botMode
+      // on "p1" while ChatKitPanel replayed a P2 trip's draft effects.
+      let stageFromRestore: string | null | undefined;
       if (knownSessionId) {
         try {
           stageFromRestore = await restoreItineraryDirectly(knownSessionId);
         } catch (err) {
           console.warn(
-            "[handleThreadSelect] restoreItineraryDirectly failed, falling back to loadThread-only:",
+            "[handleThreadSelect] restoreItineraryDirectly failed, letting loadThread resolve the stage:",
             err,
           );
+          stageFromRestore = undefined;
         }
       }
 
@@ -2917,10 +3082,19 @@ export default function BotApp({
     [dispatch],
   );
 
-  // Mobile chat header's close button. A thread that started on a theme page
-  // goes straight back to that page; a plain /chat session falls back to the
-  // previous history entry (and the homepage when /chat was opened cold).
+  // Mobile chat header's close button. Once the thread has produced an
+  // itinerary that's the thing to close INTO — the reader came here to build a
+  // trip, and the trip now exists at its own URL. That wins over the theme page
+  // even for a thread that started on one, because going back to the marketing
+  // page would throw away what they just made. Failing that, a thread that
+  // started on a theme page goes straight back to that page; a plain /chat
+  // session falls back to the previous history entry (and the homepage when
+  // /chat was opened cold).
   const handleCloseChat = () => {
+    if (hasItinerary) {
+      router.push(`/itinerary/${activeItineraryId}`);
+      return;
+    }
     const themePath = getThemePagePath(themeSlug);
     if (themePath) {
       router.push(themePath);
@@ -2988,7 +3162,7 @@ export default function BotApp({
     setShowPaymentDrawer(false);
     const cleanUrl2 = new URL(window.location.href);
     cleanUrl2.searchParams.delete("drawer");
-    window.history.replaceState({}, "", cleanUrl2.toString());
+    replaceUrl(cleanUrl2.toString());
 
     dispatch(setItinerary({}));
     dispatch(setCart({}));
@@ -3007,7 +3181,7 @@ export default function BotApp({
       : "/chat";
     if (currentPath !== targetPath) {
       setActiveChatSessionId(undefined);
-      window.history.pushState({}, "", targetPath);
+      pushUrlDetached(targetPath);
     }
 
     // Non-theme /chat: the fresh surface defaults to the in-chat intake form
@@ -3023,11 +3197,25 @@ export default function BotApp({
   // Keep the popstate handler's ref pointing at the latest handleNewChat.
   handleNewChatRef.current = handleNewChat;
 
-  const executePromptSelect = (prompt: string, attachmentIds?: string[]) => {
+  const executePromptSelect = (
+    prompt: string,
+    attachmentIds?: string[],
+    // A prompt seeded from a theme page carries that page's structured `intake`
+    // (see theme/cinematic/themeIntake.ts). It has to ride BOTH branches below:
+    // the live-panel branch bypasses `initialPrompt` entirely, so passing it
+    // only as a prop would silently drop the payload whenever the chat was
+    // already mounted — which is exactly what happened before.
+    intakePayload?: Record<string, unknown>,
+  ) => {
     // chatSendMessageRef is set by both desktop and mobile ChatKitPanel onSendReady
     const sendFn = sendMessageRef.current ?? chatSendMessageRef.current;
     if (isChatActive && sendFn) {
-      sendFn(prompt);
+      sendFn(
+        prompt,
+        undefined,
+        undefined,
+        intakePayload ? { formSubmitted: true, intakePayload } : undefined,
+      );
     } else {
       setInitialPrompt(prompt);
       setInitialAttachmentIds(attachmentIds);
@@ -3068,6 +3256,10 @@ export default function BotApp({
       }
       if (seedMeta.slug) setThemeSlug(seedMeta.slug);
       if (seedMeta.note) setThemeNote(seedMeta.note);
+      // Present only on the seed path (a card/hero/ask-bar prompt). The "Build
+      // trip" route carries none — its intake is composed by the mini-form on
+      // submit instead.
+      if (seedMeta.intake) setThemeIntake(seedMeta.intake);
     }
 
     // "Build this itinerary" from a theme page routes here with `?themeForm=<slug>`.
@@ -3098,7 +3290,7 @@ export default function BotApp({
         try {
           const url = new URL(window.location.href);
           url.searchParams.delete("themeForm");
-          window.history.replaceState({}, "", url.toString());
+          replaceUrl(url.toString());
         } catch {
           /* noop */
         }
@@ -3136,7 +3328,11 @@ export default function BotApp({
       // funnels through `handlePromptSelect`, which sets `initialPrompt`
       // and flips `isChatActive`. ChatKitPanel's `initialPrompt` effect
       // sends it as the first message after location is ready.
-      handlePromptSelect(seed);
+      //
+      // The theme page's `intake` is handed over directly rather than read back
+      // off `themeIntake` state — the setState above hasn't landed yet, and the
+      // live-panel branch inside executePromptSelect sends synchronously.
+      handlePromptSelect(seed, undefined, seedMeta?.intake ?? undefined);
     }
 
     // Drop the seed from the URL once consumed so a refresh doesn't replay it.
@@ -3144,7 +3340,7 @@ export default function BotApp({
       try {
         const url = new URL(window.location.href);
         url.searchParams.delete("seed");
-        window.history.replaceState({}, "", url.toString());
+        replaceUrl(url.toString());
       } catch {
         /* noop */
       }
@@ -3185,7 +3381,7 @@ export default function BotApp({
         const url = new URL(window.location.href);
         url.searchParams.delete("intake");
         url.searchParams.delete("destination");
-        window.history.replaceState({}, "", url.toString());
+        replaceUrl(url.toString());
       } catch {
         /* noop */
       }
@@ -3193,12 +3389,16 @@ export default function BotApp({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.isReady]);
 
-  const handlePromptSelect = (prompt: string, attachmentIds?: string[]) => {
+  const handlePromptSelect = (
+    prompt: string,
+    attachmentIds?: string[],
+    intakePayload?: Record<string, unknown>,
+  ) => {
     // The first prompt is allowed through without an upfront login modal so the
     // in-chat intake form can render immediately; authentication is collected
     // later via the inline OTP card when the user submits the form (or via the
     // backend `prompt_login` effect if it gates a specific action).
-    executePromptSelect(prompt, attachmentIds);
+    executePromptSelect(prompt, attachmentIds, intakePayload);
   };
 
   // Open the traveller-story detail view inside ChatKitPanel without pushing a
@@ -3427,6 +3627,7 @@ export default function BotApp({
     themeItems,
     themeSlug,
     themeNote,
+    themeIntake,
     themeForm,
     startThemedForm,
     // The yellow "View Itinerary" strip under the composer is how the chat TAB
@@ -3664,13 +3865,31 @@ Start Location: ${details.startLocation}`;
       )
       .then((res) => setIsHotelsPresent(res.data.no_of_hotels > 0))
       .catch(() => setIsHotelsPresent(false))
-      .finally(() => setShowSettings(true));
+      .finally(() => {
+        // Opened from the gear (or "More") — no particular reason, so the modal
+        // keeps its general heading rather than a stale one from last time.
+        setSettingsReason(null);
+        setShowSettings(true);
+      });
   }, [authToken, activeItineraryId]);
 
   const handleBackToItinerary = useCallback(() => {
     if (isMobile) mobileTabSwitchRef.current?.("itinerary");
     else setViewMode("itinerary");
   }, [isMobile]);
+
+  // RouteEditSection fires this the moment an Update Route save is accepted and
+  // status polling begins. The route the traveller is looking at is about to be
+  // replaced, and the recompute is narrated by the itinerary's own status
+  // loader in the bottom bar — so send them to the surface being rebuilt rather
+  // than leaving them on a stale list behind a blocking spinner.
+  useEffect(() => {
+    if (typeof window === "undefined") return undefined;
+    const onRouteUpdateStarted = () => handleBackToItinerary();
+    window.addEventListener("route-update-started", onRouteUpdateStarted);
+    return () =>
+      window.removeEventListener("route-update-started", onRouteUpdateStarted);
+  }, [handleBackToItinerary]);
 
   // How tall the stack of fixed bottom bars is, so the "Back to itinerary" pill
   // can sit just above the topmost of them and never cover an actionable
@@ -4034,7 +4253,18 @@ Start Location: ${details.startLocation}`;
           sticky element is this wrapper (not the card) so its white background
           fills the card's mx/mt gutters — otherwise the timeline would show
           through them while scrolling underneath. */}
-      <div className="max-ph:sticky max-ph:top-0 max-ph:z-30 max-ph:bg-white">
+      {/* Hidden inside the phone's route sheet: the sheet has its own "Your
+          route" header, and the trip card underneath it — title, dates, the
+          route strip with its own Change button, the Kaira Protected badge —
+          repeats the itinerary the traveller just came from. The sheet opens on
+          the Route section itself. Desktop keeps the card in every view: there
+          it is the panel's header, not a sheet's second one. */}
+      <div
+        className="max-ph:sticky max-ph:top-0 max-ph:z-30 max-ph:bg-white"
+        style={
+          isMobile && viewMode === "routes" ? { display: "none" } : undefined
+        }
+      >
       {/* Arbitrary px values, not px-3/py-3: bootstrap's `.px-3`/`.py-3` are
           `1rem !important` and land after Tailwind, so they silently overrode
           every padding this card asked for (`md:px-[22px]`, `max-ph:px-[12px]`,
@@ -4297,7 +4527,12 @@ Start Location: ${details.startLocation}`;
                           setIsHotelsPresent(res.data.no_of_hotels > 0),
                         )
                         .catch(() => setIsHotelsPresent(false))
-                        .finally(() => setShowSettings(true));
+                        .finally(() => {
+                      // Opened from the gear — no particular reason, so the
+                      // modal keeps its general heading.
+                      setSettingsReason(null);
+                      setShowSettings(true);
+                    });
                     }}
                   >
                     <Image src="/settings.svg" height={18} width={18} alt="Settings" />
@@ -4399,7 +4634,12 @@ Start Location: ${details.startLocation}`;
                       setIsHotelsPresent(res.data.no_of_hotels > 0),
                     )
                     .catch(() => setIsHotelsPresent(false))
-                    .finally(() => setShowSettings(true));
+                    .finally(() => {
+                      // Opened from the gear — no particular reason, so the
+                      // modal keeps its general heading.
+                      setSettingsReason(null);
+                      setShowSettings(true);
+                    });
                 }}
               >
                 <Image
@@ -4769,11 +5009,7 @@ Start Location: ${details.startLocation}`;
                       onNewChat={handleNewChat}
                       onThreadSelect={handleThreadSelect}
                       activeThreadId={activeThreadId}
-                      isComplete={
-                        activeItineraryId !== "skeleton" &&
-                        activeItineraryId !== "draft" &&
-                        !!activeItineraryId
-                      }
+                      isComplete={hasItinerary}
                       onLoginSuccess={attachUserToItinerary}
                       onClose={handleCloseChat}
                     />
@@ -4859,11 +5095,7 @@ Start Location: ${details.startLocation}`;
                           onNewChat={handleNewChat}
                           onThreadSelect={handleThreadSelect}
                           activeThreadId={activeThreadId}
-                          isComplete={
-                            activeItineraryId !== "skeleton" &&
-                            activeItineraryId !== "draft" &&
-                            !!activeItineraryId
-                          }
+                          isComplete={hasItinerary}
                           onLoginSuccess={attachUserToItinerary}
                           onClose={handleCloseChat}
                         />
@@ -4924,9 +5156,37 @@ Start Location: ${details.startLocation}`;
           // Re-poll status + canonical fetch instead of trusting the edit response,
           // which lacks day-by-day, hotels, transfers, pricing and would clobber
           // status:"Finalized" (hiding Routes/Bookings tabs).
-          if (activeItineraryId) handleItineraryRefresh(activeItineraryId);
+          //
+          // Guarded because the modal closes on this promise: the save is done
+          // the moment the POST above returns, and a throw from the refresh —
+          // which only rebuilds this page's own state — would otherwise keep the
+          // sheet open under an error message about a save the server accepted.
+          try {
+            if (activeItineraryId) handleItineraryRefresh(activeItineraryId);
+            // Saved from the Route view — on a phone, the route sheet standing
+            // over the itinerary. The route behind it is about to be rebuilt
+            // around the new dates, so hand the traveller back to the itinerary:
+            // the surface being rebuilt, and the one whose status loader narrates
+            // it. Same landing an accepted Update Route gives them. Left alone
+            // when Settings was opened from anywhere else — a save from the
+            // itinerary or bookings shouldn't move anyone.
+            if (viewMode === "routes") handleBackToItinerary();
+          } catch (err) {
+            console.error("[BotApp] itinerary refresh after settings edit:", err);
+          }
           return response;
         };
+        // Opened from the Route tab's blocked action bar: the traveller came
+        // here to fix one thing, so the modal names it instead of offering
+        // "preferences" and leaving them to find the date picker.
+        const pastDates = settingsReason === "past-dates";
+        const settingsCopy = pastDates
+          ? {
+              heading: { lead: "Update your", emphasis: "travel", trail: "dates" },
+              subheading:
+                "Your trip dates have passed — pick new ones and I'll re-plan the trip.",
+            }
+          : {};
         return isMobile ? (
           <BottomModal
             show={true}
@@ -4944,6 +5204,7 @@ Start Location: ${details.startLocation}`;
               handleApply={settingsHandleApply}
               maxAdults={true}
               maxRooms={true}
+              {...settingsCopy}
             />
           </BottomModal>
         ) : (
@@ -4954,6 +5215,7 @@ Start Location: ${details.startLocation}`;
               handleApply={settingsHandleApply}
               maxAdults={true}
               maxRooms={true}
+              {...settingsCopy}
             />
           </ModalWithBackdrop>
         );
@@ -5945,7 +6207,9 @@ export const MobileHeaderMenu = React.memo(
           </div>
           )}
 
-          {/* Close — black circle back to the theme page this chat started on. */}
+          {/* Close — black circle out to whatever this chat produced: the
+              itinerary if there is one, else the theme page it started on.
+              See handleCloseChat. */}
           {onClose && (
             <button
               onClick={onClose}
@@ -6309,7 +6573,17 @@ const MobileLayout = React.memo(
     // strip stacked on top of it. Kept everywhere else.
     const itineraryOwnsHeader =
       !!onAskKaira && (activeTab === "itinerary" || activeTab === "map");
-    const headerVisible = activeTab !== "chat" && !itineraryOwnsHeader;
+    // On a phone the Route tab is presented as a full-screen bottom sheet
+    // rather than another tab body: "Change Route" is a detour from the
+    // itinerary, and a sheet says "you'll be handed back" in a way a tab swap
+    // doesn't. It reuses this pane rather than rendering its own — moving
+    // `itineraryContent` into a new container would remount the single
+    // ItineraryContainer instance and every poll and timer inside it.
+    const routeSheet = activeTab === "routes";
+    // The navbar stays out of the way while the sheet is up (the sheet has its
+    // own header with the close button) and wherever the itinerary owns it.
+    const headerVisible =
+      activeTab !== "chat" && !itineraryOwnsHeader && !routeSheet;
 
     // Held in a ref so the scroll listener below never re-registers on it.
     const onItineraryScrolledRef = React.useRef(onItineraryScrolled);
@@ -6386,6 +6660,20 @@ const MobileLayout = React.memo(
       setNavHidden(false);
     }, [activeTab]);
 
+    // Only one bar owns the bottom of the screen. Opening the Route tab's
+    // editor puts its own "Update Route" bar there for the whole session, and
+    // the cart bar stands down until the edit is saved or abandoned. Stacking
+    // can't arbitrate this on its own — the route bar is portalled to <body>
+    // and would simply cover the cart bar, leaving two bars' worth of chrome
+    // stacked at the foot. RouteEditSection owns the flag (whether its editor
+    // is open is state nothing up here can see) and publishes it to the store.
+    // No activeTab reset needed — the gate below already requires the Route
+    // tab, and the flag stays truthful while the user is elsewhere.
+    const routeBarShown = (useSelector as any)(
+      (s: any) => !!s.ItineraryStatus?.route_bar_active,
+    );
+    const showCartBar = !(activeTab === "routes" && routeBarShown);
+
     // The scroll pane ends where the fixed CTA bar begins. Measure the bar
     // rather than assume a height — it swaps between a one-line confirm button,
     // the steps loader and the two-line cart row, each a different height, and
@@ -6396,27 +6684,37 @@ const MobileLayout = React.memo(
       // own copy mounted (opacity-toggled) and precedes this pane in the DOM,
       // so a bare first-match query measures the MAP's bar. Prefer the
       // itinerary footer whenever it is mounted; it is the taller of the two
-      // and the one this pane actually has to clear.
-      const el =
+      // and the one this pane actually has to clear. The Route tab's own action
+      // bar can be down there at the same time (that tab stays mounted behind
+      // the itinerary, just display:none'd, so a hidden copy measures 0), so
+      // measure it too and clear whichever is tallest.
+      const cta =
         document.querySelector<HTMLElement>("[data-itinerary-cta-bar]") ||
         document.querySelector<HTMLElement>("[data-bottom-cta-bar]");
-      if (!el) {
+      const els = [
+        ...(cta ? [cta] : []),
+        ...Array.from(
+          document.querySelectorAll<HTMLElement>("[data-route-action-bar]"),
+        ),
+      ];
+      if (!els.length) {
         setCtaBarHeight(0);
         return undefined;
       }
-      // offsetHeight, not getBoundingClientRect().height: this bar lives inside
+      // offsetHeight, not getBoundingClientRect().height: these bars live inside
       // the trip card, and while Kaira's sheet is open that card is scaled to
       // .93 — a rect measured then comes back 7% short, and the pane above
       // would resize by the difference the next time anything re-ran this (a
       // cart update mid-conversation does). Layout height ignores transforms.
-      const measure = () => setCtaBarHeight(el.offsetHeight);
+      const measure = () =>
+        setCtaBarHeight(els.reduce((h, el) => Math.max(h, el.offsetHeight), 0));
       measure();
       const ro = new ResizeObserver(measure);
-      ro.observe(el);
+      els.forEach((el) => ro.observe(el));
       return () => ro.disconnect();
       // bottomCTABarProps carries cart/pricingStatus, so it changes whenever the
       // bar swaps variants and this re-queries the (newly mounted) element.
-    }, [bottomCTABarProps, hasItineraryActivity, activeTab]);
+    }, [bottomCTABarProps, hasItineraryActivity, activeTab, routeBarShown]);
 
     return (
       <div className="flex flex-col h-full overflow-hidden relative">
@@ -6765,7 +7063,14 @@ const MobileLayout = React.memo(
               // padding the pane by its height: padding is scrollable, so it
               // forced a scrollbar even when the content fit. Shrinking the pane
               // cannot.
-              className="absolute inset-x-0 top-0 overflow-y-auto bg-white"
+              className={`overflow-y-auto bg-white ${
+                routeSheet
+                  // No rounded top and no inset: the sheet covers the screen
+                  // edge to edge, so nothing behind it shows through a corner
+                  // or a sliver at the top.
+                  ? "fixed inset-0 ttw-sheet-up"
+                  : "absolute inset-x-0 top-0"
+              }`}
               style={{
                 // Full height (the spacer below reserves the navbar's row inside
                 // the scroll flow); end where the fixed CTA bar begins. The
@@ -6793,9 +7098,14 @@ const MobileLayout = React.memo(
                 )
                   ? "auto"
                   : "none",
-                zIndex: ["itinerary", "routes", "bookings"].includes(activeTab)
-                  ? 2
-                  : 1,
+                // 20 as a sheet so it covers the page chrome it is standing in
+                // front of, but stays under the portalled Update Route bar
+                // (z-30) that acts as its footer.
+                zIndex: routeSheet
+                  ? 20
+                  : ["itinerary", "routes", "bookings"].includes(activeTab)
+                    ? 2
+                    : 1,
               }}
             >
               {/* Scrolling spacer the height of the absolute navbar. The navbar
@@ -6805,6 +7115,29 @@ const MobileLayout = React.memo(
                   once the spacer scrolls past. */}
               {headerVisible && (
                 <div style={{ height: headerHeight }} aria-hidden />
+              )}
+              {routeSheet && (
+                // Sticky, not fixed: it lives inside the scroller, and a fixed
+                // child of a -webkit-overflow-scrolling:touch pane is placed
+                // against the scrolled content on iOS.
+                <div className="sticky top-0 z-40 flex items-center justify-between gap-3 bg-white px-[18px] py-[16px] border-b border-slate-100 rounded-t-[20px]">
+                  {/* Same weight and tracking as the "Route" heading directly
+                      below it, so the sheet's chrome doesn't outweigh the
+                      content it is introducing. */}
+                  <span className="font-inter text-[19px] font-bold leading-none tracking-[-0.3px] text-[#0B1220]">
+                    Your route
+                  </span>
+                  <button
+                    type="button"
+                    aria-label="Close route"
+                    onClick={() => handleTabClick("itinerary")}
+                    className="flex h-[24px] w-[24px] shrink-0 items-center justify-center rounded-full bg-[#0b1220] text-white"
+                  >
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+                      <path d="M18 6 6 18M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
               )}
               {itineraryContent}
             </div>
@@ -6826,23 +7159,25 @@ const MobileLayout = React.memo(
             // card changes shape during the gesture.
             TRIP_TABS.includes(tripTab) && (
               <>
-                <BottomCTABar
-                  {...bottomCTABarProps}
-                  viewMode="itinerary"
-                  // The package-priced footer belongs to the itinerary itself.
-                  // Routes/bookings keep the standard bar — they are lists of
-                  // line items, where the old chrome still reads correctly.
-                  variant={
-                    onAskKaira && tripTab === "itinerary"
-                      ? "mobileItinerary"
-                      : "default"
-                  }
-                  // Stays wired even under the sheet: the bar renders its
-                  // ask-Kaira pill only when this prop is present, so dropping
-                  // it would change the bar's height — and the pane measures
-                  // that height. The scrim above it takes the taps.
-                  onAskKaira={tripTab === "itinerary" ? onAskKaira : undefined}
-                />
+                {showCartBar && (
+                  <BottomCTABar
+                    {...bottomCTABarProps}
+                    viewMode="itinerary"
+                    // The package-priced footer belongs to the itinerary itself.
+                    // Routes/bookings keep the standard bar — they are lists of
+                    // line items, where the old chrome still reads correctly.
+                    variant={
+                      onAskKaira && tripTab === "itinerary"
+                        ? "mobileItinerary"
+                        : "default"
+                    }
+                    // Stays wired even under the sheet: the bar renders its
+                    // ask-Kaira pill only when this prop is present, so dropping
+                    // it would change the bar's height — and the pane measures
+                    // that height. The scrim above it takes the taps.
+                    onAskKaira={tripTab === "itinerary" ? onAskKaira : undefined}
+                  />
+                )}
                 {["routes", "bookings"].includes(tripTab) && (
                   <BackToItineraryBar
                     onClick={() => handleTabClick("itinerary")}
@@ -6858,9 +7193,11 @@ const MobileLayout = React.memo(
         {/* ── Floating Kaira icon + chat banner — on itinerary/routes/bookings views ──
             Suppressed on the new itinerary, where the footer's ask-Kaira pill is
             the way in. Two floating invitations to the same conversation, one
-            covering the trip, is one too many. ── */}
+            covering the trip, is one too many. Not over the route sheet either —
+            this floats at z-100 and would cover the sheet's own CTA. ── */}
         {hasItineraryActivity &&
           !itineraryOwnsHeader &&
+          !routeSheet &&
           ["itinerary", "routes", "bookings"].includes(activeTab) && (
             <div
               className="fixed z-[100] flex flex-col items-end gap-2"

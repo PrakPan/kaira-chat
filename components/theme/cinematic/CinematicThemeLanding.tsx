@@ -42,6 +42,7 @@ import type {
   CinematicStoryCard,
   CinematicEatCard,
   CinematicVisaCard,
+  CinematicSelectableItem,
   CinematicFeatureCta,
   CinematicHeroConfig,
   CinematicAskBar,
@@ -52,6 +53,13 @@ import {
   useThemeSelection,
   type ThemeSelectionValue,
 } from "./ThemeSelection";
+import type { ThemePromptIntent } from "./themeIntake";
+
+// Every prompt this surface fires reports WHERE it came from, so the page can
+// build the `intake` payload for the /chatkit request rather than sending bare
+// free text (see themeIntake.ts). The intent is optional on the signature so a
+// caller that ignores it still typechecks.
+type SelectPrompt = (prompt: string, intent?: ThemePromptIntent) => void;
 
 // ── Palette ──────────────────────────────────────────────────────────────
 const INK = "#0b1220";
@@ -63,6 +71,9 @@ const PAPER = "#fafaf5";
 const DARK = "#0a1020";
 const RED = "#b84034";
 const SAND = "#f4f3ec";
+// The one "saved" green on the page — Kaira's online dot, the dark sections'
+// added state, and the tick on a saved hero polaroid all read from it.
+const GREEN = "#1f8a5a";
 
 // Pull a catalog element id out of a drawer href (e.g. "?restaurant_id=abc",
 // "?city_id=xyz") so a saved element carries its id in the /chatkit request.
@@ -111,9 +122,29 @@ const cardChrome = (onSand?: boolean): React.CSSProperties => ({
   border: `1px solid ${onSand ? "#e6e3d6" : BORDER}`,
 });
 
+// The mockup's scroller cards carry a warmer hairline than the grid ones and a
+// low gold lift under them, so a rail reads as a row of things you push along
+// rather than a block of tiles. Only sections that opt into `rail` get it.
+const railCardChrome: React.CSSProperties = {
+  background: "#ffffff",
+  border: "1px solid #f0dfc0",
+  boxShadow: "0 8px 20px -14px rgba(184,140,20,0.35)",
+};
+
 const DARK_CARD: React.CSSProperties = {
   background: "rgba(255,255,255,0.04)",
   border: "1px solid rgba(255,255,255,0.08)",
+};
+
+// The mono badge over a card image on a DARK card — the frosted white one
+// below disappears against an ink panel, so this inverts it.
+const IMAGE_BADGE_DARK: React.CSSProperties = {
+  background: "rgba(11,18,32,0.82)",
+  backdropFilter: "blur(10px)",
+  WebkitBackdropFilter: "blur(10px)",
+  color: PAPER,
+  fontSize: 9.5,
+  pointerEvents: "none",
 };
 
 // The mono badge that floats over a card image (city, nights, "2h from
@@ -163,7 +194,10 @@ const addCtaStyle = (
       };
 };
 
-const addCtaLabel = (selected: boolean) => (selected ? "✓ Added" : "+ Add");
+// "+ Add" by default; pass a noun where the card needs to say what it adds
+// ("+ Add visa" on the country cards, which sit far from the rest of the tray).
+const addCtaLabel = (selected: boolean, noun?: string) =>
+  selected ? "✓ Added" : noun ? `+ Add ${noun}` : "+ Add";
 
 // Primary card action ("Create this plan →", "Book this itinerary →") — an
 // accent-filled pill that spans the card foot.
@@ -185,6 +219,11 @@ const CinematicStyles = () => (
       .ctl-h { font-family: 'Inter', sans-serif; font-weight: 800; letter-spacing: -0.03em; color: ${INK}; margin: 0; }
       .ctl-h-light { color: ${PAPER}; }
       .ctl-h-yellow { color: ${YELLOW}; }
+      .ctl-eyebrow-yellow { color: ${YELLOW}; }
+      /* Shared measure for every section. The gutter stays put; only the cap
+         moves, so a wider page gains content width rather than losing padding. */
+      .ctl-container { max-width: var(--ctl-container, 1240px); padding-left: 20px; padding-right: 20px; }
+      @media (min-width: 768px) { .ctl-container { padding-left: 28px; padding-right: 28px; } }
       .ctl-card { transition: transform .25s cubic-bezier(.2,.7,.3,1), box-shadow .25s cubic-bezier(.2,.7,.3,1); }
       .ctl-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px -10px rgba(11,18,32,0.15); }
       .ctl-press { transition: transform .15s cubic-bezier(.2,.7,.3,1); }
@@ -238,8 +277,18 @@ const CinematicStyles = () => (
       .ctl-kairawrap { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px 0; min-height: 440px; }
       .ctl-kaira { width: 180px; height: 180px; border-radius: 50%; overflow: hidden; box-shadow: 0 16px 40px rgba(11,18,32,0.2); border: 6px solid ${PAPER}; z-index: 2; }
       .ctl-kaira img { width: 100%; height: 100%; object-fit: cover; }
-      .ctl-polaroid { position: absolute; width: 148px; background: #fff; padding: 8px 8px 26px; box-shadow: 0 12px 28px -8px rgba(11,18,32,0.25); border-radius: 4px; z-index: 3; transition: transform .3s cubic-bezier(.2,.7,.3,1); cursor: pointer; }
+      /* The polaroids save the scene they show: clicking one adds it to the
+         trip and marks it with a green tick, clicking again removes it. (They
+         used to navigate, which put a second, unlabelled destination behind
+         the hero's own CTAs.) A page with no selection handler leaves them as
+         plain, decorative tiles that lift on hover. */
+      .ctl-polaroid { position: absolute; width: 148px; background: #fff; padding: 8px 8px 26px; box-shadow: 0 12px 28px -8px rgba(11,18,32,0.25); border-radius: 4px; z-index: 3; transition: transform .3s cubic-bezier(.2,.7,.3,1), box-shadow .25s ease; }
       .ctl-polaroid:hover { transform: translateY(-4px) rotate(0deg) !important; z-index: 5; }
+      /* Button reset — a selectable polaroid is a real button, but it has to
+         keep the tile's own box exactly. */
+      .ctl-polaroid-btn { border: none; font: inherit; color: inherit; text-align: inherit; cursor: pointer; display: block; }
+      .ctl-polaroid-saved { box-shadow: 0 0 0 2px ${GREEN}, 0 12px 28px -8px rgba(11,18,32,0.25); }
+      .ctl-polaroid-tick { position: absolute; top: -9px; right: -9px; width: 25px; height: 25px; border-radius: 50%; background: ${GREEN}; color: #fff; font-size: 13px; font-weight: 700; line-height: 21px; text-align: center; border: 2px solid #fff; box-shadow: 0 4px 10px -4px rgba(11,18,32,0.45); z-index: 6; }
       .ctl-polaroid-img { position: relative; overflow: hidden; width: 100%; aspect-ratio: 1 / 1; border-radius: 2px; }
       .ctl-polaroid-cap { font-family: 'Instrument Serif', serif; font-style: italic; font-size: 12px; color: ${INK}; text-align: center; margin-top: 8px; line-height: 1.2; }
       .ctl-kaira-name { text-align: center; margin-top: 16px; z-index: 4; }
@@ -253,13 +302,14 @@ const CinematicStyles = () => (
 
 // ── Layout container — every section shares this so headings and card rows
 // line up to the same left edge on all breakpoints (20px mobile / 28px md). ──
+// The cap is a CSS variable rather than a literal so one page can run wider
+// than the shared 1240 without every other theme page moving with it — see
+// `maxWidth` on CinematicThemeConfig, which sets --ctl-container on .ctl-root.
 const Container: React.FC<{ children: React.ReactNode; className?: string }> = ({
   children,
   className,
 }) => (
-  <div
-    className={`w-full max-w-[1240px] mx-auto px-[20px] md:px-[28px] ${className ?? ""}`}
-  >
+  <div className={`w-full ctl-container mx-auto ${className ?? ""}`}>
     {children}
   </div>
 );
@@ -336,9 +386,16 @@ const SkeletonImage: React.FC<{
 const Heading: React.FC<{
   heading: CinematicHeading;
   className?: string;
-}> = ({ heading, className }) => (
+  // Recolours the mono eyebrow — the ink panel takes a yellow one, where the
+  // default faint grey all but disappears.
+  eyebrowClassName?: string;
+}> = ({ heading, className, eyebrowClassName }) => (
   <div>
-    {heading.eyebrow && <div className="ctl-mono mb-[4px]">{heading.eyebrow}</div>}
+    {heading.eyebrow && (
+      <div className={`ctl-mono mb-[4px] ${eyebrowClassName ?? ""}`}>
+        {heading.eyebrow}
+      </div>
+    )}
     <h2 className={`ctl-h ${className ?? ""}`}>
       {heading.lead}
       {heading.accent ? (
@@ -355,14 +412,15 @@ const Heading: React.FC<{
 // ── Section CTA (pill button — retained for future pages; unused by filmy) ──
 const SectionCta: React.FC<{
   cta: CinematicSectionCta;
-  onSelectPrompt: (p: string) => void;
+  onSelectPrompt: SelectPrompt;
 }> = ({ cta, onSelectPrompt }) => {
   const router = useRouter();
   return (
     <button
       type="button"
       onClick={() => {
-        if (cta.prompt) onSelectPrompt(cta.prompt);
+        if (cta.prompt)
+          onSelectPrompt(cta.prompt, { source: "cta", label: cta.label });
         else if (cta.href) router.push(cta.href);
       }}
       className="ctl-press shrink-0 rounded-full bg-white px-[18px] py-[10px] text-[13px] font-semibold cursor-pointer"
@@ -376,16 +434,21 @@ const SectionCta: React.FC<{
 // ── Hero ───────────────────────────────────────────────────────────────────
 const CinematicHero: React.FC<{
   hero: CinematicHeroConfig;
-  onSelectPrompt: (p: string) => void;
+  onSelectPrompt: SelectPrompt;
 }> = ({ hero, onSelectPrompt }) => {
-  const router = useRouter();
   const palette = usePalette();
+  // The hero collage is a selection surface too — each polaroid saves the
+  // scene it shows (see the polaroid block below).
+  const selection = useThemeSelection();
   // Controlled composer: send the typed text (falling back to the example
-  // prompt when empty) on Send click or Enter.
+  // prompt when empty) on Send click or Enter. Typed words go out as the
+  // intake's `note`; the fallback example prompt is ours, so it goes out as a
+  // canned prompt instead — hence the `typed` flag rather than one fixed intent.
   const [composerText, setComposerText] = React.useState("");
   const submitComposer = () => {
-    const value = composerText.trim() || hero.prompt || "";
-    if (value) onSelectPrompt(value);
+    const typedValue = composerText.trim();
+    const value = typedValue || hero.prompt || "";
+    if (value) onSelectPrompt(value, { source: "hero", typed: !!typedValue });
   };
   const polaroidPos: Array<{
     top?: number;
@@ -459,7 +522,11 @@ const CinematicHero: React.FC<{
               type="button"
               onClick={submitComposer}
               className="shrink-0 rounded-full border-none cursor-pointer px-[15px] py-[8px] md:px-[20px] md:py-[10px] text-[12.5px] md:text-[14px] font-semibold"
-              style={{ background: INK, color: PAPER }}
+              // The hero's primary action, so it takes the accent like every
+              // other CTA on the page. It used to hard-code INK, which left it
+              // black on a themed page while the docked bar beside it and the
+              // card CTAs below it were all in the theme colour.
+              style={{ background: palette.accent, color: palette.accentOn }}
             >
               Send →
             </button>
@@ -472,7 +539,12 @@ const CinematicHero: React.FC<{
                 <button
                   key={`hero-chip-${i}`}
                   type="button"
-                  onClick={() => onSelectPrompt(chip.prompt)}
+                  onClick={() =>
+                    onSelectPrompt(chip.prompt, {
+                      source: "hero",
+                      label: chip.label,
+                    })
+                  }
                   className="ctl-press bg-white rounded-full px-[12px] py-[7px] md:px-[16px] md:py-[9px] text-[11.5px] md:text-[13px] font-medium cursor-pointer"
                   style={{ color: MUTED }}
                 >
@@ -489,25 +561,71 @@ const CinematicHero: React.FC<{
             <div className="ctl-kairawrap">
               {hero.images.slice(0, 4).map((img, i) => {
                 const pos = polaroidPos[i];
-                return (
-                  <div
-                    key={`polaroid-${i}`}
-                    className="ctl-polaroid"
-                    style={{
-                      top: pos.top,
-                      left: pos.left,
-                      right: pos.right,
-                      bottom: pos.bottom,
-                      transform: `rotate(${pos.rotate}deg)`,
-                    }}
-                    onClick={() => img.href && router.push(img.href)}
-                  >
+                // What this polaroid saves. An explicit `item` wins; otherwise
+                // the caption names the scene, which every existing config
+                // already carries — so the collage becomes selectable without
+                // any page being rewritten.
+                const item =
+                  img.item ??
+                  (img.caption
+                    ? {
+                        kind: "scene",
+                        label: img.caption,
+                        short: img.caption,
+                      }
+                    : undefined);
+                const selectable = !!(item && selection);
+                const selected = selectable
+                  ? selection!.isSelected(item!)
+                  : false;
+                const style: React.CSSProperties = {
+                  top: pos.top,
+                  left: pos.left,
+                  right: pos.right,
+                  bottom: pos.bottom,
+                  transform: `rotate(${pos.rotate}deg)`,
+                };
+                const inner = (
+                  <>
                     <div className="ctl-polaroid-img">
                       <SkeletonImage src={img.image} alt={img.caption ?? ""} />
                     </div>
                     {img.caption && (
                       <div className="ctl-polaroid-cap">{img.caption}</div>
                     )}
+                    {selected && (
+                      <span className="ctl-polaroid-tick" aria-hidden>
+                        ✓
+                      </span>
+                    )}
+                  </>
+                );
+                // Decorative unless the page is running a selection — a tile
+                // that can't save anything shouldn't advertise itself as a
+                // button.
+                return selectable ? (
+                  <button
+                    key={`polaroid-${i}`}
+                    type="button"
+                    onClick={() => selection!.toggle(item!)}
+                    aria-pressed={selected}
+                    aria-label={`${selected ? "Remove" : "Add"} ${
+                      img.caption ?? "this scene"
+                    }`}
+                    className={`ctl-polaroid ctl-polaroid-btn${
+                      selected ? " ctl-polaroid-saved" : ""
+                    }`}
+                    style={style}
+                  >
+                    {inner}
+                  </button>
+                ) : (
+                  <div
+                    key={`polaroid-${i}`}
+                    className="ctl-polaroid"
+                    style={style}
+                  >
+                    {inner}
                   </div>
                 );
               })}
@@ -534,7 +652,7 @@ const CinematicHero: React.FC<{
 // Mobile: 220px wide, 130px image. Desktop: fills a 3-col grid cell, 200px image.
 const PromptCard: React.FC<{
   card: CinematicPromptCard;
-  onSelectPrompt: (p: string) => void;
+  onSelectPrompt: SelectPrompt;
   onSelectActivity?: (activityId: string, source?: string) => void;
   ctaLabel?: string;
   ctaTone?: "solid" | "dark";
@@ -543,8 +661,16 @@ const PromptCard: React.FC<{
   // the card unless it carries an explicit one.
   sectionSelectable?: boolean;
   itemKind?: string;
+  // Noun for the resting Add pill — "activity" renders "+ Add activity".
+  addNoun?: string;
   // The card sits on a sand-toned band, so it needs the warmer hairline.
   onSand?: boolean;
+  // The card sits on the ink panel: translucent chrome, light type, an inverted
+  // image badge and a yellow CTA, since the accent fill vanishes against ink.
+  onDark?: boolean;
+  // The section keeps its rail from md up, so the card holds a fixed width
+  // there instead of stretching to a grid track.
+  inRail?: boolean;
 }> = ({
   card,
   onSelectPrompt,
@@ -554,7 +680,10 @@ const PromptCard: React.FC<{
   priority,
   sectionSelectable,
   itemKind,
+  addNoun,
   onSand,
+  onDark,
+  inRail,
 }) => {
   const selection = useThemeSelection();
   const palette = usePalette();
@@ -573,37 +702,42 @@ const PromptCard: React.FC<{
       : undefined);
   const selectable = !!(item && selection);
   const selected = selectable ? selection!.isSelected(item!) : false;
-  // Element cards (an activity drawer) keep opening the drawer on body click —
-  // the "+ Add" CTA does the saving. Non-element selectable cards toggle on
-  // body click as before.
-  const isElement = selectable && !!card.activityId;
   const toggle = () => item && selection && selection.toggle(item);
   return (
   <button
     type="button"
+    // A click anywhere on a selectable card adds or removes it. The detail
+    // drawers these cards used to open are retired on the theme pages, so
+    // saving is the only thing a body click can usefully do — and the "+ Add"
+    // pill and the card now agree instead of doing two different things.
     onClick={() => {
-      if (isElement) {
-        onSelectActivity?.(card.activityId!, card.activitySource);
-        return;
-      }
       if (item && selection) {
         selection.toggle(item);
         return;
       }
       if (card.activityId && onSelectActivity)
         onSelectActivity(card.activityId, card.activitySource);
-      else if (card.prompt) onSelectPrompt(card.prompt);
+      else if (card.prompt)
+        onSelectPrompt(card.prompt, { source: "card", label: card.name });
     }}
     aria-pressed={selectable ? selected : undefined}
-    className="ctl-card group flex flex-col text-left rounded-[18px] overflow-hidden cursor-pointer w-[262px] md:w-auto shrink-0 md:shrink"
+    className={`ctl-card group flex flex-col text-left rounded-[18px] overflow-hidden cursor-pointer w-[262px] shrink-0 ${
+      inRail ? "md:w-[288px]" : "md:w-auto md:shrink"
+    }`}
     style={{
-      ...cardChrome(onSand),
+      ...(onDark
+        ? DARK_CARD
+        : inRail
+          ? railCardChrome
+          : cardChrome(onSand)),
       ...(selected ? { borderColor: palette.accent } : {}),
     }}
   >
     <div
-      className="relative h-[148px] md:h-[160px] overflow-hidden"
-      style={{ background: SAND }}
+      className={`relative overflow-hidden ${
+        onDark ? "h-[176px] md:h-[220px]" : "h-[148px] md:h-[160px]"
+      }`}
+      style={{ background: onDark ? "rgba(255,255,255,0.04)" : SAND }}
     >
       <SkeletonImage
         src={card.image}
@@ -616,23 +750,29 @@ const PromptCard: React.FC<{
       {card.tag && (
         <div
           className="ctl-mono absolute top-[10px] left-[10px] px-[8px] py-[3px] rounded-[6px]"
-          style={IMAGE_BADGE}
+          style={onDark ? IMAGE_BADGE_DARK : IMAGE_BADGE}
         >
           {card.tag}
         </div>
       )}
     </div>
-    <div className="flex flex-col flex-1 px-[17px] py-[16px] md:px-[18px] md:py-[17px]">
+    <div
+      className={`flex flex-col flex-1 px-[17px] py-[16px] ${
+        onDark ? "md:px-[22px] md:py-[22px]" : "md:px-[18px] md:py-[17px]"
+      }`}
+    >
       <div
-        className="text-[15px] md:text-[16.5px] font-bold leading-[1.3]"
-        style={{ color: INK, letterSpacing: "-0.01em" }}
+        className={`font-bold leading-[1.3] ${
+          onDark ? "text-[16px] md:text-[18px]" : "text-[15px] md:text-[16.5px]"
+        }`}
+        style={{ color: onDark ? PAPER : INK, letterSpacing: "-0.01em" }}
       >
         {card.name}
       </div>
       {card.line && (
         <div
           className="text-[12.5px] md:text-[13.5px] leading-[1.5] mt-[8px] flex-1"
-          style={{ color: MUTED }}
+          style={{ color: onDark ? FAINT : MUTED }}
         >
           {card.line}
         </div>
@@ -654,13 +794,15 @@ const PromptCard: React.FC<{
             className="block w-full text-center rounded-full text-[12.5px] md:text-[13px] font-bold px-[14px] py-[10px]"
             style={
               selectable
-                ? addCtaStyle(palette, selected)
-                : ctaTone === "dark"
-                  ? { background: INK, color: PAPER, border: "none" }
-                  : primaryCtaStyle(palette)
+                ? addCtaStyle(palette, selected, onDark)
+                : onDark
+                  ? { background: YELLOW, color: INK, border: "none" }
+                  : ctaTone === "dark"
+                    ? { background: INK, color: PAPER, border: "none" }
+                    : primaryCtaStyle(palette)
             }
           >
-            {selectable ? addCtaLabel(selected) : ctaLabel}
+            {selectable ? addCtaLabel(selected, addNoun) : ctaLabel}
           </span>
         </div>
       )}
@@ -671,60 +813,302 @@ const PromptCard: React.FC<{
 
 const CardsSection: React.FC<{
   section: Extract<CinematicSection, { type: "cards" }>;
-  onSelectPrompt: (p: string) => void;
+  onSelectPrompt: SelectPrompt;
   onSelectActivity?: (activityId: string, source?: string) => void;
   // True for the first section on the page — its first card is the LCP image
   // on mobile (the hero collage is desktop-only), so it loads eagerly.
   first?: boolean;
-}> = ({ section, onSelectPrompt, onSelectActivity, first }) => (
-  <section
-    className={`pt-[30px] md:pt-[56px] ${
-      section.tone === "sand" ? "pb-[30px] md:pb-[52px]" : ""
-    }`}
-    style={section.tone === "sand" ? { background: SAND } : undefined}
-  >
-    <Container>
-      <div className="flex items-end justify-between gap-[16px]">
-        <Heading heading={section.heading} className="text-[22px] md:text-[34px]" />
-        {section.cta && (
-          <div className="max-ph:hidden">
-            <SectionCta cta={section.cta} onSelectPrompt={onSelectPrompt} />
+}> = ({ section, onSelectPrompt, onSelectActivity, first }) => {
+  const onDark = section.tone === "dark";
+  // `rail` keeps the horizontal scroller at every width. Without it the row
+  // becomes a 3-up grid from md, which is right for a five-card row and wrong
+  // for an eleven-card one — that stacks into four full-height bands and stops
+  // reading as a set of options you scan across.
+  const rail = !!section.rail;
+  const cards = (
+    <div
+      className={`ctl-scroll ctl-rail flex gap-[12px] overflow-x-auto pt-[4px] pb-[10px] ${
+        rail
+          ? "md:gap-[16px] mt-[12px] md:mt-[22px]"
+          : `md:grid md:gap-[20px] mt-[12px] md:mt-[24px] md:overflow-visible ${
+              // The ink panel lays out to however many cards it holds rather
+              // than a fixed count: two cards want two tracks (three would
+              // leave a third of the panel empty beside them), three want
+              // three, or the row doesn't reach the panel's own edges.
+              onDark && section.cards.length === 2
+                ? "md:grid-cols-2"
+                : "md:grid-cols-3"
+            }`
+      }`}
+    >
+      {section.cards.map((card, i) => (
+        <PromptCard
+          key={`card-${i}`}
+          card={card}
+          onSelectPrompt={onSelectPrompt}
+          onSelectActivity={onSelectActivity}
+          ctaLabel={section.ctaLabel}
+          ctaTone={section.ctaTone}
+          sectionSelectable={section.selectable}
+          itemKind={section.itemKind}
+          addNoun={section.addNoun}
+          onSand={section.tone === "sand"}
+          onDark={onDark}
+          inRail={rail}
+          priority={first && i === 0}
+        />
+      ))}
+    </div>
+  );
+
+  const header = (
+    <div className="flex items-end justify-between gap-[16px]">
+      <div className="max-w-[620px]">
+        <Heading
+          heading={section.heading}
+          className={`text-[22px] md:text-[34px] ${onDark ? "ctl-h-yellow" : ""}`}
+          eyebrowClassName={onDark ? "ctl-eyebrow-yellow" : undefined}
+        />
+        {section.intro && (
+          <p
+            className="text-[13.5px] md:text-[15px] leading-[1.6] mt-[12px] md:mt-[14px]"
+            style={{ color: FAINT }}
+          >
+            {section.intro}
+          </p>
+        )}
+      </div>
+      {section.cta && (
+        <div className="max-ph:hidden">
+          <SectionCta cta={section.cta} onSelectPrompt={onSelectPrompt} />
+        </div>
+      )}
+    </div>
+  );
+
+  // The ink tone is an inset panel rather than a full-bleed band: it sits
+  // inside the page gutter with its own radius, so the paper still frames it.
+  if (onDark)
+    return (
+      <section className="pt-[30px] md:pt-[56px]">
+        <Container>
+          <div
+            className="relative overflow-hidden rounded-[20px] md:rounded-[28px] px-[18px] py-[30px] md:px-[48px] md:py-[56px]"
+            style={{ background: DARK }}
+          >
+            <div
+              className="absolute pointer-events-none"
+              style={{
+                top: -120,
+                right: -60,
+                width: 460,
+                height: 460,
+                background:
+                  "radial-gradient(circle, rgba(247,231,0,0.12), transparent 70%)",
+              }}
+            />
+            <div className="relative">
+              {header}
+              {cards}
+            </div>
+          </div>
+        </Container>
+      </section>
+    );
+
+  return (
+    <section
+      className={`pt-[30px] md:pt-[56px] ${
+        section.tone === "sand" ? "pb-[30px] md:pb-[52px]" : ""
+      }`}
+      style={section.tone === "sand" ? { background: SAND } : undefined}
+    >
+      <Container>
+        {header}
+        {cards}
+      </Container>
+    </section>
+  );
+};
+
+// ── Trip card ("Step into the scene") ──────────────────────────────────────
+// Mobile: full-width stacked rows, 104px thumb. Desktop: 3-col grid, 112px
+// thumb. The price sits above the length in both.
+// A trip card states its length twice — in the top tag ("Couple · 12N") and
+// again under the price ("12 nights · Krabi + Bali"). The tag keeps who the
+// trip is for, the price block keeps how long it runs. Only a trailing "· 12N"
+// is taken, so tags that never name a length ("The full festival", "10+") and
+// the audience half of longer ones ("Family · ages 6+ · 8N") survive intact.
+const tagWithoutNights = (tag: string) =>
+  tag.replace(/\s*·\s*\d+\s*N\s*$/i, "").trim() || tag;
+
+// A packaged price is written either as "₹2,95,000" or "₹2,95,000 / person".
+// The stacked card prints the unit itself, in mono, so a price that already
+// carries one is split rather than left to say it twice.
+const PER_PERSON = /\s*[/·]\s*(per\s+)?person\s*$/i;
+const splitPrice = (price: string) => ({
+  amount: price.replace(PER_PERSON, "").trim(),
+  unit: PER_PERSON.test(price) ? "/ person" : undefined,
+});
+
+// The mockup's packaged-trip card: cover photo on top, then the meta, the
+// what's-included chips, a ruled price line and the CTA. Distinct from the
+// default row card (side thumbnail) because it is selling a fixed product
+// rather than offering a shape to start from.
+const StackedTripCard: React.FC<{
+  card: CinematicTripCard;
+  onSelectPrompt: SelectPrompt;
+  ctaLabel?: string;
+  // In a rail the card keeps a width of its own at every breakpoint; in the
+  // grid it hands sizing over to the column.
+  rail?: boolean;
+}> = ({ card, onSelectPrompt, ctaLabel, rail }) => {
+  const router = useRouter();
+  const palette = usePalette();
+  const price = card.price ? splitPrice(card.price) : null;
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        if (card.href) router.push(card.href);
+        else if (card.prompt)
+          onSelectPrompt(card.prompt, { source: "card", label: card.name });
+      }}
+      // `self-stretch`, not `h-full`: in the rail these cards are flex items in
+      // an auto-height row, and a definite `height:100%` there resolves against
+      // an indefinite parent — it disables the stretch and every card falls back
+      // to its own content height, so a plan with a fourth include-chip ends up
+      // taller than the rest and the price lines stop lining up. Stretch works
+      // in the grid too, where it is already the default.
+      className={`ctl-card text-left rounded-[18px] overflow-hidden flex flex-col self-stretch cursor-pointer w-[272px] shrink-0 ${
+        rail ? "md:w-[300px]" : "md:w-auto md:shrink"
+      }`}
+      style={cardChrome()}
+    >
+      <div
+        className="relative h-[150px] md:h-[168px] overflow-hidden"
+        style={{ background: SAND }}
+      >
+        {card.image ? (
+          <SkeletonImage
+            src={card.image}
+            alt={card.name}
+            objectPosition={card.objectPosition}
+          />
+        ) : (
+          <span
+            className="absolute inset-0 flex items-center justify-center text-[34px]"
+            style={{ background: card.gradient ?? SAND }}
+          >
+            {card.emoji}
+          </span>
+        )}
+        {card.tag && (
+          <div
+            className="ctl-mono absolute top-[10px] left-[10px] px-[8px] py-[3px] rounded-[6px]"
+            style={IMAGE_BADGE}
+          >
+            {tagWithoutNights(card.tag)}
           </div>
         )}
       </div>
-      <div className="ctl-scroll ctl-rail flex md:grid md:grid-cols-3 gap-[12px] md:gap-[20px] mt-[12px] md:mt-[24px] overflow-x-auto md:overflow-visible pt-[4px] pb-[10px]">
-        {section.cards.map((card, i) => (
-          <PromptCard
-            key={`card-${i}`}
-            card={card}
-            onSelectPrompt={onSelectPrompt}
-            onSelectActivity={onSelectActivity}
-            ctaLabel={section.ctaLabel}
-            ctaTone={section.ctaTone}
-            sectionSelectable={section.selectable}
-            itemKind={section.itemKind}
-            onSand={section.tone === "sand"}
-            priority={first && i === 0}
-          />
-        ))}
+      <div className="flex flex-col flex-1 px-[17px] py-[16px] md:px-[20px] md:py-[20px]">
+        {card.nights && (
+          <div className="ctl-mono" style={{ fontSize: 9.5 }}>
+            {card.nights}
+          </div>
+        )}
+        <div
+          className="text-[15.5px] md:text-[17px] font-bold mt-[8px] leading-[1.25]"
+          style={{ color: INK, letterSpacing: "-0.02em" }}
+        >
+          {card.name}
+        </div>
+        {card.line && (
+          <div
+            className="text-[12.5px] md:text-[13px] leading-[1.5] mt-[8px] flex-1"
+            style={{ color: MUTED }}
+          >
+            {card.line}
+          </div>
+        )}
+        {card.includes && card.includes.length > 0 && (
+          <div className="flex flex-wrap gap-[6px] mt-[14px]">
+            {card.includes.map((inc, i) => (
+              <span
+                key={`inc-${i}`}
+                className="ctl-mono px-[9px] py-[5px] rounded-[6px]"
+                style={{
+                  background: palette.accentSoft,
+                  color: palette.accent,
+                  fontSize: 8.5,
+                  fontWeight: 600,
+                }}
+              >
+                {inc}
+              </span>
+            ))}
+          </div>
+        )}
+        {price && (
+          <div
+            className="flex items-baseline gap-[8px] mt-[16px] pt-[14px] md:pt-[16px]"
+            style={{ borderTop: `1px solid ${BORDER}` }}
+          >
+            <span className="ctl-mono" style={{ fontSize: 9 }}>
+              From
+            </span>
+            <span
+              className="ctl-h text-[18px] md:text-[20px]"
+              style={{ letterSpacing: "-0.03em" }}
+            >
+              {price.amount}
+            </span>
+            {price.unit && (
+              <span className="ctl-mono" style={{ fontSize: 9 }}>
+                {price.unit}
+              </span>
+            )}
+          </div>
+        )}
+        {ctaLabel && (
+          <span
+            className="block w-full text-center rounded-full text-[13px] font-bold px-[14px] py-[12px] mt-[14px]"
+            style={{ background: INK, color: PAPER, border: "none" }}
+          >
+            {ctaLabel}
+          </span>
+        )}
+        {card.urgent && (
+          <div className="flex items-start gap-[7px] mt-[10px]">
+            <span
+              className="w-[6px] h-[6px] rounded-full shrink-0 mt-[4px]"
+              style={{ background: RED }}
+            />
+            <span
+              className="ctl-mono"
+              style={{ color: RED, fontSize: 9, lineHeight: 1.4 }}
+            >
+              {card.urgent}
+            </span>
+          </div>
+        )}
       </div>
-    </Container>
-  </section>
-);
+    </button>
+  );
+};
 
-// ── Trip card ("Step into the scene") ──────────────────────────────────────
-// Mobile: full-width stacked rows, 78px thumb, price + nights inline.
-// Desktop: 3-col grid, 96px thumb, price + nights stacked.
 const TripCard: React.FC<{
   card: CinematicTripCard;
-  onSelectPrompt: (p: string) => void;
+  onSelectPrompt: SelectPrompt;
   ctaLabel?: string;
 }> = ({ card, onSelectPrompt, ctaLabel }) => {
   const router = useRouter();
   const palette = usePalette();
   const act = () => {
     if (card.href) router.push(card.href);
-    else if (card.prompt) onSelectPrompt(card.prompt);
+    else if (card.prompt)
+      onSelectPrompt(card.prompt, { source: "card", label: card.name });
   };
   return (
   <button
@@ -753,7 +1137,11 @@ const TripCard: React.FC<{
         )}
       </div>
       <div className="flex-1 min-w-0">
-        {card.tag && <div className="ctl-mono" style={{ fontSize: 9 }}>{card.tag}</div>}
+        {card.tag && (
+          <div className="ctl-mono" style={{ fontSize: 9 }}>
+            {tagWithoutNights(card.tag)}
+          </div>
+        )}
         <div
           className="text-[14.5px] md:text-[16px] font-bold mt-[2px]"
           style={{ color: INK, letterSpacing: "-0.01em" }}
@@ -765,17 +1153,35 @@ const TripCard: React.FC<{
             {card.line}
           </div>
         )}
+        {/* Price block. A priced card reads as a packaged trip: a rule closes
+            the copy off, then the price in bold on its own line with the
+            length under it. Cards that carry no price (their length is the
+            only meta) keep the plain mono line, with no rule to imply a
+            commercial block that isn't there. */}
         {(card.price || card.nights) && (
-          <div className="flex md:flex-col gap-[10px] md:gap-[2px] mt-[6px] md:mt-[10px]">
+          <div
+            className={`mt-[10px] md:mt-[14px] ${
+              card.price ? "pt-[10px] md:pt-[12px]" : ""
+            }`}
+            style={
+              card.price ? { borderTop: `1px solid ${BORDER}` } : undefined
+            }
+          >
             {card.price && (
-              <span className="ctl-mono" style={{ color: INK, fontSize: 10.5 }}>
+              <div
+                className="ctl-mono"
+                style={{ color: INK, fontSize: 14, fontWeight: 700 }}
+              >
                 {card.price}
-              </span>
+              </div>
             )}
             {card.nights && (
-              <span className="ctl-mono" style={{ fontSize: 10 }}>
+              <div
+                className={`ctl-mono ${card.price ? "mt-[5px]" : ""}`}
+                style={{ fontSize: 10 }}
+              >
                 {card.nights}
-              </span>
+              </div>
             )}
           </div>
         )}
@@ -811,36 +1217,66 @@ const TripCard: React.FC<{
 
 const TripsSection: React.FC<{
   section: Extract<CinematicSection, { type: "trips" }>;
-  onSelectPrompt: (p: string) => void;
-}> = ({ section, onSelectPrompt }) => (
-  <section className="pt-[30px] md:pt-[56px]">
-    <Container>
-      <Heading heading={section.heading} className="text-[22px] md:text-[34px]" />
-      <div className="flex flex-col md:grid md:grid-cols-3 gap-[10px] md:gap-[16px] mt-[14px] md:mt-[24px]">
-        {section.cards.map((card, i) => (
-          <TripCard
-            key={`trip-${i}`}
-            card={card}
-            onSelectPrompt={onSelectPrompt}
-            ctaLabel={section.ctaLabel}
-          />
-        ))}
-      </div>
-    </Container>
-  </section>
-);
+  onSelectPrompt: SelectPrompt;
+}> = ({ section, onSelectPrompt }) => {
+  const palette = usePalette();
+  const stacked = section.layout === "stacked";
+  // `rail` keeps the mobile scroller at every breakpoint. Only the stacked
+  // layout has one to keep — the row layout is a stack of full-width cards.
+  const rail = stacked && !!section.rail;
+  const band = section.tone === "band";
+  return (
+    <section
+      className={`pt-[30px] md:pt-[56px] ${band ? "pb-[30px] md:pb-[56px] md:mt-[56px]" : ""}`}
+      style={band ? { background: palette.accentSoft } : undefined}
+    >
+      <Container>
+        <Heading heading={section.heading} className="text-[22px] md:text-[34px]" />
+        <div
+          className={`gap-[10px] md:gap-[16px] mt-[14px] md:mt-[24px] ${
+            stacked
+              ? `ctl-scroll ctl-rail flex overflow-x-auto pt-[4px] pb-[10px] ${
+                  rail ? "" : "md:grid md:grid-cols-3 md:overflow-visible"
+                }`
+              : "flex flex-col md:grid md:grid-cols-3"
+          }`}
+        >
+          {section.cards.map((card, i) =>
+            stacked ? (
+              <StackedTripCard
+                key={`trip-${i}`}
+                card={card}
+                onSelectPrompt={onSelectPrompt}
+                ctaLabel={section.ctaLabel}
+                rail={rail}
+              />
+            ) : (
+              <TripCard
+                key={`trip-${i}`}
+                card={card}
+                onSelectPrompt={onSelectPrompt}
+                ctaLabel={section.ctaLabel}
+              />
+            ),
+          )}
+        </div>
+      </Container>
+    </section>
+  );
+};
 
 // ── Gradient tile (Other themes / Destinations) ────────────────────────────
 const GradientCard: React.FC<{
   card: CinematicGradientCard;
-  onSelectPrompt: (p: string) => void;
+  onSelectPrompt: SelectPrompt;
   compact?: boolean; // destinations: shorter tile + no name min-height
   // Beyond the paired columns' 4-tile desktop grid — stays in the phone list.
   hideOnDesktop?: boolean;
 }> = ({ card, onSelectPrompt, compact, hideOnDesktop }) => {
   const router = useRouter();
   const act = () => {
-    if (card.prompt) onSelectPrompt(card.prompt);
+    if (card.prompt)
+      onSelectPrompt(card.prompt, { source: "card", label: card.name });
     else if (card.href) router.push(card.href);
   };
   return (
@@ -900,7 +1336,7 @@ const GradientCard: React.FC<{
 // stays complete from the same markup.
 const GradientColumn: React.FC<{
   section: Extract<CinematicSection, { type: "gradient" }>;
-  onSelectPrompt: (p: string) => void;
+  onSelectPrompt: SelectPrompt;
   desktopCols?: number;
   desktopLimit?: number;
 }> = ({ section, onSelectPrompt, desktopCols, desktopLimit }) => {
@@ -948,7 +1384,7 @@ const GradientColumn: React.FC<{
 
 const GradientSection: React.FC<{
   section: Extract<CinematicSection, { type: "gradient" }>;
-  onSelectPrompt: (p: string) => void;
+  onSelectPrompt: SelectPrompt;
 }> = ({ section, onSelectPrompt }) => (
   <section className="pt-[30px] md:pt-[56px]">
     <Container>
@@ -962,7 +1398,7 @@ const GradientSection: React.FC<{
 const GradientPairSection: React.FC<{
   left: Extract<CinematicSection, { type: "gradient" }>;
   right: Extract<CinematicSection, { type: "gradient" }>;
-  onSelectPrompt: (p: string) => void;
+  onSelectPrompt: SelectPrompt;
 }> = ({ left, right, onSelectPrompt }) => (
   <section className="pt-[30px] md:pt-[72px]">
     <Container>
@@ -984,14 +1420,15 @@ const GradientPairSection: React.FC<{
 // Full-width outline button under a grid (e.g. "View all destinations →").
 const FooterButton: React.FC<{
   cta: CinematicSectionCta;
-  onSelectPrompt: (p: string) => void;
+  onSelectPrompt: SelectPrompt;
 }> = ({ cta, onSelectPrompt }) => {
   const router = useRouter();
   return (
     <button
       type="button"
       onClick={() => {
-        if (cta.prompt) onSelectPrompt(cta.prompt);
+        if (cta.prompt)
+          onSelectPrompt(cta.prompt, { source: "cta", label: cta.label });
         else if (cta.href) router.push(cta.href);
       }}
       className="ctl-press mt-[12px] md:mt-[20px] w-full md:w-auto md:mx-auto md:block bg-white rounded-full px-[24px] py-[13px] text-[14px] font-bold cursor-pointer"
@@ -1007,11 +1444,13 @@ const FooterButton: React.FC<{
 // 236px wide horizontal scroller. Desktop: fills a 3-col grid cell.
 const PillarCard: React.FC<{
   card: CinematicPillarCard;
-  onSelectPrompt: (p: string) => void;
+  onSelectPrompt: SelectPrompt;
 }> = ({ card, onSelectPrompt }) => (
   <button
     type="button"
-    onClick={() => onSelectPrompt(card.prompt)}
+    onClick={() =>
+      onSelectPrompt(card.prompt, { source: "card", label: card.name })
+    }
     className="ctl-card text-left rounded-[18px] overflow-hidden cursor-pointer w-[262px] md:w-auto shrink-0 md:shrink flex flex-col"
     style={cardChrome()}
   >
@@ -1050,7 +1489,7 @@ const PillarCard: React.FC<{
 
 const PillarsSection: React.FC<{
   section: Extract<CinematicSection, { type: "pillars" }>;
-  onSelectPrompt: (p: string) => void;
+  onSelectPrompt: SelectPrompt;
 }> = ({ section, onSelectPrompt }) => (
   <section className="pt-[30px] md:pt-[56px]">
     <Container>
@@ -1075,7 +1514,7 @@ const PillarsSection: React.FC<{
 const ListRow: React.FC<{
   row: CinematicListRow;
   compact?: boolean;
-  onSelectPrompt: (p: string) => void;
+  onSelectPrompt: SelectPrompt;
   onSelectActivity?: (activityId: string, source?: string) => void;
   sectionSelectable?: boolean;
   itemKind?: string;
@@ -1094,24 +1533,19 @@ const ListRow: React.FC<{
     : undefined;
   const selectable = !!(item && selection);
   const selected = selectable ? selection!.isSelected(item!) : false;
-  // An element row (activity drawer or a drawer href) keeps opening the drawer
-  // on body click; the "+ Add" pill saves it.
-  const isElement = selectable && !!(row.activityId || row.href);
   const toggle = () => item && selection && selection.toggle(item);
+  // Saving wins over everything: the drawer this row used to open (by activity
+  // id or a `?city_id=` href) is retired on the theme pages, so a body click
+  // adds or removes the row instead of navigating.
   const act = () => {
-    if (isElement) {
-      if (row.activityId && onSelectActivity)
-        onSelectActivity(row.activityId, row.activitySource);
-      else if (row.href) router.push(row.href);
-      return;
-    }
     if (item && selection) {
       selection.toggle(item);
       return;
     }
     if (row.activityId && onSelectActivity)
       onSelectActivity(row.activityId, row.activitySource);
-    else if (row.prompt) onSelectPrompt(row.prompt);
+    else if (row.prompt)
+      onSelectPrompt(row.prompt, { source: "card", label: row.name });
     else if (row.href) router.push(row.href);
   };
   return (
@@ -1201,7 +1635,7 @@ const ListRow: React.FC<{
 
 const ListSection: React.FC<{
   section: Extract<CinematicSection, { type: "list" }>;
-  onSelectPrompt: (p: string) => void;
+  onSelectPrompt: SelectPrompt;
   onSelectActivity?: (activityId: string, source?: string) => void;
 }> = ({ section, onSelectPrompt, onSelectActivity }) => (
   <section className="pt-[32px] md:pt-[56px] pb-[16px] md:pb-[32px]">
@@ -1233,7 +1667,7 @@ const ListSection: React.FC<{
 // ── Checklist (dark section — "The Santa bit, done properly") ───────────────
 const ChecklistSection: React.FC<{
   section: Extract<CinematicSection, { type: "checklist" }>;
-  onSelectPrompt: (p: string) => void;
+  onSelectPrompt: SelectPrompt;
 }> = ({ section, onSelectPrompt }) => {
   const router = useRouter();
   return (
@@ -1259,7 +1693,8 @@ const ChecklistSection: React.FC<{
         <div className="grid grid-cols-1 md:grid-cols-2 gap-[8px] md:gap-[12px] mt-[16px] md:mt-[24px]">
           {section.rows.map((row, i) => {
             const act = () => {
-              if (row.prompt) onSelectPrompt(row.prompt);
+              if (row.prompt)
+                onSelectPrompt(row.prompt, { source: "card", label: row.name });
               else if (row.href) router.push(row.href);
             };
             const clickable = !!(row.prompt || row.href);
@@ -1392,14 +1827,21 @@ const MonthsSection: React.FC<{
 // ── Stories ("People who went") ─────────────────────────────────────────────
 const StoriesSection: React.FC<{
   section: Extract<CinematicSection, { type: "stories" }>;
-  onSelectPrompt: (p: string) => void;
+  onSelectPrompt: SelectPrompt;
 }> = ({ section, onSelectPrompt }) => {
   const router = useRouter();
   const palette = usePalette();
   return (
   <section className="pt-[34px] md:pt-[56px]">
     <Container>
-      <Heading heading={section.heading} className="text-[22px] md:text-[34px]" />
+      <div className="flex items-baseline justify-between gap-[12px]">
+        <Heading heading={section.heading} className="text-[22px] md:text-[34px]" />
+        {section.badge && (
+          <span className="ctl-mono shrink-0 whitespace-nowrap">
+            {section.badge}
+          </span>
+        )}
+      </div>
       <div className="ctl-scroll ctl-rail flex md:grid md:grid-cols-3 gap-[12px] md:gap-[20px] mt-[16px] md:mt-[24px] overflow-x-auto md:overflow-visible pt-[4px] pb-[10px]">
         {section.cards.map((card: CinematicStoryCard, i) => (
           <button
@@ -1408,7 +1850,14 @@ const StoriesSection: React.FC<{
             onClick={() => {
               // A traveller's real itinerary (/chat/{id}) opens; otherwise seed.
               if (card.href) router.push(card.href);
-              else if (card.prompt) onSelectPrompt(card.prompt);
+              // The card's own "name" is the reviewer's, so the route they took
+              // is the label that identifies what was tapped — falling back to
+              // the name on cards that carry no route.
+              else if (card.prompt)
+                onSelectPrompt(card.prompt, {
+                  source: "card",
+                  label: card.route ?? card.name,
+                });
             }}
             className="ctl-card flex flex-col text-left rounded-[18px] p-[17px] md:p-[20px] w-[262px] md:w-auto shrink-0 md:shrink cursor-pointer"
             style={cardChrome()}
@@ -1451,25 +1900,38 @@ const StoriesSection: React.FC<{
                 Math.min(5, Math.max(1, Math.round(Number(card.rating) || 5))),
               )}
             </div>
-            {card.quote && (
+            {/* Card body. A real review is quoted; an itinerary summary is
+                not — the quote marks are what make the line a testimonial, so
+                only `quote` gets them. A card with neither keeps the bare
+                header + route it has always had. */}
+            {(card.quote || card.summary) && (
               <div
                 className="text-[13px] md:text-[13.5px] leading-[1.55] mt-[8px] flex-1"
                 style={{ color: MUTED }}
               >
-                &ldquo;{card.quote}&rdquo;
+                {card.quote ? (
+                  <>&ldquo;{card.quote}&rdquo;</>
+                ) : (
+                  card.summary
+                )}
               </div>
             )}
+            {/* Foot of the card: the trip in a pill on the left, the CTA on
+                the right. The pill is skipped when the card has no `route`,
+                which is how a card avoids printing the CTA twice. */}
             <div className="flex items-center gap-[10px] mt-[14px]">
-              <span
-                className="ctl-mono min-w-0 truncate px-[9px] py-[5px] rounded-[6px]"
-                style={{
-                  background: palette.accentSoft,
-                  color: palette.accent,
-                  fontSize: 9,
-                }}
-              >
-                {card.route}
-              </span>
+              {card.route && (
+                <span
+                  className="ctl-mono min-w-0 truncate px-[9px] py-[5px] rounded-[6px]"
+                  style={{
+                    background: palette.accentSoft,
+                    color: palette.accent,
+                    fontSize: 9,
+                  }}
+                >
+                  {card.route}
+                </span>
+              )}
               <span className="flex-1" />
               <span
                 className="shrink-0 text-[12.5px] font-bold whitespace-nowrap"
@@ -1491,7 +1953,7 @@ const StoriesSection: React.FC<{
 // a line, and a rating. Clicking seeds the card's prompt.
 const EatsSection: React.FC<{
   section: Extract<CinematicSection, { type: "eats" }>;
-  onSelectPrompt: (p: string) => void;
+  onSelectPrompt: SelectPrompt;
 }> = ({ section, onSelectPrompt }) => {
   const router = useRouter();
   const selection = useThemeSelection();
@@ -1516,7 +1978,11 @@ const EatsSection: React.FC<{
         heading={section.heading}
         className="text-[22px] md:text-[34px] ctl-h-light"
       />
-      <div className="ctl-scroll ctl-rail flex md:grid md:grid-cols-5 gap-[12px] md:gap-[16px] mt-[14px] md:mt-[24px] overflow-x-auto md:overflow-visible pt-[4px] pb-[10px]">
+      <div
+        className={`ctl-scroll ctl-rail flex gap-[12px] md:gap-[16px] mt-[14px] md:mt-[24px] overflow-x-auto pt-[4px] pb-[10px] ${
+          section.rail ? "" : "md:grid md:grid-cols-5 md:overflow-visible"
+        }`}
+      >
         {section.cards.map((card, i) => {
           const hrefId = drawerIdFromHref(card.href);
           const item =
@@ -1531,28 +1997,29 @@ const EatsSection: React.FC<{
               : undefined);
           const selectable = !!(item && selection);
           const selected = selectable ? selection!.isSelected(item!) : false;
-          // A restaurant card with a drawer href keeps opening the drawer on
-          // body click; the "+ Add" CTA saves it.
-          const isElement = selectable && !!card.href;
           const toggle = () => item && selection && selection.toggle(item);
           return (
           <button
             key={`eat-${i}`}
             type="button"
+            // The restaurant drawer behind `card.href` is retired on the theme
+            // pages, so a body click saves the card rather than navigating.
             onClick={() => {
-              if (isElement) {
-                router.push(card.href!);
-                return;
-              }
               if (item && selection) {
                 selection.toggle(item);
                 return;
               }
               if (card.href) router.push(card.href);
-              else if (card.prompt) onSelectPrompt(card.prompt);
+              else if (card.prompt)
+                onSelectPrompt(card.prompt, {
+                  source: "card",
+                  label: card.name,
+                });
             }}
             aria-pressed={selectable ? selected : undefined}
-            className="ctl-card text-left rounded-[18px] overflow-hidden cursor-pointer w-[224px] md:w-auto shrink-0 md:shrink flex flex-col"
+            className={`ctl-card text-left rounded-[18px] overflow-hidden cursor-pointer w-[224px] shrink-0 flex flex-col ${
+              section.rail ? "md:w-[252px]" : "md:w-auto md:shrink"
+            }`}
             style={{
               ...DARK_CARD,
               ...(selected
@@ -1621,7 +2088,9 @@ const EatsSection: React.FC<{
                     : addCtaStyle(palette, false, true)
                 }
               >
-                {selectable ? addCtaLabel(selected) : section.ctaLabel}
+                {selectable
+                  ? addCtaLabel(selected, section.addNoun)
+                  : section.ctaLabel}
               </span>
             )}
           </div>
@@ -1634,164 +2103,452 @@ const EatsSection: React.FC<{
   );
 };
 
-// ── Visa (dark — "Your visa, handled") ──────────────────────────────────────
-// Intro copy, a scroller of country fee cards (each links to its visa page),
-// and a row of fact chips.
+// ── Visa (light — "Your visa, handled") ─────────────────────────────────────
+// One white card split in two from md up: the heading, intro and a 2×2 grid of
+// facts on the left; the country cards on the right. On a phone it collapses to
+// a single column and a long country list becomes a horizontal carousel — the
+// rail the dark version used.
+//
+// The countries listed are the theme's OWN — the ones its trips actually cross
+// — so the list is short by design, and the layout is sized from the count
+// rather than assuming a full 2×2: one or two countries take the whole column
+// width, three or more fall into two tracks, and `md:flex-1` + `auto-rows-fr`
+// hand the column's height to the rows so the cards always finish level with
+// the facts beside them instead of trailing off halfway down.
+//
+// Each card is a "+ Add visa" save-toggle like every other element on the page,
+// so a visa joins the trip in the tray instead of sending the reader off-site
+// mid-scroll — which is also why there's no "Start my visa" CTA under the list.
+//
+// Every colour that isn't ink comes from the page's own palette: fact tiles
+// take `accentSoft`, their labels and every Add pill take `accent`/`accentOn`,
+// so a teal page and a purple one share this layout without either hard-coding
+// a colour.
 const VisaSection: React.FC<{
   section: Extract<CinematicSection, { type: "visa" }>;
-}> = ({ section }) => (
-  <section
-    className="mt-[34px] md:mt-[56px] relative overflow-hidden"
-    style={{ background: DARK }}
-  >
-    <div
-      className="absolute pointer-events-none"
-      style={{
-        top: -80,
-        right: -80,
-        width: 320,
-        height: 320,
-        background: "radial-gradient(circle, rgba(247,231,0,0.08), transparent 70%)",
-      }}
-    />
-    <Container className="pt-[30px] md:pt-[52px]">
-      <Heading
-        heading={section.heading}
-        className="text-[22px] md:text-[34px] ctl-h-light"
-      />
-      {section.intro && (
-        <p
-          className="text-[13.5px] md:text-[15px] leading-[1.55] mt-[10px] md:mt-[14px] max-w-[560px]"
-          style={{ color: FAINT }}
+}> = ({ section }) => {
+  const palette = usePalette();
+  const selection = useThemeSelection();
+  const facts = section.facts ?? [];
+  const cards = section.cards ?? [];
+  const count = cards.length;
+  // These lists are as long as the trip makes them — one country for Hokkaido,
+  // five for the Christmas markets — so the grid is sized from the count rather
+  // than assuming four. A lone card takes the full column instead of leaving a
+  // hole beside it, and an odd last card spans both tracks so a 3- or 5-country
+  // page doesn't end on a half-empty row either.
+  const cols = (n: number) => (n === 1 ? "md:grid-cols-1" : "md:grid-cols-2");
+  const spanLast = (n: number, i: number) =>
+    n > 1 && n % 2 === 1 && i === n - 1 ? "md:col-span-2" : "";
+  // One or two countries get the full column width and a roomier card — a
+  // 210px chip marooned in half of a two-track grid reads like something
+  // failed to load. They also stack on the phone rather than becoming a rail
+  // there's nothing to scroll through.
+  const roomy = count > 0 && count <= 2;
+  const solo = count === 1;
+  // Type scales with how much column each card owns. A lone visa is the only
+  // thing in its half of the panel, so it's set like a heading and carries a
+  // supporting line; a pair splits the column and takes a step down; three or
+  // more stay compact chips with no room for prose.
+  const scale = solo
+    ? {
+        pad: "p-[18px] md:p-[28px]",
+        radius: "rounded-[18px]",
+        country: "text-[20px] md:text-[26px]",
+        fee: 20,
+        cities: 10,
+        line: "text-[13.5px] md:text-[15px]",
+      }
+    : roomy
+      ? {
+          pad: "p-[16px] md:p-[22px]",
+          radius: "rounded-[18px]",
+          country: "text-[16px] md:text-[20px]",
+          fee: 17,
+          cities: 10,
+          line: "text-[13px] md:text-[14px]",
+        }
+      : {
+          pad: "p-[14px] md:p-[18px]",
+          radius: "rounded-[16px]",
+          country: "text-[14.5px]",
+          fee: 14,
+          cities: 9,
+          line: "",
+        };
+  const ctaStyle: React.CSSProperties = {
+    background: palette.accent,
+    color: palette.accentOn,
+  };
+  return (
+    <section className="pt-[30px] md:pt-[56px]">
+      <Container>
+        <div
+          // items-stretch (not start) so the right column runs the full height
+          // of the left one and its cards can share that height between them,
+          // rather than both columns ending wherever their own content does.
+          className={`rounded-[20px] md:rounded-[28px] p-[18px] md:p-[40px] lg:p-[48px] grid gap-[24px] md:gap-[40px] items-stretch ${
+            count > 0 ? "md:grid-cols-2" : ""
+          }`}
+          style={{
+            ...cardChrome(),
+            boxShadow: "0 8px 20px -16px rgba(11,18,32,0.14)",
+          }}
         >
-          {section.intro}
-        </p>
-      )}
-      <div className="ctl-mono mt-[16px] md:mt-[20px]">Visa fee by country</div>
-      <div className="ctl-scroll ctl-rail flex gap-[12px] overflow-x-auto md:overflow-visible pt-[10px] pb-[6px]">
-      {section.cards.map((card: CinematicVisaCard, i) => {
-        const inner = (
-          <>
-            <div className="flex-1">
-              <div
-                className="text-[15px] font-bold leading-[1.25]"
-                style={{ color: PAPER, letterSpacing: "-0.01em" }}
+          {/* ── Left: heading, intro, facts ── */}
+          {/* min-w-0: a grid item defaults to min-width:auto, so the scroll
+              rails inside these columns push the whole card wider than a phone
+              instead of scrolling within it. */}
+          <div className="min-w-0 flex flex-col">
+            <Heading
+              heading={section.heading}
+              className="text-[24px] md:text-[40px]"
+            />
+            {section.intro && (
+              <p
+                className="text-[13.5px] md:text-[15px] leading-[1.6] mt-[11px] md:mt-[14px] mb-[20px] md:mb-[28px] max-w-[46ch]"
+                style={{ color: MUTED }}
               >
-                {card.country}
+                {section.intro}
+              </p>
+            )}
+            {facts.length > 0 && (
+              // Carousel on phones, 2×2 from md. Stacked two-up on a 375px
+              // screen these tiles are ~140px wide, which wraps "Schengen
+              // short-stay" onto three lines and makes the block taller than
+              // everything around it; on a rail they keep a readable width and
+              // the section stays one screen tall.
+              <div
+                className={`ctl-scroll ctl-rail flex gap-[10px] overflow-x-auto md:grid md:gap-[12px] md:overflow-visible ${cols(
+                  facts.length,
+                )}`}
+              >
+                {facts.map((f, i) => (
+                  <div
+                    key={`fact-${i}`}
+                    className={`flex-[1_0_160px] md:flex-none box-border rounded-[14px] md:rounded-[18px] p-[14px] md:p-[22px] ${spanLast(
+                      facts.length,
+                      i,
+                    )}`}
+                    style={{ background: palette.accentSoft }}
+                  >
+                    <div
+                      className="ctl-mono"
+                      style={{ fontSize: 9, color: palette.accent }}
+                    >
+                      {f.label}
+                    </div>
+                    <div
+                      className="font-extrabold text-[14px] md:text-[22px] mt-[6px] md:mt-[9px] leading-[1.2]"
+                      style={{ color: INK, letterSpacing: "-0.03em" }}
+                    >
+                      {f.value}
+                    </div>
+                  </div>
+                ))}
               </div>
-              {card.cities && (
-                <div
-                  className="ctl-mono mt-[7px]"
-                  style={{ fontSize: 9, lineHeight: 1.5 }}
-                >
-                  {card.cities}
-                </div>
-              )}
-            </div>
-            <div
-              className="pt-[13px]"
-              style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}
-            >
-              {card.fee && (
-                <div
-                  className="ctl-mono"
-                  style={{ color: YELLOW, fontSize: 15, fontWeight: 600 }}
-                >
-                  {card.fee}
-                </div>
-              )}
-              <div className="ctl-mono mt-[4px]" style={{ fontSize: 9 }}>
-                per person
+            )}
+            {section.note && (
+              <div
+                className="mt-[16px] md:mt-[20px] text-[12px] md:text-[13px] leading-[1.55]"
+                style={{ color: FAINT }}
+              >
+                {section.note}
               </div>
-            </div>
-          </>
-        );
-        const cls =
-          "shrink-0 w-[158px] h-[168px] box-border flex flex-col rounded-[18px] p-[16px] cursor-pointer no-underline";
-        const st: React.CSSProperties = { ...DARK_CARD };
-        return card.href ? (
-          <a
-            key={`visa-${i}`}
-            href={card.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={cls}
-            style={st}
-          >
-            {inner}
-          </a>
-        ) : (
-          <div key={`visa-${i}`} className={cls} style={st}>
-            {inner}
+            )}
           </div>
-        );
-      })}
-      </div>
-    </Container>
-    {section.facts && section.facts.length > 0 && (
-      <Container className="pb-[30px] md:pb-[52px]">
-        <div className="flex gap-[8px] mt-[18px]">
-          {section.facts.map((f, i) => (
+
+          {/* ── Right: the theme's own countries ── */}
+          {count > 0 && (
             <div
-              key={`fact-${i}`}
-              className="flex-1 rounded-[14px] px-[13px] py-[12px]"
-              style={{
-                border: "1px solid rgba(255,255,255,0.08)",
-                background: "rgba(247,231,0,0.10)",
-              }}
+              // One or two cards keep their own height and sit centred against
+              // the facts — stretching them to a 440px column was all air. From
+              // three up the rows share the column height instead (auto-rows-fr
+              // below), because that many cards genuinely fill it.
+              className={`min-w-0 flex flex-col ${
+                roomy ? "md:justify-center" : ""
+              }`}
             >
+              {/* Stacked at every width for one or two countries; a two-track
+                  grid from md for three or more, with the phone rail only where
+                  the list is long enough to be worth scrolling. */}
               <div
-                className="ctl-mono text-center"
-                style={{ fontSize: 9 }}
+                className={
+                  roomy
+                    ? "grid grid-cols-1 gap-[12px] md:gap-[16px]"
+                    : `ctl-scroll ctl-rail flex gap-[10px] overflow-x-auto md:grid md:gap-[12px] md:overflow-visible md:flex-1 md:auto-rows-fr ${cols(
+                        count,
+                      )}`
+                }
               >
-                {f.label}
+                {cards.map((card: CinematicVisaCard, i) => {
+                  // Saved like any other element on the page — kind "visa", so
+                  // the tray tags the row VISA and the brief reads "Switzerland
+                  // (visa)" alongside the places and the restaurants.
+                  const item: CinematicSelectableItem = {
+                    kind: "visa",
+                    label: card.country,
+                    short: card.country,
+                  };
+                  const selectable = !!selection;
+                  const selected = selectable
+                    ? selection!.isSelected(item)
+                    : false;
+                  // flex basis rather than a fixed width: five countries hold
+                  // 210px each and scroll, while a shorter list grows to the
+                  // full column instead of leaving dead space beside it.
+                  // Ignored once the grid takes over.
+                  const cardClass = roomy
+                    ? `box-border flex flex-col ${scale.radius} ${scale.pad}`
+                    : `flex-[1_0_210px] md:flex-none box-border flex flex-col ${
+                        scale.radius
+                      } ${scale.pad} ${spanLast(count, i)}`;
+                  const cardStyle: React.CSSProperties = {
+                    // No fill: the cards sit on the white panel behind a
+                    // hairline, like every other card on the page. The line
+                    // turns accent once the visa is saved.
+                    ...cardChrome(),
+                    ...(selected ? { borderColor: palette.accent } : {}),
+                  };
+                  const inner = (
+                    <>
+                      <div className="flex items-baseline justify-between gap-[8px]">
+                        <span
+                          className={`font-bold leading-[1.2] ${scale.country}`}
+                          style={{ color: INK, letterSpacing: "-0.02em" }}
+                        >
+                          {card.country}
+                        </span>
+                        {card.fee && (
+                          <span
+                            className="ctl-mono shrink-0"
+                            style={{
+                              fontSize: scale.fee,
+                              fontWeight: 600,
+                              color: INK,
+                              letterSpacing: "0.02em",
+                            }}
+                          >
+                            {card.fee}
+                          </span>
+                        )}
+                      </div>
+                      {card.cities && (
+                        <div
+                          className="ctl-mono mt-[4px]"
+                          style={{ fontSize: scale.cities, lineHeight: 1.5 }}
+                        >
+                          {card.cities}
+                        </div>
+                      )}
+                      {/* The supporting line only renders where there's room
+                          for it — one or two countries leave the card most of
+                          a column to fill, and a bare name + fee floating in
+                          that much space is what made the block read empty.
+                          Three or more are chips; they have no room and the
+                          pages don't write one. */}
+                      {card.line && scale.line && (
+                        <p
+                          className={`leading-[1.6] mt-[10px] md:mt-[12px] ${scale.line}`}
+                          style={{ color: MUTED }}
+                        >
+                          {card.line}
+                        </p>
+                      )}
+                      {/* mt-auto: on a card taller than its text the pill sits
+                          on the bottom edge rather than floating mid-card with
+                          a hole beneath it.
+
+                          The pill always takes the card's width. Short lists
+                          used to cap it at 300px so it couldn't read as a
+                          banner, but that left a stub of a button under
+                          full-width copy — and every other Add pill on the page
+                          spans its card, so the cap made the visa cards the
+                          odd ones out. Only the padding and type size change
+                          with the count now (see `scale`). */}
+                      <div className="mt-auto pt-[14px] md:pt-[18px]">
+                        <span
+                          className={`block box-border w-full text-center rounded-full font-bold ${
+                            roomy
+                              ? "py-[11px] px-[12px] text-[13px]"
+                              : "py-[9px] px-[10px] text-[12px]"
+                          }`}
+                          style={
+                            selectable
+                              ? addCtaStyle(palette, selected)
+                              : ctaStyle
+                          }
+                        >
+                          {selectable
+                            ? addCtaLabel(selected, "visa")
+                            : "Check visa →"}
+                        </span>
+                      </div>
+                    </>
+                  );
+                  // With a selection on the page the whole card is the toggle,
+                  // pill included — one target, one outcome. A page that never
+                  // opted into selection keeps the old behaviour: the card is
+                  // the link to that country's visa page.
+                  return selectable ? (
+                    <button
+                      key={`visa-${i}`}
+                      type="button"
+                      onClick={() => selection!.toggle(item)}
+                      aria-pressed={selected}
+                      className={`ctl-card text-left cursor-pointer ${cardClass}`}
+                      style={cardStyle}
+                    >
+                      {inner}
+                    </button>
+                  ) : (
+                    <a
+                      key={`visa-${i}`}
+                      href={card.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`ctl-card no-underline ${cardClass}`}
+                      style={cardStyle}
+                    >
+                      {inner}
+                    </a>
+                  );
+                })}
               </div>
-              <div
-                className="text-[13px] font-semibold text-center mt-[4px] leading-[1.25]"
-                style={{ color: PAPER }}
-              >
-                {f.value}
-              </div>
+              {section.footer && (
+                <div className="mt-[14px] md:mt-[18px] flex flex-col gap-[12px]">
+                  {section.footer.cta && (
+                    <a
+                      href={section.footer.cta.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="ctl-press block w-full text-center rounded-full no-underline px-[16px] py-[14px] md:py-[15px] text-[13.5px] md:text-[14.5px] font-bold"
+                      style={{
+                        background: INK,
+                        color: PAPER,
+                        boxShadow: "0 8px 20px -10px rgba(11,18,32,0.3)",
+                      }}
+                    >
+                      {section.footer.cta.label}
+                    </a>
+                  )}
+                  {section.footer.callback && (
+                    <div
+                      className="flex items-center gap-[12px] rounded-[16px] px-[14px] py-[13px] md:px-[18px] md:py-[16px]"
+                      style={{ background: SAND }}
+                    >
+                      <span
+                        className="shrink-0 flex items-center justify-center rounded-full"
+                        style={{
+                          width: 36,
+                          height: 36,
+                          background: "#ffffff",
+                          color: INK,
+                        }}
+                      >
+                        <svg
+                          width="17"
+                          height="17"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          aria-hidden
+                        >
+                          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                        </svg>
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <div
+                          className="text-[12.5px] md:text-[13px] font-bold leading-[1.35]"
+                          style={{ color: INK }}
+                        >
+                          {section.footer.callback.title}
+                        </div>
+                        {section.footer.callback.line && (
+                          <div
+                            className="text-[11px] md:text-[11.5px] mt-[2px] leading-[1.4]"
+                            style={{ color: MUTED }}
+                          >
+                            {section.footer.callback.line}
+                          </div>
+                        )}
+                      </div>
+                      <a
+                        href={section.footer.callback.cta.href}
+                        className="ctl-press shrink-0 rounded-full no-underline whitespace-nowrap px-[14px] py-[9px] md:px-[16px] md:py-[10px] text-[12px] md:text-[13px] font-semibold"
+                        style={{
+                          background: "#ffffff",
+                          color: INK,
+                          border: "1px solid #d7dbe0",
+                        }}
+                      >
+                        {section.footer.callback.cta.label}
+                      </a>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
-          ))}
+          )}
         </div>
-        {section.note && (
-          <div
-            className="rounded-[14px] px-[14px] md:px-[18px] py-[11px] md:py-[14px] mt-[12px] text-[12px] md:text-[13.5px] leading-[1.5]"
-            style={{ background: "rgba(255,255,255,0.04)", color: FAINT }}
-          >
-            {section.note}
-          </div>
-        )}
       </Container>
-    )}
-  </section>
-);
+    </section>
+  );
+};
 
 // ── Feature (dark — "A bullet train under the ocean floor") ─────────────────
 // Highlighted fact rows, a 3-up stat grid, and a yellow CTA card that opens the
 // read-only activity drawer (e.g. the JR Pass) or seeds a prompt.
 const FeatureCtaCard: React.FC<{
   cta: CinematicFeatureCta;
-  onSelectPrompt: (p: string) => void;
+  onSelectPrompt: SelectPrompt;
   onSelectActivity?: (activityId: string, source?: string) => void;
 }> = ({ cta, onSelectPrompt, onSelectActivity }) => {
   const router = useRouter();
+  const selection = useThemeSelection();
   const palette = usePalette();
+  // This card has always worn a "+ Add" pill; with the drawer retired it now
+  // does what the pill says. An explicit `item` wins, else the card's own title
+  // names what gets saved (and its activity id rides along when it has one).
+  const item =
+    cta.item ??
+    (cta.title
+      ? {
+          kind: "ticket",
+          label: cta.title,
+          short: cta.title,
+          ...(cta.activityId ? { id: cta.activityId } : {}),
+        }
+      : undefined);
+  const selectable = !!(item && selection);
+  const selected = selectable ? selection!.isSelected(item!) : false;
   const act = () => {
+    if (item && selection) {
+      selection.toggle(item);
+      return;
+    }
     if (cta.activityId && onSelectActivity)
       onSelectActivity(cta.activityId, cta.activitySource);
-    else if (cta.prompt) onSelectPrompt(cta.prompt);
+    else if (cta.prompt)
+      onSelectPrompt(cta.prompt, { source: "cta", label: cta.title });
     else router.push("/chat");
   };
   return (
     <button
       type="button"
       onClick={act}
+      aria-pressed={selectable ? selected : undefined}
       className="ctl-press w-full text-left flex items-center gap-[14px] rounded-[18px] px-[18px] py-[17px] mt-[12px] cursor-pointer"
       style={{
-        background: "rgba(247,231,0,0.10)",
-        border: "1px solid rgba(247,231,0,0.28)",
+        background: selected
+          ? "rgba(31,138,90,0.14)"
+          : "rgba(247,231,0,0.10)",
+        border: `1px solid ${
+          selected ? "rgba(31,138,90,0.45)" : "rgba(247,231,0,0.28)"
+        }`,
       }}
     >
       <div className="flex-1 min-w-0">
@@ -1806,9 +2563,9 @@ const FeatureCtaCard: React.FC<{
       </div>
       <span
         className="shrink-0 rounded-full px-[16px] py-[10px] text-[12.5px] font-semibold whitespace-nowrap"
-        style={addCtaStyle(palette, false, true)}
+        style={addCtaStyle(palette, selected, true)}
       >
-        + Add
+        {addCtaLabel(selected)}
       </span>
     </button>
   );
@@ -1816,7 +2573,7 @@ const FeatureCtaCard: React.FC<{
 
 const FeatureSection: React.FC<{
   section: Extract<CinematicSection, { type: "feature" }>;
-  onSelectPrompt: (p: string) => void;
+  onSelectPrompt: SelectPrompt;
   onSelectActivity?: (activityId: string, source?: string) => void;
 }> = ({ section, onSelectPrompt, onSelectActivity }) => (
   <section
@@ -1924,6 +2681,111 @@ const FeatureSection: React.FC<{
   </section>
 );
 
+// ── Steps (dark — "Sketch it. I'll finish it.") ─────────────────────────────
+// The closing block: the heading and the page's primary CTA share a row from md
+// up (stacked on a phone), then a hairline and a numbered 3-up of what happens
+// once the reader taps it. Deliberately the last thing on the page — everything
+// above it is a way in, and this says what happens after.
+const StepsSection: React.FC<{
+  section: Extract<CinematicSection, { type: "steps" }>;
+  onSelectPrompt: SelectPrompt;
+}> = ({ section, onSelectPrompt }) => {
+  const router = useRouter();
+  const cta = section.cta;
+  return (
+    <section
+      className="mt-[34px] md:mt-[56px] relative overflow-hidden"
+      style={{ background: DARK }}
+    >
+      <div
+        className="absolute pointer-events-none"
+        style={{
+          top: -100,
+          right: 60,
+          width: 420,
+          height: 420,
+          background:
+            "radial-gradient(circle, rgba(247,231,0,0.08), transparent 70%)",
+        }}
+      />
+      <Container className="py-[36px] md:py-[60px] relative">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-[20px] md:gap-[64px]">
+          <Heading
+            heading={section.heading}
+            className="text-[24px] md:text-[40px] ctl-h-light"
+          />
+          {cta && (
+            <div className="flex flex-col items-start md:items-end gap-[10px] shrink-0">
+              <button
+                type="button"
+                onClick={() => {
+                  if (cta.prompt)
+                    onSelectPrompt(cta.prompt, {
+                      source: "cta",
+                      label: cta.label,
+                    });
+                  else if (cta.href) router.push(cta.href);
+                }}
+                className="ctl-press rounded-full px-[26px] py-[14px] md:px-[34px] md:py-[16px] text-[14.5px] md:text-[16px] font-bold whitespace-nowrap cursor-pointer"
+                style={{
+                  background: YELLOW,
+                  color: INK,
+                  border: "none",
+                  boxShadow: "0 8px 20px -10px rgba(247,231,0,0.3)",
+                }}
+              >
+                {cta.label}
+              </button>
+              {section.ctaNote && (
+                <div className="ctl-mono">{section.ctaNote}</div>
+              )}
+            </div>
+          )}
+        </div>
+        <div
+          className="grid md:grid-cols-3 gap-[18px] md:gap-[24px] mt-[26px] md:mt-[48px] pt-[24px] md:pt-[40px]"
+          style={{ borderTop: "1px solid rgba(255,255,255,0.1)" }}
+        >
+          {section.rows.map((row, i) => (
+            <div key={`step-${i}`} className="flex items-start gap-[14px]">
+              <div
+                className="ctl-mono shrink-0 flex items-center justify-center rounded-full"
+                style={{
+                  width: 30,
+                  height: 30,
+                  background: "rgba(247,231,0,0.16)",
+                  border: "1px solid rgba(247,231,0,0.35)",
+                  color: YELLOW,
+                  fontSize: 11,
+                  fontWeight: 600,
+                }}
+              >
+                {row.n}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div
+                  className="text-[14.5px] md:text-[15.5px] font-bold"
+                  style={{ color: PAPER }}
+                >
+                  {row.title}
+                </div>
+                {row.line && (
+                  <div
+                    className="text-[12.5px] md:text-[13px] leading-[1.55] mt-[6px]"
+                    style={{ color: FAINT }}
+                  >
+                    {row.line}
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </Container>
+    </section>
+  );
+};
+
 // ── Ask-Kaira strip ("Docked composer") ─────────────────────────────────────
 // A single, shared design used on every theme page (matches the theme mockup):
 // a bar pinned to the bottom of the viewport carrying the saved-items bag, a
@@ -1931,17 +2793,28 @@ const FeatureSection: React.FC<{
 // pill; mobile stacks it. Present from first paint — the reader shouldn't have
 // to scroll to discover how to start.
 //
-// The field is a real composer: whatever is typed either goes straight to
-// /chat as the opening message (Enter / the send arrow) or rides along into the
-// themed mini-form as a note (the build CTA), so it is never dropped.
+// The bar takes exactly one brief at a time, and which one decides where the
+// reader lands:
+//
+//   • Typed something → it goes straight to /chat as the opening message, in
+//     the same `intake` request shape everything else on the page uses. The
+//     themed mini-form is deliberately skipped: it would discard what they just
+//     wrote and ask them the same questions back.
+//   • Saved a list, or neither → the themed mini-form opens on /chat, which is
+//     where month / route / travellers actually get picked.
+//
+// The two can never be live together. Saving anything clears the field and
+// locks it (see the effect below), so a draft in hand means there is no list,
+// and a list means there is no draft.
 const AskKairaStrip: React.FC<{
   bar: CinematicAskBar;
-  onSelectPrompt: (p: string) => void;
+  onSelectPrompt: SelectPrompt;
   // "Build this itinerary" action. When provided, the build button (and the
   // selection popup) call this instead of seeding a prompt — the page routes to
   // /chat and opens the themed mini-form there. Falls back to seeding
-  // bar.buildPrompt when omitted. `note` is whatever the reader typed in the
-  // bar; it travels with the handoff and lands in the form's submission.
+  // bar.buildPrompt when omitted. The `note` parameter is left on the signature
+  // for callers that still pass one, but this bar no longer sends it: typed
+  // text now opens the chat directly rather than riding into the form.
   onBuild?: (note?: string) => void;
   // Kaira's avatar for the round chat button at the end of the action row.
   avatar?: string;
@@ -1959,15 +2832,28 @@ const AskKairaStrip: React.FC<{
   const trimmedDraft = draft.trim();
   const hasDraft = trimmedDraft.length > 0;
 
-  // The bar has exactly one submit: "Start planning" / "Build trip · N".
-  // Anything typed into the field rides along with it — as the themed form's
-  // note when the page supplies onBuild, otherwise as the opening chat message.
-  // Either way the page's onSelectPrompt / openThemeForm attaches the saved
-  // items and the theme slug, so the request carries the full context.
+  // One brief at a time. The moment anything is saved the field empties and
+  // goes disabled, so a half-typed sentence can't sit behind a "Build trip · 4"
+  // button quietly doing nothing. Keyed on the flip, not on `count`, so
+  // saving a fifth item doesn't re-run it.
+  React.useEffect(() => {
+    if (hasSelection) setDraft("");
+  }, [hasSelection]);
+
+  // The bar's single submit. A draft wins and goes straight to chat; with
+  // nothing typed this is "Build trip · N" over a saved list or a bare
+  // "Start planning", and both open the themed mini-form.
   const doBuild = () => {
-    if (onBuild) onBuild(hasDraft ? trimmedDraft : undefined);
-    else if (hasDraft) onSelectPrompt(trimmedDraft);
-    else if (bar.buildPrompt) onSelectPrompt(bar.buildPrompt);
+    if (hasDraft) {
+      onSelectPrompt(trimmedDraft, { source: "ask_bar", typed: true });
+      return;
+    }
+    if (onBuild) onBuild();
+    else if (bar.buildPrompt)
+      onSelectPrompt(bar.buildPrompt, {
+        source: "ask_bar",
+        label: bar.buildCta,
+      });
     else router.push("/chat");
   };
 
@@ -1976,10 +2862,11 @@ const AskKairaStrip: React.FC<{
   // never a dead end here either.
   const openChat = () => {
     if (hasDraft) {
-      onSelectPrompt(trimmedDraft);
+      onSelectPrompt(trimmedDraft, { source: "ask_bar", typed: true });
       return;
     }
-    if (bar.prompt) onSelectPrompt(bar.prompt);
+    if (bar.prompt)
+      onSelectPrompt(bar.prompt, { source: "ask_bar", label: bar.cta });
     else router.push("/chat");
   };
 
@@ -1992,11 +2879,14 @@ const AskKairaStrip: React.FC<{
     }
   };
 
-  // Nothing saved yet → the bar is a plain invitation to start planning. Once
-  // something is saved it becomes "Build trip · N".
-  const buildLabel = hasSelection
-    ? `${bar.buildCta ?? "Build trip"} · ${count}`
-    : "Start planning";
+  // The label has to say which of the two things the button will do, because
+  // they end somewhere different: a typed brief opens the chat on those words,
+  // the other two open the themed form.
+  const buildLabel = hasDraft
+    ? "Send"
+    : hasSelection
+      ? `${bar.buildCta ?? "Build trip"} · ${count}`
+      : "Start planning";
 
   // Human label for a saved item's kind (singular). Used for the row tag and
   // the per-type summary chips (e.g. "poi" → "place", "do" → "activity").
@@ -2271,18 +3161,34 @@ const AskKairaStrip: React.FC<{
             </div>
           )}
 
-          {/* Free-text field — Enter submits the bar, same as the CTA. */}
+          {/* Free-text field — Enter submits the bar, same as the CTA. Locked
+              while a list is saved: that list IS the brief, and the themed form
+              is about to ask the rest. The placeholder says so rather than
+              leaving a dead input with no explanation. */}
           <input
             type="text"
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={onDraftKeyDown}
-            placeholder={bar.placeholder}
+            disabled={hasSelection}
+            placeholder={
+              hasSelection ? "Building around your saved list" : bar.placeholder
+            }
             aria-label={bar.placeholder}
+            title={
+              hasSelection
+                ? "Clear your saved list to type a brief instead"
+                : undefined
+            }
             className="flex-1 border-none outline-none bg-transparent"
             // Floor rather than min-w-0: the field keeps a usable width and the
             // chips beside it give way instead.
-            style={{ fontSize: 13.5, color: INK, minWidth: 90 }}
+            style={{
+              fontSize: 13.5,
+              color: INK,
+              minWidth: 90,
+              cursor: hasSelection ? "not-allowed" : "text",
+            }}
           />
 
           <button
@@ -2512,7 +3418,11 @@ const CompactHeader: React.FC<{ title: string; subtitle?: string }> = ({
 // ── Orchestrator ───────────────────────────────────────────────────────────
 export interface CinematicThemeLandingProps {
   config: CinematicThemeConfig;
-  onSelectPrompt: (prompt: string) => void;
+  // Fires a prompt at /chat. The second argument reports which surface fired it
+  // (hero composer, ask bar, a card, a CTA) and whether the text is the
+  // reader's own — the page turns that into the request's `intake` payload, so
+  // pass it straight through to useSeedChat rather than dropping it.
+  onSelectPrompt: SelectPrompt;
   // Opens the read-only activity details drawer for a catalog activity id.
   // Used by `list` rows that carry an `activityId` (e.g. "Worth the cold").
   onSelectActivity?: (activityId: string, source?: string) => void;
@@ -2585,7 +3495,12 @@ const CinematicThemeLanding: React.FC<CinematicThemeLandingProps> = ({
           : "pb-[104px] md:pb-[108px]"
         : "pb-[32px] md:pb-0"
     }`}
-    style={{ background: palette.page }}
+    style={
+      {
+        background: palette.page,
+        ...(config.maxWidth ? { "--ctl-container": config.maxWidth } : {}),
+      } as React.CSSProperties
+    }
   >
     {lcpPreloadHref && (
       <Head>
@@ -2610,65 +3525,94 @@ const CinematicThemeLanding: React.FC<CinematicThemeLandingProps> = ({
       const key = `sec-${i}`;
       // Tail of a pair — already rendered by its partner.
       if (pairedWithNext.has(i - 1)) return null;
+      // A `desktopOnly` section still renders and still ships in the HTML — it
+      // is hidden by the shared `.ttw-wide-only` rule below 640px. Hiding it in
+      // CSS rather than by not rendering it keeps the server HTML and the first
+      // client render identical, so the page never changes height at hydration.
+      const wrap = (node: React.ReactNode) =>
+        section.desktopOnly ? (
+          <div key={key} className="ttw-wide-only">
+            {node}
+          </div>
+        ) : (
+          node
+        );
+
       if (pairedWithNext.has(i)) {
         const next = config.sections[i + 1];
         if (section.type === "gradient" && next.type === "gradient")
-          return (
+          return wrap(
             <GradientPairSection
               key={key}
               left={section}
               right={next}
               onSelectPrompt={onSelectPrompt}
-            />
+            />,
           );
       }
 
       switch (section.type) {
         case "cards":
-          return (
+          return wrap(
             <CardsSection
               key={key}
               section={section}
               onSelectPrompt={onSelectPrompt}
               onSelectActivity={onSelectActivity}
               first={i === 0}
-            />
+            />,
           );
         case "trips":
-          return <TripsSection key={key} section={section} onSelectPrompt={onSelectPrompt} />;
+          return wrap(
+            <TripsSection key={key} section={section} onSelectPrompt={onSelectPrompt} />,
+          );
         case "pillars":
-          return <PillarsSection key={key} section={section} onSelectPrompt={onSelectPrompt} />;
+          return wrap(
+            <PillarsSection key={key} section={section} onSelectPrompt={onSelectPrompt} />,
+          );
         case "list":
-          return (
+          return wrap(
             <ListSection
               key={key}
               section={section}
               onSelectPrompt={onSelectPrompt}
               onSelectActivity={onSelectActivity}
-            />
+            />,
           );
         case "checklist":
-          return <ChecklistSection key={key} section={section} onSelectPrompt={onSelectPrompt} />;
+          return wrap(
+            <ChecklistSection key={key} section={section} onSelectPrompt={onSelectPrompt} />,
+          );
         case "months":
-          return <MonthsSection key={key} section={section} />;
+          return wrap(<MonthsSection key={key} section={section} />);
         case "stories":
-          return <StoriesSection key={key} section={section} onSelectPrompt={onSelectPrompt} />;
+          return wrap(
+            <StoriesSection key={key} section={section} onSelectPrompt={onSelectPrompt} />,
+          );
         case "eats":
-          return <EatsSection key={key} section={section} onSelectPrompt={onSelectPrompt} />;
+          return wrap(
+            <EatsSection key={key} section={section} onSelectPrompt={onSelectPrompt} />,
+          );
         case "visa":
-          return <VisaSection key={key} section={section} />;
+          return wrap(<VisaSection key={key} section={section} />);
         case "feature":
-          return (
+          return wrap(
             <FeatureSection
               key={key}
               section={section}
               onSelectPrompt={onSelectPrompt}
               onSelectActivity={onSelectActivity}
-            />
+            />,
+          );
+        case "steps":
+          return wrap(
+            <StepsSection key={key} section={section} onSelectPrompt={onSelectPrompt} />,
           );
         case "gradient":
         default:
-          return <GradientSection key={key} section={section} onSelectPrompt={onSelectPrompt} />;
+          return wrap(
+            <GradientSection key={key} section={section} onSelectPrompt={onSelectPrompt} />,
+          );
       }
     })}
 
@@ -2701,6 +3645,7 @@ export {
   VisaSection,
   GradientPairSection,
   FeatureSection,
+  StepsSection,
   AskKairaStrip,
   PromptCard,
   TripCard,

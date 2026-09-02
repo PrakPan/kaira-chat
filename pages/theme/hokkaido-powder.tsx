@@ -17,8 +17,12 @@ import {
   useSeedChat,
   useOpenThemeForm,
 } from "../../components/theme/cinematic/useSeedChat";
+import {
+  promptIntakeMap,
+  type ThemePromptIntent,
+} from "../../components/theme/cinematic/themeIntake";
 import { useThemeSelectionState } from "../../components/theme/cinematic/ThemeSelection";
-import ActivityDetailsDrawer from "../../components/drawers/activityDetails/ActivityDetailsDrawer";
+// import ActivityDetailsDrawer from "../../components/drawers/activityDetails/ActivityDetailsDrawer";
 import type { CinematicThemeConfig } from "../../components/theme/cinematic/types";
 import { THEME_PALETTES } from "../../components/theme/cinematic/palettes";
 
@@ -106,62 +110,99 @@ const VISA_JAPAN = "https://visa.thetarzanway.com/country/japan-visa-online";
 const PROMPTS = {
   // Hero chips (verbatim from the brief)
   snowFestivalPowder:
-    "We are 2 travellers, and our travel dates are flexible. We want one trip that combines Hokkaido's best powder snow with the Sapporo Snow Festival. Include skiing, winter festivals, onsens, scenic train journeys, and iconic winter experiences at a comfortable pace.",
+    "We are 2 travellers going for 9 nights in February, and our travel dates are flexible. We want one trip that combines Hokkaido's best powder snow with the Sapporo Snow Festival. Include skiing, winter festivals, onsens, scenic train journeys, and iconic winter experiences at a comfortable pace.",
   underseaShinkansen:
-    "We are 2 travellers, and our travel dates are flexible. We want to experience Japan's famous undersea Shinkansen journey to Hokkaido. Build our itinerary around scenic train travel, Hakodate, Sapporo, local food, winter landscapes, and unique rail experiences before continuing into Hokkaido.",
+    "We are 2 travellers going for 11 nights in February, and our travel dates are flexible. We want to experience Japan's famous undersea Shinkansen journey to Hokkaido. Build our itinerary around scenic train travel, Hakodate, Sapporo, local food, winter landscapes, and unique rail experiences before continuing into Hokkaido.",
   sapporoWinter:
-    "We are 2 travellers, and our travel dates are flexible. We want to experience Sapporo during winter. Include the Snow Festival (when available), local seafood markets, beer museum, winter illuminations, ramen alley, snowy city walks, and day trips to nearby attractions.",
+    "We are 2 travellers going for 8 nights in February, and our travel dates are flexible. We want to experience Sapporo during winter. Include the Snow Festival (when available), local seafood markets, beer museum, winter illuminations, ramen alley, snowy city walks, and day trips to nearby attractions.",
   skiOnsen:
-    "We are 2 travellers, and our travel dates are flexible. We want to combine skiing with traditional Japanese onsen experiences. Balance ski days with relaxing hot springs, ryokan stays, mountain scenery, local cuisine, and slow winter evenings.",
+    "We are 2 travellers going for 9 nights in January, and our travel dates are flexible. We want to combine skiing with traditional Japanese onsen experiences. Balance ski days with relaxing hot springs, ryokan stays, mountain scenery, local cuisine, and slow winter evenings.",
   // "Pick a shape" routes (verbatim)
   powderCity:
-    "We are 2 travellers, and our travel dates are flexible. We want a 9-night Hokkaido winter itinerary combining Sapporo and Niseko. Prioritize legendary powder snow, skiing or snowboarding (based on our experience level), cozy onsens, local seafood, ramen, winter cafés, scenic snowy landscapes, and enough time to explore Sapporo's city highlights. Balance adventure on the slopes with relaxed evenings and authentic Hokkaido experiences.",
+    "We are 2 travellers, and our travel dates in January are flexible. We want a 9-night Hokkaido winter itinerary combining Sapporo and Niseko. Prioritize legendary powder snow, skiing or snowboarding (based on our experience level), cozy onsens, local seafood, ramen, winter cafés, scenic snowy landscapes, and enough time to explore Sapporo's city highlights. Balance adventure on the slopes with relaxed evenings and authentic Hokkaido experiences.",
   underseaRun:
-    "We are 2 travellers, and our travel dates are flexible. We want an 11-night Japan winter itinerary featuring the undersea Hokkaido Shinkansen journey from Tokyo to Hokkaido. Include Tokyo's highlights before travelling by bullet train through the Seikan Tunnel to Hakodate and Sapporo. Prioritize scenic rail travel, fresh seafood, winter city experiences, historic districts, onsens, snowy landscapes, and authentic Japanese culture at a comfortable pace.",
+    "We are 2 travellers, and our travel dates in February are flexible. We want an 11-night Japan winter itinerary featuring the undersea Hokkaido Shinkansen journey from Tokyo to Hokkaido. Include Tokyo's highlights before travelling by bullet train through the Seikan Tunnel to Hakodate and Sapporo. Prioritize scenic rail travel, fresh seafood, winter city experiences, historic districts, onsens, snowy landscapes, and authentic Japanese culture at a comfortable pace.",
   snowFestivalWeek:
-    "We are 2 travellers, and our travel dates are flexible. We want an 8-night Hokkaido winter itinerary centered around the Sapporo Snow Festival. Include the festival's iconic snow and ice sculptures, winter illuminations, Otaru's canal and glass workshops, Noboribetsu's famous hot springs and Jigokudani (Hell Valley), local seafood, cozy cafés, and classic Hokkaido winter experiences. Keep the pace relaxed with time to fully enjoy each destination.",
+    "We are 2 travellers, and our travel dates in February are flexible. We want an 8-night Hokkaido winter itinerary centered around the Sapporo Snow Festival. Include the festival's iconic snow and ice sculptures, winter illuminations, Otaru's canal and glass workshops, Noboribetsu's famous hot springs and Jigokudani (Hell Valley), local seafood, cozy cafés, and classic Hokkaido winter experiences. Keep the pace relaxed with time to fully enjoy each destination.",
   // Mountains (POIs)
   niseko:
-    "Tell me about skiing Niseko — the Grand Hirafu resort and the wider Niseko United area. What's the powder like, what runs suit different levels, how many days should we ski, and how do we combine it with Sapporo? Add it to my Hokkaido plan.",
+    "On our 9-night January trip for two, tell me about skiing Niseko — the Grand Hirafu resort and the wider Niseko United area. What's the powder like, what runs suit different levels, how many days should we ski, and how do we combine it with Sapporo? Add it to my Hokkaido plan.",
   okura:
-    "Tell me about the Okurayama Ski Jump Stadium in Sapporo — the Olympic ski jump, the observation deck views over the city, and the winter sports museum. Work a visit into my Sapporo days.",
+    "On our 9-night February trip for two, tell me about the Okurayama Ski Jump Stadium in Sapporo — the Olympic ski jump, the observation deck views over the city, and the winter sports museum. Work a visit into my Sapporo days.",
   takino:
-    "Tell me about Takino Suzuran Hillside Park near Sapporo in winter — the snow play, tubing and cross-country trails. Is it worth a half day with the family? Add it to my Hokkaido plan.",
+    "On a 9-night February Hokkaido trip for 2 adults and 2 children, tell me about Takino Suzuran Hillside Park near Sapporo in winter — the snow play, tubing and cross-country trails. Is it worth a half day with the family? Add it to my Hokkaido plan.",
   // Rest days (POIs)
   beerMuseum:
-    "Tell me about the Sapporo Beer Museum — the history, the tasting room, and the beer garden next door. Add a relaxed afternoon there to my Sapporo plan.",
+    "On our 9-night February trip for two, tell me about the Sapporo Beer Museum — the history, the tasting room, and the beer garden next door. Add a relaxed afternoon there to my Sapporo plan.",
   nijoMarket:
-    "Tell me about Nijo Fish Market in Sapporo — the fresh uni, crab and kaisendon breakfast bowls. Work a morning there into my plan.",
+    "On our 9-night February trip for two, tell me about Nijo Fish Market in Sapporo — the fresh uni, crab and kaisendon breakfast bowls. Work a morning there into my plan.",
   tanukikoji:
-    "Tell me about the Tanukikoji shopping arcade in Sapporo — the covered street of shops, izakayas and cafés, perfect for a snowy evening. Add it to my plan.",
+    "On our 9-night February trip for two, tell me about the Tanukikoji shopping arcade in Sapporo — the covered street of shops, izakayas and cafés, perfect for a snowy evening. Add it to my plan.",
   hokkaidoShrine:
-    "Tell me about Hokkaido Shrine in Maruyama Park, Sapporo — a peaceful, snow-covered shrine visit. Add it to my winter itinerary.",
+    "On our 9-night February trip for two, tell me about Hokkaido Shrine in Maruyama Park, Sapporo — a peaceful, snow-covered shrine visit. Add it to my winter itinerary.",
   kanemori:
-    "Tell me about the Kanemori Red Brick Warehouse in Hakodate — the historic bayside warehouses turned shops and cafés, lit up in winter. Add it to my Hakodate plan.",
+    "On our 9-night February trip for two, tell me about the Kanemori Red Brick Warehouse in Hakodate — the historic bayside warehouses turned shops and cafés, lit up in winter. Add it to my Hakodate plan.",
   goryokaku:
-    "Tell me about Goryokaku Tower and the star-shaped fort in Hakodate, especially under snow from the observation deck. Add it to my plan.",
+    "On our 9-night February trip for two, tell me about Goryokaku Tower and the star-shaped fort in Hakodate, especially under snow from the observation deck. Add it to my plan.",
   // Restaurants
   beerGarden:
-    "Tell me about the Sapporo Beer Garden and its Genghis Khan (jingisukan) lamb barbecue, and add a hearty dinner there to my Sapporo plan.",
+    "On our 9-night February trip for two, tell me about the Sapporo Beer Garden and its Genghis Khan (jingisukan) lamb barbecue, and add a hearty dinner there to my Sapporo plan.",
   ebisoba:
-    "Tell me about Ebisoba Ichigen in Sapporo and its shrimp-based ramen, and add a warm-up bowl there to my plan.",
+    "On our 9-night February trip for two, tell me about Ebisoba Ichigen in Sapporo and its shrimp-based ramen, and add a warm-up bowl there to my plan.",
   soupCurry:
-    "Tell me about Soup Curry Suage in Sapporo — the local soup curry with vegetables and chicken — and work a lunch there into my plan.",
+    "On our 9-night February trip for two, tell me about Soup Curry Suage in Sapporo — the local soup curry with vegetables and chicken — and work a lunch there into my plan.",
   menyaSaimi:
-    "Tell me about Menya Saimi, one of Sapporo's most famous miso ramen shops, and add it to my plan.",
+    "On our 9-night February trip for two, tell me about Menya Saimi, one of Sapporo's most famous miso ramen shops, and add it to my plan.",
   afuri:
-    "Tell me about Afuri and its yuzu shio ramen, and add a lighter ramen stop to my Japan plan.",
+    "On our 9-night February trip for two, tell me about Afuri and its yuzu shio ramen, and add a lighter ramen stop to my Japan plan.",
   uniMurakami:
-    "Tell me about Uni Murakami in Hakodate and its fresh sea urchin, and add a seafood stop to my Hakodate plan.",
+    "On our 9-night February trip for two, tell me about Uni Murakami in Hakodate and its fresh sea urchin, and add a seafood stop to my Hakodate plan.",
   // Ask bar
   askBar:
-    "Which Hokkaido winter trip should I do — Niseko powder week, Tokyo to Hokkaido by rail, or a Snow Festival week with softer slopes? Compare the powder, the pace, the cost, and the best month, then build the full itinerary for the one you recommend.",
+    "Which Hokkaido winter trip should we do, travelling as a couple — Niseko powder week, Tokyo to Hokkaido by rail, or a Snow Festival week with softer slopes? Compare the powder, the pace, the cost, and the best month, then build the full itinerary for the one you recommend.",
   // "Build this itinerary" — sent when the reader has saved places on the page.
   // The saved items ride along in the /chatkit request; this brief tells Kaira
   // to shape the trip around them.
   buildItinerary:
-    "We are 2 travellers, and our travel dates are flexible. Build my complete Hokkaido winter itinerary around the places I've saved on this page — fit them into the right stops with skiing, onsens, scenic rail and Sapporo at a comfortable pace, then price it.",
+    "We are 2 travellers going for 9 nights in February, and our travel dates are flexible. Build my complete Hokkaido winter itinerary around the places I've saved on this page — fit them into the right stops with skiing, onsens, scenic rail and Sapporo at a comfortable pace, then price it.",
 };
+
+// What each prompt above states about the trip, sent as `intake` keys (month /
+// nights / pax) rather than left for the backend to read out of the sentence.
+// Keyed by prompt text via promptIntakeMap, so a card only carries its prompt
+// and the facts follow. Months stay inside the Hokkaido winter (Dec–Mar):
+// February for anything touching the Sapporo Snow Festival, January for the
+// pure powder-and-onsen weeks.
+//
+// `askBar` deliberately carries neither `month` nor `nights`: it asks Kaira to
+// compare three shapes AND name the best month, so committing to either would
+// answer the question for her.
+const PROMPT_FACTS = promptIntakeMap(PROMPTS, {
+  snowFestivalPowder: { nights: 9, month: 2, day: 4, who: "Couple" },
+  underseaShinkansen: { nights: 11, month: 2, who: "Couple" },
+  sapporoWinter: { nights: 8, month: 2, day: 4, who: "Couple" },
+  skiOnsen: { nights: 9, month: 1, who: "Couple" },
+  powderCity: { nights: 9, month: 1, who: "Couple" },
+  underseaRun: { nights: 11, month: 2, who: "Couple" },
+  snowFestivalWeek: { nights: 8, month: 2, day: 4, who: "Couple" },
+  niseko: { nights: 9, month: 1, who: "Couple" },
+  okura: { nights: 9, month: 2, who: "Couple" },
+  takino: { nights: 9, month: 2, who: "Family", adults: 2, children: 2 },
+  beerMuseum: { nights: 9, month: 2, who: "Couple" },
+  nijoMarket: { nights: 9, month: 2, who: "Couple" },
+  tanukikoji: { nights: 9, month: 2, who: "Couple" },
+  hokkaidoShrine: { nights: 9, month: 2, who: "Couple" },
+  kanemori: { nights: 9, month: 2, who: "Couple" },
+  goryokaku: { nights: 9, month: 2, who: "Couple" },
+  beerGarden: { nights: 9, month: 2, who: "Couple" },
+  ebisoba: { nights: 9, month: 2, who: "Couple" },
+  soupCurry: { nights: 9, month: 2, who: "Couple" },
+  menyaSaimi: { nights: 9, month: 2, who: "Couple" },
+  afuri: { nights: 9, month: 2, who: "Couple" },
+  uniMurakami: { nights: 9, month: 2, who: "Couple" },
+  askBar: { who: "Couple" },
+  buildItinerary: { nights: 9, month: 2, who: "Couple" },
+});
 
 const hokkaidoConfig: CinematicThemeConfig = {
   // Hokkaido snow blue — carries every CTA, the saved state and the docked bar.
@@ -538,11 +579,17 @@ const hokkaidoConfig: CinematicThemeConfig = {
       },
       intro:
         "We prep the paperwork, check every document and submit for you. No embassy queues, no guesswork on the bank statements.",
+      // This trip crosses one border, so the list is one country. The stopover
+      // and consolation-prize visas that used to pad it out (Singapore,
+      // Vietnam, Thailand, Switzerland, Finland) belonged to trips this page
+      // isn't selling.
       cards: [
         {
           country: "Japan",
           cities: "Sticker · single entry · up to 90 days",
           fee: "₹4,300",
+          line:
+            "Single entry, so the whole trip has to sit inside one stay — Tokyo, the run north and every day on the mountain. Start it about six weeks out: February slots go to whoever books them first, and everyone chasing this snow wants the same fortnight.",
           href: VISA_JAPAN,
         },
       ],
@@ -550,6 +597,7 @@ const hokkaidoConfig: CinematicThemeConfig = {
         { label: "Type", value: "Tourist sticker" },
         { label: "Embassy fee", value: "₹3,300" },
         { label: "Our fee", value: "₹1,000" },
+        { label: "We handle", value: "Appointment + file" },
       ],
       note:
         "Applied through the Japanese embassy. We book the appointment, assemble the file, and hand it back to you ready to travel.",
@@ -595,26 +643,38 @@ const hokkaidoConfig: CinematicThemeConfig = {
       type: "stories",
       heading: { eyebrow: "Came back · rated it", lead: "People who", accent: "went" },
       cards: [
+        // These used to link three Japan trips with no Hokkaido winter in them
+        // (a September Tokyo–Kyoto run, an April loop, a June one). They now
+        // point at plans that actually spend their nights up north, so the
+        // summary and the itinerary behind each card agree. `summary` renders
+        // unquoted — no review text is on file for these travellers, so
+        // nothing is presented as something they said.
         {
           rating: "5.0",
           type: "Couple",
-          name: "Rohan Mehta",
-          route: "See the full itinerary →",
-          href: "/itinerary/f4ebf208-8d91-42f8-a482-4edb84455fe4",
+          name: "Armaan",
+          when: "Couple · Sapporo + Niseko",
+          summary:
+            "A full powder week in Niseko with two nights in Sapporo at either end. One mountain base, no hopping around.",
+          href: "/chat/caade3a1-c62b-4b00-ac3f-5131f418c4bd",
         },
         {
           rating: "5.0",
-          type: "Solo",
-          name: "Priya",
-          route: "See the plan →",
-          href: "/chat/c534d49c-fe0d-420f-9350-b88aadc921cb",
+          type: "Couple",
+          name: "Darshan",
+          when: "Couple · Tokyo, Kyoto, Hokkaido",
+          summary:
+            "Tokyo and Kyoto first, then north — three nights in Sapporo and two in Niseko, with the snow saved for the end.",
+          href: "/chat/1df81e37-17dd-4463-83e8-c22143359d33",
         },
         {
           rating: "4.9",
-          type: "Family",
-          name: "Arjun & family",
-          route: "See the full itinerary →",
-          href: "/itinerary/7504ac55-cfc1-4f7b-92c3-5198273d3835",
+          type: "Group of 10",
+          name: "Maharshi",
+          when: "Group of 10 · Tokyo to Sapporo",
+          summary:
+            "Ten of them moving as one group. Two nights in Tokyo, two in an Obanazawa onsen town, then three in Sapporo.",
+          href: "/chat/bd4a3e4b-581a-485e-b163-1f802d745a82",
         },
       ],
     },
@@ -737,29 +797,34 @@ const HokkaidoPowderThemePage = ({
   const selection = useThemeSelectionState();
   const openThemeForm = useOpenThemeForm();
   // Every seed from this page carries the current selection + theme slug.
-  const handleSelectPrompt = (prompt: string) =>
-    seedChat(prompt, { items: selection.items, slug: THEME_SLUG });
+  const handleSelectPrompt = (prompt: string, intent?: ThemePromptIntent) =>
+    seedChat(prompt, {
+      items: selection.items,
+      slug: THEME_SLUG,
+      intent,
+      facts: PROMPT_FACTS[prompt],
+    });
   // "Build this itinerary" — open the themed mini-form on /chat (no auto-send);
   // the saved items ride along and are sent to /chatkit only on form submit.
   const handleBuild = (note?: string) =>
     openThemeForm(THEME_SLUG, selection.items, note);
   // Read-only activity drawer (opened from the Activities cards + the JR Pass CTA).
-  const [activityDrawer, setActivityDrawer] = useState<{
-    show: boolean;
-    activityId?: string;
-    source?: string;
-    date?: string;
-  }>({ show: false });
+  // const [activityDrawer, setActivityDrawer] = useState<{
+    // show: boolean;
+    // activityId?: string;
+    // source?: string;
+    // date?: string;
+  // }>({ show: false });
 
-  const openActivity = (activityId: string, source?: string) =>
-    setActivityDrawer({
-      show: true,
-      activityId,
-      source,
-      date: defaultActivityDate(),
-    });
-  const closeActivity = () =>
-    setActivityDrawer((prev) => ({ ...prev, show: false }));
+  // const openActivity = (activityId: string, source?: string) =>
+    // setActivityDrawer({
+      // show: true,
+      // activityId,
+      // source,
+      // date: defaultActivityDate(),
+    // });
+  // const closeActivity = () =>
+    // setActivityDrawer((prev) => ({ ...prev, show: false }));
 
   useEffect(() => {
     checkAuthState();
@@ -842,11 +907,14 @@ const HokkaidoPowderThemePage = ({
       <CinematicThemeLanding
         config={hokkaidoConfig}
         onSelectPrompt={handleSelectPrompt}
-        onSelectActivity={openActivity}
         selection={selection}
         onBuild={handleBuild}
       />
-      {/* Read-only activity details — no Add/Remove CTA on this marketing page */}
+      {/* Detail drawers are retired on this page — a click anywhere on a
+          card adds or removes it, so nothing opens a drawer. Uncomment to
+          restore (and pass `onSelectActivity` to <CinematicThemeLanding>).
+
+      Read-only activity details — no Add/Remove CTA on this marketing page
       <ActivityDetailsDrawer
         show={activityDrawer.show}
         activityId={activityDrawer.activityId}
@@ -856,19 +924,20 @@ const HokkaidoPowderThemePage = ({
         handleCloseDrawer={closeActivity}
         setShowDrawer={closeActivity}
       />
+      */}
     </Layout>
   );
 };
 
 // A sensible default start date for the read-only activity drawer — ~60 days
 // out, in DD/MM/YYYY (the format the detail endpoint expects).
-const defaultActivityDate = () => {
-  const d = new Date();
-  d.setDate(d.getDate() + 60);
-  const dd = String(d.getDate()).padStart(2, "0");
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  return `${dd}/${mm}/${d.getFullYear()}`;
-};
+// const defaultActivityDate = () => {
+  // const d = new Date();
+  // d.setDate(d.getDate() + 60);
+  // const dd = String(d.getDate()).padStart(2, "0");
+  // const mm = String(d.getMonth() + 1).padStart(2, "0");
+  // return `${dd}/${mm}/${d.getFullYear()}`;
+// };
 
 const mapDispatchToProps = (dispatch: any) => ({
   checkAuthState: () => dispatch(authaction.checkAuthState()),

@@ -13,7 +13,8 @@ import LiveDetailBody from "./LiveDetailBody";
 //  what keeps them from drifting apart.
 //
 //  Callers pass `detail`:
-//    { kind, name, meta, imageUrl, Icon, iconColor, blurb, facts: [{k, v}],
+//    { kind, name, meta, imageUrl, Icon | iconKeys, iconColor, blurb,
+//      facts: [{k, v}],
 //      segments: [{modeLabel, modeKey, title, durationLabel}],
 //      policy, hasMap, statusLabel, status, contextLabel,
 //      live: { … }  ← see below,
@@ -111,6 +112,14 @@ export default function DetailSheet({
   if (!d) return null;
 
   const facts = (d.facts || []).filter((f) => f && f.v);
+  // The tile's stand-in for a photo. `iconKeys` is a journey's run of modes
+  // (see LegSection's TravelRow); `Icon` is the single glyph everything else
+  // passes. Either way the tile is never left as a bare grey square.
+  const glyphs = d.iconKeys?.length
+    ? d.iconKeys.map((key) => ({ key, Icon: getModeAccent(key).Icon }))
+    : d.Icon
+      ? [{ key: "icon", Icon: d.Icon }]
+      : [];
   const policy =
     d.policy !== undefined ? d.policy : policyFor(d.kind);
 
@@ -124,19 +133,40 @@ export default function DetailSheet({
       <div className="flex h-full flex-col">
         <div className="flex-none px-[14px]">
           <div className="flex items-start gap-[12px] border-b border-[#e6e8ec] pb-[11px]">
-            {/* The photo, or — for the rows that never have one, a taxi and the
-                visa/eSIM block — the same glyph their row in the trip carries,
-                so opening one doesn't swap its identity for a blank tile. */}
+            {/* The photo, or — for the rows that never have one, every journey
+                and the visa/eSIM block — the same glyph their row in the trip
+                carries, so opening one doesn't swap its identity for a blank
+                tile. A combo keeps the row's whole run ("car › plane"): one
+                glyph for a taxi+flight booking would say the traveller is being
+                driven the entire way. */}
             <div
-              className="flex h-[58px] w-[58px] flex-none items-center justify-center rounded-[11px] bg-[#eef0f4] bg-cover bg-center"
+              className="flex h-[58px] w-[58px] flex-none items-center justify-center gap-[2px] rounded-[11px] bg-[#eef0f4] bg-cover bg-center"
               style={
                 d.imageUrl
                   ? { backgroundImage: `url("${d.imageUrl}")` }
                   : undefined
               }
             >
-              {!d.imageUrl && d.Icon ? (
-                <d.Icon size={22} color={d.iconColor || "#6b7280"} aria-hidden />
+              {!d.imageUrl && glyphs.length ? (
+                glyphs.map(({ key, Icon }, i) => (
+                  <React.Fragment key={`${key}-${i}`}>
+                    {i > 0 ? (
+                      <span
+                        className="text-[9px] leading-none text-[#8fa8dd]"
+                        aria-hidden
+                      >
+                        ›
+                      </span>
+                    ) : null}
+                    {/* Two or three glyphs have to share the tile the single
+                        one had to itself. */}
+                    <Icon
+                      size={glyphs.length > 1 ? 17 : 22}
+                      color={d.iconColor || "#6b7280"}
+                      aria-hidden
+                    />
+                  </React.Fragment>
+                ))
               ) : null}
             </div>
             <div className="min-w-0 flex-1">

@@ -114,7 +114,7 @@ export async function getStaticPaths() {
       `${MERCURY_HOST}/api/v1/geos/search/all/?type=Country`
     );
     const data = res.data;
-    for (var i = 0; i < 1; i++) {
+    for (var i = 0; i < data?.length; i++) {
       const pathArr = data[i].path.split("/");
       var [continentSlug, countrySlug] = pathArr;
       paths.push({
@@ -128,17 +128,15 @@ export async function getStaticPaths() {
     console.error("[ERROR][countryPage:getStaticPaths]: ", err.message);
   }
 
-  // Ensure the Thailand country page is always built. The loop above only
-  // pre-builds a couple of countries, and with `output: "export"` +
-  // `fallback: false` any path not listed here 404s (there is no on-demand
-  // fallback in a static export). De-dupe in case it's already included.
-  if (
-    !paths.some(
-      (p) => p.params.continent === "asia" && p.params.country === "thailand"
-    )
-  ) {
-    paths.push({ params: { continent: "asia", country: "thailand" } });
-  }
+  // Thailand is served by its own page (pages/asia/thailand.tsx), which renders
+  // the cinematic country surface instead of the generic CountryPage below.
+  // Next resolves that static route ahead of this dynamic one, so leaving
+  // asia/thailand in this list would only export a second copy of the page it
+  // no longer serves — it used to be pushed explicitly here for exactly the
+  // opposite reason, when nothing else built it.
+  paths = paths.filter(
+    (p) => !(p.params.continent === "asia" && p.params.country === "thailand")
+  );
 
   return {
     paths: paths,

@@ -5,12 +5,14 @@
 // memory + sessionStorage, survives the route change and a hard reload of
 // /chat) and also passed as `?seed=` so a cold /chat load can still pick it up.
 //
-// A theme page may also pass the items the reader saved and a `slug` naming the
-// theme. The /chatkit request body has no structured `items` field — it is the
-// same shape every other chat surface sends — so the saved picks are folded
-// into the seed TEXT here (see selectionText). The meta still rides along via
-// setPendingSeedMeta, but only for in-app use: the mini-form's chips, the
-// widget theme, and the mobile close button's way back to the theme page.
+// A theme page may also pass structured context — the items the reader saved on
+// the page and a `slug` naming the theme. That rides along via setPendingSeedMeta
+// and is forwarded verbatim in the first /chatkit request body (see useChat.ts).
+//
+// The seed also carries an `intake` object built from the same keys the themed
+// mini-form submits (see themeIntake.ts), so a hero send, an ask-bar send and a
+// card CTA all hit /chatkit in the mini-form's request shape rather than as
+// bare free text. `intent` is what the landing surface reports about the click.
 
 import { useCallback } from "react";
 import { useRouter } from "next/router";
@@ -18,12 +20,21 @@ import {
   setPendingSeed,
   setPendingSeedMeta,
 } from "../../../services/heroChatHandoff";
-import type { CinematicSelectableItem } from "./types";
-import { composeSelectionText } from "./selectionText";
+import type {
+  CinematicPromptIntake,
+  CinematicSelectableItem,
+} from "./types";
+import { buildSeedIntake, type ThemePromptIntent } from "./themeIntake";
 
 export interface SeedChatMeta {
   items?: CinematicSelectableItem[];
   slug?: string;
+  /** What fired the prompt — the hero composer, the ask bar, a card, a CTA.
+   *  Shapes the `intake` object sent with the first /chatkit request. */
+  intent?: ThemePromptIntent;
+  /** What the fired prompt states about the trip (month / nights / who), from
+   *  the page's PROMPT_FACTS map. Absent for free text the reader typed. */
+  facts?: CinematicPromptIntake;
 }
 
 export function useSeedChat() {
@@ -31,15 +42,20 @@ export function useSeedChat() {
 
   return useCallback(
     (prompt: string, meta?: SeedChatMeta) => {
-      // The saved picks are appended to the prompt itself — the request body
-      // carries no `items`, so the text is the only place they survive.
-      const selection = composeSelectionText(meta?.items);
-      const base = (prompt || "").trim();
-      const seed = selection ? `${base}\n\n${selection}`.trim() : base;
+      const seed = (prompt || "").trim();
       if (seed) setPendingSeed(seed);
       // Always write (setPendingSeedMeta clears itself when empty) so a plain
       // seed after a themed one never inherits a stale selection.
-      setPendingSeedMeta({ items: meta?.items ?? [], slug: meta?.slug ?? "" });
+      setPendingSeedMeta({
+        items: meta?.items ?? [],
+        slug: meta?.slug ?? "",
+        intake: buildSeedIntake(seed, {
+          slug: meta?.slug,
+          items: meta?.items,
+          intent: meta?.intent,
+          facts: meta?.facts,
+        }),
+      });
       router.push(seed ? `/chat?seed=${encodeURIComponent(seed)}` : "/chat");
     },
     [router],

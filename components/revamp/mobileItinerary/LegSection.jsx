@@ -37,22 +37,12 @@ const Chevron = () => (
  * way to another city.
  */
 function TravelRow({ travel, cityName, onOpen, onChange, disabled }) {
-  // De-duplicated by mode, in order: a taxi-flight-taxi combo is a plane
-  // journey with transfers either end, and drawing the car twice says nothing
-  // the first one didn't.
-  const glyphKeys = (() => {
-    if (!travel.segments || travel.segments.length < 2) return [travel.modeKey];
-    const seen = new Set();
-    const keys = [];
-    for (const seg of travel.segments) {
-      const k = seg.modeKey || null;
-      if (k && !seen.has(k)) {
-        seen.add(k);
-        keys.push(k);
-      }
-    }
-    return keys.length ? keys : [travel.modeKey];
-  })();
+  // De-duplicated by mode, in order — built with the journey in
+  // lib/tripViewModel.js, so the detail sheet this row opens shows the same
+  // run of glyphs rather than its own reading of the booking.
+  const glyphKeys = travel.glyphKeys?.length
+    ? travel.glyphKeys
+    : [travel.modeKey];
 
   return (
     <div

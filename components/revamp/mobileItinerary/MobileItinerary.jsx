@@ -284,6 +284,14 @@ export default function MobileItinerary({
         name: travel.title,
         meta: travel.meta,
         contextLabel: travel.title,
+        // A journey has no photo. It carries the same run of mode glyphs its
+        // row does — one for a plain transfer, "car › plane" for a combo — in
+        // the transfer blue this surface draws every journey in. Without it the
+        // header opened on an empty grey tile.
+        iconKeys: travel.glyphKeys?.length
+          ? travel.glyphKeys
+          : [travel.modeKey],
+        iconColor: "#1a4fd6",
         // A P1 draft leg is a statement about the route with no booking behind
         // it — there is nothing to fetch, so it keeps the described fallback.
         live: travel.bookingId

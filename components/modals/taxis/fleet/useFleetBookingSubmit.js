@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { replaceUrl } from "../../../../helper/historyUrl";
 import { useDispatch } from "react-redux";
 
 import { axiosTaxiBooking } from "../../../../services/bookings/UpdateTaxiGozo";
@@ -101,7 +102,7 @@ export const useFleetBookingSubmit = ({
       ["drawer", "booking_id", "flight_modal", "modal", "edit"].forEach((param) =>
         url.searchParams.delete(param),
       );
-      window.history.replaceState({}, "", url.toString());
+      replaceUrl(url.toString());
       setTimeout(() => window.location.reload(), 200);
     }
 

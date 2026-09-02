@@ -276,6 +276,10 @@ const UpdateItineraryDates = ({
   resetRef,
   handleCloseDrawer,
   cartValue = false,
+  // Lets a caller render the `cartValue` "Update Dates" text as a full-width
+  // CTA (the cart's pay-button slots) instead of the inline chip. Applied to
+  // the clickable element itself so the whole button stays tappable.
+  ctaClassName = "",
   setShowSettings,
   isHotelsPresent,
   setIsHotelsPresent,
@@ -560,10 +564,10 @@ const UpdateItineraryDates = ({
   };
 
   return (
-    <div className="">
+    <div className={ctaClassName ? "w-full" : ""}>
       {/* Date display with pen icon */}
       <div
-        className={`font-400 ${cartValue ? "text-white font-normal" : ""} flex flex-row items-center gap-2`}
+        className={`font-400 ${cartValue ? "text-white font-normal" : ""} flex flex-row items-center gap-2 ${ctaClassName ? "w-full" : ""}`}
       >
         {!isEditing && !cartValue ? (
           <div className="min-w-max ">
@@ -579,7 +583,7 @@ const UpdateItineraryDates = ({
           <div className="min-w-max">{formatDateRangeDisplay()}</div>
         ) : (
           <div
-            className="text-white min-w-max cursor-pointer"
+            className={`text-white min-w-max cursor-pointer ${ctaClassName}`}
             onClick={handleEditClick}
           >
             Update Dates

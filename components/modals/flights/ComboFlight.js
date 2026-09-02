@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
+import { replaceUrl } from "../../../helper/historyUrl";
 import styled from "styled-components";
 import media from "../../media";
 import {
@@ -1019,7 +1020,7 @@ const ComboFlight = (props) => {
             url.searchParams.delete(param);
           });
 
-          window.history.replaceState({}, "", url.toString());
+          replaceUrl(url.toString());
 
           setTimeout(() => {
             window.location.reload();
@@ -1057,7 +1058,7 @@ const ComboFlight = (props) => {
             url.searchParams.delete(param);
           });
 
-          window.history.replaceState({}, "", url.toString());
+          replaceUrl(url.toString());
           setTimeout(() => {
             window.location.reload();
           }, 200);

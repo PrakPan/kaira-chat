@@ -483,6 +483,18 @@
     height: 42px;
   }
 }
+/* These buttons hold a <FontAwesomeIcon>, and this app never imports
+   @fortawesome/fontawesome-svg-core/styles.css — so the emitted <svg> carries
+   `svg-inline--fa` classes that nothing defines, leaving it with a viewBox and
+   no intrinsic size. With no rule here it stretched to the button's width and
+   derived its height from the 320×512 chevron ratio (36×58 in a 36px circle),
+   spilling out of the button. Height is fixed and width follows the aspect
+   ratio, so a non-chevron icon dropped in here still can't overflow.
+   Same class of fix as .indiaCardIcon svg / .faqIcon svg above. */
+.carouselNav svg {
+  height: 16px;
+  width: auto;
+}
 .carouselNav:hover {
   transform: translateY(-50%) scale(1.05);
 }
@@ -747,6 +759,13 @@
   place-items: center;
   margin-bottom: 14px;
 }
+/* Backstop: an inline <svg> with only a viewBox has no intrinsic size, so it
+   defaults to the ~300px default object size and bursts out of this tile.
+   The icons set width/height themselves; this catches any that don't. */
+.indiaCardIcon svg {
+  width: 24px;
+  height: 24px;
+}
 .indiaCard h4 {
   font-size: 15px;
   font-weight: 700;
@@ -1000,6 +1019,11 @@
   place-items: center;
   flex-shrink: 0;
   transition: all 0.2s;
+}
+/* Same backstop as .indiaCardIcon — see the note there. */
+.faqIcon svg {
+  width: 14px;
+  height: 14px;
 }
 .faqItemOpen .faqIcon {
   background: var(--ttw-yellow);

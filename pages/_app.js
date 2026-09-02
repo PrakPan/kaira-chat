@@ -9,7 +9,7 @@ import "../containers/itinerary/typography.css";
 import "../styles/kaira-sidebar.css";
 import { useRouter } from "next/router";
 import * as ga from "../services/ga/Index";
-import { FACEBOOK_PIXEL_ID, GOOGLE_CLIENT_ID, JUPITER_HOST } from "../services/constants";
+import { GOOGLE_CLIENT_ID, JUPITER_HOST } from "../services/constants";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import dynamic from "next/dynamic";
 import Head from "next/head";
@@ -22,6 +22,7 @@ import { changeUserLocation } from "../store/actions/userLocation";
 import { usePathname } from "next/navigation";
 import JupyterAnalytics from "../components/JupyterAnalytics";
 import { captureAdParams, captureLandingPage } from "../helper/adAttribution";
+import { replaceUrl } from "../helper/historyUrl";
 
 // Polyfill for requestIdleCallback (Safari compatibility)
 if (typeof window !== "undefined" && !window.requestIdleCallback) {
@@ -164,23 +165,53 @@ function MyApp({ Component, pageProps }) {
     // sent as `landing_page` when a chat is later initiated from /chat.
     captureLandingPage();
 
+    // Read the LIVE URL rather than the `router` snapshot this effect closed
+    // over. `MyApp` has getInitialProps, so Next marks the router ready on the
+    // very first client render — while `router.query` is still `{}` — and this
+    // effect never re-runs (both of its deps are stable). A snapshot-based diff
+    // therefore saw an empty query on every later navigation and "restored" the
+    // params onto the LANDING page's pathname: clicking through to /chat from
+    // an ad URL bounced straight back to the theme page, then looped.
     const persistAdParams = () => {
       const stored = captureAdParams();
 
       // Add-only: never overwrite a param already present in the URL. This
       // protects overloaded keys like `source` (e.g. `?source=tailored`).
-      const missing = {};
-      Object.entries(stored).forEach(([key, value]) => {
-        if (router.query[key] === undefined) missing[key] = value;
-      });
-
-      if (Object.keys(missing).length > 0) {
-        router.replace(
-          { pathname: router.pathname, query: { ...router.query, ...missing } },
-          undefined,
-          { shallow: true },
+      const search = window.location.search;
+      const present = new URLSearchParams(search);
+      const missing = Object.entries(stored)
+        .filter(([key]) => !present.has(key))
+        .map(
+          ([key, value]) =>
+            `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
         );
-      }
+
+      if (missing.length === 0) return;
+
+      // Append to the raw query string instead of re-serialising it, so params
+      // already on the URL (notably /chat's long `?seed=` prompt) keep their
+      // exact encoding.
+      const url =
+        window.location.pathname +
+        search +
+        (search ? "&" : "?") +
+        missing.join("&") +
+        window.location.hash;
+
+      // Rewrite the address bar directly rather than via `router.replace`.
+      // This runs FROM `routeChangeComplete`, so a router call here starts a
+      // second navigation before the first has settled — and BotApp strips
+      // `intake` / `destination` / `seed` / `themeForm` off the /chat URL with
+      // its own history writes in the same tick. That put up to four history
+      // writes into the first moments of /chat in a non-deterministic order,
+      // which is what made the bounce intermittent and webview-specific.
+      //
+      // Nothing reads these params off the URL: both consumers
+      // (useChat's buildSourceFields, slideOneActions) take them from
+      // sessionStorage via getAdParams() and only let URL values override. So
+      // the router never needed to know — this is purely so the params stay
+      // visible in the address bar.
+      replaceUrl(url);
     };
 
     persistAdParams();
@@ -224,35 +255,27 @@ function MyApp({ Component, pageProps }) {
         />
       </Head>
 
-      {/* Google Analytics */}
-      <Script
-        src="https://www.googletagmanager.com/gtag/js?id=G-EV1KHKN8VV"
-        strategy="afterInteractive"
-      />
-      <Script strategy="afterInteractive">
-        {`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', 'G-EV1KHKN8VV');
-        `}
-      </Script>
+      {/* ---------- Google Analytics 4 & Facebook Pixel ----------
+          Both are loaded by the GTM container (GTM-5C5GGGV) in _document.js,
+          NOT here. Verified against live production: window.google_tag_manager
+          contains "G-EV1KHKN8VV" and fbq reports pixel "611867085917762" even
+          though neither id appears anywhere in the served HTML — the only
+          possible source is the container itself. The GA4 loader also carries
+          GTM's own cache-buster (gtag/js?id=G-EV1KHKN8VV&cx=c&gtm=...).
 
-      {/* Facebook Pixel */}
-      <Script strategy="afterInteractive">
-        {`
-          !function(f,b,e,v,n,t,s)
-          {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-          n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-          if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-          n.queue=[];t=b.createElement(e);t.async=!0;
-          t.src=v;s=b.getElementsByTagName(e)[0];
-          s.parentNode.insertBefore(t,s)}
-          (window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
-          fbq('init', '${FACEBOOK_PIXEL_ID}');
-          fbq('track', 'PageView');
-        `}
-      </Script>
+          A gtag <Script> and an inline fbq snippet used to sit here as well.
+          They named the SAME GA4 property and the SAME pixel id that the
+          container already fires (NEXT_PUBLIC_FACEBOOK_PIXEL_ID is byte-for-byte
+          611867085917762), so once deployed they would have loaded gtag.js and
+          fbevents.js a second time each — ~290 KiB of duplicate transfer plus
+          duplicate long tasks — and risked double-counting PageView.
+
+          GTM stays the single owner of both tags. Add or change them in the
+          container UI, not here. Note that window.gtag and window.dataLayer are
+          still defined (by the Google Ads block in _document.js), and the
+          route-change handler above keeps calling fbq("track","PageView") for
+          client-side navigations only — GTM's own PageView covers the initial
+          load, so the two do not overlap. */}
 
       {/* Jupiter Analytics is loaded by <JupyterAnalytics /> below (which pulls
           /jupyter-partytown.js and owns window.JupiterAnalytics). There used to

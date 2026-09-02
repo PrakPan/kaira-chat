@@ -68,7 +68,8 @@ const getStaticThemeSlugs = () => {
 
 const generateSitemap = async () => {
   const BASE_URL =
-    process.env.NEXT_PUBLIC_MERCURY_HOST || "https://mercury.tarzanway.com";
+    // process.env.NEXT_PUBLIC_MERCURY_HOST || 
+    "https://mercury.tarzanway.com";
 
   // Fetch continents list
   const continents = await axios.get(

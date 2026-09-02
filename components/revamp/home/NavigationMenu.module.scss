@@ -53,7 +53,11 @@
   display: none !important;
 }
 
-@media (max-width: 1024px) {
+/* 1023.98px so this is the exact complement of Tailwind's `lg` (min-width:
+   1024px), which NavigationMenu.jsx also applies to these two elements as a
+   fallback for the window before this stylesheet loads. At a flat 1024px the
+   two disagreed on that single pixel. */
+@media (max-width: 1023.98px) {
   .logoFull {
     display: none !important;
   }
@@ -88,7 +92,12 @@
     background: #fafaf5;
   }
 
-  @media (max-width: 768px) {
+  /* 767.98px, not 768px. The mobile block this pairs with in NavigationMenu.jsx
+     is gated by Tailwind's `md:hidden` — i.e. `min-width: 768px`. With both
+     written as 768px the two queries BOTH matched at exactly 768px wide, so the
+     desktop menu and the mobile avatar were hidden simultaneously and the nav
+     lost its profile/login control entirely at that one width. */
+  @media (max-width: 767.98px) {
     display: none;
   }
 }

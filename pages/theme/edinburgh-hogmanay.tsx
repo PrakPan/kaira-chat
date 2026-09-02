@@ -17,8 +17,12 @@ import {
   useSeedChat,
   useOpenThemeForm,
 } from "../../components/theme/cinematic/useSeedChat";
+import {
+  promptIntakeMap,
+  type ThemePromptIntent,
+} from "../../components/theme/cinematic/themeIntake";
 import { useThemeSelectionState } from "../../components/theme/cinematic/ThemeSelection";
-import ActivityDetailsDrawer from "../../components/drawers/activityDetails/ActivityDetailsDrawer";
+// import ActivityDetailsDrawer from "../../components/drawers/activityDetails/ActivityDetailsDrawer";
 import type { CinematicThemeConfig } from "../../components/theme/cinematic/types";
 import { THEME_PALETTES } from "../../components/theme/cinematic/palettes";
 
@@ -105,35 +109,59 @@ const ACTIVITY = {
 const PROMPTS = {
   // Hero chips (verbatim from the campaign brief)
   scottishTraditions:
-    "We are 2 travellers, and our travel dates are flexible. We want to experience Hogmanay the traditional Scottish way. Prioritize the Torchlight Procession, ceilidh dancing, Auld Lang Syne celebrations, first-footing traditions, local pubs, whisky experiences, authentic Scottish food, historic streets, and cultural experiences alongside Edinburgh's New Year festivities.",
+    "We are 2 travellers going for 5 nights in December, and our travel dates are flexible. We want to experience Hogmanay the traditional Scottish way. Prioritize the Torchlight Procession, ceilidh dancing, Auld Lang Syne celebrations, first-footing traditions, local pubs, whisky experiences, authentic Scottish food, historic streets, and cultural experiences alongside Edinburgh's New Year festivities.",
   edinburghLondon:
-    "We are 2 travellers, and our travel dates are flexible. We want to celebrate New Year's in Edinburgh during Hogmanay and continue our trip to London. Include the best of Edinburgh's festive celebrations before exploring London's iconic landmarks, Christmas lights (if available), markets, museums, West End, cafés, and classic sightseeing at a comfortable pace.",
+    "We are 2 travellers going for 8 nights in December, and our travel dates are flexible. We want to celebrate New Year's in Edinburgh during Hogmanay and continue our trip to London. Include the best of Edinburgh's festive celebrations before exploring London's iconic landmarks, Christmas lights (if available), markets, museums, West End, cafés, and classic sightseeing at a comfortable pace.",
   ultimate:
-    "We are 2 travellers, and our travel dates are flexible. We want the complete Hogmanay experience in Edinburgh. Prioritize the Torchlight Procession, official Street Party, Edinburgh Castle fireworks, Scottish traditions, festive markets, local food, historic pubs, and the city's best winter experiences. Build an itinerary that lets us experience every major Hogmanay highlight while balancing sightseeing and free time.",
+    "We are 2 travellers going for 7 nights in December, and our travel dates are flexible. We want the complete Hogmanay experience in Edinburgh. Prioritize the Torchlight Procession, official Street Party, Edinburgh Castle fireworks, Scottish traditions, festive markets, local food, historic pubs, and the city's best winter experiences. Build an itinerary that lets us experience every major Hogmanay highlight while balancing sightseeing and free time.",
   castlesWhisky:
-    "We are 2 travellers, and our travel dates are flexible. We want to experience Scotland's historic castles, whisky culture, and Hogmanay celebrations in one trip. Include Edinburgh Castle, local whisky tastings, historic towns, scenic viewpoints, traditional pubs, and iconic Scottish experiences.",
+    "We are 2 travellers going for 7 nights in December, and our travel dates are flexible. We want to experience Scotland's historic castles, whisky culture, and Hogmanay celebrations in one trip. Include Edinburgh Castle, local whisky tastings, historic towns, scenic viewpoints, traditional pubs, and iconic Scottish experiences.",
   // Programme — "Four days, hour by hour" (verbatim)
   progLondon:
-    "We are 2 travellers, and our travel dates are flexible. We want to celebrate Hogmanay in Edinburgh before continuing to London. Include Edinburgh's New Year celebrations, iconic landmarks, scenic train travel, London's famous attractions, cozy winter cafés, markets, museums, and enough free time to enjoy both cities at a relaxed pace.",
+    "We are 2 travellers going for 8 nights in December, and our travel dates are flexible. We want to celebrate Hogmanay in Edinburgh before continuing to London. Include Edinburgh's New Year celebrations, iconic landmarks, scenic train travel, London's famous attractions, cozy winter cafés, markets, museums, and enough free time to enjoy both cities at a relaxed pace.",
   progTorchlight:
-    "We are 2 travellers, and our travel dates are flexible. We want to experience Edinburgh's famous Torchlight Procession during Hogmanay. Build our itinerary around the procession, historic Old Town, festive markets, cozy pubs, Scottish traditions, and enough free time to soak in the city's magical winter atmosphere.",
+    "We are 2 travellers going for 4 nights in December, and our travel dates are flexible. We want to experience Edinburgh's famous Torchlight Procession during Hogmanay. Build our itinerary around the procession, historic Old Town, festive markets, cozy pubs, Scottish traditions, and enough free time to soak in the city's magical winter atmosphere.",
   progStreetParty:
-    "We are 2 travellers, and our travel dates are flexible. We want the ultimate Edinburgh Hogmanay celebration. Prioritize the official Street Party, Edinburgh Castle fireworks, live music stages, midnight celebrations, Auld Lang Syne, and the city's best festive experiences while balancing sightseeing before and after New Year's Eve.",
+    "We are 2 travellers going for 4 nights in December, and our travel dates are flexible. We want the ultimate Edinburgh Hogmanay celebration. Prioritize the official Street Party, Edinburgh Castle fireworks, live music stages, midnight celebrations, Auld Lang Syne, and the city's best festive experiences while balancing sightseeing before and after New Year's Eve.",
   progLoonyDook:
-    "We are 2 travellers, and our travel dates are flexible. We want to experience the fun side of Hogmanay, including the famous Loony Dook. Combine Edinburgh's New Year celebrations with quirky local traditions, scenic winter walks, cozy cafés, and authentic Scottish experiences for a memorable trip.",
+    "We are 2 travellers going for 5 nights in December, and our travel dates are flexible. We want to experience the fun side of Hogmanay, including the famous Loony Dook. Combine Edinburgh's New Year celebrations with quirky local traditions, scenic winter walks, cozy cafés, and authentic Scottish experiences for a memorable trip.",
   // Daylight
   arthursSeat:
-    "I want to climb Arthur's Seat at sunrise on one of my Hogmanay days — the ancient volcano in the middle of Edinburgh. Tell me the easiest route from the Old Town, how long it takes, what the view over the city and the Firth of Forth looks like in early winter, and the best time for the light.",
+    "On our 7-night Hogmanay trip in December for two, I want to climb Arthur's Seat at sunrise on one of the days — the ancient volcano in the middle of Edinburgh. Tell me the easiest route from the Old Town, how long it takes, what the view over the city and the Firth of Forth looks like in early winter, and the best time for the light.",
   edinburghCastle:
-    "I want to visit Edinburgh Castle properly on a pre-festival day. Tell me the opening time in late December, what's genuinely worth seeing inside — the Crown Jewels, the Stone of Destiny, the One O'Clock Gun — and how it deepens watching the New Year fireworks launch from its walls. Build it into a full Old Town day.",
+    "On our 7-night Hogmanay trip in December for two, I want to visit Edinburgh Castle properly on a pre-festival day. Tell me the opening time in late December, what's genuinely worth seeing inside — the Crown Jewels, the Stone of Destiny, the One O'Clock Gun — and how it deepens watching the New Year fireworks launch from its walls. Build it into a full Old Town day.",
   lochNessGlencoe:
-    "I want a day trip from Edinburgh into the Highlands around Hogmanay — Loch Ness and Glencoe in winter. Tell me honestly what the drive is like in early January, what the landscape looks like under snow, whether I need a car or can join a tour, and how long the day runs.",
+    "On our 7-night Hogmanay trip in December for two, I want a day trip from Edinburgh into the Highlands — Loch Ness and Glencoe in winter. Tell me honestly what the drive is like in early January, what the landscape looks like under snow, whether I need a car or can join a tour, and how long the day runs.",
   speyside:
-    "I want to spend a day on a Speyside whisky run from Edinburgh — the distilleries worth visiting, what the difference between a Speyside, Islay and Highland malt actually tastes like, and whether it's better as a guided tour or self-drive. Build it into my trip around the festival.",
+    "On our 7-night Hogmanay trip in December for two, I want to spend a day on a Speyside whisky run from Edinburgh — the distilleries worth visiting, what the difference between a Speyside, Islay and Highland malt actually tastes like, and whether it's better as a guided tour or self-drive. Build it into my trip around the festival.",
   // Ask-bar comparison
   askBar:
-    "Which Edinburgh Hogmanay plan should I do — all four festival nights, New Year in the Highlands, a calmer Hogmanay without the street party, or Edinburgh plus London? Compare the atmosphere, cost, and effort, then build the full itinerary for the one you recommend.",
+    "Which Edinburgh Hogmanay plan should we do in December, travelling as a couple — all four festival nights, New Year in the Highlands, a calmer Hogmanay without the street party, or Edinburgh plus London? Compare the atmosphere, cost, and effort, then build the full itinerary for the one you recommend.",
 };
+
+// What each prompt above states about the trip, sent as `intake` keys (month /
+// nights / pax) rather than left for the backend to read out of the sentence.
+// Keyed by prompt text via promptIntakeMap, so a card only carries its prompt
+// and the facts follow. Every month is December — Hogmanay is a fixed date, and
+// the form's routes anchor to it.
+//
+// `askBar` deliberately carries no `nights`: it asks Kaira to compare a four-
+// night festival run against longer plans, so pinning a length would answer it.
+const PROMPT_FACTS = promptIntakeMap(PROMPTS, {
+  scottishTraditions: { nights: 5, month: 12, day: 29, who: "Couple" },
+  edinburghLondon: { nights: 8, month: 12, day: 29, who: "Couple" },
+  ultimate: { nights: 7, month: 12, day: 28, who: "Couple" },
+  castlesWhisky: { nights: 7, month: 12, day: 28, who: "Couple" },
+  progLondon: { nights: 8, month: 12, day: 29, who: "Couple" },
+  progTorchlight: { nights: 4, month: 12, day: 29, who: "Couple" },
+  progStreetParty: { nights: 4, month: 12, day: 29, who: "Couple" },
+  progLoonyDook: { nights: 5, month: 12, day: 29, who: "Couple" },
+  arthursSeat: { nights: 7, month: 12, day: 28, who: "Couple" },
+  edinburghCastle: { nights: 7, month: 12, day: 28, who: "Couple" },
+  lochNessGlencoe: { nights: 7, month: 12, day: 28, who: "Couple" },
+  speyside: { nights: 7, month: 12, day: 28, who: "Couple" },
+  askBar: { month: 12, who: "Couple" },
+});
 
 const edinburghHogmanayConfig: CinematicThemeConfig = {
   // Hogmanay purple — carries every CTA, the saved state and the docked bar.
@@ -296,7 +324,8 @@ const edinburghHogmanayConfig: CinematicThemeConfig = {
           name: "New Year's the Highland way",
           line: "The Bells in the city, then north into the snow.",
           nights: "NYE + Highland drive",
-          href: `${CHAT}/a57add01-f613-4c99-a24b-aa2528ddc2ea`,
+          // Edinburgh 4N → Inverness 3N — the one that actually goes north.
+          href: `${CHAT}/796881b5-9dc0-4860-820c-52d26c0d6782`,
         },
         {
           image: PIC.theCalmer,
@@ -304,7 +333,7 @@ const edinburghHogmanayConfig: CinematicThemeConfig = {
           name: "The calmer Hogmanay",
           line: "All the magic, minus the 75,000-strong crowd.",
           nights: "No street party",
-          href: `${CHAT}/796881b5-9dc0-4860-820c-52d26c0d6782`,
+          href: `${CHAT}/a57add01-f613-4c99-a24b-aa2528ddc2ea`,
         },
         {
           image: PIC.edinburghLondon2,
@@ -312,7 +341,7 @@ const edinburghHogmanayConfig: CinematicThemeConfig = {
           name: "Edinburgh + London",
           line: "New Year up north, then south by train.",
           nights: "Two cities",
-          prompt: PROMPTS.edinburghLondon,
+          href: `${CHAT}/05157102-2653-42e9-8308-31e610be58d8`,
         },
       ],
     },
@@ -552,13 +581,13 @@ const edinburghHogmanayConfig: CinematicThemeConfig = {
 // A sensible default start date for the read-only activity drawer — ~60 days
 // out, in DD/MM/YYYY (the format the detail endpoint expects). The drawer only
 // shows details/indicative pricing here; the visitor picks real dates in chat.
-const defaultActivityDate = () => {
-  const d = new Date();
-  d.setDate(d.getDate() + 60);
-  const dd = String(d.getDate()).padStart(2, "0");
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  return `${dd}/${mm}/${d.getFullYear()}`;
-};
+// const defaultActivityDate = () => {
+  // const d = new Date();
+  // d.setDate(d.getDate() + 60);
+  // const dd = String(d.getDate()).padStart(2, "0");
+  // const mm = String(d.getMonth() + 1).padStart(2, "0");
+  // return `${dd}/${mm}/${d.getFullYear()}`;
+// };
 
 const EdinburghHogmanayThemePage = ({
   checkAuthState,
@@ -568,28 +597,33 @@ const EdinburghHogmanayThemePage = ({
   const seedChat = useSeedChat();
   const selection = useThemeSelectionState();
   const openThemeForm = useOpenThemeForm();
-  const handleSelectPrompt = (prompt: string) =>
-    seedChat(prompt, { items: selection.items, slug: THEME_SLUG });
+  const handleSelectPrompt = (prompt: string, intent?: ThemePromptIntent) =>
+    seedChat(prompt, {
+      items: selection.items,
+      slug: THEME_SLUG,
+      intent,
+      facts: PROMPT_FACTS[prompt],
+    });
   const handleBuild = (note?: string) =>
     openThemeForm(THEME_SLUG, selection.items, note);
   // Read-only activity details drawer (opened from the "Which ticket you
   // actually need" cards).
-  const [activityDrawer, setActivityDrawer] = useState<{
-    show: boolean;
-    activityId?: string;
-    source?: string;
-    date?: string;
-  }>({ show: false });
+  // const [activityDrawer, setActivityDrawer] = useState<{
+    // show: boolean;
+    // activityId?: string;
+    // source?: string;
+    // date?: string;
+  // }>({ show: false });
 
-  const openActivity = (activityId: string, source?: string) =>
-    setActivityDrawer({
-      show: true,
-      activityId,
-      source,
-      date: defaultActivityDate(),
-    });
-  const closeActivity = () =>
-    setActivityDrawer((prev) => ({ ...prev, show: false }));
+  // const openActivity = (activityId: string, source?: string) =>
+    // setActivityDrawer({
+      // show: true,
+      // activityId,
+      // source,
+      // date: defaultActivityDate(),
+    // });
+  // const closeActivity = () =>
+    // setActivityDrawer((prev) => ({ ...prev, show: false }));
 
   useEffect(() => {
     checkAuthState();
@@ -671,11 +705,14 @@ const EdinburghHogmanayThemePage = ({
       <CinematicThemeLanding
         config={edinburghHogmanayConfig}
         onSelectPrompt={handleSelectPrompt}
-        onSelectActivity={openActivity}
         selection={selection}
         onBuild={handleBuild}
       />
-      {/* Read-only activity details — no Add/Remove CTA on this marketing page */}
+      {/* Detail drawers are retired on this page — a click anywhere on a
+          card adds or removes it, so nothing opens a drawer. Uncomment to
+          restore (and pass `onSelectActivity` to <CinematicThemeLanding>).
+
+      Read-only activity details — no Add/Remove CTA on this marketing page
       <ActivityDetailsDrawer
         show={activityDrawer.show}
         activityId={activityDrawer.activityId}
@@ -685,6 +722,7 @@ const EdinburghHogmanayThemePage = ({
         handleCloseDrawer={closeActivity}
         setShowDrawer={closeActivity}
       />
+      */}
     </Layout>
   );
 };

@@ -12,9 +12,18 @@ import useDebounce from "../../../../../hooks/useDebounce";
 import { optimizedMediaUrl } from "../../../../../lib/mediaImage";
 import styles from "./SearchInput.module.scss";
 
-const SearchIcon = () => (
+// `width`/`height` are presentation attributes, so the `.navSearch svg` /
+// `.searchInputRow svg` / `.searchCtaRowBtn svg` rules in SearchInput.module.scss
+// still win and the rendered size is unchanged. They exist as a floor: an inline
+// <svg> with only a viewBox has an intrinsic ratio but no intrinsic size, so the
+// instant that stylesheet isn't applied — dev-mode FOUC, or a CSS chunk that
+// 404s against a stale deploy — the browser falls back to the ~300px default
+// object size and the icon renders enormous. Defaults match the CSS.
+const SearchIcon = ({ size = 18 }) => (
   <svg
     viewBox="0 0 24 24"
+    width={size}
+    height={size}
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
@@ -26,9 +35,11 @@ const SearchIcon = () => (
   </svg>
 );
 
-const ArrowRightIcon = () => (
+const ArrowRightIcon = ({ size = 12 }) => (
   <svg
     viewBox="0 0 24 24"
+    width={size}
+    height={size}
     fill="none"
     stroke="currentColor"
     strokeWidth="2.5"
@@ -418,7 +429,8 @@ const SearchInput = (props) => {
         onClick={openPanel}
         aria-label="Search destinations"
       >
-        <SearchIcon />
+        {/* 15px to match `.navSearch svg` */}
+        <SearchIcon size={15} />
         <span className={styles.navSearchPlaceholder}>
           Where do you want to go?
         </span>

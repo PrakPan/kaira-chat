@@ -14,12 +14,16 @@ export default function DetailSection({
   right,
   children,
   className = "",
+  divider = true,
 }) {
   if (!children) return null;
 
   return (
     <section className={className}>
-      <div className="h-px bg-[#efede6] mx-4 mb-4" />
+      {/* The rule separates this section from the one above it — so the first
+          section in a drawer, which has only the header band above it, opts
+          out rather than drawing a line against the ink. */}
+      {divider ? <div className="h-px bg-[#efede6] mx-4 mb-4" /> : null}
       {label || right ? (
         <div className="flex items-center justify-between gap-2 px-4 pb-2.5">
           {/* The label is one short word; whatever sits opposite it is the part

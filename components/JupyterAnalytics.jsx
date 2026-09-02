@@ -25,21 +25,20 @@ export default function JupyterAnalytics({
 
   return (
     <>
-      {/* Partytown configuration */}
-      <Script
-        id="partytown-config"
-        strategy="beforeInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-            partytown = {
-              forward: ['JupiterAnalytics', 'JUPITER_CONFIG'],
-              debug: ${process.env.NODE_ENV === 'production'}
-            };
-          `,
-        }}
-      />
+      {/* A <Script id="partytown-config" strategy="beforeInteractive"> used to
+          sit here writing a global `partytown = { forward: [...] }`. It was the
+          reason Partytown never worked anywhere on the site: _document.js wrote
+          a second, different config under that same script id, next/script
+          dedupes by id, and the surviving config had the wrong `forward` (and
+          no `lib`). The worker library was never fetched, so every script tagged
+          type="text/partytown" silently did nothing.
 
-      {/* Load Jupiter Analytics in web worker */}
+          Partytown is gone now, and this config with it. Note the tracker below
+          is NOT a Partytown script despite the filename — it is a normal
+          afterInteractive script that runs on the main thread, and it kept
+          working throughout. */}
+
+      {/* Load Jupiter Analytics (main thread, after hydration) */}
       <Script
         src="/jupyter-partytown.js"
         strategy="afterInteractive"

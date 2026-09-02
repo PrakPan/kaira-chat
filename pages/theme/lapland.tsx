@@ -16,8 +16,12 @@ import {
   useSeedChat,
   useOpenThemeForm,
 } from "../../components/theme/cinematic/useSeedChat";
+import {
+  promptIntakeMap,
+  type ThemePromptIntent,
+} from "../../components/theme/cinematic/themeIntake";
 import { useThemeSelectionState } from "../../components/theme/cinematic/ThemeSelection";
-import ActivityDetailsDrawer from "../../components/drawers/activityDetails/ActivityDetailsDrawer";
+// import ActivityDetailsDrawer from "../../components/drawers/activityDetails/ActivityDetailsDrawer";
 import type { CinematicThemeConfig } from "../../components/theme/cinematic/types";
 import { THEME_PALETTES } from "../../components/theme/cinematic/palettes";
 
@@ -27,58 +31,88 @@ const THEME_SLUG = "lapland";
 const PROMPTS = {
   // Hero
   hero:
-    "Plan a magical Lapland winter trip with the northern lights, Santa's village, husky safaris and a glass igloo stay. Recommend the best bases and the ideal number of nights, then build a complete cinematic itinerary balancing snow adventures with slow Nordic evenings.",
+    "Plan a magical Lapland winter trip for two over 6 nights in December, with the northern lights, Santa's village, husky safaris and a glass igloo stay. Recommend the best bases, then build a complete cinematic itinerary balancing snow adventures with slow Nordic evenings.",
   chipLapland:
-    "We are 2 adults, and our travel dates are flexible. We want to plan a complete Lapland holiday covering the region's best experiences. Include iconic Arctic activities like husky and reindeer safaris, snowmobile rides, scenic winter landscapes, Finnish saunas, cozy stays, and local culture. Build a balanced itinerary with sightseeing, unique experiences, and enough free time to enjoy the Arctic at a relaxed pace.",
+    "We are 2 adults going for 6 nights in January, and our travel dates are flexible. We want to plan a complete Lapland holiday covering the region's best experiences. Include iconic Arctic activities like husky and reindeer safaris, snowmobile rides, scenic winter landscapes, Finnish saunas, cozy stays, and local culture. Build a balanced itinerary with sightseeing, unique experiences, and enough free time to enjoy the Arctic at a relaxed pace.",
   chipAurora:
-    "We are 2 adults (a couple), and our travel dates are flexible. We want our trip to focus on experiencing the Northern Lights. Prioritize destinations with high Aurora visibility, include guided Aurora hunts, glass igloos or remote cabins where possible, and schedule activities around the best viewing opportunities. Maximize our chances of seeing the Aurora while still including a few classic Lapland experiences.",
+    "We are 2 adults (a couple) going for 5 nights in February, and our travel dates are flexible. We want our trip to focus on experiencing the Northern Lights. Prioritize destinations with high Aurora visibility, include guided Aurora hunts, glass igloos or remote cabins where possible, and schedule activities around the best viewing opportunities. Maximize our chances of seeing the Aurora while still including a few classic Lapland experiences.",
   chipChristmas:
-    "We are 2 adults, and our travel dates are flexible. We want to experience Lapland during Christmas. Prioritize Santa Claus Village, festive markets, reindeer rides, husky safaris, snow-covered forests, Christmas lights, cozy cafés, and magical winter experiences. We want the itinerary to feel festive, immersive, and perfect for celebrating Christmas in the Arctic.",
+    "We are 2 adults going for 6 nights in December, and our travel dates are flexible. We want to experience Lapland during Christmas. Prioritize Santa Claus Village, festive markets, reindeer rides, husky safaris, snow-covered forests, Christmas lights, cozy cafés, and magical winter experiences. We want the itinerary to feel festive, immersive, and perfect for celebrating Christmas in the Arctic.",
   // Pillars — Choose Your Arctic Story
   pillarChristmas:
-    "We are 2 adults, and our travel dates are flexible. We want a Christmas-focused Lapland itinerary with a stay in Rovaniemi. Include Santa Claus Village, reindeer and husky experiences, snowy forests, Christmas markets (if available), cozy cafés, and festive winter activities. Prioritize a magical Christmas atmosphere.",
+    "We are 2 adults going for 6 nights in December, and our travel dates are flexible. We want a Christmas-focused Lapland itinerary with a stay in Rovaniemi. Include Santa Claus Village, reindeer and husky experiences, snowy forests, Christmas markets (if available), cozy cafés, and festive winter activities. Prioritize a magical Christmas atmosphere.",
   pillarAurora:
-    "We are 2 adults, and our travel dates are flexible. We want a Lapland itinerary focused on maximizing our chances of seeing the Northern Lights. Include stays in Aurora-friendly locations, glass igloos or unique Arctic accommodations where possible, guided Aurora hunts, scenic winter landscapes, Finnish saunas, and Arctic experiences with minimal city time.",
+    "We are 2 adults going for 5 nights in February, and our travel dates are flexible. We want a Lapland itinerary focused on maximizing our chances of seeing the Northern Lights. Include stays in Aurora-friendly locations, glass igloos or unique Arctic accommodations where possible, guided Aurora hunts, scenic winter landscapes, Finnish saunas, and Arctic experiences with minimal city time.",
   pillarSlowdown:
-    "We are 2 adults, and our travel dates are flexible. We want a slow-paced Lapland itinerary focused on relaxation and cozy Nordic experiences. Include scenic stays, traditional Finnish saunas, snow-covered forests, local cafés, peaceful walks, optional light winter activities, and plenty of free time.",
+    "We are 2 adults going for 5 nights in January, and our travel dates are flexible. We want a slow-paced Lapland itinerary focused on relaxation and cozy Nordic experiences. Include scenic stays, traditional Finnish saunas, snow-covered forests, local cafés, peaceful walks, optional light winter activities, and plenty of free time.",
   pillarFairytale:
-    "We are 2 adults, and our travel dates are flexible. We want a cinematic winter wonderland itinerary in Lapland. Include snowy forests, glass igloos or cozy cabins, reindeer and husky safaris, frozen lakes, beautiful viewpoints, magical cafés, and iconic Arctic experiences. We want the trip to feel like a real-life fairytale.",
+    "We are 2 adults going for 6 nights in December, and our travel dates are flexible. We want a cinematic winter wonderland itinerary in Lapland. Include snowy forests, glass igloos or cozy cabins, reindeer and husky safaris, frozen lakes, beautiful viewpoints, magical cafés, and iconic Arctic experiences. We want the trip to feel like a real-life fairytale.",
   // Bases — Where you'd sleep
   baseRovaniemi:
-    "We are 2 adults, and our travel dates are flexible. We want our trip to be centered around Rovaniemi, with most of our stay here. Prioritize easy access to Santa Claus Village, reindeer farms, husky safaris, snowmobile experiences, Arctic museums, cozy cafés, and festive winter attractions. We'd like a balance of winter activities and relaxed evenings, with accommodation close to the main experiences.",
+    "We are 2 adults going for 6 nights in December, and our travel dates are flexible. We want our trip to be centered around Rovaniemi, with most of our stay here. Prioritize easy access to Santa Claus Village, reindeer farms, husky safaris, snowmobile experiences, Arctic museums, cozy cafés, and festive winter attractions. We'd like a balance of winter activities and relaxed evenings, with accommodation close to the main experiences.",
   baseHelsinki:
-    "We are 2 adults(a couple), and our travel dates are flexible. We want to combine the best of Helsinki and Lapland. Start our trip in Helsinki to explore Finnish architecture, cafés, markets, saunas, and local culture before heading north to experience the Arctic. Include enough time in both destinations, with a comfortable pace and seamless travel between the city and Lapland.",
+    "We are 2 adults (a couple) going for 7 nights in January, and our travel dates are flexible. We want to combine the best of Helsinki and Lapland. Start our trip in Helsinki to explore Finnish architecture, cafés, markets, saunas, and local culture before heading north to experience the Arctic. Include enough time in both destinations, with a comfortable pace and seamless travel between the city and Lapland.",
   baseSaariselka:
-    "Plan a Lapland trip based in Saariselkä — deeper north, darker skies and glass roofs over the snow for the best aurora odds. Build an itinerary focused on northern lights and Arctic wilderness.",
+    "Plan a 5-night Lapland trip for two in February based in Saariselkä — deeper north, darker skies and glass roofs over the snow for the best aurora odds. Build an itinerary focused on northern lights and Arctic wilderness.",
   baseLevi:
-    "Plan a Lapland trip based in Levi — ski slopes by day and husky night trails. Great for teens and active families. Build a balanced snow-adventure itinerary.",
+    "Plan a 6-night Lapland trip in March for 2 adults and 2 children, based in Levi — ski slopes by day and husky night trails. Great for teens and active families. Build a balanced snow-adventure itinerary.",
   baseKakslauttanen:
-    "Plan a splurge Lapland stay at Kakslauttanen — glass igloos, Christmas lights and deep snow. Build a romantic, high-end itinerary around the igloo experience.",
+    "Plan a 5-night splurge Lapland stay for two in December at Kakslauttanen — glass igloos, Christmas lights and deep snow. Build a romantic, high-end itinerary around the igloo experience.",
   // Trips — "Which Lapland is yours?" cards now open a saved sample itinerary
   // at /chat/{id} (see the trips section below), so they carry no prompt.
   // Santa checklist
   santaMeet:
-    "Arrange a private meeting with Santa in Rovaniemi with no queue and a photo included, and build the rest of a family day around it.",
+    "On a 6-night December Lapland trip for 2 adults and 2 children, arrange a private meeting with Santa in Rovaniemi with no queue and a photo included, and build the rest of a family day around it.",
   santaArctic:
-    "Plan a day where we cross the Arctic Circle and get the certificate, plus the best nearby winter activities for kids.",
+    "On a 6-night December Lapland trip for 2 adults and 2 children, plan a day where we cross the Arctic Circle and get the certificate, plus the best nearby winter activities for kids.",
   santaLetter:
-    "Include a visit to Santa's main post office to post a letter that arrives home next December, and suggest what else to do in the village.",
+    "On a 6-night December Lapland trip for 2 adults and 2 children, include a visit to Santa's main post office to post a letter that arrives home next December, and suggest what else to do in the village.",
   santaReindeer:
-    "Add a reindeer sleigh ride through the pines to a Lapland itinerary and recommend the quietest, most scenic operator.",
+    "Add a reindeer sleigh ride through the pines to a 6-night December Lapland itinerary for 2 adults and 2 children, and recommend the quietest, most scenic operator.",
   // Experiences — "Worth the cold" rows now open the read-only activity
   // details drawer by activity id (see the section below), so they carry no
   // prompt.
   // Stories
   storyFamily:
-    "Plan a Christmas-week Lapland family trip like the Mehras did with kids aged 6 and 9 — Santa, huskies and snow — over 6 nights.",
+    "Plan a Christmas-week Lapland family trip in December like the Mehras did, for 2 adults and 2 children aged 6 and 9 — Santa, huskies and snow — over 6 nights.",
   storyCouple:
     "Plan a mid-January Lapland couple's trip with a glass igloo stay like Aditi and Rohan's, over 5 nights.",
   storySolo:
     "Plan a 4-night solo Lapland trip based in Rovaniemi in February focused on aurora, huskies and quiet snowy days.",
   // Ask bar
   ask:
-    "Which Lapland base should I actually pick — Rovaniemi, Saariselkä, Levi or Kakslauttanen? Compare them for aurora odds, family-friendliness and cost, then build the ideal itinerary for the one you recommend.",
+    "Which Lapland base should we actually pick for 6 nights in January, travelling as a couple — Rovaniemi, Saariselkä, Levi or Kakslauttanen? Compare them for aurora odds, family-friendliness and cost, then build the ideal itinerary for the one you recommend.",
 };
+
+// What each prompt above states about the trip, sent as `intake` keys (month /
+// nights / pax) rather than left for the backend to read out of the sentence.
+// Keyed by prompt text via promptIntakeMap, so a card only carries its prompt
+// and the facts follow. Months stay inside the Lapland winter (Nov–Mar), each
+// chosen for what the prompt is after — December for Santa and Christmas,
+// February for the darkest aurora skies, March for the ski-and-husky week.
+const PROMPT_FACTS = promptIntakeMap(PROMPTS, {
+  hero: { nights: 6, month: 12, day: 20, who: "Couple" },
+  chipLapland: { nights: 6, month: 1, who: "Couple" },
+  chipAurora: { nights: 5, month: 2, who: "Couple" },
+  chipChristmas: { nights: 6, month: 12, day: 21, who: "Couple" },
+  pillarChristmas: { nights: 6, month: 12, day: 21, who: "Couple" },
+  pillarAurora: { nights: 5, month: 2, who: "Couple" },
+  pillarSlowdown: { nights: 5, month: 1, who: "Couple" },
+  pillarFairytale: { nights: 6, month: 12, day: 20, who: "Couple" },
+  baseRovaniemi: { nights: 6, month: 12, day: 20, who: "Couple" },
+  baseHelsinki: { nights: 7, month: 1, who: "Couple" },
+  baseSaariselka: { nights: 5, month: 2, who: "Couple" },
+  baseLevi: { nights: 6, month: 3, who: "Family", adults: 2, children: 2 },
+  baseKakslauttanen: { nights: 5, month: 12, day: 21, who: "Couple" },
+  santaMeet: { nights: 6, month: 12, day: 20, who: "Family", adults: 2, children: 2 },
+  santaArctic: { nights: 6, month: 12, day: 20, who: "Family", adults: 2, children: 2 },
+  santaLetter: { nights: 6, month: 12, day: 20, who: "Family", adults: 2, children: 2 },
+  santaReindeer: { nights: 6, month: 12, day: 20, who: "Family", adults: 2, children: 2 },
+  storyFamily: { nights: 6, month: 12, day: 21, who: "Family", adults: 2, children: 2 },
+  storyCouple: { nights: 5, month: 1, day: 12, who: "Couple" },
+  storySolo: { nights: 4, month: 2, who: "Just me" },
+  ask: { nights: 6, month: 1, who: "Couple" },
+});
 
 const filmyThemePrompt =
   "Plan a film-inspired getaway — tell me a movie and I'll build a trip around the real places behind it, with the touristy bits trimmed out.";
@@ -563,39 +597,44 @@ const laplandConfig: CinematicThemeConfig = {
 // A sensible default start date for the read-only activity drawer — ~60 days
 // out, in DD/MM/YYYY (the format the detail endpoint expects). The drawer only
 // shows details/indicative pricing here; the visitor picks real dates in chat.
-const defaultActivityDate = () => {
-  const d = new Date();
-  d.setDate(d.getDate() + 60);
-  const dd = String(d.getDate()).padStart(2, "0");
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  return `${dd}/${mm}/${d.getFullYear()}`;
-};
+// const defaultActivityDate = () => {
+  // const d = new Date();
+  // d.setDate(d.getDate() + 60);
+  // const dd = String(d.getDate()).padStart(2, "0");
+  // const mm = String(d.getMonth() + 1).padStart(2, "0");
+  // return `${dd}/${mm}/${d.getFullYear()}`;
+// };
 
 const LaplandThemePage = ({ checkAuthState }: { checkAuthState: () => void }) => {
   const seedChat = useSeedChat();
   const selection = useThemeSelectionState();
   const openThemeForm = useOpenThemeForm();
-  const handleSelectPrompt = (prompt: string) =>
-    seedChat(prompt, { items: selection.items, slug: THEME_SLUG });
+  const handleSelectPrompt = (prompt: string, intent?: ThemePromptIntent) =>
+    seedChat(prompt, {
+      items: selection.items,
+      slug: THEME_SLUG,
+      intent,
+      facts: PROMPT_FACTS[prompt],
+    });
   const handleBuild = (note?: string) =>
     openThemeForm(THEME_SLUG, selection.items, note);
   // Read-only activity details drawer (opened from the "Worth the cold" list).
-  const [activityDrawer, setActivityDrawer] = useState<{
-    show: boolean;
-    activityId?: string;
-    source?: string;
-    date?: string;
-  }>({ show: false });
+  // const [activityDrawer, setActivityDrawer] = useState<{
+    // show: boolean;
+    // activityId?: string;
+    // source?: string;
+    // date?: string;
+  // }>({ show: false });
 
-  const openActivity = (activityId: string, source?: string) =>
-    setActivityDrawer({
-      show: true,
-      activityId,
-      source,
-      date: defaultActivityDate(),
-    });
-  const closeActivity = () =>
-    setActivityDrawer((prev) => ({ ...prev, show: false }));
+  // const openActivity = (activityId: string, source?: string) =>
+    // setActivityDrawer({
+      // show: true,
+      // activityId,
+      // source,
+      // date: defaultActivityDate(),
+    // });
+  // const closeActivity = () =>
+    // setActivityDrawer((prev) => ({ ...prev, show: false }));
 
   useEffect(() => {
     checkAuthState();
@@ -675,11 +714,14 @@ const LaplandThemePage = ({ checkAuthState }: { checkAuthState: () => void }) =>
       <CinematicThemeLanding
         config={laplandConfig}
         onSelectPrompt={handleSelectPrompt}
-        onSelectActivity={openActivity}
         selection={selection}
         onBuild={handleBuild}
       />
-      {/* Read-only activity details — no Add/Remove CTA on this marketing page */}
+      {/* Detail drawers are retired on this page — a click anywhere on a
+          card adds or removes it, so nothing opens a drawer. Uncomment to
+          restore (and pass `onSelectActivity` to <CinematicThemeLanding>).
+
+      Read-only activity details — no Add/Remove CTA on this marketing page
       <ActivityDetailsDrawer
         show={activityDrawer.show}
         activityId={activityDrawer.activityId}
@@ -689,6 +731,7 @@ const LaplandThemePage = ({ checkAuthState }: { checkAuthState: () => void }) =>
         handleCloseDrawer={closeActivity}
         setShowDrawer={closeActivity}
       />
+      */}
     </Layout>
   );
 };

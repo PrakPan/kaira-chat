@@ -2,7 +2,6 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import PackageCard from "./PackageCard";
 import MobileCardCarousel from "./MobileCardCarousel";
-import useMediaQuery from "../../../hooks/useMedia";
 import styles from "./LuxuryEuropeDestinations.module.scss";
 
 /*
@@ -265,7 +264,6 @@ const LuxuryEuropeDestinations = ({
   total = 84,
 }) => {
   const router = useRouter();
-  const isMobile = useMediaQuery("(max-width: 640px)");
   const [active, setActive] = useState("all");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
@@ -277,15 +275,12 @@ const LuxuryEuropeDestinations = ({
   }, [packages, active]);
 
   // Only the "All" tab paginates (4 at a time); category tabs show everything.
-  // On mobile the cards become a swipeable rail, so show the full set there
-  // (no "see more" pagination).
-  const visible = isMobile
-    ? filtered
-    : active === "all"
-      ? filtered.slice(0, visibleCount)
-      : filtered;
-  const canSeeMore =
-    !isMobile && active === "all" && visibleCount < filtered.length;
+  // The mobile rail is swipeable, so it always carries the full set and has no
+  // "see more" — pagination and its button are desktop concerns, hidden below
+  // 640px by `ttw-wide-only` rather than by a JS branch.
+  const desktopVisible =
+    active === "all" ? filtered.slice(0, visibleCount) : filtered;
+  const canSeeMore = active === "all" && visibleCount < filtered.length;
 
   const handleFilter = (key) => {
     setActive(key);
@@ -350,16 +345,17 @@ const LuxuryEuropeDestinations = ({
           ))}
         </div>
 
-        {isMobile ? (
-          <MobileCardCarousel
-            items={visible.map((p) => ({ key: p.id, node: renderPackage(p) }))}
-          />
-        ) : (
-          <div className={styles.grid}>{visible.map(renderPackage)}</div>
-        )}
+        {/* Both layouts ship; CSS picks one at 640px. See globals.css. */}
+        <MobileCardCarousel
+          className="ttw-narrow-only"
+          items={filtered.map((p) => ({ key: p.id, node: renderPackage(p) }))}
+        />
+        <div className={`${styles.grid} ttw-wide-only`}>
+          {desktopVisible.map(renderPackage)}
+        </div>
 
         {canSeeMore && (
-          <div className={styles.seeMoreWrap}>
+          <div className={`${styles.seeMoreWrap} ttw-wide-only`}>
             <button
               type="button"
               className={styles.seeMore}

@@ -90,6 +90,38 @@ export const formatMinutes = (minutes) => {
 };
 
 /**
+ * A leg's duration in minutes, whichever way the supplier expressed it.
+ *
+ * The older shapes send a bare minute count; the newer ones send
+ * `{value, unit}` — and the unit is genuinely "hour" on the quotes ops fill in
+ * by hand, so reading `value` as minutes would turn an eight-hour package into
+ * eight minutes.
+ */
+export const durationMinutes = (duration) => {
+  const value = typeof duration === "number" ? duration : duration?.value;
+  if (typeof value !== "number" || Number.isNaN(value)) return null;
+  const unit = String(
+    typeof duration === "number" ? "minute" : duration?.unit || "minute",
+  ).toLowerCase();
+  if (unit.startsWith("hour") || unit.startsWith("hr")) return value * 60;
+  if (unit.startsWith("day")) return value * 1440;
+  return value;
+};
+
+/**
+ * The bare figure out of a per-day quote's label.
+ *
+ * A sightseeing package's allowance is entered as "80 kms per day" / "8 hours
+ * per day", and the drawers set those under a "Per day" chip and after a day
+ * count — where the supplier's own suffix reads back as "8 hours per day
+ * daily". Strip it and let the surrounding copy say it once.
+ */
+export const perDayFigure = (text) =>
+  typeof text === "string"
+    ? text.replace(/\s*(per\s*day|\/\s*day|daily)\s*$/i, "").trim() || null
+    : text || null;
+
+/**
  * Calendar days crossed between departure and arrival, so an overnight leg can
  * badge its arrival "+1 day" instead of quietly showing a different date.
  * Compared at midnight — a 23:30 → 00:30 hop crosses a day even though it is
@@ -141,49 +173,156 @@ export const arrivalOffsetLabel = (days) => {
 };
 
 /**
+ * One end of a leg, split into what to lead with and what to say under it.
+ *
+ * An endpoint names the place and the city separately — `name` is the station,
+ * port or pickup address, `city_name` the city it stands in — and on a
+ * city-level endpoint the two are the same string. Leading with the city, which
+ * this used to do, is only right for that second case: it announced Shinagawa
+ * as "Tokyo", and turned an intra-city rail hop into "Hong Kong → Hong Kong".
+ */
+const placePair = (point) => {
+  if (!point || typeof point !== "object") return null;
+  const title = point.name || point.address || point.city_name || null;
+  if (!title) return null;
+  const city = point.city_name || null;
+  return { title, detail: city && city !== title ? city : null };
+};
+
+/**
  * Where a leg starts and ends.
  *
- * `transfer_details.source` is NOT a location — on a self-drive booking it is
- * the string "Self", naming who supplied the quote — so it is only read when it
- * is actually an object. The route itself lives on `trips`, the same place the
- * taxi bookings keep it.
+ * `transfer_details.source` is NOT a location on every shape — on a self-drive
+ * booking it is the string "Self", naming who supplied the quote — so it is
+ * only read when it is actually an object. The route itself lives on `trips`,
+ * the same place the taxi bookings keep it, and the booking's own
+ * `source_address` / `destination_address` are the last resort.
  */
-const placeName = (point) =>
-  point?.city_name || point?.name || point?.address || null;
-
 export const legEndpoints = (booking) => {
   const details = booking?.transfer_details;
   const trips = details?.trips;
   const firstTrip = Array.isArray(trips) ? trips[0] : null;
   const lastTrip = Array.isArray(trips) ? trips[trips.length - 1] : null;
 
-  const sourceObject =
-    details?.source && typeof details.source === "object" ? details.source : null;
-  const destinationObject =
-    details?.destination && typeof details.destination === "object"
-      ? details.destination
-      : null;
+  const origin =
+    placePair(details?.source) ||
+    placePair(firstTrip?.origin) ||
+    placePair(booking?.source_address);
 
-  const from =
-    placeName(sourceObject) ||
-    placeName(firstTrip?.origin) ||
-    placeName(booking?.source_address) ||
-    null;
-
-  const to =
-    placeName(destinationObject) ||
-    placeName(lastTrip?.destination) ||
-    placeName(booking?.destination_address) ||
-    null;
-
-  // The street address, when it says something the city name doesn't.
-  const fromDetail = firstTrip?.origin?.address;
-  const toDetail = lastTrip?.destination?.address;
+  const destination =
+    placePair(details?.destination) ||
+    placePair(lastTrip?.destination) ||
+    placePair(booking?.destination_address);
 
   return {
-    from,
-    to,
-    fromDetail: fromDetail && fromDetail !== from ? fromDetail : null,
-    toDetail: toDetail && toDetail !== to ? toDetail : null,
+    from: origin?.title || null,
+    to: destination?.title || null,
+    // The city, when it says something the place name doesn't.
+    fromDetail: origin?.detail || null,
+    toDetail: destination?.detail || null,
+  };
+};
+
+/**
+ * The rail for a booking sold by the day rather than by the leg — a sightseeing
+ * package. One node per day, because only the start date and a day count are
+ * stored and the days in between are implied.
+ *
+ * Shared, so that a city's sightseeing slot describes what it holds the same
+ * way whether that is a taxi at the traveller's disposal or a self-booked train
+ * pass.
+ */
+export const packageDayNodes = ({
+  start,
+  days,
+  meta = null,
+  pickup = null,
+  title = "At your disposal",
+}) =>
+  Array.from({ length: Math.max(1, days || 1) }, (_, index) => {
+    const stamp = railStamp(start, index);
+    return {
+      kind: "day",
+      key: `day-${index}`,
+      time: `Day ${index + 1}`,
+      date: stamp.date,
+      title,
+      subtitle: meta || null,
+      // The pickup point is stated once, on the day it happens.
+      tag: index === 0 && pickup ? `Pickup: ${pickup}` : null,
+    };
+  });
+
+/**
+ * A quoted distance in kilometres, whichever way the supplier expressed it.
+ *
+ * Almost every quote sends `{text, unit: "km", value}`, but a handful of older
+ * ones send a bare number — and `text` is prose ("361 kms", "80 kms per day"),
+ * so it is the wrong thing to add up. Only the numeric side is read here; the
+ * unit is honoured so a metre figure does not get summed as kilometres.
+ */
+export const distanceKm = (distance) => {
+  const value = typeof distance === "number" ? distance : distance?.value;
+  if (typeof value !== "number" || Number.isNaN(value)) return null;
+  const unit = String(
+    typeof distance === "number" ? "km" : distance?.unit || "km",
+  ).toLowerCase();
+  if (unit === "m" || unit.startsWith("met")) return value / 1000;
+  return value;
+};
+
+/**
+ * How many calendar days a booking covers, counting both ends — a leg that
+ * starts and ends on the same date is one day, not zero.
+ */
+export const spanDays = (from, to) =>
+  Math.max(1, dayOffset(from, to || from) + 1);
+
+/**
+ * How far one leg of a package actually runs, in kilometres.
+ *
+ * A point-to-point leg quotes the distance it covers. A sightseeing leg quotes
+ * an ALLOWANCE PER DAY ("80 kms per day") for however many days the car is at
+ * the traveller's disposal — so its figure only becomes a distance once it is
+ * multiplied by that span. Summing the raw `distance.value` off every leg,
+ * which is the obvious thing to do, counts a three-day package as a single
+ * 80 km hop.
+ */
+export const legDistanceKm = (leg) => {
+  const km = distanceKm(leg?.transfer_details?.distance);
+  if (km === null) return null;
+  return leg?.transfer_type === "sightseeing"
+    ? km * spanDays(leg?.check_in, leg?.check_out)
+    : km;
+};
+
+/**
+ * What a multi-leg package adds up to: the road distance across all of its
+ * legs, and the calendar days it spans.
+ *
+ * `km` is null rather than 0 when no leg quoted a distance — a package whose
+ * supplier itemised nothing should say nothing, not claim "0 kms". `partial`
+ * flags the mixed case, where some legs carried a figure and others did not,
+ * so the caller can label the total as at-least rather than exact.
+ */
+export const packageTotals = (legs) => {
+  const list = (legs || []).filter(Boolean);
+  const distances = list.map(legDistanceKm);
+  const quoted = distances.filter((km) => km !== null);
+
+  const starts = list.map((leg) => leg?.check_in).filter(Boolean);
+  const ends = list.map((leg) => leg?.check_out || leg?.check_in).filter(Boolean);
+
+  return {
+    km: quoted.length ? Math.round(quoted.reduce((sum, km) => sum + km, 0)) : null,
+    partial: quoted.length > 0 && quoted.length < list.length,
+    days: starts.length
+      ? spanDays(
+          starts.reduce((a, b) => (new Date(a) <= new Date(b) ? a : b)),
+          ends.length
+            ? ends.reduce((a, b) => (new Date(a) >= new Date(b) ? a : b))
+            : null,
+        )
+      : null,
   };
 };

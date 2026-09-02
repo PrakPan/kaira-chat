@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import {
   FiMapPin,
   FiCalendar,
@@ -33,6 +33,52 @@ import { currencySymbols } from "../../data/currencySymbols";
 import Skeleton from "../../components/modals/taxis/Skeleton";
 import OfflineQuoteEmptyState from "../../components/ui/OfflineQuoteEmptyState";
 import { useRouter } from "next/router";
+
+// Long enough that the passenger stepper, a typed date and the time list can all
+// settle before a search goes out; short enough that the results feel like they
+// answer the change that was just made.
+const AUTO_SEARCH_DEBOUNCE_MS = 500;
+
+/**
+ * What a search actually is: the RESOLVED locations plus date, time and party
+ * size. Ids and coordinates, never the typed text — a half-typed address has
+ * nothing to search on, which is also why this is null until every part is
+ * present. Two form states with the same key would send the same request, so
+ * the key is what decides whether an edit is worth re-searching.
+ */
+const buildSearchKey = (formData) => {
+  const sourceId =
+    formData.sourceHubId ||
+    formData.sourceGmapsId ||
+    (formData.sourceLatitude && formData.sourceLongitude
+      ? `${formData.sourceLatitude},${formData.sourceLongitude}`
+      : "");
+  const destinationId =
+    formData.destinationHubId ||
+    formData.destinationGmapsId ||
+    (formData.destinationLatitude && formData.destinationLongitude
+      ? `${formData.destinationLatitude},${formData.destinationLongitude}`
+      : "");
+
+  if (
+    !formData.sourceAddress ||
+    !formData.destinationAddress ||
+    !sourceId ||
+    !destinationId ||
+    !formData.transferDate ||
+    !formData.transferTime ||
+    !formData.passengers
+  )
+    return null;
+
+  return [
+    sourceId,
+    destinationId,
+    formData.transferDate,
+    formData.transferTime,
+    formData.passengers,
+  ].join("|");
+};
 
 const PickupDropDrawer = ({
   isOpen,
@@ -100,7 +146,12 @@ const PickupDropDrawer = ({
   const [sourceInput, setSourceInput] = useState("");
   const [destinationInput, setDestinationInput] = useState("");
   const [initialPropsAssigned, setInitialPropsAssigned] = useState(false);
-  const hasAutoSearchedRef = useRef(false);
+  // The last set of inputs we searched on, so an edit that resolves to the same
+  // request — re-picking the suggestion already selected, say — does not re-fetch.
+  const lastSearchKeyRef = useRef(null);
+  // Searches now go out on their own, so two can easily be in flight at once;
+  // only the newest one's results may land.
+  const searchSeqRef = useRef(0);
   const router = useRouter();
 
   const sourceInputRef = useRef(null);
@@ -134,7 +185,7 @@ const PickupDropDrawer = ({
   useEffect(() => {
     if (isOpen) {
       const trip = trips?.[0];
-      hasAutoSearchedRef.current = false;
+      lastSearchKeyRef.current = null;
       // Reset state first
       setFormData(initialFormState); 
       setSourceInput(""); 
@@ -833,8 +884,16 @@ const getStationName = () => {
       return;
     }
 
+    // Claimed before the request goes out, so the auto-search effect does not
+    // fire the same search again while this one is in flight.
+    lastSearchKeyRef.current = buildSearchKey(formData);
+    const seq = ++searchSeqRef.current;
+
     setIsLoadingQuotes(true);
-    setTransferQuotes([]);
+    // The previous results stay on screen until these land. A re-search is now
+    // one edit away, and blanking the list for every tweak means the full-screen
+    // "Finding best transfers" panel over a drawer the customer is still typing
+    // in — the button's spinner and the dimmed list say it well enough.
     setSearchError("");
     setHasMoreQuotes(false);
     setTraceId(null);
@@ -876,6 +935,10 @@ const getStationName = () => {
     axiosTaxiSearch
       .post(`?currency=${currency?.currency || 'INR'}`, requestBody)
       .then((res) => {
+        // A later edit has already gone out — its answer is the one that matches
+        // what is on screen, so this one is dropped whole (trace_id included,
+        // which Load More would otherwise poll against the wrong search).
+        if (seq !== searchSeqRef.current) return;
         if (res.data.data && res.data.data?.quotes) {
           setSource(res?.data.data?.source);
           setTraceId(res.data?.trace_id);
@@ -886,17 +949,23 @@ const getStationName = () => {
         } else {
           setIsLoadingQuotes(false);
           setHasMoreQuotes(false);
+          setTransferQuotes([]);
           setSearchError("No transfer options found for the selected route");
         }
         setIsLoadingQuotes(false);
       })
       .catch((error) => {
+        if (seq !== searchSeqRef.current) return;
         setIsLoadingQuotes(false);
-        console.error(
-          "Transfer search error:",
-          error.response.data?.errors?.[0]?.message[0]
+        // Optional all the way down: a network failure has no `response` at all,
+        // and reading through it threw inside the catch — which left the drawer
+        // on a spinner with nothing said. Auto-search makes that far likelier.
+        setTransferQuotes([]);
+        const message = error?.response?.data?.errors?.[0]?.message?.[0];
+        console.error("Transfer search error:", message || error);
+        setSearchError(
+          message || "We could not fetch transfers just now. Please try again."
         );
-        setSearchError(error.response.data?.errors?.[0]?.message[0]);
       });
   };
 
@@ -1169,78 +1238,25 @@ const getTitle = () => {
   } ${action} in ${location}`;
 };
 
-  // Auto-search when all fields are filled on initial mount
-  // Auto-search when all fields are filled on initial mount
-  // useEffect(() => {
-  //   if (
-  //     isOpen &&
-  //     isAutoFilled &&
-  //     initialPropsAssigned &&
-  //     !hasAutoSearchedRef.current
-  //   ) {
-  //     // Check if all required fields are filled
-  //     const sourceId =
-  //       formData.sourceHubId ||
-  //       formData.sourceGmapsId ||
-  //       (formData.sourceLatitude && formData.sourceLongitude);
-  //     const destinationId =
-  //       formData.destinationHubId ||
-  //       formData.destinationGmapsId ||
-  //       (formData.destinationLatitude && formData.destinationLongitude);
+  const searchKey = useMemo(() => buildSearchKey(formData), [formData]);
 
-  //     const allFieldsFilled =
-  //       formData.sourceAddress &&
-  //       formData.destinationAddress &&
-  //       formData.transferDate &&
-  //       formData.transferTime &&
-  //       formData.passengers &&
-  //       sourceId &&
-  //       destinationId;
-
-  //     if (allFieldsFilled) {
-  //       console.log("All fields filled, auto-searching transfers...");
-  //       hasAutoSearchedRef.current = true;
-  //       searchTransfers();
-  //     }
-  //   }
-  // }, [isOpen, isAutoFilled, initialPropsAssigned]);
-
+  // Every change to the form is a new search. Picking a different airport,
+  // nudging the time or adding a passenger all change what is available and at
+  // what price, so a list left over from the previous inputs is not stale, it is
+  // wrong — and making the customer press Search to find that out was the only
+  // thing standing between the two.
+  //
+  // Debounced, because the passenger stepper and the date field both emit while
+  // the customer is still deciding; skipped when the inputs resolve to a search
+  // already run, and inert while an address is half-typed (no id yet, so no key).
   useEffect(() => {
-  // Only run auto-search after a short delay to ensure all form data is set
-  if (
-    isOpen &&
-    isAutoFilled &&
-    initialPropsAssigned &&
-    !hasAutoSearchedRef.current
-  ) {
-    const timeoutId = setTimeout(() => {
-      const sourceId =
-        formData.sourceHubId ||
-        formData.sourceGmapsId ||
-        (formData.sourceLatitude && formData.sourceLongitude);
-      const destinationId =
-        formData.destinationHubId ||
-        formData.destinationGmapsId ||
-        (formData.destinationLatitude && formData.destinationLongitude);
+    if (!isOpen || !isAutoFilled || !initialPropsAssigned) return;
+    if (!searchKey || searchKey === lastSearchKeyRef.current) return;
 
-      const allFieldsFilled =
-        formData.sourceAddress &&
-        formData.destinationAddress &&
-        formData.transferDate &&
-        formData.transferTime &&
-        formData.passengers &&
-        sourceId &&
-        destinationId;
-
-      if (allFieldsFilled) {
-        hasAutoSearchedRef.current = true;
-        searchTransfers();
-      }
-    }, 500); 
-
+    const timeoutId = setTimeout(() => searchTransfers(), AUTO_SEARCH_DEBOUNCE_MS);
     return () => clearTimeout(timeoutId);
-  }
-}, [formData, isOpen, isAutoFilled, initialPropsAssigned]);
+  }, [searchKey, isOpen, isAutoFilled, initialPropsAssigned]);
+
 
 
   if (!isOpen) return null;
@@ -1575,7 +1591,11 @@ const getTitle = () => {
           ) : null}
 
           {transferQuotes.length > 0 && (
-            <div className="space-y-3">
+            <div
+              className={`space-y-3 transition-opacity ${
+                isLoadingQuotes ? "opacity-50 pointer-events-none" : ""
+              }`}
+            >
               {transferQuotes.map((quote, index) => (
                 <TaxiSearched
                   airportBooking
