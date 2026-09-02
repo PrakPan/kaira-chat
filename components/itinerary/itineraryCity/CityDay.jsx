@@ -567,6 +567,7 @@ const CityDay = (props) => {
   const dispatch = useDispatch();
   const { id } = useSelector((state) => state.auth);
   const { customer } = useSelector((state) => state.Itinerary);
+  const itineraryFromStore = useSelector((state) => state.Itinerary);
   const cart = useSelector((state) => state.Cart);
 
   // An activity reads as "Confirmed" only when its booking is in the cart and
@@ -972,7 +973,10 @@ useEffect(() => {
 
   // Booking actions only exist once the itinerary is out of Draft (p1) and its
   // pricing has settled — same gate the city header applies to its own actions.
-  const canAddActivity = !isDraft && finalized_status !== "PENDING";
+  // Archived V1 itineraries are read-only — nothing can be added to them.
+  const isV1Archive = !!itineraryFromStore?.is_v1_archive;
+  const canAddActivity =
+    !isDraft && !isV1Archive && finalized_status !== "PENDING";
 
   // This day's sightseeing chips, rendered on their own row under the day
   // summary — see the call site for why they no longer share the heading's line.

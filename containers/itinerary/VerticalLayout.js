@@ -378,6 +378,11 @@ const CityItem = ({
 }) => {
   const router = useRouter();
   const dispatch = useDispatch();
+  // Archived V1 itineraries have no per-leg transfer data — no gmaps place ids,
+  // no coordinates, no booking records — so these between-city connectors have
+  // nothing to render or price. The archive instead carries one flat trip-level
+  // list, shown as a vertical section under the day-by-day (V1TransfersList).
+  const isV1Archive = useSelector((state) => state.Itinerary?.is_v1_archive);
   const { transfers_status,pricing_status } = useSelector((state) => state.ItineraryStatus);
   const isDesktop = useMediaQuery("(min-width:767px)");
   const reduxItineraryId = useSelector((state) => state.ItineraryId);
@@ -1241,6 +1246,8 @@ useEffect(() => {
   };
   const transferChipCursor = isP1Draft ? "" : "cursor-pointer";
 
+  // Placed after every hook so the hook order stays stable across renders.
+  if (isV1Archive) return null;
 
   return (
     <Container

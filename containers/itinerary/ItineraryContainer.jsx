@@ -10,6 +10,8 @@ import axiosdaybydayinstance, {
   axiosGetItineraryStatus,
 } from "../../services/itinerary/daybyday/preview";
 import axiosbreifinstance from "../../services/itinerary/brief/preview";
+import { fetchV1Itinerary } from "../../services/itinerary/v1/archive";
+import { adaptV1ToMercuryShape } from "../../lib/v1Itinerary";
 import * as authaction from "../../store/actions/auth";
 import {
   ITINERARY_STATUSES,
@@ -876,9 +878,11 @@ const fetchStatus = async () => {
     ) {
       setPolling(false);
       setItineraryLoading(false);
-      // Falling back to the v1 itinerary view — release the chat lock so
-      // the composer doesn't stay disabled forever.
+      // Falling back to the v1 itinerary — release the chat lock so the
+      // composer doesn't stay disabled forever. Prefer the archived copy
+      // rendered through this view; the retired layout is the last resort.
       dispatch(setItineraryStatus("is_polling", false));
+      if (await loadArchivedV1()) return;
       setOldOne(true);
       return;
     }
@@ -886,6 +890,38 @@ const fetchStatus = async () => {
     handleApiError();
   }
 };
+
+    // An itinerary Mercury reports as v1 has no content of its own — the
+    // supplier portal held that, and it is being switched off. The archive on
+    // CloudFront does, and it was exported straight out of Mercury's own
+    // structure, so once the few dropped fields are filled back in it renders
+    // through this same view rather than the retired V1 layout.
+    //
+    // Returns false when the itinerary isn't in the archive either, so callers
+    // can fall back to `oldOne` as a last resort.
+    const loadArchivedV1 = async () => {
+      try {
+        const snapshot = await fetchV1Itinerary(props.id);
+        const data = adaptV1ToMercuryShape(snapshot, props.id);
+        if (!data || !data.cities?.length) return false;
+
+        setShowMercuryItinerary(true);
+        dispatch(setItinerary(data));
+        props.setItineraryDaybyDay(data);
+        props.setBreif(data);
+        setCities(data.cities);
+        setItineraryDate(data.start_date);
+        props.setItineraryActivities(getItineraryActivities());
+        setItineraryLoading(false);
+        // Nothing here polls or streams: release the chat lock so the (disabled)
+        // composer doesn't sit in a loading state forever.
+        dispatch(setItineraryStatus("is_polling", false));
+        return true;
+      } catch (err) {
+        console.error("[ERROR][ItineraryContainer][v1-archive]", err?.message);
+        return false;
+      }
+    };
 
     const fetchItinerary = async (itinerary, hotels, transfers, pricing, statusApiStatus) => {
       try {
@@ -896,9 +932,12 @@ const fetchStatus = async () => {
           const data = res.data;
 
           if (data?.version === "v1" || !data) {
+            // Render the archived copy through this view; only drop to the
+            // retired V1 layout if the archive doesn't have it either.
+            if (await loadArchivedV1()) return;
+
             setShowMercuryItinerary(false);
             setItineraryLoading(false);
-            // router.push(`/itinerary/v1/${props.id}`);
             setOldOne(true);
 
             return;
@@ -989,7 +1028,8 @@ const fetchStatus = async () => {
         ) {
           setPolling(false);
           setItineraryLoading(false);
-          // router.push(`/itinerary/v1/${props.id}`);
+          // Mercury has no record, but the archive may still hold it.
+          if (await loadArchivedV1()) return;
           setOldOne(true);
           return;
         }

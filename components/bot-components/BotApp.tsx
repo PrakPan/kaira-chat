@@ -42,6 +42,7 @@ import {
 import { getThemePagePath } from "../theme/cinematic/palettes";
 import ItineraryContainer from "../../containers/itinerary/ItineraryContainer";
 import ItineraryLegend from "../itinerary/itineraryCity/ItineraryLegend";
+import ArchiveChatPanel from "./components/ArchiveChatPanel";
 import type {
   Location,
   ItineraryData,
@@ -723,6 +724,11 @@ export default function BotApp({
   }, [showPaymentDrawer, activeItineraryId, fetchPaymentData]);
 
   const itineraryRedux = useSelector((state: any) => state.Itinerary);
+  // Archived V1 itineraries predate the chat service: no thread exists, so the
+  // right-hand panel is a static clone CTA instead of the live chat.
+  const isV1Archive = useSelector(
+    (state: any) => state.Itinerary?.is_v1_archive,
+  );
   const galleryImages = useSelector((state: any) => state.galleryImages);
   const itineraryReduxName = itineraryRedux?.name;
   const socialProofCount = routeSocialProofCount(
@@ -3603,7 +3609,9 @@ Start Location: ${details.startLocation}`;
   // Editing the route hangs off the route strip because it acts on the same data
   // the strip shows. Seeing it on the map does not — that CTA sits at the head of
   // the day-by-day, above the starting city, where the journey it plots begins.
-  const changeRouteButton = (
+  // Archived V1 itineraries have no coordinates or city ids, so there is no
+  // route to edit — the pill would open an editor over data that isn't there.
+  const changeRouteButton = isV1Archive ? null : (
     <button
       type="button"
       aria-label="Change route"
@@ -3817,6 +3825,7 @@ Start Location: ${details.startLocation}`;
     loaderDisplayText: statusDisplayText || loaderDisplayText,
     currency,
     countCartItems,
+    isV1Archive,
     isHovered,
     setIsHovered,
     popupStyle,
@@ -4387,8 +4396,17 @@ Start Location: ${details.startLocation}`;
     </div>
   );
 
-  // v1 itineraries — render only the itinerary component, no chatbot/sidebar/toggle
-  if (isV1) {
+  // v1 itineraries used to bail out here to a bare ItineraryContainer — no
+  // `mercuryItinerary`, no `fromChat` — which made MenuV2 take all of its
+  // standalone branches: the Breif route editor pinned above the title, the old
+  // Chatbot in the right column, and an unpinned cart. That was the only way to
+  // show a v1 itinerary while its content still lived on the supplier portal.
+  //
+  // Archived v1 itineraries no longer need it: their data is adapted into the
+  // Mercury shape (lib/v1Itinerary -> adaptV1ToMercuryShape) and renders through
+  // the normal chat layout below, with ArchiveChatPanel standing in for the chat.
+  // The bail-out stays for a v1 itinerary the archive doesn't have.
+  if (isV1 && !isV1Archive) {
     return <ItineraryContainer id={activeItineraryId} />;
   }
 
@@ -4562,7 +4580,12 @@ Start Location: ${details.startLocation}`;
  : "opacity-0 translate-y-2 pointer-events-none"
  }`}
           >
-            {!isMobile && (
+            {/* Archived V1 itineraries have no chat thread — mounting the real
+                panel makes it try to start a session and fail. */}
+            {!isMobile && isV1Archive && (
+              <ArchiveChatPanel itineraryId={sessionId} />
+            )}
+            {!isMobile && !isV1Archive && (
               <ChatKitPanel
                 key={chatKey}
                 {...sharedChatKitProps}
@@ -4651,7 +4674,10 @@ Start Location: ${details.startLocation}`;
                   zIndex: isChatActive ? 1 : 0,
                 }}
               >
-                {isMobile && (
+                {isMobile && isV1Archive && (
+                  <ArchiveChatPanel itineraryId={sessionId} />
+                )}
+                {isMobile && !isV1Archive && (
                   <ChatKitPanel
                     key={`${chatKey}`}
                     {...sharedChatKitProps}
@@ -4909,6 +4935,7 @@ interface BottomCTABarProps {
   loaderDisplayText: string | null;
   currency: any;
   countCartItems: number;
+  isV1Archive?: boolean;
   isHovered: boolean;
   setIsHovered: (v: boolean) => void;
   popupStyle: React.CSSProperties;
@@ -5055,6 +5082,7 @@ const BottomCTABar = React.memo(
     loaderDisplayText,
     currency,
     countCartItems,
+    isV1Archive,
     isHovered,
     setIsHovered,
     popupStyle,
@@ -5071,6 +5099,10 @@ const BottomCTABar = React.memo(
       (!activeItineraryId && !showItineraryShimmer)
     )
       return null;
+
+    // Archived V1 itineraries carry no cart, pricing or bookings — the bar
+    // would render an empty "Total Cost" shell with a dead View Cart button.
+    if (isV1Archive) return null;
 
     if (isDraft) {
       return (

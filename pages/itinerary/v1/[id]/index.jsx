@@ -1,70 +1,30 @@
-import Head from "next/head";
-import { useRouter } from "next/router";
 import { useEffect } from "react";
-import { connect } from "react-redux";
-import ItineraryContainer from "../../../../containers/itinerary/IndexsV2/Index";
-import LayoutV2 from "../../../../components/Layout";
-import * as authaction from "../../../../store/actions/auth";
-import setItineraryId from "../../../../store/actions/itineraryId";
-import setHotLocationSearch from "../../../../store/actions/hotLocationSearch";
-import axioslocationsinstance from "../../../../services/search/search";
+import { useRouter } from "next/router";
 
-const Itinerary = (props) => {
+// Archived V1 itineraries render through the same view as everything else now.
+//
+// This page used to mount the retired V1 layout (IndexsV2/Index -> ArchiveMenuV1).
+// The archive was exported straight out of Mercury's own itinerary structure, so
+// once the few dropped fields are filled back in (lib/v1Itinerary ->
+// adaptV1ToMercuryShape) it renders in the normal /chat view — ItineraryContainer
+// picks the archive up whenever Mercury reports the itinerary as version "v1".
+//
+// Redirecting rather than mounting the chat shell here keeps one implementation
+// of that screen instead of two that can drift, and matches what
+// pages/itinerary/[id]/index.js already does. Links customers already hold keep
+// working; they just land on /chat/<id>.
+const ItineraryV1 = () => {
   const router = useRouter();
 
   useEffect(() => {
-    if (router.query.id) {
-      props.setItineraryId(router.query.id);
+    if (!router.isReady) return;
+    const { id, ...rest } = router.query;
+    if (id) {
+      router.replace({ pathname: `/chat/${id}`, query: rest });
     }
-    getHotLocationsSearch();
-    props.checkAuthState();
-  }, [router]);
+  }, [router.isReady, router.query.id]);
 
-  const getHotLocationsSearch = async () => {
-    try {
-      const response = await axioslocationsinstance.get("hot_destinations/");
-      if (response.data?.length) {
-        const hotLocationSearch = response.data;
-        props.setHotLocationSearch(hotLocationSearch);
-      }
-    } catch (err) {
-      console.log(
-        `[ERROR][ItineraryPage][axioslocationsinstance:/hot_destinations]`
-      );
-    }
-  };
-
-  return (
-    <LayoutV2 newYear staticnav itinerary page={"Itinerary Page"}>
-      <Head>
-        <title> Tailored Itinerary | The Tarzan Way </title>
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1"
-        ></meta>
-      </Head>
-
-      {router.query.id && (
-        <ItineraryContainer id={router.query.id}></ItineraryContainer>
-      )}
-    </LayoutV2>
-  );
+  return null;
 };
 
-const mapStateToPros = (state) => {
-  return {
-    token: state.auth.token,
-    showLogin: state.auth.showLogin,
-  };
-};
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    checkAuthState: () => dispatch(authaction.checkAuthState()),
-    authCloseLogin: () => dispatch(authaction.authCloseLogin()),
-    setItineraryId: (payload) => dispatch(setItineraryId(payload)),
-    setHotLocationSearch: (payload) => dispatch(setHotLocationSearch(payload)),
-  };
-};
-
-export default connect(mapStateToPros, mapDispatchToProps)(Itinerary);
+export default ItineraryV1;

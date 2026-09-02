@@ -3,6 +3,7 @@ import { connect, useSelector } from "react-redux";
 
 import ItineraryCity from "../../components/itinerary/itineraryCity";
 import DownloadShareBanners from "../../components/itinerary/DownloadShareBanners";
+import V1TransfersList from "../../components/itinerary/V1TransfersList";
 import CityItem from "./VerticalLayout";
 import media from "../../components/media";
 import BookingModal from "../../components/modals/bookingupdated/Index";
@@ -773,6 +774,13 @@ const DaybyDay = ({
             Hidden in the P1 chat state while the itinerary is still building —
             only surfaced once creation completes. Standalone (non-chat) itinerary
             views always render them. */}
+        {/* Archived V1 itineraries carry one flat transfers list instead of
+            per-leg data, so the between-city connectors are suppressed (see
+            VerticalLayout) and the whole set is listed here instead. */}
+        {Itinerary?.is_v1_archive && (
+          <V1TransfersList transfers={Itinerary?.v1_transfers} />
+        )}
+
         {(!props.fromChat || itineraryIsComplete) && (
           <DownloadShareBanners
             itineraryId={router.query?.id}
