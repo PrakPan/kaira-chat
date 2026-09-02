@@ -47,4 +47,31 @@ export async function fetchV1Itinerary(id, { signal } = {}) {
   return res.json();
 }
 
+export const tripsIndexUrl = () =>
+  `${String(V1_ITINERARY_CDN).replace(/\/+$/, "")}/trips/index.json`;
+
+/**
+ * The indexed-trips manifest: `[{ slug, id, group_type }]`.
+ *
+ * This replaces the supplier's /sales/itinerary/indexed/ endpoint, which is the
+ * only place the slug ever existed — it is not in the itinerary objects and is
+ * not derivable from them (the slug's text half needs a destination label that
+ * the archive does not carry). getStaticPaths reads this to build the 644
+ * /trips URLs, so if it fails the export would silently emit zero trips pages;
+ * callers should treat a throw as fatal rather than defaulting to an empty list.
+ *
+ * Only trips whose itinerary object actually exists are listed — a slug without
+ * a payload would fail getStaticProps and take the whole export down with it.
+ */
+export async function fetchTripsIndex() {
+  const res = await fetch(tripsIndexUrl(), { method: "GET" });
+  if (!res.ok) throw new Error(`[v1-archive] ${res.status} for trips index`);
+
+  const index = await res.json();
+  if (!Array.isArray(index) || !index.length) {
+    throw new Error("[v1-archive] trips index is empty or malformed");
+  }
+  return index;
+}
+
 export default fetchV1Itinerary;

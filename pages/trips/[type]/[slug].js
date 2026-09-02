@@ -6,14 +6,25 @@ import ItineraryContainer from "../../../containers/itinerary/IndexsV2/IndexedCo
 import LayoutV2 from "../../../components/Layout";
 import * as authaction from "../../../store/actions/auth";
 import setItineraryId from "../../../store/actions/itineraryId";
-import axiosplaninstance from "../../../services/itinerary/plan";
-import axiosIndexedItinerary from "../../../services/itinerary/releasedForCustomer";
-import axiosDaybyDayInstance from "../../../services/itinerary/daybyday/preview";
-import axiosbreifinstance from "../../../services/itinerary/brief/preview";
-import axiosRoutesInstance from "../../../services/itinerary/brief/route";
-import axiosBookingsInstance from "../../../services/itinerary/bookings";
-import axiosPaymentInstance from "../../../services/itinerary/payment";
+import {
+  fetchTripsIndex,
+  fetchV1Itinerary,
+} from "../../../services/itinerary/v1/archive";
+import { adaptV1Snapshot } from "../../../lib/v1Itinerary";
+import { titleFromSlug, descriptionFromSlug } from "../../../lib/tripsSeo";
 
+// These pages used to be built from seven supplier-portal calls — the indexed
+// list for getStaticPaths, then plan/day_by_day/brief/routes/bookings/payment
+// per trip in getStaticProps. That portal is being switched off, so both now
+// read the S3 archive through CloudFront: `trips/index.json` for the slug -> id
+// mapping (the slug lives nowhere else) and `itineraries/<id>.json` for the
+// content, which `adaptV1Snapshot` maps onto the shapes the container expects.
+//
+// Still prerendered rather than client-rendered: /trips exists for organic
+// search, and one shared [type]/[slug] shell would ship identical <title>,
+// description, canonical and JSON-LD on all 644 URLs — which the crawlers that
+// build link previews (WhatsApp, Facebook, LinkedIn, Slack) would never see
+// past, since they don't execute JS.
 let TRIPS_CACHE = null;
 
 const IndexedItinerary = ({
@@ -37,7 +48,9 @@ const IndexedItinerary = ({
   const tripsTitle =
     Data?.duration && Data?.cities?.length
       ? `${Data.duration} Days ${Data.cities[0]} Itinerary — ${groupTypeLabel} Trip Plan | The Tarzan Way`
-      : Data?.page_title || "Plan your trip with The Tarzan Way";
+      : Data?.page_title
+        ? `${Data.page_title} | The Tarzan Way`
+        : "Plan your trip with The Tarzan Way";
 
   useEffect(() => {
     if (Data?.ID) {
@@ -164,109 +177,60 @@ const mapDispatchToProps = (dispatch) => {
 export default connect(mapStateToProps, mapDispatchToProps)(IndexedItinerary);
 
 async function fetchTripDataById(id) {
-  let daybydayResponse = null;
-  let breifResponse = null;
-  let routesResponse = null;
-  let bookingsResponse = null;
-  let planResponse = null;
-  let paymentResponse = null;
-
+  // One CloudFront object replaces the six supplier calls this used to make.
+  // A miss returns nulls rather than throwing so a single bad trip can't fail
+  // the whole export — getStaticProps turns that into notFound.
   try {
-    const response = await axiosDaybyDayInstance.get(`/?itinerary_id=${id}`);
-    daybydayResponse = response.data;
-  } catch (err) {
-    console.log("[ERROR][tripsPage:daybyday]: ", err.message);
-  }
+    const snapshot = await fetchV1Itinerary(id);
+    const adapted = adaptV1Snapshot(snapshot, id);
+    if (!adapted) return { daybydayResponse: null };
 
-  try {
-    const response = await axiosbreifinstance.get(`/?itinerary_id=${id}`);
-    breifResponse = response.data;
+    return {
+      daybydayResponse: adapted.itinerary,
+      breifResponse: adapted.breif,
+      planResponse: adapted.plan,
+      bookingsResponse: adapted.bookings,
+      // The archive carries no route geometry and no pricing, so the route map
+      // stays empty and every price/pay affordance renders nothing.
+      routesResponse: [],
+      paymentResponse: null,
+    };
   } catch (err) {
-    console.log("[ERROR][tripsPage:breif]: ", err.message);
+    console.log("[ERROR][tripsPage:archive]: ", err.message);
+    return { daybydayResponse: null };
   }
-
-  try {
-    const response = await axiosRoutesInstance.get(`/?itinerary_id=${id}`);
-    routesResponse = response.data;
-  } catch (err) {
-    console.log("[ERROR][tripsPage:routes]: ", err.message);
-  }
-
-  try {
-    const response = await axiosBookingsInstance.get(`/?itinerary_id=${id}`);
-    bookingsResponse = response.data;
-  } catch (err) {
-    console.log("[ERROR][tripsPage:bookings]: ", err.message);
-  }
-
-  try {
-    const response = await axiosplaninstance.get(`/?itinerary_id=${id}`);
-    planResponse = response.data;
-  } catch (err) {
-    console.log("[ERROR][tripsPage:plan]: ", err.message);
-  }
-
-  try {
-    const response = await axiosPaymentInstance.post("", {
-      itinerary_type: "Tailored",
-      itinerary_id: id,
-    });
-    paymentResponse = response.data;
-  } catch (err) {
-    console.log("[ERROR][tripsPage:payment]: ", err.message);
-  }
-
-  return {
-    daybydayResponse,
-    breifResponse,
-    routesResponse,
-    bookingsResponse,
-    planResponse,
-    paymentResponse,
-  };
 }
 
 async function fetchAllSlugsWithIds() {
-  const response = await axiosIndexedItinerary.get("");
-  const trips = response.data
-    .filter((trip) => trip?.slug && trip?.id) 
-    .map((trip) => {
-      let group_type = "family";
-      
-      if (trip?.group_type) {
-        group_type = trip.group_type.replaceAll(" ", "_").toLowerCase();
-      }group_type
-      
-      return {
-        group_type: group_type,
-        slug: trip.slug,
-        id: trip.id,
-      };
-    });
+  // trips/index.json already carries the group_type the supplier returned, and
+  // only lists trips whose itinerary object exists in the archive.
+  const index = await fetchTripsIndex();
 
-  return trips;
+  return index
+    .filter((trip) => trip?.slug && trip?.id)
+    .map((trip) => ({
+      group_type: trip.group_type
+        ? trip.group_type.replaceAll(" ", "_").toLowerCase()
+        : "family",
+      slug: trip.slug,
+      id: trip.id,
+    }));
 }
 
 export async function getStaticPaths() {
-  let paths = [];
-
-  try {
-    if (!TRIPS_CACHE) {
-      TRIPS_CACHE = await fetchAllSlugsWithIds();
-    }
-
-    paths = TRIPS_CACHE.map((trip) => ({
-      params: {
-        type: trip.group_type,
-        slug: trip.slug,
-      },
-    }));
-  } catch (err) {
-    console.log("[ERROR][tripsPage:getStaticPaths]: ", err.message);
+  // Deliberately unguarded. This used to swallow the error and return an empty
+  // path list, which with fallback:false emits *zero* trips pages — a silent
+  // build that 404s all 644 indexed URLs and looks successful. Failing the
+  // build is the safer outcome: the index is one small object, and if it can't
+  // be read that is something to fix before deploying, not to ship past.
+  if (!TRIPS_CACHE) {
+    TRIPS_CACHE = await fetchAllSlugsWithIds();
   }
 
   return {
-    paths: paths,
+    paths: TRIPS_CACHE.map((trip) => ({
+      params: { type: trip.group_type, slug: trip.slug },
+    })),
     fallback: false,
   };
 }
@@ -315,6 +279,11 @@ export async function getStaticProps(context) {
       paymentResponse,
     } = await fetchTripDataById(trip.id);
 
+    // No itinerary object behind the slug — don't publish an empty page.
+    if (!daybydayResponse) {
+      return { notFound: true };
+    }
+
     daybyday = daybydayResponse;
     breif = breifResponse;
     routes = routesResponse;
@@ -323,16 +292,27 @@ export async function getStaticProps(context) {
     payment = paymentResponse;
 
     ID = trip.id;
-    page_title = planResponse?.page_title;
-    meta_description = planResponse?.meta_description;
-    social_title = planResponse?.social_share_title;
-    social_description = planResponse?.social_media_description;
-    duration = planResponse?.duration_number;
-    image = planResponse?.images?.length > 0 ? planResponse.images[0] : null;
-    review = planResponse?.review;
-    rating_count = planResponse?.rating_count;
-    price = planResponse?.payment_info?.per_person_total_cost / 100;
-    cities = [...new Set(planResponse?.itinerary_locations)];
+
+    // The supplier's plan payload carried the whole SEO layer — page_title,
+    // meta_description, social copy, itinerary_locations, review, rating and
+    // price. None of it survived into the archive. The slug is a slugified
+    // page_title, so the title and description are rebuilt from it; the rest
+    // is left null and drops out of the head and JSON-LD rather than being
+    // invented (the template already spreads image/price in conditionally).
+    page_title = titleFromSlug(slug);
+    meta_description = descriptionFromSlug(slug);
+    social_title = page_title
+      ? `${page_title} | The Tarzan Way`
+      : null;
+    social_description = meta_description;
+
+    duration = planResponse?.duration_number ?? null;
+    image = daybydayResponse?.images?.length ? daybydayResponse.images[0] : null;
+
+    // `cities` drives the "{N} Days {City} Itinerary" title and the keywords
+    // meta. The archive ships cities without names, so this stays empty and the
+    // title falls through to page_title above.
+    cities = [];
   } catch (err) {
     console.log("[ERROR][tripsPage:getStaticProps]: ", err.message);
 

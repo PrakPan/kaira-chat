@@ -15,7 +15,6 @@ import { setBookings } from "../../../store/actions/bookings";
 import { setItineraryActivities } from "../../../store/actions/itineraryActivities";
 import setBreif from "../../../store/actions/breif";
 import { ChatProvider } from "../../../components/Chatbot/context/ChatContext";
-import NavigationMenu from "../../../components/revamp/home/NavigationMenu";
 
 const Container = styled.div`
   width: 90%;
@@ -129,10 +128,12 @@ const Itinerary = (props) => {
       }, [IntervalTiming]);
   }, []);
 
+  // No <NavigationMenu /> below: components/Layout.js already renders one for
+  // every page, and mounting a second produced two stacked headers on
+  // /itinerary/v1/[id] and /itinerary/physicswallah/[id].
   if (props.breif && !itineraryLoading)
     return (
       <ChatProvider itinearyId={router.query.id}>
-        <NavigationMenu />
         <Container className="mt-2">
           <Overview
             title={props.itinerary.name}

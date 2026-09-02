@@ -43,6 +43,12 @@ import { IoMdClose } from "react-icons/io";
 
 const noop = () => {};
 
+// The archive container passes none of the booking/payment callbacks, and the
+// shared sections below are also used by MenuV2, where they exist — several
+// call them without guarding the method itself. Forward a no-op rather than
+// undefined so a drawer close can't throw.
+const fn = (candidate) => (typeof candidate === "function" ? candidate : noop);
+
 const useStyles = {
   root: `
     flex-grow-1
@@ -171,14 +177,14 @@ const ArchiveMenuV1 = (props) => {
             itinerary={props.itinerary}
             breif={props.breif}
             fetchData={props.fetchData}
-            getPaymentHandler={props.getPaymentHandler}
+            getPaymentHandler={fn(props.getPaymentHandler)}
             setShowLoginModal={setShowLoginModal}
             _GetInTouch={_GetInTouch}
             group_type={props.group_type}
             duration_time={props.duration_time}
             travellerType={props.travellerType}
             editRoute={props.editRoute}
-            setEditRoute={props.setEditRoute}
+            setEditRoute={fn(props.setEditRoute)}
           ></Breif>
         )}
       </div>
@@ -193,15 +199,13 @@ const ArchiveMenuV1 = (props) => {
               setShowLoginModal={setShowLoginModal}
               city_slabs={props?.breif?.city_slabs}
               itinerary={props.itinerary}
-              setItinerary={props.setItinerary}
-              getPaymentHandler={props.getPaymentHandler}
+              setItinerary={fn(props.setItinerary)}
+              getPaymentHandler={fn(props.getPaymentHandler)}
               transferBookings={props.transferBookings}
               stayBookings={props.stayBookings}
               activityBookings={props.activityBookings}
-              getAccommodationAndActivitiesHandler={
-                props.getAccommodationAndActivitiesHandler
-              }
-              setShowBookingModal={props.setShowBookingModal}
+              getAccommodationAndActivitiesHandler={fn(props.getAccommodationAndActivitiesHandler)}
+              setShowBookingModal={fn(props.setShowBookingModal)}
               _GetInTouch={_GetInTouch}
             ></NewItenaryDBDMob>
           </div>
@@ -216,13 +220,13 @@ const ArchiveMenuV1 = (props) => {
               budget={props.budget}
               breif={props.breif}
               stayBookings={props.stayBookings}
-              _updateBookingHandler={props._updateBookingHandler}
-              _updateStayBookingHandler={props._updateStayBookingHandler}
-              _updatePaymentHandler={props._updatePaymentHandler}
-              getPaymentHandler={props.getPaymentHandler}
-              setShowBookingModal={props.setShowBookingModal}
+              _updateBookingHandler={fn(props._updateBookingHandler)}
+              _updateStayBookingHandler={fn(props._updateStayBookingHandler)}
+              _updatePaymentHandler={fn(props._updatePaymentHandler)}
+              getPaymentHandler={fn(props.getPaymentHandler)}
+              setShowBookingModal={fn(props.setShowBookingModal)}
               showBookingModal={props.showBookingModal}
-              setHideBookingModal={props.setHideBookingModal}
+              setHideBookingModal={fn(props.setHideBookingModal)}
               payment={props.payment}
               booking={props.booking}
             ></HotelsBooking>
@@ -239,17 +243,17 @@ const ArchiveMenuV1 = (props) => {
                 transfers={TransfersData}
                 routes={props.routes}
                 showTaxiModal={props.showTaxiModal}
-                getPaymentHandler={props.getPaymentHandler}
-                _updateFlightBookingHandler={props._updateFlightBookingHandler}
-                setShowTaxiModal={props.setShowTaxiModal}
-                _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-                _updatePaymentHandler={props._updatePaymentHandler}
-                _updateBookingHandler={props._updateBookingHandler}
+                getPaymentHandler={fn(props.getPaymentHandler)}
+                _updateFlightBookingHandler={fn(props._updateFlightBookingHandler)}
+                setShowTaxiModal={fn(props.setShowTaxiModal)}
+                _updateTaxiBookingHandler={fn(props._updateTaxiBookingHandler)}
+                _updatePaymentHandler={fn(props._updatePaymentHandler)}
+                _updateBookingHandler={fn(props._updateBookingHandler)}
                 showFlightModal={props.showFlightModal}
                 setShowFlightModal={noop}
                 setHideFlightModal={noop}
-                setShowBookingModal={props.setShowBookingModal}
-                setHideBookingModal={props.setHideBookingModal}
+                setShowBookingModal={fn(props.setShowBookingModal)}
+                setHideBookingModal={fn(props.setHideBookingModal)}
                 payment={props.payment}
                 transferBookings={props?.transferBookings}
                 itinerary_id={props.itinerary_id}
@@ -274,14 +278,14 @@ const ArchiveMenuV1 = (props) => {
                 }
                 budget={props.budget}
                 stayBookings={props.stayBookings}
-                _updateBookingHandler={props._updateBookingHandler}
-                _updateStayBookingHandler={props._updateStayBookingHandler}
-                _updatePaymentHandler={props._updatePaymentHandler}
+                _updateBookingHandler={fn(props._updateBookingHandler)}
+                _updateStayBookingHandler={fn(props._updateStayBookingHandler)}
+                _updatePaymentHandler={fn(props._updatePaymentHandler)}
                 flightBookings={props.flightBookings}
-                getPaymentHandler={props.getPaymentHandler}
-                setShowBookingModal={props.setShowBookingModal}
+                getPaymentHandler={fn(props.getPaymentHandler)}
+                setShowBookingModal={fn(props.setShowBookingModal)}
                 showBookingModal={props.showBookingModal}
-                setHideBookingModal={props.setHideBookingModal}
+                setHideBookingModal={fn(props.setHideBookingModal)}
                 activityBookings={props.activityBookings}
                 payment={props.payment}
                 booking={props.booking}
@@ -309,16 +313,14 @@ const ArchiveMenuV1 = (props) => {
                     payment={props.payment}
                     city_slabs={props?.breif?.city_slabs}
                     itinerary={props?.itinerary}
-                    setItinerary={props.setItinerary}
-                    getPaymentHandler={props.getPaymentHandler}
+                    setItinerary={fn(props.setItinerary)}
+                    getPaymentHandler={fn(props.getPaymentHandler)}
                     token={props.token}
                     transferBookings={props.transferBookings}
                     stayBookings={props.stayBookings}
                     activityBookings={props.activityBookings}
-                    getAccommodationAndActivitiesHandler={
-                      props.getAccommodationAndActivitiesHandler
-                    }
-                    setShowBookingModal={props.setShowBookingModal}
+                    getAccommodationAndActivitiesHandler={fn(props.getAccommodationAndActivitiesHandler)}
+                    setShowBookingModal={fn(props.setShowBookingModal)}
                     _GetInTouch={_GetInTouch}
                   ></NewItenaryMain>
                 )}
@@ -332,12 +334,12 @@ const ArchiveMenuV1 = (props) => {
                   setShowLoginModal={setShowLoginModal}
                   city_slabs={props?.breif?.city_slabs}
                   itinerary={props.itinerary}
-                  setItinerary={props.setItinerary}
-                  getPaymentHandler={props.getPaymentHandler}
+                  setItinerary={fn(props.setItinerary)}
+                  getPaymentHandler={fn(props.getPaymentHandler)}
                   transferBookings={props.transferBookings}
                   stayBookings={props.stayBookings}
                   activityBookings={props.activityBookings}
-                  setShowBookingModal={props.setShowBookingModal}
+                  setShowBookingModal={fn(props.setShowBookingModal)}
                   _GetInTouch={_GetInTouch}
                 ></NewItenaryDBDMob>
               </div>
@@ -357,13 +359,13 @@ const ArchiveMenuV1 = (props) => {
                   breif={props.breif}
                   budget={props.budget}
                   stayBookings={props.stayBookings}
-                  _updateBookingHandler={props._updateBookingHandler}
-                  _updateStayBookingHandler={props._updateStayBookingHandler}
-                  _updatePaymentHandler={props._updatePaymentHandler}
-                  getPaymentHandler={props.getPaymentHandler}
-                  setShowBookingModal={props.setShowBookingModal}
+                  _updateBookingHandler={fn(props._updateBookingHandler)}
+                  _updateStayBookingHandler={fn(props._updateStayBookingHandler)}
+                  _updatePaymentHandler={fn(props._updatePaymentHandler)}
+                  getPaymentHandler={fn(props.getPaymentHandler)}
+                  setShowBookingModal={fn(props.setShowBookingModal)}
                   showBookingModal={props.showBookingModal}
-                  setHideBookingModal={props.setHideBookingModal}
+                  setHideBookingModal={fn(props.setHideBookingModal)}
                   payment={props.payment}
                   booking={props.booking}
                   _GetInTouch={_GetInTouch}
@@ -381,19 +383,17 @@ const ArchiveMenuV1 = (props) => {
                   routesData={RoutesData}
                   transfers={TransfersData}
                   routes={props.routes}
-                  _updateFlightBookingHandler={
-                    props._updateFlightBookingHandler
-                  }
-                  setShowTaxiModal={props.setShowTaxiModal}
-                  getPaymentHandler={props.getPaymentHandler}
-                  _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-                  _updatePaymentHandler={props._updatePaymentHandler}
-                  _updateBookingHandler={props._updateBookingHandler}
+                  _updateFlightBookingHandler={fn(props._updateFlightBookingHandler)}
+                  setShowTaxiModal={fn(props.setShowTaxiModal)}
+                  getPaymentHandler={fn(props.getPaymentHandler)}
+                  _updateTaxiBookingHandler={fn(props._updateTaxiBookingHandler)}
+                  _updatePaymentHandler={fn(props._updatePaymentHandler)}
+                  _updateBookingHandler={fn(props._updateBookingHandler)}
                   showFlightModal={props.showFlightModal}
                   setShowFlightModal={noop}
                   setHideFlightModal={noop}
-                  setShowBookingModal={props.setShowBookingModal}
-                  setHideBookingModal={props.setHideBookingModal}
+                  setShowBookingModal={fn(props.setShowBookingModal)}
+                  setHideBookingModal={fn(props.setHideBookingModal)}
                   payment={props.payment}
                   transferBookings={props?.transferBookings}
                   itinerary_id={props.itinerary_id}
@@ -418,14 +418,14 @@ const ArchiveMenuV1 = (props) => {
                   }
                   budget={props.budget}
                   stayBookings={props.stayBookings}
-                  _updateBookingHandler={props._updateBookingHandler}
-                  _updateStayBookingHandler={props._updateStayBookingHandler}
-                  _updatePaymentHandler={props._updatePaymentHandler}
+                  _updateBookingHandler={fn(props._updateBookingHandler)}
+                  _updateStayBookingHandler={fn(props._updateStayBookingHandler)}
+                  _updatePaymentHandler={fn(props._updatePaymentHandler)}
                   flightBookings={props.flightBookings}
-                  getPaymentHandler={props.getPaymentHandler}
-                  setShowBookingModal={props.setShowBookingModal}
+                  getPaymentHandler={fn(props.getPaymentHandler)}
+                  setShowBookingModal={fn(props.setShowBookingModal)}
                   showBookingModal={props.showBookingModal}
-                  setHideBookingModal={props.setHideBookingModal}
+                  setHideBookingModal={fn(props.setHideBookingModal)}
                   activityBookings={props.activityBookings}
                   payment={props.payment}
                   booking={props.booking}

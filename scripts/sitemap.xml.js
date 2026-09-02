@@ -153,26 +153,35 @@ const generateSitemap = async () => {
     };
   });
 
-  // Fetch trips list
-  const response = await axios.get(
-    "https://suppliers.tarzanway.com/sales/itinerary/indexed/"
-  );
-  const trips = response.data.map((trip) => {
-    let group_type = trip?.group_type
-      ? trip.group_type.replaceAll(" ", "_").toLowerCase()
-      : "family";
-    return {
-      path: group_type + "/" + trip.slug,
-    };
-  });
+  // Trips list. This used to read suppliers.tarzanway.com/sales/itinerary/indexed/
+  // unguarded, which mattered more than it looks: this script is the `prebuild`
+  // hook, so it runs before *every* build, and a throw here exits non-zero and
+  // takes the whole deploy down — not just the trips sitemap. Now it reads the
+  // same manifest the trips pages build from, and a failure degrades to a
+  // trips-less sitemap instead of a failed release.
+  let tripsPaths = [];
+  try {
+    const tripsIndexUrl = `${
+      process.env.NEXT_PUBLIC_V1_ITINERARY_CDN ||
+      "https://d1dnn1kn2tf4hu.cloudfront.net"
+    }/trips/index.json`;
+    const response = await axios.get(tripsIndexUrl);
 
-  let tripsPaths = trips.map((trip) => {
-    return {
-      title: "Trip",
-      link: PROD_BASE_URL + "/trips/" + trip.path,
-      priority: "0.6",
-    };
-  });
+    tripsPaths = (response.data || [])
+      .filter((trip) => trip?.slug)
+      .map((trip) => {
+        const group_type = trip?.group_type
+          ? trip.group_type.replaceAll(" ", "_").toLowerCase()
+          : "family";
+        return {
+          title: "Trip",
+          link: `${PROD_BASE_URL}/trips/${group_type}/${trip.slug}`,
+          priority: "0.6",
+        };
+      });
+  } catch (err) {
+    console.error("[sitemap] failed to fetch trips index:", err.message);
+  }
 
   // Theme landing pages: union of statically-authored pages/theme/*.tsx files
   // and CMS-driven themes served by pages/theme/[slug].js. Deduped by slug
