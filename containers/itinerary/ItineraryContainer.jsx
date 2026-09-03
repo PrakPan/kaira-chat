@@ -797,7 +797,7 @@ const fetchStatus = async () => {
       allFailureCountRef.current += 1;
       if (allFailureCountRef.current <= ALL_FAILURE_RETRIES) {
         console.warn(
-          `[status] all tasks FAILURE — retry ${allFailureCountRef.current}/${ALL_FAILURE_RETRIES} before accepting it`,
+          `[status] all tasks FAILURE - retry ${allFailureCountRef.current}/${ALL_FAILURE_RETRIES} before accepting it`,
         );
         setPolling(true);
         return;

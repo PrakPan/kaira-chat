@@ -43,14 +43,14 @@ const StartScreen: React.FC<StartScreenProps> = ({
  const defaultAllTrips = [
   {
     image: "https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=1600",
-    label: "Japan — Summer Season",
+    label: "Japan - Summer Season",
     tags: "Premium · Honeymoon",
     description: "Fuji, Kyoto, Gion. All of it.",
     prompt: "Plan a summer trip to Japan for 2 people in July or August. I want to see Mount Fuji at dawn, experience Kyoto's Gion Matsuri festival, feel Tokyo's Shibuya energy, and explore Osaka's food alleys. Suggest the best 10-day itinerary, stays, and budget.",
   },
   {
     image: "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=1600",
-    label: "Greece — Island Hopping",
+    label: "Greece - Island Hopping",
     tags: "Iconic · Couples",
     description: "Sunsets, ferries, and blue domes.",
     prompt: "Plan a Greek islands trip for a couple. I want Santorini sunsets, Mykonos beaches, the Athens Acropolis, and ferry rides between the islands. Suggest the best 10-day itinerary with stays and budget.",
@@ -66,19 +66,19 @@ const StartScreen: React.FC<StartScreenProps> = ({
     image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Mountain hiking adventure.jpg",
     label: "Himalayan Road Trip",
     description: "Monasteries, mountains, and open roads.",
-    prompt: "Plan a 10-day Himalayan road trip — Spiti or Ladakh, starting from Delhi. I want scenic drives, camping, monasteries, and mountain stays.",
+    prompt: "Plan a 10-day Himalayan road trip - Spiti or Ladakh, starting from Delhi. I want scenic drives, camping, monasteries, and mountain stays.",
   },
   {
     image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Road trip explorer.jpg",
     label: "Plan a Road Trip from My City",
     description: "Your city. Your route. Let's go.",
-    prompt: "I want to plan a road trip. Ask me which city I'm starting from and how many days I have — then suggest the best route, stops, and places to stay.",
+    prompt: "I want to plan a road trip. Ask me which city I'm starting from and how many days I have - then suggest the best route, stops, and places to stay.",
   },
   {
     image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Water sports getaway.jpg",
     label: "Water Sports Getaway",
     description: "Surf, snorkel, kayak. Repeat.",
-    prompt: "Plan a 4-day water sports trip — surfing, kayaking, snorkelling. Goa, Andamans, or Bali. Budget ₹50K for 2.",
+    prompt: "Plan a 4-day water sports trip - surfing, kayaking, snorkelling. Goa, Andamans, or Bali. Budget ₹50K for 2.",
   },
 ];
 
@@ -86,21 +86,21 @@ const StartScreen: React.FC<StartScreenProps> = ({
  const defaultTrendingTrips = [
   {
     image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/La-Tomatina-01.jpg",
-    label: "Spain 🇪🇸 — La Tomatina",
-    sublabel: "Book early — festival in August",
+    label: "Spain 🇪🇸 - La Tomatina",
+    sublabel: "Book early - festival in August",
     description: "Tomatoes, chaos, and pure joy.",
-    prompt: "I want to attend La Tomatina in Spain. Help me plan the full trip — flights from India, where to stay near Buñol, and things to do around the festival.",
+    prompt: "I want to attend La Tomatina in Spain. Help me plan the full trip - flights from India, where to stay near Buñol, and things to do around the festival.",
   },
   {
     image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Rajasthan Desert Nights.jpg",
-    label: "Rajasthan 🏰 — Desert Nights",
+    label: "Rajasthan 🏰 - Desert Nights",
     sublabel: "Best before the summer heat",
     description: "Stars above. Sand below. Magic.",
     prompt: "Plan a 4-day Rajasthan trip. Desert camp under the stars in Jaisalmer, camel safari at golden hour, and a heritage hotel stay.",
   },
   {
     image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Bali.jpg",
-    label: "Bali 🇮🇩 — Shoulder Season",
+    label: "Bali 🇮🇩 - Shoulder Season",
     sublabel: "Fewer crowds, better villa prices",
     description: "Same Bali. Half the tourists.",
     prompt: "Plan a 7-day Bali trip for April. Rice terraces, uncrowded temple, villa stay, and beach time. What's the best itinerary and budget?",
@@ -114,21 +114,21 @@ const StartScreen: React.FC<StartScreenProps> = ({
     label: "Perfect Proposals",
     sublabel: "Say Yes Spots",
     description: "Say yes in the right place.",
-    prompt: "I am planning a marriage proposal trip. Suggest the most romantic destinations — international or India — with a beautiful setting, ideas to make it memorable, and where to stay. Budget is flexible.",
+    prompt: "I am planning a marriage proposal trip. Suggest the most romantic destinations - international or India - with a beautiful setting, ideas to make it memorable, and where to stay. Budget is flexible.",
   },
   {
     image: "https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=1600",
     label: "Honeymoon Trip Planner",
     sublabel: "Romantic Escapes",
     description: "Romance, curated for two.",
-    prompt: "Plan a honeymoon trip for 2. Ask me our preferred vibe — beach, mountains, Europe, or Southeast Asia — and our budget, then suggest the best destination and a full itinerary.",
+    prompt: "Plan a honeymoon trip for 2. Ask me our preferred vibe - beach, mountains, Europe, or Southeast Asia - and our budget, then suggest the best destination and a full itinerary.",
   },
   {
     image: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1600",
     label: "Road Trips 2025",
     sublabel: "Drive Diaries",
     description: "Your route. Your rules.",
-    prompt: "I want to plan a road trip. Ask me where I am based and how many days I have — then suggest the best route with stops, stays, and driving distances.",
+    prompt: "I want to plan a road trip. Ask me where I am based and how many days I have - then suggest the best route with stops, stays, and driving distances.",
   },
   {
     image: "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=1600",
@@ -146,7 +146,7 @@ const StartScreen: React.FC<StartScreenProps> = ({
   },
   {
     image: "https://images.unsplash.com/photo-1516426122078-c23e76319801?w=1600",
-    label: "The Great Migration — Kenya",
+    label: "The Great Migration - Kenya",
     sublabel: "Wildlife Bucket List",
     description: "One million wildebeest. Go.",
     prompt: "I want to see the Great Migration in Kenya. When is the best time, which lodges are worth it, and what does a full Kenya safari trip cost for an Indian traveller? Plan it for me.",
@@ -171,7 +171,7 @@ const StartScreen: React.FC<StartScreenProps> = ({
         "What are the best beaches in India to visit in April? I prefer fewer crowds. Suggest itinerary options.",
     },
     {
-      label: "✦  Surprise me — 4 days, ₹80K",
+      label: "✦  Surprise me - 4 days, ₹80K",
       prompt:
         "Surprise me with an offbeat trip. 4 days, budget ₹80,000. I like experiences over touristy places.",
     },
@@ -182,12 +182,12 @@ const StartScreen: React.FC<StartScreenProps> = ({
     {
       icon: "✈",
       label: "Tell Kaira where",
-      text: "Your destination, dates, budget — or just your vibe.",
+      text: "Your destination, dates, budget - or just your vibe.",
     },
     {
       icon: "🗺",
       label: "Get a full plan",
-      text: "Full itinerary, hotels, flights, and activities — instantly.",
+      text: "Full itinerary, hotels, flights, and activities - instantly.",
     },
     {
       icon: "⚡",

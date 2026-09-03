@@ -454,7 +454,7 @@ const CloneItinerary = ({
             trip
           </div>
           <p style={{ fontSize: 13, color: "#5C5A55", marginTop: 4 }}>
-            Tweak the dates and travellers — I'll build your own editable copy.
+            Tweak the dates and travellers - I'll build your own editable copy.
           </p>
         </div>
 

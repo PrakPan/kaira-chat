@@ -177,14 +177,14 @@ export const MultiVehicleNote = ({
       (fleet?.is_mixed ? (
         <>
           Your group travels in {fleet.label || `${count} taxis`}
-          {fleet.seats ? ` — ${fleet.seats} seats in total` : ""}. The price
+          {fleet.seats ? ` - ${fleet.seats} seats in total` : ""}. The price
           shown covers every vehicle.
         </>
       ) : (
         <>
           Your group needs {count} taxis
           {seatingCapacity
-            ? ` — one ${seatingCapacity}-seater cannot fit everyone`
+            ? ` - one ${seatingCapacity}-seater cannot fit everyone`
             : ""}
           . The price shown covers all {count} taxis.
         </>

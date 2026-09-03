@@ -47,7 +47,7 @@ const kairaPerfectProposalThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/perfect-proposal-2026/Udaipur — Royal Lake Proposal.jpg ",
-          label: "Udaipur — Royal Lake Proposal",
+          label: "Udaipur - Royal Lake Proposal",
           tags: "Heritage · Royal · Rajasthan",
           description: "The most romantic city in India.",
           prompt:
@@ -56,7 +56,7 @@ const kairaPerfectProposalThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/perfect-proposal-2026/Santorini — Cliffside Sunset Proposal.jpg ",
-          label: "Santorini — Cliffside Sunset Proposal",
+          label: "Santorini - Cliffside Sunset Proposal",
           tags: "Iconic · Cliffside · Greece",
           description: "The sunset nobody forgets.",
           prompt:
@@ -65,7 +65,7 @@ const kairaPerfectProposalThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/perfect-proposal-2026/Cappadocia — Balloon Proposal at Sunrise.jpg ",
-          label: "Cappadocia — Balloon Proposal at Sunrise",
+          label: "Cappadocia - Balloon Proposal at Sunrise",
           tags: "Surreal · Adventure · Romantic",
           description: "A sky full of forever.",
           prompt:
@@ -74,7 +74,7 @@ const kairaPerfectProposalThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/perfect-proposal-2026/Amalfi Coast — Cliffside Love Story.jpg ",
-          label: "Amalfi Coast — Cliffside Love Story",
+          label: "Amalfi Coast - Cliffside Love Story",
           tags: "Coastal · Luxury · Scenic",
           description: "Positano, pasta, and forever.",
           prompt:
@@ -83,7 +83,7 @@ const kairaPerfectProposalThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/perfect-proposal-2026/Maldives — Private Ocean Proposal.jpg ",
-          label: "Maldives — Private Ocean Proposal",
+          label: "Maldives - Private Ocean Proposal",
           tags: "Overwater · Isolated · Tropical",
           description: "Just us and the Ocean.",
           prompt:
@@ -98,7 +98,7 @@ const kairaPerfectProposalThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/perfect-proposal-2026/Jaipur — A Royal Fort Proposal.jpg ",
-          label: "Jaipur — A Royal Fort Proposal",
+          label: "Jaipur - A Royal Fort Proposal",
           tags: "Heritage · Royal · Rajasthan",
           description: "Golden forts and grand gestures.",
           prompt:
@@ -107,7 +107,7 @@ const kairaPerfectProposalThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/perfect-proposal-2026/Kerala — A Private Backwater Proposal.jpg ",
-          label: "Kerala — A Private Backwater Proposal",
+          label: "Kerala - A Private Backwater Proposal",
           tags: "Nature · Backwaters · Intimate",
           description: "Just water, palms, and quiet love.",
           prompt:
@@ -116,7 +116,7 @@ const kairaPerfectProposalThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/perfect-proposal-2026/Goa — A Sunset Beach Proposal.jpg ",
-          label: "Goa — A Sunset Beach Proposal",
+          label: "Goa - A Sunset Beach Proposal",
           tags: "Beaches · Coastal · Romantic",
           description: "Golden sunsets made for two.",
           prompt:
@@ -125,7 +125,7 @@ const kairaPerfectProposalThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/perfect-proposal-2026/Shimla–Manali — A Snowy Mountain Proposal.jpg ",
-          label: "Shimla–Manali — A Snowy Mountain Proposal",
+          label: "Shimla–Manali - A Snowy Mountain Proposal",
           tags: "Mountains · Scenic · Cozy",
           description: "Clouds, cabins, and forever moments.",
           prompt:
@@ -134,7 +134,7 @@ const kairaPerfectProposalThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/perfect-proposal-2026/Udaipur — A Lake Palace Proposal.jpg ",
-          label: "Udaipur — A Lake Palace Proposal",
+          label: "Udaipur - A Lake Palace Proposal",
           tags: "Heritage · Romantic",
           description: "Where palaces meet still waters.",
           prompt:
@@ -149,7 +149,7 @@ const kairaPerfectProposalThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/perfect-proposal-2026/Cherry Blossom Proposals — Japan in Spring.jpg ",
-          label: "Cherry Blossom Proposals — Japan in Spring",
+          label: "Cherry Blossom Proposals - Japan in Spring",
           tags: "Spring · Seasonal · Culture",
           description: "Pink skies and eternal moments.",
           prompt:
@@ -158,7 +158,7 @@ const kairaPerfectProposalThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/perfect-proposal-2026/Northern Lights Proposal — Iceland Winter Magic.jpg ",
-          label: "Northern Lights Proposal — Iceland Magic",
+          label: "Northern Lights Proposal - Iceland Magic",
           tags: "Iceland · Natural Phenomenon",
           description: "Dancing skies, frozen silence.",
           prompt:
@@ -167,7 +167,7 @@ const kairaPerfectProposalThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/perfect-proposal-2026/Great Migration Proposal — Kenya Safari.jpg ",
-          label: "Great Migration Proposal — Kenya Safari",
+          label: "Great Migration Proposal - Kenya Safari",
           tags: "Safari · Wildlife · Kenya",
           description: "The wildest backdrop on earth.",
           prompt:
@@ -176,7 +176,7 @@ const kairaPerfectProposalThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/perfect-proposal-2026/Europe Summer Proposal — The Dream Route.jpg ",
-          label: "Europe Summer Proposal — The Dream Route",
+          label: "Europe Summer Proposal - The Dream Route",
           tags: "Europe · Summer · Romantic",
           description: "Golden hour across continents.",
           prompt:
@@ -185,7 +185,7 @@ const kairaPerfectProposalThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/perfect-proposal-2026/Thailand Beach Proposal — Perfect Escape.jpg ",
-          label: "Thailand Beach Proposal — Perfect Escape",
+          label: "Thailand Beach Proposal - Perfect Escape",
           tags: "Thailand · Luxury-Budget",
           description: "Warm nights, clear water, perfect timing.",
           prompt:
@@ -200,7 +200,7 @@ const kairaPerfectProposalThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/perfect-proposal-2026/The Classic Romantic — Paris, Tuscany, or Santorini.jpg ",
-          label: "The Classic Romantic — Paris, Tuscany, or Santorini",
+          label: "The Classic Romantic - Paris, Tuscany, or Santorini",
           tags: "Iconic · Timeless",
           description: "The proposal everyone pictures.",
           prompt:
@@ -209,7 +209,7 @@ const kairaPerfectProposalThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/perfect-proposal-2026/The Adventure Proposal — Kenya, Nepal, or Patagonia.jpg ",
-          label: "The Adventure Proposal — Kenya, Nepal, or Patagonia",
+          label: "The Adventure Proposal - Kenya, Nepal, or Patagonia",
           tags: "Adventure · Wild",
           description: "For the couple that never sits still.",
           prompt:
@@ -218,7 +218,7 @@ const kairaPerfectProposalThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/perfect-proposal-2026/The India Royal Proposal — Rajasthan Palace Circuit.jpg ",
-          label: "The India Royal Proposal — Rajasthan Circuit",
+          label: "The India Royal Proposal - Rajasthan Circuit",
           tags: "India · Heritage · Royal",
           description: "A fairytale written in forts and palaces.",
           prompt:
@@ -227,7 +227,7 @@ const kairaPerfectProposalThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/perfect-proposal-2026/The Wellness Proposal — Bali, Kerala or Sri Lanka.jpg ",
-          label: "The Wellness Proposal — Bali, Kerala or Sri Lanka",
+          label: "The Wellness Proposal - Bali, Kerala or Sri Lanka",
           tags: "Wellness · Intimate",
           description: "Slow down, feel everything, say yes.",
           prompt:
@@ -236,7 +236,7 @@ const kairaPerfectProposalThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/perfect-proposal-2026/The Budget Proposal That Feels Luxury — Southeast Asia.jpg ",
-          label: "The Budget Proposal That Feels Luxury — Southeast Asia",
+          label: "The Budget Proposal That Feels Luxury - Southeast Asia",
           tags: "Thailand · Vietnam · Malaysia",
           description: "Big moments, smart spending.",
           prompt:
@@ -264,7 +264,7 @@ const kairaPerfectProposalThemeConfig: ThemeConfig = {
           tags: "Sunset · Cliffside · Greece",
           description: "The view that says yes before you do.",
           prompt:
-            "I want to plan a private caldera sunset proposal in Santorini. Help me choose between Oia, Imerovigli, and Firostefani, and explain the best setup — restaurants vs private villa dinners. Include photographer timing, crowd-free options, and a smooth 5-day itinerary.",
+            "I want to plan a private caldera sunset proposal in Santorini. Help me choose between Oia, Imerovigli, and Firostefani, and explain the best setup - restaurants vs private villa dinners. Include photographer timing, crowd-free options, and a smooth 5-day itinerary.",
         },
         {
           image:
@@ -312,10 +312,10 @@ const KairaPerfectProposalThemePage = ({
     <>
       <Head>
         <title>{"Proposal Trip Ideas & Romantic Destinations for Indian Couples | The Tarzan Way"}</title>
-        <meta name="description" content={"Plan the perfect proposal trip with The Tarzan Way's AI itinerary — dreamy destinations, private moments and romantic stays. Budgets in ₹ and a custom day-by-day plan for Indian couples."} />
+        <meta name="description" content={"Plan the perfect proposal trip with The Tarzan Way's AI itinerary - dreamy destinations, private moments and romantic stays. Budgets in ₹ and a custom day-by-day plan for Indian couples."} />
         <link rel="canonical" href="https://thetarzanway.com/theme/perfect-proposal" />
         <meta property="og:title" content={"Proposal Trip Ideas & Romantic Destinations for Indian Couples | The Tarzan Way"} />
-        <meta property="og:description" content={"Plan the perfect proposal trip with The Tarzan Way's AI itinerary — dreamy destinations, private moments and romantic stays. Budgets in ₹ and a custom day-by-day plan for Indian couples."} />
+        <meta property="og:description" content={"Plan the perfect proposal trip with The Tarzan Way's AI itinerary - dreamy destinations, private moments and romantic stays. Budgets in ₹ and a custom day-by-day plan for Indian couples."} />
         <meta property="og:url" content="https://thetarzanway.com/theme/perfect-proposal" />
         <meta property="og:type" content="website" />
         <meta property="og:image" content="https://thetarzanway.com/og-image.png" />

@@ -237,7 +237,7 @@ const IntakeFormCard: React.FC<IntakeFormCardProps> = ({ onComplete, snapshot })
         <div className="text-[13.5px] font-semibold text-[#0b1220] leading-relaxed">
           {(state.destinations?.length
             ? state.destinations.map((d) => d.name).join(", ")
-            : state.destination?.name) || "—"}{" "}
+            : state.destination?.name) || "-"}{" "}
           · {whenSummary(state)} ·{" "}
           {state.who ? paxLabel(state) : "just me"}
         </div>

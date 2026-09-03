@@ -288,9 +288,9 @@ const IntakeLeftPanel: React.FC = () => {
       <div className="absolute inset-0 z-[3] flex flex-col p-[30px_34px]">
         {/* Logo — items-start keeps the inline-flex lockup from stretching to
             the full panel width under the column's default align-items:stretch. */}
-        <div className="flex flex-col items-start">
+        {/* <div className="flex flex-col items-start">
           <BrandLockup size={LOGO_H} variant="dark" />
-        </div>
+        </div> */}
 
         {/* Bottom */}
         <div className="mt-auto">

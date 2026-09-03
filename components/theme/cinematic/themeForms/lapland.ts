@@ -10,7 +10,7 @@ import type { ThemeForm } from "./types";
 const laplandForm: ThemeForm = {
   slug: "lapland",
   display: "Lapland",
-  tagline: "Lapland — Santa's own town, husky trails, and the aurora over a glass roof.",
+  tagline: "Lapland - Santa's own town, husky trails, and the aurora over a glass roof.",
   voice:
     "Warm and wonderstruck, kid-and-couple friendly. Talks Santa, huskies, glass igloos, snow.",
   copy: {
@@ -67,7 +67,7 @@ const laplandForm: ThemeForm = {
       // Only fires when December is the chosen month; in January or March the
       // same trip simply departs mid-month, which is the quiet way to do it.
       anchor: { month: 12, day: 22, note: "Christmas in Rovaniemi" },
-      fareNote: "Christmas week is the most competitive — book months ahead.",
+      fareNote: "Christmas week is the most competitive - book months ahead.",
     },
     {
       key: "aurora_glass",

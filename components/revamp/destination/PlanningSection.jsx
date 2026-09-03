@@ -79,7 +79,7 @@ const PlanningSection = ({ destinationInfo, destinationName }) => {
               </span>
             </h2>
             <p className={styles.lede}>
-              Practical bits — visa, money, getting around.{" "}
+              Practical bits - visa, money, getting around.{" "}
               <span className={styles.serif}>Less guessing</span>, more booking.
             </p>
           </div>

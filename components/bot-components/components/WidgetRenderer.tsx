@@ -691,7 +691,7 @@ function TransportCard({
         fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
         whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
       }}>
-        {city || "—"}
+        {city || "-"}
       </div>
     </div>
   );
@@ -3922,9 +3922,11 @@ function StolenBadge({ count, status }: { count: number; status: StolenStatus })
   );
 }
 
-// Green editorial route header. Shows the derived trip title (city names) over
-// the brand green gradient — plus the stolen count, the trip date chip, and the
-// nights/stops pills.
+// Editorial route header. Shows the derived trip title (city names) over the
+// brand green gradient — plus the stolen count, the trip date chip, and the
+// nights/stops pills. A thread that came from a theme page paints the band in
+// that theme's accent instead, so the header and the "Confirm Route" CTA below
+// it carry the same colour as the page the reader arrived from.
 function RouteHeaderBand({
   title,
   departure,
@@ -3940,6 +3942,19 @@ function RouteHeaderBand({
   stopCount: number;
   stolen?: { count: number; status: StolenStatus };
 }) {
+  // Theme accent when the thread came from a theme page; null → brand green.
+  // The default band is a 135° sweep that lightens across its width
+  // (#2f6b52 → #4a8a69, roughly a 0 → 16% white wash), so a themed band lays
+  // that same wash over the theme's accent rather than inventing a second
+  // gradient — the flat accent alone would read heavier than the green it
+  // replaces.
+  const accent = useWidgetAccent();
+  const band = accent
+    ? `linear-gradient(135deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.09) 55%, rgba(255,255,255,0.16) 100%), ${accent.bg}`
+    : "linear-gradient(135deg, #2f6b52 0%, #3c7c5e 55%, #4a8a69 100%)";
+  // On-accent text, same as the confirm CTA's label colour.
+  const onBand = accent?.fg ?? "#ffffff";
+
   const pill = (text: string) => (
     <span
       style={{
@@ -3948,7 +3963,7 @@ function RouteHeaderBand({
         padding: "3px 9px",
         borderRadius: 9999,
         background: "rgba(255,255,255,0.16)",
-        color: "#ffffff",
+        color: onBand,
         fontSize: 10.5,
         fontWeight: 600,
         letterSpacing: "0.02em",
@@ -3963,8 +3978,7 @@ function RouteHeaderBand({
   return (
     <div
       style={{
-        background:
-          "linear-gradient(135deg, #2f6b52 0%, #3c7c5e 55%, #4a8a69 100%)",
+        background: band,
         padding: "clamp(15px, 4.5vw, 18px) clamp(16px, 4.5vw, 20px)",
       }}
     >
@@ -3981,7 +3995,10 @@ function RouteHeaderBand({
             fontWeight: 600,
             letterSpacing: "0.1em",
             textTransform: "uppercase",
-            color: "rgba(255,255,255,0.72)",
+            // Composites to the same rgba(255,255,255,0.72) it used to be on
+            // the default band, and stays legible on any accent.
+            color: onBand,
+            opacity: 0.72,
             marginBottom: 6,
           }}
         >
@@ -3994,7 +4011,7 @@ function RouteHeaderBand({
         style={{
           fontSize: "clamp(20px, 6vw, 24px)",
           lineHeight: 1.14,
-          color: "#ffffff",
+          color: onBand,
         }}
       >
         {title}
@@ -5842,7 +5859,7 @@ const TRIP_EXTRAS_THEMES: Record<string, TripExtrasTheme> = {
   },
   "esim.open": {
     defaultHeadline: "Add an eSIM",
-    defaultSubline: "Stay connected the moment you land — no roaming surprises.",
+    defaultSubline: "Stay connected the moment you land - no roaming surprises.",
     defaultCta: "Browse eSIM packages",
     cardBackground:
       "linear-gradient(135deg, #f0fdf4 0%, #dcfce7 50%, #bbf7d0 100%)",
@@ -6142,7 +6159,7 @@ function PlanNewTripCard({
     asText(captionNodes[0]?.value) ||
     asText(textNodes[0]?.value) ||
     asText(payload.context) ||
-    "Pick up where this conversation leaves off — I'll start a fresh plan tailored to your next idea.";
+    "Pick up where this conversation leaves off - I'll start a fresh plan tailored to your next idea.";
 
   const handleClick = () => {
     onAction?.({

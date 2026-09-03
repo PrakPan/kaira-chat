@@ -105,9 +105,9 @@ const PROMPTS = {
   ddlj:
     "We are 2 travellers going for 7 nights in September, and our travel dates are flexible. Create a romantic Switzerland itinerary inspired by the feeling of Dilwale Dulhania Le Jayenge. Prioritize scenic train journeys, charming alpine villages, breathtaking mountain landscapes, lakeside towns, cozy cafés, slow mornings, and unforgettable viewpoints. Keep the whole route on Swiss rail. The itinerary should feel relaxed, cinematic, and immersive rather than rushed, balancing iconic Swiss experiences with hidden gems.",
   znmd:
-    "We are 2 travellers going for 10 nights in September, and our travel dates are flexible. Plan a Spain road trip inspired by Zindagi Na Milegi Dobara. Design the journey around friendship, freedom, adventure, and unforgettable experiences rather than simply covering cities. Prioritize scenic drives, coastal towns, authentic Spanish culture, lively nightlife, beautiful sunsets, local food experiences, and meaningful moments. Keep the coastal stretch self-driven — the drive is the film. Balance iconic highlights with offbeat recommendations to create a journey that feels spontaneous yet well-paced.",
+    "We are 2 travellers going for 10 nights in September, and our travel dates are flexible. Plan a Spain road trip inspired by Zindagi Na Milegi Dobara. Design the journey around friendship, freedom, adventure, and unforgettable experiences rather than simply covering cities. Prioritize scenic drives, coastal towns, authentic Spanish culture, lively nightlife, beautiful sunsets, local food experiences, and meaningful moments. Keep the coastal stretch self-driven - the drive is the film. Balance iconic highlights with offbeat recommendations to create a journey that feels spontaneous yet well-paced.",
   yjhd:
-    "We are 2 travellers going for 8 nights in October, and our travel dates are flexible. Create a Yeh Jawaani Hai Deewani journey that runs from the Himalayas down to Rajasthan — the trek half first, the palace half second. Balance adventure, friendships, peaceful mountain moments, and cozy cafés up in the hills, then finish among lakes, courtyards and palace evenings. Include scenic drives, breathtaking viewpoints, optional treks, adventure activities, bonfire evenings, stargazing opportunities, and hidden cafés while keeping the pace relaxed and memorable.",
+    "We are 2 travellers going for 8 nights in October, and our travel dates are flexible. Create a Yeh Jawaani Hai Deewani journey that runs from the Himalayas down to Rajasthan - the trek half first, the palace half second. Balance adventure, friendships, peaceful mountain moments, and cozy cafés up in the hills, then finish among lakes, courtyards and palace evenings. Include scenic drives, breathtaking viewpoints, optional treks, adventure activities, bonfire evenings, stargazing opportunities, and hidden cafés while keeping the pace relaxed and memorable.",
   dilChahtaHai:
     "We are 2 travellers going for 6 nights in November, and our travel dates are flexible. Build a Dil Chahta Hai trip that opens in Mumbai and runs down to Goa, splitting the beach time between the loud north and the quiet south. Focus on unforgettable moments with friends, beach sunsets, scenic drives, lively cafés, hidden beaches, water activities, local food, nightlife, and long, relaxed afternoons rather than simply covering tourist attractions. Blend iconic experiences with lesser-known gems to create the perfect mix of fun and downtime.",
   jabWeMet:
@@ -116,9 +116,9 @@ const PROMPTS = {
     "We are 2 travellers going for 8 nights in September, and our travel dates are flexible. Design a Corsica escape inspired by Tamasha. Focus on scenic coastal drives, charming villages, beautiful beaches, local cafés, Mediterranean culture, hidden viewpoints, and slow travel experiences that encourage exploration and self-discovery. The island is car-only, so plan the moves as drives. Balance relaxation with unique local experiences to create a journey that feels both refreshing and meaningful.",
   // Hollywood
   midnightInParis:
-    "We are 2 travellers going for 6 nights in September, and our travel dates are flexible. Create a Paris itinerary inspired by the timeless charm of Midnight in Paris. Prioritize atmospheric cafés, charming neighborhoods, bookstores, art museums, riverside walks, jazz bars, evening strolls, local bakeries, and authentic Parisian experiences. Keep it to Paris — anything outside the city should be a day trip, not a second base. Balance iconic landmarks with hidden gems to create a slow, romantic, and immersive journey.",
+    "We are 2 travellers going for 6 nights in September, and our travel dates are flexible. Create a Paris itinerary inspired by the timeless charm of Midnight in Paris. Prioritize atmospheric cafés, charming neighborhoods, bookstores, art museums, riverside walks, jazz bars, evening strolls, local bakeries, and authentic Parisian experiences. Keep it to Paris - anything outside the city should be a day trip, not a second base. Balance iconic landmarks with hidden gems to create a slow, romantic, and immersive journey.",
   eatPrayLove:
-    "We are 2 travellers going for 12 nights in September, and our travel dates are flexible. Plan an Eat Pray Love journey across Italy and Bali, in that order — Italy first, then the Bali half. Design it around food, wellness, mindfulness, cultural immersion, beautiful nature, hidden cafés, temples, waterfalls, beach sunsets, yoga experiences, spa treatments, and slow travel. Prioritize meaningful local experiences over simply visiting popular tourist attractions.",
+    "We are 2 travellers going for 12 nights in September, and our travel dates are flexible. Plan an Eat Pray Love journey across Italy and Bali, in that order - Italy first, then the Bali half. Design it around food, wellness, mindfulness, cultural immersion, beautiful nature, hidden cafés, temples, waterfalls, beach sunsets, yoga experiences, spa treatments, and slow travel. Prioritize meaningful local experiences over simply visiting popular tourist attractions.",
   mammaMia:
     "We are 2 travellers going for 8 nights in September, and our travel dates are flexible. Create a Greek island itinerary inspired by Mamma Mia!. Prioritize charming whitewashed villages, crystal-clear beaches, local tavernas, boat trips, coastal walks, hidden viewpoints, island hopping, and spectacular sunsets. Give the quieter chapel island the longest block. The journey should feel joyful, picturesque, and relaxed while blending iconic highlights with authentic island experiences.",
   harryPotter:
@@ -132,7 +132,7 @@ const PROMPTS = {
   // packages below don't: it isn't one of the eleven film routes the mini-form
   // knows.
   harryPotterUK:
-    "We are 2 travellers going for 9 nights in October, and our travel dates are flexible. Create a Harry Potter journey through the UK that opens in London and finishes in the Scottish Highlands. Include the Warner Bros. Studio Tour London — the standing sets, Diagon Alley and the Great Hall — and flag how far ahead it needs booking. Then head north for the Glenfinnan viaduct and the Jacobite steam train, Edinburgh's old town, misty Highland landscapes and cosy pubs. Keep the London–Scotland leg on rail. Capture a sense of wonder and adventure rather than simply ticking off filming locations.",
+    "We are 2 travellers going for 9 nights in October, and our travel dates are flexible. Create a Harry Potter journey through the UK that opens in London and finishes in the Scottish Highlands. Include the Warner Bros. Studio Tour London - the standing sets, Diagon Alley and the Great Hall - and flag how far ahead it needs booking. Then head north for the Glenfinnan viaduct and the Jacobite steam train, Edinburgh's old town, misty Highland landscapes and cosy pubs. Keep the London–Scotland leg on rail. Capture a sense of wonder and adventure rather than simply ticking off filming locations.",
   // Step into the scene
   romanticEscape:
     "We are 2 travellers going for 9 nights in October, and our travel dates are flexible. Create a romantic itinerary designed around meaningful experiences rather than packed sightseeing. Prioritize beautiful stays, scenic viewpoints, sunset experiences, charming cafés, intimate dining, leisurely walks, hidden gems, and memorable moments. Balance iconic attractions with peaceful experiences to create a slow, cinematic, and deeply romantic journey.",
@@ -142,7 +142,7 @@ const PROMPTS = {
     "I'm travelling solo for 7 nights in October, and my travel dates are flexible. Create a solo travel itinerary focused on self-discovery, flexibility, safety, and immersive local experiences. Prioritize walkable neighborhoods, cafés, cultural experiences, scenic viewpoints, peaceful moments, hidden gems, and opportunities to connect with the destination. Maintain a relaxed pace that encourages exploration while leaving room for spontaneity.",
   // Ask Kaira
   whichFilmLocation:
-    "Which iconic film-inspired trip should we do first, travelling as a couple — DDLJ Switzerland, ZNMD Spain, Eat Pray Love Italy & Bali, or Mamma Mia Greece? Compare the experience, cost, and atmosphere, then build the ideal itinerary for the one you recommend.",
+    "Which iconic film-inspired trip should we do first, travelling as a couple - DDLJ Switzerland, ZNMD Spain, Eat Pray Love Italy & Bali, or Mamma Mia Greece? Compare the experience, cost, and atmosphere, then build the ideal itinerary for the one you recommend.",
 };
 
 // What each prompt above states about the trip, sent as `intake` keys (month /
@@ -262,7 +262,7 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
     eyebrow: "Some stories are too good to just watch.",
     heading: { lead: "Live Your", accent: "Favorite Movie" },
     // Kept on desktop only (the mobile mockup has no hero subtext).
-    lede: "You've watched the scene enough times. Tell me the film and I'll build the trip around the places that made it — with the touristy bits trimmed out.",
+    lede: "You've watched the scene enough times. Tell me the film and I'll build the trip around the places that made it - with the touristy bits trimmed out.",
     placeholder: "Try: the ZNMD Spain trip",
     prompt: PROMPTS.znmd,
     chips: [
@@ -327,7 +327,7 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
         {
           image: PHOTO.hobbiton,
           name: "Hobbiton, the actual Shire",
-          line: "Bag End, the Green Dragon Inn, every hobbit hole — still gardened.",
+          line: "Bag End, the Green Dragon Inn, every hobbit hole - still gardened.",
           tag: "New Zealand",
           item: {
             kind: "activity",
@@ -342,7 +342,7 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
           tag: "London",
           item: {
             kind: "activity",
-            label: "Warner Bros. Studio Tour London — The Making of Harry Potter",
+            label: "Warner Bros. Studio Tour London - The Making of Harry Potter",
             short: "WB Studio Tour London",
           },
         },
@@ -384,7 +384,7 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
         },
         {
           image: `${IMAGE_BASE}/YJHD.png`,
-          name: "Yeh Jawaani — mountains to palaces",
+          name: "Yeh Jawaani - mountains to palaces",
           line: "Mountains, desert, road-trip vibes. Manali → Delhi → Udaipur.",
           tag: "8 nights",
           prompt: PROMPTS.yjhd,
@@ -430,7 +430,7 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
         },
         {
           image: `${IMAGE_BASE}/MammaMia.png`,
-          name: "Mamma Mia — Greek islands",
+          name: "Mamma Mia - Greek islands",
           line: "Where life turns into music. Athens → Skopelos → Skiathos.",
           tag: "8 nights",
           prompt: PROMPTS.mammaMia,
@@ -475,7 +475,7 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
         {
           image: PHOTO.parkGuell,
           name: "Park Güell, ticketed",
-          line: "Gaudí's park — the Barcelona ZNMD keeps coming back to.",
+          line: "Gaudí's park - the Barcelona ZNMD keeps coming back to.",
           tag: "Barcelona",
         },
         {
@@ -518,7 +518,7 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
       cards: [
         {
           image: TABLE.scalaLucerne,
-          name: "Scala — Art Deco Hotel Montana",
+          name: "Scala - Art Deco Hotel Montana",
           city: "Lucerne",
           line: "The lake through the window, on DDLJ's opening leg.",
           rating: "4.8",
@@ -528,7 +528,7 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
           image: TABLE.bodegaBiarritz,
           name: "Bodega Biarritz 1881",
           city: "Barcelona",
-          line: "Tapas standing at the bar — ZNMD's Barcelona, loud and late.",
+          line: "Tapas standing at the bar - ZNMD's Barcelona, loud and late.",
           rating: "4.7",
           reviews: "4,156",
           item: { kind: "restaurant", label: "Bodega Biarritz 1881, Barcelona", short: "Bodega Biarritz", id: "c7a78d29-2440-480d-82fb-03b6818f5098" },
@@ -564,7 +564,7 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
           image: TABLE.karmaOia,
           name: "Karma",
           city: "Oia, Santorini",
-          line: "Dinner in Oia as the caldera goes pink — the Greek-island evening.",
+          line: "Dinner in Oia as the caldera goes pink - the Greek-island evening.",
           rating: "4.6",
           reviews: "1,318",
           item: { kind: "restaurant", label: "Karma, Oia, Santorini", short: "Karma, Oia", id: "e78b5312-f113-4095-84ec-c3113557f7d7" },
@@ -589,35 +589,35 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
         accent: "handled",
       },
       intro:
-        "Apply through the country you'll spend the most nights in — one Schengen visa then covers Switzerland, Spain, France, Italy and Greece for the whole route. We prep the paperwork, check every document and submit for you.",
+        "Apply through the country you'll spend the most nights in - one Schengen visa then covers Switzerland, Spain, France, Italy and Greece for the whole route. We prep the paperwork, check every document and submit for you.",
       cards: [
         {
           country: "Switzerland",
-          cities: "Lucerne · Wengen · Montreux — DDLJ",
+          cities: "Lucerne · Wengen · Montreux - DDLJ",
           fee: "₹5,400",
           href: `${VISA}/switzerland-visa-online`,
         },
         {
           country: "Spain",
-          cities: "Barcelona · Costa Brava · Seville — ZNMD",
+          cities: "Barcelona · Costa Brava · Seville - ZNMD",
           fee: "₹3,900",
           href: `${VISA}/spain-visa-online`,
         },
         {
           country: "France",
-          cities: "Paris and Corsica — Midnight in Paris, Tamasha",
+          cities: "Paris and Corsica - Midnight in Paris, Tamasha",
           fee: "₹4,202",
           href: `${VISA}/france-visa-online`,
         },
         {
           country: "Greece",
-          cities: "Athens · Skopelos · Skiathos — Mamma Mia",
+          cities: "Athens · Skopelos · Skiathos - Mamma Mia",
           fee: "₹2,590",
           href: `${VISA}/greece-visa-online`,
         },
         {
           country: "Italy",
-          cities: "Rome — the first half of Eat Pray Love",
+          cities: "Rome - the first half of Eat Pray Love",
           fee: "₹3,032",
           href: `${VISA}/italy-visa-online`,
         },
@@ -651,7 +651,7 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
       // which of them to apply through — that depends on where the nights fall,
       // and a person settles it faster than another form.
       note:
-        "Processing, stay and entry above are the Schengen sticker's. The UK, New Zealand and Indonesia are separate applications on their own timelines — New Zealand's takes about 40 days, so start it before anything else.",
+        "Processing, stay and entry above are the Schengen sticker's. The UK, New Zealand and Indonesia are separate applications on their own timelines - New Zealand's takes about 40 days, so start it before anything else.",
     },
     // ── When to actually go ──
     // The months here are the ones the prompts above are written for, so the
@@ -667,7 +667,7 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
         {
           range: "Sep",
           name: "The Alps and the Aegean",
-          line: "DDLJ Switzerland, ZNMD Spain, Mamma Mia Greece, Tamasha Corsica — warm sea, soft light, the trains still running.",
+          line: "DDLJ Switzerland, ZNMD Spain, Mamma Mia Greece, Tamasha Corsica - warm sea, soft light, the trains still running.",
         },
         {
           range: "Oct",
@@ -684,7 +684,7 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
         {
           range: "Feb",
           name: "A New Zealand summer",
-          line: "Middle-earth at its greenest — the South Island's warmest, longest days.",
+          line: "Middle-earth at its greenest - the South Island's warmest, longest days.",
         },
       ],
       note:
@@ -759,7 +759,7 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
           name: "Naveen Dadlani",
           when: "Europe · Google review",
           quote:
-            "Amazing experience with their agility and trip planning — supported us throughout two weeks across 4 countries and 7 cities. A fab team that blends AI with real travel expertise.",
+            "Amazing experience with their agility and trip planning - supported us throughout two weeks across 4 countries and 7 cities. A fab team that blends AI with real travel expertise.",
           route: "14N · 4 countries",
           href: "https://share.google/iy1b48ykCI0d7O8dU",
         },
@@ -769,7 +769,7 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
           name: "Sumit Jain",
           when: "Europe · Google review",
           quote:
-            "One of the best travel experiences — meticulously planned and executed to perfection. Hotels, internal transfers and airport transfers all handled, with support available even late at night.",
+            "One of the best travel experiences - meticulously planned and executed to perfection. Hotels, internal transfers and airport transfers all handled, with support available even late at night.",
           route: "Multi-city · rail included",
           href: "https://share.google/z3sDM17ebOShAqw6Q",
         },
@@ -779,7 +779,7 @@ const filmyGetawaysConfig: CinematicThemeConfig = {
           name: "Neel",
           when: "Greece · Google review",
           quote:
-            "A last-minute solo trip to Greece, curated in under 12 hours — flights, stays, transfers and experiences all matched to my preferences. Athens, Mykonos and Santorini, perfectly balanced.",
+            "A last-minute solo trip to Greece, curated in under 12 hours - flights, stays, transfers and experiences all matched to my preferences. Athens, Mykonos and Santorini, perfectly balanced.",
           route: "Solo · planned in 12h",
           href: "https://share.google/FwRwaWXW3a6NHTdvk",
         },
@@ -1044,7 +1044,7 @@ const FilmyGetawaysThemePage = ({
         </title>
         <meta
           name="description"
-          content="Plan film-inspired getaways with The Tarzan Way's AI itinerary — ZNMD Spain, DDLJ Switzerland, Eat Pray Love Bali, Mamma Mia Greece, and more iconic Bollywood and Hollywood movie destinations for Indian travellers."
+          content="Plan film-inspired getaways with The Tarzan Way's AI itinerary - ZNMD Spain, DDLJ Switzerland, Eat Pray Love Bali, Mamma Mia Greece, and more iconic Bollywood and Hollywood movie destinations for Indian travellers."
         />
         <meta
           property="og:title"
@@ -1052,7 +1052,7 @@ const FilmyGetawaysThemePage = ({
         />
         <meta
           property="og:description"
-          content="Plan film-inspired getaways with The Tarzan Way's AI itinerary — ZNMD Spain, DDLJ Switzerland, Eat Pray Love Bali, Mamma Mia Greece, and more iconic Bollywood and Hollywood movie destinations for Indian travellers."
+          content="Plan film-inspired getaways with The Tarzan Way's AI itinerary - ZNMD Spain, DDLJ Switzerland, Eat Pray Love Bali, Mamma Mia Greece, and more iconic Bollywood and Hollywood movie destinations for Indian travellers."
         />
         <link
           rel="canonical"
@@ -1076,9 +1076,9 @@ const FilmyGetawaysThemePage = ({
               "@graph": [
                 {
                   "@type": "TouristTrip",
-                  name: "Filmy Getaways — Film-Inspired Trip Planner",
+                  name: "Filmy Getaways - Film-Inspired Trip Planner",
                   description:
-                    "Plan film-inspired getaways with The Tarzan Way's AI itinerary — ZNMD Spain, DDLJ Switzerland, Eat Pray Love Bali, Mamma Mia Greece, and more iconic Bollywood and Hollywood movie destinations for Indian travellers.",
+                    "Plan film-inspired getaways with The Tarzan Way's AI itinerary - ZNMD Spain, DDLJ Switzerland, Eat Pray Love Bali, Mamma Mia Greece, and more iconic Bollywood and Hollywood movie destinations for Indian travellers.",
                   url: "https://thetarzanway.com/theme/filmy-getaways",
                   image: "https://thetarzanway.com/og-image.png",
                   provider: {

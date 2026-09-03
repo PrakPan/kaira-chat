@@ -36,7 +36,7 @@ const IndexedItinerary = ({
     : "";
   const tripsTitle =
     Data?.duration && Data?.cities?.length
-      ? `${Data.duration} Days ${Data.cities[0]} Itinerary — ${groupTypeLabel} Trip Plan | The Tarzan Way`
+      ? `${Data.duration} Days ${Data.cities[0]} Itinerary - ${groupTypeLabel} Trip Plan | The Tarzan Way`
       : Data?.page_title || "Plan your trip with The Tarzan Way";
 
   useEffect(() => {

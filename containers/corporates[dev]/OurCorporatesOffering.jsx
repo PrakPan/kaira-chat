@@ -82,7 +82,7 @@ const OurCorporatesOffering = () => {
       icon: <StarIcon />,
       title: "Team Outings (Same city/ Outstation)",
       description:
-        "From thrilling adventures to serene retreats — we craft team outings that bond, refresh, and inspire.",
+        "From thrilling adventures to serene retreats - we craft team outings that bond, refresh, and inspire.",
       iconBgColor: "#FFF9DC",
     },
     {
@@ -90,7 +90,7 @@ const OurCorporatesOffering = () => {
       icon: <HeartIcon />,
       title: "Events & Conferences (Same city/ outstation)",
       description:
-        "Effortless planning for corporate events, conferences, and offsites — from venues to logistics, we handle it all seamlessly.",
+        "Effortless planning for corporate events, conferences, and offsites - from venues to logistics, we handle it all seamlessly.",
       iconBgColor: "#FAEBEA",
     },
     {
@@ -98,7 +98,7 @@ const OurCorporatesOffering = () => {
       icon: <DollarIcon />,
       title: "Team Building Sessions and Activations",
       description:
-        "Engaging, goal-driven activities that boost communication, trust, and leadership — tailored for your office or offsite experience.",
+        "Engaging, goal-driven activities that boost communication, trust, and leadership - tailored for your office or offsite experience.",
       iconBgColor: "#EBFFED",
     }
   ];

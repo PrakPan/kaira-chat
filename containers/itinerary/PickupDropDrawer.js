@@ -1585,7 +1585,7 @@ const getTitle = () => {
 
           {taxiSelection.enabled ? (
             <div className="rounded-2xl border-sm border-solid border-[#f2e6a8] bg-[#fffdf0] px-3 py-2 mb-3 ttw-type-small text-[#6b5600]">
-              No single taxi seats {fleet?.pax} — add as many as you need and we
+              No single taxi seats {fleet?.pax} - add as many as you need and we
               will book them together.
             </div>
           ) : null}

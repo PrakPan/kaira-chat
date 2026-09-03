@@ -610,7 +610,7 @@ const TransferEditDrawer = (props) => {
     }
     if (!props?.initialEdgeId && !props?.initialMode) {
       console.log(
-        "[TransferEditDrawer][auto-skip] no initialMode/initialEdgeId — staying on step 0",
+        "[TransferEditDrawer][auto-skip] no initialMode/initialEdgeId - staying on step 0",
       );
       return;
     }
@@ -6414,7 +6414,7 @@ const AirportPickupDropCard = ({ suggestion, isPickup, onSearch }) => {
 
         <MultiVehicleCallout show={isMultiVehicle}>
           No single taxi seats your whole group, so these options use multiple
-          taxis. Prices shown cover every taxi in the trip — the fare for one
+          taxis. Prices shown cover every taxi in the trip - the fare for one
           taxi is shown alongside.
         </MultiVehicleCallout>
 

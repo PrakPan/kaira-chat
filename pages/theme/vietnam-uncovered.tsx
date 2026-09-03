@@ -15,27 +15,27 @@ const vietnamThemeConfig: ThemeConfig = {
     promptChips: [
       {
         icon: "🗺️",
-        label: "Plan a 10-day Vietnam trip — north to south",
+        label: "Plan a 10-day Vietnam trip - north to south",
         prompt:
           "Plan a 10-day Vietnam trip covering the north and south. Start in Hanoi, include Ha Long Bay, move through Hoi An, and end in Ho Chi Minh City. Include the best transport between cities, key experiences, food stops, and a full budget breakdown for Indian travellers.",
       },
       {
         icon: "🛥️",
-        label: "Ha Long Bay overnight cruise — worth it?",
+        label: "Ha Long Bay overnight cruise - worth it?",
         prompt:
           "I want to do an overnight cruise on Ha Long Bay. Is it worth the cost? What is the difference between a 1-night and 2-night cruise, which cruise company level should I book, and how do I combine it with a Hanoi and northern Vietnam trip?",
       },
       {
         icon: "💰",
-        label: "Vietnam on Rs 50K per person — full trip",
+        label: "Vietnam on Rs 50K per person - full trip",
         prompt:
           "I want to plan a Vietnam trip on a budget of Rs 50,000 per person including flights from India. Is it realistic? What can I cover, where should I stay, and what are the best ways to keep costs low without missing the highlights?",
       },
       {
         icon: "🌏",
-        label: "First time in Vietnam — where do I actually start?",
+        label: "First time in Vietnam - where do I actually start?",
         prompt:
-          "This will be my first trip to Vietnam. I have about 10 days and do not know whether to go north, south, or do both. Help me figure out the best first-timer route — Hanoi, Ha Long Bay, Hoi An, Ho Chi Minh City — and what to expect as an Indian traveller.",
+          "This will be my first trip to Vietnam. I have about 10 days and do not know whether to go north, south, or do both. Help me figure out the best first-timer route - Hanoi, Ha Long Bay, Hoi An, Ho Chi Minh City - and what to expect as an Indian traveller.",
       },
     ],
   },
@@ -47,16 +47,16 @@ const vietnamThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/vietnam-theme-2026/Hanoi — Old Quarter and Everything After.jpg ",
-          label: "Hanoi — Old Quarter and Everything After",
+          label: "Hanoi - Old Quarter and Everything After",
           tags: "Urban · History",
           description: "The city that never really sleeps.",
           prompt:
-            "Plan 3 days in Hanoi. I want to explore the Old Quarter, visit Hoan Kiem Lake, try authentic pho and bun cha, and understand the history. Include a day trip suggestion — Ha Long Bay or Ninh Binh — and transport tips.",
+            "Plan 3 days in Hanoi. I want to explore the Old Quarter, visit Hoan Kiem Lake, try authentic pho and bun cha, and understand the history. Include a day trip suggestion - Ha Long Bay or Ninh Binh - and transport tips.",
         },
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/vietnam-theme-2026/Ha Long Bay — Limestone and Still Water.jpg ",
-          label: "Ha Long Bay — Limestone and Still Water",
+          label: "Ha Long Bay - Limestone and Still Water",
           tags: "Scenic · Iconic",
           description: "Still the most beautiful thing. Always.",
           prompt:
@@ -65,7 +65,7 @@ const vietnamThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/vietnam-theme-2026/Hoi An — Lanterns and Ancient Streets.jpg ",
-          label: "Hoi An — Lanterns and Ancient Streets",
+          label: "Hoi An - Lanterns and Ancient Streets",
           tags: "Culture · Slow Travel",
           description: "You'll want to stay another week.",
           prompt:
@@ -74,7 +74,7 @@ const vietnamThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/vietnam-theme-2026/HoC.jpg",
-          label: "Ho Chi Minh City — Chaos Worth Loving",
+          label: "Ho Chi Minh City - Chaos Worth Loving",
           tags: "Food · Energy",
           description: "More alive than any city you've visited.",
           prompt:
@@ -83,7 +83,7 @@ const vietnamThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/vietnam-theme-2026/Sapa.jpg",
-          label: "Sapa — Rice Terraces and Mountain Tribes",
+          label: "Sapa - Rice Terraces and Mountain Tribes",
           tags: "Offbeat · Trek",
           description: "The photo you've seen. Now go live it.",
           prompt:
@@ -98,16 +98,16 @@ const vietnamThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/vietnam-theme-2026/Ha Long Bay — Before the Rains.jpg ",
-          label: "Ha Long Bay — Before the Rains",
+          label: "Ha Long Bay - Before the Rains",
           sublabel: "Seasonal · Iconic",
           description: "Best visibility window closes by June.",
           prompt:
-            "Ha Long Bay is best visited before the rainy season. I want to do an overnight cruise in May or early June. Plan the trip — which cruise, which nights, and how to combine it with Hanoi and the rest of northern Vietnam.",
+            "Ha Long Bay is best visited before the rainy season. I want to do an overnight cruise in May or early June. Plan the trip - which cruise, which nights, and how to combine it with Hanoi and the rest of northern Vietnam.",
         },
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/vietnam-theme-2026/Hoi An Lantern Festival — Full Moon Night.png ",
-          label: "Hoi An Lantern Festival — Full Moon Night",
+          label: "Hoi An Lantern Festival - Full Moon Night",
           sublabel: "Festival · Culture",
           description: "Every full moon, the town transforms.",
           prompt:
@@ -116,7 +116,7 @@ const vietnamThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/vietnam-theme-2026/Phu Quoc Island — Before Peak Season.jpg ",
-          label: "Phu Quoc Island — Before Peak Season",
+          label: "Phu Quoc Island - Before Peak Season",
           sublabel: "Beach · Island",
           description: "The beach before the crowds arrive.",
           prompt:
@@ -125,20 +125,20 @@ const vietnamThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/vietnam-theme-2026/Ninh Binh — Ha Long Bay on Land.jpg ",
-          label: "Ninh Binh — Ha Long Bay on Land",
+          label: "Ninh Binh - Ha Long Bay on Land",
           sublabel: "Offbeat · Scenic",
           description: "Ha Long Bay, minus the boat crowds.",
           prompt:
-            "I want to visit Ninh Binh instead of or alongside Ha Long Bay. What can I see and do — Trang An boat caves, Mua Cave hike, Bich Dong Pagoda — how many days do I need and how does it connect to a Hanoi itinerary?",
+            "I want to visit Ninh Binh instead of or alongside Ha Long Bay. What can I see and do - Trang An boat caves, Mua Cave hike, Bich Dong Pagoda - how many days do I need and how does it connect to a Hanoi itinerary?",
         },
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/vietnam-theme-2026/Vietnamese Street Food Trail — North to South.jpg",
-          label: "Vietnamese Street Food Trail — North to South",
+          label: "Vietnamese Street Food Trail - North to South",
           sublabel: "Food · Culture",
           description: "The best food trip in Southeast Asia.",
           prompt:
-            "Plan a Vietnam trip focused entirely on food. I want to eat my way from Hanoi to Ho Chi Minh City — pho, bun cha, banh mi, cao lau, banh xeo, com tam. Which cities, which dishes, and which specific places should I not miss?",
+            "Plan a Vietnam trip focused entirely on food. I want to eat my way from Hanoi to Ho Chi Minh City - pho, bun cha, banh mi, cao lau, banh xeo, com tam. Which cities, which dishes, and which specific places should I not miss?",
         },
       ],
     },
@@ -153,7 +153,7 @@ const vietnamThemeConfig: ThemeConfig = {
           sublabel: "Southeast Asia Without Compromise",
           description: "Big trip. Honest budget.",
           prompt:
-            "Plan a Vietnam trip on the tightest realistic budget for an Indian traveller. I want to do it properly — Ha Long Bay, Hoi An, Ho Chi Minh City — without feeling like I am cutting corners everywhere. What does a truly good Vietnam trip cost if done smartly?",
+            "Plan a Vietnam trip on the tightest realistic budget for an Indian traveller. I want to do it properly - Ha Long Bay, Hoi An, Ho Chi Minh City - without feeling like I am cutting corners everywhere. What does a truly good Vietnam trip cost if done smartly?",
         },
         {
           image:
@@ -162,7 +162,7 @@ const vietnamThemeConfig: ThemeConfig = {
           sublabel: "Romantic, Unhurried, Unforgettable",
           description: "Lanterns, cruises, slow mornings.",
           prompt:
-            "Plan a Vietnam honeymoon. We want the romantic version — a river cruise in Ha Long Bay, lanterns in Hoi An, a beach stay in Da Nang or Phu Quoc, and good food throughout. 10 days, suggest the full itinerary and where to splurge.",
+            "Plan a Vietnam honeymoon. We want the romantic version - a river cruise in Ha Long Bay, lanterns in Hoi An, a beach stay in Da Nang or Phu Quoc, and good food throughout. 10 days, suggest the full itinerary and where to splurge.",
         },
         {
           image:
@@ -171,7 +171,7 @@ const vietnamThemeConfig: ThemeConfig = {
           sublabel: "10 Days, All Ages, No Stress",
           description: "Easy days. Happy kids.",
           prompt:
-            "Plan a Vietnam family trip for 2 adults and 2 children. I want destinations and experiences that work for kids — not too much heat, easy transport, good food variety, and engaging activities. 10 days, cover the highlights without exhausting everyone.",
+            "Plan a Vietnam family trip for 2 adults and 2 children. I want destinations and experiences that work for kids - not too much heat, easy transport, good food variety, and engaging activities. 10 days, cover the highlights without exhausting everyone.",
         },
         {
           image:
@@ -180,16 +180,16 @@ const vietnamThemeConfig: ThemeConfig = {
           sublabel: "Safe, Free, and Exactly Your Pace",
           description: "Go where the day takes you.",
           prompt:
-            "Plan a solo Vietnam trip. I want it to feel free — flexible itinerary, easy to meet people, safe for solo travel, and genuinely interesting beyond the tourist trail. 10 to 12 days, any budget range, suggest the best route and mindset for going alone.",
+            "Plan a solo Vietnam trip. I want it to feel free - flexible itinerary, easy to meet people, safe for solo travel, and genuinely interesting beyond the tourist trail. 10 to 12 days, any budget range, suggest the best route and mindset for going alone.",
         },
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/vietnam-theme-2026/North Vietnam — The Full Experience.jpg ",
-          label: "North Vietnam — The Full Experience",
+          label: "North Vietnam - The Full Experience",
           sublabel: "Hanoi, Ha Long Bay, Sapa, Ninh Binh",
           description: "Go deep. No south. No rush.",
           prompt:
-            "Plan a trip focused entirely on northern Vietnam. I want to spend 10 to 12 days going deep — Hanoi old quarter, Ha Long Bay overnight, Sapa trek, Ninh Binh caves. No south, no rush. Suggest the best order, transport, and stays.",
+            "Plan a trip focused entirely on northern Vietnam. I want to spend 10 to 12 days going deep - Hanoi old quarter, Ha Long Bay overnight, Sapa trek, Ninh Binh caves. No south, no rush. Suggest the best order, transport, and stays.",
         },
       ],
     },
@@ -210,10 +210,10 @@ const VietnamUncoveredThemePage = ({
     <>
       <Head>
         <title>{"Vietnam Trip Packages & Itineraries for Indian Travellers | The Tarzan Way"}</title>
-        <meta name="description" content={"Plan your Vietnam trip with The Tarzan Way's AI itinerary — Hanoi, Ha Long Bay, Hoi An, Da Nang and Ho Chi Minh City. Best time to go, budgets in ₹, and a custom day-by-day plan."} />
+        <meta name="description" content={"Plan your Vietnam trip with The Tarzan Way's AI itinerary - Hanoi, Ha Long Bay, Hoi An, Da Nang and Ho Chi Minh City. Best time to go, budgets in ₹, and a custom day-by-day plan."} />
         <link rel="canonical" href="https://thetarzanway.com/theme/vietnam-uncovered" />
         <meta property="og:title" content={"Vietnam Trip Packages & Itineraries for Indian Travellers | The Tarzan Way"} />
-        <meta property="og:description" content={"Plan your Vietnam trip with The Tarzan Way's AI itinerary — Hanoi, Ha Long Bay, Hoi An, Da Nang and Ho Chi Minh City. Best time to go, budgets in ₹, and a custom day-by-day plan."} />
+        <meta property="og:description" content={"Plan your Vietnam trip with The Tarzan Way's AI itinerary - Hanoi, Ha Long Bay, Hoi An, Da Nang and Ho Chi Minh City. Best time to go, budgets in ₹, and a custom day-by-day plan."} />
         <meta property="og:url" content="https://thetarzanway.com/theme/vietnam-uncovered" />
         <meta property="og:type" content="website" />
         <meta property="og:image" content="https://thetarzanway.com/og-image.png" />

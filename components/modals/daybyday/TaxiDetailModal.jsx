@@ -314,7 +314,7 @@ const TaxiDetailModal = ({
                 {travellerCount > 0
                   ? ` for your ${travellerCount} traveller${travellerCount > 1 ? "s" : ""}`
                   : ""}
-                {fleet.seats ? ` — ${fleet.seats} seats in total` : ""}. Each
+                {fleet.seats ? ` - ${fleet.seats} seats in total` : ""}. Each
                 vehicle is listed below.
               </>
             ) : (
@@ -324,7 +324,7 @@ const TaxiDetailModal = ({
                   ? ` for your ${travellerCount} traveller${travellerCount > 1 ? "s" : ""}`
                   : ""}
                 {vehicle?.seating_capacity
-                  ? ` — one ${vehicle.seating_capacity}-seater cannot fit everyone`
+                  ? ` - one ${vehicle.seating_capacity}-seater cannot fit everyone`
                   : ""}
                 . The details below describe a single taxi.
               </>

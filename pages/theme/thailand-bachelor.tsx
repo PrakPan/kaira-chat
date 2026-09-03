@@ -127,7 +127,7 @@ const THEME_IMG = {
 // ── Prompts ─────────────────────────────────────────────────────────────────
 const PROMPTS = {
   hero:
-    "We are 8 friends planning a bachelor/bachelorette trip to Thailand over 6 nights in January, and our travel dates are flexible. Help us pick the right bases, then build one itinerary around a private pool villa, island days, beach clubs and nightlife — with enough downtime that the trip never feels rushed. Keep the group together and the transfers handled.",
+    "We are 8 friends planning a bachelor/bachelorette trip to Thailand over 6 nights in January, and our travel dates are flexible. Help us pick the right bases, then build one itinerary around a private pool villa, island days, beach clubs and nightlife - with enough downtime that the trip never feels rushed. Keep the group together and the transfers handled.",
   // Chips
   villaWeekend:
     "We are 8 friends going for 6 nights in January, and our travel dates are flexible. We want a bachelor/bachelorette trip centered around a private pool villa. Include beach clubs, villa parties, island hopping, great food, nightlife, and enough downtime to enjoy the villa together.",
@@ -146,14 +146,14 @@ const PROMPTS = {
     "We are 8 friends, and our travel dates in February are flexible. We want an 8-night bachelor/bachelorette trip through Krabi and Koh Samui. Prioritize luxury private villas, beach clubs, sunset cruises, island hopping, lively nightlife, great restaurants, spa experiences, and memorable group activities. Keep the itinerary relaxed during the day and vibrant in the evenings, with plenty of time to enjoy the villa together.",
   // Trips
   tripPhuketVilla:
-    "We are 8 friends. Build the Phuket villa and boats trip — 6 nights in January, one private pool villa in Bang Tao, three island days and two nights out, with transfers held for the whole group and flights from Delhi included.",
+    "We are 8 friends. Build the Phuket villa and boats trip - 6 nights in January, one private pool villa in Bang Tao, three island days and two nights out, with transfers held for the whole group and flights from Delhi included.",
   tripKrabiBangkok:
-    "We are 6 friends. Build the Krabi slow, Bangkok loud trip — 7 nights in January: four of longtails and cliff bars in Krabi, then three of rooftops and Yaowarat in Bangkok, with a spa afternoon on the last day and flights from Delhi included.",
+    "We are 6 friends. Build the Krabi slow, Bangkok loud trip - 7 nights in January: four of longtails and cliff bars in Krabi, then three of rooftops and Yaowarat in Bangkok, with a spa afternoon on the last day and flights from Delhi included.",
   tripOneBase:
-    "We are 10 friends. Build the one-base weekender — 5 nights in February, nobody changes hotels: one villa in Phuket, boats out and back daily, minimal logistics, flights from Delhi included.",
+    "We are 10 friends. Build the one-base weekender - 5 nights in February, nobody changes hotels: one villa in Phuket, boats out and back daily, minimal logistics, flights from Delhi included.",
   // Ask Kaira
   askBar:
-    "Which Thailand send-off should we do in January, for 8 of us — Phuket and Krabi over 6 nights, Bangkok and Phuket over 7, or Krabi and Koh Samui over 8? Compare the nightlife, the villas, the cost per head and the boat days, then build the ideal itinerary for the one you recommend.",
+    "Which Thailand send-off should we do in January, for 8 of us - Phuket and Krabi over 6 nights, Bangkok and Phuket over 7, or Krabi and Koh Samui over 8? Compare the nightlife, the villas, the cost per head and the boat days, then build the ideal itinerary for the one you recommend.",
 };
 
 // What each prompt above states about the trip, sent as `intake` keys (month /
@@ -190,7 +190,7 @@ const thailandBachelorConfig: CinematicThemeConfig = {
     eyebrow: "FRIENDS · VILLAS · ISLANDS · NIGHTLIFE",
     heading: { lead: "The last big one", accent: "before the wedding." },
     lede:
-      "Eight people, six flights, one villa. The hard part was never the party — it's getting everyone in the same place with a boat waiting. Tell me the headcount and I'll handle the rest.",
+      "Eight people, six flights, one villa. The hard part was never the party - it's getting everyone in the same place with a boat waiting. Tell me the headcount and I'll handle the rest.",
     placeholder: "Try: Phuket and Krabi for eight of us, five nights, January",
     prompt: PROMPTS.hero,
     chips: [
@@ -268,7 +268,7 @@ const thailandBachelorConfig: CinematicThemeConfig = {
         {
           image: IMG.phiPhiCatamaran,
           name: "Phi Phi and Bamboo by catamaran",
-          line: "The big one — Maya Bay, Bamboo Island, snorkelling stops. A premium boat so the group isn't crammed.",
+          line: "The big one - Maya Bay, Bamboo Island, snorkelling stops. A premium boat so the group isn't crammed.",
           tag: "Krabi",
           activityId: ACTIVITY.phiPhiCatamaran,
         },
@@ -296,7 +296,7 @@ const thailandBachelorConfig: CinematicThemeConfig = {
         {
           image: IMG.jamesBond,
           name: "James Bond Island by speedboat",
-          line: "Phang Nga Bay's limestone stacks and sea caves by canoe. Go early — the tour fleet arrives at eleven.",
+          line: "Phang Nga Bay's limestone stacks and sea caves by canoe. Go early - the tour fleet arrives at eleven.",
           tag: "Phuket",
           activityId: ACTIVITY.jamesBond,
         },
@@ -348,7 +348,7 @@ const thailandBachelorConfig: CinematicThemeConfig = {
           gradient: "linear-gradient(150deg, #0d7f8f, #f0e9d6 190%)",
           name: "Phi Phi Islands",
           badge: "Loudest after dark",
-          line: "Maya Bay by day, a beach party every night. 2h from Phuket — the one everybody pictures.",
+          line: "Maya Bay by day, a beach party every night. 2h from Phuket - the one everybody pictures.",
           activityId: ISLAND.phiPhi,
         },
         {
@@ -385,7 +385,7 @@ const thailandBachelorConfig: CinematicThemeConfig = {
       heading: {
         lead: "For the",
         accent: "morning after",
-        note: "Low effort, high payoff — nothing here needs a 6am alarm",
+        note: "Low effort, high payoff - nothing here needs a 6am alarm",
       },
       rows: [
         {
@@ -403,7 +403,7 @@ const thailandBachelorConfig: CinematicThemeConfig = {
           gradient: "linear-gradient(150deg, #16324f, #0d7f8f 160%)",
           name: "Wat Arun",
           badge: "★ 4.6 · 32.2k",
-          line: "The Temple of Dawn across the river. Go at 7am — empty, cool, and the light is why people photograph it. · Bangkok",
+          line: "The Temple of Dawn across the river. Go at 7am - empty, cool, and the light is why people photograph it. · Bangkok",
           href: `${PAGE}?poi_id=${POI.watArun}`,
         },
         {
@@ -495,7 +495,7 @@ const thailandBachelorConfig: CinematicThemeConfig = {
           image: IMG.vertigo,
           name: "Vertigo and Moon Bar",
           city: "Bangkok",
-          line: "61 floors up with no roof. Get there for sunset — dress code enforced, worth the shirt.",
+          line: "61 floors up with no roof. Get there for sunset - dress code enforced, worth the shirt.",
           rating: "4.4",
           reviews: "3,030",
           href: `${PAGE}?restaurant_id=${RESTAURANT.vertigo}`,
@@ -522,7 +522,7 @@ const thailandBachelorConfig: CinematicThemeConfig = {
           image: IMG.jungleClub,
           name: "Jungle Club",
           city: "Koh Samui",
-          line: "Up a dirt track above Chaweng. The view does the work — book a table before you climb.",
+          line: "Up a dirt track above Chaweng. The view does the work - book a table before you climb.",
           rating: "4.4",
           reviews: "3,965",
           href: `${PAGE}?restaurant_id=${RESTAURANT.jungleClub}`,
@@ -540,7 +540,7 @@ const thailandBachelorConfig: CinematicThemeConfig = {
           image: IMG.yaowarat,
           name: "Yaowarat Road",
           city: "Bangkok",
-          line: "Chinatown after dark — the whole street is the restaurant. Go hungry, bring cash, follow the queues.",
+          line: "Chinatown after dark - the whole street is the restaurant. Go hungry, bring cash, follow the queues.",
           rating: "4.6",
           reviews: "874",
           href: `${PAGE}?restaurant_id=${RESTAURANT.yaowarat}`,
@@ -559,12 +559,12 @@ const thailandBachelorConfig: CinematicThemeConfig = {
         {
           range: "Nov – Feb",
           name: "Cool and dry · best weather",
-          line: "Flat seas, 30°C, no rain. Also the priciest — villas for 8+ go months out.",
+          line: "Flat seas, 30°C, no rain. Also the priciest - villas for 8+ go months out.",
         },
         {
           range: "Mar – May",
           name: "Hot season · cheaper",
-          line: "36°C and humid. Rates drop, boats still run. Songkran in mid-April is a nationwide water fight — go for it or avoid it deliberately.",
+          line: "36°C and humid. Rates drop, boats still run. Songkran in mid-April is a nationwide water fight - go for it or avoid it deliberately.",
         },
         {
           range: "Jun – Aug",
@@ -578,14 +578,14 @@ const thailandBachelorConfig: CinematicThemeConfig = {
         },
       ],
       note:
-        "Alcohol sales stop nationwide on a handful of Buddhist holidays and election days. It has ruined more than one big night — send me your dates and I'll check them against the list before anything is booked.",
+        "Alcohol sales stop nationwide on a handful of Buddhist holidays and election days. It has ruined more than one big night - send me your dates and I'll check them against the list before anything is booked.",
     },
     // ── Visa (dark) ──
     {
       type: "visa",
       heading: { lead: "Your visa,", accent: "handled" },
       intro:
-        "Thailand ended visa-free entry for Indian passports. For a group, the e-Visa is the only sane route — one file per person, done before you fly, no cash counter at 2am.",
+        "Thailand ended visa-free entry for Indian passports. For a group, the e-Visa is the only sane route - one file per person, done before you fly, no cash counter at 2am.",
       // Every night on this page is in Thailand, so that's the whole list. The
       // extensions and stopovers it used to carry (Indonesia, Vietnam,
       // Singapore, Maldives, Japan) were for trips this page isn't selling.
@@ -595,7 +595,7 @@ const thailandBachelorConfig: CinematicThemeConfig = {
           cities: "Tourist e-Visa · 60 days · applied before you fly",
           fee: "₹4,700",
           line:
-            "One file per person — which is the whole problem with a group. Send the passports together and we run them as a batch, so you find out about the one bad photo now rather than the week before you fly.",
+            "One file per person - which is the whole problem with a group. Send the passports together and we run them as a batch, so you find out about the one bad photo now rather than the week before you fly.",
           href: `${VISA}/thailand-visa-online`,
         },
       ],
@@ -606,7 +606,7 @@ const thailandBachelorConfig: CinematicThemeConfig = {
         { label: "Arrival card", value: "Free · 72h" },
       ],
       note:
-        "Visa-on-arrival still exists — 15 days, ฿2,000 cash each, and a queue. Fine for a long weekend, wrong for eight people. Everyone also needs the free digital arrival card within 72 hours of landing; we send that link.",
+        "Visa-on-arrival still exists - 15 days, ฿2,000 cash each, and a queue. Fine for a long weekend, wrong for eight people. Everyone also needs the free digital arrival card within 72 hours of landing; we send that link.",
     },
     // ── Read this first ──
     // {
@@ -655,7 +655,7 @@ const thailandBachelorConfig: CinematicThemeConfig = {
           name: "Varun and seven friends",
           when: "January 2026 · Phuket",
           quote:
-            "Eight of us, six flights, one villa. Every transfer was waiting and the Phi Phi boat was ours alone — no sharing with forty strangers. She also warned us one night was dry, which saved the plan.",
+            "Eight of us, six flights, one villa. Every transfer was waiting and the Phi Phi boat was ours alone - no sharing with forty strangers. She also warned us one night was dry, which saved the plan.",
           href: `${CHAT}/ed0b5d1f-9ec7-4e57-9962-8cc640e6689c`,
         },
         {
@@ -843,7 +843,7 @@ const ThailandBachelorThemePage = ({
         </title>
         <meta
           name="description"
-          content="Plan a Thailand bachelor or bachelorette trip with The Tarzan Way's AI itinerary — private pool villas in Phuket and Krabi, beach clubs, private island boats, Bangkok rooftops, e-Visas and group transfers handled for Indian travellers."
+          content="Plan a Thailand bachelor or bachelorette trip with The Tarzan Way's AI itinerary - private pool villas in Phuket and Krabi, beach clubs, private island boats, Bangkok rooftops, e-Visas and group transfers handled for Indian travellers."
         />
         <meta
           property="og:title"
@@ -851,7 +851,7 @@ const ThailandBachelorThemePage = ({
         />
         <meta
           property="og:description"
-          content="Plan a Thailand bachelor or bachelorette trip with The Tarzan Way's AI itinerary — private pool villas in Phuket and Krabi, beach clubs, private island boats, Bangkok rooftops, e-Visas and group transfers handled for Indian travellers."
+          content="Plan a Thailand bachelor or bachelorette trip with The Tarzan Way's AI itinerary - private pool villas in Phuket and Krabi, beach clubs, private island boats, Bangkok rooftops, e-Visas and group transfers handled for Indian travellers."
         />
         <link
           rel="canonical"
@@ -875,9 +875,9 @@ const ThailandBachelorThemePage = ({
               "@graph": [
                 {
                   "@type": "TouristTrip",
-                  name: "Thailand Bachelor & Bachelorette — Trip Planner",
+                  name: "Thailand Bachelor & Bachelorette - Trip Planner",
                   description:
-                    "Plan a Thailand bachelor or bachelorette trip with The Tarzan Way's AI itinerary — private pool villas in Phuket and Krabi, beach clubs, private island boats, Bangkok rooftops, e-Visas and group transfers handled for Indian travellers.",
+                    "Plan a Thailand bachelor or bachelorette trip with The Tarzan Way's AI itinerary - private pool villas in Phuket and Krabi, beach clubs, private island boats, Bangkok rooftops, e-Visas and group transfers handled for Indian travellers.",
                   url: "https://thetarzanway.com/theme/thailand-bachelor",
                   image: "https://thetarzanway.com/og-image.png",
                   provider: {

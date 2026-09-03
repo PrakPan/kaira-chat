@@ -27,7 +27,7 @@ export default function PricingTest() {
 
   return (
     <div style={{ padding: 24, maxWidth: 560, margin: "0 auto", background: "#f4f4f0", minHeight: "100vh" }}>
-      <h3>Pricing form — visual test</h3>
+      <h3>Pricing form - visual test</h3>
       <PricingFormCard onComplete={(msg) => console.log("COMPOSED:\n" + msg)} />
     </div>
   );

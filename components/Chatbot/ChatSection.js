@@ -171,7 +171,7 @@ const WelcomeState = () => (
       fontFamily: "'Inter', sans-serif",
       margin: 0,
     }}>
-      I'm Kaira — your AI travel companion. Ask me anything about destinations,
+      I'm Kaira - your AI travel companion. Ask me anything about destinations,
       itineraries, routes, or local tips.
     </p>
   </div>

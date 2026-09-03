@@ -210,7 +210,7 @@ const PROMPTS = {
     "We are 2 travellers, and our dates are flexible, but we want to travel in January. Plan an 8-night Thailand trip combining Krabi and Chiang Mai, focused on active and hands-on experiences. Include kayaking, caves, hiking, snorkeling, Thai cooking classes, temples, local food and outdoor adventures. Keep the itinerary active but balanced with relaxed evenings.",
   // Ask Kaira
   askBar:
-    "Which Thailand trip should we do first, for two of us with flexible dates — Krabi and the Andaman islands, Chiang Mai and the north around the Yi Peng lanterns, or a first-timer's Bangkok and one beach? Compare the pace, the cost and which months each one actually works in, given the two coasts have opposite monsoons, then build the ideal itinerary for the one you recommend.",
+    "Which Thailand trip should we do first, for two of us with flexible dates - Krabi and the Andaman islands, Chiang Mai and the north around the Yi Peng lanterns, or a first-timer's Bangkok and one beach? Compare the pace, the cost and which months each one actually works in, given the two coasts have opposite monsoons, then build the ideal itinerary for the one you recommend.",
 };
 
 // What each prompt states about the trip, sent as `intake` keys (month / day /
@@ -348,17 +348,17 @@ const thailandConfig: CinematicThemeConfig = {
         accent: "fills up",
       },
       intro:
-        "One night a year, on the Lanna full moon. The release everyone photographs is ticketed and 30–45 minutes outside the city — not the free one in town, which runs the same nights and is worth doing as well.",
+        "One night a year, on the Lanna full moon. The release everyone photographs is ticketed and 30–45 minutes outside the city - not the free one in town, which runs the same nights and is worth doing as well.",
       cards: [
         {
           image: IMG.heritageLanterns,
           name: "Heritage Sky Lanterns",
-          line: "The traditional Lanna ceremony — monks chanting, then the release. The one people photograph.",
+          line: "The traditional Lanna ceremony - monks chanting, then the release. The one people photograph.",
           tag: "Most booked",
           item: {
             kind: "activity",
             label:
-              "Yi Peng — Heritage Sky Lanterns, Chiang Mai (24–25 Nov 2026)",
+              "Yi Peng - Heritage Sky Lanterns, Chiang Mai (24–25 Nov 2026)",
             short: "Heritage Sky Lanterns",
           },
         },
@@ -370,14 +370,14 @@ const thailandConfig: CinematicThemeConfig = {
           item: {
             kind: "activity",
             label:
-              "Yi Peng — Heaven Lantern Festival with Khantoke dinner, Chiang Mai (24–25 Nov 2026)",
+              "Yi Peng - Heaven Lantern Festival with Khantoke dinner, Chiang Mai (24–25 Nov 2026)",
             short: "Heaven Lantern Festival",
           },
         },
         {
           image: IMG.skyFestival,
           name: "Chiang Mai Sky Festival",
-          line: "A separate ticketed release earlier in the month — the fallback when Yi Peng night is sold out.",
+          line: "A separate ticketed release earlier in the month - the fallback when Yi Peng night is sold out.",
           tag: "Early November",
           item: {
             kind: "activity",
@@ -405,35 +405,35 @@ const thailandConfig: CinematicThemeConfig = {
         {
           image: PickAVibe.chiangMai,
           name: "Lanterns and the north",
-          line: "Chiang Mai · Chiang Rai · Bangkok — the festival, the temples, the markets.",
+          line: "Chiang Mai · Chiang Rai · Bangkok - the festival, the temples, the markets.",
           tag: "6 nights · November",
           prompt: PROMPTS.lanternsNorth,
         },
         {
           image: PickAVibe.kohJum,
           name: "Islands, slowly",
-          line: "Krabi · Koh Lanta · Koh Jum — longtails, snorkelling, and days with nothing in them.",
+          line: "Krabi · Koh Lanta · Koh Jum - longtails, snorkelling, and days with nothing in them.",
           tag: "9 nights · February",
           prompt: PROMPTS.islandsSlowly,
         },
         {
           image: PickAVibe.phuket,
           name: "One city, one beach",
-          line: "Bangkok · Phuket — the simplest first trip. Two bases, one internal flight.",
+          line: "Bangkok · Phuket - the simplest first trip. Two bases, one internal flight.",
           tag: "5 nights · November",
           prompt: PROMPTS.cityAndBeach,
         },
         {
           image: PickAVibe.pattaya,
           name: "Loud week with friends",
-          line: "Bangkok · Pattaya · Phuket — nightlife, beach clubs and island days, six of you.",
+          line: "Bangkok · Pattaya · Phuket - nightlife, beach clubs and island days, six of you.",
           tag: "7 nights · December",
           prompt: PROMPTS.loudWeek,
         },
         {
           image: PickAVibe.trek,
           name: "Kayaks, caves and cooking",
-          line: "Krabi · Chiang Mai — half sea, half hills, hands-on the whole way.",
+          line: "Krabi · Chiang Mai - half sea, half hills, hands-on the whole way.",
           tag: "8 nights · January",
           prompt: PROMPTS.kayaksCavesCooking,
         },
@@ -483,7 +483,7 @@ const thailandConfig: CinematicThemeConfig = {
         {
           image: IMG.cook,
           name: "Thai Charm cooking class with meal",
-          line: "Market first, wok second — four dishes you'll cook again at home.",
+          line: "Market first, wok second - four dishes you'll cook again at home.",
           tag: "Krabi",
           activityId: ACTIVITY.cookingClass,
         },
@@ -504,7 +504,7 @@ const thailandConfig: CinematicThemeConfig = {
         {
           image: IMG.cityTour,
           name: "Customise your own city tour",
-          line: "Build the day yourself — temples, markets, and the lantern-release spots in November.",
+          line: "Build the day yourself - temples, markets, and the lantern-release spots in November.",
           tag: "Chiang Mai",
           activityId: ACTIVITY.cityTour,
         },
@@ -624,7 +624,7 @@ const thailandConfig: CinematicThemeConfig = {
           image: IMG.karaweik,
           name: "Karaweik",
           city: "Koh Tao",
-          line: "Burmese kitchen on a Thai island — rich curries, fish soup, mohinga. Nothing like the beach menus.",
+          line: "Burmese kitchen on a Thai island - rich curries, fish soup, mohinga. Nothing like the beach menus.",
           rating: "5.0",
           reviews: "2,118",
           href: `${PAGE}?restaurant_id=${RESTAURANT.karaweik}`,
@@ -697,14 +697,14 @@ const thailandConfig: CinematicThemeConfig = {
         accent: "handled",
       },
       intro:
-        "Thailand waives the visa fee for Indian passports on stays under 60 days — you land, you get stamped. We still check your return ticket, funds proof and hotel confirmations before you fly, because those are what get people turned around at immigration.",
+        "Thailand waives the visa fee for Indian passports on stays under 60 days - you land, you get stamped. We still check your return ticket, funds proof and hotel confirmations before you fly, because those are what get people turned around at immigration.",
       cards: [
         {
           country: "Thailand",
           cities: "Visa-free · 60 days · stamped on arrival",
           fee: "Free",
           line:
-            "Extendable once at an immigration office inside the country, which is worth knowing before you book a return you can't move. The free digital arrival card is separate and due within 72 hours of landing — we send that link with your documents.",
+            "Extendable once at an immigration office inside the country, which is worth knowing before you book a return you can't move. The free digital arrival card is separate and due within 72 hours of landing - we send that link with your documents.",
           href: VISA_URL,
         },
       ],
@@ -715,7 +715,7 @@ const thailandConfig: CinematicThemeConfig = {
         { label: "Carry", value: "4 papers" },
       ],
       note:
-        "Return ticket, funds proof, hotel confirmations and insurance are the four papers immigration asks for. Nothing is filed in advance — the work is making sure you land with the right file.",
+        "Return ticket, funds proof, hotel confirmations and insurance are the four papers immigration asks for. Nothing is filed in advance - the work is making sure you land with the right file.",
     },
     // ── When to actually go ──
     // The two coasts are on opposite monsoons, which is the whole planning
@@ -794,7 +794,7 @@ const thailandConfig: CinematicThemeConfig = {
           image: CITY.krabi,
           tag: "Family · ★ 4.8",
           name: "Thai'd Together",
-          line: "Krabi and Phuket with the four-island tour in the middle — the easiest version with kids along.",
+          line: "Krabi and Phuket with the four-island tour in the middle - the easiest version with kids along.",
           price: "₹96,000 / person",
           nights: "6 nights",
           includes: ["Flights", "2 stays", "4-island tour"],
@@ -987,7 +987,7 @@ const ThailandCountryPage = ({
         </title>
         <meta
           name="description"
-          content="Plan a Thailand trip with The Tarzan Way's AI itinerary — Krabi and the Andaman islands, Chiang Mai and the Yi Peng lantern festival, Bangkok, Phuket and the Gulf. Experiences, stays, visa and flights, priced live."
+          content="Plan a Thailand trip with The Tarzan Way's AI itinerary - Krabi and the Andaman islands, Chiang Mai and the Yi Peng lantern festival, Bangkok, Phuket and the Gulf. Experiences, stays, visa and flights, priced live."
         />
         <meta
           property="og:title"
@@ -995,7 +995,7 @@ const ThailandCountryPage = ({
         />
         <meta
           property="og:description"
-          content="Plan a Thailand trip with The Tarzan Way's AI itinerary — Krabi and the Andaman islands, Chiang Mai and the Yi Peng lantern festival, Bangkok, Phuket and the Gulf. Experiences, stays, visa and flights, priced live."
+          content="Plan a Thailand trip with The Tarzan Way's AI itinerary - Krabi and the Andaman islands, Chiang Mai and the Yi Peng lantern festival, Bangkok, Phuket and the Gulf. Experiences, stays, visa and flights, priced live."
         />
         <link rel="canonical" href={`${SITE}/asia/thailand`} />
         <meta property="og:url" content={`${SITE}/asia/thailand`} />
@@ -1012,7 +1012,7 @@ const ThailandCountryPage = ({
                   "@type": "TouristDestination",
                   name: "Thailand",
                   description:
-                    "Plan a Thailand trip with The Tarzan Way's AI itinerary — Krabi and the Andaman islands, Chiang Mai and the Yi Peng lantern festival, Bangkok, Phuket and the Gulf.",
+                    "Plan a Thailand trip with The Tarzan Way's AI itinerary - Krabi and the Andaman islands, Chiang Mai and the Yi Peng lantern festival, Bangkok, Phuket and the Gulf.",
                   url: `${SITE}/asia/thailand`,
                   image: `${SITE}/og-image.png`,
                 },

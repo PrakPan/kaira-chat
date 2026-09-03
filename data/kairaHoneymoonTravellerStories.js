@@ -66,7 +66,7 @@ const kairaHoneymoonTravellerStories = [
   {
     id: 4,
     name: "Sagar",
-    tripName: "8N Bali Honeymoon — Ubud, Nusa Penida and Seminyak",
+    tripName: "8N Bali Honeymoon - Ubud, Nusa Penida and Seminyak",
     duration: "8 Nights",
     groupType: "Couple",
     destinations: ["Ubud", "Nusa Penida", "Seminyak"],
@@ -76,7 +76,7 @@ const kairaHoneymoonTravellerStories = [
       "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/176180543525607132911682128906.jpg",
     ],
     shortDescription:
-      "Mount Batur sunrise at 5am, hot springs by 9, lying by the villa pool by noon. Then Nusa Penida happened — manta rays in the morning, Diamond Beach in the afternoon, candlelit dinner that night. Bali earned its reputation.",
+      "Mount Batur sunrise at 5am, hot springs by 9, lying by the villa pool by noon. Then Nusa Penida happened - manta rays in the morning, Diamond Beach in the afternoon, candlelit dinner that night. Bali earned its reputation.",
     viewItineraryLink: "https://thetarzanway.com/chat/0c3b0195-2f92-4e09-a202-4cad85575117",
     rating: 4.9,
     prompt:

@@ -53,11 +53,11 @@ const PROMPTS = {
   baseHelsinki:
     "We are 2 adults (a couple) going for 7 nights in January, and our travel dates are flexible. We want to combine the best of Helsinki and Lapland. Start our trip in Helsinki to explore Finnish architecture, cafés, markets, saunas, and local culture before heading north to experience the Arctic. Include enough time in both destinations, with a comfortable pace and seamless travel between the city and Lapland.",
   baseSaariselka:
-    "Plan a 5-night Lapland trip for two in February based in Saariselkä — deeper north, darker skies and glass roofs over the snow for the best aurora odds. Build an itinerary focused on northern lights and Arctic wilderness.",
+    "Plan a 5-night Lapland trip for two in February based in Saariselkä - deeper north, darker skies and glass roofs over the snow for the best aurora odds. Build an itinerary focused on northern lights and Arctic wilderness.",
   baseLevi:
-    "Plan a 6-night Lapland trip in March for 2 adults and 2 children, based in Levi — ski slopes by day and husky night trails. Great for teens and active families. Build a balanced snow-adventure itinerary.",
+    "Plan a 6-night Lapland trip in March for 2 adults and 2 children, based in Levi - ski slopes by day and husky night trails. Great for teens and active families. Build a balanced snow-adventure itinerary.",
   baseKakslauttanen:
-    "Plan a 5-night splurge Lapland stay for two in December at Kakslauttanen — glass igloos, Christmas lights and deep snow. Build a romantic, high-end itinerary around the igloo experience.",
+    "Plan a 5-night splurge Lapland stay for two in December at Kakslauttanen - glass igloos, Christmas lights and deep snow. Build a romantic, high-end itinerary around the igloo experience.",
   // Trips — "Which Lapland is yours?" cards now open a saved sample itinerary
   // at /chat/{id} (see the trips section below), so they carry no prompt.
   // Santa checklist
@@ -74,14 +74,14 @@ const PROMPTS = {
   // prompt.
   // Stories
   storyFamily:
-    "Plan a Christmas-week Lapland family trip in December like the Mehras did, for 2 adults and 2 children aged 6 and 9 — Santa, huskies and snow — over 6 nights.",
+    "Plan a Christmas-week Lapland family trip in December like the Mehras did, for 2 adults and 2 children aged 6 and 9 - Santa, huskies and snow - over 6 nights.",
   storyCouple:
     "Plan a mid-January Lapland couple's trip with a glass igloo stay like Aditi and Rohan's, over 5 nights.",
   storySolo:
     "Plan a 4-night solo Lapland trip based in Rovaniemi in February focused on aurora, huskies and quiet snowy days.",
   // Ask bar
   ask:
-    "Which Lapland base should we actually pick for 6 nights in January, travelling as a couple — Rovaniemi, Saariselkä, Levi or Kakslauttanen? Compare them for aurora odds, family-friendliness and cost, then build the ideal itinerary for the one you recommend.",
+    "Which Lapland base should we actually pick for 6 nights in January, travelling as a couple - Rovaniemi, Saariselkä, Levi or Kakslauttanen? Compare them for aurora odds, family-friendliness and cost, then build the ideal itinerary for the one you recommend.",
 };
 
 // What each prompt above states about the trip, sent as `intake` keys (month /
@@ -115,7 +115,7 @@ const PROMPT_FACTS = promptIntakeMap(PROMPTS, {
 });
 
 const filmyThemePrompt =
-  "Plan a film-inspired getaway — tell me a movie and I'll build a trip around the real places behind it, with the touristy bits trimmed out.";
+  "Plan a film-inspired getaway - tell me a movie and I'll build a trip around the real places behind it, with the touristy bits trimmed out.";
 const proposalPrompt =
   "Help me plan the perfect proposal trip abroad with a jaw-dropping setting, the right moment and every detail handled.";
 const newYearPrompt =
@@ -204,7 +204,7 @@ const laplandConfig: CinematicThemeConfig = {
         },
         {
           name: "Frozen Fairytale",
-          line: "A cinematic winter wonderland — snowy forests, frozen lakes, cozy cabins and iconic Arctic experiences.",
+          line: "A cinematic winter wonderland - snowy forests, frozen lakes, cozy cabins and iconic Arctic experiences.",
           window: "Dec – Mar",
           emoji: "🏰",
           image: `${CDN}/media/website/lapland-2026/FrozenFairystyle.png`,
@@ -278,7 +278,7 @@ const laplandConfig: CinematicThemeConfig = {
           emoji: "🛷",
           image: IMG.rovaniemi,
           gradient: "linear-gradient(150deg, #b84034, #1f8a5a 180%)",
-          urgent: "Christmas week — 4 rooms left across all bases",
+          urgent: "Christmas week - 4 rooms left across all bases",
           href: "/chat/456c747e-4c30-4420-a92a-d5ca91841c71",
         },
         {
@@ -649,7 +649,7 @@ const LaplandThemePage = ({ checkAuthState }: { checkAuthState: () => void }) =>
         </title>
         <meta
           name="description"
-          content="Plan a magical Lapland winter trip with The Tarzan Way's AI itinerary — northern lights, Santa's village in Rovaniemi, husky safaris, glass igloos and the best time to go for aurora and Christmas."
+          content="Plan a magical Lapland winter trip with The Tarzan Way's AI itinerary - northern lights, Santa's village in Rovaniemi, husky safaris, glass igloos and the best time to go for aurora and Christmas."
         />
         <meta
           property="og:title"
@@ -657,7 +657,7 @@ const LaplandThemePage = ({ checkAuthState }: { checkAuthState: () => void }) =>
         />
         <meta
           property="og:description"
-          content="Plan a magical Lapland winter trip with The Tarzan Way's AI itinerary — northern lights, Santa's village in Rovaniemi, husky safaris, glass igloos and the best time to go for aurora and Christmas."
+          content="Plan a magical Lapland winter trip with The Tarzan Way's AI itinerary - northern lights, Santa's village in Rovaniemi, husky safaris, glass igloos and the best time to go for aurora and Christmas."
         />
         <link rel="canonical" href="https://thetarzanway.com/theme/lapland" />
         <meta
@@ -678,9 +678,9 @@ const LaplandThemePage = ({ checkAuthState }: { checkAuthState: () => void }) =>
               "@graph": [
                 {
                   "@type": "TouristTrip",
-                  name: "Lapland Trip Planner — Northern Lights, Santa & Aurora",
+                  name: "Lapland Trip Planner - Northern Lights, Santa & Aurora",
                   description:
-                    "Plan a magical Lapland winter trip with The Tarzan Way's AI itinerary — northern lights, Santa's village in Rovaniemi, husky safaris, glass igloos and the best time to go for aurora and Christmas.",
+                    "Plan a magical Lapland winter trip with The Tarzan Way's AI itinerary - northern lights, Santa's village in Rovaniemi, husky safaris, glass igloos and the best time to go for aurora and Christmas.",
                   url: "https://thetarzanway.com/theme/lapland",
                   image: "https://thetarzanway.com/og-image.png",
                   provider: {

@@ -12,7 +12,7 @@ const christmasMarketsForm: ThemeForm = {
   slug: "christmas-markets",
   display: "Christmas Markets & New Year",
   tagline:
-    "Europe's most magical six weeks — glühwein, lantern-lit squares, and New Year's Eve.",
+    "Europe's most magical six weeks - glühwein, lantern-lit squares, and New Year's Eve.",
   voice: "Cosy and festive. Talks glühwein, Striezelmarkt, Rathausplatz, the Bells.",
   copy: {
     datesTitle: "When are you going?",
@@ -26,7 +26,7 @@ const christmasMarketsForm: ThemeForm = {
       month: 11,
       label: "Markets open",
       tag: "QUIET",
-      line: "Stalls up from the last week of November — no crowds, softest fares.",
+      line: "Stalls up from the last week of November - no crowds, softest fares.",
     },
     {
       month: 12,

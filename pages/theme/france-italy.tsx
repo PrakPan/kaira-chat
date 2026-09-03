@@ -15,7 +15,7 @@ const franceItalyThemeConfig: ThemeConfig = {
     promptChips: [
       {
         icon: "🗺️",
-        label: "Two weeks, France and Italy — how do I split the time?",
+        label: "Two weeks, France and Italy - how do I split the time?",
         prompt:
           "Help me split 14 days between France and Italy. Build the smartest route, ideal time in each country, and a seamless itinerary without wasting days in transit.",
       },
@@ -33,7 +33,7 @@ const franceItalyThemeConfig: ThemeConfig = {
       },
       {
         icon: "💶",
-        label: "Rs 2 lakh per person — what does France and Italy look like?",
+        label: "Rs 2 lakh per person - what does France and Italy look like?",
         prompt:
           "What does ₹2 lakh per person actually get me in France and Italy? Build a realistic 10–12 day itinerary with flights, hotels, trains, and smart budget choices.",
       },
@@ -46,7 +46,7 @@ const franceItalyThemeConfig: ThemeConfig = {
       cards: [
         {
           image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/france-italy-theme-2026/Paris — Palaces and Pastries.jpg ",
-          label: "Paris — Palaces and Pastries",
+          label: "Paris - Palaces and Pastries",
           tags: "City · France",
           description: "Classic Paris experience.",
           prompt:
@@ -54,7 +54,7 @@ const franceItalyThemeConfig: ThemeConfig = {
         },
         {
           image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/france-italy-theme-2026/Loire Valley — Castles & Countryside.jpg ",
-          label: "Loire Valley — Castles & Countryside",
+          label: "Loire Valley - Castles & Countryside",
           tags: "History · France",
           description: "A calm escape through castles.",
           prompt:
@@ -62,7 +62,7 @@ const franceItalyThemeConfig: ThemeConfig = {
         },
         {
           image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/france-italy-theme-2026/Rome — The Eternal City.jpg ",
-          label: "Rome — The Eternal City",
+          label: "Rome - The Eternal City",
           tags: "History · Italy",
           description: "Rome beyond just monuments.",
           prompt:
@@ -70,7 +70,7 @@ const franceItalyThemeConfig: ThemeConfig = {
         },
         {
           image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/france-italy-theme-2026/Amalfi Coast — Sea and Sweat.jpg ",
-          label: "Amalfi Coast — Sea and Sweat",
+          label: "Amalfi Coast - Sea and Sweat",
           tags: "Scenic · Italy",
           description: "Adventure with sea views.",
           prompt:
@@ -78,7 +78,7 @@ const franceItalyThemeConfig: ThemeConfig = {
         },
         {
           image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/france-italy-theme-2026/French Riviera — Coastline Classics.jpg ",
-          label: "French Riviera — Coastline Classics",
+          label: "French Riviera - Coastline Classics",
           tags: "Coastal · France",
           description: "Nice, Antibes, Monaco in 3 days.",
           prompt:
@@ -92,7 +92,7 @@ const franceItalyThemeConfig: ThemeConfig = {
       cards: [
         {
           image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/france-italy-theme-2026/Venice —City of Waterways.jpg ",
-          label: "Venice — City of Waterways",
+          label: "Venice - City of Waterways",
           sublabel: "See Venice before the crowds.",
           description: "Italy · Classic",
           prompt:
@@ -100,7 +100,7 @@ const franceItalyThemeConfig: ThemeConfig = {
         },
         {
           image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/france-italy-theme-2026/Provence — Lavender Window.jpg",
-          label: "Provence — Lavender Window",
+          label: "Provence - Lavender Window",
           sublabel: "Plan around the lavender bloom.",
           description: "France · Seasonal",
           prompt:
@@ -108,15 +108,15 @@ const franceItalyThemeConfig: ThemeConfig = {
         },
         {
           image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/france-italy-theme-2026/Cannes — Film Festival Experience.png ",
-          label: "Cannes — Film Festival Experience",
+          label: "Cannes - Film Festival Experience",
           sublabel: "See the city during its biggest event.",
           description: "France · Festival",
           prompt:
-            "Show me how to experience Cannes during the Film Festival as a traveller—what's accessible, where to stay nearby, how to move around, and how to soak in the Riviera atmosphere.",
+            "Show me how to experience Cannes during the Film Festival as a traveller-what's accessible, where to stay nearby, how to move around, and how to soak in the Riviera atmosphere.",
         },
         {
           image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/france-italy-theme-2026/Bologna — Food & City Culture.jpg ",
-          label: "Bologna — Food & City Culture",
+          label: "Bologna - Food & City Culture",
           sublabel: "Italy's most serious food city.",
           description: "Italy · Food",
           prompt:
@@ -128,7 +128,7 @@ const franceItalyThemeConfig: ThemeConfig = {
           sublabel: "See the world's biggest cycling race.",
           description: "France · Scenic",
           prompt:
-            "Help me plan a Tour de France trip around a live stage—how to choose the right stage, where to stay, how early to arrive roadside, and how to combine it with a France itinerary.",
+            "Help me plan a Tour de France trip around a live stage-how to choose the right stage, where to stay, how early to arrive roadside, and how to combine it with a France itinerary.",
         },
       ],
     },
@@ -138,7 +138,7 @@ const franceItalyThemeConfig: ThemeConfig = {
       cards: [
         {
           image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/france-italy-theme-2026/The Grand Tour -- Done Right.jpg ",
-          label: "The Grand Tour — Done Right",
+          label: "The Grand Tour - Done Right",
           sublabel: "Both Countries · 14 Days",
           description: "Paris to Rome.",
           prompt:
@@ -154,7 +154,7 @@ const franceItalyThemeConfig: ThemeConfig = {
         },
         {
           image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/france-italy-theme-2026/Honeymoon — Romance Across Two Countries.png ",
-          label: "Honeymoon — Romance Across Two Countries",
+          label: "Honeymoon - Romance Across Two Countries",
           sublabel: "Romantic · Premium",
           description: "Fewer places. Longer stays.",
           prompt:
@@ -162,7 +162,7 @@ const franceItalyThemeConfig: ThemeConfig = {
         },
         {
           image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/france-italy-theme-2026/Food & Wine — Best Culinary Journey.jpg",
-          label: "Food & Wine — Best Culinary Journey",
+          label: "Food & Wine - Best Culinary Journey",
           sublabel: "Gastronomy · Both Countries",
           description: "Eat and drink across France & Italy.",
           prompt:
@@ -170,7 +170,7 @@ const franceItalyThemeConfig: ThemeConfig = {
         },
         {
           image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/france-italy-theme-2026/Italy First — Full Country Itinerary.jpg ",
-          label: "Italy First — Full Country Itinerary",
+          label: "Italy First - Full Country Itinerary",
           sublabel: "Italy · Deep Dive",
           description: "10 days. One country. All of it.",
           prompt:
@@ -179,13 +179,13 @@ const franceItalyThemeConfig: ThemeConfig = {
       ],
     },
     {
-      heading: "Only Here — Experiences Worth Flying For",
+      heading: "Only Here - Experiences Worth Flying For",
       icon: "✨",
       cards: [
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/france-italy-theme-2026/Versailles — The Royal France Experience.jpg ",
-          label: "Versailles — The Royal France Experience",
+          label: "Versailles - The Royal France Experience",
           tags: "History · France",
           description: "Visit Versailles without the chaos.",
           prompt:
@@ -194,7 +194,7 @@ const franceItalyThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/france-italy-theme-2026/Périgord — Real Truffle Hunting Experience.png",
-          label: "Périgord — Real Truffle Hunting Experience",
+          label: "Périgord - Real Truffle Hunting Experience",
           tags: "Food · Southwest France",
           description: "Find truffles with local hunters.",
           prompt:
@@ -203,7 +203,7 @@ const franceItalyThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/france-italy-theme-2026/Bologna — Home Cooking with Locals.jpeg ",
-          label: "Bologna — Home Cooking with Locals",
+          label: "Bologna - Home Cooking with Locals",
           tags: "Food · Italy",
           description: "Cook tortellini in a real kitchen.",
           prompt:
@@ -212,7 +212,7 @@ const franceItalyThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/france-italy-theme-2026/Loire Valley — Stay in a Chateau.jpg ",
-          label: "Loire Valley — Stay in a Chateau",
+          label: "Loire Valley - Stay in a Chateau",
           tags: "Heritage · France",
           description: "Sleep inside a real French castle.",
           prompt:
@@ -221,7 +221,7 @@ const franceItalyThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/france-italy-theme-2026/Cinque Terre — Hiking Between Villages.jpg ",
-          label: "Cinque Terre — Hiking Between Villages",
+          label: "Cinque Terre - Hiking Between Villages",
           tags: "Hiking · Italy",
           description: "Walk all five villages properly.",
           prompt:
@@ -246,10 +246,10 @@ const FranceItalyGrandEuropeanThemePage = ({
     <>
       <Head>
         <title>{"France & Italy Trip Packages & Itineraries for Indian Travellers | The Tarzan Way"}</title>
-        <meta name="description" content={"Plan a grand France & Italy itinerary with The Tarzan Way's AI planner — Paris, the French Riviera, Rome, Florence, Venice and the Amalfi Coast. Visa notes, budgets in ₹, and a custom day-by-day plan."} />
+        <meta name="description" content={"Plan a grand France & Italy itinerary with The Tarzan Way's AI planner - Paris, the French Riviera, Rome, Florence, Venice and the Amalfi Coast. Visa notes, budgets in ₹, and a custom day-by-day plan."} />
         <link rel="canonical" href="https://thetarzanway.com/theme/france-italy" />
         <meta property="og:title" content={"France & Italy Trip Packages & Itineraries for Indian Travellers | The Tarzan Way"} />
-        <meta property="og:description" content={"Plan a grand France & Italy itinerary with The Tarzan Way's AI planner — Paris, the French Riviera, Rome, Florence, Venice and the Amalfi Coast. Visa notes, budgets in ₹, and a custom day-by-day plan."} />
+        <meta property="og:description" content={"Plan a grand France & Italy itinerary with The Tarzan Way's AI planner - Paris, the French Riviera, Rome, Florence, Venice and the Amalfi Coast. Visa notes, budgets in ₹, and a custom day-by-day plan."} />
         <meta property="og:url" content="https://thetarzanway.com/theme/france-italy" />
         <meta property="og:type" content="website" />
         <meta property="og:image" content="https://thetarzanway.com/og-image.png" />

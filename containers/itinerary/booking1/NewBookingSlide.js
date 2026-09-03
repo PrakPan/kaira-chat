@@ -634,7 +634,7 @@ const PaymentSuccess = ({
             </svg>
           </div>
           <h2 className="text-lg font-600 leading-xl">
-            All set—your payment was successful.
+            All set-your payment was successful.
           </h2>
           <p className="text-md font-400 leading-xl text-text-spacegrey mb-zero max-ph:mb-md">
             Your full payment of{" "}
@@ -2625,7 +2625,7 @@ const Details = (props) => {
       icon: "/assets/trip-condition/trip-condition-2.svg",
       title: "Transparent Inclusions",
       subheading:
-        "A clear breakdown of stays, transfers, experiences, and support — shared before confirmation.",
+        "A clear breakdown of stays, transfers, experiences, and support - shared before confirmation.",
     },
     {
       icon: "/assets/trip-condition/trip-condition-3.svg",

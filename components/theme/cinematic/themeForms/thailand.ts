@@ -52,7 +52,7 @@ const thailandForm: ThemeForm = {
       month: 2,
       label: "Still perfect",
       tag: "EASY",
-      line: "Flat Andaman seas — the safest month for a boat day you can't reschedule.",
+      line: "Flat Andaman seas - the safest month for a boat day you can't reschedule.",
     },
     {
       month: 3,
@@ -122,7 +122,7 @@ const thailandForm: ThemeForm = {
       skeleton: "bangkok_phuket",
       months: [11, 12, 1, 2, 3, 4],
       fareNote:
-        "BKK in / HKT out. The shortest sensible first trip — two bases, one internal flight.",
+        "BKK in / HKT out. The shortest sensible first trip - two bases, one internal flight.",
     },
     {
       key: "loud_week",
@@ -144,7 +144,7 @@ const thailandForm: ThemeForm = {
       skeleton: "krabi_chiangmai",
       months: [11, 12, 1, 2, 3],
       fareNote:
-        "KBV in / CNX out via BKK. Half sea, half hills — the caves and the ridge trek both want dry ground.",
+        "KBV in / CNX out via BKK. Half sea, half hills - the caves and the ridge trek both want dry ground.",
     },
     {
       key: "gulf_islands",
@@ -162,7 +162,7 @@ const thailandForm: ThemeForm = {
       // some November rain), so this is the quieter, not the sunnier, option.
       months: [11, 12, 1, 2],
       fareNote:
-        "BKK in, USM out. The Gulf keeps a little more November rain than Krabi does, and takes half the crowd — Phangan's full moon party is the one date to check before booking.",
+        "BKK in, USM out. The Gulf keeps a little more November rain than Krabi does, and takes half the crowd - Phangan's full moon party is the one date to check before booking.",
     },
   ],
   // Panel hero on /chat — the Hong Island lagoon, reached by longtail.

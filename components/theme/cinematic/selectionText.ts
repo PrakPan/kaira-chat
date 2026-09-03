@@ -45,7 +45,7 @@ export function composeSelectionText(
   const plural = named.length === 1 ? "pick" : "picks";
   const them = named.length === 1 ? "it" : "them";
   const opening =
-    lead ?? `I saved ${named.length} ${plural} on the page — build the trip around ${them}:`;
+    lead ?? `I saved ${named.length} ${plural} on the page - build the trip around ${them}:`;
   return `${opening} ${named.join(", ")}.`;
 }
 

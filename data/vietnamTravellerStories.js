@@ -3,7 +3,7 @@ const vietnamTravellerStories = [
   {
     id: 2,
     name: "Prabhjot Singh",
-    tripName: "14N Romantic Vietnam — Hanoi, Da Nang, Hue, HCMC & Phu Quoc",
+    tripName: "14N Romantic Vietnam - Hanoi, Da Nang, Hue, HCMC & Phu Quoc",
     duration: "14 Nights",
     groupType: "Couple",
     destinations: ["Hanoi", "Da Nang", "Hue", "Ho Chi Minh City", "Phu Quoc"],
@@ -26,7 +26,7 @@ const vietnamTravellerStories = [
   {
     id: 3,
     name: "Puranjay Jadeja",
-    tripName: "9N Vietnam Adventure & Romance — HCMC, Nha Trang, Hoi An & Da Nang",
+    tripName: "9N Vietnam Adventure & Romance - HCMC, Nha Trang, Hoi An & Da Nang",
     duration: "9 Nights",
     groupType: "Couple",
     destinations: ["Ho Chi Minh City", "Nha Trang", "Hoi An", "Da Nang"],
@@ -38,7 +38,7 @@ const vietnamTravellerStories = [
       "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/175862306090730118751525878906.png",
     ],
     shortDescription:
-      "Travelled with my girlfriend from Ahmedabad and this was the perfect blend of city buzz and beach time. Saigon nightlife, Nha Trang island hopping, and a slow day wandering Hoi An's lantern-lit lanes — all sorted. The Han River dinner cruise was a sweet touch.",
+      "Travelled with my girlfriend from Ahmedabad and this was the perfect blend of city buzz and beach time. Saigon nightlife, Nha Trang island hopping, and a slow day wandering Hoi An's lantern-lit lanes - all sorted. The Han River dinner cruise was a sweet touch.",
     viewItineraryLink:
       "https://thetarzanway.com/chat/9fc0a4a1-c3af-4163-a655-29ff736e924d",
     rating: 4.8,
@@ -48,7 +48,7 @@ const vietnamTravellerStories = [
   {
     id: 4,
     name: "Husain Ansari",
-    tripName: "7N Hidden Gems of Vietnam — Hanoi, Da Nang, Hoi An & HCMC",
+    tripName: "7N Hidden Gems of Vietnam - Hanoi, Da Nang, Hoi An & HCMC",
     duration: "7 Nights",
     groupType: "Friends",
     destinations: ["Hanoi", "Da Nang", "Hoi An", "Ho Chi Minh City"],
@@ -60,7 +60,7 @@ const vietnamTravellerStories = [
       "https://d31aoa0ehgvjdi.cloudfront.net/media/cities/175862333343050932884216308594.png",
     ],
     shortDescription:
-      "Did this with a friend from Kolkata on a tight budget and it still hit every high — Hanoi's train street, the Dragon Bridge fire show, and Cu Chi tunnels. The bike tour through Hanoi's hidden corners was the surprise win. Nights out in Saigon kept things lively.",
+      "Did this with a friend from Kolkata on a tight budget and it still hit every high - Hanoi's train street, the Dragon Bridge fire show, and Cu Chi tunnels. The bike tour through Hanoi's hidden corners was the surprise win. Nights out in Saigon kept things lively.",
     viewItineraryLink:
       "https://thetarzanway.com/chat/e16deb09-451e-4f1c-9994-31795f3937b7",
     rating: 4.8,
@@ -70,7 +70,7 @@ const vietnamTravellerStories = [
    {
     id: 1,
     name: "Muskan Agarwal",
-    tripName: "6N Cultural Journey Through Vibrant Vietnam — Da Nang & Hanoi",
+    tripName: "6N Cultural Journey Through Vibrant Vietnam - Da Nang & Hanoi",
     duration: "6 Nights",
     groupType: "Family",
     destinations: ["Da Nang", "Hanoi"],

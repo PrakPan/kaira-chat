@@ -28,11 +28,11 @@ const thailandThemeConfig: ThemeConfig = {
         icon: "🗺️",
         label: "Build me a 10-day Thailand itinerary from scratch",
         prompt:
-          "Build me the ultimate 10-day Thailand itinerary covering culture, food, temples, nature, and beaches—without feeling rushed or wasting time in transit.",
+          "Build me the ultimate 10-day Thailand itinerary covering culture, food, temples, nature, and beaches-without feeling rushed or wasting time in transit.",
       },
       {
         icon: "💰",
-        label: "Thailand on a budget — what does Rs 80,000 get me?",
+        label: "Thailand on a budget - what does Rs 80,000 get me?",
         prompt:
           "What does ₹80,000 actually get me in Thailand? Build a realistic 8–10 day itinerary with flights, hotels, transport, and the smartest places to spend and save.",
       },
@@ -46,7 +46,7 @@ const thailandThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/Bangkok — Streets to Skybars.jpg ",
-          label: "Bangkok — Streets to Skybars",
+          label: "Bangkok - Streets to Skybars",
           tags: "City · Food",
           description: "A city worth three days.",
           prompt:
@@ -55,7 +55,7 @@ const thailandThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/ChiangRai.jpg ",
-          label: "Chiang Mai — Slow Northern Thailand",
+          label: "Chiang Mai - Slow Northern Thailand",
           tags: "Culture · North Thailand",
           description: "A calmer side of Thailand.",
           prompt:
@@ -64,7 +64,7 @@ const thailandThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/Koh Lanta — Quiet Island Escape.png ",
-          label: "Koh Lanta — Quiet Island Escape",
+          label: "Koh Lanta - Quiet Island Escape",
           tags: "Beach · Relaxed",
           description: "Thailand beaches without crowds.",
           prompt:
@@ -73,7 +73,7 @@ const thailandThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/ChiangMai.jpg ",
-          label: "Chiang Rai — Thailand's Artistic North",
+          label: "Chiang Rai - Thailand's Artistic North",
           tags: "Culture · Offbeat",
           description: "Temples, art, and the far north.",
           prompt:
@@ -82,7 +82,7 @@ const thailandThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/Koh Tao — The Underwater Side of Thailand.jpg ",
-          label: "Koh Tao — The Underwater Side of Thailand",
+          label: "Koh Tao - The Underwater Side of Thailand",
           tags: "Diving · Island",
           description: "Thailand's best island for diving.",
           prompt:
@@ -97,8 +97,8 @@ const thailandThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/Songkran — Thailand’s Biggest Festival.png ",
-          label: "Songkran — Thailand's Biggest Festival",
-          sublabel: "Book by January — Chiang Mai fills 3 months out",
+          label: "Songkran - Thailand's Biggest Festival",
+          sublabel: "Book by January - Chiang Mai fills 3 months out",
           description: "Biggest water fight on earth.",
           prompt:
             "Plan a Thailand trip around Songkran. Help me choose between Bangkok, Chiang Mai, and the islands, explain the festival traditions, and build the perfect itinerary around the celebrations.",
@@ -106,7 +106,7 @@ const thailandThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/Loy Krathong — Thailand’s Most Beautiful Night.jpg ",
-          label: "Loy Krathong — Thailand's Most Beautiful Night",
+          label: "Loy Krathong - Thailand's Most Beautiful Night",
           sublabel: "November · book the lantern release early",
           description: "Thousands of lanterns. One night.",
           prompt:
@@ -115,7 +115,7 @@ const thailandThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/Vegetarian Festival — Phuket Experience.png ",
-          label: "Vegetarian Festival — Phuket Experience",
+          label: "Vegetarian Festival - Phuket Experience",
           sublabel: "October · 9 days of rituals",
           description: "Nine days of rituals in Phuket.",
           prompt:
@@ -133,7 +133,7 @@ const thailandThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/Full Moon Party -- Koh Phangan.webp ",
-          label: "Full Moon Party — Koh Phangan",
+          label: "Full Moon Party - Koh Phangan",
           sublabel: "Monthly · plan around the moon",
           description: "Music, fire, and endless night.",
           prompt:
@@ -152,7 +152,7 @@ const thailandThemeConfig: ThemeConfig = {
           sublabel: "All Regions · First Timer",
           description: "City, culture, and beaches in one trip.",
           prompt:
-            "Show me the best version of Thailand for a first visit—Bangkok, Chiang Mai, and the islands—with the perfect route, pace, and budget for 10 unforgettable days.",
+            "Show me the best version of Thailand for a first visit-Bangkok, Chiang Mai, and the islands-with the perfect route, pace, and budget for 10 unforgettable days.",
         },
         {
           image:
@@ -184,7 +184,7 @@ const thailandThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/Islands Only -- 10 Days.jpg",
-          label: "Islands Only — 10 Days",
+          label: "Islands Only - 10 Days",
           sublabel: "Beach · Island Hopping",
           description: "Nothing but beaches and islands.",
           prompt:
@@ -193,13 +193,13 @@ const thailandThemeConfig: ThemeConfig = {
       ],
     },
     {
-      heading: "Only in Thailand — Experiences Worth Flying For",
+      heading: "Only in Thailand - Experiences Worth Flying For",
       icon: "✨",
       cards: [
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/Muay Thai -- Train with a Real Coach.jpg ",
-          label: "Muay Thai — Train with a Real Coach",
+          label: "Muay Thai - Train with a Real Coach",
           tags: "Sport · Bangkok or Chiang Mai",
           description: "Not a show. An actual session.",
           prompt:
@@ -208,7 +208,7 @@ const thailandThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/Thai Cooking Class — Chiang Mai Food Experience.png ",
-          label: "Thai Cooking Class — Chiang Mai Food Experience",
+          label: "Thai Cooking Class - Chiang Mai Food Experience",
           tags: "Food · Chiang Mai",
           description: "Learn the dishes Thailand is known for.",
           prompt:
@@ -217,7 +217,7 @@ const thailandThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/Overnight Train -- Bangkok to Chiang Mai.png ",
-          label: "Overnight Train — Bangkok to Chiang Mai",
+          label: "Overnight Train - Bangkok to Chiang Mai",
           tags: "Experience · Night Train",
           description: "Thailand's most popular train journey.",
           prompt:
@@ -226,7 +226,7 @@ const thailandThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/Similan Islands — Thailand’s Best Snorkelling.jpg ",
-          label: "Similan Islands — Thailand's Best Snorkelling",
+          label: "Similan Islands - Thailand's Best Snorkelling",
           tags: "Diving · Andaman Sea",
           description: "Clear water, reefs, and marine life.",
           prompt:
@@ -235,7 +235,7 @@ const thailandThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/thailand-theme-2026/Doi Inthanon - Thailand's Highest Point.jpg ",
-          label: "Doi Inthanon — Thailand's Highest Point",
+          label: "Doi Inthanon - Thailand's Highest Point",
           tags: "Nature · Chiang Mai Day Trip",
           description: "Waterfalls, hill tribes, cold air.",
           prompt:
@@ -260,10 +260,10 @@ const ThailandTripThatHasEverythingThemePage = ({
     <>
       <Head>
         <title>{"Thailand Trip Packages & Itineraries for Indian Travellers | The Tarzan Way"}</title>
-        <meta name="description" content={"Plan your Thailand trip with The Tarzan Way's AI itinerary — Bangkok, Phuket, Krabi, Phi Phi and Chiang Mai. Best time to go, budgets in ₹, and a custom day-by-day plan for Indian travellers."} />
+        <meta name="description" content={"Plan your Thailand trip with The Tarzan Way's AI itinerary - Bangkok, Phuket, Krabi, Phi Phi and Chiang Mai. Best time to go, budgets in ₹, and a custom day-by-day plan for Indian travellers."} />
         <link rel="canonical" href="https://thetarzanway.com/theme/thailand-trip" />
         <meta property="og:title" content={"Thailand Trip Packages & Itineraries for Indian Travellers | The Tarzan Way"} />
-        <meta property="og:description" content={"Plan your Thailand trip with The Tarzan Way's AI itinerary — Bangkok, Phuket, Krabi, Phi Phi and Chiang Mai. Best time to go, budgets in ₹, and a custom day-by-day plan for Indian travellers."} />
+        <meta property="og:description" content={"Plan your Thailand trip with The Tarzan Way's AI itinerary - Bangkok, Phuket, Krabi, Phi Phi and Chiang Mai. Best time to go, budgets in ₹, and a custom day-by-day plan for Indian travellers."} />
         <meta property="og:url" content="https://thetarzanway.com/theme/thailand-trip" />
         <meta property="og:type" content="website" />
         <meta property="og:image" content="https://thetarzanway.com/og-image.png" />
