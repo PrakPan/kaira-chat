@@ -912,6 +912,12 @@ const fetchStatus = async () => {
         setCities(data.cities);
         setItineraryDate(data.start_date);
         props.setItineraryActivities(getItineraryActivities());
+        // Stays go through the same city hotel row as V2: ItineraryCity reads
+        // state.Stays and filters by itinerary_city_id. `hotels_status` has to
+        // be a settled value — the row renders its loading skeleton while it is
+        // "PENDING", and nothing here will ever move it off that.
+        dispatch(setStays(data.v1_stays || []));
+        dispatch(setItineraryStatus("hotels_status", "SUCCESS"));
         setItineraryLoading(false);
         // Nothing here polls or streams: release the chat lock so the (disabled)
         // composer doesn't sit in a loading state forever.

@@ -12,7 +12,10 @@
 // has none of that — so this is presentational only.
 
 import React from "react";
-import { optimizedImageUrl } from "../../helper/imageUrl";
+import {
+  TRANSPORT_ICONS,
+  getTransportBadgeStyle,
+} from "../bot-components/components/transportIcons";
 import { getHumanDate } from "../../services/getHumanDate";
 
 // "2024-05-17 00:00:00" -> "17 May 2024"; anything unparseable is dropped
@@ -29,17 +32,20 @@ const formatDate = (value) => {
   }
 };
 
-// The archive's most-used transfer icon — media/icons/bookings/flight.png, on
-// 43% of all legs — is no longer in the media bucket, so those rows rendered a
-// broken image however correct the URL was. These keys are all present (verified
-// 200 through the image handler), and double as a fallback for any other icon
-// that has since been deleted.
-const FALLBACK_ICON = {
-  Flight: "media/icons/bookings/transfers/airplane.svg",
-  Train: "media/icons/bookings/transfers/railway.svg",
-  Taxi: "media/icons/bookings/transfers/car-sedan.svg",
-  Bus: "media/icons/bookings/transfers/bus.svg",
-  Ferry: "media/icons/bookings/transfers/boat.svg",
+// The archive's `icon` is a media-bucket path, and the most-used one by far —
+// media/icons/bookings/flight.png, on 43% of all legs — is no longer in the
+// bucket, so those rows rendered a broken image however correct the URL was.
+// The mode's own vector icon is used instead: it is the same set the live chat
+// draws its transport cards with (WidgetRenderer), so an archived leg and a
+// current one look alike, and it can't 404.
+//
+// Only Flight, Taxi and Train occur in the archive; `bus` comes along with the
+// shared set and costs nothing to keep mapped.
+const MODE_KEY = {
+  Flight: "flight",
+  Taxi: "taxi",
+  Train: "train",
+  Bus: "bus",
 };
 
 const MODE_LABEL = {
@@ -47,7 +53,6 @@ const MODE_LABEL = {
   Train: "Train",
   Taxi: "Road transfer",
   Bus: "Bus",
-  Ferry: "Ferry",
 };
 
 const V1TransfersList = ({ transfers }) => {
@@ -55,7 +60,7 @@ const V1TransfersList = ({ transfers }) => {
   if (!items.length) return null;
 
   return (
-    <section id="Transfers" className="mt-8 mb-6">
+    <section id="V1Transfers" className="mt-8 mb-6">
       <h2 className="ttw-type-h3 font-medium text-[#262626] mb-1">Transfers</h2>
       <p className="ttw-type-small text-[#7A7A7A] mb-3">
         How you move between stops on this trip.
@@ -71,7 +76,9 @@ const V1TransfersList = ({ transfers }) => {
               ? `${checkIn} – ${checkOut}`
               : checkIn;
 
-          const fallbackIcon = FALLBACK_ICON[transfer.booking_type] || null;
+          const modeKey = MODE_KEY[transfer.booking_type] || "taxi";
+          const icon = TRANSPORT_ICONS[modeKey] ?? TRANSPORT_ICONS.taxi;
+          const accent = getTransportBadgeStyle(modeKey);
 
           const meta = [
             MODE_LABEL[transfer.booking_type] || transfer.booking_type,
@@ -86,32 +93,15 @@ const V1TransfersList = ({ transfers }) => {
               key={`${transfer.name}-${index}`}
               className="flex flex-row items-center gap-2.5 py-2.5"
             >
-              {transfer.icon || fallbackIcon ? (
-                <img
-                  src={optimizedImageUrl(transfer.icon || fallbackIcon, {
-                    width: 64,
-                  })}
-                  alt=""
-                  aria-hidden="true"
-                  className="w-5 h-5 md:w-6 md:h-6 object-contain flex-shrink-0"
-                  loading="lazy"
-                  onError={(event) => {
-                    // Swap to the mode's icon once; if that 404s too, hide the
-                    // slot rather than leaving a broken-image glyph.
-                    const img = event.currentTarget;
-                    const next = fallbackIcon
-                      ? optimizedImageUrl(fallbackIcon, { width: 64 })
-                      : null;
-                    if (next && img.src !== next) {
-                      img.src = next;
-                      return;
-                    }
-                    img.style.visibility = "hidden";
-                  }}
-                />
-              ) : (
-                <span className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0" />
-              )}
+              {/* Same tinted chip the chat's transport cards use, so the two
+                  read as one design language. */}
+              <span
+                aria-hidden="true"
+                className="flex items-center justify-center w-7 h-7 md:w-8 md:h-8 rounded-[9px] flex-shrink-0"
+                style={{ background: accent.background, color: accent.color }}
+              >
+                {icon}
+              </span>
 
               <div className="flex flex-col min-w-0">
                 <span className="text-[13px] md:text-[14px] text-[#262626] truncate">

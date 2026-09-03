@@ -2634,12 +2634,17 @@ export default function BotApp({
       let statusOk = false;
       let stage: string | null = null;
       let allDone = false;
+      let archivedV1 = false;
       try {
         const { axiosGetItineraryStatus } =
           await import("../../services/itinerary/daybyday/preview");
         const statusRes = await axiosGetItineraryStatus.get(`/${sid}/status/`);
         const celery = statusRes?.data?.celery;
         stage = statusRes?.data?.stage ?? null;
+        // Same signal ItineraryContainer keys the archive off. Read here too
+        // because the Redux flag is set by an async fetch that hasn't landed
+        // yet at this point in the restore.
+        archivedV1 = statusRes?.data?.version === "v1";
         statusOk = !!celery;
         if (celery) {
           allDone = ["ITINERARY", "HOTELS", "TRANSFERS", "PRICING"].every(
@@ -2676,6 +2681,15 @@ export default function BotApp({
         setShowStartScreen(false);
         setIsChatActive(true);
       }
+
+      // ── Archived V1: no chat behind it, so stop here ─────────────────────
+      // These itineraries predate the chat service. There is no thread to
+      // restore, and the "empty chatkit" branch below would read that absence
+      // as a new P2 trip and seed "Hey Kaira! provide summary of my
+      // itinerary" — firing a /chatkit p2 request against an itinerary the
+      // service has never seen. The panel is the static ArchiveChatPanel
+      // anyway, so there is nothing for a thread to render into.
+      if (archivedV1) return;
 
       // ── Step 3: chatkit threads.list → loadThread (threads.get_by_id) ────
       try {
@@ -3779,14 +3793,26 @@ Start Location: ${details.startLocation}`;
 
   // Compact mobile header sub-line ("dates · pax") shown under the title in the
   // collapsed trip strip (mirrors the design's .trip-row .t-sub).
-  const _tripDates =
-    itineraryRedux?.start_date && itineraryRedux?.end_date
+  //
+  // Archived V1 itineraries show their length instead of their dates. The dates
+  // are real but they are the dates the trip was originally planned for — years
+  // past for most of the archive — so printing them next to a live "Get in
+  // touch" CTA reads as a trip on offer for a date that has already gone. The
+  // night count is the part that still describes the itinerary.
+  const _tripNights =
+    itineraryRedux?.duration > 0
+      ? `${itineraryRedux.duration} ${itineraryRedux.duration === 1 ? "Night" : "Nights"}`
+      : "";
+  const _tripDates = isV1Archive
+    ? _tripNights
+    : itineraryRedux?.start_date && itineraryRedux?.end_date
       ? `${new Date(itineraryRedux.start_date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })} – ${new Date(itineraryRedux.end_date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}`
       : itineraryRedux?.travel_date || "";
   // Same dates with a 2-digit year — used on mobile where the two-column meta
   // is too tight for the full "2026" and the dates would otherwise overflow.
-  const _tripDatesShort =
-    itineraryRedux?.start_date && itineraryRedux?.end_date
+  const _tripDatesShort = isV1Archive
+    ? _tripNights
+    : itineraryRedux?.start_date && itineraryRedux?.end_date
       ? `${new Date(itineraryRedux.start_date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "2-digit" })} – ${new Date(itineraryRedux.end_date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "2-digit" })}`
       : itineraryRedux?.travel_date || "";
   const _tripPax = [
@@ -4160,7 +4186,10 @@ Start Location: ${details.startLocation}`;
                 />
               )}
               <div className="flex items-center gap-[8px] ml-auto">
-                {!isDraft && (
+                {/* No settings on an archive: the panel edits pax, dates and
+                    room config through the live itinerary-edit endpoint, which
+                    has nothing to write back to for a V1 snapshot. */}
+                {!isDraft && !isV1Archive && (
                   <button
                     aria-label="Settings"
                     className="flex items-center justify-center w-[34px] h-[34px] rounded-full bg-gray-100 hover:bg-gray-200"
@@ -4268,7 +4297,9 @@ Start Location: ${details.startLocation}`;
           </div>
 
           <div className="flex gap-3 max-ph:gap-[6px] items-center absolute top-0 right-0">
-            {!isDraft && (
+            {/* See the mobile settings button above — hidden for the same
+                reason on desktop. */}
+            {!isDraft && !isV1Archive && (
               <button
                 className="max-ph:hidden flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200"
                 onClick={() => {

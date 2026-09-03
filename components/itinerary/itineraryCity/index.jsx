@@ -844,17 +844,22 @@ const ItineraryCity = (props) => {
                     {/* Chat: hotel icon before the stay name */}
                     {props?.fromChat && <HotelIcon />}
                     {/* Hotel name — truncated in p2, full text in p1 (Draft) */}
+                    {/* Archived stays are plain text: the detail drawer loads
+                        from the live accommodation endpoints, which have
+                        nothing for a V1 snapshot's hotel id, so the underline
+                        would advertise a drawer that only ever errors. */}
                     <span
                       className={`${
                         isDraftStage
-                          ? "underline cursor-pointer break-words"
-                          : `underline cursor-pointer truncate shrink min-w-0 ${props?.fromChat ? "" : "max-w-[130px]"} md:max-w-none md:overflow-visible md:whitespace-normal md:break-words`
+                          ? `${isReadOnlyArchive ? "" : "underline cursor-pointer"} break-words`
+                          : `${isReadOnlyArchive ? "" : "underline cursor-pointer"} truncate shrink min-w-0 ${props?.fromChat ? "" : "max-w-[130px]"} md:max-w-none md:overflow-visible md:whitespace-normal md:break-words`
                       } ${props?.fromChat ? "text-[#1f6feb] font-semibold" : ""} ${
                         p1HotelLoadingId === hotel.id
                           ? "opacity-60 cursor-wait pointer-events-none"
                           : ""
                       }`}
                       onClick={() => {
+                        if (isReadOnlyArchive) return;
                         trackHotelCardClicked?.(
                           currentItineraryId,
                           hotel.id,
