@@ -567,7 +567,11 @@ const CityDay = (props) => {
   const dispatch = useDispatch();
   const { id } = useSelector((state) => state.auth);
   const { customer } = useSelector((state) => state.Itinerary);
-  const itineraryFromStore = useSelector((state) => state.Itinerary);
+  // Archived V1 itineraries are read-only and carry no bookings. Declared with
+  // the other selectors so every use below (tags, add-activity) is past the TDZ.
+  const isV1Archive = useSelector(
+    (state) => !!state.Itinerary?.is_v1_archive,
+  );
   const cart = useSelector((state) => state.Cart);
 
   // An activity reads as "Confirmed" only when its booking is in the cart and
@@ -800,9 +804,15 @@ useEffect(() => {
       typeof item?.guide === "string" && item.guide.trim()
         ? item.guide.trim()
         : null;
+    // "Tickets held" asserts a confirmed booking. Archived V1 itineraries have
+    // no bookings at all — the export carries none — so the chip would be a
+    // false claim on every activity.
     const renderTags =
       resolvedType === "activity"
-        ? [...(guideTag ? [guideTag] : []), "tickets_held"]
+        ? [
+            ...(guideTag ? [guideTag] : []),
+            ...(isV1Archive ? [] : ["tickets_held"]),
+          ]
         : resolvedType === "poi"
         ? ["on_your_own", ...dataTags].slice(0, 2)
         : dataTags;
@@ -973,8 +983,6 @@ useEffect(() => {
 
   // Booking actions only exist once the itinerary is out of Draft (p1) and its
   // pricing has settled — same gate the city header applies to its own actions.
-  // Archived V1 itineraries are read-only — nothing can be added to them.
-  const isV1Archive = !!itineraryFromStore?.is_v1_archive;
   const canAddActivity =
     !isDraft && !isV1Archive && finalized_status !== "PENDING";
 

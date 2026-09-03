@@ -12,7 +12,7 @@
 // has none of that — so this is presentational only.
 
 import React from "react";
-import { optimizedMediaUrl } from "../../lib/mediaImage";
+import { optimizedImageUrl } from "../../helper/imageUrl";
 import { getHumanDate } from "../../services/getHumanDate";
 
 // "2024-05-17 00:00:00" -> "17 May 2024"; anything unparseable is dropped
@@ -27,6 +27,19 @@ const formatDate = (value) => {
   } catch (err) {
     return null;
   }
+};
+
+// The archive's most-used transfer icon — media/icons/bookings/flight.png, on
+// 43% of all legs — is no longer in the media bucket, so those rows rendered a
+// broken image however correct the URL was. These keys are all present (verified
+// 200 through the image handler), and double as a fallback for any other icon
+// that has since been deleted.
+const FALLBACK_ICON = {
+  Flight: "media/icons/bookings/transfers/airplane.svg",
+  Train: "media/icons/bookings/transfers/railway.svg",
+  Taxi: "media/icons/bookings/transfers/car-sedan.svg",
+  Bus: "media/icons/bookings/transfers/bus.svg",
+  Ferry: "media/icons/bookings/transfers/boat.svg",
 };
 
 const MODE_LABEL = {
@@ -58,6 +71,8 @@ const V1TransfersList = ({ transfers }) => {
               ? `${checkIn} – ${checkOut}`
               : checkIn;
 
+          const fallbackIcon = FALLBACK_ICON[transfer.booking_type] || null;
+
           const meta = [
             MODE_LABEL[transfer.booking_type] || transfer.booking_type,
             transfer.travel_duration || null,
@@ -71,13 +86,28 @@ const V1TransfersList = ({ transfers }) => {
               key={`${transfer.name}-${index}`}
               className="flex flex-row items-center gap-2.5 py-2.5"
             >
-              {transfer.icon ? (
+              {transfer.icon || fallbackIcon ? (
                 <img
-                  src={optimizedMediaUrl(transfer.icon, { width: 64 })}
+                  src={optimizedImageUrl(transfer.icon || fallbackIcon, {
+                    width: 64,
+                  })}
                   alt=""
                   aria-hidden="true"
                   className="w-5 h-5 md:w-6 md:h-6 object-contain flex-shrink-0"
                   loading="lazy"
+                  onError={(event) => {
+                    // Swap to the mode's icon once; if that 404s too, hide the
+                    // slot rather than leaving a broken-image glyph.
+                    const img = event.currentTarget;
+                    const next = fallbackIcon
+                      ? optimizedImageUrl(fallbackIcon, { width: 64 })
+                      : null;
+                    if (next && img.src !== next) {
+                      img.src = next;
+                      return;
+                    }
+                    img.style.visibility = "hidden";
+                  }}
                 />
               ) : (
                 <span className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0" />

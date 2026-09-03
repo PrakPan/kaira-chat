@@ -767,8 +767,6 @@ export default function BotApp({
   useEffect(() => {
     itineraryStatusRef.current = itineraryRedux?.status;
   }, [itineraryRedux?.status]);
-  const isV1 =
-    useSelector((state: any) => state.ItineraryStatus?.version) === "v1";
   const statusDisplayText = useSelector(
     (state: any) => state.ItineraryStatus?.display_text,
   );
@@ -4406,9 +4404,13 @@ Start Location: ${details.startLocation}`;
   // Mercury shape (lib/v1Itinerary -> adaptV1ToMercuryShape) and renders through
   // the normal chat layout below, with ArchiveChatPanel standing in for the chat.
   // The bail-out stays for a v1 itinerary the archive doesn't have.
-  if (isV1 && !isV1Archive) {
-    return <ItineraryContainer id={activeItineraryId} />;
-  }
+  // No v1 bail-out. It used to return a bare ItineraryContainer here, which
+  // produced a visible three-step flip on every archived itinerary: the chat
+  // layout painted first, then `isV1` arrived from the status API and swapped in
+  // the old standalone interface, then the archive loaded and swapped back. The
+  // chat layout below now handles v1 from the first paint — and if the archive
+  // has nothing for this id, ItineraryContainer falls back internally (oldOne)
+  // without changing the shell around it.
 
   return (
     <main
@@ -5100,9 +5102,29 @@ const BottomCTABar = React.memo(
     )
       return null;
 
-    // Archived V1 itineraries carry no cart, pricing or bookings — the bar
-    // would render an empty "Total Cost" shell with a dead View Cart button.
-    if (isV1Archive) return null;
+    // Archived V1 itineraries carry no cart, pricing or bookings, so the usual
+    // price + View Cart pair has nothing behind it. Keep the bar — it's how the
+    // traveller reaches us — but say why there's no price and point at contact
+    // instead. Mirrors the pricing-failure branch below.
+    if (isV1Archive) {
+      return (
+        <div
+          data-bottom-cta-bar
+          style={barStyle}
+          className="z-20 fixed w-full md:w-[48%] bottom-0 flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3 flex items-center justify-between"
+        >
+          <p className="ttw-type-body text-[#6E757A]">
+            Get in touch for pricing
+          </p>
+          <button
+            onClick={onGetInTouch}
+            className="flex items-center gap-2 h-[44px] px-4 rounded-[8px] bg-[#F7E700] ttw-type-body font-inter font-semibold"
+          >
+            Get in touch!
+          </button>
+        </div>
+      );
+    }
 
     if (isDraft) {
       return (

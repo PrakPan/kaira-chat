@@ -111,3 +111,9 @@ pm2-deploy.sh
 package-lock.json
 vercel.json
 tsconfig.tsbuildinfo
+
+# Prebuild snapshot for the SEO trips pages (scripts/tripsSeoCache.js).
+.seo-cache/
+
+# Where scripts/removeTripsPage.js parks pages/trips during a non-trips build.
+.trips-pages-backup/

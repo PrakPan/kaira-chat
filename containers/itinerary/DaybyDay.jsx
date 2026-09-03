@@ -4,6 +4,7 @@ import { connect, useSelector } from "react-redux";
 import ItineraryCity from "../../components/itinerary/itineraryCity";
 import DownloadShareBanners from "../../components/itinerary/DownloadShareBanners";
 import V1TransfersList from "../../components/itinerary/V1TransfersList";
+import V1StaysList from "../../components/itinerary/V1StaysList";
 import CityItem from "./VerticalLayout";
 import media from "../../components/media";
 import BookingModal from "../../components/modals/bookingupdated/Index";
@@ -778,7 +779,10 @@ const DaybyDay = ({
             per-leg data, so the between-city connectors are suppressed (see
             VerticalLayout) and the whole set is listed here instead. */}
         {Itinerary?.is_v1_archive && (
-          <V1TransfersList transfers={Itinerary?.v1_transfers} />
+          <>
+            <V1StaysList stays={Itinerary?.v1_stays} />
+            <V1TransfersList transfers={Itinerary?.v1_transfers} />
+          </>
         )}
 
         {(!props.fromChat || itineraryIsComplete) && (
