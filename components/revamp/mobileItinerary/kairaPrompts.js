@@ -33,6 +33,10 @@ const prompts = {
 
   // ── Taxis within a city ────────────────────────────────────────────────────
   changeTaxi: (city) => `change the taxi in ${city}`,
+  // The airport pair, named by which of the two it is. `changeTaxi` means the
+  // sightseeing car, and a city that has all three would otherwise send the
+  // same sentence for every one of them.
+  changeAirportTaxi: (role, city) => `change the airport ${role} in ${city}`,
   addTaxi: (city) => `add a taxi in ${city}`,
 
   // ── Days ───────────────────────────────────────────────────────────────────
@@ -50,6 +54,11 @@ const prompts = {
   // string the itinerary already sends (itineraryCity/index.jsx).
   showDetails: (name, city) => `Show ${name}, ${city} Details`,
   removeItem: (name, city) => `remove ${name} from my ${city} plan`,
+  // A place or a restaurant is a plan entry, not a booking — the POI drawer's
+  // CTA has always said "Replace with something else", so the request Kaira
+  // gets is worded the same way rather than as a booking "change".
+  replaceItem: (name, city) =>
+    `Can you replace ${name}${city ? ` in ${city}` : ""} with something else?`,
 
   // ── Trip-level ─────────────────────────────────────────────────────────────
   changePax: () => `change traveller count`,
@@ -58,7 +67,10 @@ const prompts = {
   changeActivity: (name, city) =>
     `Can you change ${name}${city ? ` in ${city}` : ""} to something else?`,
   openEnded: () => `I'd like to change something in my trip`,
-  changeAncillaries: () => `change the visa and eSIM in my trip`,
+  // `what` is the one booking being changed — "visa" or "eSIM". Each is its
+  // own card and its own sheet now, so the request names one rather than
+  // asking Kaira to redo both.
+  changeAncillary: (what) => `change the ${what} in my trip`,
   // `what` is what the block actually holds — "visa", "eSIM" or "visa and
   // eSIM". A trip with no visa should not be asked to drop one.
   removeAncillaries: (what) => `remove the ${what} from my trip`,

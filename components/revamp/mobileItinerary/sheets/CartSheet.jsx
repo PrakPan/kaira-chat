@@ -28,11 +28,16 @@ import { formatMoney } from "../../../../services/money";
 // ─────────────────────────────────────────────────────────────────────────────
 
 // Category key → the label the design uses.
+//
+// "Transfers", not "Taxis": the cart's Transfers group is every way of getting
+// between two places that isn't a flight — a bus, a train, a ferry, a
+// self-drive — and a trip with one bus in it was billing that bus under a
+// heading that named a taxi.
 const GROUP_LABEL = {
   Flights: "Flights",
   Stays: "Stays",
   Hotels: "Stays",
-  Transfers: "Taxis",
+  Transfers: "Transfers",
   Activities: "Activities",
   Ancillaries: "Visa & eSIM",
 };

@@ -51,14 +51,21 @@ const ShieldCheck = () => (
 );
 
 // The change CTA on a journey names the thing being changed — "Change Flight",
-// "Change Train" — rather than the category. "Change travel" reads identically
+// "Change Train" — rather than the category. The noun is capitalised, here and
+// on every other change CTA on this surface ("Change Stay", "Change Activity",
+// "Change Visa"): the button is a name, and a lowercase one beside its
+// capitalised siblings reads as a typo. "Change travel" reads identically
 // on every journey in the trip, so it never says which of them the button is
 // about to hand to Kaira.
 //
 // Keyed on the resolved mode key, so the word agrees with the glyph the row is
 // drawn with. A COMBO is deliberately excluded: "taxi, then fly" has no single
 // mode, and naming its leading leg would promise to change only the taxi.
-// Self-drive and the unrecognised-mode fallback keep the generic verb too.
+// Self-drive and the unrecognised-mode fallback take the same route.
+//
+// What those fall back to is "Change Transfer" — the transfer drawer's own CTA
+// on desktop, and the noun Kaira is asked for anyway ("change transfer in Hoi
+// An"). "Change travel" named nothing the traveller books.
 const TRANSFER_NOUNS = {
   Flight: "Flight",
   Train: "Train",
@@ -69,7 +76,7 @@ const TRANSFER_NOUNS = {
 
 const transferChangeLabel = (modeKey, isCombo) => {
   const noun = isCombo ? null : TRANSFER_NOUNS[getModeAccent(modeKey).key];
-  return noun ? `Change ${noun}` : "Change travel";
+  return `Change ${noun || "Transfer"}`;
 };
 
 // The pane that actually scrolls belongs to the host (BotApp's MobileLayout),
@@ -259,14 +266,13 @@ export default function MobileItinerary({
   // The add row only renders when the city HAS no taxi — a booked one takes the
   // slot and carries its own CHANGE — so this is the add case. The change
   // branch stays as the safety net for any caller that still routes here.
+  // The row only exists while one of this city's three cars is still missing —
+  // pickup, drop or the sightseeing car — so it always ADDS. It used to send
+  // "change the taxi" whenever the city already had one, which on a city with
+  // a sightseeing car and no airport transfers asked Kaira to redo the one
+  // booking the traveller was happy with.
   const handleAddTaxi = useCallback(
-    (leg) =>
-      ask(
-        leg.extras.length > 0
-          ? prompts.changeTaxi(leg.city)
-          : prompts.addTaxi(leg.city),
-        `Taxi in ${leg.city}`,
-      ),
+    (leg) => ask(prompts.addTaxi(leg.city), `Taxi in ${leg.city}`),
     [ask],
   );
 
@@ -275,7 +281,12 @@ export default function MobileItinerary({
   // has more than one.
   const handleChangeExtra = useCallback(
     (leg, extra) =>
-      ask(prompts.changeTaxi(leg.city), extra?.name || `Taxi in ${leg.city}`),
+      ask(
+        extra?.airportRole
+          ? prompts.changeAirportTaxi(extra.airportRole, leg.city)
+          : prompts.changeTaxi(leg.city),
+        extra?.name || `Taxi in ${leg.city}`,
+      ),
     [ask],
   );
 
@@ -317,7 +328,7 @@ export default function MobileItinerary({
         hasMap: true,
         onOpenMap: onViewMap,
         canChange: true,
-        changeLabel: "Change stay",
+        changeLabel: "Change Stay",
         changeMessage: prompts.changeStay(leg.city),
         canRemove: true,
         removeMessage: prompts.removeStay(leg.city),
@@ -392,8 +403,14 @@ export default function MobileItinerary({
   const handleOpenExtra = useCallback(
     (leg, extra) =>
       setSheet({ type: "detail", detail: {
-        kind: `TAXI · ${String(leg.city).toUpperCase()}`,
-        contextLabel: `Taxi in ${leg.city}`,
+        // An airport transfer says which one it is. "TAXI · HOI AN" over three
+        // different cars in the same city named none of them.
+        kind: `${
+          extra.airportRole ? `AIRPORT ${extra.airportRole}` : "TAXI"
+        } · ${String(leg.city).toUpperCase()}`.toUpperCase(),
+        contextLabel: extra.airportRole
+          ? `Airport ${extra.airportRole} in ${leg.city}`
+          : `Taxi in ${leg.city}`,
         name: extra.name,
         meta: extra.meta,
         // A taxi has no photo. It carries the same mode glyph its row does,
@@ -410,14 +427,21 @@ export default function MobileItinerary({
               title: extra.name,
             }
           : null,
-        blurb: "A car booked for you inside this city.",
+        blurb:
+          extra.airportRole === "pickup"
+            ? "A car booked to meet you at the airport."
+            : extra.airportRole === "drop"
+              ? "A car booked to take you to the airport."
+              : "A car booked for you inside this city.",
         facts: [
           { k: "CITY", v: leg.city },
           { k: "STATUS", v: "Booked" },
         ],
         canChange: true,
         changeLabel: transferChangeLabel(extra.modeKey, extra.isCombo),
-        changeMessage: prompts.changeTaxi(leg.city),
+        changeMessage: extra.airportRole
+          ? prompts.changeAirportTaxi(extra.airportRole, leg.city)
+          : prompts.changeTaxi(leg.city),
         canRemove: true,
         removeMessage: prompts.removeItem(extra.name, leg.city),
         },
@@ -425,68 +449,56 @@ export default function MobileItinerary({
     [],
   );
 
-  // "Before you fly" — the visa/eSIM block, in the same sheet as everything
-  // else, and now with the same BODY as everything else: the real bookings,
-  // fetched from /bookings/ancillary/<id>/ by AncillaryDetail. It used to
-  // describe itself out of the view model's tally alone ("A data plan so you
-  // land connected", ESIM · 1 plan), which said nothing the row above it had
-  // not already said.
+  // ONE BOOKING PER SHEET, like desktop.
   //
+  // "Before you fly" used to be a single row that opened every ancillary the
+  // trip had stacked in one sheet — a visa and an eSIM under one header, one
+  // pair of CTAs governing both. Desktop has never done that: each ancillary
+  // booking is its own row with its own "View Detail", and its own drawer.
+  // Nothing about the two is shared — different suppliers, different terms,
+  // and removing one has no bearing on the other — so a sheet that spoke for
+  // both could only speak vaguely ("Change", "remove the visa and eSIM").
+  //
+  // The body is unchanged: AncillaryDetail off /bookings/ancillary/<id>/.
   // Deliberately NOT the existing VisaDetailDrawer / EsimDetailDrawer: those
   // quote a supplier price and offer to buy, and a price is the one thing that
   // must never appear on a package surface.
-  const handleOpenAncillaries = useCallback(() => {
-    const { visaCount, esimCount, items } = ancillaries;
-    // One booking names itself in the header, the way a stay or a flight does.
-    // Several keep the summary line, and the sheet labels each body below it.
-    const only = items.length === 1 ? items[0] : null;
+  const handleOpenAncillary = useCallback((item) => {
+    const isEsim = item.type === "eSIM";
+    const noun = isEsim ? "eSIM" : "Visa";
     setSheet({ type: "detail", detail: {
-      kind: "BEFORE YOU FLY",
-      contextLabel: "Visa & eSIM",
-      name: only
-        ? only.name || only.type
-        : [
-            visaCount ? `Visa × ${visaCount}` : null,
-            esimCount ? (esimCount === 1 ? "eSIM" : `eSIM × ${esimCount}`) : null,
-          ]
-            .filter(Boolean)
-            .join(" + "),
+      kind: isEsim ? "ESIM" : "VISA",
+      contextLabel: item.name || noun,
+      name: item.name || noun,
       meta: "INCLUDED",
-      Icon: visaCount > 0 ? FaPassport : FaSimCard,
+      Icon: isEsim ? FaSimCard : FaPassport,
       live: {
         kind: "ancillary",
         // The sheet keys its body on this, so opening a different row refetches
         // rather than painting the last booking under the new header.
-        id: items.map((item) => item.id).join("+"),
-        items,
+        id: item.id,
+        items: [item],
       },
       canChange: true,
-      // Name what is being changed, the way a journey's CTA does. The block
-      // holds visas, eSIMs or both — a MIXED block keeps the bare verb, since
-      // the button hands the whole "before you fly" set to Kaira and "Change
-      // Visa" would promise to leave the eSIM alone.
-      changeLabel:
-        visaCount && esimCount
-          ? "Change"
-          : esimCount
-            ? "Change eSIM"
-            : "Change Visa",
-      changeMessage: prompts.changeAncillaries(),
+      changeLabel: `Change ${noun}`,
+      changeMessage: prompts.changeAncillary(isEsim ? "eSIM" : "visa"),
       canRemove: true,
-      removeMessage: prompts.removeAncillaries(
-        visaCount && esimCount ? "visa and eSIM" : esimCount ? "eSIM" : "visa",
-      ),
+      removeMessage: prompts.removeAncillaries(isEsim ? "eSIM" : "visa"),
       },
     });
-  }, [ancillaries]);
+  }, []);
 
   // A day item — opened from the day sheet, which knows the leg and day.
   const handleOpenDayItem = useCallback((leg, day, item) => {
     const booked = item.kind === "booked";
     setSheet({ type: "detail", detail: {
+      // No kicker on a booked activity: "BOOKED ACTIVITY" over its own name
+      // said what the STATUS fact and the ticket copy inside the sheet both
+      // say, and it was the widest line in the header. A place or a restaurant
+      // keeps its kicker — those two are told apart by nothing else up here.
       kind:
         item.kind === "booked"
-          ? "BOOKED ACTIVITY"
+          ? null
           : item.kind === "food"
             ? "RESTAURANT"
             : "PLACE",
@@ -517,11 +529,18 @@ export default function MobileItinerary({
         { k: "CATEGORY", v: item.category || null },
         { k: "STATUS", v: booked ? "Tickets held" : "Suggestion" },
       ],
-      status: booked ? "Tickets held" : "Included",
       hasMap: true,
-      canChange: booked,
-      changeLabel: "Change activity",
-      changeMessage: prompts.changeActivity(item.name, leg.city),
+      // A place or a restaurant swaps rather than changes, and it says so in
+      // the POI drawer's own words — "Replace with something else", short to
+      // "Replace" where the bar is narrow. It used to have no change CTA at
+      // all here, which left a suggestion the traveller didn't want with only
+      // one way out of the sheet: remove it.
+      canChange: true,
+      changeLabel: booked ? "Change Activity" : "Replace with something else",
+      changeLabelShort: booked ? null : "Replace",
+      changeMessage: booked
+        ? prompts.changeActivity(item.name, leg.city)
+        : prompts.replaceItem(item.name, leg.city),
       canRemove: true,
       removeMessage: prompts.removeItem(item.name, leg.city),
       },
@@ -703,49 +722,59 @@ export default function MobileItinerary({
           />
         ))}
 
-        {(ancillaries.visaCount > 0 || ancillaries.esimCount > 0) && (
-          <div style={T.card}
-            className="flex items-center gap-[11px] p-[13px]">
-            {/* One row, and on a mixed trip two things behind it. The VISA wins
-                the glyph: it is the one that decides whether you board, and an
-                eSIM you can still buy at the airport. Neutral tile and grey
-                glyph, not the transfers' blue — nothing here is a journey. */}
-            <span
-              className="flex h-[28px] w-[28px] flex-none items-center justify-center rounded-[6px]"
-              style={{ background: "#eef0f4" }}
-              aria-hidden
-            >
-              {ancillaries.visaCount > 0 ? (
-                <FaPassport size={14} color="#6b7280" />
-              ) : (
-                <FaSimCard size={14} color="#6b7280" />
-              )}
-            </span>
-            <div className="min-w-0 flex-1">
-              <div className="text-[13.5px] font-[700] text-[#0b1220]">
-                Before you fly
-              </div>
-              <div className="mt-[4px] truncate font-mono text-[10px] tracking-[0.06em] text-[#8a93a6]">
-                {[
-                  ancillaries.visaCount ? `VISA × ${ancillaries.visaCount}` : null,
-                  ancillaries.esimCount ? "ESIM" : null,
-                  "INCLUDED",
-                ]
-                  .filter(Boolean)
-                  .join(" · ")}
-              </div>
+        {/* A card each, the way desktop lists them — a visa and an eSIM are two
+            bookings, and one card reading "VISA × 1 · ESIM · INCLUDED" made the
+            traveller open a sheet to find out what either of them actually was.
+            The group keeps the "before you fly" framing as its kicker, which is
+            the only thing the merged card was really saying. */}
+        {ancillaries.items.length > 0 && (
+          <div className="flex flex-col gap-[10px]">
+            <div className="font-mono text-[10px] tracking-[0.08em] text-[#8a93a6]">
+              BEFORE YOU FLY
             </div>
-            {/* The row named two bookings and then refused to say anything more
-                about them. This opens what they actually cover — still with no
-                price, because they are inside the package. */}
-            <button
-              type="button"
-              onClick={handleOpenAncillaries}
-              style={{ border: 0, background: "none", padding: 0 }}
-              className="flex-none font-mono text-[10px] tracking-[0.06em] text-[#6b7280]"
-            >
-              VIEW ›
-            </button>
+            {ancillaries.items.map((item) => {
+              const isEsim = item.type === "eSIM";
+              return (
+                <div
+                  key={item.id}
+                  style={T.card}
+                  className="flex items-center gap-[11px] p-[13px]"
+                >
+                  {/* Neutral tile and grey glyph, not the transfers' blue —
+                      nothing here is a journey. */}
+                  <span
+                    className="flex h-[28px] w-[28px] flex-none items-center justify-center rounded-[6px]"
+                    style={{ background: "#eef0f4" }}
+                    aria-hidden
+                  >
+                    {isEsim ? (
+                      <FaSimCard size={14} color="#6b7280" />
+                    ) : (
+                      <FaPassport size={14} color="#6b7280" />
+                    )}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    {/* The supplier's own name for it — "Vietnam e-Visa", the
+                        eSIM's plan title. A booking with none falls back to
+                        what kind it is rather than to a blank line. */}
+                    <div className="truncate text-[13.5px] font-[700] text-[#0b1220]">
+                      {item.name || (isEsim ? "eSIM" : "Visa")}
+                    </div>
+                    <div className="mt-[4px] truncate font-mono text-[10px] tracking-[0.06em] text-[#8a93a6]">
+                      {[isEsim ? "ESIM" : "VISA", "INCLUDED"].join(" · ")}
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleOpenAncillary(item)}
+                    style={{ border: 0, background: "none", padding: 0 }}
+                    className="flex-none font-mono text-[10px] tracking-[0.06em] text-[#6b7280]"
+                  >
+                    VIEW ›
+                  </button>
+                </div>
+              );
+            })}
           </div>
         )}
       </div>

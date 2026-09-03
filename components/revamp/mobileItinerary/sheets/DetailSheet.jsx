@@ -1,7 +1,9 @@
 import React, { useRef } from "react";
 import getModeAccent from "../../common/components/bookingDetail/modeAccent";
+import BookingDetailActions from "../../common/components/BookingDetailActions";
 import Sheet from "../../common/components/Sheet";
 import LiveDetailBody from "./LiveDetailBody";
+import StarGlyph from "../../common/components/bookingDetail/StarGlyph";
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  DetailSheet — ONE sheet, one descriptor, every row on the surface.
@@ -16,9 +18,9 @@ import LiveDetailBody from "./LiveDetailBody";
 //    { kind, name, meta, imageUrl, Icon | iconKeys, iconColor, blurb,
 //      facts: [{k, v}],
 //      segments: [{modeLabel, modeKey, title, durationLabel}],
-//      policy, hasMap, statusLabel, status, contextLabel,
+//      policy, hasMap, contextLabel,
 //      live: { … }  ← see below,
-//      canChange, changeLabel, changeMessage,
+//      canChange, changeLabel, changeLabelShort, changeMessage,
 //      canRemove, removeLabel, removeMessage }
 //
 //  `live` names a booking that has a detail endpoint behind it — a transfer, a
@@ -91,6 +93,10 @@ function Segment({ seg, first }) {
  * is a speck rather than a rating. It is a GLYPH, not a letter, so it is scaled
  * on its own instead of by raising the whole line, which would enlarge the
  * transfer and activity metas that have no glyph in them.
+ *
+ * It is a drawn star rather than the character: at 13px against a 10px numeral
+ * the typed glyph rode low, and how low depended on which font on the device
+ * owned "★" — StarGlyph centres it on the digit instead.
  */
 function Meta({ text }) {
   const parts = String(text).split("★");
@@ -100,11 +106,7 @@ function Meta({ text }) {
     // eslint-disable-next-line react/no-array-index-key
     <React.Fragment key={i}>
       {part}
-      {i < parts.length - 1 ? (
-        <span style={{ fontSize: 13, lineHeight: 1, verticalAlign: "-1.5px" }}>
-          ★
-        </span>
-      ) : null}
+      {i < parts.length - 1 ? <StarGlyph size={11} textSize={10} style={{ marginLeft: 1 }} /> : null}
     </React.Fragment>
   ));
 }
@@ -196,10 +198,19 @@ export default function DetailSheet({
               ) : null}
             </div>
             <div className="min-w-0 flex-1">
-              <div className="font-mono text-[9.5px] tracking-[0.08em] text-[#8a93a6]">
-                {d.kind}
-              </div>
-              <div className="mt-[4px] text-[16px] font-[800] leading-[1.2] tracking-[-0.02em] text-[#0b1220]">
+              {/* A descriptor may leave the kicker off (a booked activity
+                  does) — rendered conditionally so the header closes up
+                  instead of holding an empty mono line above the name. */}
+              {d.kind ? (
+                <div className="font-mono text-[9.5px] tracking-[0.08em] text-[#8a93a6]">
+                  {d.kind}
+                </div>
+              ) : null}
+              <div
+                className={`text-[16px] font-[800] leading-[1.2] tracking-[-0.02em] text-[#0b1220] ${
+                  d.kind ? "mt-[4px]" : ""
+                }`}
+              >
                 {d.name}
               </div>
               {d.meta ? (
@@ -318,53 +329,39 @@ export default function DetailSheet({
           )}
         </div>
 
-        <div className="flex-none border-t border-[#e6e8ec] px-[14px] pb-[14px] pt-[11px]">
-          <div className="flex items-center gap-[8px]">
-            <div className="min-w-0 flex-1">
-              {/* Truncated, not wrapped: every sheet now carries BOTH a change
-                  and a remove button, and on a narrow phone a two-line status
-                  column is what pushes them off the row. */}
-              <div className="truncate font-mono text-[9.5px] tracking-[0.07em] text-[#8a93a6]">
-                {d.statusLabel || "IN YOUR PACKAGE"}
-              </div>
-              <div className="mt-[3px] truncate text-[13.5px] font-[700] text-[#0b1220]">
-                {d.status || "Included"}
-              </div>
-            </div>
-            {d.canChange ? (
-              <button
-                type="button"
-                disabled={disabled}
-                onClick={act(d.changeMessage)}
-                style={{
-                  border: "none",
-                  background: "#f7e700",
-                  borderRadius: 10,
-                  boxShadow: "0 8px 20px -10px rgba(247,231,0,0.5)",
-                }}
-                className="flex-none whitespace-nowrap px-[18px] py-[12px] text-[13.5px] font-[800] text-[#0b1220] disabled:opacity-40"
-              >
-                {d.changeLabel || "Change"}
-              </button>
-            ) : null}
-            {d.canRemove ? (
-              <button
-                type="button"
-                disabled={disabled}
-                onClick={act(d.removeMessage)}
-                style={{
-                  border: "1px solid #dcdfe5",
-                  background: "#ffffff",
-                  borderRadius: 10,
-                  boxShadow: "none",
-                }}
-                className="flex-none whitespace-nowrap px-[14px] py-[11px] text-[13.5px] font-[600] text-[#6b7280] disabled:opacity-40"
-              >
-                {d.removeLabel || "Remove"}
-              </button>
-            ) : null}
+        {/* The same two pills every booking drawer on the site ends with —
+            outlined red "Remove" on the left, yellow "Change …" on the right —
+            rather than this sheet's own pair of square buttons.
+
+            The status column they used to share the bar with is gone: it said
+            "IN YOUR PACKAGE / Included" on nearly every booking, which is the
+            one thing a traveller already knows about anything in their
+            itinerary, and it was taking the width that let the pills be pills.
+            The one row with something else to say (a held activity ticket)
+            still says it in its STATUS fact.
+
+            Removing here is not the desktop's immediate cancellation — it hands
+            the request to Kaira like every other action on this surface — so it
+            skips BookingDetailActions' confirm modal: there is nothing yet to
+            confirm, and the message she is asked is visible in the thread the
+            sheet closes into. */}
+        {d.canChange || d.canRemove ? (
+          <div className="flex-none border-t border-[#e6e8ec] px-[14px] pb-[14px] pt-[11px]">
+            <BookingDetailActions
+              onDelete={d.canRemove ? act(d.removeMessage) : undefined}
+              deleteLabel={d.removeLabel || "Remove from Itinerary"}
+              deleteDisabled={disabled}
+              confirmDelete={false}
+              onChange={d.canChange ? act(d.changeMessage) : undefined}
+              changeLabel={d.changeLabel || "Change"}
+              // A label too long for a phone's half of the bar hands in a short
+              // form that swaps in under 520px, the way the POI drawer's
+              // "Replace with something else" becomes "Replace".
+              changeLabelShort={d.changeLabelShort || undefined}
+              changeDisabled={disabled}
+            />
           </div>
-        </div>
+        ) : null}
       </div>
     </Sheet>
   );

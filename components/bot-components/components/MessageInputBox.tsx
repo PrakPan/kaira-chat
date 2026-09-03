@@ -701,7 +701,8 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
            design has no outlined "armed/unarmed" state — the disc is the
            anchor of the row, and having it switch between outline and fill on
            every keystroke flickers the one fixed point at the bottom of the
-           screen. Disabled reads as opacity instead.
+           screen. Nothing to send reads as an inert disc, not a faded one:
+           only a locked composer dims.
 
            Stop keeps the same disc so the row does not change shape mid-turn;
            only the glyph swaps. */
@@ -747,10 +748,16 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
             background: #0b1220;
             color: #f7e700;
           }
+          /* Full strength with nothing typed. The disc is the fixed anchor of
+             the bottom row, and fading it to a third on every empty field made
+             the composer look broken rather than idle — the same reason the
+             desktop pill keeps its outline at full strength when unarmed. It
+             is still disabled, so it takes no tap; only the genuinely locked
+             composer (.is-locked, rule above at higher specificity) dims. */
           .kp-composer-wrap .kp-send:disabled {
             background: #0b1220;
             color: #f7e700;
-            opacity: 0.35;
+            opacity: 1;
           }
           /* The word goes; the arrow the desktop pill hides comes back. */
           .kp-composer-wrap .kp-send .kp-btn-label,

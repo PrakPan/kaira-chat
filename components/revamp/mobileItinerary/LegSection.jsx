@@ -422,12 +422,16 @@ export default function LegSection({
         onChange={() => onChangeStay?.(leg)}
       />
 
-      {/* The days, and under them the ONE taxi slot for this city.
-          `leg.extras` is intracity taxis — the sightseeing car, the day-hire —
-          which is exactly what "Add taxi in …" offers to book. So they are the
-          same slot in two states, and rendering the taxi as a card above the
-          list while the empty invitation sat below it asked the reader to work
-          out that the two were about the same thing.
+      {/* The days, and under them every car booked in this city: the airport
+          pickup and drop, and the sightseeing taxi — each its own row, each
+          openable and changeable, in the order they happen.
+
+          "Add taxi in …" stands for whichever car this city is still missing —
+          the airport pickup, the airport drop, the sightseeing car — so it goes
+          only once there is nothing left to add. `taxiSlots.complete` is that
+          question answered in the view model, where it can also tell that a
+          city reached and left by road can hold no airport pair at all, and so
+          is complete on its sightseeing car alone.
           The box renders for a leg with taxis but no days too — otherwise the
           booking would have nowhere left to appear. */}
       {(leg.days.length > 0 || leg.extras.length > 0) && (
@@ -440,17 +444,16 @@ export default function LegSection({
               onOpen={() => onOpenDay?.(leg, day)}
             />
           ))}
-          {leg.extras.length > 0 ? (
-            leg.extras.map((x) => (
-              <TaxiRow
-                key={x.bookingId || x.name}
-                extra={x}
-                disabled={disabled}
-                onOpen={() => onOpenExtra?.(leg, x)}
-                onChange={() => onChangeExtra?.(leg, x)}
-              />
-            ))
-          ) : (
+          {leg.extras.map((x) => (
+            <TaxiRow
+              key={x.bookingId || x.name}
+              extra={x}
+              disabled={disabled}
+              onOpen={() => onOpenExtra?.(leg, x)}
+              onChange={() => onChangeExtra?.(leg, x)}
+            />
+          ))}
+          {leg.taxiSlots?.complete ? null : (
             <button
               type="button"
               onClick={() => onAddTaxi?.(leg)}

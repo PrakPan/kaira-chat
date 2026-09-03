@@ -288,7 +288,11 @@ export function PhotoMosaic({ images, full, alt }) {
 
   return (
     <>
-      <div className="flex flex-col gap-[8px] px-4 pb-4">
+      {/* 10px under the mosaic, not 16: what follows it in the one sheet that
+          uses this — the hotel's class line — is the caption to these photos,
+          and the sheet sets a caption 10px off what it captions (DetailSection
+          does it with `pb-2.5`). A full section gap read as a stray line. */}
+      <div className="flex flex-col gap-[8px] px-4 pb-[10px]">
         <div className="flex">
           <MosaicTile
             src={list[0]}

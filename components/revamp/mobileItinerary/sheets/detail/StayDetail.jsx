@@ -1,11 +1,11 @@
 import React from "react";
 import { useRouter } from "next/router";
-import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 
 import PolicyNote from "../../../common/components/bookingDetail/PolicyNote";
 import { dateFormat } from "../../../../../helper/DateUtils";
 import { getHumanTime } from "../../../../../services/getHumanTime";
 import { MERCURY_HOST } from "../../../../../services/constants";
+import StarGlyph from "../../../common/components/bookingDetail/StarGlyph";
 import useBookingDetail from "./useBookingDetail";
 import {
   Bullets,
@@ -151,55 +151,132 @@ function Description({ html, facilities }) {
   );
 }
 
-// Filled stars, and a half where the score has one — no empty stars: the count
-// of gold glyphs IS the reading, exactly as the hotel drawer draws it, down to
-// the brand yellow.
-function Stars({ value, size = 12 }) {
-  const n = Number(value);
-  if (!(n > 0)) return null;
-
-  const full = Math.floor(n);
-  const half = n > full;
+/**
+ * The hotel's class, under the photos — where the guest score and its review
+ * count used to sit. A 4.3 out of 116 reviews is a different fact from a
+ * three-star property, and the two side by side read as one contradictory
+ * number; the class is what this itinerary was sold on, so it is the one fact
+ * the line states.
+ *
+ * "3★ Hotel", written the way the sheet's header writes it — a number and one
+ * glyph — rather than counted out in three star icons: a row of glyphs is a
+ * guest rating everywhere else on the web, which is exactly the reading this
+ * line is not making.
+ */
+function HotelClass({ stars }) {
+  const value = Number(stars);
+  if (!(value > 0)) return null;
 
   return (
-    <span
-      className="inline-flex items-center gap-[2px] text-[#f7e700]"
-      style={{ verticalAlign: "-1px" }}
-      aria-hidden
+    <div
+      className="px-4 pb-[10px] text-[13px] font-[700] text-[#0b1220]"
+      // The glyph is hidden from screen readers, so the line names itself —
+      // otherwise it is announced as "3 Hotel".
+      aria-label={`${value}-star hotel`}
     >
-      {Array.from({ length: full }, (unused, i) => (
-        <FaStar key={`full-${i}`} size={size} />
-      ))}
-      {half ? <FaStarHalfAlt size={size} /> : null}
-    </span>
+      {value}
+      {/* The same drawn star the header uses, sized up from the 13px it sits
+          in and centred on the numeral rather than on a fallback font's
+          baseline. */}
+      <StarGlyph
+        size={14}
+        textSize={13}
+        className="text-[#f7e700]"
+        style={{ marginLeft: 1.5 }}
+      />{" "}
+      Hotel
+    </div>
+  );
+}
+
+/** One end of the stay: mono label, the date, the clock time under it. */
+function StayEnd({ end, align }) {
+  return (
+    <div
+      className={`flex min-w-0 flex-1 flex-col gap-[3px] ${
+        align === "right" ? "items-end text-right" : "items-start"
+      }`}
+    >
+      <span className="font-mono text-[9px] font-500 uppercase tracking-[0.12em] text-[#8a93a6]">
+        {end.label}
+      </span>
+      <span className="text-[13.5px] font-[700] leading-[1.25] text-[#0b1220]">
+        {end.date || "—"}
+      </span>
+      {end.time ? (
+        <span className="text-[12px] leading-[1.3] tabular-nums text-[#6b7280]">
+          {end.time}
+        </span>
+      ) : null}
+    </div>
   );
 }
 
 /**
- * The hotel's guest rating — the one thing the sheet was not saying anywhere.
+ * The stay's two ends, as two ends.
  *
- * Under the photos, where the hotel drawer puts it: the stars, the score, and
- * how many reviews are behind it. A review count with no score is not a rating,
- * so the block renders on `rating` alone; the count joins it when the payload
- * carries one.
+ * This was one chip reading "Sept 4, 2026 · 1 PM → Sept 7, 2026 · 11 AM" — an
+ * unbroken line of four facts in one weight, where the arrow is the only thing
+ * telling you which two of them are the arrival. A traveller checking what time
+ * they can get in had to parse the whole string to find out.
+ *
+ * So each end gets its own stack — label, date, time — and they are pushed to
+ * opposite edges of one panel with the arrow given real size between them. The
+ * two columns are what the earlier note ruled out as "two labelled chips that
+ * wrap onto two lines"; they don't wrap here because they are one panel with a
+ * fixed middle, not two chips in a flow row, and each column holds a short date
+ * over a shorter time rather than one long line.
  */
-function HotelRating({ rating, reviews }) {
-  const value = Number(rating);
-  if (!(value > 0)) return null;
+function StayWindow({ checkIn, checkOut }) {
+  const ends = [
+    {
+      label: "Check in",
+      date: dateOnly(checkIn?.date),
+      time: timeOnly(checkIn?.begin_time),
+    },
+    {
+      label: "Check out",
+      date: dateOnly(checkOut?.date),
+      time: timeOnly(checkOut?.time),
+    },
+  ].map((end) => (end.date || end.time ? end : null));
 
-  const count = Number(reviews) > 0 ? Number(reviews) : null;
+  if (!ends[0] && !ends[1]) return null;
+
+  // One end only — a lone column pinned left with an arrow pointing at nothing
+  // is worse than the fact on its own.
+  if (!ends[0] || !ends[1]) {
+    const only = ends[0] || ends[1];
+    return (
+      <div className="mx-4 mb-4 rounded-[11px] bg-[#fafaf5] px-3.5 py-[13px]">
+        <StayEnd end={only} />
+      </div>
+    );
+  }
 
   return (
-    <div className="flex items-center gap-[7px] px-4 pb-4">
-      <Stars value={value} size={12} />
-      <span className="text-[13px] font-[700] tabular-nums text-[#0b1220]">
-        {value.toFixed(1)}
-      </span>
-      {count ? (
-        <span className="font-mono text-[10px] tracking-[0.06em] text-[#8a93a6]">
-          {count.toLocaleString()} {count === 1 ? "REVIEW" : "REVIEWS"}
-        </span>
-      ) : null}
+    <div className="mx-4 mb-4 flex items-center gap-[12px] rounded-[11px] bg-[#fafaf5] px-3.5 py-[13px]">
+      <StayEnd end={ends[0]} />
+      {/* Drawn rather than typed: "→" at this size is a different glyph in
+          every fallback face, and this one has to read as the span between two
+          dates from across the room. */}
+      <svg
+        width="26"
+        height="12"
+        viewBox="0 0 26 12"
+        fill="none"
+        className="shrink-0 text-[#b9bfcc]"
+        aria-hidden
+      >
+        <path
+          d="M1 6h22M18.5 1.5 23.5 6l-5 4.5"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+      <StayEnd end={ends[1]} align="right" />
     </div>
   );
 }
@@ -289,18 +366,12 @@ export default function StayDetail({ bookingId }) {
 
   const checkIn = hotel?.check_in || {};
   const checkOut = hotel?.check_out || {};
-  // "Sept 4, 2026 · 1 PM → Sept 7, 2026 · 11 AM". Joined rather than rendered
-  // as two ends, so a stay with only one known date still says something.
-  const stayWindow = [
-    [dateOnly(checkIn.date), timeOnly(checkIn.begin_time)]
-      .filter(Boolean)
-      .join(" · "),
-    [dateOnly(checkOut.date), timeOnly(checkOut.time)]
-      .filter(Boolean)
-      .join(" · "),
-  ]
-    .filter(Boolean)
-    .join(" → ");
+  const hasStayWindow = !!(
+    checkIn?.date ||
+    checkIn?.begin_time ||
+    checkOut?.date ||
+    checkOut?.time
+  );
   const guests = [
     data?.number_of_adults
       ? `${data.number_of_adults} adult${data.number_of_adults > 1 ? "s" : ""}`
@@ -330,42 +401,23 @@ export default function StayDetail({ bookingId }) {
         alt={hotel?.name}
       />
 
-      <HotelRating
-        rating={data?.rating}
-        // The count hangs off the hotel record on some payloads and the booking
-        // on others — the accommodation drawer reads both, so this does too.
-        reviews={
-          hotel?.user_ratings_total ?? data?.user_ratings_total ?? null
-        }
-      />
+      <HotelClass stars={data?.star_category} />
 
       <FactChips
         className="px-4 pb-4"
         padded={false}
         facts={[
-          // No RATING chip: the stars above the photos already carry it, and
-          // the same score twice on one screen reads as two different numbers
-          // until you check.
-          {
-            label: "Class",
-            value:
-              data?.star_category && String(data.star_category) !== "0"
-                ? `${data.star_category}-star`
-                : null,
-          },
+          // No CLASS chip: the stars under the photos already count it out, and
+          // "3-star" a few lines below three gold stars is the same fact twice.
           { label: "Nights", value: data?.duration || null },
           { label: "Rooms", value: roomCount || null },
           { label: "Guests", value: guests || null },
         ]}
       />
 
-      {stayWindow ? (
+      {hasStayWindow ? (
         <DetailSection label="Your stay">
-          {/* One label-less chip, not a "Check in" / "Check out" pair: the
-              section heading already says what this is, and two labelled chips
-              wrapped onto two lines at phone width — which read as two
-              unrelated facts rather than as one span of nights. */}
-          <FactChips facts={[{ value: stayWindow }]} />
+          <StayWindow checkIn={checkIn} checkOut={checkOut} />
         </DetailSection>
       ) : null}
 
