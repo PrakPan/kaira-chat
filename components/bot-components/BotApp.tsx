@@ -5149,7 +5149,7 @@ const BottomCTABar = React.memo(
           </p>
           <button
             onClick={onGetInTouch}
-            className="flex items-center gap-2 h-[44px] px-4 rounded-[8px] bg-[#F7E700] ttw-type-body font-inter font-semibold"
+            className="flex items-center gap-2 h-[44px] px-4 rounded-[8px] bg-[#F7E700] ttw-type-body font-inter !font-semibold"
           >
             Get in touch!
           </button>

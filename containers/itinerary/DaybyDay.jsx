@@ -305,7 +305,9 @@ const DaybyDay = ({
             desktop-only), and its padding is set in arbitrary values rather than
             `px-3` — bootstrap.min.css loads after Tailwind and its `.px-3` is
             `1rem !important`, which silently inflates the pill. */}
-        {props?.fromChat && props?.onViewMap && (
+        {/* Archives are excluded: the export carries no coordinates for its
+            cities, so the map it opens has nothing to plot. */}
+        {props?.fromChat && props?.onViewMap && !Itinerary?.is_v1_archive && (
           <button
             type="button"
             onClick={props.onViewMap}
