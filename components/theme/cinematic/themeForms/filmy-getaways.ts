@@ -249,7 +249,7 @@ const filmyGetawaysForm: ThemeForm = {
     "Keep the signature scene for last",
     "Fewer transfers, longer stays",
     "Add the day trips, not more cities",
-    "What does this cost, honestly?",
+    "Break down what this actually costs",
   ],
 };
 

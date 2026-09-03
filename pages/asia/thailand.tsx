@@ -165,10 +165,19 @@ const THEME_IMG = {
 };
 
 // ── Prompts ─────────────────────────────────────────────────────────────────
-// Every prompt below is the brief's own copy, verbatim. They all open "We are 2
-// travellers, and our travel dates are flexible" except the three Yi Peng ones,
-// which pin 24–25 November 2026 because that is when the festival is — a
-// flexible-dates lantern trip is a contradiction.
+// Every prompt below is the brief's own copy. The hero chips keep its opening
+// verbatim — "We are 2 travellers, and our travel dates are flexible" — because
+// a chip is a browse, not a decision: the reader is still asking what Thailand
+// is, and pinning a month for them would answer a question they haven't asked.
+//
+// The five "Pick a vibe" prompts are the opposite. Each one is a whole route,
+// and a route only works in some months — so they each name a month inside the
+// Nov–Feb dry window and say so in the sentence: "our dates are flexible, but we
+// want to travel in <Month>". The sentence has to carry it because the matching
+// `month` in PROMPT_FACTS below is sent as structured intake, and a prompt whose
+// words say "flexible" while its intake says February is a contradiction the
+// backend has no way to resolve. Sentence and fact are edited together or not
+// at all. Which month each route gets is reasoned at PROMPT_FACTS.
 const PROMPTS = {
   // Hero + chips
   yiPengChip:
@@ -192,13 +201,13 @@ const PROMPTS = {
   lanternsNorth:
     "We are 2 travellers, and our dates are flexible, but we want to travel in November. Plan a 6-night Thailand trip around the Yi Peng Lantern Festival, combining Chiang Mai, Chiang Rai and Bangkok. Include the lantern festival, temples, night markets, local food and cultural experiences, with enough time to enjoy each place without rushing.",
   islandsSlowly:
-    "We are 2 travellers, and our travel dates are flexible. Plan a 9-night Thailand island trip through Krabi, Koh Lanta and Koh Jum. Focus on quiet beaches, longtail boats, snorkeling, local food, sunsets and slow island days. Avoid overly crowded tourist spots and keep the itinerary relaxed with minimal rushing between islands.",
+    "We are 2 travellers, and our dates are flexible, but we want to travel in February. Plan a 9-night Thailand island trip through Krabi, Koh Lanta and Koh Jum. Focus on quiet beaches, longtail boats, snorkeling, local food, sunsets and slow island days. Avoid overly crowded tourist spots and keep the itinerary relaxed with minimal rushing between islands.",
   cityAndBeach:
-    "We are 2 travellers, and our travel dates are flexible. Plan a 5-night first-time Thailand trip combining Bangkok and Phuket. Include Bangkok's temples, street food and markets, followed by Phuket's best beaches and island experiences. Keep it simple, practical and relaxed for a first visit.",
+    "We are 2 travellers, and our dates are flexible, but we want to travel in November. Plan a 5-night first-time Thailand trip combining Bangkok and Phuket. Include Bangkok's temples, street food and markets, followed by Phuket's best beaches and island experiences. Keep it simple, practical and relaxed for a first visit.",
   loudWeek:
-    "We are a group of 6 friends, and our travel dates are flexible. Plan a 7-night Thailand trip through Bangkok, Pattaya and Phuket. Focus on nightlife, beach clubs, street food, fun group activities, island trips and memorable experiences. Keep the itinerary energetic but leave enough downtime between nights out.",
+    "We are a group of 6 friends, and our dates are flexible, but we want to travel in December. Plan a 7-night Thailand trip through Bangkok, Pattaya and Phuket. Focus on nightlife, beach clubs, street food, fun group activities, island trips and memorable experiences. Keep the itinerary energetic but leave enough downtime between nights out.",
   kayaksCavesCooking:
-    "We are 2 travellers, and our travel dates are flexible. Plan an 8-night Thailand trip combining Krabi and Chiang Mai, focused on active and hands-on experiences. Include kayaking, caves, hiking, snorkeling, Thai cooking classes, temples, local food and outdoor adventures. Keep the itinerary active but balanced with relaxed evenings.",
+    "We are 2 travellers, and our dates are flexible, but we want to travel in January. Plan an 8-night Thailand trip combining Krabi and Chiang Mai, focused on active and hands-on experiences. Include kayaking, caves, hiking, snorkeling, Thai cooking classes, temples, local food and outdoor adventures. Keep the itinerary active but balanced with relaxed evenings.",
   // Ask Kaira
   askBar:
     "Which Thailand trip should we do first, for two of us with flexible dates — Krabi and the Andaman islands, Chiang Mai and the north around the Yi Peng lanterns, or a first-timer's Bangkok and one beach? Compare the pace, the cost and which months each one actually works in, given the two coasts have opposite monsoons, then build the ideal itinerary for the one you recommend.",
@@ -211,10 +220,30 @@ const PROMPTS = {
 // so they carry `who` only — inventing a month for them would contradict the
 // sentence the reader just sent.
 //
-// The five vibes carry the nights their own card prints. The lantern one also
-// carries `month: 11` with `day: 22`: Yi Peng is two fixed nights and a
-// mid-month departure would miss them, so the trip starts two days ahead and
-// the 24th and 25th land inside it.
+// The five vibes carry the nights their own card prints AND a month inside the
+// Nov–Feb dry window, matching the sentence each prompt now states and the four
+// months the theme form's season strip offers (themeForms/thailand.ts). Each
+// month resolves forward on its own, so these never point at a February that has
+// been and gone. Why each one:
+//
+//   • lanternsNorth  — November, `day: 22`. Not a preference: Yi Peng is two
+//     fixed nights on the Lanna full moon, so the trip starts two days ahead and
+//     the 24th and 25th land inside it.
+//   • cityAndBeach   — November. Bangkok and Phuket are both near their peak in
+//     it (775 and 659 itineraries since 2023) and it is the cheapest way into
+//     the season, before December's New Year spike. No Chiang Mai in this route,
+//     so it doesn't compete with the lantern trip for the same beds.
+//   • loudWeek       — December. The clearest signal in the data: friends-groups
+//     peak at 354 trips in December against 188 in February, and Pattaya peaks
+//     with them at 265. A six-friend week is a December product.
+//   • kayaksCavesCooking — January. Wants dry ground at both ends. Chiang Mai is
+//     at its coolest and driest for the ridge trek and the caves, and crucially
+//     it is before the late-February burning season puts smoke over the north.
+//   • islandsSlowly  — February. Pure Andaman and entirely boat-dependent, so it
+//     wants the month the form's own season row calls "flat Andaman seas — the
+//     safest month for a boat day you can't reschedule". The data agrees: Koh
+//     Lanta's own peak, couples holding strongest at 331 trips, and the longest
+//     average stay of the four months at 7.4 nights.
 const PROMPT_FACTS = promptIntakeMap(PROMPTS, {
   yiPengChip: { who: "Couple", month: 11 },
   krabiIslands: { who: "Couple" },
@@ -233,12 +262,14 @@ const PROMPT_FACTS = promptIntakeMap(PROMPTS, {
   islandsSlowly: {
     who: "Couple",
     nights: 9,
+    month: 2,
     window: "islands_slowly",
     skeleton: "krabi_lanta_kohjum",
   },
   cityAndBeach: {
     who: "Couple",
     nights: 5,
+    month: 11,
     window: "city_and_beach",
     skeleton: "bangkok_phuket",
   },
@@ -246,12 +277,14 @@ const PROMPT_FACTS = promptIntakeMap(PROMPTS, {
     who: "Friends",
     adults: 6,
     nights: 7,
+    month: 12,
     window: "loud_week",
     skeleton: "bangkok_pattaya_phuket",
   },
   kayaksCavesCooking: {
     who: "Couple",
     nights: 8,
+    month: 1,
     window: "active_krabi_north",
     skeleton: "krabi_chiangmai",
   },
@@ -380,28 +413,28 @@ const thailandConfig: CinematicThemeConfig = {
           image: PickAVibe.kohJum,
           name: "Islands, slowly",
           line: "Krabi · Koh Lanta · Koh Jum — longtails, snorkelling, and days with nothing in them.",
-          tag: "9 nights",
+          tag: "9 nights · February",
           prompt: PROMPTS.islandsSlowly,
         },
         {
           image: PickAVibe.phuket,
           name: "One city, one beach",
           line: "Bangkok · Phuket — the simplest first trip. Two bases, one internal flight.",
-          tag: "5 nights · first time",
+          tag: "5 nights · November",
           prompt: PROMPTS.cityAndBeach,
         },
         {
           image: PickAVibe.pattaya,
           name: "Loud week with friends",
           line: "Bangkok · Pattaya · Phuket — nightlife, beach clubs and island days, six of you.",
-          tag: "7 nights · friends",
+          tag: "7 nights · December",
           prompt: PROMPTS.loudWeek,
         },
         {
           image: PickAVibe.trek,
           name: "Kayaks, caves and cooking",
           line: "Krabi · Chiang Mai — half sea, half hills, hands-on the whole way.",
-          tag: "8 nights · active",
+          tag: "8 nights · January",
           prompt: PROMPTS.kayaksCavesCooking,
         },
       ],

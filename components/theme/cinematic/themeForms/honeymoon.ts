@@ -157,7 +157,7 @@ const honeymoonForm: ThemeForm = {
     "Make it more private",
     "Add a private candlelit dinner",
     "Keep it to one island",
-    "What does this cost, honestly?",
+    "Break down the real cost, no surprises",
   ],
 };
 

@@ -3,11 +3,21 @@
 // Mini-form render data for the Thailand country page (/asia/thailand).
 // Month-first (see season.ts).
 //
-// One fact shapes this whole form: Thailand has two coasts on opposite monsoons.
-// The Andaman side (Krabi, Phuket, Koh Lanta) is rough Jun–Sep with boat days
-// cancelled outright, while the Gulf (Samui, Phangan, Koh Tao) is fine — so the
-// island routes are month-gated by coast rather than offered year round and left
-// to disappoint someone in July.
+// The season is the dry window only — November through April, the same span the
+// country page's header ("Asia · Nov – Apr") and its "Nov – Feb · best overall"
+// months row already promise. It used to list all twelve months, and because
+// resolveSeason walks forward from today and stops at four, a reader arriving in
+// early September opened the form on Sep '26 / Oct '26 with one monsoon route
+// between them — the page saying "cool and dry, Nov to Feb" above a form
+// offering October. Cutting May–October makes the strip open on November and run
+// Nov → Dec → Jan → Feb, and it keeps rolling correctly on its own: read in
+// January it comes back Jan → Feb → Mar → Apr.
+//
+// Thailand still has two coasts on opposite monsoons, but that stops being the
+// reader's problem once every month on offer is a dry one — inside Nov–Apr both
+// the Andaman and the Gulf behave, so the routes are gated on what each month is
+// LIKE (crowds, prices, Yi Peng, Songkran) rather than on which sea is workable.
+// The Jun–Sep "go east" advice still lives on the page, in "When to actually go".
 //
 // The lantern route is the other reason this form exists rather than a generic
 // country picker: Yi Peng falls on the Lanna full moon, which is a real date in
@@ -20,13 +30,13 @@ const thailandForm: ThemeForm = {
   slug: "thailand",
   display: "Thailand",
   tagline:
-    "Longtails out of Krabi, night temples in Chiang Mai, and the two coasts that are never good at the same time. Tell me the month and I'll tell you which side of the country to be on.",
+    "Longtails out of Krabi, night temples in Chiang Mai, and one dry window that runs November to April. Tell me the month and I'll tell you what the country is actually like in it.",
   voice:
-    "Specific and unfussy. Talks coasts and boat days over brochure adjectives, names the months things actually shut, and says when the free version of something is better than the ticketed one.",
+    "Specific and unfussy. Talks boat days and crowd levels over brochure adjectives, names what each month costs and what it sells out of, and says when the free version of something is better than the ticketed one.",
   copy: {
     datesTitle: "When are you going?",
     datesSub:
-      "The Andaman and the Gulf run on opposite monsoons. Pick a month and I'll put you on the coast that behaves.",
+      "November to April is the dry run, and every month in it is a different trip. Pick one and I'll shape the route to suit it.",
     footer:
       "That's the whole form. Whatever you tapped on the page is already in your list.",
     cta: "Draft the route →",
@@ -56,42 +66,9 @@ const thailandForm: ThemeForm = {
       tag: "PLAN AROUND IT",
       line: "The water festival lands mid-month. Worth building around either way, but decide deliberately.",
     },
-    {
-      month: 5,
-      label: "Andaman turns",
-      tag: "GO EAST",
-      line: "Krabi and Phuket start getting squalls. The Gulf islands are unbothered.",
-    },
-    {
-      month: 6,
-      label: "Green season",
-      tag: "BEST VALUE",
-      line: "Wet in the west, dry in the east. Weight the trip to Samui and the Gulf and you win twice.",
-    },
-    {
-      month: 7,
-      label: "Gulf's best",
-      tag: "SAMUI PEAK",
-      line: "Driest stretch on the east coast while the Andaman is at its roughest.",
-    },
-    {
-      month: 8,
-      label: "Still dry east",
-      tag: "SAMUI PEAK",
-      line: "Same split. Chiang Mai is green and cheap, with afternoon rain rather than all-day.",
-    },
-    {
-      month: 9,
-      label: "Wettest west",
-      tag: "SKIP KRABI",
-      line: "The month I'd push you off the Andaman entirely. Boats cancel and the lagoon days don't run.",
-    },
-    {
-      month: 10,
-      label: "The shoulder",
-      tag: "BEST VALUE",
-      line: "Rain easing, everything green, prices at their lowest before the season turns.",
-    },
+    // May–October are deliberately absent. They are the Andaman monsoon and the
+    // Gulf-only half of the year, and listing them made the strip open on
+    // whichever of them happened to be next — see the note at the top of the file.
     {
       month: 11,
       label: "Cool and dry",
@@ -171,14 +148,21 @@ const thailandForm: ThemeForm = {
     },
     {
       key: "gulf_islands",
-      label: "The Gulf, when the west is wet",
+      label: "The Gulf side",
       blurb: "Bangkok → Koh Samui → Koh Phangan",
-      tag: "JUN – SEP",
+      tag: "QUIETER",
       nights: 8,
       skeleton: "bangkok_samui_phangan",
-      months: [5, 6, 7, 8, 9, 10],
+      // Was Jun–Sep, as the monsoon fallback for when the Andaman shuts. It is
+      // re-gated to the dry months because that is when it is actually booked:
+      // across trips since 2023, Koh Samui appears in 200 November itineraries,
+      // 203 in December, 159 in January and 208 in February — the Gulf is a
+      // choice people make in peak season, not only a wet-season consolation.
+      // The Andaman is drier than the Gulf in this window (the east coast keeps
+      // some November rain), so this is the quieter, not the sunnier, option.
+      months: [11, 12, 1, 2],
       fareNote:
-        "The monsoon answer. Samui and Phangan are at their driest exactly when Krabi and Phuket aren't.",
+        "BKK in, USM out. The Gulf keeps a little more November rain than Krabi does, and takes half the crowd — Phangan's full moon party is the one date to check before booking.",
     },
   ],
   // Panel hero on /chat — the Hong Island lagoon, reached by longtail.
@@ -192,7 +176,7 @@ const thailandForm: ThemeForm = {
   },
   allowExactDates: true,
   seedPrompts: [
-    "Which coast for my month?",
+    "Find the cheapest week in my month",
     "Add the Yi Peng lantern night",
     "Skip Phuket entirely",
     "More islands, fewer cities",

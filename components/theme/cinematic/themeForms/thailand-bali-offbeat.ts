@@ -159,7 +159,7 @@ const thailandBaliOffbeatForm: ThemeForm = {
     "Keep me off the crowded islands",
     "More water, fewer temples",
     "Add a night on a Nusa",
-    "Which coast works for my month?",
+    "Put me on the coast that behaves",
   ],
 };
 

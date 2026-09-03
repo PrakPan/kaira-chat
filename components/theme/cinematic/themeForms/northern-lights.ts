@@ -117,8 +117,8 @@ const northernLightsForm: ThemeForm = {
   },
   allowExactDates: true,
   seedPrompts: [
-    "Which country has the best aurora odds?",
-    "Glass igloo or Arctic cabin?",
+    "Put me where the aurora odds are best",
+    "Compare glass igloos and Arctic cabins",
     "Add Santa and huskies for the kids",
     "Do it as a long weekend",
   ],

@@ -110,7 +110,7 @@ const christmasMarketsForm: ThemeForm = {
   },
   allowExactDates: true,
   seedPrompts: [
-    "Where should I be for New Year's Eve?",
+    "Pick the best city for New Year's Eve",
     "Add Dresden's Striezelmarkt",
     "Do the Rhine markets instead",
     "A shorter NYE-only trip",
