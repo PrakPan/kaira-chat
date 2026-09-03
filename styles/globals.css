@@ -43,11 +43,11 @@
    under system chrome. Use these tokens (or the .safe-* helpers below) rather
    than writing env() inline, so the fallback is in one place.
 
-   They matter most in two states: the app running fullscreen (see
-   components/FullscreenOnFirstGesture.jsx — no browser chrome left to protect
-   the edges) and a home-screen/standalone launch. In a normal portrait browser
-   tab the browser's own bars already occupy those strips and the insets read 0,
-   which is exactly why the fallback is 0px and these are safe everywhere. */
+   They matter most in a home-screen/standalone launch, where no browser chrome
+   is left to protect the edges, and on iOS in landscape. In a normal portrait
+   browser tab the browser's own bars already occupy those strips and the insets
+   read 0, which is exactly why the fallback is 0px and these are safe
+   everywhere. */
 :root {
     --safe-top: env(safe-area-inset-top, 0px);
     --safe-right: env(safe-area-inset-right, 0px);
@@ -77,88 +77,102 @@
     margin-bottom: var(--safe-bottom);
 }
 
-/* ── Viewport-height token ─────────────────────────────────────────────────
-   The app shell is a fixed-height, non-scrolling column: everything anchored
-   to its foot — the chat composer, the cart bar — is only on screen if that
-   height matches the visible viewport exactly. `100dvh` is the right value
-   for that everywhere EXCEPT inside the Fullscreen API on Android Chrome,
-   where the viewport grows the moment the URL bar is dropped but the viewport
-   UNITS are not recomputed: `100dvh` keeps reporting the pre-fullscreen height
-   and the shell ends up sized to a browser bar that is no longer there. That
-   is what pushed the composer off the bottom of Kaira's sheet the first time a
-   tap opened the chat, since that same first tap is what triggers fullscreen
-   (see components/FullscreenOnFirstGesture.jsx).
-
-   So the token DEFAULTS to `100dvh` — no JS needed, correct on first paint,
-   and the behaviour every non-fullscreen browser (iPhone Safari included) has
-   today is unchanged. While fullscreen is actually engaged,
-   FullscreenOnFirstGesture overwrites it with the measured px height and
-   removes it again on exit, so the measured value is only ever trusted in the
-   one state where the unit is known to lie.
-
-   Use `.h-app` / `.max-h-app` (or the token) for anything that must be exactly
-   one viewport tall. Plain `dvh` is still fine for things that only need to be
-   roughly proportional. */
-:root {
-    --app-vh: 100dvh;
-}
-
+/* ── App-shell height ─────────────────────────────────────────────────────
+   One VISIBLE viewport tall. `100dvh` is the viewport as currently painted, so
+   it already accounts for whatever browser chrome is showing, and (with
+   `interactive-widget=resizes-content` in the viewport meta, see pages/_app.js)
+   it shrinks for the on-screen keyboard so a composer at the foot rides above
+   it rather than under it. Desktop has no retracting chrome and no soft
+   keyboard, so `100vh` there. */
 .h-app {
-    height: var(--app-vh, 100dvh);
+    height: 100dvh;
 }
 
 .max-h-app {
-    max-height: var(--app-vh, 100dvh);
+    max-height: 100dvh;
 }
 
-/* Desktop never goes fullscreen and has no retracting browser chrome, so the
-   shell takes the plain viewport there — this is the `md:h-screen` half of the
-   `h-dvh md:h-screen` pair this class replaced. */
 @media (min-width: 768px) {
     .h-app {
         height: 100vh;
     }
 }
 
-/* ── App-shell scroll lock ─────────────────────────────────────────────────
-   Set on <html> by the bot shell for as long as it is mounted (see the
-   `app-shell-locked` effect in components/bot-components/BotApp.tsx).
+/* ── The bot shell ────────────────────────────────────────────────────────
+   Two different layouts behind one class, and the split is the whole point.
 
-   The shell is one viewport tall and `overflow: hidden` — the itinerary pane
-   inside it is the only scroller, and the DOCUMENT is never meant to scroll.
-   Nothing enforced that, though, and the shell's height comes from `--app-vh`,
-   which is a JS MEASUREMENT while fullscreen is engaged. Any measurement that
-   comes back taller than the painted viewport (a fullscreen transition sampled
-   mid-flight, a desktop browser emulating a phone in DevTools) makes <main>
-   overflow the viewport, and the page silently becomes scrollable. The next
-   scrollIntoView — the mobile itinerary fires one whenever Kaira moves
-   something — then drags the whole shell up: the trip clips off the top, a
-   blank strip opens where the shell's bottom edge used to be, and the cart bar
-   stays put because it is `fixed` to the viewport, not the shell.
+   DESKTOP is a fixed app frame: exactly one viewport, `overflow: hidden`, with
+   the sidebar / chat / itinerary columns scrolling inside it. Nothing about a
+   desktop browser retracts, so there is nothing to gain by letting the window
+   scroll and a three-column frame to lose.
 
-   Locking the viewport turns that class of bug back into what it should be:
-   at worst a few pixels of the shell sit off-screen, never a page that moves. */
-html.app-shell-locked {
-    /* Clips whatever the shell overflows by, so a bad height is a few pixels
-       off-screen rather than something you can reach. NOT sufficient on its
-       own: neither `hidden` nor `clip` on the root stops the viewport being
-       scrolled PROGRAMMATICALLY — window.scrollTo and scrollIntoView move it
-       exactly as before, and scrollIntoView is the call that shifts the shell
-       here. The body rule below is what actually removes the scroll. */
-    overflow: hidden;
-    overscroll-behavior: none;
+   MOBILE is an ordinary document-scrolling page, and that is deliberate. iOS
+   Safari and Chrome Android minimise their address bars in response to
+   MAIN-DOCUMENT scroll only — a gesture over an inner `overflow: auto` pane
+   collapses nothing, however tall its content. The shell used to be exactly
+   that (one `100dvh` box with the itinerary pane as the only scroller), which
+   is why the URL bar never went away on either platform. So on a phone the
+   trip scrolls the window: `min-height` rather than `height`, no overflow
+   clip, and the header/cart bars are `position: fixed`.
+
+   `100svh`, not `100dvh`: this is the floor for a SHORT trip, and it wants to
+   be the height the viewport has with the browser bars OUT — sizing it to the
+   dynamic height would grow the page as the bar retracts, which re-creates the
+   scroll that retracted it and oscillates. Anything that must fill the visible
+   viewport instead (Kaira's sheet, the map) is fixed and uses `dvh`. */
+.app-shell {
+    min-height: 100vh;
+    min-height: 100svh;
 }
 
-/* Takes body out of flow, so the document's scrollable area is the viewport and
-   nothing — user gesture or script — has anywhere to scroll it to. Out-of-flow
-   boxes contribute no scrollable overflow, so an oversized <main> can no longer
-   lengthen the page.
-   `position`/`inset` only: components/ui/Drawer.js writes `body.style.overflow`
-   inline on every sheet open and close, and an inline style would win over any
-   overflow declared here. */
+/* Same floor, for the layers inside the shell that have to keep covering the
+   screen when the trip is too short to fill it. `100vh` first as the fallback
+   for anything that predates the small-viewport unit. */
+.min-h-screen-s {
+    min-height: 100vh;
+    min-height: 100svh;
+}
+
+@media (min-width: 768px) {
+    .app-shell {
+        height: 100vh;
+        overflow: hidden;
+    }
+}
+
+/* On <html> for as long as the bot shell is mounted (BotApp.tsx). Now that the
+   phone layout scrolls the window, the top of the trip is also the top of the
+   document — where Chrome Android reads a downward pull as pull-to-refresh and
+   reloads the whole app. `contain` keeps the gesture inside the page. */
+html.app-shell-page {
+    overscroll-behavior-y: contain;
+}
+
+/* ── Document scroll lock ─────────────────────────────────────────────────
+   Added by MobileLayout while something viewport-fixed is on top of the trip —
+   Kaira's sheet, the map, the route sheet. Each of those covers the screen, so
+   the page behind it must not move: a scroll under an open sheet leaves the
+   user somewhere else when it closes, and on the itinerary the trip is
+   additionally lifted into a scaled CARD for the chat gesture, which only
+   reads correctly if it is a still image.
+
+   `position: fixed` on body, not `overflow: hidden`. Neither `hidden` nor
+   `clip` on the root stops the viewport being scrolled PROGRAMMATICALLY
+   (window.scrollTo and scrollIntoView move it exactly as before, and the
+   itinerary fires a scrollIntoView whenever Kaira moves something), and
+   components/ui/Drawer.js writes `body.style.overflow` inline on every sheet
+   open and close — an inline style would win over any overflow declared here.
+   Taking body out of flow leaves the document's scrollable area equal to the
+   viewport, so there is nowhere left to scroll to, by gesture or by script.
+
+   Body keeps its scroll offset as an inline `top: -<scrollY>px` set alongside
+   this class, and MobileLayout scrolls back to it on release — without that,
+   locking would silently jump the trip to the top. */
 html.app-shell-locked body {
     position: fixed;
-    inset: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
 }
 
 html {

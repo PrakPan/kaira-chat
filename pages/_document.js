@@ -236,11 +236,9 @@ mixpanel.init('a87174a5773c86d78b1c1b8d51015a16', {debug: false});`,
           <meta name="theme-color" content="#0b1220" />
 
           {/* ---------- Home-screen web app ----------
-              On iPhone this is the ONLY route to a genuinely chrome-free app:
-              Safari on iPhone does not implement the Fullscreen API for
-              anything but <video> (it works on iPad only), so a tab always
-              keeps its address bar. Added to the Home Screen, the same site
-              launches with no Safari chrome at all.
+              A browser tab always keeps some chrome — the address bar
+              minimises on scroll but never leaves. Added to the Home Screen,
+              the same site launches with no browser chrome at all.
 
               iOS 26 opens every home-screen site as a web app on its own and
               honours the manifest's `display: standalone`, so these tags are

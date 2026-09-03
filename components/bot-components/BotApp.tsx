@@ -44,6 +44,10 @@ import ItineraryContainer from "../../containers/itinerary/ItineraryContainer";
 import ItineraryLegend from "../itinerary/itineraryCity/ItineraryLegend";
 import MobileItinerary from "../revamp/mobileItinerary/MobileItinerary";
 import kairaPrompts from "../revamp/mobileItinerary/kairaPrompts";
+import {
+  lockDocumentScroll,
+  lockedScrollY,
+} from "../revamp/common/scrollLock";
 import TripHeaderLive from "../revamp/mobileItinerary/TripHeaderLive";
 import CartSheet from "../revamp/mobileItinerary/sheets/CartSheet";
 import AskKairaPill from "../revamp/mobileItinerary/AskKairaPill";
@@ -794,30 +798,21 @@ export default function BotApp({
   const isV1 =
     useSelector((state: any) => state.ItineraryStatus?.version) === "v1";
 
-  // ── The document must never scroll under the shell ───────────────────────
-  // <main> below is `h-app overflow-hidden` — exactly one viewport tall, with
-  // the itinerary pane as the only scroller. But `--app-vh` (the height `h-app`
-  // resolves to) is a JS measurement whenever fullscreen is engaged, and a
-  // measurement taken against a viewport that is not the one being painted —
-  // a fullscreen transition sampled mid-flight, or a desktop browser emulating
-  // a phone in DevTools, where the first tap enters fullscreen — leaves <main>
-  // TALLER than the screen. The page then becomes scrollable, and the mobile
-  // itinerary's scrollIntoView (MobileItinerary scrolls to whatever Kaira just
-  // changed) scrolls the whole shell up: the trip clips off the top, a blank
-  // strip opens below it, and the cart bar stays behind because it is `fixed`
-  // to the viewport rather than to the shell.
-  //
-  // Locking the viewport bounds that failure to a few pixels of shell sitting
-  // off-screen instead of a page that visibly comes apart. See the
-  // `.app-shell-locked` rule in styles/globals.css.
+  // ── Page-level flags for the shell ───────────────────────────────────────
+  // On a phone <main> is a document-scrolling page (that is what lets the
+  // browser retract its address bar — see `.app-shell` in styles/globals.css),
+  // which also puts the top of the trip at the top of the DOCUMENT, where
+  // Chrome Android reads a downward pull as pull-to-refresh. The class turns
+  // that off. Freezing the page under a sheet is a separate, temporary lock
+  // owned by MobileLayout (`.app-shell-locked`).
   //
   // NOT for v1, which returns ItineraryContainer below instead of the shell —
-  // that is an ordinary long page and scrolls the window for a living.
+  // that is an ordinary long page and wants the browser's own gestures.
   useEffect(() => {
     if (isV1) return undefined;
     const root = document.documentElement;
-    root.classList.add("app-shell-locked");
-    return () => root.classList.remove("app-shell-locked");
+    root.classList.add("app-shell-page");
+    return () => root.classList.remove("app-shell-page");
   }, [isV1]);
 
   const statusDisplayText = useSelector(
@@ -4751,21 +4746,18 @@ Start Location: ${details.startLocation}`;
 
   return (
     <main
-      // `h-app`, not `h-dvh md:h-screen`: same value on both, except inside
-      // fullscreen on Android Chrome, where `dvh` keeps reporting the height the
-      // viewport had before the URL bar was dropped. The shell then stays a
-      // browser-bar short of the screen and everything anchored to its foot —
-      // Kaira's composer above all — is pushed out of view. See the --app-vh
-      // token in styles/globals.css.
-      className="flex flex-col h-app overflow-hidden bg-slate-100 dark:bg-slate-950"
+      // `app-shell` is a fixed one-viewport frame on desktop and a normal
+      // document-scrolling page on a phone — the phone half is what lets iOS
+      // Safari and Chrome Android retract their address bars, which they only
+      // ever do for main-document scroll. See styles/globals.css.
+      className="flex flex-col app-shell bg-slate-100 dark:bg-slate-950"
       style={{
         fontFamily: "'Inter', sans-serif",
         // Side insets, not top/bottom. With `viewport-fit=cover` the shell
-        // paints edge to edge, and in landscape on a notched phone — which is
-        // where the app most often ends up once it goes fullscreen and the
-        // system bars are gone — the cutout eats into one side. The individual
-        // edge bars below own their own top/bottom insets, because those have
-        // to compose with the padding each bar already carries.
+        // paints edge to edge, and in landscape on a notched phone the cutout
+        // eats into one side. The individual edge bars below own their own
+        // top/bottom insets, because those have to compose with the padding
+        // each bar already carries.
         paddingLeft: "var(--safe-left, 0px)",
         paddingRight: "var(--safe-right, 0px)",
       }}
@@ -4950,8 +4942,12 @@ Start Location: ${details.startLocation}`;
         </div>
       </div>
 
-      {/* ── Mobile layout — full-screen views + top tab bar ── */}
-      <div className="flex md:hidden flex-col flex-1 overflow-hidden min-h-0">
+      {/* ── Mobile layout — full-screen views + top tab bar ──
+          No `flex-1 min-h-0 overflow-hidden`: on a phone this is not a pane
+          inside a fixed frame, it IS the page, and its height is its content's.
+          Everything that has to stay put while it scrolls (the navbar, the cart
+          bar, Kaira's sheet, the map) is `position: fixed` inside it. */}
+      <div className="flex md:hidden flex-col">
         <MobileLayout
           showStartScreen={showStartScreen}
           hasBotResponded={hasBotResponded}
@@ -6429,6 +6425,39 @@ const MobileLayout = React.memo(
       return () => clearTimeout(t);
     }, [sheetShown, sheetLifted]);
 
+    // ── Freezing the page under a full-screen surface ─────────────────────
+    // The trip scrolls the WINDOW on a phone (that is what retracts the
+    // browser's address bar — see `.app-shell` in styles/globals.css). Every
+    // other view on this surface is a viewport-fixed layer over that page:
+    // Kaira's sheet, the map, the route sheet, and the full-screen chat before
+    // there is a trip. While one of those is up the page underneath must not
+    // move — a scroll under an open sheet leaves the user somewhere else when
+    // it closes — so the document is locked and released at exactly the offset
+    // it was locked at.
+    //
+    // `sheetLifted`, not `chatSheetOpen`: the trip is a scaled card for the
+    // whole gesture INCLUDING the way out, and unfreezing while it is still
+    // travelling would drop the page back to a live scroller mid-animation.
+    const PAGE_TABS = ["itinerary", "bookings"];
+    const docFrozen = sheetLifted || !PAGE_TABS.includes(activeTab);
+
+    // Shared with every bottom sheet on this surface (see
+    // components/revamp/common/scrollLock) — a detail sheet's "Change …" button
+    // opens Kaira while the sheet is still closing, and two locks each saving
+    // their own restore offset is how the trip ended up back at the top.
+    //
+    // useLayoutEffect: the lock has to be in place in the same frame the
+    // covering layer is painted, or the page is briefly still scrollable under
+    // a sheet that has already arrived.
+    React.useLayoutEffect(() => {
+      if (!docFrozen) return undefined;
+      // Phones only. On desktop this whole subtree is `display: none` (its
+      // effects still run) and <main> is a fixed frame that never scrolls, so
+      // there is nothing to freeze and a release would scroll it to 0.
+      if (!window.matchMedia("(max-width: 768px)").matches) return undefined;
+      return lockDocumentScroll();
+    }, [docFrozen]);
+
     // ── What the trip pane is showing, which is not always the active tab ──
     // With the sheet open the active tab is "chat", but the trip is still on
     // screen behind it and has to keep rendering as whatever it was. Its cart
@@ -6546,10 +6575,10 @@ const MobileLayout = React.memo(
     // child that collapsed via an animated negative margin-top on scroll, but
     // that reflowed the pane every frame and read as a scroll glitch.)
     //
-    // NOTE: window/document never scrolls on this page — <main> is
-    // `h-app overflow-hidden`, so a window scroll listener would never fire.
-    // The real scroller is the itinerary/routes/bookings pane below, and the
-    // two thresholds here only drive the trip card's condense/meta-collapse.
+    // NOTE: the WINDOW is the scroller here — the trip is laid out in the
+    // document so the browser will retract its address bar (see `.app-shell`
+    // in styles/globals.css). The two thresholds only drive the navbar and the
+    // trip card's condense/meta-collapse.
     const SCROLL_JITTER_PX = 6; // ignore sub-pixel / momentum noise
     const SHOW_ABOVE_PX = 48; // condense the trip card past this scroll depth
     // Two stops for the navbar rather than one: it hides once scrolled past
@@ -6559,7 +6588,6 @@ const MobileLayout = React.memo(
     const NAV_SHOW_PX = 4;
     const NAV_HIDE_PX = 40;
 
-    const scrollPaneRef = React.useRef<HTMLDivElement | null>(null);
     const headerRef = React.useRef<HTMLDivElement | null>(null);
     const lastScrollRef = React.useRef(0);
     const [headerHeight, setHeaderHeight] = React.useState(0);
@@ -6607,9 +6635,7 @@ const MobileLayout = React.memo(
     }, [headerVisible]);
 
     React.useEffect(() => {
-      const el = scrollPaneRef.current;
-      if (!el) return;
-      lastScrollRef.current = el.scrollTop;
+      lastScrollRef.current = window.scrollY;
 
       // Coalesce every burst of scroll events into a single update per animation
       // frame. Calling setState synchronously inside the scroll event forces a
@@ -6618,7 +6644,7 @@ const MobileLayout = React.memo(
       let rafId = 0;
       const update = () => {
         rafId = 0;
-        const y = el.scrollTop;
+        const y = window.scrollY;
         const delta = y - lastScrollRef.current;
 
         // iOS rubber-banding drives scrollTop negative / past the end; the
@@ -6645,9 +6671,9 @@ const MobileLayout = React.memo(
         rafId = requestAnimationFrame(update);
       };
 
-      el.addEventListener("scroll", onScroll, { passive: true });
+      window.addEventListener("scroll", onScroll, { passive: true });
       return () => {
-        el.removeEventListener("scroll", onScroll);
+        window.removeEventListener("scroll", onScroll);
         if (rafId) cancelAnimationFrame(rafId);
       };
     }, [hasItineraryActivity]);
@@ -6656,7 +6682,7 @@ const MobileLayout = React.memo(
     // pane isn't misread as a large jump, and show the navbar again (a new tab
     // starts at the top).
     React.useEffect(() => {
-      lastScrollRef.current = scrollPaneRef.current?.scrollTop ?? 0;
+      lastScrollRef.current = window.scrollY;
       setNavHidden(false);
     }, [activeTab]);
 
@@ -6717,7 +6743,7 @@ const MobileLayout = React.memo(
     }, [bottomCTABarProps, hasItineraryActivity, activeTab, routeBarShown]);
 
     return (
-      <div className="flex flex-col h-full overflow-hidden relative">
+      <div className="relative flex flex-col">
         {/* ── Mobile header — hidden on chat tab; ChatKitPanel renders its
            own top bar with the menu on the right of "Chat with Kaira". ── */}
         {headerVisible && (
@@ -6730,15 +6756,21 @@ const MobileLayout = React.memo(
             // scroll glitch.) A scrolling spacer of the same height sits at the
             // top of the pane below, so the content still starts under the navbar
             // at rest and nothing moves when it slides away.
-            className="absolute top-0 inset-x-0 z-40 bg-white transition-[transform,opacity] duration-300 ease-out motion-reduce:transition-none"
+            // `fixed`, not `absolute`: the page scrolls under it, so an
+            // absolute bar would be left behind at the top of the document.
+            className="fixed top-0 inset-x-0 z-40 bg-white transition-[transform,opacity] duration-300 ease-out motion-reduce:transition-none"
             style={{
-              // Clears the status bar / dynamic island when nothing else does:
-              // a home-screen launch, or a fullscreen session on a browser that
-              // keeps the status bar overlaid. 0px in a normal tab. Its height
+              // Clears the status bar / dynamic island when nothing else
+              // does — a home-screen launch. 0px in a normal tab. Its height
               // is measured into `headerHeight` (and mirrored by the scrolling
               // spacer at the top of the pane), so growing here shifts the
               // content down with it rather than under it.
               paddingTop: "var(--safe-top, 0px)",
+              // Side insets too, because a `fixed` bar is laid out against the
+              // viewport and so escapes the side padding <main> carries for the
+              // landscape cutout. 0px in portrait.
+              paddingLeft: "var(--safe-left, 0px)",
+              paddingRight: "var(--safe-right, 0px)",
               transform: navHidden ? "translateY(-100%)" : "translateY(0)",
               opacity: navHidden ? 0 : 1,
               pointerEvents: navHidden ? "none" : "auto",
@@ -6799,7 +6831,10 @@ const MobileLayout = React.memo(
             corners are cut out of THIS colour and the two have to agree at
             every frame of the animation, not just at its ends. */}
         <div
-          className="flex-1 min-h-0 overflow-hidden relative"
+          // `min-h`, not `h`: the trip below is as tall as the trip, and the
+          // page scrolls it. The floor keeps the white ground covering the
+          // screen on a one-day trip that does not fill it.
+          className="relative min-h-screen-s"
           style={{ backgroundColor: "#ffffff" }}
         >
           {/* ── MIDNIGHT — the dark surface the trip is lifted off ──────────
@@ -6830,7 +6865,7 @@ const MobileLayout = React.memo(
               still settles on the flat #0a1020 the design asks for. */}
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-0 motion-reduce:!transition-none"
+            className="pointer-events-none fixed inset-0 motion-reduce:!transition-none"
             style={{
               zIndex: 0,
               backgroundColor: "#0a1020",
@@ -6859,7 +6894,7 @@ const MobileLayout = React.memo(
               onClick={() => handleTabClick("itinerary")}
               tabIndex={chatSheetOpen ? 0 : -1}
               aria-hidden={!chatSheetOpen}
-              className="absolute inset-0 z-[3] border-0 bg-[rgba(10,16,32,0.42)] p-0 motion-reduce:!transition-none"
+              className="fixed inset-0 z-[3] border-0 bg-[rgba(10,16,32,0.42)] p-0 motion-reduce:!transition-none"
               style={{
                 opacity: sheetShown ? 1 : 0,
                 pointerEvents: chatSheetOpen ? "auto" : "none",
@@ -6871,8 +6906,12 @@ const MobileLayout = React.memo(
           <div
             className={
               chatAsSheet
-                ? "absolute inset-x-0 bottom-0 flex flex-col overflow-hidden rounded-t-[22px] border-t border-[#ececec] bg-[#fafaf5] shadow-[0_-18px_50px_-18px_rgba(11,18,32,0.4)] motion-reduce:!transition-none"
-                : "absolute inset-0"
+                // `fixed`: the conversation is a layer over the page, and the
+                // page scrolls. Anchored to the viewport it also keeps its
+                // composer above the keyboard rather than at some point in the
+                // document the keyboard has pushed off screen.
+                ? "fixed inset-x-0 bottom-0 flex flex-col overflow-hidden rounded-t-[22px] border-t border-[#ececec] bg-[#fafaf5] shadow-[0_-18px_50px_-18px_rgba(11,18,32,0.4)] motion-reduce:!transition-none"
+                : "fixed inset-0"
             }
             style={
               chatAsSheet
@@ -6883,17 +6922,13 @@ const MobileLayout = React.memo(
                     // Kaira sheet that stopped somewhere else read as a
                     // different kind of object than the ones it sits beside.
                     //
-                    // Expressed as a top offset rather than a height because
-                    // this pane clips: a 95dvh box anchored to the bottom would
-                    // simply have its top cut off on any device where the pane
-                    // is shorter than that. `100%` here is the pane, so the
-                    // max() collapses to 0 in that case and the sheet fills
-                    // what there is instead of overflowing it.
-                    // --app-vh, not a bare 95dvh: in fullscreen on Android
-                    // the unit is stale and the sheet would be measured against
-                    // a viewport that no longer exists, hanging its composer
-                    // below the screen. The token IS `100dvh` everywhere else.
-                    top: "max(0px, calc(100% - 0.95 * var(--app-vh, 100dvh)))",
+                    // Expressed as a top offset against the viewport rather
+                    // than a height: `dvh` is the viewport as painted, so the
+                    // sheet keeps its 95% whatever the browser's bars are
+                    // doing, and grows into the space a retracting address bar
+                    // leaves behind instead of being measured against a
+                    // viewport that no longer exists.
+                    top: "5dvh",
                     zIndex: 4,
                     // Slide, don't fade: the sheet has to read as arriving from
                     // the bottom over the trip, and a translated pane keeps the
@@ -6972,7 +7007,18 @@ const MobileLayout = React.memo(
               when nothing is animating. `none` interpolates as the identity
               matrix, so the transition still runs both ways. */}
           <div
-            className="absolute inset-0 motion-reduce:!transition-none"
+            // AT REST it is in flow: the trip is the page, and the page is what
+            // scrolls (which is what retracts the address bar). FOR THE GESTURE
+            // it is taken out of flow and pinned to the viewport, because the
+            // design's "trip eases back into a card" only reads if the thing
+            // being scaled is one screen with four corners — scaling a
+            // document-tall column about a point puts its rounded corners
+            // thousands of pixels off screen and shears everything else. The
+            // page is frozen for exactly as long as this is true (see
+            // `docFrozen` above), so nothing is lost by leaving flow.
+            className={`motion-reduce:!transition-none ${
+              sheetLifted ? "fixed inset-0" : "relative"
+            }`}
             style={{
               transformOrigin: "50% 18%",
               transform: sheetShown
@@ -7010,11 +7056,30 @@ const MobileLayout = React.memo(
               willChange: sheetLifted ? "transform" : "auto",
             }}
           >
+          {/* Holds the slice of the trip that was on screen when the page
+              froze. Pinning the card to the viewport (above) resets its
+              contents to the top of the itinerary; shifting them back up by the
+              scroll offset the lock recorded is what keeps the user looking at
+              the same cards Kaira was asked about. Undone the moment the card
+              returns to flow, where the document's own scroll position — which
+              the lock restores — puts them back.
+
+              The cart bar is deliberately OUTSIDE this: it belongs to the
+              bottom of the screen, not to the scrolled column. */}
+          <div
+            style={
+              sheetLifted
+                ? {
+                    transform: `translate3d(0,${-lockedScrollY()}px,0)`,
+                  }
+                : undefined
+            }
+          >
           {/* MAP view */}
           <div
-            className="absolute inset-x-0 bottom-0 flex flex-col"
+            className="fixed inset-x-0 bottom-0 flex flex-col"
             style={{
-              top: headerHeight, // sit below the absolute navbar
+              top: headerHeight, // sit below the fixed navbar
               opacity: activeTab === "map" ? 1 : 0,
               pointerEvents: activeTab === "map" ? "auto" : "none",
               zIndex: activeTab === "map" ? 2 : 1,
@@ -7056,36 +7121,45 @@ const MobileLayout = React.memo(
           {/* ITINERARY / ROUTES / BOOKINGS view */}
           {hasItineraryActivity && (
             <div
-              ref={scrollPaneRef}
-              // The cart bar (rendered as a sibling below this pane) is
-              // `fixed bottom-0`, so it takes no flow space and would cover the
-              // last card at max scroll. End the pane above it rather than
-              // padding the pane by its height: padding is scrollable, so it
-              // forced a scrollbar even when the content fit. Shrinking the pane
-              // cannot.
-              className={`overflow-y-auto bg-white ${
+              // ITINERARY / BOOKINGS: not a scroller at all. It is the page's
+              // content, and the WINDOW scrolls it — the only scroll either
+              // mobile browser will retract its address bar for. (It used to be
+              // an `absolute inset` pane with `overflow-y: auto`, which is
+              // exactly the arrangement that pins the URL bar in place.)
+              //
+              // ROUTE: still a viewport sheet with its own scroller. It covers
+              // the screen edge to edge and hands itself back when it closes —
+              // a detour, not a page — and the document is frozen behind it.
+              className={`bg-white ${
                 routeSheet
-                  // No rounded top and no inset: the sheet covers the screen
-                  // edge to edge, so nothing behind it shows through a corner
-                  // or a sliver at the top.
-                  ? "fixed inset-0 ttw-sheet-up"
-                  : "absolute inset-x-0 top-0"
+                  ? "fixed inset-0 overflow-y-auto ttw-sheet-up"
+                  : "min-h-screen-s"
               }`}
               style={{
-                // Full height (the spacer below reserves the navbar's row inside
-                // the scroll flow); end where the fixed CTA bar begins. The
-                // ask-Kaira pill lives inside that bar, so its height is already
-                // in the measurement.
-                bottom: ctaBarHeight,
-                // Momentum scrolling; keep the scroll from chaining into the
-                // surface behind it; and hard-clip horizontal overflow so a
-                // too-wide child can't turn this vertical pane into a two-axis
-                // scroller (that sideways drift was the "horizontal scroll" and
-                // the diagonal glitch). willChange hints its own compositor layer.
-                WebkitOverflowScrolling: "touch",
-                overscrollBehavior: "contain",
-                overflowX: "hidden",
-                willChange: "scroll-position",
+                ...(routeSheet
+                  ? {
+                      // Momentum scrolling; keep the scroll from chaining into
+                      // the frozen page behind it; and hard-clip horizontal
+                      // overflow so a too-wide child can't turn this vertical
+                      // pane into a two-axis scroller.
+                      WebkitOverflowScrolling: "touch",
+                      overscrollBehavior: "contain",
+                      overflowX: "hidden",
+                    }
+                  : {
+                      // `position` so the z-index below applies (a static box
+                      // ignores it) — the map pane and this one swap depth on a
+                      // tab change and neither may take taps meant for the
+                      // other.
+                      position: "relative",
+                      // The cart bar is `fixed bottom-0`, so it takes no flow
+                      // space and would cover the last card at the end of the
+                      // page. Padding, not a shortened box: the box no longer
+                      // has a height of its own to shorten. The ask-Kaira pill
+                      // lives inside that bar, so its height is in the
+                      // measurement already.
+                      paddingBottom: ctaBarHeight,
+                    }),
                 // Stays lit under the chat sheet — that's the whole point of the
                 // sheet — but never takes a tap through it.
                 opacity: ["itinerary", "routes", "bookings"].includes(activeTab)
@@ -7108,7 +7182,7 @@ const MobileLayout = React.memo(
                     : 1,
               }}
             >
-              {/* Scrolling spacer the height of the absolute navbar. The navbar
+              {/* Scrolling spacer the height of the fixed navbar. The navbar
                   overlays this at rest; it scrolls away with the content so the
                   navbar can slide up without leaving a gap or shifting anything.
                   The sticky trip card sits after it and pins to the very top
@@ -7142,16 +7216,18 @@ const MobileLayout = React.memo(
               {itineraryContent}
             </div>
           )}
+          </div>
 
           {/* Cart bar (+ back-to-itinerary pill) for the itinerary / routes /
-              bookings tabs. Rendered here as a SIBLING of the scroll pane, never
-              inside it: on iOS a position:fixed element nested in a
-              -webkit-overflow-scrolling:touch scroller is positioned against the
-              scrolled content instead of the viewport, so it scrolls off-screen
-              and vanishes — which is exactly why the bar was missing on phones.
-              The map tab keeps its own copy outside the pane for the same reason.
-              The pane reserves `ctaBarHeight` at its foot so this never covers the
-              last card. */}
+              bookings tabs. Rendered here as a SIBLING of the pane and OUTSIDE
+              the frozen-offset wrapper above: it is fixed to the bottom of the
+              screen, so it must not inherit either the pane's flow position or
+              the wrapper's scroll offset. (It also has to stay clear of the
+              route sheet's `-webkit-overflow-scrolling: touch` scroller — on
+              iOS a position:fixed element nested in one of those is positioned
+              against the scrolled content instead of the viewport, which is how
+              the bar went missing on phones in the first place.) The pane pads
+              itself by `ctaBarHeight` so this never covers the last card. */}
           {bottomCTABarProps &&
             hasItineraryActivity &&
             // `tripTab`, not `activeTab`: the bar belongs to the trip behind the

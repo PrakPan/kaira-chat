@@ -537,38 +537,49 @@ export default function MobileItinerary({
   //
   // NOT `scrollIntoView`. That asks the browser to put the element at the top
   // of the viewport whatever it takes, and it moves EVERY scrollable ancestor
-  // to get there — the pane, and then the document behind it. On the last leg,
-  // which has less than a screenful under it, there is no pane scroll left to
-  // give: the rest came out of the page, which slid the whole app up and left a
-  // band of empty white under the trip that no amount of scrolling put back.
+  // to get there. It also lands the target flush under the top edge, where the
+  // sticky trip card is already sitting — so the eyebrow it scrolled to is
+  // covered by the thing you tapped in.
   //
-  // So the pane is moved directly, by hand, and the target is clamped to the
-  // scroll the pane actually has. Tapping the last city now lands as far down
-  // as the trip goes and stops there.
+  // So one scroller is moved directly, by hand, and the target is clamped to
+  // the scroll it actually has. Tapping the last city lands as far down as the
+  // trip goes and stops there.
+  //
+  // WHICH scroller depends on the host. On a phone this surface has none of
+  // its own: the bot shell lays the trip out in the document so the browser
+  // will retract its address bar (see `.app-shell` in styles/globals.css), and
+  // the window is the scroller. Inside a pane that scrolls itself — the route
+  // sheet, or the desktop column — that pane is. Both are handled below rather
+  // than one being a fallback for the other, because the maths differs: a
+  // pane's own top is its scroll origin, the window's is 0.
   const scrollToAnchor = useCallback((anchor) => {
     const root = rootRef.current;
     const el = anchor ? root?.querySelector(`#${CSS.escape(anchor)}`) : null;
     if (!el) return;
 
-    const pane = scrollParentOf(root);
-    if (!pane) {
-      // No scroller of our own to move — the host is laid out differently than
-      // we expect, and one imperfect scroll beats none.
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
-      return;
-    }
-
     // Clear the sticky trip card, which would otherwise sit over the leg's own
     // eyebrow the moment it arrived. It is this component's first child.
     const stuck = root.firstElementChild?.offsetHeight || 0;
-    const top =
-      pane.scrollTop +
-      el.getBoundingClientRect().top -
-      pane.getBoundingClientRect().top -
-      stuck;
-    const max = Math.max(0, pane.scrollHeight - pane.clientHeight);
+    const pane = scrollParentOf(root);
 
-    pane.scrollTo({ top: Math.min(Math.max(top, 0), max), behavior: "smooth" });
+    if (pane) {
+      const top =
+        pane.scrollTop +
+        el.getBoundingClientRect().top -
+        pane.getBoundingClientRect().top -
+        stuck;
+      const max = Math.max(0, pane.scrollHeight - pane.clientHeight);
+      pane.scrollTo({ top: Math.min(Math.max(top, 0), max), behavior: "smooth" });
+      return;
+    }
+
+    const doc = document.scrollingElement || document.documentElement;
+    const top = window.scrollY + el.getBoundingClientRect().top - stuck;
+    const max = Math.max(0, doc.scrollHeight - window.innerHeight);
+    window.scrollTo({
+      top: Math.min(Math.max(top, 0), max),
+      behavior: "smooth",
+    });
   }, []);
 
   // ── Where Kaira's last change landed ───────────────────────────────────────

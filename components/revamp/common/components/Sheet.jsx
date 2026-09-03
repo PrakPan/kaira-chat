@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import Drawer from "../../../ui/Drawer";
+import { lockDocumentScroll } from "../scrollLock";
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  Sheet — the bottom-sheet primitive for the mobile itinerary.
@@ -28,11 +29,7 @@ export default function Sheet({
   title,
   subtitle,
   headerRight,
-  // Sized off --app-vh rather than a bare `dvh`: inside fullscreen on Android
-  // the unit still reports the pre-fullscreen viewport, which leaves every
-  // sheet on this surface short of the height it asked for. Identical to
-  // `82dvh` everywhere else (see the token in styles/globals.css).
-  height = "calc(0.82 * var(--app-vh, 100dvh))",
+  height = "82dvh",
   zIndex = 1600,
   children,
   footer,
@@ -42,6 +39,18 @@ export default function Sheet({
   const [everOpened, setEverOpened] = useState(false);
   useEffect(() => {
     if (open) setEverOpened(true);
+  }, [open]);
+
+  // Freeze the page while the sheet is up. Drawer writes `body.style.overflow`
+  // on open, which is enough on a page that only scrolls a pane — but the
+  // mobile itinerary now scrolls the WINDOW (that is what retracts the
+  // browser's address bar; see `.app-shell` in styles/globals.css), and iOS
+  // does not reliably honour `overflow: hidden` on body against a touch drag.
+  // Without this a drag beside the sheet scrolls the trip out from under it and
+  // the user is somewhere else when it closes.
+  useEffect(() => {
+    if (!open) return undefined;
+    return lockDocumentScroll();
   }, [open]);
 
   // Escape closes, matching every other drawer on this surface.
@@ -74,7 +83,7 @@ export default function Sheet({
         // is given. Releasing `top` lets bottom + height actually anchor it.
         top: "auto",
         height,
-        maxHeight: "calc(0.95 * var(--app-vh, 100dvh))",
+        maxHeight: "95dvh",
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
         overflow: "hidden",

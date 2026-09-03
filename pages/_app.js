@@ -47,15 +47,6 @@ const ClarityInit = dynamic(() => import("../components/ClarityInit"), {
   ssr: false,
 });
 
-// Browser fullscreen on the user's first tap (Android Chrome/Firefox, iPad
-// Safari; a silent no-op on iPhone, which has no element fullscreen). Renders
-// nothing — it is an effect with a component's lifecycle. ssr:false keeps it
-// out of the server payload; it is not needed for first paint.
-const FullscreenOnFirstGesture = dynamic(
-  () => import("../components/FullscreenOnFirstGesture"),
-  { ssr: false },
-);
-
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
   const ref = useRef();
@@ -290,7 +281,6 @@ function MyApp({ Component, pageProps }) {
       <div ref={ref}>
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
           <ClarityInit />
-          <FullscreenOnFirstGesture />
           <Theme>
             <JupyterAnalytics
               apiEndpoint={JUPITER_HOST}
