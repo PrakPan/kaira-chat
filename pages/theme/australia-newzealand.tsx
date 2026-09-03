@@ -139,31 +139,31 @@ const PROMPTS = {
     "We are 2 travellers, and our travel dates in December are flexible. Plan a 9-night Australia trip focused on New Year's Eve in Sydney and a Great Ocean Road road trip. Include Sydney's harbour fireworks, beaches, coastal experiences and food, followed by a scenic drive from Melbourne along the Great Ocean Road with the Twelve Apostles, wildlife and coastal towns. Keep the pace relaxed and leave room for spontaneous stops.",
   // Boxing Day Test feature
   boxingDayTicket:
-    "On our 10-night December trip for two, I want to be at the Boxing Day Test at the MCG in Melbourne. Tell me how Day 1 tickets work, what they cost, where to sit for a first-timer, and how early we need to book — then build the Melbourne leg of my trip around the 26th of December.",
+    "On our 10-night December trip for two, I want to be at the Boxing Day Test at the MCG in Melbourne. Tell me how Day 1 tickets work, what they cost, where to sit for a first-timer, and how early we need to book - then build the Melbourne leg of my trip around the 26th of December.",
   // Where to stand at midnight (POIs)
   mrsMacquaries:
-    "On our 10-night December trip for two, tell me about watching the Sydney New Year's Eve fireworks from Mrs Macquarie's Point — how early to arrive, whether it's ticketed, what to carry, and what the view is like. Add it to my Sydney plan.",
+    "On our 10-night December trip for two, tell me about watching the Sydney New Year's Eve fireworks from Mrs Macquarie's Point - how early to arrive, whether it's ticketed, what to carry, and what the view is like. Add it to my Sydney plan.",
   midnightCruise:
-    "On our 10-night December trip for two, tell me about watching the Sydney New Year's Eve fireworks from a boat on the harbour — what the cruises include, what they cost, and how far ahead they sell out. Add a midnight harbour cruise to my Sydney plan.",
+    "On our 10-night December trip for two, tell me about watching the Sydney New Year's Eve fireworks from a boat on the harbour - what the cruises include, what they cost, and how far ahead they sell out. Add a midnight harbour cruise to my Sydney plan.",
   tarongaLawns:
-    "On our 10-night December trip for two, tell me about watching the Sydney New Year's Eve fireworks from the Taronga Zoo lawns — the view back across the harbour, what's included, and whether it suits families. Add it to my Sydney plan.",
+    "On our 10-night December trip for two, tell me about watching the Sydney New Year's Eve fireworks from the Taronga Zoo lawns - the view back across the harbour, what's included, and whether it suits families. Add it to my Sydney plan.",
   // Restaurants
   quay:
-    "On our 10-night December trip for two, tell me about Quay in Sydney — the harbour-front fine dining and its famous tasting menu — and add a special dinner there to my Sydney plan.",
+    "On our 10-night December trip for two, tell me about Quay in Sydney - the harbour-front fine dining and its famous tasting menu - and add a special dinner there to my Sydney plan.",
   mrWong:
     "On our 10-night December trip for two, tell me about Mr Wong in Sydney and its modern Cantonese cooking, and add a long dinner there to my plan.",
   rouleGalette:
     "On our 10-night December trip for two, tell me about Roule Galette in Melbourne and its French galettes and crêpes, and work a relaxed lunch there into my Melbourne days.",
   fergburger:
-    "On our 14-night December trip for two, tell me about Fergburger in Queenstown — the queue, the burgers, and when to go — and add it to my New Zealand plan.",
+    "On our 14-night December trip for two, tell me about Fergburger in Queenstown - the queue, the burgers, and when to go - and add it to my New Zealand plan.",
   // Ask bar
   askBar:
-    "Which southern-summer trip should we do in December, travelling as a couple — the Boxing Day Test and Sydney NYE double, the same double extended into New Zealand's South Island, or Sydney NYE with a Great Ocean Road drive? Compare the pace, the cost and the fixed dates, then build the full itinerary for the one you recommend.",
+    "Which southern-summer trip should we do in December, travelling as a couple - the Boxing Day Test and Sydney NYE double, the same double extended into New Zealand's South Island, or Sydney NYE with a Great Ocean Road drive? Compare the pace, the cost and the fixed dates, then build the full itinerary for the one you recommend.",
   // "Build this itinerary" — sent when the reader has saved places on the page.
   // The saved items ride along in the /chatkit request; this brief tells Kaira
   // to shape the trip around them.
   buildItinerary:
-    "We are 2 travellers going for 10 nights in December, and our travel dates are flexible. Build my complete Australia and New Zealand summer itinerary around the places I've saved on this page — fit them into the right cities with the cricket, the fireworks, the coast and the mountains at a comfortable pace, then price it.",
+    "We are 2 travellers going for 10 nights in December, and our travel dates are flexible. Build my complete Australia and New Zealand summer itinerary around the places I've saved on this page - fit them into the right cities with the cricket, the fireworks, the coast and the mountains at a comfortable pace, then price it.",
 };
 
 // What each prompt above states about the trip, sent as `intake` keys (month /
@@ -314,7 +314,7 @@ const australiaNewZealandConfig: CinematicThemeConfig = {
       type: "feature",
       heading: { lead: "One ticket the whole summer is built around" },
       intro:
-        "The Boxing Day Test starts at the MCG on 26 December, every year, without exception. Day 1 is the one people fly for — 90,000-odd in for the first session, and a city that shuts down around it. Get that date locked and the rest of the trip arranges itself.",
+        "The Boxing Day Test starts at the MCG on 26 December, every year, without exception. Day 1 is the one people fly for - 90,000-odd in for the first session, and a city that shuts down around it. Get that date locked and the rest of the trip arranges itself.",
       rows: [
         {
           stat: "26 Dec",
@@ -349,7 +349,7 @@ const australiaNewZealandConfig: CinematicThemeConfig = {
         {
           image: IMG.nyeMrsMacquaries,
           name: "Mrs Macquarie's Point",
-          line: "The postcard angle — Bridge and Opera House in one frame.",
+          line: "The postcard angle - Bridge and Opera House in one frame.",
           tag: "Sydney",
           prompt: PROMPTS.mrsMacquaries,
           item: {
@@ -546,7 +546,7 @@ const australiaNewZealandConfig: CinematicThemeConfig = {
         {
           range: "January",
           name: "Peak summer",
-          line: "Hottest, longest days — and the priciest fares of the year.",
+          line: "Hottest, longest days - and the priciest fares of the year.",
         },
         {
           range: "Feb – Mar",
@@ -555,7 +555,7 @@ const australiaNewZealandConfig: CinematicThemeConfig = {
         },
       ],
       note:
-        "The two big dates are fixed, and everything around them books out early — flights from India for late December go months ahead. Come in February or March instead for the same weather at a much better price.",
+        "The two big dates are fixed, and everything around them books out early - flights from India for late December go months ahead. Come in February or March instead for the same weather at a much better price.",
     },
     // ── Visa (dark) ──
     {
@@ -566,7 +566,7 @@ const australiaNewZealandConfig: CinematicThemeConfig = {
         accent: "handled",
       },
       intro:
-        "Both are online applications, and both are slow — New Zealand especially. We prep the paperwork, check every document and submit for you, so the processing clock starts as early as it can.",
+        "Both are online applications, and both are slow - New Zealand especially. We prep the paperwork, check every document and submit for you, so the processing clock starts as early as it can.",
       // The two countries this trip actually crosses. The stopover visas that
       // used to sit under them (Singapore, Bali, Thailand, Japan) were for
       // trips this page isn't selling.
@@ -576,7 +576,7 @@ const australiaNewZealandConfig: CinematicThemeConfig = {
           cities: "e-Visa · multiple entry · 90 days a visit",
           fee: "₹13,900",
           line:
-            "Filed online, but the document list is the long kind — funds, itinerary, insurance, the lot. We assemble it, check it against what the department actually asks for, and submit on your behalf.",
+            "Filed online, but the document list is the long kind - funds, itinerary, insurance, the lot. We assemble it, check it against what the department actually asks for, and submit on your behalf.",
           href: VISA_HOME,
         },
         {
@@ -584,7 +584,7 @@ const australiaNewZealandConfig: CinematicThemeConfig = {
           cities: "e-Visa · multiple entry · 90 days a visit",
           fee: "₹27,500",
           line:
-            "The slowest thing on this itinerary — slower than the flights, the Test tickets and the summer stays. It's the first file we open, and it's what decides how early the rest of the trip has to be booked.",
+            "The slowest thing on this itinerary - slower than the flights, the Test tickets and the summer stays. It's the first file we open, and it's what decides how early the rest of the trip has to be booked.",
           href: VISA_HOME,
         },
       ],
@@ -595,7 +595,7 @@ const australiaNewZealandConfig: CinematicThemeConfig = {
         { label: "We handle", value: "Docs + filing" },
       ],
       note:
-        "Start the New Zealand application first — it takes roughly twice as long as the Australian one. Apply for both at least three months out if you're travelling over Christmas.",
+        "Start the New Zealand application first - it takes roughly twice as long as the Australian one. Apply for both at least three months out if you're travelling over Christmas.",
     },
     // ── Stories (open each traveller's itinerary) ──
     {
@@ -810,7 +810,7 @@ const AustraliaNewZealandThemePage = ({
         </title>
         <meta
           name="description"
-          content="Plan an Australia and New Zealand summer trip with The Tarzan Way's AI itinerary — the Boxing Day Test at the MCG, Sydney New Year's Eve fireworks, the Great Ocean Road, Queenstown and the South Island, for Indian travellers."
+          content="Plan an Australia and New Zealand summer trip with The Tarzan Way's AI itinerary - the Boxing Day Test at the MCG, Sydney New Year's Eve fireworks, the Great Ocean Road, Queenstown and the South Island, for Indian travellers."
         />
         <meta
           property="og:title"
@@ -818,7 +818,7 @@ const AustraliaNewZealandThemePage = ({
         />
         <meta
           property="og:description"
-          content="Plan an Australia and New Zealand summer trip with The Tarzan Way's AI itinerary — the Boxing Day Test at the MCG, Sydney New Year's Eve fireworks, the Great Ocean Road, Queenstown and the South Island, for Indian travellers."
+          content="Plan an Australia and New Zealand summer trip with The Tarzan Way's AI itinerary - the Boxing Day Test at the MCG, Sydney New Year's Eve fireworks, the Great Ocean Road, Queenstown and the South Island, for Indian travellers."
         />
         <link
           rel="canonical"
@@ -842,9 +842,9 @@ const AustraliaNewZealandThemePage = ({
               "@graph": [
                 {
                   "@type": "TouristTrip",
-                  name: "Australia & New Zealand Summer — Trip Planner",
+                  name: "Australia & New Zealand Summer - Trip Planner",
                   description:
-                    "Plan an Australia and New Zealand summer trip with The Tarzan Way's AI itinerary — the Boxing Day Test at the MCG, Sydney New Year's Eve fireworks, the Great Ocean Road, Queenstown and the South Island, for Indian travellers.",
+                    "Plan an Australia and New Zealand summer trip with The Tarzan Way's AI itinerary - the Boxing Day Test at the MCG, Sydney New Year's Eve fireworks, the Great Ocean Road, Queenstown and the South Island, for Indian travellers.",
                   url: "https://thetarzanway.com/theme/australia-newzealand",
                   image: "https://thetarzanway.com/og-image.png",
                   provider: {

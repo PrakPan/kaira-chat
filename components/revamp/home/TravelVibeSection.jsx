@@ -109,7 +109,7 @@ const TravelVibeSection = (props) => {
             className="text-gray-600 max-w-2xl mx-auto px-2 sm:px-0 text-base"
             style={{ fontSize: "16px" }}
           >
-            Find a plan that feels just right — whether you're planning a
+            Find a plan that feels just right - whether you're planning a
             honeymoon, a road trip, or your next solo escape.
           </p>
         </div>

@@ -21,7 +21,7 @@ const spainTravellerStories = [
       "https://thetarzanway.com/chat/2f9faac4-a539-460a-85d4-232faa6a6f56",
     rating: 4.6,
     prompt:
-      "Plan a 10-night solo cultural escape through Spain — Madrid 3N, Granada 2N, Seville 3N, Malaga 2N. I love heritage landmarks, flamenco, tapas crawls, and iconic viewpoints. Add a Royal Palace tour in Madrid, an Alhambra guided tour in Granada, and a tapas night crawl in Seville.",
+      "Plan a 10-night solo cultural escape through Spain - Madrid 3N, Granada 2N, Seville 3N, Malaga 2N. I love heritage landmarks, flamenco, tapas crawls, and iconic viewpoints. Add a Royal Palace tour in Madrid, an Alhambra guided tour in Granada, and a tapas night crawl in Seville.",
   },
   
   {
@@ -40,12 +40,12 @@ const spainTravellerStories = [
       "https://images.thetarzanway.com/media/cities/167636131177145671844482421875.jpeg",
     ],
     shortDescription:
-      "Naveen and five friends uncovered the romantic soul of Spain — starting in Madrid with a heritage Segway glide through Retiro Park, a visit to Museo del Romanticismo, and a fine-dining experience at Paco Roncero. Granada delivered sunset magic at Mirador de San Nicolás, a walk through the Albaicín quarter, and the lush Generalife Gardens. Seville charmed them with the Alcázar palace, a romantic horse-drawn carriage ride past La Giralda, and the dazzling Plaza de España. The trip ended with a final Barcelona evening exploring Catalan history and gallery art.",
+      "Naveen and five friends uncovered the romantic soul of Spain - starting in Madrid with a heritage Segway glide through Retiro Park, a visit to Museo del Romanticismo, and a fine-dining experience at Paco Roncero. Granada delivered sunset magic at Mirador de San Nicolás, a walk through the Albaicín quarter, and the lush Generalife Gardens. Seville charmed them with the Alcázar palace, a romantic horse-drawn carriage ride past La Giralda, and the dazzling Plaza de España. The trip ended with a final Barcelona evening exploring Catalan history and gallery art.",
     viewItineraryLink:
       "https://thetarzanway.com/chat/65b987ee-e0d3-4c57-9877-55d887118939",
     rating: 4.8,
     prompt:
-      "Plan a 6-night romantic hidden gems trip through Spain for 6 friends — Madrid 2N, Granada 1N, Seville 2N, Barcelona 1N. We love romantic viewpoints, heritage sites, flamenco, horse-drawn carriage rides, and hidden gems off the beaten path. Add a Segway tour in Madrid and a carriage ride in Seville.",
+      "Plan a 6-night romantic hidden gems trip through Spain for 6 friends - Madrid 2N, Granada 1N, Seville 2N, Barcelona 1N. We love romantic viewpoints, heritage sites, flamenco, horse-drawn carriage rides, and hidden gems off the beaten path. Add a Segway tour in Madrid and a carriage ride in Seville.",
   },
    {
     id: 7,
@@ -68,7 +68,7 @@ const spainTravellerStories = [
       "https://thetarzanway.com/chat/69e6010e-421d-45c9-966d-e6dfdd9571f5",
     rating: 4.9,
     prompt:
-      "Plan a 14-night couple trip through Spain — Madrid 3N, Barcelona 3N, Valencia 2N, Malaga 3N, Seville 3N. We love adventure activities, tapas crawls, coastal sailing, nightlife, and iconic heritage sites. Add skydiving in Seville, indoor skydiving in Madrid, a Sagrada Família tour in Barcelona, and a catamaran cruise in Malaga.",
+      "Plan a 14-night couple trip through Spain - Madrid 3N, Barcelona 3N, Valencia 2N, Malaga 3N, Seville 3N. We love adventure activities, tapas crawls, coastal sailing, nightlife, and iconic heritage sites. Add skydiving in Seville, indoor skydiving in Madrid, a Sagrada Família tour in Barcelona, and a catamaran cruise in Malaga.",
   },
   {
     id: 5,
@@ -90,7 +90,7 @@ const spainTravellerStories = [
       "https://thetarzanway.com/chat/48ea9f86-7627-48c0-a5cc-44f004eeaa49",
     rating: 4.7,
     prompt:
-      "Plan an 8-night solo cultural journey through Spain — Barcelona 3N, Valencia 3N, Madrid 2N. I love tapas, Gaudí architecture, flamenco shows, and local markets. Add a paella cooking class in Valencia and a Gaudí nighttime tour in Barcelona.",
+      "Plan an 8-night solo cultural journey through Spain - Barcelona 3N, Valencia 3N, Madrid 2N. I love tapas, Gaudí architecture, flamenco shows, and local markets. Add a paella cooking class in Valencia and a Gaudí nighttime tour in Barcelona.",
   },
 ];
 export default spainTravellerStories;

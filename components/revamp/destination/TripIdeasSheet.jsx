@@ -108,7 +108,7 @@ const TripIdeasSheet = ({ open, onClose, onSelect, destinationLabel, prompts = [
               Trip ideas for {destinationLabel || "you"}
             </div>
             <div className="mt-0.5 text-[12.5px] text-[#6B7280]">
-              Tap one — Kaira picks it up in chat.
+              Tap one - Kaira picks it up in chat.
             </div>
           </div>
           <button

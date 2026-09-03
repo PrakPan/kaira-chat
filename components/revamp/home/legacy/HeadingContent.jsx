@@ -73,7 +73,7 @@ const HeadingContent = ({ title, subtitle }) => {
       </div>
       <div ref={contentWrapperRef} className={styles.contentWrapper}>
         <p className={`${styles.subtitle} text-text-focused`}>
-          Solo? Couple? Group? We Plan Like It’s Just for You — Because It Is.
+          Solo? Couple? Group? We Plan Like It’s Just for You - Because It Is.
         </p>
       </div>
       <div ref={buttonRef}>

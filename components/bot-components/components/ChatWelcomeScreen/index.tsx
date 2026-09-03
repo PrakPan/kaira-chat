@@ -215,7 +215,7 @@ const CWS_STYLES = `
 // entry as the SSR default to avoid a hydration mismatch; the client swaps in
 // a random pick (which may be any entry, including this one) after mount.
 const HERO_HOOKS: string[] = [
-  "We don't just chat — we sell holidays.",
+  "We don't just chat - we sell holidays.",
   "We don't just chat, we book!",
   "Plan it. Book it. Pack it.",
   "Dream it. Plan it. Book it.",
@@ -223,7 +223,7 @@ const HERO_HOOKS: string[] = [
   "AI plans it. You just pack.",
   "Your trip, sorted in one chat.",
   "Not a planner. A closer.",
-  "Tap, plan, book — done.",
+  "Tap, plan, book - done.",
   "We chat. We plan. We book.",
   "You imagine it. We plan and book it.",
   "Your travel buddy, from idea to booking.",
@@ -424,7 +424,7 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
       icon: "💍",
       label: "Santorini or Amalfi Coast",
       sublabel: "",
-      prompt: "We are planning our honeymoon and deciding between Santorini and the Amalfi Coast. Can you compare both — best time to go, what to do, where to stay, and approximate budget for 7 nights for 2? Help us decide.",
+      prompt: "We are planning our honeymoon and deciding between Santorini and the Amalfi Coast. Can you compare both - best time to go, what to do, where to stay, and approximate budget for 7 nights for 2? Help us decide.",
     },
     {
       icon: "🏰",
@@ -434,7 +434,7 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
     },
     {
       icon: "🌌",
-      label: "Northern Lights — Iceland or Norway",
+      label: "Northern Lights - Iceland or Norway",
       sublabel: "",
       prompt: "I want to see the Northern Lights. Should I go to Iceland or Norway? What is the best time, what does it cost for an Indian traveller including flights, and what else is there to do beyond the lights? Give me a full picture.",
     },
@@ -465,8 +465,8 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
       rotatePlaceholders={[
         "Try:  Plan a 10-day Japan trip",
         "Try:  Santorini or Amalfi for our honeymoon?",
-        "Try:  Northern Lights — Iceland or Norway?",
-        "Try:  Europe in summer — where should we go?",
+        "Try:  Northern Lights - Iceland or Norway?",
+        "Try:  Europe in summer - where should we go?",
       ]}
       showAttach={true}
       onFilesSelected={handleFilesSelected}

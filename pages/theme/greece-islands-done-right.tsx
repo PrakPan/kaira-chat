@@ -49,9 +49,9 @@ const PROMPTS = {
   mainland:
     "Create a 10-night mainland Greece itinerary in October for two of us, focused on Athens, Delphi, Meteora, Mycenae, Epidaurus, and Nafplio. Include transport, daily plans, and the key stories behind each site.",
   build:
-    "We are 2 travellers going for 9 nights in September, and our dates are flexible. Build my complete Greece itinerary around the islands and experiences I've saved on this page — route Athens and the Cyclades with smooth ferry connections at a relaxed pace, then price it.",
+    "We are 2 travellers going for 9 nights in September, and our dates are flexible. Build my complete Greece itinerary around the islands and experiences I've saved on this page - route Athens and the Cyclades with smooth ferry connections at a relaxed pace, then price it.",
   ask:
-    "Which Greece trip should I do for 9 nights in September as a couple — the classic Santorini + Mykonos run, a slower Cyclades hop with Naxos, or add Crete? Compare the pace, the ferries and the cost, tell me if another month suits it better, then build the full itinerary for the one you recommend.",
+    "Which Greece trip should I do for 9 nights in September as a couple - the classic Santorini + Mykonos run, a slower Cyclades hop with Naxos, or add Crete? Compare the pace, the ferries and the cost, tell me if another month suits it better, then build the full itinerary for the one you recommend.",
 };
 
 // What each prompt above states about the trip, sent as `intake` keys (month /
@@ -87,7 +87,7 @@ const greeceConfig: CinematicThemeConfig = {
     prompt: PROMPTS.tenDay,
     chips: [
       { label: "Is Santorini worth the hype?", prompt: PROMPTS.santorini },
-      { label: "₹1.8 lakh — what do I get?", prompt: PROMPTS.budget },
+      { label: "₹1.8 lakh - what do I get?", prompt: PROMPTS.budget },
       { label: "A doable 10-day itinerary", prompt: PROMPTS.tenDay },
       { label: "A romantic Greece for 2", prompt: PROMPTS.romantic },
     ],
@@ -108,31 +108,31 @@ const greeceConfig: CinematicThemeConfig = {
       cards: [
         {
           image: img("Athens.jpg"),
-          name: "Athens — ruins and rooftops",
+          name: "Athens - ruins and rooftops",
           line: "2,500 years. Still buzzing.",
           tag: "History · City",
         },
         {
           image: img("Santorini.jpg"),
-          name: "Santorini — blue domes, real story",
+          name: "Santorini - blue domes, real story",
           line: "The photo is real. Book early.",
           tag: "Scenic · Romantic",
         },
         {
           image: img("Crete.jpg"),
-          name: "Crete — more than a beach",
+          name: "Crete - more than a beach",
           line: "Biggest island. Wildly underrated.",
           tag: "Culture · Beach",
         },
         {
           image: img("Meteora.jpg"),
-          name: "Meteora — monasteries on cliffs",
+          name: "Meteora - monasteries on cliffs",
           line: "Built on nothing. Literally.",
           tag: "UNESCO",
         },
         {
           image: img("Mykonos.jpg"),
-          name: "Mykonos — beyond the party",
+          name: "Mykonos - beyond the party",
           line: "The calm side of Mykonos.",
           tag: "Beach",
         },
@@ -147,31 +147,31 @@ const greeceConfig: CinematicThemeConfig = {
       cards: [
         {
           image: img("Easter in Greece.png"),
-          name: "Easter in Greece — nothing like it",
+          name: "Easter in Greece - nothing like it",
           line: "Bigger than Christmas.",
           tag: "Apr – May",
         },
         {
           image: img("Epidaurus.png"),
-          name: "Epidaurus — the original theatre",
+          name: "Epidaurus - the original theatre",
           line: "2,400 years old.",
           tag: "Jun – Aug",
         },
         {
           image: img("Thessaloniki.jpg"),
-          name: "Thessaloniki — where Greeks holiday",
+          name: "Thessaloniki - where Greeks holiday",
           line: "More food per street.",
           tag: "Year-round",
         },
         {
           image: img("Hydra.jpg"),
-          name: "Hydra — no cars, just donkeys",
+          name: "Hydra - no cars, just donkeys",
           line: "90 minutes from Athens.",
           tag: "Day trip",
         },
         {
           image: img("Delphi.jpg"),
-          name: "Delphi — where gods were consulted",
+          name: "Delphi - where gods were consulted",
           line: "The centre of the ancient world.",
           tag: "Day trip",
         },
@@ -214,7 +214,7 @@ const greeceConfig: CinematicThemeConfig = {
         },
         {
           image: img("Greece Mainland.png"),
-          name: "Greece mainland — ancient journey",
+          name: "Greece mainland - ancient journey",
           line: "Before the islands existed.",
           tag: "History",
           prompt: PROMPTS.mainland,
@@ -226,35 +226,35 @@ const greeceConfig: CinematicThemeConfig = {
       type: "cards",
       selectable: true,
       itemKind: "experience",
-      heading: { lead: "Only in Greece —", accent: "experiences worth flying for" },
+      heading: { lead: "Only in Greece -", accent: "experiences worth flying for" },
       cards: [
         {
           image: img("Acropolis.jpg"),
-          name: "Acropolis — 8am, no one else",
+          name: "Acropolis - 8am, no one else",
           line: "You and the Parthenon.",
           tag: "Athens",
         },
         {
           image: img("Catamaran.jpg"),
-          name: "Catamaran — Santorini from the sea",
+          name: "Catamaran - Santorini from the sea",
           line: "Better from the water.",
           tag: "Santorini",
         },
         {
           image: img("Samaria Gorge.png"),
-          name: "Samaria Gorge — hike, then beach",
+          name: "Samaria Gorge - hike, then beach",
           line: "16km. Worth every step.",
           tag: "Crete",
         },
         {
           image: img("Cook Greek — In a Local Home.png"),
-          name: "Cook Greek — in a local home",
+          name: "Cook Greek - in a local home",
           line: "A Greek grandmother's kitchen.",
           tag: "Food",
         },
         {
           image: img("Sail the Cyclades — Your Own Route.png"),
-          name: "Sail the Cyclades — your own route",
+          name: "Sail the Cyclades - your own route",
           line: "New island every morning.",
           tag: "Sailing",
         },
@@ -336,7 +336,7 @@ const GreeceIslandsThemePage = ({
         </title>
         <meta
           name="description"
-          content="Plan a Greek islands trip with The Tarzan Way's AI itinerary — Athens, a Santorini caldera sunset, and the Cyclades by ferry. Island-hop Mykonos, Naxos and Crete at a relaxed pace, for Indian travellers."
+          content="Plan a Greek islands trip with The Tarzan Way's AI itinerary - Athens, a Santorini caldera sunset, and the Cyclades by ferry. Island-hop Mykonos, Naxos and Crete at a relaxed pace, for Indian travellers."
         />
         <meta
           property="og:title"
@@ -344,7 +344,7 @@ const GreeceIslandsThemePage = ({
         />
         <meta
           property="og:description"
-          content="Plan a Greek islands trip with The Tarzan Way's AI itinerary — Athens, a Santorini caldera sunset, and the Cyclades by ferry. Island-hop Mykonos, Naxos and Crete at a relaxed pace, for Indian travellers."
+          content="Plan a Greek islands trip with The Tarzan Way's AI itinerary - Athens, a Santorini caldera sunset, and the Cyclades by ferry. Island-hop Mykonos, Naxos and Crete at a relaxed pace, for Indian travellers."
         />
         <link
           rel="canonical"

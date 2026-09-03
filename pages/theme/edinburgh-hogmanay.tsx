@@ -127,16 +127,16 @@ const PROMPTS = {
     "We are 2 travellers going for 5 nights in December, and our travel dates are flexible. We want to experience the fun side of Hogmanay, including the famous Loony Dook. Combine Edinburgh's New Year celebrations with quirky local traditions, scenic winter walks, cozy cafés, and authentic Scottish experiences for a memorable trip.",
   // Daylight
   arthursSeat:
-    "On our 7-night Hogmanay trip in December for two, I want to climb Arthur's Seat at sunrise on one of the days — the ancient volcano in the middle of Edinburgh. Tell me the easiest route from the Old Town, how long it takes, what the view over the city and the Firth of Forth looks like in early winter, and the best time for the light.",
+    "On our 7-night Hogmanay trip in December for two, I want to climb Arthur's Seat at sunrise on one of the days - the ancient volcano in the middle of Edinburgh. Tell me the easiest route from the Old Town, how long it takes, what the view over the city and the Firth of Forth looks like in early winter, and the best time for the light.",
   edinburghCastle:
-    "On our 7-night Hogmanay trip in December for two, I want to visit Edinburgh Castle properly on a pre-festival day. Tell me the opening time in late December, what's genuinely worth seeing inside — the Crown Jewels, the Stone of Destiny, the One O'Clock Gun — and how it deepens watching the New Year fireworks launch from its walls. Build it into a full Old Town day.",
+    "On our 7-night Hogmanay trip in December for two, I want to visit Edinburgh Castle properly on a pre-festival day. Tell me the opening time in late December, what's genuinely worth seeing inside - the Crown Jewels, the Stone of Destiny, the One O'Clock Gun - and how it deepens watching the New Year fireworks launch from its walls. Build it into a full Old Town day.",
   lochNessGlencoe:
-    "On our 7-night Hogmanay trip in December for two, I want a day trip from Edinburgh into the Highlands — Loch Ness and Glencoe in winter. Tell me honestly what the drive is like in early January, what the landscape looks like under snow, whether I need a car or can join a tour, and how long the day runs.",
+    "On our 7-night Hogmanay trip in December for two, I want a day trip from Edinburgh into the Highlands - Loch Ness and Glencoe in winter. Tell me honestly what the drive is like in early January, what the landscape looks like under snow, whether I need a car or can join a tour, and how long the day runs.",
   speyside:
-    "On our 7-night Hogmanay trip in December for two, I want to spend a day on a Speyside whisky run from Edinburgh — the distilleries worth visiting, what the difference between a Speyside, Islay and Highland malt actually tastes like, and whether it's better as a guided tour or self-drive. Build it into my trip around the festival.",
+    "On our 7-night Hogmanay trip in December for two, I want to spend a day on a Speyside whisky run from Edinburgh - the distilleries worth visiting, what the difference between a Speyside, Islay and Highland malt actually tastes like, and whether it's better as a guided tour or self-drive. Build it into my trip around the festival.",
   // Ask-bar comparison
   askBar:
-    "Which Edinburgh Hogmanay plan should we do in December, travelling as a couple — all four festival nights, New Year in the Highlands, a calmer Hogmanay without the street party, or Edinburgh plus London? Compare the atmosphere, cost, and effort, then build the full itinerary for the one you recommend.",
+    "Which Edinburgh Hogmanay plan should we do in December, travelling as a couple - all four festival nights, New Year in the Highlands, a calmer Hogmanay without the street party, or Edinburgh plus London? Compare the atmosphere, cost, and effort, then build the full itinerary for the one you recommend.",
 };
 
 // What each prompt above states about the trip, sent as `intake` keys (month /
@@ -174,7 +174,7 @@ const edinburghHogmanayConfig: CinematicThemeConfig = {
     eyebrow: "THREE NIGHTS · 75,000 PEOPLE · ONE CASTLE",
     heading: { lead: "The world's", accent: "loudest new year" },
     lede:
-      "Edinburgh throws the planet's biggest New Year — the Torchlight Procession, the Street Party, fireworks off the Castle, and a whole city singing Auld Lang Syne. Tell me your dates and I'll lock the tickets and rooms in the right order.",
+      "Edinburgh throws the planet's biggest New Year - the Torchlight Procession, the Street Party, fireworks off the Castle, and a whole city singing Auld Lang Syne. Tell me your dates and I'll lock the tickets and rooms in the right order.",
     placeholder: "Try: Hogmanay for four friends, five nights",
     prompt: PROMPTS.ultimate,
     chips: [
@@ -314,7 +314,7 @@ const edinburghHogmanayConfig: CinematicThemeConfig = {
           image: PIC.hogmanayAllFourNights,
           tag: "The full festival",
           name: "Hogmanay, all four nights",
-          line: "Torchlight to First Footin — the complete run.",
+          line: "Torchlight to First Footin - the complete run.",
           nights: "Dec 29 – Jan 1",
           href: `${CHAT}/a376fdc1-6fba-4e9d-a6f6-07d96f9f74d5`,
         },
@@ -398,7 +398,7 @@ const edinburghHogmanayConfig: CinematicThemeConfig = {
         {
           range: "By now",
           name: "Street Party tickets",
-          line: "The Bells sells out first — lock these before anything else.",
+          line: "The Bells sells out first - lock these before anything else.",
         },
         {
           range: "Sep–Oct",
@@ -463,7 +463,7 @@ const edinburghHogmanayConfig: CinematicThemeConfig = {
         {
           rating: "5.0",
           type: "Couple · 5N",
-          name: "“Midnight under the Castle — nothing comes close.”",
+          name: "“Midnight under the Castle - nothing comes close.”",
           route: "Street Party + Highlands",
           prompt: PROMPTS.progStreetParty,
         },
@@ -477,7 +477,7 @@ const edinburghHogmanayConfig: CinematicThemeConfig = {
         {
           rating: "4.8",
           type: "Couple · 8N",
-          name: "“Edinburgh then London — two cities, one trip.”",
+          name: "“Edinburgh then London - two cities, one trip.”",
           route: "Edinburgh → London",
           prompt: PROMPTS.edinburghLondon,
         },
@@ -637,7 +637,7 @@ const EdinburghHogmanayThemePage = ({
         </title>
         <meta
           name="description"
-          content="Plan your Edinburgh Hogmanay 2026/27 trip with The Tarzan Way's AI itinerary. Torchlight Procession, Street Party, midnight fireworks, and January 1 First Footin — plus the Highlands, London, and Scotland for Indian travellers."
+          content="Plan your Edinburgh Hogmanay 2026/27 trip with The Tarzan Way's AI itinerary. Torchlight Procession, Street Party, midnight fireworks, and January 1 First Footin - plus the Highlands, London, and Scotland for Indian travellers."
         />
         <meta
           property="og:title"
@@ -645,7 +645,7 @@ const EdinburghHogmanayThemePage = ({
         />
         <meta
           property="og:description"
-          content="Plan your Edinburgh Hogmanay 2026/27 trip with The Tarzan Way's AI itinerary. Torchlight Procession, Street Party, midnight fireworks, and January 1 First Footin — plus the Highlands, London, and Scotland for Indian travellers."
+          content="Plan your Edinburgh Hogmanay 2026/27 trip with The Tarzan Way's AI itinerary. Torchlight Procession, Street Party, midnight fireworks, and January 1 First Footin - plus the Highlands, London, and Scotland for Indian travellers."
         />
         <link
           rel="canonical"
@@ -669,9 +669,9 @@ const EdinburghHogmanayThemePage = ({
               "@graph": [
                 {
                   "@type": "TouristTrip",
-                  name: "Edinburgh Hogmanay 2026/27 — Trip Planner",
+                  name: "Edinburgh Hogmanay 2026/27 - Trip Planner",
                   description:
-                    "Plan your Edinburgh Hogmanay 2026/27 trip with The Tarzan Way's AI itinerary. Torchlight Procession, Street Party, midnight fireworks, and January 1 First Footin — plus the Highlands, London, and Scotland for Indian travellers.",
+                    "Plan your Edinburgh Hogmanay 2026/27 trip with The Tarzan Way's AI itinerary. Torchlight Procession, Street Party, midnight fireworks, and January 1 First Footin - plus the Highlands, London, and Scotland for Indian travellers.",
                   url: "https://thetarzanway.com/theme/edinburgh-hogmanay",
                   image: "https://thetarzanway.com/og-image.png",
                   provider: {

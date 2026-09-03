@@ -122,7 +122,7 @@ const GetInspiredSection: React.FC<GetInspiredSectionProps> = ({
               </h2>
               <p className={styles.lede}>
                 Real trips and ready-made ideas.{" "}
-                <span className={styles.serif}>Tap any card</span> — Kaira picks
+                <span className={styles.serif}>Tap any card</span> - Kaira picks
                 it up in chat.
               </p>
             </div>

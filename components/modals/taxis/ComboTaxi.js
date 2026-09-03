@@ -653,7 +653,7 @@ const ComboTaxi = (props) => {
                 <OptionsContainer id="options">
                   {taxiSelection.enabled ? (
                     <div className="rounded-2xl border-sm border-solid border-[#f2e6a8] bg-[#fffdf0] px-3 py-2 mt-md ttw-type-small text-[#6b5600]">
-                      No single taxi seats {fleet?.pax} — add as many as you need
+                      No single taxi seats {fleet?.pax} - add as many as you need
                       and we will book them together.
                     </div>
                   ) : null}

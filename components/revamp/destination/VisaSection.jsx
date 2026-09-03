@@ -43,7 +43,7 @@ const VisaSection = ({ visas, destinationName }) => {
               <span className={styles.serif}>handled for you.</span>
             </h2>
             <p className={styles.lede}>
-              Pick a processing speed — we prep the paperwork, double-check every
+              Pick a processing speed - we prep the paperwork, double-check every
               document, and submit on your behalf.{" "}
               <span className={`${styles.serif} ${styles.visaNoWrap}`}>
                 No embassy queues.

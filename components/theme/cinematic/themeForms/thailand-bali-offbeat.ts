@@ -24,7 +24,7 @@ const thailandBaliOffbeatForm: ThemeForm = {
   copy: {
     datesTitle: "When are you going?",
     datesSub:
-      "Bali runs year round. Thailand's Andaman coast doesn't — that's the whole planning problem.",
+      "Bali runs year round. Thailand's Andaman coast doesn't - that's the whole planning problem.",
     footer: "That's the whole form. The page already told me you want the quiet version.",
     cta: "Draft the route →",
   },
@@ -33,7 +33,7 @@ const thailandBaliOffbeatForm: ThemeForm = {
       month: 1,
       label: "Peak dry",
       tag: "BUSIEST",
-      line: "Perfect on both sides. Also the priciest — east-coast villas go three months out.",
+      line: "Perfect on both sides. Also the priciest - east-coast villas go three months out.",
     },
     {
       month: 2,
@@ -51,7 +51,7 @@ const thailandBaliOffbeatForm: ThemeForm = {
       month: 4,
       label: "Songkran",
       tag: "PLAN AROUND IT",
-      line: "Thailand's water festival mid-month. Worth building around, either way — but decide deliberately.",
+      line: "Thailand's water festival mid-month. Worth building around, either way - but decide deliberately.",
     },
     {
       month: 5,
@@ -112,7 +112,7 @@ const thailandBaliOffbeatForm: ThemeForm = {
       skeleton: "krabi_ubud_amed",
       months: [11, 12, 1, 2, 3, 4],
       fareNote:
-        "KBV in / DPS out, one flight between. Andaman-dependent — gated to the dry months on purpose.",
+        "KBV in / DPS out, one flight between. Andaman-dependent - gated to the dry months on purpose.",
     },
     {
       key: "north_thailand_gilis",
@@ -159,7 +159,7 @@ const thailandBaliOffbeatForm: ThemeForm = {
     "Keep me off the crowded islands",
     "More water, fewer temples",
     "Add a night on a Nusa",
-    "Which coast works for my month?",
+    "Put me on the coast that behaves",
   ],
 };
 

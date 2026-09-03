@@ -404,7 +404,7 @@ const SearchInput = (props) => {
             <div className={styles.searchCtaRow}>
               <div className={styles.searchCtaRowText}>
                  Looking for something specific?{" "}
-                <span className={styles.serif}>Just tell Kaira</span> — she 
+                <span className={styles.serif}>Just tell Kaira</span> - she 
                 can plan any kind of trip in 100+ countries.
               </div>
               <button

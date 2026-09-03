@@ -7,9 +7,9 @@ import * as authaction from "../../store/actions/auth";
 
 // Keyword split from the homepage: the homepage targets "AI trip planner";
 // this page targets "AI travel agent" / "plan my trip with AI".
-const CHAT_TITLE = "AI Travel Agent — Plan My Trip with AI | The Tarzan Way";
+const CHAT_TITLE = "AI Travel Agent - Plan My Trip with AI | The Tarzan Way";
 const CHAT_DESCRIPTION =
-  "Plan your trip with AI. Kaira is an AI travel agent that builds a complete, bookable itinerary in seconds — flights, stays, activities and routes — reviewed by a local human expert before it reaches you.";
+  "Plan your trip with AI. Kaira is an AI travel agent that builds a complete, bookable itinerary in seconds - flights, stays, activities and routes - reviewed by a local human expert before it reaches you.";
 
 const ChatPage = ({ checkAuthState }) => {
   useEffect(() => {
@@ -24,7 +24,7 @@ const ChatPage = ({ checkAuthState }) => {
   const appLd = {
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    name: "Kaira — AI Travel Agent",
+    name: "Kaira - AI Travel Agent",
     url: "https://thetarzanway.com/chat",
     applicationCategory: "TravelApplication",
     operatingSystem: "Web",
@@ -71,7 +71,7 @@ const ChatPage = ({ checkAuthState }) => {
           border: 0,
         }}
       >
-        AI Travel Agent — Plan your trip with Kaira
+        AI Travel Agent - Plan your trip with Kaira
       </h1>
       <BotApp />
     </>

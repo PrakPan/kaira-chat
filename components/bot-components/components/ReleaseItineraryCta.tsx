@@ -268,7 +268,7 @@ const ReleaseItineraryCta: React.FC<ReleaseItineraryCtaProps> = ({
         onClick={() => setConfirming(true)}
         title={
           released
-            ? `Released to the customer${state.status ? ` · ${state.status}` : ""} — click to undo`
+            ? `Released to the customer${state.status ? ` · ${state.status}` : ""} - click to undo`
             : `Mark this itinerary released to the customer${state.status ? ` · currently ${state.status}` : ""}`
         }
         aria-label={

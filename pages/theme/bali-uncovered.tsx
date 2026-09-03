@@ -11,7 +11,7 @@ import baliTravellerStories from "../../data/baliTravellerStories";
 const baliThemeConfig: ThemeConfig = {
   welcome: {
     subtitle:
-      "Tell us your vibe — rice fields, beaches, or sunsets — and we'll map your Bali.",
+      "Tell us your vibe - rice fields, beaches, or sunsets - and we'll map your Bali.",
     promptChips: [
       {
         icon: "💍",
@@ -21,13 +21,13 @@ const baliThemeConfig: ThemeConfig = {
       },
       {
         icon: "🌴",
-        label: "Bali for first-timers — what is actually worth it?",
+        label: "Bali for first-timers - what is actually worth it?",
         prompt:
           "I want a first-time Bali itinerary that shows only what's truly worth doing. Build a balanced plan covering key temples, beaches, Nusa Penida, food spots, and sunsets. Tell me what to skip, how many places to stay in, and how to avoid a rushed, over-touristy trip.",
       },
       {
         icon: "💰",
-        label: "Bali with a Rs 60,000 budget — is it realistic?",
+        label: "Bali with a Rs 60,000 budget - is it realistic?",
         prompt:
           "I want to plan a Bali trip on a ₹60,000 per person budget including flights. Tell me what 7–8 days realistically looks like, where to stay in Ubud and Seminyak, how to travel cheaply, and build a full day-by-day itinerary with where to spend and where to save.",
       },
@@ -47,7 +47,7 @@ const baliThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/Ubud -- Temples and Rice Fields.jpg ",
-          label: "Ubud — Temples and Rice Fields",
+          label: "Ubud - Temples and Rice Fields",
           tags: "Culture · Central Bali",
           description: "The Bali everyone pictures.",
           prompt:
@@ -56,7 +56,7 @@ const baliThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/Seminyak -- Beach Clubs and Sunset.jpg ",
-          label: "Seminyak — Beach Clubs and Sunset",
+          label: "Seminyak - Beach Clubs and Sunset",
           tags: "Beach · West Bali",
           description: "Sunsets, cocktails, and beach days.",
           prompt:
@@ -65,7 +65,7 @@ const baliThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/Canggu — Surf, Cafes, Slow Bali Days.jpg ",
-          label: "Canggu — Surf, Cafes, Slow Bali Days",
+          label: "Canggu - Surf, Cafes, Slow Bali Days",
           tags: "Surf · Lifestyle",
           description: "Coffee at 8. Surf at 9.",
           prompt:
@@ -74,7 +74,7 @@ const baliThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/Uluwatu — Clifftop Sunsets and Surf.jpg ",
-          label: "Uluwatu — Clifftop Sunsets and Surf",
+          label: "Uluwatu - Clifftop Sunsets and Surf",
           tags: "Scenic · South Bali",
           description: "The sunset nobody forgets.",
           prompt:
@@ -83,7 +83,7 @@ const baliThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/Nusa Penida -- Day Trip Done Right.jpg ",
-          label: "Nusa Penida — Day Trip Done Right",
+          label: "Nusa Penida - Day Trip Done Right",
           tags: "Scenic · Island",
           description: "The views are worth the chaos.",
           prompt:
@@ -99,7 +99,7 @@ const baliThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/Nyepi -- Bali Day of Silence.jpg",
-          label: "Nyepi — Bali Day of Silence",
+          label: "Nyepi - Bali Day of Silence",
           sublabel: "Culture · March",
           description: "An entire island goes silent.",
           prompt:
@@ -108,7 +108,7 @@ const baliThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/Galungan — Bali’s Most Sacred Festival.jpg ",
-          label: "Galungan — Bali's Most Sacred Festival",
+          label: "Galungan - Bali's Most Sacred Festival",
           sublabel: "Culture · Balinese Calendar",
           description: "Bali covered in bamboo offerings.",
           prompt:
@@ -117,7 +117,7 @@ const baliThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/Surf Season — Bali’s Best Waves.jpg",
-          label: "Surf Season — Bali's Best Waves",
+          label: "Surf Season - Bali's Best Waves",
           sublabel: "Surf · Dry Season",
           description: "Clean waves, warm water, all day in the ocean.",
           prompt:
@@ -126,7 +126,7 @@ const baliThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/Bali Arts Festival — Culture Month in Denpasar.png ",
-          label: "Bali Arts Festival — Culture Month in Denpasar",
+          label: "Bali Arts Festival - Culture Month in Denpasar",
           sublabel: "Culture · Annual",
           description: "A month of dance and music.",
           prompt:
@@ -135,7 +135,7 @@ const baliThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/Bali in Shoulder Season -- November.jpg ",
-          label: "Bali in Shoulder Season — November",
+          label: "Bali in Shoulder Season - November",
           sublabel: "Travel Tip · November",
           description: "Lush green Bali, fewer crowds, softer prices.",
           prompt:
@@ -186,7 +186,7 @@ const baliThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/Bali and Lombok -- Two Islands.jpg ",
-          label: "Bali and Lombok — Two Islands",
+          label: "Bali and Lombok - Two Islands",
           sublabel: "Both Islands · Beach",
           description: "Bali for culture. Lombok for quiet.",
           prompt:
@@ -195,7 +195,7 @@ const baliThemeConfig: ThemeConfig = {
       ],
     },
     {
-      heading: "Only in Bali — Experiences Worth Flying For",
+      heading: "Only in Bali - Experiences Worth Flying For",
       icon: "✨",
       cards: [
         {
@@ -237,7 +237,7 @@ const baliThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/bali-theme-2026/Private Villas in Bali — Worth It_.jpg ",
-          label: "Private Villas in Bali — Worth It?",
+          label: "Private Villas in Bali - Worth It?",
           tags: "Villas · Luxury Stay",
           description: "Your own pool changes the trip.",
           prompt:
@@ -262,10 +262,10 @@ const BaliUncoveredThemePage = ({
     <>
       <Head>
         <title>{"Bali Trip Packages & Honeymoon Itineraries for Indian Travellers | The Tarzan Way"}</title>
-        <meta name="description" content={"Plan your Bali trip with The Tarzan Way's AI itinerary — Ubud, Seminyak, Uluwatu and Nusa Penida. Honeymoon villas, beaches, budgets in ₹, and a custom day-by-day plan for Indian travellers."} />
+        <meta name="description" content={"Plan your Bali trip with The Tarzan Way's AI itinerary - Ubud, Seminyak, Uluwatu and Nusa Penida. Honeymoon villas, beaches, budgets in ₹, and a custom day-by-day plan for Indian travellers."} />
         <link rel="canonical" href="https://thetarzanway.com/theme/bali-uncovered" />
         <meta property="og:title" content={"Bali Trip Packages & Honeymoon Itineraries for Indian Travellers | The Tarzan Way"} />
-        <meta property="og:description" content={"Plan your Bali trip with The Tarzan Way's AI itinerary — Ubud, Seminyak, Uluwatu and Nusa Penida. Honeymoon villas, beaches, budgets in ₹, and a custom day-by-day plan for Indian travellers."} />
+        <meta property="og:description" content={"Plan your Bali trip with The Tarzan Way's AI itinerary - Ubud, Seminyak, Uluwatu and Nusa Penida. Honeymoon villas, beaches, budgets in ₹, and a custom day-by-day plan for Indian travellers."} />
         <meta property="og:url" content="https://thetarzanway.com/theme/bali-uncovered" />
         <meta property="og:type" content="website" />
         <meta property="og:image" content="https://thetarzanway.com/og-image.png" />

@@ -13,10 +13,10 @@ import { CheckCircle } from "@mui/icons-material";
 
 const points = [
   "100% customized plans, no pre-set packages.",
-  "Stays & experiences that match your style — whether it’s budget hostels or boutique villas.",
+  "Stays & experiences that match your style - whether it’s budget hostels or boutique villas.",
   "Trusted local partners & verified vendors.",
   "Emergency support and WhatsApp assistance on-ground.",
-  "Sustainable, responsible travel — no animal shows, no tourist traps.",
+  "Sustainable, responsible travel - no animal shows, no tourist traps.",
 ];
 
 export default function OverviewThailand(props) {
@@ -62,7 +62,7 @@ export default function OverviewThailand(props) {
           <div className="flex flex-col gap-3 justify-start">
             <p className="text-gray-700 mb-6">
               From hidden islands to vibrant street markets, we craft seamless
-              Thai journeys that blend culture, comfort, and adventure—exactly
+              Thai journeys that blend culture, comfort, and adventure-exactly
               the way you like it.
             </p>
             <ul className="space-y-4">
@@ -106,7 +106,7 @@ export default function OverviewThailand(props) {
           <div className="flex flex-col gap-3 justify-start">
             <p className="text-gray-700 mb-6">
               From hidden islands to vibrant street markets, we craft seamless
-              Thai journeys that blend culture, comfort, and adventure—exactly
+              Thai journeys that blend culture, comfort, and adventure-exactly
               the way you like it.
             </p>
             <ul className="space-y-4">

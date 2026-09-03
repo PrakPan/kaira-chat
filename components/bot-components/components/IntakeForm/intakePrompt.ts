@@ -134,7 +134,7 @@ export function travellersLabel(state: {
     parts.push(`${state.children} ${state.children === 1 ? "child" : "children"}`);
   if (state.infants)
     parts.push(`${state.infants} ${state.infants === 1 ? "infant" : "infants"}`);
-  return parts.length ? `${who} — ${parts.join(", ")}` : who;
+  return parts.length ? `${who} - ${parts.join(", ")}` : who;
 }
 
 // Readable "when" line for the composed message.
@@ -151,7 +151,7 @@ function whenLine(state: IntakeFormState): string {
         : "Flexible · ";
     return `${month}${state.flexNights} ${state.flexNights === 1 ? "night" : "nights"}`;
   }
-  return "Surprise me — suggest the best time";
+  return "Surprise me - suggest the best time";
 }
 
 export function composeIntakeMessage(state: IntakeFormState): string {

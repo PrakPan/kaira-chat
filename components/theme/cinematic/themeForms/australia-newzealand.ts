@@ -18,7 +18,7 @@ const australiaNewZealandForm: ThemeForm = {
   slug: "australia-newzealand",
   display: "Australia & New Zealand",
   tagline:
-    "Southern summer — cricket at the 'G, fireworks over the harbour, and mountains three hours east.",
+    "Southern summer - cricket at the 'G, fireworks over the harbour, and mountains three hours east.",
   voice: "Warm and unhurried. Talks cricket, coastline and driving distances.",
   copy: {
     datesTitle: "When are you going?",
@@ -65,7 +65,7 @@ const australiaNewZealandForm: ThemeForm = {
       months: [12],
       // Lands on the 23rd so the 10 nights cover both the 26th and the 31st.
       anchor: { month: 12, day: 23, note: "Boxing Day Test + Sydney NYE" },
-      fareNote: "Peak fares — the two biggest dates of the Australian summer.",
+      fareNote: "Peak fares - the two biggest dates of the Australian summer.",
     },
     {
       key: "double_south_island",

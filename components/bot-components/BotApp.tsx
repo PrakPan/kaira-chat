@@ -2658,7 +2658,7 @@ export default function BotApp({
 
       if (!statusOk) {
         console.warn(
-          "[restoreLatestThread] status API failed — redirecting to /thank-you",
+          "[restoreLatestThread] status API failed - redirecting to /thank-you",
         );
         try {
           await router.replace("/thank-you");
@@ -2727,7 +2727,7 @@ export default function BotApp({
           // instead of auto-sending an unauthenticated summary request.
           const loggedIn = !!getAuthToken();
           console.log(
-            `[restoreLatestThread] stage P2 + empty chatkit — seeding summary prompt (loggedIn=${loggedIn})`,
+            `[restoreLatestThread] stage P2 + empty chatkit - seeding summary prompt (loggedIn=${loggedIn})`,
           );
           setInitialPrompt("Hey Kaira! provide summary of my itinerary");
           setInitialPromptRequiresLogin(!loggedIn);
@@ -2740,11 +2740,11 @@ export default function BotApp({
           // SUCCESS.
           pendingTailoredSeedRef.current = true;
           console.log(
-            "[restoreLatestThread] stage P2 + fromTailored + still building — deferring summary prompt until itinerary_status=SUCCESS",
+            "[restoreLatestThread] stage P2 + fromTailored + still building - deferring summary prompt until itinerary_status=SUCCESS",
           );
         } else {
           console.log(
-            `[restoreLatestThread] stage ${stage ?? "unknown"} + empty chatkit — chat skipped`,
+            `[restoreLatestThread] stage ${stage ?? "unknown"} + empty chatkit - chat skipped`,
           );
         }
       } catch (err) {
@@ -4830,7 +4830,7 @@ Start Location: ${details.startLocation}`;
           ? {
               heading: { lead: "Update your", emphasis: "travel", trail: "dates" },
               subheading:
-                "Your trip dates have passed — pick new ones and I'll re-plan the trip.",
+                "Your trip dates have passed - pick new ones and I'll re-plan the trip.",
             }
           : {};
         return isMobile ? (

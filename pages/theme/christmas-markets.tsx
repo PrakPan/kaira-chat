@@ -115,35 +115,35 @@ const THEME_IMG = {
 // ── Prompts ─────────────────────────────────────────────────────────────────
 const PROMPTS = {
   hero:
-    "We are 2 travellers with flexible December dates, over 9 nights across Christmas and New Year. Plan a European Christmas markets trip built around the most magical squares — mulled wine, festive lights, Christmas Day itself, and a New Year's Eve finish. Recommend the best market cities for the dates, string them into one smooth multi-city route with rail between them, and balance iconic markets with quieter local ones.",
+    "We are 2 travellers with flexible December dates, over 9 nights across Christmas and New Year. Plan a European Christmas markets trip built around the most magical squares - mulled wine, festive lights, Christmas Day itself, and a New Year's Eve finish. Recommend the best market cities for the dates, string them into one smooth multi-city route with rail between them, and balance iconic markets with quieter local ones.",
   // Routes
   alpineClassic:
     "We are 2 travellers with flexible December dates. Plan a 9-night Alpine Christmas markets route through Munich, Salzburg and Vienna across Christmas and New Year. Prioritise the great market squares, cosy cafés, Christmas Day in the mountains, and a New Year's Eve in Vienna. Include rail between cities and a relaxed, festive pace.",
   rhineRun:
-    "We are 2 travellers with flexible December dates. Plan an 8-night Christmas markets trip along the Rhine over Christmas — Strasbourg, Cologne and Amsterdam, with Christmas Day itself in one of them. Focus on the oldest and prettiest markets, riverside lights, and easy rail hops. Balance the famous markets with local squares and slow festive mornings.",
+    "We are 2 travellers with flexible December dates. Plan an 8-night Christmas markets trip along the Rhine over Christmas - Strasbourg, Cologne and Amsterdam, with Christmas Day itself in one of them. Focus on the oldest and prettiest markets, riverside lights, and easy rail hops. Balance the famous markets with local squares and slow festive mornings.",
   centralLoop:
     "We are 2 travellers with flexible December dates. Plan a 10-night Central Europe Christmas loop through Prague, Vienna and Budapest with Christmas Day and a New Year's Eve celebration. Prioritise old-town markets, thermal baths, festive food, and scenic rail between the cities.",
   // Chips / misc
   viennaNye:
-    "We are 2 travellers. Plan 9 nights in Vienna across Christmas and New Year in December — Christmas Day in the city, then the Silvesterpfad street party, midnight fireworks by the Rathaus, and a festive dinner. Add the best Christmas markets to see in the days before.",
+    "We are 2 travellers. Plan 9 nights in Vienna across Christmas and New Year in December - Christmas Day in the city, then the Silvesterpfad street party, midnight fireworks by the Rathaus, and a festive dinner. Add the best Christmas markets to see in the days before.",
   gluhweinCrawl:
     "We are 2 travellers with 3 nights over Christmas in December. Plan a self-guided Glühwein and Christmas market crawl through the best squares of one European city, with the collectible mug stalls, food to try, and the prettiest lit streets.",
   // Markets — "show all the activities/tours in this city"
   activitiesVienna:
-    "We are 2 travellers spending 3 of our December nights in Vienna over Christmas for the markets. Show me all the tours and activities worth doing in Vienna over Christmas — market walks, the Schönbrunn and Spanish Riding School experiences, coffeehouse culture, and what stays open on Christmas Day — and add the best ones to my plan.",
+    "We are 2 travellers spending 3 of our December nights in Vienna over Christmas for the markets. Show me all the tours and activities worth doing in Vienna over Christmas - market walks, the Schönbrunn and Spanish Riding School experiences, coffeehouse culture, and what stays open on Christmas Day - and add the best ones to my plan.",
   activitiesPrague:
-    "We are 2 travellers spending 3 of our December nights in Prague over Christmas for the markets. Show me all the tours and activities worth doing in Prague over Christmas — Old Town and Castle tours, the Night Watchman walk, festive food, river views, and what stays open on Christmas Day — and add the best ones to my plan.",
+    "We are 2 travellers spending 3 of our December nights in Prague over Christmas for the markets. Show me all the tours and activities worth doing in Prague over Christmas - Old Town and Castle tours, the Night Watchman walk, festive food, river views, and what stays open on Christmas Day - and add the best ones to my plan.",
   activitiesDresden:
-    "We are 2 travellers spending 2 of our December nights in Dresden over Christmas for the Striezelmarkt, which runs to Christmas Eve. Show me all the tours and activities worth doing in Dresden over Christmas — the old town, the Frauenkirche, festive food and Stollen — and add the best ones to my plan.",
+    "We are 2 travellers spending 2 of our December nights in Dresden over Christmas for the Striezelmarkt, which runs to Christmas Eve. Show me all the tours and activities worth doing in Dresden over Christmas - the old town, the Frauenkirche, festive food and Stollen - and add the best ones to my plan.",
   activitiesStrasbourg:
-    "We are 2 travellers spending 3 of our December nights in Strasbourg over Christmas for the markets. Show me all the tours and activities worth doing in Strasbourg over Christmas — the cathedral market, Petite France, Alsace wine and food — and add the best ones to my plan.",
+    "We are 2 travellers spending 3 of our December nights in Strasbourg over Christmas for the markets. Show me all the tours and activities worth doing in Strasbourg over Christmas - the cathedral market, Petite France, Alsace wine and food - and add the best ones to my plan.",
   // Where to come in from the cold (restaurants)
   eatCafeCentral:
-    "Tell me about Café Central in Vienna — the grand coffeehouse — and whether it's worth a stop on our 9-night Christmas markets trip in December for two. Add it to my Vienna plan.",
+    "Tell me about Café Central in Vienna - the grand coffeehouse - and whether it's worth a stop on our 9-night Christmas markets trip in December for two. Add it to my Vienna plan.",
   eatCafeLouvre:
     "Tell me about Café Louvre in Prague and whether it's worth a stop for coffee and cake on our 9-night Christmas markets trip in December for two. Add it to my Prague plan.",
   eatPfund:
-    "Tell me about Pfunds Molkerei (Gebrüder Pfund) in Dresden — the beautiful old dairy shop — and work a visit into our 9-night Christmas markets trip in December for two.",
+    "Tell me about Pfunds Molkerei (Gebrüder Pfund) in Dresden - the beautiful old dairy shop - and work a visit into our 9-night Christmas markets trip in December for two.",
   eatWinkel:
     "Tell me about Winkel 43 in Amsterdam and its famous apple pie, and add a warm-up stop there to our 9-night Christmas markets trip in December for two.",
   eatCambrinus:
@@ -152,7 +152,7 @@ const PROMPTS = {
   // finished itinerary at /chat/{id} instead of seeding a fresh session.
   // Ask Kaira
   askBar:
-    "Which European Christmas market trip should we do first, over 9 nights across Christmas and New Year in December for two — the Alpine classic (Munich, Salzburg, Vienna), the Rhine run (Strasbourg, Cologne, Amsterdam), or the Central Europe loop with a Vienna New Year's Eve? Compare the atmosphere, cost, and dates, then build the ideal itinerary for the one you recommend.",
+    "Which European Christmas market trip should we do first, over 9 nights across Christmas and New Year in December for two - the Alpine classic (Munich, Salzburg, Vienna), the Rhine run (Strasbourg, Cologne, Amsterdam), or the Central Europe loop with a Vienna New Year's Eve? Compare the atmosphere, cost, and dates, then build the ideal itinerary for the one you recommend.",
 };
 
 // What each prompt above states about the trip, sent as `intake` keys (month /
@@ -361,7 +361,7 @@ const christmasMarketsConfig: CinematicThemeConfig = {
           emoji: "🥨",
           gradient: "linear-gradient(150deg, #3d2b52, #b84034 170%)",
           name: "Dresden",
-          line: "The Striezelmarkt — Germany's oldest, and its Stollen.",
+          line: "The Striezelmarkt - Germany's oldest, and its Stollen.",
           href: `${PAGE}?city_id=${CITY.dresden}`,
         },
         {
@@ -394,7 +394,7 @@ const christmasMarketsConfig: CinematicThemeConfig = {
           name: "Markets, then NYE in Vienna",
           line: "Salzburg and Prague squares, finishing with the Silvesterpfad and a waltz you'll fake convincingly.",
           price: "₹1,91,389 / person",
-          urgent: "NYE week — Vienna rooms 80% gone by September",
+          urgent: "NYE week - Vienna rooms 80% gone by September",
           href: `${CHAT}/8495d68b-5430-4e4a-979c-a270d80d8fa3`,
         },
         {
@@ -500,14 +500,14 @@ const christmasMarketsConfig: CinematicThemeConfig = {
         },
       ],
       note:
-        "Most markets run late November to 23 December, then a handful reopen for New Year. If you want both markets and NYE, aim your last nights at a city that keeps its market open — Vienna and Budapest are safe bets.",
+        "Most markets run late November to 23 December, then a handful reopen for New Year. If you want both markets and NYE, aim your last nights at a city that keeps its market open - Vienna and Budapest are safe bets.",
     },
     // ── Visa (dark) ──
     {
       type: "visa",
       heading: { lead: "Your visa,", accent: "handled" },
       intro:
-        "One Schengen visa covers this whole trip — apply through the country where you'll spend the most nights. We prep the paperwork, check every document, and submit for you. No embassy queues.",
+        "One Schengen visa covers this whole trip - apply through the country where you'll spend the most nights. We prep the paperwork, check every document, and submit for you. No embassy queues.",
       cards: [
         {
           country: "Czech Republic",
@@ -601,7 +601,7 @@ const christmasMarketsConfig: CinematicThemeConfig = {
           name: "Pujan",
           when: "Couple · Prague to Budapest",
           summary:
-            "Four market cities at three nights each — Prague, Salzburg, Vienna and Budapest. Long enough in each to do the squares twice.",
+            "Four market cities at three nights each - Prague, Salzburg, Vienna and Budapest. Long enough in each to do the squares twice.",
           href: `${CHAT}/44ed05ba-6e76-400b-af42-b9ec9a24ef5c`,
         },
         {
@@ -619,7 +619,7 @@ const christmasMarketsConfig: CinematicThemeConfig = {
           name: "Khushbu",
           when: "Friends · Amsterdam to Budapest",
           summary:
-            "The northern markets before the Danube ones — Amsterdam and Berlin first, then Prague and four nights in Budapest.",
+            "The northern markets before the Danube ones - Amsterdam and Berlin first, then Prague and four nights in Budapest.",
           href: `${CHAT}/92a629fa-0219-46d5-8f54-222c43711a42`,
         },
       ],
@@ -789,7 +789,7 @@ const ChristmasMarketsThemePage = ({
         </title>
         <meta
           name="description"
-          content="Plan a European Christmas markets and New Year's Eve trip with The Tarzan Way's AI itinerary — Vienna, Strasbourg, Nuremberg, Prague and more, strung into one festive multi-city route with rail included, for Indian travellers."
+          content="Plan a European Christmas markets and New Year's Eve trip with The Tarzan Way's AI itinerary - Vienna, Strasbourg, Nuremberg, Prague and more, strung into one festive multi-city route with rail included, for Indian travellers."
         />
         <meta
           property="og:title"
@@ -797,7 +797,7 @@ const ChristmasMarketsThemePage = ({
         />
         <meta
           property="og:description"
-          content="Plan a European Christmas markets and New Year's Eve trip with The Tarzan Way's AI itinerary — Vienna, Strasbourg, Nuremberg, Prague and more, strung into one festive multi-city route with rail included, for Indian travellers."
+          content="Plan a European Christmas markets and New Year's Eve trip with The Tarzan Way's AI itinerary - Vienna, Strasbourg, Nuremberg, Prague and more, strung into one festive multi-city route with rail included, for Indian travellers."
         />
         <link
           rel="canonical"
@@ -821,9 +821,9 @@ const ChristmasMarketsThemePage = ({
               "@graph": [
                 {
                   "@type": "TouristTrip",
-                  name: "Christmas Markets & New Year in Europe — Trip Planner",
+                  name: "Christmas Markets & New Year in Europe - Trip Planner",
                   description:
-                    "Plan a European Christmas markets and New Year's Eve trip with The Tarzan Way's AI itinerary — Vienna, Strasbourg, Nuremberg, Prague and more, strung into one festive multi-city route with rail included, for Indian travellers.",
+                    "Plan a European Christmas markets and New Year's Eve trip with The Tarzan Way's AI itinerary - Vienna, Strasbourg, Nuremberg, Prague and more, strung into one festive multi-city route with rail included, for Indian travellers.",
                   url: "https://thetarzanway.com/theme/christmas-markets",
                   image: "https://thetarzanway.com/og-image.png",
                   provider: {

@@ -17,6 +17,8 @@ import { FaCar } from "react-icons/fa";
 import { PiTaxiLight } from "react-icons/pi";
 import { currencySymbols } from "../../../../../data/currencySymbols";
 import { QuoteTerms } from "../../VendorCharges";
+import { QuoteDetailRow } from "../../QuoteDetailSheet";
+import VehicleSpecs from "../../VehicleSpecs";
 import {
   getVehicleCount,
   MultiVehicleNote,
@@ -150,13 +152,10 @@ const ComboSection = (props) => {
             <div>
               <div className="flex flex-wrap items-center gap-2 w-100">
                 <span className="text-md font-600 leading-xl text-[#0b1220] ">
+                  {/* The fuel type is a spec, and sits with the other specs
+                      below rather than parenthesised onto the name. */}
                   {props.data?.taxi_category?.type ? (
-                    <>
-                      {props.data.taxi_category.type}{" "}
-                      {props.data.taxi_category?.fuel_type && isPageWide
-                        ? `(${props.data.taxi_category.fuel_type})`
-                        : null}
-                    </>
+                    props.data.taxi_category.type
                   ) : props.selectedBooking.transfer_type ===
                     "Intercity round-trip" ? (
                     "Round-trip Taxi"
@@ -171,15 +170,10 @@ const ComboSection = (props) => {
 
               <div className="flex flex-row justify-between">
                 <div className="flex flex-col ">
-                  <div className="font-600 text-md-lg leading-xl-sm text-[#0b1220]">
-                    {props.data?.taxi_category?.seating_capacity + "-seater"}
-                    {vehicleCount > 1 ? (
-                      <span className="font-400 text-sm text-[#445069]">
-                        {" "}
-                        (per taxi)
-                      </span>
-                    ) : null}
-                  </div>
+                  <VehicleSpecs
+                    category={props.data?.taxi_category}
+                    perTaxi={vehicleCount > 1}
+                  />
                   <MultiVehicleNote
                     count={vehicleCount}
                     seatingCapacity={props.data?.taxi_category?.seating_capacity}
@@ -235,7 +229,10 @@ const ComboSection = (props) => {
             </div>
             <div className="flex flex-col justify-between h-full items-end  max-ph:flex-row">
               <div className="flex flex-col items-end max-ph:items-start">
-                <span className="text-lg font-mono text-[#0b1220] 2xl-md">
+                {/* One step down from `text-lg`: on a phone the price and the
+                    CTA share a single row, and a 20px mono figure beside a
+                    compact button read as the card's headline, not its fare. */}
+                <span className="text-md font-600 font-mono text-[#0b1220]">
                   {currencySymbol + getIndianPrice(Math.ceil(props.data.price.total))}
                 </span>
                 <PerTaxiPrice
@@ -250,14 +247,16 @@ const ComboSection = (props) => {
                 ) : props?.isSelected ? (
                   <div className="flex items-center gap-1">
                     {/* <ImCheckboxChecked className="inline" /> */}
-                    <button className="ttw-btn-secondary-fill max-ph:w-full">Selected</button>
+                    <button className="ttw-btn-secondary-fill">Selected</button>
                   </div>
                 ) : (
                   <div
                     className="flex items-center gap-1 cursor-pointer"
                     onClick={handleOnSelect}
                   >
-                    <button className="ttw-btn-fill-yellow max-ph:w-full">Add to Itinerary</button>
+                    {/* Sized to its label rather than stretched: the phone row
+                        is price-left / CTA-right. */}
+                    <button className="ttw-btn-fill-yellow px-5">+ Add</button>
                     {/* <ImCheckboxUnchecked className="inline" /> */}
                   </div>
                 )}
@@ -274,6 +273,22 @@ const ComboSection = (props) => {
             quote={props.data}
             currencySymbol={currencySymbol}
             includedItems
+            className="max-ph:hidden"
+          />
+
+          {/* On a phone the chips and the fold-out policy cost more rows than
+              the card itself, so there the whole description — photo, class,
+              specs, terms, policy — moves into one sheet behind a single row. */}
+          <QuoteDetailRow
+            quote={props.data}
+            currencySymbol={currencySymbol}
+            total={props.data?.price?.total}
+            vehicleCount={vehicleCount}
+            perVehicleTotal={perVehicleTotal}
+            added={!!props?.isSelected}
+            addedLabel="Selected"
+            busy={loading}
+            onAdd={handleOnSelect}
           />
 
         </DetailsContainer>

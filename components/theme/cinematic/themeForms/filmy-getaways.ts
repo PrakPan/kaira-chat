@@ -79,7 +79,7 @@ const filmyGetawaysForm: ThemeForm = {
       month: 7,
       label: "High summer, fewer films",
       tag: "BUSIEST",
-      line: "Rome and Bali sit this one out — Corsica, Greece and Scotland carry it.",
+      line: "Rome and Bali sit this one out - Corsica, Greece and Scotland carry it.",
     },
     {
       month: 8,
@@ -90,7 +90,7 @@ const filmyGetawaysForm: ThemeForm = {
       month: 9,
       label: "The month that reads best",
       tag: "BEST LIGHT",
-      line: "Rome, Spain, Greece, Corsica and the Alps all clear at once — crowds gone.",
+      line: "Rome, Spain, Greece, Corsica and the Alps all clear at once - crowds gone.",
     },
     {
       month: 10,
@@ -133,18 +133,18 @@ const filmyGetawaysForm: ThemeForm = {
       months: [4, 5, 6, 9, 10],
       skeleton: "znmd_spain",
       fareNote:
-        "BCN in / MAD out, one stop via DXB, DOH or IST. Self-drive from Barcelona to Valencia — the drive is the film.",
+        "BCN in / MAD out, one stop via DXB, DOH or IST. Self-drive from Barcelona to Valencia - the drive is the film.",
     },
     {
       key: "yjhd_india",
-      label: "Yeh Jawaani — mountains to palaces",
+      label: "Yeh Jawaani - mountains to palaces",
       blurb: "Manali → Delhi → Udaipur, the trek then the wedding",
       tag: "DOMESTIC",
       nights: 8,
       months: [3, 4, 5, 6],
       skeleton: "yjhd_india",
       fareNote:
-        "Domestic — DEL in / UDR out. Bhuntar flights cancel often, so the Delhi–Manali road is the reliable default.",
+        "Domestic - DEL in / UDR out. Bhuntar flights cancel often, so the Delhi–Manali road is the reliable default.",
     },
     {
       key: "dch_goa",
@@ -155,7 +155,7 @@ const filmyGetawaysForm: ThemeForm = {
       months: [11, 12, 1, 2],
       skeleton: "dch_goa",
       fareNote:
-        "Domestic — BOM in / GOX out. Chapora Fort is the wall shot and stays in the North Goa block.",
+        "Domestic - BOM in / GOX out. Chapora Fort is the wall shot and stays in the North Goa block.",
     },
     {
       key: "jabwemet_hills",
@@ -166,7 +166,7 @@ const filmyGetawaysForm: ThemeForm = {
       months: [3, 4, 5, 6, 9, 10, 11],
       skeleton: "jabwemet_hills",
       fareNote:
-        "Domestic loop out of DEL. The Kalka–Shimla toy train is the hero transfer, never a car — it books out early.",
+        "Domestic loop out of DEL. The Kalka–Shimla toy train is the hero transfer, never a car - it books out early.",
     },
     {
       key: "tamasha_corsica",
@@ -177,7 +177,7 @@ const filmyGetawaysForm: ThemeForm = {
       months: [4, 5, 6, 7, 8, 9, 10],
       skeleton: "tamasha_corsica",
       fareNote:
-        "No direct India–Corsica: route via Nice or Paris, then AJA in and out. Car-only on the island — rail reaches neither Porto nor Bonifacio.",
+        "No direct India–Corsica: route via Nice or Paris, then AJA in and out. Car-only on the island - rail reaches neither Porto nor Bonifacio.",
     },
     {
       key: "midnight_paris",
@@ -187,7 +187,7 @@ const filmyGetawaysForm: ThemeForm = {
       nights: 6,
       skeleton: "midnight_paris",
       fareNote:
-        "CDG in and out, direct from DEL and BOM. Single-city by design — Versailles and Giverny are day trips, not second overnights.",
+        "CDG in and out, direct from DEL and BOM. Single-city by design - Versailles and Giverny are day trips, not second overnights.",
     },
     {
       key: "eatpraylove_bali_italy",
@@ -198,11 +198,11 @@ const filmyGetawaysForm: ThemeForm = {
       months: [4, 5, 6, 9, 10],
       skeleton: "eatpraylove_bali_italy",
       fareNote:
-        "FCO in / DPS out — Italy first, Bali second, because the flight home from Denpasar is the short one. Naples and Pompeii are day trips out of Rome.",
+        "FCO in / DPS out - Italy first, Bali second, because the flight home from Denpasar is the short one. Naples and Pompeii are day trips out of Rome.",
     },
     {
       key: "mammamia_greece",
-      label: "Mamma Mia — Greek islands",
+      label: "Mamma Mia - Greek islands",
       blurb: "Athens → Skopelos → Skiathos, the chapel island",
       tag: "ISLAND HOPPING",
       nights: 8,
@@ -220,7 +220,7 @@ const filmyGetawaysForm: ThemeForm = {
       months: [5, 6, 7, 8, 9],
       skeleton: "harrypotter_scotland",
       fareNote:
-        "EDI in / GLA out; the Highlands leg is a private car, not rail. The Jacobite steam train sells out months ahead — book it before the trip is confirmed.",
+        "EDI in / GLA out; the Highlands leg is a private car, not rail. The Jacobite steam train sells out months ahead - book it before the trip is confirmed.",
     },
     {
       key: "lotr_newzealand",
@@ -231,7 +231,7 @@ const filmyGetawaysForm: ThemeForm = {
       months: [11, 12, 1, 2, 3, 4],
       skeleton: "lotr_newzealand",
       fareNote:
-        "AKL in and out — Queenstown has no long-haul, so the loop closes at Auckland. Hobbiton is a day trip from Auckland, ~2h each way.",
+        "AKL in and out - Queenstown has no long-haul, so the loop closes at Auckland. Hobbiton is a day trip from Auckland, ~2h each way.",
     },
   ],
   // Panel hero on /chat — the green Lauterbrunnen valley under the Bernese Alps,
@@ -241,7 +241,7 @@ const filmyGetawaysForm: ThemeForm = {
     image: "/theme-heroes/switzerland-ddlj.jpg",
     title: "Live your favourite movie",
     subtext:
-      "Eleven films, eleven real routes — and the touristy bits trimmed out.",
+      "Eleven films, eleven real routes - and the touristy bits trimmed out.",
     tag: "Bollywood + Hollywood",
   },
   allowExactDates: true,
@@ -249,7 +249,7 @@ const filmyGetawaysForm: ThemeForm = {
     "Keep the signature scene for last",
     "Fewer transfers, longer stays",
     "Add the day trips, not more cities",
-    "What does this cost, honestly?",
+    "Break down what this actually costs",
   ],
 };
 

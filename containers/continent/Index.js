@@ -274,7 +274,7 @@ const Index = (props) => {
         }
         description={
           <>
-            Tell Kaira <b>your vibe and dates</b> — she'll thread the right
+            Tell Kaira <b>your vibe and dates</b> - she'll thread the right
             countries into a trip that{" "}
             <span className={styles.serif}>actually flows.</span>
           </>
@@ -378,7 +378,7 @@ const Index = (props) => {
                 </h2>
                 <p className={styles.lede}>
                   Every itinerary below has been done.{" "}
-                  <span className={styles.serif}>Tweak anything</span> in chat —
+                  <span className={styles.serif}>Tweak anything</span> in chat -
                   dates, hotels, duration.
                 </p>
               </div>

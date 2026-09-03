@@ -382,7 +382,9 @@ const Booking = (props) => {
           setIsMercury={setIsMercury}
         ></SectionOne>
 
-        <div className="flex-1 min-h-0 overflow-y-scroll px-6 max-ph:px-4">
+        {/* The pane had no bottom padding, so the last result card ended flush
+            against the bottom of the drawer with the home indicator over it. */}
+        <div className="flex-1 min-h-0 overflow-y-scroll px-6 max-ph:px-4 pb-[calc(28px+env(safe-area-inset-bottom))]">
           <div style={{ clear: "right" }}>
             <ContentContainer style={{ position: "relative" }}>
               {updateBookingState ? (
@@ -403,7 +405,7 @@ const Booking = (props) => {
                       steppers and SelectedTaxisBar below commits them as one booking. */}
                   {taxiSelection.enabled ? (
                     <div className="rounded-2xl border-sm border-solid border-[#f2e6a8] bg-[#fffdf0] px-3 py-2 mt-md ttw-type-small text-[#6b5600]">
-                      No single taxi seats {fleet?.pax} — add as many as you need
+                      No single taxi seats {fleet?.pax} - add as many as you need
                       and we will book them together.
                     </div>
                   ) : null}

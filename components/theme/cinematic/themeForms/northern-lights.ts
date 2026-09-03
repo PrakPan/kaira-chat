@@ -12,7 +12,7 @@ const northernLightsForm: ThemeForm = {
   slug: "northern-lights",
   display: "Northern Lights",
   tagline:
-    "Chasing the Aurora — glass roofs, husky trails, and a sky that comes alive.",
+    "Chasing the Aurora - glass roofs, husky trails, and a sky that comes alive.",
   voice:
     "Awe-chasing and cold-weather-savvy. Talks aurora odds, glass igloos, which country suits.",
   copy: {
@@ -71,12 +71,12 @@ const northernLightsForm: ThemeForm = {
     {
       key: "finnish_lapland",
       label: "Finnish Lapland",
-      blurb: "The full package — aurora, huskies and Santa",
+      blurb: "The full package - aurora, huskies and Santa",
       tag: "MOST POPULAR",
       nights: 7,
       skeleton: "finland_helsinki_rovaniemi",
       fareNote:
-        "Finnair DEL⇄HEL direct — best connectivity. Christmas week peaks.",
+        "Finnair DEL⇄HEL direct - best connectivity. Christmas week peaks.",
     },
     {
       key: "tromso_norway",
@@ -99,7 +99,7 @@ const northernLightsForm: ThemeForm = {
     {
       key: "abisko_sweden",
       label: "Abisko, Sweden",
-      blurb: "Max sky, min crowds — the clearest-sky spot there is",
+      blurb: "Max sky, min crowds - the clearest-sky spot there is",
       tag: "OFF-GRID",
       nights: 6,
       skeleton: "sweden_stockholm_abisko",
@@ -117,8 +117,8 @@ const northernLightsForm: ThemeForm = {
   },
   allowExactDates: true,
   seedPrompts: [
-    "Which country has the best aurora odds?",
-    "Glass igloo or Arctic cabin?",
+    "Put me where the aurora odds are best",
+    "Compare glass igloos and Arctic cabins",
     "Add Santa and huskies for the kids",
     "Do it as a long weekend",
   ],

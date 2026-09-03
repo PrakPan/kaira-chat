@@ -13,12 +13,12 @@ const edinburghHogmanayForm: ThemeForm = {
   slug: "edinburgh-hogmanay",
   display: "Edinburgh Hogmanay",
   tagline:
-    "Edinburgh Hogmanay — the world's biggest New Year, torchlit and fireworks over the castle.",
+    "Edinburgh Hogmanay - the world's biggest New Year, torchlit and fireworks over the castle.",
   voice:
     "Festive and warm against the cold. Talks Torchlight, the Bells, ceilidhs, Loony Dook.",
   copy: {
     datesTitle: "How long, and how far?",
-    datesSub: "Hogmanay itself is fixed — 30 Dec to 1 Jan. Pick your trip length.",
+    datesSub: "Hogmanay itself is fixed - 30 Dec to 1 Jan. Pick your trip length.",
     footer:
       "That's the whole form. The page already told me it's Hogmanay in Edinburgh.",
     cta: "Draft my route →",
@@ -72,7 +72,7 @@ const edinburghHogmanayForm: ThemeForm = {
   hero: {
     image: "/theme-heroes/edinburgh-hogmanay.jpg",
     title: "Edinburgh Hogmanay",
-    subtext: "The world's biggest New Year — torchlit, fireworks over the castle.",
+    subtext: "The world's biggest New Year - torchlit, fireworks over the castle.",
     tag: "Scotland · 29 Dec – 2 Jan",
   },
   allowExactDates: true,

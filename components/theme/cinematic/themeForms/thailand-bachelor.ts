@@ -23,7 +23,7 @@ const thailandBachelorForm: ThemeForm = {
     "Dry and unbothered. Talks villas over hotel rooms, Bangla Road, longtails, dry days, and moving ten people without a group-chat meltdown.",
   copy: {
     datesTitle: "When are you going?",
-    datesSub: "Thailand runs year round — but the two coasts take turns being wet.",
+    datesSub: "Thailand runs year round - but the two coasts take turns being wet.",
     footer: "That's the whole form. The page already told me it's the bachelor trip.",
     cta: "Draft the send-off →",
   },
@@ -56,7 +56,7 @@ const thailandBachelorForm: ThemeForm = {
       month: 5,
       label: "Rains begin",
       tag: "BEST VALUE",
-      line: "Our busiest month anyway — short sharp showers, big villa discounts.",
+      line: "Our busiest month anyway - short sharp showers, big villa discounts.",
     },
     {
       month: 6,
@@ -74,7 +74,7 @@ const thailandBachelorForm: ThemeForm = {
       month: 8,
       label: "Still wet west",
       tag: "GULF BETTER",
-      line: "Same story — go Gulf side, or accept a cancelled boat day or two.",
+      line: "Same story - go Gulf side, or accept a cancelled boat day or two.",
     },
     {
       month: 9,
@@ -130,7 +130,7 @@ const thailandBachelorForm: ThemeForm = {
       nights: 7,
       skeleton: "bangkok_phuket",
       fareNote:
-        "BKK in / HKT out. Easiest when the group lands in waves — Bangkok absorbs staggered arrivals.",
+        "BKK in / HKT out. Easiest when the group lands in waves - Bangkok absorbs staggered arrivals.",
     },
     {
       key: "krabi_samui",
@@ -148,7 +148,7 @@ const thailandBachelorForm: ThemeForm = {
     image:
       "https://images.thetarzanway.com/media/activities/176782413521073794364929199219.webp",
     title: "Thailand bachelor & bachelorette",
-    subtext: "Villas, longtails, beach clubs — and a plan that survives ten people.",
+    subtext: "Villas, longtails, beach clubs - and a plan that survives ten people.",
     tag: "Thailand · year round",
   },
   allowExactDates: true,

@@ -412,7 +412,7 @@ export function tripStartPassedError(startDate) {
   if (isSameDay(start, today) || start >= today) return null;
   return {
     title: "Trip dates have passed",
-    hint: `Starts ${format(start, "d MMM yyyy")} — update your dates`,
+    hint: `Starts ${format(start, "d MMM yyyy")} - update your dates`,
   };
 }
 
@@ -1076,7 +1076,7 @@ const RouteEditSection = (props) => {
     if (!isSameDay(end, prevDate) && end < prevDate) {
       return {
         title: "Stops run past your end date",
-        hint: `Ends ${onDay(endDate)} — shorten a stop`,
+        hint: `Ends ${onDay(endDate)} - shorten a stop`,
       };
     }
 

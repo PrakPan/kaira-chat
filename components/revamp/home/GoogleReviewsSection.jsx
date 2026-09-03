@@ -22,7 +22,7 @@ const REVIEWS = [
     trip: "Japan",
     avatarVariant: "pink",
     quote:
-      "Our honeymoon to Japan was truly the best decision — every detail, from hotels to transport to guided tours, was handled seamlessly so we could just relax and enjoy. Japan in November was magical.",
+      "Our honeymoon to Japan was truly the best decision - every detail, from hotels to transport to guided tours, was handled seamlessly so we could just relax and enjoy. Japan in November was magical.",
     link: "https://share.google/6lo8sROhZYtNycepM",
   },
   {
@@ -30,7 +30,7 @@ const REVIEWS = [
     trip: "Maldives",
     avatarVariant: "blue",
     quote:
-      "Our fully customized Maldives trip turned out far better than expected — smooth transfers, the perfect resort, and zero stress throughout. Pricing was also very reasonable for the service.",
+      "Our fully customized Maldives trip turned out far better than expected - smooth transfers, the perfect resort, and zero stress throughout. Pricing was also very reasonable for the service.",
     link: "https://share.google/cTpInuX3E6Zr9z8cl",
   },
   {
@@ -38,7 +38,7 @@ const REVIEWS = [
     trip: "Europe",
     avatarVariant: "green",
     quote:
-      "Amazing experience with their agility and trip planning — supported us throughout two weeks across 4 countries and 7 cities. A fab team that blends AI with real travel expertise.",
+      "Amazing experience with their agility and trip planning - supported us throughout two weeks across 4 countries and 7 cities. A fab team that blends AI with real travel expertise.",
     link: "https://share.google/iy1b48ykCI0d7O8dU",
   },
   {
@@ -46,7 +46,7 @@ const REVIEWS = [
     trip: "India",
     avatarVariant: "coral",
     quote:
-      "A fully customized trip across Manali, Hyderabad and Dehradun — nothing short of amazing. Well-planned, smooth, and personalized to my preferences from start to finish, 10/10.",
+      "A fully customized trip across Manali, Hyderabad and Dehradun - nothing short of amazing. Well-planned, smooth, and personalized to my preferences from start to finish, 10/10.",
     link: "https://share.google/oiJoDyOzuRbz4e6nK",
   },
   {
@@ -54,7 +54,7 @@ const REVIEWS = [
     trip: "Europe",
     avatarVariant: "pink",
     quote:
-      "One of the best travel experiences — meticulously planned and executed to perfection. Hotels, internal transfers and airport transfers all handled, with support available even late at night.",
+      "One of the best travel experiences - meticulously planned and executed to perfection. Hotels, internal transfers and airport transfers all handled, with support available even late at night.",
     link: "https://share.google/z3sDM17ebOShAqw6Q",
   },
   {
@@ -62,7 +62,7 @@ const REVIEWS = [
     trip: "Vietnam",
     avatarVariant: "blue",
     quote:
-      "A wonderful trip to Vietnam — the team was responsive and attentive from start to finish. Hanoi, Da Nang and Hoi An were covered with seamless transfers and accommodations.",
+      "A wonderful trip to Vietnam - the team was responsive and attentive from start to finish. Hanoi, Da Nang and Hoi An were covered with seamless transfers and accommodations.",
     link: "https://share.google/S4YD4Tme2g8wbeiDc",
   },
   {
@@ -78,7 +78,7 @@ const REVIEWS = [
     trip: "Greece",
     avatarVariant: "coral",
     quote:
-      "A last-minute solo trip to Greece, curated in under 12 hours — flights, stays, transfers and experiences all matched to my preferences. Athens, Mykonos and Santorini, perfectly balanced.",
+      "A last-minute solo trip to Greece, curated in under 12 hours - flights, stays, transfers and experiences all matched to my preferences. Athens, Mykonos and Santorini, perfectly balanced.",
     link: "https://share.google/FwRwaWXW3a6NHTdvk",
   },
 ];

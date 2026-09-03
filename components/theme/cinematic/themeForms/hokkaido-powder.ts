@@ -9,11 +9,11 @@ import type { ThemeForm } from "./types";
 const hokkaidoPowderForm: ThemeForm = {
   slug: "hokkaido-powder",
   display: "Hokkaido Powder",
-  tagline: "Hokkaido powder — the lightest snow on earth, reached by train.",
+  tagline: "Hokkaido powder - the lightest snow on earth, reached by train.",
   voice: "Ski-savvy and unhurried. Talks snow quality and season tradeoffs.",
   copy: {
     datesTitle: "When are you going?",
-    datesSub: "Pick a month — the season reads differently in each one.",
+    datesSub: "Pick a month - the season reads differently in each one.",
     footer:
       "That's the whole form. The page already told me where, what vibe, and what you want to do.",
     cta: "Draft my route →",
@@ -32,7 +32,7 @@ const hokkaidoPowderForm: ThemeForm = {
       month: 1,
       label: "Deepest powder",
       tag: "BEST SNOW",
-      line: "Japanuary — the driest snow of the year, and the coldest.",
+      line: "Japanuary - the driest snow of the year, and the coldest.",
     },
     {
       month: 2,
@@ -54,7 +54,7 @@ const hokkaidoPowderForm: ThemeForm = {
     {
       key: "powder_city",
       label: "Powder and the city",
-      blurb: "Sapporo + Niseko — ski days, city nights",
+      blurb: "Sapporo + Niseko - ski days, city nights",
       tag: "MOST PICKED",
       nights: 9,
       skeleton: "sapporo_niseko",
@@ -81,7 +81,7 @@ const hokkaidoPowderForm: ThemeForm = {
       // reader is booking.
       months: [2],
       anchor: { month: 2, day: 4, note: "Sapporo Snow Festival week" },
-      fareNote: "Festival demand — book Sapporo stays early.",
+      fareNote: "Festival demand - book Sapporo stays early.",
     },
     {
       key: "first_tracks",
@@ -91,7 +91,7 @@ const hokkaidoPowderForm: ThemeForm = {
       nights: 7,
       skeleton: "sapporo_niseko_noboribetsu",
       months: [12, 3],
-      fareNote: "Shoulder months — quietest slopes and the best value.",
+      fareNote: "Shoulder months - quietest slopes and the best value.",
     },
   ],
   // Panel hero on /chat — a skier through deep powder in snow-laden trees.

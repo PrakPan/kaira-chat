@@ -44,7 +44,7 @@ const greeceThemeConfig: ThemeConfig = {
       },
       {
         icon: "💶",
-        label: "I have Rs 1.8 lakh — what does Greece actually get me?",
+        label: "I have Rs 1.8 lakh - what does Greece actually get me?",
         prompt:
           "Plan an 8-day Greece trip for ₹1.8 lakh per person, including flights from India. Show what's realistically possible, which islands offer the best value, and create a complete itinerary with stays, transport, and daily experiences.",
       },
@@ -70,16 +70,16 @@ const greeceThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Athens.jpg",
-          label: "Athens — Ruins and Rooftops",
+          label: "Athens - Ruins and Rooftops",
           tags: "History · City",
           description: "2,500 years. Still buzzing.",
           prompt:
-            "Show me how to spend 3 perfect days in Athens—covering ancient landmarks, great neighborhoods, rooftop dining, local culture, and the experiences most visitors miss.",
+            "Show me how to spend 3 perfect days in Athens-covering ancient landmarks, great neighborhoods, rooftop dining, local culture, and the experiences most visitors miss.",
         },
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Santorini.jpg",
-          label: "Santorini — Blue Domes, Real Story",
+          label: "Santorini - Blue Domes, Real Story",
           tags: "Scenic · Romantic",
           description: "The photo is real. Book early.",
           prompt:
@@ -88,7 +88,7 @@ const greeceThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Crete.jpg",
-          label: "Crete — More Than a Beach",
+          label: "Crete - More Than a Beach",
           tags: "Culture · Beach",
           description: "Biggest island. Wildly underrated.",
           prompt:
@@ -97,16 +97,16 @@ const greeceThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Meteora.jpg",
-          label: "Meteora — Monasteries on Cliffs",
+          label: "Meteora - Monasteries on Cliffs",
           tags: "UNESCO · Spiritual",
           description: "Built on nothing. Literally.",
           prompt:
-            "Help me understand and explore Meteora in 2 days—covering the most impressive monasteries, viewpoints, history, and the smartest way to visit from Athens.",
+            "Help me understand and explore Meteora in 2 days-covering the most impressive monasteries, viewpoints, history, and the smartest way to visit from Athens.",
         },
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Mykonos.jpg",
-          label: "Mykonos — Beyond the Party",
+          label: "Mykonos - Beyond the Party",
           tags: "Beach · Nightlife",
           description: "The calm side of Mykonos.",
           prompt:
@@ -121,7 +121,7 @@ const greeceThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Easter in Greece.png",
-          label: "Easter in Greece — Nothing Like It",
+          label: "Easter in Greece - Nothing Like It",
           sublabel: "April–May · Bigger than Christmas",
           description: "Bigger than Christmas.",
           prompt:
@@ -130,7 +130,7 @@ const greeceThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Epidaurus.png",
-          label: "Epidaurus — The Original Theatre",
+          label: "Epidaurus - The Original Theatre",
           sublabel: "June–August · 2,400 years old",
           description: "2,400 years old.",
           prompt:
@@ -139,7 +139,7 @@ const greeceThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Thessaloniki.jpg",
-          label: "Thessaloniki — Where Greeks Holiday",
+          label: "Thessaloniki - Where Greeks Holiday",
           sublabel: "Year-Round · More food per street",
           description: "More food per street.",
           prompt:
@@ -148,7 +148,7 @@ const greeceThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Hydra.jpg",
-          label: "Hydra — No Cars. Just Donkeys.",
+          label: "Hydra - No Cars. Just Donkeys.",
           sublabel: "90 minutes from Athens",
           description: "90 minutes from Athens.",
           prompt:
@@ -157,7 +157,7 @@ const greeceThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Delphi.jpg",
-          label: "Delphi — Where Gods Were Consulted",
+          label: "Delphi - Where Gods Were Consulted",
           sublabel: "Day Trip · The centre of the ancient world",
           description: "The centre of the ancient world.",
           prompt:
@@ -208,7 +208,7 @@ const greeceThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Greece Mainland.png",
-          label: "Greece Mainland — Ancient Greek Journey",
+          label: "Greece Mainland - Ancient Greek Journey",
           sublabel: "History · Culture",
           description: "Before the islands existed.",
           prompt:
@@ -217,13 +217,13 @@ const greeceThemeConfig: ThemeConfig = {
       ],
     },
     {
-      heading: "Only in Greece — Experiences Worth Flying For",
+      heading: "Only in Greece - Experiences Worth Flying For",
       icon: "✨",
       cards: [
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Acropolis.jpg",
-          label: "Acropolis — 8am, No One Else",
+          label: "Acropolis - 8am, No One Else",
           tags: "History · Athens",
           description: "You and the Parthenon.",
           prompt:
@@ -232,7 +232,7 @@ const greeceThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Catamaran.jpg",
-          label: "Catamaran — Santorini From the Sea",
+          label: "Catamaran - Santorini From the Sea",
           tags: "Luxury · Santorini",
           description: "Better from the water.",
           prompt:
@@ -241,7 +241,7 @@ const greeceThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Samaria Gorge.png",
-          label: "Samaria Gorge — Hike, Then Beach",
+          label: "Samaria Gorge - Hike, Then Beach",
           tags: "Hiking · Crete",
           description: "16km. Worth every step.",
           prompt:
@@ -250,7 +250,7 @@ const greeceThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Cook Greek — In a Local Home.png",
-          label: "Cook Greek — In a Local Home",
+          label: "Cook Greek - In a Local Home",
           tags: "Food · Cultural",
           description: "A Greek grandmother's kitchen.",
           prompt:
@@ -259,7 +259,7 @@ const greeceThemeConfig: ThemeConfig = {
         {
           image:
             "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Sail the Cyclades — Your Own Route.png",
-          label: "Sail the Cyclades — Your Own Route",
+          label: "Sail the Cyclades - Your Own Route",
           tags: "Sailing · Islands",
           description: "New island every morning.",
           prompt:

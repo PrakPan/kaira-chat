@@ -437,13 +437,13 @@ const resolveTagLabel = (raw) => {
 // note, so the per-label meanings live here, on the badge itself. Unknown tags
 // simply get no tooltip (resolveTagDesc → null).
 const TAG_DESC_BY_KEY = {
-  on_your_own: "Not pre-booked — go at your own pace. No ticket needed.",
+  on_your_own: "Not pre-booked - go at your own pace. No ticket needed.",
   self_guided: "Explore at your own pace with directions provided.",
   semi_guided: "Part guided, part free time to explore on your own.",
   included: "Already included in your trip package.",
   guided: "Led by a local guide.",
-  suggested: "A spot we recommend — visit if it appeals to you.",
-  suggest: "A spot we recommend — visit if it appeals to you.",
+  suggested: "A spot we recommend - visit if it appeals to you.",
+  suggest: "A spot we recommend - visit if it appeals to you.",
   kaira_pick: "A standout Kaira specially recommends for this trip.",
   kairas_pick: "A standout Kaira specially recommends for this trip.",
   must_do: "A trip highlight worth prioritising.",

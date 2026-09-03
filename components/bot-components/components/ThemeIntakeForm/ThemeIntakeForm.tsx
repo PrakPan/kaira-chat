@@ -381,7 +381,7 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
 
     // Include the plan's blurb so the message reads with the chosen route
     // (e.g. "Powder and the city — Sapporo + Niseko — ski days, city nights").
-    const routeLine = planBlurb ? ` — ${planBlurb}` : "";
+    const routeLine = planBlurb ? ` - ${planBlurb}` : "";
     // With exact dates the length comes from the calendar, so the route is
     // named WITHOUT any stored night count and the dates get their own line —
     // otherwise the message would read "The Last Hurrah · 6N" over a 9-night
@@ -389,10 +389,10 @@ const ThemeIntakeForm: React.FC<ThemeIntakeFormProps> = ({
     const nightsWord = nights === 1 ? "night" : "nights";
     const whenLines = useExact
       ? `• When: ${formatLong(dates[0])} to ${formatLong(dates[1])} · ${nights} ${nightsWord} ` +
-        `(my exact dates — use these, not the route's usual length)\n` +
+        `(my exact dates - use these, not the route's usual length)\n` +
         `• Plan: ${routeTitle(planLabel)}${routeLine}\n`
       : `• When: ${formatLong(dates[0])} to ${formatLong(dates[1])} · ${nights} ${nightsWord}` +
-        (legacy ? "" : ` (I'm going in ${month?.long ?? ""} — shift the dates within that month if it prices better)`) +
+        (legacy ? "" : ` (I'm going in ${month?.long ?? ""} - shift the dates within that month if it prices better)`) +
         `\n• Plan: ${routeTitle(planLabel)}${routeLine}\n`;
     // The picks also ride the request body structurally (as `intake.items` —
     // see handleThemedFormSubmit), but they're named here too so the message

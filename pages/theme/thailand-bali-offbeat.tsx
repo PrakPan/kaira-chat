@@ -147,14 +147,14 @@ const PROMPTS = {
     "We are 2 travellers, and our travel dates are flexible. Plan a 10-night trip focused entirely on Koh Yao Noi in Thailand and Nusa Lembongan in Indonesia. Prioritize quiet beaches, snorkeling, boat trips, scenic viewpoints, local food, beautiful stays and slow island days. Avoid crowded tourist areas and keep the itinerary relaxed, with plenty of time to enjoy each island rather than constantly moving.",
   // Trips — the same three shapes, priced and dated, flights included
   tripKrabiEastBali:
-    "We are 2 travellers. Build the Krabi backroads and East Bali trip — 12 nights in January, starting with Krabi's quieter coast, mangroves and longtail island days, then Ubud and Amed for rice terraces, water palaces and snorkeling. Flights from Delhi and the internal flight included.",
+    "We are 2 travellers. Build the Krabi backroads and East Bali trip - 12 nights in January, starting with Krabi's quieter coast, mangroves and longtail island days, then Ubud and Amed for rice terraces, water palaces and snorkeling. Flights from Delhi and the internal flight included.",
   tripNorthThailandGilis:
-    "We are 2 travellers. Build the North Thailand and Gili Islands trip — 13 nights in February: Chiang Mai's temples and night markets, a short Bangkok stop for the food, then Gili Trawangan for beaches, snorkeling and cycling. Flights from Delhi and the boat transfers included.",
+    "We are 2 travellers. Build the North Thailand and Gili Islands trip - 13 nights in February: Chiang Mai's temples and night markets, a short Bangkok stop for the food, then Gili Trawangan for beaches, snorkeling and cycling. Flights from Delhi and the boat transfers included.",
   tripTwoIslands:
-    "We are 2 travellers. Build the two-island trip — 10 nights in March split between Koh Yao Noi in Thailand and Nusa Lembongan in Indonesia. Two bases, no rushing, boats and ferries handled, flights from Delhi included.",
+    "We are 2 travellers. Build the two-island trip - 10 nights in March split between Koh Yao Noi in Thailand and Nusa Lembongan in Indonesia. Two bases, no rushing, boats and ferries handled, flights from Delhi included.",
   // Ask Kaira
   askBar:
-    "Which offbeat Thailand and Bali trip should we do first, for two of us with flexible dates — Krabi backroads then East Bali over 12 nights, North Thailand then the Gili Islands over 13, or just Koh Yao Noi and Nusa Lembongan over 10? Compare the pace, the cost and which months each one actually works in, then build the ideal itinerary for the one you recommend.",
+    "Which offbeat Thailand and Bali trip should we do first, for two of us with flexible dates - Krabi backroads then East Bali over 12 nights, North Thailand then the Gili Islands over 13, or just Koh Yao Noi and Nusa Lembongan over 10? Compare the pace, the cost and which months each one actually works in, then build the ideal itinerary for the one you recommend.",
 };
 
 // What each prompt above states about the trip, sent as `intake` keys (nights /
@@ -226,21 +226,21 @@ const thailandBaliOffbeatConfig: CinematicThemeConfig = {
         {
           image: IMG.hongLagoon,
           name: "Krabi backroads, East Bali",
-          line: "Krabi · Ao Thalane · Ubud · Amed — 4 bases, 2 flights",
+          line: "Krabi · Ao Thalane · Ubud · Amed - 4 bases, 2 flights",
           tag: "12 nights",
           prompt: PROMPTS.krabiEastBali,
         },
         {
           image: IMG.tukTukNight,
           name: "North Thailand, then the Gilis",
-          line: "Chiang Mai · Bangkok · Gili Trawangan — 3 stops, 3 flights",
+          line: "Chiang Mai · Bangkok · Gili Trawangan - 3 stops, 3 flights",
           tag: "13 nights",
           prompt: PROMPTS.northThailandGilis,
         },
         {
           image: IMG.lembongan,
           name: "Two islands, nothing else",
-          line: "Koh Yao Noi · Nusa Lembongan — 2 islands, boats between",
+          line: "Koh Yao Noi · Nusa Lembongan - 2 islands, boats between",
           tag: "10 nights",
           prompt: PROMPTS.twoIslands,
         },
@@ -256,7 +256,7 @@ const thailandBaliOffbeatConfig: CinematicThemeConfig = {
         {
           image: IMG.hongLagoon,
           name: "Hong Island lagoon by longtail boat",
-          line: "The hidden lagoon before the speedboats find it — one boat, one crew, snorkel stops in between.",
+          line: "The hidden lagoon before the speedboats find it - one boat, one crew, snorkel stops in between.",
           tag: "Krabi",
           activityId: ACTIVITY.hongLagoon,
         },
@@ -284,14 +284,14 @@ const thailandBaliOffbeatConfig: CinematicThemeConfig = {
         {
           image: IMG.tukTukNight,
           name: "Tuk-tuk night temples and street food",
-          line: "Lit temples after dark and the stalls locals queue at — four hours, no bus.",
+          line: "Lit temples after dark and the stalls locals queue at - four hours, no bus.",
           tag: "Chiang Mai",
           activityId: ACTIVITY.tukTukNight,
         },
         {
           image: IMG.taladNoi,
           name: "Talad Noi street art walk",
-          line: "The old Chinatown alleys — murals, mechanic shops and a shrine at the end.",
+          line: "The old Chinatown alleys - murals, mechanic shops and a shrine at the end.",
           tag: "Bangkok",
           activityId: ACTIVITY.taladNoi,
         },
@@ -372,7 +372,7 @@ const thailandBaliOffbeatConfig: CinematicThemeConfig = {
           gradient: "linear-gradient(150deg, #16324f, #0e7a55 160%)",
           name: "Nusa Lembongan & Ceningan",
           badge: "40 min from Sanur",
-          line: "The yellow bridge, mangrove channels and a coastline of secluded coves — Bali without Bali's traffic.",
+          line: "The yellow bridge, mangrove channels and a coastline of secluded coves - Bali without Bali's traffic.",
           activityId: ISLAND.lembongan,
         },
         {
@@ -524,7 +524,7 @@ const thailandBaliOffbeatConfig: CinematicThemeConfig = {
           image: IMG.karaweik,
           name: "Karaweik",
           city: "Koh Tao",
-          line: "Burmese kitchen on a Thai island — rich curries, fish soup, mohinga. Nothing like the beach menus.",
+          line: "Burmese kitchen on a Thai island - rich curries, fish soup, mohinga. Nothing like the beach menus.",
           rating: "5.0",
           reviews: "2,118",
           href: `${PAGE}?restaurant_id=${RESTAURANT.karaweik}`,
@@ -607,7 +607,7 @@ const thailandBaliOffbeatConfig: CinematicThemeConfig = {
         },
       ],
       note:
-        "The two countries don't share a monsoon, which is the whole planning problem — and the reason a May-to-October trip should be weighted east. Send me your month and I'll tell you which coast behaves before anything is booked.",
+        "The two countries don't share a monsoon, which is the whole planning problem - and the reason a May-to-October trip should be weighted east. Send me your month and I'll tell you which coast behaves before anything is booked.",
     },
     // ── Visa (dark) ──
     {
@@ -632,7 +632,7 @@ const thailandBaliOffbeatConfig: CinematicThemeConfig = {
           cities: "e-Visa · 30 days · single entry, extendable once",
           fee: "₹3,600",
           line:
-            "Comes through in about a day, and extends once on the ground. This is the half of the trip that can stretch — if the Sidemen valley does its job, you extend rather than re-plan.",
+            "Comes through in about a day, and extends once on the ground. This is the half of the trip that can stretch - if the Sidemen valley does its job, you extend rather than re-plan.",
           href: `${VISA}/indonesia-visa-online`,
         },
       ],
@@ -643,7 +643,7 @@ const thailandBaliOffbeatConfig: CinematicThemeConfig = {
         { label: "Entry", value: "Single · both" },
       ],
       note:
-        "Both are single-entry, so the order of the two countries matters if you were thinking of hopping back. Thailand also needs the free digital arrival card within 72 hours of landing — we send that link with the visa.",
+        "Both are single-entry, so the order of the two countries matters if you were thinking of hopping back. Thailand also needs the free digital arrival card within 72 hours of landing - we send that link with the visa.",
     },
     // ── Read this first ──
     // {
@@ -695,7 +695,7 @@ const thailandBaliOffbeatConfig: CinematicThemeConfig = {
           name: "Atal",
           when: "July 2024 · Ubud",
           quote:
-            "A week entirely in Ubud — waterfalls, rice terraces and temples, no south-Bali beach clubs.",
+            "A week entirely in Ubud - waterfalls, rice terraces and temples, no south-Bali beach clubs.",
           href: `${SITE}/chat/1d73f1c3-a43a-4c56-afc2-23eedb88d7e6`,
         },
         {
@@ -839,7 +839,7 @@ const ThailandBaliOffbeatThemePage = ({
         </title>
         <meta
           name="description"
-          content="Plan an offbeat Thailand and Bali trip with The Tarzan Way's AI itinerary — Krabi's quiet islands, Koh Yao Noi, East Bali, the Nusas and the Gilis, strung into one route with boats, ferries and visas handled, for Indian travellers."
+          content="Plan an offbeat Thailand and Bali trip with The Tarzan Way's AI itinerary - Krabi's quiet islands, Koh Yao Noi, East Bali, the Nusas and the Gilis, strung into one route with boats, ferries and visas handled, for Indian travellers."
         />
         <meta
           property="og:title"
@@ -847,7 +847,7 @@ const ThailandBaliOffbeatThemePage = ({
         />
         <meta
           property="og:description"
-          content="Plan an offbeat Thailand and Bali trip with The Tarzan Way's AI itinerary — Krabi's quiet islands, Koh Yao Noi, East Bali, the Nusas and the Gilis, strung into one route with boats, ferries and visas handled, for Indian travellers."
+          content="Plan an offbeat Thailand and Bali trip with The Tarzan Way's AI itinerary - Krabi's quiet islands, Koh Yao Noi, East Bali, the Nusas and the Gilis, strung into one route with boats, ferries and visas handled, for Indian travellers."
         />
         <link
           rel="canonical"
@@ -871,9 +871,9 @@ const ThailandBaliOffbeatThemePage = ({
               "@graph": [
                 {
                   "@type": "TouristTrip",
-                  name: "Offbeat Thailand & Bali — Trip Planner",
+                  name: "Offbeat Thailand & Bali - Trip Planner",
                   description:
-                    "Plan an offbeat Thailand and Bali trip with The Tarzan Way's AI itinerary — Krabi's quiet islands, Koh Yao Noi, East Bali, the Nusas and the Gilis, strung into one route with boats, ferries and visas handled, for Indian travellers.",
+                    "Plan an offbeat Thailand and Bali trip with The Tarzan Way's AI itinerary - Krabi's quiet islands, Koh Yao Noi, East Bali, the Nusas and the Gilis, strung into one route with boats, ferries and visas handled, for Indian travellers.",
                   url: "https://thetarzanway.com/theme/thailand-bali-offbeat",
                   image: "https://thetarzanway.com/og-image.png",
                   provider: {

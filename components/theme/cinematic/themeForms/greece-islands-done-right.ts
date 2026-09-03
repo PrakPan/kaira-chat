@@ -11,7 +11,7 @@ const greeceIslandsForm: ThemeForm = {
   slug: "greece-islands-done-right",
   display: "Greece Islands Done Right",
   tagline:
-    "Greece, the islands done right — Athens, a caldera sunset, and the Cyclades by ferry.",
+    "Greece, the islands done right - Athens, a caldera sunset, and the Cyclades by ferry.",
   voice: "Sun-warm and unhurried. Talks ferries, caldera sunsets, which island is which.",
   copy: {
     datesTitle: "When are you going?",
@@ -71,11 +71,11 @@ const greeceIslandsForm: ThemeForm = {
     {
       key: "cyclades_9",
       label: "A slower Cyclades hop",
-      blurb: "Add Naxos — fewer crowds, more time on each island",
+      blurb: "Add Naxos - fewer crowds, more time on each island",
       tag: "SLOW HOP",
       nights: 9,
       skeleton: "cyclades_9",
-      fareNote: "Shoulder May/Oct — cheaper, ferries running, fewer crowds.",
+      fareNote: "Shoulder May/Oct - cheaper, ferries running, fewer crowds.",
     },
     {
       key: "crete_10",

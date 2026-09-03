@@ -183,7 +183,7 @@ const Index = (props) => {
         }
         description={
           <>
-            Tell Kaira <b>your dates and vibe</b> — she stitches the right cities
+            Tell Kaira <b>your dates and vibe</b> - she stitches the right cities
             into a route that{" "}
             <span className={styles.serif}>actually flows.</span> Local
             concierges check every booking before you pay.
@@ -298,7 +298,7 @@ const Index = (props) => {
                 </h2>
                 <p className={styles.lede}>
                   Every itinerary below has been done.{" "}
-                  <span className={styles.serif}>Tweak anything</span> in chat —
+                  <span className={styles.serif}>Tweak anything</span> in chat -
                   dates, hotels, duration.
                 </p>
               </div>
