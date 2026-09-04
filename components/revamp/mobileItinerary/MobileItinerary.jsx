@@ -283,7 +283,11 @@ export default function MobileItinerary({
     (leg, extra) =>
       ask(
         extra?.airportRole
-          ? prompts.changeAirportTaxi(extra.airportRole, leg.city)
+          ? prompts.changeHubTaxi(
+              extra.airportHub,
+              extra.airportRole,
+              leg.city,
+            )
           : prompts.changeTaxi(leg.city),
         extra?.name || `Taxi in ${leg.city}`,
       ),
@@ -403,13 +407,17 @@ export default function MobileItinerary({
   const handleOpenExtra = useCallback(
     (leg, extra) =>
       setSheet({ type: "detail", detail: {
-        // An airport transfer says which one it is. "TAXI · HOI AN" over three
-        // different cars in the same city named none of them.
+        // A pickup or drop says which one it is, and where it happens: only a
+        // flight has an airport, and "AIRPORT DROP" over a ride to a ferry
+        // terminal sends the traveller across the city. "TAXI · HOI AN" over
+        // three different cars named none of them.
         kind: `${
-          extra.airportRole ? `AIRPORT ${extra.airportRole}` : "TAXI"
-        } · ${String(leg.city).toUpperCase()}`.toUpperCase(),
+          extra.airportRole
+            ? `${extra.airportHub || "Airport"} ${extra.airportRole}`
+            : "TAXI"
+        } · ${leg.city}`.toUpperCase(),
         contextLabel: extra.airportRole
-          ? `Airport ${extra.airportRole} in ${leg.city}`
+          ? `${extra.airportHub || "Airport"} ${extra.airportRole} in ${leg.city}`
           : `Taxi in ${leg.city}`,
         name: extra.name,
         meta: extra.meta,
@@ -429,9 +437,13 @@ export default function MobileItinerary({
           : null,
         blurb:
           extra.airportRole === "pickup"
-            ? "A car booked to meet you at the airport."
+            ? `A car booked to meet you at the ${(
+                extra.airportHub || "airport"
+              ).toLowerCase()}.`
             : extra.airportRole === "drop"
-              ? "A car booked to take you to the airport."
+              ? `A car booked to take you to the ${(
+                  extra.airportHub || "airport"
+                ).toLowerCase()}.`
               : "A car booked for you inside this city.",
         facts: [
           { k: "CITY", v: leg.city },
@@ -440,7 +452,7 @@ export default function MobileItinerary({
         canChange: true,
         changeLabel: transferChangeLabel(extra.modeKey, extra.isCombo),
         changeMessage: extra.airportRole
-          ? prompts.changeAirportTaxi(extra.airportRole, leg.city)
+          ? prompts.changeHubTaxi(extra.airportHub, extra.airportRole, leg.city)
           : prompts.changeTaxi(leg.city),
         canRemove: true,
         removeMessage: prompts.removeItem(extra.name, leg.city),

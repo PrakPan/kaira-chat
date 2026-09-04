@@ -1,6 +1,16 @@
 import React, { useMemo } from "react";
 import { shallowEqual, useSelector } from "react-redux";
+import { FaPassport } from "react-icons/fa";
+import {
+  MdOutlineFlightTakeoff,
+  MdOutlineHotel,
+  MdOutlineLocalActivity,
+  MdOutlineLocalOffer,
+  MdOutlineReceiptLong,
+  MdTransferWithinAStation,
+} from "react-icons/md";
 
+import CouponSheet from "./CouponSheet";
 import Sheet from "../../common/components/Sheet";
 import { formatMoney } from "../../../../services/money";
 
@@ -44,13 +54,45 @@ const GROUP_LABEL = {
 
 const GROUP_ORDER = ["Flights", "Stays", "Hotels", "Transfers", "Activities", "Ancillaries"];
 
-function Row({ label, count, amount }) {
+// The glyph each row is read by. Five categories in one column of identical
+// grey squares gave the eye nothing to jump to — the label was doing all the
+// work, and a traveller looking for what their hotels cost had to read every
+// line. The transfer glyph is the neutral one from the mode accents rather than
+// a car: the group holds taxis, buses and trains at once.
+const GROUP_ICON = {
+  Flights: MdOutlineFlightTakeoff,
+  Stays: MdOutlineHotel,
+  Hotels: MdOutlineHotel,
+  Transfers: MdTransferWithinAStation,
+  Activities: MdOutlineLocalActivity,
+  Ancillaries: FaPassport,
+  // Not a category the cart sends — the reconciliation row this sheet adds
+  // itself, which is money rather than bookings and takes the price tag.
+  __adjustment: MdOutlineLocalOffer,
+};
+
+// A category the payload invented after this list was written still gets a
+// tile, so the column never breaks its rhythm on one unrecognised row.
+const FallbackIcon = MdOutlineReceiptLong;
+
+function Row({ groupKey, label, count, amount }) {
+  const Icon = GROUP_ICON[groupKey] || FallbackIcon;
+
   return (
     <div
       style={{ border: "1px solid #dcdfe5", borderRadius: 11, background: "#fff", boxShadow: "none" }}
       className="flex items-center gap-[12px] p-[12px]"
     >
-      <div className="h-[28px] w-[28px] flex-none rounded-[6px] bg-[#e6e8ec]" />
+      {/* Neutral tile, grey glyph — the same treatment the itinerary's own
+          "before you fly" cards use. No per-category colour: these are five
+          lines of one receipt, not five kinds of thing to tell apart by hue. */}
+      <span
+        className="flex h-[28px] w-[28px] flex-none items-center justify-center rounded-[6px]"
+        style={{ background: "#eef0f4" }}
+        aria-hidden
+      >
+        <Icon size={15} color="#6b7280" />
+      </span>
       <div className="min-w-0 flex-1">
         <div className="truncate text-[13.5px] font-[700] text-[#0b1220]">{label}</div>
         {count ? (
@@ -70,10 +112,16 @@ export default function CartSheet({
   open,
   onClose,
   onPay,
-  onApplyCoupon,
   onReprice,
+  onCouponApplied,
+  token,
   isRepricing = false,
 }) {
+  // Picking a coupon is a step INSIDE this sheet now, not a handover: the row's
+  // button used to close Review & pay and open the old cart drawer, so the
+  // traveller left checkout to choose a coupon and came back to it through a
+  // different screen.
+  const [couponsOpen, setCouponsOpen] = React.useState(false);
   const { cart, currency } = useSelector(
     (s) => ({ cart: s.Cart, currency: s.currency }),
     shallowEqual,
@@ -232,6 +280,7 @@ export default function CartSheet({
             {model.groups.map((g) => (
               <Row
                 key={g.key}
+                groupKey={g.key}
                 label={g.label}
                 count={g.count}
                 amount={model.hidden ? "—" : g.amount}
@@ -247,7 +296,7 @@ export default function CartSheet({
               </div>
               <button
                 type="button"
-                onClick={onApplyCoupon}
+                onClick={() => setCouponsOpen(true)}
                 style={{
                   border: "1px solid #dcdfe5",
                   background: "#ffffff",
@@ -293,6 +342,15 @@ export default function CartSheet({
           </div>
         </div>
       </div>
+
+      {/* Rendered inside the Sheet's tree but portalled out by Drawer, so it
+          sits above this one rather than inside its scroll pane. */}
+      <CouponSheet
+        open={couponsOpen}
+        onClose={() => setCouponsOpen(false)}
+        token={token}
+        onApplied={onCouponApplied}
+      />
     </Sheet>
   );
 }

@@ -4039,6 +4039,15 @@ Start Location: ${details.startLocation}`;
         `${MERCURY_HOST}/api/v1/itinerary/${itinId}/reprice/bookings`,
         { headers: { Authorization: `Bearer ${token}` } },
       );
+      // Repricing worked, so the sheet the traveller pressed it in is now
+      // showing prices that no longer exist — "PRICES EXPIRED", the old total,
+      // and a Pay button it will not honour. Close it and let the itinerary
+      // behind it repaint from the statuses and the cart fetched below; the
+      // traveller opens Review & pay again on the new prices.
+      //
+      // Only on success. A failed reprice leaves the sheet open with its
+      // expired notice still true and the button ready to try again.
+      setShowCartSheet(false);
     } catch (e) {
       console.error("Failed to reprice itinerary", e);
     } finally {
@@ -4059,6 +4068,23 @@ Start Location: ${details.startLocation}`;
         console.error("Failed to refresh itinerary status after reprice", e);
       }
       await fetchPaymentData(itinId);
+
+      // Restart ItineraryContainer's status poll.
+      //
+      // The four PENDING statuses dispatched above are what put the "Updating
+      // your itinerary" loader on the mobile footer, and only a poll observing
+      // them resolve takes it off again. That poll stops itself once everything
+      // reads SUCCESS, so by the time a reprice runs there is nothing watching:
+      // the single status read above sees a backend that has usually not
+      // finished yet, and nothing ever reads again. The loader sat there
+      // forever.
+      //
+      // Bumping the counter is how the desktop cart drawer restarts it too —
+      // NewBookingSlide's reprice calls resetRef + fetchData, both wired to
+      // this same bump. In the `finally` rather than on success: a failed
+      // reprice left those PENDING statuses behind as well, and the poll is
+      // what replaces them with the truth.
+      setItineraryRefetchCounter((c) => c + 1);
       setIsRepricing(false);
     }
   }, [activeItineraryId, authToken, isRepricing, dispatch]);
@@ -4202,11 +4228,14 @@ Start Location: ${details.startLocation}`;
           setAutoStartPayment(true);
           ctaBarProps.onViewCart();
         }}
-        onApplyCoupon={() => {
-          setShowCartSheet(false);
-          setAutoStartPayment(false);
-          ctaBarProps.onViewCart();
-        }}
+        // Coupons open as their own sheet on top of this one now, so there is
+        // no handover to the cart drawer to make. The cart the apply endpoint
+        // returns is dispatched straight into redux; this refetch is what keeps
+        // the footer's total and the drawer behind it in step with it.
+        onCouponApplied={() =>
+          activeItineraryId && fetchPaymentData(activeItineraryId)
+        }
+        token={authToken}
         onReprice={handleReprice}
         isRepricing={isRepricing}
       />

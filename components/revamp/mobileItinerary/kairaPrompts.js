@@ -33,10 +33,12 @@ const prompts = {
 
   // ── Taxis within a city ────────────────────────────────────────────────────
   changeTaxi: (city) => `change the taxi in ${city}`,
-  // The airport pair, named by which of the two it is. `changeTaxi` means the
-  // sightseeing car, and a city that has all three would otherwise send the
-  // same sentence for every one of them.
-  changeAirportTaxi: (role, city) => `change the airport ${role} in ${city}`,
+  // The pickup/drop pair, named by which of the two it is and by where it
+  // happens — "airport" for a flight, "station" for a train, a bus or a ferry.
+  // `changeTaxi` means the sightseeing car, and a city that has all three would
+  // otherwise send the same sentence for every one of them.
+  changeHubTaxi: (hub, role, city) =>
+    `change the ${String(hub || "airport").toLowerCase()} ${role} in ${city}`,
   addTaxi: (city) => `add a taxi in ${city}`,
 
   // ── Days ───────────────────────────────────────────────────────────────────
