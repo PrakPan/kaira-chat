@@ -17,10 +17,10 @@ import Layout from "../../../components/Layout";
 import TripsHub from "../../../components/trips/TripsHub";
 import { SITE_ORIGIN } from "../../../lib/seo/tripsIndexed";
 import { readDestinations, readTripPage } from "../../../lib/seo/tripsCache";
+import { tripCard } from "../../../lib/seo/tripsCards";
 import { breadcrumbSchema } from "../../../lib/seo/tripsJsonLd";
 import {
   destinationLabel,
-  durationLabel,
   formatINR,
   roundedPerPerson,
 } from "../../../lib/seo/tripsFormat";
@@ -119,13 +119,7 @@ export async function getStaticProps({ params }) {
       sections: [
         {
           title: `All ${label} trips`,
-          items: rows.map((row) => ({
-            url: row.url,
-            name: row.name,
-            meta: [durationLabel(row.duration), row.group_type]
-              .filter(Boolean)
-              .join(" · "),
-          })),
+          items: rows.map(tripCard).filter(Boolean),
         },
       ],
       schema: breadcrumbSchema([

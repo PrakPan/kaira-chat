@@ -10,8 +10,9 @@ import Layout from "../../components/Layout";
 import TripsHub from "../../components/trips/TripsHub";
 import { SITE_ORIGIN } from "../../lib/seo/tripsIndexed";
 import { readDestinations } from "../../lib/seo/tripsCache";
+import { tripCard } from "../../lib/seo/tripsCards";
 import { breadcrumbSchema } from "../../lib/seo/tripsJsonLd";
-import { destinationLabel, durationLabel } from "../../lib/seo/tripsFormat";
+import { destinationLabel } from "../../lib/seo/tripsFormat";
 
 const CANONICAL = `${SITE_ORIGIN}/trips`;
 
@@ -79,13 +80,7 @@ export async function getStaticProps() {
       sections: [
         {
           title: "Recently updated",
-          items: recent.map((row) => ({
-            url: row.url,
-            name: row.name,
-            meta: [durationLabel(row.duration), row.group_type]
-              .filter(Boolean)
-              .join(" · "),
-          })),
+          items: recent.map(tripCard).filter(Boolean),
         },
       ],
       schema: breadcrumbSchema([{ name: "Trips", href: "/trips" }]),

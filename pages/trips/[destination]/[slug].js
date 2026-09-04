@@ -19,12 +19,13 @@ import Layout from "../../../components/Layout";
 import TripSeoPage, { heroImageUrl } from "../../../components/trips/TripSeoPage";
 import { SITE_ORIGIN } from "../../../lib/seo/tripsIndexed";
 import { readTripPage, readTripsIndex } from "../../../lib/seo/tripsCache";
+import { tripCard } from "../../../lib/seo/tripsCards";
 import {
   breadcrumbSchema,
   faqSchema,
   touristTripSchema,
 } from "../../../lib/seo/tripsJsonLd";
-import { destinationLabel, durationLabel } from "../../../lib/seo/tripsFormat";
+import { destinationLabel } from "../../../lib/seo/tripsFormat";
 
 const jsonLd = (schema) =>
   schema ? (
@@ -101,11 +102,7 @@ const pickSiblings = (rows, current) => {
     if (!chosen.includes(row)) chosen.push(row);
   }
 
-  return chosen.map((row) => ({
-    slug: row.slug,
-    url: row.url,
-    label: [durationLabel(row.duration), row.group_type].filter(Boolean).join(" · "),
-  }));
+  return chosen.map(tripCard).filter(Boolean);
 };
 
 export async function getStaticPaths() {

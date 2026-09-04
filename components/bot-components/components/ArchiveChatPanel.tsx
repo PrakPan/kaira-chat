@@ -14,14 +14,10 @@
 // composer. Only the content differs: one clone message, and nothing to send.
 
 import React, { useState } from "react";
-import { createPortal } from "react-dom";
 import { useSelector } from "react-redux";
-import useMediaQuery from "../../../hooks/useMedia";
-import ModalWithBackdrop from "../../ui/ModalWithBackdrop";
-import BottomModal from "../../ui/LowerModal";
 import { ItineraryCloneCta } from "./MessageBubble";
 import { MessageInputBox } from "./MessageInputBox";
-import CloneItinerary from "../../CloneItinerary/Index";
+import CloneItineraryModal from "./CloneItineraryModal";
 import BotLoginModal from "./BotLoginModal";
 
 interface ArchiveChatPanelProps {
@@ -85,7 +81,6 @@ const ArchiveChatPanel: React.FC<ArchiveChatPanelProps> = ({ itineraryId }) => {
   const [showCloneModal, setShowCloneModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const token = useSelector((state: any) => state?.auth?.token);
-  const isDesktopViewport = useMediaQuery("(min-width:767px)");
 
   return (
     <div className="kp-root flex flex-col h-full min-h-0 bg-white max-h-[100dvh] border-[0.5px] border-l-[#e5e5e5] overflow-x-hidden">
@@ -138,46 +133,12 @@ const ArchiveChatPanel: React.FC<ArchiveChatPanelProps> = ({ itineraryId }) => {
         </div>
       </div>
 
-      {/* Portalled to <body> and wrapped in a modal, exactly as ChatKitPanel
-          mounts it. Rendered inline it landed in the panel's scroll flow,
-          appearing below the chat instead of centred over the page. */}
-      {showCloneModal &&
-        typeof document !== "undefined" &&
-        createPortal(
-          isDesktopViewport ? (
-            <ModalWithBackdrop
-              show={showCloneModal}
-              onHide={() => setShowCloneModal(false)}
-              closeIcon={false}
-              width="560px"
-              borderRadius="20px"
-              backdropStyle={{ zIndex: 3300 }}
-            >
-              <CloneItinerary
-                sourceItineraryId={itineraryId}
-                showEndLocation
-                onCancel={() => setShowCloneModal(false)}
-              />
-            </ModalWithBackdrop>
-          ) : (
-            <BottomModal
-              show={showCloneModal}
-              onHide={() => setShowCloneModal(false)}
-              closeIcon={false}
-              height="auto"
-              borderRadius="20px 20px 0 0"
-              isMobile
-              backdropStyle={{ zIndex: 3300 }}
-            >
-              <CloneItinerary
-                sourceItineraryId={itineraryId}
-                showEndLocation
-                onCancel={() => setShowCloneModal(false)}
-              />
-            </BottomModal>
-          ),
-          document.body,
-        )}
+      {/* Same popup the bottom bar's "Get this trip!" opens. */}
+      <CloneItineraryModal
+        show={showCloneModal}
+        onHide={() => setShowCloneModal(false)}
+        itineraryId={itineraryId}
+      />
 
       <BotLoginModal
         show={showLoginModal && !token}

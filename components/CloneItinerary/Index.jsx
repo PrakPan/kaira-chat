@@ -440,7 +440,7 @@ const CloneItinerary = ({
               color: "#0B1220",
             }}
           >
-            Craft a{" "}
+            Make this trip{" "}
             <em
               style={{
                 fontFamily: "'Instrument Serif', 'Times New Roman', serif",
@@ -449,9 +449,8 @@ const CloneItinerary = ({
                 letterSpacing: "-0.015em",
               }}
             >
-              similar
-            </em>{" "}
-            trip
+              your own
+            </em>
           </div>
           <p style={{ fontSize: 13, color: "#5C5A55", marginTop: 4 }}>
             Tweak the dates and travellers - I'll build your own editable copy.
@@ -604,7 +603,7 @@ const CloneItinerary = ({
           handleUpdate={handleUpdate}
           isLoading={isLoading}
           isEdit={true}
-          updateLabel="Clone Itinerary"
+          updateLabel="Build Itinerary →"
         />
       </div>
 

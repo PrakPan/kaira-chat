@@ -8,8 +8,15 @@
 import Link from "next/link";
 import styled from "styled-components";
 
+import ItineraryCardV2 from "../revamp/destination/ItineraryCardV2";
+// The card's stylesheet reads 35 `--ttw-*` custom properties, and they are
+// declared on `.ttwRevamp` rather than :root. Without this scope the card still
+// lays out but loses its border and background, because `var(--ttw-line)`
+// doesn't resolve and the shorthand falls back to `0px none`.
+import revamp from "../../styles/pages/revamp/home.module.scss";
+
 const Wrapper = styled.div`
-  max-width: 960px;
+  width: 87%;
   margin: 0 auto;
   padding: 16px 20px 72px;
   color: #1c1c1c;
@@ -59,43 +66,16 @@ const SectionTitle = styled.h2`
   margin: 34px 0 14px;
 `;
 
-const Cards = styled.ul`
-  list-style: none;
-  margin: 0;
-  padding: 0;
+// Two-up on desktop, single column below — the same grid the homepage and the
+// theme pages put these cards in, so the card keeps the proportions it was
+// designed at (its image column is a fixed 240px).
+const Cards = styled.div`
   display: grid;
-  gap: 10px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 22px;
 
-  li {
-    border: 1px solid #eceae5;
-    border-radius: 12px;
-  }
-
-  a {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 6px 16px;
-    padding: 14px 16px;
-    color: #1c1c1c;
-    text-decoration: none;
-  }
-
-  a:hover {
-    background: #faf9f7;
-  }
-
-  .name {
-    font-size: 16px;
-    font-weight: 500;
-    flex: 1 1 320px;
-  }
-
-  .meta {
-    font-size: 13px;
-    color: #6b6b6b;
-    white-space: nowrap;
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
   }
 `;
 
@@ -161,16 +141,21 @@ const TripsHub = ({ crumbs = [], title, intro, sections = [], chips = null }) =>
     {sections.map((section) => (
       <section key={section.title}>
         <SectionTitle>{section.title}</SectionTitle>
-        <Cards>
-          {section.items.map((item) => (
-            <li key={item.url}>
-              <Link href={item.url}>
-                <span className="name">{item.name}</span>
-                <span className="meta">{item.meta}</span>
-              </Link>
-            </li>
-          ))}
-        </Cards>
+        {/* Built at build time (lib/seo/tripsCards), so each card is a real
+            anchor in the served HTML — these hubs are the pages targeting the
+            head terms, and a grid that only fills in after hydration would give
+            a crawler an empty div. */}
+        <div className={revamp.ttwRevamp}>
+          <Cards>
+            {section.items.map((item) => (
+              <ItineraryCardV2
+                key={item.path || item.name}
+                itinerary={item}
+                currency={item.currency}
+              />
+            ))}
+          </Cards>
+        </div>
       </section>
     ))}
   </Wrapper>

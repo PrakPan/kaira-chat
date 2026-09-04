@@ -15,6 +15,10 @@
 import Link from "next/link";
 import styled from "styled-components";
 
+import ItineraryCardV2 from "../revamp/destination/ItineraryCardV2";
+import FaqSection from "../revamp/home/FaqSection";
+// See TripsHub: the card's `--ttw-*` tokens live on `.ttwRevamp`, not :root.
+import revamp from "../../styles/pages/revamp/home.module.scss";
 import { optimizedImageUrl, resolveImageUrl } from "../../helper/imageUrl";
 import {
   destinationLabel,
@@ -24,7 +28,7 @@ import {
   roundedPerPerson,
 } from "../../lib/seo/tripsFormat";
 
-const MAX_WIDTH = "920px";
+const MAX_WIDTH = "87%";
 
 // ── Layout ──────────────────────────────────────────────────────────────────
 
@@ -291,20 +295,15 @@ const Stays = styled.ul`
   }
 `;
 
-const Faqs = styled.div`
+// Same two-up grid the hubs use, so a card keeps the proportions it was drawn
+// at (its image column is a fixed 240px).
+const SiblingCards = styled.div`
   display: grid;
-  gap: 18px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 22px;
 
-  h3 {
-    font-size: 16px;
-    font-weight: 500;
-    margin: 0 0 6px;
-  }
-
-  p {
-    font-size: 15px;
-    color: #4a4a4a;
-    margin: 0;
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
   }
 `;
 
@@ -499,38 +498,54 @@ const TripSeoPage = ({ page, siblings = [] }) => {
         </Section>
       )}
 
-      {faqs.length > 0 && (
+    
+
+      {siblings.length > 0 && (
         <Section>
-          <SectionTitle>Questions people ask</SectionTitle>
-          {/* Rendered verbatim from the same objects the FAQPage JSON-LD is
-              built from — Google flags markup whose answers are not visible. */}
-          <Faqs>
-            {faqs.map((faq, index) => (
-              <div key={index}>
-                <h3>{faq.q}</h3>
-                <p>{faq.a}</p>
-              </div>
-            ))}
-          </Faqs>
+          <SectionTitle>More {region} trips</SectionTitle>
+          <div className={revamp.ttwRevamp}>
+            <SiblingCards>
+              {siblings.map((sibling) => (
+                <ItineraryCardV2
+                  key={sibling.path || sibling.name}
+                  itinerary={sibling}
+                  currency={sibling.currency}
+                />
+              ))}
+            </SiblingCards>
+          </div>
         </Section>
       )}
 
       <Section>
-        <Related aria-label={`More ${region} trips`}>
-          <SectionTitle>More {region} trips</SectionTitle>
+        <Related aria-label={`All ${region} trips`}>
           <ul>
-            {siblings.map((sibling) => (
-              <li key={sibling.slug}>
-                <Link href={sibling.url}>{sibling.label}</Link>
-              </li>
-            ))}
             <li>
               <Link href={hubHref}>All {region} itineraries</Link>
             </li>
           </ul>
         </Related>
       </Section>
+
+        {faqs.length > 0 && (
+        <Section>
+          {/* Built from the same objects the FAQPage JSON-LD is — Google flags
+              markup whose answers aren't on the page. The accordion collapses
+              with max-height rather than unmounting, so every answer is still
+              in the served HTML. */}
+          <FaqSection
+            heading="Questions people ask"
+            lede={`About this ${region} trip.`}
+            Faqs={faqs.map((faq) => ({
+              question: faq.q,
+              answer: faq.a,
+            }))}
+          />
+        </Section>
+      )}
     </Article>
+
+
   );
 };
 

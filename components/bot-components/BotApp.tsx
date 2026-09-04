@@ -43,6 +43,7 @@ import { getThemePagePath } from "../theme/cinematic/palettes";
 import ItineraryContainer from "../../containers/itinerary/ItineraryContainer";
 import ItineraryLegend from "../itinerary/itineraryCity/ItineraryLegend";
 import ArchiveChatPanel from "./components/ArchiveChatPanel";
+import CloneItineraryModal from "./components/CloneItineraryModal";
 import type {
   Location,
   ItineraryData,
@@ -812,6 +813,9 @@ export default function BotApp({
   // from the gear) so a reason can never carry over into the next one.
   const [settingsReason, setSettingsReason] = useState<string | null>(null);
   const [showSettingsLoginPrompt, setShowSettingsLoginPrompt] = useState(false);
+  // Opened by the archive bar's "Get this trip!" — the same popup the archive
+  // chat panel's clone card opens.
+  const [showArchiveCloneModal, setShowArchiveCloneModal] = useState(false);
   // Mobile: the compact trip strip collapses the traveller/date/social meta
   // behind a chevron. Desktop always shows the full header.
   const [tripMetaOpen, setTripMetaOpen] = useState(false);
@@ -2641,10 +2645,6 @@ export default function BotApp({
         const statusRes = await axiosGetItineraryStatus.get(`/${sid}/status/`);
         const celery = statusRes?.data?.celery;
         stage = statusRes?.data?.stage ?? null;
-        // Same signal ItineraryContainer keys the archive off. Read here too
-        // because the Redux flag is set by an async fetch that hasn't landed
-        // yet at this point in the restore.
-        archivedV1 = statusRes?.data?.version === "v1";
         statusOk = !!celery;
         if (celery) {
           allDone = ["ITINERARY", "HOTELS", "TRANSFERS", "PRICING"].every(
@@ -2654,6 +2654,21 @@ export default function BotApp({
       } catch (e) {
         console.warn("[restoreLatestThread] status check failed:", e);
         statusOk = false;
+      }
+
+      // Whether there is a live chat behind this id is decided by the archive,
+      // not by the status API's `version` — Mercury reports most archived
+      // itineraries as "v2" (see ItineraryContainer's fetchItinerary), and
+      // trusting it here fired the /chatkit p2 summary against ids the chat
+      // service has never seen. Same object ItineraryContainer fetches, served
+      // from the browser cache on the second read.
+      try {
+        const { fetchV1Itinerary } = await import(
+          "../../services/itinerary/v1/archive"
+        );
+        archivedV1 = !!(await fetchV1Itinerary(sid));
+      } catch (e) {
+        archivedV1 = false;
       }
 
       if (!statusOk) {
@@ -3830,6 +3845,33 @@ Start Location: ${details.startLocation}`;
     .join(", ");
   const tripCompactSub = [_tripDates, _tripPax].filter(Boolean).join(" · ");
 
+  // Archived V1 itineraries have no cart or pricing service behind them, but the
+  // export carries the price the trip was sold at in `payment_info`. Values are
+  // in paise, so they are divided by 100 before display.
+  //
+  // `show_per_person_cost` is the export's own flag for which figure to lead
+  // with. It is set on very few records, so most archives show the trip total.
+  // Around one in ten carries a zero total — those fall through to the
+  // get-in-touch message rather than advertising a free trip.
+  const archivePrice = (() => {
+    if (!isV1Archive) return null;
+
+    const info = itineraryRedux?.payment_info;
+    if (!info) return null;
+
+    const perPerson = !!info.show_per_person_cost;
+    const paise = Number(
+      perPerson ? info.per_person_total_cost : info.total_cost,
+    );
+    if (!Number.isFinite(paise) || paise <= 0) return null;
+
+    return {
+      amount: paise / 100,
+      perPerson,
+      code: itineraryRedux?.currency || "INR",
+    };
+  })();
+
   // ── Shared itinerary panel content (header strip + container + CTA) ──────
   // On mobile, MobileLayout's activeTab already gates visibility (the panel
   // sits inside an absolute-positioned container that toggles opacity per
@@ -3850,6 +3892,7 @@ Start Location: ${details.startLocation}`;
     currency,
     countCartItems,
     isV1Archive,
+    archivePrice,
     isHovered,
     setIsHovered,
     popupStyle,
@@ -3872,6 +3915,11 @@ Start Location: ${details.startLocation}`;
     },
     onViewBookings: itineraryIsComplete ? handleViewBookings : undefined,
     notes: statusNotes,
+    // Archive-only: the bar's CTA clones the trip rather than raising a contact
+    // request. get_in_touch/ is an authenticated call against a live itinerary,
+    // which an archived one isn't — cloning is the action that actually goes
+    // somewhere from here.
+    onGetThisTrip: () => setShowArchiveCloneModal(true),
     onGetInTouch: () => {
       if (!activeItineraryId) return;
       const token = localStorage.getItem("access_token");
@@ -4869,8 +4917,16 @@ Start Location: ${details.startLocation}`;
 
       
 
+      {/* Archive bar's "Get this trip!". Mounted here rather than inside the
+          bar because the bar is `position: fixed` and re-mounts per layout. */}
+      <CloneItineraryModal
+        show={showArchiveCloneModal}
+        onHide={() => setShowArchiveCloneModal(false)}
+        itineraryId={activeItineraryId || sessionId}
+      />
+
       {showSettingsLoginPrompt && !authToken && (
-        
+
         <BotLoginModal
           show={showSettingsLoginPrompt}
           onhide={() => setShowSettingsLoginPrompt(false)}
@@ -4969,12 +5025,20 @@ interface BottomCTABarProps {
   currency: any;
   countCartItems: number;
   isV1Archive?: boolean;
+  /** Archive-only price, already converted from the export's paise. */
+  archivePrice?: {
+    amount: number;
+    perPerson: boolean;
+    code: string;
+  } | null;
   isHovered: boolean;
   setIsHovered: (v: boolean) => void;
   popupStyle: React.CSSProperties;
   onConfirm: () => void;
   onViewCart: () => void;
   onGetInTouch?: () => void;
+  /** Archive-only: opens the clone popup from "Get this trip!". */
+  onGetThisTrip?: () => void;
   onRetryCart?: () => void;
   // The Bookings view's only entry point. Left undefined until the itinerary is
   // complete — that is the same gate the Bookings tab used to carry — and the
@@ -5116,12 +5180,14 @@ const BottomCTABar = React.memo(
     currency,
     countCartItems,
     isV1Archive,
+    archivePrice,
     isHovered,
     setIsHovered,
     popupStyle,
     onConfirm,
     onViewCart,
     onGetInTouch,
+    onGetThisTrip,
     onRetryCart,
     onViewBookings,
     notes,
@@ -5133,10 +5199,12 @@ const BottomCTABar = React.memo(
     )
       return null;
 
-    // Archived V1 itineraries carry no cart, pricing or bookings, so the usual
-    // price + View Cart pair has nothing behind it. Keep the bar — it's how the
-    // traveller reaches us — but say why there's no price and point at contact
-    // instead. Mirrors the pricing-failure branch below.
+    // Archived V1 itineraries have no cart, pricing service or bookings behind
+    // them, so the usual price + View Cart pair has nothing to read from. The
+    // export does carry the price the trip was sold at, though, so that is
+    // shown in the same shape the live bar uses. When it doesn't (a zero total,
+    // on roughly one in ten records), the bar falls back to pointing at
+    // contact — same as the pricing-failure branch below.
     if (isV1Archive) {
       return (
         <div
@@ -5144,14 +5212,30 @@ const BottomCTABar = React.memo(
           style={barStyle}
           className="z-20 fixed w-full md:w-[48%] bottom-0 flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3 flex items-center justify-between"
         >
-          <p className="ttw-type-body text-[#6E757A]">
-            Get in touch for pricing
-          </p>
+          {archivePrice ? (
+            <div className="flex flex-col">
+              <span className="font-mono text-[10px] md:text-[11px] font-semibold uppercase tracking-[0.06em] text-[#8A9099]">
+                {archivePrice.perPerson ? "Per Person" : "Total Cost"}
+              </span>
+              <span className="font-sans text-[16px] md:text-[21px] font-bold leading-tight text-[#111827] whitespace-nowrap">
+                {currencySymbols[archivePrice.code] || "₹"}
+                {formatCurrencyValue(
+                  Math.round(archivePrice.amount),
+                  archivePrice.code,
+                )}
+                /-
+              </span>
+            </div>
+          ) : (
+            <p className="ttw-type-body text-[#6E757A]">
+              Get in touch for pricing
+            </p>
+          )}
           <button
-            onClick={onGetInTouch}
+            onClick={onGetThisTrip}
             className="flex items-center gap-2 h-[44px] px-4 rounded-[8px] bg-[#F7E700] ttw-type-body font-inter !font-semibold"
           >
-            Get in touch!
+            Get this trip!
           </button>
         </div>
       );

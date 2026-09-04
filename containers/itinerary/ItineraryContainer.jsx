@@ -287,6 +287,10 @@ const ItineraryContainer = (props) => {
   const transfersSuccessRef = useRef(false);
   const hotelsSuccessRef = useRef(false);
   const galleryFetchedRef = useRef(false);
+  // Set the moment the archive loads. The gallery fetch is kicked off from the
+  // status poll, which can resolve before the archive does, so reading the Redux
+  // flag there would sometimes miss and leave the dates in the captions.
+  const isV1ArchiveRef = useRef(false);
   const fetchDataRef = useRef(null);
   const instanceIdRef = useRef(0);
 
@@ -391,6 +395,22 @@ const ItineraryContainer = (props) => {
     };
   };
 
+  // Gallery captions are composed by Mercury and carry the trip's original
+  // dates — "Calangute, June 30, 2025 - July 1, 2025". On an archive those are
+  // years past, so the trailing date range is dropped and only the place is
+  // kept. A trailing ", None" (Mercury's placeholder where a POI has no date)
+  // goes with it.
+  const stripCaptionDates = (caption) => {
+    if (typeof caption !== "string") return caption;
+    return caption
+      .replace(
+        /,\s*[A-Z][a-z]+ \d{1,2}, \d{4}(\s*-\s*[A-Z][a-z]+ \d{1,2}, \d{4})?\s*$/,
+        "",
+      )
+      .replace(/,\s*None\s*$/, "")
+      .trim();
+  };
+
   const fetchGallery = async () => {
     // Idempotent: gallery is itinerary-scoped, so fetch it once per itinerary.
     // It's triggered early (as soon as the ITINERARY task succeeds in
@@ -404,8 +424,15 @@ const ItineraryContainer = (props) => {
       const response = await axios.get(
         `${MERCURY_HOST}/api/v1/itinerary/${props.id}/gallery/`
       );
-      setGallery(response.data);
-      dispatch(setGalleryImages(response.data));
+      const images = isV1ArchiveRef.current || props.itinerary?.is_v1_archive
+        ? (response.data || []).map((image) =>
+            image?.caption
+              ? { ...image, caption: stripCaptionDates(image.caption) }
+              : image,
+          )
+        : response.data;
+      setGallery(images);
+      dispatch(setGalleryImages(images));
     } catch (err) {
       console.error("Error fetching gallery:", err);
       // Allow a retry on the next trigger if the fetch failed.
@@ -905,6 +932,7 @@ const fetchStatus = async () => {
         const data = adaptV1ToMercuryShape(snapshot, props.id);
         if (!data || !data.cities?.length) return false;
 
+        isV1ArchiveRef.current = true;
         setShowMercuryItinerary(true);
         dispatch(setItinerary(data));
         props.setItineraryDaybyDay(data);
@@ -934,14 +962,30 @@ const fetchStatus = async () => {
         if (itinerary === "SUCCESS" && !itinerarySuccessRef.current) {
           if (true) window.scrollTo(0, 0);
           itinerarySuccessRef.current = true;
+
+          // The archive decides whether this is a V1 itinerary — not Mercury's
+          // `version` field. Mercury reports roughly two in three archived
+          // itineraries as "v2" even though they were exported out of the V1
+          // system and carry `version: "v1"` in the export itself, so gating on
+          // that field left those rendering from the live detail API. That is
+          // the worse copy: for the same ids Mercury returns HOTELS and
+          // TRANSFERS as FAILURE, so the stays and transfers the archive still
+          // holds come back missing.
+          //
+          // Presence in the bucket is the reliable signal — it holds the V1
+          // export and nothing else.
+          //
+          // The archive is resolved BEFORE the detail request is made, not
+          // alongside it: an archived itinerary must not touch the itinerary
+          // detail endpoint at all. Firing both and discarding the loser still
+          // issues the call. The cost is one serial edge lookup on a live
+          // itinerary, where the archive 404s from the nearest CloudFront POP.
+          if (await loadArchivedV1()) return;
+
           const res = await axiosGetItinerary.get(`/${props.id}/`);
           const data = res.data;
 
-          if (data?.version === "v1" || !data) {
-            // Render the archived copy through this view; only drop to the
-            // retired V1 layout if the archive doesn't have it either.
-            if (await loadArchivedV1()) return;
-
+          if (!data) {
             setShowMercuryItinerary(false);
             setItineraryLoading(false);
             setOldOne(true);
