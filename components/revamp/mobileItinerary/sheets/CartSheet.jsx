@@ -603,10 +603,10 @@ export default function CartSheet({
             <div className="text-sm font-400 leading-xl mb-sm text-[#01202B]">
               Enhance Your Trip
             </div>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-3">
               <button
                 type="button"
-                className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-[#E5E5E5] bg-white"
+                className="w-full flex items-center justify-between px-4 py-3 rounded-lg border border-[#e6e8ec] bg-white shadow-[0_4px_34px_1px_rgba(195,195,195,0.25)]"
                 onClick={() => setShowVisaDrawer(true)}
               >
                 <div className="flex items-center gap-3">
@@ -632,7 +632,7 @@ export default function CartSheet({
 
               <button
                 type="button"
-                className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-[#E5E5E5] bg-white"
+                className="w-full flex items-center justify-between px-4 py-3 rounded-lg border border-[#e6e8ec] bg-white shadow-[0_4px_34px_1px_rgba(195,195,195,0.25)]"
                 onClick={() => setShowEsimDrawer(true)}
               >
                 <div className="flex items-center gap-3">
@@ -737,9 +737,12 @@ export default function CartSheet({
         onApplied={onCouponApplied}
       />
 
-      {/* The drawers the imported sections open. All three portal to <body> at
-          z 1710, above this sheet's 1620. */}
+      {/* The visa and eSIM pickers. Shared with desktop, where they are
+          right-anchored drawers; `variant="sheet"` renders the same views as
+          bottom sheets so they stack on this one (search 1700, its detail
+          1710) rather than sliding in over it. */}
       <VisaSearchDrawer
+        variant="sheet"
         show={showVisaDrawer}
         onHide={() => setShowVisaDrawer(false)}
         onAdded={(booking, replaceId) => {
@@ -754,6 +757,7 @@ export default function CartSheet({
       />
 
       <EsimPackagesDrawer
+        variant="sheet"
         show={showEsimDrawer}
         onHide={() => setShowEsimDrawer(false)}
         onAdded={(booking, replaceId) => {

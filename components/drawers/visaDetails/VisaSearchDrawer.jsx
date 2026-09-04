@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
-import Image from "next/image";
-import Drawer from "../../ui/Drawer";
+import AncillaryShell from "../AncillaryShell";
 import { visaSearch } from "../../../services/ancillaries/visaServices";
 import { getIndianPrice } from "../../../services/getIndianPrice";
 import { currencySymbols } from "../../../data/currencySymbols";
@@ -93,7 +92,7 @@ const VisaCard = ({ visa, onSelect, currency }) => {
   );
 };
 
-export default function VisaSearchDrawer({ show, onHide, onBooked, onAdded, onRemoved, bookingId, zIndex = 1700 }) {
+export default function VisaSearchDrawer({ show, onHide, onBooked, onAdded, onRemoved, bookingId, zIndex = 1700, variant = "drawer" }) {
   const router = useRouter();
   const itineraryId = useSelector((state) => state.ItineraryId) || router.query?.id;
   const itinerary = useSelector((state) => state.Itinerary);
@@ -173,148 +172,127 @@ export default function VisaSearchDrawer({ show, onHide, onBooked, onAdded, onRe
     setShowDetail(true);
   };
 
+  const hasFilters =
+    filterOptions.purposes.length > 0 ||
+    filterOptions.processing_types.length > 0 ||
+    filterOptions.categories.length > 0 ||
+    filterOptions.entry_types.length > 0;
+
+  // On the sheet the filter row would eat the little height a bottom sheet has
+  // before the first card; it scrolls with the list instead of pinning.
+  const filterControls = hasFilters ? (
+    <div className="flex flex-wrap gap-2">
+      {filterOptions.purposes.length > 0 && (
+        <select
+          className="px-3 py-2 rounded-lg bg-[#f4f3ec] border border-[#ececec] text-[#0b1220] ttw-type-small font-medium"
+          value={filters.purpose}
+          onChange={(e) => handleFilterChange("purpose", e.target.value)}
+        >
+          <option value="">All Purposes</option>
+          {filterOptions.purposes.map((p) => (
+            <option key={p} value={p}>{p}</option>
+          ))}
+        </select>
+      )}
+      {filterOptions.processing_types.length > 0 && (
+        <select
+          className="px-3 py-2 rounded-lg bg-[#f4f3ec] border border-[#ececec] text-[#0b1220] ttw-type-small font-medium"
+          value={filters.processing_type}
+          onChange={(e) => handleFilterChange("processing_type", e.target.value)}
+        >
+          <option value="">All Processing Types</option>
+          {filterOptions.processing_types.map((p) => (
+            <option key={p} value={p}>{p}</option>
+          ))}
+        </select>
+      )}
+      {filterOptions.categories.length > 0 && (
+        <select
+          className="px-3 py-2 rounded-lg bg-[#f4f3ec] border border-[#ececec] text-[#0b1220] ttw-type-small font-medium"
+          value={filters.category}
+          onChange={(e) => handleFilterChange("category", e.target.value)}
+        >
+          <option value="">All Categories</option>
+          {filterOptions.categories.map((c) => (
+            <option key={c} value={c}>{c}</option>
+          ))}
+        </select>
+      )}
+      {filterOptions.entry_types.length > 0 && (
+        <select
+          className="px-3 py-2 rounded-lg bg-[#f4f3ec] border border-[#ececec] text-[#0b1220] ttw-type-small font-medium"
+          value={filters.entry_type}
+          onChange={(e) => handleFilterChange("entry_type", e.target.value)}
+        >
+          <option value="">All Entry Types</option>
+          {filterOptions.entry_types.map((e) => (
+            <option key={e} value={e}>{e}</option>
+          ))}
+        </select>
+      )}
+    </div>
+  ) : null;
+
   return (
     <>
-      <Drawer
+      <AncillaryShell
+        variant={variant}
         show={show}
-        anchor="right"
-        backdrop
-        width="50%"
-        mobileWidth="100%"
-        bgColor="#ffffff"
-        style={{ zIndex }}
-        className="!overflow-y-hidden"
         onHide={onHide}
+        zIndex={zIndex}
+        title="Add Visa"
+        subtitle={
+          !loading && visas.length > 0
+            ? `${visas.length} visa option${visas.length !== 1 ? "s" : ""}`
+            : null
+        }
+        stickyHeader={filterControls}
       >
-        <div className="overflow-y-scroll h-screen px-6 max-ph:px-4">
-          {/* Header */}
-          <div className="py-4 bg-white z-[900] flex flex-col gap-3 pb-2 sticky top-0">
-            {/* Back arrow and title share one line, same as the other search
-                drawers (activityAddDrawer et al.) */}
-            <div className="flex flex-row items-center gap-3 w-full">
-              <Image
-                src="/backarrow.svg"
-                className="cursor-pointer shrink-0"
-                width={22}
-                height={2}
-                alt="Back"
-                onClick={onHide}
-              />
-              <div className="flex-1 min-w-0 line-clamp-1 ttw-type-h4 md:ttw-type-h3 font-600 text-[#0b1220]">
-                Add Visa
-              </div>
-            </div>
-
-            {/* Filters */}
-            {(filterOptions.purposes.length > 0 ||
-              filterOptions.processing_types.length > 0 ||
-              filterOptions.categories.length > 0 ||
-              filterOptions.entry_types.length > 0) && (
-              <div className="flex flex-wrap gap-2">
-                {filterOptions.purposes.length > 0 && (
-                  <select
-                    className="px-3 py-2 rounded-lg bg-[#f4f3ec] border border-[#ececec] text-[#0b1220] ttw-type-small font-medium"
-                    value={filters.purpose}
-                    onChange={(e) => handleFilterChange("purpose", e.target.value)}
-                  >
-                    <option value="">All Purposes</option>
-                    {filterOptions.purposes.map((p) => (
-                      <option key={p} value={p}>{p}</option>
-                    ))}
-                  </select>
-                )}
-                {filterOptions.processing_types.length > 0 && (
-                  <select
-                    className="px-3 py-2 rounded-lg bg-[#f4f3ec] border border-[#ececec] text-[#0b1220] ttw-type-small font-medium"
-                    value={filters.processing_type}
-                    onChange={(e) => handleFilterChange("processing_type", e.target.value)}
-                  >
-                    <option value="">All Processing Types</option>
-                    {filterOptions.processing_types.map((p) => (
-                      <option key={p} value={p}>{p}</option>
-                    ))}
-                  </select>
-                )}
-                {filterOptions.categories.length > 0 && (
-                  <select
-                    className="px-3 py-2 rounded-lg bg-[#f4f3ec] border border-[#ececec] text-[#0b1220] ttw-type-small font-medium"
-                    value={filters.category}
-                    onChange={(e) => handleFilterChange("category", e.target.value)}
-                  >
-                    <option value="">All Categories</option>
-                    {filterOptions.categories.map((c) => (
-                      <option key={c} value={c}>{c}</option>
-                    ))}
-                  </select>
-                )}
-                {filterOptions.entry_types.length > 0 && (
-                  <select
-                    className="px-3 py-2 rounded-lg bg-[#f4f3ec] border border-[#ececec] text-[#0b1220] ttw-type-small font-medium"
-                    value={filters.entry_type}
-                    onChange={(e) => handleFilterChange("entry_type", e.target.value)}
-                  >
-                    <option value="">All Entry Types</option>
-                    {filterOptions.entry_types.map((e) => (
-                      <option key={e} value={e}>{e}</option>
-                    ))}
-                  </select>
-                )}
-              </div>
-            )}
-
-            {!loading && (
-              <div className="ttw-type-body text-[#445069]">
-                {visas.length > 0 ? `Showing ${visas.length} visa option${visas.length !== 1 ? "s" : ""}` : ""}
-              </div>
-            )}
-          </div>
-
-          {/* Content */}
-          {loading ? (
-            <div className="flex flex-col gap-3 mt-2">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="rounded-2xl border border-[#ececec] p-4 animate-pulse">
-                  <div className="flex gap-4">
-                    <div className="w-[80px] h-[60px] bg-gray-200 rounded-xl flex-shrink-0" />
-                    <div className="flex-1 space-y-2">
-                      <div className="h-4 bg-gray-200 rounded w-3/4" />
-                      <div className="h-3 bg-gray-200 rounded w-1/2" />
-                      <div className="h-3 bg-gray-200 rounded w-1/4" />
-                    </div>
+        {/* Content */}
+        {loading ? (
+          <div className="flex flex-col gap-3 mt-2">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="rounded-2xl border border-[#ececec] p-4 animate-pulse">
+                <div className="flex gap-4">
+                  <div className="w-[80px] h-[60px] bg-gray-200 rounded-xl flex-shrink-0" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 bg-gray-200 rounded w-3/4" />
+                    <div className="h-3 bg-gray-200 rounded w-1/2" />
+                    <div className="h-3 bg-gray-200 rounded w-1/4" />
                   </div>
                 </div>
-              ))}
-            </div>
-          ) : error ? (
-            <div className="flex flex-col items-center justify-center mt-16 gap-3">
-              <div className="text-[#445069] text-center">{error}</div>
-              <button
-                className="bg-[#f7e700] border border-black text-black px-4 py-2 rounded-lg ttw-type-body-strong"
-                onClick={() => fetchVisas()}
-              >
-                Retry
-              </button>
-            </div>
-          ) : visas.length === 0 ? (
-            <div className="flex flex-col items-center justify-center mt-16 gap-2">
-              <div className="text-[#445069] text-center">
-                No visa options available for this itinerary.
               </div>
+            ))}
+          </div>
+        ) : error ? (
+          <div className="flex flex-col items-center justify-center mt-16 gap-3">
+            <div className="text-[#445069] text-center">{error}</div>
+            <button
+              className="bg-[#f7e700] border border-black text-black px-4 py-2 rounded-lg ttw-type-body-strong"
+              onClick={() => fetchVisas()}
+            >
+              Retry
+            </button>
+          </div>
+        ) : visas.length === 0 ? (
+          <div className="flex flex-col items-center justify-center mt-16 gap-2">
+            <div className="text-[#445069] text-center">
+              No visa options available for this itinerary.
             </div>
-          ) : (
-            <div className="pb-8">
-              {visas.map((visa, i) => (
-                <VisaCard
-                  key={visa?.id || i}
-                  visa={visa}
-                  onSelect={handleSelectVisa}
-                  currency={currency}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      </Drawer>
+          </div>
+        ) : (
+          <div>
+            {visas.map((visa, i) => (
+              <VisaCard
+                key={visa?.id || i}
+                visa={visa}
+                onSelect={handleSelectVisa}
+                currency={currency}
+              />
+            ))}
+          </div>
+        )}
+      </AncillaryShell>
 
       <SearchLoaderOverlay
         isVisible={show && loading}
@@ -328,6 +306,7 @@ export default function VisaSearchDrawer({ show, onHide, onBooked, onAdded, onRe
           visa={selectedVisa}
           bookingId={bookingId}
           drawerZIndex={zIndex + 10}
+          variant={variant}
           onHide={() => setShowDetail(false)}
           onAdded={onAdded}
           onRemoved={onRemoved}

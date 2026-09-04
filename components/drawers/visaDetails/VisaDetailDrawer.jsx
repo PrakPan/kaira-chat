@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import { PulseLoader } from "react-spinners";
-import Drawer from "../../ui/Drawer";
+import AncillaryShell from "../AncillaryShell";
 import BookingDetailHeader from "../../revamp/common/components/BookingDetailHeader";
 import BookingDetailActions from "../../revamp/common/components/BookingDetailActions";
 import { visaDetail, visaBooking } from "../../../services/ancillaries/visaServices";
@@ -15,7 +15,7 @@ import { currencySymbols } from "../../../data/currencySymbols";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 import VisaSearchDrawer from "./VisaSearchDrawer";
 
-export default function VisaDetailDrawer({ show, visa, onHide, onBooked, onAdded, onRemoved, bookingId, drawerZIndex = 1710, showManageActions = false }) {
+export default function VisaDetailDrawer({ show, visa, onHide, onBooked, onAdded, onRemoved, bookingId, drawerZIndex = 1710, showManageActions = false, variant = "drawer" }) {
   const router = useRouter();
   const dispatch = useDispatch();
   // sessionId is how the chat itinerary route carries the same id.
@@ -247,27 +247,56 @@ export default function VisaDetailDrawer({ show, visa, onHide, onBooked, onAdded
     { label: "Validity", value: formatPeriod(displayVisa?.validity) },
   ].filter((fact) => fact.value);
 
+  // The detail endpoint's payload does NOT always carry `text` — the name is
+  // the search row's. Falling through to the `visa` prop keeps the title (and
+  // with it the sheet's ✕, which Sheet only draws when there IS a title) from
+  // vanishing the moment the quote lands.
+  const heading =
+    displayVisa?.text || visa?.text || bookingDetail?.name || "Visa details";
+
+  // The CTA is the shell's footer — Sheet's footer slot on the phone, a sticky
+  // bar inside the drawer on desktop. Shown for a loaded booking in manage
+  // mode; otherwise the quote's traceId, falling back to visa.id.
+  const canAct =
+    !loading &&
+    !error &&
+    Boolean(isBookingDetail ? bookingDetail : traceId || displayVisa?.id);
+
+  const cta = canAct ? (
+    showManageActions ? (
+      <BookingDetailActions
+        onDelete={handleRemove}
+        deleting={removing}
+        deleteLabel="Remove from Itinerary"
+        confirmItemLabel="visa"
+        onChange={() => setShowSearch(true)}
+        changeLabel="Change Visa"
+        changeDisabled={removing}
+      />
+    ) : (
+      <button
+        className="w-full bg-[#f7e700] text-black font-500 ttw-type-body py-3 rounded-xl flex items-center justify-center gap-2 disabled:opacity-60"
+        onClick={handleBook}
+        disabled={booking}
+      >
+        {booking ? <PulseLoader size={8} color="#000" /> : "Add Visa to Cart"}
+      </button>
+    )
+  ) : null;
+
   return (
     <>
-    <Drawer
+    <AncillaryShell
+      variant={variant}
       show={show}
-      anchor="right"
-      backdrop
-      width="50%"
-      mobileWidth="100%"
-      bgColor="#ffffff"
-      style={{ zIndex: drawerZIndex }}
-      className="!overflow-y-hidden"
       onHide={onHide}
+      zIndex={drawerZIndex}
+      title={heading}
+      footer={cta}
+      drawerHeader={
+        <BookingDetailHeader title={heading} loading={loading} onBack={onHide} />
+      }
     >
-      <div className="h-screen flex flex-col overflow-hidden">
-        <div className="overflow-y-scroll flex-1 px-6 max-ph:px-4 pb-24">
-          <BookingDetailHeader
-            title={displayVisa?.text || bookingDetail?.name}
-            loading={loading}
-            onBack={onHide}
-          />
-
           {loading ? (
             <div className="flex flex-col gap-4 mt-2">
               <div className="w-full h-[200px] bg-gray-200 rounded-2xl animate-pulse" />
@@ -524,41 +553,14 @@ export default function VisaDetailDrawer({ show, visa, onHide, onBooked, onAdded
               )}
             </>
           )}
-        </div>
-
-        {/* Sticky CTA — a loaded booking in manage mode; otherwise the quote's
-            traceId, falling back to visa.id */}
-        {!loading && !error && (isBookingDetail ? !!bookingDetail : traceId || displayVisa?.id) && (
-          <div className="sticky bottom-0 z-10 border-t border-[#ececec] px-6 max-ph:px-4 py-4 bg-white">
-            {showManageActions ? (
-              <BookingDetailActions
-                onDelete={handleRemove}
-                deleting={removing}
-                deleteLabel="Remove from Itinerary"
-                confirmItemLabel="visa"
-                onChange={() => setShowSearch(true)}
-                changeLabel="Change Visa"
-                changeDisabled={removing}
-              />
-            ) : (
-              <button
-                className="w-full bg-[#f7e700] text-black font-500 ttw-type-body py-3 rounded-xl flex items-center justify-center gap-2 disabled:opacity-60"
-                onClick={handleBook}
-                disabled={booking}
-              >
-                {booking ? <PulseLoader size={8} color="#000" /> : "Add Visa to Cart"}
-              </button>
-            )}
-          </div>
-        )}
-      </div>
-    </Drawer>
+    </AncillaryShell>
 
     {showSearch && (
       <VisaSearchDrawer
         show={showSearch}
         bookingId={bookingId}
         zIndex={drawerZIndex + 10}
+        variant={variant}
         onHide={() => setShowSearch(false)}
         onAdded={onAdded}
         onRemoved={onRemoved}

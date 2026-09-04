@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
-import Image from "next/image";
-import Drawer from "../../ui/Drawer";
+import AncillaryShell from "../AncillaryShell";
 import { esimPackages } from "../../../services/ancillaries/esimServices";
 import { getIndianPrice } from "../../../services/getIndianPrice";
 import { currencySymbols } from "../../../data/currencySymbols";
@@ -92,7 +91,7 @@ const EsimCard = ({ pkg, onSelect, currency }) => {
   );
 };
 
-export default function EsimPackagesDrawer({ show, onHide, onBooked, onAdded, onRemoved, bookingId, zIndex = 1700 }) {
+export default function EsimPackagesDrawer({ show, onHide, onBooked, onAdded, onRemoved, bookingId, zIndex = 1700, variant = "drawer" }) {
   const router = useRouter();
   const itineraryId = useSelector((state) => state.ItineraryId) || router.query?.id;
   const currency = useSelector((state) => state.currency);
@@ -148,100 +147,74 @@ export default function EsimPackagesDrawer({ show, onHide, onBooked, onAdded, on
 
   return (
     <>
-      <Drawer
+      <AncillaryShell
+        variant={variant}
         show={show}
-        anchor="right"
-        backdrop
-        width="50%"
-        mobileWidth="100%"
-        bgColor="#ffffff"
-        style={{ zIndex }}
-        className="!overflow-y-hidden"
         onHide={onHide}
+        zIndex={zIndex}
+        title="Add eSIM"
+        subtitle={
+          !loading && packages.length > 0
+            ? meta?.total
+              ? `${packages.length} of ${meta.total} package${meta.total !== 1 ? "s" : ""} available`
+              : `${packages.length} package${packages.length !== 1 ? "s" : ""} available`
+            : null
+        }
       >
-        <div className="overflow-y-scroll h-screen px-6 max-ph:px-4">
-          {/* Header */}
-          <div className="py-4 bg-white z-[900] flex flex-col gap-3 pb-2 sticky top-0">
-            {/* Back arrow and title share one line, same as the other search
-                drawers (activityAddDrawer et al.) */}
-            <div className="flex flex-row items-center gap-3 w-full">
-              <Image
-                src="/backarrow.svg"
-                className="cursor-pointer shrink-0"
-                width={22}
-                height={2}
-                alt="Back"
-                onClick={onHide}
-              />
-              <div className="flex-1 min-w-0 line-clamp-1 ttw-type-h4 md:ttw-type-h3 font-600 text-[#0b1220]">
-                Add eSIM
-              </div>
-            </div>
-
-            {!loading && packages.length > 0 && (
-              <div className="ttw-type-body text-[#445069]">
-                {meta?.total
-                  ? `${packages.length} of ${meta.total} package${meta.total !== 1 ? "s" : ""} available`
-                  : `${packages.length} package${packages.length !== 1 ? "s" : ""} available`}
-              </div>
-            )}
-          </div>
-
-          {/* Content */}
-          {loading ? (
-            <div className="flex flex-col gap-3 mt-2">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="rounded-2xl border border-[#ececec] p-4 animate-pulse">
-                  <div className="flex gap-4">
-                    <div className="w-[70px] h-[50px] bg-gray-200 rounded-xl flex-shrink-0" />
-                    <div className="flex-1 space-y-2">
-                      <div className="h-4 bg-gray-200 rounded w-3/4" />
-                      <div className="h-3 bg-gray-200 rounded w-1/2" />
-                      <div className="h-3 bg-gray-200 rounded w-1/4" />
-                    </div>
+        {/* Content */}
+        {loading ? (
+          <div className="flex flex-col gap-3 mt-2">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="rounded-2xl border border-[#ececec] p-4 animate-pulse">
+                <div className="flex gap-4">
+                  <div className="w-[70px] h-[50px] bg-gray-200 rounded-xl flex-shrink-0" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 bg-gray-200 rounded w-3/4" />
+                    <div className="h-3 bg-gray-200 rounded w-1/2" />
+                    <div className="h-3 bg-gray-200 rounded w-1/4" />
                   </div>
                 </div>
-              ))}
-            </div>
-          ) : error ? (
-            <div className="flex flex-col items-center justify-center mt-16 gap-3">
-              <div className="text-[#445069] text-center">{error}</div>
-              <button
-                className="bg-[#f7e700] border border-black text-black px-4 py-2 rounded-lg ttw-type-body-strong"
-                onClick={() => fetchPackages(1, false)}
-              >
-                Retry
-              </button>
-            </div>
-          ) : packages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center mt-16 gap-2">
-              <div className="text-[#445069] text-center">
-                No eSIM packages found for this itinerary.
               </div>
+            ))}
+          </div>
+        ) : error ? (
+          <div className="flex flex-col items-center justify-center mt-16 gap-3">
+            <div className="text-[#445069] text-center">{error}</div>
+            <button
+              className="bg-[#f7e700] border border-black text-black px-4 py-2 rounded-lg ttw-type-body-strong"
+              onClick={() => fetchPackages(1, false)}
+            >
+              Retry
+            </button>
+          </div>
+        ) : packages.length === 0 ? (
+          <div className="flex flex-col items-center justify-center mt-16 gap-2">
+            <div className="text-[#445069] text-center">
+              No eSIM packages found for this itinerary.
             </div>
-          ) : (
-            <div className="pb-8">
-              {packages.map((pkg, i) => (
-                <EsimCard
-                  key={pkg?.id || i}
-                  pkg={pkg}
-                  onSelect={(p) => { setSelectedPackage(p); setShowDetail(true); }}
-                  currency={currency}
-                />
-              ))}
-              {meta?.has_next && (
-                <button
-                  onClick={handleLoadMore}
-                  disabled={loadingMore}
-                  className="w-full mt-4 py-3 rounded-xl border border-[#ececec] ttw-type-small font-500 text-[#0b1220] hover:bg-[#f4f3ec] transition-colors disabled:opacity-50"
-                >
-                  {loadingMore ? "Loading..." : `Load more (${meta.total - packages.length} remaining)`}
-                </button>
-              )}
-            </div>
-          )}
-        </div>
-      </Drawer>
+          </div>
+        ) : (
+          <div>
+            {packages.map((pkg, i) => (
+              <EsimCard
+                key={pkg?.id || i}
+                pkg={pkg}
+                onSelect={(p) => { setSelectedPackage(p); setShowDetail(true); }}
+                currency={currency}
+              />
+            ))}
+            {meta?.has_next && (
+              <button
+                onClick={handleLoadMore}
+                disabled={loadingMore}
+                className="w-full mt-4 py-3 rounded-xl border border-[#ececec] ttw-type-small font-500 text-[#0b1220] hover:bg-[#f4f3ec] transition-colors disabled:opacity-50"
+              >
+                {loadingMore ? "Loading..." : `Load more (${meta.total - packages.length} remaining)`}
+              </button>
+            )}
+          </div>
+        )}
+      </AncillaryShell>
 
       <SearchLoaderOverlay
         isVisible={show && loading}
@@ -255,6 +228,7 @@ export default function EsimPackagesDrawer({ show, onHide, onBooked, onAdded, on
           pkg={selectedPackage}
           bookingId={bookingId}
           drawerZIndex={zIndex + 10}
+          variant={variant}
           onHide={() => setShowDetail(false)}
           onAdded={onAdded}
           onRemoved={onRemoved}
