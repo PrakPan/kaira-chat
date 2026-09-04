@@ -64,10 +64,15 @@ function CouponCard({ coupon, applied, applying, disabled, onApply }) {
           {/* The dashed chip is what a coupon code looks like on every surface
               this app has — kept, at phone type sizes. */}
           <span
-            className={`inline-block rounded-[3px] border border-dashed px-[12px] py-[5px] text-[13.5px] font-[600] ${
-              unavailable
-                ? "border-[#c3c8d2] text-[#8a93a6]"
-                : "border-[#0b1220] text-[#0b1220]"
+            // Inline, like every other bordered thing on this surface: the
+            // app's global CSS overrides a Tailwind `border` on a span, and the
+            // chip lost the dashes that make it read as a coupon.
+            style={{
+              border: `1px dashed ${unavailable ? "#c3c8d2" : "#0b1220"}`,
+              borderRadius: 3,
+            }}
+            className={`inline-block px-[12px] py-[5px] text-[13.5px] font-[600] ${
+              unavailable ? "text-[#8a93a6]" : "text-[#0b1220]"
             }`}
           >
             {coupon.code}

@@ -5,7 +5,6 @@ import PolicyNote from "../../../common/components/bookingDetail/PolicyNote";
 import { dateFormat } from "../../../../../helper/DateUtils";
 import { getHumanTime } from "../../../../../services/getHumanTime";
 import { MERCURY_HOST } from "../../../../../services/constants";
-import StarGlyph from "../../../common/components/bookingDetail/StarGlyph";
 import useBookingDetail from "./useBookingDetail";
 import {
   Bullets,
@@ -148,44 +147,6 @@ function Description({ html, facilities }) {
       ))}
       {ownAmenitySection}
     </>
-  );
-}
-
-/**
- * The hotel's class, under the photos — where the guest score and its review
- * count used to sit. A 4.3 out of 116 reviews is a different fact from a
- * three-star property, and the two side by side read as one contradictory
- * number; the class is what this itinerary was sold on, so it is the one fact
- * the line states.
- *
- * "3★ Hotel", written the way the sheet's header writes it — a number and one
- * glyph — rather than counted out in three star icons: a row of glyphs is a
- * guest rating everywhere else on the web, which is exactly the reading this
- * line is not making.
- */
-function HotelClass({ stars }) {
-  const value = Number(stars);
-  if (!(value > 0)) return null;
-
-  return (
-    <div
-      className="px-4 pb-[10px] text-[13px] font-[700] text-[#0b1220]"
-      // The glyph is hidden from screen readers, so the line names itself —
-      // otherwise it is announced as "3 Hotel".
-      aria-label={`${value}-star hotel`}
-    >
-      {value}
-      {/* The same drawn star the header uses, sized up from the 13px it sits
-          in and centred on the numeral rather than on a fallback font's
-          baseline. */}
-      <StarGlyph
-        size={14}
-        textSize={13}
-        className="text-[#f7e700]"
-        style={{ marginLeft: 1.5 }}
-      />{" "}
-      Hotel
-    </div>
   );
 }
 
@@ -401,14 +362,13 @@ export default function StayDetail({ bookingId }) {
         alt={hotel?.name}
       />
 
-      <HotelClass stars={data?.star_category} />
-
       <FactChips
         className="px-4 pb-4"
         padded={false}
         facts={[
-          // No CLASS chip: the stars under the photos already count it out, and
-          // "3-star" a few lines below three gold stars is the same fact twice.
+          // No CLASS chip: the sheet's own header states it — "3★ HOTEL",
+          // above the name — and a chip repeating it here is the same fact
+          // twice on one screen.
           { label: "Nights", value: data?.duration || null },
           { label: "Rooms", value: roomCount || null },
           { label: "Guests", value: guests || null },

@@ -837,7 +837,8 @@ const CouponSection = ({
 };
 
 // 4. Price Details Component (Add after coupon section)
-const PriceDetails = ({
+// Exported for the phone's "Review & pay" sheet — see ItineraryInclusions.
+export const PriceDetails = ({
   itineraryCost,
   lockInCost,
   couponDiscount,
@@ -1013,7 +1014,11 @@ const PaymentButton = ({
   );
 };
 
-const ItineraryInclusions = ({
+// Exported so the phone's "Review & pay" sheet renders the SAME breakdown this
+// drawer does (components/revamp/mobileItinerary/sheets/CartSheet). It is a
+// pure presentational component — every piece of state it needs arrives as a
+// prop — so the two surfaces cannot drift.
+export const ItineraryInclusions = ({
   Cart,
   selectedInclusions,
   onToggleInclusion,
@@ -1671,18 +1676,59 @@ const Details = (props) => {
   //
   // Guarded so it fires once per open: re-firing would POST /payment/initiate/
   // again and mint a second order.
+  //
+  // Firing it was not enough on its own: this drawer still MOUNTED on the cart
+  // while the initiate call was in flight, and stayed there under the gateway —
+  // so tapping "Pay now" on the sheet put the traveller straight back on the
+  // screen they had just finished with. On an auto-started payment this drawer
+  // paints NOTHING (see `hideCartForAutoPay`); it is the payment engine, and
+  // the phone's own sheet stays up as the screen behind the gateway.
+  //
+  // Latched for the life of this mount rather than read live: the caller clears
+  // `autoStartPayment` as soon as the attempt stops (so its own button stops
+  // reading as busy), and reading the flag directly would let the cart screen
+  // paint at exactly that moment. Every open bumps `paymentDrawerKey` and
+  // remounts, so each open gets its own latch.
+  const autoPayMountRef = useRef(!!props?.autoStartPayment);
+  const hideCartForAutoPay = autoPayMountRef.current;
+
   const autoPayFiredRef = useRef(false);
   useEffect(() => {
-    if (!props?.autoStartPayment) {
-      autoPayFiredRef.current = false;
+    if (!autoPayMountRef.current) return;
+    if (autoPayFiredRef.current) return;
+    // Still waiting on the cart, or on this drawer's own open — nothing has
+    // failed, so come back on the next change.
+    if (!Cart?.id || !showDetailedPayment) return;
+    // Nothing to charge: there is no gateway to send anyone to. Hand back
+    // rather than revealing a cart the traveller did not ask to see.
+    if (calculateFilteredTotal() === 0) {
+      autoPayFiredRef.current = true;
+      props.onAutoPayEnded?.("nothing-to-pay");
       return;
     }
-    if (autoPayFiredRef.current) return;
-    if (!Cart?.id || !showDetailedPayment) return;
-    if (calculateFilteredTotal() === 0) return;
     autoPayFiredRef.current = true;
     handlePayNow("full");
   }, [props?.autoStartPayment, Cart?.id, showDetailedPayment]);
+
+  // The auto-started attempt has settled — hand back to whoever started it.
+  //
+  // `paymentLoading` spans the WHOLE attempt: set at the top of
+  // _fullPaymentHandler, and cleared on every exit it has, including Razorpay's
+  // own `ondismiss` and the verify call that follows a successful payment. So
+  // this fires once, when the traveller is done with the gateway one way or the
+  // other, and the caller takes the drawer down.
+  const payAttemptStartedRef = useRef(false);
+  useEffect(() => {
+    if (!autoPayMountRef.current) return;
+    if (paymentLoading) {
+      payAttemptStartedRef.current = true;
+      return;
+    }
+    if (payAttemptStartedRef.current) {
+      payAttemptStartedRef.current = false;
+      props.onAutoPayEnded?.("settled");
+    }
+  }, [paymentLoading]);
 
   useEffect(() => {
     if (Cart?.summary) {
@@ -2417,6 +2463,10 @@ const Details = (props) => {
       Itinerary.travellers.length === 0
     ) {
       setTravellerDetailsOpen(true);
+      // An auto-started payment stops HERE rather than at the gateway. Tell the
+      // caller so its button stops reading as busy — but the gate is rendered
+      // inside this drawer, so the drawer itself has to stay mounted.
+      if (autoPayMountRef.current) props.onAutoPayEnded?.("traveller-details");
       return;
     }
 
@@ -2686,7 +2736,7 @@ const Details = (props) => {
     <>
       {/* Payment Drawer - shows full pricing + detailed payment when proceeding */}
 
-      {showPaymentDrawer && (
+      {showPaymentDrawer && !hideCartForAutoPay && (
         <Drawer
           show={showPaymentDrawer}
           anchor={"right"}
@@ -3402,7 +3452,11 @@ const Details = (props) => {
 
               return ReactDOM.createPortal(
                 <div
-                  className="fixed bottom-0 left-0 right-0 md:hidden bg-white px-4 pt-3 pb-4 shadow-[0_-2px_12px_rgba(0,0,0,0.08)]"
+                  // `ttw-cart-pay-bar` is what hides it under the phone's own
+                  // bottom sheets — see the `html.ttw-sheet-open` rule in
+                  // styles/globals.css. `anyOverlayOpen` above only knows about
+                  // the overlays this drawer itself owns.
+                  className="ttw-cart-pay-bar fixed bottom-0 left-0 right-0 md:hidden bg-white px-4 pt-3 pb-4 shadow-[0_-2px_12px_rgba(0,0,0,0.08)]"
                   style={{ zIndex: 1650 }}
                 >
                   {showUpdateDates ? (

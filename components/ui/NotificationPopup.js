@@ -7,7 +7,11 @@ import { closeNotification } from "../../store/actions/notification";
 
 const Container = styled.div`
   position: fixed;
-  right: 0px;
+  /* 12px off the edge on a phone, not flush against it: the toast is 94vw
+     wide, so pinning it to right:0 put the whole 6vw gutter on its left and
+     ran its close button into the screen edge. Desktop keeps its 2rem
+     (the md:!right-[2rem] class below). */
+  right: 12px;
   top: ${(props) => (props.show ? "1%" : "-100%")};
   transition: 0.5s top;
   z-index: ${(props) => props.zIndex};
@@ -23,7 +27,8 @@ const PopupContainer = styled.div`
   color: white;
   border-radius: 0.5rem;
   text-align: left;
-  width: 94vw;
+  /* Matching gutters either side, now that the container is inset. */
+  width: calc(100vw - 24px);
   @media screen and (min-width: 768px) {
     width: 32rem;
   }

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import CloseButton from "./CloseButton";
 import Drawer from "../../../ui/Drawer";
 import { lockDocumentScroll } from "../scrollLock";
 
@@ -21,7 +22,34 @@ import { lockDocumentScroll } from "../scrollLock";
 //      false — including on FIRST MOUNT — which fires `onHide` ~100ms after
 //      mount. So this component does not render a Drawer at all until it has
 //      been opened at least once.
+//  It also stamps `html.ttw-sheet-open` for as long as any sheet is up. That is
+//  the signal for anything portaled to <body> ABOVE the itinerary that must not
+//  float over a sheet covering it — today the cart drawer's mobile pay bar
+//  (z 1650; see `.ttw-cart-pay-bar` in styles/globals.css). Reference-counted
+//  for the same reason the scroll lock is: sheets stack, and a detail sheet
+//  closing must not clear the mark its parent still holds.
+//
+//  Deliberately NOT the scroll lock's own class: that one is also held by the
+//  chat and map layers, which the payment drawer opens OVER rather than under.
 // ─────────────────────────────────────────────────────────────────────────────
+
+const SHEET_OPEN_CLASS = "ttw-sheet-open";
+let openSheets = 0;
+
+function markSheetOpen() {
+  if (typeof document === "undefined") return () => {};
+  openSheets += 1;
+  document.documentElement.classList.add(SHEET_OPEN_CLASS);
+  let released = false;
+  return () => {
+    if (released) return;
+    released = true;
+    openSheets = Math.max(0, openSheets - 1);
+    if (openSheets === 0) {
+      document.documentElement.classList.remove(SHEET_OPEN_CLASS);
+    }
+  };
+}
 
 export default function Sheet({
   open,
@@ -51,6 +79,11 @@ export default function Sheet({
   useEffect(() => {
     if (!open) return undefined;
     return lockDocumentScroll();
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return undefined;
+    return markSheetOpen();
   }, [open]);
 
   // Escape closes, matching every other drawer on this surface.
@@ -116,14 +149,7 @@ export default function Sheet({
               ) : null}
             </div>
             {headerRight}
-            <button
-              type="button"
-              onClick={onClose}
-              aria-label="Close"
-              className="flex h-[24px] w-[24px] flex-none items-center justify-center rounded-full border border-[#dcdfe5] bg-white text-[12px] leading-none text-[#6b7280]"
-            >
-              ✕
-            </button>
+            <CloseButton onClick={onClose} />
           </div>
         )}
 

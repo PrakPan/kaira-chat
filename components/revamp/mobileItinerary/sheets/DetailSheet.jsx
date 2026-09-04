@@ -1,6 +1,7 @@
 import React, { useRef } from "react";
 import getModeAccent from "../../common/components/bookingDetail/modeAccent";
 import BookingDetailActions from "../../common/components/BookingDetailActions";
+import CloseButton from "../../common/components/CloseButton";
 import Sheet from "../../common/components/Sheet";
 import LiveDetailBody from "./LiveDetailBody";
 import StarGlyph from "../../common/components/bookingDetail/StarGlyph";
@@ -129,6 +130,10 @@ export default function DetailSheet({
   detail,
   disabled,
   onAskKaira,
+  // 1610 sits above the itinerary (1600) and below the cart (1620), which is
+  // right for a row opened from the trip. A row opened from inside the cart
+  // has to clear the cart instead, so that caller raises it.
+  zIndex = 1610,
 }) {
   // Hold the last descriptor so the sheet still has something to draw while it
   // slides out. The single sheet slot is cleared the instant it closes, and
@@ -157,7 +162,7 @@ export default function DetailSheet({
   };
 
   return (
-    <Sheet open={open} onClose={onClose} height="95dvh" zIndex={1610}>
+    <Sheet open={open} onClose={onClose} height="95dvh" zIndex={zIndex}>
       <div className="flex h-full flex-col">
         <div className="flex-none px-[14px]">
           <div className="flex items-start gap-[12px] border-b border-[#e6e8ec] pb-[11px]">
@@ -219,26 +224,7 @@ export default function DetailSheet({
                 </div>
               ) : null}
             </div>
-            <button
-              type="button"
-              onClick={onClose}
-              aria-label="Close"
-              style={{
-                border: "1px solid #dcdfe5",
-                background: "#ffffff",
-                borderRadius: 999,
-                boxShadow: "none",
-                width: 26,
-                height: 26,
-                color: "#6b7280",
-                fontSize: 13,
-                lineHeight: 1,
-                padding: 0,
-              }}
-              className="flex flex-none items-center justify-center"
-            >
-              ×
-            </button>
+            <CloseButton onClick={onClose} />
           </div>
         </div>
 

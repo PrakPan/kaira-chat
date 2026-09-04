@@ -1,4 +1,5 @@
 import React, { useMemo, useRef, useState } from "react";
+import CloseButton from "../../common/components/CloseButton";
 import Sheet from "../../common/components/Sheet";
 import prompts from "../kairaPrompts";
 
@@ -74,26 +75,7 @@ export default function DaySheet({
                 {d.items.length === 1 ? "" : "S"}
               </div>
             </div>
-            <button
-              type="button"
-              onClick={onClose}
-              aria-label="Close"
-              style={{
-                border: "1px solid #dcdfe5",
-                background: "#ffffff",
-                borderRadius: 999,
-                boxShadow: "none",
-                width: 26,
-                height: 26,
-                color: "#6b7280",
-                fontSize: 13,
-                lineHeight: 1,
-                padding: 0,
-              }}
-              className="flex flex-none items-center justify-center"
-            >
-              ×
-            </button>
+            <CloseButton onClick={onClose} />
           </div>
 
           {/* The rule belongs UNDER the chips, not under the title row. */}

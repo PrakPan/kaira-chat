@@ -1,27 +1,57 @@
 import React, { useMemo } from "react";
-import { shallowEqual, useSelector } from "react-redux";
-import { FaPassport } from "react-icons/fa";
-import {
-  MdOutlineFlightTakeoff,
-  MdOutlineHotel,
-  MdOutlineLocalActivity,
-  MdOutlineLocalOffer,
-  MdOutlineReceiptLong,
-  MdTransferWithinAStation,
-} from "react-icons/md";
+import Link from "next/link";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
+import { format } from "date-fns";
+import { FaPassport, FaSimCard } from "react-icons/fa";
+import { MdOutlineHotel, MdOutlineLocalActivity } from "react-icons/md";
+import { RiWhatsappFill } from "react-icons/ri";
 
+import CloseButton from "../../common/components/CloseButton";
 import CouponSheet from "./CouponSheet";
 import Sheet from "../../common/components/Sheet";
+import setCart from "../../../../store/actions/Cart";
+import urls from "../../../../services/urls";
+import { openNotification } from "../../../../store/actions/notification";
+import { removeCoupon } from "../../../../services/sales/itinerary/Purchase";
+import { updateCartPricing } from "../../../../services/sales/Bookings";
 import { formatMoney } from "../../../../services/money";
+import {
+  addAncillaryBooking,
+  removeAncillaryBooking,
+} from "../../../../store/actions/ancillaryBookings";
+import VisaSearchDrawer from "../../../drawers/visaDetails/VisaSearchDrawer";
+import EsimPackagesDrawer from "../../../drawers/esimDetails/EsimPackagesDrawer";
+import DetailSheet from "./DetailSheet";
+import getModeAccent from "../../common/components/bookingDetail/modeAccent";
+import prompts from "../kairaPrompts";
+import {
+  ItineraryInclusions,
+  PriceDetails,
+} from "../../../../containers/itinerary/booking1/NewBookingSlide";
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  CartSheet — "Review & pay", the design's version.
+//  CartSheet — "Review & pay" on the phone.
 //
-//  The old cart (NewBookingSlide, opened via openPaymentDrawer) is untouched and
-//  still mounted — it owns coupons, traveller details and the payment gateway.
-//  This sheet is the design's summary in front of it: what you're buying, by
-//  group, and what comes off your card today. "Pay now" and "Apply" both hand
-//  over to that drawer rather than reimplementing checkout.
+//  The body is the DESKTOP cart's, not a summary of it. It used to be five
+//  grouped total lines — "Stays · 3 bookings · ₹1,14,135" — which named what
+//  was being bought but not WHICH hotel, gave no way to drop a booking from
+//  the order, and printed one number where the drawer prints a breakdown. So
+//  the two components that draw that breakdown are imported from the drawer
+//  itself (NewBookingSlide) rather than reimplemented here:
+//
+//    • ItineraryInclusions — the per-category accordions, every booking in
+//      them, and the checkbox that includes or excludes one.
+//    • PriceDetails        — itinerary cost, GST/TCS, coupon, total.
+//
+//  Both are pure and prop-driven, so this sheet and the drawer cannot drift.
+//  What is written out here is only what the drawer renders inline: the
+//  WhatsApp CTA, the Visa/eSIM upsells, the trust list and the terms link.
+//
+//  Kept from this sheet's own design, deliberately: the header, the dashed
+//  "Have a coupon?" row (its own CouponSheet, no handover to the drawer), the
+//  sticky PAYABLE NOW / Pay now bar, and the detail sheet a row opens into —
+//  see `detailForCartBooking`. "Pay now" still hands over to the drawer, which
+//  owns the traveller-details gate and the gateway.
 //
 //  DATA NOTES (verified against the Mercury /cart/ payload):
 //   • `cart.summary` is an OBJECT keyed by category — "Flights", "Stays",
@@ -37,76 +67,190 @@ import { formatMoney } from "../../../../services/money";
 //     coupon (cart.coupon_usage) or a neutral invitation, never a fake promise.
 // ─────────────────────────────────────────────────────────────────────────────
 
-// Category key → the label the design uses.
+// The four assurances the drawer closes on. Copied rather than imported: they
+// are a literal inside its render, and they are content, not behaviour.
+const TRIP_CONDITIONS = [
+  {
+    icon: "/assets/trip-condition/trip-condition-1.svg",
+    title: "All Taxes & Fees Included",
+    subheading:
+      "What you see is what you pay. No last-minute taxes, service fees, or surprises at checkout.",
+  },
+  {
+    icon: "/assets/trip-condition/trip-condition-2.svg",
+    title: "Transparent Inclusions",
+    subheading:
+      "A clear breakdown of stays, transfers, experiences, and support — shared before confirmation.",
+  },
+  {
+    icon: "/assets/trip-condition/trip-condition-3.svg",
+    title: "Secure Payments",
+    subheading:
+      "Safe, encrypted payment gateways with flexible payment options where applicable.",
+  },
+  {
+    icon: "/info.svg",
+    title: "On-Ground & Remote Support",
+    subheading:
+      "Local assistance during your trip plus WhatsApp support from our team whenever you need it.",
+  },
+];
+
+// Which cart category a booking id belongs to, in the vocabulary the cart PATCH
+// expects. The drawer derives this inline; it is the one piece of its toggle
+// handler that is not state.
+const BOOKING_TYPE_FOR_CATEGORY = {
+  Hotels: "accommodation",
+  Stays: "accommodation",
+  Flights: "flight",
+  Transfers: "transfer",
+  Ancillaries: "ancillary",
+};
+
+// ─── A cart row, as a detail-sheet descriptor ────────────────────────────────
 //
-// "Transfers", not "Taxis": the cart's Transfers group is every way of getting
-// between two places that isn't a flight — a bus, a train, a ferry, a
-// self-drive — and a trip with one bus in it was billing that bus under a
-// heading that named a taxi.
-const GROUP_LABEL = {
-  Flights: "Flights",
-  Stays: "Stays",
-  Hotels: "Stays",
-  Transfers: "Transfers",
-  Activities: "Activities",
-  Ancillaries: "Visa & eSIM",
+//  Tapping a booking's name in the cart opens THIS surface's detail sheet — the
+//  same one every row of the itinerary opens — not the desktop drawer stack the
+//  cart used to hand off to. Those drawers are full-height panels built around
+//  editing a booking (change hotel, delete transfer, re-pick an activity); from
+//  inside checkout the traveller is reading, not editing, and the sheet is
+//  where reading already happens on this surface.
+//
+//  So the cart row is translated into DetailSheet's descriptor. Only `live`
+//  really matters: it names the endpoint behind the booking, and LiveDetailBody
+//  renders the real thing off it. Everything else is the header.
+//
+//  It keeps the sheet's footer too — the same outlined "Remove" and yellow
+//  "Change …" pills a row of the itinerary ends with, handing the request to
+//  Kaira. Acting on one closes Review & pay as well as the detail sheet: the
+//  cart the traveller was checking out is about to change, so leaving it up
+//  behind the answer would be showing them a total that is already stale.
+
+const cartDate = (value) => {
+  if (!value) return null;
+  const d = new Date(value);
+  return Number.isNaN(d.getTime()) ? null : format(d, "MMM dd");
 };
 
-const GROUP_ORDER = ["Flights", "Stays", "Hotels", "Transfers", "Activities", "Ancillaries"];
-
-// The glyph each row is read by. Five categories in one column of identical
-// grey squares gave the eye nothing to jump to — the label was doing all the
-// work, and a traveller looking for what their hotels cost had to read every
-// line. The transfer glyph is the neutral one from the mode accents rather than
-// a car: the group holds taxis, buses and trains at once.
-const GROUP_ICON = {
-  Flights: MdOutlineFlightTakeoff,
-  Stays: MdOutlineHotel,
-  Hotels: MdOutlineHotel,
-  Transfers: MdTransferWithinAStation,
-  Activities: MdOutlineLocalActivity,
-  Ancillaries: FaPassport,
-  // Not a category the cart sends — the reconciliation row this sheet adds
-  // itself, which is money rather than bookings and takes the price tag.
-  __adjustment: MdOutlineLocalOffer,
+const cartTravellers = (pax) => {
+  const n =
+    (Number(pax?.number_of_adults) || 0) +
+    (Number(pax?.number_of_children) || 0) +
+    (Number(pax?.number_of_infants) || 0);
+  return n > 0 ? `${n} TRAVELER${n === 1 ? "" : "S"}` : null;
 };
 
-// A category the payload invented after this list was written still gets a
-// tile, so the column never breaks its rhythm on one unrecognised row.
-const FallbackIcon = MdOutlineReceiptLong;
+/**
+ * `booking` is what ItineraryInclusions hands its `onOpenDetails`:
+ * `{ id, booking_cost, status, booking_type, detail: { name, check_in,
+ * check_out, duration, pax, transfer_type, booking_type } }` — where
+ * `booking_type` is the CART CATEGORY and `detail.booking_type` is the
+ * booking's own kind (Taxi, Visa, eSIM …).
+ */
+const detailForCartBooking = (booking) => {
+  if (!booking?.id) return null;
 
-function Row({ groupKey, label, count, amount }) {
-  const Icon = GROUP_ICON[groupKey] || FallbackIcon;
+  const d = booking.detail || {};
+  const name = d.name || "Booking";
+  const checkIn = cartDate(d.check_in);
+  const checkOut = cartDate(d.check_out);
+  const travellers = cartTravellers(d.pax);
 
-  return (
-    <div
-      style={{ border: "1px solid #dcdfe5", borderRadius: 11, background: "#fff", boxShadow: "none" }}
-      className="flex items-center gap-[12px] p-[12px]"
-    >
-      {/* Neutral tile, grey glyph — the same treatment the itinerary's own
-          "before you fly" cards use. No per-category colour: these are five
-          lines of one receipt, not five kinds of thing to tell apart by hue. */}
-      <span
-        className="flex h-[28px] w-[28px] flex-none items-center justify-center rounded-[6px]"
-        style={{ background: "#eef0f4" }}
-        aria-hidden
-      >
-        <Icon size={15} color="#6b7280" />
-      </span>
-      <div className="min-w-0 flex-1">
-        <div className="truncate text-[13.5px] font-[700] text-[#0b1220]">{label}</div>
-        {count ? (
-          <div className="mt-[3px] font-mono text-[9.5px] tracking-[0.06em] text-[#8a93a6]">
-            {count}
-          </div>
-        ) : null}
-      </div>
-      <div className="flex-none whitespace-nowrap text-[13.5px] font-[800] text-[#0b1220]">
-        {amount}
-      </div>
-    </div>
-  );
-}
+  const meta = (parts) => parts.filter(Boolean).join(" · ") || null;
+
+  switch (booking.booking_type) {
+    case "Accommodation":
+      return {
+        kind: "STAY",
+        name,
+        meta: meta([
+          checkIn && checkOut ? `${checkIn} – ${checkOut}` : checkIn,
+          d.duration ? `${d.duration}N` : null,
+          travellers,
+        ])?.toUpperCase(),
+        Icon: MdOutlineHotel,
+        live: { kind: "stay", bookingId: booking.id },
+        canChange: true,
+        changeLabel: "Change Stay",
+        changeMessage: prompts.changeBooking(name),
+        canRemove: true,
+        removeMessage: prompts.removeBooking(name),
+      };
+
+    case "Flight":
+    case "Transfer": {
+      // The mode is the booking's own type ("Taxi", "Flight", or on a combo the
+      // comma-joined list of its legs) — getModeAccent normalises all three and
+      // falls back to the neutral transfer glyph on anything it doesn't know.
+      const mode = d.booking_type || (booking.booking_type === "Flight" ? "Flight" : "Taxi");
+      return {
+        kind: String(mode).toUpperCase(),
+        name,
+        meta: meta([checkIn, travellers])?.toUpperCase(),
+        Icon: getModeAccent(mode).Icon,
+        iconColor: "#1a4fd6",
+        live: {
+          kind: "transfer",
+          bookingId: booking.id,
+          bookingType: mode,
+          combo: d.transfer_type === "combo",
+          isSightseeing: d.transfer_type === "sightseeing",
+          title: name,
+        },
+        canChange: true,
+        // "Change Flight", "Change Taxi" — the mode is what the traveller is
+        // looking at, and on a combo the neutral "Change Transfer" is the only
+        // honest label for a booking that is several modes at once.
+        changeLabel: `Change ${getModeAccent(mode).key}`,
+        changeLabelShort: "Change",
+        changeMessage: prompts.changeBooking(name),
+        canRemove: true,
+        removeMessage: prompts.removeBooking(name),
+      };
+    }
+
+    case "Ancillary": {
+      const isEsim = d.booking_type === "eSIM";
+      return {
+        kind: isEsim ? "ESIM" : "VISA",
+        name,
+        meta: "INCLUDED",
+        Icon: isEsim ? FaSimCard : FaPassport,
+        live: {
+          kind: "ancillary",
+          id: booking.id,
+          items: [{ id: booking.id, type: d.booking_type, name }],
+        },
+        canChange: true,
+        changeLabel: isEsim ? "Change eSIM" : "Change Visa",
+        // The ancillary prompts name the KIND, not the booking: a trip carries
+        // one visa arrangement, and "change Schengen Visa – 90 days" reads as a
+        // request about a document rather than about the booking.
+        changeMessage: prompts.changeAncillary(isEsim ? "eSIM" : "visa"),
+        canRemove: true,
+        removeMessage: prompts.removeAncillaries(isEsim ? "eSIM" : "visa"),
+      };
+    }
+
+    case "Activity":
+    default:
+      return {
+        kind: "ACTIVITY",
+        name,
+        meta: meta([checkIn, travellers])?.toUpperCase(),
+        Icon: MdOutlineLocalActivity,
+        // An activity booking answers on /bookings/activity/<id>/ — the slot it
+        // sits in (city, day, slab) is only needed by the POI/restaurant
+        // endpoint, which a cart row can never be.
+        live: { kind: "element", elementType: "activity", id: booking.id, name },
+        canChange: true,
+        changeLabel: "Change Activity",
+        changeMessage: prompts.changeBooking(name),
+        canRemove: true,
+        removeMessage: prompts.removeBooking(name),
+      };
+  }
+};
 
 export default function CartSheet({
   open,
@@ -115,13 +259,29 @@ export default function CartSheet({
   onReprice,
   onCouponApplied,
   token,
+  itineraryId,
+  askKaira,
   isRepricing = false,
+  // The gateway is being opened. The sheet stays up as the screen behind it,
+  // so its own button has to say that something is happening — otherwise a tap
+  // on "Pay now" looks like nothing at all until Razorpay paints.
+  isPaying = false,
 }) {
   // Picking a coupon is a step INSIDE this sheet now, not a handover: the row's
   // button used to close Review & pay and open the old cart drawer, so the
   // traveller left checkout to choose a coupon and came back to it through a
   // different screen.
   const [couponsOpen, setCouponsOpen] = React.useState(false);
+  const [removingCoupon, setRemovingCoupon] = React.useState(false);
+  // Which bookings are in the order, and which of them the server is still
+  // acknowledging. Seeded from the cart and re-seeded whenever it changes, the
+  // same way the drawer does it — `selected` is per booking and defaults true.
+  const [selectedInclusions, setSelectedInclusions] = React.useState({});
+  const [updatingInclusions, setUpdatingInclusions] = React.useState({});
+  const [detailBooking, setDetailBooking] = React.useState(null);
+  const [showVisaDrawer, setShowVisaDrawer] = React.useState(false);
+  const [showEsimDrawer, setShowEsimDrawer] = React.useState(false);
+  const dispatch = useDispatch();
   const { cart, currency } = useSelector(
     (s) => ({ cart: s.Cart, currency: s.currency }),
     shallowEqual,
@@ -137,6 +297,17 @@ export default function CartSheet({
     return () => clearInterval(id);
   }, [open]);
 
+  React.useEffect(() => {
+    if (!cart?.summary) return;
+    const seed = {};
+    Object.values(cart.summary).forEach((category) => {
+      (category?.bookings || []).forEach((booking) => {
+        seed[booking.id] = booking.selected ?? true;
+      });
+    });
+    setSelectedInclusions(seed);
+  }, [cart?.summary]);
+
   const model = useMemo(() => {
     const C = cart;
     const usable = !!C && !C.error && !!C.summary;
@@ -145,44 +316,14 @@ export default function CartSheet({
     const code = C?.currency || currency?.currency || "INR";
     const money = (n) => formatMoney(n, code);
 
-    const entries = Object.entries(C.summary);
-    const known = GROUP_ORDER.filter((k) => C.summary[k]);
-    const rest = entries.map(([k]) => k).filter((k) => !GROUP_ORDER.includes(k));
+    const bookings = Object.values(C.summary).reduce(
+      (n, g) => n + (Number(g?.count) || 0),
+      0,
+    );
 
-    const groups = [];
-    let grouped = 0;
-    for (const key of [...known, ...rest]) {
-      const g = C.summary[key];
-      const count = Number(g?.count) || 0;
-      const cost = Number(g?.cost) || 0;
-      if (count === 0 && cost === 0) continue;
-      grouped += cost;
-      groups.push({
-        key,
-        label: GROUP_LABEL[key] || key,
-        count: `${count} BOOKING${count === 1 ? "" : "S"}`,
-        amount: money(cost),
-      });
-    }
-
-    // The headline total is quoted and held; the per-category costs are the
-    // live line items. When they disagree the difference is real money, so the
-    // design surfaces it as its own row rather than silently reconciling.
     const perPerson = !!(C?.pay_only_for_one || C?.show_per_person_cost);
     const rawTotal = perPerson ? C?.per_person_discounted_cost : C?.discounted_cost;
     const total = Number(rawTotal);
-    const adjustment =
-      !perPerson && Number.isFinite(total) ? Math.round(total - grouped) : 0;
-    if (adjustment !== 0) {
-      groups.push({
-        key: "__adjustment",
-        label: "Held-fare adjustment",
-        count: "AGAINST YOUR QUOTE",
-        amount: `${adjustment < 0 ? "−" : "+"}${money(Math.abs(adjustment))}`,
-      });
-    }
-
-    const bookings = entries.reduce((n, [, g]) => n + (Number(g?.count) || 0), 0);
 
     const payableRaw = Number(C?.total_payable_amount);
     const payable = Number.isFinite(payableRaw) && payableRaw > 0 ? payableRaw : total;
@@ -198,18 +339,126 @@ export default function CartSheet({
 
     return {
       expired,
-      groups,
       bookings,
       hidden: !!C?.are_prices_hidden,
       payableLabel: Number.isFinite(payable) ? money(payable) : null,
       coupon: applied
         ? {
-            text: applied.message || `Coupon ${C?.coupon?.code || ""} applied`.trim(),
-            cta: applied.discount ? `−${money(applied.discount)}` : "Applied",
+            applied: true,
+            // What the remove endpoint is addressed by. The usage row carries
+            // the coupon's id; the code is the fallback, which is what the
+            // desktop cart sends.
+            id: applied.id || applied.coupon_id || C?.coupon?.code || null,
+            text:
+              applied.message || `Coupon ${C?.coupon?.code || ""} applied`.trim(),
           }
-        : { text: "Have a coupon?", cta: "Apply" },
+        : { applied: false, text: "Have a coupon?", cta: "Apply" },
     };
   }, [cart, currency, now]);
+
+  // Including or excluding one booking, the way the drawer does it: optimistic
+  // flip, PATCH the cart, and let the cart that comes back repaint everything
+  // downstream — the category totals, PRICE DETAILS and the payable bar all
+  // read from it. On failure the flip is reverted.
+  //
+  // `itineraryId` is a PROP, not `router.query.id`: on /chat/<id> that param is
+  // the chat session, not the itinerary, and the PATCH would 404.
+  const handleToggleInclusion = async (bookingId) => {
+    if (!itineraryId || updatingInclusions[bookingId]) return;
+    setUpdatingInclusions((prev) => ({ ...prev, [bookingId]: true }));
+    const next = !selectedInclusions[bookingId];
+    setSelectedInclusions((prev) => ({ ...prev, [bookingId]: next }));
+
+    let category = null;
+    Object.entries(cart?.summary || {}).forEach(([key, group]) => {
+      if ((group?.bookings || []).some((b) => b.id === bookingId)) category = key;
+    });
+
+    try {
+      const res = await updateCartPricing.patch(
+        `/${itineraryId}/cart/`,
+        [
+          {
+            booking_type: BOOKING_TYPE_FOR_CATEGORY[category] || "activity",
+            booking_id: bookingId,
+            selected: next,
+          },
+        ],
+        token ? { headers: { Authorization: `Bearer ${token}` } } : undefined,
+      );
+      if (res?.data) dispatch(setCart(res.data));
+    } catch (e) {
+      setSelectedInclusions((prev) => ({ ...prev, [bookingId]: !next }));
+      dispatch(
+        openNotification({
+          type: "error",
+          heading: "Error!",
+          text: "Couldn't update your cart. Please try again.",
+        }),
+      );
+    } finally {
+      setUpdatingInclusions((prev) => ({ ...prev, [bookingId]: false }));
+    }
+  };
+
+  // Taking the coupon off, the way the desktop cart does it: the same endpoint,
+  // and the cart it answers with is what repaints this sheet.
+  const handleRemoveCoupon = async () => {
+    if (!cart?.id || !model?.coupon?.id || removingCoupon) return;
+    setRemovingCoupon(true);
+    try {
+      const res = await removeCoupon.post(
+        "/",
+        { payment_information_id: cart.id, coupon_id: model.coupon.id },
+        token ? { headers: { Authorization: `Bearer ${token}` } } : undefined,
+      );
+      if (res?.data) {
+        dispatch(setCart(res.data));
+        onCouponApplied?.();
+      }
+    } catch (e) {
+      dispatch(
+        openNotification({
+          type: "error",
+          heading: "Error!",
+          text: "Couldn't remove that coupon. Please try again.",
+        }),
+      );
+    } finally {
+      setRemovingCoupon(false);
+    }
+  };
+
+  const handleWhatsappChat = () => {
+    const here =
+      typeof window !== "undefined" ? window.location.href : "https://www.thetarzanway.com";
+    window.open(
+      `${urls.WHATSAPP}?text=${encodeURIComponent(
+        `Hey TTW! I need some help with my tailored experience - ${here}`,
+      )}`,
+      "_blank",
+    );
+  };
+
+  // The detail sheet's Change/Remove pills, from inside checkout.
+  //
+  // Both sheets go, not just the detail one: the request Kaira is about to act
+  // on changes what is IN this cart, so leaving Review & pay open behind the
+  // answer would leave the traveller reading a total that is already stale —
+  // and Kaira's own sheet needs the screen.
+  const askFromCart = React.useCallback(
+    (message, contextLabel) => {
+      if (!message) return;
+      setDetailBooking(null);
+      onClose?.();
+      askKaira?.(message, contextLabel || null);
+    },
+    [askKaira, onClose],
+  );
+
+  const ancillaryBookings = cart?.summary?.Ancillaries?.bookings || [];
+  const visaCount = ancillaryBookings.filter((b) => b?.booking_type === "Visa").length;
+  const esimCount = ancillaryBookings.filter((b) => b?.booking_type === "eSIM").length;
 
   if (!model) return null;
 
@@ -233,67 +482,71 @@ export default function CartSheet({
                 )}
               </div>
             </div>
-            <button
-              type="button"
-              onClick={onClose}
-              aria-label="Close"
-              style={{
-                border: "1px solid #dcdfe5",
-                background: "#ffffff",
-                borderRadius: 999,
-                boxShadow: "none",
-                width: 26,
-                height: 26,
-                color: "#6b7280",
-                fontSize: 13,
-                lineHeight: 1,
-                padding: 0,
-              }}
-              className="flex flex-none items-center justify-center"
-            >
-              ×
-            </button>
+            <CloseButton onClick={onClose} />
           </div>
         </div>
 
         <div className="min-h-0 flex-1 overflow-y-auto px-[14px] py-[12px]">
-          <div className="flex flex-col gap-[11px]">
-            {model.expired ? (
-              <div
+          {model.expired ? (
+            <div
+              style={{
+                border: "1px solid #f3c9c4",
+                background: "#fff1ee",
+                borderRadius: 11,
+                boxShadow: "none",
+              }}
+              className="mb-[12px] flex flex-col gap-[3px] p-[12px]"
+            >
+              <div className="font-mono text-[9.5px] tracking-[0.07em] text-[#b84034]">
+                PRICES EXPIRED
+              </div>
+              <div className="text-[13px] leading-[1.45] text-[#0b1220]">
+                These prices are no longer held. Reprice the itinerary to see
+                today&apos;s cost before paying.
+              </div>
+            </div>
+          ) : null}
+
+          {/* The drawer's own breakdown, imported rather than rebuilt. */}
+          <ItineraryInclusions
+            Cart={cart}
+            selectedInclusions={selectedInclusions}
+            onToggleInclusion={handleToggleInclusion}
+            onOpenDetails={setDetailBooking}
+            arePricesHidden={model.hidden}
+            updatingInclusions={updatingInclusions}
+            arePricesExpired={model.expired}
+          />
+
+          {/* Coupons stay this sheet's own: a dashed row that opens CouponSheet
+              on top, rather than the drawer's "Apply coupon" line. */}
+          <div
+            style={{ border: "1.5px dashed #cfd3da", borderRadius: 11, background: "#fff", boxShadow: "none" }}
+            className="mb-4 flex items-center gap-[11px] p-[12px]"
+          >
+            <div className="min-w-0 flex-1 text-[13px] text-[#6b7280]">
+              {model.coupon.text}
+            </div>
+            {/* An applied coupon offers the only thing left to do with it —
+                take it off. The discount it printed here instead is the number
+                PRICE DETAILS below already carries, and it sat in the one place
+                on the row that looks like a button. */}
+            {model.coupon.applied ? (
+              <button
+                type="button"
+                onClick={handleRemoveCoupon}
+                disabled={removingCoupon}
                 style={{
                   border: "1px solid #f3c9c4",
-                  background: "#fff1ee",
-                  borderRadius: 11,
+                  background: "#ffffff",
+                  borderRadius: 999,
                   boxShadow: "none",
                 }}
-                className="flex flex-col gap-[3px] p-[12px]"
+                className="flex-none whitespace-nowrap px-[13px] py-[7px] text-[12.5px] font-[700] text-[#b42318] disabled:opacity-50"
               >
-                <div className="font-mono text-[9.5px] tracking-[0.07em] text-[#b84034]">
-                  PRICES EXPIRED
-                </div>
-                <div className="text-[13px] leading-[1.45] text-[#0b1220]">
-                  These prices are no longer held. Reprice the itinerary to see
-                  today&apos;s cost before paying.
-                </div>
-              </div>
-            ) : null}
-            {model.groups.map((g) => (
-              <Row
-                key={g.key}
-                groupKey={g.key}
-                label={g.label}
-                count={g.count}
-                amount={model.hidden ? "—" : g.amount}
-              />
-            ))}
-
-            <div
-              style={{ border: "1.5px dashed #cfd3da", borderRadius: 11, background: "#fff", boxShadow: "none" }}
-              className="flex items-center gap-[11px] p-[12px]"
-            >
-              <div className="min-w-0 flex-1 text-[13px] text-[#6b7280]">
-                {model.coupon.text}
-              </div>
+                {removingCoupon ? "Removing…" : "Remove"}
+              </button>
+            ) : (
               <button
                 type="button"
                 onClick={() => setCouponsOpen(true)}
@@ -307,7 +560,137 @@ export default function CartSheet({
               >
                 {model.coupon.cta}
               </button>
+            )}
+          </div>
+
+          <PriceDetails
+            itineraryCost={
+              cart?.taxation_policy == "TCS"
+                ? cart?.total_itinerary_cost
+                : cart?.total_cost
+            }
+            lockInCost={0}
+            couponDiscount={-(cart?.coupon_usage?.discount || 0)}
+            surchargesTaxes={cart?.surcharges_and_taxes || 0}
+            totalPayable={Math.round(cart?.total_payable_amount || 0)}
+          />
+
+          {/* Help */}
+          <hr className="text-text-placeholder" />
+          <div className="mt-md">
+            <div className="flex gap-2 items-center">
+              <img src="/info.svg" alt="" />
+              <div className="text-sm-md font-400 leading-xl">
+                Need help with your trip?
+              </div>
             </div>
+            <div className="text-sm-md font-400 leading-xl text-text-spacegrey mb-2">
+              Connect with a travel expert on WhatsApp
+            </div>
+            <button
+              type="button"
+              onClick={handleWhatsappChat}
+              className="flex flex-row justify-center items-center w-[60%] rounded-lg border border-black bg-white p-[6px] text-black"
+            >
+              <RiWhatsappFill className="text-[#4da750] mr-2 text-xl" />
+              <div className="font-normal">Chat on WhatsApp</div>
+            </button>
+          </div>
+
+          {/* Visa & eSIM CTAs */}
+          <div className="mt-md mb-md">
+            <hr className="text-text-placeholder mb-md" />
+            <div className="text-sm font-400 leading-xl mb-sm text-[#01202B]">
+              Enhance Your Trip
+            </div>
+            <div className="flex flex-col gap-2">
+              <button
+                type="button"
+                className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-[#E5E5E5] bg-white"
+                onClick={() => setShowVisaDrawer(true)}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-[36px] h-[36px] rounded-full bg-[#F5F0FF] flex items-center justify-center flex-shrink-0">
+                    <span className="text-[18px]">🛂</span>
+                  </div>
+                  <div className="text-left">
+                    <div className="text-[13px] font-600 text-[#01202B] flex items-center gap-1">
+                      {visaCount > 0 ? `${visaCount} Visa added` : "Add Visa"}
+                      {visaCount > 0 && (
+                        <span className="inline-flex items-center justify-center w-[14px] h-[14px] rounded-full bg-[#22C55E] text-white text-[9px] font-700">
+                          ✓
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-[11px] text-[#6E757A]">
+                      Hassle-free visa assistance
+                    </div>
+                  </div>
+                </div>
+                <span className="text-[#979393] text-lg">›</span>
+              </button>
+
+              <button
+                type="button"
+                className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-[#E5E5E5] bg-white"
+                onClick={() => setShowEsimDrawer(true)}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-[36px] h-[36px] rounded-full bg-[#DDF4C5] flex items-center justify-center flex-shrink-0">
+                    <span className="text-[18px]">📶</span>
+                  </div>
+                  <div className="text-left">
+                    <div className="text-[13px] font-600 text-[#01202B] flex items-center gap-1">
+                      {esimCount > 0 ? `${esimCount} eSIM added` : "Add eSIM"}
+                      {esimCount > 0 && (
+                        <span className="inline-flex items-center justify-center w-[14px] h-[14px] rounded-full bg-[#22C55E] text-white text-[9px] font-700">
+                          ✓
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-[11px] text-[#6E757A]">
+                      Stay connected abroad
+                    </div>
+                  </div>
+                </div>
+                <span className="text-[#979393] text-lg">›</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Trip Conditions */}
+          <div className="bg-primary-lightPurple p-sm mt-xl">
+            <div className="text-sm font-400 leading-xl mb-sm">
+              Your Trip Will have
+            </div>
+            <div>
+              {TRIP_CONDITIONS.map((item) => (
+                <div key={item.title} className="flex gap-md mb-md">
+                  <img
+                    src={item.icon}
+                    alt=""
+                    width={20}
+                    height={20}
+                    className="rounded-circle w-[25px] h-[25px] flex p-[5px] bg-text-white"
+                  />
+                  <div>
+                    <div className="text-sm font-400 leading-sm-md mb-xxs">
+                      {item.title}
+                    </div>
+                    <div className="text-sm font-400 leading-sm-md text-text-spacegrey">
+                      {item.subheading}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Terms & Conditions */}
+          <div className="flex flex-row justify-center items-center text-[#01202B] mt-2">
+            <Link href="/terms-conditions" target="_blank">
+              <div className="text-sm">Terms &amp; Conditions</div>
+            </Link>
           </div>
         </div>
 
@@ -324,7 +707,7 @@ export default function CartSheet({
             <button
               type="button"
               onClick={model.expired ? onReprice : onPay}
-              disabled={isRepricing}
+              disabled={isRepricing || isPaying}
               style={{
                 border: "none",
                 background: "#f7e700",
@@ -337,7 +720,9 @@ export default function CartSheet({
                 ? "Repricing…"
                 : model.expired
                   ? "Reprice itinerary"
-                  : "Pay now"}
+                  : isPaying
+                    ? "Opening payment…"
+                    : "Pay now"}
             </button>
           </div>
         </div>
@@ -350,6 +735,47 @@ export default function CartSheet({
         onClose={() => setCouponsOpen(false)}
         token={token}
         onApplied={onCouponApplied}
+      />
+
+      {/* The drawers the imported sections open. All three portal to <body> at
+          z 1710, above this sheet's 1620. */}
+      <VisaSearchDrawer
+        show={showVisaDrawer}
+        onHide={() => setShowVisaDrawer(false)}
+        onAdded={(booking, replaceId) => {
+          if (booking?.id) dispatch(addAncillaryBooking(booking, replaceId));
+          else if (replaceId) dispatch(removeAncillaryBooking(replaceId));
+          onCouponApplied?.();
+        }}
+        onRemoved={(bookingId) => {
+          if (bookingId) dispatch(removeAncillaryBooking(bookingId));
+          onCouponApplied?.();
+        }}
+      />
+
+      <EsimPackagesDrawer
+        show={showEsimDrawer}
+        onHide={() => setShowEsimDrawer(false)}
+        onAdded={(booking, replaceId) => {
+          if (booking?.id) dispatch(addAncillaryBooking(booking, replaceId));
+          else if (replaceId) dispatch(removeAncillaryBooking(replaceId));
+          onCouponApplied?.();
+        }}
+        onRemoved={(bookingId) => {
+          if (bookingId) dispatch(removeAncillaryBooking(bookingId));
+          onCouponApplied?.();
+        }}
+      />
+
+      {/* The cart row whose name was tapped, in this surface's own detail
+          sheet. 1630 clears the cart's 1620 — the itinerary opens the same
+          sheet at 1610, which is under the cart and right for that caller. */}
+      <DetailSheet
+        open={!!detailBooking}
+        onClose={() => setDetailBooking(null)}
+        detail={detailForCartBooking(detailBooking)}
+        onAskKaira={askFromCart}
+        zIndex={1630}
       />
     </Sheet>
   );

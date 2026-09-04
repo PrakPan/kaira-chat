@@ -175,6 +175,20 @@ html.app-shell-locked body {
     width: 100%;
 }
 
+/* The cart drawer's mobile pay bar is portaled to <body> at z 1650 — above the
+   phone's own sheets (Review & pay is 1620, the booking detail it opens 1630).
+   It belongs to the drawer's cart screen, so it must not float over a sheet
+   that has covered that screen: a booking's detail sheet was ending in a
+   "Proceed to Pay" bar it does not own.
+
+   `.ttw-sheet-open` is stamped on <html> for exactly as long as one of those
+   sheets is up — see the counter in revamp/common/components/Sheet.jsx. Not the
+   scroll lock's own class: that one is held by the chat and map layers too, and
+   the payment drawer opens OVER those, where the bar is still its own. */
+html.ttw-sheet-open .ttw-cart-pay-bar {
+    display: none !important;
+}
+
 html {
     scroll-behavior: auto !important;
     scrollbar-gutter: stable;
