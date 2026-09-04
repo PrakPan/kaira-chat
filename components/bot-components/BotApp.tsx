@@ -4017,6 +4017,22 @@ Start Location: ${details.startLocation}`;
   const [autoStartPayment, setAutoStartPayment] = React.useState(false);
   const [isRepricing, setIsRepricing] = React.useState(false);
 
+  // An auto-started payment has stopped — at the gateway, or before it.
+  //
+  // Either way the Review & pay sheet's button stops reading as busy. The
+  // drawer only comes DOWN when it has nothing left to show: the traveller
+  // -details gate is rendered inside it, so closing on that reason would take
+  // the gate away with it and the traveller would have nowhere to enter them.
+  const handleAutoPayEnded = React.useCallback(
+    (reason?: string) => {
+      setAutoStartPayment(false);
+      if (reason === "traveller-details") return;
+      closePaymentDrawer();
+      if (activeItineraryId) fetchPaymentData(activeItineraryId);
+    },
+    [closePaymentDrawer, activeItineraryId, fetchPaymentData],
+  );
+
   // Reprice, mirroring the cart drawer's flow (NewBookingSlide.handleRepriceBookings).
   //
   // Two things are deliberately NOT copied from it. It reads `router.query.id`,
@@ -4221,13 +4237,19 @@ Start Location: ${details.startLocation}`;
         open={showCartSheet}
         onClose={() => setShowCartSheet(false)}
         onPay={() => {
-          // Straight to the gateway: the drawer still mounts (it owns the
-          // traveller-details gate and the Razorpay handshake) but fires its own
-          // handlePayNow immediately instead of stopping on the cart screen.
-          setShowCartSheet(false);
+          // Straight to the gateway. The drawer still mounts — it owns the
+          // traveller-details gate and the Razorpay handshake — but on
+          // `autoStartPayment` it paints nothing at all, so the traveller is
+          // never handed back the cart they just reviewed.
+          //
+          // This sheet STAYS OPEN behind it. It is the screen the gateway opens
+          // over and the one the traveller lands on when they dismiss it;
+          // closing it left a blank itinerary under the Razorpay modal.
           setAutoStartPayment(true);
           ctaBarProps.onViewCart();
         }}
+        // The button reads as busy from the tap until the gateway closes.
+        isPaying={autoStartPayment}
         // Coupons open as their own sheet on top of this one now, so there is
         // no handover to the cart drawer to make. The cart the apply endpoint
         // returns is dispatched straight into redux; this refetch is what keeps
@@ -4236,6 +4258,14 @@ Start Location: ${details.startLocation}`;
           activeItineraryId && fetchPaymentData(activeItineraryId)
         }
         token={authToken}
+        // The cart PATCH behind the sheet's include/exclude checkboxes is
+        // addressed by ITINERARY id. `router.query.id` on /chat/<id> is the
+        // chat session, so it has to be passed explicitly — same trap as
+        // handleReprice above.
+        itineraryId={activeItineraryId}
+        // The Change/Remove pills on a booking opened from inside the cart go
+        // to Kaira, same as they do from the itinerary.
+        askKaira={handleItineraryContainerSendMessage}
         onReprice={handleReprice}
         isRepricing={isRepricing}
       />
@@ -5330,6 +5360,10 @@ Start Location: ${details.startLocation}`;
             social_description={itineraryRedux?.social_description}
             openPaymentDrawer={true}
             autoStartPayment={autoStartPayment}
+            // The gateway is done with — paid, dismissed or failed. Take the
+            // invisible drawer down and re-pull the cart, so the Review & pay
+            // sheet the traveller is looking at repaints on the new state.
+            onAutoPayEnded={handleAutoPayEnded}
           />
         </div>
       )}

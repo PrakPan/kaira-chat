@@ -76,6 +76,13 @@ const prompts = {
   // `what` is what the block actually holds — "visa", "eSIM" or "visa and
   // eSIM". A trip with no visa should not be asked to drop one.
   removeAncillaries: (what) => `remove the ${what} from my trip`,
+  // A booking opened from the CART. The cart is grouped by kind, not by leg, so
+  // a row there names the booking but not the city it sits in — these say what
+  // to change by NAME, which is the one handle both sides of the conversation
+  // already share.
+  changeBooking: (name) => `change ${name} in my trip`,
+  removeBooking: (name) => `remove ${name} from my trip`,
+
   // The change bar's Undo. Phrased as a request because that is what it is:
   // nothing here can roll the trip back on its own, so it asks the one party
   // that can — see TripChangeBar.
