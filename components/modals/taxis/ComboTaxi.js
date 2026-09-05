@@ -11,6 +11,7 @@ import LoadingLottie from "../../ui/LoadingLottie";
 import { ItineraryUpdateLoader } from "../../revamp/common/components/loader";
 import TaxiSearched from "./taxi-searched/Index";
 import SelectedTaxisBar from "./fleet/SelectedTaxisBar";
+import PriceSourceNote from "../../revamp/common/components/PriceSourceNote";
 import {
   TaxiSelectionProvider,
   useTaxiSelectionState,
@@ -720,6 +721,11 @@ const ComboTaxi = (props) => {
                         margin="1rem auto"
                       />
                     </div>
+                  ) : null}
+
+                  {/* Staff-only: who quoted the fares listed above. */}
+                  {!loading && quotes.length ? (
+                    <PriceSourceNote source={fleetSource} />
                   ) : null}
                 </OptionsContainer>
               ) : null}

@@ -31,6 +31,9 @@ import Filters from "./filtersmobile/Filters";
 import FilterChips from "./filtersmobile/FilterChips";
 import BotLoginModal from "../../bot-components/components/BotLoginModal";
 import OfflineQuoteEmptyState from "../../ui/OfflineQuoteEmptyState";
+import PriceSourceNote, {
+  readSearchSources,
+} from "../../revamp/common/components/PriceSourceNote";
 
 const GridContainer = styled.div`
   @media screen and (min-width: 768px) {
@@ -85,7 +88,9 @@ const Booking = (props) => {
   const autocompleteCancelTokenRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const [nextPage, setNextPage] = useState(1);
-  const [provider, setProvider] = useState(null);
+  // Which supplier(s) quoted the rates on screen — the search reports one
+  // search-wide where it has it, and otherwise names it per hotel.
+  const [priceSources, setPriceSources] = useState([]);
   const [updateBookingState, setUpdateBookingState] = useState(false);
   const [updateLoadingState, setUpdateLoadingState] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
@@ -449,7 +454,7 @@ const Booking = (props) => {
       })
       .then((res) => {
         setUpdateLoadingState(false);
-        setProvider(res.data?.source);
+        setPriceSources(readSearchSources(res.data, res.data?.data));
 
         if (res.data?.trace_details?.id) {
           localStorage.setItem("trace_id", res?.data?.trace_details?.id);
@@ -685,7 +690,12 @@ const Booking = (props) => {
         })
         .then((res) => {
           setUpdateLoadingState(false);
-          setProvider(res.data?.source);
+          // This is the paging path (results are appended, not replaced), so
+          // keep the suppliers named by earlier pages.
+          setPriceSources((prev) => [
+            ...prev,
+            ...readSearchSources(res.data, res.data?.data),
+          ]);
 
           if (res.data?.trace_details?.id) {
             localStorage.setItem("trace_id", res?.data?.trace_details?.id);
@@ -1066,6 +1076,11 @@ const Booking = (props) => {
                               // ) : null} */}
                           </div>
                         )}
+
+                        {/* Staff-only: who quoted the rates listed above. */}
+                        {!loading && moreOptionsJSX.length ? (
+                          <PriceSourceNote source={priceSources} />
+                        ) : null}
                       </div>
                     </OptionsContainer>
                   ) : null}

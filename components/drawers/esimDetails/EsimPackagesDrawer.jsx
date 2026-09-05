@@ -9,6 +9,9 @@ import { currencySymbols } from "../../../data/currencySymbols";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 import EsimDetailDrawer from "./EsimDetailDrawer";
 import SearchLoaderOverlay from "../../ui/SearchLoaderOverlay";
+import PriceSourceNote, {
+  readSearchSources,
+} from "../../revamp/common/components/PriceSourceNote";
 
 const EsimCard = ({ pkg, onSelect, currency }) => {
   const currCode = currency?.currency || "INR";
@@ -98,6 +101,9 @@ export default function EsimPackagesDrawer({ show, onHide, onBooked, onAdded, on
   const currency = useSelector((state) => state.currency);
 
   const [packages, setPackages] = useState([]);
+  // Suppliers behind the prices on screen — staff-only footnote, and empty
+  // whenever the search answers from our own catalogue.
+  const [sources, setSources] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState(null);
@@ -132,6 +138,8 @@ export default function EsimPackagesDrawer({ show, onHide, onBooked, onAdded, on
       const list = Array.isArray(payload) ? payload : Array.isArray(payload?.data) ? payload.data : [];
       const pageMeta = payload?.meta || res.data?.meta || null;
       setPackages((prev) => append ? [...prev, ...list] : list);
+      const pageSources = readSearchSources(payload || res.data, list);
+      setSources((prev) => append ? [...prev, ...pageSources] : pageSources);
       setMeta(pageMeta);
       if (!append) trackEsimSearchList?.(itineraryId);
     } catch (err) {
@@ -238,6 +246,9 @@ export default function EsimPackagesDrawer({ show, onHide, onBooked, onAdded, on
                   {loadingMore ? "Loading..." : `Load more (${meta.total - packages.length} remaining)`}
                 </button>
               )}
+
+              {/* Staff-only: who priced the packages listed above. */}
+              <PriceSourceNote source={sources} />
             </div>
           )}
         </div>

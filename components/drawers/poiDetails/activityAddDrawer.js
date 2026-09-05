@@ -28,6 +28,9 @@ import Drawer from "../../ui/Drawer";
 import BackArrow from "../../ui/BackArrow";
 import { TbArrowBack } from "react-icons/tb";
 import { useRouter } from "next/router";
+import PriceSourceNote, {
+  readSearchSources,
+} from "../../revamp/common/components/PriceSourceNote";
 
 const FloatingView = styled.div`
   position: sticky;
@@ -96,6 +99,8 @@ const ActivityAddDrawer = (props) => {
   const [linktivityCursor, setLinktivityCursor] = useState(null);
   const [elementType, setElementType] = useState("Activity");
   const [options, setOptions] = useState([]);
+  // Suppliers behind the activity results on screen — staff-only footnote.
+  const [activitySources, setActivitySources] = useState([]);
   const [totalResults, setTotalResults] = useState(null);
   const [showMoreResults, setShowMoreResults] = useState(false);
   const [selectSearch, setSelectedSearch] = useState("");
@@ -459,8 +464,21 @@ const ActivityAddDrawer = (props) => {
                 );
               }
 
-              if (showMore) setOptions((prev) => [...prev, ...options]);
-              else setOptions(options);
+              // Our own activities come back with no `source`, so credit them
+              // to Self rather than letting a third party's name stand for the
+              // whole list.
+              const sources = readSearchSources(
+                res.data,
+                res.data.data.activities,
+                { fallback: "Self" },
+              );
+              if (showMore) {
+                setOptions((prev) => [...prev, ...options]);
+                setActivitySources((prev) => [...prev, ...sources]);
+              } else {
+                setOptions(options);
+                setActivitySources(sources);
+              }
               setNextUrl(res?.data?.next);
               setLinktivityCursor(res?.data?.linktivity_next_cursor ?? null);
 
@@ -620,6 +638,12 @@ const ActivityAddDrawer = (props) => {
           );
         }
         setOptions((prev) => [...prev, ...options]);
+        setActivitySources((prev) => [
+          ...prev,
+          ...readSearchSources(res.data, res.data.data.activities, {
+            fallback: "Self",
+          }),
+        ]);
         setNextUrl(res?.data?.next);
         setLinktivityCursor(res?.data?.linktivity_next_cursor ?? null);
         if (res.data.next) {
@@ -965,6 +989,12 @@ const ClickHandler = (child) => {
                       >
                         View more
                       </button>
+                    ) : null}
+
+                    {/* Staff-only: who priced the activities listed above.
+                        Attractions (the POI tab) carry no price, so no note. */}
+                    {elementType === "Activity" ? (
+                      <PriceSourceNote source={activitySources} />
                     ) : null}
                   </div>
                 ) : (

@@ -24,6 +24,7 @@ import Skeleton from "./Skeleton";
 import TransferEditDrawer from "../../drawers/routeTransfer/TransferEditDrawer";
 import { fetchTransferMode } from "../../../services/bookings/FetchTaxiRecommendations";
 import OfflineQuoteEmptyState from "../../ui/OfflineQuoteEmptyState";
+import PriceSourceNote from "../../revamp/common/components/PriceSourceNote";
 import { useRouter } from "next/router";
 import { PulseLoader } from "react-spinners";
 
@@ -444,6 +445,11 @@ const Booking = (props) => {
                         )}
                       </button>
                     </div>
+                  ) : null}
+
+                  {/* Staff-only: who quoted the fares listed above. */}
+                  {!loading && (optionsJSX.length || moreOptionsJSX.length) ? (
+                    <PriceSourceNote source={fleetSource} />
                   ) : null}
                 </OptionsContainer>
               ) : null}
